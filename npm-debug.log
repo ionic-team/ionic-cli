@@ -1,0 +1,154 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'publish' ]
+2 info using npm@1.2.32
+3 info using node@v0.10.12
+4 verbose publish [ '.' ]
+5 verbose read json /Users/driftyadmin/git/ionic/tools/ionic/package.json
+6 warn package.json ionic@0.9.05 No repository field.
+7 warn package.json ionic@0.9.05 No readme data.
+8 verbose cache add [ '.', null ]
+9 verbose cache add name=undefined spec="." args=[".",null]
+10 verbose parsed url { protocol: null,
+10 verbose parsed url   slashes: null,
+10 verbose parsed url   auth: null,
+10 verbose parsed url   host: null,
+10 verbose parsed url   port: null,
+10 verbose parsed url   hostname: null,
+10 verbose parsed url   hash: null,
+10 verbose parsed url   search: null,
+10 verbose parsed url   query: null,
+10 verbose parsed url   pathname: '.',
+10 verbose parsed url   path: '.',
+10 verbose parsed url   href: '.' }
+11 silly lockFile 3a52ce78- .
+12 verbose lock . /Users/driftyadmin/.npm/3a52ce78-.lock
+13 verbose read json package.json
+14 verbose tar pack [ '/var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/tmp.tgz',
+14 verbose tar pack   '.' ]
+15 verbose tarball /var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/tmp.tgz
+16 verbose folder .
+17 info prepublish ionic@0.9.05
+18 silly lockFile 1f1177db-tar tar://.
+19 verbose lock tar://. /Users/driftyadmin/.npm/1f1177db-tar.lock
+20 silly lockFile 74dec091-97226-0-8251332442741841-tmp-tgz tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/tmp.tgz
+21 verbose lock tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/tmp.tgz /Users/driftyadmin/.npm/74dec091-97226-0-8251332442741841-tmp-tgz.lock
+22 silly lockFile 1f1177db-tar tar://.
+23 silly lockFile 1f1177db-tar tar://.
+24 silly lockFile 74dec091-97226-0-8251332442741841-tmp-tgz tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/tmp.tgz
+25 silly lockFile 74dec091-97226-0-8251332442741841-tmp-tgz tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/tmp.tgz
+26 verbose tar unpack /var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/tmp.tgz
+27 silly lockFile c4b8a2e3-97226-0-8251332442741841-package tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/package
+28 verbose lock tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/package /Users/driftyadmin/.npm/c4b8a2e3-97226-0-8251332442741841-package.lock
+29 silly lockFile 74dec091-97226-0-8251332442741841-tmp-tgz tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/tmp.tgz
+30 verbose lock tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/tmp.tgz /Users/driftyadmin/.npm/74dec091-97226-0-8251332442741841-tmp-tgz.lock
+31 silly gunzTarPerm modes [ '755', '644' ]
+32 silly gunzTarPerm extractEntry package.json
+33 silly gunzTarPerm extractEntry ionic.js
+34 silly gunzTarPerm extractEntry lib/ionic/start.js
+35 silly gunzTarPerm extractEntry lib/ionic/task.js
+36 silly gunzTarPerm extractEntry template/index.html
+37 silly gunzTarPerm extractEntry template/t
+38 verbose read json /var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/package/package.json
+39 silly lockFile c4b8a2e3-97226-0-8251332442741841-package tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/package
+40 silly lockFile c4b8a2e3-97226-0-8251332442741841-package tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/package
+41 silly lockFile 74dec091-97226-0-8251332442741841-tmp-tgz tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/tmp.tgz
+42 silly lockFile 74dec091-97226-0-8251332442741841-tmp-tgz tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/tmp.tgz
+43 verbose from cache /var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/package/package.json
+44 verbose tar pack [ '/Users/driftyadmin/.npm/ionic/0.9.05/package.tgz',
+44 verbose tar pack   '/var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/package' ]
+45 verbose tarball /Users/driftyadmin/.npm/ionic/0.9.05/package.tgz
+46 verbose folder /var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/package
+47 silly lockFile c4b8a2e3-97226-0-8251332442741841-package tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/package
+48 verbose lock tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/package /Users/driftyadmin/.npm/c4b8a2e3-97226-0-8251332442741841-package.lock
+49 silly lockFile be49939d-min-npm-ionic-0-9-05-package-tgz tar:///Users/driftyadmin/.npm/ionic/0.9.05/package.tgz
+50 verbose lock tar:///Users/driftyadmin/.npm/ionic/0.9.05/package.tgz /Users/driftyadmin/.npm/be49939d-min-npm-ionic-0-9-05-package-tgz.lock
+51 silly lockFile c4b8a2e3-97226-0-8251332442741841-package tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/package
+52 silly lockFile c4b8a2e3-97226-0-8251332442741841-package tar:///var/folders/yc/wb4ct6qn5vl2r6hv8k3mck_w0000gq/T/npm-51998/1384964997226-0.8251332442741841/package
+53 silly lockFile be49939d-min-npm-ionic-0-9-05-package-tgz tar:///Users/driftyadmin/.npm/ionic/0.9.05/package.tgz
+54 silly lockFile be49939d-min-npm-ionic-0-9-05-package-tgz tar:///Users/driftyadmin/.npm/ionic/0.9.05/package.tgz
+55 silly lockFile 1478df52-tyadmin-npm-ionic-0-9-05-package /Users/driftyadmin/.npm/ionic/0.9.05/package
+56 verbose lock /Users/driftyadmin/.npm/ionic/0.9.05/package /Users/driftyadmin/.npm/1478df52-tyadmin-npm-ionic-0-9-05-package.lock
+57 silly lockFile 1478df52-tyadmin-npm-ionic-0-9-05-package /Users/driftyadmin/.npm/ionic/0.9.05/package
+58 silly lockFile 1478df52-tyadmin-npm-ionic-0-9-05-package /Users/driftyadmin/.npm/ionic/0.9.05/package
+59 verbose tar unpack /Users/driftyadmin/.npm/ionic/0.9.05/package.tgz
+60 silly lockFile ce6e26b9-tyadmin-npm-ionic-0-9-05-package tar:///Users/driftyadmin/.npm/ionic/0.9.05/package
+61 verbose lock tar:///Users/driftyadmin/.npm/ionic/0.9.05/package /Users/driftyadmin/.npm/ce6e26b9-tyadmin-npm-ionic-0-9-05-package.lock
+62 silly lockFile be49939d-min-npm-ionic-0-9-05-package-tgz tar:///Users/driftyadmin/.npm/ionic/0.9.05/package.tgz
+63 verbose lock tar:///Users/driftyadmin/.npm/ionic/0.9.05/package.tgz /Users/driftyadmin/.npm/be49939d-min-npm-ionic-0-9-05-package-tgz.lock
+64 silly gunzTarPerm modes [ '755', '644' ]
+65 silly gunzTarPerm extractEntry package.json
+66 silly gunzTarPerm extractEntry ionic.js
+67 silly gunzTarPerm extractEntry lib/ionic/start.js
+68 silly gunzTarPerm extractEntry lib/ionic/task.js
+69 silly gunzTarPerm extractEntry template/index.html
+70 silly gunzTarPerm extractEntry template/t
+71 verbose read json /Users/driftyadmin/.npm/ionic/0.9.05/package/package.json
+72 silly lockFile ce6e26b9-tyadmin-npm-ionic-0-9-05-package tar:///Users/driftyadmin/.npm/ionic/0.9.05/package
+73 silly lockFile ce6e26b9-tyadmin-npm-ionic-0-9-05-package tar:///Users/driftyadmin/.npm/ionic/0.9.05/package
+74 silly lockFile be49939d-min-npm-ionic-0-9-05-package-tgz tar:///Users/driftyadmin/.npm/ionic/0.9.05/package.tgz
+75 silly lockFile be49939d-min-npm-ionic-0-9-05-package-tgz tar:///Users/driftyadmin/.npm/ionic/0.9.05/package.tgz
+76 verbose from cache /Users/driftyadmin/.npm/ionic/0.9.05/package/package.json
+77 verbose chmod /Users/driftyadmin/.npm/ionic/0.9.05/package.tgz 644
+78 verbose chown /Users/driftyadmin/.npm/ionic/0.9.05/package.tgz [ 503, 20 ]
+79 silly lockFile 3a52ce78- .
+80 silly lockFile 3a52ce78- .
+81 silly publish { name: 'ionic',
+81 silly publish   version: '0.9.05',
+81 silly publish   preferGlobal: true,
+81 silly publish   description: 'A tool for creating and building Ionic Framework mobile apps.',
+81 silly publish   homepage: 'http://ionicframework.com/',
+81 silly publish   main: 'ionic.js',
+81 silly publish   scripts: { test: 'echo "Error: no test specified" && exit 1' },
+81 silly publish   author: { name: 'Max Lynch', email: 'max@drifty.com' },
+81 silly publish   license: 'MIT',
+81 silly publish   dependencies: { cordova: '>=3.1.0', optimist: '0.0.2', wrench: '1.5.1' },
+81 silly publish   readme: 'ERROR: No README data found!',
+81 silly publish   _id: 'ionic@0.9.05',
+81 silly publish   dist: { shasum: '901fb6f02fcfb8f2944c61b575ba88f70395b720' },
+81 silly publish   _from: '.' }
+82 verbose url raw ionic
+83 verbose url resolving [ 'https://registry.npmjs.org/', './ionic' ]
+84 verbose url resolved https://registry.npmjs.org/ionic
+85 info trying registry request attempt 1 at 10:29:58
+86 http PUT https://registry.npmjs.org/ionic
+87 http 409 https://registry.npmjs.org/ionic
+88 verbose url raw ionic
+89 verbose url resolving [ 'https://registry.npmjs.org/', './ionic' ]
+90 verbose url resolved https://registry.npmjs.org/ionic
+91 info trying registry request attempt 1 at 10:29:58
+92 http GET https://registry.npmjs.org/ionic
+93 http 200 https://registry.npmjs.org/ionic
+94 verbose uploading [ 'ionic/-/ionic-0.9.05.tgz/-rev/3-eaa605a9ad6fae3bb8c301e3127943db',
+94 verbose uploading   '/Users/driftyadmin/.npm/ionic/0.9.05/package.tgz' ]
+95 verbose url raw ionic/-/ionic-0.9.05.tgz/-rev/3-eaa605a9ad6fae3bb8c301e3127943db
+96 verbose url resolving [ 'https://registry.npmjs.org/',
+96 verbose url resolving   './ionic/-/ionic-0.9.05.tgz/-rev/3-eaa605a9ad6fae3bb8c301e3127943db' ]
+97 verbose url resolved https://registry.npmjs.org/ionic/-/ionic-0.9.05.tgz/-rev/3-eaa605a9ad6fae3bb8c301e3127943db
+98 info trying registry request attempt 1 at 10:29:59
+99 http PUT https://registry.npmjs.org/ionic/-/ionic-0.9.05.tgz/-rev/3-eaa605a9ad6fae3bb8c301e3127943db
+100 http 403 https://registry.npmjs.org/ionic/-/ionic-0.9.05.tgz/-rev/3-eaa605a9ad6fae3bb8c301e3127943db
+101 info trying registry request attempt 1 at 10:29:59
+102 http PUT https://registry.npmjs.org/ionic/-/ionic-0.9.05.tgz/-rev/3-eaa605a9ad6fae3bb8c301e3127943db
+103 http 403 https://registry.npmjs.org/ionic/-/ionic-0.9.05.tgz/-rev/3-eaa605a9ad6fae3bb8c301e3127943db
+104 error publish Error uploading package
+105 error Error: forbidden user: drifty not authorized to modify ionic
+105 error Added: _attachments.ionic-0.9.05.tgz: ionic/-/ionic-0.9.05.tgz/-rev/3-eaa605a9ad6fae3bb8c301e3127943db
+105 error     at RegClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:272:14)
+105 error     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/index.js:148:22)
+105 error     at Request.EventEmitter.emit (events.js:98:17)
+105 error     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/index.js:876:14)
+105 error     at Request.EventEmitter.emit (events.js:117:20)
+105 error     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/index.js:827:12)
+105 error     at IncomingMessage.EventEmitter.emit (events.js:117:20)
+105 error     at _stream_readable.js:910:16
+105 error     at process._tickCallback (node.js:415:13)
+106 error If you need help, you may report this log at:
+106 error     <http://github.com/isaacs/npm/issues>
+106 error or email it to:
+106 error     <npm-@googlegroups.com>
+107 error System Darwin 12.5.0
+108 error command "node" "/usr/local/bin/npm" "publish"
+109 error cwd /Users/driftyadmin/git/ionic/tools/ionic
+110 error node -v v0.10.12
+111 error npm -v 1.2.32
+112 verbose exit [ 1, true ]

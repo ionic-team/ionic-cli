@@ -1,0 +1,18 @@
+{
+  "name": "ionic",
+  "version": "0.9.05",
+  "preferGlobal": true,
+  "description": "A tool for creating and building Ionic Framework mobile apps.",
+  "homepage": "http://ionicframework.com/",
+  "main": "ionic.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Max Lynch <max@drifty.com>",
+  "license": "MIT",
+  "dependencies": {
+    "cordova": ">=3.1.0",
+    "optimist": "0.0.2",
+    "wrench": "1.5.1"
+  }
+}
