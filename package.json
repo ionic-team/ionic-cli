@@ -4,7 +4,9 @@
   "preferGlobal": true,
   "description": "A tool for creating and building Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
-  "main": "ionic.js",
+  "bin": {
+    "ionic": "bin/ionic"
+  },
   "keywords": [
     "ionic",
     "ionic framework",

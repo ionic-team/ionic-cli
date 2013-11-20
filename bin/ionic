@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+'use strict';
+
+process.title = 'ionic';
+
+var Ionic = require('../lib/ionic').Ionic;
+
+var ionic = new Ionic();
+ionic.run();
