@@ -24,7 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "cordova": ">=3.1.0",
-    "optimist": "0.0.2",
+    "optimist": "0.6.0",
     "wrench": "1.5.1"
   }
 }
