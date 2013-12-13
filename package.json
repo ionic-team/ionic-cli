@@ -25,7 +25,7 @@
   "author": "Max Lynch <max@drifty.com>",
   "license": "MIT",
   "dependencies": {
-    "cordova": ">=3.1.0",
+    "cordova": "~3.2.0",
     "request": "2.27.0",
     "shelljs": "0.2.6",
     "unzip": "0.1.9",
