@@ -25,12 +25,13 @@
   "author": "Max Lynch <max@drifty.com>",
   "license": "MIT",
   "dependencies": {
-    "cordova": "~3.2.0",
-    "request": "2.27.0",
-    "shelljs": "0.2.6",
-    "unzip": "0.1.9",
+    "adm-zip": "0.4.3",
+    "cordova": "~3.2.0",    
     "ncp": "0.4.2",
     "optimist": "0.6.0",
-    "prompt": "0.2.12"
+    "prompt": "0.2.12",
+    "request": "2.27.0",
+    "shelljs": "0.2.6",
+    "unzip": "0.1.9"
   }
 }
