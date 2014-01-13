@@ -22,7 +22,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Max Lynch <max@drifty.com>",
+  "author": "Max Lynch <max@drifty.com> and Peter Collins <peter@drifty.com>",
   "license": "MIT",
   "dependencies": {
     "adm-zip": "0.4.3",
