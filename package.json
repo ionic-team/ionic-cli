@@ -25,13 +25,15 @@
   "author": "Max Lynch <max@drifty.com> and Peter Collins <peter@drifty.com>",
   "license": "MIT",
   "dependencies": {
-    "adm-zip": "0.4.3",
     "cordova": "~3.2.0",    
     "form-data": "~0.1.0",
+    "fstream": "0.1.25",
     "ncp": "0.4.2",
     "optimist": "0.6.0",
     "prompt": "0.2.12",
     "request": "2.27.0",
+    "shelljs": "0.2.6",
+    "tar": "0.1.19",
     "unzip": "0.1.9"
   }
 }
