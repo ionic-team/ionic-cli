@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "0.9.10",
+  "version": "0.9.11",
   "preferGlobal": true,
   "description": "A tool for creating and building Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -30,6 +30,7 @@
     "shelljs": "0.2.6",
     "unzip": "0.1.9",
     "ncp": "0.4.2",
-    "optimist": "0.6.0"
+    "optimist": "0.6.0",
+    "event-stream": "3.0.x"
   }
 }
