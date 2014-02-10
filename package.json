@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "0.9.10",
+  "version": "0.9.16",
   "preferGlobal": true,
   "description": "A tool for creating and building Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -26,7 +26,8 @@
   "license": "MIT",
   "dependencies": {
     "archiver": "0.5.1",
-    "cordova": "~3.2.0",    
+    "cordova": "~3.2.0",   
+    "event-stream": "3.0.x", 
     "form-data": "~0.1.0",
     "ncp": "0.4.2",
     "optimist": "0.6.0",
