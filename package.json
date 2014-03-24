@@ -26,14 +26,16 @@
   "license": "MIT",
   "dependencies": {
     "archiver": "0.5.1",
-    "cordova": "~3.2.0",   
-    "event-stream": "3.0.x", 
+    "cordova": "~3.2.0",
+    "event-stream": "3.0.x",
     "form-data": "~0.1.0",
     "ncp": "0.4.2",
     "optimist": "0.6.0",
     "prompt": "0.2.12",
     "request": "2.27.0",
     "shelljs": "0.2.6",
-    "unzip": "0.1.9"
+    "unzip": "0.1.9",
+    "q": "^1.0.1",
+    "colors": "^0.6.2"
   }
 }
