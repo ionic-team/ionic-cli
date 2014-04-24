@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "1.0.1-beta",
+  "version": "1.0.3-beta",
   "preferGlobal": true,
   "description": "A tool for creating and building Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -32,6 +32,7 @@
     "shelljs": "0.2.6",
     "unzip": "0.1.9",
     "colors": "^0.6.2",
-    "q": "^1.0.1"
+    "q": "^1.0.1",
+    "npm": "^1.4.6"
   }
 }
