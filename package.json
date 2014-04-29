@@ -1,8 +1,8 @@
 {
   "name": "ionic",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "preferGlobal": true,
-  "description": "A tool for creating and building Ionic Framework mobile apps.",
+  "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
   "bin": {
     "ionic": "bin/ionic"
@@ -35,6 +35,9 @@
     "q": "^1.0.1",
     "npm": "^1.4.6",
     "connect": "^2.14.5",
-    "open": "0.0.5"
+    "open": "0.0.5",
+    "tiny-lr-fork": "0.0.5",
+    "connect-livereload": "^0.4.0",
+    "vinyl-fs": "^0.1.4"
   }
 }
