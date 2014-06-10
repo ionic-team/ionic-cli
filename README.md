@@ -12,8 +12,20 @@ $ sudo npm install -g ionic
 ## Starting an Ionic App
 
 ```bash
-$ ionic start myApp
+$ ionic start myApp [template]
 ```
+There are three choices of templates.
+
+* Side-Menu (sidemenu)
+* Tabs (tabs)
+* Blank (blank)
+ 
+## Testing in a Browser
+
+```bash
+$ ionic serve
+```
+
 
 ## Adding a platform target
 
