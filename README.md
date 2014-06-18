@@ -53,4 +53,4 @@ $ ionic run ios
 
 Ionic uses Cordova underneath, so you can also substitute Cordova commands to prepare/build/emulate/run, or to add additional plugins.
 
-Note: we occasionally anonymous usage statistics to the Ionic team to make the tool better.
+Note: we occasionally collect and send anonymous usage statistics to the Ionic team to make the tool better.
