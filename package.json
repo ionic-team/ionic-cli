@@ -19,25 +19,42 @@
     "type": "git",
     "url": "https://github.com/driftyco/ionic-cli.git"
   },
-  "author": "Max Lynch <max@drifty.com> and Peter Collins <peter@drifty.com>",
+  "contributors": [
+    {
+      "name": "Max Lynch",
+      "email": "max@drifty.com",
+      "web": "https://twitter.com/maxlynch"
+    },
+    {
+      "name": "Peter Collins",
+      "email": "peter@drifty.com",
+      "web": "https://twitter.com/SomethingNew2_0"
+    },
+    {
+      "name": "Adam Bradley",
+      "web": "https://twitter.com/adamdbradley"
+    }
+  ],
   "license": "MIT",
   "dependencies": {
     "archiver": "0.5.1",
+    "colors": "^0.6.2",
+    "connect": "^2.14.5",
+    "connect-livereload": "^0.4.0",
     "event-stream": "3.0.x",
     "form-data": "~0.1.0",
     "ncp": "0.4.2",
+    "npm": "^1.4.6",
+    "open": "0.0.5",
     "optimist": "0.6.0",
     "prompt": "0.2.12",
+    "progress": "1.1.7",
+    "q": "^1.0.1",
     "request": "2.27.0",
     "shelljs": "0.2.6",
-    "unzip": "0.1.9",
-    "colors": "^0.6.2",
-    "q": "^1.0.1",
-    "npm": "^1.4.6",
-    "connect": "^2.14.5",
-    "open": "0.0.5",
     "tiny-lr-fork": "0.0.5",
-    "connect-livereload": "^0.4.0",
-    "vinyl-fs": "^0.1.4"
+    "vinyl-fs": "^0.1.4",
+    "unzip": "0.1.9",
+    "xml2js": "^0.4.4"
   }
 }
