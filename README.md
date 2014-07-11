@@ -49,6 +49,7 @@ $ ionic emulate ios
 
 ```bash
 $ ionic run ios
+```
 
 
 ## Packaging an app (beta)
