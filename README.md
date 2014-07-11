@@ -19,7 +19,7 @@ There are three choices of templates.
 * Side-Menu (sidemenu)
 * Tabs (tabs)
 * Blank (blank)
- 
+
 ## Testing in a Browser
 
 ```bash
@@ -49,7 +49,21 @@ $ ionic emulate ios
 
 ```bash
 $ ionic run ios
+
+
+## Packaging an app (beta)
+
+Using Ionic's service, you can compile and package your project into an app-store ready app without
+requiring native SDKs on your machine.
+
+```bash
+$ ionic package debug android
 ```
+
+The third argument can be either `debug` or `release`, and the last argument can be either `android` or `ios`.
+
+
+## Cordova Commands
 
 Ionic uses Cordova underneath, so you can also substitute Cordova commands to prepare/build/emulate/run, or to add additional plugins.
 
