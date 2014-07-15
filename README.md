@@ -23,8 +23,12 @@ There are three choices of templates:
  
 or you can use your own or any other non-offical template from github
 * username/repo
+
 where username is the users github username and repo is the template repository.
-For `https://github.com/omeid/ionic-starter-tabs` you would use `omeid/ionic-starter-tabs`.
+For `https://github.com/omeid/ionic-starter-tabs` you would use:
+```bash
+$ ionic start myApp omeid/ionic-starter-tab
+```
 
 Command-line flags/options:
 
