@@ -21,6 +21,11 @@ There are three choices of templates:
 * Tabs (tabs)
 * Blank (blank)
  
+or you can use your own or any other non-offical template from github
+* username/repo
+where username is the users github username and repo is the template repository.
+For `https://github.com/omeid/ionic-starter-tabs` you would use `omeid/ionic-starter-tabs`.
+
 Command-line flags/options:
 
     -a, --app <APP NAME> ................... your app's name (Use quotes around the name)
