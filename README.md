@@ -20,11 +20,11 @@ There are three choices of templates:
 * Side-Menu (sidemenu)
 * Tabs (tabs)
 * Blank (blank)
- 
+
 Command-line flags/options:
 
-    -a, --app <APP NAME> ................... your app's name (Use quotes around the name)
-    -p, --package <PACKAGE NAME> ........... package name, such as "com.mycompany.myapp"
+    --app-name, -a  ........................  Human readable name for the app (Use quotes around the name)
+    --id, -i  ..............................  Package name set in the <widget id> config, ie: com.mycompany.myapp
 
 
 ## Testing in a Browser
