@@ -25,6 +25,7 @@ Command-line flags/options:
 
     --app-name, -a  ........................  Human readable name for the app (Use quotes around the name)
     --id, -i  ..............................  Package name set in the <widget id> config, ie: com.mycompany.myapp
+    --no-cordova, -n  ......................  Do not create an app targeted for Cordova
 
 
 ## Testing in a Browser
