@@ -1,7 +1,9 @@
 Ionic-Cli
 =========
 
-The Ionic Framework command line utility makes it easy to start, build, run, and emulate [Ionic](http://ionicframework.com/) apps. In the future, it will also have support for our mobile development services and tools that make Ionic even more powerful. Use `ionic --help` for detailed task information.
+The Ionic Framework command line utility makes it easy to start, build, run, and emulate [Ionic](http://ionicframework.com/) apps. In the future, it will also have support for our mobile development services and tools that make Ionic even more powerful.
+
+Use the `ionic --help` command for more detailed task information.
 
 ## Installing
 
@@ -25,7 +27,7 @@ Command-line flags/options:
 
     --app-name, -a  ........................  Human readable name for the app (Use quotes around the name)
     --id, -i  ..............................  Package name set in the <widget id> config, ie: com.mycompany.myapp
-    --no-cordova, -n  ......................  Do not create an app targeted for Cordova
+    --no-cordova, -w  ......................  Do not create an app targeted for Cordova
 
 
 ## Testing in a Browser
@@ -57,6 +59,14 @@ $ ionic emulate ios
 
 ```bash
 $ ionic run ios
+```
+
+## Update Ionic lib
+
+Update Ionic library files, which are found in the `www/lib/ionic` directory.
+
+```bash
+$ ionic lib update
 ```
 
 
