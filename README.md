@@ -25,16 +25,23 @@ There are three choices of templates:
 
 Command-line flags/options:
 
-    --app-name, -a  ........................  Human readable name for the app (Use quotes around the name)
-    --id, -i  ..............................  Package name set in the <widget id> config, ie: com.mycompany.myapp
-    --no-cordova, -w  ......................  Do not create an app targeted for Cordova
+    --app-name, -a  ......  Human readable name for the app (Use quotes around the name)
+    --id, -i  ............  Package name set in the <widget id> config, ie: com.mycompany.myapp
+    --no-cordova, -w  ....  Do not create an app targeted for Cordova
 
 
 ## Testing in a Browser
 
+Start a local development server for app dev and testing. This is also useful to test within a device browser which is connected to the same wireless network. Additionally, LiveReload is installed which is used to monitor changes in the file system. As soon as you save a file, it is preprocessed as needed, and the browser is refreshed automatically.
+
 ```bash
-$ ionic serve
+$ ionic serve [http-port] [livereload-port] [options]
 ```
+
+Command-line flags/options:
+
+    [--nobrowser|-b]  ......  Disable launching a browser
+    [--nolivereload|-r]  ...  Do not start live reload
 
 
 ## Adding a platform target
