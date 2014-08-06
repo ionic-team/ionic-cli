@@ -63,7 +63,9 @@ $ ionic run ios
 
 ## Update Ionic lib
 
-Update Ionic library files, which are found in the `www/lib/ionic` directory.
+Update Ionic library files, which are found in the `www/lib/ionic` directory. If bower is being used
+by the project, this command will automatically run `bower update`, otherwise this command updates 
+the local static files from Ionic's CDN.
 
 ```bash
 $ ionic lib update
