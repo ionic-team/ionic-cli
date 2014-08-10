@@ -96,3 +96,15 @@ The third argument can be either `debug` or `release`, and the last argument can
 Ionic uses Cordova underneath, so you can also substitute Cordova commands to prepare/build/emulate/run, or to add additional plugins.
 
 Note: we occasionally send anonymous usage statistics to the Ionic team to make the tool better.
+
+
+## Using Sass
+
+By default, starter projects are hooked up to Ionic's precompiled CSS file, which is found in the project's `www/lib/ionic/css` directory, and is linked to the app in the head of the root `index.html` file. However, Ionic projects can also be customized using [Sass](http://sass-lang.com/), which gives developers and designers "superpowers" in terms of creating and maintaining CSS. Please follow these steps if you would like to use Sass for an Ionic project:
+
+1) Run `npm install` from the working directory of an Ionic project. This will install the [gulp.js](http://gulpjs.com/) build system and a few handy tasks, such as [gulp-sass](https://www.npmjs.org/package/gulp-sass) and [gulp-minify-css](https://www.npmjs.org/package/gulp-minify-css).
+2) Remove `<link href="lib/ionic/css/ionic.css" rel="stylesheet">` from the `<head>` of the root `index.html` file.
+3) Remove `<link href="css/style.css" rel="stylesheet">` from the `<head>` of the root `index.html` file.
+4) Add `<link href="css/ionic.app.css" rel="stylesheet">` to the `<head>` of the root `index.html` file.
+5) In the `ionic.project` file, add the JavaScript property `sass: true` to the object.
+
