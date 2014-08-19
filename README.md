@@ -17,11 +17,12 @@ $ sudo npm install -g ionic
 $ ionic start myApp [template]
 ```
 
-There are three choices of templates:
+There are four choices of templates:
 
 * Side-Menu (sidemenu)
 * Tabs (tabs)
 * Blank (blank)
+* Custom Github Repo (githubUser/template-repo)
 
 Command-line flags/options:
 
@@ -29,6 +30,7 @@ Command-line flags/options:
     --id, -i  ............  Package name set in the <widget id> config, ie: com.mycompany.myapp
     --no-cordova, -w  ....  Do not create an app targeted for Cordova
 
+By providing a `username/repo` value for `template`, you can have ionic load a custom template that exists on Github.
 
 ## Testing in a Browser
 
