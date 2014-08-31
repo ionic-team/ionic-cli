@@ -82,11 +82,11 @@ Command-line flags/options:
     [--live-reload|-l]  ...  Live reload app dev files from the device (beta)
     [--debug|--release]
 
-### Live Reload Within Cordova
+### Live Reload Within Cordova (beta)
 
 The `run` command will deploy the app to the specified platform devices and emulators. You can also run __live reload__ on the specified platform device by adding the `--live-reload` option. The `run` command's live reload functionality is similar to `ionic serve`, but instead of using a standard browser, the Cordova app itself is watching for any changes to its files and reloading when needed. This reduces the requirement to constantly rebuild the Cordova app for small changes. However, any changes to plugins will still require a full rebuild.
 
-In order for live reload to work, symlinks are automatically created and added to the `www` root, and the `<content src="index.html">` node in the config.xml file is updated to point to the dev server created by Ionic's CLI. On exit (by typing "exit" or using ctrl+c), the app's original settings will be restored and the symlinks should automatically be deleted. __Currently in beta__
+In order for live reload to work, symlinks are automatically created and added to the `www` root, and the `<content src="index.html">` node in the config.xml file is updated to point to the dev server created by Ionic's CLI. On exit (by typing "exit" or using ctrl+c), the app's original settings will be restored and the symlinks will be removed. __Currently in beta.__
 
 
 ## Update Ionic lib
