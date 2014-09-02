@@ -72,15 +72,13 @@ $ ionic platform ios android
 $ ionic build ios
 ```
 
-## Running your app
+## Live Reload App During Development (beta)
 
-Deploys the Ionic app on specified platform devices.
+The `run` or `emulate` command will deploy the app to the specified platform devices/emulators. You can also run __live reload__ on the specified platform device by adding the `--livereload` option. The live reload functionality is similar to `ionic serve`, but instead of developing and debugging an app using a standard browser, the compiled hybrid app itself is watching for any changes to its files and reloading the app when needed. This reduces the requirement to constantly rebuild the app for small changes. However, any changes to plugins will still require a full rebuild. For live reload to work, the dev machine and device must be on the same local network, and the device must support [web sockets](http://caniuse.com/websockets).
 
-```bash
-$ ionic run ios [options]
-```
+With live reload enabled, an app's console logs can also be printed to the terminal/command prompt by including the `--consolelogs` or `-c` option. Additionally, the development server's request logs can be printed out using `--serverlogs` or `-s` options.
 
-Command-line flags/options:
+Command-line flags/options for `run` and `emulate`:
 
     [--livereload|-l] .......  Live Reload app dev files from the device (beta)
     [--consolelogs|-c] ......  Print app console logs to Ionic CLI (live reload req.)
@@ -89,19 +87,22 @@ Command-line flags/options:
     [--livereload-port|-i] ..  Live Reload port (35729 default, live reload req.)
     [--debug|--release]
 
-### Live Reload App During Development (beta)
-
-The `run` or `emulate` command will deploy the app to the specified platform devices/emulators. You can also run __live reload__ on the specified platform device by adding the `--livereload` option. The live reload functionality is similar to `ionic serve`, but instead of developing and debugging an app using a standard browser, the compiled hybrid app itself is watching for any changes to its files and reloading the app when needed. This reduces the requirement to constantly rebuild the app for small changes. However, any changes to plugins will still require a full rebuild. For live reload to work, the dev machine and device must be on the same local network.
-
-With live reload enabled, an app's console logs can also be printed to the terminal/command prompt by including the `--consolelogs` or `-c` option. Additionally, the development server's request logs can be printed out using `--serverlogs` or `-s` options.
-
 
 ## Emulating your app
 
-Deploys the Ionic app on specified platform emulator. This is simply an alias for `run --emulator`. Live reload options are the same as the `run` options listed above.
+Deploys the Ionic app on specified platform emulator. This is simply an alias for `run --emulator`.
 
 ```bash
 $ ionic emulate ios [options]
+```
+
+
+## Running your app
+
+Deploys the Ionic app on specified platform devices. If a device is not found it'll then deploy to an emulator/simulator.
+
+```bash
+$ ionic run ios [options]
 ```
 
 
