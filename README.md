@@ -8,8 +8,11 @@ Use the `ionic --help` command for more detailed task information.
 ## Installing
 
 ```bash
-$ sudo npm install -g ionic
+$ npm install -g ionic
 ```
+
+Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix the command with `sudo`.
+
 
 ## Starting an Ionic App
 
@@ -32,7 +35,7 @@ Codepen URL starters:
 
 Command-line flags/options:
 
-    --app-name, -a  ......  Human readable name for the app
+    --appname, -a  .......  Human readable name for the app
                             (Use quotes around the name)
     --id, -i  ............  Package name set in the <widget id> config
                             ex: com.mycompany.myapp
@@ -44,13 +47,17 @@ Command-line flags/options:
 Use `ionic serve` to start a local development server for app dev and testing. This is useful for both desktop browser testing, and to test within a device browser which is connected to the same network. Additionally, this command starts LiveReload which is used to monitor changes in the file system. As soon as you save a file the browser is refreshed automatically. View [Using Sass](https://github.com/driftyco/ionic-cli/blob/master/README.md#using-sass) if you would also like to have `ionic serve` watch the project's Sass files.
 
 ```bash
-$ ionic serve [http-port] [livereload-port] [options]
+$ ionic serve [options]
 ```
 
 Command-line flags/options:
 
-    [--nobrowser|-b]  ......  Disable launching a browser
-    [--nolivereload|-r]  ...  Do not start live reload
+    [--consolelogs|-c] ......  Print app console logs to Ionic CLI
+    [--serverlogs|-s] .......  Print dev server logs to Ionic CLI
+    [--port|-p] .............  Dev server HTTP port (8100 default)
+    [--livereload-port|-i] ..  Live Reload port (35729 default)
+    [--nobrowser|-b] ........  Disable launching a browser
+    [--nolivereload|-r] .....  Do not start live reload
 
 
 ## Adding a platform target
@@ -65,28 +72,37 @@ $ ionic platform ios android
 $ ionic build ios
 ```
 
-## Emulating your app
-
-```bash
-$ ionic emulate ios
-```
-
 ## Running your app
 
+Deploys the Ionic app on specified platform devices.
+
 ```bash
-$ ionic run ios
+$ ionic run ios [options]
 ```
 
 Command-line flags/options:
 
-    [--live-reload|-l]  ...  Live reload app dev files from the device (beta)
+    [--livereload|-l] .......  Live Reload app dev files from the device (beta)
+    [--consolelogs|-c] ......  Print app console logs to Ionic CLI (live reload req.)
+    [--serverlogs|-s] .......  Print dev server logs to Ionic CLI (live reload req.)
+    [--port|-p] .............  Dev server HTTP port (8100 default, live reload req.)
+    [--livereload-port|-i] ..  Live Reload port (35729 default, live reload req.)
     [--debug|--release]
 
-### Live Reload Within Cordova (beta)
+### Live Reload App During Development (beta)
 
-The `run` command will deploy the app to the specified platform devices and emulators. You can also run __live reload__ on the specified platform device by adding the `--live-reload` option. The `run` command's live reload functionality is similar to `ionic serve`, but instead of using a standard browser, the Cordova app itself is watching for any changes to its files and reloading when needed. This reduces the requirement to constantly rebuild the Cordova app for small changes. However, any changes to plugins will still require a full rebuild.
+The `run` or `emulate` command will deploy the app to the specified platform devices/emulators. You can also run __live reload__ on the specified platform device by adding the `--livereload` option. The live reload functionality is similar to `ionic serve`, but instead of developing and debugging an app using a standard browser, the compiled hybrid app itself is watching for any changes to its files and reloading the app when needed. This reduces the requirement to constantly rebuild the app for small changes. However, any changes to plugins will still require a full rebuild. For live reload to work, the dev machine and device must be on the same local network.
 
-In order for live reload to work, symlinks are automatically created and added to the `www` root, and the `<content src="index.html">` node in the config.xml file is updated to point to the dev server created by Ionic's CLI. On exit (by typing "exit" or using ctrl+c), the app's original settings will be restored and the symlinks will be removed. __Currently in beta.__
+With live reload enabled, an app's console logs can also be printed to the terminal/command prompt by including the `--consolelogs` or `-c` option. Additionally, the development server's request logs can be printed out using `--serverlogs` or `-s` options.
+
+
+## Emulating your app
+
+Deploys the Ionic app on specified platform emulator. This is simply an alias for `run --emulator`. Live reload options are the same as the `run` options listed above.
+
+```bash
+$ ionic emulate ios [options]
+```
 
 
 ## Update Ionic lib

@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "1.1.13",
+  "version": "1.2.0",
   "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -42,6 +42,8 @@
     "archiver": "0.5.1",
     "colors": "^0.6.2",
     "connect": "^2.14.5",
+    "serve-static": "^1.5.3",
+    "finalhandler": "^0.1.0",
     "connect-livereload": "^0.4.0",
     "event-stream": "3.0.x",
     "form-data": "~0.1.0",
