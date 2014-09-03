@@ -11,7 +11,7 @@ Use the `ionic --help` command for more detailed task information.
 $ npm install -g ionic
 ```
 
-Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix the command with `sudo`.
+*Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix the command with `sudo`.*
 
 
 ## Starting an Ionic App
@@ -133,7 +133,7 @@ The third argument can be either `debug` or `release`, and the last argument can
 
 Ionic uses Cordova underneath, so you can also substitute Cordova commands to prepare/build/emulate/run, or to add additional plugins.
 
-Note: we occasionally send anonymous usage statistics to the Ionic team to make the tool better.
+*Note: we occasionally send anonymous usage statistics to the Ionic team to make the tool better.*
 
 
 ## Using Sass
