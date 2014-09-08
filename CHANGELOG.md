@@ -1,3 +1,9 @@
+### 1.2.4
+
+* Use `cross-spawn` module to fix errors with using spawn on Windows
+* Use specific npm versions in package.json to avoid any future errors from breaking changes
+
+
 ### 1.2.3
 
 * From the server, use `restart` or `r` to restart the client app from the root
