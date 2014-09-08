@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "1.2.3",
+  "version": "1.2.4-beta1",
   "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -40,25 +40,26 @@
   "license": "MIT",
   "dependencies": {
     "archiver": "0.5.1",
-    "colors": "^0.6.2",
-    "connect": "^2.14.5",
-    "serve-static": "^1.5.3",
-    "finalhandler": "^0.1.0",
-    "connect-livereload": "^0.4.0",
+    "colors": "0.6.2",
+    "connect": "3.1.1",
+    "cross-spawn": "0.2.3",
+    "connect-livereload": "0.4.0",
     "event-stream": "3.0.x",
-    "form-data": "~0.1.0",
+    "finalhandler": "0.2.0",
+    "form-data": "0.1.4",
     "ncp": "0.4.2",
     "npm": "^1.4.6",
     "open": "0.0.5",
     "optimist": "0.6.0",
     "prompt": "0.2.12",
     "progress": "1.1.7",
-    "q": "^1.0.1",
+    "q": "1.0.1",
     "request": "2.27.0",
+    "serve-static": "1.6.1",
     "shelljs": "0.2.6",
     "tiny-lr-fork": "0.0.5",
     "unzip": "0.1.9",
-    "vinyl-fs": "^0.1.4",
-    "xml2js": "^0.4.4"
+    "vinyl-fs": "0.3.7",
+    "xml2js": "0.4.4"
   }
 }
