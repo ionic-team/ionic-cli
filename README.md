@@ -87,6 +87,14 @@ Command-line flags/options for `run` and `emulate`:
     [--livereload-port|-i] ..  Live Reload port (35729 default, live reload req.)
     [--debug|--release]
 
+While the server is running for live reload, you can use the following commands within the CLI:
+
+    restart or r to restart the client app from the root
+    goto or g and a url to have the app navigate to the given url
+    consolelogs or c to enable/disable console log output
+    serverlogs or s to enable/disable server log output
+    quit or q to shutdown the server and exit
+
 
 ## Emulating your app
 
