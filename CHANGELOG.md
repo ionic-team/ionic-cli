@@ -1,6 +1,7 @@
 ### 1.2.4
 
 * Use `cross-spawn` module to fix errors with using spawn on Windows
+* Start ionic projects using a local directory
 * Use specific npm versions in package.json to avoid any future errors from breaking changes
 
 
