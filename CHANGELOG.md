@@ -4,6 +4,7 @@
 * Start ionic project from any Github repo
 * Start ionic projects using a local directory
 * Use specific npm versions in package.json to avoid any future errors from breaking changes
+* Fix write errors after downloading github archive files
 
 
 ### 1.2.3
