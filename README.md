@@ -22,27 +22,27 @@ $ ionic start myapp [template]
 
 Starter templates can either come from a named template, a Github repo, a Codepen, or a local directory. A starter template is what becomes the `www` directory within the Cordova project.
 
-Named template starters:
+__Named template starters:__
 
 * [tabs](https://github.com/driftyco/ionic-starter-tabs) (Default)
 * [sidemenu](https://github.com/driftyco/ionic-starter-sidemenu)
 * [blank](https://github.com/driftyco/ionic-starter-blank)
 
-Github Repo starters:
+__Github Repo starters:__
 
 * Any Github repo url, ex: [https://github.com/driftyco/ionic-starter-tabs](https://github.com/driftyco/ionic-starter-tabs)
 * Named templates are simply aliases to Ionic starter repos
 
-Codepen URL starters:
+__Codepen URL starters:__
 
 * Any Codepen url, ex: [http://codepen.io/ionic/pen/odqCz](http://codepen.io/ionic/pen/odqCz)
 * [Ionic Codepen Demos](http://codepen.io/ionic/public-list/)
 
-Local directory starters:
+__Local directory starters:__
 
 * Relative or absolute path to a local directory
 
-Command-line flags/options:
+__Command-line flags/options:__
 
     --appname, -a  .......  Human readable name for the app
                             (Use quotes around the name)
@@ -59,7 +59,7 @@ Use `ionic serve` to start a local development server for app dev and testing. T
 $ ionic serve [options]
 ```
 
-Command-line flags/options:
+__Command-line flags/options:__
 
     [--consolelogs|-c] ......  Print app console logs to Ionic CLI
     [--serverlogs|-s] .......  Print dev server logs to Ionic CLI
@@ -87,7 +87,7 @@ The `run` or `emulate` command will deploy the app to the specified platform dev
 
 With live reload enabled, an app's console logs can also be printed to the terminal/command prompt by including the `--consolelogs` or `-c` option. Additionally, the development server's request logs can be printed out using `--serverlogs` or `-s` options.
 
-Command-line flags/options for `run` and `emulate`:
+__Command-line flags/options for `run` and `emulate`:__
 
     [--livereload|-l] .......  Live Reload app dev files from the device (beta)
     [--consolelogs|-c] ......  Print app console logs to Ionic CLI (live reload req.)
