@@ -168,4 +168,4 @@ By default, starter projects are hooked up to Ionic's precompiled CSS file, whic
 2. Remove `<link href="lib/ionic/css/ionic.css" rel="stylesheet">` from the `<head>` of the root `index.html` file.
 3. Remove `<link href="css/style.css" rel="stylesheet">` from the `<head>` of the root `index.html` file.
 4. Add `<link href="css/ionic.app.css" rel="stylesheet">` to the `<head>` of the root `index.html` file.
-5. In the `ionic.project` file, add the JavaScript property `sass: true` to the object.
+5. In the `ionic.project` file, add the JavaScript property `"gulpStartupTasks": ["sass", "watch"]` (this can also be customized to whatever gulp tasks you'd like).
