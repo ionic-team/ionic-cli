@@ -20,7 +20,7 @@ $ npm install -g ionic
 $ ionic start myapp [template]
 ```
 
-Starter templates can either come from a named template, or from any Codepen URL.
+Starter templates can either come from a named template, a Github repo, a Codepen, or a local directory. A starter template is what becomes the `www` directory within the Cordova project.
 
 Named template starters:
 
@@ -28,10 +28,19 @@ Named template starters:
 * [sidemenu](https://github.com/driftyco/ionic-starter-sidemenu)
 * [blank](https://github.com/driftyco/ionic-starter-blank)
 
+Github Repo starters:
+
+* Any Github repo url, ex: [https://github.com/driftyco/ionic-starter-tabs](https://github.com/driftyco/ionic-starter-tabs)
+* Named templates are simply aliases to Ionic starter repos
+
 Codepen URL starters:
 
 * Any Codepen url, ex: [http://codepen.io/ionic/pen/odqCz](http://codepen.io/ionic/pen/odqCz)
 * [Ionic Codepen Demos](http://codepen.io/ionic/public-list/)
+
+Local directory starters:
+
+* Relative or absolute path to a local directory
 
 Command-line flags/options:
 
