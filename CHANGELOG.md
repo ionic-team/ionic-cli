@@ -5,6 +5,7 @@
 * Start ionic projects using a local directory
 * Use specific npm versions in package.json to avoid any future errors from breaking changes
 * Fix write errors after downloading github archive files
+* Refactor sass setup to use gulpStartupTasks ionic.project property instead
 
 
 ### 1.2.3
