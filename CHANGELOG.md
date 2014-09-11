@@ -1,3 +1,11 @@
+### 1.2.5
+
+* Do not watch `www/lib/` files by default
+* Set watchPatterns within ionic.project config file
+* Friendly EMFILE error when too many files are watched
+* Ensure config.xml content[src] gets reset after run/emulate
+
+
 ### 1.2.4
 
 * Use `cross-spawn` module to fix errors with using spawn on Windows
