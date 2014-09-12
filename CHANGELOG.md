@@ -4,6 +4,7 @@
 * Set watchPatterns within ionic.project config file
 * Friendly EMFILE error when too many files are watched
 * Ensure config.xml content[src] gets reset after run/emulate
+* Improve fetchArchive error handling
 
 
 ### 1.2.4
