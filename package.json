@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "1.2.5-beta3",
+  "version": "1.2.5",
   "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",

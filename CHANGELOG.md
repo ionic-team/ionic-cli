@@ -5,6 +5,8 @@
 * Friendly EMFILE error when too many files are watched
 * Ensure config.xml content[src] gets reset after run/emulate
 * Improve fetchArchive error handling
+* Fix SSL Cert errors
+* Do not prompt for address selection when there's only one
 
 
 ### 1.2.4
