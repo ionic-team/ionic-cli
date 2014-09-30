@@ -1,3 +1,11 @@
+### 1.2.6
+
+* Fix `fs.chmodSync: Error: ENOENT` for existing projects
+* Fix lib update
+* Add ionic app task
+* Starter projects can provide `app.json` to specify plugins and sass setup
+
+
 ### 1.2.5
 
 * Do not watch `www/lib/` files by default
