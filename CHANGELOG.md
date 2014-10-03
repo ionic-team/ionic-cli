@@ -1,3 +1,9 @@
+### 1.2.7
+
+* npm-shrinkwrap
+* Update ionic.io API URL
+
+
 ### 1.2.6
 
 * Fix `fs.chmodSync: Error: ENOENT` for existing projects
