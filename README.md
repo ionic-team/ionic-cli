@@ -132,7 +132,7 @@ the local static files from Ionic's CDN.
 ```bash
 $ ionic lib update
 ```
-
+*Note: Using bower? This command does not update Ionic's dependencies. Run `bower update` to update Ionic and all of it's dependencies defined in `bower.json`.*
 
 ## Packaging an app (beta)
 
