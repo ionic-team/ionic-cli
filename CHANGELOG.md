@@ -1,3 +1,8 @@
+### 1.2.8
+
+* CSRF cookie fixes
+
+
 ### 1.2.7
 
 * npm-shrinkwrap
