@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "1.2.8-beta2",
+  "version": "1.2.8",
   "dependencies": {
     "archiver": {
       "version": "0.5.1",
