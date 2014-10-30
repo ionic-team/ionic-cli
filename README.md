@@ -59,6 +59,30 @@ Use `ionic serve` to start a local development server for app dev and testing. T
 $ ionic serve [options]
 ```
 
+__Proxies:__
+
+The `serve` command can add some proxies to the http server. This proxies are useful if your are developing in the browser and you need to make calls to an external API. With this feature you can proxy request to the external api through the ionic http server preventing the `No 'Access-Control-Allow-Origin' header is present on the requested resource` error.
+
+In the `ionic.project` file you can add a property with an array of proxies you want to add. The proxies are object with two properties:
+
+* `path`: string that will be matched against the beginning of the incoming request URL.
+* `options`: can be an array or an object. Allows any options that are permitted on the [http](http://nodejs.org/api/http.html#http_http_request_options_callback) request options.
+
+```json
+{
+  "name": "appname",
+  "email": "",
+  "app_id": "",
+  "proxies": [
+    {
+      "path": "/api",
+      "options": "http://my.server.com/api"
+    }
+  ]
+}
+
+```
+
 __Command-line flags/options:__
 
     [--consolelogs|-c] ......  Print app console logs to Ionic CLI
@@ -67,6 +91,7 @@ __Command-line flags/options:__
     [--livereload-port|-i] ..  Live Reload port (35729 default)
     [--nobrowser|-b] ........  Disable launching a browser
     [--nolivereload|-r] .....  Do not start live reload
+    [--noproxy|-x] ..........  Do not add proxies
 
 
 ## Adding a platform target
