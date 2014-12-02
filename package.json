@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "1.2.8",
+  "version": "1.2.8-1",
   "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -61,6 +61,8 @@
     "tiny-lr-fork": "0.0.5",
     "unzip": "0.1.9",
     "vinyl-fs": "0.3.7",
-    "xml2js": "0.4.4"
+    "xml2js": "0.4.4",
+    "execSync": "^1.0.2",
+    "underscore": "~1.7.0"
   }
 }
