@@ -65,8 +65,7 @@ The `serve` command can add some proxies to the http server. This proxies are us
 
 In the `ionic.project` file you can add a property with an array of proxies you want to add. The proxies are object with two properties:
 
-* `path`: string that will be matched against the beginning of the incoming request URL.
-* `options`: can be an array or an object. Allows any options that are permitted on the [http](http://nodejs.org/api/http.html#http_http_request_options_callback) request options.
+Say you want to intercept all calls to your server `http://localhost:8100/api` to go instead to `http://my.server.com/api` - use the following configuration:
 
 ```json
 {
@@ -82,6 +81,10 @@ In the `ionic.project` file you can add a property with an array of proxies you 
 }
 
 ```
+
+* `path`: string that will be matched against after the host in the request URL (for example, the `/api` in `http://localhost:8100/api`)
+* `options`: a string of the address to proxy to. Allows any options that are permitted on the [http](http://nodejs.org/api/http.html#http_http_request_options_callback) request options.
+
 
 __Command-line flags/options:__
 
