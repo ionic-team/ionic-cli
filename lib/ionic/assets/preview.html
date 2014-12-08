@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      body {
+        background-color: #31363f;
+        font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+        padding: 0;
+        margin: 0;
+      }
+      preview {
+        display: block;
+        max-width: 840px;
+        margin: 30px auto 0 auto;
+        overflow: auto;
+      }
+      h2 {
+        color: #fff;
+        font-weight: 200;
+        letter-spacing: 1px;
+      }
+      #header {
+      }
+      #header #left {
+        position: absolute; 
+        left: 20px;
+        top: 20px;
+      }
+      #header {
+        position: fixed;
+        top: 30px;
+        right: 20px;
+      }
+      #header a {
+        color: #fff;
+        display: inline-block;
+        margin: 0px 9px;
+        opacity: 0.4;
+        font-size: 90%;
+        letter-spacing: 1px;
+        text-decoration: none;
+      }
+      #header a:hover {
+        opacity: 1;
+      }
+      .phone {
+        float: left;
+        margin: 20px;
+      }
+      .frame {
+        border: 6px solid #121316;
+        border-radius: 3px;
+      }
+      #iphone-frame {
+        top: 109px;
+        left: 25px;
+        width: 375px;
+        height: 667px;
+      }
+      #android-frame {
+        top: 88px;
+        left: 24px;
+        width: 360px;
+        height: 640px;
+      }
+      #iphone {
+      }
+      #android {
+      }
+      #logo {
+        display: block;
+        width: 48px;
+        height: 48px;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        opacity: 0.3;
+      }
+      #logo:hover {
+        opacity: 1;
+      }
+      #logo img {
+        max-width: 100%;
+      }
+      @media screen and (max-height:860px) {
+        #logo {
+          display: none;
+        }
+      }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js"></script>
+    <script>
+      angular.module('app', [])
+      .directive('preview', function() {
+        return {
+          restrict: 'E',
+          scope: true,
+          link: function($scope, $element, $attr) {
+            $scope.screenSizes = [
+              { label: 'iPhone 5 (320x568)', size: '320x568' }
+            ];
+            $scope.screenSize = $scope.screenSizes[0];
+          }
+        }
+      });
+    </script>
+  </head>
+  <body ng-app="app">
+    <a target="_blank" href="http://ionicframework.com/" id="logo">
+      <img src="http://docs.ionic.io/img/ionic-logo.png">
+    </a>
+    <header id="header">
+      <a target="_blank" href="http://ionicframework.com/docs/components/">CSS</a>
+      <a target="_blank" href="http://ionicframework.com/docs/api/">API</a>
+      <a target="_blank" href="http://forum.ionicframework.com/">Forum</a>
+      <a target="_blank" href="http://ngcordova.com/">ngCordova</a>
+      <a target="_blank" href="https://github.com/driftyco/ionic">GitHub</a>
+    </header>
+    <preview>
+      <!--
+      <div id="choice">
+        <select ng-model="screenSize" ng-options="s.label for s in screenSizes"></select>
+      </div>
+      -->
+      <div class="phone">
+        <div id="iphone">
+          <h2>iPhone 6</h2>
+          <iframe id="iphone-frame" src="/?ionicplatform=ios" class="frame"></iframe>
+        </div>
+      </div>
+      <div class="phone">
+        <div id="android">
+          <h2>Android</h2>
+          <iframe id="android-frame" src="/?ionicplatform=android" class="frame"></iframe>
+        </div>
+      </div>
+    </preview>
+    <!--
+    <a href="http://ionicframework.com/" id="logo">
+      <img src="http://docs.ionic.io/img/ionic-logo.png">
+    </a>
+    -->
+  </body>
+</html>
