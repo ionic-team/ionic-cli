@@ -61,11 +61,12 @@ $ ionic serve [options]
 
 __Proxies:__
 
-The `serve` command can add some proxies to the http server. This proxies are useful if your are developing in the browser and you need to make calls to an external API. With this feature you can proxy request to the external api through the ionic http server preventing the `No 'Access-Control-Allow-Origin' header is present on the requested resource` error.
+The `serve` command can add some proxies to the http server. These proxies are useful if you are developing in the browser and you need to make calls to an external API. With this feature you can proxy request to the external api through the ionic http server preventing the `No 'Access-Control-Allow-Origin' header is present on the requested resource` error.
 
 In the `ionic.project` file you can add a property with an array of proxies you want to add. The proxies are object with two properties:
 
-Say you want to intercept all calls to your server `http://localhost:8100/api` to go instead to `http://my.server.com/api` - use the following configuration:
+* `path`: string that will be matched against the beginning of the incoming request URL.
+* `proxyUrl`: a string with the url of where the proxied request should go.
 
 ```json
 {
@@ -74,17 +75,37 @@ Say you want to intercept all calls to your server `http://localhost:8100/api` t
   "app_id": "",
   "proxies": [
     {
-      "path": "/api",
-      "options": "http://my.server.com/api"
+      "path": "/v1",
+      "proxyUrl": "https://api.instagram.com/v1"
     }
   ]
 }
 
 ```
 
-* `path`: string that will be matched against after the host in the request URL (for example, the `/api` in `http://localhost:8100/api`)
-* `options`: a string of the address to proxy to. Allows any options that are permitted on the [http](http://nodejs.org/api/http.html#http_http_request_options_callback) request options.
+Using the above configuration, you can now make requests to your local server at `http://localhost:8100/v1` to have it proxy out requests to `https://api.instagram.com/v1`
 
+For example:
+
+```js
+angular.module('starter.controllers', [])
+.constant('InstagramApiUrl', '')
+// .contant('InstagramApiUrl','https://api.instagram.com')
+//In production, make this the real URL
+
+.controller('FeedCtrl', function($scope, $http, InstagramApiUrl) {
+
+  $scope.feed = null;
+
+  $http.get(InstagramApiUrl + '/v1/media/search?client_id=1&lat=48&lng=2.294351').then(function(data) {
+    console.log('data ' , data)
+    $scope.feed = data;
+  })
+
+})
+```
+
+See also [this gist](https://gist.github.com/jbavari/d9c1c94058c4fdd4e935) for more help.
 
 __Command-line flags/options:__
 
