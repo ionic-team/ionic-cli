@@ -1811,6 +1811,11 @@
         }
       }
     },
+    "underscore": {
+      "version": "1.7.0",
+      "from": "underscore@>=1.7.0 <1.8.0",
+      "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.7.0.tgz"
+    },
     "unzip": {
       "version": "0.1.9",
       "from": "unzip@0.1.9",
