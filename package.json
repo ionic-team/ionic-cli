@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -35,6 +35,11 @@
     {
       "name": "Adam Bradley",
       "web": "https://twitter.com/adamdbradley"
+    },
+    {
+      "name": "Josh Bavari",
+      "web": "https://twitter.com/jbavari",
+      "email": "josh@drifty.com"
     }
   ],
   "license": "MIT",
