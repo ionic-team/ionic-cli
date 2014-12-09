@@ -59,7 +59,7 @@ Use `ionic serve` to start a local development server for app dev and testing. T
 $ ionic serve [options]
 ```
 
-__Proxies:__
+__Service Proxies:__
 
 The `serve` command can add some proxies to the http server. These proxies are useful if you are developing in the browser and you need to make calls to an external API. With this feature you can proxy request to the external api through the ionic http server preventing the `No 'Access-Control-Allow-Origin' header is present on the requested resource` error.
 
