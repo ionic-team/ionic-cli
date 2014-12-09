@@ -201,6 +201,23 @@ Ionic uses Cordova underneath, so you can also substitute Cordova commands to pr
 
 *Note: we occasionally send anonymous usage statistics to the Ionic team to make the tool better.*
 
+## Working around proxies
+
+If you have a proxy you need to get around, you can pass that proxy with the default `http_proxy` [node environment variable](https://www.npmjs.org/doc/misc/npm-config.html#proxy) or an environment variable `proxy`.
+
+A few ways to set up and use the environment variable:
+
+```bash
+export http_proxy=internal.proxy.com
+# Or
+export PROXY=internal.proxy.com
+
+ionic start my_app
+
+# Additionally, pass in line
+PROXY=internal.proxy.com ionic start my_app
+```
+
 
 ## Using Sass
 
