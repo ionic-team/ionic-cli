@@ -16,3 +16,15 @@ A problem occurred evaluating script.
 > No installed build tools found. Please install the Android build tools version 19.1.0 or higher.
 
 Had to bump the minversionnumber in platform/android/AndroidManifest.xml to 14 from 10.
+
+
+
+
+## Roadmap for Crosswalk integration
+
+Cordova release in Jan 2015 is pushing for pluggable web views
+
+In the meantime, do we go ahead and release now as a beta?
+
+When they do release, how do we integrate with those changes?
+
