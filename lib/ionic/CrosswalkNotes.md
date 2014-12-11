@@ -28,3 +28,10 @@ In the meantime, do we go ahead and release now as a beta?
 
 When they do release, how do we integrate with those changes?
 
+
+
+`ionic browser add crosswalk` will add that engine file.
+It will also add a platform for android
+How do we handle the case of when they want to re-add stuffs?
+Removing Android - browser remove feature
+
