@@ -1,0 +1,190 @@
+<!doctype html>
+<html ng-app="app">
+  <head>
+    <title ng-bind="title"></title>
+    <style>
+      body {
+        background-color: #EFF1F5;
+        font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+        padding: 0;
+        margin: 0;
+        -webkit-font-smoothing: antialiased;
+      }
+      preview {
+        display: block;
+        max-width: 855px;
+        margin: 0 auto 0 auto;
+        overflow: auto;
+      }
+      h2 {
+        color: #fff;
+        font-weight: 200;
+        letter-spacing: 1px;
+      }
+      #header-left {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        line-height: 40px;
+      }
+      #header-left span {
+        margin-left: 10px;
+        vertical-align: middle;
+        display: inline-block;
+        font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+        font-weight: 300;
+        color: #6F7582;
+        font-size: 16px;
+      }
+      #header {
+      }
+      #header #left {
+        position: absolute; 
+        left: 20px;
+        top: 20px;
+      }
+      #header {
+        position: fixed;
+        top: 30px;
+        right: 20px;
+      }
+      #header a {
+        color: #fff;
+        display: inline-block;
+        margin: 0px 9px;
+        opacity: 0.4;
+        font-size: 90%;
+        letter-spacing: 1px;
+        text-decoration: none;
+      }
+      #header a:hover {
+        opacity: 1;
+      }
+      h2 a {
+        font-size: 18px;
+        color: #6F7582;
+        text-decoration: none;
+      }
+      .phone {
+        float: left;
+        margin: 40px 20px 0 20px;
+      }
+      .frame {
+        border: none;
+        border-radius: 3px;
+        box-shadow: 0px 2px 6px 0px rgba(0, 0, 0, 0.3);
+      }
+      #iphone-frame {
+        top: 109px;
+        left: 25px;
+        width: 375px;
+        height: 667px;
+      }
+      #android-frame {
+        top: 88px;
+        left: 24px;
+        width: 375px;
+        height: 667px;
+      }
+      #iphone {
+      }
+      #android {
+      }
+      #logo {
+        display: inline-block;
+        width: 48px;
+        height: 48px;
+        vertical-align: middle;
+        background-image: url(data:image/png;base64,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);
+        background-repeat: no-repeat;
+        width: 40px;
+        height: 40px;
+        background-size: 100%;
+      }
+      #logo:hover {
+        opacity: 1;
+      }
+      #logo img {
+        max-width: 100%;
+      }
+    </style>
+
+    <!-- quick and dirty templating, don't touch this -->
+    <script>
+      //INSERT_JSON_HERE;
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js"></script>
+    <script>
+      angular.module('app', [])
+      .directive('preview', function() {
+        return {
+          restrict: 'E',
+          scope: true,
+          link: function($scope, $element, $attr) {
+            $scope.screenSizes = [
+              { label: 'iPhone 5 (320x568)', size: '320x568' }
+            ];
+            $scope.screenSize = $scope.screenSizes[0];
+          }
+        }
+      })
+      .run(['$rootScope', function($rootScope) {
+        $rootScope.appName = BOOTSTRAP && BOOTSTRAP.appName || null;
+        $rootScope.title = $rootScope.appName && $rootScope.appName + ' - Ionic App' || 'Ionic App';
+      }]);
+    </script>
+
+  </head>
+  <body>
+    <div id="header-left">
+      <a target="_blank" href="http://ionicframework.com/" id="logo">
+      </a>
+      <span ng-bind="appName"></span>
+    </div>
+    <!--
+    <header id="header">
+      <a target="_blank" href="http://ionicframework.com/docs/components/">CSS</a>
+      <a target="_blank" href="http://ionicframework.com/docs/api/">API</a>
+      <a target="_blank" href="http://forum.ionicframework.com/">Forum</a>
+      <a target="_blank" href="http://ngcordova.com/">ngCordova</a>
+      <a target="_blank" href="https://github.com/driftyco/ionic">GitHub</a>
+    </header>
+    -->
+    <preview>
+      <!--
+      <div id="choice">
+        <select ng-model="screenSize" ng-options="s.label for s in screenSizes"></select>
+      </div>
+      -->
+      <div class="phone">
+        <div id="iphone">
+          <h2><a href="/?ionicplatform=ios" target="_blank">iOS</a></h2>
+          <iframe id="iphone-frame" src="/?ionicplatform=ios" class="frame"></iframe>
+        </div>
+      </div>
+      <div class="phone">
+        <div id="android">
+          <h2><a href="/?ionicplatform=android" target="_blank">Android</a></h2>
+          <iframe id="android-frame" src="/?ionicplatform=android" class="frame"></iframe>
+        </div>
+      </div>
+    </preview>
+    <!--
+    <a href="http://ionicframework.com/" id="logo">
+      <img src="http://docs.ionic.io/img/ionic-logo.png">
+    </a>
+    -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-44023830-9', {
+        'cookieDomain': 'none'
+      })
+      ga('send', 'pageview');
+    </script>
+  </body>
+</html>
