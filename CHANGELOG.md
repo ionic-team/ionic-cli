@@ -1,18 +1,29 @@
+### 1.2.14
+
+* Automatically create icon resources from source file: `ionic resources --icon`
+* Automatically create splash screen resources from source file: `ionic resources --splash`
+* Update config.xml resource platform nodes
+
+
 ### 1.2.13
 
 * Locking Gulp at 3.8.8 to avoid adding the v8flags module dependency
+
 
 ### 1.2.12
 
 * Updating the npm-shrinkwrap
 
+
 ### 1.2.11
 
 * Updating the Labs styles
 
+
 ### 1.2.10
 
 * Updated the serve command for the `serve --labs` to use `IONIC_LAB_URL`
+
 
 ### 1.2.9
 
@@ -23,6 +34,7 @@
 * Bumped `serve-static` to 1.7.1 to avoid some errors with the `serve` for users of Node 0.12
 * Added the `add` command to use ionic to manage bower components
 * Ionic now reads the Node environment variable `http_proxy` along with the passed `PROXY` variable to get around a local proxy
+
 
 ### 1.2.8
 
