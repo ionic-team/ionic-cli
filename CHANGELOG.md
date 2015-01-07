@@ -1,6 +1,6 @@
 ### 1.3.0
 
-* Crosswalk
+* You can now use [Crosswalk in your Android projects](http://forum.ionicframework.com/t/crosswalk-integration-beta-in-ionic-cli/15190). Crosswalk is a way to package your Chrome Webview and use it with Cordova. Use the `ionic help browser` command to get more information about it.
 * Automatically add the `SplashScreen` and `SplashScreenDelay` preference configs for Android splash screens
 * When an orientation is locked using the [preference config](http://cordova.apache.org/docs/en/edge/config_ref_index.md.html#The%20config.xml%20File_global_preferences), only build the necessary splash screen images
 
