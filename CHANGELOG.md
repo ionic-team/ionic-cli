@@ -10,6 +10,7 @@
 * Automatically create icon resources from source file: `ionic resources --icon`
 * Automatically create splash screen resources from source file: `ionic resources --splash`
 * Update config.xml resource platform nodes
+* [Automating Icons and Splash Screens](http://ionicframework.com/blog/automating-icons-and-splash-screens/)
 
 
 ### 1.2.13
