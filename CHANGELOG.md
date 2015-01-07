@@ -35,10 +35,10 @@
 
 ### 1.2.9
 
+* [Introduced Ionic Labs](http://ionicframework.com/blog/ionic-lab/) - a way to see preview iOS and Android side by side in the browser
 * Added proxy-middleware to provide proxying to APIs from the `serve` command
 * Updated README doc about how to use the proxy
 * Injects platform specific class to HTML to view it as an iOS or Android device in browser
-* Introduced Ionic Labs - a way to see preview iOS and Android side by side in the browser
 * Bumped `serve-static` to 1.7.1 to avoid some errors with the `serve` for users of Node 0.12
 * Added the `add` command to use ionic to manage bower components
 * Ionic now reads the Node environment variable `http_proxy` along with the passed `PROXY` variable to get around a local proxy
