@@ -1,3 +1,10 @@
+### 1.3.0
+
+* Crosswalk
+* Automatically add the `SplashScreen` and `SplashScreenDelay` preference configs for Android splash screens
+* When an orientation is locked using the [preference config](http://cordova.apache.org/docs/en/edge/config_ref_index.md.html#The%20config.xml%20File_global_preferences), only build the necessary splash screen images
+
+
 ### 1.2.14
 
 * Automatically create icon resources from source file: `ionic resources --icon`
