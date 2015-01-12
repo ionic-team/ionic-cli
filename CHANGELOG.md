@@ -1,3 +1,10 @@
+### 1.3.1
+
+* See all the browsers available to install - `ionic browser list`. *NOTE: Only stable releases are allowed for now.*
+* You can now specify [which version of the Crosswalk run time](https://download.01.org/crosswalk/releases/crosswalk/android/stable/) you want to use - `ionic browser add crosswalk@8.37.189.14`.
+* Caching the Crosswalk downloads - once you’ve installed a version in a project, running `ionic browser add crosswalk` will not re-download the webviews if they have previously been downloaded.
+* Fixed an issue with `ionic upload` - now you should be able to log in and re-use your login cookies without errors.
+
 ### 1.3.0
 
 * You can now use [Crosswalk in your Android projects](http://forum.ionicframework.com/t/crosswalk-integration-beta-in-ionic-cli/15190). Crosswalk is a way to package your Chrome Webview and use it with Cordova. Use the `ionic help browser` command to get more information about it.
