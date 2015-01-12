@@ -1,5 +1,6 @@
 ### 1.3.1
 
+* [Adding the Crosswalk browser for Ionic](http://ionicframework.com/blog/crosswalk-comes-to-ionic/)
 * See all the browsers available to install - `ionic browser list`. *NOTE: Only stable releases are allowed for now.*
 * You can now specify [which version of the Crosswalk run time](https://download.01.org/crosswalk/releases/crosswalk/android/stable/) you want to use - `ionic browser add crosswalk@8.37.189.14`.
 * Caching the Crosswalk downloads - once you’ve installed a version in a project, running `ionic browser add crosswalk` will not re-download the webviews if they have previously been downloaded.
