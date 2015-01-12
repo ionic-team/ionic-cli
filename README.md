@@ -214,6 +214,18 @@ $ ionic resources
 
 One source image can be used to generate images for each platform by placing the file within the `resources` directory, such as `resources/icon.png`. To use different source images for individual platforms, place the source image in the respective platform's directory. For example, to use a different icon for Android, it should follow this path: `resources/android/icon.png`, and a different image for iOS would use this path: `resources/ios/icon.png`.
 
+## Crosswalk for Android
+
+In v1.3.0 and later, you can now specify which browser to use in your Cordova Android projects. Currently we only support [Crosswalk](https://crosswalk-project.org/) and have plans to support more browsers later.
+
+Execute `ionic browser add crosswalk` to add the Crosswalk browser to your Android project. By default, this will install the `8.37.189.14` version of Crosswalk.
+
+If you'd like to specify a different version of Crosswalk, run `ionic browser list` to see which browsers are available and what versions. Then run `ionic browser add crosswalk@10.39.235.15`.
+
+All that is left is to run the project as normal - `ionic run android`.
+
+*NOTE: To start with, we are only supporting stable versions of Crosswalk. We plan to add the beta and canary versions as we continue adding to this feature set*
+
 
 ## Update Ionic lib
 
