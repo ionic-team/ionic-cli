@@ -1,3 +1,7 @@
+### 1.3.2
+
+* Added another fix for the way the cookies were handled for `ionic upload` - changing from `cookie.name` to `cookie.key`
+
 ### 1.3.1
 
 * [Adding the Crosswalk browser for Ionic](http://ionicframework.com/blog/crosswalk-comes-to-ionic/)
