@@ -1,6 +1,7 @@
 ### 1.3.3
 
 * Added the ability to specify an address when using `ionic serve` by specifying the address as an argument: `ionic serve --address 192.168.1.100`
+* Added the ability to download and target select versions of beta / canary versions of Crosswalk - see `ionic browser list` to see versions available.
 
 ### 1.3.2
 
