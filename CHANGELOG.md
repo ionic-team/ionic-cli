@@ -1,3 +1,7 @@
+### 1.3.3
+
+* Added the ability to specify an address when using `ionic serve` by specifying the address as an argument: `ionic serve --address 192.168.1.100`
+
 ### 1.3.2
 
 * Added another fix for the way the cookies were handled for `ionic upload` - changing from `cookie.name` to `cookie.key`
