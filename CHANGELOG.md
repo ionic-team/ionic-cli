@@ -2,6 +2,9 @@
 
 * Added the ability to specify an address when using `ionic serve` by specifying the address as an argument: `ionic serve --address 192.168.1.100`
 * Added the ability to download and target select versions of beta / canary versions of Crosswalk - see `ionic browser list` to see versions available.
+* Fixed the issue with `ionic serve` - when typing 'q' or 'quit' in the prompt, it will properly kill the gulp spawned process. Previously, it was left behind.
+* Now when you type `ionic browser versions` - it will list all installed browsers and versions for the platform its installed for.
+* Bumped connect-livereload up to 0.5.2 to resolve [an issue](https://github.com/intesso/connect-livereload/issues/41) from its repository regarding cookies.
 
 ### 1.3.2
 
