@@ -47,7 +47,7 @@
     "archiver": "0.5.1",
     "colors": "0.6.2",
     "connect": "3.1.1",
-    "connect-livereload": "0.4.0",
+    "connect-livereload": "0.5.2",
     "crc": "3.2.1",
     "cross-spawn": "0.2.3",
     "event-stream": "3.0.x",

@@ -59,6 +59,39 @@ Use `ionic serve` to start a local development server for app dev and testing. T
 $ ionic serve [options]
 ```
 
+__LiveReload__
+
+By default, LiveReload will watch for changes in your `www/` directory, 
+excluding `www/lib/`.  To change this, you can specify a `watchPatterns` 
+property in the `ionic.project` file located in your project root to watch 
+(or not watch) for specific changes.
+
+```json
+{
+  "name": "myApp",
+  "app_id": "",
+  "watchPatterns": [
+    "www/js/*",
+    "!www/css/**/*"
+  ]
+}
+```
+
+For a reference on glob pattern syntax, check out 
+[globbing patterns](http://gruntjs.com/configuring-tasks#globbing-patterns) on 
+the Grunt website.
+
+Note: 
+
+```bash
+$ ionic setup sass 
+```
+
+will add a `watchPatterns` propery with the default values to your `ionic.project` 
+file that you can then edit, in addition to the `gulpStartupTasks` property 
+described in the [Using Sass](https://github.com/driftyco/ionic-cli/blob/master/README.md#using-sass) section.
+
+
 __Service Proxies:__
 
 The `serve` command can add some proxies to the http server. These proxies are useful if you are developing in the browser and you need to make calls to an external API. With this feature you can proxy request to the external api through the ionic http server preventing the `No 'Access-Control-Allow-Origin' header is present on the requested resource` error.
