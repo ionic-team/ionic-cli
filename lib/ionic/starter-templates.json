@@ -1,0 +1,66 @@
+{
+  "total_count": "7",
+  "incomplete_results": false,
+  "items": [
+    {
+      "name": "ionic-starter-maps",
+      "description": "An Ionic starter project using Google Maps and a side menu",
+      "created_at": "2014-04-28T20:16:01Z",
+      "updated_at": "2015-01-14T19:14:08Z",
+      "pushed_at": "2014-09-03T07:20:28Z",
+      "git_url": "git://github.com/driftyco/ionic-starter-maps.git"
+    },
+    {
+      "name": "ionic-starter-tabs",
+      "description": "A starting project for Ionic using a simple tabbed interface",
+      "created_at": "2014-03-21T17:56:04Z",
+      "updated_at": "2015-01-11T16:54:23Z",
+      "pushed_at": "2014-12-29T21:09:20Z",
+      "git_url": "git://github.com/driftyco/ionic-starter-tabs.git"
+    },
+    {
+      "name": "ionic-starter-sidemenu",
+      "description": "A starting project for Ionic using a side menu with navigation in the content area",
+      "created_at": "2014-03-24T22:31:35Z",
+      "updated_at": "2015-01-12T06:33:31Z",
+      "pushed_at": "2014-12-15T20:47:21Z",
+      "git_url": "git://github.com/driftyco/ionic-starter-sidemenu.git"
+    },
+    {
+      "id": 17983811,
+      "name": "ionic-starter-blank",
+      "description": "A blank starter project for Ionic",
+      "created_at": "2014-03-21T15:14:45Z",
+      "updated_at": "2014-12-10T23:36:01Z",
+      "pushed_at": "2014-05-14T15:26:21Z",
+      "git_url": "git://github.com/driftyco/ionic-starter-blank.git"
+    },
+    {
+      "id": 24473944,
+      "name": "ionic-starter-salesforce",
+      "description": "A starter project for Ionic and Salesforce",
+      "created_at": "2014-09-25T20:22:13Z",
+      "updated_at": "2015-01-06T10:08:01Z",
+      "pushed_at": "2014-11-06T18:57:36Z",
+      "git_url": "git://github.com/driftyco/ionic-starter-salesforce.git"
+    },
+    {
+      "id": 24610601,
+      "name": "ionic-starter-tests",
+      "description": "A test of different kinds of page navigation",
+      "created_at": "2014-09-29T19:57:25Z",
+      "updated_at": "2015-01-17T17:12:18Z",
+      "pushed_at": "2015-01-17T17:12:17Z",
+      "git_url": "git://github.com/driftyco/ionic-starter-tests.git"
+    },
+    {
+      "id": 27608851,
+      "name": "ionic-starter-complex-list",
+      "description": "A complex list starter template",
+      "created_at": "2014-12-05T20:29:34Z",
+      "updated_at": "2014-12-06T05:12:52Z",
+      "pushed_at": "2014-12-05T20:29:34Z",
+      "git_url": "git://github.com/driftyco/ionic-starter-complex-list.git"
+    }
+  ]
+}
