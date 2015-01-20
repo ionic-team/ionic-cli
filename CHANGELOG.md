@@ -5,6 +5,7 @@
 * Fixed the issue with `ionic serve` - when typing 'q' or 'quit' in the prompt, it will properly kill the gulp spawned process. Previously, it was left behind.
 * Now when you type `ionic browser versions` - it will list all installed browsers and versions for the platform its installed for.
 * Bumped connect-livereload up to 0.5.2 to resolve [an issue](https://github.com/intesso/connect-livereload/issues/41) from its repository regarding cookies.
+* Added the ability to list all Ionic starter templates available for Ionic.
 
 ### 1.3.2
 
