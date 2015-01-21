@@ -1,3 +1,61 @@
+### 1.3.2
+
+* Added another fix for the way the cookies were handled for `ionic upload` - changing from `cookie.name` to `cookie.key`
+
+### 1.3.1
+
+* [Adding the Crosswalk browser for Ionic](http://ionicframework.com/blog/crosswalk-comes-to-ionic/)
+* See all the browsers available to install - `ionic browser list`. *NOTE: Only stable releases are allowed for now.*
+* You can now specify [which version of the Crosswalk run time](https://download.01.org/crosswalk/releases/crosswalk/android/stable/) you want to use - `ionic browser add crosswalk@8.37.189.14`.
+* Caching the Crosswalk downloads - once you’ve installed a version in a project, running `ionic browser add crosswalk` will not re-download the webviews if they have previously been downloaded.
+* Fixed an issue with `ionic upload` - now you should be able to log in and re-use your login cookies without errors.
+
+### 1.3.0
+
+* You can now use [Crosswalk in your Android projects](http://forum.ionicframework.com/t/crosswalk-integration-beta-in-ionic-cli/15190). Crosswalk is a way to package your Chrome Webview and use it with Cordova. Use the `ionic help browser` command to get more information about it.
+* Automatically add the `SplashScreen` and `SplashScreenDelay` preference configs for Android splash screens
+* When an orientation is locked using the [preference config](http://cordova.apache.org/docs/en/edge/config_ref_index.md.html#The%20config.xml%20File_global_preferences), only build the necessary splash screen images
+
+
+### 1.2.14
+
+* [Automating Icons and Splash Screens](http://ionicframework.com/blog/automating-icons-and-splash-screens/)
+* Automatically create icon resources from source file: `ionic resources --icon`
+* Automatically create splash screen resources from source file: `ionic resources --splash`
+* Update config.xml resource platform nodes
+
+
+### 1.2.13
+
+* Locking Gulp at 3.8.8 to avoid adding the v8flags module dependency
+
+
+### 1.2.12
+
+* Updating the npm-shrinkwrap
+
+
+### 1.2.11
+
+* Updating the Labs styles
+
+
+### 1.2.10
+
+* Updated the serve command for the `serve --labs` to use `IONIC_LAB_URL`
+
+
+### 1.2.9
+
+* [Introduced Ionic Labs](http://ionicframework.com/blog/ionic-lab/) - a way to see preview iOS and Android side by side in the browser
+* Added proxy-middleware to provide proxying to APIs from the `serve` command
+* Updated README doc about how to use the proxy
+* Injects platform specific class to HTML to view it as an iOS or Android device in browser
+* Bumped `serve-static` to 1.7.1 to avoid some errors with the `serve` for users of Node 0.12
+* Added the `add` command to use ionic to manage bower components
+* Ionic now reads the Node environment variable `http_proxy` along with the passed `PROXY` variable to get around a local proxy
+
+
 ### 1.2.8
 
 * CSRF cookie fixes
