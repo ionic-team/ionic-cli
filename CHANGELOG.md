@@ -13,7 +13,8 @@
 * Fixed a small bug when using `ionic start --sass dir template` - before the boolean command line arguments were eating the following argument. This has been fixed by adding boolean properties to optimist.
 * Added the stdio inheritance to have your gulp watch task inherit coloring.
 * Added the ability for you to specify an alternate document root  to use with `ionic serve` other than the default `www`. This is specified in your `ionic.project` file as a `documentRoot` property.
-* Adding a hook to remove Ionic SASS files from platforms folders. This should save you about 340K of space on your device builds!
+* Adding a cordova hook to remove Ionic SASS files from platforms folders. This should save you about 340K of space on your device builds.
+* Adding a cordova hook to ensure platforms and plugins folder exist before adding a platform.
 
 ### 1.3.2
 
