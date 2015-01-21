@@ -164,6 +164,27 @@ If you've used the serve command before, you'll feel right at home with this one
 
 And of course, it supports Live Reload and all the other goodies we've added over the last couple of months.
 
+## Serving an alternate document root
+
+If you'd like to test your app in the browser and you use a folder other than the default of `www`, you can specify this folder in your `ionic.project` file.
+
+It is also advised you specify the watch patterns for this document root as well, as follows:
+
+```json
+{
+  "name": "SmoothRiders",
+   "gulpStartupTasks": [
+    "watch"
+  ],
+  "documentRoot": "app",
+  "watchPatterns": [
+    "app/js/*",
+    "!app/css/**/*"
+  ]
+}
+
+```
+
 ## Adding a platform target
 
 ```bash

@@ -12,6 +12,7 @@
 * Updating ionic help information about the `ionic serve --lab` feature to let users know how to use it.
 * Fixed a small bug when using `ionic start --sass dir template` - before the boolean command line arguments were eating the following argument. This has been fixed by adding boolean properties to optimist.
 * Added the stdio inheritance to have your gulp watch task inherit coloring.
+* Added the ability for you to specify an alternate document root  to use with `ionic serve` other than the default `www`. This is specified in your `ionic.project` file as a `documentRoot` property.
 
 ### 1.3.2
 
