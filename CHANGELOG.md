@@ -1,3 +1,18 @@
+### 1.3.3
+
+* Added the ability to specify an address when using `ionic serve` by specifying the address as an argument: `ionic serve --address 192.168.1.100`
+* Added the ability to download and target select versions of beta / canary versions of Crosswalk - see `ionic browser list` to see versions available.
+* Fixed the issue with `ionic serve` - when typing 'q' or 'quit' in the prompt, it will properly kill the gulp spawned process. Previously, it was left behind.
+* When adding a browser for a platform, the version of that browser and name shall be saved.
+* Now when you type `ionic browser versions` - it will list all installed browsers and versions for the platform its installed for.
+* Bumped connect-livereload up to 0.5.2 to resolve [an issue](https://github.com/intesso/connect-livereload/issues/41) from its repository regarding cookies.
+* Fixes for uploading - now provides more meaningful errors.
+* Added the ability to list all Ionic starter templates available for Ionic. Use `ionic start --list` or `ionic templates` to see available starter templates.
+* Updating ionic help information to give better understanding to ions and bower components `ionic help add`, `ionic help remove` and `ionic help list`
+* Updating ionic help information about the `ionic serve --lab` feature to let users know how to use it.
+* Fixed a small bug when using `ionic start --sass dir template` - before the boolean command line arguments were eating the following argument. This has been fixed by adding boolean properties to optimist.
+* Added the stdio inheritance to have your gulp watch task inherit coloring.
+
 ### 1.3.2
 
 * Added another fix for the way the cookies were handled for `ionic upload` - changing from `cookie.name` to `cookie.key`
