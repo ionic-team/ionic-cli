@@ -61,9 +61,9 @@ $ ionic serve [options]
 
 __LiveReload__
 
-By default, LiveReload will watch for changes in your `www/` directory, 
-excluding `www/lib/`.  To change this, you can specify a `watchPatterns` 
-property in the `ionic.project` file located in your project root to watch 
+By default, LiveReload will watch for changes in your `www/` directory,
+excluding `www/lib/`.  To change this, you can specify a `watchPatterns`
+property in the `ionic.project` file located in your project root to watch
 (or not watch) for specific changes.
 
 ```json
@@ -77,18 +77,18 @@ property in the `ionic.project` file located in your project root to watch
 }
 ```
 
-For a reference on glob pattern syntax, check out 
-[globbing patterns](http://gruntjs.com/configuring-tasks#globbing-patterns) on 
+For a reference on glob pattern syntax, check out
+[globbing patterns](http://gruntjs.com/configuring-tasks#globbing-patterns) on
 the Grunt website.
 
-Note: 
+Note:
 
 ```bash
-$ ionic setup sass 
+$ ionic setup sass
 ```
 
-will add a `watchPatterns` propery with the default values to your `ionic.project` 
-file that you can then edit, in addition to the `gulpStartupTasks` property 
+will add a `watchPatterns` propery with the default values to your `ionic.project`
+file that you can then edit, in addition to the `gulpStartupTasks` property
 described in the [Using Sass](https://github.com/driftyco/ionic-cli/blob/master/README.md#using-sass) section.
 
 
@@ -149,7 +149,20 @@ __Command-line flags/options:__
     [--nobrowser|-b] ........  Disable launching a browser
     [--nolivereload|-r] .....  Do not start live reload
     [--noproxy|-x] ..........  Do not add proxies
+    [--address] .............  Serves in the browser at the specified address
+    [--labs] ................  Serves both iOS and Android in the browser
 
+## Using Ionic Labs
+
+We've extended the serve command to open the new Lab UI that features iOS and Android side-by-side.
+
+```bash
+$ ionic serve --lab
+```
+
+If you've used the serve command before, you'll feel right at home with this one. Just like serve, it opens your app in a browser, but now it shows you what your app will look like on a phone, with both iOS and Android side by side.
+
+And of course, it supports Live Reload and all the other goodies we've added over the last couple of months.
 
 ## Adding a platform target
 
