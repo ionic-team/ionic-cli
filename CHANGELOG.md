@@ -11,7 +11,7 @@
 * Updating ionic help information to give better understanding to ions and bower components `ionic help add`, `ionic help remove` and `ionic help list`
 * Updating ionic help information about the `ionic serve --lab` feature to let users know how to use it.
 * Fixed a small bug when using `ionic start --sass dir template` - before the boolean command line arguments were eating the following argument. This has been fixed by adding boolean properties to optimist.
-
+* Added the stdio inheritance to have your gulp watch task inherit coloring.
 
 ### 1.3.2
 
