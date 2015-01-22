@@ -15,6 +15,9 @@
 * Added the ability for you to specify an alternate document root  to use with `ionic serve` other than the default `www`. This is specified in your `ionic.project` file as a `documentRoot` property.
 * Adding a cordova hook to remove Ionic SASS files from platforms folders. This should save you about 340K of space on your device builds.
 * Adding a cordova hook to ensure platforms and plugins folder exist before adding a platform.
+* Adding a cordova hook to store plugins in package.json file as `cordovaPlugins` when a plugin is added or removed.
+* Adding a cordova hook to install plugins listed in package.json file as `cordovaPlugins` after a platform is added to the project.
+
 
 ### 1.3.2
 
