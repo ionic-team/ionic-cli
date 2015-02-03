@@ -1,3 +1,10 @@
+### 1.3.4
+
+* Added the ionic news updates for when `ionic start` finishes - alerts the users of the latest changes for ionic
+* Updated cordova android and the cordova crosswalk engine to be versioned. Now they pull the latest dev commits.
+* Due to the cordova crosswalk engine changing its plugin ID, the browser command now removes the older plugin name (org.apache.cordova.crosswalk.engine to org.crosswalk.engine)
+* Updated cordova android to have a gradle.properties file to give the user options to build multiple architectures by default
+
 ### 1.3.3
 
 * Added the ability to specify an address when using `ionic serve` by specifying the address as an argument: `ionic serve --address 192.168.1.100`
