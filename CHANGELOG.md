@@ -1,3 +1,7 @@
+### 1.3.5
+
+* Added a check in reading to read the ionic.project file in and catches and reports any exception that may from loading invalid characters in JSON.
+
 ### 1.3.4
 
 * Added the ionic news updates for when `ionic start` finishes - alerts the users of the latest changes for ionic
