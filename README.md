@@ -150,7 +150,7 @@ __Command-line flags/options:__
     [--nolivereload|-r] .....  Do not start live reload
     [--noproxy|-x] ..........  Do not add proxies
     [--address] .............  Serves in the browser at the specified address
-    [--labs] ................  Serves both iOS and Android in the browser
+    [--lab] ................  Serves both iOS and Android in the browser
 
 ## Using Ionic Labs
 
