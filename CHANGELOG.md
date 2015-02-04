@@ -1,6 +1,18 @@
-### 1.3.5
+### NEXT
 
 * Added a check in reading to read the ionic.project file in and catches and reports any exception that may from loading invalid characters in JSON.
+
+### 1.3.7
+
+* Fixed some capitalization errors on the Ionic download url
+
+### 1.3.6
+
+* Fixed some bad lowercasing in the sign up prompt with IONIC_DASH
+
+### 1.3.5
+
+* Added a sign up prompt after starting a new ionic app to create an ionic.io account to take advantage of all the extra features Ionic has to provide.
 
 ### 1.3.4
 
