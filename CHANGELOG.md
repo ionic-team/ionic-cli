@@ -1,3 +1,15 @@
+### 1.3.7
+
+* Fixed some capitalization errors on the Ionic download url
+
+### 1.3.6
+
+* Fixed some bad lowercasing in the sign up prompt with IONIC_DASH
+
+### 1.3.5
+
+* Added a sign up prompt after starting a new ionic app to create an ionic.io account to take advantage of all the extra features Ionic has to provide.
+
 ### 1.3.4
 
 * Added the ionic news updates for when `ionic start` finishes - alerts the users of the latest changes for ionic
