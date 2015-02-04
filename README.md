@@ -44,11 +44,12 @@ __Local directory starters:__
 
 __Command-line flags/options:__
 
-    --appname, -a  .......  Human readable name for the app
-                            (Use quotes around the name)
-    --id, -i  ............  Package name set in the <widget id> config
-                            ex: com.mycompany.myapp
-    --no-cordova, -w  ....  Do not create an app targeted for Cordova
+    [--appname|-a]  .......  Human readable name for the app
+                             (Use quotes around the name)
+    [--id|-i]  ............  Package name set in the <widget id> config
+                             ex: com.mycompany.myapp
+    [--no-cordova|-w]  ....  Do not create an app targeted for Cordova
+    [--list|-l]  ..........  List starter templates available
 
 
 ## Testing in a Browser
