@@ -1,6 +1,8 @@
-### NEXT
+### 1.3.8
 
 * Added a check in reading to read the ionic.project file in and catches and reports any exception that may from loading invalid characters in JSON.
+* Added in an additional browser command `ionic browser clean` that will clean out all the artifacts from the browser additions
+* Modified the browser addition process by copying crosswalk libraries over as its own method, and calling this even if the xwalk libraries are downloaded.
 
 ### 1.3.7
 
