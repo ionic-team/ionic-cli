@@ -1,3 +1,10 @@
+### Next
+
+* Fixed an error where running `ionic serve` and then pressing `q` in the console would have an error trying to close a non-existent process
+* Fixing an error where it tries to read a promise from a null/undefined object.
+* Updating the error message for if/when `ionic templates` fails to download latest templates
+
+
 ### 1.3.8
 
 * Added a check in reading to read the ionic.project file in and catches and reports any exception that may from loading invalid characters in JSON.
