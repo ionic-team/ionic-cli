@@ -1,4 +1,4 @@
-### Next
+### 1.3.9
 
 * Fixed an error where running `ionic serve` and then pressing `q` in the console would have an error trying to close a non-existent process
 * Fixing an error where it tries to read a promise from a null/undefined object.
