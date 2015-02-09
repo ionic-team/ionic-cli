@@ -1,3 +1,7 @@
+### Next
+
+* Updating after_platform_add hook 010_install_plugins.js to check to see if the directory running the commands is in fact a valid Ionic project directory.
+
 ### 1.3.9
 
 * Fixed an error where running `ionic serve` and then pressing `q` in the console would have an error trying to close a non-existent process
