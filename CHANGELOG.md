@@ -6,6 +6,9 @@
 * Added semver to the required node modules for version checking
 * Added a version checking utility for cordova cli and node - `ionic info` tells you what you need to run correctly
 * Added a version check in the browser command - that way you can stay up to date where it matters
+* Modified browser process addition process to use `ionic platform add` to ensure hooks are set up properly
+* Modified browser process to change permissions on files using `fs` instead of `shelljs`
+* Now upon receiving an error, the CLI will dump system environment information to help the user copy/paste to issues
 
 ### 1.3.8
 
