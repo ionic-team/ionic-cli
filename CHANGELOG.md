@@ -1,6 +1,11 @@
-### Next
+### 1.3.10
 
 * Updating after_platform_add hook 010_install_plugins.js to check to see if the directory running the commands is in fact a valid Ionic project directory.
+* ionic start now checks that you pass a valid directory name, no longer accepting '.'
+* Fix for install_plugins to check that is in a valid ionic project
+* Checks for invalid contents of your config.xml file and reports those to help you fix the errors
+* Fix for `ionic info` - now properly displays OSX Mavericks as operating system if it is indeed Mavericks
+* 
 
 ### 1.3.9
 
