@@ -11,7 +11,7 @@ Use the `ionic --help` command for more detailed task information.
 $ npm install -g ionic
 ```
 
-*Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix the command with `sudo`.*
+*Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix the command with `sudo` or can setup [proper file permissions on OSX for npm](http://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx/) to install without `sudo`. *
 
 
 ## Starting an Ionic App
@@ -264,7 +264,7 @@ __Command-line flags/options:__
     [--nolivereload|-r] .....  Do not start live reload
     [--noproxy|-x] ..........  Do not add proxies
     [--address] .............  Serves in the browser at the specified address
-    [--labs] ................  Serves both iOS and Android in the browser
+    [--lab] .................  Serves both iOS and Android in the browser
 
 ## Using Ionic Labs
 
