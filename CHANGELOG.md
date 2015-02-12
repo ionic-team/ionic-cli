@@ -1,3 +1,10 @@
+### Next-release
+
+* Updating task order in the CLI output for help - putting more important tasks at the top, and lesser used ones at the bottom
+* Updated README to have basic info at top, more advanced information at bottom
+* Bumping cordova-android to our fork version of c0.5.6 to have latest commits from the Cordova-android team.
+* Bumping cordova-crosswalk-engine to our fork version of c0.6.2 for latest changes by the Mobile chrome team.
+
 ### 1.3.10
 
 * Updating after_platform_add hook 010_install_plugins.js to check to see if the directory running the commands is in fact a valid Ionic project directory.
@@ -5,7 +12,6 @@
 * Fix for install_plugins to check that is in a valid ionic project
 * Checks for invalid contents of your config.xml file and reports those to help you fix the errors
 * Fix for `ionic info` - now properly displays OSX Mavericks as operating system if it is indeed Mavericks
-* 
 
 ### 1.3.9
 
