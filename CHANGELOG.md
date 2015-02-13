@@ -1,9 +1,10 @@
 ### Next-release
 
-* Updating task order in the CLI output for help - putting more important tasks at the top, and lesser used ones at the bottom
-* Updated README to have basic info at top, more advanced information at bottom
+* Updating task order in the CLI output for help - putting more important tasks at the top, and lesser used ones at the bottom.
+* Updated README to have basic info at top, more advanced information at bottom.
 * Bumping cordova-android to our fork version of c0.5.6 to have latest commits from the Cordova-android team.
 * Bumping cordova-crosswalk-engine to our fork version of c0.6.2 for latest changes by the Mobile chrome team.
+* Added option to have your livereload server run off the address passed from the `--address` argument.
 
 ### 1.3.10
 
