@@ -1,4 +1,4 @@
-### Next-release
+### 1.3.11
 
 * Updating task order in the CLI output for help - putting more important tasks at the top, and lesser used ones at the bottom.
 * Updated README to have basic info at top, more advanced information at bottom.
