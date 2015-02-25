@@ -195,7 +195,23 @@ For a reference on glob pattern syntax, check out
 [globbing patterns](http://gruntjs.com/configuring-tasks#globbing-patterns) on
 the Grunt website.
 
-Note:
+__Gulp Integration__
+
+When running `ionic serve`, you can have Ionic run any Gulp tasks you specify by putting them into your `ionic.project` as a `gulpStartupTasks` property, as follows:
+
+```json
+{
+  "name": "SmoothRiders",
+   "gulpStartupTasks": [
+    "watch"
+  ]
+}
+
+```
+
+Now, when you run `ionic serve`, it will run the `watch` task while starting the Ionic server.
+
+NOTE:
 
 ```bash
 $ ionic setup sass
