@@ -226,10 +226,11 @@ __Service Proxies:__
 
 The `serve` command can add some proxies to the http server. These proxies are useful if you are developing in the browser and you need to make calls to an external API. With this feature you can proxy request to the external api through the ionic http server preventing the `No 'Access-Control-Allow-Origin' header is present on the requested resource` error.
 
-In the `ionic.project` file you can add a property with an array of proxies you want to add. The proxies are object with two properties:
+In the `ionic.project` file you can add a property with an array of proxies you want to add. The proxies are object with the following properties:
 
 * `path`: string that will be matched against the beginning of the incoming request URL.
 * `proxyUrl`: a string with the url of where the proxied request should go.
+* `proxyNoAgent` (optional): true/false, if true the connection to the proxy server will not use keep-alives and the default connection pooling of HttpAgent 
 
 ```json
 {
