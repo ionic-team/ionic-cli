@@ -230,7 +230,7 @@ In the `ionic.project` file you can add a property with an array of proxies you 
 
 * `path`: string that will be matched against the beginning of the incoming request URL.
 * `proxyUrl`: a string with the url of where the proxied request should go.
-* `proxyNoAgent` (optional): true/false, if true the connection to the proxy server will not use keep-alives and the default connection pooling of HttpAgent 
+* `proxyNoAgent`: (optional) true/false, if true opts out of connection pooling, see [HttpAgent](http://nodejs.org/api/http.html#http_class_http_agent)
 
 ```json
 {
