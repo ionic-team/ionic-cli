@@ -1,3 +1,8 @@
+### 1.3.12
+
+* Explicitly state which platform resources should be built by providing a platform name in the command
+
+
 ### 1.3.11
 
 * Updating task order in the CLI output for help - putting more important tasks at the top, and lesser used ones at the bottom.
