@@ -1,6 +1,8 @@
 ### 1.3.12
 
 * Explicitly state which platform resources should be built by providing a platform name in the command
+* The serve command now allows you to specify a browser to open other than your default - `ionic serve --browser safari`
+* The serve command now checks for existing server and live reload ports before trying to start up servers. If either serve host/port is used, then the port is incremented and informs the user of the change, then starts the server to avoid Address conflicts.
 
 
 ### 1.3.11
