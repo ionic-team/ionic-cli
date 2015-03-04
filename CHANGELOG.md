@@ -4,6 +4,7 @@
 * The serve command now allows you to specify a browser to open other than your default - `ionic serve --browser safari`
 * The serve command now allows you to specify a path to start the browser in so you can go straight to what you want to test - `ionic serve -o /#/tab/dash`
 * The serve command now checks for existing server and live reload ports before trying to start up servers. If either serve host/port is used, then the port is incremented and informs the user of the change, then starts the server to avoid Address conflicts.
+* Added in the `proxyNoAgent` property on `ionic.project` proxies to be true/false, if true opts out of connection pooling, see [HttpAgent](http://nodejs.org/api/http.html#http_class_http_agent)
 
 
 ### 1.3.11
