@@ -237,10 +237,11 @@ __Service Proxies:__
 
 The `serve` command can add some proxies to the http server. These proxies are useful if you are developing in the browser and you need to make calls to an external API. With this feature you can proxy request to the external api through the ionic http server preventing the `No 'Access-Control-Allow-Origin' header is present on the requested resource` error.
 
-In the `ionic.project` file you can add a property with an array of proxies you want to add. The proxies are object with two properties:
+In the `ionic.project` file you can add a property with an array of proxies you want to add. The proxies are object with the following properties:
 
 * `path`: string that will be matched against the beginning of the incoming request URL.
 * `proxyUrl`: a string with the url of where the proxied request should go.
+* `proxyNoAgent`: (optional) true/false, if true opts out of connection pooling, see [HttpAgent](http://nodejs.org/api/http.html#http_class_http_agent)
 
 ```json
 {
@@ -309,6 +310,8 @@ And of course, it supports Live Reload and all the other goodies we've added ove
 
 If you'd like to test your app in the browser and you use a folder other than the default of `www`, you can specify this folder in your `ionic.project` file.
 
+You might also want to have the document root be created if you use some sort of build system, we suggest using `createDocumentRoot` for that so that `ionic serve` will create that folder for you.
+
 It is also advised you specify the watch patterns for this document root as well, as follows:
 
 ```json
@@ -318,6 +321,7 @@ It is also advised you specify the watch patterns for this document root as well
     "watch"
   ],
   "documentRoot": "app",
+  "createDocumentRoot": "app",
   "watchPatterns": [
     "app/js/*",
     "!app/css/**/*"

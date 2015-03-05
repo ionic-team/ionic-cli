@@ -1,3 +1,7 @@
+### 1.3.13
+
+* Added the ionic.project property `createDocumentRoot` to aid users with build systems to create the folder and run tasks before calling serve.
+
 ### 1.3.12
 
 * Explicitly state which platform resources should be built by providing a platform name in the command
@@ -5,6 +9,7 @@
 * The serve command now allows you to specify a path to start the browser in so you can go straight to what you want to test - `ionic serve -o /#/tab/dash`
 * The serve command now checks for existing server and live reload ports before trying to start up servers. If either serve host/port is used, then the port is incremented and informs the user of the change, then starts the server to avoid Address conflicts.
 * There was a bug when multiple addresses were available - it gave the option to select the address but immediately started listening to console commands for the server. This has been corrected, and now correctly prompts for the address.
+* The serve command proxy now accepts another property `proxyNoAgent`: (optional) true/false, if true opts out of connection pooling, see [HttpAgent](http://nodejs.org/api/http.html#http_class_http_agent)
 
 
 ### 1.3.11
