@@ -10,6 +10,7 @@
 * The serve command now checks for existing server and live reload ports before trying to start up servers. If either serve host/port is used, then the port is incremented and informs the user of the change, then starts the server to avoid Address conflicts.
 * There was a bug when multiple addresses were available - it gave the option to select the address but immediately started listening to console commands for the server. This has been corrected, and now correctly prompts for the address.
 * The serve command proxy now accepts another property `proxyNoAgent`: (optional) true/false, if true opts out of connection pooling, see [HttpAgent](http://nodejs.org/api/http.html#http_class_http_agent)
+* Added in the `proxyNoAgent` property on `ionic.project` proxies to be true/false, if true opts out of connection pooling, see [HttpAgent](http://nodejs.org/api/http.html#http_class_http_agent)
 
 
 ### 1.3.11
