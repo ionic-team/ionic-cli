@@ -1,3 +1,8 @@
+### 1.3.14
+
+* Fixing the `ionic emulate --livereload` and `ionic run --livereload` to continue to accept user input for server commands.
+* Added the `ionic link` command to allow you to specify your Ionic App ID.
+
 ### 1.3.13
 
 * Added the ionic.project property `createDocumentRoot` to aid users with build systems to create the folder and run tasks before calling serve.
