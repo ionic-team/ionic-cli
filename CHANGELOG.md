@@ -1,3 +1,10 @@
+### 1.3.15
+
+* Updated the `ionic link` command to work properly with the `--reset` option
+* Fixed the `ionic run --livereload` on windows - now properly gives the prompt for server commands.
+* Updated Crosswalk Versions for Canary 13.41.318.0 and beta of 12.41.296.4.
+* Fixed the `ionic login` command to properly look at email addresses without lowercasing them.
+
 ### 1.3.14
 
 * Fixing the `ionic emulate --livereload` and `ionic run --livereload` to continue to accept user input for server commands.
