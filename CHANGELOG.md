@@ -1,3 +1,7 @@
+### 1.3.16
+
+* Added the ability to share an Ionic app with another user via email `ionic share developer@theirdomain.com`
+
 ### 1.3.15
 
 * Updated the `ionic link` command to work properly with the `--reset` option
