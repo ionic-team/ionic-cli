@@ -89,6 +89,8 @@ __Command-line flags/options for `run` and `emulate`:__
     [--serverlogs|-s] .......  Print dev server logs to Ionic CLI (live reload req.)
     [--port|-p] .............  Dev server HTTP port (8100 default, live reload req.)
     [--livereload-port|-i] ..  Live Reload port (35729 default, live reload req.)
+    [--browser|-w] ..........  Specifies the browser to use (safari, firefox, chrome)
+    [--browseroption|-o] ....  Specifies a path to open to (/#/tab/dash)
     [--debug|--release]
 
 While the server is running for live reload, you can use the following commands within the CLI:
@@ -159,6 +161,15 @@ $ ionic resources
 
 One source image can be used to generate images for each platform by placing the file within the `resources` directory, such as `resources/icon.png`. To use different source images for individual platforms, place the source image in the respective platform's directory. For example, to use a different icon for Android, it should follow this path: `resources/android/icon.png`, and a different image for iOS would use this path: `resources/ios/icon.png`.
 
+### Generating Exact Platform Resources
+
+By default the `ionic resources` command will automatically figure out which platforms it should generate according to what platforms have been added to your project. However, you can also explicitly state which resources should be built by providing a platform name in the command. The example below would generate only `ios` resources (even if the platform hasn't been added to the project).
+
+```bash
+$ ionic resources ios
+```
+
+
 ## Crosswalk for Android
 
 In v1.3.0 and later, you can now specify which browser to use in your Cordova Android projects. Currently we only support [Crosswalk](https://crosswalk-project.org/) and have plans to support more browsers later.
@@ -195,7 +206,23 @@ For a reference on glob pattern syntax, check out
 [globbing patterns](http://gruntjs.com/configuring-tasks#globbing-patterns) on
 the Grunt website.
 
-Note:
+__Gulp Integration__
+
+When running `ionic serve`, you can have Ionic run any Gulp tasks you specify by putting them into your `ionic.project` as a `gulpStartupTasks` property, as follows:
+
+```json
+{
+  "name": "SmoothRiders",
+   "gulpStartupTasks": [
+    "watch"
+  ]
+}
+
+```
+
+Now, when you run `ionic serve`, it will run the `watch` task while starting the Ionic server.
+
+NOTE:
 
 ```bash
 $ ionic setup sass
@@ -210,10 +237,11 @@ __Service Proxies:__
 
 The `serve` command can add some proxies to the http server. These proxies are useful if you are developing in the browser and you need to make calls to an external API. With this feature you can proxy request to the external api through the ionic http server preventing the `No 'Access-Control-Allow-Origin' header is present on the requested resource` error.
 
-In the `ionic.project` file you can add a property with an array of proxies you want to add. The proxies are object with two properties:
+In the `ionic.project` file you can add a property with an array of proxies you want to add. The proxies are object with the following properties:
 
 * `path`: string that will be matched against the beginning of the incoming request URL.
 * `proxyUrl`: a string with the url of where the proxied request should go.
+* `proxyNoAgent`: (optional) true/false, if true opts out of connection pooling, see [HttpAgent](http://nodejs.org/api/http.html#http_class_http_agent)
 
 ```json
 {
@@ -282,6 +310,8 @@ And of course, it supports Live Reload and all the other goodies we've added ove
 
 If you'd like to test your app in the browser and you use a folder other than the default of `www`, you can specify this folder in your `ionic.project` file.
 
+You might also want to have the document root be created if you use some sort of build system, we suggest using `createDocumentRoot` for that so that `ionic serve` will create that folder for you.
+
 It is also advised you specify the watch patterns for this document root as well, as follows:
 
 ```json
@@ -291,6 +321,7 @@ It is also advised you specify the watch patterns for this document root as well
     "watch"
   ],
   "documentRoot": "app",
+  "createDocumentRoot": "app",
   "watchPatterns": [
     "app/js/*",
     "!app/css/**/*"
@@ -362,3 +393,8 @@ By default, starter projects are hooked up to Ionic's precompiled CSS file, whic
 3. Remove `<link href="css/style.css" rel="stylesheet">` from the `<head>` of the root `index.html` file.
 4. Add `<link href="css/ionic.app.css" rel="stylesheet">` to the `<head>` of the root `index.html` file.
 5. In the `ionic.project` file, add the JavaScript property `"gulpStartupTasks": ["sass", "watch"]` (this can also be customized to whatever gulp tasks you'd like).
+
+
+# Set your Ionic Project App ID
+
+Use the `ionic link <appId>` command to set your Ionic App ID to continue working with the same app with the Ionic platform across development enviroments.

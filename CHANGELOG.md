@@ -1,3 +1,34 @@
+### 1.3.16
+
+* Added the ability to share an Ionic app with another user via email `ionic share developer@theirdomain.com`
+
+### 1.3.15
+
+* Updated the `ionic link` command to work properly with the `--reset` option
+* Fixed the `ionic run --livereload` on windows - now properly gives the prompt for server commands.
+* Updated Crosswalk Versions for Canary 13.41.318.0 and beta of 12.41.296.4.
+* Fixed the `ionic login` command to properly look at email addresses without lowercasing them.
+
+### 1.3.14
+
+* Fixing the `ionic emulate --livereload` and `ionic run --livereload` to continue to accept user input for server commands.
+* Added the `ionic link` command to allow you to specify your Ionic App ID.
+
+### 1.3.13
+
+* Added the ionic.project property `createDocumentRoot` to aid users with build systems to create the folder and run tasks before calling serve.
+
+### 1.3.12
+
+* Explicitly state which platform resources should be built by providing a platform name in the command
+* The serve command now allows you to specify a browser to open other than your default - `ionic serve --browser safari`
+* The serve command now allows you to specify a path to start the browser in so you can go straight to what you want to test - `ionic serve -o /#/tab/dash`
+* The serve command now checks for existing server and live reload ports before trying to start up servers. If either serve host/port is used, then the port is incremented and informs the user of the change, then starts the server to avoid Address conflicts.
+* There was a bug when multiple addresses were available - it gave the option to select the address but immediately started listening to console commands for the server. This has been corrected, and now correctly prompts for the address.
+* The serve command proxy now accepts another property `proxyNoAgent`: (optional) true/false, if true opts out of connection pooling, see [HttpAgent](http://nodejs.org/api/http.html#http_class_http_agent)
+* Added in the `proxyNoAgent` property on `ionic.project` proxies to be true/false, if true opts out of connection pooling, see [HttpAgent](http://nodejs.org/api/http.html#http_class_http_agent)
+
+
 ### 1.3.11
 
 * Updating task order in the CLI output for help - putting more important tasks at the top, and lesser used ones at the bottom.
