@@ -1,3 +1,14 @@
+### 1.3.17
+
+* Added in default Ionic icons and splashscreens for your iOS and Android applications! Try them out `ionic resources --default`.
+* To note: if you have entries in your config.xml file for icons or splashscreens or files existing in your resources directory,
+* neither the settings nor the directory will not be overridden.
+* To force resource folder with the ionic icons, use `ionic resources --default --force`
+* Added in the ability to start an Ionic application from a Plnkr url - try it `ionic start http://embed.plnkr.co/dFvL8n/preview`
+* Fixed the no cordova option when using the shorthand `-w` - `ionic start -w folderX blank` should now work
+* Ionic info will now look up your version of ios-deploy - which is needed for ios application deployments - `ionic info`
+
+
 ### 1.3.16
 
 * Added the ability to share an Ionic app with another user via email `ionic share developer@theirdomain.com`
