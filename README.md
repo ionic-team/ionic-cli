@@ -42,6 +42,10 @@ __Codepen URL starters:__
 * Any Codepen url, ex: [http://codepen.io/ionic/pen/odqCz](http://codepen.io/ionic/pen/odqCz)
 * [Ionic Codepen Demos](http://codepen.io/ionic/public-list/)
 
+__Plunker URL starters:__
+
+* Any Plunker url, ex: [http://embed.plnkr.co/dFvL8n/preview](http://embed.plnkr.co/dFvL8n/preview)
+
 __Local directory starters:__
 
 * Relative or absolute path to a local directory
@@ -168,6 +172,18 @@ By default the `ionic resources` command will automatically figure out which pla
 ```bash
 $ ionic resources ios
 ```
+
+### Default Ionic Resources
+
+Ionic provides you some default icons and splash screens to give you a better idea of how to size your icons and splashscreen, as well as how to modify your config.xml file for your own icons.
+
+```bash
+$ ionic resources --default
+```
+
+If you already have a resources directory, the command above will not over write your files. If you wish to force an over write, use `ionic resources --default --force`.
+
+When starting a new app and adding a platform `ionic platform add ios` - the default icons and splashscreens will be downloaded and your config.xml will be modified to set up the default resources. This should help you identify your Ionic apps easier as well as help you get the file structure and configuration correct.
 
 
 ## Crosswalk for Android
