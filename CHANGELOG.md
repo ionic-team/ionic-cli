@@ -1,3 +1,7 @@
+### next-release
+
+* Added an option to `ionic serve` to specify a default browser for that Ionic project. `ionic serve --defaultBrowser safari`
+
 ### 1.3.17
 
 * Added in default Ionic icons and splashscreens for your iOS and Android applications! Try them out `ionic resources --default`.
