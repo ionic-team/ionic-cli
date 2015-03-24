@@ -1,6 +1,7 @@
 ### next-release
 
 * Added an option when adding platforms to not include the default Ionic cordova hooks - `ionic platform add ios --no-hook`
+* Ionic CLI now removes some of the older cordova hooks that try to manage plugins - this is now handled by cordova.
 
 ### 1.3.17
 
