@@ -1,3 +1,7 @@
+### next-release
+
+* Added an option when adding platforms to not include the default Ionic cordova hooks - `ionic platform add ios --no-hook`
+
 ### 1.3.17
 
 * Added in default Ionic icons and splashscreens for your iOS and Android applications! Try them out `ionic resources --default`.
