@@ -1,0 +1,141 @@
+{
+  "versions": [
+    "1.0.0-beta.10",
+    "1.0.0-beta.11",
+    "1.0.0-beta.12",
+    "1.0.0-beta.13",
+    "1.0.0-beta.14"
+  ],
+  "api": {
+    "controller": {
+      "id": "controller",
+      "docs": [
+        "ionicModal",
+        "ionicPopover"
+      ]
+    },
+    "directive": {
+      "id": "directive",
+      "docs": [
+        "collectionRepeat",
+        "exposeAsideWhen",
+        "ionCheckbox",
+        "ionContent",
+        "ionDeleteButton",
+        "ionFooterBar",
+        "ionHeaderBar",
+        "ionInfiniteScroll",
+        "ionItem",
+        "ionList",
+        "ionNavBackButton",
+        "ionNavBar",
+        "ionNavButtons",
+        "ionNavTitle",
+        "ionNavView",
+        "ionOptionButton",
+        "ionPane",
+        "ionRadio",
+        "ionRefresher",
+        "ionReorderButton",
+        "ionScroll",
+        "ionSideMenu",
+        "ionSideMenuContent",
+        "ionSideMenus",
+        "ionSlide",
+        "ionSlideBox",
+        "ionSlidePager",
+        "ionTab",
+        "ionTabs",
+        "ionToggle",
+        "ionView",
+        "keyboardAttach",
+        "menuClose",
+        "menuToggle",
+        "navClear",
+        "navDirection",
+        "navTransition",
+        "onDrag",
+        "onDragDown",
+        "onDragLeft",
+        "onDragRight",
+        "onDragUp",
+        "onHold",
+        "onRelease",
+        "onSwipe",
+        "onSwipeDown",
+        "onSwipeLeft",
+        "onSwipeRight",
+        "onSwipeUp",
+        "onTap",
+        "onTouch"
+      ]
+    },
+    "ionic": {
+      "id": "ionic",
+      "docs": [
+        "controller",
+        "directive",
+        "service",
+        "utility"
+      ]
+    },
+    "module": {
+      "id": "module",
+      "docs": [
+        "ionic"
+      ]
+    },
+    "object": {
+      "id": "object",
+      "docs": [
+        "$ionicLoadingConfig"
+      ]
+    },
+    "page": {
+      "id": "page",
+      "docs": [
+        "keyboard",
+        "tap"
+      ]
+    },
+    "provider": {
+      "id": "provider",
+      "docs": [
+        "$ionicConfigProvider"
+      ]
+    },
+    "service": {
+      "id": "service",
+      "docs": [
+        "$ionicActionSheet",
+        "$ionicAnimation",
+        "$ionicBackdrop",
+        "$ionicBody",
+        "$ionicConfig",
+        "$ionicGesture",
+        "$ionicHistory",
+        "$ionicListDelegate",
+        "$ionicLoading",
+        "$ionicModal",
+        "$ionicNavBarDelegate",
+        "$ionicPlatform",
+        "$ionicPopover",
+        "$ionicPopup",
+        "$ionicPosition",
+        "$ionicScrollDelegate",
+        "$ionicSideMenuDelegate",
+        "$ionicSlideBoxDelegate",
+        "$ionicTabsDelegate",
+        "$ionicTemplateCache"
+      ]
+    },
+    "utility": {
+      "id": "utility",
+      "docs": [
+        "ionic.DomUtil",
+        "ionic.EventController",
+        "ionic.Platform"
+      ]
+    }
+  }
+}
