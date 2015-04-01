@@ -190,13 +190,18 @@ When starting a new app and adding a platform `ionic platform add ios` - the def
 
 In v1.3.0 and later, you can now specify which browser to use in your Cordova Android projects. Currently we only support [Crosswalk](https://crosswalk-project.org/) and have plans to support more browsers later.
 
-Execute `ionic browser add crosswalk` to add the Crosswalk browser to your Android project. By default, this will install the `8.37.189.14` version of Crosswalk.
+Execute `ionic browser add crosswalk` to add the Crosswalk browser to your Android project. By default, this will install the `12.41.296.5` version of Crosswalk.
 
 If you'd like to specify a different version of Crosswalk, run `ionic browser list` to see which browsers are available and what versions. Then run `ionic browser add crosswalk@10.39.235.15`.
 
 All that is left is to run the project as normal - `ionic run android`.
 
-*NOTE: To start with, we are only supporting stable versions of Crosswalk. We plan to add the beta and canary versions as we continue adding to this feature set*
+If you'd like to build without Crosswalk for Android SDK 21 or later, do the following:
+
+```
+ionic browser revert android
+ionic build android --release -- --minSdkVersion 21
+```
 
 ## Advanced serve options
 
