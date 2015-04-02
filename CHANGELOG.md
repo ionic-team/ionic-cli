@@ -1,8 +1,18 @@
 ### next-release
 
+* Added in the `ionic docs` command to assist you in getting Ionic docs opened faster from the CLI! View all with `ionic docs ls`, or type in your desired docs `ionic docs collectionRepeat`. Ionic docs will be opened for the version of Ionic that you are using in your project (ex RC0, RC1, etc).
+* Added in the `ionic state` command to help organize your Cordova platforms and plugins by storing the information in the package.json file. Try out `ionic state save` and `ionic state restore`.
+* Added in the `ionic hooks` command to help users deal with the default Ionic hooks. In 1.3.18, they were removed by default. That has been turned off, and now to opt-out, use `ionic hooks remove`, or to add back in `ionic hooks add`.
+* Added in `--noresources` option for `ionic platform add` - to avoid getting the default Ionic resources.
+* Updated default Crosswalk version to 12.41.296.5.
+* Updated latest Cordova Android commits from Cordova master to fix various bugs.
+* Updated latest Cordova Crosswalk Engine from master to fix various bugs.
+
+### 1.3.18
+
+* Added an option to `ionic serve` to specify a default browser for that Ionic project. `ionic serve --defaultBrowser safari`
 * Added an option when adding platforms to not include the default Ionic cordova hooks - `ionic platform add ios --no-hook`
 * Ionic CLI now removes some of the older cordova hooks that try to manage plugins - this is now handled by cordova.
-* Added an option to `ionic serve` to specify a default browser for that Ionic project. `ionic serve --defaultBrowser safari`
 * Added an argument to not add default Ionic icon and splash screen resources
 * Modified the cordova run command to check for the platform passed - this should resolve issues users are having with crosswalk and android.
 
