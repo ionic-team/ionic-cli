@@ -419,3 +419,91 @@ By default, starter projects are hooked up to Ionic's precompiled CSS file, whic
 # Set your Ionic Project App ID
 
 Use the `ionic link <appId>` command to set your Ionic App ID to continue working with the same app with the Ionic platform across development enviroments.
+
+# Ionic Docs
+
+To get Ionic documentation from the Ionic CLI, try using the `ionic docs` command. The command will look up your currently used Ionic version and open the docs specific for that version. Ex: RC0, RC1, etc.
+
+To view all docs, `ionic docs ls`.
+
+To get help with a doc you may not remember, just type the name close enough: `ionic docs list` and you will be prompted for suggestions that may match.
+
+
+# Ionic Hooks
+
+Ionic provides some default hooks for you to use in your Cordova application. In versions prior to 1.3.18, these hooks were automatically installed via the `ionic platform` command. 
+
+In 1.3.18, the hooks were automatically removed due to some errors users were having with Crosswalk and other plugins with variables. 
+
+If you were a user who would still like to use those hooks, you can re-install these hooks with the `ionic hooks add` command.
+
+If you would like to remove these hooks yourself, use `ionic hooks remove` to get rid of them.
+
+
+# Ionic State
+
+Ionic now provides a command to help you manage the state of your Ionic application. Previously Cordova hooks were used to save platforms and plugins to your `package.json` file.
+
+Now when using `ionic platform add`, `ionic platform rm`, `ionic plugin add`, or `ionic plugin rm`, the state command will automatically be used to save the platform or plugin state to the `package.json` file.
+
+If you would like to avoid saving plugins or platforms to the `package.json` file - pass in the `--nosave` option. (`ionic plugin add org.apache.cordova.file --nosave`).
+
+Your package.json file might look something like the following:
+
+```json
+"cordovaPlatforms": [
+  "ios",
+  {
+    "android": {
+      "id": "android",
+      "locator": "https://github.com/apache/cordova-android.git"
+    }
+  }
+],
+"cordovaPlugins": [
+  "org.apache.cordova.device",
+  "org.apache.cordova.console",
+  "com.ionic.keyboard",
+  "org.apache.cordova.splashscreen",
+  {
+    "locator": "https://github.com/MobileChromeApps/cordova-crosswalk-engine.git",
+    "id": "org.cordova.croswalk"
+  },
+  {
+    "locator": "/path/to/cloned/phonegap-facebook-plugin",
+    "id": "",
+    "variables": {
+        "APP_ID": "some_id",
+        "APP_NAME": "some_name"
+    }
+  }
+]
+```
+
+## ionic state save
+
+The `ionic state save` command does some lookup in your platforms and plugins to save the current state of your cordova application. 
+
+First it looks in your platforms folder to see which platforms are installed, and saves the name and version in your `package.json` file under the `cordovaPlatforms` attribute.
+
+Second it looks at your plugins `fetch.json` file to save the plugins installed both from the Cordova registry, locally installed plugins, as well as remote plugins from github or a remote HTTP url.
+
+## ionic state restore
+
+The `ionic state restore` command looks at the `cordovaPlugins` and `cordovaPlatforms` attributes in your `package.json` file to restore your application with those platforms and plugins.
+
+In the package.json file, `cordovaPlugins` will be stored as just their `ID` if they are installed from the Cordova registry. However, if they are local or remote, they will be stored as an object with those properties. Also to note, variables are stored for plugins with variables like the Facebook connect plugin.
+
+The `cordovaPlatforms` follow the same convention of either an `ID` for the platform name, if they are local or remote, they will be stored as an object with those properties.
+
+If you'd like, you can populate the `cordovaPlugins` and `cordovaPlatforms` by hand, then use the `ionic state restore` command to get your app ready to go.
+
+## ionic state clear
+
+The `ionic state clear` method will clear out your platforms and plugins directories, as well as removing the `cordovaPlugins` and `cordovaPlaforms` attributes in your `package.json` file.
+
+## ionic state reset
+
+The `ionic state reset` method will first remove your platforms and plugins folders. Then it will look at your `package.json` file to re-install the platforms and plugins as specified there.
+
+This command can be helpful for you to reinstall your plugins and platforms to get a fresh start.

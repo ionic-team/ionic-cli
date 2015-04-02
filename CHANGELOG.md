@@ -1,4 +1,4 @@
-### next-release
+### 1.3.19
 
 * Added in the `ionic docs` command to assist you in getting Ionic docs opened faster from the CLI! View all with `ionic docs ls`, or type in your desired docs `ionic docs collectionRepeat`. Ionic docs will be opened for the version of Ionic that you are using in your project (ex RC0, RC1, etc).
 * Added in the `ionic state` command to help organize your Cordova platforms and plugins by storing the information in the package.json file. Try out `ionic state save` and `ionic state restore`.
