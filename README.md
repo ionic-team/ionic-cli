@@ -59,6 +59,8 @@ __Command-line flags/options:__
     [--no-cordova|-w]  ....  Do not create an app targeted for Cordova
     [--sass|-s] ...........  Setup the project to use Sass CSS precompiling
     [--list|-l]  ..........  List starter templates available
+    
+    [--io-app-id] .........  The Ionic.io app ID to use
 
 ## Adding a platform target
 
