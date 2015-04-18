@@ -93,6 +93,7 @@ __Command-line flags/options for `run` and `emulate`:__
     [--serverlogs|-s] .......  Print dev server logs to Ionic CLI (live reload req.)
     [--port|-p] .............  Dev server HTTP port (8100 default, live reload req.)
     [--livereload-port|-i] ..  Live Reload port (35729 default, live reload req.)
+    [--all|-a] ..............  Specify to run on all addresses, 0.0.0.0, so you can view externally
     [--browser|-w] ..........  Specifies the browser to use (safari, firefox, chrome)
     [--browseroption|-o] ....  Specifies a path to open to (/#/tab/dash)
     [--debug|--release]
