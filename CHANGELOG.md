@@ -1,3 +1,12 @@
+### 1.4.0
+
+* Extracting core logic for the CLI into ionic-app-lib
+* Certain commands have been moved to the ionic-app-lib - notably: start, serve, hooks, info, browser, and some of cordova.
+* Ionic serve now allows all IP addresses so you can access the server outside of your machine - use `ionic serve --all` or `ionic serve --address 0.0.0.0` to serve to all addresses.
+* Ionic hooks have had some issues with permissions - those are now added in when an app is started. Also there is the `ionic hooks permissions` command to grant those hooks execute permissions.
+* Updating Crosswalk to have version canary version 14.42.334.0.
+* Crosswalk now contains the cordova whitelist by default.
+
 ### 1.3.19
 
 * Added in the `ionic docs` command to assist you in getting Ionic docs opened faster from the CLI! View all with `ionic docs ls`, or type in your desired docs `ionic docs collectionRepeat`. Ionic docs will be opened for the version of Ionic that you are using in your project (ex RC0, RC1, etc).
