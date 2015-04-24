@@ -12,7 +12,10 @@
     "beta-bump": "node lib/tasks/bumpversion --level pre --identifier beta",
     "publish-release": "node lib/tasks/bumpversion --npmPublish",
     "publish-tag": "node lib/tasks/bumpversion --level beta --npmPublishTag",
-    "full-release": "node lib/tasks/bumpversion --npmInstall --git --npmPublish"
+    "full-release": "node lib/tasks/bumpversion --npmInstall --git --npmPublish",
+    "test": "npm run jasmine",
+    "e2e": "jasmine-node --captureExceptions ./e2e",
+    "jasmine": "jasmine-node --captureExceptions  ./spec"
   },
   "keywords": [
     "ionic",
@@ -83,5 +86,8 @@
     "unzip": "0.1.9",
     "vinyl-fs": "0.3.7",
     "xml2js": "0.4.4"
+  },
+  "devDependencies": {
+    "jasmine-node": "^1.14.5"
   }
 }
