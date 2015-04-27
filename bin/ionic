@@ -1,17 +1,5 @@
 #!/usr/bin/env node
 
-
-// 'use strict';
-
-// process.title = 'ionic';
-
-// var Ionic = require('../lib/ionic').Ionic;
-
-// Ionic.run();
-
-/////////////////////
-//What I want to see
-/////////////////////
 'use strict';
 
 process.title = 'ionic';
