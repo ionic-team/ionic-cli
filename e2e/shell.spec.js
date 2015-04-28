@@ -119,6 +119,12 @@ ddescribe('end-to-end', function() {
       expect(path.join(project, 'platforms', 'android', 'AndroidManifest.xml')).toExist();
       expect(path.join(project, 'resources', 'icon.png')).toExist();
 
+      shell.exec('ionic hooks add');
+      expect(path.join(project, 'hooks', 'after_plugin_add', '010_register_plugin.js')).toExist();
+
+      shell.exec('ionic hooks remove');
+      expect(path.join(project, 'hooks', 'after_plugin_add', '010_register_plugin.js')).not.toExist();
+
       shell.exec('ionic build ios');
       expect(path.join(project, 'platforms', 'ios', 'build', 'emulator', [appName, '.app'].join(''), 'config.xml')).toExist();
 
