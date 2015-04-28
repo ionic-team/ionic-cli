@@ -17,7 +17,7 @@ var utils = IonicAppLib.utils;
 var optimistSpy;
 
 
-ddescribe('end-to-end', function() {
+describe('end-to-end', function() {
   beforeEach(function() {
       jasmine.getEnv().defaultTimeoutInterval = 150000;
       // if (optimistSpy) {
@@ -103,35 +103,6 @@ ddescribe('end-to-end', function() {
         expect(path.join(project, 'www', 'js', 'app.js')).toExist();
       })
       .catch(function(error) {
-        expect('this').toBe('not this');
-      })
-      .fin(done);
-    });
-
-    iit('should start and serve an app', function(done) {
-
-      var args = { _: ['start', 'test', 'blank'], verbose: true};
-      //Mock out args from the commands.
-      optimistSpy.andCallFake(function(){
-        return {argv: args};
-      });
-        console.log('IonicCli.run');
-      
-
-      Q()
-      .then(function() {
-        console.log('IonicCli.run');
-        // return IonicCli.run(args);
-      }).then(function(){
-        // expect(path.join(project, 'www', 'index.html')).toExist();
-        // expect(path.join(project, 'www', 'js', 'app.js')).toExist();
-        args._ = ['run', 'ios'];
-        console.log('running ios')
-        return IonicCli.run(args);
-      })
-      .catch(function(error) {
-        console.log(error);
-        console.log(error.stack);
         expect('this').toBe('not this');
       })
       .fin(done);
