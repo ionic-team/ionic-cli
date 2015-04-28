@@ -2,6 +2,7 @@ var IonicAppLib = require('ionic-app-lib'),
     Ionitron = require('../lib/ionic/ionitron'),
     IonicCli = require('../lib/cli'),
     Q = require('q'),
+    Task = require('../lib/ionic/task').Task,
     Utils = IonicAppLib.utils;
 
 describe('Cli', function() {
@@ -75,9 +76,27 @@ describe('Cli', function() {
       expect(IonicCli.attachErrorHandling).toHaveBeenCalled();
     });
 
-    it('should run the task it finds', function() {
-      
+    it('should set up console logging helpers', function() {
+      spyOn(IonicCli, 'setUpConsoleLoggingHelpers');
+      IonicCli.run({ _: [] });
+      expect(IonicCli.setUpConsoleLoggingHelpers).toHaveBeenCalled();
+    });
+
+    it('should run the corodva task', function() {
+      var fakeTask = function() {};
+      fakeTask.prototype = new Task();
+      fakeTask.prototype.run = function() {
+        // console.log('running');
+      }
+
+      spyOn(IonicCli, 'tryBuildingTask').andReturn(true);
+
+      spyOn(fakeTask.prototype, 'run').andCallThrough();
+      // var fakeTaskInstance
+      // spyOn(fakeTask, 'constructor').allCallThrough();
+      spyOn(IonicCli, 'lookupTask').andReturn(fakeTask);
+      IonicCli.run({ _: ['cordova', 'run']});
+      expect(fakeTask.prototype.run).toHaveBeenCalled();
     });
   });
-
 });
