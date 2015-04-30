@@ -1,3 +1,15 @@
+### 1.3.22
+
+* Fix for the upload command to correct issues with the view app cachebuster
+
+### 1.3.21
+
+* Fix for Ionic default hooks permissions
+
+### 1.3.20 
+
+* Adding in a command with ionic start to provide an ionic io app ID. `ionic start --io-app-id <someid>`
+
 ### 1.3.19
 
 * Added in the `ionic docs` command to assist you in getting Ionic docs opened faster from the CLI! View all with `ionic docs ls`, or type in your desired docs `ionic docs collectionRepeat`. Ionic docs will be opened for the version of Ionic that you are using in your project (ex RC0, RC1, etc).
