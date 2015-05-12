@@ -7,6 +7,7 @@
 * When starting an application on a Mac, the iOS platform will be automatically added.
 * Updating Crosswalk to have version canary version 14.42.334.0.
 * Crosswalk now contains the cordova whitelist by default.
+* Ionic sass setup now checks that gulp is installed globally - and if not - tells the user how to set it up.
 
 ### 1.3.19
 
