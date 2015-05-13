@@ -6,7 +6,7 @@ process.title = 'ionic';
 
 var argv = require('optimist')
     .boolean(['no-cordova', 'sass', 'list', 'w','nohooks', 
-    'n', 'r', 'noresources', 'nosave', 'e']).argv,
+    'n', 'r', 'noresources', 'nosave', 'e', 'nogulp']).argv,
     IonicCli = require('../lib/cli');
 
 IonicCli.run(argv);

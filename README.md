@@ -232,7 +232,7 @@ the Grunt website.
 
 __Gulp Integration__
 
-When running `ionic serve`, you can have Ionic run any Gulp tasks you specify by putting them into your `ionic.project` as a `gulpStartupTasks` property, as follows:
+When running `ionic serve`, you can have Ionic run any Gulp tasks you specify by putting them into your `ionic.project` as a `gulpStartupTasks` property as follows:
 
 ```json
 {
@@ -245,6 +245,8 @@ When running `ionic serve`, you can have Ionic run any Gulp tasks you specify by
 ```
 
 Now, when you run `ionic serve`, it will run the `watch` task while starting the Ionic server.
+
+If you would like to disable gulp from running during serve, pass the `--nogulp` option.
 
 NOTE:
 
