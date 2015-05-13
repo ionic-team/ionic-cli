@@ -1029,9 +1029,9 @@
       }
     },
     "ionic-app-lib": {
-      "version": "0.0.15",
-      "from": "ionic-app-lib@0.0.15",
-      "resolved": "https://registry.npmjs.org/ionic-app-lib/-/ionic-app-lib-0.0.15.tgz",
+      "version": "0.0.16",
+      "from": "ionic-app-lib@0.0.16",
+      "resolved": "https://registry.npmjs.org/ionic-app-lib/-/ionic-app-lib-0.0.16.tgz",
       "dependencies": {
         "cordova-lib": {
           "version": "4.3.0",
@@ -2004,7 +2004,7 @@
                               "dependencies": {
                                 "source-map": {
                                   "version": "0.1.43",
-                                  "from": "source-map@>=0.1.7 <0.2.0",
+                                  "from": "source-map@>=0.1.40 <0.2.0",
                                   "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.43.tgz",
                                   "dependencies": {
                                     "amdefine": {
@@ -2179,7 +2179,7 @@
               "dependencies": {
                 "graceful-fs": {
                   "version": "3.0.6",
-                  "from": "graceful-fs@>=3.0.2 <4.0.0",
+                  "from": "graceful-fs@>=2.0.0 <3.0.0||>=3.0.0 <4.0.0",
                   "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-3.0.6.tgz"
                 },
                 "inherits": {
@@ -2365,7 +2365,7 @@
                     },
                     "graceful-fs": {
                       "version": "3.0.6",
-                      "from": "graceful-fs@>=3.0.2 <4.0.0",
+                      "from": "graceful-fs@>=2.0.0 <3.0.0||>=3.0.0 <4.0.0",
                       "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-3.0.6.tgz"
                     }
                   }
@@ -3103,7 +3103,7 @@
                   "dependencies": {
                     "graceful-fs": {
                       "version": "3.0.6",
-                      "from": "graceful-fs@>=3.0.2 <4.0.0",
+                      "from": "graceful-fs@>=3.0.0 <4.0.0",
                       "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-3.0.6.tgz"
                     },
                     "mkdirp": {
@@ -3184,7 +3184,7 @@
                 },
                 "inherits": {
                   "version": "2.0.1",
-                  "from": "inherits@>=2.0.0 <3.0.0",
+                  "from": "inherits@>=2.0.1 <2.1.0",
                   "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                 }
               }
