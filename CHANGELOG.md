@@ -1,3 +1,7 @@
+### 1.4.1 
+
+* Corrected a bug with ionic state restore command - it now properly passes the app directory to be fixed.
+
 ### 1.4.0
 
 * Extracting core logic for the CLI into ionic-app-lib.

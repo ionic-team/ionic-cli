@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "dependencies": {
     "archiver": {
       "version": "0.5.1",
@@ -1029,9 +1029,9 @@
       }
     },
     "ionic-app-lib": {
-      "version": "0.0.16",
-      "from": "ionic-app-lib@0.0.16",
-      "resolved": "https://registry.npmjs.org/ionic-app-lib/-/ionic-app-lib-0.0.16.tgz",
+      "version": "0.0.18",
+      "from": "ionic-app-lib@0.0.18",
+      "resolved": "https://registry.npmjs.org/ionic-app-lib/-/ionic-app-lib-0.0.18.tgz",
       "dependencies": {
         "cordova-lib": {
           "version": "4.3.0",
@@ -1173,7 +1173,7 @@
                     },
                     "builtins": {
                       "version": "0.0.7",
-                      "from": "builtins@>=0.0.3 <0.1.0",
+                      "from": "builtins@0.0.7",
                       "resolved": "https://registry.npmjs.org/builtins/-/builtins-0.0.7.tgz"
                     },
                     "commondir": {
@@ -2179,12 +2179,12 @@
               "dependencies": {
                 "graceful-fs": {
                   "version": "3.0.6",
-                  "from": "graceful-fs@>=3.0.2 <4.0.0",
+                  "from": "graceful-fs@>=2.0.0 <3.0.0||>=3.0.0 <4.0.0",
                   "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-3.0.6.tgz"
                 },
                 "inherits": {
                   "version": "2.0.1",
-                  "from": "inherits@>=2.0.0 <3.0.0",
+                  "from": "inherits@>=2.0.1 <2.1.0",
                   "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                 },
                 "minimatch": {
@@ -2242,7 +2242,7 @@
                     },
                     "inherits": {
                       "version": "2.0.1",
-                      "from": "inherits@>=2.0.0 <3.0.0",
+                      "from": "inherits@>=2.0.1 <2.1.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                     },
                     "minimatch": {
@@ -2341,7 +2341,7 @@
                     },
                     "normalize-package-data": {
                       "version": "2.1.0",
-                      "from": "normalize-package-data@>=2.0.0 <3.0.0",
+                      "from": "normalize-package-data@*",
                       "resolved": "https://registry.npmjs.org/normalize-package-data/-/normalize-package-data-2.1.0.tgz",
                       "dependencies": {
                         "hosted-git-info": {
@@ -2365,7 +2365,7 @@
                     },
                     "graceful-fs": {
                       "version": "3.0.6",
-                      "from": "graceful-fs@>=3.0.2 <4.0.0",
+                      "from": "graceful-fs@>=2.0.0 <3.0.0||>=3.0.0 <4.0.0",
                       "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-3.0.6.tgz"
                     }
                   }
@@ -2804,12 +2804,12 @@
                 },
                 "inherits": {
                   "version": "2.0.1",
-                  "from": "inherits@>=2.0.0 <3.0.0",
+                  "from": "inherits@>=2.0.1 <2.1.0",
                   "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                 },
                 "once": {
                   "version": "1.3.2",
-                  "from": "once@>=1.3.0 <1.4.0",
+                  "from": "once@>=1.3.0 <2.0.0",
                   "resolved": "https://registry.npmjs.org/once/-/once-1.3.2.tgz",
                   "dependencies": {
                     "wrappy": {
@@ -3184,7 +3184,7 @@
                 },
                 "inherits": {
                   "version": "2.0.1",
-                  "from": "inherits@>=2.0.0 <3.0.0",
+                  "from": "inherits@>=2.0.1 <2.1.0",
                   "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                 }
               }
@@ -3216,7 +3216,7 @@
                     },
                     "inherits": {
                       "version": "2.0.1",
-                      "from": "inherits@>=2.0.0 <3.0.0",
+                      "from": "inherits@>=2.0.1 <2.1.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                     }
                   }
