@@ -5,11 +5,11 @@
 * Ionic serve now allows all IP addresses so you can access the server outside of your machine - use `ionic serve --all` or `ionic serve --address 0.0.0.0` to serve to all addresses.
 * Ionic hooks have had some issues with permissions - those are now added in when an app is started. Also there is the `ionic hooks permissions` command to grant those hooks execute permissions.
 * When starting an application on a Mac, the iOS platform will be automatically added.
+* Ionic Browser command now reverts to using the Cordova CLI if CLI v5.0 is installed.
 * Updating Crosswalk to have canary version 14.42.334.0.
 * Crosswalk now contains the cordova whitelist by default.
 * Ionic sass setup now checks that gulp is installed globally - and if not - tells the user how to set it up.
 * Ionic serve command now has a `--nogulp` option to avoid running gulp on serve.
-
 
 ### 1.3.19
 
