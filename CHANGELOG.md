@@ -1,6 +1,7 @@
 ### 1.4.1 
 
 * Corrected a bug with ionic state restore command - it now properly passes the app directory to be fixed.
+* Corrected landscape and portrait sizes for the resources command.
 
 ### 1.4.0
 
