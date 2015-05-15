@@ -1,3 +1,9 @@
+### 1.4.2
+
+* Fixing a bug with serve that will duplicate console logging from the browser.
+* Fix for a bug when serve wont start console logs with `--consolelogs` argument.
+* Added flag `--platform` for serve command that opens the browser with those platform specific styles (android/ios).
+
 ### 1.4.1 
 
 * Corrected a bug with ionic state restore command - it now properly passes the app directory to be fixed.
