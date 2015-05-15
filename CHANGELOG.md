@@ -1,3 +1,7 @@
+### 1.4.4
+
+* Fix upload to now work behind proxies.
+
 ### 1.4.3
 
 * Patch an issue where the server commands are not working from the `ionic run` with livereload.
