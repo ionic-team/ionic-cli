@@ -1,3 +1,7 @@
+### 1.4.3
+
+* Patch an issue where the server commands are not working from the `ionic run` with livereload.
+
 ### 1.4.2
 
 * Fixing a bug with serve that will duplicate console logging from the browser.

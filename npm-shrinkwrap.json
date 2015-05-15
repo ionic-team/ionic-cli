@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "dependencies": {
     "archiver": {
       "version": "0.5.1",
@@ -1193,7 +1193,7 @@
                         },
                         "readable-stream": {
                           "version": "1.1.13",
-                          "from": "readable-stream@>=1.1.9 <1.2.0",
+                          "from": "readable-stream@>=1.1.13-1 <2.0.0",
                           "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-1.1.13.tgz",
                           "dependencies": {
                             "core-util-is": {
@@ -1731,7 +1731,7 @@
                                 },
                                 "source-map": {
                                   "version": "0.1.43",
-                                  "from": "source-map@>=0.1.40 <0.2.0",
+                                  "from": "source-map@>=0.1.7 <0.2.0",
                                   "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.43.tgz",
                                   "dependencies": {
                                     "amdefine": {
@@ -2004,7 +2004,7 @@
                               "dependencies": {
                                 "source-map": {
                                   "version": "0.1.43",
-                                  "from": "source-map@>=0.1.40 <0.2.0",
+                                  "from": "source-map@>=0.1.7 <0.2.0",
                                   "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.43.tgz",
                                   "dependencies": {
                                     "amdefine": {
@@ -2804,7 +2804,7 @@
                 },
                 "inherits": {
                   "version": "2.0.1",
-                  "from": "inherits@>=2.0.0 <2.1.0",
+                  "from": "inherits@>=2.0.0 <3.0.0",
                   "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                 },
                 "once": {
@@ -3103,7 +3103,7 @@
                   "dependencies": {
                     "graceful-fs": {
                       "version": "3.0.6",
-                      "from": "graceful-fs@>=3.0.0 <4.0.0",
+                      "from": "graceful-fs@>=3.0.2 <4.0.0",
                       "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-3.0.6.tgz"
                     },
                     "mkdirp": {
@@ -3184,7 +3184,7 @@
                 },
                 "inherits": {
                   "version": "2.0.1",
-                  "from": "inherits@>=2.0.0 <2.1.0",
+                  "from": "inherits@>=2.0.0 <3.0.0",
                   "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                 }
               }
@@ -3216,7 +3216,7 @@
                     },
                     "inherits": {
                       "version": "2.0.1",
-                      "from": "inherits@>=2.0.0 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                     }
                   }
