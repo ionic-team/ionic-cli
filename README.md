@@ -320,7 +320,7 @@ __Command-line flags/options:__
     [--address] .............  Serves in the browser at the specified address
     [--lab] .................  Serves both iOS and Android in the browser
     [--nogulp] ..............  Serve without running gulp tasks
-    [--platform] ............  Serve the platform specific styles in the browser (ios/android)
+    [--platform|-t] .........  Serve the platform specific styles in the browser (ios/android)
 
 ## Using Ionic Labs
 
