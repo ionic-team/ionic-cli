@@ -1,6 +1,9 @@
 ### 1.4.4
 
 * Fix upload to now work behind proxies.
+* Fix for start - now includes new plugin ID's for Cordova 5.0.
+* Fix for serve - fixes argument short name for lab and platform.
+* Ionic run with livereload now shows command tips before and after the cordova command completes.
 
 ### 1.4.3
 
