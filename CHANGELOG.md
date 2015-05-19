@@ -4,6 +4,7 @@
 * Fix for start - now includes new plugin ID's for Cordova 5.0.
 * Fix for serve - fixes argument short name for lab and platform.
 * Ionic run with livereload now shows command tips before and after the cordova command completes.
+* Fix for `ionic run -l --all` - now respects the all addresses to serve on 0.0.0.0.
 
 ### 1.4.3
 
