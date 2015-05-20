@@ -1,3 +1,8 @@
+### 1.4.5
+
+* Fix for `ionic browser remove crosswalk` - fix for passing arguments and app directory.
+* Fix for `ionic browser upgrade crosswalk` - passes app directory correctly.
+
 ### 1.4.4
 
 * Fix upload to now work behind proxies.
