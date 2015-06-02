@@ -423,9 +423,48 @@ By default, starter projects are hooked up to Ionic's precompiled CSS file, whic
 5. In the `ionic.project` file, add the JavaScript property `"gulpStartupTasks": ["sass", "watch"]` (this can also be customized to whatever gulp tasks you'd like).
 
 
-# Set your Ionic Project App ID
+# Ionic.io services
+
+The CLI supports operations to use backend services for your Ionic app. To get started, [visit the ionic.io homepage](http://ionic.io) and [sign up there](https://apps.ionic.io/signup).
+
+There are a few things you can utilize the CLI for to support ease of development.
+
+## Login
+
+Type `ionic login` to get logged in the CLI.
+
+## Upload your Ionic app
+
+Use the `ionic upload` command to take your current application you are developing and upload it to the Ionic.io servers. 
+
+Now you can use [the ionic view app](http://view.ionic.io/) to view that application or have others view the application.
+
+After uploading the application, you will see a message:
+
+
+```
+Uploading app....
+
+Successfully uploaded (f23j9fjs)
+```
+
+This indicates you uploaded the application correctly, and the App ID is set to `f23j9fjs`.
+
+You can then view that App ID from the View app or the application listing on ionic.io.
+
+### Adding a note with your upload
+
+To add a note to your build, pass the `--note` option as follows: 
+
+`ionic upload --note "This version of the application fixes the menu selections"`.
+
+## Set your Ionic Project App ID manually
 
 Use the `ionic link <appId>` command to set your Ionic App ID to continue working with the same app with the Ionic platform across development enviroments.
+
+## Share the application with another user
+
+Use the `ionic share <email>` command to have an email sent to another person to have them view the Ionic application you are using. Note: You must have an ionic.io account as well as the user you are sharing with.
 
 # Ionic Docs
 
