@@ -1,6 +1,7 @@
 ### 1.5.0
 
 * Fix for Project - now can work from any directory, not just a directory that contains a project.
+* Fix for Ionic upload - you can now include a note - `ionic upload --note 'This build fixes the menu'`.
 * Login command now exists in ionic-app-lib.
 * Upload command now exists in ionic-app-lib.
 * Setup command now exists in ionic-app-lib.
