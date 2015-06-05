@@ -1,7 +1,6 @@
 var IonicAppLib = require('ionic-app-lib'),
     Ionitron = require('../lib/ionic/ionitron'),
     IonicCli = require('../lib/cli'),
-    LoginTask = require('../lib/ionic/login'),
     Q = require('q'),
     Task = require('../lib/ionic/task').Task,
     Utils = IonicAppLib.utils;
@@ -84,6 +83,13 @@ describe('Cli', function() {
         expect(IonicCli.printAvailableTasks).toHaveBeenCalled();
       });
 
+      it('should get the correct task by name', function() {
+        var task = IonicCli.getTaskWithName('start');
+        expect(task).toBeDefined();
+        expect(task.name).toBe('start');
+        expect(task.args).toBeDefined();
+      });
+
       it('should call attachErrorHandling', function() {
         spyOn(IonicCli, 'attachErrorHandling');
         IonicCli.run(['node', 'bin/ionic']);
@@ -98,7 +104,7 @@ describe('Cli', function() {
 
       it('should get boolean options from start task', function() {
         var tasks = require('../lib/tasks/cliTasks');
-        var task = tasks[0];//start task
+        var task = IonicCli.getTaskWithName('start');
         var booleanOptions = IonicCli.getBooleanOptionsForTask(task);
         //We expect 6 total = 3 options, each with short hand notation.
         expect(booleanOptions.length).toBe(6);
@@ -121,8 +127,6 @@ describe('Cli', function() {
 
     it('should parse start options correctly', function() {
       var processArgs = [ 'node', '/usr/local/bin/ionic', 'start', 's1', '-w', '--appname', 'asdf'];
-      var tasks = require('../lib/tasks/cliTasks');
-      var task = tasks[0];//start task
 
       IonicCli.run(processArgs);
 
@@ -146,8 +150,6 @@ describe('Cli', function() {
 
     it('should parse serve options correctly', function() {
       var processArgs = [ 'node', '/usr/local/bin/ionic', 'serve', '--nogulp', '--all', '--browser', 'firefox'];
-      var tasks = require('../lib/tasks/cliTasks');
-      var task = tasks[1];//serve task
 
       IonicCli.run(processArgs);
 
@@ -170,8 +172,6 @@ describe('Cli', function() {
     it('should parse upload options correctly', function() {
       var note = 'A note for notes';
       var processArgs = [ 'node', '/usr/local/bin/ionic', 'upload', '--email', 'user@ionic.io', '--password', 'pass', '--note', note];
-      var tasks = require('../lib/tasks/cliTasks');
-      var task = tasks[1];//serve task
 
       IonicCli.run(processArgs);
 
@@ -179,7 +179,7 @@ describe('Cli', function() {
       var taskArgs = fakeTask.prototype.run.mostRecentCall.args;
 
       var taskArgv = taskArgs[1];
-      
+
       //should only have serve in the command args
       expect(taskArgv._.length).toBe(1);
       expect(taskArgv.note).toBe(note);
@@ -187,5 +187,62 @@ describe('Cli', function() {
       expect(taskArgv.password).toBe('pass');
 
     });
+
+    it('should parse login options correctly', function() {
+      var processArgs = [ 'node', '/usr/local/bin/ionic', 'login', '--email', 'user@ionic.io', '--password', 'pass'];
+
+      IonicCli.run(processArgs);
+
+      expect(fakeTask.prototype.run).toHaveBeenCalled();
+      var taskArgs = fakeTask.prototype.run.mostRecentCall.args;
+
+      var taskArgv = taskArgs[1];
+
+      //should only have serve in the command args
+      expect(taskArgv._.length).toBe(1);
+      expect(taskArgv.email).toBe('user@ionic.io');
+      expect(taskArgv.password).toBe('pass');
+    });
+
+    it('should parse run options correctly', function() {
+      var processArgs = [ 'node', '/usr/local/bin/ionic', 'run', 'ios', '--livereload', '--port', '5000', '-r', '35730', '--consolelogs', '--serverlogs'];
+
+      IonicCli.run(processArgs);
+
+      expect(fakeTask.prototype.run).toHaveBeenCalled();
+      var taskArgs = fakeTask.prototype.run.mostRecentCall.args;
+
+      var taskArgv = taskArgs[1];
+
+      //should only have serve in the command args
+      expect(taskArgv._.length).toBe(2);
+      expect(taskArgv.r).toBe(35730);
+      expect(taskArgv.port).toBe(5000);
+      expect(taskArgv.consolelogs).toBe(true);
+      expect(taskArgv.serverlogs).toBe(true);
+      expect(taskArgv.livereload).toBe(true);
+    });
+
+    it('should parse emulate options correctly', function() {
+      var processArgs = [ 'node', '/usr/local/bin/ionic', 'emulate', 'android', '--livereload', '--port', '5000', '-r', '35730', '--consolelogs', '--serverlogs'];
+
+      IonicCli.run(processArgs);
+
+      expect(fakeTask.prototype.run).toHaveBeenCalled();
+      var taskArgs = fakeTask.prototype.run.mostRecentCall.args;
+
+      var taskArgv = taskArgs[1];
+
+      //should only have serve in the command args
+      expect(taskArgv._.length).toBe(2);
+      expect(taskArgv._[1]).toBe('android');
+      expect(taskArgv.r).toBe(35730);
+      expect(taskArgv.port).toBe(5000);
+      expect(taskArgv.consolelogs).toBe(true);
+      expect(taskArgv.serverlogs).toBe(true);
+      expect(taskArgv.livereload).toBe(true);
+    });
+
+
   });
 });
