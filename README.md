@@ -435,6 +435,18 @@ There are a few things you can utilize the CLI for to support ease of developmen
 
 Type `ionic login` to get logged in the CLI.
 
+### Login without prompt
+
+You can pass the email and password to login without being prompted for email and password.
+
+`ionic login --email user@ionic.io --password somepass`
+
+### Login with environment variables
+
+The CLI also supports settings environment variables to read off the email and password for the user.
+
+Set `IONIC_EMAIL` and `IONIC_PASSWORD` as variables to have the CLI read these instead of being prompted for them.
+
 ## Upload your Ionic app
 
 Use the `ionic upload` command to take your current application you are developing and upload it to the Ionic.io servers. 
