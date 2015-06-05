@@ -243,6 +243,58 @@ describe('Cli', function() {
       expect(taskArgv.livereload).toBe(true);
     });
 
+    it('should parse state options correctly', function() {
+      var processArgs = [ 'node', '/usr/local/bin/ionic', 'state', 'save', '--plugins'];
+
+      IonicCli.run(processArgs);
+
+      expect(fakeTask.prototype.run).toHaveBeenCalled();
+      var taskArgs = fakeTask.prototype.run.mostRecentCall.args;
+
+      var taskArgv = taskArgs[1];
+
+      //should only have serve in the command args
+      expect(taskArgv._.length).toBe(2);
+      expect(taskArgv._[1]).toBe('save');
+      expect(taskArgv.plugins).toBe(true);
+      expect(taskArgv.platforms).toBe(false);
+    });
+
+    it('should parse plugin options correctly', function() {
+      var processArgs = [ 'node', '/usr/local/bin/ionic', 'plugin', 'add', 'org.apache.cordova.splashscreen', '--nosave', '--searchpath', '../'];
+
+      IonicCli.run(processArgs);
+
+      expect(fakeTask.prototype.run).toHaveBeenCalled();
+      var taskArgs = fakeTask.prototype.run.mostRecentCall.args;
+
+      var taskArgv = taskArgs[1];
+
+      //should only have serve in the command args
+      expect(taskArgv._.length).toBe(3);
+      expect(taskArgv._[0]).toBe('plugin');
+      expect(taskArgv._[1]).toBe('add');
+      expect(taskArgv._[2]).toBe('org.apache.cordova.splashscreen');
+      expect(taskArgv.nosave).toBe(true);
+      expect(taskArgv.searchpath).toBe('../');
+    });
+
+    it('should parse build options correctly', function() {
+      var processArgs = [ 'node', '/usr/local/bin/ionic', 'build', 'ios', '--nohooks'];
+
+      IonicCli.run(processArgs);
+
+      expect(fakeTask.prototype.run).toHaveBeenCalled();
+      var taskArgs = fakeTask.prototype.run.mostRecentCall.args;
+
+      var taskArgv = taskArgs[1];
+
+      //should only have serve in the command args
+      expect(taskArgv._.length).toBe(2);
+      expect(taskArgv._[0]).toBe('build');
+      expect(taskArgv._[1]).toBe('ios');
+      expect(taskArgv.nohooks).toBe(true);
+    });
 
   });
 });
