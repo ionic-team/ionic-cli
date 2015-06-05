@@ -1,6 +1,7 @@
 var IonicAppLib = require('ionic-app-lib'),
     Ionitron = require('../lib/ionic/ionitron'),
     IonicCli = require('../lib/cli'),
+    LoginTask = require('../lib/ionic/login'),
     Q = require('q'),
     Task = require('../lib/ionic/task').Task,
     Utils = IonicAppLib.utils;
@@ -162,6 +163,28 @@ describe('Cli', function() {
       expect(taskArgv.all).toBe(true);
       expect(taskArgv.lab).toBe(false);
       expect(taskArgv.nobrowser).toBe(false);
+
+    });
+
+
+    it('should parse upload options correctly', function() {
+      var note = 'A note for notes';
+      var processArgs = [ 'node', '/usr/local/bin/ionic', 'upload', '--email', 'user@ionic.io', '--password', 'pass', '--note', note];
+      var tasks = require('../lib/tasks/cliTasks');
+      var task = tasks[1];//serve task
+
+      IonicCli.run(processArgs);
+
+      expect(fakeTask.prototype.run).toHaveBeenCalled();
+      var taskArgs = fakeTask.prototype.run.mostRecentCall.args;
+
+      var taskArgv = taskArgs[1];
+      
+      //should only have serve in the command args
+      expect(taskArgv._.length).toBe(1);
+      expect(taskArgv.note).toBe(note);
+      expect(taskArgv.email).toBe('user@ionic.io');
+      expect(taskArgv.password).toBe('pass');
 
     });
   });
