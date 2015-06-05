@@ -1,3 +1,5 @@
+[![Circle CI](https://circleci.com/gh/driftyco/ionic-cli.svg?style=svg)](https://circleci.com/gh/driftyco/ionic-cli)
+
 Ionic-Cli
 =========
 
