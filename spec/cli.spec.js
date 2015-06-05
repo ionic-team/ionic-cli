@@ -205,7 +205,7 @@ describe('Cli', function() {
     });
 
     it('should parse run options correctly', function() {
-      var processArgs = [ 'node', '/usr/local/bin/ionic', 'run', 'ios', '--livereload', '--port', '5000', '-r', '35730', '--consolelogs', '--serverlogs'];
+      var processArgs = [ 'node', '/usr/local/bin/ionic', 'run', 'ios', '--livereload', '--port', '5000', '-r', '35730', '--consolelogs', '--serverlogs', '--device'];
 
       IonicCli.run(processArgs);
 
@@ -221,6 +221,8 @@ describe('Cli', function() {
       expect(taskArgv.consolelogs).toBe(true);
       expect(taskArgv.serverlogs).toBe(true);
       expect(taskArgv.livereload).toBe(true);
+      expect(taskArgv.device).toBe(true);
+
     });
 
     it('should parse emulate options correctly', function() {
