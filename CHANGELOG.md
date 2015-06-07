@@ -1,3 +1,11 @@
+### 1.5.1
+
+* Fix for ionic serve to specify a browser.
+* Added help test for ionic push - `ionic help push`.
+* Added a plethora of tests for confidence in refactoring of the command options.
+* Fix for the repeated "Ionic not Defined" error.
+* Fix for ionic upload - removes the BOM (byte order mark) certain users were having - was leaving unwanted artifacts. This has been corrected.
+
 ### 1.5.0
 
 * Fix for Project - now can work from any directory, not just a directory that contains a project.
