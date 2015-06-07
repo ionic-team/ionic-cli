@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "1.5.0",
+  "version": "1.5.1-beta.0",
   "dependencies": {
     "archiver": {
       "version": "0.5.1",
@@ -1036,8 +1036,8 @@
       }
     },
     "ionic-app-lib": {
-      "version": "0.1.0",
-      "from": "ionic-app-lib@0.1.0",
+      "version": "0.1.1-beta.1",
+      "from": "ionic-app-lib@0.1.1-beta.1",
       "dependencies": {
         "cordova-lib": {
           "version": "5.0.0",
@@ -1204,7 +1204,7 @@
                         },
                         "readable-stream": {
                           "version": "1.1.13",
-                          "from": "readable-stream@>=1.1.13 <2.0.0",
+                          "from": "readable-stream@>=1.1.9 <1.2.0",
                           "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-1.1.13.tgz",
                           "dependencies": {
                             "core-util-is": {
@@ -1259,9 +1259,9 @@
                               "resolved": "https://registry.npmjs.org/browserify-rsa/-/browserify-rsa-2.0.1.tgz"
                             },
                             "elliptic": {
-                              "version": "3.0.3",
+                              "version": "3.0.4",
                               "from": "elliptic@>=3.0.0 <4.0.0",
-                              "resolved": "https://registry.npmjs.org/elliptic/-/elliptic-3.0.3.tgz",
+                              "resolved": "https://registry.npmjs.org/elliptic/-/elliptic-3.0.4.tgz",
                               "dependencies": {
                                 "brorand": {
                                   "version": "1.0.5",
@@ -1307,9 +1307,9 @@
                               "resolved": "https://registry.npmjs.org/bn.js/-/bn.js-2.0.5.tgz"
                             },
                             "elliptic": {
-                              "version": "3.0.3",
+                              "version": "3.0.4",
                               "from": "elliptic@>=3.0.0 <4.0.0",
-                              "resolved": "https://registry.npmjs.org/elliptic/-/elliptic-3.0.3.tgz",
+                              "resolved": "https://registry.npmjs.org/elliptic/-/elliptic-3.0.4.tgz",
                               "dependencies": {
                                 "brorand": {
                                   "version": "1.0.5",
@@ -1336,9 +1336,9 @@
                               "resolved": "https://registry.npmjs.org/ripemd160/-/ripemd160-1.0.1.tgz"
                             },
                             "sha.js": {
-                              "version": "2.4.1",
+                              "version": "2.4.2",
                               "from": "sha.js@>=2.3.6 <3.0.0",
-                              "resolved": "https://registry.npmjs.org/sha.js/-/sha.js-2.4.1.tgz"
+                              "resolved": "https://registry.npmjs.org/sha.js/-/sha.js-2.4.2.tgz"
                             }
                           }
                         },
@@ -1632,9 +1632,9 @@
                       }
                     },
                     "module-deps": {
-                      "version": "3.8.0",
+                      "version": "3.8.1",
                       "from": "module-deps@>=3.6.3 <4.0.0",
-                      "resolved": "https://registry.npmjs.org/module-deps/-/module-deps-3.8.0.tgz",
+                      "resolved": "https://registry.npmjs.org/module-deps/-/module-deps-3.8.1.tgz",
                       "dependencies": {
                         "JSONStream": {
                           "version": "1.0.4",
@@ -1750,7 +1750,7 @@
                         },
                         "readable-stream": {
                           "version": "1.1.13",
-                          "from": "readable-stream@>=1.1.13-1 <2.0.0",
+                          "from": "readable-stream@>=1.1.13 <2.0.0",
                           "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-1.1.13.tgz",
                           "dependencies": {
                             "core-util-is": {
@@ -2000,7 +2000,7 @@
                               "dependencies": {
                                 "source-map": {
                                   "version": "0.1.43",
-                                  "from": "source-map@>=0.1.31 <0.2.0",
+                                  "from": "source-map@>=0.1.40 <0.2.0",
                                   "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.43.tgz",
                                   "dependencies": {
                                     "amdefine": {
@@ -2178,7 +2178,7 @@
                     },
                     "inherits": {
                       "version": "2.0.1",
-                      "from": "inherits@>=2.0.0 <3.0.0",
+                      "from": "inherits@>=2.0.1 <2.1.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                     },
                     "object-inspect": {
@@ -2306,7 +2306,7 @@
                     },
                     "inherits": {
                       "version": "2.0.1",
-                      "from": "inherits@>=2.0.0 <3.0.0",
+                      "from": "inherits@>=2.0.1 <2.1.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                     },
                     "minimatch": {
@@ -2414,9 +2414,9 @@
                           "resolved": "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.1.4.tgz"
                         },
                         "spdx": {
-                          "version": "0.4.0",
+                          "version": "0.4.1",
                           "from": "spdx@>=0.4.0 <0.5.0",
-                          "resolved": "https://registry.npmjs.org/spdx/-/spdx-0.4.0.tgz",
+                          "resolved": "https://registry.npmjs.org/spdx/-/spdx-0.4.1.tgz",
                           "dependencies": {
                             "spdx-license-ids": {
                               "version": "1.0.1",
@@ -2429,7 +2429,7 @@
                     },
                     "graceful-fs": {
                       "version": "3.0.8",
-                      "from": "graceful-fs@>=3.0.2 <4.0.0",
+                      "from": "graceful-fs@>=3.0.0 <4.0.0",
                       "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-3.0.8.tgz"
                     }
                   }
@@ -2440,9 +2440,9 @@
                   "resolved": "https://registry.npmjs.org/validate-npm-package-license/-/validate-npm-package-license-1.0.0-prerelease-2.tgz",
                   "dependencies": {
                     "spdx": {
-                      "version": "0.4.0",
+                      "version": "0.4.1",
                       "from": "spdx@>=0.4.0 <0.5.0",
-                      "resolved": "https://registry.npmjs.org/spdx/-/spdx-0.4.0.tgz",
+                      "resolved": "https://registry.npmjs.org/spdx/-/spdx-0.4.1.tgz",
                       "dependencies": {
                         "spdx-license-ids": {
                           "version": "1.0.1",
@@ -2834,9 +2834,9 @@
                       "resolved": "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.1.4.tgz"
                     },
                     "spdx": {
-                      "version": "0.4.0",
+                      "version": "0.4.1",
                       "from": "spdx@>=0.4.0 <0.5.0",
-                      "resolved": "https://registry.npmjs.org/spdx/-/spdx-0.4.0.tgz",
+                      "resolved": "https://registry.npmjs.org/spdx/-/spdx-0.4.1.tgz",
                       "dependencies": {
                         "spdx-license-ids": {
                           "version": "1.0.1",
@@ -3248,7 +3248,7 @@
                 },
                 "inherits": {
                   "version": "2.0.1",
-                  "from": "inherits@>=2.0.0 <2.1.0",
+                  "from": "inherits@>=2.0.0 <3.0.0",
                   "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                 }
               }
@@ -3280,7 +3280,7 @@
                     },
                     "inherits": {
                       "version": "2.0.1",
-                      "from": "inherits@>=2.0.0 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
                     }
                   }
