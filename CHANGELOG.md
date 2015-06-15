@@ -5,6 +5,7 @@
 * Added a plethora of tests for confidence in refactoring of the command options.
 * Fix for the repeated "Ionic not Defined" error.
 * Fix for ionic upload - removes the BOM (byte order mark) certain users were having - was leaving unwanted artifacts. This has been corrected.
+* Fix to no longer run the hooks permissions on every cordova command.
 
 ### 1.5.0
 
