@@ -1,3 +1,23 @@
+### 1.5.1
+
+* Fix for ionic serve to specify a browser.
+* Added help test for ionic push - `ionic help push`.
+* Added a plethora of tests for confidence in refactoring of the command options.
+* Fix for the repeated "Ionic not Defined" error.
+* Fix for ionic upload - removes the BOM (byte order mark) certain users were having - was leaving unwanted artifacts. This has been corrected.
+* Fix to no longer run the hooks permissions on every cordova command.
+
+### 1.5.0
+
+* Fix for Project - now can work from any directory, not just a directory that contains a project.
+* Fix for Ionic upload - you can now include a note - `ionic upload --note 'This build fixes the menu'`.
+* Login command now exists in ionic-app-lib.
+* Upload command now exists in ionic-app-lib.
+* Setup command now exists in ionic-app-lib.
+* Add 10.39.236.1 for crosswalk lite.
+* Add in settings file to have settings across applications.
+* Fix for `ionic start --io-app-id <app_id>` to properly add the app ID to the project file.
+
 ### 1.4.5
 
 * Fix for `ionic browser remove crosswalk` - fix for passing arguments and app directory.
