@@ -1,3 +1,12 @@
+### 1.5.3
+
+* Fix for login issue with share - now correctly prompts for ionic.io login.
+
+
+### 1.5.2
+
+* Fix for login issue with upload and push - now correctly prompts for ionic.io login.
+
 ### 1.5.1
 
 * Fix for ionic serve to specify a browser.
