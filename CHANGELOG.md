@@ -1,3 +1,7 @@
+### 1.5.4
+
+* Fix for error adding Crosswalk to existing ionic project.
+
 ### 1.5.3
 
 * Fix for login issue with share - now correctly prompts for ionic.io login.
