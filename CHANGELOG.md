@@ -1,3 +1,7 @@
+### 1.5.5
+
+* Fix(start): Fetch codepen was trying to fetch invalid html/css/js files because of a leading '/'. The trailing slash has been removed.
+
 ### 1.5.4
 
 * Fix for error adding Crosswalk to existing ionic project.
