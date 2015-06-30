@@ -3,6 +3,7 @@ var IonicAppLib = require('ionic-app-lib'),
     IonicCli = require('../lib/cli'),
     Q = require('q'),
     Task = require('../lib/ionic/task').Task,
+    Info = IonicAppLib.info,
     Utils = IonicAppLib.utils;
 
 describe('Cli', function() {
@@ -12,6 +13,7 @@ describe('Cli', function() {
     spyOn(IonicCli, 'printAvailableTasks');
     spyOn(IonicAppLib.events, 'on');
     spyOn(process, 'on');
+    spyOn(Info, 'checkRuntime');
 
     spyOn(Utils, 'fail').andCallFake(function(err){
       console.log(err);
@@ -45,6 +47,12 @@ describe('Cli', function() {
         spyOn(IonicCli, 'checkLatestVersion').andReturn(deferred);
         IonicCli.run(['node', 'bin/ionic', 'run', 'ios']);
         expect(IonicCli.checkLatestVersion).toHaveBeenCalled();
+      });
+
+      it('should run info checkruntime on run', function() {
+        spyOn(IonicCli, 'printHelpLines');
+        IonicCli.run(['node', 'bin/ionic', '--h']);
+        expect(Info.checkRuntime).toHaveBeenCalled();
       });
 
       it('should run ionitron when argument is passed', function() {
