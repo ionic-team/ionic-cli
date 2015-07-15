@@ -1,3 +1,44 @@
+### 1.6.0
+
+* Fix(upload): Bumped archiver back to 0.5.1 - it was causing an issue related to unzipped compressed files on Android devices - see: https://github.com/driftyco/ionic-cli/issues/494 and https://github.com/archiverjs/node-archiver/issues/113.
+* Refactor(share): Share is now available in ionic-app-lib.
+* Update serve method `start` to check for document root and reject promise if it does not exist instead of exiting process with Util.fail.
+* Fix for upload - if you have a script with a query string, it will not get mangled from the removeCacheBusters call. Fixes issue https://github.com/driftyco/ionic-cli/issues/504.
+* Fix(browser): Fix for remove crosswalk, pass in the app directory for the project file, then use that instance object to save. Fixes CLI bug https://github.com/driftyco/ionic-cli/issues/500.
+* Fix(state): cordovaPlatforms in package.json no longer gets duplicate entry.
+* Feature(start): add the ability to add bower packages to a starter project.
+* Fix(start): Ensure appSetup.bower is set so that the appSetup.bower.length call doesnt cause a run time exception. Handle the exception thrown from initCordova in the chain by rethrowing the exception if the app setup process fails.
+* Fix(platform): Remove console.log command from ionic-cordova-lib, bump to 5.1.5 to have that change.
+* Fix(lab): Update preview.html to have utf-8 charset meta tag.
+* Style(share): Show the finished message as green
+* Fix(login): Remove lowercase of email.
+* Feature(project): Expose project to module.
+* Fix(upload): Remove entity parsing to fix https://github.com/driftyco/ionic-cli/issues/452#issuecomment-117376542
+* Fix(info): Add check runtime call to show upgrade messages for dependencies that are not fulfilled.
+* Fix(start): Ensure appSetup.bower is set so that the appSetup.bower.length call doesnt cause a run time exception. Handle the exception thrown from initCordova in the chain by rethrowing the exception if the app setup process fails.
+* Fix(platform): Remove console.log command from ionic-cordova-lib, bump to 5.1.5 to have that change.
+* Update ionic-cordova-lib to 5.1.4 for fix with cordova lib run propagating errors to callers.
+* Fix for serve - directory root is using path.join instead of path.resolve.
+* Add build platform to the cordova command. 
+* Bump version of ionic-cordova-lib.
+
+### 1.5.5
+
+* Fix(start): Fetch codepen was trying to fetch invalid html/css/js files because of a leading '/'. The trailing slash has been removed.
+
+### 1.5.4
+
+* Fix for error adding Crosswalk to existing ionic project.
+
+### 1.5.3
+
+* Fix for login issue with share - now correctly prompts for ionic.io login.
+
+
+### 1.5.2
+
+* Fix for login issue with upload and push - now correctly prompts for ionic.io login.
+
 ### 1.5.1
 
 * Fix for ionic serve to specify a browser.
