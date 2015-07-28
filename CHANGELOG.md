@@ -1,3 +1,7 @@
+### 1.6.3
+
+* Updated tooltips for io command.
+
 ### 1.6.2
 
 * Added `io init` command to initialize your project with ionic.io.
