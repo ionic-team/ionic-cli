@@ -1,3 +1,14 @@
+### 1.6.2
+
+* Added `io init` command to initialize your project with ionic.io.
+* Added config command to centralize ionic.io services configuration.
+* Added `--deploy` flag to upload command. 
+
+### 1.6.1
+
+* Fix(share): Properly checking that the app exists with app id before attemping to upload. Fix login passing args to get from args or prompting.
+* Fix(spelling): Fix spelling mistake of CLI output.
+
 ### 1.6.0
 
 * Fix(upload): Bumped archiver back to 0.5.1 - it was causing an issue related to unzipped compressed files on Android devices - see: https://github.com/driftyco/ionic-cli/issues/494 and https://github.com/archiverjs/node-archiver/issues/113.
