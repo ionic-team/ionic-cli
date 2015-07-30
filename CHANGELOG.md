@@ -1,3 +1,7 @@
+### 1.6.4
+
+* Updating app-lib dependency
+
 ### 1.6.3
 
 * Updated tooltips for io command.
