@@ -190,6 +190,10 @@ If you already have a resources directory, the command above will not over write
 
 When starting a new app and adding a platform `ionic platform add ios` - the default icons and splashscreens will be downloaded and your config.xml will be modified to set up the default resources. This should help you identify your Ionic apps easier as well as help you get the file structure and configuration correct.
 
+## Generating resources configuration for Phonegap Build
+
+Although Phonegap Build uses similar resources during the build, the content of the `config.xml` difers in several ways.
+Generating a Phonegap Build ready configuration can be done by using `ionic resources --phonegap`.
 
 ## Crosswalk for Android
 
