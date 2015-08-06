@@ -4,13 +4,15 @@ var IonicAppLib = require('ionic-app-lib'),
     Q = require('q'),
     Task = require('../lib/ionic/task').Task,
     Info = IonicAppLib.info,
-    Utils = IonicAppLib.utils;
+    Utils = IonicAppLib.utils,
+    rewire = require('rewire');
 
 describe('Cli', function() {
 
   beforeEach(function() {
     spyOn(IonicCli, 'processExit');
     spyOn(IonicCli, 'printAvailableTasks');
+    spyOn(IonicCli, 'doRuntimeCheck');
     spyOn(IonicAppLib.events, 'on');
     spyOn(process, 'on');
     spyOn(Info, 'checkRuntime');
@@ -49,10 +51,10 @@ describe('Cli', function() {
         expect(IonicCli.checkLatestVersion).toHaveBeenCalled();
       });
 
-      it('should run info checkruntime on run', function() {
+      it('should run info doRuntimeCheck on run', function() {
         spyOn(IonicCli, 'printHelpLines');
         IonicCli.run(['node', 'bin/ionic', '--h']);
-        expect(Info.checkRuntime).toHaveBeenCalled();
+        expect(IonicCli.doRuntimeCheck).toHaveBeenCalled();
       });
 
       it('should run ionitron when argument is passed', function() {
@@ -61,10 +63,11 @@ describe('Cli', function() {
         expect(Ionitron.print).toHaveBeenCalled();
       });
 
-      it('should listen to verbosity when arg is passed', function() {
+      it('should change log level to debug when verbose arg is passed', function() {
         spyOn(IonicCli, 'tryBuildingTask').andReturn(false);
+        expect(IonicAppLib.logging.logger.level).toBe('info');
         IonicCli.run(['node', 'bin/ionic', '--verbose']);
-        expect(IonicAppLib.events.on).toHaveBeenCalledWith('verbose', console.log);
+        expect(IonicAppLib.logging.logger.level).toBe('debug');
       });
 
       it('should get version when version flag passed', function() {
@@ -305,6 +308,34 @@ describe('Cli', function() {
       expect(taskArgv._[1]).toBe('ios');
       expect(taskArgv.nohooks).toBe(true);
     });
+
+    describe('version checking for checkRuntime', function() {
+      var IonicCli;
+      beforeEach(function() {
+        IonicCli = rewire('../lib/cli');
+      });
+
+      it('should do runtime check when version is not checked', function() {
+        var IonicConfigSpy = createSpyObj('IonicConfig', ['get', 'set', 'save']);
+        IonicConfigSpy.get.andReturn('1.6.4');
+        IonicCli.__set__('IonicConfig', IonicConfigSpy);
+        IonicCli.doRuntimeCheck('1.6.4');
+        expect(Info.checkRuntime).not.toHaveBeenCalled();
+        expect(IonicConfigSpy.set).not.toHaveBeenCalled();
+        expect(IonicConfigSpy.save).not.toHaveBeenCalled();
+      });
+
+      it('should do runtime check when version is not checked', function() {
+        var IonicConfigSpy = createSpyObj('IonicConfig', ['get', 'set', 'save']);
+        IonicConfigSpy.get.andReturn('1.6.4');
+        IonicCli.__set__('IonicConfig', IonicConfigSpy);
+        IonicCli.doRuntimeCheck('1.6.5');
+        expect(Info.checkRuntime).toHaveBeenCalled();
+        expect(IonicConfigSpy.get).toHaveBeenCalled();
+        expect(IonicConfigSpy.set).toHaveBeenCalledWith('lastVersionChecked', '1.6.5');
+        expect(IonicConfigSpy.save).toHaveBeenCalled();
+      });
+    })
 
   });
 });
