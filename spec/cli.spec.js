@@ -63,10 +63,11 @@ describe('Cli', function() {
         expect(Ionitron.print).toHaveBeenCalled();
       });
 
-      it('should listen to verbosity when arg is passed', function() {
+      it('should change log level to debug when verbose arg is passed', function() {
         spyOn(IonicCli, 'tryBuildingTask').andReturn(false);
+        expect(IonicAppLib.logging.logger.level).toBe('info');
         IonicCli.run(['node', 'bin/ionic', '--verbose']);
-        expect(IonicAppLib.events.on).toHaveBeenCalledWith('verbose', console.log);
+        expect(IonicAppLib.logging.logger.level).toBe('debug');
       });
 
       it('should get version when version flag passed', function() {
