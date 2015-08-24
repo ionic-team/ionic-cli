@@ -9,7 +9,7 @@ var argv = {
   nogulp: false
 }
 
-ddescribe('Serve', function() {
+describe('Serve', function() {
   var serveTask;
 
   beforeEach(function() {
@@ -52,7 +52,7 @@ ddescribe('Serve', function() {
     .fin(done);
   });
 
-  iit('should use connect live reload port from env var', function(done) {
+  it('should use connect live reload port from env var', function(done) {
     spyOn(IonicProject, 'load').andReturn({
       get: function() {
         return false;
