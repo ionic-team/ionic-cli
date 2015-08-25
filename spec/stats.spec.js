@@ -6,7 +6,7 @@ var Q = require('q'),
     path = require('path'),
     rewire = require('rewire');
 
-ddescribe('Stats', function() {
+describe('Stats', function() {
   beforeEach(function() {
     IonicStatsModule = rewire('../lib/ionic/stats');
     IonicStats = IonicStatsModule.IonicStats;
