@@ -2,6 +2,7 @@ var IonicAppLib = require('ionic-app-lib'),
     Ionitron = require('../lib/ionic/ionitron'),
     IonicCli = require('../lib/cli'),
     Q = require('q'),
+    IonicStats = require('../lib/ionic/stats').IonicStats,
     Task = require('../lib/ionic/task').Task,
     Info = IonicAppLib.info,
     Utils = IonicAppLib.utils,
@@ -119,6 +120,12 @@ describe('Cli', function() {
         var booleanOptions = IonicCli.getBooleanOptionsForTask(task);
         //We expect 6 total = 3 options, each with short hand notation.
         expect(booleanOptions.length).toBe(6);
+      });
+
+      it('should track stats for cli', function() {
+        spyOn(IonicStats, 't');
+        IonicCli.run(['node', 'bin/ionic', 'run', 'ios']);
+        expect(IonicStats.t).toHaveBeenCalled();
       });
     });
   });
