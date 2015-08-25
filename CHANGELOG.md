@@ -1,6 +1,15 @@
+### 1.7.0
+
+* Added winston as default logger - may break event listeners.
+* Added ENV variable CONNECT_LIVE_RELOAD_PORT for users to expose the live reload server on a port.
+* Speed up CLI by lazy-loading ionic-app-lib modules.
+* Update hooks - use `util` instead of deprecated `sys`.
+* Update hooks to run sequentially instead of asychronously.
+* Added additional tests for CLI, stats, and running commands.
+
 ### 1.6.4
 
-* Updating app-lib dependency
+* Updating app-lib dependency.
 
 ### 1.6.3
 
