@@ -38,6 +38,7 @@ describe('Stats', function() {
     it('should not track stats if opted out', function() {
       var configSpy = createSpyObj('ionicConfig', ['get']);
       configSpy.get.andReturn(true);
+      spyOn(IonicStatsModule, 'getVersion').andReturn({version: '1.6.4'});
 
       IonicStatsModule.__set__('ionicConfig', configSpy);
 
@@ -49,9 +50,10 @@ describe('Stats', function() {
     it('should track the correct command', function() {
       var oldprocessargv = process.argv;
       process.argv = ['node', 'bin/ionic', 'start', 'foldername'];
-      var packageJson = require(path.join('..', 'package.json'));
+      var packageJson = { version: '1.6.4' };
 
       spyOn(IonicStats, 'mp');
+      spyOn(IonicStatsModule, 'getVersion').andReturn(packageJson);
 
       var configSpy = createSpyObj('ionicConfig', ['get']);
       configSpy.get.andReturn(false);
