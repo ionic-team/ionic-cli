@@ -63,6 +63,7 @@
     "crc": "3.2.1",
     "cross-spawn": "0.2.3",
     "event-stream": "3.0.x",
+    "expand-tilde": "^1.2.0",
     "finalhandler": "0.2.0",
     "form-data": "0.1.4",
     "gulp": "3.8.8",
