@@ -567,3 +567,22 @@ The `ionic state clear` method will clear out your platforms and plugins directo
 The `ionic state reset` method will first remove your platforms and plugins folders. Then it will look at your `package.json` file to re-install the platforms and plugins as specified there.
 
 This command can be helpful for you to reinstall your plugins and platforms to get a fresh start.
+
+
+# ionic.project file
+
+The ionic.project is a configuration for an ionic project that stores the following:
+
+* `app_id` - the associated app ID in ionic.io.  
+* `browsers` - the installed browsers (CrossWalk).  
+* `createDocumentRoot` - boolean setting stating to create the designated.document root upon serve (for CI, using `app` folder, and compiling)  
+* `defaultBrowser` - the browser they prefer to use with `ionic serve`. Chrome, Firefox, etc.  
+* `documentRoot` - the associated document root with HTML/JS/CSS files.  
+* `gulpDependentTasks` - gulp tasks that are run before `ionic serve` launches. Think of `gulp build`, `gulp sass`, etc.  
+* `gulpStartupTasks` - gulp tasks that are run and kept alive during `ionic serve`.  
+* `imagePaths` - paths relative to document root that specify the release feature to compress images.  
+* `proxies` - designated proxies to use during `ionic serve`.  
+* `name` - the name of the application.  
+* `sass` - the setting to watch sass during `ionic serve`.  
+* `watchPatterns` - the patterns to watch and live reload during `ionic.serve`.  
+
