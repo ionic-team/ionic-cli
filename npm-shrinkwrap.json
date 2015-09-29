@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "1.6.5-testing.1",
+  "version": "1.6.5-testing.2",
   "dependencies": {
     "async": {
       "version": "0.9.2",
@@ -820,9 +820,9 @@
       }
     },
     "ionic-app-lib": {
-      "version": "0.3.9-testing.1",
-      "from": "ionic-app-lib@0.3.9-testing.1",
-      "resolved": "https://registry.npmjs.org/ionic-app-lib/-/ionic-app-lib-0.3.9-testing.1.tgz",
+      "version": "0.3.9-testing.2",
+      "from": "ionic-app-lib@0.3.9-testing.2",
+      "resolved": "https://registry.npmjs.org/ionic-app-lib/-/ionic-app-lib-0.3.9-testing.2.tgz",
       "dependencies": {
         "archiver": {
           "version": "0.5.2",
@@ -3347,7 +3347,7 @@
                     },
                     "once": {
                       "version": "1.3.2",
-                      "from": "once@>=1.3.0 <2.0.0",
+                      "from": "once@>=1.3.0 <1.4.0",
                       "resolved": "https://registry.npmjs.org/once/-/once-1.3.2.tgz",
                       "dependencies": {
                         "wrappy": {
@@ -4210,7 +4210,7 @@
           "dependencies": {
             "once": {
               "version": "1.3.2",
-              "from": "once@>=1.3.0 <2.0.0",
+              "from": "once@>=1.3.0 <1.4.0",
               "resolved": "https://registry.npmjs.org/once/-/once-1.3.2.tgz",
               "dependencies": {
                 "wrappy": {
@@ -4792,7 +4792,7 @@
             },
             "inherits": {
               "version": "2.0.1",
-              "from": "inherits@>=2.0.0 <3.0.0",
+              "from": "inherits@>=2.0.0 <2.1.0",
               "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
             },
             "mkdirp": {
