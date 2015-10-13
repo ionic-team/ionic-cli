@@ -1,3 +1,8 @@
+### 1.7.0
+
+* Added security command for managing Security Profiles.
+* Added package command for Ionic Package.
+
 ### 1.6.5
 
 * Updating app-lib dependency
