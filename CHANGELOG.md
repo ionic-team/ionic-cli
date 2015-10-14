@@ -1,3 +1,7 @@
+### 1.7.1
+
+* Fix incorrect passwords being sent in Android Credentials for security command.
+
 ### 1.7.0
 
 * Added security command for managing Security Profiles.
