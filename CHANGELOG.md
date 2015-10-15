@@ -1,3 +1,7 @@
+### 1.7.2
+
+* Updating app-lib dependency
+
 ### 1.7.1
 
 * Fix incorrect passwords being sent in Android Credentials for security command.
