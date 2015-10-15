@@ -45,6 +45,7 @@ ddescribe('end-to-end', function() {
       spyOn(IonicAppLib.multibar, 'newBar').andReturn({tick: function(){}});
 
 
+      console.log('Removing project', project);
       shell.rm('-rf', project);
       shell.mkdir('-p', tmpDir);
 
@@ -58,6 +59,21 @@ ddescribe('end-to-end', function() {
   });
 
   describe('#start', function(){
+    it('should start a v2 app without cordova cli', function(done) {
+      console.log('Starting v2 app');
+      shell.cd(tmpDir);
+      // shell.rm('-rf', path.join(project, 'i2'));
+      shell.exec('ionic start ' + appName +' --v2');
+      expect(path.join(project, 'www', 'index.html')).toExist();
+      expect(path.join(project, 'hooks', 'before_prepare', '01_gulp_build.js')).toExist();
+      console.log('v2 start completed');
+      done();
+      console.log('done called');
+      return;
+    });
+  });
+
+  xdescribe('#start', function(){
     xit('should start a new app', function(done) {
       shell.cd(tmpDir);
       shell.exec('echo "yes" | ionic start s1');
@@ -142,5 +158,45 @@ ddescribe('end-to-end', function() {
       expect(path.join(project, 'platforms', 'android', 'build', 'outputs', 'apk', 'android-x86-debug.apk')).toExist();
 
     });
+
+    iit('should start new v2 app', function() {
+      shell.cd(tmpDir);
+      shell.exec('echo "yes" | ionic start ' + appName);
+      shell.cd(project);
+      
+      expect(path.join(project, 'www', 'index.html')).toExist();
+      expect(path.join(project, 'www', 'templates', 'tabs.html')).toExist();
+      
+      shell.exec('ionic plugin add org.apache.cordova.splashscreen');
+      
+      expect(path.join(project, 'plugins', 'org.apache.cordova.splashscreen', 'plugin.xml')).toExist();
+      
+      shell.exec('ionic platform add android');
+
+      expect(path.join(project, 'platforms', 'android', 'AndroidManifest.xml')).toExist();
+      expect(path.join(project, 'resources', 'icon.png')).toExist();
+
+      shell.exec('ionic hooks add');
+      expect(path.join(project, 'hooks', 'after_plugin_add', '010_register_plugin.js')).toExist();
+
+      shell.exec('ionic hooks remove');
+      expect(path.join(project, 'hooks', 'after_plugin_add', '010_register_plugin.js')).not.toExist();
+
+      shell.exec('ionic build ios');
+      expect(path.join(project, 'platforms', 'ios', 'build', 'emulator', [appName, '.app'].join(''), 'config.xml')).toExist();
+
+      shell.exec('ionic build android');
+      //NOTE this expects you're using ant to build. In cordova android 4.0.0 - gradle is used, ant-build wont be there.
+      expect(path.join(project, 'platforms', 'android', 'ant-build', 'MainActivity-debug.apk')).toExist();
+      expect(path.join(project, 'platforms', 'android', 'build.xml')).toExist();
+
+      shell.exec('ionic browser add crosswalk');
+      expect(path.join(project, 'engine', 'xwalk-webviews')).toExist();
+
+      shell.exec('ionic build android');
+      expect(path.join(project, 'platforms', 'android', 'gradle.properties')).toExist();
+      expect(path.join(project, 'platforms', 'android', 'build', 'outputs', 'apk', 'android-armv7-debug.apk')).toExist();
+      expect(path.join(project, 'platforms', 'android', 'build', 'outputs', 'apk', 'android-x86-debug.apk')).toExist();
+    })
   });
 });

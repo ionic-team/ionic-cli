@@ -17,7 +17,7 @@ var utils = IonicAppLib.utils;
 var optimistSpy;
 
 
-describe('end-to-end', function() {
+xdescribe('end-to-end', function() {
   beforeEach(function() {
       jasmine.getEnv().defaultTimeoutInterval = 150000;
       // if (optimistSpy) {
