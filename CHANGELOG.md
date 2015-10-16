@@ -1,3 +1,7 @@
+### 1.7.3
+
+* Updating app-lib dependency
+
 ### 1.7.2
 
 * Updating app-lib dependency
