@@ -1,3 +1,7 @@
+### 1.7.7
+
+* `ionic-app-lib` updated to `0.6.3`
+
 ### 1.7.6
 
 * `ionic-app-lib` updated to `0.6.2`
