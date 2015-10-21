@@ -52,7 +52,7 @@ describe('Cli', function() {
         expect(IonicCli.checkLatestVersion).toHaveBeenCalled();
       });
 
-      it('should run info doRuntimeCheck on run', function() {
+      xit('should run info doRuntimeCheck on run', function() {
         spyOn(IonicCli, 'printHelpLines');
         IonicCli.run(['node', 'bin/ionic', '--h']);
         expect(IonicCli.doRuntimeCheck).toHaveBeenCalled();
@@ -126,6 +126,18 @@ describe('Cli', function() {
         spyOn(IonicStats, 't');
         IonicCli.run(['node', 'bin/ionic', 'run', 'ios']);
         expect(IonicStats.t).toHaveBeenCalled();
+      });
+
+      it('should change pwd for commands', function() {
+        spyOn(Utils, 'cdIonicRoot');
+        IonicCli.run(['node', 'bin/ionic', 'serve']);
+        expect(Utils.cdIonicRoot).toHaveBeenCalled();
+      });
+
+      it('should not change pwd for commands', function() {
+        spyOn(Utils, 'cdIonicRoot');
+        IonicCli.run(['node', 'bin/ionic', 'start']);
+        expect(Utils.cdIonicRoot).not.toHaveBeenCalled();
       });
     });
   });
@@ -322,7 +334,7 @@ describe('Cli', function() {
         IonicCli = rewire('../lib/cli');
       });
 
-      it('should do runtime check when version is not checked', function() {
+      xit('should do runtime check when version is not checked', function() {
         var IonicConfigSpy = createSpyObj('IonicConfig', ['get', 'set', 'save']);
         IonicConfigSpy.get.andReturn('1.6.4');
         IonicCli.__set__('IonicConfig', IonicConfigSpy);
@@ -332,7 +344,7 @@ describe('Cli', function() {
         expect(IonicConfigSpy.save).not.toHaveBeenCalled();
       });
 
-      it('should do runtime check when version is not checked', function() {
+      xit('should do runtime check when version is not checked', function() {
         var IonicConfigSpy = createSpyObj('IonicConfig', ['get', 'set', 'save']);
         IonicConfigSpy.get.andReturn('1.6.4');
         IonicCli.__set__('IonicConfig', IonicConfigSpy);
