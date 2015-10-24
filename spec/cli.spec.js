@@ -237,7 +237,7 @@ describe('Cli', function() {
     });
 
     it('should parse emulate options correctly', function() {
-      var processArgs = [ 'node', '/usr/local/bin/ionic', 'emulate', 'android', '--livereload', '--port', '5000', '-r', '35730', '--consolelogs', '--serverlogs'];
+      var processArgs = [ 'node', '/usr/local/bin/ionic', 'emulate', 'android', '--livereload', '--address', 'localhost', '--port', '5000', '-r', '35730', '--consolelogs', '--serverlogs'];
 
       IonicCli.run(processArgs);
 
@@ -250,6 +250,7 @@ describe('Cli', function() {
       expect(taskArgv._.length).toBe(2);
       expect(taskArgv._[1]).toBe('android');
       expect(taskArgv.r).toBe(35730);
+      expect(taskArgv.address).toBe('localhost');
       expect(taskArgv.port).toBe(5000);
       expect(taskArgv.consolelogs).toBe(true);
       expect(taskArgv.serverlogs).toBe(true);
