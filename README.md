@@ -578,7 +578,7 @@ The ionic.project is a configuration for an ionic project that stores the follow
 * `createDocumentRoot` - boolean setting stating to create the designated.document root upon serve (for CI, using `app` folder, and compiling)  
 * `defaultBrowser` - the browser they prefer to use with `ionic serve`. Chrome, Firefox, etc.  
 * `documentRoot` - the associated document root with HTML/JS/CSS files.  
-* `gulpDependentTasks` - gulp tasks that are run before `ionic serve` launches. Think of `gulp build`, `gulp sass`, etc.  
+* `gulpDependantTasks` - gulp tasks that are run before `ionic serve` launches. Think of `gulp build`, `gulp sass`, etc.  
 * `gulpStartupTasks` - gulp tasks that are run and kept alive during `ionic serve`.  
 * `imagePaths` - paths relative to document root that specify the release feature to compress images.  
 * `proxies` - designated proxies to use during `ionic serve`.  
