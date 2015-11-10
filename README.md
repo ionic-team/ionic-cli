@@ -30,7 +30,6 @@ __Named template starters:__
 * [sidemenu](https://github.com/driftyco/ionic-starter-sidemenu)
 * [maps](https://github.com/driftyco/ionic-starter-maps)
 * [salesforce](https://github.com/driftyco/ionic-starter-salesforce)
-* [tests](https://github.com/driftyco/ionic-starter-tests)
 * [complex-list](https://github.com/driftyco/ionic-starter-complex-list)
 * [blank](https://github.com/driftyco/ionic-starter-blank)
 
