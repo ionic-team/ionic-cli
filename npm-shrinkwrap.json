@@ -1324,11 +1324,7 @@
               "from": "bplist-parser@0.0.6",
               "resolved": "https://registry.npm.taobao.org/bplist-parser/-/bplist-parser-0.0.6.tgz"
             },
-            "cordova-app-hello-world": {
-              "version": "3.9.0",
-              "from": "cordova-app-hello-world@3.9.0",
-              "resolved": "https://registry.npm.taobao.org/cordova-app-hello-world/-/cordova-app-hello-world-3.9.0.tgz"
-            },
+
             "cordova-js": {
               "version": "4.0.0",
               "from": "cordova-js@4.0.0",
