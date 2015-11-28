@@ -3,7 +3,7 @@
 Ionic-Cli
 =========
 
-The Ionic Framework command line utility makes it easy to start, build, run, and emulate [Ionic](http://ionicframework.com/) apps. In addition, it comes with (optional!) easy integration with the [Ionic Platform], a set of mobile services perfect for Ionic apps.
+The Ionic Framework command line utility makes it easy to start, build, run, and emulate [Ionic](http://ionicframework.com/) apps. In addition, it comes with (optional!)  integration with the [Ionic Platform](http://ionic.io/), a set of mobile services perfect for Ionic apps.
 
 Use the `ionic --help` command for more detailed task information.
 
