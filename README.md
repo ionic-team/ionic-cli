@@ -60,7 +60,7 @@ __Command-line flags/options:__
     [--no-cordova|-w]  ....  Do not create an app targeted for Cordova
     [--sass|-s] ...........  Setup the project to use Sass CSS precompiling
     [--list|-l]  ..........  List starter templates available
-    
+
     [--io-app-id] .........  The Ionic.io app ID to use
 
 ## Adding a platform target
@@ -448,7 +448,7 @@ Set `IONIC_EMAIL` and `IONIC_PASSWORD` as variables to have the CLI read these i
 
 ## Upload your Ionic app
 
-Use the `ionic upload` command to take your current application you are developing and upload it to the Ionic.io servers. 
+Use the `ionic upload` command to take your current application you are developing and upload it to the Ionic.io servers.
 
 Now you can use [the ionic view app](http://view.ionic.io/) to view that application or have others view the application.
 
@@ -467,7 +467,7 @@ You can then view that App ID from the View app or the application listing on io
 
 ### Adding a note with your upload
 
-To add a note to your build, pass the `--note` option as follows: 
+To add a note to your build, pass the `--note` option as follows:
 
 `ionic upload --note "This version of the application fixes the menu selections"`.
 
@@ -490,9 +490,9 @@ To get help with a doc you may not remember, just type the name close enough: `i
 
 # Ionic Hooks
 
-Ionic provides some default hooks for you to use in your Cordova application. In versions prior to 1.3.18, these hooks were automatically installed via the `ionic platform` command. 
+Ionic provides some default hooks for you to use in your Cordova application. In versions prior to 1.3.18, these hooks were automatically installed via the `ionic platform` command.
 
-In 1.3.18, the hooks were automatically removed due to some errors users were having with Crosswalk and other plugins with variables. 
+In 1.3.18, the hooks were automatically removed due to some errors users were having with Crosswalk and other plugins with variables.
 
 If you were a user who would still like to use those hooks, you can re-install these hooks with the `ionic hooks add` command.
 
@@ -541,7 +541,7 @@ Your package.json file might look something like the following:
 
 ## ionic state save
 
-The `ionic state save` command does some lookup in your platforms and plugins to save the current state of your cordova application. 
+The `ionic state save` command does some lookup in your platforms and plugins to save the current state of your cordova application.
 
 First it looks in your platforms folder to see which platforms are installed, and saves the name and version in your `package.json` file under the `cordovaPlatforms` attribute.
 
@@ -568,20 +568,18 @@ The `ionic state reset` method will first remove your platforms and plugins fold
 This command can be helpful for you to reinstall your plugins and platforms to get a fresh start.
 
 
-# ionic.project file
+# Ionic CLI 2.0
 
-The ionic.project is a configuration for an ionic project that stores the following:
+## Ionic Generators
 
-* `app_id` - the associated app ID in ionic.io.  
-* `browsers` - the installed browsers (CrossWalk).  
-* `createDocumentRoot` - boolean setting stating to create the designated.document root upon serve (for CI, using `app` folder, and compiling)  
-* `defaultBrowser` - the browser they prefer to use with `ionic serve`. Chrome, Firefox, etc.  
-* `documentRoot` - the associated document root with HTML/JS/CSS files.  
-* `gulpDependantTasks` - gulp tasks that are run before `ionic serve` launches. Think of `gulp build`, `gulp sass`, etc.  
-* `gulpStartupTasks` - gulp tasks that are run and kept alive during `ionic serve`.  
-* `imagePaths` - paths relative to document root that specify the release feature to compress images.  
-* `proxies` - designated proxies to use during `ionic serve`.  
-* `name` - the name of the application.  
-* `sass` - the setting to watch sass during `ionic serve`.  
-* `watchPatterns` - the patterns to watch and live reload during `ionic.serve`.  
+First class support has come to the Ionic CLI to scaffold and generate Ionic and Angular 2 components. To use this feature, first install the V2 Ionic CLI: `npm install ionic@alpha` and start an app.
 
+Once in the app folder, use the `generate` command (alias: `g`).
+
+Usage:
+* `ionic generate page About` - Generate a page named About with HTML, JavaScript, and Sass named `about`.
+* `ionic g tabs MyTabPage` - Generate a page named MyTabPage, queries for the amount of tabs, and creates pages for those tabs.
+
+List:
+
+View all generators: `ionic g --list`.

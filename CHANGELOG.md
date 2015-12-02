@@ -30,6 +30,12 @@
 
 * Added security command for managing Security Profiles.
 * Added package command for Ionic Package.
+* Added winston as default logger - may break event listeners.
+* Added ENV variable CONNECT_LIVE_RELOAD_PORT for users to expose the live reload server on a port.
+* Speed up CLI by lazy-loading ionic-app-lib modules.
+* Update hooks - use `util` instead of deprecated `sys`.
+* Update hooks to run sequentially instead of asychronously.
+* Added additional tests for CLI, stats, and running commands.
 
 ### 1.6.5
 
@@ -37,7 +43,7 @@
 
 ### 1.6.4
 
-* Updating app-lib dependency
+* Updating app-lib dependency.
 
 ### 1.6.3
 
@@ -47,7 +53,7 @@
 
 * Added `io init` command to initialize your project with ionic.io.
 * Added config command to centralize ionic.io services configuration.
-* Added `--deploy` flag to upload command. 
+* Added `--deploy` flag to upload command.
 
 ### 1.6.1
 
@@ -75,7 +81,7 @@
 * Fix(platform): Remove console.log command from ionic-cordova-lib, bump to 5.1.5 to have that change.
 * Update ionic-cordova-lib to 5.1.4 for fix with cordova lib run propagating errors to callers.
 * Fix for serve - directory root is using path.join instead of path.resolve.
-* Add build platform to the cordova command. 
+* Add build platform to the cordova command.
 * Bump version of ionic-cordova-lib.
 
 ### 1.5.5
@@ -138,7 +144,7 @@
 * Fix for a bug when serve wont start console logs with `--consolelogs` argument.
 * Added flag `--platform` for serve command that opens the browser with those platform specific styles (android/ios).
 
-### 1.4.1 
+### 1.4.1
 
 * Corrected a bug with ionic state restore command - it now properly passes the app directory to be fixed.
 * Corrected landscape and portrait sizes for the resources command.
@@ -164,7 +170,7 @@
 
 * Fix for Ionic default hooks permissions
 
-### 1.3.20 
+### 1.3.20
 
 * Adding in a command with ionic start to provide an ionic io app ID. `ionic start --io-app-id <someid>`
 
