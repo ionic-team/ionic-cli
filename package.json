@@ -1,10 +1,6 @@
 {
   "name": "ionic",
-<<<<<<< f9f6b5783fc4530a3a1fca289da235327e83dded
-  "version": "1.7.14",
-=======
-  "version": "2.0.0",
->>>>>>> feat(v2): New v2 support
+  "version": "2.0.0-beta.1",
   "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -71,12 +67,8 @@
     "finalhandler": "0.2.0",
     "form-data": "0.1.4",
     "gulp": "3.8.8",
-<<<<<<< f9f6b5783fc4530a3a1fca289da235327e83dded
-    "ionic-app-lib": "0.7.0",
-=======
     "inquirer": "^0.11.0",
-    "ionic-app-lib": "2.0.0",
->>>>>>> feat(v2): New v2 support
+    "ionic-app-lib": "2.0.0-beta.1",
     "moment": "^2.10.6",
     "ncp": "0.4.2",
     "open": "0.0.5",
