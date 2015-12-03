@@ -5,7 +5,7 @@
 process.title = 'ionic';
 
 process.on('uncaughtException', function(err) {
-  console.log('Caught exception: ' + err);
+  console.error('Caught exception:\n', err.stack, '\n\nMind letting us know? https://github.com/driftyco/ionic-cli/issues\n');
 });
 
 var IonicCli = require('../lib/cli');
