@@ -4,6 +4,10 @@
 
 process.title = 'ionic';
 
+process.on('uncaughtException', function(err) {
+  console.log('Caught exception: ' + err);
+});
+
 var IonicCli = require('../lib/cli');
 
 IonicCli.run(process.argv);
