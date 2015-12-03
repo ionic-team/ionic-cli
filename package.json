@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "2.0.0-beta.5",
+  "version": "2.0.0-beta.6",
   "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -25,6 +25,7 @@
     "app",
     "hybrid",
     "cordova",
+    "native",
     "phonegap"
   ],
   "repository": {
@@ -34,12 +35,11 @@
   "contributors": [
     {
       "name": "Max Lynch",
-      "email": "max@drifty.com",
+      "email": "max@ionic.io",
       "web": "https://twitter.com/maxlynch"
     },
     {
       "name": "Peter Collins",
-      "email": "peter@drifty.com",
       "web": "https://twitter.com/SomethingNew2_0"
     },
     {
@@ -48,8 +48,7 @@
     },
     {
       "name": "Josh Bavari",
-      "web": "https://twitter.com/jbavari",
-      "email": "josh@drifty.com"
+      "web": "https://twitter.com/jbavari"
     }
   ],
   "license": "MIT",
@@ -68,7 +67,7 @@
     "form-data": "0.1.4",
     "gulp": "3.8.8",
     "inquirer": "^0.11.0",
-    "ionic-app-lib": "2.0.0-beta.1",
+    "ionic-app-lib": "2.0.0-beta.2",
     "moment": "^2.10.6",
     "ncp": "0.4.2",
     "open": "0.0.5",
