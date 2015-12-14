@@ -104,6 +104,7 @@
     "finalhandler",
     "form-data",
     "gulp",
+    "inquirer",
     "ionic-app-lib",
     "moment",
     "ncp",
