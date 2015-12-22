@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "2.0.0-beta.14",
+  "version": "2.0.0-beta.15",
   "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -68,7 +68,7 @@
     "form-data": "0.1.4",
     "gulp": "3.8.8",
     "inquirer": "^0.11.0",
-    "ionic-app-lib": "2.0.0-beta.7",
+    "ionic-app-lib": "2.0.0-beta.8",
     "moment": "^2.10.6",
     "ncp": "0.4.2",
     "open": "0.0.5",
