@@ -15,7 +15,8 @@
     "full-release": "node lib/tasks/bumpversion --npmInstall --git --npmPublish",
     "test": "npm run jasmine",
     "e2e": "jasmine-node --captureExceptions ./e2e",
-    "jasmine": "jasmine-node --captureExceptions  ./spec"
+    "jasmine": "jasmine-node --captureExceptions  ./spec",
+    "postinstall": "node lib/tasks/postinstall"
   },
   "keywords": [
     "ionic",
