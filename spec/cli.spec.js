@@ -6,6 +6,7 @@ var IonicAppLib = require('ionic-app-lib'),
     Task = require('../lib/ionic/task').Task,
     Info = IonicAppLib.info,
     Utils = IonicAppLib.utils,
+    Project = IonicAppLib.project,
     rewire = require('rewire');
 
 describe('Cli', function() {
@@ -17,6 +18,8 @@ describe('Cli', function() {
     spyOn(IonicAppLib.events, 'on');
     spyOn(process, 'on');
     spyOn(Info, 'checkRuntime');
+    spyOn(Utils, 'cdIonicRoot');
+    spyOn(Project, 'load');
 
     spyOn(Utils, 'fail').andCallFake(function(err){
       console.log(err);
@@ -129,13 +132,11 @@ describe('Cli', function() {
       });
 
       it('should change pwd for commands', function() {
-        spyOn(Utils, 'cdIonicRoot');
         IonicCli.run(['node', 'bin/ionic', 'serve']);
         expect(Utils.cdIonicRoot).toHaveBeenCalled();
       });
 
       it('should not change pwd for commands', function() {
-        spyOn(Utils, 'cdIonicRoot');
         IonicCli.run(['node', 'bin/ionic', 'start']);
         expect(Utils.cdIonicRoot).not.toHaveBeenCalled();
       });

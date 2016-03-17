@@ -2,7 +2,6 @@ var Q = require('q'),
     // IonicStats = require('../lib/ionic/stats').IonicStats,
     IonicStatsModule,
     IonicStats,
-    IonicConfig = require('../lib/ionic/config'),
     path = require('path'),
     rewire = require('rewire');
 

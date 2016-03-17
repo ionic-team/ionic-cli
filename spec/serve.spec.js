@@ -5,7 +5,7 @@ var IonicAppLib = require('ionic-app-lib'),
     rewire = require('rewire'),
     Utils = IonicAppLib.utils;
 
-var argv = { 
+var argv = {
   _: ['--livereload'],
   nogulp: false
 }
@@ -15,9 +15,6 @@ describe('Serve', function() {
 
   beforeEach(function() {
     serveTask = rewire('../lib/ionic/serve');
-
-    spyOn(Utils, 'isIonicV2').andReturn(false);
-    
   });
 
   it('should have serve defined', function() {
