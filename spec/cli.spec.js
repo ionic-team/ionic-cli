@@ -111,12 +111,6 @@ describe('Cli', function() {
         expect(IonicCli.attachErrorHandling).toHaveBeenCalled();
       });
 
-      it('should set up console logging helpers', function() {
-        spyOn(IonicCli, 'setUpConsoleLoggingHelpers');
-        IonicCli.run(['node', 'bin/ionic']);
-        expect(IonicCli.setUpConsoleLoggingHelpers).toHaveBeenCalled();
-      });
-
       it('should get boolean options from start task', function() {
         var tasks = require('../lib/tasks/cliTasks');
         var task = IonicCli.getTaskWithName('start');
