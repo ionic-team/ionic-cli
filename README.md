@@ -1,4 +1,6 @@
-[![Circle CI](https://circleci.com/gh/driftyco/ionic-cli.svg?style=svg)](https://circleci.com/gh/driftyco/ionic-cli)
+[![Build Status][circle-badge]][circle-badge-url]
+[![Build status][appveyor-badge]][appveyor-badge-url]
+[![npm][npm-badge]][npm-badge-url]
 
 Ionic-Cli
 =========
@@ -585,3 +587,9 @@ The ionic.project is a configuration for an ionic project that stores the follow
 * `sass` - the setting to watch sass during `ionic serve`.  
 * `watchPatterns` - the patterns to watch and live reload during `ionic.serve`.  
 
+[circle-badge]: https://circleci.com/gh/driftyco/ionic-cli.svg?style=shield
+[circle-badge-url]: https://circleci.com/gh/driftyco/ionic-cli
+[appveyor-badge]: https://ci.appveyor.com/api/projects/status/oqaqa7fdc7y9mma3?svg=true
+[appveyor-badge-url]: https://ci.appveyor.com/project/jthoms1/ionic-cli
+[npm-badge]: https://img.shields.io/npm/v/ionic.svg
+[npm-badge-url]: https://www.npmjs.com/package/ionic
