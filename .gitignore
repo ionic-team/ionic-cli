@@ -2,3 +2,5 @@
 *.cookies
 node_modules/
 .idea/
+coverage/
+.vscode/
