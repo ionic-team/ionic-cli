@@ -1,69 +1,154 @@
 module.exports = {
-  "env": {
-    "browser": true,
-    "commonjs": true
+  env: {
+    node: true,
+    commonjs: true
   },
-  "extends": "eslint:recommended",
-  "rules": {
-    "indent": [
-      "error",
+  extends: 'eslint:recommended',
+  rules: {
+    indent: [
+      'error',
       2
     ],
-    "linebreak-style": [
-      "error",
-      "unix"
+    'linebreak-style': [
+      'error',
+      'unix'
     ],
-    "quotes": [
-      "error",
-      "single"
-    ],
-    "semi": [
-      "error",
-      "always"
-    ],
-    "brace-style": [
-      "error",
-      "1tbs",
+    'lines-around-comment': [
+      'error',
       {
-        "allowSingleLine": true
+        beforeLineComment: true
       }
     ],
-    "camelcase": [
-      "error",
+    'spaced-comment': [
+      'error',
+      'always'
+    ],
+    'new-parens': 'error',
+    'newline-per-chained-call': [
+      'error',
       {
-        "properties": "always"
+        ignoreChainWithDepth: 3
       }
     ],
-    "comma-style": [
-      "error",
-      "last"
+    quotes: [
+      'error',
+      'single'
     ],
-    "consistent-this": [
-      "error",
-      "self"
+    semi: [
+      'error',
+      'always'
     ],
-    "new-cap": [
-      "error"
+    'semi-spacing': [
+      'error',
+      {
+        before: false,
+        after: true
+      }
     ],
-    "no-extra-semi": "error",
-    "no-lonely-if": "error",
-    "no-underscore-dangle": "error",
-    "no-spaced-func": "error",
-    "space-before-function-paren": [
+    'brace-style': [
+      'error',
+      '1tbs',
+      {
+        allowSingleLine: true
+      }
+    ],
+    camelcase: [
+      'error',
+      {
+        properties: 'always'
+      }
+    ],
+    'comma-style': [
+      'error',
+      'last'
+    ],
+    'comma-spacing': [
+      'error',
+      {
+        before: false,
+        after: true
+      }
+    ],
+    'computed-property-spacing': [
+      'error',
+      'never'
+    ],
+    'func-style': [
+      'error',
+      'declaration',
+      {
+        allowArrowFunctions: true
+      }
+    ],
+    'consistent-this': [
+      'error',
+      'self'
+    ],
+    'new-cap': [
+      'error'
+    ],
+    'no-console': 0,
+    'array-bracket-spacing': [
+      'error',
+      'never'
+    ],
+    'object-curly-spacing': [
+      'error',
+      'always'
+    ],
+    'max-len': [
+      'error',
+      120,
+      4
+    ],
+    'no-new-object': 'error',
+    'quote-props': [
+      'error',
+      'as-needed'
+    ],
+    'block-spacing': 'error',
+    'handle-callback-err': 'error',
+    'no-new-require': 'error',
+    'no-path-concat': 'error',
+    'callback-return': 'error',
+    'no-array-constructor': 'error',
+    'no-useless-escape': 'error',
+    'no-extra-semi': 'error',
+    'no-lonely-if': 'error',
+    'no-underscore-dangle': 'error',
+    'no-spaced-func': 'error',
+    'no-plusplus': 'error',
+    'one-var-declaration-per-line': [
+      'error',
+      'always'
+    ],
+    'no-multiple-empty-lines': [
+      'error',
+      {
+        max: 2
+      }
+    ],
+    'guard-for-in': 'error',
+    'keyword-spacing': [
+      'error',
+      {
+        before: true,
+        after: true
+      }
+    ],
+    'space-before-function-paren': [
       2,
-      "never"
+      'never'
     ],
-    "keyword-spacing": [
-      "error",
-      {
-        "before": true,
-        "after": true
-      }
-    ],
-    "space-before-blocks": [
+    'space-before-blocks': [
       2,
-      "always"
-    ]
+      'always'
+    ],
+    'space-in-parens': [
+      'error',
+      'never'
+    ],
+    'space-infix-ops': 'error'
   }
 };
 
