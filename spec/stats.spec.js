@@ -52,9 +52,11 @@ describe('Stats', function() {
 
       spyOn(IonicStats, 'mp');
       spyOn(IonicStatsModule, 'getVersion').andReturn(packageJson);
-      spyOn(IonicInfoModule, 'getNodeVersion').andReturn('v5.10.1');
-      spyOn(IonicInfoModule, 'getOsEnvironment').andReturn('Mac OS X El Capitan');
-      spyOn(IonicInfoModule, 'gatherGulpInfo').andReturn('v3.0.0');
+      spyOn(IonicInfoModule, 'gatherGulpInfo').andCallFake(function(info) {
+        info.os = 'Mac OS X El Capitan';
+        info.node = 'v5.10.1';
+        info.gulp = 'v3.0.0';
+      });
 
       var configSpy = jasmine.createSpyObj('ionicConfig', ['get']);
       configSpy.get.andReturn(false);
