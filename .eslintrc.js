@@ -45,6 +45,7 @@ module.exports = {
     "new-cap": [
       "error"
     ],
+    "no-console": 0,
     "no-extra-semi": "error",
     "no-lonely-if": "error",
     "no-underscore-dangle": "error",

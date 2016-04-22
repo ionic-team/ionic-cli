@@ -1,22 +1,14 @@
-var fs = require('fs'),
-    helpers = require('./helpers'),
-    path = require('path'),
-    Q = require('q'),
-    request = require('request'),
-    shell = require('shelljs');
+var helpers = require('./helpers');
+var path = require('path');
+var shell = require('shelljs');
 
-var IonicCli = require('../lib/cli');
 var IonicAppLib = require('ionic-app-lib');
-var Serve = IonicAppLib.serve;
 
 var tmpDir = helpers.tmpDir('create_test');
 var appName = 'TestIonic';
-var appId = 'org.ionic.testing';
 var project = path.join(tmpDir, appName);
 var optimist = require('optimist');
-var start = IonicAppLib.start;
 var utils = IonicAppLib.utils;
-var optimistSpy;
 
 // What to test
 
@@ -24,42 +16,35 @@ var optimistSpy;
 // * [ ] Start
 // * [ ] Serve
 // * [ ] Run
-// * [ ] 
+// * [ ]
 
 
-ddescribe('end-to-end', function() {
+describe('end-to-end', function() {
   beforeEach(function() {
-      jasmine.getEnv().defaultTimeoutInterval = 150000;
-      // if (optimistSpy) {
-      //   optimistSpy.reset();
-      // }
-      optimistSpy = spyOn(optimist, 'boolean');
-      optimist.boolean.reset();
+    jasmine.getEnv().defaultTimeoutInterval = 150000;
+    optimist.boolean.reset();
 
-      //Mock out call to get the app directory, return our project
-      spyOn(utils, 'getProjectDirectory').andReturn(project);
+    //Mock out call to get the app directory, return our project
+    spyOn(utils, 'getProjectDirectory').andReturn(project);
 
-      //Disable console.log statements
-      // spyOn(IonicAppLib.events, 'on');
-      // spyOn(process.stdout, 'write');
-      spyOn(IonicAppLib.multibar, 'newBar').andReturn({tick: function(){}});
+    spyOn(IonicAppLib.multibar, 'newBar').andReturn({tick: function() {}});
 
 
-      console.log('Removing project', project);
-      shell.rm('-rf', project);
-      shell.mkdir('-p', tmpDir);
+    console.log('Removing project', project);
+    shell.rm('-rf', project);
+    shell.mkdir('-p', tmpDir);
 
-      //Copy over created project here.
+    //Copy over created project here.
 
   });
 
   afterEach(function() {
-      process.chdir(path.join(__dirname, '..'));  // Needed to rm the dir on Windows.
-      // shell.rm('-rf', tmpDir);
+    process.chdir(path.join(__dirname, '..'));  // Needed to rm the dir on Windows.
+    // shell.rm('-rf', tmpDir);
   });
 
   //This is working, Tim!
-  describe('#start', function(){
+  describe('#start', function() {
     it('should start a v2 app without cordova cli', function() {
       console.log('Starting v2 app');
       shell.cd(tmpDir);
@@ -124,14 +109,14 @@ ddescribe('end-to-end', function() {
   //     shell.cd(tmpDir);
   //     shell.exec('echo "yes" | ionic start ' + appName);
   //     shell.cd(project);
-      
+
   //     expect(path.join(project, 'www', 'index.html')).toExist();
   //     expect(path.join(project, 'www', 'templates', 'tabs.html')).toExist();
-      
+
   //     shell.exec('ionic plugin add org.apache.cordova.splashscreen');
-      
+
   //     expect(path.join(project, 'plugins', 'org.apache.cordova.splashscreen', 'plugin.xml')).toExist();
-      
+
   //     shell.exec('ionic platform add android');
 
   //     expect(path.join(project, 'platforms', 'android', 'AndroidManifest.xml')).toExist();
@@ -165,14 +150,14 @@ ddescribe('end-to-end', function() {
   //     shell.cd(tmpDir);
   //     shell.exec('echo "yes" | ionic start ' + appName);
   //     shell.cd(project);
-      
+
   //     expect(path.join(project, 'www', 'index.html')).toExist();
   //     expect(path.join(project, 'www', 'templates', 'tabs.html')).toExist();
-      
+
   //     shell.exec('ionic plugin add org.apache.cordova.splashscreen');
-      
+
   //     expect(path.join(project, 'plugins', 'org.apache.cordova.splashscreen', 'plugin.xml')).toExist();
-      
+
   //     shell.exec('ionic platform add android');
 
   //     expect(path.join(project, 'platforms', 'android', 'AndroidManifest.xml')).toExist();
