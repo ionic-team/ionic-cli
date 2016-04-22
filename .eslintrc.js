@@ -5,6 +5,10 @@ module.exports = {
   },
   extends: 'eslint:recommended',
   rules: {
+    eqeqeq: [
+      "error",
+      "smart"
+    ],
     indent: [
       'error',
       2
@@ -32,7 +36,10 @@ module.exports = {
     ],
     quotes: [
       'error',
-      'single'
+      'single',
+      {
+        avoidEscape: true
+      }
     ],
     semi: [
       'error',
@@ -87,7 +94,7 @@ module.exports = {
     'new-cap': [
       'error',
       {
-        'capIsNewExceptions': ['Q']
+        capIsNewExceptions: ['Q']
       }
     ],
     'no-console': 0,
@@ -102,7 +109,10 @@ module.exports = {
     'max-len': [
       'error',
       120,
-      4
+      4,
+      {
+        ignoreUrls: true
+      }
     ],
     'no-new-object': 'error',
     'quote-props': [
