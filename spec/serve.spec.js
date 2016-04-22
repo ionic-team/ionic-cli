@@ -1,14 +1,13 @@
-var IonicAppLib = require('ionic-app-lib'),
-    IonicProject = IonicAppLib.project,
-    Serve = IonicAppLib.serve,
-    Q = require('q'),
-    rewire = require('rewire'),
-    Utils = IonicAppLib.utils;
+var IonicAppLib = require('ionic-app-lib');
+var IonicProject = IonicAppLib.project;
+var Serve = IonicAppLib.serve;
+var Q = require('q');
+var rewire = require('rewire');
 
 var argv = {
   _: ['--livereload'],
   nogulp: false
-}
+};
 
 describe('Serve', function() {
   var serveTask;
@@ -41,13 +40,13 @@ describe('Serve', function() {
     };
 
     Q()
-    .then(function(){
+    .then(function() {
       return serve.run({}, argv);
     })
     .then(function() {
       expect(Serve.start).toHaveBeenCalledWith(options);
     })
-    .catch(function(ex){
+    .catch(function(ex) {
       expect('this').toBe(ex.stack);
     })
     .fin(done);
@@ -70,14 +69,14 @@ describe('Serve', function() {
     var serve = new serveTask.IonicTask();
 
     Q()
-    .then(function(){
+    .then(function() {
       return serve.run({}, argv);
     })
     .then(function() {
       var calls = Serve.start.calls[0].args[0];
       expect(calls.liveReloadPort).toBe(35729);
     })
-    .catch(function(ex){
+    .catch(function(ex) {
       expect('this').toBe(ex.stack);
     })
     .fin(done);

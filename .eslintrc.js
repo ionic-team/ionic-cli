@@ -85,7 +85,10 @@ module.exports = {
       'self'
     ],
     'new-cap': [
-      'error'
+      'error',
+      {
+        'capIsNewExceptions': ['Q']
+      }
     ],
     'no-console': 0,
     'array-bracket-spacing': [

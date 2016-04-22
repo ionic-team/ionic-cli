@@ -1,13 +1,12 @@
-var Q = require('q'),
-    // IonicStats = require('../lib/ionic/stats').IonicStats,
-    IonicStatsModule,
-    IonicStats,
-    path = require('path'),
-    rewire = require('rewire');
+var IonicStatsModule;
+var IonicInfoModule;
+var IonicStats;
+var rewire = require('rewire');
 
 describe('Stats', function() {
   beforeEach(function() {
     IonicStatsModule = rewire('../lib/ionic/stats');
+    IonicInfoModule = rewire('ionic-app-lib').info;
     IonicStats = IonicStatsModule.IonicStats;
   });
 
@@ -22,7 +21,7 @@ describe('Stats', function() {
 
       spyOn(IonicStats, 'mp');
 
-      var configSpy = createSpyObj('ionicConfig', ['get']);
+      var configSpy = jasmine.createSpyObj('ionicConfig', ['get']);
       configSpy.get.andReturn(true);
 
       IonicStatsModule.__set__('ionicConfig', configSpy);
@@ -35,9 +34,9 @@ describe('Stats', function() {
     });
 
     it('should not track stats if opted out', function() {
-      var configSpy = createSpyObj('ionicConfig', ['get']);
+      var configSpy = jasmine.createSpyObj('ionicConfig', ['get']);
       configSpy.get.andReturn(true);
-      spyOn(IonicStatsModule, 'getVersion').andReturn({version: '1.6.4'});
+      spyOn(IonicStatsModule, 'getVersion').andReturn({ version: '1.6.4' });
 
       IonicStatsModule.__set__('ionicConfig', configSpy);
 
@@ -53,15 +52,25 @@ describe('Stats', function() {
 
       spyOn(IonicStats, 'mp');
       spyOn(IonicStatsModule, 'getVersion').andReturn(packageJson);
+      spyOn(IonicInfoModule, 'getNodeVersion').andReturn('v5.10.1');
+      spyOn(IonicInfoModule, 'getOsEnvironment').andReturn('Mac OS X El Capitan');
+      spyOn(IonicInfoModule, 'gatherGulpInfo').andReturn('v3.0.0');
 
-      var configSpy = createSpyObj('ionicConfig', ['get']);
+      var configSpy = jasmine.createSpyObj('ionicConfig', ['get']);
       configSpy.get.andReturn(false);
 
       IonicStatsModule.__set__('ionicConfig', configSpy);
 
       IonicStats.t();
 
-      expect(IonicStats.mp).toHaveBeenCalledWith('start', { cli_version: packageJson.version, email: false, account_id: false });
+      expect(IonicStats.mp).toHaveBeenCalledWith('start', {
+        cli_version: packageJson.version, // eslint-disable-line camelcase
+        email: false,
+        account_id: false, // eslint-disable-line camelcase
+        os: 'Mac OS X El Capitan',
+        gulp: 'v3.0.0',
+        node: 'v5.10.1'
+      });
       process.argv = oldprocessargv;
     });
   });
