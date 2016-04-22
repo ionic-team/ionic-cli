@@ -65,6 +65,15 @@ module.exports = {
         properties: 'always'
       }
     ],
+    "no-console": 0,
+    "no-extra-semi": "error",
+    "no-lonely-if": "error",
+    "no-underscore-dangle": "error",
+    "no-spaced-func": "error",
+    "space-before-function-paren": [
+      2,
+      "never"
+    ],
     'comma-style': [
       'error',
       'last'
