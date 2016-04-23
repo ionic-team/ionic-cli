@@ -1,13 +1,4 @@
-var IonicAppLib = require('ionic-app-lib'),
-    IonicProject = IonicAppLib.project,
-    Serve = IonicAppLib.serve,
-    Q = require('q'),
-    rewire = require('rewire');
-
-var argv = { 
-  _: ['--livereload'],
-  nogulp: false
-}
+var rewire = require('rewire');
 
 describe('Start', function() {
   var startTask;

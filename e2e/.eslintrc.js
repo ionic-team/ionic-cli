@@ -1,8 +1,6 @@
 module.exports = {
   env: {
+    node: true,
     jasmine: true
-  },
-  rules: {
-    'no-underscore-dangle': 0
   }
 };
