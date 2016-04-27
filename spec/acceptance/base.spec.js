@@ -1,9 +1,9 @@
 var IonicAppLib = require('ionic-app-lib');
-var Ionitron = require('../lib/ionic/ionitron');
-var IonicCli = require('../lib/cli');
-var Q = require('q');
-var IonicStats = require('../lib/ionic/stats').IonicStats;
-var Task = require('../lib/ionic/task').Task;
+var IonicCli = require('../../lib/cli');
+
+var ionic = require('../helpers/ionic');
+
+var Task = require('../../lib/ionic/task').Task;
 var Info = IonicAppLib.info;
 var Utils = IonicAppLib.utils;
 var Project = IonicAppLib.project;
@@ -47,76 +47,10 @@ describe('Cli', function() {
     });
 
     describe('#Cli methods', function() {
-      it('should run checkLatestVersion on run', function(done) {
-        var deferred = Q.defer();
-        deferred.resolve();
-        spyOn(IonicCli, 'checkLatestVersion').andReturn(deferred);
-        IonicCli.run(['node', 'bin/ionic', 'run', 'ios'])
-        .then(function() {
-          expect(IonicCli.checkLatestVersion).toHaveBeenCalled();
-          done();
-        });
-      });
 
-      xit('should run info doRuntimeCheck on run', function(done) {
-        spyOn(IonicCli, 'printHelpLines');
-        IonicCli.run(['node', 'bin/ionic', '--h'])
-        .then(function() {
-          expect(IonicCli.doRuntimeCheck).toHaveBeenCalled();
-          done();
-        });
-      });
+      it('should print available tasks if no valid command is passed', function() {
+        ionic([]).then(function() {
 
-      it('should run ionitron when argument is passed', function(done) {
-        spyOn(Ionitron, 'print');
-        IonicCli.run(['node', 'bin/ionic', '--ionitron'])
-        .then(function() {
-          expect(Ionitron.print).toHaveBeenCalled();
-          done();
-        });
-      });
-
-      it('should change log level to debug when verbose arg is passed', function(done) {
-        expect(IonicAppLib.logging.logger.level).toBe('info');
-        IonicCli.run(['node', 'bin/ionic', '--verbose'])
-        .then(function() {
-          expect(IonicAppLib.logging.logger.level).toBe('debug');
-          done();
-        });
-      });
-
-      it('should get version when version flag passed', function(done) {
-        spyOn(IonicCli, 'version');
-        IonicCli.run(['node', 'bin/ionic', '--version'])
-        .then(function() {
-          expect(IonicCli.version).toHaveBeenCalled();
-          done();
-        });
-      });
-
-      it('should call help when help argument passed', function(done) {
-        spyOn(IonicCli, 'printHelpLines');
-        IonicCli.run(['node', 'bin/ionic', '--help'])
-        .then(function() {
-          expect(IonicCli.printHelpLines).toHaveBeenCalled();
-          done();
-        });
-      });
-
-      it('should call help when help shorthand argument passed', function(done) {
-        spyOn(IonicCli, 'printHelpLines');
-        IonicCli.run(['node', 'bin/ionic', '--h'])
-        .then(function() {
-          expect(IonicCli.printHelpLines).toHaveBeenCalled();
-          done();
-        });
-      });
-
-      it('should print available tasks if no valid command is passed', function(done) {
-        IonicCli.run(['node', 'bin/ionic'])
-        .then(function() {
-          expect(IonicCli.printAvailableTasks).toHaveBeenCalled();
-          done();
         });
       });
 
@@ -127,13 +61,10 @@ describe('Cli', function() {
         expect(task.args).toBeDefined();
       });
 
-      it('should call attachErrorHandling', function(done) {
+      it('should call attachErrorHandling', function() {
         spyOn(IonicCli, 'attachErrorHandling');
-        IonicCli.run(['node', 'bin/ionic'])
-        .then(function() {
-          expect(IonicCli.attachErrorHandling).toHaveBeenCalled();
-          done();
-        });
+        ionic([]);
+        expect(IonicCli.attachErrorHandling).toHaveBeenCalled();
       });
 
       it('should get boolean options from start task', function() {
@@ -144,29 +75,18 @@ describe('Cli', function() {
         expect(booleanOptions.length).toBe(11);
       });
 
-      it('should track stats for cli', function(done) {
-        spyOn(IonicStats, 't');
-        IonicCli.run(['node', 'bin/ionic', 'run', 'ios'])
-        .then(function() {
-          expect(IonicStats.t).toHaveBeenCalled();
-          done();
-        });
+      it('should change pwd for commands', function() {
+        ionic([
+          'serve'
+        ]);
+        expect(Utils.cdIonicRoot).toHaveBeenCalled();
       });
 
-      it('should change pwd for commands', function(done) {
-        IonicCli.run(['node', 'bin/ionic', 'serve'])
-        .then(function() {
-          expect(Utils.cdIonicRoot).toHaveBeenCalled();
-          done();
-        });
-      });
-
-      it('should not change pwd for commands', function(done) {
-        IonicCli.run(['node', 'bin/ionic', 'start'])
-        .then(function() {
-          expect(Utils.cdIonicRoot).not.toHaveBeenCalled();
-          done();
-        });
+      it('should not change pwd for commands', function() {
+        ionic([
+          'start'
+        ]);
+        expect(Utils.cdIonicRoot).not.toHaveBeenCalled();
       });
     });
   });
@@ -185,9 +105,15 @@ describe('Cli', function() {
     });
 
     it('should parse start options correctly', function(done) {
-      var processArgs = ['node', '/usr/local/bin/ionic', 'start', 's1', '-w', '--appname', 'asdf'];
+      var processArgs = [
+        'start',
+        's1',
+        '-w',
+        '--appname',
+        'asdf'
+      ];
 
-      var promise = IonicCli.run(processArgs);
+      var promise = ionic(processArgs);
       var fakeTaskRef = fakeTask;
 
       promise.then(function() {
@@ -212,9 +138,15 @@ describe('Cli', function() {
     });
 
     it('should parse serve options correctly', function(done) {
-      var processArgs = ['node', '/usr/local/bin/ionic', 'serve', '--nogulp', '--all', '--browser', 'firefox'];
+      var processArgs = [
+        'serve',
+        '--nogulp',
+        '--all',
+        '--browser',
+        'firefox'
+      ];
 
-      var promise = IonicCli.run(processArgs);
+      var promise = ionic(processArgs);
       var fakeTaskRef = fakeTask;
 
       promise.then(function() {
@@ -237,10 +169,17 @@ describe('Cli', function() {
 
     it('should parse upload options correctly', function(done) {
       var note = 'A note for notes';
-      var processArgs = ['node', '/usr/local/bin/ionic', 'upload', '--email',
-        'user@ionic.io', '--password', 'pass', '--note', note];
+      var email = 'user@ionic.io';
+      var password = 'pass';
 
-      var promise = IonicCli.run(processArgs);
+      var processArgs = [
+        'upload',
+        '--email', email,
+        '--password', password,
+        '--note', note
+      ];
+
+      var promise = ionic(processArgs);
       var fakeTaskRef = fakeTask;
 
       promise.then(function() {
@@ -252,16 +191,23 @@ describe('Cli', function() {
         // should only have serve in the command args
         expect(taskArgv._.length).toBe(1);
         expect(taskArgv.note).toBe(note);
-        expect(taskArgv.email).toBe('user@ionic.io');
-        expect(taskArgv.password).toBe('pass');
+        expect(taskArgv.email).toBe(email);
+        expect(taskArgv.password).toBe(password);
         done();
       });
     });
 
     it('should parse login options correctly', function(done) {
-      var processArgs = ['node', '/usr/local/bin/ionic', 'login', '--email', 'user@ionic.io', '--password', 'pass'];
+      var email = 'user@ionic.io';
+      var password = 'pass';
 
-      var promise = IonicCli.run(processArgs);
+      var processArgs = [
+        'login',
+        '--email', email,
+        '--password', password
+      ];
+
+      var promise = ionic(processArgs);
       var fakeTaskRef = fakeTask;
 
       promise.then(function() {
@@ -272,17 +218,28 @@ describe('Cli', function() {
 
         // should only have serve in the command args
         expect(taskArgv._.length).toBe(1);
-        expect(taskArgv.email).toBe('user@ionic.io');
-        expect(taskArgv.password).toBe('pass');
+        expect(taskArgv.email).toBe(email);
+        expect(taskArgv.password).toBe(password);
         done();
       });
     });
 
     it('should parse run options correctly', function(done) {
-      var processArgs = ['node', '/usr/local/bin/ionic', 'run', 'ios', '--livereload',
-        '--port', '5000', '-r', '35730', '--consolelogs', '--serverlogs', '--device'];
+      var platform = 'ios';
+      var port = 5000;
+      var r = 35730;
 
-      var promise = IonicCli.run(processArgs);
+      var processArgs = [
+        'run',
+        platform,
+        '--livereload',
+        '--port', port,
+        '-r', r,
+        '--consolelogs',
+        '--serverlogs',
+        '--device'];
+
+      var promise = ionic(processArgs);
       var fakeTaskRef = fakeTask;
 
       promise.then(function() {
@@ -293,8 +250,9 @@ describe('Cli', function() {
 
         // should only have serve in the command args
         expect(taskArgv._.length).toBe(2);
-        expect(taskArgv.r).toBe(35730);
-        expect(taskArgv.port).toBe(5000);
+        expect(taskArgv._[1]).toBe(platform);
+        expect(taskArgv.port).toBe(port);
+        expect(taskArgv.r).toBe(r);
         expect(taskArgv.consolelogs).toBe(true);
         expect(taskArgv.serverlogs).toBe(true);
         expect(taskArgv.livereload).toBe(true);
@@ -304,10 +262,22 @@ describe('Cli', function() {
     });
 
     it('should parse emulate options correctly', function(done) {
-      var processArgs = ['node', '/usr/local/bin/ionic', 'emulate', 'android',
-        '--livereload', '--address', 'localhost', '--port', '5000', '-r', '35730', '--consolelogs', '--serverlogs'];
+      var platform = 'android';
+      var address = 'localhost';
+      var port = 5000;
+      var r = 35730;
 
-      var promise = IonicCli.run(processArgs);
+      var processArgs = [
+        'emulate',
+        platform,
+        '--livereload',
+        '--address', address,
+        '--port', port,
+        '-r', r,
+        '--consolelogs',
+        '--serverlogs'];
+
+      var promise = ionic(processArgs);
       var fakeTaskRef = fakeTask;
 
       promise.then(function() {
@@ -318,10 +288,10 @@ describe('Cli', function() {
 
         // should only have serve in the command args
         expect(taskArgv._.length).toBe(2);
-        expect(taskArgv._[1]).toBe('android');
-        expect(taskArgv.r).toBe(35730);
-        expect(taskArgv.address).toBe('localhost');
-        expect(taskArgv.port).toBe(5000);
+        expect(taskArgv._[1]).toBe(platform);
+        expect(taskArgv.address).toBe(address);
+        expect(taskArgv.port).toBe(port);
+        expect(taskArgv.r).toBe(r);
         expect(taskArgv.consolelogs).toBe(true);
         expect(taskArgv.serverlogs).toBe(true);
         expect(taskArgv.livereload).toBe(true);
@@ -330,9 +300,13 @@ describe('Cli', function() {
     });
 
     it('should parse state options correctly', function(done) {
-      var processArgs = ['node', '/usr/local/bin/ionic', 'state', 'save', '--plugins'];
+      var processArgs = [
+        'state',
+        'save',
+        '--plugins'
+      ];
 
-      var promise = IonicCli.run(processArgs);
+      var promise = ionic(processArgs);
       var fakeTaskRef = fakeTask;
 
       promise.then(function() {
@@ -351,10 +325,15 @@ describe('Cli', function() {
     });
 
     it('should parse plugin options correctly', function(done) {
-      var processArgs = ['node', '/usr/local/bin/ionic', 'plugin', 'add',
-        'org.apache.cordova.splashscreen', '--nosave', '--searchpath', '../'];
+      var processArgs = [
+        'plugin',
+        'add',
+        'org.apache.cordova.splashscreen',
+        '--nosave',
+        '--searchpath', '../'
+      ];
 
-      var promise = IonicCli.run(processArgs);
+      var promise = ionic(processArgs);
       var fakeTaskRef = fakeTask;
 
       promise.then(function() {
@@ -375,9 +354,15 @@ describe('Cli', function() {
     });
 
     it('should parse build options correctly', function(done) {
-      var processArgs = ['node', '/usr/local/bin/ionic', 'build', 'ios', '--nohooks'];
+      var platform = 'ios';
 
-      var promise = IonicCli.run(processArgs);
+      var processArgs = [
+        'build',
+        platform,
+        '--nohooks'
+      ];
+
+      var promise = ionic(processArgs);
       var fakeTaskRef = fakeTask;
 
       promise.then(function() {
@@ -389,7 +374,7 @@ describe('Cli', function() {
         // should only have serve in the command args
         expect(taskArgv._.length).toBe(2);
         expect(taskArgv._[0]).toBe('build');
-        expect(taskArgv._[1]).toBe('ios');
+        expect(taskArgv._[1]).toBe(platform);
         expect(taskArgv.nohooks).toBe(true);
         done();
       });
@@ -398,7 +383,7 @@ describe('Cli', function() {
     describe('version checking for checkRuntime', function() {
       var IonicCli;
       beforeEach(function() {
-        IonicCli = rewire('../lib/cli');
+        IonicCli = rewire('../../lib/cli');
       });
 
       xit('should do runtime check when version is not checked', function() {
