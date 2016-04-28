@@ -10,6 +10,7 @@
   "scripts": {
     "bump": "node lib/tasks/bumpversion",
     "beta-bump": "node lib/tasks/bumpversion --level pre --identifier beta",
+    "lint": "eslint .",
     "publish-release": "node lib/tasks/bumpversion --npmPublish",
     "publish-tag": "node lib/tasks/bumpversion --level beta --npmPublishTag",
     "full-release": "node lib/tasks/bumpversion --npmInstall --git --npmPublish",
