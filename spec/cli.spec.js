@@ -3,7 +3,6 @@ var Ionitron = require('../lib/ionic/ionitron');
 var IonicCli = require('../lib/cli');
 var Q = require('q');
 var IonicStats = require('../lib/ionic/stats').IonicStats;
-var Task = require('../lib/ionic/task').Task;
 var Info = IonicAppLib.info;
 var Utils = IonicAppLib.utils;
 var Project = IonicAppLib.project;
@@ -40,7 +39,6 @@ describe('Cli', function() {
 
     beforeEach(function() {
       function fakeTask() {}
-      fakeTask.prototype = new Task();
       fakeTask.prototype.run = function() {};
 
       spyOn(IonicCli, 'lookupTask').andReturn(fakeTask);
@@ -176,7 +174,6 @@ describe('Cli', function() {
 
     beforeEach(function() {
       fakeTask = function() {};
-      fakeTask.prototype = new Task();
       fakeTask.prototype.run = function() {};
 
       spyOn(IonicCli, 'lookupTask').andReturn(fakeTask);
