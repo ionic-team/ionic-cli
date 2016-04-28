@@ -32,7 +32,7 @@ describe('Serve', function() {
 
     process.env = { CONNECT_LIVE_RELOAD_PORT: 5000 };
 
-    var serve = new serveTask.IonicTask();
+    var serve = serveTask;
     var options = {
       appDirectory: '/ionic/app/path',
       liveReloadPort: 5000,
@@ -66,7 +66,7 @@ describe('Serve', function() {
     spyOn(Serve, 'showFinishedServeMessage');
     spyOn(process, 'cwd').andReturn('/ionic/app/path');
 
-    var serve = new serveTask.IonicTask();
+    var serve = serveTask;
 
     Q()
     .then(function() {

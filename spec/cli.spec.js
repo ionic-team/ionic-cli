@@ -36,10 +36,12 @@ describe('Cli', function() {
   });
 
   describe('#run', function() {
+    var fakeTask;
 
     beforeEach(function() {
-      function fakeTask() {}
-      fakeTask.prototype.run = function() {};
+      fakeTask = {
+        run:  function() {}
+      };
 
       spyOn(IonicCli, 'lookupTask').andReturn(fakeTask);
     });
@@ -173,23 +175,21 @@ describe('Cli', function() {
     var fakeTask;
 
     beforeEach(function() {
-      fakeTask = function() {};
-      fakeTask.prototype.run = function() {};
+      fakeTask = {
+        run:  function() {}
+      };
 
       spyOn(IonicCli, 'lookupTask').andReturn(fakeTask);
-      spyOn(fakeTask.prototype, 'run').andCallThrough();
-
+      spyOn(fakeTask, 'run').andCallThrough();
     });
 
     it('should parse start options correctly', function(done) {
       var processArgs = ['node', '/usr/local/bin/ionic', 'start', 's1', '-w', '--appname', 'asdf'];
 
       var promise = IonicCli.run(processArgs);
-      var fakeTaskRef = fakeTask;
 
       promise.then(function() {
-        expect(fakeTaskRef.prototype.run).toHaveBeenCalled();
-        var taskArgs = fakeTaskRef.prototype.run.mostRecentCall.args;
+        var taskArgs = fakeTask.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
         expect(taskArgv._.length).toBe(2);
@@ -212,11 +212,9 @@ describe('Cli', function() {
       var processArgs = ['node', '/usr/local/bin/ionic', 'serve', '--nogulp', '--all', '--browser', 'firefox'];
 
       var promise = IonicCli.run(processArgs);
-      var fakeTaskRef = fakeTask;
 
       promise.then(function() {
-        expect(fakeTaskRef.prototype.run).toHaveBeenCalled();
-        var taskArgs = fakeTaskRef.prototype.run.mostRecentCall.args;
+        var taskArgs = fakeTask.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -238,11 +236,9 @@ describe('Cli', function() {
         'user@ionic.io', '--password', 'pass', '--note', note];
 
       var promise = IonicCli.run(processArgs);
-      var fakeTaskRef = fakeTask;
 
       promise.then(function() {
-        expect(fakeTaskRef.prototype.run).toHaveBeenCalled();
-        var taskArgs = fakeTaskRef.prototype.run.mostRecentCall.args;
+        var taskArgs = fakeTask.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -259,11 +255,9 @@ describe('Cli', function() {
       var processArgs = ['node', '/usr/local/bin/ionic', 'login', '--email', 'user@ionic.io', '--password', 'pass'];
 
       var promise = IonicCli.run(processArgs);
-      var fakeTaskRef = fakeTask;
 
       promise.then(function() {
-        expect(fakeTaskRef.prototype.run).toHaveBeenCalled();
-        var taskArgs = fakeTaskRef.prototype.run.mostRecentCall.args;
+        var taskArgs = fakeTask.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -280,11 +274,9 @@ describe('Cli', function() {
         '--port', '5000', '-r', '35730', '--consolelogs', '--serverlogs', '--device'];
 
       var promise = IonicCli.run(processArgs);
-      var fakeTaskRef = fakeTask;
 
       promise.then(function() {
-        expect(fakeTaskRef.prototype.run).toHaveBeenCalled();
-        var taskArgs = fakeTaskRef.prototype.run.mostRecentCall.args;
+        var taskArgs = fakeTask.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -305,11 +297,9 @@ describe('Cli', function() {
         '--livereload', '--address', 'localhost', '--port', '5000', '-r', '35730', '--consolelogs', '--serverlogs'];
 
       var promise = IonicCli.run(processArgs);
-      var fakeTaskRef = fakeTask;
 
       promise.then(function() {
-        expect(fakeTaskRef.prototype.run).toHaveBeenCalled();
-        var taskArgs = fakeTaskRef.prototype.run.mostRecentCall.args;
+        var taskArgs = fakeTask.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -330,11 +320,9 @@ describe('Cli', function() {
       var processArgs = ['node', '/usr/local/bin/ionic', 'state', 'save', '--plugins'];
 
       var promise = IonicCli.run(processArgs);
-      var fakeTaskRef = fakeTask;
 
       promise.then(function() {
-        expect(fakeTaskRef.prototype.run).toHaveBeenCalled();
-        var taskArgs = fakeTaskRef.prototype.run.mostRecentCall.args;
+        var taskArgs = fakeTask.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -352,11 +340,9 @@ describe('Cli', function() {
         'org.apache.cordova.splashscreen', '--nosave', '--searchpath', '../'];
 
       var promise = IonicCli.run(processArgs);
-      var fakeTaskRef = fakeTask;
 
       promise.then(function() {
-        expect(fakeTaskRef.prototype.run).toHaveBeenCalled();
-        var taskArgs = fakeTaskRef.prototype.run.mostRecentCall.args;
+        var taskArgs = fakeTask.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -375,11 +361,9 @@ describe('Cli', function() {
       var processArgs = ['node', '/usr/local/bin/ionic', 'build', 'ios', '--nohooks'];
 
       var promise = IonicCli.run(processArgs);
-      var fakeTaskRef = fakeTask;
 
       promise.then(function() {
-        expect(fakeTaskRef.prototype.run).toHaveBeenCalled();
-        var taskArgs = fakeTaskRef.prototype.run.mostRecentCall.args;
+        var taskArgs = fakeTask.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
