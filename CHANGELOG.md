@@ -1,3 +1,222 @@
+<a name="2.0.0-beta.25"></a>
+# [2.0.0-beta.25](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.24...v2.0.0-beta.25) (2016-04-20)
+
+
+
+<a name="2.0.0-beta.24"></a>
+# [2.0.0-beta.24](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.23...v2.0.0-beta.24) (2016-04-04)
+
+
+### Bug Fixes
+
+* **generate:** use project.get([61ff94f](https://github.com/driftyco/ionic-cli/commit/61ff94f))
+* **start:** don't run start commands if cancelled([021702a](https://github.com/driftyco/ionic-cli/commit/021702a))
+
+
+### Features
+
+* remove postinstall script([3ecebb5](https://github.com/driftyco/ionic-cli/commit/3ecebb5))
+* **app:** remove unused app task([ff99d14](https://github.com/driftyco/ionic-cli/commit/ff99d14))
+
+
+### BREAKING CHANGES
+
+* app: the 'app' task has been removed
+
+
+
+<a name="2.0.0-beta.23"></a>
+# [2.0.0-beta.23](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.22...v2.0.0-beta.23) (2016-03-28)
+
+
+### Bug Fixes
+
+* **cli:** report gulpfile errors([9c53ffc](https://github.com/driftyco/ionic-cli/commit/9c53ffc))
+* **cli:** use github for default gulpfile([86fbce6](https://github.com/driftyco/ionic-cli/commit/86fbce6))
+* **state:** fix state([984f46f](https://github.com/driftyco/ionic-cli/commit/984f46f))
+
+
+### Features
+
+* **cli:** install necessary packages for default gulpfile([89f560b](https://github.com/driftyco/ionic-cli/commit/89f560b))
+
+
+
+<a name="2.0.0-beta.22"></a>
+# [2.0.0-beta.22](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.21...v2.0.0-beta.22) (2016-03-28)
+
+
+
+<a name="2.0.0-beta.21"></a>
+# [2.0.0-beta.21](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.20...v2.0.0-beta.21) (2016-03-28)
+
+
+### Bug Fixes
+
+* **gulp:** check proper hook name([e897dac](https://github.com/driftyco/ionic-cli/commit/e897dac))
+* **hooks:** only warn about missing tasks if they are missing([0ce5642](https://github.com/driftyco/ionic-cli/commit/0ce5642))
+
+
+### Features
+
+* **console:** make console info messages cyan([912dceb](https://github.com/driftyco/ionic-cli/commit/912dceb))
+* **hooks:** download default gulpfile([408a660](https://github.com/driftyco/ionic-cli/commit/408a660))
+* **hooks:** print newline after gulp tasks have finished([c8643b7](https://github.com/driftyco/ionic-cli/commit/c8643b7))
+* **start:** add --skip-npm flag([375ad4b](https://github.com/driftyco/ionic-cli/commit/375ad4b))
+
+
+
+<a name="2.0.0-beta.20"></a>
+# [2.0.0-beta.20](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.19...v2.0.0-beta.20) (2016-03-28)
+
+
+### Bug Fixes
+
+* **cordova:** use cordova command for now([f469d47](https://github.com/driftyco/ionic-cli/commit/f469d47))
+* **gulp:** don't error on missing hooks([0e36814](https://github.com/driftyco/ionic-cli/commit/0e36814))
+* **gulp:** don't warn about gulp hooks in v1 projects([a98b785](https://github.com/driftyco/ionic-cli/commit/a98b785))
+* **gulp:** handle gulpfile edge case([83bbab6](https://github.com/driftyco/ionic-cli/commit/83bbab6))
+* **gulp:** let gulp handle its own errors([5695cfa](https://github.com/driftyco/ionic-cli/commit/5695cfa))
+* **hooks:** don't require Gulpfile twice([c17d268](https://github.com/driftyco/ionic-cli/commit/c17d268))
+* **hooks:** only print build warning for v2([3d69f9d](https://github.com/driftyco/ionic-cli/commit/3d69f9d))
+
+
+### Features
+
+* **gulp:** run gulp tasks([33fc34a](https://github.com/driftyco/ionic-cli/commit/33fc34a))
+* add console.warn colors([745a259](https://github.com/driftyco/ionic-cli/commit/745a259))
+* **hooks:** don't run gulp if node_modules doesn't exist([52f1a8f](https://github.com/driftyco/ionic-cli/commit/52f1a8f))
+* **setup:** deprecate setup task([a48e7b9](https://github.com/driftyco/ionic-cli/commit/a48e7b9))
+
+
+
+<a name="2.0.0-beta.19"></a>
+# [2.0.0-beta.19](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.18...v2.0.0-beta.19) (2016-03-28)
+
+
+
+<a name="2.0.0-beta.18"></a>
+# [2.0.0-beta.18](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.17...v2.0.0-beta.18) (2016-03-28)
+
+
+### Features
+
+* **browser:** deprecate browser cmd([96b79ec](https://github.com/driftyco/ionic-cli/commit/96b79ec))
+* **generate:** support all 3 package locations([db3db0e](https://github.com/driftyco/ionic-cli/commit/db3db0e))
+
+
+### BREAKING CHANGES
+
+* browser: The browser command is deprecated in favor of using the
+Cordova Crosswalk plugin.
+
+
+
+<a name="2.0.0-beta.17"></a>
+# [2.0.0-beta.17](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.16...v2.0.0-beta.17) (2016-03-28)
+
+
+
+<a name="2.0.0-beta.16"></a>
+# [2.0.0-beta.16](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.15...v2.0.0-beta.16) (2016-03-28)
+
+
+
+<a name="2.0.0-beta.15"></a>
+# [2.0.0-beta.15](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.14...v2.0.0-beta.15) (2016-03-28)
+
+
+### Features
+
+* **cordova:** copy html before building([ef84e59](https://github.com/driftyco/ionic-cli/commit/ef84e59))
+
+
+
+<a name="2.0.0-beta.14"></a>
+# [2.0.0-beta.14](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.13...v2.0.0-beta.14) (2016-03-28)
+
+
+### Bug Fixes
+
+* **bundle:** rebuild native bindings postinstall([dfa3b03](https://github.com/driftyco/ionic-cli/commit/dfa3b03))
+
+
+
+<a name="2.0.0-beta.13"></a>
+# [2.0.0-beta.13](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.12...v2.0.0-beta.13) (2016-03-28)
+
+
+### Bug Fixes
+
+* bundle before build, emulate, run and upload([c8930b8](https://github.com/driftyco/ionic-cli/commit/c8930b8))
+* **run:** fix livereload option for v2 run([cc1cc11](https://github.com/driftyco/ionic-cli/commit/cc1cc11))
+
+
+### Features
+
+* run Sass before build commands([d3a1673](https://github.com/driftyco/ionic-cli/commit/d3a1673))
+
+
+
+<a name="2.0.0-beta.1"></a>
+# [2.0.0-beta.1 - 2.0.0-beta.12](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.1...v2.0.0-beta.12) (2016-03-28)
+
+
+### Features
+
+* **v2:** New v2 support([666ae35](https://github.com/driftyco/ionic-cli/commit/666ae35))
+
+
+
+<a name="1.7.14"></a>
+## [1.7.14](https://github.com/driftyco/ionic-cli/compare/1.7.14...v1.7.14) (2016-02-01)
+
+
+### Bug Fixes
+
+* add info back in([fec24f7](https://github.com/driftyco/ionic-cli/commit/fec24f7))
+
+
+
+<a name="1.7.13"></a>
+## [1.7.13](https://github.com/driftyco/ionic-cli/compare/v1.7.12...v1.7.13) (2016-01-20)
+
+
+
+<a name="1.7.12"></a>
+## [1.7.12](https://github.com/driftyco/ionic-cli/compare/v1.7.11...v1.7.12) (2015-12-14)
+
+* Use bundledDependencies([40294f7])(https://github.com/driftyco/ionic-cli/commit/40294f7)
+
+
+
+<a name="1.7.11"></a>
+## [1.7.11](https://github.com/driftyco/ionic-cli/compare/v1.7.10...v1.7.11) (2015-12-02)
+
+
+
+<a name="1.7.10"></a>
+## [1.7.10](https://github.com/driftyco/ionic-cli/compare/v1.7.9...v1.7.10) (2015-11-17)
+
+
+
+<a name="1.7.9"></a>
+## [1.7.9](https://github.com/driftyco/ionic-cli/compare/v1.7.8...v1.7.9) (2015-11-17)
+
+
+### Bug Fixes
+
+* **creator:** creator start zip([9ae25e8](https://github.com/driftyco/ionic-cli/commit/9ae25e8))
+* **state:** Pass the proper variable array to the state save plugin command([2c5c19b](https://github.com/driftyco/ionic-cli/commit/2c5c19b))
+* **docs:** Remove the tests starter([ff1997a](https://github.com/driftyco/ionic-cli/commit/ff1997a))
+* **cordova:** Update ionic build to build all installed platforms and ionic platform to list all available platforms([73f95f8](https://github.com/driftyco/ionic-cli/commit/73f95f8))
+* **emulate/run:** Update cordova run method to respect address for ionic emulate --address localhost - it will remove the --address arg as well as the following IP address to use for passing to cordova CLI.([9cf0ae2](https://github.com/driftyco/ionic-cli/commit/9cf0ae2))
+
+
+
+<a name="1.7.8"></a>
+## [1.7.8](https://github.com/driftyco/ionic-cli/compare/1.7.7...v1.7.8) (2015-11-05)
+
 ### 1.7.7
 
 * `ionic-app-lib` updated to `0.6.3`
