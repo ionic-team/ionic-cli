@@ -43,12 +43,12 @@
 
 
 <a name="2.0.0-beta.22"></a>
-# [2.0.0-beta.22](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.21...v2.0.0-beta.22) (2016-03-28)
+# [2.0.0-beta.22](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.21...v2.0.0-beta.22) (2016-03-22)
 
 
 
 <a name="2.0.0-beta.21"></a>
-# [2.0.0-beta.21](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.20...v2.0.0-beta.21) (2016-03-28)
+# [2.0.0-beta.21](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.20...v2.0.0-beta.21) (2016-03-21)
 
 
 ### Bug Fixes
@@ -67,7 +67,7 @@
 
 
 <a name="2.0.0-beta.20"></a>
-# [2.0.0-beta.20](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.19...v2.0.0-beta.20) (2016-03-28)
+# [2.0.0-beta.20](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.19...v2.0.0-beta.20) (2016-03-17)
 
 
 ### Bug Fixes
@@ -91,12 +91,12 @@
 
 
 <a name="2.0.0-beta.19"></a>
-# [2.0.0-beta.19](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.18...v2.0.0-beta.19) (2016-03-28)
+# [2.0.0-beta.19](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.18...v2.0.0-beta.19) (2016-03-01)
 
 
 
 <a name="2.0.0-beta.18"></a>
-# [2.0.0-beta.18](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.17...v2.0.0-beta.18) (2016-03-28)
+# [2.0.0-beta.18](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.17...v2.0.0-beta.18) (2016-02-29)
 
 
 ### Features
@@ -113,17 +113,17 @@ Cordova Crosswalk plugin.
 
 
 <a name="2.0.0-beta.17"></a>
-# [2.0.0-beta.17](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.16...v2.0.0-beta.17) (2016-03-28)
+# [2.0.0-beta.17](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.16...v2.0.0-beta.17) (2016-01-08)
 
 
 
 <a name="2.0.0-beta.16"></a>
-# [2.0.0-beta.16](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.15...v2.0.0-beta.16) (2016-03-28)
+# [2.0.0-beta.16](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.15...v2.0.0-beta.16) (2016-01-07)
 
 
 
 <a name="2.0.0-beta.15"></a>
-# [2.0.0-beta.15](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.14...v2.0.0-beta.15) (2016-03-28)
+# [2.0.0-beta.15](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.14...v2.0.0-beta.15) (2015-12-22)
 
 
 ### Features
@@ -133,7 +133,7 @@ Cordova Crosswalk plugin.
 
 
 <a name="2.0.0-beta.14"></a>
-# [2.0.0-beta.14](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.13...v2.0.0-beta.14) (2016-03-28)
+# [2.0.0-beta.14](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.13...v2.0.0-beta.14) (2015-12-22)
 
 
 ### Bug Fixes
@@ -143,7 +143,7 @@ Cordova Crosswalk plugin.
 
 
 <a name="2.0.0-beta.13"></a>
-# [2.0.0-beta.13](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.12...v2.0.0-beta.13) (2016-03-28)
+# [2.0.0-beta.13](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.12...v2.0.0-beta.13) (2015-12-18)
 
 
 ### Bug Fixes
@@ -186,7 +186,7 @@ Cordova Crosswalk plugin.
 <a name="1.7.12"></a>
 ## [1.7.12](https://github.com/driftyco/ionic-cli/compare/v1.7.11...v1.7.12) (2015-12-14)
 
-* Use bundledDependencies([40294f7])(https://github.com/driftyco/ionic-cli/commit/40294f7)
+* Use bundledDependencies([40294f7](https://github.com/driftyco/ionic-cli/commit/40294f7))
 
 
 
