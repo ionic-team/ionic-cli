@@ -8,6 +8,7 @@
     "ionic": "bin/ionic"
   },
   "scripts": {
+    "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
     "gh-release": "node scripts/release",
     "e2e": "jasmine-node --captureExceptions ./e2e",
     "jasmine": "jasmine-node --captureExceptions  ./spec",
