@@ -13,7 +13,7 @@ describe('Serve', function() {
   var serveTask;
 
   beforeEach(function() {
-    serveTask = rewire('../lib/ionic/serve');
+    serveTask = rewire('../../lib/ionic/serve');
   });
 
   it('should have serve defined', function() {

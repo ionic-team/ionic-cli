@@ -83,7 +83,8 @@
   "devDependencies": {
     "eslint": "^2.8.0",
     "jasmine-node": "1.14.5",
-    "rewire": "2.5.1"
+    "rewire": "2.5.1",
+    "sinon": "^1.17.4"
   },
   "bundledDependencies": [
     "cli-table",
