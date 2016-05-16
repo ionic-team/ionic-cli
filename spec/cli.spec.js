@@ -2,6 +2,7 @@ var IonicAppLib = require('ionic-app-lib');
 var Ionitron = require('../lib/utils/ionitron');
 var IonicCli = require('../lib/cli');
 var Q = require('q');
+var helpUtils = require('../lib/utils/help');
 var IonicStats = require('../lib/utils/stats').IonicStats;
 var Info = IonicAppLib.info;
 var Utils = IonicAppLib.utils;
@@ -12,7 +13,8 @@ describe('Cli', function() {
 
   beforeEach(function() {
     spyOn(IonicCli, 'processExit');
-    spyOn(IonicCli, 'printAvailableTasks');
+    spyOn(helpUtils, 'printTaskListShortUsage');
+    spyOn(helpUtils, 'printTaskListUsage');
     spyOn(IonicCli, 'doRuntimeCheck');
     spyOn(IonicAppLib.events, 'on');
     spyOn(process, 'on');
@@ -32,34 +34,23 @@ describe('Cli', function() {
   });
 
   it('should have cli tasks defined', function() {
-    expect(IonicCli.Tasks).toBeDefined();
+    expect(IonicCli.ALL_TASKS).toBeDefined();
   });
 
   describe('#run', function() {
-    var fakeTask;
-
-    beforeEach(function() {
-      fakeTask = {
-        run:  function() {}
-      };
-
-      spyOn(IonicCli, 'lookupTask').andReturn(fakeTask);
-    });
 
     describe('#Cli methods', function() {
       it('should run checkLatestVersion on run', function(done) {
-        var deferred = Q.defer();
-        deferred.resolve();
-        spyOn(IonicCli, 'checkLatestVersion').andReturn(deferred);
-        IonicCli.run(['node', 'bin/ionic', 'run', 'ios'])
+        spyOn(IonicCli, 'checkLatestVersion').andReturn(Q(true));
+
+        IonicCli.run(['node', 'bin/ionic', '--h'])
         .then(function() {
           expect(IonicCli.checkLatestVersion).toHaveBeenCalled();
           done();
         });
       });
 
-      xit('should run info doRuntimeCheck on run', function(done) {
-        spyOn(IonicCli, 'printHelpLines');
+      it('should run info doRuntimeCheck on run', function(done) {
         IonicCli.run(['node', 'bin/ionic', '--h'])
         .then(function() {
           expect(IonicCli.doRuntimeCheck).toHaveBeenCalled();
@@ -69,6 +60,7 @@ describe('Cli', function() {
 
       it('should run ionitron when argument is passed', function(done) {
         spyOn(Ionitron, 'print');
+
         IonicCli.run(['node', 'bin/ionic', '--ionitron'])
         .then(function() {
           expect(Ionitron.print).toHaveBeenCalled();
@@ -78,6 +70,7 @@ describe('Cli', function() {
 
       it('should change log level to debug when verbose arg is passed', function(done) {
         expect(IonicAppLib.logging.logger.level).toBe('info');
+
         IonicCli.run(['node', 'bin/ionic', '--verbose'])
         .then(function() {
           expect(IonicAppLib.logging.logger.level).toBe('debug');
@@ -87,6 +80,7 @@ describe('Cli', function() {
 
       it('should get version when version flag passed', function(done) {
         spyOn(IonicCli, 'version');
+
         IonicCli.run(['node', 'bin/ionic', '--version'])
         .then(function() {
           expect(IonicCli.version).toHaveBeenCalled();
@@ -95,33 +89,34 @@ describe('Cli', function() {
       });
 
       it('should call help when help argument passed', function(done) {
-        spyOn(IonicCli, 'printHelpLines');
+
         IonicCli.run(['node', 'bin/ionic', '--help'])
         .then(function() {
-          expect(IonicCli.printHelpLines).toHaveBeenCalled();
+          expect(helpUtils.printTaskListUsage).toHaveBeenCalled();
           done();
         });
       });
 
       it('should call help when help shorthand argument passed', function(done) {
-        spyOn(IonicCli, 'printHelpLines');
+
         IonicCli.run(['node', 'bin/ionic', '--h'])
         .then(function() {
-          expect(IonicCli.printHelpLines).toHaveBeenCalled();
+          expect(helpUtils.printTaskListUsage).toHaveBeenCalled();
           done();
         });
       });
 
       it('should print available tasks if no valid command is passed', function(done) {
+
         IonicCli.run(['node', 'bin/ionic'])
         .then(function() {
-          expect(IonicCli.printAvailableTasks).toHaveBeenCalled();
+          expect(helpUtils.printTaskListShortUsage).toHaveBeenCalled();
           done();
         });
       });
 
       it('should get the correct task by name', function() {
-        var task = IonicCli.getTaskByName('start');
+        var task = IonicCli.getTaskSettingsByName('start');
         expect(task).toBeDefined();
         expect(task.name).toBe('start');
         expect(task.args).toBeDefined();
@@ -129,6 +124,7 @@ describe('Cli', function() {
 
       it('should call attachErrorHandling', function(done) {
         spyOn(IonicCli, 'attachErrorHandling');
+
         IonicCli.run(['node', 'bin/ionic'])
         .then(function() {
           expect(IonicCli.attachErrorHandling).toHaveBeenCalled();
@@ -137,7 +133,7 @@ describe('Cli', function() {
       });
 
       it('should get boolean options from start task', function() {
-        var task = IonicCli.getTaskByName('start');
+        var task = IonicCli.getTaskSettingsByName('start');
         var booleanOptions = IonicCli.getListOfBooleanOptions(task.options);
 
         // We expect 6 total = 3 options, each with short hand notation.
@@ -146,7 +142,8 @@ describe('Cli', function() {
 
       it('should track stats for cli', function(done) {
         spyOn(IonicStats, 't');
-        IonicCli.run(['node', 'bin/ionic', 'run', 'ios'])
+
+        IonicCli.run(['node', 'bin/ionic', 'help'])
         .then(function() {
           expect(IonicStats.t).toHaveBeenCalled();
           done();
@@ -154,6 +151,9 @@ describe('Cli', function() {
       });
 
       it('should change pwd for commands', function(done) {
+        var Serve = require('../lib/ionic/serve');
+        spyOn(Serve, 'run').andReturn(Q(true));
+
         IonicCli.run(['node', 'bin/ionic', 'serve'])
         .then(function() {
           expect(Utils.cdIonicRoot).toHaveBeenCalled();
@@ -162,6 +162,9 @@ describe('Cli', function() {
       });
 
       it('should not change pwd for commands', function(done) {
+        var Start = require('../lib/ionic/start');
+        spyOn(Start, 'run').andReturn(Q(true));
+
         IonicCli.run(['node', 'bin/ionic', 'start'])
         .then(function() {
           expect(Utils.cdIonicRoot).not.toHaveBeenCalled();
@@ -172,24 +175,14 @@ describe('Cli', function() {
   });
 
   describe('#commands options', function() {
-    var fakeTask;
-
-    beforeEach(function() {
-      fakeTask = {
-        run:  function() {}
-      };
-
-      spyOn(IonicCli, 'lookupTask').andReturn(fakeTask);
-      spyOn(fakeTask, 'run').andCallThrough();
-    });
-
     it('should parse start options correctly', function(done) {
+      var Start = require('../lib/ionic/start');
+      spyOn(Start, 'run').andReturn(Q(true));
+
       var processArgs = ['node', '/usr/local/bin/ionic', 'start', 's1', '-w', '--appname', 'asdf'];
 
-      var promise = IonicCli.run(processArgs);
-
-      promise.then(function() {
-        var taskArgs = fakeTask.run.mostRecentCall.args;
+      IonicCli.run(processArgs).then(function() {
+        var taskArgs = Start.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
         expect(taskArgv._.length).toBe(2);
@@ -209,12 +202,13 @@ describe('Cli', function() {
     });
 
     it('should parse serve options correctly', function(done) {
+      var Serve = require('../lib/ionic/serve');
+      spyOn(Serve, 'run').andReturn(Q(true));
+
       var processArgs = ['node', '/usr/local/bin/ionic', 'serve', '--nogulp', '--all', '--browser', 'firefox'];
 
-      var promise = IonicCli.run(processArgs);
-
-      promise.then(function() {
-        var taskArgs = fakeTask.run.mostRecentCall.args;
+      IonicCli.run(processArgs).then(function() {
+        var taskArgs = Serve.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -231,14 +225,15 @@ describe('Cli', function() {
 
 
     it('should parse upload options correctly', function(done) {
+      var Upload = require('../lib/ionic/upload');
+      spyOn(Upload, 'run').andReturn(Q(true));
+
       var note = 'A note for notes';
       var processArgs = ['node', '/usr/local/bin/ionic', 'upload', '--email',
         'user@ionic.io', '--password', 'pass', '--note', note];
 
-      var promise = IonicCli.run(processArgs);
-
-      promise.then(function() {
-        var taskArgs = fakeTask.run.mostRecentCall.args;
+      IonicCli.run(processArgs).then(function() {
+        var taskArgs = Upload.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -252,12 +247,13 @@ describe('Cli', function() {
     });
 
     it('should parse login options correctly', function(done) {
+      var Login = require('../lib/ionic/login');
+      spyOn(Login, 'run').andReturn(Q(true));
+
       var processArgs = ['node', '/usr/local/bin/ionic', 'login', '--email', 'user@ionic.io', '--password', 'pass'];
 
-      var promise = IonicCli.run(processArgs);
-
-      promise.then(function() {
-        var taskArgs = fakeTask.run.mostRecentCall.args;
+      IonicCli.run(processArgs).then(function() {
+        var taskArgs = Login.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -266,17 +262,18 @@ describe('Cli', function() {
         expect(taskArgv.email).toBe('user@ionic.io');
         expect(taskArgv.password).toBe('pass');
         done();
-      });
+      }).catch(done);
     });
 
     it('should parse run options correctly', function(done) {
+      var Run = require('../lib/ionic/run');
+      spyOn(Run, 'run').andReturn(Q(true));
+
       var processArgs = ['node', '/usr/local/bin/ionic', 'run', 'ios', '--livereload',
         '--port', '5000', '-r', '35730', '--consolelogs', '--serverlogs', '--device'];
 
-      var promise = IonicCli.run(processArgs);
-
-      promise.then(function() {
-        var taskArgs = fakeTask.run.mostRecentCall.args;
+      IonicCli.run(processArgs).then(function() {
+        var taskArgs = Run.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -293,13 +290,14 @@ describe('Cli', function() {
     });
 
     it('should parse emulate options correctly', function(done) {
+      var Emulate = require('../lib/ionic/emulate');
+      spyOn(Emulate, 'run').andReturn(Q(true));
+
       var processArgs = ['node', '/usr/local/bin/ionic', 'emulate', 'android',
         '--livereload', '--address', 'localhost', '--port', '5000', '-r', '35730', '--consolelogs', '--serverlogs'];
 
-      var promise = IonicCli.run(processArgs);
-
-      promise.then(function() {
-        var taskArgs = fakeTask.run.mostRecentCall.args;
+      IonicCli.run(processArgs).then(function() {
+        var taskArgs = Emulate.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -317,12 +315,13 @@ describe('Cli', function() {
     });
 
     it('should parse state options correctly', function(done) {
+      var State = require('../lib/ionic/state');
+      spyOn(State, 'run').andReturn(Q(true));
+
       var processArgs = ['node', '/usr/local/bin/ionic', 'state', 'save', '--plugins'];
 
-      var promise = IonicCli.run(processArgs);
-
-      promise.then(function() {
-        var taskArgs = fakeTask.run.mostRecentCall.args;
+      IonicCli.run(processArgs).then(function() {
+        var taskArgs = State.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -336,13 +335,14 @@ describe('Cli', function() {
     });
 
     it('should parse plugin options correctly', function(done) {
+      var Plugin = require('../lib/ionic/plugin');
+      spyOn(Plugin, 'run').andReturn(Q(true));
+
       var processArgs = ['node', '/usr/local/bin/ionic', 'plugin', 'add',
         'org.apache.cordova.splashscreen', '--nosave', '--searchpath', '../'];
 
-      var promise = IonicCli.run(processArgs);
-
-      promise.then(function() {
-        var taskArgs = fakeTask.run.mostRecentCall.args;
+      IonicCli.run(processArgs).then(function() {
+        var taskArgs = Plugin.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 
@@ -358,12 +358,13 @@ describe('Cli', function() {
     });
 
     it('should parse build options correctly', function(done) {
+      var Build = require('../lib/ionic/build');
+      spyOn(Build, 'run').andReturn(Q(true));
+
       var processArgs = ['node', '/usr/local/bin/ionic', 'build', 'ios', '--nohooks'];
 
-      var promise = IonicCli.run(processArgs);
-
-      promise.then(function() {
-        var taskArgs = fakeTask.run.mostRecentCall.args;
+      IonicCli.run(processArgs).then(function() {
+        var taskArgs = Build.run.mostRecentCall.args;
 
         var taskArgv = taskArgs[1];
 

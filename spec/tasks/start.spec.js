@@ -4,7 +4,7 @@ describe('Start', function() {
   var startTask;
 
   beforeEach(function() {
-    startTask = rewire('../lib/ionic/serve');
+    startTask = rewire('../../lib/ionic/start');
   });
 
   it('should have serve defined', function() {

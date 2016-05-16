@@ -5,7 +5,7 @@ var rewire = require('rewire');
 
 describe('Stats', function() {
   beforeEach(function() {
-    IonicStatsModule = rewire('../lib/ionic/stats');
+    IonicStatsModule = rewire('../../lib/utils/stats');
     IonicInfoModule = rewire('ionic-app-lib').info;
     IonicStats = IonicStatsModule.IonicStats;
   });
