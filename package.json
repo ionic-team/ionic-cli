@@ -8,14 +8,12 @@
     "ionic": "bin/ionic"
   },
   "scripts": {
-    "bump": "node lib/tasks/bumpversion",
-    "beta-bump": "node lib/tasks/bumpversion --level pre --identifier beta",
-    "publish-release": "node lib/tasks/bumpversion --npmPublish",
-    "publish-tag": "node lib/tasks/bumpversion --level beta --npmPublishTag",
-    "full-release": "node lib/tasks/bumpversion --npmInstall --git --npmPublish",
-    "test": "npm run jasmine",
+    "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
+    "gh-release": "node scripts/release",
     "e2e": "jasmine-node --captureExceptions ./e2e",
-    "jasmine": "jasmine-node --captureExceptions  ./spec"
+    "jasmine": "jasmine-node --captureExceptions  ./spec",
+    "lint": "eslint .",
+    "test": "npm run jasmine"
   },
   "keywords": [
     "ionic",
@@ -53,6 +51,10 @@
     {
       "name": "Tim Lancina",
       "web": "https://twitter.com/timlancina"
+    },
+    {
+      "name": "Josh Thomas",
+      "web": "https://twitter.com/jthoms1"
     }
   ],
   "license": "MIT",
@@ -81,7 +83,9 @@
     "unzip": "0.1.9"
   },
   "devDependencies": {
+    "conventional-changelog-cli": "1.1.1",
     "eslint": "^2.8.0",
+    "github": "0.2.4",
     "jasmine-node": "1.14.5",
     "rewire": "2.5.1",
     "sinon": "^1.17.4"
