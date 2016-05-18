@@ -1,6 +1,7 @@
+'use strict';
+
 var IonicAppLib = require('ionic-app-lib');
 var Ionitron = require('../lib/utils/ionitron');
-var IonicCli = require('../lib/cli');
 var Q = require('q');
 var helpUtils = require('../lib/utils/help');
 var IonicStats = require('../lib/utils/stats').IonicStats;
@@ -8,6 +9,7 @@ var Info = IonicAppLib.info;
 var Utils = IonicAppLib.utils;
 var Project = IonicAppLib.project;
 var rewire = require('rewire');
+var IonicCli = rewire('../lib/cli');
 
 describe('Cli', function() {
 
@@ -171,6 +173,21 @@ describe('Cli', function() {
           done();
         });
       });
+
+      /*
+      it('should save to the config if stats-opt-out is passed', function(done) {
+        var IonicConfig = new IonicStore('ionic.config');
+        spyOn(IonicConfig, 'set');
+        spyOn(IonicConfig, 'save');
+
+        IonicCli.run(['node', 'bin/ionic', '--stats-opt-out'])
+        .then(function() {
+          expect(IonicConfig.set).toHaveBeenCalledWith('statsOptOut', true);
+          expect(IonicConfig.save).toHaveBeenCalled();
+          done();
+        });
+      });
+      */
     });
   });
 
@@ -388,6 +405,7 @@ describe('Cli', function() {
         IonicConfigSpy.get.andReturn('1.6.4');
         IonicCli.__set__('IonicConfig', IonicConfigSpy);
         IonicCli.doRuntimeCheck('1.6.4');
+
         expect(Info.checkRuntime).not.toHaveBeenCalled();
         expect(IonicConfigSpy.set).not.toHaveBeenCalled();
         expect(IonicConfigSpy.save).not.toHaveBeenCalled();
@@ -398,6 +416,7 @@ describe('Cli', function() {
         IonicConfigSpy.get.andReturn('1.6.4');
         IonicCli.__set__('IonicConfig', IonicConfigSpy);
         IonicCli.doRuntimeCheck('1.6.5');
+
         expect(Info.checkRuntime).toHaveBeenCalled();
         expect(IonicConfigSpy.get).toHaveBeenCalled();
         expect(IonicConfigSpy.set).toHaveBeenCalledWith('lastVersionChecked', '1.6.5');
