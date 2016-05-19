@@ -89,25 +89,29 @@ describe('printTaskUsage method', function() {
 });
 
 describe('printTaskDetails function', function() {
-  it('should log info', function() {
-    spyOn(log, 'info');
-    var printTaskDetails = helpUtils.__get__('printTaskDetails');
-    printTaskDetails({
-      name: 'one',
-      title: 'one',
-      summary: 'one summary',
+  it('should write to process log', function() {
+    var settings = {
+      title: 'platform',
+      name: 'platform',
+      summary: 'Add platform target for building an Ionic app',
       args: {
         '[options]': '',
         '<PLATFORM>': ''
       },
       options: {
-        '--livereload-port|-r': 'Live Reload port (35729 default, livereload req.)',
-        '--consolelogs|-c': {
-          title: 'Print app console logs to Ionic CLI (livereload req.)',
+        '--noresources|-r': {
+          title: 'Do not add default Ionic icons and splash screen resources',
+          boolean: true
+        },
+        '--nosave|-e': {
+          title: 'Do not save the platform to the package.json file',
           boolean: true
         }
       }
-    });
-    expect(log.info).toHaveBeenCalled();
+    };
+    spyOn(process.stdout, 'write');
+    var printTaskDetails = helpUtils.__get__('printTaskDetails');
+    printTaskDetails(settings);
+    expect(process.stdout.write).toHaveBeenCalled();
   });
 });
