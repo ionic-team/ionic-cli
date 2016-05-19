@@ -24,13 +24,14 @@ describe('Stats', function() {
       var configSpy = jasmine.createSpyObj('ionicConfig', ['get']);
       configSpy.get.andReturn(true);
 
-      IonicStatsModule.__set__('ionicConfig', configSpy);
+      var revertConfig = IonicStatsModule.__set__('ionicConfig', configSpy);
 
       IonicStats.t();
 
       expect(configSpy.get).not.toHaveBeenCalled();
       expect(IonicStats.mp).not.toHaveBeenCalled();
       process.argv = oldprocessargv;
+      revertConfig();
     });
 
     it('should not track stats if opted out', function() {
@@ -38,11 +39,12 @@ describe('Stats', function() {
       configSpy.get.andReturn(true);
       spyOn(IonicStatsModule, 'getVersion').andReturn({ version: '1.6.4' });
 
-      IonicStatsModule.__set__('ionicConfig', configSpy);
+      var revertConfig = IonicStatsModule.__set__('ionicConfig', configSpy);
 
       IonicStats.t();
 
       expect(configSpy.get).toHaveBeenCalled();
+      revertConfig();
     });
 
     it('should track the correct command', function() {
@@ -61,7 +63,7 @@ describe('Stats', function() {
       var configSpy = jasmine.createSpyObj('ionicConfig', ['get']);
       configSpy.get.andReturn(false);
 
-      IonicStatsModule.__set__('ionicConfig', configSpy);
+      var revertConfig = IonicStatsModule.__set__('ionicConfig', configSpy);
 
       IonicStats.t();
 
@@ -74,6 +76,7 @@ describe('Stats', function() {
         node: 'v5.10.1'
       });
       process.argv = oldprocessargv;
+      revertConfig();
     });
   });
 });

@@ -1,13 +1,17 @@
 'use strict';
 
 var IonicAppLib = require('ionic-app-lib');
+var semver = require('semver');
 var Ionitron = require('../lib/utils/ionitron');
 var Q = require('q');
 var helpUtils = require('../lib/utils/help');
+var IonicStore = require('../lib/utils/store');
 var IonicStats = require('../lib/utils/stats').IonicStats;
 var Info = IonicAppLib.info;
 var Utils = IonicAppLib.utils;
 var Project = IonicAppLib.project;
+var Logging = IonicAppLib.logging;
+var log = Logging.logger;
 var rewire = require('rewire');
 var IonicCli = rewire('../lib/cli');
 
@@ -17,7 +21,6 @@ describe('Cli', function() {
     spyOn(IonicCli, 'processExit');
     spyOn(helpUtils, 'printTaskListShortUsage');
     spyOn(helpUtils, 'printTaskListUsage');
-    spyOn(IonicCli, 'doRuntimeCheck');
     spyOn(IonicAppLib.events, 'on');
     spyOn(process, 'on');
     spyOn(Info, 'checkRuntime');
@@ -27,7 +30,6 @@ describe('Cli', function() {
     spyOn(Utils, 'fail').andCallFake(function(err) {
       console.log(err);
       console.log(err.stack);
-      throw err;
     });
   });
 
@@ -40,6 +42,10 @@ describe('Cli', function() {
   });
 
   describe('#run', function() {
+
+    beforeEach(function() {
+      spyOn(IonicCli, 'doRuntimeCheck');
+    });
 
     describe('#Cli methods', function() {
       it('should run checkLatestVersion on run', function(done) {
@@ -174,24 +180,35 @@ describe('Cli', function() {
         });
       });
 
-      /*
+      it('should call Utils.fail if an exception occurrs within run', function() {
+        var error = new Error('error happened');
+        spyOn(IonicCli, 'checkLatestVersion').andCallFake(function() {
+          throw error;
+        });
+
+        IonicCli.run(['node', 'bin/ionic', '--stats-opt-out']);
+        expect(Utils.fail).toHaveBeenCalledWith(error);
+      });
+
       it('should save to the config if stats-opt-out is passed', function(done) {
-        var IonicConfig = new IonicStore('ionic.config');
-        spyOn(IonicConfig, 'set');
-        spyOn(IonicConfig, 'save');
+        spyOn(IonicStore.prototype, 'set');
+        spyOn(IonicStore.prototype, 'save');
 
         IonicCli.run(['node', 'bin/ionic', '--stats-opt-out'])
         .then(function() {
-          expect(IonicConfig.set).toHaveBeenCalledWith('statsOptOut', true);
-          expect(IonicConfig.save).toHaveBeenCalled();
+          expect(IonicStore.prototype.set).toHaveBeenCalledWith('statsOptOut', true);
+          expect(IonicStore.prototype.save).toHaveBeenCalled();
           done();
         });
       });
-      */
     });
   });
 
   describe('#commands options', function() {
+    beforeEach(function() {
+      spyOn(IonicCli, 'doRuntimeCheck');
+    });
+
     it('should parse start options correctly', function(done) {
       var Start = require('../lib/ionic/start');
       spyOn(Start, 'run').andReturn(Q(true));
@@ -239,7 +256,6 @@ describe('Cli', function() {
         done();
       });
     });
-
 
     it('should parse upload options correctly', function(done) {
       var Upload = require('../lib/ionic/upload');
@@ -396,6 +412,7 @@ describe('Cli', function() {
 
     describe('version checking for checkRuntime', function() {
       var IonicCli;
+
       beforeEach(function() {
         IonicCli = rewire('../lib/cli');
       });
@@ -403,25 +420,196 @@ describe('Cli', function() {
       xit('should do runtime check when version is not checked', function() {
         var IonicConfigSpy = jasmine.createSpyObj('IonicConfig', ['get', 'set', 'save']);
         IonicConfigSpy.get.andReturn('1.6.4');
-        IonicCli.__set__('IonicConfig', IonicConfigSpy);
+        var revertConfig = IonicCli.__set__('IonicConfig', IonicConfigSpy);
         IonicCli.doRuntimeCheck('1.6.4');
 
         expect(Info.checkRuntime).not.toHaveBeenCalled();
         expect(IonicConfigSpy.set).not.toHaveBeenCalled();
         expect(IonicConfigSpy.save).not.toHaveBeenCalled();
+        revertConfig();
       });
 
       xit('should do runtime check when version is not checked', function() {
         var IonicConfigSpy = jasmine.createSpyObj('IonicConfig', ['get', 'set', 'save']);
         IonicConfigSpy.get.andReturn('1.6.4');
-        IonicCli.__set__('IonicConfig', IonicConfigSpy);
+        var revertConfig = IonicCli.__set__('IonicConfig', IonicConfigSpy);
         IonicCli.doRuntimeCheck('1.6.5');
 
         expect(Info.checkRuntime).toHaveBeenCalled();
         expect(IonicConfigSpy.get).toHaveBeenCalled();
         expect(IonicConfigSpy.set).toHaveBeenCalledWith('lastVersionChecked', '1.6.5');
         expect(IonicConfigSpy.save).toHaveBeenCalled();
+        revertConfig();
       });
+    });
+  });
+
+  describe('processExit method', function() {
+  });
+
+  describe('gatherInfo method', function() {
+    it('should return an object and gather info from Info function from app-lib', function() {
+      spyOn(Info, 'gatherInfo').andReturn({});
+      spyOn(Info, 'getIonicVersion');
+      spyOn(Info, 'getIonicCliVersion');
+
+      var info = IonicCli.gatherInfo();
+
+      expect(info).toEqual(jasmine.any(Object));
+    });
+  });
+
+  describe('printVersionWarning method', function() {
+    it('should write out a warning if the version is not equal to version specified by the cli', function() {
+      spyOn(log, 'warn');
+
+      IonicCli.printVersionWarning('2.0.1', '2.0.2');
+      expect(log.warn).toHaveBeenCalled();
+    });
+    it('should not write out a warning if the version is equal to version specified by the cli', function() {
+      spyOn(log, 'warn');
+
+      IonicCli.printVersionWarning('2.0.1', '2.0.1');
+      expect(log.warn).not.toHaveBeenCalled();
+    });
+
+    it('should not write out a warning if the version is in beta', function() {
+      spyOn(log, 'warn');
+
+      IonicCli.printVersionWarning('2.0.1-beta', '2.0.1');
+      expect(log.warn).not.toHaveBeenCalled();
+    });
+
+    it('should not write out a warning if the version is in alpha', function() {
+      spyOn(log, 'warn');
+
+      IonicCli.printVersionWarning('2.0.1-alpha', '2.0.1');
+      expect(log.warn).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('formatGulpError function', function() {
+    var formatGulpError = IonicCli.__get__('formatGulpError');
+
+    it('should return e.message if e.err is null', function() {
+      var error = new Error('gulp broke');
+      error.err = null;
+
+      var results = formatGulpError(error);
+      expect(results).toEqual(error.message);
+    });
+
+    it('should return a string if the error is in a plugin', function() {
+      var error = {
+        err: {
+          showStack: 'boolean'
+        }
+      };
+
+      var results = formatGulpError(error);
+      expect(results).toEqual(jasmine.any(String));
+    });
+
+    it('should return a stack if it exists', function() {
+      var testError = new Error('gulp broke');
+      var error = {
+        err: testError
+      };
+
+      var results = formatGulpError(error);
+      expect(results).toEqual(testError.stack);
+    });
+
+    it('should return a new error if it does not understand the error', function() {
+      var error = {
+        err: 'Something broke somewhere'
+      };
+      var results = formatGulpError(error);
+      expect(results).toContain(error.err);
+    });
+  });
+
+  describe('checkLatestVersion method', function() {
+    it('should not check npm if current version is a beta', function() {
+      spyOn(IonicStore.prototype, 'get');
+      spyOn(IonicStore.prototype, 'set');
+      spyOn(IonicStore.prototype, 'save');
+      var npmVersion = IonicCli.npmVersion;
+
+      var result = IonicCli.checkLatestVersion('2.0.1-beta');
+      expect(result).toEqual(null);
+      expect(npmVersion).toEqual(IonicCli.npmVersion);
+      expect(IonicStore.prototype.get).not.toHaveBeenCalled();
+      expect(IonicStore.prototype.set).not.toHaveBeenCalled();
+      expect(IonicStore.prototype.save).not.toHaveBeenCalled();
+    });
+
+    it('should not check npm if timestamp is recent', function() {
+      spyOn(IonicStore.prototype, 'get').andReturn(new Date().getTime());
+      spyOn(IonicStore.prototype, 'set');
+      spyOn(IonicStore.prototype, 'save');
+      var npmVersion = IonicCli.npmVersion;
+
+      var result = IonicCli.checkLatestVersion('2.0.1');
+      expect(result).toEqual(null);
+      expect(npmVersion).toEqual(IonicCli.npmVersion);
+      expect(IonicStore.prototype.set).not.toHaveBeenCalled();
+      expect(IonicStore.prototype.save).not.toHaveBeenCalled();
+    });
+
+    it('should check npm if timestamp is recent', function() {
+      spyOn(IonicStore.prototype, 'get').andReturn(new Date(2016, 1, 1).getTime());
+      spyOn(IonicStore.prototype, 'set');
+      spyOn(IonicStore.prototype, 'save');
+      var revertRequest = IonicCli.__set__('request', function(options, callback) {
+        callback(null, null, '{ "version": "1.0.1" }');
+      });
+
+      IonicCli.checkLatestVersion('2.0.1').then(function() {
+        expect(IonicStore.prototype.set).toHaveBeenCalledWith('versionCheck', '1.0.1');
+        expect(IonicStore.prototype.save).toHaveBeenCalled();
+        revertRequest();
+      });
+    });
+  });
+
+  describe('doRuntimeCheck method', function() {
+    it('should update IonicConfig if semver is not met', function() {
+      var version = '0.2.0';
+      var error = new Error('semver failure');
+      spyOn(IonicStore.prototype, 'get').andReturn('0.1.0');
+      spyOn(IonicStore.prototype, 'set');
+      spyOn(IonicStore.prototype, 'save');
+      spyOn(semver, 'satisfies').andCallFake(function() {
+        throw error;
+      });
+
+      IonicCli.doRuntimeCheck(version);
+      expect(IonicStore.prototype.set).toHaveBeenCalledWith('lastVersionChecked', version);
+      expect(IonicStore.prototype.save).toHaveBeenCalled();
+    });
+
+    it('should update IonicConfig if lastVersionChecked from IonicConfig is not available', function() {
+      var version = '0.2.0';
+      spyOn(IonicStore.prototype, 'get').andReturn(null);
+      spyOn(IonicStore.prototype, 'set');
+      spyOn(IonicStore.prototype, 'save');
+
+      IonicCli.doRuntimeCheck(version);
+      expect(IonicStore.prototype.set).toHaveBeenCalledWith('lastVersionChecked', version);
+      expect(IonicStore.prototype.save).toHaveBeenCalled();
+    });
+
+    it('should not update IonicConfig if lastVersionChecked is available and semver is met', function() {
+      var version = '0.2.0';
+      spyOn(IonicStore.prototype, 'get').andReturn('0.2.0');
+      spyOn(IonicStore.prototype, 'set');
+      spyOn(IonicStore.prototype, 'save');
+      spyOn(semver, 'satisfies').andReturn(true);
+
+      IonicCli.doRuntimeCheck(version);
+      expect(IonicStore.prototype.set).not.toHaveBeenCalled();
+      expect(IonicStore.prototype.save).not.toHaveBeenCalled();
     });
   });
 });

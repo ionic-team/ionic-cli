@@ -39,17 +39,10 @@ describe('build command', function() {
 
   describe('cordova platform checks', function() {
 
-    // This argv should model after optimist objects
-    // $ ionic build -n
-    var argv = {
-      _: [
-        'build'
-      ],
-      n: true,
-      nohooks: false
-    };
-    var rawCliArguments = ['build', '-n'];
     var appDirectory = '/ionic/app/path';
+    var processArguments = ['node', 'ionic', 'build', '-n'];
+    var rawCliArguments = processArguments.slice(2);
+    var argv = optimist(rawCliArguments).argv;
 
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
@@ -82,17 +75,10 @@ describe('build command', function() {
 
   describe('cordova platform and plugin checks', function() {
 
-    // This argv should model after optimist objects
-    // $ ionic build -n
-    var argv = {
-      _: [
-        'build'
-      ],
-      n: true,
-      nohooks: false
-    };
-    var rawCliArguments = ['build', '-n'];
     var appDirectory = '/ionic/app/path';
+    var processArguments = ['node', 'ionic', 'build', '-n'];
+    var rawCliArguments = processArguments.slice(2);
+    var argv = optimist(rawCliArguments).argv;
 
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
