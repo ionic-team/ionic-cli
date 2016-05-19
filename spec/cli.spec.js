@@ -12,6 +12,10 @@ var Utils = IonicAppLib.utils;
 var Project = IonicAppLib.project;
 var Logging = IonicAppLib.logging;
 var log = Logging.logger;
+var fs = require('fs');
+var path = require('path');
+var gulp = require('gulp');
+var inquirer = require('inquirer');
 var rewire = require('rewire');
 var IonicCli = rewire('../lib/cli');
 
@@ -158,22 +162,36 @@ describe('Cli', function() {
         });
       });
 
-      it('should change pwd for commands', function(done) {
-        var Serve = require('../lib/ionic/serve');
-        spyOn(Serve, 'run').andReturn(Q(true));
+      it('should change pwd for commands that require it', function(done) {
+        var FakeTask = {
+          name: 'fake',
+          title: 'fake',
+          run: function() {
+            return Q(true);
+          },
+          disableChangePwd: false
+        };
+        spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
 
-        IonicCli.run(['node', 'bin/ionic', 'serve'])
+        IonicCli.run(['node', 'bin/ionic', 'fake'])
         .then(function() {
           expect(Utils.cdIonicRoot).toHaveBeenCalled();
           done();
         });
       });
 
-      it('should not change pwd for commands', function(done) {
-        var Start = require('../lib/ionic/start');
-        spyOn(Start, 'run').andReturn(Q(true));
+      it('should not change pwd for commands that do not require it', function(done) {
+        var FakeTask = {
+          name: 'fake',
+          title: 'fake',
+          run: function() {
+            return Q(true);
+          },
+          disableChangePwd: true
+        };
+        spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
 
-        IonicCli.run(['node', 'bin/ionic', 'start'])
+        IonicCli.run(['node', 'bin/ionic', 'fake'])
         .then(function() {
           expect(Utils.cdIonicRoot).not.toHaveBeenCalled();
           done();
@@ -442,6 +460,104 @@ describe('Cli', function() {
         revertConfig();
       });
     });
+  });
+
+  describe('runWithGulp function', function() {
+    var fakeTask;
+
+    beforeEach(function() {
+      fakeTask = {
+        name: 'fake',
+        title: 'fake',
+        run: function() {
+          return Q(true);
+        },
+        disableChangePwd: false
+      };
+      spyOn(fakeTask, 'run').andCallThrough();
+      spyOn(process, 'exit');
+    });
+
+    it('should run the task and not gulp if there is no gulp file and the command is not v2', function(done) {
+      var argv = {
+        _: ['fake'],
+        v2: false
+      };
+      var loadGulpFileRevert = IonicCli.__set__('loadGulpfile', function() { return false; });
+      spyOn(fs, 'existsSync');
+      spyOn(gulp, 'start');
+      spyOn(inquirer, 'prompt');
+
+      var runWithGulp = IonicCli.__get__('runWithGulp');
+
+      runWithGulp(argv, fakeTask).then(function() {
+        expect(fakeTask.run).toHaveBeenCalled();
+
+        expect(process.exit).not.toHaveBeenCalled();
+        expect(fs.existsSync).not.toHaveBeenCalled();
+        expect(gulp.start).not.toHaveBeenCalled();
+        expect(inquirer.prompt).not.toHaveBeenCalled();
+        loadGulpFileRevert();
+        done();
+      });
+    });
+
+    it('should try to load gulp file, exit if it fails', function() {
+      var argv = {
+        _: ['fake'],
+        v2: false
+      };
+      var loadGulpFileRevert = IonicCli.__set__('loadGulpfile', function() { return true; });
+      spyOn(path, 'resolve').andReturn('./RKLERREulp');
+      spyOn(log, 'error');
+      spyOn(fs, 'existsSync');
+      spyOn(gulp, 'start');
+      spyOn(inquirer, 'prompt');
+
+      var runWithGulp = IonicCli.__get__('runWithGulp');
+
+      runWithGulp(argv, fakeTask);
+      expect(log.error).toHaveBeenCalled();
+      expect(process.exit).toHaveBeenCalled();
+
+      expect(fakeTask.run).not.toHaveBeenCalled();
+      expect(fs.existsSync).not.toHaveBeenCalled();
+      expect(gulp.start).not.toHaveBeenCalled();
+      expect(inquirer.prompt).not.toHaveBeenCalled();
+      loadGulpFileRevert();
+    });
+
+    /*
+    it('should try to load gulp file, logEvents if successful, and call task', function(done) {
+      var argv = {
+        _: ['fake'],
+        v2: false
+      };
+      var loadGulpFileRevert = IonicCli.__set__('loadGulpfile', function() { return true; });
+      var logEventsRevert = IonicCli.__set__('logEvents', function() { return true; });
+
+      spyOn(log, 'error');
+      spyOn(fs, 'existsSync');
+      spyOn(gulp, 'start');
+      spyOn(inquirer, 'prompt');
+
+      var runWithGulp = IonicCli.__get__('runWithGulp');
+
+      runWithGulp(argv, fakeTask).then(function() {
+        expect(gulp.start).toHaveBeenCalledWith('fake:before');
+        expect(gulp.start).toHaveBeenCalledWith('fake:after');
+        expect(fakeTask.run).toHaveBeenCalledWith(IonicCli, argv);
+
+        expect(log.error).not.toHaveBeenCalled();
+        expect(process.exit).not.toHaveBeenCalled();
+        expect(fs.existsSync).not.toHaveBeenCalled();
+        expect(inquirer.prompt).not.toHaveBeenCalled();
+        loadGulpFileRevert();
+        logEventsRevert();
+        done();
+      }).catch(done);
+    });
+    */
   });
 
   describe('processExit method', function() {
