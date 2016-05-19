@@ -557,7 +557,7 @@ describe('Cli', function() {
       expect(IonicStore.prototype.save).not.toHaveBeenCalled();
     });
 
-    it('should check npm if timestamp is recent', function() {
+    it('should check npm if timestamp is recent', function(done) {
       spyOn(IonicStore.prototype, 'get').andReturn(new Date(2016, 1, 1).getTime());
       spyOn(IonicStore.prototype, 'set');
       spyOn(IonicStore.prototype, 'save');
@@ -566,9 +566,24 @@ describe('Cli', function() {
       });
 
       IonicCli.checkLatestVersion('2.0.1').then(function() {
-        expect(IonicStore.prototype.set).toHaveBeenCalledWith('versionCheck', '1.0.1');
+        expect(IonicStore.prototype.set).toHaveBeenCalledWith('versionCheck', jasmine.any(Number));
         expect(IonicStore.prototype.save).toHaveBeenCalled();
         revertRequest();
+        done();
+      });
+    });
+  });
+
+  describe('printNewsUpdates method', function() {
+    it('should log request info if a valid response is returned', function(done) {
+      spyOn(log, 'info');
+      var revertRequest = IonicCli.__set__('request', function(options, callback) {
+        callback(null, { statusCode: '200' }, '{ "version": "1.0.1" }');
+      });
+      IonicCli.printNewsUpdates().then(function() {
+        expect(log.info).toHaveBeenCalled();
+        revertRequest();
+        done();
       });
     });
   });
