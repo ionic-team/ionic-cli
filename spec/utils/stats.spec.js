@@ -1,6 +1,7 @@
 var IonicStatsModule;
 var IonicInfoModule;
 var IonicStats;
+var fs = require('fs');
 var rewire = require('rewire');
 
 describe('Stats', function() {
@@ -35,25 +36,28 @@ describe('Stats', function() {
     });
 
     it('should not track stats if opted out', function() {
+      var oldprocessargv = process.argv;
+      process.argv = ['node', 'bin/ionic', 'start', 'foldername'];
       var configSpy = jasmine.createSpyObj('ionicConfig', ['get']);
       configSpy.get.andReturn(true);
-      spyOn(IonicStatsModule, 'getVersion').andReturn({ version: '1.6.4' });
 
       var revertConfig = IonicStatsModule.__set__('ionicConfig', configSpy);
 
       IonicStats.t();
 
       expect(configSpy.get).toHaveBeenCalled();
+      process.argv = oldprocessargv;
       revertConfig();
     });
 
     it('should track the correct command', function() {
       var oldprocessargv = process.argv;
       process.argv = ['node', 'bin/ionic', 'start', 'foldername'];
-      var packageJson = { version: '1.6.4' };
+      spyOn(fs, 'readFileSync').andReturn('{ "version": "2.0.0-beta.25" }');
 
       spyOn(IonicStats, 'mp');
-      spyOn(IonicStatsModule, 'getVersion').andReturn(packageJson);
+      spyOn(IonicInfoModule, 'getNodeVersion');
+      spyOn(IonicInfoModule, 'getOsEnvironment');
       spyOn(IonicInfoModule, 'gatherGulpInfo').andCallFake(function(info) {
         info.os = 'Mac OS X El Capitan';
         info.node = 'v5.10.1';
@@ -68,12 +72,14 @@ describe('Stats', function() {
       IonicStats.t();
 
       expect(IonicStats.mp).toHaveBeenCalledWith('start', {
-        cli_version: packageJson.version, // eslint-disable-line camelcase
+        ionic_version: '2.0.0-beta.25', // eslint-disable-line camelcase
+        cli_version: '2.0.0-beta.25', // eslint-disable-line camelcase
         email: false,
         account_id: false, // eslint-disable-line camelcase
         os: 'Mac OS X El Capitan',
         gulp: 'v3.0.0',
-        node: 'v5.10.1'
+        node: 'v5.10.1',
+        cli_release_tag: 'beta' // eslint-disable-line camelcase
       });
       process.argv = oldprocessargv;
       revertConfig();
