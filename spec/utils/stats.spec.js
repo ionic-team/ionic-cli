@@ -111,9 +111,11 @@ describe('Stats', function() {
         cli_version: '2.0.0-beta.25', // eslint-disable-line camelcase
         email: false,
         account_id: false, // eslint-disable-line camelcase
+        /*
         os: 'Mac OS X El Capitan',
         gulp: 'v3.0.0',
         node: 'v5.10.1',
+        */
         cli_release_tag: 'beta', // eslint-disable-line camelcase
         '--no-cordova': true,
         android: true,
@@ -152,9 +154,11 @@ describe('Stats', function() {
         cli_version: '2.0.0', // eslint-disable-line camelcase
         email: false,
         account_id: false, // eslint-disable-line camelcase
+        /*
         os: 'Mac OS X El Capitan',
         gulp: 'v3.0.0',
         node: 'v5.10.1',
+        */
         '--no-cordova': true
       });
       revertMpSpy();
