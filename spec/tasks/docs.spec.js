@@ -23,6 +23,14 @@ describe('docs command', function() {
     });
   });
 
+  describe('sanitizeUrl function', function() {
+    it('should replace $ with %24', function() {
+      var sanitizeUrl = docs.__get__('sanitizeUrl');
+      var results = sanitizeUrl('http://ionic.io/$yo');
+      expect(results).toEqual('http://ionic.io/%24yo');
+    });
+  });
+
   describe('list function', function() {
     var list = docs.__get__('list');
 
@@ -36,5 +44,40 @@ describe('docs command', function() {
   describe('lookupCommand function', function() {
     var lookupCommand = docs.__get__('list');
 
+  });
+
+  describe('run', function() {
+    it('should call list if command is ls', function() {
+      var listSpy = jasmine.createSpy('listSpy');
+      var revert = docs.__set__('list', listSpy);
+      var argv = {
+        _: ['docs', 'ls']
+      };
+      docs.run({}, argv);
+      expect(listSpy).toHaveBeenCalled();
+      revert();
+    });
+
+    it('should call openDefault if command is missing', function() {
+      var openDefaultSpy = jasmine.createSpy('openDefaultSpy');
+      var revert = docs.__set__('openDefault', openDefaultSpy);
+      var argv = {
+        _: ['docs']
+      };
+      docs.run({}, argv);
+      expect(openDefaultSpy).toHaveBeenCalled();
+      revert();
+    });
+
+    it('should call list if command is not ls', function() {
+      var lookUpCommandSpy = jasmine.createSpy('lookUpCommandSpy');
+      var revert = docs.__set__('lookUpCommand', lookUpCommandSpy);
+      var argv = {
+        _: ['docs', 'other']
+      };
+      docs.run({}, argv);
+      expect(lookUpCommandSpy).toHaveBeenCalledWith('other');
+      revert();
+    });
   });
 });

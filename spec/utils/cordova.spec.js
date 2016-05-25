@@ -243,6 +243,35 @@ describe('setupLiveReload', function() {
       done();
     });
   });
+
+  it('should throw an error if the an error occurs within the promise chain', function(done) {
+    var processCwd = '/process/current/pwd';
+    var project = { name: 'something' };
+    var loadSettings = { address: '127.0.0.1', port: 80 };
+    var serveHostValue = 'devServer value';
+
+    spyOn(process, 'cwd').andReturn(processCwd);
+    spyOn(Project, 'load').andReturn(project);
+    spyOn(Serve, 'loadSettings').andReturn(loadSettings);
+    spyOn(Serve, 'getAddress').andCallFake(function(options) {
+      options.address = '80.80.80.80';
+      return Q(true);
+    });
+    spyOn(Serve, 'host').andReturn(serveHostValue);
+    spyOn(Serve, 'checkPorts').andReturn(Q.reject('AN ERROR OCCURRED'));
+    spyOn(ConfigXml, 'setConfigXml').andReturn(Q(true));
+    spyOn(Serve, 'start');
+    spyOn(Serve, 'showFinishedServeMessage');
+    var setupLiveReload = cordovaUtils.__get__('setupLiveReload');
+
+    setupLiveReload(argv, baseDir).catch(function() {
+      expect(Project.load).toHaveBeenCalledWith(baseDir);
+      expect(Serve.loadSettings).toHaveBeenCalledWith(argv, project);
+      expect(Serve.getAddress).toHaveBeenCalled();
+      expect(Serve.host.calls[0].args).toEqual(['80.80.80.80', 80]);
+      done();
+    });
+  });
 });
 
 describe('filterArgumentsForCordova', function() {
@@ -346,8 +375,5 @@ describe('filterArgumentsForCordova', function() {
     var resultArgs = cordovaUtils.filterArgumentsForCordova(cmdName, argv, rawCliArguments);
     expect(resultArgs).toEqual(['build', '--target="ios"']);
   });
-});
-
-describe('setupLiveReload', function() {
 });
 

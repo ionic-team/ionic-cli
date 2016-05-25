@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 var rewire = require('rewire');
 var IonicStats = rewire('../../lib/utils/stats');

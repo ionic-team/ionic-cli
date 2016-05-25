@@ -54,7 +54,49 @@ describe('printTaskListUsage method', function() {
 });
 
 describe('printTaskListShortUsage method', function() {
-  it('should log', function() {
+  it('should print ionic logo, a header and the each task details', function() {
+    var printIonicSpy = jasmine.createSpy('printIonicSpy');
+    printIonicSpy.andReturn('ionic logo');
+    var revertPrintIonic = helpUtils.__set__('printIonic', printIonicSpy);
+
+    var printTemplateSpy = jasmine.createSpy('printTemplateSpy');
+    var revertPrintTemplate = helpUtils.__set__('printTemplate', printTemplateSpy);
+
+    spyOn(log, 'info');
+    var taskList = [
+      {
+        name: 'one',
+        summary: 'one summary'
+      },
+      {
+        name: 'two',
+        summary: 'two summary'
+      },
+      {
+        name: 'three'
+      }
+    ];
+    helpUtils.printTaskListShortUsage(taskList, null, 'v2.0.0');
+    var arrayArgs = printTemplateSpy.calls[0].args[0];
+    expect(arrayArgs[0]).toEqual('ionic logo');
+    expect(arrayArgs[1]).toEqual('');
+    expect(arrayArgs[2]).toEqual('Usage: ionic task args');
+    expect(arrayArgs[3]).toEqual('');
+    expect(arrayArgs[4]).toEqual('');
+    expect(arrayArgs[5]).toEqual('=======================');
+    expect(arrayArgs[6]).toEqual(null);
+    revertPrintIonic();
+    revertPrintTemplate();
+  });
+
+  it('should identify the task does not exist if taskname is provided', function() {
+    var printIonicSpy = jasmine.createSpy('printIonicSpy');
+    printIonicSpy.andReturn('ionic logo');
+    var revertPrintIonic = helpUtils.__set__('printIonic', printIonicSpy);
+
+    var printTemplateSpy = jasmine.createSpy('printTemplateSpy');
+    var revertPrintTemplate = helpUtils.__set__('printTemplate', printTemplateSpy);
+
     spyOn(log, 'info');
     var taskList = [
       {
@@ -70,7 +112,10 @@ describe('printTaskListShortUsage method', function() {
       }
     ];
     helpUtils.printTaskListShortUsage(taskList, 'fudge', 'v2.0.0');
-    expect(log.info.calls.length).toEqual(1);
+    var arrayArgs = printTemplateSpy.calls[0].args[0];
+    expect(arrayArgs[6]).toMatch('fudge is not a valid task');
+    revertPrintIonic();
+    revertPrintTemplate();
   });
 });
 

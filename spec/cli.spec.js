@@ -483,7 +483,9 @@ describe('Cli', function() {
         _: ['fake'],
         v2: false
       };
-      var loadGulpFileRevert = IonicCli.__set__('loadGulpfile', function() { return false; });
+      var loadGulpFileSpy = jasmine.createSpy('loadGulpfile');
+      loadGulpFileSpy.andReturn(false);
+      var loadGulpFileRevert = IonicCli.__set__('loadGulpfile', loadGulpFileSpy);
       spyOn(fs, 'existsSync');
       spyOn(gulp, 'start');
       spyOn(inquirer, 'prompt');
@@ -491,6 +493,7 @@ describe('Cli', function() {
       var runWithGulp = IonicCli.__get__('runWithGulp');
 
       runWithGulp(argv, fakeTask).then(function() {
+        expect(loadGulpFileSpy).toHaveBeenCalled();
         expect(fakeTask.run).toHaveBeenCalled();
 
         expect(process.exit).not.toHaveBeenCalled();
@@ -507,7 +510,14 @@ describe('Cli', function() {
         _: ['fake'],
         v2: false
       };
-      var loadGulpFileRevert = IonicCli.__set__('loadGulpfile', function() { return true; });
+      var loadGulpFileSpy = jasmine.createSpy('loadGulpfile');
+      loadGulpFileSpy.andReturn(true);
+      var loadGulpFileRevert = IonicCli.__set__('loadGulpfile', loadGulpFileSpy);
+
+      var logEventsSpy = jasmine.createSpy('logEvents');
+      logEventsSpy.andReturn(true);
+      var logEventsRevert = IonicCli.__set__('logEvents', logEventsSpy);
+
       spyOn(path, 'resolve').andReturn('./RKLERREulp');
       spyOn(log, 'error');
       spyOn(fs, 'existsSync');
@@ -515,26 +525,35 @@ describe('Cli', function() {
       spyOn(inquirer, 'prompt');
 
       var runWithGulp = IonicCli.__get__('runWithGulp');
-
       runWithGulp(argv, fakeTask);
+
+      expect(loadGulpFileSpy).toHaveBeenCalled();
       expect(log.error).toHaveBeenCalled();
       expect(process.exit).toHaveBeenCalled();
 
+      expect(logEventsSpy).not.toHaveBeenCalled();
       expect(fakeTask.run).not.toHaveBeenCalled();
       expect(fs.existsSync).not.toHaveBeenCalled();
       expect(gulp.start).not.toHaveBeenCalled();
       expect(inquirer.prompt).not.toHaveBeenCalled();
       loadGulpFileRevert();
+      logEventsRevert();
     });
 
     /*
-    it('should try to load gulp file, logEvents if successful, and call task', function(done) {
+    it('should try to load gulp file, on success logEvents and call task', function(done) {
       var argv = {
         _: ['fake'],
         v2: false
       };
-      var loadGulpFileRevert = IonicCli.__set__('loadGulpfile', function() { return true; });
-      var logEventsRevert = IonicCli.__set__('logEvents', function() { return true; });
+
+      var loadGulpFileSpy = jasmine.createSpy('loadGulpfile');
+      loadGulpFileSpy.andReturn(true);
+      var loadGulpFileRevert = IonicCli.__set__('loadGulpfile', loadGulpFileSpy);
+
+      var logEventsSpy = jasmine.createSpy('logEvents');
+      logEventsSpy.andReturn(true);
+      var logEventsRevert = IonicCli.__set__('logEvents', logEventsSpy);
 
       spyOn(log, 'error');
       spyOn(fs, 'existsSync');
@@ -542,8 +561,10 @@ describe('Cli', function() {
       spyOn(inquirer, 'prompt');
 
       var runWithGulp = IonicCli.__get__('runWithGulp');
-
       runWithGulp(argv, fakeTask).then(function() {
+
+        expect(loadGulpFileSpy).toHaveBeenCalled();
+        expect(logEventsSpy).toHaveBeenCalled();
         expect(gulp.start).toHaveBeenCalledWith('fake:before');
         expect(gulp.start).toHaveBeenCalledWith('fake:after');
         expect(fakeTask.run).toHaveBeenCalledWith(IonicCli, argv);
@@ -741,6 +762,48 @@ describe('Cli', function() {
       IonicCli.doRuntimeCheck(version);
       expect(IonicStore.prototype.set).not.toHaveBeenCalled();
       expect(IonicStore.prototype.save).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getContentSrc method', function() {
+    it('should call getContentSrc util for process cwd.', function() {
+      spyOn(process, 'cwd').andReturn('/some/dir');
+      spyOn(Utils, 'getContentSrc').andCallFake(function(param) {
+        return param;
+      });
+      var result = IonicCli.getContentSrc();
+      expect(process.cwd).toHaveBeenCalled();
+      expect(Utils.getContentSrc).toHaveBeenCalledWith('/some/dir');
+      expect(result).toEqual('/some/dir');
+    });
+  });
+
+  describe('fail method', function() {
+    it('should call fail util.', function() {
+      IonicCli.fail('some error', 'task help text');
+      expect(Utils.fail).toHaveBeenCalledWith('some error', 'task help text');
+    });
+  });
+
+  describe('handleUncaughtExceptions method', function() {
+    it('log an error and then exit if param is a string', function() {
+      spyOn(log, 'error');
+      spyOn(process, 'exit');
+      spyOn(Utils, 'errorHandler');
+
+      IonicCli.handleUncaughtExceptions('error message');
+      expect(Utils.errorHandler).toHaveBeenCalledWith('error message');
+      expect(process.exit).toHaveBeenCalledWith(1);
+    });
+
+    it('log an error and then exit if param is an object', function() {
+      spyOn(log, 'error');
+      spyOn(process, 'exit');
+      spyOn(Utils, 'errorHandler');
+
+      IonicCli.handleUncaughtExceptions({ message: 'error message' });
+      expect(Utils.errorHandler).toHaveBeenCalledWith('error message');
+      expect(process.exit).toHaveBeenCalledWith(1);
     });
   });
 });

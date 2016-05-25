@@ -10,15 +10,22 @@ describe('print function', function() {
     spyOn(log, 'info');
     ionitron.print();
 
-    // TODO: really should test better but its ionitron
     expect(log.info).toHaveBeenCalled();
+    var printedLines = log.info.calls[0].args[0];
+    expect(log.info).toHaveBeenCalled();
+    expect(printedLines).not.toMatch(
+      '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+    );
   });
 
   it('should return an array of strings', function() {
     spyOn(log, 'info');
     ionitron.print('es');
 
-    // TODO: really should test better but its ionitron
+    var printedLines = log.info.calls[0].args[0];
     expect(log.info).toHaveBeenCalled();
+    expect(printedLines).not.toMatch(
+      '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+    );
   });
 });
