@@ -30,7 +30,7 @@ describe('add command', function() {
     });
   });
 
-  describe('cordova platform checks', function() {
+  describe('run function', function() {
     var processArguments = ['node', 'ionic', 'add', 'thing'];
     var rawCliArguments = processArguments.slice(2);
     var argv = optimist(rawCliArguments).argv;
