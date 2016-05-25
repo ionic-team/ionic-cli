@@ -32,17 +32,14 @@ describe('docs command', function() {
   });
 
   describe('list function', function() {
-    var list = docs.__get__('list');
 
   });
 
   describe('openDefault function', function() {
-    var openDefault = docs.__get__('list');
 
   });
 
   describe('lookupCommand function', function() {
-    var lookupCommand = docs.__get__('list');
 
   });
 
