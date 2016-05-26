@@ -55,12 +55,13 @@ describe('run command', function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
     });
 
     it('should default to iOS for the platform', function(done) {
       spyOn(os, 'platform').andReturn('darwin');
 
-      run.run(null, argv, rawCliArguments).catch(function() {
+      run.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.isPlatformInstalled).toHaveBeenCalledWith('ios', appDirectory);
         done();
       });
@@ -79,33 +80,25 @@ describe('run command', function() {
 
   describe('cordova platform and plugin checks', function() {
 
-    // This argv should model after optimist objects
-    // $ ionic run -n
-    var argv = {
-      _: [
-        'run'
-      ],
-      n: true,
-      nohooks: false
-    };
-    var rawCliArguments = ['run', '-n'];
     var appDirectory = '/ionic/app/path';
+    var processArguments = ['node', 'ionic', 'run', '-n'];
+    var rawCliArguments = processArguments.slice(2);
+    var argv = optimist(rawCliArguments).argv;
 
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
       spyOn(os, 'platform').andReturn('darwin');
-      spyOn(childProcess, 'exec').andCallThrough();
 
       spyOn(cordovaUtils, 'installPlatform').andReturn(Q(true));
       spyOn(cordovaUtils, 'installPlugins').andReturn(Q(true));
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
     });
 
     it('should try to install the cordova platform if it is not installed', function(done) {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(false);
 
-      run.run(null, argv, rawCliArguments).catch(function() {
+      run.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.installPlatform).toHaveBeenCalledWith('ios');
-        expect(childProcess.exec).toHaveBeenCalledWith('cordova run -n ios');
         done();
       });
     });
@@ -113,7 +106,7 @@ describe('run command', function() {
     it('should not try to install the cordova platform if it is installed', function(done) {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
 
-      run.run(null, argv, rawCliArguments).catch(function() {
+      run.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.installPlatform).not.toHaveBeenCalledWith();
         done();
       });
@@ -123,7 +116,7 @@ describe('run command', function() {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(false);
 
-      run.run(null, argv, rawCliArguments).catch(function() {
+      run.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.arePluginsInstalled).toHaveBeenCalledWith(appDirectory);
         expect(cordovaUtils.installPlugins).toHaveBeenCalledWith();
         done();
@@ -134,7 +127,7 @@ describe('run command', function() {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
 
-      run.run(null, argv, rawCliArguments).catch(function() {
+      run.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.arePluginsInstalled).toHaveBeenCalledWith(appDirectory);
         expect(cordovaUtils.installPlugins).not.toHaveBeenCalledWith();
         done();
@@ -148,16 +141,16 @@ describe('run command', function() {
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
       spyOn(os, 'platform').andReturn('darwin');
+
+      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
     });
 
     it('should execute the command against the cordova util', function(done) {
       var processArguments = ['node', 'ionic', 'run', '-n'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
-
-      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
-      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
-      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
 
       run.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['run', '-n', 'ios'], false, true);
@@ -171,10 +164,6 @@ describe('run command', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
-      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
-      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
-      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
-
       run.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['run', 'android'], false, true);
         done();
@@ -186,12 +175,9 @@ describe('run command', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
-      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
-      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
       spyOn(cordovaUtils, 'setupLiveReload').andReturn(Q({
         blah: 'blah'
       }));
-      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
 
       run.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.setupLiveReload).toHaveBeenCalledWith(argv);

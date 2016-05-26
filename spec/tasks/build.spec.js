@@ -51,9 +51,10 @@ describe('build command', function() {
 
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
+
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
-      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
     });
 
     it('should default to iOS for the platform', function(done) {
@@ -62,7 +63,6 @@ describe('build command', function() {
       // Expect failure
       build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.isPlatformInstalled).toHaveBeenCalledWith('ios', appDirectory);
-        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['build', '-n', 'ios']);
         done();
       });
     });
