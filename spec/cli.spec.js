@@ -198,6 +198,37 @@ describe('Cli', function() {
         });
       });
 
+      it('should print a warning if using v2 and node_modules doesn\'t exist', function(done){
+        spyOn(fs, 'existsSync').andReturn(false);
+        Project.load = function(){
+          return {
+            get: function(){ return true }
+          }
+        };
+
+        var FakeTask = {
+          name: 'fake',
+          title: 'fake',
+          run: function() {
+            return Q(true);
+          },
+          isProjectTask: true
+        };
+        spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
+
+        spyOn(log, 'warn');
+        var runWithGulpSpy = jasmine.createSpy('runWithGulp');
+        var runWithGulpRevert = IonicCli.__set__('runWithGulp', runWithGulpSpy);
+
+        IonicCli.run(['node', 'bin/ionic', 'fake'])
+        .then(function() {
+          expect(log.warn).toHaveBeenCalledWith('WARN: No node_modules directory found, do you need to run npm install?'.yellow);
+          expect(runWithGulpSpy).not.toHaveBeenCalled();
+          runWithGulpRevert();
+          done();
+        });
+      });
+
       it('should call Utils.fail if an exception occurrs within run', function() {
         var error = new Error('error happened');
         spyOn(IonicCli, 'checkLatestVersion').andCallFake(function() {
