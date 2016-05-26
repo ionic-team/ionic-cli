@@ -4,7 +4,6 @@ var Q = require('q');
 var optimist = require('optimist');
 var cordovaUtils = require('../../lib/utils/cordova');
 var os = require('os');
-var childProcess = require('child_process');
 var IonicAppLib = require('ionic-app-lib');
 var ConfigXml = IonicAppLib.configXml;
 var log = IonicAppLib.logging.logger;
@@ -44,23 +43,15 @@ describe('emulate command', function() {
 
   describe('cordova platform checks', function() {
 
-    // This argv should model after optimist objects
-    // $ ionic emulate -n
-    var argv = {
-      _: [
-        'emulate'
-      ],
-      n: true,
-      nohooks: false
-    };
-    var rawCliArguments = ['emulate', '-n'];
     var appDirectory = '/ionic/app/path';
+    var processArguments = ['node', 'ionic', 'emulate', '-n'];
+    var rawCliArguments = processArguments.slice(2);
+    var argv = optimist(rawCliArguments).argv;
 
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
-      spyOn(childProcess, 'exec').andCallThrough();
     });
 
     it('should default to iOS for the platform', function(done) {
@@ -68,7 +59,6 @@ describe('emulate command', function() {
 
       emulate.run(null, argv, rawCliArguments).catch(function() {
         expect(cordovaUtils.isPlatformInstalled).toHaveBeenCalledWith('ios', appDirectory);
-        expect(childProcess.exec).toHaveBeenCalledWith('cordova emulate -n ios');
         done();
       });
     });
@@ -86,41 +76,33 @@ describe('emulate command', function() {
 
   describe('cordova platform and plugin checks', function() {
 
-    // This argv should model after optimist objects
-    // $ ionic emulate -n
-    var argv = {
-      _: [
-        'emulate'
-      ],
-      n: true,
-      nohooks: false
-    };
-    var rawCliArguments = ['emulate', '-n'];
     var appDirectory = '/ionic/app/path';
+    var processArguments = ['node', 'ionic', 'emulate', 'ios', '-n'];
+    var rawCliArguments = processArguments.slice(2);
+    var argv = optimist(rawCliArguments).argv;
 
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
-      spyOn(os, 'platform').andReturn('darwin');
-      spyOn(childProcess, 'exec').andCallThrough();
-
       spyOn(cordovaUtils, 'installPlatform').andReturn(Q(true));
       spyOn(cordovaUtils, 'installPlugins').andReturn(Q(true));
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
     });
 
     it('should try to install the cordova platform if it is not installed', function(done) {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(false);
+      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
 
-      emulate.run(null, argv, rawCliArguments).catch(function() {
+      emulate.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.installPlatform).toHaveBeenCalledWith('ios');
-        expect(childProcess.exec).toHaveBeenCalledWith('cordova emulate -n ios');
         done();
       });
     });
 
     it('should not try to install the cordova platform if it is installed', function(done) {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
 
-      emulate.run(null, argv, rawCliArguments).catch(function() {
+      emulate.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.installPlatform).not.toHaveBeenCalledWith();
         done();
       });
@@ -130,7 +112,7 @@ describe('emulate command', function() {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(false);
 
-      emulate.run(null, argv, rawCliArguments).catch(function() {
+      emulate.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.arePluginsInstalled).toHaveBeenCalledWith(appDirectory);
         expect(cordovaUtils.installPlugins).toHaveBeenCalledWith();
         done();
@@ -141,7 +123,7 @@ describe('emulate command', function() {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
 
-      emulate.run(null, argv, rawCliArguments).catch(function() {
+      emulate.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.arePluginsInstalled).toHaveBeenCalledWith(appDirectory);
         expect(cordovaUtils.installPlugins).not.toHaveBeenCalledWith();
         done();
@@ -155,7 +137,6 @@ describe('emulate command', function() {
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
       spyOn(os, 'platform').andReturn('darwin');
-      spyOn(childProcess, 'exec').andCallThrough();
     });
 
     it('should execute the command against the cordova util', function(done) {
@@ -165,9 +146,10 @@ describe('emulate command', function() {
 
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
 
-      emulate.run(null, argv, rawCliArguments).catch(function() {
-        expect(childProcess.exec).toHaveBeenCalledWith('cordova emulate -n ios');
+      emulate.run(null, argv, rawCliArguments).then(function() {
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', '-n', 'ios'], false, true);
         done();
       });
     });
@@ -179,9 +161,30 @@ describe('emulate command', function() {
 
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
 
-      emulate.run(null, argv, rawCliArguments).catch(function() {
-        expect(childProcess.exec).toHaveBeenCalledWith('cordova emulate android');
+      emulate.run(null, argv, rawCliArguments).then(function() {
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', 'android'], false, true);
+        done();
+      });
+    });
+
+    it('should execute the command against the cordova util using the platform provided', function(done) {
+      var processArguments = ['node', 'ionic', 'emulate', 'android', '--livereload'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'setupLiveReload').andReturn(Q({
+        blah: 'blah'
+      }));
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
+
+      emulate.run(null, argv, rawCliArguments).then(function() {
+        expect(cordovaUtils.setupLiveReload).toHaveBeenCalledWith(argv);
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(
+          ['emulate', 'android'], true, { blah: 'blah' });
         done();
       });
     });
