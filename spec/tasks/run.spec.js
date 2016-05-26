@@ -46,21 +46,15 @@ describe('run command', function() {
 
     // This argv should model after optimist objects
     // $ ionic run -n
-    var argv = {
-      _: [
-        'run'
-      ],
-      n: true,
-      nohooks: false
-    };
-    var rawCliArguments = ['run', '-n'];
+    var processArguments = ['node', 'ionic', 'run', '-n'];
+    var rawCliArguments = processArguments.slice(2);
+    var argv = optimist(rawCliArguments).argv;
     var appDirectory = '/ionic/app/path';
 
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
-      spyOn(childProcess, 'exec').andCallThrough();
     });
 
     it('should default to iOS for the platform', function(done) {
@@ -68,7 +62,6 @@ describe('run command', function() {
 
       run.run(null, argv, rawCliArguments).catch(function() {
         expect(cordovaUtils.isPlatformInstalled).toHaveBeenCalledWith('ios', appDirectory);
-        expect(childProcess.exec).toHaveBeenCalledWith('cordova run -n ios');
         done();
       });
     });
@@ -155,7 +148,6 @@ describe('run command', function() {
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
       spyOn(os, 'platform').andReturn('darwin');
-      spyOn(childProcess, 'exec').andCallThrough();
     });
 
     it('should execute the command against the cordova util', function(done) {
@@ -165,12 +157,14 @@ describe('run command', function() {
 
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
 
-      run.run(null, argv, rawCliArguments).catch(function() {
-        expect(childProcess.exec).toHaveBeenCalledWith('cordova run -n ios');
+      run.run(null, argv, rawCliArguments).then(function() {
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['run', '-n', 'ios'], false, true);
         done();
       });
     });
+
 
     it('should execute the command against the cordova util using the platform provided', function(done) {
       var processArguments = ['node', 'ionic', 'run', 'android'];
@@ -179,9 +173,30 @@ describe('run command', function() {
 
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
 
-      run.run(null, argv, rawCliArguments).catch(function() {
-        expect(childProcess.exec).toHaveBeenCalledWith('cordova run android');
+      run.run(null, argv, rawCliArguments).then(function() {
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['run', 'android'], false, true);
+        done();
+      });
+    });
+
+    it('should execute the command against the cordova util using the platform provided', function(done) {
+      var processArguments = ['node', 'ionic', 'run', 'android', '--livereload'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'setupLiveReload').andReturn(Q({
+        blah: 'blah'
+      }));
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
+
+      run.run(null, argv, rawCliArguments).then(function() {
+        expect(cordovaUtils.setupLiveReload).toHaveBeenCalledWith(argv);
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(
+          ['run', 'android'], true, { blah: 'blah' });
         done();
       });
     });
