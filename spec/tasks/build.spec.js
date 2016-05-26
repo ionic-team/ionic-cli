@@ -4,7 +4,6 @@ var Q = require('q');
 var optimist = require('optimist');
 var cordovaUtils = require('../../lib/utils/cordova');
 var os = require('os');
-var childProcess = require('child_process');
 var IonicAppLib = require('ionic-app-lib');
 var ConfigXml = IonicAppLib.configXml;
 var log = IonicAppLib.logging.logger;
@@ -30,7 +29,13 @@ describe('build command', function() {
       expect(build.summary.length).toBeGreaterThan(0);
     });
 
-    it('should have a boolean option of --nohooks or -n that defaults to true', function() {
+    it('should have args', function() {
+      expect(build.args).toEqual(jasmine.any(Object));
+      expect(build.args['[options]']).toEqual(jasmine.any(String));
+      expect(build.args['<PLATFORM>']).toEqual(jasmine.any(String));
+    });
+
+    it('should have options', function() {
       expect(build.options).toEqual(jasmine.any(Object));
       expect(build.options['--nohooks|-n']).toEqual(jasmine.any(Object));
     });
@@ -46,18 +51,18 @@ describe('build command', function() {
 
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
+
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
-      spyOn(childProcess, 'exec').andCallThrough();
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
     });
 
     it('should default to iOS for the platform', function(done) {
       spyOn(os, 'platform').andReturn('darwin');
 
       // Expect failure
-      build.run(null, argv, rawCliArguments).catch(function() {
+      build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.isPlatformInstalled).toHaveBeenCalledWith('ios', appDirectory);
-        expect(childProcess.exec).toHaveBeenCalledWith('cordova build -n ios');
         done();
       });
     });
@@ -76,25 +81,24 @@ describe('build command', function() {
   describe('cordova platform and plugin checks', function() {
 
     var appDirectory = '/ionic/app/path';
-    var processArguments = ['node', 'ionic', 'build', '-n'];
+    var processArguments = ['node', 'ionic', 'build', 'ios', '-n'];
     var rawCliArguments = processArguments.slice(2);
     var argv = optimist(rawCliArguments).argv;
 
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
-      spyOn(os, 'platform').andReturn('darwin');
-      spyOn(childProcess, 'exec').andCallThrough();
 
       spyOn(cordovaUtils, 'installPlatform').andReturn(Q(true));
       spyOn(cordovaUtils, 'installPlugins').andReturn(Q(true));
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
     });
 
     it('should try to install the cordova platform if it is not installed', function(done) {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(false);
 
-      build.run(null, argv, rawCliArguments).catch(function() {
+      build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.installPlatform).toHaveBeenCalledWith('ios');
-        expect(childProcess.exec).toHaveBeenCalledWith('cordova build -n ios');
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['build', 'ios', '-n']);
         done();
       });
     });
@@ -102,7 +106,7 @@ describe('build command', function() {
     it('should not try to install the cordova platform if it is installed', function(done) {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
 
-      build.run(null, argv, rawCliArguments).catch(function() {
+      build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.installPlatform).not.toHaveBeenCalledWith();
         done();
       });
@@ -112,7 +116,7 @@ describe('build command', function() {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(false);
 
-      build.run(null, argv, rawCliArguments).catch(function() {
+      build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.arePluginsInstalled).toHaveBeenCalledWith(appDirectory);
         expect(cordovaUtils.installPlugins).toHaveBeenCalledWith();
         done();
@@ -123,47 +127,9 @@ describe('build command', function() {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
 
-      build.run(null, argv, rawCliArguments).catch(function() {
+      build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.arePluginsInstalled).toHaveBeenCalledWith(appDirectory);
         expect(cordovaUtils.installPlugins).not.toHaveBeenCalledWith();
-        done();
-      });
-    });
-  });
-
-  describe('execute cordova command', function() {
-    var appDirectory = '/ionic/app/path';
-
-    beforeEach(function() {
-      spyOn(process, 'cwd').andReturn(appDirectory);
-      spyOn(os, 'platform').andReturn('darwin');
-      spyOn(childProcess, 'exec').andCallThrough();
-    });
-
-    it('should execute the command against the cordova util', function(done) {
-      var processArguments = ['node', 'ionic', 'build', '-n'];
-      var rawCliArguments = processArguments.slice(2);
-      var argv = optimist(rawCliArguments).argv;
-
-      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
-      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
-
-      build.run(null, argv, rawCliArguments).catch(function() {
-        expect(childProcess.exec).toHaveBeenCalledWith('cordova build -n ios');
-        done();
-      });
-    });
-
-    it('should execute the command against the cordova util using the platform provided', function(done) {
-      var processArguments = ['node', 'ionic', 'build', 'android'];
-      var rawCliArguments = processArguments.slice(2);
-      var argv = optimist(rawCliArguments).argv;
-
-      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
-      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
-
-      build.run(null, argv, rawCliArguments).catch(function() {
-        expect(childProcess.exec).toHaveBeenCalledWith('cordova build android');
         done();
       });
     });
