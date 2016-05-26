@@ -3,6 +3,7 @@
 var fs = require('fs');
 var Q = require('q');
 var rewire = require('rewire');
+var childProcess = require('child_process');
 var cordovaUtils = rewire('../../lib/utils/cordova');
 var optimist = require('optimist');
 var IonicAppLib = require('ionic-app-lib');
@@ -269,6 +270,41 @@ describe('setupLiveReload', function() {
       expect(Serve.loadSettings).toHaveBeenCalledWith(argv, project);
       expect(Serve.getAddress).toHaveBeenCalled();
       expect(Serve.host.calls[0].args).toEqual(['80.80.80.80', 80]);
+      done();
+    });
+  });
+});
+
+describe('execCordovaCommand', function() {
+  beforeEach(function() {
+    spyOn(childProcess, 'exec').andCallThrough();
+  });
+
+  it('should execute the command against the cordova util', function(done) {
+    var optionList = [
+      'build',
+      '-n',
+      'ios'
+    ];
+    var isLiveReload = false;
+    var serveOptions = {};
+
+    cordovaUtils.execCordovaCommand(optionList, isLiveReload, serveOptions).catch(function() {
+      expect(childProcess.exec).toHaveBeenCalledWith('cordova build -n ios');
+      done();
+    });
+  });
+
+  it('should execute the command against the cordova util using the platform provided', function(done) {
+    var optionList = [
+      'build',
+      'android'
+    ];
+    var isLiveReload = false;
+    var serveOptions = {};
+
+    cordovaUtils.execCordovaCommand(optionList, isLiveReload, serveOptions).catch(function() {
+      expect(childProcess.exec).toHaveBeenCalledWith('cordova build android');
       done();
     });
   });
