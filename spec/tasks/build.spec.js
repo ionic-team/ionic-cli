@@ -90,11 +90,11 @@ describe('build command', function() {
 
       spyOn(cordovaUtils, 'installPlatform').andReturn(Q(true));
       spyOn(cordovaUtils, 'installPlugins').andReturn(Q(true));
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
     });
 
     it('should try to install the cordova platform if it is not installed', function(done) {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(false);
-      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
 
       build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.installPlatform).toHaveBeenCalledWith('ios');
@@ -106,7 +106,7 @@ describe('build command', function() {
     it('should not try to install the cordova platform if it is installed', function(done) {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
 
-      build.run(null, argv, rawCliArguments).catch(function() {
+      build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.installPlatform).not.toHaveBeenCalledWith();
         done();
       });
@@ -116,7 +116,7 @@ describe('build command', function() {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(false);
 
-      build.run(null, argv, rawCliArguments).catch(function() {
+      build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.arePluginsInstalled).toHaveBeenCalledWith(appDirectory);
         expect(cordovaUtils.installPlugins).toHaveBeenCalledWith();
         done();
@@ -127,7 +127,7 @@ describe('build command', function() {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
 
-      build.run(null, argv, rawCliArguments).catch(function() {
+      build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.arePluginsInstalled).toHaveBeenCalledWith(appDirectory);
         expect(cordovaUtils.installPlugins).not.toHaveBeenCalledWith();
         done();
