@@ -86,6 +86,7 @@ describe('build command', function() {
     var argv = optimist(rawCliArguments).argv;
 
     beforeEach(function() {
+      spyOn(os, 'platform').andReturn('darwin');
       spyOn(process, 'cwd').andReturn(appDirectory);
 
       spyOn(cordovaUtils, 'installPlatform').andReturn(Q(true));
