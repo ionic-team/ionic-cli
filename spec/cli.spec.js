@@ -169,7 +169,7 @@ describe('Cli', function() {
           run: function() {
             return Q(true);
           },
-          disableChangePwd: false
+          isProjectTask: true
         };
         spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
 
@@ -187,7 +187,7 @@ describe('Cli', function() {
           run: function() {
             return Q(true);
           },
-          disableChangePwd: true
+          isProjectTask: false
         };
         spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
 
@@ -472,7 +472,7 @@ describe('Cli', function() {
         run: function() {
           return Q(true);
         },
-        disableChangePwd: false
+        isProjectTask: true
       };
       spyOn(fakeTask, 'run').andCallThrough();
       spyOn(process, 'exit');
