@@ -162,7 +162,7 @@ describe('Cli', function() {
         });
       });
 
-      it('should change pwd for commands that require it', function(done) {
+      it('should change cwd to project root for project tasks', function(done) {
         var FakeTask = {
           name: 'fake',
           title: 'fake',
@@ -180,7 +180,7 @@ describe('Cli', function() {
         });
       });
 
-      it('should not change pwd for commands that do not require it', function(done) {
+      it('should not change cwd to project root for non project tasks', function(done) {
         var FakeTask = {
           name: 'fake',
           title: 'fake',
