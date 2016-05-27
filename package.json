@@ -62,7 +62,6 @@
   "dependencies": {
     "cli-table": "0.3.1",
     "colors": "0.6.2",
-    "detective": "4.3.1",
     "expand-tilde": "1.2.0",
     "form-data": "0.1.4",
     "gulp": "3.8.8",
@@ -95,7 +94,6 @@
   "bundledDependencies": [
     "cli-table",
     "colors",
-    "detective",
     "expand-tilde",
     "form-data",
     "gulp",
