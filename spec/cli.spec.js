@@ -561,6 +561,35 @@ describe('Cli', function() {
       });
     });
 
+    it('should warn if there is no gulp file and the command requires a build step', function(done) {
+      var cmdName = fakeTask.name = "build";
+      var argv = {
+        _: [cmdName],
+        v2: true
+      };
+
+      var loadGulpFileSpy = jasmine.createSpy('loadGulpfile');
+      loadGulpFileSpy.andReturn(false);
+      var loadGulpFileRevert = IonicCli.__set__('loadGulpfile', loadGulpFileSpy);
+      spyOn(log, 'warn');
+      spyOn(fs, 'existsSync');
+      spyOn(gulp, 'start');
+
+      var runWithGulp = IonicCli.__get__('runWithGulp');
+
+      runWithGulp(argv, fakeTask).then(function() {
+        expect(loadGulpFileSpy).toHaveBeenCalled();
+        expect(fakeTask.run).toHaveBeenCalled();
+        expect(log.warn).toHaveBeenCalledWith('WARN: No gulpfile found!');
+        expect(log.warn).toHaveBeenCalledWith('If your app requires a build step, you may want to ensure it runs before ' + cmdName + '.\n');
+        expect(process.exit).not.toHaveBeenCalled();
+        expect(fs.existsSync).not.toHaveBeenCalled();
+        expect(gulp.start).not.toHaveBeenCalled();
+        loadGulpFileRevert();
+        done();
+      });
+    });
+
     it('should try to load gulp file, exit if it fails', function() {
       var argv = {
         _: ['fake'],
