@@ -15,7 +15,6 @@ var log = Logging.logger;
 var fs = require('fs');
 var path = require('path');
 var gulp = require('gulp');
-var inquirer = require('inquirer');
 var rewire = require('rewire');
 var IonicCli = rewire('../lib/cli');
 
@@ -547,7 +546,6 @@ describe('Cli', function() {
       var loadGulpFileRevert = IonicCli.__set__('loadGulpfile', loadGulpFileSpy);
       spyOn(fs, 'existsSync');
       spyOn(gulp, 'start');
-      spyOn(inquirer, 'prompt');
 
       var runWithGulp = IonicCli.__get__('runWithGulp');
 
@@ -558,7 +556,6 @@ describe('Cli', function() {
         expect(process.exit).not.toHaveBeenCalled();
         expect(fs.existsSync).not.toHaveBeenCalled();
         expect(gulp.start).not.toHaveBeenCalled();
-        expect(inquirer.prompt).not.toHaveBeenCalled();
         loadGulpFileRevert();
         done();
       });
@@ -581,7 +578,6 @@ describe('Cli', function() {
       spyOn(log, 'error');
       spyOn(fs, 'existsSync');
       spyOn(gulp, 'start');
-      spyOn(inquirer, 'prompt');
 
       var runWithGulp = IonicCli.__get__('runWithGulp');
       runWithGulp(argv, fakeTask);
@@ -594,7 +590,6 @@ describe('Cli', function() {
       expect(fakeTask.run).not.toHaveBeenCalled();
       expect(fs.existsSync).not.toHaveBeenCalled();
       expect(gulp.start).not.toHaveBeenCalled();
-      expect(inquirer.prompt).not.toHaveBeenCalled();
       loadGulpFileRevert();
       logEventsRevert();
     });
@@ -617,7 +612,6 @@ describe('Cli', function() {
       spyOn(log, 'error');
       spyOn(fs, 'existsSync');
       spyOn(gulp, 'start');
-      spyOn(inquirer, 'prompt');
 
       var runWithGulp = IonicCli.__get__('runWithGulp');
       runWithGulp(argv, fakeTask).then(function() {
@@ -631,7 +625,6 @@ describe('Cli', function() {
         expect(log.error).not.toHaveBeenCalled();
         expect(process.exit).not.toHaveBeenCalled();
         expect(fs.existsSync).not.toHaveBeenCalled();
-        expect(inquirer.prompt).not.toHaveBeenCalled();
         loadGulpFileRevert();
         logEventsRevert();
         done();
