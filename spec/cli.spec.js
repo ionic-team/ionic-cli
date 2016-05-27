@@ -612,7 +612,8 @@ describe('Cli', function() {
       runWithGulp(argv, fakeTask);
 
       expect(loadGulpFileSpy).toHaveBeenCalled();
-      expect(log.error).toHaveBeenCalled();
+      expect(log.error).toHaveBeenCalledWith('\nGulpfile detected, but gulp is not installed'.red);
+      expect(log.error).toHaveBeenCalledWith('Do you need to run `npm install`?\n'.red);
       expect(process.exit).toHaveBeenCalled();
 
       expect(logEventsSpy).not.toHaveBeenCalled();
