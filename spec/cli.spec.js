@@ -225,14 +225,32 @@ describe('Cli', function() {
         });
       });
 
-      it('should not runWithGulp if node_modules doesn\'t exist and not using v2', function(done){
-        spyOn(fs, 'existsSync').andReturn(false);
+      it('should warn if cmd requires build step and gulpfile doesn\'t exist and using v2', function(done){
+        var FakeTask = {
+          name: 'build',
+          title: 'build',
+          run: function(){},
+          isProjectTask: true
+        };
         Project.load = function(){
           return {
-            get: function(){ return false } // return v2 === false
+            get: function(){ return true } // return v2 === true
           }
         };
+        spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
+        spyOn(FakeTask, 'run').andReturn(Q(true));
+        spyOn(fs, 'existsSync').andReturn(true);
+        spyOn(IonicCli, 'loadGulpfile').andReturn(false);
+        spyOn(log, 'warn');
 
+        IonicCli.run(['node', 'bin/ionic', 'build'])
+        .then(function() {
+          expect(log.warn).toHaveBeenCalledWith('WARN: No gulpfile found!');
+          done();
+        });
+      });
+
+      it('should not runWithGulp if a gulpfile doesn\'t exist', function(done){
         var FakeTask = {
           name: 'fake',
           title: 'fake',
@@ -242,11 +260,31 @@ describe('Cli', function() {
         spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
         spyOn(IonicCli, 'runWithGulp');
         spyOn(FakeTask, 'run').andReturn(Q(true));
+        spyOn(fs, 'existsSync').andReturn(true);
+        spyOn(IonicCli, 'loadGulpfile').andReturn(false);
 
         IonicCli.run(['node', 'bin/ionic', 'fake'])
         .then(function() {
+          expect(IonicCli.loadGulpfile).toHaveBeenCalled();
           expect(FakeTask.run).toHaveBeenCalled();
           expect(IonicCli.runWithGulp).not.toHaveBeenCalled();
+          done();
+        });
+      });
+
+      it('should runWithGulp', function(done){
+        var FakeTask = {
+          name: 'fake',
+          isProjectTask: true
+        };
+        spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
+        spyOn(IonicCli, 'runWithGulp').andReturn(Q(true));
+        spyOn(fs, 'existsSync').andReturn(true);
+        spyOn(IonicCli, 'loadGulpfile').andReturn(true);
+
+        IonicCli.run(['node', 'bin/ionic', 'fake'])
+        .then(function() {
+          expect(IonicCli.runWithGulp).toHaveBeenCalled();
           done();
         });
       });
@@ -527,78 +565,31 @@ describe('Cli', function() {
         },
         isProjectTask: true
       };
+      spyOn(IonicCli, 'loadGulpfile').andReturn(true);
       spyOn(fakeTask, 'run').andCallThrough();
       spyOn(process, 'exit');
     });
 
-    it('should run the task and not gulp if there is no gulp file and the command is not v2', function(done) {
-      var argv = {
-        _: ['fake'],
-        v2: false
-      };
-      spyOn(IonicCli, 'loadGulpfile').andReturn(false);
-      spyOn(fs, 'existsSync');
-      spyOn(gulp, 'start');
-
-      IonicCli.runWithGulp(argv, fakeTask).then(function() {
-        expect(IonicCli.loadGulpfile).toHaveBeenCalled();
-        expect(fakeTask.run).toHaveBeenCalled();
-
-        expect(process.exit).not.toHaveBeenCalled();
-        expect(fs.existsSync).not.toHaveBeenCalled();
-        expect(gulp.start).not.toHaveBeenCalled();
-        done();
-      });
-    });
-
-    it('should warn if there is no gulp file and the command requires a build step', function(done) {
-      var cmdName = fakeTask.name = "build";
-      var argv = {
-        _: [cmdName],
-        v2: true
-      };
-
-      spyOn(IonicCli, 'loadGulpfile').andReturn(false);
-      spyOn(log, 'warn');
-      spyOn(fs, 'existsSync');
-      spyOn(gulp, 'start');
-
-      IonicCli.runWithGulp(argv, fakeTask).then(function() {
-        expect(IonicCli.loadGulpfile).toHaveBeenCalled();
-        expect(fakeTask.run).toHaveBeenCalled();
-        expect(log.warn).toHaveBeenCalledWith('WARN: No gulpfile found!');
-        expect(log.warn).toHaveBeenCalledWith('If your app requires a build step, you may want to ensure it runs before ' + cmdName + '.\n');
-        expect(process.exit).not.toHaveBeenCalled();
-        expect(fs.existsSync).not.toHaveBeenCalled();
-        expect(gulp.start).not.toHaveBeenCalled();
-        done();
-      });
-    });
-
-    it('should try to load gulp file, exit if it fails', function() {
+    it('should try to load gulp, exit if it fails', function() {
       var argv = {
         _: ['fake'],
         v2: false
       };
 
-
-      spyOn(IonicCli, 'loadGulpfile').andReturn(true);
-      spyOn(IonicCli, 'logEvents').andReturn(true);
-      spyOn(path, 'resolve').andReturn('./RKLERREulp');
+      spyOn(IonicCli, 'logEvents');
+      spyOn(path, 'resolve').andReturn('./wrong_path');
       spyOn(log, 'error');
       spyOn(fs, 'existsSync');
       spyOn(gulp, 'start');
 
       IonicCli.runWithGulp(argv, fakeTask);
 
-      expect(IonicCli.loadGulpfile).toHaveBeenCalled();
       expect(log.error).toHaveBeenCalledWith('\nGulpfile detected, but gulp is not installed'.red);
       expect(log.error).toHaveBeenCalledWith('Do you need to run `npm install`?\n'.red);
       expect(process.exit).toHaveBeenCalled();
 
       expect(IonicCli.logEvents).not.toHaveBeenCalled();
       expect(fakeTask.run).not.toHaveBeenCalled();
-      expect(fs.existsSync).not.toHaveBeenCalled();
       expect(gulp.start).not.toHaveBeenCalled();
     });
 
@@ -608,7 +599,6 @@ describe('Cli', function() {
         _: ['fake'],
         v2: false
       };
-      spyOn(IonicCli, 'loadGulpfile').andReturn(true);
       spyOn(IonicCli, 'logEvents').andReturn(true);
       spyOn(log, 'error');
       spyOn(fs, 'existsSync');
@@ -616,7 +606,6 @@ describe('Cli', function() {
 
       IonicCli.runWithGulp(argv, fakeTask).then(function() {
 
-        expect(IonicCli.loadGulpfile).toHaveBeenCalled();
         expect(IonicCli.logEvents).toHaveBeenCalled();
         expect(gulp.start).toHaveBeenCalledWith('fake:before');
         expect(gulp.start).toHaveBeenCalledWith('fake:after');
