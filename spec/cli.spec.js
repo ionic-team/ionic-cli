@@ -198,11 +198,11 @@ describe('Cli', function() {
         });
       });
 
-      it('should print a warning if using v2 and node_modules doesn\'t exist', function(done){
+      it('should print a warning if node_modules doesn\'t exist and using v2', function(done){
         spyOn(fs, 'existsSync').andReturn(false);
         Project.load = function(){
           return {
-            get: function(){ return true }
+            get: function(){ return true } // return v2 === true
           }
         };
 
@@ -223,6 +223,34 @@ describe('Cli', function() {
         IonicCli.run(['node', 'bin/ionic', 'fake'])
         .then(function() {
           expect(log.warn).toHaveBeenCalledWith('WARN: No node_modules directory found, do you need to run npm install?'.yellow);
+          expect(runWithGulpSpy).not.toHaveBeenCalled();
+          runWithGulpRevert();
+          done();
+        });
+      });
+
+      it('should not runWithGulp if node_modules doesn\'t exist and not using v2', function(done){
+        spyOn(fs, 'existsSync').andReturn(false);
+        Project.load = function(){
+          return {
+            get: function(){ return false } // return v2 === false
+          }
+        };
+
+        var FakeTask = {
+          name: 'fake',
+          title: 'fake',
+          run: function(){},
+          isProjectTask: true
+        };
+        spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
+        spyOn(FakeTask, 'run').andReturn(Q(true));
+        var runWithGulpSpy = jasmine.createSpy('runWithGulp');
+        var runWithGulpRevert = IonicCli.__set__('runWithGulp', runWithGulpSpy);
+
+        IonicCli.run(['node', 'bin/ionic', 'fake'])
+        .then(function() {
+          expect(FakeTask.run).toHaveBeenCalled();
           expect(runWithGulpSpy).not.toHaveBeenCalled();
           runWithGulpRevert();
           done();
