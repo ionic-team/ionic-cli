@@ -623,22 +623,16 @@ describe('Cli', function() {
     });
 
     it('should warn if no gulp task and using v2 and cmd requires build', function(done) {
+      argv._[0] = "build";
       spyOn(log, 'warn');
       gulp.start = function(taskName, cb){
         cb({
           missingTask: true
         });
       }
-
-      IonicCli.runWithGulp(argv, fakeTask).then(function() {
-        expect(log.warn).toHaveBeenCalledWith(('WARN: No \'fake:before\' gulp task found!').yellow)
+      IonicCli.runWithGulp(argv, fakeTask).then(function(err){
+        expect(log.warn).toHaveBeenCalledWith(('WARN: No \'build:before\' gulp task found!').yellow)
         done();
-      }).catch(function(err){
-        if (!err.missingTask) {
-          done(err);
-        } else {
-          done();
-        }
       });
     });
 
