@@ -554,7 +554,7 @@ describe('Cli', function() {
   });
 
   describe('runWithGulp function', function() {
-    var fakeTask;
+    var fakeTask, argv, qCallbacks;
 
     beforeEach(function() {
       fakeTask = {
@@ -565,22 +565,35 @@ describe('Cli', function() {
         },
         isProjectTask: true
       };
+      argv = {
+        _: ['fake'],
+        v2: true
+      };
+      gulp.tasks = {
+        "fake:before": function(){},
+        "fake:after": function(){}
+      };
+      qCallbacks = [];
+
+      // gulp.start gets called with nfcall because it's async with a callback
+      // so we stub our own function with a callback instead of creating a spy
+      // (which is sync). We also track the callbacks because they are created
+      // at runtime by Q.nfcall so we can tell jasmine what to expect.
+      gulp.start = function(taskName, cb){
+        qCallbacks.push(cb);
+        cb();
+      }
+      spyOn(gulp, 'start').andCallThrough();
       spyOn(IonicCli, 'loadGulpfile').andReturn(true);
       spyOn(fakeTask, 'run').andCallThrough();
       spyOn(process, 'exit');
+      spyOn(IonicCli, 'logEvents');
+      spyOn(log, 'error');
+      spyOn(fs, 'existsSync');
     });
 
     it('should try to load gulp, exit if it fails', function() {
-      var argv = {
-        _: ['fake'],
-        v2: false
-      };
-
-      spyOn(IonicCli, 'logEvents');
       spyOn(path, 'resolve').andReturn('./wrong_path');
-      spyOn(log, 'error');
-      spyOn(fs, 'existsSync');
-      spyOn(gulp, 'start');
 
       IonicCli.runWithGulp(argv, fakeTask);
 
@@ -594,21 +607,12 @@ describe('Cli', function() {
     });
 
 
-    xit('should try to load gulp file, on success logEvents and call task', function(done) {
-      var argv = {
-        _: ['fake'],
-        v2: false
-      };
-      spyOn(IonicCli, 'logEvents').andReturn(true);
-      spyOn(log, 'error');
-      spyOn(fs, 'existsSync');
-      spyOn(gulp, 'start');
-
+    it('should run logEvents, the command and the gulp hooks', function(done) {
       IonicCli.runWithGulp(argv, fakeTask).then(function() {
 
         expect(IonicCli.logEvents).toHaveBeenCalled();
-        expect(gulp.start).toHaveBeenCalledWith('fake:before');
-        expect(gulp.start).toHaveBeenCalledWith('fake:after');
+        expect(gulp.start).toHaveBeenCalledWith('fake:before', qCallbacks[0]);
+        expect(gulp.start).toHaveBeenCalledWith('fake:after', qCallbacks[1]);
         expect(fakeTask.run).toHaveBeenCalledWith(IonicCli, argv);
 
         expect(log.error).not.toHaveBeenCalled();
@@ -617,6 +621,27 @@ describe('Cli', function() {
         done();
       }).catch(done);
     });
+
+    it('should warn if no gulp task and using v2 and cmd requires build', function(done) {
+      spyOn(log, 'warn');
+      gulp.start = function(taskName, cb){
+        cb({
+          missingTask: true
+        });
+      }
+
+      IonicCli.runWithGulp(argv, fakeTask).then(function() {
+        expect(log.warn).toHaveBeenCalledWith(('WARN: No \'fake:before\' gulp task found!').yellow)
+        done();
+      }).catch(function(err){
+        if (!err.missingTask) {
+          done(err);
+        } else {
+          done();
+        }
+      });
+    });
+
 
   });
 
