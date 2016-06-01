@@ -1,3 +1,16 @@
+<a name="2.0.0-beta.26"></a>
+# [2.0.0-beta.26](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.25...v2.0.0-beta.26) (2016-06-01)
+
+
+### Bug Fixes
+* **tests:** add tests to cover cli tasks and utilities. ([6c7a040](https://github.com/driftyco/ionic-cli/commit/6c7a040))
+* **eslint:** add parseInt to all request response checks because type coersion was removed. ([5e283ce](https://github.com/driftyco/ionic-cli/commit/5e283ce))
+* **login:** correct email regex that was split to change decrease line length. ([2dbd92c](https://github.com/driftyco/ionic-cli/commit/2dbd92c))
+* **serve:** remove unused lab preview template ([a100e8b](https://github.com/driftyco/ionic-cli/commit/a100e8b))
+* **share:** use app-lib project utility ([6317e76](https://github.com/driftyco/ionic-cli/commit/6317e76))
+* **store:** don't error if config isn't found ([cd72553](https://github.com/driftyco/ionic-cli/commit/cd72553))
+
+
 <a name="2.0.0-beta.25"></a>
 # [2.0.0-beta.25](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.24...v2.0.0-beta.25) (2016-04-20)
 
