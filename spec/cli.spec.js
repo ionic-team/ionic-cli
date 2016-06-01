@@ -639,6 +639,25 @@ describe('Cli', function() {
 
   });
 
+  describe('loadGulpfile function', function() {
+    it('should return true if gulpfile found', function(){
+      var mock = require('mock-require');
+      var gulpfilePath = path.resolve(process.cwd() + '/gulpfile.js');
+      mock(gulpfilePath, {});
+
+      var result = IonicCli.loadGulpfile();
+      expect(result).toBe(true);
+
+      mock.stop(gulpfilePath);
+    });
+
+    it('should return false if gulpfile not found', function(){
+      var result = IonicCli.loadGulpfile();
+      expect(result).toBe(false);
+    });
+
+  });
+
   describe('processExit method', function() {
   });
 

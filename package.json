@@ -89,6 +89,7 @@
     "github": "0.2.4",
     "istanbul": "^0.4.3",
     "jasmine-node": "1.14.5",
+    "mock-require": "1.3.0",
     "rewire": "2.5.1"
   },
   "bundledDependencies": [
