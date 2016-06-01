@@ -14,13 +14,14 @@ var Logging = IonicAppLib.logging;
 var log = Logging.logger;
 var fs = require('fs');
 var path = require('path');
-var gulp = require('gulp');
 var rewire = require('rewire');
 var IonicCli = rewire('../lib/cli');
+var gulp = require('gulp');
 
 describe('Cli', function() {
 
   beforeEach(function() {
+    spyOn(IonicStats, 't');
     spyOn(IonicCli, 'processExit');
     spyOn(helpUtils, 'printTaskListShortUsage');
     spyOn(helpUtils, 'printTaskListUsage');
@@ -152,7 +153,6 @@ describe('Cli', function() {
       });
 
       it('should track stats for cli', function(done) {
-        spyOn(IonicStats, 't');
 
         IonicCli.run(['node', 'bin/ionic', 'help'])
         .then(function() {
@@ -197,12 +197,12 @@ describe('Cli', function() {
         });
       });
 
-      it('should print a warning if node_modules doesn\'t exist and using v2', function(done){
+      it('should print a warning if node_modules doesn\'t exist and using v2', function(done) {
         spyOn(fs, 'existsSync').andReturn(false);
-        Project.load = function(){
+        Project.load = function() {
           return {
-            get: function(){ return true } // return v2 === true
-          }
+            get: function() { return true; } // return v2 === true
+          };
         };
 
         var FakeTask = {
@@ -216,26 +216,27 @@ describe('Cli', function() {
         spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
         spyOn(IonicCli, 'runWithGulp');
         spyOn(log, 'warn');
-
         IonicCli.run(['node', 'bin/ionic', 'fake'])
         .then(function() {
-          expect(log.warn).toHaveBeenCalledWith('WARN: No node_modules directory found, do you need to run npm install?'.yellow);
+          expect(log.warn.calls[0].args[0]).toMatch(
+            'WARN: No node_modules directory found, do you need to run npm install?'
+          );
           expect(IonicCli.runWithGulp).not.toHaveBeenCalled();
           done();
         });
       });
 
-      it('should warn if cmd requires build step and gulpfile doesn\'t exist and using v2', function(done){
+      it('should warn if cmd requires build step and gulpfile doesn\'t exist and using v2', function(done) {
         var FakeTask = {
           name: 'build',
           title: 'build',
-          run: function(){},
+          run: function() {},
           isProjectTask: true
         };
-        Project.load = function(){
+        Project.load = function() {
           return {
-            get: function(){ return true } // return v2 === true
-          }
+            get: function() { return true; } // return v2 === true
+          };
         };
         spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
         spyOn(FakeTask, 'run').andReturn(Q(true));
@@ -250,11 +251,11 @@ describe('Cli', function() {
         });
       });
 
-      it('should not runWithGulp if a gulpfile doesn\'t exist', function(done){
+      it('should not runWithGulp if a gulpfile doesn\'t exist', function(done) {
         var FakeTask = {
           name: 'fake',
           title: 'fake',
-          run: function(){},
+          run: function() {},
           isProjectTask: true
         };
         spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
@@ -272,7 +273,7 @@ describe('Cli', function() {
         });
       });
 
-      it('should runWithGulp', function(done){
+      it('should runWithGulp', function(done) {
         var FakeTask = {
           name: 'fake',
           isProjectTask: true
@@ -554,7 +555,9 @@ describe('Cli', function() {
   });
 
   describe('runWithGulp function', function() {
-    var fakeTask, argv, qCallbacks;
+    var fakeTask;
+    var argv;
+    var qCallbacks;
 
     beforeEach(function() {
       fakeTask = {
@@ -570,8 +573,8 @@ describe('Cli', function() {
         v2: true
       };
       gulp.tasks = {
-        "fake:before": function(){},
-        "fake:after": function(){}
+        'fake:before': function() {},
+        'fake:after': function() {}
       };
       qCallbacks = [];
 
@@ -579,10 +582,10 @@ describe('Cli', function() {
       // so we stub our own function with a callback instead of creating a spy
       // (which is sync). We also track the callbacks because they are created
       // at runtime by Q.nfcall so we can tell jasmine what to expect.
-      gulp.start = function(taskName, cb){
+      gulp.start = function(taskName, cb) {
         qCallbacks.push(cb);
         cb();
-      }
+      };
       spyOn(gulp, 'start').andCallThrough();
       spyOn(IonicCli, 'loadGulpfile').andReturn(true);
       spyOn(fakeTask, 'run').andCallThrough();
@@ -623,24 +626,22 @@ describe('Cli', function() {
     });
 
     it('should warn if no gulp task and using v2 and cmd requires build', function(done) {
-      argv._[0] = "build";
+      argv._[0] = 'build';
       spyOn(log, 'warn');
-      gulp.start = function(taskName, cb){
+      gulp.start = function(taskName, cb) {
         cb({
           missingTask: true
         });
-      }
-      IonicCli.runWithGulp(argv, fakeTask).then(function(err){
-        expect(log.warn).toHaveBeenCalledWith(('WARN: No \'build:before\' gulp task found!').yellow)
+      };
+      IonicCli.runWithGulp(argv, fakeTask).then(function() {
+        expect(log.warn).toHaveBeenCalledWith(('WARN: No \'build:before\' gulp task found!').yellow);
         done();
       });
     });
-
-
   });
 
   describe('loadGulpfile function', function() {
-    it('should return true if gulpfile found', function(){
+    it('should return true if gulpfile found', function() {
       var mock = require('mock-require');
       var gulpfilePath = path.resolve(process.cwd() + '/gulpfile.js');
       mock(gulpfilePath, {});
@@ -651,11 +652,10 @@ describe('Cli', function() {
       mock.stop(gulpfilePath);
     });
 
-    it('should return false if gulpfile not found', function(){
+    it('should return false if gulpfile not found', function() {
       var result = IonicCli.loadGulpfile();
       expect(result).toBe(false);
     });
-
   });
 
   describe('processExit method', function() {
