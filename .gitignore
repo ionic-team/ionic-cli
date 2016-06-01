@@ -2,5 +2,7 @@
 *.cookies
 node_modules/
 .idea/
-coverage/
 .vscode/
+coverage/
+.coveralls.yml
+npm-debug.log

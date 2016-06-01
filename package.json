@@ -10,10 +10,11 @@
   "scripts": {
     "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
     "gh-release": "node scripts/release",
+    "coveralls": "istanbul cover node_modules/jasmine-node/bin/jasmine-node --captureExceptions spec/ && cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js && rm -rf coverage",
     "e2e": "jasmine-node --captureExceptions ./e2e",
     "jasmine": "jasmine-node --captureExceptions  ./spec",
     "lint": "eslint .",
-    "test": "npm run jasmine"
+    "test": "istanbul cover node_modules/jasmine-node/bin/jasmine-node --captureExceptions spec/"
   },
   "keywords": [
     "ionic",
@@ -61,7 +62,6 @@
   "dependencies": {
     "cli-table": "0.3.1",
     "colors": "0.6.2",
-    "detective": "4.3.1",
     "expand-tilde": "1.2.0",
     "form-data": "0.1.4",
     "gulp": "3.8.8",
@@ -84,15 +84,17 @@
   },
   "devDependencies": {
     "conventional-changelog-cli": "1.1.1",
+    "coveralls": "^2.2.0",
     "eslint": "^2.8.0",
     "github": "0.2.4",
+    "istanbul": "^0.4.3",
     "jasmine-node": "1.14.5",
+    "mock-require": "1.3.0",
     "rewire": "2.5.1"
   },
   "bundledDependencies": [
     "cli-table",
     "colors",
-    "detective",
     "expand-tilde",
     "form-data",
     "gulp",
