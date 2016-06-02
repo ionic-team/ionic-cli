@@ -1,3 +1,12 @@
+<a name="2.0.0-beta.29"></a>
+# [2.0.0-beta.29](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.25...v2.0.0-beta.29) (2016-06-02)
+
+
+### Bug Fixes
+
+* **commands:** add generate, prepare, address, compile to the available command list. ([7ddd42e](https://github.com/driftyco/ionic-cli/commit/7ddd42e))
+
+
 <a name="2.0.0-beta.28"></a>
 # [2.0.0-beta.28](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.25...v2.0.0-beta.28) (2016-06-02)
 
