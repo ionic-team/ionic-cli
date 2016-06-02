@@ -1,6 +1,10 @@
 <a name="2.0.0-beta.26"></a>
 # [2.0.0-beta.26](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.25...v2.0.0-beta.26) (2016-06-01)
 
+### Features
+
+* **start:** default all version 2 projects that are started to use typescript.
+
 
 ### Bug Fixes
 * **tests:** add tests to cover cli tasks and utilities. ([6c7a040](https://github.com/driftyco/ionic-cli/commit/6c7a040))
