@@ -3,7 +3,7 @@
 
 ### Features
 
-* **start:** default all version 2 projects that are started to use typescript.
+* **start:** default all v2 projects that are started to use typescript. ([3f80103](https://github.com/driftyco/ionic-cli/commit/3f80103))
 
 
 ### Bug Fixes
