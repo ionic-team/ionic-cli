@@ -133,7 +133,30 @@ describe('start command', function() {
         done();
       });
     });
-    it('should provide extra content if starting a v2 project', function(done) {
+
+    it('should default to typescript if starting a v2 project with -v', function(done) {
+      var processArguments = ['node', 'ionic', 'start', 'newDir', '-v'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      spyOn(fs, 'existsSync').andReturn(false);
+      spyOn(appLibUtils, 'preprocessCliOptions').andCallThrough();
+      spyOn(Start, 'promptForOverwrite');
+      spyOn(Start, 'startApp').andReturn(Q(true));
+      spyOn(Start, 'printQuickHelp').andReturn(Q(true));
+      spyOn(Start, 'promptLogin').andReturn(Q(true));
+
+      start.run({}, argv).then(function() {
+        expect(appLibUtils.preprocessCliOptions.calls[0].args[0].v).toEqual(true);
+        expect(appLibUtils.preprocessCliOptions.calls[0].args[0].ts).toEqual(true);
+        expect(log.info).toHaveBeenCalledWith(
+          '\nNew to Ionic? Get started here: http://ionicframework.com/docs/v2/getting-started\n'
+        );
+        done();
+      });
+    });
+
+    it('should default to typescript if starting a v2 project with --v2', function(done) {
       var processArguments = ['node', 'ionic', 'start', 'newDir', '--v2'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
@@ -146,6 +169,8 @@ describe('start command', function() {
       spyOn(Start, 'promptLogin').andReturn(Q(true));
 
       start.run({}, argv).then(function() {
+        expect(appLibUtils.preprocessCliOptions.calls[0].args[0].v2).toEqual(true);
+        expect(appLibUtils.preprocessCliOptions.calls[0].args[0].ts).toEqual(true);
         expect(log.info).toHaveBeenCalledWith(
           '\nNew to Ionic? Get started here: http://ionicframework.com/docs/v2/getting-started\n'
         );
