@@ -1,3 +1,12 @@
+<a name="2.0.0-beta.27"></a>
+# [2.0.0-beta.27](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.25...v2.0.0-beta.27) (2016-06-02)
+
+
+### Bug Fixes
+
+* **commands:** ensure that rawCliArguments are passed to all tasks that are ran from cli.js. ([5549b82](https://github.com/driftyco/ionic-cli/commit/5549b82))
+
+
 <a name="2.0.0-beta.26"></a>
 # [2.0.0-beta.26](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.25...v2.0.0-beta.26) (2016-06-01)
 
