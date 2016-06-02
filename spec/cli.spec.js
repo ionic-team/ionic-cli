@@ -2,6 +2,7 @@
 
 var IonicAppLib = require('ionic-app-lib');
 var semver = require('semver');
+var optimist = require('optimist');
 var Ionitron = require('../lib/utils/ionitron');
 var Q = require('q');
 var helpUtils = require('../lib/utils/help');
@@ -162,6 +163,10 @@ describe('Cli', function() {
       });
 
       it('should change cwd to project root for project tasks', function(done) {
+        var processArguments = ['node', 'bin/ionic', 'fake'];
+        var rawCliArguments = processArguments.slice(2);
+        var argv = optimist(rawCliArguments).argv;
+
         var FakeTask = {
           name: 'fake',
           title: 'fake',
@@ -171,15 +176,77 @@ describe('Cli', function() {
           isProjectTask: true
         };
         spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
+        spyOn(FakeTask, 'run').andReturn(Q(true));
 
-        IonicCli.run(['node', 'bin/ionic', 'fake'])
+        IonicCli.run(processArguments)
         .then(function() {
           expect(Utils.cdIonicRoot).toHaveBeenCalled();
+          expect(FakeTask.run).toHaveBeenCalledWith(IonicCli, argv, rawCliArguments);
+          done();
+        });
+      });
+
+      it('should skip loading gulpfile if node_modules does not exist', function(done) {
+        var processArguments = ['node', 'bin/ionic', 'fake'];
+        var rawCliArguments = processArguments.slice(2);
+        var argv = optimist(rawCliArguments).argv;
+
+        var FakeTask = {
+          name: 'fake',
+          title: 'fake',
+          run: function() {
+            return Q(true);
+          },
+          isProjectTask: true
+        };
+        spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
+        spyOn(fs, 'existsSync').andReturn(false);
+        spyOn(FakeTask, 'run').andReturn(Q(true));
+        spyOn(IonicCli, 'loadGulpfile');
+        spyOn(IonicCli, 'runWithGulp');
+
+        IonicCli.run(processArguments)
+        .then(function() {
+          expect(IonicCli.loadGulpfile).not.toHaveBeenCalled();
+          expect(IonicCli.runWithGulp).not.toHaveBeenCalled();
+          expect(FakeTask.run).toHaveBeenCalledWith(IonicCli, argv, rawCliArguments);
+          done();
+        });
+      });
+
+      it('should skip runWithGulp if a gulpfile does not exist', function(done) {
+        var processArguments = ['node', 'bin/ionic', 'fake'];
+        var rawCliArguments = processArguments.slice(2);
+        var argv = optimist(rawCliArguments).argv;
+
+        var FakeTask = {
+          name: 'fake',
+          title: 'fake',
+          run: function() {
+            return Q(true);
+          },
+          isProjectTask: true
+        };
+        spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
+        spyOn(fs, 'existsSync').andReturn(true);
+        spyOn(IonicCli, 'loadGulpfile').andReturn(false);
+        spyOn(FakeTask, 'run').andReturn(Q(true));
+        spyOn(IonicCli, 'runWithGulp');
+
+        IonicCli.run(processArguments)
+        .then(function() {
+          expect(IonicCli.loadGulpfile).toHaveBeenCalled();
+          expect(IonicCli.runWithGulp).not.toHaveBeenCalled();
+          expect(FakeTask.run).toHaveBeenCalledWith(IonicCli, argv, rawCliArguments);
           done();
         });
       });
 
       it('should not change cwd to project root for non project tasks', function(done) {
+        var processArguments = ['node', 'bin/ionic', 'fake'];
+        var rawCliArguments = processArguments.slice(2);
+        var argv = optimist(rawCliArguments).argv;
+
         var FakeTask = {
           name: 'fake',
           title: 'fake',
@@ -189,10 +256,12 @@ describe('Cli', function() {
           isProjectTask: false
         };
         spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
+        spyOn(FakeTask, 'run').andReturn(Q(true));
 
-        IonicCli.run(['node', 'bin/ionic', 'fake'])
+        IonicCli.run(processArguments)
         .then(function() {
           expect(Utils.cdIonicRoot).not.toHaveBeenCalled();
+          expect(FakeTask.run).toHaveBeenCalledWith(IonicCli, argv, rawCliArguments);
           done();
         });
       });
@@ -267,7 +336,6 @@ describe('Cli', function() {
         IonicCli.run(['node', 'bin/ionic', 'fake'])
         .then(function() {
           expect(IonicCli.loadGulpfile).toHaveBeenCalled();
-          expect(FakeTask.run).toHaveBeenCalled();
           expect(IonicCli.runWithGulp).not.toHaveBeenCalled();
           done();
         });
@@ -557,6 +625,7 @@ describe('Cli', function() {
   describe('runWithGulp function', function() {
     var fakeTask;
     var argv;
+    var rawCliArguments;
     var qCallbacks;
 
     beforeEach(function() {
@@ -572,6 +641,7 @@ describe('Cli', function() {
         _: ['fake'],
         v2: true
       };
+      rawCliArguments = ['fake', '--v2'];
       gulp.tasks = {
         'fake:before': function() {},
         'fake:after': function() {}
@@ -598,7 +668,7 @@ describe('Cli', function() {
     it('should try to load gulp, exit if it fails', function() {
       spyOn(path, 'resolve').andReturn('./wrong_path');
 
-      IonicCli.runWithGulp(argv, fakeTask);
+      IonicCli.runWithGulp(argv, fakeTask, rawCliArguments);
 
       expect(log.error).toHaveBeenCalledWith('\nGulpfile detected, but gulp is not installed'.red);
       expect(log.error).toHaveBeenCalledWith('Do you need to run `npm install`?\n'.red);
@@ -611,12 +681,12 @@ describe('Cli', function() {
 
 
     it('should run logEvents, the command and the gulp hooks', function(done) {
-      IonicCli.runWithGulp(argv, fakeTask).then(function() {
+      IonicCli.runWithGulp(argv, fakeTask, rawCliArguments).then(function() {
 
         expect(IonicCli.logEvents).toHaveBeenCalled();
         expect(gulp.start).toHaveBeenCalledWith('fake:before', qCallbacks[0]);
         expect(gulp.start).toHaveBeenCalledWith('fake:after', qCallbacks[1]);
-        expect(fakeTask.run).toHaveBeenCalledWith(IonicCli, argv);
+        expect(fakeTask.run).toHaveBeenCalledWith(IonicCli, argv, rawCliArguments);
 
         expect(log.error).not.toHaveBeenCalled();
         expect(process.exit).not.toHaveBeenCalled();
