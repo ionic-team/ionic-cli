@@ -178,6 +178,50 @@ describe('start command', function() {
       });
     });
 
+    it('should use javascript if starting a v2 project with --v2 and --no-ts', function(done) {
+      var processArguments = ['node', 'ionic', 'start', 'newDir', '--v2', '--no-ts'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      spyOn(fs, 'existsSync').andReturn(false);
+      spyOn(appLibUtils, 'preprocessCliOptions').andCallThrough();
+      spyOn(Start, 'promptForOverwrite');
+      spyOn(Start, 'startApp').andReturn(Q(true));
+      spyOn(Start, 'printQuickHelp').andReturn(Q(true));
+      spyOn(Start, 'promptLogin').andReturn(Q(true));
+
+      start.run({}, argv).then(function() {
+        expect(appLibUtils.preprocessCliOptions.calls[0].args[0].v2).toEqual(true);
+        expect(appLibUtils.preprocessCliOptions.calls[0].args[0].ts).toEqual(false);
+        expect(log.info).toHaveBeenCalledWith(
+          '\nNew to Ionic? Get started here: http://ionicframework.com/docs/v2/getting-started\n'
+        );
+        done();
+      });
+    });
+
+    it('should use javascript if starting a v2 project with --v2 and --no-typescript', function(done) {
+      var processArguments = ['node', 'ionic', 'start', 'newDir', '--v2', '--no-typescript'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      spyOn(fs, 'existsSync').andReturn(false);
+      spyOn(appLibUtils, 'preprocessCliOptions').andCallThrough();
+      spyOn(Start, 'promptForOverwrite');
+      spyOn(Start, 'startApp').andReturn(Q(true));
+      spyOn(Start, 'printQuickHelp').andReturn(Q(true));
+      spyOn(Start, 'promptLogin').andReturn(Q(true));
+
+      start.run({}, argv).then(function() {
+        expect(appLibUtils.preprocessCliOptions.calls[0].args[0].v2).toEqual(true);
+        expect(appLibUtils.preprocessCliOptions.calls[0].args[0].typescript).toEqual(false);
+        expect(log.info).toHaveBeenCalledWith(
+          '\nNew to Ionic? Get started here: http://ionicframework.com/docs/v2/getting-started\n'
+        );
+        done();
+      });
+    });
+
     it('should catch error if any process throws', function(done) {
       var processArguments = ['node', 'ionic', 'start', 'newDir'];
       var rawCliArguments = processArguments.slice(2);
