@@ -1,3 +1,12 @@
+<a name="2.0.0-beta.28"></a>
+# [2.0.0-beta.28](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.25...v2.0.0-beta.28) (2016-06-02)
+
+
+### Bug Fixes
+
+* **start:** ensure that --no-ts flag provided to --v2 project start pulls the javascript version. ([c30f9d8](https://github.com/driftyco/ionic-cli/commit/c30f9d8))
+
+
 <a name="2.0.0-beta.27"></a>
 # [2.0.0-beta.27](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.25...v2.0.0-beta.27) (2016-06-02)
 
