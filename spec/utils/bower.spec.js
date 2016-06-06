@@ -171,4 +171,12 @@ describe('checkForBower function', function() {
     var result = bowerUtils.checkForBower();
     expect(result).toEqual(false);
   });
+
+  it('should return false if bower exec throws an error', function() {
+    spyOn(childProcess, 'exec').andCallFake(function() {
+      throw new Error('something happened');
+    });
+    var result = bowerUtils.checkForBower();
+    expect(result).toEqual(false);
+  });
 });
