@@ -183,7 +183,7 @@ describe('emulate command', function() {
       spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
 
       emulate.run(null, argv, rawCliArguments).then(function() {
-        expect(cordovaUtils.setupLiveReload).toHaveBeenCalledWith(argv. appDirectory);
+        expect(cordovaUtils.setupLiveReload).toHaveBeenCalledWith(argv, appDirectory);
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(
           ['emulate', 'android'], true, { blah: 'blah' });
         done();
