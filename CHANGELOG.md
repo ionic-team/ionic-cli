@@ -1,5 +1,14 @@
+<a name="2.0.0-beta.30"></a>
+# [2.0.0-beta.30](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.29...v2.0.0-beta.30) (2016-06-06)
+
+
+### Bug Fixes
+* ensure that the project base directory is passed to setupLiveReload. fixes [#1034](https://github.com/driftyco/ionic-cli/issues/1034) ([f36acef](https://github.com/driftyco/ionic-cli/commit/f36acef)), closes [#1034](https://github.com/driftyco/ionic-cli/issues/1034)
+* ensure when bower exec throws an error it is caught. fixes [#1037](https://github.com/driftyco/ionic-cli/issues/1037). ([53bcbbb](https://github.com/driftyco/ionic-cli/commit/53bcbbb)), closes [#1037](https://github.com/driftyco/ionic-cli/issues/1037)
+
+
 <a name="2.0.0-beta.29"></a>
-# [2.0.0-beta.29](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.25...v2.0.0-beta.29) (2016-06-02)
+# [2.0.0-beta.29](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.28...v2.0.0-beta.29) (2016-06-02)
 
 
 ### Bug Fixes
@@ -8,7 +17,7 @@
 
 
 <a name="2.0.0-beta.28"></a>
-# [2.0.0-beta.28](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.25...v2.0.0-beta.28) (2016-06-02)
+# [2.0.0-beta.28](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.27...v2.0.0-beta.28) (2016-06-02)
 
 
 ### Bug Fixes
@@ -17,7 +26,7 @@
 
 
 <a name="2.0.0-beta.27"></a>
-# [2.0.0-beta.27](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.25...v2.0.0-beta.27) (2016-06-02)
+# [2.0.0-beta.27](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.26...v2.0.0-beta.27) (2016-06-02)
 
 
 ### Bug Fixes
