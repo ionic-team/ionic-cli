@@ -180,7 +180,7 @@ describe('run command', function() {
       }));
 
       run.run(null, argv, rawCliArguments).then(function() {
-        expect(cordovaUtils.setupLiveReload).toHaveBeenCalledWith(argv);
+        expect(cordovaUtils.setupLiveReload).toHaveBeenCalledWith(argv, appDirectory);
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(
           ['run', 'android'], true, { blah: 'blah' });
         done();
