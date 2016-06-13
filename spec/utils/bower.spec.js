@@ -149,31 +149,30 @@ describe('saveData function', function() {
 
 describe('checkForBower function', function() {
   it('should return true if bower is installed', function() {
-    spyOn(childProcess, 'exec').andReturn({
-      output: '0'
-    });
+    spyOn(childProcess, 'execSync').andReturn('1.7.9\n');
+    var result = bowerUtils.checkForBower();
+    expect(result).toEqual(true);
+  });
+  it('should return true if bower is installed', function() {
+    spyOn(childProcess, 'execSync').andReturn('0');
     var result = bowerUtils.checkForBower();
     expect(result).toEqual(true);
   });
 
   it('should return false if bower exec returns "command not found"', function() {
-    spyOn(childProcess, 'exec').andReturn({
-      output: 'command not found'
-    });
+    spyOn(childProcess, 'execSync').andReturn('command not found');
     var result = bowerUtils.checkForBower();
     expect(result).toEqual(false);
   });
 
   it('should return false if bower exec returns "not recognized"', function() {
-    spyOn(childProcess, 'exec').andReturn({
-      output: 'not recognized'
-    });
+    spyOn(childProcess, 'execSync').andReturn('not recognized');
     var result = bowerUtils.checkForBower();
     expect(result).toEqual(false);
   });
 
   it('should return false if bower exec throws an error', function() {
-    spyOn(childProcess, 'exec').andCallFake(function() {
+    spyOn(childProcess, 'execSync').andCallFake(function() {
       throw new Error('something happened');
     });
     var result = bowerUtils.checkForBower();
