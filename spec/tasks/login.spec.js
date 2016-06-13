@@ -118,21 +118,18 @@ describe('login command', function() {
       });
     });
 
-    it('should throw an error on a failed log in', function(done) {
+    it('should display the error on a failed log in attempt', function(done) {
       var processArguments = ['node', 'ionic', 'login', '--email', 'josh@ionic.io', '--password', 'asdf1234'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
-      var error = new Error('error occurred');
+      var error = 'Email or Password incorrect. Please visit';
       spyOn(log, 'error');
       spyOn(login, 'promptForLogin');
-      spyOn(appLibLogin, 'requestLogIn').andCallFake(function() {
-        throw error;
-      });
+      spyOn(appLibLogin, 'requestLogIn').andReturn(Q.reject(error));
 
-      login.login(argv).catch(function(err) {
-        expect(log.error).toHaveBeenCalledWith('Error logging in');
-        expect(err).toEqual(error);
+      login.login(argv).then(function() {
+        expect(log.error).toHaveBeenCalledWith(error);
         done();
       });
     });
@@ -156,26 +153,6 @@ describe('login command', function() {
         expect(prompt.get).toHaveBeenCalled();
         expect(results.email).toEqual('josh@ionic.io');
         expect(results.password).toEqual('asdf1234');
-        done();
-      });
-    });
-
-    it('should return a rejected promise on failure', function(done) {
-      var processArguments = ['node', 'ionic', 'login'];
-      var rawCliArguments = processArguments.slice(2);
-      var argv = optimist(rawCliArguments).argv;
-
-      spyOn(log, 'info');
-      spyOn(prompt, 'start');
-      spyOn(prompt, 'get').andCallFake(function(schema, callback) {
-        callback('an error occurred', null);
-      });
-
-      var promptForLogin = login.__get__('promptForLogin');
-
-      promptForLogin(argv).catch(function(results) {
-        expect(prompt.get).toHaveBeenCalled();
-        expect(results).toEqual('Error logging in: an error occurred');
         done();
       });
     });
