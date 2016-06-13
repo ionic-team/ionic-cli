@@ -157,6 +157,24 @@ describe('start command', function() {
     });
 
 
+    it('should treat all numerically named folders and strings not integers', function(done) {
+      var processArguments = ['node', 'ionic', 'start', '5887'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      spyOn(fs, 'existsSync').andReturn(false);
+      spyOn(appLibUtils, 'preprocessCliOptions').andCallThrough();
+      spyOn(Start, 'promptForOverwrite');
+      spyOn(Start, 'startApp').andReturn(Q(true));
+      spyOn(Start, 'printQuickHelp').andReturn(Q(true));
+      spyOn(Start, 'promptLogin').andReturn(Q(true));
+
+      start.run({}, argv).then(function() {
+        expect(appLibUtils.preprocessCliOptions.calls[0].args[0]._[1]).toEqual('5887');
+        done();
+      });
+    });
+
     it('should print a getting started message with v2 projects', function(done) {
       var processArguments = ['node', 'ionic', 'start', 'newDir', '--v2'];
       var rawCliArguments = processArguments.slice(2);
