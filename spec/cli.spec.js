@@ -150,7 +150,7 @@ describe('Cli', function() {
         var booleanOptions = IonicCli.getListOfBooleanOptions(task.options);
 
         // We expect 6 total = 3 options, each with short hand notation.
-        expect(booleanOptions.length).toBe(11);
+        expect(booleanOptions.length).toBe(9);
       });
 
       it('should track stats for cli', function(done) {
