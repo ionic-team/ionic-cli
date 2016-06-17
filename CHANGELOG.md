@@ -1,3 +1,19 @@
+<a name="2.0.0-beta.31"></a>
+# [2.0.0-beta.31](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.30...v2.0.0-beta.31) (2016-06-13)
+
+
+### Bug Fixes
+
+* **bower:** change check for bower to use execSync. ([9de2157](https://github.com/driftyco/ionic-cli/commit/9de2157))
+* **login:** show error message from login results on login failure. ([2379b41](https://github.com/driftyco/ionic-cli/commit/2379b41))
+* **start:** ensure that folders can be created even if they are numeric. ([6322376](https://github.com/driftyco/ionic-cli/commit/6322376))
+
+
+### Features
+
+* **start:** remove javascript as an option for v2 projects because they should all be typescript. ([3f87bfb](https://github.com/driftyco/ionic-cli/commit/3f87bfb))
+
+
 <a name="2.0.0-beta.30"></a>
 # [2.0.0-beta.30](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.29...v2.0.0-beta.30) (2016-06-06)
 
