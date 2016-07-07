@@ -31,8 +31,18 @@ describe('compile command', function() {
       var error = new Error('error occurred');
       spyOn(ConfigXml, 'setConfigXml').andReturn(Q.reject(error));
 
-      compile.run({}, argv, rawCliArguments).catch(function(ex) {
-        expect(ex).toEqual(error);
+      compile.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).toHaveBeenCalledWith(error);
+        done();
+      });
+    });
+
+    it('should fail if any functions throw and not log if error is not instanceof Error', function(done) {
+      var error = 1;
+      spyOn(ConfigXml, 'setConfigXml').andReturn(Q.reject(error));
+
+      compile.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).not.toHaveBeenCalled();
         done();
       });
     });

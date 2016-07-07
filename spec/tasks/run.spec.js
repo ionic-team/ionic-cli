@@ -4,7 +4,6 @@ var Q = require('q');
 var optimist = require('optimist');
 var cordovaUtils = require('../../lib/utils/cordova');
 var os = require('os');
-var childProcess = require('child_process');
 var IonicAppLib = require('ionic-app-lib');
 var ConfigXml = IonicAppLib.configXml;
 var log = IonicAppLib.logging.logger;
@@ -70,8 +69,8 @@ describe('run command', function() {
     it('should fail if the system is not Mac and the platform is iOS', function(done) {
       spyOn(os, 'platform').andReturn('windows');
 
-      run.run(null, argv, rawCliArguments).catch(function(error) {
-        expect(error).toEqual('✗ You cannot run iOS unless you are on Mac OSX.');
+      run.run(null, argv, rawCliArguments).then(function() {
+        expect(log.error).toHaveBeenCalledWith('✗ You cannot run iOS unless you are on Mac OSX.');
         done();
       });
     });
@@ -144,7 +143,6 @@ describe('run command', function() {
 
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
-      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
     });
 
     it('should execute the command against the cordova util', function(done) {
@@ -152,17 +150,48 @@ describe('run command', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
+
       run.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['run', '-n', 'ios'], false, true);
         done();
       });
     });
 
+    it('should fail if any functions throw', function(done) {
+      var processArguments = ['node', 'ionic', 'run', '-n'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      var error = new Error('error occurred');
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q.reject(error));
+
+      run.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).toHaveBeenCalledWith(error);
+        done();
+      });
+    });
+
+    it('should fail if any functions throw and not log if not an instance of an Error', function(done) {
+      var processArguments = ['node', 'ionic', 'run', '-n'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      var error = 1;
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q.reject(error));
+
+      run.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).not.toHaveBeenCalled();
+        done();
+      });
+    });
 
     it('should execute the command against the cordova util using the platform provided', function(done) {
       var processArguments = ['node', 'ionic', 'run', 'android'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
+
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
 
       run.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['run', 'android'], false, true);
@@ -178,6 +207,7 @@ describe('run command', function() {
       spyOn(cordovaUtils, 'setupLiveReload').andReturn(Q({
         blah: 'blah'
       }));
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
 
       run.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.setupLiveReload).toHaveBeenCalledWith(argv, appDirectory);

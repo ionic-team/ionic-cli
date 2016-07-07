@@ -65,6 +65,52 @@ describe('plugin command', function() {
       });
     });
 
+    it('should fail if any functions throw', function(done) {
+      var processArguments = ['node', 'ionic', 'plugin', 'add', 'thing', '--variable', 'hello'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      var error = new Error('error occurred');
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q.reject(error));
+
+      plugin.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).toHaveBeenCalledWith(error);
+        done();
+      });
+    });
+
+    it('should fail if any functions throw and not log if not an instance of an Error', function(done) {
+      var processArguments = ['node', 'ionic', 'plugin', 'add', 'thing', '--variable', 'hello'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      var error = 1;
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q.reject(error));
+
+      plugin.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).not.toHaveBeenCalled();
+        done();
+      });
+    });
+
+    it('should not save if nosave flag is passed', function(done) {
+      var processArguments = ['node', 'ionic', 'plugin', 'add', 'thing', '--variable', 'hello', '--nosave'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      spyOn(State, 'savePlugin');
+      spyOn(State, 'removePlugin');
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
+
+      plugin.run(null, argv, rawCliArguments).then(function() {
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(
+          ['plugin', 'add', 'thing', '--variable', 'hello', '--nosave']);
+        expect(State.savePlugin).not.toHaveBeenCalled();
+        expect(State.removePlugin).not.toHaveBeenCalled();
+        done();
+      });
+    });
+
     it('should add plugins', function(done) {
       var processArguments = ['node', 'ionic', 'plugin', 'add', 'thing', '--variable', 'hello'];
       var rawCliArguments = processArguments.slice(2);
