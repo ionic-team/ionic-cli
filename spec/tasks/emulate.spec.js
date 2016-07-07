@@ -66,8 +66,8 @@ describe('emulate command', function() {
     it('should fail if the system is not Mac and the platform is iOS', function(done) {
       spyOn(os, 'platform').andReturn('windows');
 
-      emulate.run(null, argv, rawCliArguments).catch(function(error) {
-        expect(error).toEqual('✗ You cannot run iOS unless you are on Mac OSX.');
+      emulate.run(null, argv, rawCliArguments).then(function() {
+        expect(log.error).toHaveBeenCalledWith('✗ You cannot run iOS unless you are on Mac OSX.');
         done();
       });
     });
