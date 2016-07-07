@@ -156,5 +156,26 @@ describe('login command', function() {
         done();
       });
     });
+
+    it('should ask for email and password and eject an error if error', function(done) {
+      var processArguments = ['node', 'ionic', 'login'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+      var error = 'error logging in';
+
+      spyOn(log, 'info');
+      spyOn(prompt, 'start');
+      spyOn(prompt, 'get').andCallFake(function(schema, callback) {
+        callback(error);
+      });
+
+      var promptForLogin = login.__get__('promptForLogin');
+
+      promptForLogin(argv).catch(function(error) {
+        expect(prompt.get).toHaveBeenCalled();
+        expect(error).toEqual(error);
+        done();
+      });
+    });
   });
 });

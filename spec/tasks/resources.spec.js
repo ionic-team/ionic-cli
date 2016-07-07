@@ -65,6 +65,24 @@ describe('resources command', function() {
       });
     });
 
+    it('should fail if applib generate fails and not log error if not instanceof Error', function(done) {
+      var processArguments = ['node', 'ionic', 'resources'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      var error = 'an error occurred';
+      spyOn(process, 'cwd').andReturn('/current/directory');
+      spyOn(Project, 'load');
+      spyOn(IonicResources, 'generate').andReturn(Q.reject(error));
+      spyOn(appLibUtils, 'fail');
+
+      // Expect failure
+      resources.run(null, argv, rawCliArguments).then(function() {
+        expect(appLibUtils.fail).not.toHaveBeenCalled();
+        done();
+      });
+    });
+
     it('should pass platforms on to the applib generate', function(done) {
       var processArguments = ['node', 'ionic', 'resources', '--icon'];
       var rawCliArguments = processArguments.slice(2);

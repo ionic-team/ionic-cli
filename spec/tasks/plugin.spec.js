@@ -111,6 +111,24 @@ describe('plugin command', function() {
       });
     });
 
+    it('should add array of variables', function(done) {
+      var processArguments = ['node', 'ionic', 'plugin', 'add', 'thing', '--variable', 'hello', '--variable', 'man'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      spyOn(State, 'savePlugin');
+      spyOn(State, 'removePlugin');
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
+
+      plugin.run(null, argv, rawCliArguments).then(function() {
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(
+          ['plugin', 'add', 'thing', '--variable', 'hello', '--variable', 'man']);
+        expect(State.savePlugin).toHaveBeenCalledWith(appDirectory, 'thing', ['hello', 'man']);
+        expect(State.removePlugin).not.toHaveBeenCalled();
+        done();
+      });
+    });
+
     it('should add plugins', function(done) {
       var processArguments = ['node', 'ionic', 'plugin', 'add', 'thing', '--variable', 'hello'];
       var rawCliArguments = processArguments.slice(2);
