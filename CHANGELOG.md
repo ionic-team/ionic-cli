@@ -1,3 +1,9 @@
+<a name="2.0.0-beta.32"></a>
+# [2.0.0-beta.32](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.31...v2.0.0-beta.32) (2016-06-23)
+
+### Bug Fixes
+* **upload** Update ionic-app-lib dependency to fix HTML entities being created in index.html on upload. Closes [#562](https://github.com/driftyco/ionic-cli/issues/562), [#600](https://github.com/driftyco/ionic-cli/issues/600), [#640](https://github.com/driftyco/ionic-cli/issues/640)
+
 <a name="2.0.0-beta.31"></a>
 # [2.0.0-beta.31](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.30...v2.0.0-beta.31) (2016-06-13)
 
