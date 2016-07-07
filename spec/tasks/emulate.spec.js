@@ -57,7 +57,7 @@ describe('emulate command', function() {
     it('should default to iOS for the platform', function(done) {
       spyOn(os, 'platform').andReturn('darwin');
 
-      emulate.run(null, argv, rawCliArguments).catch(function() {
+      emulate.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.isPlatformInstalled).toHaveBeenCalledWith('ios', appDirectory);
         done();
       });
@@ -138,6 +138,38 @@ describe('emulate command', function() {
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
       spyOn(os, 'platform').andReturn('darwin');
+    });
+
+    it('should fail if any functions throw', function(done) {
+      var processArguments = ['node', 'ionic', 'emulate', '-n'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      var error = new Error('error occurred');
+      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q.reject(error));
+
+      emulate.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).toHaveBeenCalledWith(error);
+        done();
+      });
+    });
+
+    it('should fail if any functions throw and not log if not an instance of an Error', function(done) {
+      var processArguments = ['node', 'ionic', 'emulate', '-n'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      var error = 1;
+      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q.reject(error));
+
+      emulate.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).not.toHaveBeenCalled();
+        done();
+      });
     });
 
     it('should execute the command against the cordova util', function(done) {

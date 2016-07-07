@@ -48,16 +48,65 @@ describe('platform command', function() {
 
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
-      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
+    });
+
+    it('should fail if any functions throw', function(done) {
+      var processArguments = ['node', 'ionic', 'platform', '-n'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      var error = new Error('error occurred');
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q.reject(error));
+
+      platform.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).toHaveBeenCalledWith(error);
+        done();
+      });
+    });
+
+    it('should fail if any functions throw and not log if not an instance of an Error', function(done) {
+      var processArguments = ['node', 'ionic', 'platform', '-n'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      var error = 1;
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q.reject(error));
+
+      platform.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).not.toHaveBeenCalled();
+        done();
+      });
     });
 
     it('should use commands provided', function(done) {
       var processArguments = ['node', 'ionic', 'platform', '-n'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
 
       platform.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['platform', '-n']);
+        done();
+      });
+    });
+
+    it('should not save if no-save flag is provided', function(done) {
+      var processArguments = ['node', 'ionic', 'platform', 'add', 'ios', '--nosave'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      spyOn(IonicResources, 'copyIconFilesIntoResources').andReturn(Q(true));
+      spyOn(IonicResources, 'addIonicIcons').andReturn(Q(true));
+      spyOn(State, 'savePlatform');
+      spyOn(State, 'removePlatform');
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
+
+      platform.run(null, argv, rawCliArguments).then(function() {
+        expect(IonicResources.copyIconFilesIntoResources).toHaveBeenCalledWith(appDirectory);
+        expect(IonicResources.addIonicIcons).toHaveBeenCalledWith(appDirectory, 'ios');
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['platform', 'add', 'ios', '--nosave']);
+        expect(State.savePlatform).not.toHaveBeenCalled();
+        expect(State.removePlatform).not.toHaveBeenCalled();
         done();
       });
     });
@@ -71,6 +120,7 @@ describe('platform command', function() {
       spyOn(IonicResources, 'addIonicIcons').andReturn(Q(true));
       spyOn(State, 'savePlatform');
       spyOn(State, 'removePlatform');
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
 
       platform.run(null, argv, rawCliArguments).then(function() {
         expect(IonicResources.copyIconFilesIntoResources).toHaveBeenCalledWith(appDirectory);
@@ -91,6 +141,7 @@ describe('platform command', function() {
       spyOn(IonicResources, 'addIonicIcons').andReturn(Q(true));
       spyOn(State, 'savePlatform');
       spyOn(State, 'removePlatform');
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
 
       platform.run(null, argv, rawCliArguments).then(function() {
         expect(IonicResources.copyIconFilesIntoResources).not.toHaveBeenCalled();

@@ -77,7 +77,6 @@ describe('build command', function() {
     });
   });
 
-
   describe('cordova platform and plugin checks', function() {
 
     var appDirectory = '/ionic/app/path';
@@ -91,11 +90,11 @@ describe('build command', function() {
 
       spyOn(cordovaUtils, 'installPlatform').andReturn(Q(true));
       spyOn(cordovaUtils, 'installPlugins').andReturn(Q(true));
-      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
     });
 
     it('should try to install the cordova platform if it is not installed', function(done) {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(false);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
 
       build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.installPlatform).toHaveBeenCalledWith('ios');
@@ -106,6 +105,7 @@ describe('build command', function() {
 
     it('should not try to install the cordova platform if it is installed', function(done) {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
 
       build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.installPlatform).not.toHaveBeenCalledWith();
@@ -116,6 +116,7 @@ describe('build command', function() {
     it('should install plugins if they are not installed', function(done) {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(false);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
 
       build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.arePluginsInstalled).toHaveBeenCalledWith(appDirectory);
@@ -127,10 +128,35 @@ describe('build command', function() {
     it('should not install plugins if they are installed', function(done) {
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
 
       build.run(null, argv, rawCliArguments).then(function() {
         expect(cordovaUtils.arePluginsInstalled).toHaveBeenCalledWith(appDirectory);
         expect(cordovaUtils.installPlugins).not.toHaveBeenCalledWith();
+        done();
+      });
+    });
+
+    it('should fail if any functions throw', function(done) {
+      var error = new Error('error occurred');
+      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q.reject(error));
+
+      build.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).toHaveBeenCalledWith(error);
+        done();
+      });
+    });
+
+    it('should fail if any functions throw and not log if not an instance of an Error', function(done) {
+      var error = 1;
+      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q.reject(error));
+
+      build.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).not.toHaveBeenCalled();
         done();
       });
     });

@@ -41,5 +41,27 @@ describe('prepare command', function() {
         done();
       });
     });
+
+    it('should fail if any functions throw', function(done) {
+      var error = new Error('error occurred');
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q.reject(error));
+
+      prepare.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).toHaveBeenCalledWith(error);
+        done();
+      });
+    });
+
+    it('should fail if any functions throw and not log if not an instance of an Error', function(done) {
+      var argv = optimist(rawCliArguments).argv;
+
+      var error = 1;
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q.reject(error));
+
+      prepare.run({}, argv, rawCliArguments).then(function() {
+        expect(log.error).not.toHaveBeenCalled();
+        done();
+      });
+    });
   });
 });
