@@ -5,7 +5,6 @@ var info = require('../../lib/ionic/info');
 var IonicAppLib = require('ionic-app-lib');
 var appLibUtils = IonicAppLib.utils;
 var appLibInfo = IonicAppLib.info;
-var log = IonicAppLib.logging.logger;
 
 describe('info command', function() {
   describe('command settings', function() {
