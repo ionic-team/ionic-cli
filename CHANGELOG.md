@@ -1,3 +1,13 @@
+<a name="2.0.0-beta.33"></a>
+# [2.0.0-beta.33](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.32...v2.0.0-beta.33) (2016-07-25)
+
+
+### Bug Fixes
+
+* **cordova:** ensure that each cordova command will properly catch wh… ([#1154](https://github.com/driftyco/ionic-cli/issues/1154)) ([142128a](https://github.com/driftyco/ionic-cli/commit/142128a))
+
+
+
 <a name="2.0.0-beta.32"></a>
 # [2.0.0-beta.32](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.31...v2.0.0-beta.32) (2016-06-23)
 
