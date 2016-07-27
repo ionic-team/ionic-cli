@@ -1,3 +1,11 @@
+<a name="2.0.0-beta.35"></a>
+# [2.0.0-beta.35](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.34...v2.0.0-beta.35) (2016-07-27)
+
+
+### Bug Fixes
+
+* **npm:** republish with npm 2 to fix bundled dependencies (again)
+
 <a name="2.0.0-beta.34"></a>
 # [2.0.0-beta.34](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.33...v2.0.0-beta.34) (2016-07-27)
 
