@@ -1,3 +1,14 @@
+<a name="2.0.0-beta.36"></a>
+# [2.0.0-beta.36](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.35...v2.0.0-beta.36) (2016-08-03)
+
+
+### Bug Fixes
+
+* **stats:** Updated cli to only track on valid commands. ([9308577](https://github.com/driftyco/ionic-cli/commit/9308577))
+* change all exec commands within add, remove, and service to use sync. ([cb01e1d](https://github.com/driftyco/ionic-cli/commit/cb01e1d))
+
+
+
 <a name="2.0.0-beta.35"></a>
 # [2.0.0-beta.35](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.34...v2.0.0-beta.35) (2016-07-27)
 
