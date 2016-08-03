@@ -36,7 +36,7 @@ describe('remove command', function() {
     var argv = optimist(rawCliArguments).argv;
 
     beforeEach(function() {
-      spyOn(childProcess, 'exec');
+      spyOn(childProcess, 'execSync');
     });
 
     it('should fail if bower is not installed', function() {
@@ -112,23 +112,23 @@ describe('remove command', function() {
 
   describe('uninstallBowerComponent function', function() {
 
-    it('should call childProcess exec to install the bower component', function() {
+    it('should call childProcess execSync to install the bower component', function() {
       spyOn(log, 'info');
-      spyOn(childProcess, 'exec').andReturn({ code: 0 });
+      spyOn(childProcess, 'execSync').andReturn({ code: 0 });
 
       var uninstallBowerComponent = remove.__get__('uninstallBowerComponent');
       uninstallBowerComponent('thing');
-      expect(childProcess.exec).toHaveBeenCalledWith('bower uninstall --save-dev thing');
+      expect(childProcess.execSync).toHaveBeenCalledWith('bower uninstall --save-dev thing');
       expect(log.info).toHaveBeenCalledWith(jasmine.any(String));
     });
 
-    it('should call childProcess exec and call util fail if result.code is not equal to 0', function() {
+    it('should call childProcess execSync and call util fail if result.code is not equal to 0', function() {
       spyOn(appLibUtils, 'fail');
-      spyOn(childProcess, 'exec').andReturn({ code: 1 });
+      spyOn(childProcess, 'execSync').andReturn({ code: 1 });
 
       var uninstallBowerComponent = remove.__get__('uninstallBowerComponent');
       uninstallBowerComponent('thing');
-      expect(childProcess.exec).toHaveBeenCalledWith('bower uninstall --save-dev thing');
+      expect(childProcess.execSync).toHaveBeenCalledWith('bower uninstall --save-dev thing');
       expect(appLibUtils.fail).toHaveBeenCalledWith(jasmine.any(String), 'remove');
     });
   });
