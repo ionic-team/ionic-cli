@@ -1,3 +1,13 @@
+<a name="2.0.0-beta.37"></a>
+# [2.0.0-beta.37](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.36...v2.0.0-beta.37) (2016-08-11)
+
+
+### Bug Fixes
+
+* **setup:** add setup sass back as a command for v1 projects. ([2bd7aee](https://github.com/driftyco/ionic-cli/commit/2bd7aee))
+
+
+
 <a name="2.0.0-beta.36"></a>
 # [2.0.0-beta.36](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.35...v2.0.0-beta.36) (2016-08-03)
 
