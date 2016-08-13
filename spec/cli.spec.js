@@ -162,6 +162,15 @@ describe('Cli', function() {
         });
       });
 
+      it('should not track stats for cli for a bogus command', function(done) {
+
+        IonicCli.run(['node', 'bin/ionic', 'helper'])
+        .then(function() {
+          expect(IonicStats.t).not.toHaveBeenCalled();
+          done();
+        });
+      });
+
       it('should change cwd to project root for project tasks', function(done) {
         var processArguments = ['node', 'bin/ionic', 'fake'];
         var rawCliArguments = processArguments.slice(2);
