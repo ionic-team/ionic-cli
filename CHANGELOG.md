@@ -1,3 +1,8 @@
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.37...v2.0.0) (2016-08-15)
+
+* create 2.0 release using beta.37 source.
+
 <a name="2.0.0-beta.37"></a>
 # [2.0.0-beta.37](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.36...v2.0.0-beta.37) (2016-08-11)
 
