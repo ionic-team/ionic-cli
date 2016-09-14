@@ -215,7 +215,7 @@ __LiveReload__
 
 By default, LiveReload will watch for changes in your `www/` directory,
 excluding `www/lib/`.  To change this, you can specify a `watchPatterns`
-property in the `ionic.project` file located in your project root to watch
+property in the `ionic.config.json` file located in your project root to watch
 (or not watch) for specific changes.
 
 ```json
@@ -235,21 +235,17 @@ the Grunt website.
 
 __Gulp Integration__
 
-When running `ionic serve`, you can have Ionic run any Gulp tasks you specify by putting them into your `ionic.project` as a `gulpStartupTasks` property as follows:
+When running `ionic serve`, you can have Ionic run any Gulp tasks you specify by putting them into a gulp task called `serve:before`:
 
-```json
-{
-  "name": "SmoothRiders",
-   "gulpStartupTasks": [
-    "watch"
-  ]
-}
-
+```js
+gulp.task('serve:before', ['sass', 'watch']);
 ```
 
 Now, when you run `ionic serve`, it will run the `watch` task while starting the Ionic server.
 
 If you would like to disable gulp from running during serve, pass the `--nogulp` option.
+
+Your gulpfile must be named gulpfile.js or Gulpfile.js, there is currently no support for typescript, babel or coffeescript gulp files in the 2.0 CLI
 
 NOTE:
 
@@ -257,8 +253,8 @@ NOTE:
 $ ionic setup sass
 ```
 
-will add a `watchPatterns` propery with the default values to your `ionic.project`
-file that you can then edit, in addition to the `gulpStartupTasks` property
+will add a `watchPatterns` propery with the default values to your `ionic.config.json`
+file that you can then edit, in addition to the `serve:before` gulp task
 described in the [Using Sass](https://github.com/driftyco/ionic-cli/blob/master/README.md#using-sass) section.
 
 
@@ -266,7 +262,7 @@ __Service Proxies:__
 
 The `serve` command can add some proxies to the http server. These proxies are useful if you are developing in the browser and you need to make calls to an external API. With this feature you can proxy request to the external api through the ionic http server preventing the `No 'Access-Control-Allow-Origin' header is present on the requested resource` error.
 
-In the `ionic.project` file you can add a property with an array of proxies you want to add. The proxies are object with the following properties:
+In the `ionic.config.json` file you can add a property with an array of proxies you want to add. The proxies are object with the following properties:
 
 * `path`: string that will be matched against the beginning of the incoming request URL.
 * `proxyUrl`: a string with the url of where the proxied request should go.
@@ -339,7 +335,7 @@ And of course, it supports Live Reload and all the other goodies we've added ove
 
 ## Serving an alternate document root
 
-If you'd like to test your app in the browser and you use a folder other than the default of `www`, you can specify this folder in your `ionic.project` file.
+If you'd like to test your app in the browser and you use a folder other than the default of `www`, you can specify this folder in your `ionic.config.json` file.
 
 You might also want to have the document root be created if you use some sort of build system, we suggest using `createDocumentRoot` for that so that `ionic serve` will create that folder for you.
 
@@ -348,9 +344,6 @@ It is also advised you specify the watch patterns for this document root as well
 ```json
 {
   "name": "SmoothRiders",
-   "gulpStartupTasks": [
-    "watch"
-  ],
   "documentRoot": "app",
   "createDocumentRoot": "app",
   "watchPatterns": [
@@ -423,7 +416,7 @@ By default, starter projects are hooked up to Ionic's precompiled CSS file, whic
 2. Remove `<link href="lib/ionic/css/ionic.css" rel="stylesheet">` from the `<head>` of the root `index.html` file.
 3. Remove `<link href="css/style.css" rel="stylesheet">` from the `<head>` of the root `index.html` file.
 4. Add `<link href="css/ionic.app.css" rel="stylesheet">` to the `<head>` of the root `index.html` file.
-5. In the `ionic.project` file, add the JavaScript property `"gulpStartupTasks": ["sass", "watch"]` (this can also be customized to whatever gulp tasks you'd like).
+5. In your `serve:before` gulp task, add the `sass` task `gulp.task('serve:before', ['sass', 'watch']);` (this can also be customized to whatever gulp tasks you'd like).
 
 
 # Ionic.io services
