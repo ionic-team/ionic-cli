@@ -14,10 +14,15 @@ describe('orderedListOfCommands', function() {
         var stat = fs.statSync(path.join(__dirname, '../../lib/ionic', file));
         return !stat.isDirectory();
       })
+      .filter(function(file) {
+        // stats is private to us, so ignore it
+        return file !== 'stats.js';
+      })
       .map(function(file) {
         return file.replace('.js', '');
       })
       .sort();
+
     expect(taskFileList).toEqual(listOfCommands.sort());
   });
 });
