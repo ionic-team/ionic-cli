@@ -320,11 +320,12 @@ describe('Cli', function() {
         spyOn(FakeTask, 'run').andReturn(Q(true));
         spyOn(fs, 'existsSync').andReturn(true);
         spyOn(IonicCli, 'loadGulpfile').andReturn(false);
+        spyOn(IonicCli, 'loadNpmScripts').andReturn(false);
         spyOn(log, 'warn');
 
         IonicCli.run(['node', 'bin/ionic', 'build'])
         .then(function() {
-          expect(log.warn).toHaveBeenCalledWith('WARN: No gulpfile found!');
+          expect(log.warn).toHaveBeenCalledWith('WARN: No build file found!');
           done();
         });
       });
@@ -341,6 +342,29 @@ describe('Cli', function() {
         spyOn(FakeTask, 'run').andReturn(Q(true));
         spyOn(fs, 'existsSync').andReturn(true);
         spyOn(IonicCli, 'loadGulpfile').andReturn(false);
+        spyOn(IonicCli, 'loadNpmScripts').andReturn(false);
+
+        IonicCli.run(['node', 'bin/ionic', 'fake'])
+        .then(function() {
+          expect(IonicCli.loadGulpfile).toHaveBeenCalled();
+          expect(IonicCli.runWithGulp).not.toHaveBeenCalled();
+          done();
+        });
+      });
+
+      it('should not runWithGulp if npmScripts exist', function(done) {
+        var FakeTask = {
+          name: 'fake',
+          title: 'fake',
+          run: function() {},
+          isProjectTask: true
+        };
+        spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
+        spyOn(IonicCli, 'runWithGulp');
+        spyOn(FakeTask, 'run').andReturn(Q(true));
+        spyOn(fs, 'existsSync').andReturn(true);
+        spyOn(IonicCli, 'loadGulpfile').andReturn(false);
+        spyOn(IonicCli, 'loadNpmScripts').andReturn(true);
 
         IonicCli.run(['node', 'bin/ionic', 'fake'])
         .then(function() {
@@ -357,12 +381,55 @@ describe('Cli', function() {
         };
         spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
         spyOn(IonicCli, 'runWithGulp').andReturn(Q(true));
+        spyOn(IonicCli, 'runWithNpmScripts').andReturn(Q(true));
         spyOn(fs, 'existsSync').andReturn(true);
         spyOn(IonicCli, 'loadGulpfile').andReturn(true);
+        spyOn(IonicCli, 'loadNpmScripts').andReturn(false);
 
         IonicCli.run(['node', 'bin/ionic', 'fake'])
         .then(function() {
           expect(IonicCli.runWithGulp).toHaveBeenCalled();
+          expect(IonicCli.runWithNpmScripts).not.toHaveBeenCalled();
+          done();
+        });
+      });
+
+      it('should runWithNpmScripts without Gulpfile', function(done) {
+        var FakeTask = {
+          name: 'fake',
+          isProjectTask: true
+        };
+        spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
+        spyOn(IonicCli, 'runWithGulp').andReturn(Q(true));
+        spyOn(IonicCli, 'runWithNpmScripts').andReturn(Q(true));
+        spyOn(fs, 'existsSync').andReturn(true);
+        spyOn(IonicCli, 'loadGulpfile').andReturn(false);
+        spyOn(IonicCli, 'loadNpmScripts').andReturn(true);
+
+        IonicCli.run(['node', 'bin/ionic', 'fake'])
+        .then(function() {
+          expect(IonicCli.runWithGulp).not.toHaveBeenCalled();
+          expect(IonicCli.runWithNpmScripts).toHaveBeenCalled();
+          done();
+        });
+      });
+
+      it('should runWithNpmScripts even with Gulpfile', function(done) {
+        var FakeTask = {
+          name: 'fake',
+          isProjectTask: true
+        };
+        spyOn(IonicCli, 'getTaskSettingsByName').andReturn(FakeTask);
+        spyOn(IonicCli, 'runWithGulp').andReturn(Q(true));
+        spyOn(IonicCli, 'runWithNpmScripts').andReturn(Q(true));
+        spyOn(fs, 'existsSync').andReturn(true);
+        spyOn(IonicCli, 'loadGulpfile').andReturn(true);
+        spyOn(IonicCli, 'loadNpmScripts').andReturn(true);
+
+        IonicCli.run(['node', 'bin/ionic', 'fake'])
+        .then(function() {
+          expect(IonicCli.runWithGulp).not.toHaveBeenCalled();
+          expect(IonicCli.runWithNpmScripts).toHaveBeenCalled();
           done();
         });
       });
