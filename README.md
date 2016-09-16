@@ -426,9 +426,9 @@ By default, starter projects are hooked up to Ionic's precompiled CSS file, whic
 5. In the `ionic.project` file, add the JavaScript property `"gulpStartupTasks": ["sass", "watch"]` (this can also be customized to whatever gulp tasks you'd like).
 
 
-# Ionic.io services
+# Ionic Cloud services
 
-The CLI supports operations to use backend services for your Ionic app. To get started, [visit the ionic.io homepage](http://ionic.io) and [sign up there](https://apps.ionic.io/signup).
+The CLI integrates with Ionic Cloud, a set of backend services that integrate perfectly with Ionic apps. To get started, [visit the Ionic Cloud homepage](http://ionic.io) and [sign up](https://apps.ionic.io/signup).
 
 There are a few things you can utilize the CLI for to support ease of development.
 
@@ -465,7 +465,7 @@ Successfully uploaded (f23j9fjs)
 
 This indicates you uploaded the application correctly, and the App ID is set to `f23j9fjs`.
 
-You can then view that App ID from the View app or the application listing on ionic.io.
+You can then view that App ID from the View app or the application listing on your [Ionic Cloud dashboard](http://apps.ionic.io/).
 
 ### Adding a note with your upload
 
@@ -479,7 +479,7 @@ Use the `ionic link <appId>` command to set your Ionic App ID to continue workin
 
 ## Share the application with another user
 
-Use the `ionic share <email>` command to have an email sent to another person to have them view the Ionic application you are using. Note: You must have an ionic.io account as well as the user you are sharing with.
+Use the `ionic share <email>` command to have an email sent to another person to have them view the Ionic application you are using. Note: You must have an [Ionic Cloud](http://ionic.io/) account as well as the user you are sharing with.
 
 # Ionic Docs
 
