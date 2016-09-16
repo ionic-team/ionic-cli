@@ -1,3 +1,9 @@
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/driftyco/ionic-cli/compare/v2.0.0...v2.1.0) (2016-09-16)
+
+* **refactor:** updated generate functionality to call @ionic/app-generators instead of ionic. ([45e9959](https://github.com/driftyco/ionic-cli/commit/45e99597b0f0afa81b992f4fb60388675679b595))
+* **feat:** add build step for npm scripts if they exist. ([2bc79bf](https://github.com/driftyco/ionic-cli/commit/2bc79bf728ef64a9bf66dbbd1224929e1523c1d4))
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/driftyco/ionic-cli/compare/v2.0.0-beta.37...v2.0.0) (2016-08-15)
 
