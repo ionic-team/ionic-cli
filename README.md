@@ -17,7 +17,7 @@ $ npm install -g ionic
 
 *Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix the command with `sudo` or can setup [proper file permissions on OSX for npm](http://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx/) to install without `sudo`. *
 
-*Please ensure that you have npm 2.7+ installed. We are now depending on scoped npm packages which where not introduced until this version. This occurred around the time of NodeJS 0.12.2*
+*Please ensure that you have npm 2.7+ installed. We are now depending on scoped npm packages which were not introduced until this version. This occurred around the time of NodeJS 0.12.2*
 
 
 ## Starting an Ionic App
