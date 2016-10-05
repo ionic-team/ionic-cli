@@ -1,0 +1,10 @@
+*.sw*
+*.cookies
+node_modules/
+.idea/
+.vscode/
+coverage/
+.coveralls.yml
+npm-debug.log
+
+dist

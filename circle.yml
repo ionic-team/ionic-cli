@@ -1,0 +1,5 @@
+test:
+  override:
+    - nvm use 4.0 && npm test
+  post:
+    - nvm use 4.0 && npm run coveralls
