@@ -2,10 +2,9 @@
 [![Build status][appveyor-badge]][appveyor-badge-url]
 [![npm][npm-badge]][npm-badge-url]
 
-Ionic-Cli
-=========
+# Ionic-Cli
 
-The Ionic Framework command line utility makes it easy to start, build, run, and emulate [Ionic](http://ionicframework.com/) apps. In addition, it comes with (optional!)  integration with the [Ionic Cloud](http://ionic.io/), a set of mobile backend services perfect for Ionic apps.
+The Ionic Framework command line utility makes it easy to start, build, run, and emulate [Ionic](http://ionicframework.com/) apps. In addition, it comes with (optional!) integration with the [Ionic Cloud](http://ionic.io/), a set of mobile backend services perfect for Ionic apps.
 
 Use the `ionic --help` command for more detailed task information.
 
@@ -15,27 +14,46 @@ Use the `ionic --help` command for more detailed task information.
 $ npm install -g ionic
 ```
 
-*Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix the command with `sudo` or can setup [proper file permissions on OSX for npm](http://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx/) to install without `sudo`. *
+*Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix the command with `sudo` or can setup [proper file permissions on OSX for npm](http://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx/) to install without `sudo`.*
 
-*Please ensure that you have npm 2.7+ installed. We are now depending on scoped npm packages which were not introduced until this version. This occurred around the time of NodeJS 0.12.2*
+
+Minimal node requirements:
+
+- NodeLTS or greater
+- NPM 3x
+
 
 
 ## Starting an Ionic App
+
+To start a Ionic 1x app, run:
 
 ```bash
 $ ionic start myapp [template]
 ```
 
-Starter templates can either come from a named template, a Github repo, a Codepen, or a local directory. A starter template is what becomes the `www` directory within the Cordova project.
+To start a Ionic 2 app, run:
 
-__Named template starters:__
+```bash
+$ ionic start myapp [template] --v2
+```
+
+Starter templates can either come from a named template, a Github repo, a Codepen, or a local directory. A starter template is what becomes the `www` directory for a V1 project, and a `src` directory for a V2 project
+
+__Named V1 template starters:__
 
 * [tabs](https://github.com/driftyco/ionic-starter-tabs) (Default)
 * [sidemenu](https://github.com/driftyco/ionic-starter-sidemenu)
 * [maps](https://github.com/driftyco/ionic-starter-maps)
 * [salesforce](https://github.com/driftyco/ionic-starter-salesforce)
-* [complex-list](https://github.com/driftyco/ionic-starter-complex-list)
 * [blank](https://github.com/driftyco/ionic-starter-blank)
+
+__Named V2 template starters:__
+
+* [tabs](https://github.com/driftyco/ionic2-starter-tabs) (Default)
+* [sidemenu](https://github.com/driftyco/ionic2-starter-sidemenu)
+* [blank](https://github.com/driftyco/ionic2-starter-blank)
+
 
 __Github Repo starters:__
 
@@ -62,7 +80,7 @@ __Command-line flags/options:__
     [--id|-i]  ............  Package name set in the <widget id> config
                              ex: com.mycompany.myapp
     [--no-cordova|-w]  ....  Do not create an app targeted for Cordova
-    [--sass|-s] ...........  Setup the project to use Sass CSS precompiling
+    [--sass|-s] ...........  Setup the project to use Sass CSS precompiling (V1 only)
     [--list|-l]  ..........  List starter templates available
 
     [--io-app-id] .........  The Ionic.io app ID to use
@@ -75,7 +93,7 @@ $ ionic platform ios android
 
 ## Testing in a Browser
 
-Use `ionic serve` to start a local development server for app dev and testing. This is useful for both desktop browser testing, and to test within a device browser which is connected to the same network. Additionally, this command starts LiveReload which is used to monitor changes in the file system. As soon as you save a file the browser is refreshed automatically. View [Using Sass](https://github.com/driftyco/ionic-cli/blob/master/README.md#using-sass) if you would also like to have `ionic serve` watch the project's Sass files.
+Use `ionic serve` to start a local development server for app dev and testing. Additionally, this command starts LiveReload which is used to monitor changes in the file system. As soon as you save a file the browser is refreshed automatically. View [Using Sass](https://github.com/driftyco/ionic-cli/blob/master/README.md#using-sass) if you would also like to have `ionic serve` watch the project's Sass files.
 
 ```bash
 $ ionic serve [options]
@@ -86,33 +104,6 @@ $ ionic serve [options]
 ```bash
 $ ionic build ios
 ```
-
-## Live Reload App During Development (beta)
-
-The `run` or `emulate` command will deploy the app to the specified platform devices/emulators. You can also run __live reload__ on the specified platform device by adding the `--livereload` option. The live reload functionality is similar to `ionic serve`, but instead of developing and debugging an app using a standard browser, the compiled hybrid app itself is watching for any changes to its files and reloading the app when needed. This reduces the requirement to constantly rebuild the app for small changes. However, any changes to plugins will still require a full rebuild. For live reload to work, the dev machine and device must be on the same local network, and the device must support [web sockets](http://caniuse.com/websockets).
-
-With live reload enabled, an app's console logs can also be printed to the terminal/command prompt by including the `--consolelogs` or `-c` option. Additionally, the development server's request logs can be printed out using `--serverlogs` or `-s` options.
-
-__Command-line flags/options for `run` and `emulate`:__
-
-    [--livereload|-l] .......  Live Reload app dev files from the device (beta)
-    [--consolelogs|-c] ......  Print app console logs to Ionic CLI (live reload req.)
-    [--serverlogs|-s] .......  Print dev server logs to Ionic CLI (live reload req.)
-    [--port|-p] .............  Dev server HTTP port (8100 default, live reload req.)
-    [--livereload-port|-i] ..  Live Reload port (35729 default, live reload req.)
-    [--all|-a] ..............  Specify to run on all addresses, 0.0.0.0, so you can view externally
-    [--browser|-w] ..........  Specifies the browser to use (safari, firefox, chrome)
-    [--browseroption|-o] ....  Specifies a path to open to (/#/tab/dash)
-    [--debug|--release]
-
-While the server is running for live reload, you can use the following commands within the CLI:
-
-    restart or r to restart the client app from the root
-    goto or g and a url to have the app navigate to the given url
-    consolelogs or c to enable/disable console log output
-    serverlogs or s to enable/disable server log output
-    quit or q to shutdown the server and exit
-
 
 ## Emulating your app
 
@@ -196,26 +187,19 @@ When starting a new app and adding a platform `ionic platform add ios` - the def
 
 ## Crosswalk for Android
 
-In v1.3.0 and later, you can now specify which browser to use in your Cordova Android projects. Currently we only support [Crosswalk](https://crosswalk-project.org/) and have plans to support more browsers later.
+To install [Crosswalk](https://crosswalk-project.org/) for Android run:
 
-Execute `ionic browser add crosswalk` to add the Crosswalk browser to your Android project. By default, this will install the `12.41.296.5` version of Crosswalk.
-
-If you'd like to specify a different version of Crosswalk, run `ionic browser list` to see which browsers are available and what versions. Then run `ionic browser add crosswalk@10.39.235.15`.
+```bash
+ionic plugin add cordova-plugin-crosswalk-webview --save
+```
 
 All that is left is to run the project as normal - `ionic run android`.
-
-If you'd like to build without Crosswalk for Android SDK 21 or later, do the following:
-
-```
-ionic browser revert android
-ionic build android --release -- --minSdkVersion 21
-```
 
 ## Advanced serve options
 
 __LiveReload__
 
-By default, LiveReload will watch for changes in your `www/` directory,
+By default, for Ionic 1 projects, LiveReload will watch for changes in your `www/` directory,
 excluding `www/lib/`.  To change this, you can specify a `watchPatterns`
 property in the `ionic.config.json` file located in your project root to watch
 (or not watch) for specific changes.
@@ -249,7 +233,7 @@ If you would like to disable gulp from running during serve, pass the `--nogulp`
 
 Your gulpfile must be named gulpfile.js or Gulpfile.js, there is currently no support for typescript, babel or coffeescript gulp files in the 2.0 CLI
 
-NOTE:
+NOTE For V1:
 
 ```bash
 $ ionic setup sass
@@ -325,15 +309,17 @@ __Command-line flags/options:__
 
 ## Using Ionic Labs
 
-We've extended the serve command to open the new Lab UI that features iOS and Android side-by-side.
+We've extended the serve command to open the new Lab UI that features iOS, Android, and Windows side-by-side.
 
 ```bash
 $ ionic serve --lab
 ```
 
-If you've used the serve command before, you'll feel right at home with this one. Just like serve, it opens your app in a browser, but now it shows you what your app will look like on a phone, with both iOS and Android side by side.
+If you've used the serve command before, you'll feel right at home with this one. Just like serve, it opens your app in a browser, but now it shows you what your app will look like on a phone, with both iOS, Android, Windows side by side.
 
 And of course, it supports Live Reload and all the other goodies we've added over the last couple of months.
+
+NOTE: This does **not** emulate cordova or cordova plugins. So while the UI may feel like a native app, you'll still want to deploy to a device to test plugins.
 
 ## Serving an alternate document root
 
@@ -355,17 +341,6 @@ It is also advised you specify the watch patterns for this document root as well
 }
 
 ```
-
-## Update Ionic lib
-
-Update Ionic library files, which are found in the `www/lib/ionic` directory. If bower is being used
-by the project, this command will automatically run `bower update ionic`, otherwise this command updates
-the local static files from Ionic's CDN.
-
-```bash
-$ ionic lib update
-```
-*Note: Using bower? This command does not update Ionic's dependencies. Run `bower update` to update Ionic and all of it's dependencies defined in `bower.json`.*
 
 ## Packaging an app (beta)
 
@@ -403,16 +378,18 @@ PROXY=internal.proxy.com ionic start my_app
 ```
 
 
-## Using Sass
+## Using Sass (V1 Only)
 
-By default, starter projects are hooked up to Ionic's precompiled CSS file, which is found in the project's `www/lib/ionic/css` directory, and is linked to the app in the head of the root `index.html` file. However, Ionic projects can also be customized using [Sass](http://sass-lang.com/), which gives developers and designers "superpowers" in terms of creating and maintaining CSS. Below are two ways to setup Sass for your Ionic project (the `ionic setup sass` command simply does the manual steps for you). Once Sass has been setup for your Ionic project, then the `ionic serve` command will also watch for Sass changes.
+By default, V1 starter projects are hooked up to Ionic's precompiled CSS file, which is found in the project's `www/lib/ionic/css` directory, and is linked to the app in the head of the root `index.html` file. However, projects can also be customized using [Sass](http://sass-lang.com/), which gives developers and designers "superpowers" in terms of creating and maintaining CSS. Below are two ways to setup Sass for your Ionic project (the `ionic setup sass` command simply does the manual steps for you). Once Sass has been setup for your Ionic project, then the `ionic serve` command will also watch for Sass changes.
 
-#### Setup Sass Automatically
+For V2 projects, there's nothing you need to do! Ionic 2 projects by default are setup with sass and come with all the build process enabled.
+
+#### Setup Sass Automatically (V1)
 
     ionic setup sass
 
 
-#### Setup Sass Manually
+#### Setup Sass Manually (V1)
 
 1. Run `npm install` from the working directory of an Ionic project. This will install [gulp.js](http://gulpjs.com/) and a few handy tasks, such as [gulp-sass](https://www.npmjs.org/package/gulp-sass) and [gulp-minify-css](https://www.npmjs.org/package/gulp-minify-css).
 2. Remove `<link href="lib/ionic/css/ionic.css" rel="stylesheet">` from the `<head>` of the root `index.html` file.
@@ -476,16 +453,7 @@ Use the `ionic link <appId>` command to set your Ionic App ID to continue workin
 
 Use the `ionic share <email>` command to have an email sent to another person to have them view the Ionic application you are using. Note: You must have an [Ionic Cloud](http://ionic.io/) account as well as the user you are sharing with.
 
-# Ionic Docs
-
-To get Ionic documentation from the Ionic CLI, try using the `ionic docs` command. The command will look up your currently used Ionic version and open the docs specific for that version. Ex: RC0, RC1, etc.
-
-To view all docs, `ionic docs ls`.
-
-To get help with a doc you may not remember, just type the name close enough: `ionic docs list` and you will be prompted for suggestions that may match.
-
-
-# Ionic Hooks
+# Ionic Hooks (V1)
 
 Ionic provides some default hooks for you to use in your Cordova application. In versions prior to 1.3.18, these hooks were automatically installed via the `ionic platform` command.
 
@@ -496,82 +464,13 @@ If you were a user who would still like to use those hooks, you can re-install t
 If you would like to remove these hooks yourself, use `ionic hooks remove` to get rid of them.
 
 
-# Ionic State
-
-Ionic now provides a command to help you manage the state of your Ionic application. Previously Cordova hooks were used to save platforms and plugins to your `package.json` file.
-
-Now when using `ionic platform add`, `ionic platform rm`, `ionic plugin add`, or `ionic plugin rm`, the state command will automatically be used to save the platform or plugin state to the `package.json` file.
-
-If you would like to avoid saving plugins or platforms to the `package.json` file - pass in the `--nosave` option. (`ionic plugin add org.apache.cordova.file --nosave`).
-
-Your package.json file might look something like the following:
-
-```json
-"cordovaPlatforms": [
-  "ios",
-  {
-    "android": {
-      "id": "android",
-      "locator": "https://github.com/apache/cordova-android.git"
-    }
-  }
-],
-"cordovaPlugins": [
-  "org.apache.cordova.device",
-  "org.apache.cordova.console",
-  "com.ionic.keyboard",
-  "org.apache.cordova.splashscreen",
-  {
-    "locator": "https://github.com/MobileChromeApps/cordova-crosswalk-engine.git",
-    "id": "org.cordova.croswalk"
-  },
-  {
-    "locator": "/path/to/cloned/phonegap-facebook-plugin",
-    "id": "",
-    "variables": {
-        "APP_ID": "some_id",
-        "APP_NAME": "some_name"
-    }
-  }
-]
-```
-
-## ionic state save
-
-The `ionic state save` command does some lookup in your platforms and plugins to save the current state of your cordova application.
-
-First it looks in your platforms folder to see which platforms are installed, and saves the name and version in your `package.json` file under the `cordovaPlatforms` attribute.
-
-Second it looks at your plugins `fetch.json` file to save the plugins installed both from the Cordova registry, locally installed plugins, as well as remote plugins from github or a remote HTTP url.
-
-## ionic state restore
-
-The `ionic state restore` command looks at the `cordovaPlugins` and `cordovaPlatforms` attributes in your `package.json` file to restore your application with those platforms and plugins.
-
-In the package.json file, `cordovaPlugins` will be stored as just their `ID` if they are installed from the Cordova registry. However, if they are local or remote, they will be stored as an object with those properties. Also to note, variables are stored for plugins with variables like the Facebook connect plugin.
-
-The `cordovaPlatforms` follow the same convention of either an `ID` for the platform name, if they are local or remote, they will be stored as an object with those properties.
-
-If you'd like, you can populate the `cordovaPlugins` and `cordovaPlatforms` by hand, then use the `ionic state restore` command to get your app ready to go.
-
-## ionic state clear
-
-The `ionic state clear` method will clear out your platforms and plugins directories, as well as removing the `cordovaPlugins` and `cordovaPlaforms` attributes in your `package.json` file.
-
-## ionic state reset
-
-The `ionic state reset` method will first remove your platforms and plugins folders. Then it will look at your `package.json` file to re-install the platforms and plugins as specified there.
-
-This command can be helpful for you to reinstall your plugins and platforms to get a fresh start.
-
-
 # Ionic CLI 2.0
 
 ## Ionic Generators
 
-First class support has come to the Ionic CLI to scaffold and generate Ionic and Angular 2 components. To use this feature, first install the V2 Ionic CLI: `npm install ionic@alpha` and start an app.
+First class support has come to the Ionic CLI to scaffold and generate Ionic and Angular 2 components.
 
-Once in the app folder, use the `generate` command (alias: `g`).
+From your app directory, use the `generate` command (alias: `g`).
 
 Usage:
 * `ionic generate page About` - Generate a page named About with HTML, JavaScript, and Sass named `about`.
