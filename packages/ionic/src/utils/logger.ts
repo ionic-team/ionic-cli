@@ -11,16 +11,18 @@ export interface Logger {
   info: Function;
   warn: Function;
   error: Function;
-  fatal: Function;
+  msg: Function;
 }
 
+// Add messages as a type of log 
+
 const noop = function () {};
-const levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'];
+const levels = ['trace', 'debug', 'info', 'warn', 'error'];
 
 export default function (opts: LogOptions = { level: 'info', prefix: ''}) {
   let logger: Logger;
 
-  function shouldLog (level: string) {
+  function shouldLog(level: string) {
     return levels.indexOf(level) >= levels.indexOf(opts.level);
   }
 
@@ -45,7 +47,6 @@ export default function (opts: LogOptions = { level: 'info', prefix: ''}) {
         console.warn(util.format.apply(util, arguments));
         break;
       case 'error':
-      case 'fatal':
         console.error(util.format.apply(util, arguments));
         break;
       }
@@ -59,7 +60,7 @@ export default function (opts: LogOptions = { level: 'info', prefix: ''}) {
     'info': getLogFunction('info'),
     'warn': getLogFunction('warn'),
     'error': getLogFunction('error'),
-    'fatal': getLogFunction('fatal')
+    'msg': console.log
   };
 
   return logger;

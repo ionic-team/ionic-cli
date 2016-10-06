@@ -17,7 +17,7 @@
     "jasmine": "jasmine-node --captureExceptions  ./spec",
     "lint": "eslint .",
     "test": "npm run lint && istanbul cover node_modules/jasmine-node/bin/jasmine-node --captureExceptions spec/",
-    "watch": "npm run clean && tsc --watch"
+    "watch": "npm run clean && ../../node_modules/typescript/bin/tsc --watch"
   },
   "keywords": [
     "ionic",
