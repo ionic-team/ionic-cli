@@ -1,5 +1,3 @@
-'use strict';
-
 import start from './commands/start';
 import info from './commands/info';
 import docs from './commands/docs';

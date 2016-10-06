@@ -8,11 +8,6 @@
     "noImplicitAny": true,
     "typeRoots": [
       "./node_modules/@types"
-    ],
-    "types": [
-      "node",
-      "minimist",
-      "chalk"
     ]
   },
   "include": [
