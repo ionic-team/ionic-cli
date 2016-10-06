@@ -20,35 +20,37 @@ export function run(env: ionicCommandOptions): Promise<void> | void {
 }
 
 function formatHelp(cmdMetadata: CommandMetadata): string {
-  return getUsage(cmdMetadata) + getOptions(cmdMetadata) + getExamples(cmdMetadata);
+  return `
+  ${cmdMetadata.description}
+  ${getUsage(cmdMetadata)}${cmdMetadata.availableOptions ? getOptions(cmdMetadata) : ''}${getExamples(cmdMetadata)}
+  `;
 }
 
 function getUsage(cmdMetadata: CommandMetadata): string {
   return `
-  Usage
-    $ ${cmdMetadata.name} <${
-      (cmdMetadata.inputs || []).map(command => command.name)
-        .join('> <')}>
+    Usage
+      $ ${cmdMetadata.name} ${
+        (cmdMetadata.inputs || []).map(command => '<' + command.name + '> ')}
   `;
 }
 
 function getOptions(cmdMetadata: CommandMetadata): string {
   return `
-  Options
-  ${(cmdMetadata.availableOptions || []).map(option => {
-      return '--' + option.name +
-        ', -' + option.aliases.join(', ') +
-        ' ' + option.description;
-    })
-    .join('\n')}
+    Options
+      ${(cmdMetadata.availableOptions || []).map(option => {
+        return '--' + option.name +
+          ', -' + option.aliases.join(', ') +
+          '  ' + option.description;
+      })
+      .join('\n')}
   `;
 }
 function getExamples(cmdMetadata: CommandMetadata): string {
   return `
-  Examples
-    $ ${cmdMetadata.name} ${
-      (cmdMetadata.inputs || []).map(command => command.name)
-        .join(' ')
-      }
+    Examples
+      $ ${cmdMetadata.name} ${
+        (cmdMetadata.inputs || []).map(command => command.name)
+          .join(' ')
+        }
   `;
 }
