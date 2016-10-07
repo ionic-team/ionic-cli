@@ -3,7 +3,9 @@ import { spawn } from 'cross-spawn';
 import * as path from 'path';
 import * as fs from 'fs';
 
-
+/**
+ * Get the output of a commandline program
+ */
 function getCommandInfo(cmd: string, args: Array<string>): Promise<string> {
   return new Promise((resolve, reject) => {
     let info: string = '';
@@ -26,6 +28,9 @@ function getCommandInfo(cmd: string, args: Array<string>): Promise<string> {
   });
 }
 
+/**
+ * Get the contents of a package.json file in JSON format
+ */
 function getPackageJsonContents(packageJsonPath: string): Promise<{ [key: string]: any; }> {
   return new Promise((resolve, reject) => {
     let packageJson = {};
@@ -43,6 +48,9 @@ function getPackageJsonContents(packageJsonPath: string): Promise<{ [key: string
   });
 }
 
+/**
+ * Get package.json contents for the ionic(cli) package
+ */
 export async function getCliInfo(): Promise<{ [key: string]: any; }>  {
   const packageJsonPath = path.resolve(
     process.cwd(),
@@ -52,6 +60,9 @@ export async function getCliInfo(): Promise<{ [key: string]: any; }>  {
   return await getPackageJsonContents(packageJsonPath);
 }
 
+/**
+ * Get package.json contents for the ionic-angular package
+ */
 export async function getIonicInfo(): Promise<{ [key: string]: any; }>  {
   const appDirectory = '.'; /* TODO: change this */
   const packageJsonPath = path.resolve(
@@ -64,6 +75,9 @@ export async function getIonicInfo(): Promise<{ [key: string]: any; }>  {
   return await getPackageJsonContents(packageJsonPath);
 }
 
+/**
+ * Get all useful environment information
+ */
 export async function gatherEnvironmentInfo(): Promise<{ [key: string]: any; }>  {
 
   const os = osName();

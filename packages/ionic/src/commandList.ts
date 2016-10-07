@@ -14,9 +14,7 @@ export const allCommands = new Map<string, CommandExports>([
   ['start', start],
   ['info', info],
   ['help', help],
-  ['h', help],
   ['ionitron', ionitron],
   ['docs', docs],
-  ['version', version],
-  ['v', version]
+  ['version', version]
 ]);

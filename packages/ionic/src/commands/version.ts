@@ -8,7 +8,7 @@ export const metadata: CommandMetadata = {
   isProjectTask: false
 };
 
-export async function run(env: ionicCommandOptions): Promise<void> | void {
+export async function run(env: ionicCommandOptions): Promise<void> {
   const logger = env.utils.log;
 
   const info = await getCliInfo();
