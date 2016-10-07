@@ -6,12 +6,14 @@ import { allCommands } from './commandList';
 import getIonicPlugin, { isPluginAvailable, pluginPrefix } from './utils/pluginLoader';
 import logger, { Logger } from './utils/logger';
 import { metadataToOptimistOptions } from './utils/commandOptions';
+import loadProject from './utils/project';
 
 export interface ionicCommandOptions {
   argv: minimist.ParsedArgs;
   utils: {
     log: Logger;
   };
+  projectSettings: { [key: string]: any };
   allCommands: Map<string, CommandExports>;
 }
 
@@ -46,15 +48,15 @@ const argv = minimist(process.argv.slice(2));
 
 // Global CLI option setup
 const logLevel: string = argv['loglevel'] || 'warn';
-
-let args: Array<string> = [];
-let cmd = argv._[0];
-let command: CommandExports;
-
 const log = logger({
   level: logLevel,
   prefix: ''
 });
+const projectSettings = loadProject('.');
+
+let args: Array<string> = [];
+let cmd = argv._[0];
+let command: CommandExports;
 
 /*
  * Each plugin can register its namespace and its commands.
@@ -85,8 +87,11 @@ if (allCommands.has(cmd)) {
    */
   } catch (e) {
     if (isPluginAvailable(cmd)) {
-      log.msg('This plugin is not currently installed. Please execute the following to install it.');
-      log.msg('\n    ' + chalk.bold(`npm install ${pluginPrefix}${cmd}`) + '\n');
+      log.msg(`
+This plugin is not currently installed. Please execute the following to install it.
+
+    ${chalk.bold(`npm install ${pluginPrefix}${cmd}`)}
+`);
       process.exit(1);
     }
 
@@ -103,6 +108,7 @@ log.info('executing', cmd);
   try {
     await command.run({
       argv,
+      projectSettings,
       utils: {
         log
       },
