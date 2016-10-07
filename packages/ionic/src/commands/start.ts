@@ -9,7 +9,7 @@ export const metadata: CommandMetadata = {
       description: 'directory and name for the new project'
     }, {
       name: 'template',
-      description: `Starter templates can either come from a named template (ex: tabs, sidemenu, blank)`
+      description: 'Starter templates can either come from a named template (ex: tabs, sidemenu, blank)'
     }
   ],
   availableOptions: [
@@ -19,6 +19,62 @@ export const metadata: CommandMetadata = {
       type: String,
       default: null,
       aliases: ['a']
+    },
+    {
+      name: 'id',
+      description: 'Package name for <widget id> config, ex: com.mycompany.myapp',
+      type: String,
+      default: null,
+      aliases: ['i']
+    },
+    {
+      name: 'skip-npm',
+      description:  'Skip npm package installation',
+      type: Boolean,
+      default: true,
+      aliases: []
+    },
+    {
+      name: 'no-cordova',
+      description:  'Create a basic structure without Cordova requirements',
+      type: Boolean,
+      default: true,
+      aliases: ['w']
+    },
+    {
+      name: 'sass',
+      description:  'Setup the project to use Sass CSS precompiling',
+      type: Boolean,
+      default: true,
+      aliases: ['s']
+    },
+    {
+      name: 'list',
+      description:  'List starter templates available',
+      type: Boolean,
+      default: true,
+      aliases: ['l']
+    },
+    {
+      name: 'io-app-id',
+      description: 'The Ionic.io app ID to use',
+      type: String,
+      default: null,
+      aliases: []
+    },
+    {
+      name: 'template',
+      description: 'Project starter template',
+      type: String,
+      default: null,
+      aliases: ['t']
+    },
+    {
+      name: 'zip-file',
+      description: 'URL to download zipfile for starter template',
+      type: String,
+      default: null,
+      aliases: ['z']
     }
   ],
   isProjectTask: false

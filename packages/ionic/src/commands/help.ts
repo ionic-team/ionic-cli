@@ -16,10 +16,10 @@ export function run(env: ionicCommandOptions): Promise<void> | void {
   const logger = env.utils.log;
   const commandName: string = env.argv._[0] || env.argv['command'] || 'help';
 
-  logger.msg(formatHelp(env.allCommands.get(commandName).metadata));
+  logger.msg(formatCommandHelp(env.allCommands.get(commandName).metadata));
 }
 
-function formatHelp(cmdMetadata: CommandMetadata): string {
+function formatCommandHelp(cmdMetadata: CommandMetadata): string {
   return `
   ${cmdMetadata.description}
   ${getUsage(cmdMetadata)}${cmdMetadata.availableOptions ? getOptions(cmdMetadata) : ''}${getExamples(cmdMetadata)}
@@ -30,19 +30,17 @@ function getUsage(cmdMetadata: CommandMetadata): string {
   return `
     Usage
       $ ${cmdMetadata.name} ${
-        (cmdMetadata.inputs || []).map(command => '<' + command.name + '> ')}
+        (cmdMetadata.inputs || []).map(command => '<' + command.name + '>').join(' ')}
   `;
 }
 
 function getOptions(cmdMetadata: CommandMetadata): string {
   return `
-    Options
-      ${(cmdMetadata.availableOptions || []).map(option => {
-        return '--' + option.name +
+    Options ${(cmdMetadata.availableOptions || []).map(option => {
+        return '\n      --' + option.name +
           ', -' + option.aliases.join(', ') +
           '  ' + option.description;
-      })
-      .join('\n')}
+        })}
   `;
 }
 function getExamples(cmdMetadata: CommandMetadata): string {

@@ -32,12 +32,13 @@ export interface CommandMetadata {
   }[];
 }
 
-export type CommandExports = {
+export interface CommandExports {
   run: Function;
   metadata: CommandMetadata;
 };
 
 declare function require(moduleName: string): any;
+
 
 // Check version?
 const defaultCommand = 'help';
@@ -64,14 +65,14 @@ const log = logger({
  * Each command is called with specific environment information
  */
 
-/*
+/**
  * Check if command exists local to this package
  */
 if (allCommands.has(cmd)) {
   command = allCommands.get(cmd);
   args = process.argv.slice(3);
 
-/*
+/**
  * Check if command exists as a plugin
  */
 } else {
@@ -79,9 +80,9 @@ if (allCommands.has(cmd)) {
     command = getIonicPlugin(cmd);
     args = process.argv.slice(4);
 
-  /*
-  * If command does not exist then lets show them help
-  */
+  /**
+   * If command does not exist then lets show them help
+   */
   } catch (e) {
     if (isPluginAvailable(cmd)) {
       log.msg('This plugin is not currently installed. Please execute the following to install it.');
@@ -108,7 +109,7 @@ log.info('executing', cmd);
       allCommands
     });
   } catch (e) {
-    log.error(e.message);
+    log.error(e);
     process.exit(1);
   }
 })();

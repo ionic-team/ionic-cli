@@ -1,5 +1,8 @@
 import { ionicCommandOptions, CommandMetadata } from '../ionic';
 
+/**
+ * Metadata about the docs command
+ */
 export const metadata: CommandMetadata = {
   name: 'docs',
   description: 'Opens up the documentation for Ionic',
@@ -12,10 +15,22 @@ export const metadata: CommandMetadata = {
   isProjectTask: false
 };
 
+/**
+ * Primary function that executes the docs command.
+ */
 export function run(env: ionicCommandOptions): Promise<void> | void {
   const logger = env.utils.log;
+  const inputs = env.argv._;
+  const topic = inputs[0];
 
-  logger.msg(env.argv);
-
-  return Promise.resolve();
+  /*
+  if (!topic) {
+    return;
+  }
+  if (topic) === 'ls') {
+    return list;
+  }
+  
+  return lookupTopic(topic);
+  */
 }

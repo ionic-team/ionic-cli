@@ -1,5 +1,5 @@
 import { ionicCommandOptions, CommandMetadata } from '../ionic';
-import * as path from 'path';
+import { getCliInfo } from '../utils/environmentInfo';
 
 export const metadata: CommandMetadata = {
   name: 'version',
@@ -8,14 +8,10 @@ export const metadata: CommandMetadata = {
   isProjectTask: false
 };
 
-export function run(env: ionicCommandOptions): Promise<void> | void {
+export async function run(env: ionicCommandOptions): Promise<void> | void {
   const logger = env.utils.log;
 
-  const packageJsonPath = path.resolve(
-    process.cwd(),
-    'package.json'
-  );
-  const packageJson = require(packageJsonPath);
+  const info = await getCliInfo();
 
-  logger.msg(`${packageJson.version}\n`);
+  logger.msg(`${info['version']}\n`);
 }
