@@ -8,6 +8,7 @@
   "bin": {
     "ionic": "bin/ionic"
   },
+  "types": "./dist/main.d.ts",
   "scripts": {
     "build": "npm run clean && ../../node_modules/typescript/bin/tsc",
     "clean": "rm -rf ./dist",

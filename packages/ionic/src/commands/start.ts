@@ -177,7 +177,7 @@ export async function run(env: ionicCommandOptions): Promise<void> {
  */
 function npmInstall(root: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    const proc = spawn('npm', ['install', '--verbose'], {cwd: root, stdio: 'inherit'});
+    const proc = spawn('npm', ['install'], {cwd: root, stdio: 'inherit'});
     proc.on('close', function (code: Number) {
       if (code !== 0) {
         return reject(`npm install failed`);
