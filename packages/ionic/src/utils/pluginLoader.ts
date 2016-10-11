@@ -8,7 +8,7 @@ export const pluginPrefix = '@ionic/cli-plugin-';
  * Synchronously load a plugin
  */
 export default function(name: string): PluginExports {
-  return require(`${pluginPrefix}${name}`);
+  return require(`${pluginPrefix}${name}`)();
 }
 
 /**
