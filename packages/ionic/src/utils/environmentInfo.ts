@@ -6,7 +6,7 @@ import * as fs from 'fs';
 /**
  * Get the output of a commandline program
  */
-function getCommandInfo(cmd: string, args: Array<string>): Promise<string> {
+export function getCommandInfo(cmd: string, args: Array<string>): Promise<string> {
   return new Promise((resolve, reject) => {
     let info: string = '';
     const proc = spawn(cmd, args);

@@ -7,6 +7,7 @@ import * as tar from 'tar';
 import { spawn } from 'cross-spawn';
 import * as fetch from 'node-fetch';
 import * as stream from 'stream';
+import { getCommandInfo } from '../utils/environmentInfo';
 import { ionicCommandOptions, CommandMetadata } from '../ionic';
 
 interface StarterTemplate {
@@ -126,6 +127,7 @@ export const metadata: CommandMetadata = {
 export async function run(env: ionicCommandOptions): Promise<void> {
   const logger = env.utils.log;
   const inputs = env.argv._;
+  let installer = 'npm';
   let projectRoot: string;
   let projectName: string;
   let starterTemplateName: string;
@@ -168,19 +170,30 @@ export async function run(env: ionicCommandOptions): Promise<void> {
     tarXvf(archive['body'], projectRoot)
   ]);
 
+  if (env.argv['skip-npm']) {
+    return logger.msg('Project started!');
+  }
+
+  if (env.argv['yarn']) {
+    let yarnVersion = await getCommandInfo('yarn', ['-version']);
+    if (yarnVersion) {
+      installer = 'yarn';
+    }
+  }
+
   logger.msg('Installing dependencies. This might take a couple minutes.');
-  await npmInstall(projectRoot);
+  await install(installer, projectRoot);
 }
 
 /**
  * Spawn an npm install task from within 
  */
-function npmInstall(root: string): Promise<any> {
+function install(installer: string, root: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    const proc = spawn('npm', ['install'], {cwd: root, stdio: 'inherit'});
+    const proc = spawn(installer, ['install'], {cwd: root, stdio: 'inherit'});
     proc.on('close', function (code: Number) {
       if (code !== 0) {
-        return reject(`npm install failed`);
+        return reject(`${installer} install failed`);
       }
       resolve();
     });
