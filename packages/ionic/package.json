@@ -8,7 +8,7 @@
   "bin": {
     "ionic": "bin/ionic"
   },
-  "types": "./dist/main.d.ts",
+  "types": "./dist/ionic.d.ts",
   "scripts": {
     "build": "npm run clean && ../../node_modules/typescript/bin/tsc",
     "clean": "rm -rf ./dist",
@@ -56,10 +56,6 @@
     "@types/node-fetch": "0.0.4",
     "@types/path-exists": "^1.0.29",
     "@types/semver": "^5.3.30",
-    "@types/tar": "^1.0.28",
-    "conventional-changelog-cli": "1.1.1",
-    "coveralls": "^2.2.0",
-    "istanbul": "^0.4.4",
-    "lerna": "2.0.0-beta.30"
+    "@types/tar": "^1.0.28"
   }
 }

@@ -11,10 +11,10 @@ import { getCommandInfo } from '../utils/environmentInfo';
 import { ionicCommandOptions, CommandMetadata } from '../ionic';
 
 interface StarterTemplate {
-  name: string,
-  path: string,
-  baseArchive: string,
-  archive: string
+  name: string;
+  path: string;
+  baseArchive: string;
+  archive: string;
 }
 
 const STARTER_TEMPLATE_DEFAULT = 'blank';
