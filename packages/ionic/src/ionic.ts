@@ -2,7 +2,7 @@
 
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
-import { allCommands } from './commandList';
+import getAllCommands from './commandList';
 import getIonicPlugin, { isPluginAvailable, pluginPrefix } from './utils/pluginLoader';
 import logger, { Logger } from './utils/logger';
 import { metadataToOptimistOptions } from './utils/commandOptions';
@@ -24,7 +24,7 @@ export interface CommandMetadata {
   inputs?: {
     name: string;
     description: string;
-  }[],
+  }[];
   availableOptions?: {
     name: string;
     description: string;
@@ -59,6 +59,7 @@ const projectSettings = loadProject('.');
 let args: Array<string> = [];
 let cmd = argv._[0];
 let command: CommandExports;
+const allCommands = getAllCommands();
 
 /*
  * Each plugin can register its namespace and its commands.

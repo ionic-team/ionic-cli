@@ -10,15 +10,6 @@ import { CommandExports, PluginExports } from './ionic';
  * List of commands that are available from ionic cli
  * Each command as a 1-to-1 mapping to a module with the same name
  */
-export const allCommands = new Map<string, CommandExports>([
-  ['start', start],
-  ['info', info],
-  ['help', help],
-  ['ionitron', ionitron],
-  ['docs', docs],
-  ['version', version]
-]);
-
 export default function (): PluginExports {
   return new Map<string, CommandExports>([
     ['start', start],
