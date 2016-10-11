@@ -4,7 +4,7 @@ import * as docs from './commands/docs';
 import * as help from './commands/help';
 import * as ionitron from './commands/ionitron';
 import * as version from './commands/version';
-import { CommandExports } from './ionic';
+import { CommandExports, PluginExports } from './ionic';
 
 /**
  * List of commands that are available from ionic cli
@@ -18,3 +18,14 @@ export const allCommands = new Map<string, CommandExports>([
   ['docs', docs],
   ['version', version]
 ]);
+
+export default function (): PluginExports {
+  return new Map<string, CommandExports>([
+    ['start', start],
+    ['info', info],
+    ['help', help],
+    ['ionitron', ionitron],
+    ['docs', docs],
+    ['version', version]
+  ]);
+}

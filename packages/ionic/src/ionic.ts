@@ -39,6 +39,8 @@ export interface CommandExports {
   metadata: CommandMetadata;
 };
 
+export type PluginExports = Map<string, CommandExports>;
+
 declare function require(moduleName: string): any;
 
 
@@ -79,7 +81,8 @@ if (allCommands.has(cmd)) {
  */
 } else {
   try {
-    command = getIonicPlugin(cmd);
+    //TODO: Add code here to account for plugins exposing { [commandName: string]: CommandExports }
+    command = getIonicPlugin(cmd).get('h');
     args = process.argv.slice(4);
 
   /**
@@ -107,6 +110,7 @@ log.info('executing', cmd);
   const argv: minimist.ParsedArgs = minimist(args, options);
   try {
     await command.run({
+      args,
       argv,
       projectSettings,
       utils: {

@@ -1,4 +1,4 @@
-import { CommandExports } from '../ionic';
+import { PluginExports } from '../ionic';
 
 const availablePlugins = new Set<string>(['cloud']);
 
@@ -7,7 +7,7 @@ export const pluginPrefix = '@ionic/cli-plugin-';
 /**
  * Synchronously load a plugin
  */
-export default function(name: string): CommandExports {
+export default function(name: string): PluginExports {
   return require(`${pluginPrefix}${name}`);
 }
 

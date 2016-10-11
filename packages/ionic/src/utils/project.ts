@@ -6,53 +6,56 @@ const PROJECT_FILE = 'ionic.config.json';
 export interface Project {
   has(key: string): Promise<boolean>;
   get(key: string): Promise<any>;
-  set(key: string, value: any): Promise<void>;
-  remove(key: string): Promise<void>;
+  set(key: string, value: any): Promise<any>;
+  remove(key: string): Promise<any>;
   projectDirectory: string;
+}
+
+interface Stuff {
+  (...args: Array<any>): Promise<any>;
 }
 
 export default function (projectDirectory: string): Project {
   const projectFilePath = path.resolve(projectDirectory, PROJECT_FILE);
   let projectFileContents: { [key: string]: any; };
 
-  async function has(key: string): Promise<boolean> {
-    if (!projectFileContents) {
-      projectFileContents = await getJsonFileContents(projectFilePath);
-    }
+  function ensureProjectIsLoaded(fn: Function): Stuff  {
+    return async function(...args: Array<any>): Promise<any> {
+      if (!projectFileContents) {
+        projectFileContents = await getJsonFileContents(projectFilePath);
+      }
+      return await fn(...args);
+    };
+  }
+
+  function has(key: string): boolean {
     return projectFileContents.hasOwnProperty(key);
   }
 
-  async function get(key: string): Promise<any> {
-    if (!projectFileContents) {
-      projectFileContents = await getJsonFileContents(projectFilePath);
-    }
+  function get(key: string): any {
     return projectFileContents[key];
   }
 
   async function set(key: string, value: any): Promise<any> {
-    if (!projectFileContents) {
-      projectFileContents = await getJsonFileContents(projectFilePath);
-    }
     projectFileContents[key] = value;
     await updateJsonFileContents(projectFileContents, projectFilePath);
   }
 
   async function remove(key: string): Promise<any> {
-    if (!projectFileContents) {
-      projectFileContents = await getJsonFileContents(projectFilePath);
-    }
     delete projectFileContents[key];
     await updateJsonFileContents(projectFileContents, projectFilePath);
   }
 
   return {
-    has,
-    get,
-    set,
-    remove,
+    has: ensureProjectIsLoaded(has),
+    get: ensureProjectIsLoaded(get),
+    set: ensureProjectIsLoaded(set),
+    remove: ensureProjectIsLoaded(remove),
     projectDirectory
   };
 }
+
+
 
 function updateJsonFileContents(fileContents: { [key: string]: any; }, filePath: string): Promise<any> {
   return new Promise((resolve, reject) => {

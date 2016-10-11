@@ -42,15 +42,20 @@
     "chalk": "^1.1.3",
     "cross-spawn": "^4.0.2",
     "minimist": "^1.2.0",
+    "node-fetch": "^1.6.3",
     "os-name": "^2.0.1",
     "path-exists": "^3.0.0",
-    "semver": "^5.3.0"
+    "semver": "^5.3.0",
+    "tar": "^2.2.1"
   },
   "devDependencies": {
     "@types/chalk": "^0.4.30",
     "@types/minimist": "^1.1.29",
-    "@types/node": "^6.0.42",
+    "@types/node": "^6.0.45",
+    "@types/node-fetch": "0.0.4",
+    "@types/path-exists": "^1.0.29",
     "@types/semver": "^5.3.30",
+    "@types/tar": "^1.0.28",
     "conventional-changelog-cli": "1.1.1",
     "coveralls": "^2.2.0",
     "istanbul": "^0.4.4",
