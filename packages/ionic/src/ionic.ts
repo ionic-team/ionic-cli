@@ -78,22 +78,24 @@ if (allCommands.has(cmd)) {
 
 /**
  * Check if command exists as a plugin
+ * - Each npm package is named as @ionic/cli-plugin-<name>
+ * - Each plugin command is prefixed with <plugin name>:
  */
-} else {
+} else if (cmd.indexOf(':') !== -1) {
+  const [pluginName, pluginCommand] = cmd.split(':');
   try {
-    //TODO: Add code here to account for plugins exposing { [commandName: string]: CommandExports }
-    command = getIonicPlugin(cmd).get('h');
-    args = process.argv.slice(4);
+    command = getIonicPlugin(pluginName).get(pluginCommand);
+    args = process.argv.slice(3);
 
   /**
    * If command does not exist then lets show them help
    */
   } catch (e) {
-    if (isPluginAvailable(cmd)) {
+    if (isPluginAvailable(pluginName)) {
       log.msg(`
 This plugin is not currently installed. Please execute the following to install it.
 
-    ${chalk.bold(`npm install ${pluginPrefix}${cmd}`)}
+    ${chalk.bold(`npm install ${pluginPrefix}${pluginName}`)}
 `);
       process.exit(1);
     }
@@ -101,6 +103,9 @@ This plugin is not currently installed. Please execute the following to install 
     cmd = defaultCommand;
     command = allCommands.get(cmd);
   }
+} else {
+  cmd = defaultCommand;
+  command = allCommands.get(cmd);
 }
 
 log.info('executing', cmd);
