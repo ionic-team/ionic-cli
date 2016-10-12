@@ -34,15 +34,16 @@ export interface CommandMetadata {
   }[];
 }
 
+export abstract class Command {
+    abstract public run(env: CommandOptions): Promise<void>;
+}
+
 export interface CommandExports {
   run: Function;
   metadata: CommandMetadata;
 };
 
 export type PluginExports = Map<string, CommandExports>;
-
-declare function require(moduleName: string): any;
-
 
 // Check version?
 const defaultCommand = 'help';
