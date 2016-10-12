@@ -1,7 +1,7 @@
-import { CommandMetadata } from '../ionic';
+import { CommandData } from '../definitions';
 import { Opts as minimistOptions } from 'minimist';
 
-export function metadataToOptimistOptions(metadata: CommandMetadata): minimistOptions {
+export function metadataToOptimistOptions(metadata: CommandData): minimistOptions {
   let options: minimistOptions = {
     string: [],
     boolean: [],

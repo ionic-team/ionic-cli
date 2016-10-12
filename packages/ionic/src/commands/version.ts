@@ -1,17 +1,18 @@
-import { ionicCommandOptions, CommandMetadata } from '../ionic';
+import { IonicCommandOptions, CommandMetadata, Command } from '../definitions';
 import { getCliInfo } from '../utils/environmentInfo';
 
-export const metadata: CommandMetadata = {
+@CommandMetadata({
   name: 'version',
   description: 'Returns the current CLI version',
   availableOptions: [],
   isProjectTask: false
-};
+})
+export default class Version extends Command {
+  async run(env: IonicCommandOptions): Promise<void> {
+    const logger = env.utils.log;
 
-export async function run(env: ionicCommandOptions): Promise<void> {
-  const logger = env.utils.log;
+    const info = await getCliInfo();
 
-  const info = await getCliInfo();
-
-  logger.msg(`${info['version']}\n`);
+    logger.msg(`${info['version']}\n`);
+  }
 }

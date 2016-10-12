@@ -8,7 +8,7 @@ import { spawn } from 'cross-spawn';
 import * as fetch from 'node-fetch';
 import * as stream from 'stream';
 import { getCommandInfo } from '../utils/environmentInfo';
-import { ionicCommandOptions, CommandMetadata } from '../ionic';
+import { IonicCommandOptions, CommandMetadata, Command } from '../definitions';
 
 interface StarterTemplate {
   name: string;
@@ -51,7 +51,7 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
   }
 ];
 
-export const metadata: CommandMetadata = {
+@CommandMetadata({
   name: 'start',
   description: 'Starts a new Ionic project in the specified PATH',
   inputs: [
@@ -122,67 +122,68 @@ export const metadata: CommandMetadata = {
     }
   ],
   isProjectTask: false
-};
+})
+export default class Start extends Command {
+  async run(env: IonicCommandOptions): Promise<void> {
+    const logger = env.utils.log;
+    const inputs = env.argv._;
+    let installer = 'npm';
+    let projectRoot: string;
+    let projectName: string;
+    let starterTemplateName: string;
+    let starterTemplate: StarterTemplate;
 
-export async function run(env: ionicCommandOptions): Promise<void> {
-  const logger = env.utils.log;
-  const inputs = env.argv._;
-  let installer = 'npm';
-  let projectRoot: string;
-  let projectName: string;
-  let starterTemplateName: string;
-  let starterTemplate: StarterTemplate;
-
-  if (inputs.length < 1) {
-    throw 'Please provide a name for your project.';
-  }
-  if (!isProjectNameValid(inputs[0])) {
-    throw `Please name your Ionic project something meaningful other than ${chalk.red(inputs[0])}`;
-  }
-
-  projectRoot = path.resolve(inputs[0]);
-  projectName = path.basename(projectRoot);
-
-  if (!pathExists.sync(projectName)) {
-    fs.mkdirSync(projectRoot);
-    logger.info(`Making directory ${projectRoot}`);
-  } else if (!isSafeToCreateProjectIn(projectRoot)) {
-    throw `The directory ${projectName} contains file(s) that could conflict. Aborting.`;
-  }
-
-  starterTemplateName = inputs[1] || env.argv['template'] || STARTER_TEMPLATE_DEFAULT;
-  starterTemplate = STARTER_TEMPLATES.find(tpl => tpl['name'] === starterTemplateName);
-
-  if (!starterTemplate) {
-    throw `Unable to find starter template for ${starterTemplateName}`;
-  }
-
-  const [
-    baseArchive,
-    archive
-  ] = await Promise.all([
-    fetch(starterTemplate.baseArchive),
-    fetch(starterTemplate.archive)
-  ]);
-
-  await Promise.all([
-    tarXvf(baseArchive['body'], projectRoot),
-    tarXvf(archive['body'], projectRoot)
-  ]);
-
-  if (env.argv['skip-npm']) {
-    return logger.msg('Project started!');
-  }
-
-  if (env.argv['yarn']) {
-    let yarnVersion = await getCommandInfo('yarn', ['-version']);
-    if (yarnVersion) {
-      installer = 'yarn';
+    if (inputs.length < 1) {
+      throw 'Please provide a name for your project.';
     }
-  }
+    if (!isProjectNameValid(inputs[0])) {
+      throw `Please name your Ionic project something meaningful other than ${chalk.red(inputs[0])}`;
+    }
 
-  logger.msg('Installing dependencies. This might take a couple minutes.');
-  await install(installer, projectRoot);
+    projectRoot = path.resolve(inputs[0]);
+    projectName = path.basename(projectRoot);
+
+    if (!pathExists.sync(projectName)) {
+      fs.mkdirSync(projectRoot);
+      logger.info(`Making directory ${projectRoot}`);
+    } else if (!isSafeToCreateProjectIn(projectRoot)) {
+      throw `The directory ${projectName} contains file(s) that could conflict. Aborting.`;
+    }
+
+    starterTemplateName = inputs[1] || env.argv['template'] || STARTER_TEMPLATE_DEFAULT;
+    starterTemplate = STARTER_TEMPLATES.find(tpl => tpl['name'] === starterTemplateName);
+
+    if (!starterTemplate) {
+      throw `Unable to find starter template for ${starterTemplateName}`;
+    }
+
+    const [
+      baseArchive,
+      archive
+    ] = await Promise.all([
+      fetch(starterTemplate.baseArchive),
+      fetch(starterTemplate.archive)
+    ]);
+
+    await Promise.all([
+      tarXvf(baseArchive['body'], projectRoot),
+      tarXvf(archive['body'], projectRoot)
+    ]);
+
+    if (env.argv['skip-npm']) {
+      return logger.msg('Project started!');
+    }
+
+    if (env.argv['yarn']) {
+      let yarnVersion = await getCommandInfo('yarn', ['-version']);
+      if (yarnVersion) {
+        installer = 'yarn';
+      }
+    }
+
+    logger.msg('Installing dependencies. This might take a couple minutes.');
+    await install(installer, projectRoot);
+  }
 }
 
 /**

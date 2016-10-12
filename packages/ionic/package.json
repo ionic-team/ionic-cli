@@ -8,6 +8,9 @@
   "bin": {
     "ionic": "bin/ionic"
   },
+  "engines": {
+    "node": ">=6"
+  },
   "types": "./dist/ionic.d.ts",
   "scripts": {
     "build": "npm run clean && ../../node_modules/typescript/bin/tsc",

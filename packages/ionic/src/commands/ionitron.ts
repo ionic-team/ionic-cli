@@ -1,14 +1,15 @@
-import { ionicCommandOptions, CommandMetadata } from '../ionic';
+import { IonicCommandOptions, CommandMetadata, Command } from '../definitions';
 
-export const metadata: CommandMetadata = {
+@CommandMetadata({
   name: 'ionitron',
   description: 'Print random ionitron messages',
   availableOptions: [],
   isProjectTask: false
-};
+})
+export default class Ionitron extends Command {
+  run(env: IonicCommandOptions): void {
+    const logger = env.utils.log;
 
-export function run(env: ionicCommandOptions): Promise<void> | void {
-  const logger = env.utils.log;
-
-  logger.msg(env.argv);
+    logger.msg(env.argv);
+  }
 }

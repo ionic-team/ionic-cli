@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
+    "allowUnreachableCode": false,
     "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "lib": ["es2015"],
     "module": "commonjs",
     "outDir": "./dist",

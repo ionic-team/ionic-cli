@@ -1,9 +1,9 @@
-import { ionicCommandOptions, CommandMetadata } from '../ionic';
+import { IonicCommandOptions, CommandMetadata, Command } from '../definitions';
 
 /**
  * Metadata about the docs command
  */
-export const metadata: CommandMetadata = {
+@CommandMetadata({
   name: 'docs',
   description: 'Opens up the documentation for Ionic',
   inputs: [
@@ -13,24 +13,22 @@ export const metadata: CommandMetadata = {
     }
   ],
   isProjectTask: false
-};
+})
+export default class Docs extends Command {
+  run(env: IonicCommandOptions): Promise<void> | void {
+    const logger = env.utils.log;
+    const inputs = env.argv._;
+    const topic = inputs[0];
 
-/**
- * Primary function that executes the docs command.
- */
-export function run(env: ionicCommandOptions): Promise<void> | void {
-  const logger = env.utils.log;
-  const inputs = env.argv._;
-  const topic = inputs[0];
-
-  /*
-  if (!topic) {
-    return;
+    /*
+    if (!topic) {
+      return;
+    }
+    if (topic) === 'ls') {
+      return list;
+    }
+    
+    return lookupTopic(topic);
+    */
   }
-  if (topic) === 'ls') {
-    return list;
-  }
-  
-  return lookupTopic(topic);
-  */
 }

@@ -4,46 +4,9 @@ import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 import getAllCommands from './commandList';
 import getIonicPlugin, { isPluginAvailable, pluginPrefix } from './utils/pluginLoader';
-import logger, { Logger } from './utils/logger';
+import logger from './utils/logger';
 import { metadataToOptimistOptions } from './utils/commandOptions';
 import loadProject from './utils/project';
-
-export interface ionicCommandOptions {
-  argv: minimist.ParsedArgs;
-  utils: {
-    log: Logger;
-  };
-  projectSettings: { [key: string]: any };
-  allCommands: Map<string, CommandExports>;
-}
-
-export interface CommandMetadata {
-  name: string;
-  description: string;
-  isProjectTask: boolean;
-  inputs?: {
-    name: string;
-    description: string;
-  }[];
-  availableOptions?: {
-    name: string;
-    description: string;
-    type: StringConstructor | BooleanConstructor;
-    default: string | number| boolean | null;
-    aliases: string[];
-  }[];
-}
-
-export abstract class Command {
-    abstract public run(env: CommandOptions): Promise<void>;
-}
-
-export interface CommandExports {
-  run: Function;
-  metadata: CommandMetadata;
-};
-
-export type PluginExports = Map<string, CommandExports>;
 
 // Check version?
 const defaultCommand = 'help';
@@ -59,7 +22,7 @@ const projectSettings = loadProject('.');
 
 let args: Array<string> = [];
 let cmd = argv._[0];
-let command: CommandExports;
+let SelectedCmd: any;
 const allCommands = getAllCommands();
 
 /*
@@ -75,7 +38,7 @@ const allCommands = getAllCommands();
  * Check if command exists local to this package
  */
 if (allCommands.has(cmd)) {
-  command = allCommands.get(cmd);
+  SelectedCmd = allCommands.get(cmd);
   args = process.argv.slice(3);
 
 /**
@@ -83,10 +46,10 @@ if (allCommands.has(cmd)) {
  * - Each npm package is named as @ionic/cli-plugin-<name>
  * - Each plugin command is prefixed with <plugin name>:
  */
-} else if (cmd.indexOf(':') !== -1) {
+} else if (cmd && cmd.indexOf(':') !== -1) {
   const [pluginName, pluginCommand] = cmd.split(':');
   try {
-    command = getIonicPlugin(pluginName).get(pluginCommand);
+    SelectedCmd = getIonicPlugin(pluginName).get(pluginCommand);
     args = process.argv.slice(3);
 
   /**
@@ -103,17 +66,19 @@ This plugin is not currently installed. Please execute the following to install 
     }
 
     cmd = defaultCommand;
-    command = allCommands.get(cmd);
+    SelectedCmd = allCommands.get(cmd);
   }
 } else {
   cmd = defaultCommand;
-  command = allCommands.get(cmd);
+  SelectedCmd = allCommands.get(cmd);
 }
 
 log.info('executing', cmd);
 
 (async function runCommand() {
-  const options = metadataToOptimistOptions(command.metadata);
+
+  const command = new SelectedCmd();
+  const options = metadataToOptimistOptions(SelectedCmd.metadata);
   const argv: minimist.ParsedArgs = minimist(args, options);
   try {
     await command.run({

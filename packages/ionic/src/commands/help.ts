@@ -1,6 +1,6 @@
-import { ionicCommandOptions, CommandMetadata } from '../ionic';
+import { IonicCommandOptions, CommandMetadata, Command, CommandData } from '../definitions';
 
-export const metadata: CommandMetadata = {
+@CommandMetadata({
   name: 'help',
   description: 'Provides help for a certain command',
   inputs: [
@@ -10,23 +10,25 @@ export const metadata: CommandMetadata = {
     }
   ],
   isProjectTask: false
-};
+})
+export default class Help extends Command {
+  run(env: IonicCommandOptions): void {
+    const logger = env.utils.log;
+    const commandName: string = env.argv._[0] || env.argv['command'];
+    const command = env.allCommands.get(commandName) || env.allCommands.get('help')
 
-export function run(env: ionicCommandOptions): Promise<void> | void {
-  const logger = env.utils.log;
-  const commandName: string = env.argv._[0] || env.argv['command'] || 'help';
-
-  logger.msg(formatCommandHelp(env.allCommands.get(commandName).metadata));
+    logger.msg(formatCommandHelp(command.metadata));
+  }
 }
 
-function formatCommandHelp(cmdMetadata: CommandMetadata): string {
+function formatCommandHelp(cmdMetadata: CommandData): string {
   return `
   ${cmdMetadata.description}
   ${getUsage(cmdMetadata)}${cmdMetadata.availableOptions ? getOptions(cmdMetadata) : ''}${getExamples(cmdMetadata)}
   `;
 }
 
-function getUsage(cmdMetadata: CommandMetadata): string {
+function getUsage(cmdMetadata: CommandData): string {
   return `
     Usage
       $ ${cmdMetadata.name} ${
@@ -34,7 +36,7 @@ function getUsage(cmdMetadata: CommandMetadata): string {
   `;
 }
 
-function getOptions(cmdMetadata: CommandMetadata): string {
+function getOptions(cmdMetadata: CommandData): string {
   return `
     Options ${(cmdMetadata.availableOptions || []).map(option => {
         return '\n      --' + option.name +
@@ -43,7 +45,7 @@ function getOptions(cmdMetadata: CommandMetadata): string {
         })}
   `;
 }
-function getExamples(cmdMetadata: CommandMetadata): string {
+function getExamples(cmdMetadata: CommandData): string {
   return `
     Examples
       $ ${cmdMetadata.name} ${

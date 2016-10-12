@@ -1,4 +1,4 @@
-import { PluginExports } from '../ionic';
+import { PluginExports } from '../definitions';
 
 const availablePlugins = new Set<string>(['cloud']);
 
