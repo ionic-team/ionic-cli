@@ -3,20 +3,20 @@ export * from './definitions';
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 import getCommands from './commands';
-import { Command } from './lib/command';
+import { Command, CommandMetadata } from './lib/command';
 import { CommandMap, ICommand } from './definitions';
 import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from './lib/utils/plugins';
 import { Logger } from './lib/utils/logger';
 import { metadataToOptimistOptions } from './lib/utils/commandOptions';
 import { Project } from './lib/utils/project';
 
-export { Command as Command }
+export { Command as Command, CommandMetadata as CommandMetadata }
 
 const defaultCommand = 'help';
 
 function getCommand(name: string, commands: CommandMap): ICommand {
   const loader = new PluginLoader();
-  let command: ICommand;
+  let command: ICommand | undefined;
 
   /*
    * Each plugin can register its namespace and its commands.
@@ -61,6 +61,10 @@ function getCommand(name: string, commands: CommandMap): ICommand {
 
   if (!command) {
     command = commands.get(defaultCommand);
+
+    if (!command) {
+      throw new Error('Missing default command.');
+    }
   }
 
   return command;
@@ -77,7 +81,7 @@ export async function run(pargv: string[]) {
   const log = new Logger({ level: logLevel, prefix: '' });
 
   const project = new Project('.');
-  const command = getCommand(argv._[0], commands); // TODO: This can throw an error
+  const command = getCommand(argv._[0], commands);
 
   async function runCommand(cmd: ICommand) {
     log.info('executing', cmd.metadata.name);

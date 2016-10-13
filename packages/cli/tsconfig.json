@@ -8,6 +8,7 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "outDir": "./dist",
+    "strictNullChecks": true,
     "target": "es5",
     "typeRoots": [
       "./node_modules/@types"

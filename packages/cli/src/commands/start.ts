@@ -131,8 +131,6 @@ export default class StartCommand extends Command implements ICommand {
     let installer = 'npm';
     let projectRoot: string;
     let projectName: string;
-    let starterTemplateName: string;
-    let starterTemplate: StarterTemplate;
 
     if (env.inputs.length < 1) {
       throw 'Please provide a name for your project.';
@@ -151,8 +149,8 @@ export default class StartCommand extends Command implements ICommand {
       throw `The directory ${projectName} contains file(s) that could conflict. Aborting.`;
     }
 
-    starterTemplateName = env.inputs[1] || env.options['template'] || STARTER_TEMPLATE_DEFAULT;
-    starterTemplate = STARTER_TEMPLATES.find(tpl => tpl['name'] === starterTemplateName);
+    let starterTemplateName = env.inputs[1] || env.options['template'] || STARTER_TEMPLATE_DEFAULT;
+    let starterTemplate = STARTER_TEMPLATES.find(tpl => tpl['name'] === starterTemplateName);
 
     if (!starterTemplate) {
       throw `Unable to find starter template for ${starterTemplateName}`;

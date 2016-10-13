@@ -4,14 +4,14 @@ import { CommandData } from '../../definitions';
 export function metadataToOptimistOptions(metadata: CommandData): MinimistOpts {
   let strings: string[] = [];
   let booleans: string[] = [];
-  let options: MinimistOpts = {
-    alias: {},
-    default: {}
-  };
+  let aliases = {};
+  let defaults = {};
+
+  let options: MinimistOpts = {};
 
   for (let option of metadata.availableOptions || []) {
-    options.default[option.name] = option.default;
-    options.alias[option.name] = option.aliases;
+    defaults[option.name] = option.default;
+    aliases[option.name] = option.aliases;
 
     if (option.type === String) {
       strings.push(option.name);
@@ -20,8 +20,10 @@ export function metadataToOptimistOptions(metadata: CommandData): MinimistOpts {
     }
   }
 
-  options.string = strings;
-  options.boolean = booleans;
-
-  return options;
+  return {
+    string: strings,
+    boolean: booleans,
+    alias: aliases,
+    default: defaults
+  };
 }

@@ -25,7 +25,13 @@ export class Project implements IProject {
         if (e.code === 'ENOENT') {
           throw ERROR_PROJECT_FILE_NOT_FOUND;
         }
+
+        throw e;
       }
+    }
+
+    if (!this.projectFile) {
+      throw 'hi';
     }
 
     return await this.projectFile;
@@ -35,19 +41,6 @@ export class Project implements IProject {
     await updateJsonFileContents(projectFile, this.projectFilePath);
     this.projectFile = projectFile;
   }
-}
-
-function updateJsonFileContents(fileContents: any, filePath: string): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    var jsonString = JSON.stringify(fileContents, null, 2);
-
-    fs.writeFile(filePath, jsonString, (err) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve();
-    });
-  });
 }
 
 function getJsonFileContents(filePath: string): Promise<any> {
@@ -62,6 +55,19 @@ function getJsonFileContents(filePath: string): Promise<any> {
       } catch (e) {
         reject(e);
       }
+    });
+  });
+}
+
+function updateJsonFileContents(fileContents: any, filePath: string): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    var jsonString = JSON.stringify(fileContents, null, 2);
+
+    fs.writeFile(filePath, jsonString, (err) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve();
     });
   });
 }
