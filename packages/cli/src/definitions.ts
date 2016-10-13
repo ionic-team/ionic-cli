@@ -1,14 +1,14 @@
 import * as minimist from 'minimist';
+import { ICommand } from './definitions';
 import { Logger } from './utils/logger';
 
 export interface IonicCommandOptions {
-  args: string[];
   argv: minimist.ParsedArgs;
   utils: {
     log: Logger;
   };
   projectSettings: { [key: string]: any };
-  allCommands: Map<string, any>;
+  commands: Map<string, ICommand>;
 }
 
 export interface CommandData {

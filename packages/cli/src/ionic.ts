@@ -3,8 +3,8 @@ export * from './commands/command';
 
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
-import getAllCommands from './commandList';
-import { ICommand } from './definitions';
+import getCommands from './commandList';
+import { ICommand, PluginExports } from './definitions';
 import getIonicPlugin, { isPluginAvailable, pluginPrefix } from './utils/pluginLoader';
 import logger from './utils/logger';
 import { metadataToOptimistOptions } from './utils/commandOptions';
@@ -12,23 +12,8 @@ import loadProject from './utils/project';
 
 const defaultCommand = 'help';
 
-export async function run(pargv: string[]) {
-
-  // Check version?
-  const argv = minimist(pargv.slice(2));
-
-  // Global CLI option setup
-  const logLevel: string = argv['loglevel'] || 'warn';
-  const log = logger({
-    level: logLevel,
-    prefix: ''
-  });
-  const projectSettings = loadProject('.');
-
-  let args: string[] = [];
-  let cmd = argv._[0];
-  let SelectedCmd: ICommand;
-  const allCommands = getAllCommands();
+function getCommand(name: string, commands: PluginExports): ICommand {
+  let command: ICommand;
 
   /*
    * Each plugin can register its namespace and its commands.
@@ -41,63 +26,77 @@ export async function run(pargv: string[]) {
   /**
    * Check if command exists local to this package
    */
-  if (allCommands.has(cmd)) {
-    SelectedCmd = allCommands.get(cmd);
-    args = pargv.slice(3);
+  if (commands.has(name)) {
+    command = commands.get(name);
 
   /**
    * Check if command exists as a plugin
    * - Each npm package is named as @ionic/cli-plugin-<name>
    * - Each plugin command is prefixed with <plugin name>:
    */
-  } else if (cmd && cmd.indexOf(':') !== -1) {
-    const [pluginName, pluginCommand] = cmd.split(':');
+  } else if (name && name.indexOf(':') !== -1) {
+    const [pluginName, pluginCommand] = name.split(':');
+
     try {
-      SelectedCmd = getIonicPlugin(pluginName).get(pluginCommand);
-      args = pargv.slice(3);
+      command = getIonicPlugin(pluginName).get(pluginCommand);
 
     /**
      * If command does not exist then lets show them help
      */
     } catch (e) {
       if (isPluginAvailable(pluginName)) {
-        log.msg(`
+        throw `
   This plugin is not currently installed. Please execute the following to install it.
 
       ${chalk.bold(`npm install ${pluginPrefix}${pluginName}`)}
-  `);
-        process.exit(1);
+  `;
       }
-
-      cmd = defaultCommand;
-      SelectedCmd = allCommands.get(cmd);
     }
-  } else {
-    cmd = defaultCommand;
-    SelectedCmd = allCommands.get(cmd);
   }
 
-  log.info('executing', cmd);
+  if (!command) {
+    command = commands.get(defaultCommand);
+  }
 
-  async function runCommand() {
-    const command = SelectedCmd;
-    const options = metadataToOptimistOptions(SelectedCmd.metadata);
-    const argv: minimist.ParsedArgs = minimist(args, options);
+  return command;
+}
+
+export async function run(pargv: string[]) {
+
+  // Check version?
+  const argv = minimist(pargv.slice(2));
+  const commands = getCommands();
+
+  // Global CLI option setup
+  const logLevel: string = argv['loglevel'] || 'warn';
+  const log = logger({
+    level: logLevel,
+    prefix: ''
+  });
+  const projectSettings = loadProject('.');
+
+  let command = getCommand(argv._[0], commands); // TODO: This can throw an error
+
+  async function runCommand(cmd: ICommand) {
+    log.info('executing', cmd.metadata.name);
+
+    const options = metadataToOptimistOptions(cmd.metadata);
+    const argv = minimist(pargv.slice(3), options);
+
     try {
-      await command.run({
-        args,
+      await cmd.run({
         argv,
         projectSettings,
         utils: {
           log
         },
-        allCommands
+        commands
       });
     } catch (e) {
       log.error(e);
-      process.exit(1);
+      process.exit(1); // TODO
     }
   }
 
-  await runCommand();
+  await runCommand(command);
 }

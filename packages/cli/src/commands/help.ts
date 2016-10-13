@@ -16,7 +16,7 @@ export default class HelpCommand extends Command implements ICommand {
   async run(env: IonicCommandOptions): Promise<void> {
     const logger = env.utils.log;
     const commandName: string = env.argv._[0] || env.argv['command'];
-    const command = env.allCommands.get(commandName) || env.allCommands.get('help')
+    const command = env.commands.get(commandName) || env.commands.get('help')
 
     logger.msg(formatCommandHelp(command.metadata));
   }
