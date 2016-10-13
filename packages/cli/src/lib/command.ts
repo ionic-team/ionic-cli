@@ -1,6 +1,11 @@
 import { CommandData } from '../definitions';
 
-export default class Command {
-  public metadata: CommandData;
+export function CommandMetadata(metadata: CommandData) {
+  return function (target: Function) {
+    target.prototype.metadata = metadata;
+  };
 }
 
+export class Command {
+  public metadata: CommandData;
+}

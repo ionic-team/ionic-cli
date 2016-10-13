@@ -1,5 +1,5 @@
-import Command from '../lib/command';
-import { IonicCommandOptions, CommandMetadata, ICommand } from '../definitions';
+import { IonicCommandOptions, ICommand } from '../definitions';
+import { Command, CommandMetadata } from '../lib/command';
 
 /**
  * Metadata about the docs command

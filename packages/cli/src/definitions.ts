@@ -43,12 +43,6 @@ export interface CommandData {
   }[];
 }
 
-export function CommandMetadata(metadata: CommandData) {
-  return function (target: Function) {
-    target.prototype.metadata = metadata;
-  };
-}
-
 export interface ICommand {
   metadata: CommandData;
   run(env: IonicCommandOptions): Promise<void>;

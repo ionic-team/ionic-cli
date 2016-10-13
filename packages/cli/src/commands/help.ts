@@ -1,5 +1,5 @@
-import Command from '../lib/command';
-import { IonicCommandOptions, CommandMetadata, CommandData, ICommand } from '../definitions';
+import { IonicCommandOptions, CommandData, ICommand } from '../definitions';
+import { Command, CommandMetadata } from '../lib/command';
 
 @CommandMetadata({
   name: 'help',

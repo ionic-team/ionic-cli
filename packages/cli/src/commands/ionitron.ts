@@ -1,5 +1,5 @@
-import { IonicCommandOptions, CommandMetadata, ICommand } from '../definitions';
-import Command from '../lib/command';
+import { IonicCommandOptions, ICommand } from '../definitions';
+import { Command, CommandMetadata } from '../lib/command';
 
 @CommandMetadata({
   name: 'ionitron',
