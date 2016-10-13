@@ -1,6 +1,14 @@
 import * as minimist from 'minimist';
 import { ICommand } from './definitions';
-import { Logger } from './utils/logger';
+
+export interface Logger {
+  trace: Function;
+  debug: Function;
+  info: Function;
+  warn: Function;
+  error: Function;
+  msg: Function;
+}
 
 export interface IonicCommandOptions {
   argv: minimist.ParsedArgs;

@@ -1,6 +1,6 @@
-import Command from '../lib/command';
 import { IonicCommandOptions, CommandMetadata, ICommand } from '../definitions';
-import { gatherEnvironmentInfo } from '../utils/environmentInfo';
+import Command from '../lib/command';
+import { gatherEnvironmentInfo } from '../lib/utils/environmentInfo';
 
 @CommandMetadata({
   name: 'info',

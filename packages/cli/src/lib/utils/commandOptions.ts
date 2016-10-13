@@ -1,5 +1,5 @@
-import { CommandData } from '../definitions';
 import { Opts as MinimistOpts } from 'minimist';
+import { CommandData } from '../../definitions';
 
 export function metadataToOptimistOptions(metadata: CommandData): MinimistOpts {
   let strings: string[] = [];

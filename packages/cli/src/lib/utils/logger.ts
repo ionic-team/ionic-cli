@@ -1,17 +1,9 @@
 import * as util from 'util';
+import { Logger } from '../../definitions';
 
 export interface LogOptions {
   level: string;
   prefix: string;
-}
-
-export interface Logger {
-  trace: Function;
-  debug: Function;
-  info: Function;
-  warn: Function;
-  error: Function;
-  msg: Function;
 }
 
 // Add messages as a type of log 

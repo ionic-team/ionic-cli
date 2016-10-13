@@ -1,4 +1,4 @@
-import { PluginExports } from '../definitions';
+import { PluginExports } from '../../definitions';
 
 const availablePlugins = new Set<string>(['cloud']);
 

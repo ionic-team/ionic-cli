@@ -1,6 +1,6 @@
-import Command from '../lib/command';
 import { IonicCommandOptions, CommandMetadata, ICommand } from '../definitions';
-import { getCliInfo } from '../utils/environmentInfo';
+import Command from '../lib/command';
+import { getCliInfo } from '../lib/utils/environmentInfo';
 
 @CommandMetadata({
   name: 'version',

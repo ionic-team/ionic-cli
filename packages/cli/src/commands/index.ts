@@ -4,7 +4,6 @@ import DocsCommand from './docs';
 import HelpCommand from './help';
 import IonitronCommand from './ionitron';
 import VersionCommand from './version';
-import Command from '../lib/command';
 import { ICommand, PluginExports } from '../definitions';
 
 /**

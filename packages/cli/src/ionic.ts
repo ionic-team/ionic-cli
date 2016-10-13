@@ -5,10 +5,10 @@ import * as chalk from 'chalk';
 import getCommands from './commands';
 import Command from './lib/command';
 import { ICommand, PluginExports } from './definitions';
-import getIonicPlugin, { ERROR_PLUGIN_NOT_FOUND, isPluginAvailable, pluginPrefix } from './utils/pluginLoader';
-import logger from './utils/logger';
-import { metadataToOptimistOptions } from './utils/commandOptions';
-import loadProject from './utils/project';
+import getIonicPlugin, { ERROR_PLUGIN_NOT_FOUND, isPluginAvailable, pluginPrefix } from './lib/utils/pluginLoader';
+import logger from './lib/utils/logger';
+import { metadataToOptimistOptions } from './lib/utils/commandOptions';
+import loadProject from './lib/utils/project';
 
 export { Command as Command }
 
