@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 import getCommands from './commands';
 import Command from './lib/command';
 import { ICommand, PluginExports } from './definitions';
-import getIonicPlugin, { ERROR_PLUGIN_NOT_FOUND, isPluginAvailable, pluginPrefix } from './lib/utils/pluginLoader';
+import { ERROR_PLUGIN_NOT_FOUND, PluginLoader, pluginPrefix } from './lib/utils/pluginLoader';
 import logger from './lib/utils/logger';
 import { metadataToOptimistOptions } from './lib/utils/commandOptions';
 import loadProject from './lib/utils/project';
@@ -15,6 +15,7 @@ export { Command as Command }
 const defaultCommand = 'help';
 
 function getCommand(name: string, commands: PluginExports): ICommand {
+  const loader = new PluginLoader();
   let command: ICommand;
 
   /*
@@ -40,13 +41,13 @@ function getCommand(name: string, commands: PluginExports): ICommand {
     const [pluginName, pluginCommand] = name.split(':');
 
     try {
-      command = getIonicPlugin(pluginName).get(pluginCommand);
+      command = loader.load(pluginName).get(pluginCommand);
 
     /**
      * If command does not exist then lets show them help
      */
     } catch (e) {
-      if (e === ERROR_PLUGIN_NOT_FOUND && isPluginAvailable(pluginName)) {
+      if (e === ERROR_PLUGIN_NOT_FOUND && loader.has(pluginName)) {
         throw new Error(`
   This plugin is not currently installed. Please execute the following to install it.
 
