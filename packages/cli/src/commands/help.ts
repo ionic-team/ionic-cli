@@ -15,7 +15,7 @@ import { Command, CommandMetadata } from '../lib/command';
 export default class HelpCommand extends Command implements ICommand {
   async run(env: CommandEnvironment): Promise<void> {
     const logger = env.utils.log;
-    const commandName: string = env.argv._[0] || env.argv['command'];
+    const commandName: string = env.inputs[0] || env.options['command'];
     const command = env.commands.get(commandName) || env.commands.get('help')
 
     logger.msg(formatCommandHelp(command.metadata));

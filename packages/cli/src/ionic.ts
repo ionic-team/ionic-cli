@@ -87,7 +87,8 @@ export async function run(pargv: string[]) {
 
     try {
       await cmd.run({
-        argv,
+        inputs: argv._,
+        options: argv,
         project,
         utils: {
           log

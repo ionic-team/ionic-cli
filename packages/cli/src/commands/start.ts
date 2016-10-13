@@ -128,21 +128,20 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
 export default class StartCommand extends Command implements ICommand {
   async run(env: CommandEnvironment): Promise<void> {
     const logger = env.utils.log;
-    const inputs = env.argv._;
     let installer = 'npm';
     let projectRoot: string;
     let projectName: string;
     let starterTemplateName: string;
     let starterTemplate: StarterTemplate;
 
-    if (inputs.length < 1) {
+    if (env.inputs.length < 1) {
       throw 'Please provide a name for your project.';
     }
-    if (!isProjectNameValid(inputs[0])) {
-      throw `Please name your Ionic project something meaningful other than ${chalk.red(inputs[0])}`;
+    if (!isProjectNameValid(env.inputs[0])) {
+      throw `Please name your Ionic project something meaningful other than ${chalk.red(env.inputs[0])}`;
     }
 
-    projectRoot = path.resolve(inputs[0]);
+    projectRoot = path.resolve(env.inputs[0]);
     projectName = path.basename(projectRoot);
 
     if (!pathExists.sync(projectName)) {
@@ -152,7 +151,7 @@ export default class StartCommand extends Command implements ICommand {
       throw `The directory ${projectName} contains file(s) that could conflict. Aborting.`;
     }
 
-    starterTemplateName = inputs[1] || env.argv['template'] || STARTER_TEMPLATE_DEFAULT;
+    starterTemplateName = env.inputs[1] || env.options['template'] || STARTER_TEMPLATE_DEFAULT;
     starterTemplate = STARTER_TEMPLATES.find(tpl => tpl['name'] === starterTemplateName);
 
     if (!starterTemplate) {
@@ -172,11 +171,11 @@ export default class StartCommand extends Command implements ICommand {
       tarXvf(archive['body'], projectRoot)
     ]);
 
-    if (env.argv['skip-npm']) {
+    if (env.options['skip-npm']) {
       return logger.msg('Project started!');
     }
 
-    if (env.argv['yarn']) {
+    if (env.options['yarn']) {
       let yarnVersion = await getCommandInfo('yarn', ['-version']);
       if (yarnVersion) {
         installer = 'yarn';

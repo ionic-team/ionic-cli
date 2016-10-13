@@ -18,8 +18,7 @@ import { Command, CommandMetadata } from '../lib/command';
 export default class DocsCommand extends Command implements ICommand {
   async run(env: CommandEnvironment): Promise<void> {
     const logger = env.utils.log;
-    const inputs = env.argv._;
-    const topic = inputs[0];
+    const topic = env.inputs[0];
 
     /*
     if (!topic) {

@@ -11,6 +11,6 @@ export default class IonitronCommand extends Command implements ICommand {
   async run(env: CommandEnvironment): Promise<void> {
     const logger = env.utils.log;
 
-    logger.msg(env.argv);
+    logger.msg(env.inputs, env.options);
   }
 }

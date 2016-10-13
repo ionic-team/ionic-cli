@@ -48,7 +48,8 @@ export interface CommandData {
 }
 
 export interface CommandEnvironment {
-  argv: minimist.ParsedArgs;
+  inputs: string[];
+  options: { [arg: string]: any };
   utils: {
     log: ILogger;
   };
