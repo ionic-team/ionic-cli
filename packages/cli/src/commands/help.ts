@@ -1,4 +1,5 @@
-import { IonicCommandOptions, CommandMetadata, Command, CommandData } from '../definitions';
+import Command from './command';
+import { IonicCommandOptions, CommandMetadata, CommandData, ICommand } from '../definitions';
 
 @CommandMetadata({
   name: 'help',
@@ -11,8 +12,8 @@ import { IonicCommandOptions, CommandMetadata, Command, CommandData } from '../d
   ],
   isProjectTask: false
 })
-export default class Help extends Command {
-  run(env: IonicCommandOptions): void {
+export default class HelpCommand extends Command implements ICommand {
+  async run(env: IonicCommandOptions): Promise<void> {
     const logger = env.utils.log;
     const commandName: string = env.argv._[0] || env.argv['command'];
     const command = env.allCommands.get(commandName) || env.allCommands.get('help')

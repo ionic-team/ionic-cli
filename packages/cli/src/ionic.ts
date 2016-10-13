@@ -1,8 +1,10 @@
 export * from './definitions';
+export * from './commands/command';
 
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 import getAllCommands from './commandList';
+import { ICommand } from './definitions';
 import getIonicPlugin, { isPluginAvailable, pluginPrefix } from './utils/pluginLoader';
 import logger from './utils/logger';
 import { metadataToOptimistOptions } from './utils/commandOptions';
@@ -25,7 +27,7 @@ export async function run(pargv: string[]) {
 
   let args: string[] = [];
   let cmd = argv._[0];
-  let SelectedCmd: any;
+  let SelectedCmd: ICommand;
   const allCommands = getAllCommands();
 
   /*
@@ -78,7 +80,7 @@ export async function run(pargv: string[]) {
   log.info('executing', cmd);
 
   async function runCommand() {
-    const command = new SelectedCmd();
+    const command = SelectedCmd;
     const options = metadataToOptimistOptions(SelectedCmd.metadata);
     const argv: minimist.ParsedArgs = minimist(args, options);
     try {

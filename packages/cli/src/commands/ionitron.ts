@@ -1,4 +1,5 @@
-import { IonicCommandOptions, CommandMetadata, Command } from '../definitions';
+import Command from './command';
+import { IonicCommandOptions, CommandMetadata, ICommand } from '../definitions';
 
 @CommandMetadata({
   name: 'ionitron',
@@ -6,8 +7,8 @@ import { IonicCommandOptions, CommandMetadata, Command } from '../definitions';
   availableOptions: [],
   isProjectTask: false
 })
-export default class Ionitron extends Command {
-  run(env: IonicCommandOptions): void {
+export default class IonitronCommand extends Command implements ICommand {
+  async run(env: IonicCommandOptions): Promise<void> {
     const logger = env.utils.log;
 
     logger.msg(env.argv);

@@ -1,4 +1,5 @@
-import { IonicCommandOptions, CommandMetadata, Command } from '../definitions';
+import Command from './command';
+import { IonicCommandOptions, CommandMetadata, ICommand } from '../definitions';
 import { gatherEnvironmentInfo } from '../utils/environmentInfo';
 
 @CommandMetadata({
@@ -6,7 +7,7 @@ import { gatherEnvironmentInfo } from '../utils/environmentInfo';
   description: 'List information about the users runtime environment',
   isProjectTask: false
 })
-export default class Info extends Command {
+export default class InfoCommand extends Command implements ICommand {
   async run(env: IonicCommandOptions): Promise<void> {
     const logger = env.utils.log;
     const info = await gatherEnvironmentInfo();

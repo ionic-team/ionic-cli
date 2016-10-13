@@ -1,4 +1,5 @@
-import { IonicCommandOptions, CommandMetadata, Command } from '../definitions';
+import Command from './command';
+import { IonicCommandOptions, CommandMetadata, ICommand } from '../definitions';
 
 /**
  * Metadata about the docs command
@@ -14,8 +15,8 @@ import { IonicCommandOptions, CommandMetadata, Command } from '../definitions';
   ],
   isProjectTask: false
 })
-export default class Docs extends Command {
-  run(env: IonicCommandOptions): Promise<void> | void {
+export default class DocsCommand extends Command implements ICommand {
+  async run(env: IonicCommandOptions): Promise<void> {
     const logger = env.utils.log;
     const inputs = env.argv._;
     const topic = inputs[0];

@@ -8,7 +8,8 @@ import { spawn } from 'cross-spawn';
 import * as fetch from 'node-fetch';
 import * as stream from 'stream';
 import { getCommandInfo } from '../utils/environmentInfo';
-import { IonicCommandOptions, CommandMetadata, Command } from '../definitions';
+import Command from './command';
+import { IonicCommandOptions, CommandMetadata, ICommand } from '../definitions';
 
 interface StarterTemplate {
   name: string;
@@ -123,7 +124,7 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
   ],
   isProjectTask: false
 })
-export default class Start extends Command {
+export default class StartCommand extends Command implements ICommand {
   async run(env: IonicCommandOptions): Promise<void> {
     const logger = env.utils.log;
     const inputs = env.argv._;

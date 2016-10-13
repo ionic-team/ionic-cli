@@ -2,6 +2,7 @@ import * as minimist from 'minimist';
 import { Logger } from './utils/logger';
 
 export interface IonicCommandOptions {
+  args: string[];
   argv: minimist.ParsedArgs;
   utils: {
     log: Logger;
@@ -28,13 +29,14 @@ export interface CommandData {
 }
 
 export function CommandMetadata(metadata: CommandData) {
-  return function (target: any) {
-    target.metadata = metadata;
-    return target;
+  return function (target: Function) {
+    target.prototype.metadata = metadata;
   };
 }
-export abstract class Command {
-   public abstract run(env: IonicCommandOptions): Promise<void> | void;
+
+export interface ICommand {
+  metadata: CommandData;
+  run(env: IonicCommandOptions): Promise<void>;
 }
 
-export type PluginExports = Map<string, any>;
+export type PluginExports = Map<string, ICommand>;

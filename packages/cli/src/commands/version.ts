@@ -1,4 +1,5 @@
-import { IonicCommandOptions, CommandMetadata, Command } from '../definitions';
+import Command from './command';
+import { IonicCommandOptions, CommandMetadata, ICommand } from '../definitions';
 import { getCliInfo } from '../utils/environmentInfo';
 
 @CommandMetadata({
@@ -7,8 +8,8 @@ import { getCliInfo } from '../utils/environmentInfo';
   availableOptions: [],
   isProjectTask: false
 })
-export default class Version extends Command {
-  async run(env: IonicCommandOptions): Promise<void> {
+export default class VersionCommand extends Command implements ICommand {
+  public async run(env: IonicCommandOptions): Promise<void> {
     const logger = env.utils.log;
 
     const info = await getCliInfo();
