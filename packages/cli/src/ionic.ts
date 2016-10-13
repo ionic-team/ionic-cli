@@ -6,7 +6,7 @@ import getCommands from './commands';
 import Command from './lib/command';
 import { ICommand, PluginExports } from './definitions';
 import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from './lib/utils/plugins';
-import logger from './lib/utils/logger';
+import { Logger } from './lib/utils/logger';
 import { metadataToOptimistOptions } from './lib/utils/commandOptions';
 import loadProject from './lib/utils/project';
 
@@ -74,7 +74,7 @@ export async function run(pargv: string[]) {
 
   // Global CLI option setup
   const logLevel: string = argv['loglevel'] || 'warn';
-  const log = logger({
+  const log = new Logger({
     level: logLevel,
     prefix: ''
   });

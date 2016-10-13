@@ -1,59 +1,64 @@
 import * as util from 'util';
-import { Logger } from '../../definitions';
+import { ILogger, LoggerOptions } from '../../definitions';
 
-export interface LogOptions {
-  level: string;
-  prefix: string;
-}
+const LEVELS = ['trace', 'debug', 'info', 'warn', 'error'];
 
-// Add messages as a type of log 
+export class Logger implements ILogger {
 
-const noop = function () {};
-const levels = ['trace', 'debug', 'info', 'warn', 'error'];
+  constructor(public opts: LoggerOptions = { level: 'info', prefix: '' }) {}
 
-export default function (opts: LogOptions = { level: 'info', prefix: ''}) {
-  let logger: Logger;
-
-  function shouldLog(level: string) {
-    return levels.indexOf(level) >= levels.indexOf(opts.level);
+  public trace(...args: any[]): void {
+    this.log('trace', ...args);
   }
 
-  function getLogFunction(level: string): Function {
-    function log () {
-      let prefix = opts.prefix;
+  public debug(...args: any[]): void {
+    this.log('debug', ...args);
+  }
+
+  public info(...args: any[]): void {
+    this.log('info', ...args);
+  }
+
+  public warn(...args: any[]): void {
+    this.log('warn', ...args);
+  }
+
+  public error(...args: any[]): void {
+    this.log('error', ...args);
+  }
+
+  public msg(): void {
+    console.log(arguments);
+  }
+
+  private shouldLog(level: string): boolean {
+    return LEVELS.indexOf(level) >= LEVELS.indexOf(this.opts.level);
+  }
+
+  private log(level: string, ...args: any[]): void {
+    if (this.shouldLog) {
+      let prefix = this.opts.prefix;
 
       if (prefix) {
         if (typeof prefix === 'function') {
           prefix = prefix();
         }
-        arguments[0] = util.format(prefix, arguments[0]);
+        args[0] = util.format(prefix, args[0]);
       }
 
       switch (level) {
       case 'trace':
       case 'debug':
       case 'info':
-        console.info(util.format.apply(util, arguments));
+        console.info(util.format.apply(util, args));
         break;
       case 'warn':
-        console.warn(util.format.apply(util, arguments));
+        console.warn(util.format.apply(util, args));
         break;
       case 'error':
-        console.error(util.format.apply(util, arguments));
+        console.error(util.format.apply(util, args));
         break;
       }
     }
-    return shouldLog(level) ? log : noop;
   }
-
-  logger = {
-    'trace': getLogFunction('trace'),
-    'debug': getLogFunction('debug'),
-    'info': getLogFunction('info'),
-    'warn': getLogFunction('warn'),
-    'error': getLogFunction('error'),
-    'msg': console.log
-  };
-
-  return logger;
 }

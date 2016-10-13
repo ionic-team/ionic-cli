@@ -1,19 +1,26 @@
 import * as minimist from 'minimist';
 import { ICommand } from './definitions';
 
-export interface Logger {
-  trace: Function;
-  debug: Function;
-  info: Function;
-  warn: Function;
-  error: Function;
+export type LogFn = (message?: any, ...args: any[]) => void;
+
+export interface LoggerOptions {
+  level: string;
+  prefix: string;
+}
+
+export interface ILogger {
+  trace: LogFn;
+  debug: LogFn;
+  info: LogFn;
+  warn: LogFn;
+  error: LogFn;
   msg: Function;
 }
 
 export interface IonicCommandOptions {
   argv: minimist.ParsedArgs;
   utils: {
-    log: Logger;
+    log: ILogger;
   };
   projectSettings: { [key: string]: any };
   commands: Map<string, ICommand>;
