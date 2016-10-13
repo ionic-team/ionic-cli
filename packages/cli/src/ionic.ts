@@ -2,10 +2,10 @@ export * from './definitions';
 
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
-import Command from './commands/command';
-import getCommands from './commandList';
+import getCommands from './commands';
+import Command from './lib/command';
 import { ICommand, PluginExports } from './definitions';
-import getIonicPlugin, { isPluginAvailable, pluginPrefix } from './utils/pluginLoader';
+import getIonicPlugin, { ERROR_PLUGIN_NOT_FOUND, isPluginAvailable, pluginPrefix } from './utils/pluginLoader';
 import logger from './utils/logger';
 import { metadataToOptimistOptions } from './utils/commandOptions';
 import loadProject from './utils/project';
@@ -46,13 +46,15 @@ function getCommand(name: string, commands: PluginExports): ICommand {
      * If command does not exist then lets show them help
      */
     } catch (e) {
-      if (isPluginAvailable(pluginName)) {
-        throw `
+      if (e === ERROR_PLUGIN_NOT_FOUND && isPluginAvailable(pluginName)) {
+        throw new Error(`
   This plugin is not currently installed. Please execute the following to install it.
 
       ${chalk.bold(`npm install ${pluginPrefix}${pluginName}`)}
-  `;
+  `);
       }
+
+      throw e;
     }
   }
 

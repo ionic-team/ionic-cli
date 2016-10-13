@@ -1,10 +1,11 @@
-import StartCommand from './commands/start';
-import InfoCommand from './commands/info';
-import DocsCommand from './commands/docs';
-import HelpCommand from './commands/help';
-import IonitronCommand from './commands/ionitron';
-import VersionCommand from './commands/version';
-import { ICommand, PluginExports } from './definitions';
+import StartCommand from './start';
+import InfoCommand from './info';
+import DocsCommand from './docs';
+import HelpCommand from './help';
+import IonitronCommand from './ionitron';
+import VersionCommand from './version';
+import Command from '../lib/command';
+import { ICommand, PluginExports } from '../definitions';
 
 /**
  * List of commands that are available from ionic cli

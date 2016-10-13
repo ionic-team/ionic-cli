@@ -8,7 +8,7 @@ import { spawn } from 'cross-spawn';
 import * as fetch from 'node-fetch';
 import * as stream from 'stream';
 import { getCommandInfo } from '../utils/environmentInfo';
-import Command from './command';
+import Command from '../lib/command';
 import { IonicCommandOptions, CommandMetadata, ICommand } from '../definitions';
 
 interface StarterTemplate {

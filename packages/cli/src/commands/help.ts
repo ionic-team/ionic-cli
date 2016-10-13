@@ -1,4 +1,4 @@
-import Command from './command';
+import Command from '../lib/command';
 import { IonicCommandOptions, CommandMetadata, CommandData, ICommand } from '../definitions';
 
 @CommandMetadata({
