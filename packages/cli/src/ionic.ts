@@ -1,14 +1,16 @@
 export * from './definitions';
-export * from './commands/command';
 
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
+import Command from './commands/command';
 import getCommands from './commandList';
 import { ICommand, PluginExports } from './definitions';
 import getIonicPlugin, { isPluginAvailable, pluginPrefix } from './utils/pluginLoader';
 import logger from './utils/logger';
 import { metadataToOptimistOptions } from './utils/commandOptions';
 import loadProject from './utils/project';
+
+export { Command as Command }
 
 const defaultCommand = 'help';
 
