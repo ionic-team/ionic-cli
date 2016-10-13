@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+export * from './definitions';
 
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';

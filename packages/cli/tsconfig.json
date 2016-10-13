@@ -6,9 +6,9 @@
     "experimentalDecorators": true,
     "lib": ["es2015"],
     "module": "commonjs",
+    "noImplicitAny": true,
     "outDir": "./dist",
     "target": "es5",
-    "noImplicitAny": true,
     "typeRoots": [
       "./node_modules/@types"
     ]

@@ -1,13 +1,16 @@
 {
   "compilerOptions": {
+    "allowUnreachableCode": false,
     "baseUrl": "../",
     "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "lib": ["es2015"],
     "module": "commonjs",
     "moduleResolution": "node",
+    "noImplicitAny": true,
     "outDir": "./dist",
-    "target": "es5",
-    "noImplicitAny": true
+    "target": "es5"
   },
   "include": [
     "src/**/*.ts"
