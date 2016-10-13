@@ -12,7 +12,7 @@ export interface Project {
 }
 
 interface Stuff {
-  (...args: Array<any>): Promise<any>;
+  (...args: any[]): Promise<any>;
 }
 
 export default function (projectDirectory: string): Project {
@@ -20,7 +20,7 @@ export default function (projectDirectory: string): Project {
   let projectFileContents: { [key: string]: any; };
 
   function ensureProjectIsLoaded(fn: Function): Stuff  {
-    return async function(...args: Array<any>): Promise<any> {
+    return async function(...args: any[]): Promise<any> {
       if (!projectFileContents) {
         projectFileContents = await getJsonFileContents(projectFilePath);
       }

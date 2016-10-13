@@ -23,7 +23,7 @@ export async function run(pargv: string[]) {
   });
   const projectSettings = loadProject('.');
 
-  let args: Array<string> = [];
+  let args: string[] = [];
   let cmd = argv._[0];
   let SelectedCmd: any;
   const allCommands = getAllCommands();

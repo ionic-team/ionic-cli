@@ -1,24 +1,27 @@
 import { CommandData } from '../definitions';
-import { Opts as minimistOptions } from 'minimist';
+import { Opts as MinimistOpts } from 'minimist';
 
-export function metadataToOptimistOptions(metadata: CommandData): minimistOptions {
-  let options: minimistOptions = {
-    string: [],
-    boolean: [],
+export function metadataToOptimistOptions(metadata: CommandData): MinimistOpts {
+  let strings: string[] = [];
+  let booleans: string[] = [];
+  let options: MinimistOpts = {
     alias: {},
     default: {}
   };
 
-  (metadata.availableOptions || []).forEach(option => {
+  for (let option of metadata.availableOptions || []) {
     options.default[option.name] = option.default;
     options.alias[option.name] = option.aliases;
 
     if (option.type === String) {
-      (<Array<string>>options.string).push(option.name);
+      strings.push(option.name);
     } else if (option.type === Boolean) {
-      (<Array<string>>options.boolean).push(option.name);
+      booleans.push(option.name);
     }
-  });
+  }
+
+  options.string = strings;
+  options.boolean = booleans;
 
   return options;
 }
