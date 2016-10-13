@@ -1,4 +1,4 @@
-import { IonicCommandOptions, CommandMetadata, Command, ICommand } from '@ionic/cli';
+import { Command, CommandEnvironment, CommandMetadata, ICommand } from '@ionic/cli';
 
 @CommandMetadata({
   name: 'ssh',
@@ -6,7 +6,7 @@ import { IonicCommandOptions, CommandMetadata, Command, ICommand } from '@ionic/
   isProjectTask: false
 })
 export default class SSHCommand extends Command implements ICommand {
-  async run(env: IonicCommandOptions): Promise<void> {
+  async run(env: CommandEnvironment): Promise<void> {
     console.log('hi');
   }
 }

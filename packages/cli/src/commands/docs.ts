@@ -1,4 +1,4 @@
-import { IonicCommandOptions, ICommand } from '../definitions';
+import { CommandEnvironment, ICommand } from '../definitions';
 import { Command, CommandMetadata } from '../lib/command';
 
 /**
@@ -16,7 +16,7 @@ import { Command, CommandMetadata } from '../lib/command';
   isProjectTask: false
 })
 export default class DocsCommand extends Command implements ICommand {
-  async run(env: IonicCommandOptions): Promise<void> {
+  async run(env: CommandEnvironment): Promise<void> {
     const logger = env.utils.log;
     const inputs = env.argv._;
     const topic = inputs[0];

@@ -8,7 +8,7 @@ import { spawn } from 'cross-spawn';
 import * as fetch from 'node-fetch';
 import * as stream from 'stream';
 
-import { IonicCommandOptions, ICommand } from '../definitions';
+import { CommandEnvironment, ICommand } from '../definitions';
 import { Command, CommandMetadata } from '../lib/command';
 import { getCommandInfo } from '../lib/utils/environmentInfo';
 
@@ -126,7 +126,7 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
   isProjectTask: false
 })
 export default class StartCommand extends Command implements ICommand {
-  async run(env: IonicCommandOptions): Promise<void> {
+  async run(env: CommandEnvironment): Promise<void> {
     const logger = env.utils.log;
     const inputs = env.argv._;
     let installer = 'npm';

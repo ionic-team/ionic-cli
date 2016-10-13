@@ -3,7 +3,7 @@ export * from './definitions';
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 import getCommands from './commands';
-import Command from './lib/command';
+import { Command } from './lib/command';
 import { ICommand, PluginExports } from './definitions';
 import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from './lib/utils/plugins';
 import { Logger } from './lib/utils/logger';

@@ -30,15 +30,6 @@ export interface IProject {
   save(projectFile: ProjectFile): Promise<void>;
 }
 
-export interface IonicCommandOptions {
-  argv: minimist.ParsedArgs;
-  utils: {
-    log: ILogger;
-  };
-  project: IProject;
-  commands: Map<string, ICommand>;
-}
-
 export interface CommandData {
   name: string;
   description: string;
@@ -56,9 +47,18 @@ export interface CommandData {
   }[];
 }
 
+export interface CommandEnvironment {
+  argv: minimist.ParsedArgs;
+  utils: {
+    log: ILogger;
+  };
+  project: IProject;
+  commands: Map<string, ICommand>;
+}
+
 export interface ICommand {
   metadata: CommandData;
-  run(env: IonicCommandOptions): Promise<void>;
+  run(env: CommandEnvironment): Promise<void>;
 }
 
 export type PluginExports = Map<string, ICommand>;
