@@ -1,11 +1,13 @@
 import { PluginExports } from '../../definitions';
 
-const availablePlugins = new Set<string>(['cloud']);
+const plugins = new Set<string>(['cloud']);
 
-export const pluginPrefix = '@ionic/cli-plugin-';
+export const PREFIX = '@ionic/cli-plugin-';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';
 
 export class PluginLoader {
+
+  readonly prefix = PREFIX;
 
   /**
    * Synchronously load a plugin
@@ -14,7 +16,7 @@ export class PluginLoader {
     let m: () => PluginExports;
 
     try {
-      m = require(`${pluginPrefix}${name}`);
+      m = require(`${this.prefix}${name}`);
     } catch(e) {
       if (e.code === 'MODULE_NOT_FOUND') {
         throw ERROR_PLUGIN_NOT_FOUND;
@@ -30,7 +32,7 @@ export class PluginLoader {
    * Check to see if plugin is available for download
    */
   has(name: string): boolean {
-    return availablePlugins.has(name);
+    return plugins.has(name);
   }
 
 }

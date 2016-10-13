@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 import getCommands from './commands';
 import Command from './lib/command';
 import { ICommand, PluginExports } from './definitions';
-import { ERROR_PLUGIN_NOT_FOUND, PluginLoader, pluginPrefix } from './lib/utils/pluginLoader';
+import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from './lib/utils/plugins';
 import logger from './lib/utils/logger';
 import { metadataToOptimistOptions } from './lib/utils/commandOptions';
 import loadProject from './lib/utils/project';
@@ -51,7 +51,7 @@ function getCommand(name: string, commands: PluginExports): ICommand {
         throw new Error(`
   This plugin is not currently installed. Please execute the following to install it.
 
-      ${chalk.bold(`npm install ${pluginPrefix}${pluginName}`)}
+      ${chalk.bold(`npm install ${loader.prefix}${pluginName}`)}
   `);
       }
 
