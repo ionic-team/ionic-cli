@@ -1,89 +1,67 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { IProject, ProjectFile } from '../../definitions';
+
 const PROJECT_FILE = 'ionic.config.json';
+const ERROR_PROJECT_FILE_NOT_FOUND = 'PROJECT_FILE_NOT_FOUND';
 
-export interface Project {
-  has(key: string): Promise<boolean>;
-  get(key: string): Promise<any>;
-  set(key: string, value: any): Promise<any>;
-  remove(key: string): Promise<any>;
-  projectDirectory: string;
-}
+export class Project implements IProject {
+  public directory: string;
+  public projectFilePath: string;
 
-interface Stuff {
-  (...args: any[]): Promise<any>;
-}
+  protected projectFile?: ProjectFile;
 
-export default function (projectDirectory: string): Project {
-  const projectFilePath = path.resolve(projectDirectory, PROJECT_FILE);
-  let projectFileContents: { [key: string]: any; };
+  constructor(directory: string) {
+    this.directory = path.resolve(directory);
+    this.projectFilePath = path.resolve(this.directory, PROJECT_FILE);
+  }
 
-  function ensureProjectIsLoaded(fn: Function): Stuff  {
-    return async function(...args: any[]): Promise<any> {
-      if (!projectFileContents) {
-        projectFileContents = await getJsonFileContents(projectFilePath);
+  public async load(): Promise<ProjectFile> {
+    if (!this.projectFile) {
+      try {
+        this.projectFile = await getJsonFileContents(this.projectFilePath);
+      } catch (e) {
+        if (e.code === 'ENOENT') {
+          throw ERROR_PROJECT_FILE_NOT_FOUND;
+        }
       }
-      return await fn(...args);
-    };
+    }
+
+    return await this.projectFile;
   }
 
-  function has(key: string): boolean {
-    return projectFileContents.hasOwnProperty(key);
+  public async save(projectFile: ProjectFile): Promise<void> {
+    await updateJsonFileContents(projectFile, this.projectFilePath);
+    this.projectFile = projectFile;
   }
-
-  function get(key: string): any {
-    return projectFileContents[key];
-  }
-
-  async function set(key: string, value: any): Promise<any> {
-    projectFileContents[key] = value;
-    await updateJsonFileContents(projectFileContents, projectFilePath);
-  }
-
-  async function remove(key: string): Promise<any> {
-    delete projectFileContents[key];
-    await updateJsonFileContents(projectFileContents, projectFilePath);
-  }
-
-  return {
-    has: ensureProjectIsLoaded(has),
-    get: ensureProjectIsLoaded(get),
-    set: ensureProjectIsLoaded(set),
-    remove: ensureProjectIsLoaded(remove),
-    projectDirectory
-  };
 }
 
-
-
-function updateJsonFileContents(fileContents: { [key: string]: any; }, filePath: string): Promise<any> {
-  return new Promise((resolve, reject) => {
+function updateJsonFileContents(fileContents: any, filePath: string): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
     var jsonString = JSON.stringify(fileContents, null, 2);
 
     fs.writeFile(filePath, jsonString, (err) => {
       if (err) {
-        reject(err);
+        return reject(err);
       }
       resolve();
     });
   });
 }
 
-function getJsonFileContents(filePath: string): Promise<{ [key: string]: any; }> {
+function getJsonFileContents(filePath: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    let fileContents = {};
+    fs.readFile(filePath, 'utf8', (err: any, dataString: string) => {
+      if (err) {
+        return reject(err);
+      }
 
-    try {
-      fs.readFile(filePath, 'utf8', (err: any, dataString: string) => {
-        if (!err) {
-          return reject(err);
-        }
-        fileContents = JSON.parse(dataString);
-        resolve(fileContents);
-      });
-    } catch (e) {
-      reject(e);
-    }
+      try {
+        resolve(JSON.parse(dataString));
+      } catch (e) {
+        reject(e);
+      }
+    });
   });
 }

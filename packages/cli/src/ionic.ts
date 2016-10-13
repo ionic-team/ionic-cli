@@ -8,7 +8,7 @@ import { ICommand, PluginExports } from './definitions';
 import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from './lib/utils/plugins';
 import { Logger } from './lib/utils/logger';
 import { metadataToOptimistOptions } from './lib/utils/commandOptions';
-import loadProject from './lib/utils/project';
+import { Project } from './lib/utils/project';
 
 export { Command as Command }
 
@@ -74,13 +74,10 @@ export async function run(pargv: string[]) {
 
   // Global CLI option setup
   const logLevel: string = argv['loglevel'] || 'warn';
-  const log = new Logger({
-    level: logLevel,
-    prefix: ''
-  });
-  const projectSettings = loadProject('.');
+  const log = new Logger({ level: logLevel, prefix: '' });
 
-  let command = getCommand(argv._[0], commands); // TODO: This can throw an error
+  const project = new Project('.');
+  const command = getCommand(argv._[0], commands); // TODO: This can throw an error
 
   async function runCommand(cmd: ICommand) {
     log.info('executing', cmd.metadata.name);
@@ -91,7 +88,7 @@ export async function run(pargv: string[]) {
     try {
       await cmd.run({
         argv,
-        projectSettings,
+        project,
         utils: {
           log
         },

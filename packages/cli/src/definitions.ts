@@ -17,12 +17,25 @@ export interface ILogger {
   msg: Function;
 }
 
+export interface ProjectFile {
+  name: string;
+  app_id?: string;
+  [key: string]: any;
+}
+
+export interface IProject {
+  directory: string;
+
+  load(): Promise<ProjectFile>;
+  save(projectFile: ProjectFile): Promise<void>;
+}
+
 export interface IonicCommandOptions {
   argv: minimist.ParsedArgs;
   utils: {
     log: ILogger;
   };
-  projectSettings: { [key: string]: any };
+  project: IProject;
   commands: Map<string, ICommand>;
 }
 
