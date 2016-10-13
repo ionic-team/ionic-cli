@@ -1,4 +1,4 @@
-import { PluginExports } from '../../definitions';
+import { CommandMap } from '../../definitions';
 
 const plugins = new Set<string>(['cloud']);
 
@@ -12,8 +12,8 @@ export class PluginLoader {
   /**
    * Synchronously load a plugin
    */
-  load(name: string): PluginExports {
-    let m: () => PluginExports;
+  load(name: string): CommandMap {
+    let m: () => CommandMap;
 
     try {
       m = require(`${this.prefix}${name}`);

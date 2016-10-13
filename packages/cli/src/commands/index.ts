@@ -4,13 +4,13 @@ import DocsCommand from './docs';
 import HelpCommand from './help';
 import IonitronCommand from './ionitron';
 import VersionCommand from './version';
-import { ICommand, PluginExports } from '../definitions';
+import { CommandMap, ICommand } from '../definitions';
 
 /**
  * List of commands that are available from ionic cli
  * Each command as a 1-to-1 mapping to a module with the same name
  */
-export default function (): PluginExports {
+export default function (): CommandMap {
   let m = new Map<string, ICommand>();
 
   m.set('start', new StartCommand());

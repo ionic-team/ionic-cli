@@ -4,7 +4,7 @@ import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 import getCommands from './commands';
 import { Command } from './lib/command';
-import { ICommand, PluginExports } from './definitions';
+import { CommandMap, ICommand } from './definitions';
 import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from './lib/utils/plugins';
 import { Logger } from './lib/utils/logger';
 import { metadataToOptimistOptions } from './lib/utils/commandOptions';
@@ -14,7 +14,7 @@ export { Command as Command }
 
 const defaultCommand = 'help';
 
-function getCommand(name: string, commands: PluginExports): ICommand {
+function getCommand(name: string, commands: CommandMap): ICommand {
   const loader = new PluginLoader();
   let command: ICommand;
 

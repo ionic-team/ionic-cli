@@ -62,4 +62,4 @@ export interface ICommand {
   run(env: CommandEnvironment): Promise<void>;
 }
 
-export type PluginExports = Map<string, ICommand>;
+export type CommandMap = Map<string, ICommand>;
