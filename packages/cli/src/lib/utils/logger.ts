@@ -28,7 +28,7 @@ export class Logger implements ILogger {
   }
 
   public msg(): void {
-    console.log(arguments);
+    console.log(...arguments);
   }
 
   private shouldLog(level: string): boolean {
