@@ -1,4 +1,4 @@
-import { PluginExports, CommandExports } from 'ionic';
+import { PluginExports, CommandExports } from '@ionic/cli';
 
 /**
  * List of commands that are available from ionic cli
