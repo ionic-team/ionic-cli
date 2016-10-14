@@ -1,8 +1,9 @@
-import StartCommand from './start';
-import InfoCommand from './info';
 import DocsCommand from './docs';
 import HelpCommand from './help';
+import InfoCommand from './info';
 import IonitronCommand from './ionitron';
+import LoginCommand from './login';
+import StartCommand from './start';
 import VersionCommand from './version';
 import { CommandMap, ICommand } from '../definitions';
 
@@ -13,11 +14,12 @@ import { CommandMap, ICommand } from '../definitions';
 export default function (): CommandMap {
   let m = new Map<string, ICommand>();
 
-  m.set('start', new StartCommand());
-  m.set('info', new InfoCommand());
-  m.set('help', new HelpCommand());
-  m.set('ionitron', new IonitronCommand());
   m.set('docs', new DocsCommand());
+  m.set('help', new HelpCommand());
+  m.set('info', new InfoCommand());
+  m.set('ionitron', new IonitronCommand());
+  m.set('login', new LoginCommand());
+  m.set('start', new StartCommand());
   m.set('version', new VersionCommand());
 
   return m;
