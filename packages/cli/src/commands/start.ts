@@ -114,7 +114,6 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
 })
 export default class StartCommand extends Command implements ICommand {
   async run(env: CommandEnvironment): Promise<void> {
-    const logger = env.utils.log;
     let installer = 'npm';
     let projectRoot: string;
     let projectName: string;
@@ -131,7 +130,7 @@ export default class StartCommand extends Command implements ICommand {
 
     if (!pathExists.sync(projectName)) {
       fs.mkdirSync(projectRoot);
-      logger.info(`Making directory ${projectRoot}`);
+      env.log.info(`Making directory ${projectRoot}`);
     } else if (!isSafeToCreateProjectIn(projectRoot)) {
       throw `The directory ${projectName} contains file(s) that could conflict. Aborting.`;
     }
@@ -157,7 +156,7 @@ export default class StartCommand extends Command implements ICommand {
     ]);
 
     if (env.options['skip-npm']) {
-      return logger.msg('Project started!');
+      return env.log.msg('Project started!');
     }
 
     if (env.options['yarn']) {
@@ -167,7 +166,7 @@ export default class StartCommand extends Command implements ICommand {
       }
     }
 
-    logger.msg('Installing dependencies. This might take a couple minutes.');
+    env.log.msg('Installing dependencies. This might take a couple minutes.');
     await install(installer, projectRoot);
   }
 }

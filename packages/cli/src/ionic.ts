@@ -91,13 +91,11 @@ export async function run(pargv: string[]) {
 
     try {
       await cmd.run({
+        commands,
         inputs: argv._,
+        log,
         options: argv,
-        project,
-        utils: {
-          log
-        },
-        commands
+        project
       });
     } catch (e) {
       log.error(e);

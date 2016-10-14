@@ -10,10 +10,8 @@ import { getCliInfo } from '../lib/utils/environmentInfo';
 })
 export default class VersionCommand extends Command implements ICommand {
   public async run(env: CommandEnvironment): Promise<void> {
-    const logger = env.utils.log;
-
     const info = await getCliInfo();
 
-    logger.msg(`${info['version']}\n`);
+    env.log.msg(`${info['version']}\n`);
   }
 }

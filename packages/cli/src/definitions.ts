@@ -62,13 +62,11 @@ export interface CommandData {
 }
 
 export interface CommandEnvironment {
-  inputs: string[];
-  options: { [arg: string]: any };
-  utils: {
-    log: ILogger;
-  };
-  project: IProject;
   commands: Map<string, ICommand>;
+  inputs: string[];
+  log: ILogger;
+  options: { [arg: string]: any };
+  project: IProject;
 }
 
 export interface ICommand {
