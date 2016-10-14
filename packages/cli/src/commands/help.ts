@@ -1,4 +1,10 @@
-import { CommandData, CommandEnvironment, ICommand } from '../definitions';
+import {
+  CommandData,
+  CommandOption,
+  CommandEnvironment,
+  ICommand
+} from '../definitions';
+
 import { Command, CommandMetadata } from '../lib/command';
 
 @CommandMetadata({
@@ -27,11 +33,11 @@ export default class HelpCommand extends Command implements ICommand {
 function formatCommandHelp(cmdMetadata: CommandData): string {
   return `
   ${cmdMetadata.description}
-  ${getUsage(cmdMetadata)}${cmdMetadata.availableOptions ? getOptions(cmdMetadata) : ''}${getExamples(cmdMetadata)}
+  ${formatUsage(cmdMetadata)}${cmdMetadata.options ? formatOptions(cmdMetadata.options) : ''}${formatExamples(cmdMetadata)}
   `;
 }
 
-function getUsage(cmdMetadata: CommandData): string {
+function formatUsage(cmdMetadata: CommandData): string {
   return `
     Usage
       $ ${cmdMetadata.name} ${
@@ -39,16 +45,18 @@ function getUsage(cmdMetadata: CommandData): string {
   `;
 }
 
-function getOptions(cmdMetadata: CommandData): string {
+function formatOptions(options: CommandOption[]): string {
   return `
-    Options ${(cmdMetadata.availableOptions || []).map(option => {
+    Options ${options.map(option => {
         return '\n      --' + option.name +
-          ', -' + option.aliases.join(', ') +
+          (option.aliases && option.aliases.length > 0 ? ', -' +
+           option.aliases.join(', ') : '') +
           '  ' + option.description;
         })}
   `;
 }
-function getExamples(cmdMetadata: CommandData): string {
+
+function formatExamples(cmdMetadata: CommandData): string {
   return `
     Examples
       $ ${cmdMetadata.name} ${

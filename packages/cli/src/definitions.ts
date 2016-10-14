@@ -30,21 +30,35 @@ export interface IProject {
   save(projectFile: ProjectFile): Promise<void>;
 }
 
+export type CommandOptionType = StringConstructor | BooleanConstructor;
+export type CommandOptionDefault = string | number| boolean | null;
+export type CommandOptionTypeDefaults = Map<CommandOptionType, CommandOptionDefault>;
+
+export interface CommandOption {
+  name: string;
+  description: string;
+  type?: CommandOptionType;
+  default?: CommandOptionDefault;
+  aliases?: string[];
+}
+
+export interface NormalizedCommandOption extends CommandOption {
+  type: CommandOptionType;
+  default: CommandOptionDefault;
+  aliases: string[];
+}
+
+export interface CommandInput {
+  name: string;
+  description: string;
+}
+
 export interface CommandData {
   name: string;
   description: string;
   isProjectTask: boolean;
-  inputs?: {
-    name: string;
-    description: string;
-  }[];
-  availableOptions?: {
-    name: string;
-    description: string;
-    type: StringConstructor | BooleanConstructor;
-    default: string | number| boolean | null;
-    aliases: string[];
-  }[];
+  inputs?: CommandInput[];
+  options?: CommandOption[];
 }
 
 export interface CommandEnvironment {

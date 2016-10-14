@@ -65,61 +65,48 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
       description: 'Starter templates can either come from a named template (ex: tabs, sidemenu, blank)'
     }
   ],
-  availableOptions: [
+  options: [
     {
       name: 'appname',
       description: 'Human readable name for the app (Use quotes around the name)',
-      type: String,
-      default: null,
       aliases: ['a']
     },
     {
       name: 'id',
       description: 'Package name for <widget id> config, ex: com.mycompany.myapp',
-      type: String,
-      default: null,
       aliases: ['i']
     },
     {
       name: 'skip-npm',
       description:  'Skip npm package installation',
       type: Boolean,
-      default: false,
       aliases: []
     },
     {
       name: 'no-cordova',
       description:  'Create a basic structure without Cordova requirements',
       type: Boolean,
-      default: false,
       aliases: ['w']
     },
     {
       name: 'list',
       description:  'List starter templates available',
       type: Boolean,
-      default: false,
       aliases: ['l']
     },
     {
       name: 'io-app-id',
       description: 'The Ionic.io app ID to use',
-      type: String,
-      default: null,
       aliases: []
     },
     {
       name: 'template',
       description: 'Project starter template',
-      type: String,
-      default: null,
       aliases: ['t']
     },
     {
       name: 'zip-file',
       description: 'URL to download zipfile for starter template',
-      type: String,
-      default: null,
       aliases: ['z']
     }
   ],

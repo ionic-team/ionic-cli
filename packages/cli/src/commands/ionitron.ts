@@ -4,7 +4,7 @@ import { Command, CommandMetadata } from '../lib/command';
 @CommandMetadata({
   name: 'ionitron',
   description: 'Print random ionitron messages',
-  availableOptions: [],
+  options: [],
   isProjectTask: false
 })
 export default class IonitronCommand extends Command implements ICommand {

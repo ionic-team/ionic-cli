@@ -5,7 +5,7 @@ import { getCliInfo } from '../lib/utils/environmentInfo';
 @CommandMetadata({
   name: 'version',
   description: 'Returns the current CLI version',
-  availableOptions: [],
+  options: [],
   isProjectTask: false
 })
 export default class VersionCommand extends Command implements ICommand {
