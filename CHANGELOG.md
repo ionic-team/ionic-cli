@@ -1,3 +1,19 @@
+<a name="2.1.1"></a>
+## [2.1.1](https://github.com/driftyco/ionic-cli/compare/v2.1.0...v2.1.1) (2016-10-14)
+
+
+### Bug Fixes
+
+* ensure all child spawned npm process exit when the parent process ends. fixes [#1544](https://github.com/driftyco/ionic-cli/issues/1544) ([157aefd](https://github.com/driftyco/ionic-cli/commit/157aefd))
+
+
+### Features
+
+* ensure child spawned processes for npm run print colors. ([f74e3c3](https://github.com/driftyco/ionic-cli/commit/f74e3c3))
+* update `ionic info` to print ionic app-scripts version. ([7e2dd6c](https://github.com/driftyco/ionic-cli/commit/7e2dd6c))
+
+
+
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/driftyco/ionic-cli/compare/v2.0.0...v2.1.0) (2016-09-16)
 
