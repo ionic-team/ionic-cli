@@ -8,6 +8,7 @@ var IonicAppLib = require('ionic-app-lib');
 var ConfigXml = IonicAppLib.configXml;
 var log = IonicAppLib.logging.logger;
 var run = require('../../lib/ionic/run');
+var npmScripts = require('../../lib/utils/npmScripts');
 
 describe('run command', function() {
   beforeEach(function() {
@@ -54,6 +55,7 @@ describe('run command', function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
       spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
     });
 
@@ -90,6 +92,7 @@ describe('run command', function() {
 
       spyOn(cordovaUtils, 'installPlatform').andReturn(Q(true));
       spyOn(cordovaUtils, 'installPlugins').andReturn(Q(true));
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
       spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
     });
 
@@ -143,6 +146,7 @@ describe('run command', function() {
 
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
     });
 
     it('should execute the command against the cordova util', function(done) {
@@ -214,6 +218,50 @@ describe('run command', function() {
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(
           ['run', 'android'], true, { blah: 'blah' });
         done();
+      });
+    });
+  });
+
+  describe('npmScripts check', function() {
+    var processArguments = ['node', 'ionic', 'run', 'android'];
+    var rawCliArguments = processArguments.slice(2);
+    var argv = optimist(rawCliArguments).argv;
+
+    beforeEach(function() {
+      var appDirectory = '/ionic/app/path';
+      spyOn(process, 'cwd').andReturn(appDirectory);
+      spyOn(os, 'platform').andReturn('darwin');
+
+      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
+    });
+
+    it('should not call runIonicScript if hasIonicScript is false', function(done) {
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
+      spyOn(npmScripts, 'runIonicScript');
+
+      run.run(null, argv, rawCliArguments).then(function() {
+        expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('build');
+        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['run', 'android'], false, true);
+        done();
+      }).catch(function(e) {
+        console.log(e);
+      });
+    });
+
+    it('should call runIonicScript if hasIonicScript is true', function(done) {
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(true));
+      spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
+
+      run.run(null, argv, rawCliArguments).then(function() {
+        expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('build');
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build');
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['run', 'android'], false, true);
+        done();
+      }).catch(function(e) {
+        console.log(e);
       });
     });
   });

@@ -9,6 +9,7 @@ var IonicProject = IonicAppLib.project;
 var Serve = IonicAppLib.serve;
 var log = IonicAppLib.logging.logger;
 var appLibUtils = IonicAppLib.utils;
+var npmScripts = require('../../lib/utils/npmScripts');
 
 describe('Serve', function() {
 
@@ -66,6 +67,7 @@ describe('Serve', function() {
 
       var error = new Error('some error');
 
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
       spyOn(IonicProject, 'load').andCallFake(function() {
         throw error;
       });
@@ -83,6 +85,8 @@ describe('Serve', function() {
       var argv = optimist(rawCliArguments).argv;
 
       var error = new Error('some error');
+
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -106,6 +110,8 @@ describe('Serve', function() {
       var argv = optimist(rawCliArguments).argv;
 
       var error = new Error('some error');
+
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -134,6 +140,7 @@ describe('Serve', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -158,6 +165,7 @@ describe('Serve', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -182,6 +190,7 @@ describe('Serve', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -206,6 +215,7 @@ describe('Serve', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
       spyOn(IonicProject, 'load').andReturn({});
       spyOn(Serve, 'loadSettings').andReturn({});
       spyOn(Serve, 'getAddress').andReturn(Q());
@@ -233,6 +243,7 @@ describe('Serve', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;

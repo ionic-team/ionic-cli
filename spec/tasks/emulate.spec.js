@@ -8,6 +8,7 @@ var IonicAppLib = require('ionic-app-lib');
 var ConfigXml = IonicAppLib.configXml;
 var log = IonicAppLib.logging.logger;
 var emulate = require('../../lib/ionic/emulate');
+var npmScripts = require('../../lib/utils/npmScripts');
 
 describe('emulate command', function() {
   beforeEach(function() {
@@ -52,6 +53,7 @@ describe('emulate command', function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
     });
 
     it('should default to iOS for the platform', function(done) {
@@ -86,6 +88,7 @@ describe('emulate command', function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
       spyOn(cordovaUtils, 'installPlatform').andReturn(Q(true));
       spyOn(cordovaUtils, 'installPlugins').andReturn(Q(true));
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
       spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
     });
 
@@ -138,6 +141,7 @@ describe('emulate command', function() {
     beforeEach(function() {
       spyOn(process, 'cwd').andReturn(appDirectory);
       spyOn(os, 'platform').andReturn('darwin');
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
     });
 
     it('should fail if any functions throw', function(done) {
@@ -219,6 +223,50 @@ describe('emulate command', function() {
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(
           ['emulate', 'android'], true, { blah: 'blah' });
         done();
+      });
+    });
+  });
+
+  describe('npmScripts check', function() {
+    var processArguments = ['node', 'ionic', 'emulate', 'android'];
+    var rawCliArguments = processArguments.slice(2);
+    var argv = optimist(rawCliArguments).argv;
+
+    beforeEach(function() {
+      var appDirectory = '/ionic/app/path';
+      spyOn(process, 'cwd').andReturn(appDirectory);
+      spyOn(os, 'platform').andReturn('darwin');
+
+      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
+    });
+
+    it('should not call runIonicScript if hasIonicScript is false', function(done) {
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
+      spyOn(npmScripts, 'runIonicScript');
+
+      emulate.run(null, argv, rawCliArguments).then(function() {
+        expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('build');
+        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', 'android'], false, true);
+        done();
+      }).catch(function(e) {
+        console.log(e);
+      });
+    });
+
+    it('should call runIonicScript if hasIonicScript is true', function(done) {
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(true));
+      spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
+
+      emulate.run(null, argv, rawCliArguments).then(function() {
+        expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('build');
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build');
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', 'android'], false, true);
+        done();
+      }).catch(function(e) {
+        console.log(e);
       });
     });
   });
