@@ -6,11 +6,11 @@
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
   "types": "./dist/main.d.ts",
   "scripts": {
-    "build": "npm run clean && ../../node_modules/typescript/bin/tsc",
+    "build": "npm run clean && ../../node_modules/.bin/tsc",
     "clean": "rm -rf ./dist",
     "prepublish": "npm run build",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
-    "watch": "npm run clean && ../../node_modules/typescript/bin/tsc --watch"
+    "watch": "npm run clean && ../../node_modules/.bin/tsc --watch"
   },
   "keywords": [
     "ionic",
