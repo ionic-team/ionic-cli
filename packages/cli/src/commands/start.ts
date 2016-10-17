@@ -8,7 +8,7 @@ import { spawn } from 'cross-spawn';
 import * as fetch from 'node-fetch';
 import * as stream from 'stream';
 
-import { CommandEnvironment, ICommand } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, ICommand } from '../definitions';
 import { Command, CommandMetadata } from '../lib/command';
 import { getCommandInfo } from '../lib/utils/environmentInfo';
 
@@ -113,29 +113,29 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
   isProjectTask: false
 })
 export default class StartCommand extends Command implements ICommand {
-  async run(env: CommandEnvironment): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let installer = 'npm';
     let projectRoot: string;
     let projectName: string;
 
-    if (env.inputs.length < 1) {
+    if (inputs.length < 1) {
       throw 'Please provide a name for your project.';
     }
-    if (!isProjectNameValid(env.inputs[0])) {
-      throw `Please name your Ionic project something meaningful other than ${chalk.red(env.inputs[0])}`;
+    if (!isProjectNameValid(inputs[0])) {
+      throw `Please name your Ionic project something meaningful other than ${chalk.red(inputs[0])}`;
     }
 
-    projectRoot = path.resolve(env.inputs[0]);
+    projectRoot = path.resolve(inputs[0]);
     projectName = path.basename(projectRoot);
 
     if (!pathExists.sync(projectName)) {
       fs.mkdirSync(projectRoot);
-      env.log.info(`Making directory ${projectRoot}`);
+      this.env.log.info(`Making directory ${projectRoot}`);
     } else if (!isSafeToCreateProjectIn(projectRoot)) {
       throw `The directory ${projectName} contains file(s) that could conflict. Aborting.`;
     }
 
-    let starterTemplateName = env.inputs[1] || env.options['template'] || STARTER_TEMPLATE_DEFAULT;
+    let starterTemplateName = inputs[1] || options['template'] || STARTER_TEMPLATE_DEFAULT;
     let starterTemplate = STARTER_TEMPLATES.find(tpl => tpl['name'] === starterTemplateName);
 
     if (!starterTemplate) {
@@ -155,18 +155,18 @@ export default class StartCommand extends Command implements ICommand {
       tarXvf(archive['body'], projectRoot)
     ]);
 
-    if (env.options['skip-npm']) {
-      return env.log.msg('Project started!');
+    if (options['skip-npm']) {
+      return this.env.log.msg('Project started!');
     }
 
-    if (env.options['yarn']) {
+    if (options['yarn']) {
       let yarnVersion = await getCommandInfo('yarn', ['-version']);
       if (yarnVersion) {
         installer = 'yarn';
       }
     }
 
-    env.log.msg('Installing dependencies. This might take a couple minutes.');
+    this.env.log.msg('Installing dependencies. This might take a couple minutes.');
     await install(installer, projectRoot);
   }
 }

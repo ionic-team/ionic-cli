@@ -1,4 +1,4 @@
-import { CommandEnvironment, ICommand } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, ICommand } from '../definitions';
 import { Command, CommandMetadata } from '../lib/command';
 import { gatherEnvironmentInfo } from '../lib/utils/environmentInfo';
 
@@ -8,8 +8,7 @@ import { gatherEnvironmentInfo } from '../lib/utils/environmentInfo';
   isProjectTask: false
 })
 export default class InfoCommand extends Command implements ICommand {
-  async run(env: CommandEnvironment): Promise<void> {
-    const logger = env.utils.log;
+  async run(inputs?: CommandLineInputs, options?: CommandLineOptions): Promise<void> {
     const info = await gatherEnvironmentInfo();
 
     const details: [string, string][] = [
@@ -23,7 +22,7 @@ export default class InfoCommand extends Command implements ICommand {
       ['Xcode version', info['xcode']]
     ];
 
-    logger.msg(`Your system information:
+    this.env.log.msg(`Your system information:
 
 ${details
   .filter(info => info[1] !== null && info[1] !== undefined)

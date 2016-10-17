@@ -3,7 +3,7 @@ import { Opts as MinimistOpts } from 'minimist';
 import {
   CommandData,
   CommandOption,
-  CommandOptionDefault,
+  CommandLineInput,
   CommandOptionType,
   CommandOptionTypeDefaults,
   NormalizedCommandOption
@@ -13,10 +13,10 @@ export interface NormalizedMinimistOpts extends MinimistOpts {
   string: string[],
   boolean: string[],
   alias: { [key: string]: string[] },
-  default: { [key: string]: CommandOptionDefault }
+  default: { [key: string]: CommandLineInput }
 }
 
-const typeDefaults: CommandOptionTypeDefaults = new Map<CommandOptionType, CommandOptionDefault>()
+const typeDefaults: CommandOptionTypeDefaults = new Map<CommandOptionType, CommandLineInput>()
   .set(String, null)
   .set(Boolean, false);
 

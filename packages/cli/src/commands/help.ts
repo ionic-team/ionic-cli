@@ -1,7 +1,8 @@
 import {
   CommandData,
+  CommandLineInputs,
+  CommandLineOptions,
   CommandOption,
-  CommandEnvironment,
   ICommand
 } from '../definitions';
 
@@ -19,13 +20,11 @@ import { Command, CommandMetadata } from '../lib/command';
   isProjectTask: false
 })
 export default class HelpCommand extends Command implements ICommand {
-  async run(env: CommandEnvironment): Promise<void> {
-    const logger = env.utils.log;
-    const commandName: string = env.inputs[0] || env.options['command'];
-    const command = env.commands.get(commandName) || env.commands.get('help');
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const command = this.env.commands.get(inputs[0]) || this.env.commands.get('help');
 
     if (command) {
-      logger.msg(formatCommandHelp(command.metadata));
+      this.env.log.msg(formatCommandHelp(command.metadata));
     }
   }
 }

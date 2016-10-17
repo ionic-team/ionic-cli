@@ -1,4 +1,4 @@
-import { CommandEnvironment, ICommand } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, ICommand } from '../definitions';
 import { Command, CommandMetadata } from '../lib/command';
 
 @CommandMetadata({
@@ -17,7 +17,7 @@ import { Command, CommandMetadata } from '../lib/command';
   isProjectTask: false
 })
 export default class LoginCommand extends Command implements ICommand {
-  async run(env: CommandEnvironment): Promise<void> {
+  async run(inputs: CommandLineInputs, options?: CommandLineOptions): Promise<void> {
     // TODO
   }
 }

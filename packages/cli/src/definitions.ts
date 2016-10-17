@@ -30,21 +30,23 @@ export interface IProject {
   save(projectFile: ProjectFile): Promise<void>;
 }
 
+export type CommandLineInput = string | boolean | null;
+export type CommandLineInputs = string[];
+export type CommandLineOptions = { [arg: string]: CommandLineInput };
 export type CommandOptionType = StringConstructor | BooleanConstructor;
-export type CommandOptionDefault = string | number| boolean | null;
-export type CommandOptionTypeDefaults = Map<CommandOptionType, CommandOptionDefault>;
+export type CommandOptionTypeDefaults = Map<CommandOptionType, CommandLineInput>;
 
 export interface CommandOption {
   name: string;
   description: string;
   type?: CommandOptionType;
-  default?: CommandOptionDefault;
+  default?: CommandLineInput;
   aliases?: string[];
 }
 
 export interface NormalizedCommandOption extends CommandOption {
   type: CommandOptionType;
-  default: CommandOptionDefault;
+  default: CommandLineInput;
   aliases: string[];
 }
 
@@ -63,15 +65,15 @@ export interface CommandData {
 
 export interface CommandEnvironment {
   commands: Map<string, ICommand>;
-  inputs: string[];
   log: ILogger;
-  options: { [arg: string]: any };
   project: IProject;
 }
 
 export interface ICommand {
   metadata: CommandData;
-  run(env: CommandEnvironment): Promise<void>;
+  env: CommandEnvironment;
+
+  run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
 }
 
 export type CommandMap = Map<string, ICommand>;

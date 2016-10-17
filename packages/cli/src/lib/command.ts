@@ -1,4 +1,4 @@
-import { CommandData } from '../definitions';
+import { CommandData, CommandEnvironment } from '../definitions';
 
 export function CommandMetadata(metadata: CommandData) {
   return function (target: Function) {
@@ -7,5 +7,6 @@ export function CommandMetadata(metadata: CommandData) {
 }
 
 export class Command {
+  public env: CommandEnvironment;
   public metadata: CommandData;
 }

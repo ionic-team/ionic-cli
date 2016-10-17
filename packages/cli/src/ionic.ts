@@ -90,13 +90,13 @@ export async function run(pargv: string[]) {
     const argv = minimist(pargv.slice(3), options);
 
     try {
-      await cmd.run({
+      cmd.env = {
         commands,
-        inputs: argv._,
         log,
-        options: argv,
         project
-      });
+      };
+
+      await cmd.run(argv._, argv);
     } catch (e) {
       log.error(e);
       process.exit(1); // TODO
