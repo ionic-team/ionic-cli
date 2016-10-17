@@ -1,4 +1,6 @@
 import * as minimist from 'minimist';
+import * as inquirer from 'inquirer';
+
 import { ICommand } from './definitions';
 
 export type LogFn = (message?: any, ...args: any[]) => void;
@@ -50,9 +52,25 @@ export interface NormalizedCommandOption extends CommandOption {
   aliases: string[];
 }
 
+export type Validator = (input: string) => boolean | string;
+
+export interface Validators {
+  required: Validator;
+  email: Validator;
+}
+
+export interface CommandInputPrompt {
+  type?: string;
+  message?: string;
+  choices?: inquirer.ChoiceType[] | ((answers: inquirer.Answers) => inquirer.ChoiceType[]);
+  filter?(input: string): string;
+}
+
 export interface CommandInput {
   name: string;
   description: string;
+  prompt?: CommandInputPrompt;
+  validators?: Validator[];
 }
 
 export interface CommandData {
@@ -64,6 +82,7 @@ export interface CommandData {
 }
 
 export interface CommandEnvironment {
+  argv: string[],
   commands: Map<string, ICommand>;
   log: ILogger;
   project: IProject;
@@ -73,6 +92,7 @@ export interface ICommand {
   metadata: CommandData;
   env: CommandEnvironment;
 
+  execute(env: CommandEnvironment): Promise<void>;
   run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
 }
 

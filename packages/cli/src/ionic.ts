@@ -1,5 +1,6 @@
 export * from './definitions';
 
+import * as inquirer from 'inquirer';
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 import getCommands from './commands';
@@ -7,7 +8,6 @@ import { Command, CommandMetadata } from './lib/command';
 import { CommandMap, ICommand } from './definitions';
 import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from './lib/utils/plugins';
 import { Logger } from './lib/utils/logger';
-import { metadataToOptimistOptions } from './lib/utils/commandOptions';
 import { Project } from './lib/utils/project';
 
 export { Command as Command, CommandMetadata as CommandMetadata }
@@ -83,25 +83,15 @@ export async function run(pargv: string[]) {
   const project = new Project('.');
   const command = getCommand(argv._[0], commands);
 
-  async function runCommand(cmd: ICommand) {
-    log.info('executing', cmd.metadata.name);
-
-    const options = metadataToOptimistOptions(cmd.metadata);
-    const argv = minimist(pargv.slice(3), options);
-
-    try {
-      cmd.env = {
-        commands,
-        log,
-        project
-      };
-
-      await cmd.run(argv._, argv);
-    } catch (e) {
-      log.error(e);
-      process.exit(1); // TODO
-    }
+  try {
+    await command.execute({
+      argv: pargv,
+      commands,
+      log,
+      project
+    });
+  } catch (e) {
+    log.error(e);
+    process.exit(1); // TODO
   }
-
-  await runCommand(command);
 }
