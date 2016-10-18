@@ -1,5 +1,6 @@
 import * as minimist from 'minimist';
 import * as inquirer from 'inquirer';
+import * as superagent from 'superagent';
 
 import { ICommand } from './definitions';
 
@@ -88,6 +89,7 @@ export interface Urls {
 export interface CommandEnvironment {
   argv: string[],
   commands: Map<string, ICommand>;
+  client: IClient;
   log: ILogger;
   project: IProject;
   urls: Urls;
@@ -134,4 +136,10 @@ export interface APIResponseErrorError {
 export interface APIResponseSuccess {
   data: APIResponseData;
   meta: APIResponseMeta;
+}
+
+export interface IClient {
+  make(method: string, path: string): superagent.Request;
+  do(res: superagent.Request): Promise<APIResponseSuccess>;
+  is<T extends APIResponseSuccess>(r: APIResponseSuccess, predicate: (rs: APIResponseSuccess) => boolean): r is T;
 }

@@ -4,8 +4,9 @@ import * as inquirer from 'inquirer';
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 import getCommands from './commands';
+import { Client } from './lib/api';
 import { Command, CommandMetadata } from './lib/command';
-import { CommandMap, ICommand } from './definitions';
+import { CommandMap, ICommand, Urls } from './definitions';
 import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from './lib/utils/plugins';
 import { Logger } from './lib/utils/logger';
 import { Project } from './lib/utils/project';
@@ -83,15 +84,18 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   const project = new Project('.');
   const command = getCommand(argv._[0], commands);
 
+  const urls: Urls = {
+    api: env['IONIC_API'] || 'https://api.ionic.io'
+  };
+
   try {
     await command.execute({
       argv: pargv,
       commands,
+      client: new Client(urls.api),
       log,
       project,
-      urls: {
-        api: env['IONIC_API'] || 'https://api.ionic.io'
-      }
+      urls: urls
     });
   } catch (e) {
     log.error(e);

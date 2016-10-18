@@ -4,11 +4,9 @@ import {
   APIResponse,
   APIResponseSuccess,
   CommandLineInputs,
-  CommandLineOptions,
-  ICommand
+  CommandLineOptions, ICommand
 } from '../definitions';
 
-import { isAPIResponseSuccess } from '../lib/api';
 import { Command, CommandMetadata } from '../lib/command';
 import { validators } from '../lib/validators';
 
@@ -16,10 +14,6 @@ interface LoginResponse extends APIResponseSuccess {
   data: {
     token: string;
   }
-}
-
-function isLoginResponse(r: APIResponseSuccess): r is LoginResponse {
-  return (<LoginResponse>r).data.token !== undefined;
 }
 
 @CommandMetadata({
@@ -48,24 +42,17 @@ function isLoginResponse(r: APIResponseSuccess): r is LoginResponse {
 })
 export default class LoginCommand extends Command implements ICommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    let [email, password] = inputs;
 
-    // TODO: Cleanup and make reusable!
-    const r = await fetch(`${this.env.urls.api}/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: inputs[0], password: inputs[1] })
-    });
+    let req = this.env.client.make('POST', '/login')
+      .send({ email, password });
 
-    const j = await r.json<APIResponse>();
+    let res = await this.env.client.do(req); // TODO: Handle errors nicely
 
-    if (isAPIResponseSuccess(j)) {
-      if (isLoginResponse(j)) {
-        console.log('Logged in! Your token is:', j.data.token);
-      } else {
-        console.error('Unrecognized API response.', j);
-      }
+    if (this.env.client.is<LoginResponse>(res, (r: LoginResponse) => r.data.token !== undefined)) {
+      console.log('Logged in! Your token is:', res.data.token);
     } else {
-      console.error(j.error);
+      // TODO
     }
   }
 }
