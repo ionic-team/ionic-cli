@@ -47,13 +47,14 @@ describe('info command', function() {
       expect(appLibInfo.checkRuntime).not.toHaveBeenCalled();
     });
 
-    it('should fail if any Info task throws', function() {
+    it('should gather info', function() {
       var gatheredInfo = { info: 'hi' };
       spyOn(appLibUtils, 'fail');
       spyOn(process, 'cwd').andReturn('/hello/how/areyou');
       spyOn(appLibInfo, 'gatherInfo').andReturn(gatheredInfo);
       spyOn(appLibInfo, 'getIonicVersion');
       spyOn(appLibInfo, 'getIonicCliVersion');
+      spyOn(appLibInfo, 'getIonicAppScriptsVersion');
       spyOn(appLibInfo, 'printInfo');
       spyOn(appLibInfo, 'checkRuntime');
 
@@ -62,6 +63,7 @@ describe('info command', function() {
       expect(appLibInfo.gatherInfo).toHaveBeenCalled();
       expect(appLibInfo.getIonicVersion).toHaveBeenCalledWith(gatheredInfo, '/hello/how/areyou');
       expect(appLibInfo.getIonicCliVersion).toHaveBeenCalledWith(gatheredInfo, jasmine.any(String));
+      expect(appLibInfo.getIonicAppScriptsVersion).toHaveBeenCalledWith(gatheredInfo, '/hello/how/areyou');
       expect(appLibInfo.printInfo).toHaveBeenCalledWith(gatheredInfo);
       expect(appLibInfo.checkRuntime).toHaveBeenCalled();
 
