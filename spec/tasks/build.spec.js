@@ -8,6 +8,7 @@ var IonicAppLib = require('ionic-app-lib');
 var ConfigXml = IonicAppLib.configXml;
 var log = IonicAppLib.logging.logger;
 var build = require('../../lib/ionic/build');
+var npmScripts = require('../../lib/utils/npmScripts');
 
 describe('build command', function() {
   beforeEach(function() {
@@ -54,6 +55,7 @@ describe('build command', function() {
 
       spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
       spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
       spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
     });
 
@@ -90,6 +92,7 @@ describe('build command', function() {
 
       spyOn(cordovaUtils, 'installPlatform').andReturn(Q(true));
       spyOn(cordovaUtils, 'installPlugins').andReturn(Q(true));
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
     });
 
     it('should try to install the cordova platform if it is not installed', function(done) {
@@ -158,6 +161,50 @@ describe('build command', function() {
       build.run({}, argv, rawCliArguments).then(function() {
         expect(log.error).not.toHaveBeenCalled();
         done();
+      });
+    });
+  });
+
+  describe('npmScripts check', function() {
+    var appDirectory = '/ionic/app/path';
+    var processArguments = ['node', 'ionic', 'build', 'ios', '-n'];
+    var rawCliArguments = processArguments.slice(2);
+    var argv = optimist(rawCliArguments).argv;
+
+    beforeEach(function() {
+      spyOn(os, 'platform').andReturn('darwin');
+      spyOn(process, 'cwd').andReturn(appDirectory);
+
+      spyOn(cordovaUtils, 'isPlatformInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'arePluginsInstalled').andReturn(true);
+      spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(0));
+    });
+
+    it('should not call runIonicScript if hasIonicScript is false', function(done) {
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
+      spyOn(npmScripts, 'runIonicScript');
+
+      build.run(null, argv, rawCliArguments).then(function() {
+        expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('build');
+        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['build', 'ios', '-n']);
+        done();
+      }).catch(function(e) {
+        console.log(e);
+      });
+    });
+
+    it('should call runIonicScript if hasIonicScript is true', function(done) {
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(true));
+      spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
+
+      build.run(null, argv, rawCliArguments).then(function() {
+        expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('build');
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build');
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['build', 'ios', '-n']);
+        done();
+      }).catch(function(e) {
+        console.log(e);
       });
     });
   });

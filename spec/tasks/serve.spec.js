@@ -9,6 +9,7 @@ var IonicProject = IonicAppLib.project;
 var Serve = IonicAppLib.serve;
 var log = IonicAppLib.logging.logger;
 var appLibUtils = IonicAppLib.utils;
+var npmScripts = require('../../lib/utils/npmScripts');
 
 describe('Serve', function() {
 
@@ -66,15 +67,17 @@ describe('Serve', function() {
 
       var error = new Error('some error');
 
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
+      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andCallFake(function() {
         throw error;
       });
-      spyOn(appLibUtils, 'fail');
 
-      serveTask.run({}, argv);
-      expect(log.error).toHaveBeenCalledWith(jasmine.any(String), error);
-      expect(appLibUtils.fail).toHaveBeenCalledWith(error.message);
-      done();
+      serveTask.run({}, argv).then(function() {
+        expect(log.error).toHaveBeenCalledWith(jasmine.any(String), error);
+        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
+        done();
+      });
     });
 
     it('should fail if loading the ionic project fails', function(done) {
@@ -83,6 +86,9 @@ describe('Serve', function() {
       var argv = optimist(rawCliArguments).argv;
 
       var error = new Error('some error');
+
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
+      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -93,19 +99,22 @@ describe('Serve', function() {
         throw error;
       });
 
-      spyOn(appLibUtils, 'fail');
-
-      serveTask.run({}, argv);
-      expect(appLibUtils.fail).toHaveBeenCalledWith('Error with serve- ' + error);
-      done();
+      serveTask.run({}, argv).then(function() {
+        expect(log.error).toHaveBeenCalledWith(jasmine.any(String), error);
+        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
+        done();
+      });
     });
 
-    it('should return a rejected promise when chain fails', function(done) {
+    it('should call appLibUtils when chain fails', function(done) {
       var processArguments = ['node', 'ionic', 'serve', '-a'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
       var error = new Error('some error');
+
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
+      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -118,13 +127,13 @@ describe('Serve', function() {
       spyOn(Serve, 'start');
       spyOn(Serve, 'showFinishedServeMessage');
 
-      serveTask.run({}, argv).catch(function(errCaught) {
+      serveTask.run({}, argv).then(function() {
         expect(Serve.checkPorts).toHaveBeenCalled();
         expect(Serve.start).not.toHaveBeenCalled();
         expect(Serve.showFinishedServeMessage).not.toHaveBeenCalled();
+        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
 
-        expect(log.info).toHaveBeenCalledWith('There was an error serving your Ionic application:', error);
-        expect(errCaught).toEqual(error);
+        expect(log.error).toHaveBeenCalledWith(jasmine.any(String), error);
         done();
       });
     });
@@ -134,6 +143,8 @@ describe('Serve', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
+      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -147,6 +158,7 @@ describe('Serve', function() {
       spyOn(Serve, 'showFinishedServeMessage');
 
       serveTask.run({}, argv).then(function() {
+        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
         expect(Serve.getAddress).not.toHaveBeenCalled();
         expect(Serve.start.calls[0].args[0].address).toBe('0.0.0.0');
         done();
@@ -158,6 +170,8 @@ describe('Serve', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
+      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -171,6 +185,7 @@ describe('Serve', function() {
       spyOn(Serve, 'showFinishedServeMessage');
 
       serveTask.run({}, argv).then(function() {
+        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
         expect(Serve.getAddress).not.toHaveBeenCalled();
         expect(Serve.start.calls[0].args[0].address).toBe('0.0.0.0');
         done();
@@ -182,6 +197,8 @@ describe('Serve', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
+      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -195,6 +212,7 @@ describe('Serve', function() {
       spyOn(Serve, 'showFinishedServeMessage');
 
       serveTask.run({}, argv).then(function() {
+        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
         expect(Serve.getAddress).not.toHaveBeenCalled();
         expect(Serve.start.calls[0].args[0].address).toBe('192.168.1.10');
         done();
@@ -206,6 +224,8 @@ describe('Serve', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
+      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({});
       spyOn(Serve, 'loadSettings').andReturn({});
       spyOn(Serve, 'getAddress').andReturn(Q());
@@ -223,6 +243,7 @@ describe('Serve', function() {
       };
 
       serveTask.run({}, argv).then(function() {
+        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
         expect(Serve.start).toHaveBeenCalledWith(options);
         done();
       });
@@ -233,6 +254,8 @@ describe('Serve', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
+      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -246,7 +269,23 @@ describe('Serve', function() {
       spyOn(Serve, 'showFinishedServeMessage');
 
       serveTask.run({}, argv).then(function() {
+        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
         expect(Serve.start.calls[0].args[0].liveReloadPort).toBe(35729);
+        done();
+      });
+    });
+
+    it('should call runIonicScript if hasIonicScript is true', function(done) {
+      var processArguments = ['node', 'ionic', 'serve', '--livereload', '--nogulp'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(true));
+      spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
+
+      serveTask.run({}, argv).then(function() {
+        expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('serve');
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('serve', argv);
         done();
       });
     });
