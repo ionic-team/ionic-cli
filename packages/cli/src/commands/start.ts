@@ -1,12 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as chalk from 'chalk';
-import * as pathExists from 'path-exists';
 import * as zlib from 'zlib';
 import * as tar from 'tar';
+
+import * as chalk from 'chalk';
 import { spawn } from 'cross-spawn';
-import * as fetch from 'node-fetch';
-import * as stream from 'stream';
+import * as pathExists from 'path-exists';
+import * as superagent from 'superagent';
 
 import { CommandLineInputs, CommandLineOptions, ICommand } from '../definitions';
 import { Command, CommandMetadata } from '../lib/command';
@@ -146,13 +146,14 @@ export default class StartCommand extends Command implements ICommand {
       baseArchive,
       archive
     ] = await Promise.all([
-      fetch(starterTemplate.baseArchive),
-      fetch(starterTemplate.archive)
+      superagent.get(starterTemplate.baseArchive),
+      superagent.get(starterTemplate.archive)
     ]);
 
+    // TODO: tarXvf gets stream error with superagent
     await Promise.all([
-      tarXvf(baseArchive['body'], projectRoot),
-      tarXvf(archive['body'], projectRoot)
+      tarXvf(baseArchive, projectRoot),
+      tarXvf(archive, projectRoot)
     ]);
 
     if (options['skip-npm']) {
@@ -186,7 +187,7 @@ function install(installer: string, root: string): Promise<any> {
   });
 }
 
-function tarXvf(readStream: stream.Readable, destination: string): Promise<any> {
+function tarXvf(readStream: NodeJS.ReadableStream, destination: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const baseArchiveExtract = tar.Extract({
         path: destination,

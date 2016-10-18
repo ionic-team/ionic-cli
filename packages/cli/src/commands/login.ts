@@ -1,5 +1,3 @@
-import * as fetch from 'node-fetch';
-
 import {
   APIResponse,
   APIResponseSuccess,
