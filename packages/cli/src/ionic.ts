@@ -70,7 +70,7 @@ function getCommand(name: string, commands: CommandMap): ICommand {
   return command;
 }
 
-export async function run(pargv: string[]) {
+export async function run(pargv: string[], env: { [k: string]: string }) {
 
   // Check version?
   const argv = minimist(pargv.slice(2));
@@ -88,7 +88,10 @@ export async function run(pargv: string[]) {
       argv: pargv,
       commands,
       log,
-      project
+      project,
+      urls: {
+        api: env['IONIC_API'] || 'https://api.ionic.io'
+      }
     });
   } catch (e) {
     log.error(e);

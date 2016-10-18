@@ -5,4 +5,4 @@
 process.title = 'ionic';
 
 var cli = require('../');
-cli.run(process.argv);
+cli.run(process.argv, process.env);

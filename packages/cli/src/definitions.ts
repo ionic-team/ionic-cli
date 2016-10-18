@@ -81,11 +81,16 @@ export interface CommandData {
   options?: CommandOption[];
 }
 
+export interface Urls {
+  api: string;
+}
+
 export interface CommandEnvironment {
   argv: string[],
   commands: Map<string, ICommand>;
   log: ILogger;
   project: IProject;
+  urls: Urls;
 }
 
 export interface ICommand {
@@ -97,3 +102,36 @@ export interface ICommand {
 }
 
 export type CommandMap = Map<string, ICommand>;
+
+export type APIResponse = APIResponseSuccess | APIResponseError;
+
+export interface APIResponseMeta {
+  status: number;
+  version: string;
+  request_id: string;
+}
+
+export type APIResponseData = Object | Object[];
+
+export interface APIResponseErrorDetails {
+  error_type: string;
+  parameter: string;
+  errors: string[];
+}
+
+export interface APIResponseError {
+  error: APIResponseErrorError;
+  meta: APIResponseMeta;
+}
+
+export interface APIResponseErrorError {
+  message: string;
+  link: string;
+  type: string;
+  details?: APIResponseErrorDetails[];
+}
+
+export interface APIResponseSuccess {
+  data: APIResponseData;
+  meta: APIResponseMeta;
+}
