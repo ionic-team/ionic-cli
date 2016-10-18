@@ -1,18 +1,7 @@
-import {
-  APIResponse,
-  APIResponseSuccess,
-  CommandLineInputs,
-  CommandLineOptions, ICommand
-} from '../definitions';
+import { CommandLineInputs, CommandLineOptions, ICommand } from '../definitions';
 
 import { Command, CommandMetadata } from '../lib/command';
 import { validators } from '../lib/validators';
-
-interface LoginResponse extends APIResponseSuccess {
-  data: {
-    token: string;
-  }
-}
 
 @CommandMetadata({
   name: 'login',
@@ -42,15 +31,6 @@ export default class LoginCommand extends Command implements ICommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let [email, password] = inputs;
 
-    let req = this.env.client.make('POST', '/login')
-      .send({ email, password });
-
-    let res = await this.env.client.do(req); // TODO: Handle errors nicely
-
-    if (this.env.client.is<LoginResponse>(res, (r: LoginResponse) => r.data.token !== undefined)) {
-      console.log('Logged in! Your token is:', res.data.token);
-    } else {
-      // TODO
-    }
+    await this.env.session.login(email, password);
   }
 }

@@ -82,17 +82,32 @@ export interface CommandData {
   options?: CommandOption[];
 }
 
-export interface Urls {
-  api: string;
+export interface ISession {
+  login(email: string, password: string): Promise<void>;
+}
+
+export interface ConfigFile {
+  lastUpdated: string;
+  urls: {
+    api: string;
+  }
+}
+
+export interface IConfig {
+  env: { [k: string]: string };
+
+  load(): Promise<ConfigFile>;
+  save(configFile: ConfigFile): Promise<void>;
 }
 
 export interface CommandEnvironment {
   argv: string[],
   commands: Map<string, ICommand>;
   client: IClient;
+  config: IConfig;
   log: ILogger;
   project: IProject;
-  urls: Urls;
+  session: ISession;
 }
 
 export interface ICommand {

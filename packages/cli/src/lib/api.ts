@@ -4,7 +4,8 @@ import {
   APIResponse,
   APIResponseError,
   APIResponseSuccess,
-  IClient
+  IClient,
+  IConfig
 } from '../definitions';
 
 const CONTENT_TYPE_JSON = 'application/json';

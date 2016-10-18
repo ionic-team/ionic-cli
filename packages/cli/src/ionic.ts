@@ -3,13 +3,16 @@ export * from './definitions';
 import * as inquirer from 'inquirer';
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
+
+import { CommandMap, ICommand } from './definitions';
 import getCommands from './commands';
 import { Client } from './lib/api';
 import { Command, CommandMetadata } from './lib/command';
-import { CommandMap, ICommand, Urls } from './definitions';
+import { Config } from './lib/config';
+import { Project } from './lib/project';
+import { Session } from './lib/session';
 import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from './lib/utils/plugins';
 import { Logger } from './lib/utils/logger';
-import { Project } from './lib/utils/project';
 
 export { Command as Command, CommandMetadata as CommandMetadata }
 
@@ -79,23 +82,25 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 
   // Global CLI option setup
   const logLevel: string = argv['loglevel'] || 'warn';
+
   const log = new Logger({ level: logLevel, prefix: '' });
-
+  const config = new Config(env);
+  const c = await config.load();
+  const client = new Client(c.urls.api);
   const project = new Project('.');
-  const command = getCommand(argv._[0], commands);
+  const session = new Session(config, client);
 
-  const urls: Urls = {
-    api: env['IONIC_API'] || 'https://api.ionic.io'
-  };
+  const command = getCommand(argv._[0], commands);
 
   try {
     await command.execute({
       argv: pargv,
       commands,
-      client: new Client(urls.api),
+      client,
+      config,
       log,
       project,
-      urls: urls
+      session
     });
   } catch (e) {
     log.error(e);
