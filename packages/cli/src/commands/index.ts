@@ -11,7 +11,7 @@ import { CommandMap, ICommand } from '../definitions';
  * List of commands that are available from ionic cli
  * Each command as a 1-to-1 mapping to a module with the same name
  */
-export default function (): CommandMap {
+export default function(): CommandMap {
   let m = new Map<string, ICommand>();
 
   m.set('docs', new DocsCommand());

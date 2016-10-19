@@ -4,6 +4,7 @@
   "description": "Ionic Cloud Plugin for Ionic CLI",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
+  "main": "./dist/index.js",
   "types": "./dist/main.d.ts",
   "scripts": {
     "build": "npm run clean && ../../node_modules/.bin/tsc",

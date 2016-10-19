@@ -25,7 +25,9 @@ export class PluginLoader {
       throw e;
     }
 
-    return m();
+    // TODO: type check on modules
+
+    return m.getCommands();
   }
 
   /**
