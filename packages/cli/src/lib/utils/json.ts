@@ -5,7 +5,7 @@ const ERROR_FILE_INVALID_JSON = 'FILE_INVALID_JSON';
 
 // TODO: promisify
 
-export function readJsonFile(filePath: string): Promise<Object> {
+export function readJsonFile(filePath: string): Promise<{ [key: string]: any }> {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, 'utf8', (err: any, dataString: string) => {
       if (err) {
@@ -29,7 +29,7 @@ export function readJsonFile(filePath: string): Promise<Object> {
   });
 }
 
-export function writeJsonFile(json: Object, filePath: string): Promise<void> {
+export function writeJsonFile(json: { [key: string]: any }, filePath: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     var jsonString = JSON.stringify(json, null, 2);
 

@@ -6,7 +6,6 @@ import { readJsonFile, writeJsonFile, validate } from './utils/json';
 
 const CONFIG_FILE = 'config.json';
 const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
-const CONFIG_IONIC_API = 'https://api.ionic.io';
 
 function isConfigFile(j: { [key: string]: any }): j is ConfigFile {
   return j['lastUpdated'] !== undefined;
@@ -37,8 +36,13 @@ export class Config implements IConfig {
     return this.configFile;
   }
 
-  async save(configFile: ConfigFile): Promise<void> {
-    await writeJsonFile(configFile, this.configFilePath);
-    this.configFile = configFile;
+  async save(configFile?: ConfigFile): Promise<void> {
+    if (!configFile) {
+      configFile = this.configFile;
+    }
+
+    if (configFile) {
+      await writeJsonFile(configFile, this.configFilePath);
+    }
   }
 }

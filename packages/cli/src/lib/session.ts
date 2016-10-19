@@ -26,6 +26,8 @@ export class Session implements ISession {
       throw 'todo'; // TODO
     }
 
-    console.log('Logged in! Your token is:', res.data.token);
+    let c = await this.config.load();
+
+    c.token = res.data.token;
   }
 }

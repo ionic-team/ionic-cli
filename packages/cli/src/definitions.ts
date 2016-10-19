@@ -88,8 +88,9 @@ export interface ISession {
 
 export interface ConfigFile {
   lastUpdated: string;
-  urls: {
-    api: string;
+  token?: string;
+  urls?: {
+    api?: string;
   }
 }
 

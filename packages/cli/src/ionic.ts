@@ -86,7 +86,10 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   const log = new Logger({ level: logLevel, prefix: '' });
   const config = new Config(env);
   const c = await config.load();
-  const client = new Client(c.urls.api);
+
+  const api = c.urls && c.urls.api ? c.urls.api : 'https://api.ionic.io';
+
+  const client = new Client(api);
   const project = new Project('.');
   const session = new Session(config, client);
 
@@ -104,6 +107,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     });
   } catch (e) {
     log.error(e);
-    process.exit(1); // TODO
+    // process.exit(1); // TODO
   }
+
+  await config.save();
 }
