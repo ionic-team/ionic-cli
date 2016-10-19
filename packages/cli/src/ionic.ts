@@ -6,7 +6,7 @@ import * as chalk from 'chalk';
 
 import getCommands from './commands';
 import { Client } from './lib/api';
-import { Command, CommandMap, CommandMetadata } from './lib/command';
+import { metadataToMinimistOptions, Command, CommandMap, CommandMetadata } from './lib/command';
 import { Config } from './lib/config';
 import { Project } from './lib/project';
 import { Session } from './lib/session';
@@ -23,7 +23,7 @@ const defaultCommand = 'help';
 export async function run(pargv: string[], env: { [k: string]: string }) {
 
   // Check version?
-  const argv = minimist(pargv.slice(2));
+  let argv = minimist(pargv.slice(2));
   const commands = getCommands();
 
   // Global CLI option setup
@@ -38,6 +38,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   const session = new Session(config, client);
 
   let [inputs, command] = commands.resolve(argv._);
+  const options = metadataToMinimistOptions(command.metadata);
+  argv = minimist(pargv.slice(2), options);
   argv._ = inputs;
 
   if (!command) {

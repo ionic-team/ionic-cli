@@ -1,6 +1,5 @@
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
-import * as minimist from 'minimist';
 import { Opts as MinimistOpts } from 'minimist';
 
 import {
@@ -100,19 +99,16 @@ export abstract class Command {
   async execute(env: CommandEnvironment): Promise<void> {
     this.env = env;
 
-    const options = metadataToOptimistOptions(this.metadata);
-    const argv = this.env.argv;
-
     try {
-      validateInputs(argv._, this.metadata, new Set([validators.required]));
+      validateInputs(this.env.argv._, this.metadata, new Set([validators.required]));
     } catch(e) {
       console.error(chalk.red('>> ') + e);
       return;
     }
 
-    await collectInputs(argv._, this.metadata);
+    await collectInputs(this.env.argv._, this.metadata);
 
-    return this.run(argv._, argv);
+    return this.run(this.env.argv._, this.env.argv);
   }
 }
 
@@ -201,7 +197,7 @@ function normalizeOption(option: CommandOption): NormalizedCommandOption {
   return option as NormalizedCommandOption;
 }
 
-export function metadataToOptimistOptions(metadata: CommandData): NormalizedMinimistOpts {
+export function metadataToMinimistOptions(metadata: CommandData): NormalizedMinimistOpts {
   let options: NormalizedMinimistOpts = {
     string: [],
     boolean: [],
