@@ -22,7 +22,7 @@ export class Client implements IClient {
   }
 
   async do(req: superagent.Request): Promise<APIResponseSuccess> {
-    let res = await req;
+    let res = await Promise.resolve(req); // TODO: should be able to just do `await req`
 
     if (res.type !== CONTENT_TYPE_JSON) {
       throw ERROR_UNKNOWN_CONTENT_TYPE;
