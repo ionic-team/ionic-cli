@@ -33,7 +33,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   const project = new Project('.');
   const session = new Session(config, client);
 
-  let command = commands.resolve(argv._);
+  let [inputs, command] = commands.resolve(argv._);
+  argv._ = inputs;
 
   if (!command) {
     command = commands.get(defaultCommand);
@@ -45,7 +46,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 
   try {
     await command.execute({
-      argv: pargv,
+      argv,
       commands,
       client,
       config,

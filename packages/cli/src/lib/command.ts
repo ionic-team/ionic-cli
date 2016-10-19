@@ -29,32 +29,28 @@ export interface NormalizedMinimistOpts extends MinimistOpts {
 }
 
 export class CommandMap extends Map<string, ICommand> implements ICommandMap {
-  resolve(argv: string[]): ICommand | undefined {
+  resolve(argv: string[]): [string[], ICommand | undefined] {
     const command = this.get(argv[0]);
 
     if (command) {
-      return command;
+      return [argv.slice(1), command];
     }
 
     if (argv[0].indexOf(':') === -1) {
-      return undefined;
+      return [argv.slice(1), undefined];
     }
 
     const [pluginName, pluginCommand] = argv[0].split(':');
     const loader = new PluginLoader();
 
-    function _resolve(argv: string[], commands: CommandMap): ICommand | undefined {
+    function _resolve(argv: string[], commands: CommandMap): [string[], ICommand | undefined] {
       const command = commands.get(argv[0]);
 
-      if (!command) {
-        return undefined;
-      }
-
-      if (argv.length > 1 && command.metadata.subcommands && command.metadata.subcommands.has(argv[1])) {
+      if (command && argv.length > 1 && command.metadata.subcommands && command.metadata.subcommands.has(argv[1])) {
         return _resolve(argv.slice(1), command.metadata.subcommands);
       }
 
-      return command;
+      return [argv.slice(1), command];
     }
 
     try {
@@ -93,7 +89,7 @@ export abstract class Command {
     this.env = env;
 
     const options = metadataToOptimistOptions(this.metadata);
-    const argv = minimist(this.env.argv.slice(3), options);
+    const argv = this.env.argv;
 
     try {
       validateInputs(argv._, this.metadata, new Set([validators.required]));
