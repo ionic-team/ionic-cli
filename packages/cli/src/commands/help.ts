@@ -21,10 +21,17 @@ import { Command, CommandMetadata } from '../lib/command';
 })
 export default class HelpCommand extends Command implements ICommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const command = this.env.commands.get(inputs[0]) || this.env.commands.get('help');
+    const [argv, command] = this.env.commands.resolve(inputs, { stopOnUnknown: true });
 
     if (command) {
       this.env.log.msg(formatCommandHelp(command.metadata));
+    } else {
+      if (argv.length > 0) {
+        this.env.log.error(`Command '${argv[0]}' not found.`);
+      } else {
+        this.env.log.error(`Command '${this.metadata.name}' needs a single argument.`);
+        this.env.log.msg(formatCommandHelp(this.metadata));
+      }
     }
   }
 }

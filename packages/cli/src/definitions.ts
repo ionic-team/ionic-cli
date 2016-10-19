@@ -104,7 +104,7 @@ export interface IConfig {
 
 export interface CommandEnvironment {
   argv: minimist.ParsedArgs,
-  commands: Map<string, ICommand>;
+  commands: ICommandMap;
   client: IClient;
   config: IConfig;
   log: ILogger;
@@ -121,7 +121,7 @@ export interface ICommand {
 }
 
 export interface ICommandMap extends Map<string, ICommand> {
-  resolve(argv: string[]): [string[], ICommand | undefined];
+  resolve(argv: string[], opts?: { stopOnUnknown: boolean }): [string[], ICommand | undefined];
 }
 
 export type APIResponse = APIResponseSuccess | APIResponseError;

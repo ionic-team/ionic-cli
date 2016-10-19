@@ -6,13 +6,17 @@ import * as chalk from 'chalk';
 
 import getCommands from './commands';
 import { Client } from './lib/api';
-import { Command, CommandMetadata } from './lib/command';
+import { Command, CommandMap, CommandMetadata } from './lib/command';
 import { Config } from './lib/config';
 import { Project } from './lib/project';
 import { Session } from './lib/session';
 import { Logger } from './lib/utils/logger';
 
-export { Command as Command, CommandMetadata as CommandMetadata }
+export {
+  Command as Command,
+  CommandMap as CommandMap,
+  CommandMetadata as CommandMetadata
+}
 
 const defaultCommand = 'help';
 

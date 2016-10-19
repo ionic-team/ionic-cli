@@ -29,15 +29,19 @@ export interface NormalizedMinimistOpts extends MinimistOpts {
 }
 
 export class CommandMap extends Map<string, ICommand> implements ICommandMap {
-  resolve(argv: string[]): [string[], ICommand | undefined] {
+  resolve(argv: string[], opts: { stopOnUnknown?: boolean } = {}): [string[], ICommand | undefined] {
+    if (opts.stopOnUnknown === undefined) {
+      opts.stopOnUnknown = false;
+    }
+
     const command = this.get(argv[0]);
 
     if (command) {
       return [argv.slice(1), command];
     }
 
-    if (argv[0].indexOf(':') === -1) {
-      return [argv.slice(1), undefined];
+    if (argv.length === 0 || argv[0].indexOf(':') === -1) {
+      return [argv, undefined];
     }
 
     const [pluginName, pluginCommand] = argv[0].split(':');
@@ -46,11 +50,19 @@ export class CommandMap extends Map<string, ICommand> implements ICommandMap {
     function _resolve(argv: string[], commands: CommandMap): [string[], ICommand | undefined] {
       const command = commands.get(argv[0]);
 
-      if (command && argv.length > 1 && command.metadata.subcommands && command.metadata.subcommands.has(argv[1])) {
-        return _resolve(argv.slice(1), command.metadata.subcommands);
+      if (!command) {
+        return [argv, undefined];
       }
 
-      return [argv.slice(1), command];
+      if (!command.metadata.subcommands || !command.metadata.subcommands.has(argv[1])) {
+        if (opts.stopOnUnknown && argv.length > 1) {
+          return [argv.slice(1), undefined];
+        }
+
+        return [argv.slice(1), command];
+      }
+
+      return _resolve(argv.slice(1), command.metadata.subcommands);
     }
 
     try {
