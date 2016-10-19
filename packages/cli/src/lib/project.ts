@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import { IProject, ProjectFile } from '../definitions';
-import { readJsonFile, writeJsonFile, validate } from './utils/json';
+import { readJsonFile, writeJsonFile } from './utils/json';
 
 const PROJECT_FILE = 'ionic.config.json';
 
@@ -24,7 +24,7 @@ export class Project implements IProject {
     if (!this.projectFile) {
       let o = await readJsonFile(this.projectFilePath);
 
-      if (validate<ProjectFile>(o, isProjectFile)) {
+      if (isProjectFile(o)) {
         this.projectFile = o;
       } else {
         throw 'todo'; // TODO

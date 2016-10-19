@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 
 import { ConfigFile, IConfig } from '../definitions';
-import { readJsonFile, writeJsonFile, validate } from './utils/json';
+import { readJsonFile, writeJsonFile } from './utils/json';
 
 const CONFIG_FILE = 'config.json';
 const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
@@ -39,7 +39,7 @@ export class Config implements IConfig {
       let o = await readJsonFile(this.configFilePath);
       this.provideDefaults(o);
 
-      if (validate<ConfigFile>(o, isConfigFile)) {
+      if (isConfigFile(o)) {
         this.configFile = o;
       } else {
         throw 'todo'; // TODO

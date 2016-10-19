@@ -41,7 +41,3 @@ export function writeJsonFile(json: { [key: string]: any }, filePath: string): P
     });
   });
 }
-
-export function validate<T extends { [key: string]: any }>(o: { [key: string]: any }, predicate: (j: { [key: string]: any }) => boolean): o is T {
-  return predicate(o);
-}
