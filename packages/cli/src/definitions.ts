@@ -159,3 +159,7 @@ export interface IClient {
   do(res: superagent.Request): Promise<APIResponseSuccess>;
   is<T extends APIResponseSuccess>(r: APIResponseSuccess, predicate: (rs: APIResponseSuccess) => boolean): r is T;
 }
+
+export interface PluginModule {
+  getCommands(): CommandMap;
+}

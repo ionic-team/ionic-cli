@@ -1,9 +1,14 @@
-import { CommandMap } from '../../definitions';
+import { CommandMap, PluginModule } from '../../definitions';
 
 const plugins = new Set<string>(['cloud']);
 
 export const PREFIX = '@ionic/cli-plugin-';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';
+export const ERROR_PLUGIN_INVALID = 'PLUGIN_INVALID';
+
+function isPluginModule(m: any): m is PluginModule {
+  return typeof m.getCommands === 'function';
+}
 
 export class PluginLoader {
 
@@ -13,7 +18,7 @@ export class PluginLoader {
    * Synchronously load a plugin
    */
   load(name: string): CommandMap {
-    let m: () => CommandMap;
+    let m: any;
 
     try {
       m = require(`${this.prefix}${name}`);
@@ -25,7 +30,9 @@ export class PluginLoader {
       throw e;
     }
 
-    // TODO: type check on modules
+    if (!isPluginModule(m)) {
+      throw ERROR_PLUGIN_INVALID;
+    }
 
     return m.getCommands();
   }
