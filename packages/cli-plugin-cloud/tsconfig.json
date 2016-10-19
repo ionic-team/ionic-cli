@@ -5,13 +5,12 @@
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "lib": ["es2015"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "./dist",
     "strictNullChecks": true,
-    "target": "es5"
+    "target": "es6"
   },
   "include": [
     "src/**/*.ts"
