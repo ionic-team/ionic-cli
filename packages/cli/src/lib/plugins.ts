@@ -1,4 +1,4 @@
-import { CommandMap, PluginModule } from '../../definitions';
+import { ICommandMap, PluginModule } from '../definitions';
 
 const plugins = new Set<string>(['cloud']);
 
@@ -17,7 +17,7 @@ export class PluginLoader {
   /**
    * Synchronously load a plugin
    */
-  load(name: string): CommandMap {
+  load(name: string): PluginModule {
     let m: any;
 
     try {
@@ -34,7 +34,7 @@ export class PluginLoader {
       throw ERROR_PLUGIN_INVALID;
     }
 
-    return m.getCommands();
+    return m;
   }
 
   /**

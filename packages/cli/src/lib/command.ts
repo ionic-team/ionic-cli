@@ -12,10 +12,13 @@ import {
   CommandLineOptions,
   CommandOptionType,
   CommandOptionTypeDefaults,
+  ICommand,
+  ICommandMap,
   NormalizedCommandOption,
   Validator
 } from '../definitions';
 
+import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from './plugins';
 import { validators, combine as combineValidators } from './validators';
 
 export interface NormalizedMinimistOpts extends MinimistOpts {
@@ -25,7 +28,56 @@ export interface NormalizedMinimistOpts extends MinimistOpts {
   default: { [key: string]: CommandLineInput }
 }
 
+export class CommandMap extends Map<string, ICommand> implements ICommandMap {
+  resolve(argv: string[]): ICommand | undefined {
+    const command = this.get(argv[0]);
+
+    if (command) {
+      return command;
+    }
+
+    if (argv[0].indexOf(':') === -1) {
+      return undefined;
+    }
+
+    const [pluginName, pluginCommand] = argv[0].split(':');
+    const loader = new PluginLoader();
+
+    function _resolve(argv: string[], commands: CommandMap): ICommand | undefined {
+      const command = commands.get(argv[0]);
+
+      if (!command) {
+        return undefined;
+      }
+
+      if (argv.length > 1 && command.metadata.subcommands && command.metadata.subcommands.has(argv[1])) {
+        return _resolve(argv.slice(1), command.metadata.subcommands);
+      }
+
+      return command;
+    }
+
+    try {
+      return _resolve([pluginCommand, ...argv.slice(1)], loader.load(pluginName).getCommands());
+    } catch (e) {
+      // If command does not exist then lets show them help
+      if (e === ERROR_PLUGIN_NOT_FOUND && loader.has(pluginName)) {
+        throw new Error(`
+  This plugin is not currently installed. Please execute the following to install it.
+
+      ${chalk.bold(`npm install ${loader.prefix}${pluginName}`)}
+  `);
+      }
+
+      throw e;
+    }
+  }
+}
+
 export function CommandMetadata(metadata: CommandData) {
+  // TODO: validate metadata
+  //  - make sure subcommands and inputs don't clash
+
   return function (target: Function) {
     target.prototype.metadata = metadata;
   };

@@ -5,14 +5,15 @@ import IonitronCommand from './ionitron';
 import LoginCommand from './login';
 import StartCommand from './start';
 import VersionCommand from './version';
-import { CommandMap, ICommand } from '../definitions';
+import { ICommand, ICommandMap } from '../definitions';
+import { CommandMap } from '../lib/command';
 
 /**
  * List of commands that are available from ionic cli
  * Each command as a 1-to-1 mapping to a module with the same name
  */
-export default function(): CommandMap {
-  let m = new Map<string, ICommand>();
+export default function(): ICommandMap {
+  let m = new CommandMap();
 
   m.set('docs', new DocsCommand());
   m.set('help', new HelpCommand());

@@ -77,6 +77,7 @@ export interface CommandInput {
 export interface CommandData {
   name: string;
   description: string;
+  subcommands?: ICommandMap;
   isProjectTask: boolean;
   inputs?: CommandInput[];
   options?: CommandOption[];
@@ -119,7 +120,9 @@ export interface ICommand {
   run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
 }
 
-export type CommandMap = Map<string, ICommand>;
+export interface ICommandMap extends Map<string, ICommand> {
+  resolve(argv: string[]): ICommand | undefined;
+}
 
 export type APIResponse = APIResponseSuccess | APIResponseError;
 
@@ -161,5 +164,5 @@ export interface IClient {
 }
 
 export interface PluginModule {
-  getCommands(): CommandMap;
+  getCommands(): ICommandMap;
 }
