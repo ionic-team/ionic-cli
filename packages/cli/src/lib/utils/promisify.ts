@@ -15,7 +15,7 @@ export const promisify: Promisify = function(func: any) {
     return new Promise((resolve, reject) => {
       func(...args, (err: any, response: any) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
         resolve(response);
       });
