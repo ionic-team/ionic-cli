@@ -11,11 +11,13 @@ import { Config } from './lib/config';
 import { Project } from './lib/project';
 import { Session } from './lib/session';
 import { Logger } from './lib/utils/logger';
+import { promisify } from './lib/utils/promisify';
 
 export {
   Command as Command,
   CommandMap as CommandMap,
-  CommandMetadata as CommandMetadata
+  CommandMetadata as CommandMetadata,
+  promisify as promisify
 }
 
 const defaultCommand = 'help';
