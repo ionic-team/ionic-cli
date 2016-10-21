@@ -33,7 +33,7 @@ export class Task {
     if (!this.started) {
       this.intervalId = setInterval(() => {
         this.bottomBar.updateBottomBar(`${chalk.bold(this.spinner.frame())} ${this.msg}`);
-      }, 100);
+      }, 50);
     }
   }
 
