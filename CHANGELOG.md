@@ -1,3 +1,11 @@
+<a name="2.1.2"></a>
+## [2.1.2](https://github.com/driftyco/ionic-cli/compare/v2.1.1...v2.1.2) (2016-10-21)
+
+### Bug Fixes
+
+chore(): increment ionic-app-lib dependency to 2.1.2 to get latests fixes. ([5565e5d](https://github.com/driftyco/ionic-cli/commit/5565e5d))
+
+
 <a name="2.1.1"></a>
 ## [2.1.1](https://github.com/driftyco/ionic-cli/compare/v2.1.0...v2.1.1) (2016-10-14)
 
