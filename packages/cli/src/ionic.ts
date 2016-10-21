@@ -12,11 +12,14 @@ import { Project } from './lib/project';
 import { Session } from './lib/session';
 import { Logger } from './lib/utils/logger';
 import { promisify } from './lib/utils/promisify';
+import { Task, TaskChain } from './lib/utils/task';
 
 export {
   Command as Command,
   CommandMap as CommandMap,
   CommandMetadata as CommandMetadata,
+  Task as Task,
+  TaskChain as TaskChain,
   promisify as promisify
 }
 
@@ -59,6 +62,9 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       client,
       config,
       log,
+      modules: {
+        inquirer
+      },
       project,
       session
     });

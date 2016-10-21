@@ -8,6 +8,7 @@ import {
   CommandMetadata,
   ICommand,
   ICommandMap,
+  TaskChain,
   promisify
 } from '@ionic/cli';
 
@@ -21,8 +22,8 @@ interface SSHGenerateResponse extends APIResponseSuccess {
 }
 
 function isSSHGenerateResponse(r: SSHGenerateResponse): r is SSHGenerateResponse {
-  return r.data['key'] !== undefined
-    && r.data['pubkey'] !== undefined;
+  return r.data.key !== undefined
+    && r.data.pubkey !== undefined;
 }
 
 @CommandMetadata({
@@ -44,19 +45,27 @@ function isSSHGenerateResponse(r: SSHGenerateResponse): r is SSHGenerateResponse
 })
 export class SSHGenerateCommand extends Command implements ICommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let keyPath = options['key-path'] ? String(options['key-path']) : 'id_rsa';
-    let pubkeyPath = options['pubkey-path'] ? String(options['pubkey-path']) : 'id_rsa.pub';
+    const keyPath = options['key-path'] ? String(options['key-path']) : 'id_rsa';
+    const pubkeyPath = options['pubkey-path'] ? String(options['pubkey-path']) : 'id_rsa.pub';
 
-    let req = this.env.client.make('POST', '/apps/sshkeys/generate').send({});
-    let res = await this.env.client.do(req);
+    const tasks = new TaskChain();
+
+    tasks.next('generating ssh keys');
+
+    const req = this.env.client.make('POST', '/apps/sshkeys/generate').send({});
+    const res = await this.env.client.do(req);
 
     if (!this.env.client.is<SSHGenerateResponse>(res, isSSHGenerateResponse)) {
       throw 'todo'; // TODO
     }
 
+    tasks.next('writing ssh keys');
+
     await Promise.all([
       fsWriteFile(keyPath, res.data.key),
       fsWriteFile(pubkeyPath, res.data.pubkey)
     ]);
+
+    tasks.end();
   }
 }

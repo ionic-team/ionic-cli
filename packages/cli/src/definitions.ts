@@ -108,6 +108,9 @@ export interface CommandEnvironment {
   client: IClient;
   config: IConfig;
   log: ILogger;
+  modules: {
+    inquirer: typeof inquirer
+  },
   project: IProject;
   session: ISession;
 }
