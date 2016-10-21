@@ -17,6 +17,7 @@ export class Client implements IClient {
 
   make(method: string, path: string): superagent.Request {
     return superagent(method, `${this.host}${path}`)
+      .timeout(10000) // 10 second timeout
       .set('Content-Type', CONTENT_TYPE_JSON)
       .set('Accept', CONTENT_TYPE_JSON);
   }
