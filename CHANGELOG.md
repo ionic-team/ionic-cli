@@ -3,7 +3,7 @@
 
 ### Bug Fixes
 
-chore(): increment ionic-app-lib dependency to 2.1.2 to get latests fixes. ([5565e5d](https://github.com/driftyco/ionic-cli/commit/5565e5d))
+* increment ionic-app-lib dependency to 2.1.2 to get latests fixes. ([5565e5d](https://github.com/driftyco/ionic-cli/commit/5565e5d))
 
 
 <a name="2.1.1"></a>
