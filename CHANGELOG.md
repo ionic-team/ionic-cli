@@ -1,9 +1,19 @@
-<a name="2.1.2"></a>
-## [2.1.2](https://github.com/driftyco/ionic-cli/compare/v2.1.1...v2.1.2) (2016-10-21)
+<a name="2.1.3"></a>
+## [2.1.3](https://github.com/driftyco/ionic-cli/compare/v2.1.2...v2.1.3) (2016-10-21)
+
 
 ### Bug Fixes
 
 * increment ionic-app-lib dependency to 2.1.2 to get latests fixes. ([5565e5d](https://github.com/driftyco/ionic-cli/commit/5565e5d))
+
+
+<a name="2.1.2"></a>
+## [2.1.2](https://github.com/driftyco/ionic-cli/compare/v2.1.1...v2.1.2) (2016-10-18)
+
+
+### Bug Fixes
+
+* use an environment variable to force colors instead of using the --colors flag. ([#1557](https://github.com/driftyco/ionic-cli/issues/1557)) ([cdbeef6](https://github.com/driftyco/ionic-cli/commit/cdbeef6))
 
 
 <a name="2.1.1"></a>
