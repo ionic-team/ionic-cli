@@ -8,6 +8,8 @@ const FRAMES = process.platform === 'win32' ?
   ['-', '\\', '|', '/'] :
   ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 
+export const TASKS: Task[] = [];
+
 class Spinner {
   public i: number = 0;
 
@@ -27,6 +29,7 @@ export class Task {
   constructor(public msg: string) {
     this.spinner = new Spinner();
     this.bottomBar = new inquirer.ui.BottomBar();
+    TASKS.push(this);
   }
 
   start(): void {

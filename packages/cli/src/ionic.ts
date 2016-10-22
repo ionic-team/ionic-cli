@@ -12,7 +12,7 @@ import { Project } from './lib/project';
 import { Session } from './lib/session';
 import { Logger } from './lib/utils/logger';
 import { promisify } from './lib/utils/promisify';
-import { Task, TaskChain } from './lib/utils/task';
+import { TASKS, Task, TaskChain } from './lib/utils/task';
 
 export {
   Command as Command,
@@ -24,6 +24,12 @@ export {
 }
 
 const defaultCommand = 'help';
+
+function cleanup() {
+  for (let task of TASKS) {
+    task.clear();
+  }
+}
 
 export async function run(pargv: string[], env: { [k: string]: string }) {
 
@@ -72,6 +78,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     log.error(e);
     // process.exit(1); // TODO
   }
+
+  cleanup();
 
   await config.save();
 }
