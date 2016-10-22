@@ -15,6 +15,7 @@ describe('orderedListOfCommands', function() {
         return !stat.isDirectory();
       })
       .filter(function(file) {
+
         // stats is private to us, so ignore it
         return file !== 'stats.js';
       })

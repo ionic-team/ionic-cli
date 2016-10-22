@@ -39,8 +39,8 @@ describe('setup command', function() {
       // Expect failure
       setup.run(null, argv, rawCliArguments).then(function() {
         expect(appLibUtils.fail).toHaveBeenCalledWith('Missing setup task command.', 'setup');
-				done();
-			});
+        done();
+      });
     });
 
     it('should fail if a an invalid command passed', function(done) {
@@ -52,9 +52,9 @@ describe('setup command', function() {
 
       // Expect failure
       setup.run(null, argv, rawCliArguments).then(function() {
-				expect(appLibUtils.fail).toHaveBeenCalledWith('Invalid setup task command: stuff', 'setup');
-				done();
-			});
+        expect(appLibUtils.fail).toHaveBeenCalledWith('Invalid setup task command: stuff', 'setup');
+        done();
+      });
     });
 
     it('should succeed if sass was passed and sassSetup returns success', function(done) {
@@ -71,12 +71,11 @@ describe('setup command', function() {
 
       // Expect success
       setup.run(null, argv, rawCliArguments).then(function() {
-				expect(appLibSetup.sassSetup).toHaveBeenCalledWith(dir);
-				expect(log.info).toHaveBeenCalled();
-				expect(log.error).not.toHaveBeenCalled();
-				done();
-			});
-
+        expect(appLibSetup.sassSetup).toHaveBeenCalledWith(dir);
+        expect(log.info).toHaveBeenCalled();
+        expect(log.error).not.toHaveBeenCalled();
+        done();
+      });
     });
 
     it('should fail if sass was passed and sassSetup returns an error', function(done) {
@@ -93,11 +92,11 @@ describe('setup command', function() {
 
       // Expect success
       setup.run(null, argv, rawCliArguments).then(function() {
-				expect(appLibSetup.sassSetup).toHaveBeenCalledWith(dir);
-				expect(log.info).not.toHaveBeenCalled();
-				expect(log.error).toHaveBeenCalled();
-				done();
-			});
+        expect(appLibSetup.sassSetup).toHaveBeenCalledWith(dir);
+        expect(log.info).not.toHaveBeenCalled();
+        expect(log.error).toHaveBeenCalled();
+        done();
+      });
     });
   });
 });
