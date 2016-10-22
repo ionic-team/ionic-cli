@@ -1,11 +1,15 @@
 export * from './definitions';
 
+export { isAPIResponseSuccess, isAPIResponseError } from './lib/http';
+
 import * as inquirer from 'inquirer';
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 
+import { SuperAgentError } from './definitions';
+
 import getCommands from './commands';
-import { Client } from './lib/api';
+import { Client, formatError as formatSuperAgentError } from './lib/http';
 import { metadataToMinimistOptions, Command, CommandMap, CommandMetadata } from './lib/command';
 import { Config } from './lib/config';
 import { Project } from './lib/project';
@@ -27,8 +31,17 @@ const defaultCommand = 'help';
 
 function cleanup() {
   for (let task of TASKS) {
+    if (task.running) {
+      task.fail();
+    }
+
     task.clear();
   }
+}
+
+function isSuperAgentError(e: Error): e is SuperAgentError {
+  let err: SuperAgentError = <SuperAgentError>e;
+  return e && err.response && typeof err.response === 'object';
 }
 
 export async function run(pargv: string[], env: { [k: string]: string }) {
@@ -61,6 +74,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     }
   }
 
+  let err: Error | undefined;
+
   try {
     await command.execute({
       argv,
@@ -75,11 +90,18 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       session
     });
   } catch (e) {
-    log.error(e);
-    // process.exit(1); // TODO
+    err = e;
   }
 
   cleanup();
+
+  if (err) {
+    if (isSuperAgentError(err)) {
+      console.error(formatSuperAgentError(err));
+    } else {
+      console.error(err);
+    }
+  }
 
   await config.save();
 }

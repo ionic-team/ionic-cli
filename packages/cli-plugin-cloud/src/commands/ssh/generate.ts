@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 
 import {
+  APIResponse,
   APIResponseSuccess,
   Command,
   CommandLineInputs,
@@ -9,6 +10,7 @@ import {
   ICommand,
   ICommandMap,
   TaskChain,
+  isAPIResponseSuccess,
   promisify
 } from '@ionic/cli';
 
@@ -21,9 +23,10 @@ interface SSHGenerateResponse extends APIResponseSuccess {
   }
 }
 
-function isSSHGenerateResponse(r: SSHGenerateResponse): r is SSHGenerateResponse {
-  return r.data.key !== undefined
-    && r.data.pubkey !== undefined;
+function isSSHGenerateResponse(r: APIResponse): r is SSHGenerateResponse {
+  return isAPIResponseSuccess(r)
+    && typeof r.data['key'] === 'string'
+    && typeof r.data['pubkey'] === 'string';
 }
 
 @CommandMetadata({
@@ -55,7 +58,7 @@ export class SSHGenerateCommand extends Command implements ICommand {
     const req = this.env.client.make('POST', '/apps/sshkeys/generate').send({});
     const res = await this.env.client.do(req);
 
-    if (!this.env.client.is<SSHGenerateResponse>(res, isSSHGenerateResponse)) {
+    if (!isSSHGenerateResponse(res)) {
       throw 'todo'; // TODO
     }
 

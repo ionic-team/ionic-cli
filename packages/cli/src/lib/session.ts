@@ -1,4 +1,12 @@
-import { APIResponseSuccess, IClient, IConfig, ISession } from '../definitions';
+import {
+  APIResponse,
+  APIResponseSuccess,
+  IClient,
+  IConfig,
+  ISession
+} from '../definitions';
+
+import { isAPIResponseSuccess } from './http';
 
 interface LoginResponse extends APIResponseSuccess {
   data: {
@@ -6,8 +14,9 @@ interface LoginResponse extends APIResponseSuccess {
   }
 }
 
-function isLoginResponse(r: LoginResponse) {
-  return r.data.token !== undefined;
+function isLoginResponse(r: APIResponse): r is LoginResponse {
+  let res: LoginResponse = <LoginResponse>r;
+  return isAPIResponseSuccess(res) && typeof res.data.token === 'string';
 }
 
 export class Session implements ISession {
@@ -22,7 +31,7 @@ export class Session implements ISession {
 
     let res = await this.client.do(req); // TODO: Handle errors nicely
 
-    if (!this.client.is<LoginResponse>(res, isLoginResponse)) {
+    if (!isLoginResponse(res)) {
       throw 'todo'; // TODO
     }
 

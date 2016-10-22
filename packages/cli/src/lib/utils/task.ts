@@ -22,8 +22,8 @@ class Spinner {
 
 export class Task {
   public intervalId: NodeJS.Timer;
+  public running: boolean = false;
   protected bottomBar: ui.BottomBar;
-  protected started: boolean = false;
   private spinner: Spinner;
 
   constructor(public msg: string) {
@@ -33,11 +33,13 @@ export class Task {
   }
 
   start(): void {
-    if (!this.started) {
+    if (!this.running) {
       this.intervalId = setInterval(() => {
         this.bottomBar.updateBottomBar(`${chalk.bold(this.spinner.frame())} ${this.msg}`);
       }, 50);
     }
+
+    this.running = true;
   }
 
   clear(): void {
@@ -46,13 +48,18 @@ export class Task {
     this.bottomBar.close();
   }
 
-  succeed(): void {
+  end(): void {
     this.clear();
+    this.running = false;
+  }
+
+  succeed(): void {
+    this.end();
     console.log(`${chalk.green(SUCCESS)} ${this.msg} - done!`);
   }
 
   fail(): void {
-    this.clear();
+    this.end();
     console.error(`${chalk.red(FAILURE)} ${this.msg} - failed!`);
   }
 }
