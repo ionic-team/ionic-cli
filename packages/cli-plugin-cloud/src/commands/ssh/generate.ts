@@ -12,7 +12,6 @@ import {
   CommandMetadata,
   ICON_SUCCESS_GREEN,
   ICommand,
-  ICommandMap,
   TaskChain,
   indent,
   isAPIResponseSuccess,
@@ -30,9 +29,8 @@ interface SSHGenerateResponse extends APIResponseSuccess {
 }
 
 function isSSHGenerateResponse(r: APIResponse): r is SSHGenerateResponse {
-  return isAPIResponseSuccess(r)
-    && typeof r.data['key'] === 'string'
-    && typeof r.data['pubkey'] === 'string';
+  const res: SSHGenerateResponse = <SSHGenerateResponse>r;
+  return isAPIResponseSuccess(r) && typeof res.data.key === 'string' && typeof res.data.pubkey === 'string';
 }
 
 @CommandMetadata({
