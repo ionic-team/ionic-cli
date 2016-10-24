@@ -57,9 +57,6 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   const session = new Session(config, client);
 
   let [inputs, command] = commands.resolve(argv._);
-  const options = metadataToMinimistOptions(command.metadata);
-  argv = minimist(pargv.slice(2), options);
-  argv._ = inputs;
 
   if (!command) {
     command = commands.get(defaultCommand);
@@ -68,6 +65,10 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       throw 'Missing default command.';
     }
   }
+
+  const options = metadataToMinimistOptions(command.metadata);
+  argv = minimist(pargv.slice(2), options);
+  argv._ = inputs;
 
   let err: Error | undefined;
 
