@@ -10,22 +10,17 @@ import { SuperAgentError } from './definitions';
 
 import getCommands from './commands';
 import { Client, formatError as formatSuperAgentError } from './lib/http';
-import { metadataToMinimistOptions, Command, CommandMap, CommandMetadata } from './lib/command';
+import { metadataToMinimistOptions } from './lib/command';
 import { Config } from './lib/config';
 import { Project } from './lib/project';
 import { Session } from './lib/session';
 import { Logger } from './lib/utils/logger';
-import { promisify } from './lib/utils/promisify';
-import { TASKS, Task, TaskChain } from './lib/utils/task';
+import { TASKS } from './lib/utils/task';
 
-export {
-  Command as Command,
-  CommandMap as CommandMap,
-  CommandMetadata as CommandMetadata,
-  Task as Task,
-  TaskChain as TaskChain,
-  promisify as promisify
-}
+export { Command, CommandMap, CommandMetadata } from './lib/command';
+export { indent, prettyPath, ICON_SUCCESS_GREEN, ICON_FAILURE_RED } from './lib/utils/format';
+export { promisify } from './lib/utils/promisify';
+export { Task, TaskChain } from './lib/utils/task';
 
 const defaultCommand = 'help';
 

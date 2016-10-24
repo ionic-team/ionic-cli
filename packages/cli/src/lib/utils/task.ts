@@ -2,8 +2,8 @@ import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
 import ui = inquirer.ui;
 
-const SUCCESS = '✔';
-const FAILURE = '✖';
+import { ICON_SUCCESS_GREEN, ICON_FAILURE_RED } from './format';
+
 const FRAMES = process.platform === 'win32' ?
   ['-', '\\', '|', '/'] :
   ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
@@ -55,12 +55,12 @@ export class Task {
 
   succeed(): void {
     this.end();
-    console.log(`${chalk.green(SUCCESS)} ${this.msg} - done!`);
+    console.log(`${chalk.green(ICON_SUCCESS_GREEN)} ${this.msg} - done!`);
   }
 
   fail(): void {
     this.end();
-    console.error(`${chalk.red(FAILURE)} ${this.msg} - failed!`);
+    console.error(`${chalk.red(ICON_FAILURE_RED)} ${this.msg} - failed!`);
   }
 }
 
