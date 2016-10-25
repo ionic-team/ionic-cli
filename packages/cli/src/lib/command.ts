@@ -100,7 +100,7 @@ export abstract class Command {
     this.env = env;
 
     try {
-      validateInputs(this.env.argv._, this.metadata, new Set([validators.required]));
+      validateInputs(this.env.argv._, this.metadata);
     } catch (e) {
       console.error(chalk.red('>> ') + e);
       return;
@@ -113,63 +113,72 @@ export abstract class Command {
 }
 
 async function collectInputs(argv: string[], metadata: CommandData) {
-  if (metadata.inputs) {
-    let questionsToRemove: number[] = [];
-    const questions = metadataToInquirerQuestions(metadata);
-    const inputIndexByName = new Map<string, number>(
-      metadata.inputs.map((input, i): [string, number] => [input.name, i])
-    );
+  if (!metadata.inputs) {
+    return;
+  }
 
-    if (questions) {
-      for (let question of questions) {
-        let i = inputIndexByName.get(question.name);
+  let questionsToRemove: number[] = [];
+  const questions = metadataToInquirerQuestions(metadata);
+  const inputIndexByName = new Map<string, number>(
+    metadata.inputs.map((input, i): [string, number] => [input.name, i])
+  );
 
-        if (i !== undefined) {
-          let v = argv[i];
+  if (questions) {
+    for (let question of questions) {
+      let i = inputIndexByName.get(question.name);
 
-          if (v !== undefined) {
-            questionsToRemove.push(i);
-          }
+      if (i !== undefined) {
+        let v = argv[i];
+
+        if (v !== undefined) {
+          questionsToRemove.push(i);
         }
       }
+    }
 
-      for (let i of questionsToRemove.sort((a, b) => b - a)) {
-        questions.splice(i, 1);
-      }
+    for (let i of questionsToRemove.sort((a, b) => b - a)) {
+      questions.splice(i, 1);
+    }
 
-      const answers = await inquirer.prompt(questions);
+    const answers = await inquirer.prompt(questions);
 
-      for (let name in answers) {
-        let i = inputIndexByName.get(name);
+    for (let name in answers) {
+      let i = inputIndexByName.get(name);
 
-        if (i !== undefined) {
-          argv[i] = String(answers[name]);
-        }
+      if (i !== undefined) {
+        argv[i] = String(answers[name]);
       }
     }
   }
 }
 
-function validateInputs(argv: string[], metadata: CommandData, skip: Set<Validator> = new Set<Validator>()) {
-  if (metadata.inputs) {
-    for (let i in metadata.inputs) {
-      let input = metadata.inputs[i];
+function validateInputs(argv: string[], metadata: CommandData) {
+  if (!metadata.inputs) {
+    return;
+  }
 
-      if (input.validators) {
-        for (let validator of input.validators) {
-          // If we're supposed to skip the 'required' validator and the
-          // argument has no value, then we can pass validation because later
-          // validators will fail on an empty value.
-          if (skip.has(validators.required) && !argv[i]) {
-            continue;
-          }
+  for (let i in metadata.inputs) {
+    const input = metadata.inputs[i];
+    const skip = new Set<Validator>();
 
-          if (!skip.has(validator)) {
-            let r = validator(argv[i]);
+    if (input.prompt) {
+      skip.add(validators.required);
+    }
 
-            if (r !== true) {
-              throw r;
-            }
+    if (input.validators) {
+      for (let validator of input.validators) {
+        // If we're supposed to skip the 'required' validator and the
+        // argument has no value, then we can pass validation because later
+        // validators will fail on an empty value.
+        if (skip.has(validators.required) && !argv[i]) {
+          continue;
+        }
+
+        if (!skip.has(validator)) {
+          let r = validator(argv[i], input.name);
+
+          if (r !== true) {
+            throw r;
           }
         }
       }

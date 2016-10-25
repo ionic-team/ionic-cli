@@ -3,7 +3,6 @@ import * as os from 'os';
 import * as path from 'path';
 
 import * as chalk from 'chalk';
-
 import * as SSHConfig from 'ssh-config';
 
 import {
@@ -13,7 +12,8 @@ import {
   CommandMetadata,
   ICommand,
   indent,
-  promisify
+  promisify,
+  validators
 } from '@ionic/cli';
 
 import { diffPatch } from '../../utils/diff';
@@ -32,7 +32,8 @@ function isConfigDirective(entry: SSHConfig.Config): entry is SSHConfig.ConfigDi
   inputs: [
     {
       name: 'key-path',
-      description: 'Location of private key file to use'
+      description: 'Location of private key file to use',
+      validators: [validators.required]
     },
   ],
   options: [

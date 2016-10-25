@@ -18,9 +18,9 @@ import { TASKS } from './lib/utils/task';
 
 export { Command, CommandMap, CommandMetadata } from './lib/command';
 export { indent, prettyPath, ICON_SUCCESS_GREEN, ICON_FAILURE_RED } from './lib/utils/format';
-export { readLines, writeLines } from './lib/utils/fs';
 export { promisify } from './lib/utils/promisify';
 export { Task, TaskChain } from './lib/utils/task';
+export { validators } from './lib/validators';
 
 const defaultCommand = 'help';
 

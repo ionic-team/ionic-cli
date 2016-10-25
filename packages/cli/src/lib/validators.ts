@@ -1,18 +1,27 @@
-import { Validator, Validators } from '../definitions';
+import * as chalk from 'chalk';
 
+import { Validator, Validators } from '../definitions';
 import { isValidEmail } from './utils';
 
 export const validators: Validators = {
-  required: function(input: string): boolean | string {
+  required: function(input: string, key?: string): boolean | string {
     if (!input) {
-      return 'Must not be empty.';
+      if (key) {
+        return `${chalk.bold(key)} must not be empty.`;
+      } else {
+        return 'Must not be empty';
+      }
     }
 
     return true;
   },
-  email: function(input: string): boolean | string {
+  email: function(input: string, key?: string): boolean | string {
     if (!isValidEmail(input)) {
-      return 'Invalid email address.';
+      if (key) {
+        return `${chalk.bold(key)} is an invalid email address.`;
+      } else {
+        return 'Invalid email address';
+      }
     }
 
     return true;
