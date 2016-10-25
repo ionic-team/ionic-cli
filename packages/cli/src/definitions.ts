@@ -85,8 +85,11 @@ export interface CommandData {
   options?: CommandOption[];
 }
 
+export type TokenType = 'user';
+
 export interface ISession {
   login(email: string, password: string): Promise<void>;
+  getToken(type?: TokenType): Promise<string>;
 }
 
 export interface ConfigFile {

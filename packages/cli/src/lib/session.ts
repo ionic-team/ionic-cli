@@ -5,7 +5,8 @@ import {
   APIResponseSuccess,
   IClient,
   IConfig,
-  ISession
+  ISession,
+  TokenType
 } from '../definitions';
 
 import { FatalException } from './errors';
@@ -41,5 +42,15 @@ export class Session implements ISession {
     let c = await this.config.load();
 
     c.token = res.data.token;
+  }
+
+  async getToken(type: TokenType = 'user'): Promise<string> {
+    const c = await this.config.load();
+
+    if (!c.token) {
+      throw new FatalException(`You are not logged in! Run '${chalk.bold('ionic login')}'.`);
+    }
+
+    return c.token;
   }
 }

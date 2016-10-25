@@ -58,7 +58,9 @@ export class SSHGenerateCommand extends Command implements ICommand {
 
     tasks.next('generating ssh keys');
 
-    const req = this.env.client.make('POST', '/apps/sshkeys/generate').send({});
+    const req = this.env.client.make('POST', '/apps/sshkeys/generate')
+      .set('Authorization', `Bearer ${await this.env.session.getToken('user')}`)
+      .send({});
     const res = await this.env.client.do(req);
 
     if (!isSSHGenerateResponse(res)) {
