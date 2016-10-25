@@ -1,8 +1,10 @@
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
+import * as superagent from 'superagent';
 import { Opts as MinimistOpts } from 'minimist';
 
 import {
+  APIResponse,
   CommandData,
   CommandEnvironment,
   CommandOption,
@@ -17,6 +19,8 @@ import {
   Validator
 } from '../definitions';
 
+import { FatalException } from './errors';
+import { createFatalAPIFormat, formatAPIResponse } from './http';
 import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from './plugins';
 import { validators, combine as combineValidators } from './validators';
 
@@ -109,6 +113,14 @@ export abstract class Command {
     await collectInputs(this.env.argv._, this.metadata);
 
     return this.run(this.env.argv._, this.env.argv);
+  }
+
+  exit(msg: string, code: number = 1): FatalException {
+    return new FatalException(msg, code);
+  }
+
+  exitAPIFormat(req: superagent.SuperAgentRequest, res: APIResponse): FatalException {
+    return createFatalAPIFormat(req, res);
   }
 }
 

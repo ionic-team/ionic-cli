@@ -62,7 +62,7 @@ export class SSHGenerateCommand extends Command implements ICommand {
     const res = await this.env.client.do(req);
 
     if (!isSSHGenerateResponse(res)) {
-      throw 'todo'; // TODO
+      throw this.exitAPIFormat(req, res);
     }
 
     tasks.next('writing ssh keys');

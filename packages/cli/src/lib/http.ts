@@ -11,6 +11,8 @@ import {
   SuperAgentError
 } from '../definitions';
 
+import { FatalException } from './errors';
+
 const FORMAT_ERROR_BODY_MAX_LENGTH = 1000;
 const CONTENT_TYPE_JSON = 'application/json';
 export const ERROR_UNKNOWN_CONTENT_TYPE = 'UNKNOWN_CONTENT_TYPE';
@@ -45,7 +47,8 @@ export class Client implements IClient {
     const r = Client.transform(res);
 
     if (isAPIResponseError(r)) {
-      throw 'todo'; // TODO
+      throw new FatalException('API request was successful, but the response output format was that of an error.\n'
+                             + formatAPIError(r));
     }
 
     return r;
@@ -62,6 +65,11 @@ export function isAPIResponseError(r: APIResponse): r is APIResponseError {
   return r && res.error && typeof res.error === 'object';
 }
 
+export function createFatalAPIFormat(req: superagent.SuperAgentRequest, res: APIResponse): FatalException {
+  return new FatalException('API request was successful, but the response format was unrecognized.\n'
+                          + formatAPIResponse(req, res));
+}
+
 export function formatError(e: SuperAgentError): string {
   const res = e.response;
   const req = res.request;
@@ -71,13 +79,7 @@ export function formatError(e: SuperAgentError): string {
 
   try {
     const r = Client.transform(res);
-
-    if (isAPIResponseSuccess(r)) {
-      f += util.inspect(r);
-    } else {
-      f += `API Error ${statusCode}: ${req.method} ${req.url}\n`;
-      f += util.inspect(r.error);
-    }
+    f += formatAPIResponse(req, r);
   } catch (e) {
     f += `HTTP Error ${statusCode}: ${req.method} ${req.url}\n`;
     // TODO: do this only if verbose?
@@ -89,4 +91,17 @@ export function formatError(e: SuperAgentError): string {
   }
 
   return chalk.bold(chalk.red(f));
+}
+
+export function formatAPIResponse(req: superagent.SuperAgentRequest, r: APIResponse) {
+  if (isAPIResponseSuccess(r)) {
+    return util.inspect(r);
+  } else {
+    return formatAPIError(req, r);
+  }
+}
+
+export function formatAPIError(req: superagent.SuperAgentRequest, r: APIResponseError): string {
+  return `API Error ${r.meta.status}: ${req.method} ${req.url}\n`
+       + util.inspect(r.error);
 }

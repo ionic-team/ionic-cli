@@ -1,7 +1,11 @@
 import * as os from 'os';
 import * as path from 'path';
 
+import * as chalk from 'chalk';
+
 import { ConfigFile, IConfig } from '../definitions';
+import { FatalException } from './errors';
+import { prettyPath } from './utils/format';
 import { readJsonFile, writeJsonFile } from './utils/json';
 
 const CONFIG_FILE = 'config.json';
@@ -42,7 +46,8 @@ export class Config implements IConfig {
       if (isConfigFile(o)) {
         this.configFile = o;
       } else {
-        throw 'todo'; // TODO
+        throw new FatalException(`The config file (${chalk.bold(prettyPath(this.configFilePath))}) has an unrecognized format.\n`
+                               + `Try deleting the file.`);
       }
     }
 

@@ -9,7 +9,7 @@ export const validators: Validators = {
       if (key) {
         return `${chalk.bold(key)} must not be empty.`;
       } else {
-        return 'Must not be empty';
+        return 'Must not be empty.';
       }
     }
 
@@ -20,7 +20,7 @@ export const validators: Validators = {
       if (key) {
         return `${chalk.bold(key)} is an invalid email address.`;
       } else {
-        return 'Invalid email address';
+        return 'Invalid email address.';
       }
     }
 

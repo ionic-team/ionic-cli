@@ -1,3 +1,5 @@
+import * as chalk from 'chalk';
+
 import {
   APIResponse,
   APIResponseSuccess,
@@ -6,7 +8,8 @@ import {
   ISession
 } from '../definitions';
 
-import { isAPIResponseSuccess } from './http';
+import { FatalException } from './errors';
+import { createFatalAPIFormat, isAPIResponseSuccess } from './http';
 
 interface LoginResponse extends APIResponseSuccess {
   data: {
@@ -32,7 +35,7 @@ export class Session implements ISession {
     let res = await this.client.do(req); // TODO: Handle errors nicely
 
     if (!isLoginResponse(res)) {
-      throw 'todo'; // TODO
+      throw createFatalAPIFormat(req, res);
     }
 
     let c = await this.config.load();

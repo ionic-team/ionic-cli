@@ -1,6 +1,10 @@
 import * as path from 'path';
 
+import * as chalk from 'chalk';
+
 import { IProject, ProjectFile } from '../definitions';
+import { FatalException } from './errors';
+import { prettyPath } from './utils/format';
 import { readJsonFile, writeJsonFile } from './utils/json';
 
 const PROJECT_FILE = 'ionic.config.json';
@@ -27,7 +31,8 @@ export class Project implements IProject {
       if (isProjectFile(o)) {
         this.projectFile = o;
       } else {
-        throw 'todo'; // TODO
+        throw new FatalException(`The project file (${chalk.bold(prettyPath(this.projectFilePath))}) has an unrecognized format.\n`
+                               + `Try recreating or deleting the file.`);
       }
     }
 
