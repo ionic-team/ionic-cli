@@ -1,4 +1,7 @@
 import * as util from 'util';
+
+import * as chalk from 'chalk';
+
 import { ILogger, LoggerOptions } from '../../definitions';
 
 const LEVELS = ['trace', 'debug', 'info', 'warn', 'error'];
@@ -53,10 +56,10 @@ export class Logger implements ILogger {
         console.info(util.format.apply(util, args));
         break;
       case 'warn':
-        console.warn(util.format.apply(util, args));
+        console.warn(util.format.apply(util, [chalk.bold(chalk.yellow('[WARN]')), ...args]));
         break;
       case 'error':
-        console.error(util.format.apply(util, args));
+        console.error(util.format.apply(util, [chalk.bold(chalk.red('[ERROR]')), ...args]));
         break;
       }
     }
