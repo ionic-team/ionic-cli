@@ -1,5 +1,5 @@
-<a name="2.1.3"></a>
-## [2.1.3](https://github.com/driftyco/ionic-cli/compare/v2.1.2...v2.1.3) (2016-10-21)
+<a name="2.1.4"></a>
+## [2.1.4](https://github.com/driftyco/ionic-cli/compare/v2.1.2...v2.1.4) (2016-10-21)
 
 
 ### Bug Fixes
