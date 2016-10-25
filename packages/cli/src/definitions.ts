@@ -162,8 +162,10 @@ export interface APIResponseSuccess {
   meta: APIResponseMeta;
 }
 
+export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' | 'HEAD' | 'OPTIONS';
+
 export interface IClient {
-  make(method: string, path: string): superagent.Request;
+  make(method: HttpMethod, path: string): superagent.Request;
   do(res: superagent.Request): Promise<APIResponseSuccess>;
 }
 

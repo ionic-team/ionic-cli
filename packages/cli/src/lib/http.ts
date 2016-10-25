@@ -8,6 +8,7 @@ import {
   APIResponseError,
   APIResponseSuccess,
   IClient,
+  HttpMethod,
   SuperAgentError
 } from '../definitions';
 
@@ -35,7 +36,7 @@ export class Client implements IClient {
     return j;
   }
 
-  make(method: string, path: string): superagent.Request {
+  make(method: HttpMethod, path: string): superagent.Request {
     return superagent(method, `${this.host}${path}`)
       .timeout(10000) // 10 second timeout
       .set('Content-Type', CONTENT_TYPE_JSON)
@@ -48,7 +49,7 @@ export class Client implements IClient {
 
     if (isAPIResponseError(r)) {
       throw new FatalException('API request was successful, but the response output format was that of an error.\n'
-                             + formatAPIError(r));
+                             + formatAPIError(req, r));
     }
 
     return r;
