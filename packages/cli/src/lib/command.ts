@@ -21,10 +21,10 @@ import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from './plugins';
 import { validators, combine as combineValidators } from './validators';
 
 export interface NormalizedMinimistOpts extends MinimistOpts {
-  string: string[],
-  boolean: string[],
-  alias: { [key: string]: string[] },
-  default: { [key: string]: CommandLineInput }
+  string: string[];
+  boolean: string[];
+  alias: { [key: string]: string[] };
+  default: { [key: string]: CommandLineInput };
 }
 
 export class CommandMap extends Map<string, ICommand> implements ICommandMap {
@@ -101,7 +101,7 @@ export abstract class Command {
 
     try {
       validateInputs(this.env.argv._, this.metadata, new Set([validators.required]));
-    } catch(e) {
+    } catch (e) {
       console.error(chalk.red('>> ') + e);
       return;
     }

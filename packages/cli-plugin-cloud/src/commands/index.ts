@@ -1,4 +1,4 @@
-import { CommandMap, ICommand, ICommandMap } from '@ionic/cli';
+import { CommandMap, ICommandMap } from '@ionic/cli';
 import { SSHCommand } from './ssh';
 
 /**

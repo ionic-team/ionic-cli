@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import * as readline from 'readline';
 
 import * as SSHConfig from 'ssh-config';
 
@@ -11,23 +10,14 @@ import {
   CommandLineOptions,
   CommandMetadata,
   ICommand,
-  TaskChain,
   indent,
-  isAPIResponseSuccess,
-  prettyPath,
-  promisify,
-  readLines,
-  writeLines
+  promisify
 } from '@ionic/cli';
 
 import { diffPatch } from '../../utils/diff';
 
 const fsReadFile = promisify<string, string, string>(fs.readFile);
 const fsWriteFile = promisify<void, string, any, { encoding?: string; mode?: number; flag?: string; }>(fs.writeFile);
-
-function isConfigComment(entry: SSHConfig.Config): entry is SSHConfig.ConfigComment {
-  return entry.type === SSHConfig.COMMENT;
-}
 
 function isConfigDirective(entry: SSHConfig.Config): entry is SSHConfig.ConfigDirective {
   return entry.type === SSHConfig.DIRECTIVE;
@@ -95,7 +85,7 @@ export class SSHUseCommand extends Command implements ICommand {
   protected async loadFile(filepath: string): Promise<string> {
     try {
       return await fsReadFile(filepath, 'utf8');
-    } catch(e) {
+    } catch (e) {
       if (e.code === 'ENOENT') {
         return '';
       }

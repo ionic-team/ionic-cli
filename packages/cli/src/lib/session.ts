@@ -11,7 +11,7 @@ import { isAPIResponseSuccess } from './http';
 interface LoginResponse extends APIResponseSuccess {
   data: {
     token: string;
-  }
+  };
 }
 
 function isLoginResponse(r: APIResponse): r is LoginResponse {

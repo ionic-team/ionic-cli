@@ -94,7 +94,7 @@ export interface ConfigFile {
   token?: string;
   urls: {
     api: string;
-  }
+  };
 }
 
 export interface IConfig {
@@ -105,14 +105,14 @@ export interface IConfig {
 }
 
 export interface CommandEnvironment {
-  argv: minimist.ParsedArgs,
+  argv: minimist.ParsedArgs;
   commands: ICommandMap;
   client: IClient;
   config: IConfig;
   log: ILogger;
   modules: {
     inquirer: typeof inquirer
-  },
+  };
   project: IProject;
   session: ISession;
 }

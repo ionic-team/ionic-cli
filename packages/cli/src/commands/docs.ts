@@ -17,17 +17,6 @@ import { Command, CommandMetadata } from '../lib/command';
 })
 export default class DocsCommand extends Command implements ICommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const topic = inputs[0];
-
-    /*
-    if (!topic) {
-      return;
-    }
-    if (topic) === 'ls') {
-      return list;
-    }
-    
-    return lookupTopic(topic);
-    */
+    // const topic = inputs[0];
   }
 }

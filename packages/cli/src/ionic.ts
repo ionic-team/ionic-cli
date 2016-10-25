@@ -4,7 +4,6 @@ export { isAPIResponseSuccess, isAPIResponseError } from './lib/http';
 
 import * as inquirer from 'inquirer';
 import * as minimist from 'minimist';
-import * as chalk from 'chalk';
 
 import { SuperAgentError } from './definitions';
 

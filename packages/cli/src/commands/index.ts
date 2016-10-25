@@ -5,7 +5,7 @@ import IonitronCommand from './ionitron';
 import LoginCommand from './login';
 import StartCommand from './start';
 import VersionCommand from './version';
-import { ICommand, ICommandMap } from '../definitions';
+import { ICommandMap } from '../definitions';
 import { CommandMap } from '../lib/command';
 
 /**

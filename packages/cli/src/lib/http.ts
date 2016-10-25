@@ -8,7 +8,6 @@ import {
   APIResponseError,
   APIResponseSuccess,
   IClient,
-  IConfig,
   SuperAgentError
 } from '../definitions';
 
@@ -67,7 +66,6 @@ export function formatError(e: SuperAgentError): string {
   const res = e.response;
   const req = res.request;
   const statusCode = e.response.status;
-  const contentType = e.response.type;
 
   let f = '';
 
@@ -80,7 +78,7 @@ export function formatError(e: SuperAgentError): string {
       f += `API Error ${statusCode}: ${req.method} ${req.url}\n`;
       f += util.inspect(r.error);
     }
-  } catch(e) {
+  } catch (e) {
     f += `HTTP Error ${statusCode}: ${req.method} ${req.url}\n`;
     // TODO: do this only if verbose?
     f += '\n' + res.text.substring(0, FORMAT_ERROR_BODY_MAX_LENGTH);

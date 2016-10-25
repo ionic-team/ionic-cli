@@ -24,7 +24,7 @@ interface SSHGenerateResponse extends APIResponseSuccess {
   data: {
     key: string,
     pubkey: string
-  }
+  };
 }
 
 function isSSHGenerateResponse(r: APIResponse): r is SSHGenerateResponse {

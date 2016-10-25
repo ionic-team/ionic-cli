@@ -23,7 +23,7 @@ export function getCommandInfo(cmd: string, args: string[]): Promise<string> {
       if (code !== 0) {
         return resolve('Not installed');
       }
-      resolve(info.replace('\n',' '));
+      resolve(info.replace('\n', ' '));
     });
   });
 }

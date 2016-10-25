@@ -1,4 +1,4 @@
-import { ICommandMap, PluginModule } from '../definitions';
+import { PluginModule } from '../definitions';
 
 const plugins = new Set<string>(['cloud']);
 
@@ -22,7 +22,7 @@ export class PluginLoader {
 
     try {
       m = require(`${this.prefix}${name}`);
-    } catch(e) {
+    } catch (e) {
       if (e.code === 'MODULE_NOT_FOUND') {
         throw ERROR_PLUGIN_NOT_FOUND;
       }
