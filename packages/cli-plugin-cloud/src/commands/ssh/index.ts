@@ -9,6 +9,7 @@ import {
 } from '@ionic/cli';
 
 import { SSHGenerateCommand } from './generate';
+import { SSHUseCommand } from './use';
 
 @CommandMetadata({
   name: 'ssh',
@@ -17,6 +18,7 @@ import { SSHGenerateCommand } from './generate';
     let m = new CommandMap();
 
     m.set('generate', new SSHGenerateCommand());
+    m.set('use', new SSHUseCommand());
 
     return m;
   },

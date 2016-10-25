@@ -10,10 +10,14 @@
     "noImplicitAny": true,
     "outDir": "./dist",
     "strictNullChecks": true,
-    "target": "es6"
+    "target": "es6",
+    "typeRoots": [
+      "../cli/node_modules/@types"
+    ]
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "types/index.d.ts"
   ],
   "exclude": [
     "node_modules"
