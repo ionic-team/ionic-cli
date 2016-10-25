@@ -79,6 +79,5 @@ export class SSHGenerateCommand extends Command implements ICommand {
     this.env.log.info('A new pair of SSH keys has been downloaded to your computer!\n'
                     + `${indent()}Private Key (${chalk.bold(prettyPath(keyPath))}): Keep this in a safe spot (such as ${chalk.bold('~/.ssh/')}).\n`
                     + `${indent()}Public Key (${chalk.bold(prettyPath(pubkeyPath))}): Give this to all your friends!`);
-
   }
 }

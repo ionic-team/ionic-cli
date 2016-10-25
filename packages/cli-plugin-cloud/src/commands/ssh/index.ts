@@ -10,6 +10,7 @@ import {
 
 import { SSHGenerateCommand } from './generate';
 import { SSHUseCommand } from './use';
+import { SSHAddCommand } from './add';
 
 @CommandMetadata({
   name: 'ssh',
@@ -19,6 +20,7 @@ import { SSHUseCommand } from './use';
 
     m.set('generate', new SSHGenerateCommand());
     m.set('use', new SSHUseCommand());
+    m.set('add', new SSHAddCommand());
 
     return m;
   },
