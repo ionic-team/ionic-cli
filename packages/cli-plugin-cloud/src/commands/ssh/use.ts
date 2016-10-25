@@ -114,12 +114,12 @@ export class SSHUseCommand extends Command implements ICommand {
     const conf = SSHConfig.parse(text);
     const section = conf.find({ Host: host });
 
-    const insert = `${indent(4)}IdentityKey ${keyPath}`;
+    const insert = `${indent(4)}IdentityFile ${keyPath}`;
 
     if (section) {
       const found = section.config.some((line) => {
         if (isConfigDirective(line)) {
-          if (line.param === 'IdentityKey') {
+          if (line.param === 'IdentityFile') {
             line.value = keyPath;
             return true;
           }
