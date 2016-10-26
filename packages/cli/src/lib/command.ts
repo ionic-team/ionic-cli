@@ -32,6 +32,18 @@ export interface NormalizedMinimistOpts extends MinimistOpts {
 }
 
 export class CommandMap extends Map<string, ICommand> implements ICommandMap {
+  set(key: string, value?: ICommand): this {
+    super.set(key, value);
+
+    if (value && value.metadata && value.metadata.aliases && value.metadata.aliases.length > 0) {
+      for (let alias of value.metadata.aliases) {
+        super.set(alias, value);
+      }
+    }
+
+    return this;
+  }
+
   resolve(argv: string[], opts: { stopOnUnknown?: boolean } = {}): [string[], ICommand | undefined] {
     if (opts.stopOnUnknown === undefined) {
       opts.stopOnUnknown = false;

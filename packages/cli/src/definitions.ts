@@ -79,6 +79,7 @@ export interface CommandInput {
 export interface CommandData {
   name: string;
   description: string;
+  aliases?: string[];
   subcommands?: ICommandMap;
   isProjectTask: boolean;
   inputs?: CommandInput[];

@@ -12,6 +12,7 @@ import {
 @CommandMetadata({
   name: 'delete',
   description: 'Delete an SSH public key on Ionic',
+  aliases: ['remove', 'rm'],
   inputs: [
     {
       name: 'key-id',
