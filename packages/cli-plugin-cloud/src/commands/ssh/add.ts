@@ -11,8 +11,6 @@ import {
   CommandLineOptions,
   CommandMetadata,
   ICommand,
-  TaskChain,
-  indent,
   isAPIResponseSuccess,
   prettyPath,
   promisify,
@@ -25,7 +23,7 @@ const fsStat = promisify<fs.Stats, string>(fs.stat);
 interface SSHAddResponse extends APIResponseSuccess {
   data: {
     pubkey: string;
-    annotation: string;
+    id: string;
     created: string;
   };
 }
@@ -34,7 +32,7 @@ function isSSHAddResponse(r: APIResponse): r is SSHAddResponse {
   const res: SSHAddResponse = <SSHAddResponse>r;
   return isAPIResponseSuccess(r)
     && typeof res.data.pubkey === 'string'
-    && typeof res.data.annotation === 'string'
+    && typeof res.data.id === 'string'
     && typeof res.data.created === 'string';
 }
 
@@ -70,7 +68,7 @@ export class SSHAddCommand extends Command implements ICommand {
 
     const words = res.meta.status === 201 ? 'added to' : 'updated on';
 
-    this.env.log.info(`Your public key (${chalk.bold(res.data.annotation)}) has been ${words} Ionic!`);
+    this.env.log.info(`Your public key (${chalk.bold(res.data.id)}) has been ${words} Ionic!`);
   }
 
   async parsePublicKey(pubkeyPath: string): Promise<[boolean, string, string]> {

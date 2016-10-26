@@ -23,6 +23,10 @@ export class Client implements IClient {
   constructor(public host: string) {}
 
   static transform(r: superagent.Response): APIResponse {
+    if (r.status === 204 && !r.body) {
+      r.body = { data: null, meta: { status: 204, version: '', request_id: '' } };
+    }
+
     if (r.type !== CONTENT_TYPE_JSON) {
       throw ERROR_UNKNOWN_CONTENT_TYPE;
     }
