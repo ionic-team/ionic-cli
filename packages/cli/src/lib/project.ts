@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 import { IProject, ProjectFile } from '../definitions';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
-import { readJsonFile, writeJsonFile } from './utils/json';
+import { readJsonFile, writeJsonFile } from './utils/fs';
 
 const PROJECT_FILE = 'ionic.config.json';
 
@@ -40,7 +40,7 @@ export class Project implements IProject {
   }
 
   public async save(projectFile: ProjectFile): Promise<void> {
-    await writeJsonFile(projectFile, this.projectFilePath);
+    await writeJsonFile(this.projectFilePath, projectFile);
     this.projectFile = projectFile;
   }
 }

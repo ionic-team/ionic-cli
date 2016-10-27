@@ -6,7 +6,7 @@ import * as chalk from 'chalk';
 import { ConfigFile, IConfig } from '../definitions';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
-import { readJsonFile, writeJsonFile } from './utils/json';
+import { readJsonFile, writeJsonFile } from './utils/fs';
 
 const CONFIG_FILE = 'config.json';
 const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
@@ -60,7 +60,7 @@ export class Config implements IConfig {
     }
 
     if (configFile) {
-      await writeJsonFile(configFile, this.configFilePath);
+      await writeJsonFile(this.configFilePath, configFile);
     }
   }
 }
