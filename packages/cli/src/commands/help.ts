@@ -24,7 +24,7 @@ export class HelpCommand extends Command {
       this.env.log.msg(formatCommandHelp(command.metadata));
     } else {
       if (argv.length > 0) {
-        this.env.log.error(`Command not found: ${chalk.bold(argv[0])}.`);
+        this.env.log.error(`Command not found: ${chalk.bold(argv.join(' '))}.`);
       } else {
         this.env.log.error(`Command ${chalk.bold(this.metadata.name)} needs a single argument.`);
         this.env.log.msg(formatCommandHelp(this.metadata));
