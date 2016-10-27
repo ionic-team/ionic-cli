@@ -12,6 +12,7 @@ import {
   CommandMetadata,
   ICommand,
   indent,
+  prettyPath,
   promisify,
   validators
 } from '@ionic/cli';
@@ -71,7 +72,7 @@ export class SSHUseCommand extends Command implements ICommand {
       const confirmation = await this.env.inquirer.prompt({
         type: 'confirm',
         name: 'apply',
-        message: `May we make the above change(s) to '${p}'?`
+        message: `May we make the above change(s) to '${prettyPath(p)}'?`
       });
 
       if (!confirmation['apply']) {
