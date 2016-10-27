@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions, ICommand } from '../definitions';
+import { CommandLineInputs, CommandLineOptions } from '../definitions';
 
 import { Command, CommandMetadata } from '../lib/command';
 import { validators } from '../lib/validators';
@@ -27,7 +27,7 @@ import { validators } from '../lib/validators';
   ],
   isProjectTask: false
 })
-export default class LoginCommand extends Command implements ICommand {
+export default class LoginCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let [email, password] = inputs;
 

@@ -80,7 +80,6 @@ export interface CommandData {
   name: string;
   description: string;
   aliases?: string[];
-  subcommands?: ICommandMap;
   isProjectTask: boolean;
   inputs?: CommandInput[];
   options?: CommandOption[];
@@ -106,31 +105,6 @@ export interface IConfig {
 
   load(): Promise<ConfigFile>;
   save(configFile: ConfigFile): Promise<void>;
-}
-
-export interface CommandEnvironment {
-  argv: minimist.ParsedArgs;
-  commands: ICommandMap;
-  client: IClient;
-  config: IConfig;
-  log: ILogger;
-  modules: {
-    inquirer: typeof inquirer
-  };
-  project: IProject;
-  session: ISession;
-}
-
-export interface ICommand {
-  metadata: CommandData;
-  env: CommandEnvironment;
-
-  execute(env: CommandEnvironment): Promise<void>;
-  run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
-}
-
-export interface ICommandMap extends Map<string, ICommand> {
-  resolve(argv: string[], opts?: { stopOnUnknown: boolean }): [string[], ICommand | undefined];
 }
 
 export type APIResponse = APIResponseSuccess | APIResponseError;
@@ -173,6 +147,34 @@ export interface IClient {
   do(res: superagent.Request): Promise<APIResponseSuccess>;
 }
 
-export interface PluginModule {
+export interface IIonicNamespace {
+  run(pargv: string[]): Promise<void>;
+  resolve(argv: string[]): [string[], ICommand | undefined];
+}
+
+export interface CommandEnvironment {
+  pargv: string[];
+  client: IClient;
+  config: IConfig;
+  inquirer: typeof inquirer;
+  log: ILogger;
+  project: IProject;
+  session: ISession;
+}
+
+export interface INamespace {
+  getNamespaces(): INamespaceMap;
   getCommands(): ICommandMap;
 }
+
+export interface ICommand {
+  metadata: CommandData;
+  env: CommandEnvironment;
+  cli: IIonicNamespace;
+
+  execute(cli: IIonicNamespace, env: CommandEnvironment, inputs?: CommandLineInputs): Promise<void>;
+  run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
+}
+
+export interface INamespaceMap extends Map<string, INamespace> {}
+export interface ICommandMap extends Map<string, ICommand> {}

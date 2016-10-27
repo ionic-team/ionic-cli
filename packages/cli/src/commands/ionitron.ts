@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions, ICommand } from '../definitions';
+import { CommandLineInputs, CommandLineOptions } from '../definitions';
 import { Command, CommandMetadata } from '../lib/command';
 
 @CommandMetadata({
@@ -7,7 +7,7 @@ import { Command, CommandMetadata } from '../lib/command';
   options: [],
   isProjectTask: false
 })
-export default class IonitronCommand extends Command implements ICommand {
+export default class IonitronCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     this.env.log.msg(inputs, options);
   }

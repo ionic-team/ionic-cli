@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions, ICommand } from '../definitions';
+import { CommandLineInputs, CommandLineOptions } from '../definitions';
 import { Command, CommandMetadata } from '../lib/command';
 import { gatherEnvironmentInfo } from '../lib/utils/environmentInfo';
 
@@ -7,7 +7,7 @@ import { gatherEnvironmentInfo } from '../lib/utils/environmentInfo';
   description: 'List information about the users runtime environment',
   isProjectTask: false
 })
-export default class InfoCommand extends Command implements ICommand {
+export default class InfoCommand extends Command {
   async run(inputs?: CommandLineInputs, options?: CommandLineOptions): Promise<void> {
     const info = await gatherEnvironmentInfo();
 

@@ -10,7 +10,6 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  ICommand,
   isAPIResponseSuccess,
   prettyPath,
   promisify,
@@ -53,7 +52,7 @@ function isSSHListResponse(r: APIResponse): r is SSHListResponse {
   aliases: ['ls'],
   isProjectTask: false
 })
-export class SSHListCommand extends Command implements ICommand {
+export class SSHListCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const req = this.env.client.make('GET', `/apps/sshkeys`)
       .set('Authorization', `Bearer ${await this.env.session.getToken('user')}`);

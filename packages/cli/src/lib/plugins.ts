@@ -1,4 +1,5 @@
-import { PluginModule } from '../definitions';
+import { INamespace } from '../definitions';
+import { Namespace } from './command';
 
 const plugins = new Set<string>(['cloud']);
 
@@ -6,18 +7,17 @@ export const PREFIX = '@ionic/cli-plugin-';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';
 export const ERROR_PLUGIN_INVALID = 'PLUGIN_INVALID';
 
-function isPluginModule(m: any): m is PluginModule {
-  return typeof m.getCommands === 'function';
+function isNamespace(m: any): m is typeof Namespace {
+  return m.prototype instanceof Namespace; // TODO: is this dangerous?
 }
 
 export class PluginLoader {
-
   readonly prefix = PREFIX;
 
   /**
    * Synchronously load a plugin
    */
-  load(name: string): PluginModule {
+  load(name: string): typeof Namespace {
     let m: any;
 
     try {
@@ -30,11 +30,11 @@ export class PluginLoader {
       throw e;
     }
 
-    if (!isPluginModule(m)) {
+    if (!isNamespace(m.default)) {
       throw ERROR_PLUGIN_INVALID;
     }
 
-    return m;
+    return m.default;
   }
 
   /**
@@ -43,5 +43,4 @@ export class PluginLoader {
   has(name: string): boolean {
     return plugins.has(name);
   }
-
 }

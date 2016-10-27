@@ -1,6 +1,7 @@
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
 import * as superagent from 'superagent';
+import * as minimist from 'minimist';
 import { Opts as MinimistOpts } from 'minimist';
 
 import {
@@ -15,13 +16,15 @@ import {
   CommandOptionTypeDefaults,
   ICommand,
   ICommandMap,
+  IIonicNamespace,
+  INamespace,
+  INamespaceMap,
   NormalizedCommandOption,
   Validator
 } from '../definitions';
 
 import { FatalException } from './errors';
 import { createFatalAPIFormat, formatAPIResponse } from './http';
-import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from './plugins';
 import { validators, combine as combineValidators } from './validators';
 
 export interface NormalizedMinimistOpts extends MinimistOpts {
@@ -31,100 +34,55 @@ export interface NormalizedMinimistOpts extends MinimistOpts {
   default: { [key: string]: CommandLineInput };
 }
 
-export class CommandMap extends Map<string, ICommand> implements ICommandMap {
-  set(key: string, value?: ICommand): this {
-    super.set(key, value);
-
-    if (value && value.metadata && value.metadata.aliases && value.metadata.aliases.length > 0) {
-      for (let alias of value.metadata.aliases) {
-        super.set(alias, value);
-      }
-    }
-
-    return this;
-  }
-
-  resolve(argv: string[], opts: { stopOnUnknown?: boolean } = {}): [string[], ICommand | undefined] {
-    if (opts.stopOnUnknown === undefined) {
-      opts.stopOnUnknown = false;
-    }
-
-    const command = this.get(argv[0]);
-
-    if (command) {
-      return [argv.slice(1), command];
-    }
-
-    if (argv.length === 0 || argv[0].indexOf(':') === -1) {
-      return [argv, undefined];
-    }
-
-    const [pluginName, pluginCommand] = argv[0].split(':');
-    const loader = new PluginLoader();
-
-    function _resolve(argv: string[], commands: CommandMap): [string[], ICommand | undefined] {
-      const command = commands.get(argv[0]);
-
-      if (!command) {
-        return [argv, undefined];
-      }
-
-      if (!command.metadata.subcommands || !command.metadata.subcommands.has(argv[1])) {
-        if (opts.stopOnUnknown && argv.length > 1) {
-          return [argv.slice(1), undefined];
-        }
-
-        return [argv.slice(1), command];
-      }
-
-      return _resolve(argv.slice(1), command.metadata.subcommands);
-    }
-
-    try {
-      return _resolve([pluginCommand, ...argv.slice(1)], loader.load(pluginName).getCommands());
-    } catch (e) {
-      // If command does not exist then lets show them help
-      if (e === ERROR_PLUGIN_NOT_FOUND && loader.has(pluginName)) {
-        throw new Error(`
-  This plugin is not currently installed. Please execute the following to install it.
-
-      ${chalk.bold(`npm install ${loader.prefix}${pluginName}`)}
-  `);
-      }
-
-      throw e;
-    }
-  }
-}
-
 export function CommandMetadata(metadata: CommandData) {
-  // TODO: validate metadata
-  //  - make sure subcommands and inputs don't clash
-
   return function (target: Function) {
     target.prototype.metadata = metadata;
   };
 }
 
-export abstract class Command {
+export class NamespaceMap extends Map<string, INamespace> {}
+export class CommandMap extends Map<string, ICommand> {}
+
+export class Namespace implements INamespace {
+  constructor(public env: CommandEnvironment) {}
+
+  getNamespaces(): INamespaceMap {
+    return new NamespaceMap();
+  }
+
+  getCommands(): ICommandMap {
+    return new CommandMap();
+  }
+}
+
+export class Command implements ICommand {
+  public cli: IIonicNamespace;
   public env: CommandEnvironment;
   public metadata: CommandData;
 
-  abstract async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {}
 
-  async execute(env: CommandEnvironment): Promise<void> {
+  async execute(cli: IIonicNamespace, env: CommandEnvironment, inputs?: CommandLineInputs): Promise<void> {
+    this.cli = cli;
     this.env = env;
 
+    const options = metadataToMinimistOptions(this.metadata);
+    const argv = minimist(this.env.pargv, options);
+
+    if (inputs) {
+      argv._ = inputs;
+    }
+
     try {
-      validateInputs(this.env.argv._, this.metadata);
+      validateInputs(argv._, this.metadata);
     } catch (e) {
       console.error(chalk.red('>> ') + e);
       return;
     }
 
-    await collectInputs(this.env.argv._, this.metadata);
+    await collectInputs(argv._, this.metadata);
 
-    return this.run(this.env.argv._, this.env.argv);
+    return this.run(argv._, argv);
   }
 
   exit(msg: string, code: number = 1): FatalException {

@@ -10,7 +10,6 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  ICommand,
   TaskChain,
   indent,
   isAPIResponseSuccess,
@@ -49,7 +48,7 @@ function isSSHGenerateResponse(r: APIResponse): r is SSHGenerateResponse {
   ],
   isProjectTask: false
 })
-export class SSHGenerateCommand extends Command implements ICommand {
+export class SSHGenerateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const keyPath = path.resolve(options['key-path'] ? String(options['key-path']) : 'id_rsa');
     const pubkeyPath = path.resolve(options['pubkey-path'] ? String(options['pubkey-path']) : 'id_rsa.pub');

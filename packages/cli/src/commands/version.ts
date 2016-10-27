@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions, ICommand } from '../definitions';
+import { CommandLineInputs, CommandLineOptions } from '../definitions';
 import { Command, CommandMetadata } from '../lib/command';
 import { getCliInfo } from '../lib/utils/environmentInfo';
 
@@ -8,7 +8,7 @@ import { getCliInfo } from '../lib/utils/environmentInfo';
   options: [],
   isProjectTask: false
 })
-export default class VersionCommand extends Command implements ICommand {
+export default class VersionCommand extends Command {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const info = await getCliInfo();
 

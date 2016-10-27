@@ -68,7 +68,7 @@ export class SSHUseCommand extends Command implements ICommand {
 
       process.stdout.write(diff);
 
-      const confirmation = await this.env.modules.inquirer.prompt({
+      const confirmation = await this.env.inquirer.prompt({
         type: 'confirm',
         name: 'apply',
         message: `May we make the above change(s) to '${p}'?`

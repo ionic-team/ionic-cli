@@ -5,7 +5,6 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  ICommand,
   validators
 } from '@ionic/cli';
 
@@ -22,7 +21,7 @@ import {
   ],
   isProjectTask: false
 })
-export class SSHDeleteCommand extends Command implements ICommand {
+export class SSHDeleteCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const id = inputs[0];
 

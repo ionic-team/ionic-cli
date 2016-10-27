@@ -1,12 +1,9 @@
-import {
-  CommandData,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandOption,
-  ICommand
-} from '../definitions';
+import * as chalk from 'chalk';
+
+import { CommandLineInputs, CommandLineOptions } from '../definitions';
 
 import { Command, CommandMetadata } from '../lib/command';
+import { formatCommandHelp } from '../lib/help';
 
 @CommandMetadata({
   name: 'help',
@@ -19,55 +16,19 @@ import { Command, CommandMetadata } from '../lib/command';
   ],
   isProjectTask: false
 })
-export default class HelpCommand extends Command implements ICommand {
+export default class HelpCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [argv, command] = this.env.commands.resolve(inputs, { stopOnUnknown: true });
+    const [argv, command] = this.cli.resolve(inputs);
 
     if (command) {
       this.env.log.msg(formatCommandHelp(command.metadata));
     } else {
       if (argv.length > 0) {
-        this.env.log.error(`Command '${argv[0]}' not found.`);
+        this.env.log.error(`Command not found: ${chalk.bold(argv[0])}.`);
       } else {
-        this.env.log.error(`Command '${this.metadata.name}' needs a single argument.`);
+        this.env.log.error(`Command ${chalk.bold(this.metadata.name)} needs a single argument.`);
         this.env.log.msg(formatCommandHelp(this.metadata));
       }
     }
   }
-}
-
-function formatCommandHelp(cmdMetadata: CommandData): string {
-  return `
-  ${cmdMetadata.description}
-  ${formatUsage(cmdMetadata)}${cmdMetadata.options ? formatOptions(cmdMetadata.options) : ''}${formatExamples(cmdMetadata)}
-  `;
-}
-
-function formatUsage(cmdMetadata: CommandData): string {
-  return `
-    Usage
-      $ ${cmdMetadata.name} ${
-        (cmdMetadata.inputs || []).map(command => '<' + command.name + '>').join(' ')}
-  `;
-}
-
-function formatOptions(options: CommandOption[]): string {
-  return `
-    Options ${options.map(option => {
-        return '\n      --' + option.name +
-          (option.aliases && option.aliases.length > 0 ? ', -' +
-           option.aliases.join(', ') : '') +
-          '  ' + option.description;
-        })}
-  `;
-}
-
-function formatExamples(cmdMetadata: CommandData): string {
-  return `
-    Examples
-      $ ${cmdMetadata.name} ${
-        (cmdMetadata.inputs || []).map(command => command.name)
-          .join(' ')
-        }
-  `;
 }

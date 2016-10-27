@@ -1,23 +1,18 @@
-import {
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMap,
-  CommandMetadata,
-  ICommand,
-  ICommandMap
-} from '@ionic/cli';
+import { CommandMap, Namespace } from '@ionic/cli';
 
 import { SSHGenerateCommand } from './generate';
 import { SSHUseCommand } from './use';
 import { SSHAddCommand } from './add';
 import { SSHDeleteCommand } from './delete';
 import { SSHListCommand } from './list';
+import { SSHSetupCommand } from './setup';
 
-@CommandMetadata({
-  name: 'ssh',
-  description: 'Generate and manage SSH keys, configure local SSH authentication',
-  get subcommands(): ICommandMap {
+// TODO
+// name: 'ssh',
+// description: 'Generate and manage SSH keys, configure local SSH authentication',
+
+export class SSHNamespace extends Namespace {
+  getCommands() {
     let m = new CommandMap();
 
     m.set('generate', new SSHGenerateCommand());
@@ -25,13 +20,8 @@ import { SSHListCommand } from './list';
     m.set('add', new SSHAddCommand());
     m.set('delete', new SSHDeleteCommand());
     m.set('list', new SSHListCommand());
+    m.set('setup', new SSHSetupCommand());
 
     return m;
-  },
-  isProjectTask: false
-})
-export class SSHCommand extends Command implements ICommand {
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    console.log('ssh!', inputs, options);
   }
 }

@@ -7,9 +7,8 @@ import * as minimist from 'minimist';
 
 import { SuperAgentError } from './definitions';
 
-import getCommands from './commands';
+import { IonicNamespace } from './commands';
 import { Client, formatError as formatSuperAgentError } from './lib/http';
-import { metadataToMinimistOptions } from './lib/command';
 import { Config } from './lib/config';
 import { FatalException } from './lib/errors';
 import { Project } from './lib/project';
@@ -17,7 +16,7 @@ import { Session } from './lib/session';
 import { Logger } from './lib/utils/logger';
 import { TASKS } from './lib/utils/task';
 
-export { Command, CommandMap, CommandMetadata } from './lib/command';
+export { Command, CommandMap, Namespace, NamespaceMap, CommandMetadata } from './lib/command';
 export { FatalException } from './lib/errors';
 export { indent, prettyPath, ICON_SUCCESS_GREEN, ICON_FAILURE_RED } from './lib/utils/format';
 export { promisify } from './lib/utils/promisify';
@@ -46,8 +45,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   let err: Error | undefined;
 
   // Check version?
-  let argv = minimist(pargv.slice(2));
-  const commands = getCommands();
+  pargv = pargv.slice(2)
+  const argv = minimist(pargv);
 
   // Global CLI option setup
   const logLevel: string = argv['loglevel'] || 'warn';
@@ -61,32 +60,17 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     const project = new Project('.');
     const session = new Session(config, client);
 
-    let [inputs, command] = commands.resolve(argv._);
-
-    if (!command) {
-      command = commands.get(defaultCommand);
-
-      if (!command) {
-        throw 'Missing default command.';
-      }
-    }
-
-    const options = metadataToMinimistOptions(command.metadata);
-    argv = minimist(pargv.slice(2), options);
-    argv._ = inputs;
-
-    await command.execute({
-      argv,
-      commands,
+    const ns = new IonicNamespace({
       client,
       config,
+      inquirer,
       log,
-      modules: {
-        inquirer
-      },
+      pargv,
       project,
       session
     });
+
+    await ns.run(pargv);
   } catch (e) {
     err = e;
   }

@@ -9,7 +9,6 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  ICommand,
   isAPIResponseSuccess,
   prettyPath,
   promisify,
@@ -48,7 +47,7 @@ function isSSHAddResponse(r: APIResponse): r is SSHAddResponse {
   ],
   isProjectTask: false
 })
-export class SSHAddCommand extends Command implements ICommand {
+export class SSHAddCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const pubkeyPath = path.resolve(inputs[0]);
     const [pubkey, _1, _2, id] = await parsePublicKeyFile(pubkeyPath);

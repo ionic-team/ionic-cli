@@ -8,7 +8,7 @@ import { spawn } from 'cross-spawn';
 import * as pathExists from 'path-exists';
 import * as superagent from 'superagent';
 
-import { CommandLineInputs, CommandLineOptions, ICommand } from '../definitions';
+import { CommandLineInputs, CommandLineOptions } from '../definitions';
 import { Command, CommandMetadata } from '../lib/command';
 import { getCommandInfo } from '../lib/utils/environmentInfo';
 
@@ -112,7 +112,7 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
   ],
   isProjectTask: false
 })
-export default class StartCommand extends Command implements ICommand {
+export default class StartCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let installer = 'npm';
     let projectRoot: string;
