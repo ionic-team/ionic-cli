@@ -27,7 +27,7 @@ import { validators } from '../lib/validators';
   ],
   isProjectTask: false
 })
-export default class LoginCommand extends Command {
+export class LoginCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let [email, password] = inputs;
 

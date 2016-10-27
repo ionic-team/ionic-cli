@@ -112,7 +112,7 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
   ],
   isProjectTask: false
 })
-export default class StartCommand extends Command {
+export class StartCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let installer = 'npm';
     let projectRoot: string;

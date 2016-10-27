@@ -16,7 +16,7 @@ import { formatCommandHelp } from '../lib/help';
   ],
   isProjectTask: false
 })
-export default class HelpCommand extends Command {
+export class HelpCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [argv, command] = this.cli.resolve(inputs);
 

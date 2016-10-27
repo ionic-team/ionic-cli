@@ -7,7 +7,7 @@ import { Command, CommandMetadata } from '../lib/command';
   options: [],
   isProjectTask: false
 })
-export default class IonitronCommand extends Command {
+export class IonitronCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     this.env.log.msg(inputs, options);
   }

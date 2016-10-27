@@ -15,7 +15,7 @@ import { Command, CommandMetadata } from '../lib/command';
   ],
   isProjectTask: false
 })
-export default class DocsCommand extends Command {
+export class DocsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     // const topic = inputs[0];
   }
