@@ -67,24 +67,30 @@ export class Task {
 export class TaskChain {
   protected currentTask?: Task;
 
-  next(msg: string) {
+  next(msg: string): this {
     if (this.currentTask) {
       this.currentTask.succeed();
     }
 
     this.currentTask = new Task(msg);
     this.currentTask.start();
+
+    return this;
   }
 
-  end() {
+  end(): this {
     if (this.currentTask) {
       this.currentTask.succeed();
     }
+
+    return this;
   }
 
-  fail() {
+  fail(): this {
     if (this.currentTask) {
       this.currentTask.fail();
     }
+
+    return this;
   }
 }
