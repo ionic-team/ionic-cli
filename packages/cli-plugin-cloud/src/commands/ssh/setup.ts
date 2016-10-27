@@ -18,7 +18,7 @@ import {
   isProjectTask: false
 })
 export class SSHSetupCommand extends Command {
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     const sshconfigPath = path.resolve(os.homedir(), '.ssh', 'config');
     const sshPath = path.resolve(os.homedir(), '.ssh');
     const keyPath = path.resolve(sshPath, 'ionic_rsa');
@@ -38,7 +38,7 @@ export class SSHSetupCommand extends Command {
     });
 
     if (!confirmation['apply']) {
-      return;
+      return 1;
     }
 
     await this.cli.run([
