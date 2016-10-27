@@ -83,7 +83,7 @@ export class SSHUseCommand extends Command implements ICommand {
 
     await fsWriteFile(p, text2, { encoding: 'utf8', mode: 0o600 });
 
-    this.env.log.info(`Your active Ionic SSH key has been set to ${chalk.bold(keyPath)}!`);
+    this.env.log.ok(`Your active Ionic SSH key has been set to ${chalk.bold(keyPath)}!`);
   }
 
   async isValidKey(keyPath: string): Promise<boolean> {

@@ -2,17 +2,14 @@ import * as util from 'util';
 
 import * as chalk from 'chalk';
 
-import { ILogger, LoggerOptions } from '../../definitions';
+import { ILogger, LogLevel, LoggerOptions } from '../../definitions';
+import { indent } from './format';
 
-const LEVELS = ['trace', 'debug', 'info', 'warn', 'error'];
+const LEVELS: LogLevel[] = ['debug', 'info', 'ok', 'warn', 'error'];
 
 export class Logger implements ILogger {
 
   constructor(public opts: LoggerOptions = { level: 'info', prefix: '' }) {}
-
-  public trace(...args: any[]): void {
-    this.log('trace', ...args);
-  }
 
   public debug(...args: any[]): void {
     this.log('debug', ...args);
@@ -20,6 +17,10 @@ export class Logger implements ILogger {
 
   public info(...args: any[]): void {
     this.log('info', ...args);
+  }
+
+  public ok(...args: any[]): void {
+    this.log('ok', ...args);
   }
 
   public warn(...args: any[]): void {
@@ -34,12 +35,12 @@ export class Logger implements ILogger {
     console.log.apply(console, arguments);
   }
 
-  private shouldLog(level: string): boolean {
+  private shouldLog(level: LogLevel): boolean {
     return LEVELS.indexOf(level) >= LEVELS.indexOf(this.opts.level);
   }
 
-  private log(level: string, ...args: any[]): void {
-    if (this.shouldLog) {
+  private log(level: LogLevel, ...args: any[]): void {
+    if (this.shouldLog(level)) {
       let prefix = this.opts.prefix;
 
       if (prefix) {
@@ -49,17 +50,25 @@ export class Logger implements ILogger {
         args[0] = util.format(prefix, args[0]);
       }
 
+      for (let [i, arg] of args.entries()) {
+        if (typeof arg === 'string') {
+          args[i] = arg.split('\n').map((l, i) => i > 0 ? `${indent(level.length + 2)} ${l}` : l).join('\n');
+        }
+      }
+
       switch (level) {
-      case 'trace':
       case 'debug':
       case 'info':
         console.info(util.format.apply(util, args));
         break;
+      case 'ok':
+        console.info(util.format.apply(util, [`[${chalk.bold(chalk.green('OK'))}]`, ...args]));
+        break;
       case 'warn':
-        console.warn(util.format.apply(util, [chalk.bold(chalk.yellow('[WARN]')), ...args]));
+        console.warn(util.format.apply(util, [`[${chalk.bold(chalk.yellow('WARN'))}]`, ...args]));
         break;
       case 'error':
-        console.error(util.format.apply(util, [chalk.bold(chalk.red('[ERROR]')), ...args]));
+        console.error(util.format.apply(util, [`[${chalk.bold(chalk.red('ERROR'))}]`, ...args]));
         break;
       }
     }

@@ -5,7 +5,7 @@ export { isAPIResponseSuccess, isAPIResponseError } from './lib/http';
 import * as inquirer from 'inquirer';
 import * as minimist from 'minimist';
 
-import { SuperAgentError } from './definitions';
+import { LogLevel, SuperAgentError } from './definitions';
 
 import { IonicNamespace } from './commands';
 import { Client, formatError as formatSuperAgentError } from './lib/http';
@@ -48,7 +48,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   const argv = minimist(pargv);
 
   // Global CLI option setup
-  const logLevel: string = argv['loglevel'] || 'warn';
+  const logLevel: LogLevel = argv['loglevel'] || 'info'; // TODO validate log level
   const log = new Logger({ level: logLevel, prefix: '' });
   const config = new Config(env);
 

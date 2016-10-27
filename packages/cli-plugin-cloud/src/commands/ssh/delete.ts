@@ -29,6 +29,6 @@ export class SSHDeleteCommand extends Command {
       .set('Authorization', `Bearer ${await this.env.session.getToken('user')}`);
     await this.env.client.do(req);
 
-    this.env.log.info(`Your public key (${chalk.bold(id)}) has been deleted from Ionic.`);
+    this.env.log.ok(`Your public key (${chalk.bold(id)}) has been deleted from Ionic.`);
   }
 }

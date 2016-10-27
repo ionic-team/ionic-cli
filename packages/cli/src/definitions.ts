@@ -7,15 +7,17 @@ export interface SuperAgentError extends Error {
 
 export type LogFn = (message?: any, ...args: any[]) => void;
 
+export type LogLevel = 'debug' | 'info' | 'ok' | 'warn' | 'error';
+
 export interface LoggerOptions {
-  level: string;
+  level: LogLevel;
   prefix: string;
 }
 
 export interface ILogger {
-  trace: LogFn;
   debug: LogFn;
   info: LogFn;
+  ok: LogFn;
   warn: LogFn;
   error: LogFn;
   msg: Function;

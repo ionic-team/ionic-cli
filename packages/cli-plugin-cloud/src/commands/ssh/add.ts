@@ -63,6 +63,6 @@ export class SSHAddCommand extends Command {
 
     const words = res.meta.status === 201 ? 'added to' : 'updated on';
 
-    this.env.log.info(`Your public key (${chalk.bold(res.data.id)}) has been ${words} Ionic!`);
+    this.env.log.ok(`Your public key (${chalk.bold(res.data.id)}) has been ${words} Ionic!`);
   }
 }
