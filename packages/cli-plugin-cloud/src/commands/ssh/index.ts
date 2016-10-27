@@ -1,4 +1,4 @@
-import { CommandMap, Namespace } from '@ionic/cli';
+import { CommandMap, ICommandMap, Namespace } from '@ionic/cli';
 
 import { SSHGenerateCommand } from './generate';
 import { SSHUseCommand } from './use';
@@ -12,7 +12,7 @@ import { SSHSetupCommand } from './setup';
 // description: 'Generate and manage SSH keys, configure local SSH authentication',
 
 export class SSHNamespace extends Namespace {
-  getCommands() {
+  getCommands(): ICommandMap {
     let m = new CommandMap();
 
     m.set('generate', new SSHGenerateCommand());
