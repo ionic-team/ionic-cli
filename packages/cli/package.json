@@ -14,17 +14,15 @@
   "main": "./dist/ionic.js",
   "types": "./dist/ionic.d.ts",
   "scripts": {
-    "build": "npm run lint && npm run clean && ../../node_modules/.bin/tsc",
+    "build": "npm run lint && npm run clean && ../../node_modules/.bin/concurrently -p '[{name}]' -n 'src,test' '../../node_modules/.bin/tsc' '../../node_modules/.bin/tsc -p test/tsconfig.json'",
     "clean": "rm -rf ./dist",
     "prepublish": "npm run build",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
     "coveralls": "istanbul cover node_modules/jasmine-node/bin/jasmine-node --captureExceptions spec/ && cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js && rm -rf coverage",
     "jasmine": "jasmine-node --captureExceptions ./spec",
-    "lint": "../../node_modules/.bin/concurrently 'npm run lint:js' 'npm run lint:ts'",
-    "lint:js": "eslint .",
-    "lint:ts": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
-    "test": "npm run lint && istanbul cover node_modules/jasmine-node/bin/jasmine-node --captureExceptions spec/",
-    "watch": "npm run clean && ../../node_modules/.bin/tsc --watch"
+    "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
+    "test": "../../node_modules/.bin/ava",
+    "watch": "npm run clean && ../../node_modules/.bin/concurrently -p '[{name}]' -n 'src,test' '../../node_modules/.bin/tsc --watch' '../../node_modules/.bin/tsc -p test/tsconfig.json --watch'"
   },
   "keywords": [
     "ionic",

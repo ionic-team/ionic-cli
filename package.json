@@ -3,10 +3,10 @@
   "scripts": {},
   "dependencies": {},
   "devDependencies": {
+    "ava": "^0.16.0",
     "concurrently": "^3.1.0",
     "conventional-changelog-cli": "1.1.1",
     "coveralls": "^2.2.0",
-    "jest-cli": "^16.0.1",
     "eslint-config-ionic": "0.0.2",
     "lerna": "2.0.0-beta.30",
     "rollup": "^0.36.1",
@@ -16,14 +16,5 @@
     "tslint": "^4.0.0-dev.0",
     "tslint-ionic-rules": "^0.0.8",
     "typescript": "^2.1.0-dev.20161005"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "scriptPreprocessor": "<rootDir>/preprocessor.js",
-    "testRegex": "/__tests__/.*\\.(ts|tsx|js)$"
   }
 }
