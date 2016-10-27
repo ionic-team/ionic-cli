@@ -70,7 +70,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       session
     });
 
-    await ns.run(pargv);
+    await ns.run(pargv, { showCommand: false });
   } catch (e) {
     err = e;
   }

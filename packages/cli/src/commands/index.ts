@@ -6,6 +6,7 @@ import {
   ICommand,
   ICommandMap,
   IIonicNamespace,
+  IIonicNamespaceRunOptions,
   INamespace
 } from '../definitions';
 
@@ -22,6 +23,7 @@ import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from '../lib/plugins';
 import { CommandMap, Namespace, NamespaceMap } from '../lib/command';
 
 export class IonicNamespace extends Namespace implements IIonicNamespace {
+  public name = 'ionic';
   public get help() { return new HelpCommand() };
   protected loader: PluginLoader;
 
@@ -44,7 +46,11 @@ export class IonicNamespace extends Namespace implements IIonicNamespace {
     return m;
   }
 
-  async run(pargv: string[]): Promise<void> {
+  async run(pargv: string[], opts: IIonicNamespaceRunOptions = {}): Promise<void> {
+    if (opts.showCommand === undefined) {
+      opts.showCommand = true;
+    }
+
     this.env.pargv = pargv;
 
     const argv = minimist(pargv);
@@ -59,6 +65,10 @@ export class IonicNamespace extends Namespace implements IIonicNamespace {
     } else {
       if (!command) {
         command = this.help;
+      }
+
+      if (opts.showCommand) {
+        console.log(`\n> ${this.name} ${pargv.join(' ')}\n`);
       }
 
       return command.execute(this, this.env, inputs);

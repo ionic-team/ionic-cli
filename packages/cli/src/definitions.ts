@@ -147,8 +147,12 @@ export interface IClient {
   do(res: superagent.Request): Promise<APIResponseSuccess>;
 }
 
+export interface IIonicNamespaceRunOptions {
+  showCommand?: boolean;
+}
+
 export interface IIonicNamespace {
-  run(pargv: string[]): Promise<void>;
+  run(pargv: string[], opts?: IIonicNamespaceRunOptions): Promise<void>;
   resolve(argv: string[]): [string[], ICommand | undefined];
 }
 
@@ -163,6 +167,7 @@ export interface CommandEnvironment {
 }
 
 export interface INamespace {
+  name: string;
   getNamespaces(): INamespaceMap;
   getCommands(): ICommandMap;
 }

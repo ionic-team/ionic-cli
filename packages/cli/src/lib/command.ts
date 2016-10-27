@@ -54,6 +54,7 @@ export class CommandMap extends Map<string, ICommand> {
 }
 
 export class Namespace implements INamespace {
+  public name = '';
   constructor(public env: CommandEnvironment) {}
 
   getNamespaces(): INamespaceMap {
