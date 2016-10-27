@@ -27,7 +27,7 @@ export class Command implements ICommand {
   public env: CommandEnvironment;
   public metadata: CommandData;
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {}
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
 
   async execute(cli: IIonicNamespace, env: CommandEnvironment, inputs?: CommandLineInputs): Promise<void> {
     this.cli = cli;
@@ -49,7 +49,11 @@ export class Command implements ICommand {
 
     await collectInputs(argv._, this.metadata);
 
-    return this.run(argv._, argv);
+    const r = await this.run(argv._, argv);
+
+    if (typeof r === 'number' && r > 0) {
+      throw this.exit('', r);
+    }
   }
 
   exit(msg: string, code: number = 1): FatalException {

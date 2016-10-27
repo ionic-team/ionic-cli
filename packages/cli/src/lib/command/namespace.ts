@@ -2,6 +2,7 @@ import {
   CommandEnvironment,
   ICommand,
   ICommandMap,
+  INamespace,
   INamespaceMap
 } from '../../definitions';
 

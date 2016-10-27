@@ -176,8 +176,8 @@ export interface ICommand {
   env: CommandEnvironment;
   cli: IIonicNamespace;
 
+  run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
   execute(cli: IIonicNamespace, env: CommandEnvironment, inputs?: CommandLineInputs): Promise<void>;
-  run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
 }
 
 export interface INamespaceMap extends Map<string, INamespace> {}

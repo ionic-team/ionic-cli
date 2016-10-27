@@ -83,7 +83,10 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       console.error(formatSuperAgentError(err));
     } else if (err instanceof FatalException) {
       exitCode = err.exitCode;
-      log.error(err.message);
+
+      if (err.message) {
+        log.error(err.message);
+      }
     } else {
       console.error(err);
     }
