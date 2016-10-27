@@ -1,4 +1,3 @@
-import * as minimist from 'minimist';
 import * as inquirer from 'inquirer';
 import * as superagent from 'superagent';
 

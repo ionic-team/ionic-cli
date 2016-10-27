@@ -20,11 +20,11 @@ import { VersionCommand } from './version';
 import { FatalException } from '../lib/errors';
 import { formatCommandHelp } from '../lib/help';
 import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from '../lib/plugins';
-import { CommandMap, Namespace, NamespaceMap } from '../lib/command';
+import { CommandMap, Namespace } from '../lib/command/namespace';
 
 export class IonicNamespace extends Namespace implements IIonicNamespace {
   public name = 'ionic';
-  public get help() { return new HelpCommand() };
+  public get help() { return new HelpCommand(); };
   protected loader: PluginLoader;
 
   constructor(public env: CommandEnvironment) {

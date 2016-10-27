@@ -16,14 +16,13 @@ import { Session } from './lib/session';
 import { Logger } from './lib/utils/logger';
 import { TASKS } from './lib/utils/task';
 
-export { Command, CommandMap, Namespace, NamespaceMap, CommandMetadata } from './lib/command';
+export { Command, CommandMetadata } from './lib/command';
+export { CommandMap, Namespace, NamespaceMap } from './lib/command/namespace';
 export { FatalException } from './lib/errors';
 export { indent, prettyPath, ICON_SUCCESS_GREEN, ICON_FAILURE_RED } from './lib/utils/format';
 export { promisify } from './lib/utils/promisify';
 export { Task, TaskChain } from './lib/utils/task';
 export { validators } from './lib/validators';
-
-const defaultCommand = 'help';
 
 function cleanup() {
   for (let task of TASKS) {
@@ -45,7 +44,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   let err: Error | undefined;
 
   // Check version?
-  pargv = pargv.slice(2)
+  pargv = pargv.slice(2);
   const argv = minimist(pargv);
 
   // Global CLI option setup

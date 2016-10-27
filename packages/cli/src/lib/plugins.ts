@@ -1,5 +1,4 @@
-import { INamespace } from '../definitions';
-import { Namespace } from './command';
+import { Namespace } from './command/namespace';
 
 const plugins = new Set<string>(['cloud']);
 
