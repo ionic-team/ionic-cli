@@ -17,7 +17,7 @@ import {
   promisify
 } from '@ionic/cli';
 
-const fsWriteFile = promisify<void, string, string>(fs.writeFile);
+const fsWriteFile = promisify<void, string, any, { encoding?: string; mode?: number; flag?: string; }>(fs.writeFile);
 
 interface SSHGenerateResponse extends APIResponseSuccess {
   data: {
@@ -69,8 +69,8 @@ export class SSHGenerateCommand extends Command {
     tasks.next('writing ssh keys');
 
     await Promise.all([
-      fsWriteFile(keyPath, res.data.key),
-      fsWriteFile(pubkeyPath, res.data.pubkey)
+      fsWriteFile(keyPath, res.data.key, { encoding: 'utf8', mode: 0o600 }),
+      fsWriteFile(pubkeyPath, res.data.pubkey, { encoding: 'utf8', mode: 0o644 })
     ]);
 
     tasks.end();
