@@ -3,8 +3,12 @@ module.exports = {
     node: true,
     commonjs: true
   },
+  plugins: [
+    'no-use-extend-native'
+  ],
   extends: 'eslint:recommended',
   rules: {
+    'no-use-extend-native/no-use-extend-native': 2,
     eqeqeq: [
       "error",
       "smart"
