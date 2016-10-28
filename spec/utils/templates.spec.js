@@ -5,6 +5,7 @@ var rewire = require('rewire');
 var templateUtils = rewire('../../lib/utils/templates');
 var IonicAppLib = require('ionic-app-lib');
 var log = IonicAppLib.logging.logger;
+var EOL = require('os').EOL;
 
 describe('listTemplates method', function() {
   it('should should call fetchStarterTemplates pull out templates/sort and send to list', function(done) {
@@ -148,7 +149,7 @@ describe('list function', function() {
     var list = templateUtils.__get__('list');
 
     list(templates);
-    expect(log.info.calls[0].args).toEqual(['\n']);
+    expect(log.info.calls[0].args).toEqual([EOL]);
     expect(log.info.calls[1].args[0]).toMatch('a-template'); // Use match because of colors
     expect(log.info.calls[1].args[1]).toEqual('...........');
     expect(log.info.calls[1].args[2]).toEqual(templates[0].description);
