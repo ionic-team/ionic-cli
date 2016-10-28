@@ -61,8 +61,8 @@
   "license": "MIT",
   "dependencies": {
     "@ionic/app-generators": "0.0.3",
+    "chalk": "^1.1.3",
     "cli-table": "0.3.1",
-    "colors": "0.6.2",
     "cross-spawn-async": "2.1.9",
     "expand-tilde": "1.2.0",
     "form-data": "0.1.4",
@@ -87,7 +87,8 @@
   "devDependencies": {
     "conventional-changelog-cli": "1.1.1",
     "coveralls": "^2.2.0",
-    "eslint": "^3.0.1",
+    "eslint": "^3.8.1",
+    "eslint-plugin-no-use-extend-native": "^0.3.11",
     "github": "0.2.4",
     "istanbul": "^0.4.4",
     "jasmine-node": "1.14.5",
@@ -96,7 +97,7 @@
   },
   "bundledDependencies": [
     "cli-table",
-    "colors",
+    "chalk",
     "cross-spawn-async",
     "expand-tilde",
     "form-data",
