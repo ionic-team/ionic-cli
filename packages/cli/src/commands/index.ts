@@ -73,7 +73,8 @@ export class IonicNamespace extends Namespace implements IIonicNamespace {
       }
 
       await command.load();
-      return command.execute(this, this.env, inputs);
+      await command.execute(this, this.env, inputs);
+      await command.unload();
     }
   }
 

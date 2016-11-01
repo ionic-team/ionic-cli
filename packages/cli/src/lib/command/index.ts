@@ -28,6 +28,7 @@ export class Command implements ICommand {
   public metadata: CommandData;
 
   async load(): Promise<void> {}
+  async unload(): Promise<void> {}
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
 
