@@ -72,6 +72,7 @@ export class IonicNamespace extends Namespace implements IIonicNamespace {
         console.log(`\n> ${this.name} ${pargv.join(' ')}\n`);
       }
 
+      await command.load();
       return command.execute(this, this.env, inputs);
     }
   }

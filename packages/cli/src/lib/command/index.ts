@@ -27,6 +27,8 @@ export class Command implements ICommand {
   public env: CommandEnvironment;
   public metadata: CommandData;
 
+  async load(): Promise<void> {}
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
 
   async execute(cli: IIonicNamespace, env: CommandEnvironment, inputs?: CommandLineInputs): Promise<void> {

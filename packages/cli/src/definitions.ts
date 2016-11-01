@@ -179,6 +179,7 @@ export interface ICommand {
   env: CommandEnvironment;
   metadata: CommandData;
 
+  load(): Promise<void>;
   run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
   execute(cli: IIonicNamespace, env: CommandEnvironment, inputs?: CommandLineInputs): Promise<void>;
 }
