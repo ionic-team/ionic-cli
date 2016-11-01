@@ -63,7 +63,7 @@ export class SSHUseCommand extends Command implements ICommand {
     const text2 = await this.applyConfig(text1, keyPath);
 
     if (text1 === text2) {
-      this.env.log.warn(`${chalk.bold(keyPath)} is already your active SSH key!`);
+      this.env.log.ok(`${chalk.bold(keyPath)} is already your active SSH key.`);
       return;
     } else if (!skipPrompts) {
       const diff = diffPatch(p, text1, text2);
