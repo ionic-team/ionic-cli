@@ -3,6 +3,7 @@ import * as chalk from 'chalk';
 import {
   APIResponse,
   APIResponseSuccess,
+  ConfigFile,
   IClient,
   IConfig,
   ISession,
@@ -25,7 +26,7 @@ function isLoginResponse(r: APIResponse): r is LoginResponse {
 
 export class Session implements ISession {
   constructor(
-    protected config: IConfig,
+    protected config: IConfig<ConfigFile>,
     protected client: IClient
   ) {}
 

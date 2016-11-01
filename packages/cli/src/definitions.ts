@@ -10,11 +10,14 @@ export type LogFn = (message?: any, ...args: any[]) => void;
 export type LogLevel = 'debug' | 'info' | 'ok' | 'warn' | 'error';
 
 export interface LoggerOptions {
-  level: LogLevel;
-  prefix: string;
+  level?: LogLevel;
+  prefix?: string;
 }
 
 export interface ILogger {
+  level: string;
+  prefix: string;
+
   debug: LogFn;
   info: LogFn;
   ok: LogFn;
@@ -101,11 +104,9 @@ export interface ConfigFile {
   };
 }
 
-export interface IConfig {
-  env: { [k: string]: string };
-
-  load(): Promise<ConfigFile>;
-  save(configFile: ConfigFile): Promise<void>;
+export interface IConfig<T> {
+  load(): Promise<T>;
+  save(configFile: T): Promise<void>;
 }
 
 export type APIResponse = APIResponseSuccess | APIResponseError;
@@ -160,7 +161,7 @@ export interface IIonicNamespace {
 export interface CommandEnvironment {
   pargv: string[];
   client: IClient;
-  config: IConfig;
+  config: IConfig<ConfigFile>;
   inquirer: typeof inquirer;
   log: ILogger;
   project: IProject;
@@ -174,9 +175,9 @@ export interface INamespace {
 }
 
 export interface ICommand {
-  metadata: CommandData;
-  env: CommandEnvironment;
   cli: IIonicNamespace;
+  env: CommandEnvironment;
+  metadata: CommandData;
 
   run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
   execute(cli: IIonicNamespace, env: CommandEnvironment, inputs?: CommandLineInputs): Promise<void>;

@@ -8,42 +8,26 @@ import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
 import { readJsonFile, writeJsonFile } from './utils/fs';
 
-const CONFIG_FILE = 'config.json';
-const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
-
-function isConfigFile(j: { [key: string]: any }): j is ConfigFile {
-  return typeof j['lastUpdated'] === 'string'
-    && typeof j['urls'] === 'object'
-    && typeof j['urls']['api'] === 'string';
-}
-
-export class Config implements IConfig {
-  public directory: string;
+export abstract class BaseConfig<T> implements IConfig<T> {
+  public static directory: string;
   public configFilePath: string;
 
-  protected configFile?: ConfigFile;
+  protected configFile?: T;
 
-  constructor(public env: { [k: string]: string }) {
-    this.directory = this.env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY;
-    this.configFilePath = path.resolve(this.directory, CONFIG_FILE);
+  constructor(public configFileName: string) {
+    this.configFilePath = path.resolve(BaseConfig.directory, configFileName);
   }
 
-  protected provideDefaults(o: { [key: string]: any }) {
-    if (!o['urls']) {
-      o['urls'] = {};
-    }
+  abstract provideDefaults(o: { [key: string]: any }): void;
 
-    if (!o['urls']['api']) {
-      o['urls']['api'] = 'https://api.ionic.io';
-    }
-  }
+  abstract is<T>(o: { [key: string]: any }): o is T;
 
-  async load(): Promise<ConfigFile> {
+  async load(): Promise<T> {
     if (!this.configFile) {
       let o = await readJsonFile(this.configFilePath);
       this.provideDefaults(o);
 
-      if (isConfigFile(o)) {
+      if (this.is<T>(o)) {
         this.configFile = o;
       } else {
         throw new FatalException(`The config file (${chalk.bold(prettyPath(this.configFilePath))}) has an unrecognized format.\n`
@@ -54,7 +38,7 @@ export class Config implements IConfig {
     return this.configFile;
   }
 
-  async save(configFile?: ConfigFile): Promise<void> {
+  async save(configFile?: T): Promise<void> {
     if (!configFile) {
       configFile = this.configFile;
     }
@@ -62,5 +46,23 @@ export class Config implements IConfig {
     if (configFile) {
       await writeJsonFile(this.configFilePath, configFile);
     }
+  }
+}
+
+export class Config extends BaseConfig<ConfigFile> {
+  provideDefaults(o: { [key: string]: any }): void {
+    if (!o['urls']) {
+      o['urls'] = {};
+    }
+
+    if (!o['urls']['api']) {
+      o['urls']['api'] = 'https://api.ionic.io';
+    }
+  }
+
+  is<ConfigFile>(j: { [key: string]: any }): j is ConfigFile {
+    return typeof j['lastUpdated'] === 'string'
+      && typeof j['urls'] === 'object'
+      && typeof j['urls']['api'] === 'string';
   }
 }

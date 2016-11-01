@@ -17,6 +17,7 @@ import { IonitronCommand } from './ionitron';
 import { LoginCommand } from './login';
 import { StartCommand } from './start';
 import { VersionCommand } from './version';
+
 import { FatalException } from '../lib/errors';
 import { formatCommandHelp } from '../lib/help';
 import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from '../lib/plugins';

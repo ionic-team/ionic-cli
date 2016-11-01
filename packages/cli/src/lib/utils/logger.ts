@@ -9,7 +9,13 @@ const LEVELS: LogLevel[] = ['debug', 'info', 'ok', 'warn', 'error'];
 
 export class Logger implements ILogger {
 
-  constructor(public opts: LoggerOptions = { level: 'info', prefix: '' }) {}
+  public level: LogLevel;
+  public prefix: string;
+
+  constructor(opts: LoggerOptions = {}) {
+    this.level = opts.level || 'info';
+    this.prefix = opts.prefix || '';
+  }
 
   public debug(...args: any[]): void {
     this.log('debug', ...args);
@@ -36,12 +42,12 @@ export class Logger implements ILogger {
   }
 
   private shouldLog(level: LogLevel): boolean {
-    return LEVELS.indexOf(level) >= LEVELS.indexOf(this.opts.level);
+    return LEVELS.indexOf(level) >= LEVELS.indexOf(this.level);
   }
 
   private log(level: LogLevel, ...args: any[]): void {
     if (this.shouldLog(level)) {
-      let prefix = this.opts.prefix;
+      let prefix = this.prefix;
 
       if (prefix) {
         if (typeof prefix === 'function') {
