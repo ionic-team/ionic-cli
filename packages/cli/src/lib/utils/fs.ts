@@ -2,8 +2,8 @@ import * as fs from 'fs';
 
 import { promisify } from './promisify';
 
-const ERROR_FILE_NOT_FOUND = 'FILE_NOT_FOUND';
-const ERROR_FILE_INVALID_JSON = 'FILE_INVALID_JSON';
+export const ERROR_FILE_NOT_FOUND = 'FILE_NOT_FOUND';
+export const ERROR_FILE_INVALID_JSON = 'FILE_INVALID_JSON';
 
 const fsReadFile = promisify<string, string, string>(fs.readFile);
 const fsWriteFile = promisify<void, string, string>(fs.writeFile);

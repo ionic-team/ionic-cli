@@ -6,7 +6,7 @@ import * as chalk from 'chalk';
 import { ConfigFile, IConfig } from '../definitions';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
-import { readJsonFile, writeJsonFile } from './utils/fs';
+import { ERROR_FILE_NOT_FOUND, readJsonFile, writeJsonFile } from './utils/fs';
 
 export abstract class BaseConfig<T> implements IConfig<T> {
   public static directory: string;
@@ -24,7 +24,18 @@ export abstract class BaseConfig<T> implements IConfig<T> {
 
   async load(): Promise<T> {
     if (!this.configFile) {
-      let o = await readJsonFile(this.configFilePath);
+      let o: { [key: string]: any };
+
+      try {
+        o = await readJsonFile(this.configFilePath);
+      } catch(e) {
+        if (e === ERROR_FILE_NOT_FOUND) {
+          o = {};
+        } else {
+          throw e;
+        }
+      }
+
       this.provideDefaults(o);
 
       if (this.is<T>(o)) {
@@ -51,6 +62,10 @@ export abstract class BaseConfig<T> implements IConfig<T> {
 
 export class Config extends BaseConfig<ConfigFile> {
   provideDefaults(o: { [key: string]: any }): void {
+    if (!o['lastUpdated']) {
+      o['lastUpdated'] = new Date().toISOString();
+    }
+
     if (!o['urls']) {
       o['urls'] = {};
     }
