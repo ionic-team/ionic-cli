@@ -50,9 +50,6 @@ export class Logger implements ILogger {
       let prefix = this.prefix;
 
       if (prefix) {
-        if (typeof prefix === 'function') {
-          prefix = prefix();
-        }
         args[0] = util.format(prefix, args[0]);
       }
 
@@ -62,19 +59,22 @@ export class Logger implements ILogger {
         }
       }
 
+      const status = chalk.bold.bgBlack;
+      const b = chalk.dim;
+
       switch (level) {
       case 'debug':
       case 'info':
         console.info(util.format.apply(util, args));
         break;
       case 'ok':
-        console.info(util.format.apply(util, [`[${chalk.bold(chalk.green('OK'))}]`, ...args]));
+        console.info(util.format.apply(util, [b('[') + status.green('OK') + b(']'), ...args]));
         break;
       case 'warn':
-        console.warn(util.format.apply(util, [`[${chalk.bold(chalk.yellow('WARN'))}]`, ...args]));
+        console.warn(util.format.apply(util, [b('[') + status.yellow('WARN') + b(']'), ...args]));
         break;
       case 'error':
-        console.error(util.format.apply(util, [`[${chalk.bold(chalk.red('ERROR'))}]`, ...args]));
+        console.error(util.format.apply(util, [b('[') + status.red('ERROR') + b(']'), ...args]));
         break;
       }
     }
