@@ -6,7 +6,6 @@ import * as chalk from 'chalk';
 import * as SSHConfig from 'ssh-config';
 
 import {
-  Command,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
@@ -17,6 +16,7 @@ import {
   validators
 } from '@ionic/cli';
 
+import { Command } from '../../command';
 import { diffPatch } from '../../utils/diff';
 
 const fsReadFile = promisify<string, string, string>(fs.readFile);
@@ -59,7 +59,7 @@ export class SSHUseCommand extends Command implements ICommand {
     }
 
     const text1 = await this.loadFile(p);
-    const text2 = this.setIdentifyKey(text1, keyPath);
+    const text2 = await this.applyConfig(text1, keyPath);
 
     if (text1 === text2) {
       this.env.log.warn(`${chalk.bold(keyPath)} is already your active SSH key!`);
@@ -111,33 +111,46 @@ export class SSHUseCommand extends Command implements ICommand {
     return true;
   }
 
-  setIdentifyKey(text: string, keyPath: string): string {
-    const host = 'git.ionic.io'; // TODO: config variable
+  async applyConfig(text: string, keyPath: string): Promise<string> {
+    const c = await this.config.load();
     const conf = SSHConfig.parse(text);
-    const section = conf.find({ Host: host });
+    const host = c.git.host;
+    const section = this.ensureSection(conf, host, Boolean(text));
 
-    const insert = `${indent(4)}IdentityFile ${keyPath}`;
+    this.ensureSectionLine(section, 'IdentityFile', keyPath);
 
-    if (section) {
-      const found = section.config.some((line) => {
-        if (isConfigDirective(line)) {
-          if (line.param === 'IdentityFile') {
-            line.value = keyPath;
-            return true;
-          }
-        }
-
-        return false;
-      });
-
-      if (!found) {
-        section.config = section.config.concat(SSHConfig.parse(`${insert}\n`));
-      }
-    } else {
-      conf.push(SSHConfig.parse(`${text ? '\n' : ''}Host ${host}\n${insert}\n`)[0]);
+    if (typeof c.git.port === 'number') {
+      this.ensureSectionLine(section, 'Port', String(c.git.port));
     }
 
     return SSHConfig.stringify(conf);
+  }
+
+  ensureSection(conf: SSHConfig.SSHConfig, host: string, newline: boolean): SSHConfig.ConfigDirective {
+    const section = conf.find({ Host: host });
+
+    if (!section) {
+      conf.push(SSHConfig.parse(`${newline ? '\n' : ''}Host ${host}\n`)[0]);
+    }
+
+    return conf.find({ Host: host });
+  }
+
+  ensureSectionLine(section: SSHConfig.ConfigDirective, key: string, value: string): void {
+    const found = section.config.some((line) => {
+      if (isConfigDirective(line)) {
+        if (line.param === key) {
+          line.value = value;
+          return true;
+        }
+      }
+
+      return false;
+    });
+
+    if (!found) {
+      section.config = section.config.concat(SSHConfig.parse(`${indent(4)}${key} ${value}\n`));
+    }
   }
 
   async loadFile(filepath: string): Promise<string> {
