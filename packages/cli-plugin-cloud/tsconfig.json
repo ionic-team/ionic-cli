@@ -17,7 +17,8 @@
   },
   "include": [
     "src/**/*.ts",
-    "types/index.d.ts"
+    "types/index.d.ts",
+    "../cli/types/index.d.ts"
   ],
   "exclude": [
     "node_modules"
