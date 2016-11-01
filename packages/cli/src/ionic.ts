@@ -13,6 +13,7 @@ import { FatalException } from './lib/errors';
 import { Client } from './lib/http';
 import { Project } from './lib/project';
 import { Session } from './lib/session';
+import { Shell } from './lib/shell';
 import { TASKS } from './lib/utils/task';
 import { Logger } from './lib/utils/logger';
 
@@ -27,6 +28,7 @@ export { indent, prettyPath, ICON_SUCCESS_GREEN, ICON_FAILURE_RED } from './lib/
 export { fileToString } from './lib/utils/fs';
 export { promisify } from './lib/utils/promisify';
 export { Task, TaskChain } from './lib/utils/task';
+export { runcmd } from './lib/utils/shell';
 export { validators } from './lib/validators';
 
 const CONFIG_FILE = 'config.json';
@@ -66,6 +68,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     const client = new Client(c.urls.api);
     const project = new Project('.');
     const session = new Session(config, client);
+    const shell = new Shell();
 
     const ns = new IonicNamespace({
       client,
@@ -74,7 +77,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       log,
       pargv,
       project,
-      session
+      session,
+      shell
     });
 
     await ns.run(pargv, { showCommand: false });

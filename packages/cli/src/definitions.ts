@@ -1,3 +1,4 @@
+import * as child_process from 'cross-spawn';
 import * as inquirer from 'inquirer';
 import * as superagent from 'superagent';
 
@@ -96,6 +97,15 @@ export interface ISession {
   getToken(type?: TokenType): Promise<string>;
 }
 
+export interface IShellRunOptions extends child_process.SpawnOptions {
+  show?: boolean;
+  fatal?: boolean;
+}
+
+export interface IShell {
+  run(command: string, args?: string[], options?: IShellRunOptions): Promise<string>;
+}
+
 export interface ConfigFile {
   lastUpdated: string;
   token?: string;
@@ -166,6 +176,7 @@ export interface CommandEnvironment {
   log: ILogger;
   project: IProject;
   session: ISession;
+  shell: IShell;
 }
 
 export interface INamespace {
