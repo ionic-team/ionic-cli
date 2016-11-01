@@ -10,6 +10,7 @@ import {
   CommandLineOptions,
   CommandMetadata,
   ICommand,
+  fileToString,
   indent,
   prettyPath,
   promisify,
@@ -58,7 +59,7 @@ export class SSHUseCommand extends Command implements ICommand {
       return;
     }
 
-    const text1 = await this.loadFile(p);
+    const text1 = await fileToString(p);
     const text2 = await this.applyConfig(text1, keyPath);
 
     if (text1 === text2) {
@@ -150,18 +151,6 @@ export class SSHUseCommand extends Command implements ICommand {
 
     if (!found) {
       section.config = section.config.concat(SSHConfig.parse(`${indent(4)}${key} ${value}\n`));
-    }
-  }
-
-  async loadFile(filepath: string): Promise<string> {
-    try {
-      return await fsReadFile(filepath, 'utf8');
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        return '';
-      }
-
-      throw e;
     }
   }
 }

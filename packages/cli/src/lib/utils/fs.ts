@@ -26,3 +26,15 @@ export async function readJsonFile(filePath: string): Promise<{ [key: string]: a
 export async function writeJsonFile(filePath: string, json: { [key: string]: any}): Promise<void> {
   return fsWriteFile(filePath, JSON.stringify(json, null, 2));
 }
+
+export async function fileToString(filepath: string): Promise<string> {
+  try {
+    return await fsReadFile(filepath, 'utf8');
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      return '';
+    }
+
+    throw e;
+  }
+}

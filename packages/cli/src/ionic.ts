@@ -24,6 +24,7 @@ export { BaseConfig, Config } from './lib/config';
 export { FatalException } from './lib/errors';
 export { isAPIResponseSuccess, isAPIResponseError } from './lib/http';
 export { indent, prettyPath, ICON_SUCCESS_GREEN, ICON_FAILURE_RED } from './lib/utils/format';
+export { fileToString } from './lib/utils/fs';
 export { promisify } from './lib/utils/promisify';
 export { Task, TaskChain } from './lib/utils/task';
 export { validators } from './lib/validators';
