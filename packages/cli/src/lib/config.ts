@@ -7,6 +7,7 @@ import { ConfigFile, IConfig } from '../definitions';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
 import { ERROR_FILE_NOT_FOUND, readJsonFile, writeJsonFile } from './utils/fs';
+import { cloneDeep, isEqual } from 'lodash';
 
 export abstract class BaseConfig<T> implements IConfig<T> {
   public filePath: string;
@@ -39,6 +40,7 @@ export abstract class BaseConfig<T> implements IConfig<T> {
 
       if (this.is<T>(o)) {
         this.configFile = o;
+        this.originalConfigFile = cloneDeep(o);
       } else {
         throw new FatalException(`The config file (${chalk.bold(prettyPath(this.filePath))}) has an unrecognized format.\n`
                                + `Try deleting the file.`);
@@ -53,8 +55,10 @@ export abstract class BaseConfig<T> implements IConfig<T> {
       configFile = this.configFile;
     }
 
-    if (configFile) {
+    if (configFile && !isEqual(configFile, this.originalConfigFile)) {
       await writeJsonFile(this.filePath, configFile);
+      this.configFile = configFile;
+      this.originalConfigFile = cloneDeep(configFile);
     }
   }
 }
