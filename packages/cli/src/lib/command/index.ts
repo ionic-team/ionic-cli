@@ -32,10 +32,7 @@ export class Command implements ICommand {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
 
-  async execute(cli: IIonicNamespace, env: CommandEnvironment, inputs?: CommandLineInputs): Promise<void> {
-    this.cli = cli;
-    this.env = env;
-
+  async execute(inputs?: CommandLineInputs): Promise<void> {
     const options = metadataToMinimistOptions(this.metadata);
     const argv = minimist(this.env.pargv, options);
 

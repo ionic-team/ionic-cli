@@ -9,13 +9,12 @@ import { prettyPath } from './utils/format';
 import { ERROR_FILE_NOT_FOUND, readJsonFile, writeJsonFile } from './utils/fs';
 
 export abstract class BaseConfig<T> implements IConfig<T> {
-  public static directory: string;
-  public configFilePath: string;
-
+  public filePath: string;
   protected configFile?: T;
+  protected originalConfigFile?: T;
 
-  constructor(public configFileName: string) {
-    this.configFilePath = path.resolve(BaseConfig.directory, configFileName);
+  constructor(public directory: string, public fileName: string) {
+    this.filePath = path.resolve(directory, fileName);
   }
 
   abstract provideDefaults(o: { [key: string]: any }): void;
@@ -27,7 +26,7 @@ export abstract class BaseConfig<T> implements IConfig<T> {
       let o: { [key: string]: any };
 
       try {
-        o = await readJsonFile(this.configFilePath);
+        o = await readJsonFile(this.filePath);
       } catch(e) {
         if (e === ERROR_FILE_NOT_FOUND) {
           o = {};
@@ -41,7 +40,7 @@ export abstract class BaseConfig<T> implements IConfig<T> {
       if (this.is<T>(o)) {
         this.configFile = o;
       } else {
-        throw new FatalException(`The config file (${chalk.bold(prettyPath(this.configFilePath))}) has an unrecognized format.\n`
+        throw new FatalException(`The config file (${chalk.bold(prettyPath(this.filePath))}) has an unrecognized format.\n`
                                + `Try deleting the file.`);
       }
     }
@@ -55,7 +54,7 @@ export abstract class BaseConfig<T> implements IConfig<T> {
     }
 
     if (configFile) {
-      await writeJsonFile(this.configFilePath, configFile);
+      await writeJsonFile(this.filePath, configFile);
     }
   }
 }

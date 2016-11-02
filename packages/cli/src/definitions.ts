@@ -29,8 +29,7 @@ export interface ILogger {
 
 export interface ProjectFile {
   name: string;
-  app_id?: string;
-  [key: string]: any;
+  app_id: string;
 }
 
 export interface AppDetails {
@@ -43,13 +42,10 @@ export interface IApp {
   load(): Promise<AppDetails>;
 }
 
-export interface IProject {
+export interface IProject extends IConfig<ProjectFile> {
   directory: string;
-  projectFilePath: string;
 
-  load(): Promise<ProjectFile>;
   loadAppId(): Promise<string>;
-  save(projectFile: ProjectFile): Promise<void>;
 }
 
 export type CommandLineInput = string | boolean | null;
@@ -129,6 +125,10 @@ export interface ConfigFile {
 }
 
 export interface IConfig<T> {
+  directory: string;
+  fileName: string;
+  filePath: string;
+
   load(): Promise<T>;
   save(configFile: T): Promise<void>;
 }
@@ -208,7 +208,7 @@ export interface ICommand {
   load(): Promise<void>;
   unload(): Promise<void>;
   run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
-  execute(cli: IIonicNamespace, env: CommandEnvironment, inputs?: CommandLineInputs): Promise<void>;
+  execute(inputs?: CommandLineInputs): Promise<void>;
 }
 
 export interface INamespaceMap extends Map<string, INamespace> {}

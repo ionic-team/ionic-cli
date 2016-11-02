@@ -33,6 +33,7 @@ export { validators } from './lib/validators';
 
 const CONFIG_FILE = 'config.json';
 const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
+const PROJECT_FILE = 'ionic.config.json';
 
 function cleanup() {
   for (let task of TASKS) {
@@ -57,16 +58,15 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   pargv = pargv.slice(2);
   const argv = minimist(pargv);
 
-  BaseConfig.directory = env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY;
   const log = new Logger();
-  const config = new Config(CONFIG_FILE);
+  const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
   log.level = argv['loglevel'] || 'info'; // TODO validate log level
 
   try {
     const c = await config.load();
 
     const client = new Client(c.urls.api);
-    const project = new Project('.');
+    const project = new Project('.', PROJECT_FILE);
     const session = new Session(config, project, client);
     const app = new App(session, project, client);
     const shell = new Shell();
