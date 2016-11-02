@@ -20,17 +20,16 @@ import { Logger } from './lib/utils/logger';
 export * from './definitions';
 export * from './guards';
 
-export { Command, CommandMetadata } from './lib/command';
-export { CommandMap, Namespace, NamespaceMap } from './lib/command/namespace';
-export { BaseConfig, Config } from './lib/config';
-export { FatalException } from './lib/errors';
-export { isAPIResponseSuccess, isAPIResponseError } from './lib/http';
-export { indent, prettyPath, ICON_SUCCESS_GREEN, ICON_FAILURE_RED } from './lib/utils/format';
-export { fileToString } from './lib/utils/fs';
-export { promisify } from './lib/utils/promisify';
-export { Task, TaskChain } from './lib/utils/task';
-export { runcmd } from './lib/utils/shell';
-export { validators } from './lib/validators';
+export * from './lib/command';
+export * from './lib/command/namespace';
+export * from './lib/config';
+export * from './lib/errors';
+export * from './lib/http';
+export * from './lib/utils/format';
+export * from './lib/utils/fs';
+export * from './lib/utils/promisify';
+export * from './lib/utils/shell';
+export * from './lib/validators';
 
 const CONFIG_FILE = 'config.json';
 const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
