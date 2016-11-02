@@ -1,6 +1,4 @@
 import {
-  APIResponse,
-  APIResponseSuccess,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata

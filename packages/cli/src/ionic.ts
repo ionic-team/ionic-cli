@@ -8,7 +8,7 @@ import { isSuperAgentError } from './guards';
 
 import { IonicNamespace } from './commands';
 import { App } from './lib/app';
-import { BaseConfig, Config } from './lib/config';
+import { Config } from './lib/config';
 import { FatalException } from './lib/errors';
 import { formatError as formatSuperAgentError, Client } from './lib/http';
 import { Project } from './lib/project';

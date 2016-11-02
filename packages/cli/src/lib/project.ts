@@ -1,12 +1,9 @@
-import * as path from 'path';
-
 import * as chalk from 'chalk';
 
 import { IProject, ProjectFile } from '../definitions';
 import { BaseConfig } from './config';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
-import { readJsonFile, writeJsonFile } from './utils/fs';
 
 export class Project extends BaseConfig<ProjectFile> implements IProject {
   public directory: string;

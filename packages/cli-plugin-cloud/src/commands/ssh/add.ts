@@ -10,8 +10,6 @@ import {
   CommandLineOptions,
   CommandMetadata,
   isAPIResponseSuccess,
-  prettyPath,
-  promisify,
   validators
 } from '@ionic/cli';
 

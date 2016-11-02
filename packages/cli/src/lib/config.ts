@@ -1,4 +1,3 @@
-import * as os from 'os';
 import * as path from 'path';
 
 import * as chalk from 'chalk';
@@ -28,7 +27,7 @@ export abstract class BaseConfig<T> implements IConfig<T> {
 
       try {
         o = await readJsonFile(this.filePath);
-      } catch(e) {
+      } catch (e) {
         if (e === ERROR_FILE_NOT_FOUND) {
           o = {};
         } else {

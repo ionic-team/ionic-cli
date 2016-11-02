@@ -1,4 +1,4 @@
-import { CommandMap, INamespaceMap, Namespace, NamespaceMap } from '@ionic/cli';
+import { INamespaceMap, Namespace, NamespaceMap } from '@ionic/cli';
 
 import { GitNamespace } from './commands/git';
 import { SSHNamespace } from './commands/ssh';

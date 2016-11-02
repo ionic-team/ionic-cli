@@ -10,7 +10,6 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  indent,
   isAPIResponseSuccess,
   prettyPath,
   promisify

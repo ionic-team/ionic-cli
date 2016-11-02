@@ -1,6 +1,3 @@
-import * as fs from 'fs';
-import * as path from 'path';
-
 import * as chalk from 'chalk';
 
 import {
@@ -10,16 +7,10 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  isAPIResponseSuccess,
-  prettyPath,
-  promisify,
-  validators
+  isAPIResponseSuccess
 } from '@ionic/cli';
 
 import { parsePublicKey } from '../../utils/ssh';
-
-const fsReadFile = promisify<string, string, string>(fs.readFile);
-const fsStat = promisify<fs.Stats, string>(fs.stat);
 
 interface SSHListResponse extends APIResponseSuccess {
   data: {
@@ -63,7 +54,7 @@ export class SSHListCommand extends Command {
     }
 
     for (let sshkey of res.data) {
-      const [pubkey, _, pn, id] = await parsePublicKey(sshkey.pubkey, sshkey.id);
+      const [_, _, pn, id] = await parsePublicKey(sshkey.pubkey, sshkey.id);
       this.env.log.msg(chalk.bold(id) + ':', this.prettyPublicNumbers(pn));
     }
   }

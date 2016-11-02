@@ -12,7 +12,6 @@ import {
 
 import { FatalException } from './errors';
 import { createFatalAPIFormat, isAPIResponseSuccess } from './http';
-import { prettyPath } from './utils/format';
 
 interface LoginResponse extends APIResponseSuccess {
   data: {
