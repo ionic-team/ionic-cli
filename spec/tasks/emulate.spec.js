@@ -242,12 +242,17 @@ describe('emulate command', function() {
       spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
     });
 
-    it('should not call runIonicScript if hasIonicScript is false', function(done) {
-      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
+    it('should not call runIonicScript if hasIonicScript for build and serve are both false', function(done) {
+      spyOn(npmScripts, 'hasIonicScript').andCallFake(function(task) {
+        if (task === 'build') {
+          return Q(false);
+        } else if (task === 'serve') {
+          return Q(false);
+        }
+      });
       spyOn(npmScripts, 'runIonicScript');
 
       emulate.run(null, argv, rawCliArguments).then(function() {
-        expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('build');
         expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', 'android'], false, true);
         done();
@@ -256,13 +261,65 @@ describe('emulate command', function() {
       });
     });
 
-    it('should call runIonicScript if hasIonicScript is true', function(done) {
-      spyOn(npmScripts, 'hasIonicScript').andReturn(Q(true));
+    it('should call runIonicScript(build) if ' +
+      'hasIonicScript(build) is true and hasIonicScript(build) is false', function(done) {
+      spyOn(npmScripts, 'hasIonicScript').andCallFake(function(task) {
+        if (task === 'build') {
+          return Q(true);
+        } else if (task === 'serve') {
+          return Q(false);
+        }
+      });
+      spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
+
+      emulate.run(null, argv, rawCliArguments).then(function() {
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build');
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', 'android'], false, true);
+        done();
+      }).catch(function(e) {
+        console.log(e);
+      });
+    });
+
+    it('should call runIonicScript(build) if ' +
+      'hasIonicScript(build) is true and hasIonicScript(build) is true and liveReload is not passed', function(done) {
+      spyOn(npmScripts, 'hasIonicScript').andCallFake(function(task) {
+        if (task === 'build') {
+          return Q(true);
+        } else if (task === 'serve') {
+          return Q(true);
+        }
+      });
+      spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
+
+      emulate.run(null, argv, rawCliArguments).then(function() {
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build');
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', 'android'], false, true);
+        done();
+      }).catch(function(e) {
+        console.log(e);
+      });
+    });
+
+    it('should call runIonicScript(build) if ' +
+      'hasIonicScript(build) is true and hasIonicScript(build) is true and liveReload is passed', function(done) {
+      var processArguments = ['node', 'ionic', 'emulate', 'android', '--livereload'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
+
+      spyOn(npmScripts, 'hasIonicScript').andCallFake(function(task) {
+        if (task === 'build') {
+          return Q(true);
+        } else if (task === 'serve') {
+          return Q(true);
+        }
+      });
       spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
 
       emulate.run(null, argv, rawCliArguments).then(function() {
         expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('build');
-        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build');
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('serve', ['-p', jasmine.any(Number), '--address', jasmine.any(String)]);
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', 'android'], false, true);
         done();
       }).catch(function(e) {
