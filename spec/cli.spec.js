@@ -384,7 +384,7 @@ describe('Cli', function() {
         spyOn(IonicCli, 'runWithNpmScripts').andReturn(Q(true));
         spyOn(fs, 'existsSync').andReturn(true);
         spyOn(IonicCli, 'loadGulpfile').andReturn(true);
-        spyOn(IonicCli, 'loadNpmScripts').andReturn(false);
+        spyOn(IonicCli, 'loadNpmScripts').andReturn({});
 
         IonicCli.run(['node', 'bin/ionic', 'fake'])
         .then(function() {
@@ -404,7 +404,9 @@ describe('Cli', function() {
         spyOn(IonicCli, 'runWithNpmScripts').andReturn(Q(true));
         spyOn(fs, 'existsSync').andReturn(true);
         spyOn(IonicCli, 'loadGulpfile').andReturn(false);
-        spyOn(IonicCli, 'loadNpmScripts').andReturn(true);
+        spyOn(IonicCli, 'loadNpmScripts').andReturn({
+          'fake:before': true
+        });
 
         IonicCli.run(['node', 'bin/ionic', 'fake'])
         .then(function() {
@@ -424,7 +426,9 @@ describe('Cli', function() {
         spyOn(IonicCli, 'runWithNpmScripts').andReturn(Q(true));
         spyOn(fs, 'existsSync').andReturn(true);
         spyOn(IonicCli, 'loadGulpfile').andReturn(true);
-        spyOn(IonicCli, 'loadNpmScripts').andReturn(true);
+        spyOn(IonicCli, 'loadNpmScripts').andReturn({
+          'fake:before': true
+        });
 
         IonicCli.run(['node', 'bin/ionic', 'fake'])
         .then(function() {
@@ -805,18 +809,6 @@ describe('Cli', function() {
   });
 
   describe('processExit method', function() {
-  });
-
-  describe('gatherInfo method', function() {
-    it('should return an object and gather info from Info function from app-lib', function() {
-      spyOn(Info, 'gatherInfo').andReturn({});
-      spyOn(Info, 'getIonicVersion');
-      spyOn(Info, 'getIonicCliVersion');
-
-      var info = IonicCli.gatherInfo();
-
-      expect(info).toEqual(jasmine.any(Object));
-    });
   });
 
   describe('printVersionWarning method', function() {

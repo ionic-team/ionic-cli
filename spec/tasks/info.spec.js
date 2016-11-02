@@ -5,6 +5,7 @@ var info = require('../../lib/ionic/info');
 var IonicAppLib = require('ionic-app-lib');
 var appLibUtils = IonicAppLib.utils;
 var appLibInfo = IonicAppLib.info;
+var Q = require('q');
 
 describe('info command', function() {
   describe('command settings', function() {
@@ -26,48 +27,42 @@ describe('info command', function() {
     var rawCliArguments = processArguments.slice(2);
     var argv = optimist(rawCliArguments).argv;
 
-    it('should fail if any Info task throws', function() {
+    it('should fail if any Info task throws', function(done) {
       spyOn(appLibUtils, 'fail');
       spyOn(appLibInfo, 'gatherInfo').andCallFake(function() {
-        throw new Error('error stuff');
+        return Q.reject(new Error('error stuff'));
       });
-      spyOn(appLibInfo, 'getIonicVersion');
-      spyOn(appLibInfo, 'getIonicCliVersion');
       spyOn(appLibInfo, 'printInfo');
       spyOn(appLibInfo, 'checkRuntime');
 
       // Expect failure
-      info.run(null, argv, rawCliArguments);
-      expect(appLibInfo.gatherInfo).toHaveBeenCalled();
-      expect(appLibUtils.fail).toHaveBeenCalled();
+      info.run(null, argv, rawCliArguments).fin(function() {
+        expect(appLibInfo.gatherInfo).toHaveBeenCalled();
+        expect(appLibUtils.fail).toHaveBeenCalled();
 
-      expect(appLibInfo.getIonicVersion).not.toHaveBeenCalled();
-      expect(appLibInfo.getIonicCliVersion).not.toHaveBeenCalled();
-      expect(appLibInfo.printInfo).not.toHaveBeenCalled();
-      expect(appLibInfo.checkRuntime).not.toHaveBeenCalled();
+        expect(appLibInfo.printInfo).not.toHaveBeenCalled();
+        expect(appLibInfo.checkRuntime).not.toHaveBeenCalled();
+        done();
+      });
     });
 
-    it('should gather info', function() {
+    it('should gather info', function(done) {
       var gatheredInfo = { info: 'hi' };
       spyOn(appLibUtils, 'fail');
       spyOn(process, 'cwd').andReturn('/hello/how/areyou');
-      spyOn(appLibInfo, 'gatherInfo').andReturn(gatheredInfo);
-      spyOn(appLibInfo, 'getIonicVersion');
-      spyOn(appLibInfo, 'getIonicCliVersion');
-      spyOn(appLibInfo, 'getIonicAppScriptsVersion');
+      spyOn(appLibInfo, 'gatherInfo').andReturn(Q(gatheredInfo));
       spyOn(appLibInfo, 'printInfo');
       spyOn(appLibInfo, 'checkRuntime');
 
       // Expect failure
-      info.run(null, argv, rawCliArguments);
-      expect(appLibInfo.gatherInfo).toHaveBeenCalled();
-      expect(appLibInfo.getIonicVersion).toHaveBeenCalledWith(gatheredInfo, '/hello/how/areyou');
-      expect(appLibInfo.getIonicCliVersion).toHaveBeenCalledWith(gatheredInfo, jasmine.any(String));
-      expect(appLibInfo.getIonicAppScriptsVersion).toHaveBeenCalledWith(gatheredInfo, '/hello/how/areyou');
-      expect(appLibInfo.printInfo).toHaveBeenCalledWith(gatheredInfo);
-      expect(appLibInfo.checkRuntime).toHaveBeenCalled();
+      info.run(null, argv, rawCliArguments).then(function() {
+        expect(appLibInfo.gatherInfo).toHaveBeenCalled();
+        expect(appLibInfo.printInfo).toHaveBeenCalledWith(gatheredInfo);
+        expect(appLibInfo.checkRuntime).toHaveBeenCalled();
 
-      expect(appLibUtils.fail).not.toHaveBeenCalled();
+        expect(appLibUtils.fail).not.toHaveBeenCalled();
+        done();
+      });
     });
   });
 });
