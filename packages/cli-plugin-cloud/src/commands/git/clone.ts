@@ -35,16 +35,17 @@ export class GitCloneCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let [ app_id, destination ] = inputs;
 
-    if (!destination) {
-      destination = app_id;
-    }
-
-    destination = path.resolve(destination);
-
     const configFile = await this.config.load();
     const app = await this.env.app.load(app_id);
 
     const remote = formatGitRepoUrl(configFile, app.id);
+
+    if (!destination) {
+      destination = app.slug ? app.slug : app.id;
+    }
+
+    destination = path.resolve(destination);
+
     await this.env.shell.run('git', ['clone', '-o', 'ionic', remote, destination], { stdio: 'inherit' });
 
     this.env.log.ok(`Your app has been cloned to ${chalk.bold(prettyPath(destination))}!`);
