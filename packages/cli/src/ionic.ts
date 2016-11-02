@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as inquirer from 'inquirer';
 import * as minimist from 'minimist';
 
-import { ConfigFile, LogLevel, SuperAgentError } from './definitions';
+import { isSuperAgentError } from './guards';
 
 import { IonicNamespace } from './commands';
 import { App } from './lib/app';
@@ -18,6 +18,7 @@ import { TASKS } from './lib/utils/task';
 import { Logger } from './lib/utils/logger';
 
 export * from './definitions';
+export * from './guards';
 
 export { Command, CommandMetadata } from './lib/command';
 export { CommandMap, Namespace, NamespaceMap } from './lib/command/namespace';
@@ -43,11 +44,6 @@ function cleanup() {
 
     task.clear();
   }
-}
-
-function isSuperAgentError(e: Error): e is SuperAgentError {
-  let err: SuperAgentError = <SuperAgentError>e;
-  return e && err.response && typeof err.response === 'object';
 }
 
 export async function run(pargv: string[], env: { [k: string]: string }) {
