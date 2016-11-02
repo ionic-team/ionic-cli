@@ -28,7 +28,7 @@ function isAppResponse(r: APIResponse): r is AppResponse {
 }
 
 export class App implements IApp {
-  protected details?: AppDetails;
+  protected details: { [app_id: string]: AppDetails } = {};
 
   constructor(protected session: ISession, protected project: IProject, protected client: IClient) {}
 
@@ -37,7 +37,7 @@ export class App implements IApp {
       app_id = await this.project.loadAppId();
     }
 
-    if (!this.details) {
+    if (!this.details[app_id]) {
       const req = this.client.make('GET', `/apps/${app_id}`)
         .set('Authorization', `Bearer ${await this.session.getAppUserToken(app_id)}`)
         .send({});
@@ -47,9 +47,9 @@ export class App implements IApp {
         throw createFatalAPIFormat(req, res);
       }
 
-      this.details = res.data;
+      this.details[app_id] = res.data;
     }
 
-    return this.details;
+    return this.details[app_id];
   }
 }

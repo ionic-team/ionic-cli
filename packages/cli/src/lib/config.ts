@@ -61,23 +61,33 @@ export abstract class BaseConfig<T> implements IConfig<T> {
 }
 
 export class Config extends BaseConfig<ConfigFile> {
-  provideDefaults(o: { [key: string]: any }): void {
-    if (!o['lastUpdated']) {
-      o['lastUpdated'] = new Date().toISOString();
+  provideDefaults(o: any): void {
+    if (!o.lastUpdated) {
+      o.lastUpdated = new Date().toISOString();
     }
 
-    if (!o['urls']) {
-      o['urls'] = {};
+    if (!o.urls) {
+      o.urls = {};
     }
 
-    if (!o['urls']['api']) {
-      o['urls']['api'] = 'https://api.ionic.io';
+    if (!o.urls.api) {
+      o.urls.api = 'https://api.ionic.io';
+    }
+
+    if (!o.tokens) {
+      o.tokens = {};
+    }
+
+    if (!o.tokens.appUser) {
+      o.tokens.appUser = {};
     }
   }
 
-  is<ConfigFile>(j: { [key: string]: any }): j is ConfigFile {
-    return typeof j['lastUpdated'] === 'string'
-      && typeof j['urls'] === 'object'
-      && typeof j['urls']['api'] === 'string';
+  is<ConfigFile>(j: any): j is ConfigFile {
+    return typeof j.lastUpdated === 'string'
+      && typeof j.urls === 'object'
+      && typeof j.urls.api === 'string'
+      && typeof j.tokens === 'object'
+      && typeof j.tokens.appUser === 'object';
   }
 }

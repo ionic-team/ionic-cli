@@ -70,17 +70,17 @@ export class Session implements ISession {
 
     let c = await this.config.load();
 
-    c.token = res.data.token;
+    c.tokens.user = res.data.token;
   }
 
   async getUserToken(): Promise<string> {
     const c = await this.config.load();
 
-    if (!c.token) {
+    if (!c.tokens.user) {
       throw new FatalException(`You are not logged in! Run '${chalk.bold('ionic login')}'.`);
     }
 
-    return c.token;
+    return c.tokens.user;
   }
 
   async getAppUserToken(app_id?: string): Promise<string> {
@@ -88,27 +88,33 @@ export class Session implements ISession {
       app_id = await this.project.loadAppId();
     }
 
-    let req = this.client.make('GET', '/auth/tokens')
-      .set('Authorization', `Bearer ${await this.getUserToken()}`)
-      .query({ type: 'app-user' })
-      .send();
+    const c = await this.config.load();
 
-    let res = await this.client.do(req);
+    if (!c.tokens.appUser[app_id]) {
+      const req = this.client.make('GET', '/auth/tokens')
+        .set('Authorization', `Bearer ${await this.getUserToken()}`)
+        .query({ type: 'app-user' })
+        .send();
 
-    if (!isAuthTokenResponse(res)) {
-      throw createFatalAPIFormat(req, res);
-    }
+      const res = await this.client.do(req);
 
-    // TODO: pagination
-    for (let token of res.data) {
-      if (token.details.app_id == app_id) {
-        return token.token;
+      if (!isAuthTokenResponse(res)) {
+        throw createFatalAPIFormat(req, res);
+      }
+
+      // TODO: pagination
+      for (let token of res.data) {
+        c.tokens.appUser[token.details.app_id] = token.token;
       }
     }
 
-    // TODO: we can store the app-user tokens locally to cache them
     // TODO: if this is a new app, an app-user token may not exist for the user
+    // TODO: if tokens are invalidated, what do (hint: app tokens)
 
-    throw new FatalException(`A token does not exist for your account on App '${app_id}'.`);
+    if (!c.tokens.appUser[app_id]) {
+      throw new FatalException(`A token does not exist for your account on App '${app_id}'.`);
+    }
+
+    return c.tokens.appUser[app_id];
   }
 }

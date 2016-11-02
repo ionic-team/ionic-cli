@@ -105,7 +105,7 @@ export interface CommandData {
 export interface ISession {
   login(email: string, password: string): Promise<void>;
   getUserToken(): Promise<string>;
-  getAppUserToken(): Promise<string>;
+  getAppUserToken(app_id?: string): Promise<string>;
 }
 
 export interface IShellRunOptions extends child_process.SpawnOptions {
@@ -119,9 +119,12 @@ export interface IShell {
 
 export interface ConfigFile {
   lastUpdated: string;
-  token?: string;
   urls: {
     api: string;
+  };
+  tokens: {
+    user?: string;
+    appUser: { [app_id: string]: string };
   };
 }
 
