@@ -39,7 +39,7 @@ export interface AppDetails {
 }
 
 export interface IApp {
-  load(): Promise<AppDetails>;
+  load(app_id?: string): Promise<AppDetails>;
 }
 
 export interface IProject extends IConfig<ProjectFile> {

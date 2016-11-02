@@ -5,10 +5,10 @@ import { promisify } from './promisify';
 export const ERROR_FILE_NOT_FOUND = 'FILE_NOT_FOUND';
 export const ERROR_FILE_INVALID_JSON = 'FILE_INVALID_JSON';
 
-const fsReadFile = promisify<string, string, string>(fs.readFile);
-const fsWriteFile = promisify<void, string, string>(fs.writeFile);
+export const fsReadFile = promisify<string, string, string>(fs.readFile);
+export const fsWriteFile = promisify<void, string, any, { encoding?: string; mode?: number; flag?: string; }>(fs.writeFile);
 
-export async function readJsonFile(filePath: string): Promise<{ [key: string]: any }> {
+export async function fsReadJsonFile(filePath: string): Promise<{ [key: string]: any }> {
   try {
     const f = await fsReadFile(filePath, 'utf8');
     return JSON.parse(f);
@@ -23,8 +23,8 @@ export async function readJsonFile(filePath: string): Promise<{ [key: string]: a
   }
 }
 
-export async function writeJsonFile(filePath: string, json: { [key: string]: any}): Promise<void> {
-  return fsWriteFile(filePath, JSON.stringify(json, null, 2));
+export async function fsWriteJsonFile(filePath: string, json: { [key: string]: any}, options: { encoding?: string; mode?: number; flag?: string; }): Promise<void> {
+  return fsWriteFile(filePath, JSON.stringify(json, null, 2), options);
 }
 
 export async function fileToString(filepath: string): Promise<string> {

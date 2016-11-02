@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 import { ConfigFile, IConfig } from '../definitions';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
-import { ERROR_FILE_NOT_FOUND, readJsonFile, writeJsonFile } from './utils/fs';
+import { ERROR_FILE_NOT_FOUND, fsReadJsonFile, fsWriteJsonFile } from './utils/fs';
 import { cloneDeep, isEqual } from 'lodash';
 
 export abstract class BaseConfig<T> implements IConfig<T> {
@@ -26,7 +26,7 @@ export abstract class BaseConfig<T> implements IConfig<T> {
       let o: { [key: string]: any };
 
       try {
-        o = await readJsonFile(this.filePath);
+        o = await fsReadJsonFile(this.filePath);
       } catch (e) {
         if (e === ERROR_FILE_NOT_FOUND) {
           o = {};
@@ -55,7 +55,7 @@ export abstract class BaseConfig<T> implements IConfig<T> {
     }
 
     if (configFile && !isEqual(configFile, this.originalConfigFile)) {
-      await writeJsonFile(this.filePath, configFile);
+      await fsWriteJsonFile(this.filePath, configFile, { encoding: 'utf8' });
       this.configFile = configFile;
       this.originalConfigFile = cloneDeep(configFile);
     }

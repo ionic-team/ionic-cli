@@ -54,7 +54,7 @@ export class SSHListCommand extends Command {
     }
 
     for (let sshkey of res.data) {
-      const [_, _, pn, id] = await parsePublicKey(sshkey.pubkey, sshkey.id);
+      const [_0, _1, pn, id] = await parsePublicKey(sshkey.pubkey, sshkey.id);
       this.env.log.msg(chalk.bold(id) + ':', this.prettyPublicNumbers(pn));
     }
   }
