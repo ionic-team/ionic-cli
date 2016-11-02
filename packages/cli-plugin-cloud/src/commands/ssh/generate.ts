@@ -56,7 +56,7 @@ export class SSHGenerateCommand extends Command {
     const pubkeyPath = path.resolve(options['pubkey-path'] ? String(options['pubkey-path']) : 'id_rsa.pub');
 
     const req = this.env.client.make('POST', '/apps/sshkeys/generate')
-      .set('Authorization', `Bearer ${await this.env.session.getToken('user')}`)
+      .set('Authorization', `Bearer ${await this.env.session.getUserToken()}`)
       .send({});
     const res = await this.env.client.do(req);
 

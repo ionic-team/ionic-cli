@@ -26,7 +26,7 @@ export class SSHDeleteCommand extends Command {
     const id = inputs[0];
 
     const req = this.env.client.make('DELETE', `/apps/sshkeys/${id}`)
-      .set('Authorization', `Bearer ${await this.env.session.getToken('user')}`);
+      .set('Authorization', `Bearer ${await this.env.session.getUserToken()}`);
     await this.env.client.do(req);
 
     this.env.log.ok(`Your public key (${chalk.bold(id)}) has been deleted from Ionic.`);

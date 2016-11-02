@@ -1,0 +1,52 @@
+import * as path from 'path';
+
+import * as chalk from 'chalk';
+
+import {
+  APIResponse,
+  APIResponseSuccess,
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandMetadata,
+  prettyPath,
+  validators
+} from '@ionic/cli';
+
+import { Command } from '../../command';
+import { formatGitRepoUrl } from '../../utils/git';
+
+@CommandMetadata({
+  name: 'remote',
+  description: 'Clones an Ionic app git repository to your computer',
+  inputs: [
+    {
+      name: 'app-id',
+      description: 'The App ID of the Ionic app to clone',
+      validators: [validators.required]
+    },
+    {
+      name: 'path',
+      description: 'The destination directory of the cloned app'
+    }
+  ],
+  isProjectTask: false
+})
+export class GitCloneCommand extends Command {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    let [ app_id, destination ] = inputs;
+
+    if (!destination) {
+      destination = app_id;
+    }
+
+    destination = path.resolve(destination);
+
+    const configFile = await this.config.load();
+    const app = await this.env.app.load(app_id);
+
+    const remote = formatGitRepoUrl(configFile, app.id);
+    await this.env.shell.run('git', ['clone', '-o', 'ionic', remote, destination], { stdio: 'inherit' });
+
+    this.env.log.ok(`Your app has been cloned to ${chalk.bold(prettyPath(destination))}!`);
+  }
+}

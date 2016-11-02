@@ -32,7 +32,7 @@ interface SSHListResponse extends APIResponseSuccess {
 
 function isSSHListResponse(r: APIResponse): r is SSHListResponse {
   const res: SSHListResponse = <SSHListResponse>r;
-  if (!isAPIResponseSuccess(r) || !(r.data instanceof Array)) {
+  if (!isAPIResponseSuccess(r) || !Array.isArray(r.data)) {
     return false;
   }
 
@@ -55,7 +55,7 @@ function isSSHListResponse(r: APIResponse): r is SSHListResponse {
 export class SSHListCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const req = this.env.client.make('GET', `/apps/sshkeys`)
-      .set('Authorization', `Bearer ${await this.env.session.getToken('user')}`);
+      .set('Authorization', `Bearer ${await this.env.session.getUserToken()}`);
     const res = await this.env.client.do(req);
 
     if (!isSSHListResponse(res)) {

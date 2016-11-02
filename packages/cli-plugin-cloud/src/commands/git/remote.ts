@@ -1,20 +1,13 @@
-import * as fs from 'fs';
-import * as path from 'path';
-
-import * as chalk from 'chalk';
-
 import {
   APIResponse,
   APIResponseSuccess,
   CommandLineInputs,
   CommandLineOptions,
-  CommandMetadata,
-  prettyPath,
-  promisify,
-  runcmd
+  CommandMetadata
 } from '@ionic/cli';
 
 import { Command } from '../../command';
+import { formatGitRepoUrl } from '../../utils/git';
 
 @CommandMetadata({
   name: 'remote',
@@ -24,7 +17,7 @@ import { Command } from '../../command';
 export class GitRemoteCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [projectFile, configFile] = await Promise.all([this.env.project.load(), this.config.load()]);
-    const remote = `git@${configFile.git.host}:${projectFile.app_id}.git`;
+    const remote = formatGitRepoUrl(configFile, projectFile.app_id);
     const regex = /ionic\t(.+) \(\w+\)/;
 
     // would like to use get-url, but not available in git 2.0.0
