@@ -7,10 +7,10 @@ import * as minimist from 'minimist';
 import { ConfigFile, LogLevel, SuperAgentError } from './definitions';
 
 import { IonicNamespace } from './commands';
-import { formatError as formatSuperAgentError } from './lib/http';
+import { App } from './lib/app';
 import { BaseConfig, Config } from './lib/config';
 import { FatalException } from './lib/errors';
-import { Client } from './lib/http';
+import { formatError as formatSuperAgentError, Client } from './lib/http';
 import { Project } from './lib/project';
 import { Session } from './lib/session';
 import { Shell } from './lib/shell';
@@ -67,10 +67,12 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 
     const client = new Client(c.urls.api);
     const project = new Project('.');
-    const session = new Session(config, client);
+    const session = new Session(config, project, client);
+    const app = new App(session, project, client);
     const shell = new Shell();
 
     const ns = new IonicNamespace({
+      app,
       client,
       config,
       inquirer,

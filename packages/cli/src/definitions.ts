@@ -33,10 +33,22 @@ export interface ProjectFile {
   [key: string]: any;
 }
 
+export interface AppDetails {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface IApp {
+  load(): Promise<AppDetails>;
+}
+
 export interface IProject {
   directory: string;
+  projectFilePath: string;
 
   load(): Promise<ProjectFile>;
+  loadAppId(): Promise<string>;
   save(projectFile: ProjectFile): Promise<void>;
 }
 
@@ -90,11 +102,10 @@ export interface CommandData {
   options?: CommandOption[];
 }
 
-export type TokenType = 'user';
-
 export interface ISession {
   login(email: string, password: string): Promise<void>;
-  getToken(type?: TokenType): Promise<string>;
+  getUserToken(): Promise<string>;
+  getAppUserToken(): Promise<string>;
 }
 
 export interface IShellRunOptions extends child_process.SpawnOptions {
@@ -170,6 +181,7 @@ export interface IIonicNamespace {
 
 export interface CommandEnvironment {
   pargv: string[];
+  app: IApp;
   client: IClient;
   config: IConfig<ConfigFile>;
   inquirer: typeof inquirer;

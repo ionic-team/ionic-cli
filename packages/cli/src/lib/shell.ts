@@ -31,8 +31,8 @@ export class Shell implements IShell {
 
       if (options.fatal) {
         if (options.show) {
-          throw new FatalException(`An error occurred while running the above command (exit code ${code})`
-                                 + (err ? `:\n\n${err}` : ' with no output.\n'), code);
+          const helpLine = options.stdio === 'inherit' ? '.\n' : (err ? `:\n\n${err}` : ' with no output.\n');
+          throw new FatalException(`An error occurred while running the above command (exit code ${code})` + helpLine, code);
         } else {
           throw new FatalException(`Subprocess (${command}) encountered an error (exit code ${code}).`, code);
         }

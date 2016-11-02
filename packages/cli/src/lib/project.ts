@@ -39,6 +39,17 @@ export class Project implements IProject {
     return await this.projectFile;
   }
 
+  public async loadAppId(): Promise<string> {
+    const p = await this.load();
+
+    if (!p.app_id) {
+      throw new FatalException(`Your project file (${chalk.bold(prettyPath(this.projectFilePath))}) does not contain '${chalk.bold('app_id')}'. `
+                             + `Run '${chalk.bold('ionic cloud:setup')}'.`);  // TODO: we're telling people to do cloud:setup (which is a plugin). is this okay?
+    }
+
+    return p.app_id;
+  }
+
   public async save(projectFile: ProjectFile): Promise<void> {
     await writeJsonFile(this.projectFilePath, projectFile);
     this.projectFile = projectFile;
