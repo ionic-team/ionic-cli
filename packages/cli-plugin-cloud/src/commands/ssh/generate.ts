@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -12,13 +11,11 @@ import {
   CommandLineOptions,
   CommandMetadata,
   fsMkdirp,
+  fsStat,
   indent,
   isAPIResponseSuccess,
-  prettyPath,
-  promisify
+  prettyPath
 } from '@ionic/cli';
-
-const fsStat = promisify<fs.Stats, string>(fs.stat);
 
 interface SlugResponse extends APIResponseSuccess {
   data: string;

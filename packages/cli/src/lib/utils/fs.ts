@@ -10,20 +10,25 @@ export const ERROR_FILE_NOT_FOUND = 'FILE_NOT_FOUND';
 export const ERROR_FILE_INVALID_JSON = 'FILE_INVALID_JSON';
 export const ERROR_OVERWRITE_DENIED = 'OVERWRITE_DENIED';
 
+export interface FSReadFileOptions {
+  encoding: string;
+  flag?: string;
+}
+
 export interface FSWriteFileOptions {
-  encoding?: string;
+  encoding: string;
   mode?: number;
   flag?: string;
 }
 
 export const fsMkdir = promisify<void, string, number>(fs.mkdir);
 export const fsStat = promisify<fs.Stats, string>(fs.stat);
-export const fsReadFile = promisify<string, string, string>(fs.readFile);
+export const fsReadFile = promisify<string, string, FSReadFileOptions>(fs.readFile);
 export const fsWriteFile = promisify<void, string, any, FSWriteFileOptions>(fs.writeFile);
 
-export async function fsReadJsonFile(filePath: string): Promise<{ [key: string]: any }> {
+export async function fsReadJsonFile(filePath: string, options: FSReadFileOptions = { encoding: 'utf8' }): Promise<{ [key: string]: any }> {
   try {
-    const f = await fsReadFile(filePath, 'utf8');
+    const f = await fsReadFile(filePath, options);
     return JSON.parse(f);
   } catch (e) {
     if (e.code === 'ENOENT') {
@@ -42,7 +47,7 @@ export async function fsWriteJsonFile(filePath: string, json: { [key: string]: a
 
 export async function fileToString(filepath: string): Promise<string> {
   try {
-    return await fsReadFile(filepath, 'utf8');
+    return await fsReadFile(filepath, { encoding: 'utf8' });
   } catch (e) {
     if (e.code === 'ENOENT') {
       return '';

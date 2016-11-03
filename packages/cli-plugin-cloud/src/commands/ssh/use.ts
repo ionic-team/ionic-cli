@@ -97,7 +97,7 @@ export class SSHUseCommand extends Command implements ICommand {
       throw e;
     }
 
-    const f = await fsReadFile(keyPath, 'utf8');
+    const f = await fsReadFile(keyPath, { encoding: 'utf8' });
     const lines = f.split('\n');
 
     if (!lines[0].match(/^\-{5}BEGIN [R|D]SA PRIVATE KEY\-{5}$/)) {

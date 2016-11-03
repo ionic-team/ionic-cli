@@ -1,11 +1,11 @@
-import * as fs from 'fs';
-
 import * as chalk from 'chalk';
 
-import { prettyPath, promisify, FatalException } from '@ionic/cli';
-
-const fsStat = promisify<fs.Stats, string>(fs.stat);
-const fsReadFile = promisify<string, string, string>(fs.readFile);
+import {
+  FatalException,
+  fsStat,
+  fsReadFile,
+  prettyPath
+} from '@ionic/cli';
 
 export async function parsePublicKeyFile(pubkeyPath: string): Promise<[string, string, string, string]> {
   try {
@@ -19,7 +19,7 @@ export async function parsePublicKeyFile(pubkeyPath: string): Promise<[string, s
     throw e;
   }
 
-  return parsePublicKey((await fsReadFile(pubkeyPath, 'utf8')).trim(), prettyPath(pubkeyPath));
+  return parsePublicKey((await fsReadFile(pubkeyPath, { encoding: 'utf8' })).trim(), prettyPath(pubkeyPath));
 }
 
 export async function parsePublicKey(pubkey: string, name: string): Promise<[string, string, string, string]> {
