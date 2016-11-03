@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 
 import * as inquirer from 'inquirer';
 
@@ -15,6 +16,7 @@ export interface FSWriteFileOptions {
   flag?: string;
 }
 
+export const fsMkdir = promisify<void, string, number>(fs.mkdir);
 export const fsStat = promisify<fs.Stats, string>(fs.stat);
 export const fsReadFile = promisify<string, string, string>(fs.readFile);
 export const fsWriteFile = promisify<void, string, any, FSWriteFileOptions>(fs.writeFile);
@@ -74,4 +76,25 @@ export async function fsWriteFilePromptOverwrite(p: string, data: any, options: 
   }
 
   return fsWriteFile(p, data, options);
+}
+
+export async function fsMkdirp(p: string, mode?: number): Promise<void> {
+  if (typeof mode === 'undefined') {
+    mode = 0o777 & (~process.umask());
+  }
+
+  const absPath = path.resolve(p);
+  const pathObj = path.parse(absPath);
+  const dirnames = absPath.split(path.sep).splice(1);
+  const dirs = dirnames.map((v, i) => path.resolve(pathObj.root, ...dirnames.slice(0, i), v));
+
+  for (let dir of dirs) {
+    try {
+      await fsMkdir(dir, mode);
+    } catch (e) {
+      if (e.code !== 'EEXIST') {
+        throw e;
+      }
+    }
+  }
 }
