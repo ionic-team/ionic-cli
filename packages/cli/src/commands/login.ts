@@ -32,5 +32,6 @@ export class LoginCommand extends Command {
     let [email, password] = inputs;
 
     await this.env.session.login(email, password);
+    this.env.log.ok('You are logged in!');
   }
 }

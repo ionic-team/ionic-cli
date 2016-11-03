@@ -3,13 +3,13 @@ import * as util from 'util';
 import * as chalk from 'chalk';
 
 import { ILogger, LogLevel, LoggerOptions } from '../../definitions';
+import { isLogLevel, LOG_LEVELS } from '../../guards';
+import { FatalException } from '../errors';
 import { indent } from './format';
-
-const LEVELS: LogLevel[] = ['debug', 'info', 'ok', 'warn', 'error'];
 
 export class Logger implements ILogger {
 
-  public level: LogLevel;
+  protected _level: LogLevel;
   public prefix: string;
 
   constructor(opts: LoggerOptions = {}) {
@@ -17,32 +17,46 @@ export class Logger implements ILogger {
     this.prefix = opts.prefix || '';
   }
 
-  public debug(...args: any[]): void {
+  get level(): LogLevel {
+    return this._level;
+  }
+
+  set level(v: LogLevel) {
+    const s = v.toLowerCase();
+
+    if (!isLogLevel(s)) {
+      throw new FatalException(`Invalid log level '${chalk.bold(v)}' (choose from: ${LOG_LEVELS.map(l => chalk.bold(l)).join(', ')})`);
+    }
+
+    this._level = s;
+  }
+
+  debug(...args: any[]): void {
     this.log('debug', ...args);
   }
 
-  public info(...args: any[]): void {
+  info(...args: any[]): void {
     this.log('info', ...args);
   }
 
-  public ok(...args: any[]): void {
+  ok(...args: any[]): void {
     this.log('ok', ...args);
   }
 
-  public warn(...args: any[]): void {
+  warn(...args: any[]): void {
     this.log('warn', ...args);
   }
 
-  public error(...args: any[]): void {
+  error(...args: any[]): void {
     this.log('error', ...args);
   }
 
-  public msg(): void {
+  msg(): void {
     console.log.apply(console, arguments);
   }
 
   private shouldLog(level: LogLevel): boolean {
-    return LEVELS.indexOf(level) >= LEVELS.indexOf(this.level);
+    return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(this.level);
   }
 
   private log(level: LogLevel, ...args: any[]): void {

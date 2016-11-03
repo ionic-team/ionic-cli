@@ -55,9 +55,12 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 
   const log = new Logger();
   const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
-  log.level = argv['loglevel'] || 'info'; // TODO validate log level
 
   try {
+    if (argv['log-level']) {
+      log.level = argv['log-level'];
+    }
+
     const c = await config.load();
 
     const client = new Client(c.urls.api);

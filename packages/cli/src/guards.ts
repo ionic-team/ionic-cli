@@ -1,4 +1,11 @@
-import { SuperAgentError } from './definitions';
+import { LogLevel, SuperAgentError } from './definitions';
+
+export const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'ok', 'warn', 'error'];
+
+export function isLogLevel(l: string): l is LogLevel {
+  const loglevel: LogLevel = <LogLevel>l;
+  return LOG_LEVELS.indexOf(loglevel) !== -1;
+}
 
 export function isSuperAgentError(e: Error): e is SuperAgentError {
   const err: SuperAgentError = <SuperAgentError>e;
