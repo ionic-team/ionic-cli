@@ -69,7 +69,12 @@ export class Session implements ISession {
 
     let c = await this.config.load();
 
-    c.tokens.user = res.data.token;
+    if (c.tokens.user !== res.data.token) {
+      c.tokens.user = res.data.token;
+
+      // User token changed, so the user may have changed. Wipe out other tokens!
+      c.tokens.appUser = {};
+    }
   }
 
   async getUserToken(): Promise<string> {
