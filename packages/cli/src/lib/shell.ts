@@ -3,6 +3,20 @@ import { FatalException } from './errors';
 import { runcmd } from './utils/shell';
 
 export class Shell implements IShell {
+  async exists(command: string): Promise<boolean> {
+    try {
+      await runcmd('type', [command]);
+    } catch (e) {
+      if (Array.isArray(e)) {
+        return false;
+      }
+
+      throw e;
+    }
+
+    return true;
+  }
+
   async run(command: string, args?: string[], options: IShellRunOptions = {}): Promise<string> {
     if (typeof options.show === 'undefined') {
       options.show = true;
@@ -17,7 +31,13 @@ export class Shell implements IShell {
     }
 
     try {
-      return await runcmd(command, args, options);
+      const out = await runcmd(command, args, options);
+
+      if (options.stdio === 'inherit') {
+        process.stdout.write('\n');
+      }
+
+      return out;
     } catch (e) {
       if (e.code === 'ENOENT') {
         throw new FatalException(`Command not found: ${command}`, 127);
