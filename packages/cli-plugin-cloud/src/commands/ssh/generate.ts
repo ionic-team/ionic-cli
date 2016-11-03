@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -10,10 +11,14 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  fsMkdirp,
   indent,
   isAPIResponseSuccess,
-  prettyPath
+  prettyPath,
+  promisify
 } from '@ionic/cli';
+
+const fsStat = promisify<fs.Stats, string>(fs.stat);
 
 interface SlugResponse extends APIResponseSuccess {
   data: string;
@@ -38,12 +43,24 @@ function isSlugResponse(r: APIResponse): r is SlugResponse {
 export class SSHGenerateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     const keyPath = inputs[0] ? path.resolve(String(inputs[0])) : path.resolve(os.homedir(), '.ssh', 'ionic_rsa');
+    const keyPathDir = path.dirname(keyPath);
     const pubkeyPath = keyPath + '.pub';
 
     if (!(await this.env.shell.exists('ssh-keygen'))) {
       this.env.log.error('Command not found: ssh-keygen');
       this.env.log.warn('OpenSSH not found on your computer.'); // TODO: more helpful message
       return 1;
+    }
+
+    try {
+      await fsStat(keyPathDir);
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        await fsMkdirp(keyPathDir, 0o700);
+        this.env.log.ok(`Created ${chalk.bold(prettyPath(keyPathDir))} directory for you.\n`);
+      } else {
+        throw e;
+      }
     }
 
     const req = this.env.client.make('POST', `/apps/slug`).send({});
