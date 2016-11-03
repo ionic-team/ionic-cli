@@ -62,12 +62,12 @@ export class Client implements IClient {
 
 export function isAPIResponseSuccess(r: APIResponse): r is APIResponseSuccess {
   let res: APIResponseSuccess = <APIResponseSuccess>r;
-  return r && res.data && typeof res.data === 'object';
+  return res && (typeof res.data === 'object' || typeof res.data === 'string');
 }
 
 export function isAPIResponseError(r: APIResponse): r is APIResponseError {
   let res: APIResponseError = <APIResponseError>r;
-  return r && res.error && typeof res.error === 'object';
+  return res && typeof res.error === 'object';
 }
 
 export function createFatalAPIFormat(req: superagent.SuperAgentRequest, res: APIResponse): FatalException {

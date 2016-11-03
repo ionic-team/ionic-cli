@@ -142,7 +142,7 @@ export interface APIResponseMeta {
   request_id: string;
 }
 
-export type APIResponseData = Object | Object[];
+export type APIResponseData = Object | Object[] | string;
 
 export interface APIResponseErrorDetails {
   error_type: string;
