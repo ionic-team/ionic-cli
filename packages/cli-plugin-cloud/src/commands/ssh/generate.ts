@@ -1,3 +1,4 @@
+import * as os from 'os';
 import * as path from 'path';
 
 import * as chalk from 'chalk';
@@ -9,78 +10,61 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  ERROR_OVERWRITE_DENIED,
+  indent,
   isAPIResponseSuccess,
-  fsWriteFile,
-  fsWriteFilePromptOverwrite,
   prettyPath
 } from '@ionic/cli';
 
-interface SSHGenerateResponse extends APIResponseSuccess {
-  data: {
-    key: string,
-    pubkey: string
-  };
+interface SlugResponse extends APIResponseSuccess {
+  data: string;
 }
 
-function isSSHGenerateResponse(r: APIResponse): r is SSHGenerateResponse {
-  const res: SSHGenerateResponse = <SSHGenerateResponse>r;
-  return isAPIResponseSuccess(r) && typeof res.data.key === 'string' && typeof res.data.pubkey === 'string';
+function isSlugResponse(r: APIResponse): r is SlugResponse {
+  const res: SlugResponse = <SlugResponse>r;
+  return isAPIResponseSuccess(r) && typeof res.data === 'string';
 }
 
 @CommandMetadata({
   name: 'generate',
   description: 'Generates a private and public SSH key pair',
-  options: [
+  inputs: [
     {
       name: 'key-path',
-      description: 'Destination of private key file',
-      default: 'id_rsa'
-    },
-    {
-      name: 'pubkey-path',
-      description: 'Destination of public key file',
-      default: 'id_rsa.pub'
-    },
-    {
-      name: 'yes',
-      description: 'Answer yes to all confirmation prompts',
-      aliases: ['y'],
-      type: Boolean
+      description: 'Destination of private key file'
     }
   ],
   isProjectTask: false
 })
 export class SSHGenerateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-    const keyPath = path.resolve(options['key-path'] ? String(options['key-path']) : 'id_rsa');
-    const pubkeyPath = path.resolve(options['pubkey-path'] ? String(options['pubkey-path']) : 'id_rsa.pub');
-    const fsWriteFn = options['yes'] ? fsWriteFile : fsWriteFilePromptOverwrite;
+    const keyPath = inputs[0] ? path.resolve(String(inputs[0])) : path.resolve(os.homedir(), '.ssh', 'ionic_rsa');
+    const pubkeyPath = keyPath + '.pub';
 
-    const req = this.env.client.make('POST', '/apps/sshkeys/generate')
-      .set('Authorization', `Bearer ${await this.env.session.getUserToken()}`)
-      .send({});
+    if (!(await this.env.shell.exists('ssh-keygen'))) {
+      this.env.log.error('Command not found: ssh-keygen');
+      this.env.log.warn('OpenSSH not found on your computer.'); // TODO: more helpful message
+      return 1;
+    }
+
+    const req = this.env.client.make('POST', `/apps/slug`).send({});
     const res = await this.env.client.do(req);
 
-    if (!isSSHGenerateResponse(res)) {
+    if (!isSlugResponse(res)) {
       throw this.exitAPIFormat(req, res);
     }
 
-    this.env.log.ok('Generated SSH keys.');
+    this.env.log.info(`You will be prompted to provide a ${chalk.bold('passphrase')}, which is `
+                    + 'used to protect your private key should you lose it. (If someone has your '
+                    + 'private key, they can impersonate you!) Passphrases are recommended, but not required.');
 
-    try {
-      await fsWriteFn(keyPath, res.data.key, { encoding: 'utf8', mode: 0o600 });
-      await fsWriteFn(pubkeyPath, res.data.pubkey, { encoding: 'utf8', mode: 0o644 });
-    } catch (e) {
-      if (e === ERROR_OVERWRITE_DENIED) {
-        return 1;
-      } else {
-        throw e;
-      }
-    }
+    await this.env.shell.run('ssh-keygen', ['-q', '-t', 'rsa', '-b', '2048', '-C', res.data, '-f', keyPath], { stdio: 'inherit' });
 
-    this.env.log.ok('A new pair of SSH keys has been downloaded to your computer!\n'
-                  + `Private Key (${chalk.bold(prettyPath(keyPath))}): Keep this in a safe spot (such as ${chalk.bold('~/.ssh/')}).\n`
+    this.env.log.ok('A new pair of SSH keys has been generated!\n'
+                  + `Private Key (${chalk.bold(prettyPath(keyPath))}): Keep this safe!\n`
                   + `Public Key (${chalk.bold(prettyPath(pubkeyPath))}): Give this to all your friends!`);
+
+    this.env.log.info('\nNext steps:\n'
+                    + `${indent(4)}- Add your public key to Ionic: ${chalk.bold('ionic cloud:ssh add ' + prettyPath(pubkeyPath))}\n`
+                    + `${indent(4)}- Use your private key for secure communication with Ionic: ${chalk.bold('ionic cloud:ssh use ' + prettyPath(keyPath))}`);
   }
 }

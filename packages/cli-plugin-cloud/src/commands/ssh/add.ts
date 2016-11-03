@@ -27,6 +27,7 @@ interface SSHAddResponse extends APIResponseSuccess {
 function isSSHAddResponse(r: APIResponse): r is SSHAddResponse {
   const res: SSHAddResponse = <SSHAddResponse>r;
   return isAPIResponseSuccess(r)
+    && typeof res.data === 'object'
     && typeof res.data.pubkey === 'string'
     && typeof res.data.id === 'string'
     && typeof res.data.created === 'string'

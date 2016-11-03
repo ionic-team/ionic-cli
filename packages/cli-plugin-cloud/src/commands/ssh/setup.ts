@@ -34,7 +34,7 @@ export class SSHSetupCommand extends Command {
     const skipPrompts = options['yes'];
 
     this.env.log.msg('The automatic SSH setup will do the following:\n'
-                   + `${indent()}- Generate SSH key pair on our server and download them to your computer.\n`
+                   + `${indent()}- Generate SSH key pair with OpenSSH.\n`
                    + `${indent()}- Upload the generated SSH public key to our server, registering it on your account.\n`
                    + `${indent()}- Modify your SSH config (${chalk.bold(prettyPath(sshconfigPath))}) to use the generated SSH private key for our server(s).`);
 
