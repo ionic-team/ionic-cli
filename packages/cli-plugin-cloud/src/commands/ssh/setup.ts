@@ -15,6 +15,14 @@ import {
 @CommandMetadata({
   name: 'setup',
   description: 'Setup your Ionic SSH keys automatically',
+  options: [
+    {
+      name: 'yes',
+      description: 'Answer yes to all confirmation prompts',
+      aliases: ['y'],
+      type: Boolean
+    }
+  ],
   isProjectTask: false
 })
 export class SSHSetupCommand extends Command {
@@ -23,6 +31,7 @@ export class SSHSetupCommand extends Command {
     const sshPath = path.resolve(os.homedir(), '.ssh');
     const keyPath = path.resolve(sshPath, 'ionic_rsa');
     const pubkeyPath = path.resolve(sshPath, 'ionic_rsa.pub');
+    const skipPrompts = options['yes'];
 
     this.env.log.msg('The automatic SSH setup will do the following:\n'
                    + `${indent()}- Generate SSH key pair on our server and download them to your computer.\n`
@@ -31,21 +40,24 @@ export class SSHSetupCommand extends Command {
 
     // TODO: link to docs about manual git setup
 
-    const confirmation = await this.env.inquirer.prompt({
-      type: 'confirm',
-      name: 'apply',
-      message: 'May we proceed?'
-    });
+    if (!skipPrompts) {
+      const confirmation = await this.env.inquirer.prompt({
+        type: 'confirm',
+        name: 'apply',
+        message: 'May we proceed?'
+      });
 
-    if (!confirmation['apply']) {
-      return 1;
+      if (!confirmation['apply']) {
+        return 1;
+      }
     }
 
     await this.cli.run([
       'cloud:ssh',
       'generate',
       '--key-path', keyPath,
-      '--pubkey-path', pubkeyPath
+      '--pubkey-path', pubkeyPath,
+      skipPrompts ? '-y' : ''
     ]);
 
     await this.cli.run([
@@ -57,7 +69,8 @@ export class SSHSetupCommand extends Command {
     await this.cli.run([
       'cloud:ssh',
       'use',
-      keyPath
+      keyPath,
+      skipPrompts ? '-y' : ''
     ]);
   }
 }

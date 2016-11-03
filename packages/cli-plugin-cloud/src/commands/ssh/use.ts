@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -11,18 +10,16 @@ import {
   CommandMetadata,
   ICommand,
   fileToString,
+  fsReadFile,
+  fsStat,
+  fsWriteFile,
   indent,
   prettyPath,
-  promisify,
   validators
 } from '@ionic/cli';
 
 import { Command } from '../../command';
 import { diffPatch } from '../../utils/diff';
-
-const fsReadFile = promisify<string, string, string>(fs.readFile);
-const fsWriteFile = promisify<void, string, any, { encoding?: string; mode?: number; flag?: string; }>(fs.writeFile);
-const fsStat = promisify<fs.Stats, string>(fs.stat);
 
 function isConfigDirective(entry: SSHConfig.Config): entry is SSHConfig.ConfigDirective {
   return entry.type === SSHConfig.DIRECTIVE;
