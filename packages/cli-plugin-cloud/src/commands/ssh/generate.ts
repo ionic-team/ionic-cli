@@ -60,7 +60,7 @@ export class SSHGenerateCommand extends Command {
       }
     }
 
-    const req = this.env.client.make('POST', `/apps/slug`).send({});
+    const req = this.env.client.make('POST', `/utils/slug`).send({});
     const res = await this.env.client.do(req);
 
     if (!isSlugResponse(res)) {

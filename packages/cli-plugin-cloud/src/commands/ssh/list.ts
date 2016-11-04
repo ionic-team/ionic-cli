@@ -45,7 +45,7 @@ function isSSHListResponse(r: APIResponse): r is SSHListResponse {
 })
 export class SSHListCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const req = this.env.client.make('GET', `/apps/sshkeys`)
+    const req = this.env.client.make('GET', `/sshkeys`)
       .set('Authorization', `Bearer ${await this.env.session.getUserToken()}`);
     const res = await this.env.client.do(req);
 

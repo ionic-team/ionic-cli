@@ -51,7 +51,7 @@ export class SSHAddCommand extends Command {
     const pubkeyPath = path.resolve(inputs[0]);
     const [pubkey, _1, _2, id] = await parsePublicKeyFile(pubkeyPath);
 
-    const req = this.env.client.make('PUT', `/apps/sshkeys/${id}`)
+    const req = this.env.client.make('PUT', `/sshkeys/${id}`)
       .set('Authorization', `Bearer ${await this.env.session.getUserToken()}`)
       .send({ pubkey });
     const res = await this.env.client.do(req);

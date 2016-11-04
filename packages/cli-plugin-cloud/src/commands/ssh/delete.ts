@@ -25,7 +25,7 @@ export class SSHDeleteCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const id = inputs[0];
 
-    const req = this.env.client.make('DELETE', `/apps/sshkeys/${id}`)
+    const req = this.env.client.make('DELETE', `/sshkeys/${id}`)
       .set('Authorization', `Bearer ${await this.env.session.getUserToken()}`);
     await this.env.client.do(req);
 
