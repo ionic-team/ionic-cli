@@ -1,3 +1,13 @@
+<a name="2.1.6"></a>
+## [2.1.6](https://github.com/driftyco/ionic-cli/compare/v2.1.5...v2.1.6) (2016-11-09)
+
+
+### Bug Fixes
+
+* **start:** fix regression with new version of app-lib ([70a691c](https://github.com/driftyco/ionic-cli/commit/70a691c))
+
+
+
 <a name="2.1.5"></a>
 ## [2.1.5](https://github.com/driftyco/ionic-cli/compare/v2.1.4...v2.1.5) (2016-11-09)
 
