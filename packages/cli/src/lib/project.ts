@@ -13,7 +13,7 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
 
     if (!p.app_id) {
       throw new FatalException(`Your project file (${chalk.bold(prettyPath(this.filePath))}) does not contain '${chalk.bold('app_id')}'. `
-                             + `Run '${chalk.bold('ionic cloud:setup')}'.`);  // TODO: we're telling people to do cloud:setup (which is a plugin). is this okay? }
+                             + `Run '${chalk.bold('ionic cloud:setup')}'.`);
     }
 
     return p.app_id;
