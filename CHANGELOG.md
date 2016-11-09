@@ -1,3 +1,19 @@
+<a name="2.1.5"></a>
+## [2.1.5](https://github.com/driftyco/ionic-cli/compare/v2.1.4...v2.1.5) (2016-11-09)
+
+
+### Bug Fixes
+
+* **cli:** npm install under windows ([#1539](https://github.com/driftyco/ionic-cli/issues/1539)) ([26486d2](https://github.com/driftyco/ionic-cli/commit/26486d2)), closes [#1445](https://github.com/driftyco/ionic-cli/issues/1445)
+* **docs:** Add summary and options in settings of login ([dc4ff0a](https://github.com/driftyco/ionic-cli/commit/dc4ff0a))
+
+
+### Features
+
+* allow emulate and run to use serve for livereload. ([#1614](https://github.com/driftyco/ionic-cli/issues/1614)) ([6bd2658](https://github.com/driftyco/ionic-cli/commit/6bd2658))
+
+
+
 <a name="2.1.4"></a>
 ## [2.1.4](https://github.com/driftyco/ionic-cli/compare/v2.1.2...v2.1.4) (2016-10-21)
 
