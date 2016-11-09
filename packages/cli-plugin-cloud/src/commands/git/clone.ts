@@ -32,9 +32,7 @@ import { formatGitRepoUrl } from '../../utils/git';
 export class GitCloneCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let [ app_id, destination ] = inputs;
-
-    const configFile = await this.config.load();
-    const app = await this.env.app.load(app_id);
+    const [ app, configFile ] = await Promise.all([this.env.app.load(app_id), this.config.load()]);
 
     const remote = formatGitRepoUrl(configFile, app.id);
 

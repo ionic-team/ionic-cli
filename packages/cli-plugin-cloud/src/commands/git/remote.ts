@@ -14,8 +14,8 @@ import { formatGitRepoUrl } from '../../utils/git';
 })
 export class GitRemoteCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [projectFile, configFile] = await Promise.all([this.env.project.load(), this.config.load()]);
-    const remote = formatGitRepoUrl(configFile, projectFile.app_id);
+    const [ appId, configFile ] = await Promise.all([this.env.project.loadAppId(), this.config.load()]);
+    const remote = formatGitRepoUrl(configFile, appId);
     const regex = /ionic\t(.+) \(\w+\)/;
 
     // would like to use get-url, but not available in git 2.0.0
