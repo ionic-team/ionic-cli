@@ -1,3 +1,14 @@
+<a name="2.1.8"></a>
+## [2.1.8](https://github.com/driftyco/ionic-cli/compare/v2.1.7...v2.1.8) (2016-11-10)
+
+
+### Bug Fixes
+
+* check that npm scripts exists before checking for properties. ([3fde646](https://github.com/driftyco/ionic-cli/commit/3fde646))
+* ensure params are passed correctly to app-scripts ([9c5ebed](https://github.com/driftyco/ionic-cli/commit/9c5ebed))
+
+
+
 <a name="2.1.6"></a>
 ## [2.1.6](https://github.com/driftyco/ionic-cli/compare/v2.1.5...v2.1.6) (2016-11-09)
 
