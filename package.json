@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "2.1.8",
+  "version": "2.1.9",
   "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -69,7 +69,7 @@
     "gulp": "3.8.8",
     "gulp-util": "3.0.7",
     "inquirer": "0.11.2",
-    "ionic-app-lib": "2.1.4",
+    "ionic-app-lib": "2.1.5",
     "moment": "2.11.1",
     "open": "0.0.5",
     "optimist": "0.6.0",
