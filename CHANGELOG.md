@@ -1,3 +1,18 @@
+<a name="2.1.10"></a>
+## [2.1.10](https://github.com/driftyco/ionic-cli/compare/v2.1.8...v2.1.10) (2016-11-16)
+
+
+### Bug Fixes
+
+* ensure run and emulate are delegating livereload and serve to app-scripts when applicable. ([c34b3c0](https://github.com/driftyco/ionic-cli/commit/c34b3c0))
+
+
+### Features
+
+* **emulate:** ensure emulate and run are choosing an IP and port that are available. ([70531bc](https://github.com/driftyco/ionic-cli/commit/70531bc))
+
+
+
 <a name="2.1.9"></a>
 ## [2.1.9](https://github.com/driftyco/ionic-cli/compare/v2.1.8...v2.1.9) (2016-11-15)
 
