@@ -137,10 +137,7 @@ export async function collectInputs(argv: string[], metadata: CommandData) {
 
   if (questions) {
     for (let question of questions) {
-      if (question.name === undefined) {
-        continue;
-      }
-      let i = inputIndexByName.get(question.name);
+      let i = inputIndexByName.get(question.name || '');
 
       if (i !== undefined) {
         let v = argv[i];
