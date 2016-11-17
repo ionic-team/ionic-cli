@@ -1,3 +1,13 @@
+<a name="2.1.12"></a>
+## [2.1.12](https://github.com/driftyco/ionic-cli/compare/v2.1.11...v2.1.12) (2016-11-17)
+
+
+### Bug Fixes
+
+* when spawning npmScripts ensure that stderr is piped correctly ([7687337](https://github.com/driftyco/ionic-cli/commit/7687337))
+
+
+
 <a name="2.1.10"></a>
 ## [2.1.10](https://github.com/driftyco/ionic-cli/compare/v2.1.8...v2.1.10) (2016-11-16)
 
