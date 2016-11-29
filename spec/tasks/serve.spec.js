@@ -283,9 +283,9 @@ describe('Serve', function() {
       spyOn(npmScripts, 'hasIonicScript').andReturn(Q(true));
       spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
 
-      serveTask.run({}, argv).then(function() {
+      serveTask.run({}, argv, rawCliArguments).then(function() {
         expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('serve');
-        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('serve', argv);
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('serve', rawCliArguments.slice(1));
         done();
       });
     });
