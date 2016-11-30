@@ -190,7 +190,7 @@ describe('start command', function() {
       start.run({}, argv).then(function() {
         expect(appLibUtils.preprocessCliOptions.calls[0].args[0].v2).toEqual(true);
         expect(log.info).toHaveBeenCalledWith(
-          '\nNew to Ionic? Get started here: http://ionicframework.com/docs/v2/getting-started\n'
+          '\nNew to Ionic? Get started here: http://ionicframework.com/getting-started\n'
         );
         done();
       });
