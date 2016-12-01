@@ -5,5 +5,8 @@
         "noImplicitAny": true,
         "strictNullChecks": true,
         "target": "es6"
-    }
+  },
+  "include": [
+    "../types/index.d.ts"
+  ]
 }

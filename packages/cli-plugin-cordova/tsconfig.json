@@ -1,21 +1,24 @@
 {
   "compilerOptions": {
     "allowUnreachableCode": false,
+    "baseUrl": "../",
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "commonjs",
+    "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "./dist",
     "strictNullChecks": true,
     "target": "es6",
     "typeRoots": [
-      "./node_modules/@types"
+      "../cli/node_modules/@types"
     ]
   },
   "include": [
+    "src/**/*.ts",
     "types/index.d.ts",
-    "src/**/*.ts"
+    "../cli/types/index.d.ts"
   ],
   "exclude": [
     "node_modules"

@@ -137,6 +137,9 @@ export async function collectInputs(argv: string[], metadata: CommandData) {
 
   if (questions) {
     for (let question of questions) {
+      if (question.name === undefined) {
+        continue;
+      }
       let i = inputIndexByName.get(question.name);
 
       if (i !== undefined) {
@@ -154,12 +157,12 @@ export async function collectInputs(argv: string[], metadata: CommandData) {
 
     const answers = await inquirer.prompt(questions);
 
-    for (let name in answers) {
+    Object.keys(answers).forEach(function(name) {
       let i = inputIndexByName.get(name);
 
       if (i !== undefined) {
-        argv[i] = String(answers[name]);
+        argv[i] = answers[name];
       }
-    }
+    });
   }
 }
