@@ -1,52 +1,59 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as zlib from 'zlib';
-import * as tar from 'tar';
 
+import * as open from 'open';
 import * as chalk from 'chalk';
-import { spawn } from 'cross-spawn';
 import * as pathExists from 'path-exists';
-import * as superagent from 'superagent';
+import * as fetch from 'node-fetch';
 
-import { CommandLineInputs, CommandLineOptions } from '../definitions';
+import { TaskChain } from '../lib/utils/task';
+import { CommandLineInputs, CommandLineOptions, StarterTemplate } from '../definitions';
 import { Command, CommandMetadata } from '../lib/command';
 import { getCommandInfo } from '../lib/utils/environmentInfo';
+import {
+  isProjectNameValid,
+  pkgInstallProject,
+  tarXvf,
+  isSafeToCreateProjectIn,
+  getStarterTemplateText,
+  getHelloText
+} from '../lib/start';
 
-interface StarterTemplate {
-  name: string;
-  path: string;
-  baseArchive: string;
-  archive: string;
-}
 
+const IONIC_DASH_URL = 'https://apps.ionic.io';
 const STARTER_TEMPLATE_DEFAULT = 'blank';
 const STARTER_TEMPLATES: StarterTemplate[] = [
   {
     name: 'blank',
+    description: 'A blank starter project for Ionic',
     path: 'https://github.com/driftyco/ionic2-starter-blank',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic2-starter-blank/archive/master.tar.gz'
   },
   {
     name: 'tabs',
+    description: 'A starting project for Ionic using a simple tabbed interface',
     path: 'https://github.com/driftyco/ionic2-starter-tabs',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic2-starter-tabs/archive/master.tar.gz'
   },
   {
     name: 'sidemenu',
+    description: 'A starting project for Ionic using a side menu with navigation in the content area',
     path: 'https://github.com/driftyco/ionic2-starter-sidemenu',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic2-starter-sidemenu/archive/master.tar.gz'
   },
   {
     name: 'conference',
+    description: 'A project for Ionic to demonstrate a realworld application',
     path: 'https://github.com/driftyco/ionic-conference-app',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic-conference-app/archive/master.tar.gz'
   },
   {
     name: 'tutorial',
+    description: 'A tutorial based project for Ionic that goes along with the Ionic documentation',
     path: 'https://github.com/driftyco/ionic2-starter-tutorial',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic2-starter-tutorial/archive/master.tar.gz'
@@ -98,16 +105,6 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
       name: 'io-app-id',
       description: 'The Ionic.io app ID to use',
       aliases: []
-    },
-    {
-      name: 'template',
-      description: 'Project starter template',
-      aliases: ['t']
-    },
-    {
-      name: 'zip-file',
-      description: 'URL to download zipfile for starter template',
-      aliases: ['z']
     }
   ],
   isProjectTask: false
@@ -117,6 +114,13 @@ export class StartCommand extends Command {
     let installer = 'npm';
     let projectRoot: string;
     let projectName: string;
+
+    /**
+     * If --list is provided print starters available and then exit
+     */
+    if (options['list']) {
+      return this.env.log.msg(getStarterTemplateText(STARTER_TEMPLATES));
+    }
 
     if (inputs.length < 1) {
       throw 'Please provide a name for your project.';
@@ -128,9 +132,15 @@ export class StartCommand extends Command {
     projectRoot = path.resolve(inputs[0]);
     projectName = path.basename(projectRoot);
 
+    var tasks = new TaskChain();
+
+    /**
+     * Create the project directory
+     */
+    tasks.next(`Create directory ${projectRoot}`);
+
     if (!pathExists.sync(projectName)) {
       fs.mkdirSync(projectRoot);
-      this.env.log.info(`Making directory ${projectRoot}`);
     } else if (!isSafeToCreateProjectIn(projectRoot)) {
       throw `The directory ${projectName} contains file(s) that could conflict. Aborting.`;
     }
@@ -142,82 +152,61 @@ export class StartCommand extends Command {
       throw `Unable to find starter template for ${starterTemplateName}`;
     }
 
+    /**
+     * Download the starter template, gunzip, and untar into the project folder
+     */
+    tasks.next(`Download '${starterTemplateName}' starter template`);
+    this.env.log.debug(`\nDownloading:\n  ${starterTemplate.baseArchive}\n  ${starterTemplate.archive}`);
+
     const [
-      baseArchive,
-      archive
+      baseArchiveResponse,
+      archiveResponse
     ] = await Promise.all([
-      superagent.get(starterTemplate.baseArchive),
-      superagent.get(starterTemplate.archive)
+      fetch(starterTemplate.baseArchive),
+      fetch(starterTemplate.archive)
     ]);
 
-    // TODO: tarXvf gets stream error with superagent
     await Promise.all([
-      tarXvf(baseArchive, projectRoot),
-      tarXvf(archive, projectRoot)
+      tarXvf(baseArchiveResponse.body, projectRoot),
+      tarXvf(archiveResponse.body, projectRoot)
     ]);
 
-    if (options['skip-npm']) {
-      return this.env.log.msg('Project started!');
-    }
 
-    if (options['yarn']) {
-      let yarnVersion = await getCommandInfo('yarn', ['-version']);
-      if (yarnVersion) {
-        installer = 'yarn';
+    /**
+     * Download the starter template, gunzip, and untar into the project folder
+     */
+    if (!options['skip-npm']) {
+      tasks.next(`Executing: ${installer} install`);
+
+      if (options['yarn']) {
+        let yarnVersion = await getCommandInfo('yarn', ['-version']);
+        if (yarnVersion) {
+          installer = 'yarn';
+        }
       }
+      await pkgInstallProject(installer, projectRoot);
     }
+    tasks.end();
 
-    this.env.log.msg('Installing dependencies. This might take a couple minutes.');
-    await install(installer, projectRoot);
+
+    /**
+     * Print out hello text about how to get started
+     */
+    this.env.log.msg(getHelloText());
+
+
+    /**
+     * Ask the user if they would like to create a cloud account
+     */
+    const confirmation = await this.env.inquirer.prompt({
+      type: 'confirm',
+      name: 'createAccount',
+      message: 'Create an Ionic Cloud account to add features like User Authentication, ' +
+           'Push Notifications, Live Updating, iOS builds, and more?'
+    });
+
+    if (confirmation['createAccount']) {
+      open(IONIC_DASH_URL + '/signup');
+    }
   }
-}
-
-/**
- * Spawn an npm install task from within 
- */
-function install(installer: string, root: string): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const proc = spawn(installer, ['install'], {cwd: root, stdio: 'inherit'});
-    proc.on('close', function (code: Number) {
-      if (code !== 0) {
-        return reject(`${installer} install failed`);
-      }
-      resolve();
-    });
-  });
-}
-
-function tarXvf(readStream: NodeJS.ReadableStream, destination: string): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const baseArchiveExtract = tar.Extract({
-        path: destination,
-        strip: 1
-      })
-      .on('error', reject)
-      .on('end', resolve);
-    try {
-      readStream
-        .pipe(zlib.createGunzip())
-        .pipe(baseArchiveExtract);
-    } catch (e) {
-      reject(e);
-    }
-  });
-}
-
-function isProjectNameValid(name: string): boolean {
-  return name !== '.';
-}
-
-// If project only contains files generated by GH, it’s safe.
-// We also special case IJ-based products .idea because it integrates with CRA:
-// https://github.com/facebookincubator/create-react-app/pull/368#issuecomment-243446094
-function isSafeToCreateProjectIn(root: string): boolean {
-  var validFiles = [
-    '.DS_Store', 'Thumbs.db', '.git', '.gitignore', '.idea', 'README.md', 'LICENSE'
-  ];
-  return fs.readdirSync(root)
-    .every(function(file) {
-      return validFiles.indexOf(file) >= 0;
-    });
 }

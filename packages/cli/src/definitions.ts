@@ -82,6 +82,14 @@ export interface CommandInputPrompt {
   filter?(input: string): string;
 }
 
+export interface StarterTemplate {
+  name: string;
+  description: string;
+  path: string;
+  baseArchive: string;
+  archive: string;
+}
+
 export interface CommandInput {
   name: string;
   description: string;

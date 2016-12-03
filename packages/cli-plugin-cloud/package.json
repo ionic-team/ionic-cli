@@ -10,7 +10,6 @@
     "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
     "build": "npm run lint && npm run clean && ../../node_modules/.bin/tsc",
     "clean": "rm -rf ./dist",
-    "prepublish": "npm run build",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
     "watch": "npm run clean && ../../node_modules/.bin/tsc --watch"
   },
@@ -46,7 +45,7 @@
     "@types/node": "^6.0.45"
   },
   "peerDependencies": {
-    "@cli/ionic": "^3.0.0",
-    "chalk": "^1.1.3",
+    "@ionic/cli": "^3.0.0",
+    "chalk": "^1.1.3"
   }
 }

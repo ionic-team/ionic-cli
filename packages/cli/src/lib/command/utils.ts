@@ -24,7 +24,12 @@ const typeDefaults: CommandOptionTypeDefaults = new Map<CommandOptionType, Comma
   .set(String, null)
   .set(Boolean, false);
 
+
+/**
+ * Takes a Minimist command option and normalizes its values.
+ */
 function normalizeOption(option: CommandOption): NormalizedCommandOption {
+
   if (!option.type) {
     option.type = String;
   }
