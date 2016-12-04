@@ -1,6 +1,6 @@
 import { Namespace } from './command/namespace';
 
-const plugins = new Set<string>(['cloud']);
+const plugins = new Set<string>(['cloud', 'cordova']);
 
 export const PREFIX = '@ionic/cli-plugin-';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';

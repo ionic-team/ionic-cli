@@ -1,11 +1,10 @@
-import { INamespaceMap, Namespace, NamespaceMap } from '@ionic/cli';
+import { ICommandMap, Namespace, CommandMap } from '@ionic/cli';
+
 import { EmulateCommand } from './commands/emulate';
 
 export default class CordovaNamespace extends Namespace {
-  public name: 'cloud';
-
-  getNamespaces(): INamespaceMap {
-    let m = new NamespaceMap();
+  getCommands(): ICommandMap {
+    let m = new CommandMap();
 
     m.set('emulate', new EmulateCommand());
 
