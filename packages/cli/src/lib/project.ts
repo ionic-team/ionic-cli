@@ -19,14 +19,12 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
     return p.app_id;
   }
 
-  provideDefaults(o: any): void {
-    if (!o.name) {
-      o.name = '';
-    }
-
-    if (!o.app_id) {
-      o.app_id = '';
-    }
+  provideDefaults(o: any): any {
+    return {
+      name: '',
+      app_id: '',
+      ...o
+    };
   }
 
   is<ProjectFile>(j: any): j is ProjectFile {

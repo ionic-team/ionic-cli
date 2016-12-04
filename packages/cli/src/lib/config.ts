@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as lodash from 'lodash';
 
 import * as chalk from 'chalk';
 
@@ -17,7 +18,7 @@ export abstract class BaseConfig<T> implements IConfig<T> {
     this.filePath = path.resolve(directory, fileName);
   }
 
-  abstract provideDefaults(o: { [key: string]: any }): void;
+  abstract provideDefaults(o: { [key: string]: any }): { [key: string]: any };
 
   abstract is<T>(o: { [key: string]: any }): o is T;
 
@@ -35,7 +36,7 @@ export abstract class BaseConfig<T> implements IConfig<T> {
         }
       }
 
-      this.provideDefaults(o);
+      o = this.provideDefaults(o);
 
       if (this.is<T>(o)) {
         this.configFile = o;
@@ -63,26 +64,30 @@ export abstract class BaseConfig<T> implements IConfig<T> {
 }
 
 export class Config extends BaseConfig<ConfigFile> {
-  provideDefaults(o: any): void {
-    if (!o.lastUpdated) {
-      o.lastUpdated = new Date().toISOString();
+  provideDefaults(o: any): any {
+    var results = lodash.cloneDeep(o);
+
+    if (!results.lastUpdated) {
+      results.lastUpdated = new Date().toISOString();
     }
 
-    if (!o.urls) {
-      o.urls = {};
+    if (!results.urls) {
+      results.urls = {};
     }
 
-    if (!o.urls.api) {
-      o.urls.api = 'https://api.ionic.io';
+    if (!results.urls.api) {
+      results.urls.api = 'https://api.ionic.io';
     }
 
-    if (!o.tokens) {
-      o.tokens = {};
+    if (!results.tokens) {
+      results.tokens = {};
     }
 
-    if (!o.tokens.appUser) {
-      o.tokens.appUser = {};
+    if (!results.tokens.appUser) {
+      results.tokens.appUser = {};
     }
+
+    return results;
   }
 
   is<ConfigFile>(j: any): j is ConfigFile {

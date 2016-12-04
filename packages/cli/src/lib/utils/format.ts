@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 
 export const ICON_SUCCESS = '✔';
 export const ICON_FAILURE = '✖';
-export const STRIP_ANSI_REGEX = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
+export const STRIP_ANSI_REGEX = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
 
 export const ICON_SUCCESS_GREEN = chalk.green(ICON_SUCCESS);
 export const ICON_FAILURE_RED = chalk.red(ICON_FAILURE);

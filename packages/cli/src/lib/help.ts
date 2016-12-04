@@ -11,11 +11,11 @@ export function formatCommandHelp(cmdMetadata: CommandData): string {
   `;
 }
 
-function formatUsage(cmdMetadata: CommandData): string {
+function formatUsage({ name, inputs }: CommandData): string {
   let headerLine = chalk.bold(`Usage`);
   let usageLine =
-      `$ ${cmdMetadata.name} ${
-        (cmdMetadata.inputs || []).map(command => '<' + command.name + '>').join(' ')}`;
+      `$ ${name} ${
+        (inputs || []).map(command => '<' + command.name + '>').join(' ')}`;
 
   return `
     ${headerLine}
@@ -30,16 +30,16 @@ function formatOptions(options: CommandOption[]): string {
 
   let headerLine = chalk.bold(`Options`);
 
-  function optionLineFn(option: CommandOption) {
-    let optionList = chalk.green(`--${option.name}`) +
-      (option.aliases && option.aliases.length > 0 ? ', ' +
-       option.aliases
+  function optionLineFn({ name, aliases, description}: CommandOption) {
+    let optionList = chalk.green(`--${name}`) +
+      (aliases && aliases.length > 0 ? ', ' +
+       aliases
          .map((alias) => chalk.green(`-${alias}`))
          .join(', ') : '');
 
     let optionListLength = optionList.replace(STRIP_ANSI_REGEX, '').length;
 
-    return `${optionList} ${Array(20 - optionListLength).join('.')} ${option.description}`;
+    return `${optionList} ${Array(20 - optionListLength).join('.')} ${description}`;
   };
 
   return `
@@ -49,10 +49,10 @@ function formatOptions(options: CommandOption[]): string {
   `;
 }
 
-function formatExamples(cmdMetadata: CommandData): string {
+function formatExamples({ name, inputs }: CommandData): string {
   let headerLine = chalk.bold(`Examples`);
   let exampleLine =
-    `$ ${cmdMetadata.name} ${(cmdMetadata.inputs || []).map(command => command.name).join(' ')}`;
+    `$ ${name} ${(inputs || []).map(command => command.name).join(' ')}`;
 
   return `
     ${headerLine}

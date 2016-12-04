@@ -68,10 +68,10 @@ export function isSafeToCreateProjectIn(root: string): boolean {
 export function getStarterTemplateText(templateList: StarterTemplate[]): string {
   let headerLine = chalk.bold(`Ionic Starter templates`);
 
-  function optionLineFn(template: StarterTemplate) {
-    let templateName = chalk.green(template.name);
+  function optionLineFn({ name, description }: StarterTemplate) {
+    let templateName = chalk.green(name);
 
-    return `${templateName} ${Array(20 - template.name.length).join('.')} ${template.description}`;
+    return `${templateName} ${Array(20 - name.length).join('.')} ${description}`;
   };
 
   return `
