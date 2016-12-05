@@ -3,60 +3,64 @@
 var fs = require('fs');
 var Q = require('q');
 var rewire = require('rewire');
-var childProcess = require('child_process');
 var cordovaUtils = rewire('../../lib/utils/cordova');
 var optimist = require('optimist');
 var IonicAppLib = require('ionic-app-lib');
 var Project = require('ionic-app-lib').project;
 var Serve = require('ionic-app-lib').serve;
+var crossSpawn = require('cross-spawn'); 
 var ConfigXml = require('ionic-app-lib').configXml;
 var log = IonicAppLib.logging.logger;
 
 describe('isPlatformInstalled', function() {
-  it('should return true if the platform directory does exist', function() {
-    spyOn(fs, 'statSync').andCallFake(function() {
-      return;
+  it('should return true if the platform directory does exist', function(done) {
+    spyOn(fs, 'stat').andCallFake(function(param, callback) {
+      callback(null);
     });
 
-    var result = cordovaUtils.isPlatformInstalled('ios', '/tmp');
-
-    expect(result).toEqual(true);
-    expect(fs.statSync).toHaveBeenCalledWith('/tmp/platforms/ios');
+    cordovaUtils.isPlatformInstalled('ios', '/tmp').then(function(result) {
+      expect(result).toEqual(true);
+      expect(fs.stat).toHaveBeenCalledWith('/tmp/platforms/ios', jasmine.any(Function));
+      done();
+    });
   });
 
-  it('should return false if the platform directory does not exist', function() {
-    spyOn(fs, 'statSync').andCallFake(function() {
+  it('should return false if the platform directory does not exist', function(done) {
+    spyOn(fs, 'stat').andCallFake(function() {
       throw new Error('Dir does not exist');
     });
 
-    var result = cordovaUtils.isPlatformInstalled('ios', '/tmp');
-
-    expect(result).toEqual(false);
-    expect(fs.statSync).toHaveBeenCalledWith('/tmp/platforms/ios');
+    cordovaUtils.isPlatformInstalled('ios', '/tmp').then(function(result) {
+      expect(result).toEqual(false);
+      expect(fs.stat).toHaveBeenCalledWith('/tmp/platforms/ios', jasmine.any(Function));
+      done();
+    });
   });
 });
 
 describe('arePluginsInstalled', function() {
-  it('should return true if the plugins directory does exist', function() {
-    spyOn(fs, 'statSync').andCallFake(function() {
-      return;
+  it('should return true if the plugins directory does exist', function(done) {
+    spyOn(fs, 'stat').andCallFake(function(param, callback) {
+      callback(null);
     });
 
-    var result = cordovaUtils.arePluginsInstalled('/tmp');
-
-    expect(result).toEqual(true);
-    expect(fs.statSync).toHaveBeenCalledWith('/tmp/plugins');
+    cordovaUtils.arePluginsInstalled('/tmp').then(function(result) {
+      expect(fs.stat).toHaveBeenCalledWith('/tmp/plugins', jasmine.any(Function));
+      expect(result).toEqual(true);
+      done();
+    });
   });
 
-  it('should return false if the plugins directory does not exist', function() {
-    spyOn(fs, 'statSync').andCallFake(function() {
+  it('should return false if the plugins directory does not exist', function(done) {
+    spyOn(fs, 'stat').andCallFake(function() {
       throw new Error('Dir does not exist');
     });
 
-    var result = cordovaUtils.arePluginsInstalled('/tmp');
-
-    expect(result).toEqual(false);
-    expect(fs.statSync).toHaveBeenCalledWith('/tmp/plugins');
+    cordovaUtils.arePluginsInstalled('/tmp').then(function(result) {
+      expect(result).toEqual(false);
+      expect(fs.stat).toHaveBeenCalledWith('/tmp/plugins', jasmine.any(Function));
+      done();
+    });
   });
 });
 
@@ -65,16 +69,16 @@ describe('installPlatform', function() {
     spyOn(log, 'info');
   });
 
-  it('should call promiseExec', function(done) {
+  it('should call promiseSpawn', function(done) {
     var installPlatform = cordovaUtils.__get__('installPlatform');
-    var promiseExecSpy = jasmine.createSpy('promiseExec');
-    promiseExecSpy.andReturn(Q(true));
-    var revertPromiseExecSpy = cordovaUtils.__set__('promiseExec', promiseExecSpy);
+    var promiseSpawnSpy = jasmine.createSpy('promiseSpawn');
+    promiseSpawnSpy.andReturn(Q(true));
+    var revertPromiseSpawnSpy = cordovaUtils.__set__('promiseSpawn', promiseSpawnSpy);
 
 
     installPlatform('ios').then(function() {
-      expect(promiseExecSpy).toHaveBeenCalledWith('cordova platform add ios');
-      revertPromiseExecSpy();
+      expect(promiseSpawnSpy).toHaveBeenCalledWith('cordova', ['platform', 'add', 'ios']);
+      revertPromiseSpawnSpy();
       done();
     });
   });
@@ -85,20 +89,26 @@ describe('installPlugins', function() {
     spyOn(log, 'info');
   });
 
-  it('should call promiseExec', function(done) {
+  it('should call promiseSpawn', function(done) {
     var installPlugins = cordovaUtils.__get__('installPlugins');
-    var promiseExecSpy = jasmine.createSpy('promiseExec');
-    promiseExecSpy.andReturn(Q(true));
-    var revertPromiseExecSpy = cordovaUtils.__set__('promiseExec', promiseExecSpy);
+    var promiseSpawnSpy = jasmine.createSpy('promiseSpawn');
+    promiseSpawnSpy.andReturn(Q(true));
+    var revertPromiseSpawnSpy = cordovaUtils.__set__('promiseSpawn', promiseSpawnSpy);
 
     installPlugins().then(function() {
-      expect(promiseExecSpy.calls[0].args[0]).toEqual('cordova plugin add --save cordova-plugin-device');
-      expect(promiseExecSpy.calls[1].args[0]).toEqual('cordova plugin add --save cordova-plugin-console');
-      expect(promiseExecSpy.calls[2].args[0]).toEqual('cordova plugin add --save cordova-plugin-whitelist');
-      expect(promiseExecSpy.calls[3].args[0]).toEqual('cordova plugin add --save cordova-plugin-splashscreen');
-      expect(promiseExecSpy.calls[4].args[0]).toEqual('cordova plugin add --save cordova-plugin-statusbar');
-      expect(promiseExecSpy.calls[5].args[0]).toEqual('cordova plugin add --save ionic-plugin-keyboard');
-      revertPromiseExecSpy();
+      expect(promiseSpawnSpy.calls[0].args)
+        .toEqual(['cordova', ['plugin', 'add', '--save', 'cordova-plugin-device']]);
+      expect(promiseSpawnSpy.calls[1].args)
+        .toEqual(['cordova', ['plugin', 'add', '--save', 'cordova-plugin-console']]);
+      expect(promiseSpawnSpy.calls[2].args)
+        .toEqual(['cordova', ['plugin', 'add', '--save', 'cordova-plugin-whitelist']]);
+      expect(promiseSpawnSpy.calls[3].args)
+        .toEqual(['cordova', ['plugin', 'add', '--save', 'cordova-plugin-splashscreen']]);
+      expect(promiseSpawnSpy.calls[4].args)
+        .toEqual(['cordova', ['plugin', 'add', '--save', 'cordova-plugin-statusbar']]);
+      expect(promiseSpawnSpy.calls[5].args)
+        .toEqual(['cordova', ['plugin', 'add', '--save', 'ionic-plugin-keyboard']]);
+      revertPromiseSpawnSpy();
       done();
     });
   });
@@ -277,7 +287,7 @@ describe('setupLiveReload', function() {
 
 describe('execCordovaCommand', function() {
   beforeEach(function() {
-    spyOn(childProcess, 'exec').andCallThrough();
+    spyOn(crossSpawn, 'spawn').andCallThrough();
   });
 
   it('should execute the command against the cordova util', function(done) {
@@ -290,7 +300,7 @@ describe('execCordovaCommand', function() {
     var serveOptions = {};
 
     cordovaUtils.execCordovaCommand(optionList, isLiveReload, serveOptions).catch(function() {
-      expect(childProcess.exec).toHaveBeenCalledWith('cordova build -n ios');
+      expect(crossSpawn.spawn).toHaveBeenCalledWith('cordova', ['build', '-n', 'ios']);
       done();
     });
   });
@@ -304,7 +314,7 @@ describe('execCordovaCommand', function() {
     var serveOptions = {};
 
     cordovaUtils.execCordovaCommand(optionList, isLiveReload, serveOptions).catch(function() {
-      expect(childProcess.exec).toHaveBeenCalledWith('cordova build android');
+      expect(crossSpawn.spawn).toHaveBeenCalledWith('cordova', ['build', 'android']);
       done();
     });
   });

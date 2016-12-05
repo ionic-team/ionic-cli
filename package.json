@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "2.1.12",
+  "version": "2.1.14",
   "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -63,7 +63,7 @@
     "@ionic/app-generators": "0.0.3",
     "chalk": "^1.1.3",
     "cli-table": "0.3.1",
-    "cross-spawn-async": "2.1.9",
+    "cross-spawn": "^5.0.1",
     "expand-tilde": "1.2.0",
     "form-data": "0.1.4",
     "gulp": "3.8.8",
@@ -98,7 +98,7 @@
   "bundledDependencies": [
     "cli-table",
     "chalk",
-    "cross-spawn-async",
+    "cross-spawn",
     "expand-tilde",
     "form-data",
     "gulp",

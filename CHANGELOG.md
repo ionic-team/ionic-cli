@@ -1,3 +1,13 @@
+<a name="2.1.13"></a>
+## [2.1.13](https://github.com/driftyco/ionic-cli/compare/v2.1.12...v2.1.13) (2016-11-23)
+
+
+### Bug Fixes
+
+* **cordova:** maxBuffer was too small ([ae6d904](https://github.com/driftyco/ionic-cli/commit/ae6d904))
+
+
+
 <a name="2.1.12"></a>
 ## [2.1.12](https://github.com/driftyco/ionic-cli/compare/v2.1.11...v2.1.12) (2016-11-17)
 

@@ -186,7 +186,7 @@ describe('emulate command', function() {
       spyOn(cordovaUtils, 'execCordovaCommand').andReturn(Q(true));
 
       emulate.run(null, argv, rawCliArguments).then(function() {
-        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', '-n', 'ios'], false, true);
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', 'ios', '-n'], false, true);
         done();
       });
     });
@@ -319,8 +319,13 @@ describe('emulate command', function() {
 
       emulate.run(null, argv, rawCliArguments).then(function() {
         expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('build');
-        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('serve', ['-p', jasmine.any(Number), '--address', jasmine.any(String)]);
-        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', 'android'], false, true);
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('serve', [
+          '--port', jasmine.any(Number),
+          '--address', jasmine.any(String),
+          '--liveReloadPort', jasmine.any(Number),
+          '--nobrowser'
+        ]);
+        expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', 'android'], true, true);
         done();
       }).catch(function(e) {
         console.log(e);
