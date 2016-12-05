@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import * as open from 'open';
+import * as opn from 'opn';
 import * as chalk from 'chalk';
 import * as pathExists from 'path-exists';
-import * as fetch from 'node-fetch';
+import fetch from 'node-fetch';
 
 import { TaskChain } from '../lib/utils/task';
 import { CommandLineInputs, CommandLineOptions, StarterTemplate } from '../definitions';
@@ -206,7 +206,7 @@ export class StartCommand extends Command {
     });
 
     if (confirmation['createAccount']) {
-      open(IONIC_DASH_URL + '/signup');
+      opn(IONIC_DASH_URL + '/signup');
     }
   }
 }

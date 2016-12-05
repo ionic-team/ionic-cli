@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as zlib from 'zlib';
 import * as tar from 'tar';
-import * as stream from 'stream';
 import * as chalk from 'chalk';
 
 import { runcmd } from './utils/shell';
@@ -21,7 +20,7 @@ export async function pkgInstallProject(installer: string, root: string): Promis
 /**
  * 
  */
-export function tarXvf(readStream: stream.Readable, destination: string): Promise<any> {
+export function tarXvf(readStream: NodeJS.ReadableStream, destination: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const baseArchiveExtract = tar.Extract({
         path: destination,
@@ -31,7 +30,7 @@ export function tarXvf(readStream: stream.Readable, destination: string): Promis
       .on('end', resolve);
     try {
       readStream
-        .pipe(zlib.Unzip())
+        .pipe(zlib.createUnzip())
         .on('error', reject)
         .pipe(baseArchiveExtract);
     } catch (e) {
