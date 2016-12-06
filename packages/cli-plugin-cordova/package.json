@@ -36,10 +36,8 @@
     "url": "https://github.com/driftyco/ionic-cli/issues"
   },
   "license": "MIT",
-  "dependencies": {
-  },
-  "peerDependencies": {
-    "@cli/ionic": "^3.0.0",
+  "devDependencies": {
+    "@ionic/cli": "^3.0.0",
     "chalk": "^1.1.3"
   }
 }

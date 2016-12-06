@@ -13,10 +13,7 @@
     "target": "es6",
     "typeRoots": [
       "./cli/node_modules/@types"
-    ],
-    "paths": {
-      "@ionic/cli": ["../cli"]
-    }
+    ]
   },
   "include": [
     "src/**/*.ts",
