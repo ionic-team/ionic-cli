@@ -1,4 +1,5 @@
 import { Namespace } from './command/namespace';
+import * as path from 'path';
 
 const plugins = new Set<string>(['cloud', 'cordova']);
 
@@ -20,8 +21,10 @@ export class PluginLoader {
     let m: any;
 
     try {
-      m = require(`${this.prefix}${name}`);
+      var mPath = require.resolve(path.join(process.cwd(), 'node_modules', `${this.prefix}${name}`));
+      m = require(mPath);
     } catch (e) {
+      console.log(e);
       if (e.code === 'MODULE_NOT_FOUND') {
         throw ERROR_PLUGIN_NOT_FOUND;
       }
