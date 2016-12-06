@@ -1,3 +1,14 @@
+<a name="2.1.15"></a>
+## [2.1.15](https://github.com/driftyco/ionic-cli/compare/v2.1.14...v2.1.15) (2016-12-06)
+
+
+### Bug Fixes
+
+* **run:** update run and emulate to pass additional options on to app-scripts. ([#1735](https://github.com/driftyco/ionic-cli/issues/1735)) ([68eb3e5](https://github.com/driftyco/ionic-cli/commit/68eb3e5))
+* **start:** getting started url ([#1738](https://github.com/driftyco/ionic-cli/issues/1738)) ([f834cca](https://github.com/driftyco/ionic-cli/commit/f834cca))
+
+
+
 <a name="2.1.13"></a>
 ## [2.1.13](https://github.com/driftyco/ionic-cli/compare/v2.1.12...v2.1.13) (2016-11-23)
 
