@@ -15,7 +15,9 @@ import { HelpCommand } from './help';
 import { InfoCommand } from './info';
 import { IonitronCommand } from './ionitron';
 import { LoginCommand } from './login';
+import { ServeCommand } from './serve';
 import { StartCommand } from './start';
+import { ResourcesCommand } from './resources';
 import { VersionCommand } from './version';
 
 import { FatalException } from '../lib/errors';
@@ -41,6 +43,8 @@ export class IonicNamespace extends Namespace implements IIonicNamespace {
     m.set('info', new InfoCommand());
     m.set('ionitron', new IonitronCommand());
     m.set('login', new LoginCommand());
+    m.set('resources', new ResourcesCommand());
+    m.set('serve', new ServeCommand());
     m.set('start', new StartCommand());
     m.set('version', new VersionCommand());
 

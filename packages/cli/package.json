@@ -21,6 +21,7 @@
     "jasmine": "jasmine-node --captureExceptions ./spec",
     "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
     "test": "../../node_modules/.bin/ava",
+    "globallink": "npm link",
     "watch": "npm run clean && ../../node_modules/.bin/concurrently -p '[{name}]' -n 'src,test' '../../node_modules/.bin/tsc --watch' '../../node_modules/.bin/tsc -p test/tsconfig.json --watch'"
   },
   "keywords": [

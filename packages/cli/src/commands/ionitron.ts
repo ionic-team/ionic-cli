@@ -9,6 +9,6 @@ import { Command, CommandMetadata } from '../lib/command';
 })
 export class IonitronCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    this.env.log.msg(inputs, options);
+    this.env.log.msg('ionitron');
   }
 }

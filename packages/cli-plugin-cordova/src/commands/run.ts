@@ -6,15 +6,15 @@ import {
 } from '@ionic/cli';
 
 /**
- * Metadata about the emulate command
+ * Metadata about the run command
  */
 @CommandMetadata({
-  name: 'emulate',
-  description: 'Emulate an Ionic project on a simulator or emulator',
+  name: 'run',
+  description: 'Run an Ionic project on a connected device',
   inputs: [
     {
       name: 'platform',
-      description: 'the platform to emulate',
+      description: 'the platform to emulate'
     }
   ],
   options: [
@@ -65,8 +65,8 @@ import {
   ],
   isProjectTask: true
 })
-export class EmulateCommand extends Command {
+export class RunCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    this.env.log.msg('emulate');
+    this.env.log.msg('run');
   }
 }

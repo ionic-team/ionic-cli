@@ -12,8 +12,8 @@ export function formatCommandHelp(cmdMetadata: CommandData): string {
 }
 
 function formatUsage({ name, inputs }: CommandData): string {
-  let headerLine = chalk.bold(`Usage`);
-  let usageLine =
+  const headerLine = chalk.bold(`Usage`);
+  const usageLine =
       `$ ${name} ${
         (inputs || []).map(command => '<' + command.name + '>').join(' ')}`;
 
@@ -24,22 +24,23 @@ function formatUsage({ name, inputs }: CommandData): string {
 }
 
 function formatOptions(options: CommandOption[]): string {
-  if (options.length === 0) {
+  if (!Array.isArray(options) || options.length === 0) {
     return '';
   }
 
-  let headerLine = chalk.bold(`Options`);
+  const headerLine = chalk.bold(`Options`);
 
   function optionLineFn({ name, aliases, description}: CommandOption) {
-    let optionList = chalk.green(`--${name}`) +
+    const optionList = chalk.green(`--${name}`) +
       (aliases && aliases.length > 0 ? ', ' +
        aliases
          .map((alias) => chalk.green(`-${alias}`))
          .join(', ') : '');
 
-    let optionListLength = optionList.replace(STRIP_ANSI_REGEX, '').length;
+    const optionListLength = optionList.replace(STRIP_ANSI_REGEX, '').length;
+    const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
 
-    return `${optionList} ${Array(20 - optionListLength).join('.')} ${description}`;
+    return `${optionList} ${Array(fullLength - optionListLength).join('.')} ${description}`;
   };
 
   return `
