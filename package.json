@@ -26,6 +26,6 @@
     "rollup-plugin-node-resolve": "^2.0.0",
     "tslint": "^4.0.0-dev.0",
     "tslint-ionic-rules": "^0.0.8",
-    "typescript": "^2.1.4-insiders.20161201"
+    "typescript": "^2.1.4"
   }
 }

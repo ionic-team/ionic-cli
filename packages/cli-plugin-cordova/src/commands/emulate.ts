@@ -25,7 +25,7 @@ import {
       aliases: ['l']
     },
     {
-      name: '--address',
+      name: 'address',
       description: 'Use specific address (livereload req.)',
       default: '0.0.0.0'
     },
@@ -54,12 +54,12 @@ import {
       aliases: ['r']
     },
     {
-      name: '--debug|--release',
+      name: 'debug|--release',
       description: '',
       type: Boolean,
     },
     {
-      name: '--device|--emulator|--target=FOO',
+      name: 'device|--emulator|--target=FOO',
       description: ''
     }
   ],
