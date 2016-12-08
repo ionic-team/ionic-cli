@@ -1,3 +1,13 @@
+<a name="2.1.16"></a>
+## [2.1.16](https://github.com/driftyco/ionic-cli/compare/v2.1.15...v2.1.16) (2016-12-08)
+
+
+### Features
+
+* **lab:** add ionic lab command ([6f61e60](https://github.com/driftyco/ionic-cli/commit/6f61e60))
+
+
+
 <a name="2.1.15"></a>
 ## [2.1.15](https://github.com/driftyco/ionic-cli/compare/v2.1.14...v2.1.15) (2016-12-06)
 
