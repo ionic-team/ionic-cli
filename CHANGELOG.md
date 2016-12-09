@@ -1,3 +1,13 @@
+<a name="2.1.17"></a>
+## [2.1.17](https://github.com/driftyco/ionic-cli/compare/v2.1.16...v2.1.17) (2016-12-09)
+
+
+### Bug Fixes
+
+* **build:** pass args on to app-scripts when build is executed ([bf7d15c](https://github.com/driftyco/ionic-cli/commit/bf7d15c))
+
+
+
 <a name="2.1.16"></a>
 ## [2.1.16](https://github.com/driftyco/ionic-cli/compare/v2.1.15...v2.1.16) (2016-12-08)
 
