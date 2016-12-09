@@ -9,6 +9,10 @@
     "outDir": "./dist",
     "strictNullChecks": true,
     "target": "es6",
+    "lib": [
+      "es2017.object",
+      "es6"
+    ],
     "typeRoots": [
       "./node_modules/@types"
     ]
