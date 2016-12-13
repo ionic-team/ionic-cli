@@ -1,12 +1,11 @@
 'use strict';
 
 var rewire = require('rewire');
+var optimist = require('optimist');
 var path = require('path');
 var fs = require('fs');
 var npmScripts = rewire('../../lib/utils/npmScripts');
-var EventEmitter = require('events');
 var Q = require('q');
-var spawn = require('cross-spawn-async');
 
 describe('hasIonicScript function', function() {
   
@@ -35,25 +34,7 @@ describe('hasIonicScript function', function() {
     });
   });
 });
-/*
-describe('runIonicScript function', function() {
-  it('should call spawn', function(done) {
-    //'npm', ['run', scriptName].concat(argv || []), { stdio: 'inherit' }
-    var emitter = new EventEmitter();
-    var error = new Error();
 
-    spawn = jasmine.createSpy('spawnSpy', spawn).andCallFake(function() {
-      return emitter;
-    });
-
-    npmScripts.runIonicScript('test').catch(function(err) {
-      expect(err).toEqual(error);
-      done();
-    });
-    emitter.emit('error', error);
-  });
-});
-*/
 describe('getPackageJsonContents method', function() {
   it('getPackageJsonContents should return json contents of package.json file and should memoize', function(done) {
     var dapath = path.join(__dirname, '../', 'fixtures/package.json');
@@ -69,5 +50,96 @@ describe('getPackageJsonContents method', function() {
         done();
       });
     });
+  });
+});
+
+describe('consolidate options', function() {
+  var consolidateOptions = npmScripts.__get__('consolidateOptions');
+
+  it('should consolidate options to the first array element', function() {
+    var options = {
+      _: ['run', 'ios'],
+      consolelogs: false,
+      c: true,
+      serverlogs: false,
+      s: true,
+      debug: false,
+      release: false,
+      l: true,
+      p: 8100,
+      r: 6000,
+      '$0': 'ionic',
+      v2: true,
+      runLivereload: true,
+      isPlatformServe: true
+    };
+    var results = consolidateOptions(['port', 'p'], options);
+    expect(results).toEqual({
+      _: ['run', 'ios'],
+      consolelogs: false,
+      c: true,
+      serverlogs: false,
+      s: true,
+      debug: false,
+      release: false,
+      l: true,
+      port: 8100,
+      r: 6000,
+      '$0': 'ionic',
+      v2: true,
+      runLivereload: true,
+      isPlatformServe: true
+    });
+  });
+
+  it('should consolidate duplicates', function() {
+    var options = {
+      _: ['run', 'ios'],
+      consolelogs: false,
+      c: true,
+      serverlogs: false,
+      s: true,
+      debug: false,
+      release: false,
+      l: true,
+      p: 8100,
+      port: 8100,
+      r: 6000,
+      '$0': 'ionic',
+      v2: true,
+      runLivereload: true,
+      isPlatformServe: true
+    };
+    var results = consolidateOptions(['port', 'p'], options);
+    expect(results).toEqual({
+      _: ['run', 'ios'],
+      consolelogs: false,
+      c: true,
+      serverlogs: false,
+      s: true,
+      debug: false,
+      release: false,
+      l: true,
+      port: 8100,
+      r: 6000,
+      '$0': 'ionic',
+      v2: true,
+      runLivereload: true,
+      isPlatformServe: true
+    });
+  });
+});
+describe('optionsToArray options', function() {
+  var optionsToArray = npmScripts.__get__('optionsToArray');
+
+  it('should convert argv options into an array', function() {
+    var processArguments = ['node', 'ionic', 'run', 'ios', '--port', '8100', '--livereload'];
+    var rawCliArguments = processArguments.slice(2);
+    var argv = optimist(rawCliArguments).argv;
+    var results = optionsToArray(argv);
+    expect(results).toEqual([
+      '--port', 8100,
+      '--livereload',
+    ]);
   });
 });
