@@ -273,7 +273,7 @@ describe('emulate command', function() {
       spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
 
       emulate.run(null, argv, rawCliArguments).then(function() {
-        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build');
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build', rawCliArguments.slice(2));
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', 'android'], false, true);
         done();
       }).catch(function(e) {
@@ -293,7 +293,7 @@ describe('emulate command', function() {
       spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
 
       emulate.run(null, argv, rawCliArguments).then(function() {
-        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build');
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build', rawCliArguments.slice(2));
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', 'android'], false, true);
         done();
       }).catch(function(e) {
@@ -320,9 +320,11 @@ describe('emulate command', function() {
       emulate.run(null, argv, rawCliArguments).then(function() {
         expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('build');
         expect(npmScripts.runIonicScript).toHaveBeenCalledWith('serve', [
+          '--runLivereload', '--isPlatformServe', '--livereload',
           '--port', jasmine.any(Number),
+          '--livereload-port', jasmine.any(Number),
           '--address', jasmine.any(String),
-          '--liveReloadPort', jasmine.any(Number),
+          '--iscordovaserve',
           '--nobrowser'
         ]);
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['emulate', 'android'], true, true);

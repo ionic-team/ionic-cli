@@ -320,8 +320,8 @@ describe('run command', function() {
       spyOn(cordovaUtils, 'startAppScriptsServer').andReturn(Q(true));
 
       run.run(null, argv, rawCliArguments).then(function() {
-        console.log(rawCliArguments);
-        expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('build', rawCliArguments.slice(2));
+        expect(npmScripts.hasIonicScript.calls[0].args).toEqual(['build']);
+        expect(npmScripts.hasIonicScript.calls[1].args).toEqual(['serve']);
         expect(cordovaUtils.startAppScriptsServer).toHaveBeenCalledWith(argv);
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['run', 'android'], true, true);
         done();
