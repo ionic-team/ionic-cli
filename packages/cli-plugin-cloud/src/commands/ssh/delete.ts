@@ -6,7 +6,7 @@ import {
   CommandLineOptions,
   CommandMetadata,
   validators
-} from '@ionic/cli';
+} from '@ionic/cli-utils';
 
 @CommandMetadata({
   name: 'delete',

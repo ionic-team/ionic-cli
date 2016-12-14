@@ -8,7 +8,7 @@ import {
   CommandLineOptions,
   CommandMetadata,
   isAPIResponseSuccess
-} from '@ionic/cli';
+} from '@ionic/cli-utils';
 
 import { parsePublicKey } from '../../utils/ssh';
 

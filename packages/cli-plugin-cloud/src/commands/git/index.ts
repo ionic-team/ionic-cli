@@ -1,4 +1,4 @@
-import { CommandMap, ICommandMap, Namespace } from '@ionic/cli';
+import { CommandMap, ICommandMap, Namespace } from '@ionic/cli-utils';
 
 import { GitCloneCommand } from './clone';
 import { GitRemoteCommand } from './remote';

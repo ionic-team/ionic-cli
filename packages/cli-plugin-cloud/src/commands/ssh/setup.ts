@@ -10,7 +10,7 @@ import {
   CommandMetadata,
   indent,
   prettyPath
-} from '@ionic/cli';
+} from '@ionic/cli-utils';
 
 @CommandMetadata({
   name: 'setup',

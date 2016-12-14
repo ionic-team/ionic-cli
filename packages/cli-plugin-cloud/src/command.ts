@@ -1,4 +1,4 @@
-import { Command as BaseCommand } from '@ionic/cli';
+import { Command as BaseCommand } from '@ionic/cli-utils';
 
 import { CloudConfig } from './config';
 

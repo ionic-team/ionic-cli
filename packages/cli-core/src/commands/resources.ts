@@ -1,5 +1,4 @@
-import { CommandLineInputs, CommandLineOptions } from '../definitions';
-import { Command, CommandMetadata } from '../lib/command';
+import { CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from '@ionic/cli-utils';
 
 const RESOURCES_SUMMARY = `
       Automatically create icon and splash screen resources

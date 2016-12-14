@@ -1,4 +1,4 @@
-import { ICommandMap, Namespace, CommandMap } from '@ionic/cli';
+import { ICommandMap, Namespace, CommandMap } from '@ionic/cli-utils';
 
 import { BuildCommand } from './commands/build';
 import { CompileCommand } from './commands/compile';

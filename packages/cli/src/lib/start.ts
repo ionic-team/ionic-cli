@@ -3,7 +3,7 @@ import * as zlib from 'zlib';
 import * as tar from 'tar';
 import * as chalk from 'chalk';
 
-import { runcmd } from './utils/shell';
+import { runcmd } from '@ionic/cli-utils';
 import { StarterTemplate } from '../definitions';
 
 /**

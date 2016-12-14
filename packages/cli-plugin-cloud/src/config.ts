@@ -1,4 +1,4 @@
-import { BaseConfig } from '@ionic/cli';
+import { BaseConfig } from '@ionic/cli-utils';
 
 import { CloudConfigFile } from './definitions';
 

@@ -1,4 +1,4 @@
-import { CommandMap, ICommandMap, Namespace } from '@ionic/cli';
+import { CommandMap, ICommandMap, Namespace } from '@ionic/cli-utils';
 
 import { SSHGenerateCommand } from './generate';
 import { SSHUseCommand } from './use';

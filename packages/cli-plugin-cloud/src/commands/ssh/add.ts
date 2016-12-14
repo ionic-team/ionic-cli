@@ -1,5 +1,4 @@
 import * as path from 'path';
-
 import * as chalk from 'chalk';
 
 import {
@@ -11,7 +10,7 @@ import {
   CommandMetadata,
   isAPIResponseSuccess,
   validators
-} from '@ionic/cli';
+} from '@ionic/cli-utils';
 
 import { parsePublicKeyFile } from '../../utils/ssh';
 

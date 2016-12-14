@@ -5,7 +5,7 @@ import {
   fsStat,
   fsReadFile,
   prettyPath
-} from '@ionic/cli';
+} from '@ionic/cli-utils';
 
 export async function parsePublicKeyFile(pubkeyPath: string): Promise<[string, string, string, string]> {
   try {

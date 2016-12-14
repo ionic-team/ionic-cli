@@ -6,9 +6,8 @@ import * as chalk from 'chalk';
 import * as pathExists from 'path-exists';
 import fetch from 'node-fetch';
 
-import { TaskChain } from '../lib/utils/task';
-import { CommandLineInputs, CommandLineOptions, StarterTemplate } from '../definitions';
-import { Command, CommandMetadata } from '../lib/command';
+import { TaskChain, CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from '@ionic/cli-utils';
+import { StarterTemplate } from '../definitions';
 import { getCommandInfo } from '../lib/utils/environmentInfo';
 import {
   isProjectNameValid,

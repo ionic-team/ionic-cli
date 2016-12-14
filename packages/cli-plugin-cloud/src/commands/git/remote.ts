@@ -2,7 +2,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata
-} from '@ionic/cli';
+} from '@ionic/cli-utils';
 
 import { Command } from '../../command';
 import { formatGitRepoUrl } from '../../utils/git';

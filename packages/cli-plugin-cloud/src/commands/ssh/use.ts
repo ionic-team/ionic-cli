@@ -16,7 +16,7 @@ import {
   indent,
   prettyPath,
   validators
-} from '@ionic/cli';
+} from '@ionic/cli-utils';
 
 import { Command } from '../../command';
 import { diffPatch } from '../../utils/diff';

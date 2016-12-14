@@ -1,7 +1,7 @@
 import * as chalk from 'chalk';
 
-import { CommandData, CommandOption } from '../definitions';
-import { STRIP_ANSI_REGEX } from './utils/format';
+import { CommandData, CommandOption } from '@ionic/cli-utils';
+import { STRIP_ANSI_REGEX } from '@ionic/cli-utils';
 
 
 export function formatCommandHelp(cmdMetadata: CommandData): string {

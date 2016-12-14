@@ -1,7 +1,7 @@
 {
-  "name": "@ionic/cli-plugin-cordova",
+  "name": "@ionic/cli-core",
   "version": "0.0.1",
-  "description": "Ionic Cordova Plugin for Ionic CLI",
+  "description": "Ionic CLI Core",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
   "main": "./dist/index.js",

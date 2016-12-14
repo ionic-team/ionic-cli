@@ -11,16 +11,21 @@
     "outDir": "./dist",
     "strictNullChecks": true,
     "target": "es6",
+    "lib": [
+      "es2017.object",
+      "es6",
+      "dom"
+    ],
     "typeRoots": [
-      "./cli/node_modules/@types"
+      "../../node_modules/@types"
     ]
   },
   "include": [
-    "src/**/*.ts",
-    "types/index.d.ts",
-    "../cli/types/index.d.ts"
+    "../../types/index.d.ts",
+    "src/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/**/__tests__/*.ts"
   ]
 }

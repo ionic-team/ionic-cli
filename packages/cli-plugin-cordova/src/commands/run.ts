@@ -3,7 +3,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata
-} from '@ionic/cli';
+} from '@ionic/cli-utils';
 
 /**
  * Metadata about the run command

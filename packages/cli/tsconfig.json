@@ -11,17 +11,19 @@
     "target": "es6",
     "lib": [
       "es2017.object",
-      "es6"
+      "es6",
+      "dom"
     ],
     "typeRoots": [
-      "./node_modules/@types"
+      "../../node_modules/@types"
     ]
   },
   "include": [
-    "types/index.d.ts",
+    "../../types/index.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/**/__tests__/*.ts"
   ]
 }

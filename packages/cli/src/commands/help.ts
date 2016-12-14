@@ -1,8 +1,6 @@
 import * as chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions } from '../definitions';
-
-import { Command, CommandMetadata } from '../lib/command';
+import { CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from '@ionic/cli-utils';
 import { formatCommandHelp } from '../lib/help';
 
 @CommandMetadata({

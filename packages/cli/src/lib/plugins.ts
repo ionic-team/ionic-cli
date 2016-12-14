@@ -1,4 +1,4 @@
-import { Namespace } from './command/namespace';
+import { Namespace } from '@ionic/cli-utils';
 import * as path from 'path';
 
 const plugins = new Set<string>(['cloud', 'cordova']);

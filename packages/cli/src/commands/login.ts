@@ -1,7 +1,5 @@
-import { CommandLineInputs, CommandLineOptions } from '../definitions';
-
-import { Command, CommandMetadata } from '../lib/command';
-import { validators } from '../lib/validators';
+import { CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from '@ionic/cli-utils';
+import { validators } from '@ionic/cli-utils';
 
 @CommandMetadata({
   name: 'login',

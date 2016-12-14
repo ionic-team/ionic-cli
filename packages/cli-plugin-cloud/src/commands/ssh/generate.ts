@@ -1,6 +1,5 @@
 import * as os from 'os';
 import * as path from 'path';
-
 import * as chalk from 'chalk';
 
 import {
@@ -15,7 +14,7 @@ import {
   indent,
   isAPIResponseSuccess,
   prettyPath
-} from '@ionic/cli';
+} from '@ionic/cli-utils';
 
 interface SlugResponse extends APIResponseSuccess {
   data: string;

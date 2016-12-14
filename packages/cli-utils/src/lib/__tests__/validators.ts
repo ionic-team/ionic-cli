@@ -1,7 +1,7 @@
-import { STRIP_ANSI_REGEX } from '../../src/lib/utils/format';
-import { validators } from '../../src/lib/validators';
+import { STRIP_ANSI_REGEX } from '../utils/format';
+import { validators } from '../validators';
 
-function removeColors(str) {
+function removeColors(str: any) {
   return str.replace(STRIP_ANSI_REGEX, '');
 }
 

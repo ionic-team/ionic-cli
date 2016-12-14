@@ -4,32 +4,19 @@ import * as path from 'path';
 import * as inquirer from 'inquirer';
 import * as minimist from 'minimist';
 
-import { isSuperAgentError } from './guards';
+import { isSuperAgentError } from '@ionic/cli-utils';
 
 import { IonicNamespace } from './commands';
-import { App } from './lib/app';
-import { Config } from './lib/config';
-import { FatalException } from './lib/errors';
-import { formatError as formatSuperAgentError, Client } from './lib/http';
-import { Project } from './lib/project';
-import { Session } from './lib/session';
-import { Shell } from './lib/shell';
-import { TASKS } from './lib/utils/task';
-import { Logger } from './lib/utils/logger';
+import { App } from '@ionic/cli-utils';
+import { Config } from '@ionic/cli-utils';
+import { FatalException } from '@ionic/cli-utils';
+import { formatError as formatSuperAgentError, Client } from '@ionic/cli-utils';
+import { Project } from '@ionic/cli-utils';
+import { Session } from '@ionic/cli-utils';
+import { Shell } from '@ionic/cli-utils';
+import { TASKS } from '@ionic/cli-utils';
+import { Logger } from '@ionic/cli-utils';
 
-export * from './definitions';
-export * from './guards';
-
-export * from './lib/command';
-export * from './lib/command/namespace';
-export * from './lib/config';
-export * from './lib/errors';
-export * from './lib/http';
-export * from './lib/utils/format';
-export * from './lib/utils/fs';
-export * from './lib/utils/promisify';
-export * from './lib/utils/shell';
-export * from './lib/validators';
 
 const CONFIG_FILE = 'config.json';
 const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');

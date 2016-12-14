@@ -8,22 +8,18 @@ import {
   IIonicNamespace,
   IIonicNamespaceRunOptions,
   INamespace
-} from '../definitions';
+} from '@ionic/cli-utils';
 
-import { DocsCommand } from './docs';
 import { HelpCommand } from './help';
 import { InfoCommand } from './info';
-import { IonitronCommand } from './ionitron';
 import { LoginCommand } from './login';
-import { ServeCommand } from './serve';
 import { StartCommand } from './start';
-import { ResourcesCommand } from './resources';
 import { VersionCommand } from './version';
 
-import { FatalException } from '../lib/errors';
+import { FatalException } from '@ionic/cli-utils';
 import { formatCommandHelp } from '../lib/help';
 import { ERROR_PLUGIN_NOT_FOUND, PluginLoader } from '../lib/plugins';
-import { CommandMap, Namespace } from '../lib/command/namespace';
+import { CommandMap, Namespace } from '@ionic/cli-utils';
 
 export class IonicNamespace extends Namespace implements IIonicNamespace {
   public name = 'ionic';
@@ -38,13 +34,9 @@ export class IonicNamespace extends Namespace implements IIonicNamespace {
   getCommands(): ICommandMap {
     let m = new CommandMap();
 
-    m.set('docs', new DocsCommand());
     m.set('help', this.help);
     m.set('info', new InfoCommand());
-    m.set('ionitron', new IonitronCommand());
     m.set('login', new LoginCommand());
-    m.set('resources', new ResourcesCommand());
-    m.set('serve', new ServeCommand());
     m.set('start', new StartCommand());
     m.set('version', new VersionCommand());
 
