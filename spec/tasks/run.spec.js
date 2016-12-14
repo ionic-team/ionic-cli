@@ -223,10 +223,6 @@ describe('run command', function() {
   });
 
   describe('npmScripts check', function() {
-    var processArguments = ['node', 'ionic', 'run', 'android'];
-    var rawCliArguments = processArguments.slice(2);
-    var argv = optimist(rawCliArguments).argv;
-
     beforeEach(function() {
       var appDirectory = '/ionic/app/path';
       spyOn(process, 'cwd').andReturn(appDirectory);
@@ -238,6 +234,10 @@ describe('run command', function() {
     });
 
     it('should not call runIonicScript if hasIonicScript for build and serve are both false', function(done) {
+      var processArguments = ['node', 'ionic', 'run', 'android'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
       spyOn(npmScripts, 'hasIonicScript').andCallFake(function(task) {
         if (task === 'build') {
           return Q(false);
@@ -258,6 +258,10 @@ describe('run command', function() {
 
     it('should call runIonicScript(build) if ' +
       'hasIonicScript(build) is true and hasIonicScript(build) is false', function(done) {
+      var processArguments = ['node', 'ionic', 'run', 'android'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
       spyOn(npmScripts, 'hasIonicScript').andCallFake(function(task) {
         if (task === 'build') {
           return Q(true);
@@ -268,7 +272,7 @@ describe('run command', function() {
       spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
 
       run.run(null, argv, rawCliArguments).then(function() {
-        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build');
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build', rawCliArguments.slice(2));
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['run', 'android'], false, true);
         done();
       }).catch(function(e) {
@@ -278,6 +282,10 @@ describe('run command', function() {
 
     it('should call runIonicScript(build) if ' +
       'hasIonicScript(build) is true and hasIonicScript(build) is true and liveReload is not passed', function(done) {
+      var processArguments = ['node', 'ionic', 'run', 'android'];
+      var rawCliArguments = processArguments.slice(2);
+      var argv = optimist(rawCliArguments).argv;
+
       spyOn(npmScripts, 'hasIonicScript').andCallFake(function(task) {
         if (task === 'build') {
           return Q(true);
@@ -288,7 +296,7 @@ describe('run command', function() {
       spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
 
       run.run(null, argv, rawCliArguments).then(function() {
-        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build');
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build', rawCliArguments.slice(2));
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['run', 'android'], false, true);
         done();
       }).catch(function(e) {
@@ -302,7 +310,6 @@ describe('run command', function() {
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
 
-
       spyOn(npmScripts, 'hasIonicScript').andCallFake(function(task) {
         if (task === 'build') {
           return Q(true);
@@ -310,16 +317,12 @@ describe('run command', function() {
           return Q(true);
         }
       });
-      spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
+      spyOn(cordovaUtils, 'startAppScriptsServer').andReturn(Q(true));
 
       run.run(null, argv, rawCliArguments).then(function() {
-        expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('build');
-        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('serve', [
-          '--port', jasmine.any(Number),
-          '--address', jasmine.any(String),
-          '--liveReloadPort', jasmine.any(Number),
-          '--nobrowser'
-        ]);
+        expect(npmScripts.hasIonicScript.calls[0].args).toEqual(['build']);
+        expect(npmScripts.hasIonicScript.calls[1].args).toEqual(['serve']);
+        expect(cordovaUtils.startAppScriptsServer).toHaveBeenCalledWith(argv);
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['run', 'android'], true, true);
         done();
       }).catch(function(e) {

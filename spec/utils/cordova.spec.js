@@ -422,4 +422,3 @@ describe('filterArgumentsForCordova', function() {
     expect(resultArgs).toEqual(['build', '--target="ios"']);
   });
 });
-

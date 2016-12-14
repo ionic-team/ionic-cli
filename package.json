@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "2.1.14",
+  "version": "2.1.17",
   "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -14,7 +14,8 @@
     "e2e": "jasmine-node --captureExceptions ./e2e",
     "jasmine": "jasmine-node --captureExceptions  ./spec",
     "lint": "eslint .",
-    "test": "istanbul cover node_modules/jasmine-node/bin/jasmine-node --captureExceptions spec/"
+    "test": "istanbul cover node_modules/jasmine-node/bin/jasmine-node --captureExceptions spec/",
+    "publish:nightly": "node ./scripts/publish-nightly.js"
   },
   "keywords": [
     "ionic",

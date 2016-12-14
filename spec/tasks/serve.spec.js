@@ -8,7 +8,6 @@ var IonicAppLib = require('ionic-app-lib');
 var IonicProject = IonicAppLib.project;
 var Serve = IonicAppLib.serve;
 var log = IonicAppLib.logging.logger;
-var appLibUtils = IonicAppLib.utils;
 var npmScripts = require('../../lib/utils/npmScripts');
 
 describe('Serve', function() {
@@ -64,18 +63,20 @@ describe('Serve', function() {
       var processArguments = ['node', 'ionic', 'serve', '--livereload', '--nogulp'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
+      var runAppScriptsServerSpy = jasmine.createSpy('runAppScriptsServerSpy');
+      var revert = serveTask.__set__('runAppScriptsServer', runAppScriptsServerSpy);
 
       var error = new Error('some error');
 
       spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
-      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andCallFake(function() {
         throw error;
       });
 
-      serveTask.run({}, argv).then(function() {
+      serveTask.run({}, argv, rawCliArguments).then(function() {
         expect(log.error).toHaveBeenCalledWith(jasmine.any(String), error);
-        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
+        expect(runAppScriptsServerSpy).not.toHaveBeenCalled();
+        revert();
         done();
       });
     });
@@ -84,11 +85,12 @@ describe('Serve', function() {
       var processArguments = ['node', 'ionic', 'serve', '--livereload', '--nogulp'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
+      var runAppScriptsServerSpy = jasmine.createSpy('runAppScriptsServerSpy');
+      var revert = serveTask.__set__('runAppScriptsServer', runAppScriptsServerSpy);
 
       var error = new Error('some error');
 
       spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
-      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -99,9 +101,10 @@ describe('Serve', function() {
         throw error;
       });
 
-      serveTask.run({}, argv).then(function() {
+      serveTask.run({}, argv, rawCliArguments).then(function() {
         expect(log.error).toHaveBeenCalledWith(jasmine.any(String), error);
-        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
+        expect(runAppScriptsServerSpy).not.toHaveBeenCalled();
+        revert();
         done();
       });
     });
@@ -110,11 +113,12 @@ describe('Serve', function() {
       var processArguments = ['node', 'ionic', 'serve', '-a'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
+      var runAppScriptsServerSpy = jasmine.createSpy('runAppScriptsServerSpy');
+      var revert = serveTask.__set__('runAppScriptsServer', runAppScriptsServerSpy);
 
       var error = new Error('some error');
 
       spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
-      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -127,13 +131,14 @@ describe('Serve', function() {
       spyOn(Serve, 'start');
       spyOn(Serve, 'showFinishedServeMessage');
 
-      serveTask.run({}, argv).then(function() {
+      serveTask.run({}, argv, rawCliArguments).then(function() {
         expect(Serve.checkPorts).toHaveBeenCalled();
         expect(Serve.start).not.toHaveBeenCalled();
         expect(Serve.showFinishedServeMessage).not.toHaveBeenCalled();
-        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
+        expect(runAppScriptsServerSpy).not.toHaveBeenCalled();
 
         expect(log.error).toHaveBeenCalledWith(jasmine.any(String), error);
+        revert();
         done();
       });
     });
@@ -142,9 +147,10 @@ describe('Serve', function() {
       var processArguments = ['node', 'ionic', 'serve', '-a'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
+      var runAppScriptsServerSpy = jasmine.createSpy('runAppScriptsServerSpy');
+      var revert = serveTask.__set__('runAppScriptsServer', runAppScriptsServerSpy);
 
       spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
-      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -157,10 +163,11 @@ describe('Serve', function() {
       spyOn(Serve, 'start');
       spyOn(Serve, 'showFinishedServeMessage');
 
-      serveTask.run({}, argv).then(function() {
-        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
+      serveTask.run({}, argv, rawCliArguments).then(function() {
+        expect(runAppScriptsServerSpy).not.toHaveBeenCalled();
         expect(Serve.getAddress).not.toHaveBeenCalled();
         expect(Serve.start.calls[0].args[0].address).toBe('0.0.0.0');
+        revert();
         done();
       });
     });
@@ -169,9 +176,10 @@ describe('Serve', function() {
       var processArguments = ['node', 'ionic', 'serve', '--all'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
+      var runAppScriptsServerSpy = jasmine.createSpy('runAppScriptsServerSpy');
+      var revert = serveTask.__set__('runAppScriptsServer', runAppScriptsServerSpy);
 
       spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
-      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -184,10 +192,12 @@ describe('Serve', function() {
       spyOn(Serve, 'start');
       spyOn(Serve, 'showFinishedServeMessage');
 
-      serveTask.run({}, argv).then(function() {
-        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
+      serveTask.run({}, argv, rawCliArguments).then(function() {
+        expect(runAppScriptsServerSpy).not.toHaveBeenCalled();
+        expect(runAppScriptsServerSpy).not.toHaveBeenCalled();
         expect(Serve.getAddress).not.toHaveBeenCalled();
         expect(Serve.start.calls[0].args[0].address).toBe('0.0.0.0');
+        revert();
         done();
       });
     });
@@ -196,9 +206,10 @@ describe('Serve', function() {
       var processArguments = ['node', 'ionic', 'serve', '--address', '192.168.1.10'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
+      var runAppScriptsServerSpy = jasmine.createSpy('runAppScriptsServerSpy');
+      var revert = serveTask.__set__('runAppScriptsServer', runAppScriptsServerSpy);
 
       spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
-      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -211,10 +222,12 @@ describe('Serve', function() {
       spyOn(Serve, 'start');
       spyOn(Serve, 'showFinishedServeMessage');
 
-      serveTask.run({}, argv).then(function() {
-        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
+      serveTask.run({}, argv, rawCliArguments).then(function() {
+        expect(runAppScriptsServerSpy).not.toHaveBeenCalled();
+        expect(runAppScriptsServerSpy).not.toHaveBeenCalled();
         expect(Serve.getAddress).not.toHaveBeenCalled();
         expect(Serve.start.calls[0].args[0].address).toBe('192.168.1.10');
+        revert();
         done();
       });
     });
@@ -223,9 +236,10 @@ describe('Serve', function() {
       var processArguments = ['node', 'ionic', 'serve', '--livereload', '--nogulp'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
+      var runAppScriptsServerSpy = jasmine.createSpy('runAppScriptsServerSpy');
+      var revert = serveTask.__set__('runAppScriptsServer', runAppScriptsServerSpy);
 
       spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
-      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({});
       spyOn(Serve, 'loadSettings').andReturn({});
       spyOn(Serve, 'getAddress').andReturn(Q());
@@ -242,9 +256,10 @@ describe('Serve', function() {
         nogulp: true
       };
 
-      serveTask.run({}, argv).then(function() {
-        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
+      serveTask.run({}, argv, rawCliArguments).then(function() {
+        expect(runAppScriptsServerSpy).not.toHaveBeenCalled();
         expect(Serve.start).toHaveBeenCalledWith(options);
+        revert();
         done();
       });
     });
@@ -253,9 +268,10 @@ describe('Serve', function() {
       var processArguments = ['node', 'ionic', 'serve', '--livereload'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
+      var runAppScriptsServerSpy = jasmine.createSpy('runAppScriptsServerSpy');
+      var revert = serveTask.__set__('runAppScriptsServer', runAppScriptsServerSpy);
 
       spyOn(npmScripts, 'hasIonicScript').andReturn(Q(false));
-      spyOn(npmScripts, 'runIonicScript');
       spyOn(IonicProject, 'load').andReturn({
         get: function() {
           return false;
@@ -268,24 +284,27 @@ describe('Serve', function() {
       spyOn(Serve, 'start');
       spyOn(Serve, 'showFinishedServeMessage');
 
-      serveTask.run({}, argv).then(function() {
-        expect(npmScripts.runIonicScript).not.toHaveBeenCalled();
+      serveTask.run({}, argv, rawCliArguments).then(function() {
+        expect(runAppScriptsServerSpy).not.toHaveBeenCalled();
         expect(Serve.start.calls[0].args[0].liveReloadPort).toBe(35729);
+        revert();
         done();
       });
     });
 
-    it('should call runIonicScript if hasIonicScript is true', function(done) {
+    it('should call runAppScriptsServer if hasIonicScript is true', function(done) {
       var processArguments = ['node', 'ionic', 'serve', '--livereload', '--nogulp'];
       var rawCliArguments = processArguments.slice(2);
       var argv = optimist(rawCliArguments).argv;
+      var runAppScriptsServerSpy = jasmine.createSpy('runAppScriptsServerSpy');
+      var revert = serveTask.__set__('runAppScriptsServer', runAppScriptsServerSpy);
 
       spyOn(npmScripts, 'hasIonicScript').andReturn(Q(true));
-      spyOn(npmScripts, 'runIonicScript').andReturn(Q(true));
 
       serveTask.run({}, argv, rawCliArguments).then(function() {
         expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('serve');
-        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('serve', rawCliArguments.slice(1));
+        expect(runAppScriptsServerSpy).toHaveBeenCalledWith(argv);
+        revert();
         done();
       });
     });

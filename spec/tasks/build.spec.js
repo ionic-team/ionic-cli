@@ -200,7 +200,7 @@ describe('build command', function() {
 
       build.run(null, argv, rawCliArguments).then(function() {
         expect(npmScripts.hasIonicScript).toHaveBeenCalledWith('build');
-        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build');
+        expect(npmScripts.runIonicScript).toHaveBeenCalledWith('build', rawCliArguments.slice(2));
         expect(cordovaUtils.execCordovaCommand).toHaveBeenCalledWith(['build', 'ios', '-n']);
         done();
       }).catch(function(e) {
