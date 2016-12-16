@@ -7,6 +7,8 @@ http://ionicworldwide.herokuapp.com/
 
 https://github.com/driftyco/ionic-app-scripts
 
+Please ensure that you are on the latest version of the CLI.
+`npm view ionic@latest version`
 
 #### Short description of the problem:
 
