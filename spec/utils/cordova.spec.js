@@ -8,7 +8,7 @@ var optimist = require('optimist');
 var IonicAppLib = require('ionic-app-lib');
 var Project = require('ionic-app-lib').project;
 var Serve = require('ionic-app-lib').serve;
-var crossSpawn = require('cross-spawn'); 
+var crossSpawn = require('cross-spawn');
 var ConfigXml = require('ionic-app-lib').configXml;
 var log = IonicAppLib.logging.logger;
 
@@ -409,16 +409,6 @@ describe('filterArgumentsForCordova', function() {
     var cmdName = argv._[0];
 
     var resultArgs = cordovaUtils.filterArgumentsForCordova(cmdName, argv, rawCliArguments);
-    expect(resultArgs).toEqual(['build', '--target="ios"']);
-  });
-  it('should ensure that the --target= parameter contains double quotes when quotes are not removed', function() {
-    var processArguments = ['node', 'ionic', 'build',
-      '--target="ios"'];
-    var rawCliArguments = processArguments.slice(2);
-    var argv = optimist(rawCliArguments).argv;
-    var cmdName = argv._[0];
-
-    var resultArgs = cordovaUtils.filterArgumentsForCordova(cmdName, argv, rawCliArguments);
-    expect(resultArgs).toEqual(['build', '--target="ios"']);
+    expect(resultArgs).toEqual(['build', '--target=ios']);
   });
 });
