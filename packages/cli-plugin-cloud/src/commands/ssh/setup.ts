@@ -9,7 +9,8 @@ import {
   CommandLineOptions,
   CommandMetadata,
   indent,
-  prettyPath
+  prettyPath,
+  runCommand
 } from '@ionic/cli-utils';
 
 @CommandMetadata({
@@ -52,22 +53,19 @@ export class SSHSetupCommand extends Command {
       }
     }
 
-    await this.cli.run([
-      'cloud:ssh',
+    await runCommand(this.env, [
       'generate',
       '--key-path', keyPath,
       '--pubkey-path', pubkeyPath,
       skipPrompts ? '-y' : ''
     ]);
 
-    await this.cli.run([
-      'cloud:ssh',
+    await runCommand(this.env, [
       'add',
       pubkeyPath
     ]);
 
-    await this.cli.run([
-      'cloud:ssh',
+    await runCommand(this.env, [
       'use',
       keyPath,
       skipPrompts ? '-y' : ''

@@ -9,8 +9,8 @@ export class CloudNamespace extends Namespace {
   getNamespaces(): INamespaceMap {
     let m = new NamespaceMap();
 
-    m.set('git', new GitNamespace(this.env));
-    m.set('ssh', new SSHNamespace(this.env));
+    m.set('git', new GitNamespace());
+    m.set('ssh', new SSHNamespace());
 
     return m;
   }

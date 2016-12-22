@@ -131,7 +131,7 @@ export interface IConfig<T> {
   filePath: string;
 
   load(): Promise<T>;
-  save(configFile: T): Promise<void>;
+  save(configFile?: T): Promise<void>;
 }
 
 export type APIResponse = APIResponseSuccess | APIResponseError;
@@ -174,10 +174,6 @@ export interface IClient {
   do(res: superagent.Request): Promise<APIResponseSuccess>;
 }
 
-export interface IIonicNamespaceRunOptions {
-  showCommand?: boolean;
-}
-
 export interface CommandEnvironment {
   pargv: string[];
   app: IApp;
@@ -188,6 +184,7 @@ export interface CommandEnvironment {
   project: IProject;
   session: ISession;
   shell: IShell;
+  namespace: INamespace;
 }
 
 export interface INamespace {
@@ -198,7 +195,6 @@ export interface INamespace {
 }
 
 export interface ICommand {
-  cli: any;
   env: CommandEnvironment;
   metadata: CommandData;
 

@@ -1,6 +1,9 @@
-import { execNamespace } from '@ionic/cli-utils';
+import { createCommandEnvironment, runCommand } from '@ionic/cli-utils';
 import { CordovaNamespace } from './commands';
 
 export default async function run(pargv: string[], env: { [k: string]: string }): Promise<void>  {
-  return execNamespace(pargv, env, CordovaNamespace);
+  const cordovaNamespace = new CordovaNamespace();
+  const commandEnvironment = await createCommandEnvironment(pargv, env, cordovaNamespace);
+
+  await runCommand(commandEnvironment);
 }

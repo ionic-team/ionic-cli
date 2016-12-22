@@ -21,7 +21,7 @@ import {
 })
 export class HelpCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [argv, command] = this.cli.locateCommand(inputs);
+    const [argv, command] = this.env.namespace.locateCommand(inputs);
 
     if (command) {
       return this.env.log.msg(formatCommandHelp(command.metadata));

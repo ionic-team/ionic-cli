@@ -1,5 +1,6 @@
 export * from './lib/command';
 export * from './lib/command/namespace';
+export * from './lib/command/commandEnvironment';
 export * from './lib/config';
 export * from './lib/errors';
 export * from './lib/http';
@@ -19,7 +20,6 @@ export * from './lib/http';
 export * from './lib/project';
 export * from './lib/session';
 export * from './lib/shell';
-export * from './lib/namespaces';
 export * from './lib/utils/task';
 export * from './lib/utils/logger';
 export * from './lib/utils/help';

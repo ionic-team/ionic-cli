@@ -1,5 +1,4 @@
 import {
-  CommandEnvironment,
   ICommand,
   ICommandMap,
   INamespace,
@@ -22,7 +21,6 @@ export class NamespaceMap extends Map<string, INamespace> {}
 
 export class Namespace implements INamespace {
   public name = '';
-  constructor(public env: CommandEnvironment) {}
 
   getNamespaces(): INamespaceMap {
     return new NamespaceMap();
