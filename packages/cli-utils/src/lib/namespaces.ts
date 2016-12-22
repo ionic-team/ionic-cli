@@ -55,7 +55,7 @@ export function locateCommand(argv: string[], startingNamespace: INamespace): [s
  */
 export async function execNamespace(pargv: string[], env: { [k: string]: string }, PrimaryNamespace: typeof Namespace, opts: IIonicNamespaceRunOptions = {}): Promise<void> {
   if (opts.showCommand === undefined) {
-    opts.showCommand = true;
+    opts.showCommand = false;
   }
 
   const argv = minimist(pargv);

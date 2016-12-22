@@ -2,6 +2,8 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 
 import { Namespace, FatalException } from '@ionic/cli-utils';
+import { IonicNamespace } from '../commands';
+import * as globalPlugin from '../index';
 
 export const defaultPlugin = 'core';
 export const knownPlugins = new Set<string>(['cloud', 'cordova']);
@@ -52,6 +54,11 @@ export function resolvePlugin(argv: string[]): any {
    * If there is no namespaceName assume it lives in 'core'.
    *
    */
+  const isGlobalCmd = IonicNamespace.getCommandNames().has(argv[0]);
+  if (isGlobalCmd || argv.length === 0) {
+    return globalPlugin;
+  }
+
   if (argv.length > 0 && argv[0].indexOf(':') !== -1) {
     pluginName = argv[0].split(':')[0];
   } else {
