@@ -9,7 +9,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   ICommand,
-  IIonicNamespace
+  INamespace
 } from '../../definitions';
 
 import { FatalException } from '../errors';
@@ -23,7 +23,7 @@ export function CommandMetadata(metadata: CommandData) {
 }
 
 export class Command implements ICommand {
-  public cli: IIonicNamespace;
+  public cli: INamespace;
   public env: CommandEnvironment;
   public metadata: CommandData;
 

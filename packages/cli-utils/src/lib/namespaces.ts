@@ -58,7 +58,6 @@ export async function execNamespace(pargv: string[], env: { [k: string]: string 
     opts.showCommand = true;
   }
 
-  this.env.pargv = pargv;
   const argv = minimist(pargv);
 
   const log = new Logger();
@@ -99,15 +98,15 @@ export async function execNamespace(pargv: string[], env: { [k: string]: string 
   }
 
   if (!command) {
-    command = new HelpCommand(primaryNamespace);
+    command = new HelpCommand();
   }
 
   if (opts.showCommand) {
     console.log(`\n> ${this.name} ${pargv.join(' ')}\n`);
   }
 
-  command.cli = this;
-  command.env = this.env;
+  command.cli = primaryNamespace;
+  command.env = primaryNamespace.env;
 
   await command.load();
   await command.execute(inputs);

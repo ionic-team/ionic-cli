@@ -202,7 +202,7 @@ export interface INamespace {
 }
 
 export interface ICommand {
-  cli: IIonicNamespace;
+  cli: INamespace;
   env: CommandEnvironment;
   metadata: CommandData;
 

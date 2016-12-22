@@ -6,9 +6,15 @@ import * as chalk from 'chalk';
 import * as pathExists from 'path-exists';
 import fetch from 'node-fetch';
 
-import { TaskChain, CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from '@ionic/cli-utils';
-import { StarterTemplate } from '../definitions';
-import { getCommandInfo } from '../lib/utils/environmentInfo';
+import {
+  TaskChain,
+  CommandLineInputs,
+  CommandLineOptions,
+  Command,
+  CommandMetadata,
+  getCommandInfo
+} from '@ionic/cli-utils';
+
 import {
   isProjectNameValid,
   pkgInstallProject,
@@ -17,6 +23,8 @@ import {
   getStarterTemplateText,
   getHelloText
 } from '../lib/start';
+
+import { StarterTemplate } from '../definitions';
 
 
 const IONIC_DASH_URL = 'https://apps.ionic.io';

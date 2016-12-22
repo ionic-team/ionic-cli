@@ -7,7 +7,7 @@ import {
   Logger
 } from '@ionic/cli-utils';
 
-import globalRun from './index';
+import * as globalPlugin from './index';
 import { IonicNamespace } from './commands';
 import { resolvePlugin } from './lib/plugins';
 
@@ -36,13 +36,13 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   }
 
   try {
-    const isGlobalCmd = IonicNamespace.getCommandNames().has(argv[0]);
+    const isGlobalCmd = IonicNamespace.getCommandNames().has(argv._[0]);
     let plugin;
 
     // If the command is a global then use this as the plugin
     if (isGlobalCmd) {
 
-      plugin = globalRun;
+      plugin = globalPlugin;
     } else {
 
       plugin = resolvePlugin(pargv);

@@ -1,5 +1,10 @@
-import { CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from '@ionic/cli-utils';
-import { gatherEnvironmentInfo } from '../lib/utils/environmentInfo';
+import {
+  CommandLineInputs,
+  CommandLineOptions,
+  Command,
+  CommandMetadata,
+  gatherEnvironmentInfo
+} from '@ionic/cli-utils';
 
 @CommandMetadata({
   name: 'info',

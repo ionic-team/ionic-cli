@@ -19,7 +19,7 @@ export class IonicNamespace extends Namespace {
   getCommands(): ICommandMap {
     let m = new CommandMap();
 
-    m.set('help', new HelpCommand(this));
+    m.set('help', new HelpCommand());
     m.set('info', new InfoCommand());
     m.set('login', new LoginCommand());
     m.set('start', new StartCommand());

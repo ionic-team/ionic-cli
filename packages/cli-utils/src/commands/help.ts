@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, INamespace } from '../definitions';
+import { CommandLineInputs, CommandLineOptions } from '../definitions';
 import { formatCommandHelp } from '../lib/utils/help';
 import { Command, CommandMetadata } from '../lib/command/index';
 import { locateCommand } from '../lib/namespaces';
@@ -17,11 +17,8 @@ import { locateCommand } from '../lib/namespaces';
   isProjectTask: false
 })
 export class HelpCommand extends Command {
-  constructor(public targetNamespace: INamespace) {
-    super();
-  }
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [argv, command] = locateCommand(inputs, this.targetNamespace);
+    const [argv, command] = locateCommand(inputs, this.cli);
 
     if (command) {
       return this.env.log.msg(formatCommandHelp(command.metadata));

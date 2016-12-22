@@ -3,6 +3,7 @@ import * as chalk from 'chalk';
 
 import { Namespace, FatalException } from '@ionic/cli-utils';
 
+export const defaultPlugin = 'core';
 export const knownPlugins = new Set<string>(['cloud', 'cordova']);
 export const PREFIX = '@ionic/cli-plugin-';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';
@@ -19,7 +20,7 @@ export function loadPlugin(name: string): typeof Namespace {
   let m: any;
 
   try {
-    var mPath = require.resolve(path.join(process.cwd(), 'node_modules', `${this.prefix}${name}`));
+    var mPath = require.resolve(path.join(process.cwd(), 'node_modules', `${PREFIX}${name}`));
     m = require(mPath);
   } catch (e) {
     console.log(e);
@@ -54,7 +55,7 @@ export function resolvePlugin(argv: string[]): any {
   if (argv.length > 0 && argv[0].indexOf(':') !== -1) {
     pluginName = argv[0].split(':')[0];
   } else {
-    pluginName = 'core';
+    pluginName = defaultPlugin;
   }
 
   /**
@@ -71,9 +72,9 @@ export function resolvePlugin(argv: string[]): any {
     if (e === ERROR_PLUGIN_NOT_FOUND) {
       if (knownPlugins.has(pluginName)) {
         throw new FatalException('This plugin is not currently installed. Please execute the following to install it.\n'
-                                + `    ${chalk.bold(`npm install ${this.loader.prefix}${pluginName}`)}`);
+                                + `    ${chalk.bold(`npm install ${PREFIX}${pluginName}`)}`);
       } else {
-        throw new FatalException(`Unknown plugin: ${chalk.bold(this.loader.prefix + pluginName)}.`);
+        throw new FatalException(`Unknown plugin: ${chalk.bold(PREFIX + pluginName)}.`);
       }
     }
 
