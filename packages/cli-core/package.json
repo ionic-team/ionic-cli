@@ -1,5 +1,5 @@
 {
-  "name": "@ionic/cli-core",
+  "name": "@ionic/cli-plugin-core",
   "version": "0.0.1",
   "description": "Ionic CLI Core",
   "homepage": "https://ionic.io/",

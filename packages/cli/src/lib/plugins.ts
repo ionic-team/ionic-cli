@@ -11,10 +11,6 @@ export const PREFIX = '@ionic/cli-plugin-';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';
 export const ERROR_PLUGIN_INVALID = 'PLUGIN_INVALID';
 
-function isNamespace(m: any): m is typeof Namespace {
-  return m.prototype instanceof Namespace; // TODO: is this dangerous?
-}
-
 /**
  * Synchronously load a plugin
  */
@@ -33,11 +29,7 @@ export function loadPlugin(name: string): typeof Namespace {
     throw e;
   }
 
-  if (!isNamespace(m.default)) {
-    throw ERROR_PLUGIN_INVALID;
-  }
-
-  return m.default;
+  return m;
 }
 
 /**
