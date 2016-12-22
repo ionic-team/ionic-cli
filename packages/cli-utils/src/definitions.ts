@@ -178,11 +178,6 @@ export interface IIonicNamespaceRunOptions {
   showCommand?: boolean;
 }
 
-export interface IIonicNamespace {
-  run(pargv: string[], opts?: IIonicNamespaceRunOptions): Promise<void>;
-  resolve(argv: string[]): [string[], ICommand | undefined];
-}
-
 export interface CommandEnvironment {
   pargv: string[];
   app: IApp;
@@ -199,10 +194,11 @@ export interface INamespace {
   name: string;
   getNamespaces(): INamespaceMap;
   getCommands(): ICommandMap;
+  locateCommand(argv: string[]): [string[], ICommand | undefined];
 }
 
 export interface ICommand {
-  cli: INamespace;
+  cli: any;
   env: CommandEnvironment;
   metadata: CommandData;
 

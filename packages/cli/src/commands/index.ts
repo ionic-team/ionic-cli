@@ -1,9 +1,10 @@
-import { ICommandMap, Namespace, CommandMap, HelpCommand } from '@ionic/cli-utils';
+import { ICommandMap, Namespace, CommandMap } from '@ionic/cli-utils';
 
 import { InfoCommand } from './info';
 import { LoginCommand } from './login';
 import { StartCommand } from './start';
 import { VersionCommand } from './version';
+import { HelpCommand } from './help';
 
 export class IonicNamespace extends Namespace {
   static getCommandNames() {

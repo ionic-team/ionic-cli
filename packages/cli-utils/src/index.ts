@@ -24,5 +24,3 @@ export * from './lib/utils/task';
 export * from './lib/utils/logger';
 export * from './lib/utils/help';
 export * from './lib/utils/environmentInfo';
-
-export { HelpCommand } from './commands/help';

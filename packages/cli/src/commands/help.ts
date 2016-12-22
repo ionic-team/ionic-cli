@@ -1,9 +1,12 @@
 import * as chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions } from '../definitions';
-import { formatCommandHelp } from '../lib/utils/help';
-import { Command, CommandMetadata } from '../lib/command/index';
-import { locateCommand } from '../lib/namespaces';
+import {
+  CommandMetadata,
+  CommandLineInputs,
+  CommandLineOptions,
+  formatCommandHelp,
+  Command
+} from '@ionic/cli-utils';
 
 @CommandMetadata({
   name: 'help',
@@ -18,7 +21,7 @@ import { locateCommand } from '../lib/namespaces';
 })
 export class HelpCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [argv, command] = locateCommand(inputs, this.cli);
+    const [argv, command] = this.cli.locateCommand(inputs);
 
     if (command) {
       return this.env.log.msg(formatCommandHelp(command.metadata));
