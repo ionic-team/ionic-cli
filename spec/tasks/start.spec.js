@@ -41,6 +41,7 @@ describe('start command', function() {
       expect(start.options['--appname|-a']).toEqual(jasmine.any(String));
       expect(start.options['--id|-i']).toEqual(jasmine.any(String));
       expect(start.options['--skip-npm']).toEqual(jasmine.any(Object));
+      expect(start.options['--yarn']).toEqual(jasmine.any(Object));
       expect(start.options['--no-cordova|-w']).toEqual(jasmine.any(Object));
       expect(start.options['--sass|-s']).toEqual(jasmine.any(Object));
       expect(start.options['--list|-l']).toEqual(jasmine.any(Object));
