@@ -39,18 +39,22 @@ export function resolvePlugin(argv: string[]): any {
   let pluginName: string;
 
   /**
-   * If the first arguement supplied contains a ':' then
-   * it is assumed that this is calling a command in another
-   * namespace. <namespaceName>:<commandName>
-   *
-   * If there is no namespaceName assume it lives in 'core'.
-   *
+   * If this module's primary namespace has the command then use it.
    */
-  const isGlobalCmd = IonicNamespace.getCommandNames().has(argv[0]);
+  const ionicNamespace = new IonicNamespace();
+  const isGlobalCmd = ionicNamespace.getCommands().has(argv[0]);
   if (isGlobalCmd || argv.length === 0) {
     return globalPlugin;
   }
 
+  /**
+   * If the first arguement supplied contains a ':' then
+   * it is assumed that this is calling a command in another
+   * namespace. <namespaceName>:<commandName>
+   *
+   * Else it is likely a core command that should be loaded
+   * from the 'core' plugin.
+   */
   if (argv.length > 0 && argv[0].indexOf(':') !== -1) {
     pluginName = argv[0].split(':')[0];
   } else {
@@ -58,7 +62,7 @@ export function resolvePlugin(argv: string[]): any {
   }
 
   /**
-   * Load the namespace using the namespaceName provided
+   * Load the plugin using the pluginName provided
    */
   try {
     return loadPlugin(pluginName);

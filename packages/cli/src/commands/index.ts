@@ -7,16 +7,6 @@ import { VersionCommand } from './version';
 import { HelpCommand } from './help';
 
 export class IonicNamespace extends Namespace {
-  static getCommandNames() {
-    return new Set([
-      'help',
-      'info',
-      'login',
-      'start',
-      'version'
-    ]);
-  }
-
   getCommands(): ICommandMap {
     let m = new CommandMap();
 
