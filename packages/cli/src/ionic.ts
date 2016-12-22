@@ -1,26 +1,15 @@
-import * as os from 'os';
-import * as path from 'path';
-
-import * as inquirer from 'inquirer';
 import * as minimist from 'minimist';
+import {
+  FatalException,
+  formatError as formatSuperAgentError,
+  isSuperAgentError,
+  TASKS,
+  Logger
+} from '@ionic/cli-utils';
 
-import { isSuperAgentError } from '@ionic/cli-utils';
-
+import globalRun from './index';
 import { IonicNamespace } from './commands';
-import { App } from '@ionic/cli-utils';
-import { Config } from '@ionic/cli-utils';
-import { FatalException } from '@ionic/cli-utils';
-import { formatError as formatSuperAgentError, Client } from '@ionic/cli-utils';
-import { Project } from '@ionic/cli-utils';
-import { Session } from '@ionic/cli-utils';
-import { Shell } from '@ionic/cli-utils';
-import { TASKS } from '@ionic/cli-utils';
-import { Logger } from '@ionic/cli-utils';
-
-
-const CONFIG_FILE = 'config.json';
-const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
-const PROJECT_FILE = 'ionic.config.json';
+import { resolvePlugin } from './lib/plugins';
 
 function cleanup() {
   for (let task of TASKS) {
@@ -41,34 +30,26 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   const argv = minimist(pargv);
 
   const log = new Logger();
-  const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
+
+  if (argv['log-level']) {
+    log.level = argv['log-level'];
+  }
 
   try {
-    if (argv['log-level']) {
-      log.level = argv['log-level'];
+    const isGlobalCmd = IonicNamespace.getCommandNames().has(argv[0]);
+    let plugin;
+
+    // If the command is a global then use this as the plugin
+    if (isGlobalCmd) {
+
+      plugin = globalRun;
+    } else {
+
+      plugin = resolvePlugin(pargv);
     }
 
-    const c = await config.load();
+    await plugin.run(pargv, env);
 
-    const client = new Client(c.urls.api);
-    const project = new Project('.', PROJECT_FILE);
-    const session = new Session(config, project, client);
-    const app = new App(session, project, client);
-    const shell = new Shell();
-
-    const ns = new IonicNamespace({
-      app,
-      client,
-      config,
-      inquirer,
-      log,
-      pargv,
-      project,
-      session,
-      shell
-    });
-
-    await ns.run(pargv, { showCommand: false });
   } catch (e) {
     err = e;
   }
@@ -90,8 +71,6 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       console.error(err);
     }
   }
-
-  await config.save();
 
   process.exit(exitCode);
 }

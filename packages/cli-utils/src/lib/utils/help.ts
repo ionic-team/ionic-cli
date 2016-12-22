@@ -1,9 +1,11 @@
 import * as chalk from 'chalk';
 
-import { CommandData, CommandOption } from '@ionic/cli-utils';
-import { STRIP_ANSI_REGEX } from '@ionic/cli-utils';
+import { CommandData, CommandOption } from '../../definitions';
+import { STRIP_ANSI_REGEX } from './format';
 
-
+/**
+ *
+ */
 export function formatCommandHelp(cmdMetadata: CommandData): string {
   return `
   ${chalk.bold(cmdMetadata.description)}

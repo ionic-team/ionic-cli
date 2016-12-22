@@ -14,5 +14,5 @@ describe('shell', () => {
     it('not exists should return false if the command does not exist', async () => {
     const result = await shell.exists('fdkalfjdsakl');
     expect(result).toBeFalsy();
-  })
+  });
 });

@@ -1,19 +1,6 @@
-import { ICommandMap, Namespace, CommandMap } from '@ionic/cli-utils';
+import { execNamespace } from '@ionic/cli-utils';
+import { CoreNamespace } from './commands';
 
-import { DocsCommand } from './commands/docs';
-import { IonitronCommand } from './commands/ionitron';
-import { ResourcesCommand } from './commands/resources';
-import { ServeCommand } from './commands/serve';
-
-export default class IonicNamespace extends Namespace {
-  getCommands(): ICommandMap {
-    let m = new CommandMap();
-
-    m.set('docs', new DocsCommand());
-    m.set('ionitron', new IonitronCommand());
-    m.set('resources', new ResourcesCommand());
-    m.set('serve', new ServeCommand());
-
-    return m;
-  }
+export default async function run(pargv: string[], env: { [k: string]: string }): Promise<void>  {
+  return execNamespace(pargv, env, CoreNamespace);
 }

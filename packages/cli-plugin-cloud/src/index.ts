@@ -1,17 +1,6 @@
-import { INamespaceMap, Namespace, NamespaceMap } from '@ionic/cli-utils';
+import { execNamespace } from '@ionic/cli-utils';
+import { CloudNamespace } from './commands';
 
-import { GitNamespace } from './commands/git';
-import { SSHNamespace } from './commands/ssh';
-
-export default class CloudNamespace extends Namespace {
-  public name: 'cloud';
-
-  getNamespaces(): INamespaceMap {
-    let m = new NamespaceMap();
-
-    m.set('git', new GitNamespace(this.env));
-    m.set('ssh', new SSHNamespace(this.env));
-
-    return m;
-  }
+export default async function run(pargv: string[], env: { [k: string]: string }): Promise<void>  {
+  return execNamespace(pargv, env, CloudNamespace);
 }
