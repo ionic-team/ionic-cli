@@ -31,5 +31,34 @@ export class Namespace implements INamespace {
   getCommands(): ICommandMap {
     return new CommandMap();
   }
+
+  /**
+   * Recursively inspect inputs supplied to walk down all the tree of namespaces
+   * available to find the command that we will execute.
+   */
+  locateCommand(argv: string[]): [string[], ICommand | undefined] {
+    return (function ln(inputs: string[], ns: INamespace): [string[], ICommand | undefined] {
+      const namespaces = ns.getNamespaces();
+
+      if (!namespaces.has(inputs[0])) {
+        const commands = ns.getCommands();
+        const command = commands.get(inputs[0]);
+
+        if (!command) {
+          return [argv, undefined];
+        }
+
+        return [inputs.slice(1), command];
+      }
+
+      const nextNamespace = namespaces.get(inputs[0]);
+
+      if (!nextNamespace) {
+        return [argv, undefined];
+      }
+
+      return this(inputs.slice(1), nextNamespace);
+    }(argv, this));
+  }
 }
 
