@@ -30,6 +30,7 @@ export class Namespace implements INamespace {
     return new CommandMap();
   }
 
+
   /**
    * Recursively inspect inputs supplied to walk down all the tree of namespaces
    * available to find the command that we will execute.
@@ -60,3 +61,33 @@ export class Namespace implements INamespace {
   }
 }
 
+/**
+ * Get all commands for a namespace. Return a flat structure
+ */
+export function getCommandMetadataList(namespace: INamespace, namespaceDepthList: string[] = []): [any] {
+  const commandList = <any>[];
+  const namespaces = namespace.getNamespaces();
+
+  // If the namespace has no name then it is not needed in the depth structure
+  if (namespace.name) {
+    namespaceDepthList.push(namespace.name);
+  }
+
+  // If this namespace has children then get their commands
+  if (namespaces.size > 0) {
+    namespaces.forEach((ns) => commandList.concat(getCommandMetadataList(namespace, namespaceDepthList)));
+  }
+
+  /**
+   * Gather all commands for a namespace and turn them into simple
+   * key value objects. Also keep a record of the namespace path.
+   */
+  const commands = namespace.getCommands();
+  commands.forEach((cmd) => {
+    let metadata = <any>cmd.metadata;
+    metadata.namespace = namespaceDepthList;
+    commandList.push(metadata);
+  });
+
+  return commandList;
+}

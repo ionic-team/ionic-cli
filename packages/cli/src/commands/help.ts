@@ -8,6 +8,8 @@ import {
   Command
 } from '@ionic/cli-utils';
 
+import { resolvePlugin } from '../lib/plugins';
+
 @CommandMetadata({
   name: 'help',
   description: 'Provides help for a certain command',
@@ -21,6 +23,7 @@ import {
 })
 export class HelpCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+
     const [argv, command] = this.env.namespace.locateCommand(inputs);
 
     if (command) {
@@ -28,10 +31,25 @@ export class HelpCommand extends Command {
     }
 
     if (argv.length > 0) {
+      /**
+       * Load the plugin using the pluginName provided
+       */
+      try {
+        const [plugin, argv] = resolvePlugin(inputs);
+
+        const commandMetadataList = await plugin.getAllCommandMetadata();
+        return commandMetadataList
+          .filter((cmd: any) => cmd.name === argv[0] || argv.length === 0)
+          .forEach((cmd: any) => this.env.log.msg(formatCommandHelp(cmd)));
+
+      } catch (e) {
+        this.env.log.error(e);
+      }
+
       return this.env.log.error(`Command not found: ${chalk.bold(argv.join(' '))}.`);
     }
 
-    this.env.log.error(`Command ${chalk.bold(this.metadata.name)} needs a single argument.`);
+
     this.env.log.msg(formatCommandHelp(this.metadata));
   }
 };

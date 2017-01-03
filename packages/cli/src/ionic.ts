@@ -34,8 +34,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   }
 
   try {
-    const plugin = resolvePlugin(pargv);
-    await plugin.run(pargv, env);
+    const [plugin, inputs] = resolvePlugin(pargv);
+    await plugin.run(inputs, env);
 
   } catch (e) {
     err = e;

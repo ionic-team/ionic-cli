@@ -14,7 +14,7 @@ import { Command } from '../../command';
 import { formatGitRepoUrl } from '../../utils/git';
 
 @CommandMetadata({
-  name: 'remote',
+  name: 'clone',
   description: 'Clones an Ionic app git repository to your computer',
   inputs: [
     {

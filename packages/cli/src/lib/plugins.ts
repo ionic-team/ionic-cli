@@ -1,12 +1,12 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
 
-import { Namespace, FatalException } from '@ionic/cli-utils';
+import { FatalException } from '@ionic/cli-utils';
 import { IonicNamespace } from '../commands';
 import * as globalPlugin from '../index';
 
 export const defaultPlugin = 'core';
-export const knownPlugins = new Set<string>(['cloud', 'cordova']);
+export const knownPlugins = [defaultPlugin, 'cloud', 'cordova'];
 export const PREFIX = '@ionic/cli-plugin-';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';
 export const ERROR_PLUGIN_INVALID = 'PLUGIN_INVALID';
@@ -14,7 +14,7 @@ export const ERROR_PLUGIN_INVALID = 'PLUGIN_INVALID';
 /**
  * Synchronously load a plugin
  */
-export function loadPlugin(name: string): typeof Namespace {
+export function loadPlugin(name: string): any {
   let m: any;
 
   try {
@@ -35,8 +35,9 @@ export function loadPlugin(name: string): typeof Namespace {
 /**
  * Get inputs and command class based on arguments supplied
  */
-export function resolvePlugin(argv: string[]): any {
+export function resolvePlugin(argv: string[]): [any, string[]] {
   let pluginName: string;
+  let inputs: string[] = [];
 
   /**
    * If this module's primary namespace has the command then use it.
@@ -44,7 +45,10 @@ export function resolvePlugin(argv: string[]): any {
   const ionicNamespace = new IonicNamespace();
   const isGlobalCmd = ionicNamespace.getCommands().has(argv[0]);
   if (isGlobalCmd || argv.length === 0) {
-    return globalPlugin;
+    return [
+      globalPlugin,
+      argv
+    ];
   }
 
   /**
@@ -56,16 +60,26 @@ export function resolvePlugin(argv: string[]): any {
    * from the 'core' plugin.
    */
   if (argv.length > 0 && argv[0].indexOf(':') !== -1) {
-    pluginName = argv[0].split(':')[0];
+
+    let [firstArg, ...restOfArguments] = argv;
+    [pluginName, firstArg] = firstArg.split(':');
+
+    inputs = [firstArg, ...restOfArguments];
+  } else if (knownPlugins.indexOf(argv[0])) {
+    [pluginName, ...inputs] = argv;
   } else {
     pluginName = defaultPlugin;
+    inputs = argv;
   }
 
   /**
    * Load the plugin using the pluginName provided
    */
   try {
-    return loadPlugin(pluginName);
+    return [
+      loadPlugin(pluginName),
+      inputs
+    ];
   } catch (e) {
 
     /**
@@ -73,7 +87,7 @@ export function resolvePlugin(argv: string[]): any {
      * based on whether we know the plugin exists.
      */
     if (e === ERROR_PLUGIN_NOT_FOUND) {
-      if (knownPlugins.has(pluginName)) {
+      if (knownPlugins.indexOf(pluginName) !== -1) {
         throw new FatalException('This plugin is not currently installed. Please execute the following to install it.\n'
                                 + `    ${chalk.bold(`npm install ${PREFIX}${pluginName}`)}`);
       } else {
