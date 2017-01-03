@@ -88,7 +88,7 @@ __Command-line flags/options:__
 ## Adding a platform target
 
 ```bash
-$ ionic platform ios android
+$ ionic platform add ios android
 ```
 
 ## Testing in a Browser
