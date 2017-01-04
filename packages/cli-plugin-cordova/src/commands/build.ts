@@ -23,8 +23,7 @@ import {
       description: 'Do not add default Ionic hooks for Cordova',
       type: Boolean
     }
-  ],
-  isProjectTask: true
+  ]
 })
 export class BuildCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

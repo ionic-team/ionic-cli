@@ -18,8 +18,7 @@ import {
       description: 'The ID (annotation/comment) of the public key to delete',
       validators: [validators.required]
     }
-  ],
-  isProjectTask: false
+  ]
 })
 export class SSHDeleteCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

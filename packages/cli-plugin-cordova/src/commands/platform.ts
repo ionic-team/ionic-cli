@@ -30,8 +30,7 @@ import {
       type: Boolean,
       aliases: ['e']
     }
-  ],
-  isProjectTask: true
+  ]
 })
 export class PlatformCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

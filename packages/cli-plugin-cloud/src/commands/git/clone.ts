@@ -26,8 +26,7 @@ import { formatGitRepoUrl } from '../../utils/git';
       name: 'path',
       description: 'The destination directory of the cloned app'
     }
-  ],
-  isProjectTask: false
+  ]
 })
 export class GitCloneCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

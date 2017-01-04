@@ -8,6 +8,23 @@ Icons should be 192x192 px without rounded corners.
 Splashscreens should be 2208x2208 px, with the image centered in the middle.
 `;
 
+const Settings = {
+  apiUrl: 'http://res.ionic.io',
+  apiUploadPath: '/api/v1/upload',
+  apiTransformPath: '/api/v1/transform',
+  resourceDir: 'resources',
+  iconDir: 'icon',
+  splashDir: 'splash',
+  iconSourceFile: 'icon',
+  splashSourceFile: 'splash',
+  sourceExtensions: ['psd', 'ai', 'png'],
+  supportedPlatforms: ['android', 'ios', 'wp8'],
+  configFile: 'config.xml',
+  generateThrottle: 4,
+  defaultMaxIconSize: 96,
+  cacheImages: false
+};
+
 @CommandMetadata({
   name: 'resources',
   description: RESOURCES_SUMMARY,
@@ -24,11 +41,11 @@ Splashscreens should be 2208x2208 px, with the image centered in the middle.
       type: Boolean,
       aliases: ['s']
     }
-  ],
-  isProjectTask: true
+  ]
 })
 export class ResourcesCommand extends Command {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    this.env.project.directory;
 
     this.env.log.msg(`resources`);
   }

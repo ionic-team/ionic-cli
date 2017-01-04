@@ -18,8 +18,7 @@ import { resolvePlugin } from '../lib/plugins';
       name: 'command',
       description: 'The command you desire help with',
     }
-  ],
-  isProjectTask: false
+  ]
 })
 export class HelpCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

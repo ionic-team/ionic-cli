@@ -62,8 +62,7 @@ import {
       name: 'device|--emulator|--target=FOO',
       description: ''
     }
-  ],
-  isProjectTask: true
+  ]
 })
 export class RunCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

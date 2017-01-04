@@ -10,8 +10,7 @@ import { getIonitronString, ionitronStatements } from '../lib/ionitron';
       description: 'Print in spanish',
       type: Boolean,
     }
-  ],
-  isProjectTask: false
+  ]
 })
 export class IonitronCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

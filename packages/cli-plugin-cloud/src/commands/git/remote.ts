@@ -9,8 +9,7 @@ import { formatGitRepoUrl } from '../../utils/git';
 
 @CommandMetadata({
   name: 'remote',
-  description: 'Adds a git remote to your local Ionic app repository',
-  isProjectTask: true
+  description: 'Adds a git remote to your local Ionic app repository'
 })
 export class GitRemoteCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

@@ -10,8 +10,7 @@ import {
  */
 @CommandMetadata({
   name: 'prepare',
-  description: 'prepare',
-  isProjectTask: true
+  description: 'prepare'
 })
 export class PrepareCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

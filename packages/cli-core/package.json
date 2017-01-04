@@ -41,10 +41,16 @@
     "chalk": "^1.1.3"
   },
   "jest": {
-    "moduleFileExtensions": ["ts", "js"],
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
     "transform": {
       "^.+\\.(ts)$": "<rootDir>/preprocessor.js"
     },
     "testRegex": "/__tests__/.*\\.(ts|js)$"
+  },
+  "dependencies": {
+    "opn": "^4.0.2"
   }
 }

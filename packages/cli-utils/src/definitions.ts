@@ -93,7 +93,6 @@ export interface CommandData {
   name: string;
   description: string;
   aliases?: string[];
-  isProjectTask: boolean;
   inputs?: CommandInput[];
   options?: CommandOption[];
 }

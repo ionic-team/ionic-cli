@@ -10,8 +10,7 @@ import {
 
 @CommandMetadata({
   name: 'info',
-  description: 'List information about the users runtime environment',
-  isProjectTask: false
+  description: 'List information about the users runtime environment'
 })
 export class InfoCommand extends Command {
   async run(inputs?: CommandLineInputs, options?: CommandLineOptions): Promise<void> {

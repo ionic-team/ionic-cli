@@ -33,8 +33,7 @@ function isSlugResponse(r: APIResponse): r is SlugResponse {
       name: 'key-path',
       description: 'Destination of private key file'
     }
-  ],
-  isProjectTask: false
+  ]
 })
 export class SSHGenerateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {

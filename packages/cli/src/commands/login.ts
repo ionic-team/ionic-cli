@@ -22,8 +22,7 @@ import { validators } from '@ionic/cli-utils';
       },
       validators: [validators.required]
     }
-  ],
-  isProjectTask: false
+  ]
 })
 export class LoginCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

@@ -40,8 +40,7 @@ function isSSHListResponse(r: APIResponse): r is SSHListResponse {
 @CommandMetadata({
   name: 'list',
   description: 'List your SSH public keys on Ionic',
-  aliases: ['ls'],
-  isProjectTask: false
+  aliases: ['ls']
 })
 export class SSHListCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

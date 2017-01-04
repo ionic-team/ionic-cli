@@ -23,8 +23,7 @@ import {
       aliases: ['y'],
       type: Boolean
     }
-  ],
-  isProjectTask: false
+  ]
 })
 export class SSHSetupCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {

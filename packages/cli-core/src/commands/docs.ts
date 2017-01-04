@@ -1,4 +1,5 @@
-import { CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from '@ionic/cli-utils';
+import { getIonicInfo, CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from '@ionic/cli-utils';
+import * as opn from 'opn';
 
 /**
  * Metadata about the docs command
@@ -6,16 +7,11 @@ import { CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from 
 @CommandMetadata({
   name: 'docs',
   description: 'Opens up the documentation for Ionic',
-  inputs: [
-    {
-      name: 'topic',
-      description: 'the topic to view help documentation for. Use "ls" to view all topics',
-    }
-  ],
-  isProjectTask: false
 })
 export class DocsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    this.env.log.msg('docs');
+    const ionicInfo = await getIonicInfo();
+
+    opn(`http://ionicframework.com/docs/v${ionicInfo['version'].charAt(0)}/${ionicInfo['version']}/api`);
   }
 }

@@ -42,8 +42,7 @@ function isConfigDirective(entry: SSHConfig.Config): entry is SSHConfig.ConfigDi
       aliases: ['y'],
       type: Boolean
     }
-  ],
-  isProjectTask: false
+  ]
 })
 export class SSHUseCommand extends Command implements ICommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

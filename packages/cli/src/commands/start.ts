@@ -113,8 +113,7 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
       description: 'The Ionic.io app ID to use',
       aliases: []
     }
-  ],
-  isProjectTask: false
+  ]
 })
 export class StartCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

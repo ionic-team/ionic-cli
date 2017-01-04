@@ -42,8 +42,7 @@ function isSSHAddResponse(r: APIResponse): r is SSHAddResponse {
       description: 'Location of public key file to add to Ionic',
       validators: [validators.required]
     }
-  ],
-  isProjectTask: false
+  ]
 })
 export class SSHAddCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
