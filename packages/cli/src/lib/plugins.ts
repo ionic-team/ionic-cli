@@ -65,12 +65,15 @@ export function resolvePlugin(argv: string[]): [any, string[]] {
     [pluginName, firstArg] = firstArg.split(':');
 
     inputs = [firstArg, ...restOfArguments];
-  } else if (knownPlugins.indexOf(argv[0])) {
+
+  } else if (knownPlugins.indexOf(argv[0]) !== -1) {
     [pluginName, ...inputs] = argv;
+
   } else {
     pluginName = defaultPlugin;
     inputs = argv;
   }
+
 
   /**
    * Load the plugin using the pluginName provided

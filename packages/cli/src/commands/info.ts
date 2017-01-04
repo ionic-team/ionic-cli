@@ -1,3 +1,5 @@
+import * as chalk from 'chalk';
+
 import {
   CommandLineInputs,
   CommandLineOptions,
@@ -26,10 +28,11 @@ export class InfoCommand extends Command {
       ['Xcode version', info['xcode']]
     ];
 
-    this.env.log.msg(`Your system information:
+    this.env.log.msg(`
+  Your system information:
 
-${details
-  .filter(info => info[1] !== null && info[1] !== undefined)
-  .map(info => `${info[0]}: ${info[1]}\n`).join('')}`);
+    ${details
+      .filter(info => info[1] !== null && info[1] !== undefined)
+      .map(info => `${chalk.bold(info[0])}: ${info[1]}`).join('\n    ')}`);
   }
 }
