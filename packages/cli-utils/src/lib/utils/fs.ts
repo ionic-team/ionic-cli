@@ -25,6 +25,7 @@ export const fsMkdir = promisify<void, string, number>(fs.mkdir);
 export const fsStat = promisify<fs.Stats, string>(fs.stat);
 export const fsReadFile = promisify<string, string, FSReadFileOptions>(fs.readFile);
 export const fsWriteFile = promisify<void, string, any, FSWriteFileOptions>(fs.writeFile);
+export const fsReadDir = promisify<string[], string>(fs.readdir);
 
 export async function fsReadJsonFile(filePath: string, options: FSReadFileOptions = { encoding: 'utf8' }): Promise<{ [key: string]: any }> {
   try {
