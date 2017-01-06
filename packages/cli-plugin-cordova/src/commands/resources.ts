@@ -118,6 +118,17 @@ export class ResourcesCommand extends Command {
         src: path.join(resourceDir, img.platform, img.resType, img.name)
       }));
 
+    // setup list of source images that will be needed
+    const srcImageSettings = [].concat.apply(buildPlatforms.map(platform => (
+      resourceTypes.map(resType => (
+        {
+          resType,
+          platform,
+          path: null
+        }
+      ))
+    )));
+
     /**
      * Create the resource directories that are needed for the images we will create
      */
@@ -132,7 +143,49 @@ export class ResourcesCommand extends Command {
      * Get orientation config data
      */
     const orientation = getOrientationConfigData(configFileContents);
-    await queueResTypeImages(imgResources);
+
+    /**
+     * Check /resources and /resources/<platform> directories for src files
+     */
+    const srcDirList = buildPlatforms
+      .map(platform => (
+        {
+          platform,
+          path: path.join(resourceDir, platform)
+        }
+      ))
+      .concat({
+        platform: 'global',
+        path: resourceDir
+      });
+    const srcImageDirListPromises = srcDirList.map(srcImgDir => fsReadDir(srcImgDir.path));
+
+    const srcImageDirContentList = await Promise.all(srcImageDirListPromises);
+    const srcImagesAvailable = [].concat.apply(
+      srcImageDirContentList.map((srcImageDirContents, index) => (
+        srcImageDirContents
+          .map(imgName => {
+            const ext = path.extname(imgName);
+
+            return {
+              ext,
+              platform: srcDirList[index].platform,
+              resType: path.basename(imgName, ext),
+              path: path.join(srcDirList[index].path, imgName),
+            };
+          })
+          .filter(img => SUPPORTED_SOURCE_EXTENSIONS.indexOf(img.ext) !== -1)
+          .filter(img => resourceTypes.indexOf(img.resType) !== -1)
+      ))
+    );
+
+    srcImageSettings.map((sis: any) => {
+      srcImagesAvailable.filter((sia: any) => sia.platform === sis.platform && sia.resType === sis.resType);
+      return {
+        ...sis,
+        path:
+      };
+    });
 
     // loadSourceImages
     // generateResourceImages
@@ -144,24 +197,16 @@ export class ResourcesCommand extends Command {
 }
 
 
-function queueResTypeImages (imgResource: ImageResource[]) {
-
-  // validation source images
-
-  // queue resource images
-
-}
-
 /**
  * Take the JSON structure for resources.json and turn it into a flat array
  * that contains only images and turns all struture info into attributes of the image
  * items.
  */
 function flattenResourceJsonStructure (jsonStructure: any): ImageResource[] {
-  return [].concat.apply(Object.keys(jsonStructure).map(platform =>
-    Object.keys(jsonStructure[platform]).map(resType =>
-      jsonStructure[platform][resType]['images'].map((imgInfo: any) =>
-        ({
+  return [].concat.apply(Object.keys(jsonStructure).map(platform => (
+    Object.keys(jsonStructure[platform]).map(resType => (
+      jsonStructure[platform][resType]['images'].map((imgInfo: any) => (
+        {
           platform,
           resType,
           name: imgInfo.name,
@@ -170,8 +215,8 @@ function flattenResourceJsonStructure (jsonStructure: any): ImageResource[] {
           density: imgInfo.density,
           nodeName: jsonStructure[platform][resType]['nodeName'],
           nodeAttributes: jsonStructure[platform][resType]['nodeAttributes']
-        })
-      )
-    )
-  ));
+        }
+      ))
+    ))
+  )));
 }

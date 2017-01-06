@@ -1,3 +1,6 @@
+/**
+ * get orientation information from the config.xml cordova file structure
+ */
 export function getOrientationConfigData(configData: any): string | undefined {
   if (configData.widget && configData.widget.preference) {
     var n = configData.widget.preference.find((d: any) => {
