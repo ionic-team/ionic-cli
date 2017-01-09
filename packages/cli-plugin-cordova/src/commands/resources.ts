@@ -1,14 +1,21 @@
+import * as path from 'path';
+import * as chalk from 'chalk';
 import {
-  fsReadFile, fsReadDir, fsMkdirp, fsReadJsonFile, prettyPath, CommandLineInputs,
+  fsReadFile, fsReadJsonFile, CommandLineInputs,
   CommandLineOptions, Command, CommandMetadata
 } from '@ionic/cli-utils';
 
+import { ImageResource, SourceImage } from '../definitions';
 import { getOrientationConfigData } from '../lib/configXmlUtils';
+import {
+  flattenResourceJsonStructure,
+  getProjectPlatforms,
+  createImgDestinationDirectories,
+  getSourceImages,
+  findMostSpecificImage
+} from '../lib/resources';
 
-import * as path from 'path';
-import * as chalk from 'chalk';
 
-const SUPPORTED_SOURCE_EXTENSIONS = ['psd', 'ai', 'png'];
 const RESOURCES_SUMMARY = `
 Automatically create icon and splash screen resources
 Put your images in the ./resources directory, named splash or icon.
@@ -17,26 +24,6 @@ Icons should be 192x192 px without rounded corners.
 Splashscreens should be 2208x2208 px, with the image centered in the middle.
 `;
 
-
-interface ImageResource {
-  name: string;
-  width: number;
-  height: number;
-  density: string;
-  platform: string;
-  resType: string;
-  dest: string;
-  src: string;
-  nodeName: string;
-  nodeAttributes: string[];
-}
-
-interface SourceImage {
-  ext: string;
-  platform: string;
-  resType: string;
-  path: string;
-}
 
 /*
 const SETTINGS = {
@@ -94,8 +81,9 @@ export class ResourcesCommand extends Command {
      * check that at least one platform has been installed
      */
     const resourceJsonStructure = await fsReadJsonFile('../lib/resources.json');
+    const platformsDir = path.join(this.env.project.directory, 'platforms');
 
-    const buildPlatforms = await getProjectPlatforms(resourceJsonStructure);
+    const buildPlatforms = await getProjectPlatforms(resourceJsonStructure, platformsDir);
     if (buildPlatforms.length === 0) {
       throw new Error('No platforms have been added');
     }
@@ -125,28 +113,34 @@ export class ResourcesCommand extends Command {
 
     /**
      * Check /resources and /resources/<platform> directories for src files
+     * Update imgResources to have their src attributes to equal the most speficic src img found
      */
-    const srcImagesAvailable = await getSourceImages(buildPlatforms, resourceTypes, resourceDir);
-
-    // setup list of source images that will be needed
+    const srcImagesAvailable: SourceImage[] = await getSourceImages(buildPlatforms, resourceTypes, resourceDir);
     imgResources = imgResources.map((imageResource: ImageResource) => {
-        var sourcePath = '';
-        srcImagesAvailable.every((sourceImage: SourceImage) => {
-          if (sourceImage.platform === imageResource.platform && sourceImage.resType === imageResource.resType) {
-            sourcePath = sourceImage.path;
-            return false;
-          }
-          if (sourceImage.platform === 'global' && sourceImage.resType === imageResource.resType) {
-            sourcePath = sourceImage.path;
-          }
-          return true;
-        });
+      const mostSpecificImageAvailable = findMostSpecificImage(imageResource, srcImagesAvailable);
+      return {
+        ...imageResource,
+        src: mostSpecificImageAvailable ? mostSpecificImageAvailable.path : null
+     };
+    });
 
-        return {
-          ...imageResource,
-          src: sourcePath
-        };
-      });
+    /**
+     * If there are any imgResources that have missing images then end processing and inform the user
+     */
+    const missingSrcImages = imgResources.filter((imageResource: ImageResource) => imageResource.src === null);
+    if (missingSrcImages.length > 0) {
+      const missingImageText = missingSrcImages
+        .reduce((list: any[], img: ImageResource): any => {
+          let str = `${img.resType}/${img.platform}`;
+          if (list.indexOf(str) !== -1) {
+            list.push(str);
+          }
+          return list;
+        }, [])
+        .reduce((txt: string, imgText: string) => `${txt}, ${imgText}.`, '');
+
+      throw new Error(`Source image files were not found for the following platforms/types: ${missingImageText}`);
+    }
 
 
 
@@ -157,99 +151,4 @@ export class ResourcesCommand extends Command {
 
     this.env.log.msg(`${configFileContents} ${resourceDirContents} ${orientation}`);
   }
-}
-
-
-/**
- * Take the JSON structure for resources.json and turn it into a flat array
- * that contains only images and turns all struture info into attributes of the image
- * items.
- */
-function flattenResourceJsonStructure (jsonStructure: any): ImageResource[] {
-  return [].concat.apply(Object.keys(jsonStructure).map(platform => (
-    Object.keys(jsonStructure[platform]).map(resType => (
-      jsonStructure[platform][resType]['images'].map((imgInfo: any) => (
-        {
-          platform,
-          resType,
-          name: imgInfo.name,
-          width: imgInfo.width,
-          height: imgInfo.height,
-          density: imgInfo.density,
-          nodeName: jsonStructure[platform][resType]['nodeName'],
-          nodeAttributes: jsonStructure[platform][resType]['nodeAttributes']
-        }
-      ))
-    ))
-  )));
-}
-
-/**
- * Get all platforms based on resource/platforms directories
- * TODO: should we get this from the config.xml or just the directories like app-lib
- */
-async function getProjectPlatforms (jsonStructure: any): Promise<string[]> {
-  let platformDirContents: string[] = [];
-
-  try {
-    platformDirContents = await fsReadDir(path.join(this.env.project.directory, 'platforms'));
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      throw new Error('No platforms have been added.');
-    }
-    throw e;
-  }
-
-  return Object.keys(jsonStructure).filter(platform => platformDirContents.indexOf(platform) !== -1);
-}
-
-/**
- *
- */
-async function createImgDestinationDirectories (imgResources: ImageResource[]): Promise<void[]> {
-  const buildDirPromises: Promise<void>[] = imgResources
-    .map(img => path.dirname(img.src))
-    .filter((dir, index, dirNames) => dirNames.indexOf(dir) === index)
-    .map(dir => fsMkdirp(dir));
-
-  return Promise.all(buildDirPromises);
-}
-
-/**
- *
- */
-async function getSourceImages (buildPlatforms: string[], resourceTypes: string[], resourceDir: string): Promise<SourceImage[]> {
-  const srcDirList = buildPlatforms
-    .map((platform: any) => (
-      {
-        platform,
-        path: path.join(resourceDir, platform)
-      }
-    ))
-    .concat({
-      platform: 'global',
-      path: resourceDir
-    });
-
-  const srcImageDirContentList = await Promise.all(
-    srcDirList.map((srcImgDir: any) => fsReadDir(srcImgDir.path))
-  );
-
-  return [].concat.apply(
-    srcImageDirContentList.map((srcImageDirContents, index) => (
-      srcImageDirContents
-        .map((imgName: any): SourceImage => {
-          const ext = path.extname(imgName);
-
-          return {
-            ext,
-            platform: srcDirList[index].platform,
-            resType: path.basename(imgName, ext),
-            path: path.join(srcDirList[index].path, imgName),
-          };
-        })
-        .filter((img: any) => SUPPORTED_SOURCE_EXTENSIONS.indexOf(img.ext) !== -1)
-        .filter((img: any) => resourceTypes.indexOf(img.resType) !== -1)
-    ))
-  )
 }
