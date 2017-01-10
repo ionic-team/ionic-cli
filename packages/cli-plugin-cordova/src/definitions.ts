@@ -6,14 +6,23 @@ export interface ImageResource {
   platform: string;
   resType: string;
   dest: string;
-  src: string | null;
+  imageId: string | null;
   nodeName: string;
   nodeAttributes: string[];
 }
 
 export interface SourceImage {
   ext: string;
+  imageId?: string;
   platform: string;
   resType: string;
   path: string;
+}
+
+export interface ImageUploadResponse {
+  Error: string;
+  Width: number;
+  Height: number;
+  Type: string;
+  Vector: boolean;
 }

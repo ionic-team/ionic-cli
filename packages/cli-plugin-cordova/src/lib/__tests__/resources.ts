@@ -65,7 +65,7 @@ describe('resources', () => {
       density: undefined,
       nodeName: 'splash',
       nodeAttributes: ['src', 'width', 'height'],
-      src: undefined
+      imageId: null
     }, {
       platform: 'ios',
       resType: 'splash',
@@ -75,7 +75,7 @@ describe('resources', () => {
       density: undefined,
       nodeName: 'splash',
       nodeAttributes: ['src', 'width', 'height'],
-      src: undefined
+      imageId: null
     }, {
       platform: 'android',
       resType: 'splash',
@@ -85,7 +85,7 @@ describe('resources', () => {
       density: 'land-ldpi',
       nodeName: 'splash' ,
       nodeAttributes: ['src', 'density'],
-      src: undefined
+      imageId: null
     }]
       .map((img) => ({
         ...img,
@@ -108,8 +108,6 @@ describe('resources', () => {
 
       await resources.getSourceImages(['ios', 'android'], ['splash', 'icon'], '/resourceDir');
 
-jasmine.Spy
-
       expect((<jasmine.Spy>util.fsReadDir).calls.count()).toEqual(3);
       expect((<jasmine.Spy>util.fsReadDir).calls.argsFor(0)).toEqual(['/resourceDir/ios']);
       expect((<jasmine.Spy>util.fsReadDir).calls.argsFor(1)).toEqual(['/resourceDir/android']);
@@ -117,6 +115,7 @@ jasmine.Spy
     });
 
     it('should find all sourceImages available and prioritize based on specificity', async function() {
+      spyOn(util, 'getFileChecksum').and.returnValue(Promise.resolve('FJDKLFJDKL'));
       spyOn(util, 'fsReadDir').and.callFake((dir) => {
         switch (dir) {
         case '/resourceDir/ios':
@@ -143,30 +142,35 @@ jasmine.Spy
       expect(sourceImages).toEqual([
         {
           ext: '.png',
+          imageId: 'FJDKLFJDKL',
           platform: 'ios',
           resType: 'icon',
           path: '/resourceDir/ios/icon.png'
         },
         {
           ext: '.ai',
+          imageId: 'FJDKLFJDKL',
           platform: 'android',
           resType: 'icon',
           path: '/resourceDir/android/icon.ai'
         },
         {
           ext: '.png',
+          imageId: 'FJDKLFJDKL',
           platform: 'android',
           resType: 'splash',
           path: '/resourceDir/android/splash.png'
         },
         {
           ext: '.png',
+          imageId: 'FJDKLFJDKL',
           platform: 'global',
           resType: 'icon',
           path: '/resourceDir/icon.png'
         },
         {
           ext: '.psd',
+          imageId: 'FJDKLFJDKL',
           platform: 'global',
           resType: 'splash',
           path: '/resourceDir/splash.psd'
@@ -219,7 +223,7 @@ jasmine.Spy
         density: undefined,
         nodeName: 'splash',
         nodeAttributes: ['src', 'width', 'height'],
-        src: undefined,
+        imageId: null,
         dest: '/resourcesDir/ios/splash/Default-568h@2x~iphone.png'
       };
 
@@ -243,7 +247,7 @@ jasmine.Spy
         density: undefined,
         nodeName: 'icon',
         nodeAttributes: ['src', 'width', 'height'],
-        src: undefined,
+        imageId: null,
         dest: '/resourcesDir/ios/splash/Default-568h@2x~iphone.png'
       };
 
@@ -255,6 +259,54 @@ jasmine.Spy
         resType: 'icon',
         path: '/resourceDir/ios/icon.png'
       });
+    });
+  });
+
+  // TODO: this is currently hitting the service, we should mock
+  describe('uploadSourceImages', () => {
+    it('should upload an image and receive back metadata', async function() {
+      const sourceImages: SourceImage[] = [{
+        ext: '.png',
+        platform: 'ios',
+        resType: 'icon',
+        path: path.join(__dirname, 'fixtures', 'icon.png'),
+        imageId: '60278b0fa1d5abf43d07c5ae0f8a0b41'
+      }];
+
+      const response = await resources.uploadSourceImages(sourceImages);
+      expect(response).toEqual([{
+        Error: '',
+        Width: 337,
+        Height: 421,
+        Type: 'png',
+        Vector: false
+      }]);
+    });
+  });
+
+  // TODO: this is currently hitting the service, we should mock
+  describe('generateResourceImage', () => {
+    it('should upload an image and write a stream to the destination', async function() {
+      spyOn(util, 'writeStreamToFile');
+
+      const imgResource: ImageResource = {
+        platform: 'android',
+        resType: 'splash',
+        name: 'drawable-land-ldpi-screen.png',
+        width: 320,
+        height: 240,
+        density: 'land-ldpi',
+        nodeName: 'splash' ,
+        nodeAttributes: ['src', 'density'],
+        imageId: null,
+        dest: path.join(__dirname, 'fixtures', 'drawable-land-ldpi-screen.png')
+      };
+
+      await resources.generateResourceImage(imgResource);
+
+      expect(util.writeStreamToFile).toHaveBeenCalledWith(
+        jasmine.any(Object), imgResource.dest
+      );
     });
   });
 });

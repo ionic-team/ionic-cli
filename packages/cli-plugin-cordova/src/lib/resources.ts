@@ -1,8 +1,14 @@
 import * as path from 'path';
-import { ImageResource, SourceImage } from '../definitions';
-import { fsReadDir, fsMkdirp } from '@ionic/cli-utils';
+import * as fs from 'fs';
+import * as FormData from 'form-data';
+import fetch from 'node-fetch';
+
+import { ImageResource, SourceImage, ImageUploadResponse } from '../definitions';
+import { fsReadDir, fsMkdirp, getFileChecksum, writeStreamToFile } from '@ionic/cli-utils';
 
 const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];
+const UPLOAD_URL = 'http://res.ionic.io/api/v1/upload';
+const TRANSFORM_URL = 'http://res.ionic.io/api/v1/transform';
 
 /**
  * Take the JSON structure for resources.json and turn it into a flat array
@@ -79,7 +85,7 @@ export async function getSourceImages (buildPlatforms: string[], resourceTypes: 
     srcDirList.map((srcImgDir: any) => fsReadDir(srcImgDir.path))
   );
 
-  return flatten(
+  const sourceImages = flatten(
     srcImageDirContentList.map((srcImageDirContents, index) => (
       srcImageDirContents
         .map((imgName: string): SourceImage => {
@@ -96,6 +102,15 @@ export async function getSourceImages (buildPlatforms: string[], resourceTypes: 
         .filter((img: SourceImage) => resourceTypes.indexOf(img.resType) !== -1)
     ))
   );
+
+  const sourceImageChecksums = await Promise.all(
+    sourceImages.map(img => getFileChecksum(img.path))
+  );
+
+  return sourceImages.map((img: SourceImage, index) => ({
+    ...img,
+    imageId: sourceImageChecksums[index]
+  }));
 }
 
 export function findMostSpecificImage(imageResource: ImageResource, srcImagesAvailable: SourceImage[]): SourceImage | null {
@@ -114,4 +129,51 @@ function flatten(arr: any[]): any[] {
   return arr.reduce(function (flat, toFlatten) {
     return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
   }, []);
+}
+
+export async function uploadSourceImages(srcImages: SourceImage[]): Promise<ImageUploadResponse[]> {
+  return Promise.all(
+    srcImages.map(async function(srcImage) {
+      const form = new FormData();
+      form.append('image_id', srcImage.imageId);
+      form.append('src', fs.createReadStream(srcImage.path));
+
+      const response = await fetch(UPLOAD_URL, {
+        method: 'POST',
+        body: form
+      });
+
+      return response.json();
+    })
+  );
+}
+
+export async function generateResourceImage(imageResource: ImageResource) {
+
+  const formData = {
+    image_id: imageResource.imageId,
+    name: imageResource.name,
+    platform: imageResource.platform,
+    width: imageResource.width,
+    height: imageResource.height,
+    res_type: imageResource.resType,
+    crop: 'center',
+    encoding: 'png'
+  };
+
+  const response = await fetch(TRANSFORM_URL, {
+    method: 'POST',
+    body: encodeFormObj(formData)
+  });
+
+  await writeStreamToFile(response.body, imageResource.dest);
+}
+
+function encodeFormObj(formObj: { [key: string]: string | number | null }): string {
+  return Object.keys(formObj)
+    .map((key): string => {
+      let value = formObj[key] + '';
+      return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+    })
+    .join('&');
 }

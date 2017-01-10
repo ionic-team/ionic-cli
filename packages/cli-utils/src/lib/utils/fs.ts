@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as crypto from 'crypto';
 
 import * as inquirer from 'inquirer';
 
@@ -103,4 +104,32 @@ export async function fsMkdirp(p: string, mode?: number): Promise<void> {
       }
     }
   }
+}
+
+export function getFileChecksum(filePath: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+
+    const hash = crypto.createHash('md5');
+    const input = fs.createReadStream(filePath);
+
+    input.on('error', function (err: any) {
+      reject(err);
+    });
+
+    hash.once('readable', function () {
+      resolve((<Buffer>hash.read()).toString('hex'));
+    });
+
+    input.pipe(hash);
+  });
+}
+
+export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: string) {
+  return new Promise((resolve, reject) => {
+    const dest = fs.createWriteStream(destination);
+    stream
+      .pipe(dest)
+      .on('error', reject)
+      .on('end', resolve);
+  });
 }

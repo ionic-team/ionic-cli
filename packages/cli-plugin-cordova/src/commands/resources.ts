@@ -5,14 +5,16 @@ import {
   CommandLineOptions, Command, CommandMetadata
 } from '@ionic/cli-utils';
 
-import { ImageResource, SourceImage } from '../definitions';
+import { ImageResource, SourceImage  } from '../definitions';
 import { getOrientationConfigData } from '../lib/configXmlUtils';
 import {
   flattenResourceJsonStructure,
   getProjectPlatforms,
   createImgDestinationDirectories,
   getSourceImages,
-  findMostSpecificImage
+  findMostSpecificImage,
+  uploadSourceImages,
+  generateResourceImage
 } from '../lib/resources';
 
 
@@ -24,12 +26,8 @@ Icons should be 192x192 px without rounded corners.
 Splashscreens should be 2208x2208 px, with the image centered in the middle.
 `;
 
-
 /*
 const SETTINGS = {
-  apiUrl: 'http://res.ionic.io',
-  apiUploadPath: '/api/v1/upload',
-  apiTransformPath: '/api/v1/transform',
   generateThrottle: 4,
   defaultMaxIconSize: 96,
   cacheImages: false
@@ -115,19 +113,19 @@ export class ResourcesCommand extends Command {
      * Check /resources and /resources/<platform> directories for src files
      * Update imgResources to have their src attributes to equal the most speficic src img found
      */
-    const srcImagesAvailable: SourceImage[] = await getSourceImages(buildPlatforms, resourceTypes, resourceDir);
-    imgResources = imgResources.map((imageResource: ImageResource) => {
+    let srcImagesAvailable: SourceImage[] = await getSourceImages(buildPlatforms, resourceTypes, resourceDir);
+    imgResources = imgResources.map((imageResource: ImageResource): ImageResource => {
       const mostSpecificImageAvailable = findMostSpecificImage(imageResource, srcImagesAvailable);
       return {
         ...imageResource,
-        src: mostSpecificImageAvailable ? mostSpecificImageAvailable.path : null
+        imageId: mostSpecificImageAvailable ? mostSpecificImageAvailable.imageId : null,
      };
     });
 
     /**
      * If there are any imgResources that have missing images then end processing and inform the user
      */
-    const missingSrcImages = imgResources.filter((imageResource: ImageResource) => imageResource.src === null);
+    const missingSrcImages = imgResources.filter((imageResource: ImageResource) => imageResource.imageId === null);
     if (missingSrcImages.length > 0) {
       const missingImageText = missingSrcImages
         .reduce((list: any[], img: ImageResource): any => {
@@ -142,9 +140,26 @@ export class ResourcesCommand extends Command {
       throw new Error(`Source image files were not found for the following platforms/types: ${missingImageText}`);
     }
 
+    /**
+     * Upload images to service to prepare for resource transformations
+     */
+    const imageUploadResponses = await uploadSourceImages(srcImagesAvailable);
+    srcImagesAvailable = srcImagesAvailable.map((img, index) => {
+      return {
+        ...img,
+        width: imageUploadResponses[index].Width,
+        height: imageUploadResponses[index].Height,
+        vector: imageUploadResponses[index].Vector
+      };
+    });
 
+    /**
+     * Call the transform service and output images to appropriate destination
+     */
+    Promise.all(
+      imgResources.map(img => generateResourceImage(img))
+    );
 
-    // loadSourceImages
     // generateResourceImages
     // loadResourceImages
     // updateCOnfigData
