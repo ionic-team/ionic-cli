@@ -14,11 +14,11 @@ export const ERROR_PLUGIN_INVALID = 'PLUGIN_INVALID';
 /**
  * Synchronously load a plugin
  */
-export function loadPlugin(name: string): any {
+export function loadPlugin(projectDir: string, name: string): any {
   let m: any;
 
   try {
-    var mPath = require.resolve(path.join(process.cwd(), 'node_modules', `${PREFIX}${name}`));
+    var mPath = require.resolve(path.join(projectDir, 'node_modules', `${PREFIX}${name}`));
     m = require(mPath);
   } catch (e) {
     console.log(e);
@@ -35,7 +35,7 @@ export function loadPlugin(name: string): any {
 /**
  * Get inputs and command class based on arguments supplied
  */
-export function resolvePlugin(argv: string[]): [any, string[]] {
+export function resolvePlugin(projectDir: string, argv: string[]): [any, string[]] {
   let pluginName: string;
   let inputs: string[] = [];
 
@@ -80,7 +80,7 @@ export function resolvePlugin(argv: string[]): [any, string[]] {
    */
   try {
     return [
-      loadPlugin(pluginName),
+      loadPlugin(projectDir, pluginName),
       inputs
     ];
   } catch (e) {

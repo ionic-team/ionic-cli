@@ -2,12 +2,12 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import {
   ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON,
-  fsReadFile, fsReadJsonFile, CommandLineInputs,
+  fsReadJsonFile, CommandLineInputs,
   CommandLineOptions, Command, CommandMetadata
 } from '@ionic/cli-utils';
 
 import { ImageResource, SourceImage  } from '../definitions';
-// import { getOrientationConfigData } from '../lib/configXmlUtils';
+import { parseConfigXml } from '../lib/configXmlUtils';
 import {
   flattenResourceJsonStructure,
   getProjectPlatforms,
@@ -58,7 +58,6 @@ export class ResourcesCommand extends Command {
 
     const resourceTypes = ['icon', 'splash'].filter(type => options[type]);
     const resourceDir = path.join(this.env.project.directory, 'resources');
-    const configFilePath = path.join(this.env.project.directory, 'config.xml');
 
     let configFileContents: string;
 
@@ -66,12 +65,8 @@ export class ResourcesCommand extends Command {
      * check that config file config.xml exists
      */
     try {
-      configFileContents = await fsReadFile(configFilePath, { encoding: 'utf8' });
+      configFileContents = await parseConfigXml(this.env.project.directory);
     } catch (e) {
-      if (e.code === 'ENOENT') {
-        throw new Error(`${chalk.bold(configFilePath)} does not appear to exist. Please ensure that this is a \n`
-                         + `cordova project.`);
-      }
       throw e;
     }
 
@@ -91,12 +86,11 @@ export class ResourcesCommand extends Command {
     /**
      * check that at least one platform has been installed
      */
-    console.log(this.env);
-    const platformsDir = path.join(this.env.project.directory, 'platforms');
-    const buildPlatforms = await getProjectPlatforms(resourceJsonStructure, platformsDir);
+    const buildPlatforms = await getProjectPlatforms(resourceJsonStructure, resourceDir);
     if (buildPlatforms.length === 0) {
-      throw new Error(`No platforms have been added. '${platformsDir}'`);
+      throw new Error(`No platforms have been added. '${chalk.red(resourceDir)}'`);
     }
+    this.env.log.debug(`${chalk.green('getProjectPlatforms')} completed`);
 
     /**
      * Convert the resource structure to a flat array then filter the array
@@ -115,17 +109,16 @@ export class ResourcesCommand extends Command {
      * Create the resource directories that are needed for the images we will create
      */
     await createImgDestinationDirectories(imgResources);
+    this.env.log.debug(`${chalk.green('createImgDestinationDirectories')} completed`);
 
-    /**
-     * Get orientation config data
-     */
-    // const orientation = getOrientationConfigData(configFileContents);
 
     /**
      * Check /resources and /resources/<platform> directories for src files
      * Update imgResources to have their src attributes to equal the most speficic src img found
      */
     let srcImagesAvailable: SourceImage[] = await getSourceImages(buildPlatforms, resourceTypes, resourceDir);
+    this.env.log.debug(`${chalk.green('getSourceImages')} completed`);
+
     imgResources = imgResources.map((imageResource: ImageResource): ImageResource => {
       const mostSpecificImageAvailable = findMostSpecificImage(imageResource, srcImagesAvailable);
       return {
@@ -156,6 +149,8 @@ export class ResourcesCommand extends Command {
      * Upload images to service to prepare for resource transformations
      */
     const imageUploadResponses = await uploadSourceImages(srcImagesAvailable);
+    this.env.log.debug(`${chalk.green('uploadSourceImages')} completed`);
+
     srcImagesAvailable = srcImagesAvailable.map((img, index) => {
       return {
         ...img,
