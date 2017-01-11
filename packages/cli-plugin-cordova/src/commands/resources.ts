@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
 import {
+  ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON,
   fsReadFile, fsReadJsonFile, CommandLineInputs,
   CommandLineOptions, Command, CommandMetadata
 } from '@ionic/cli-utils';
@@ -75,12 +76,23 @@ export class ResourcesCommand extends Command {
       throw e;
     }
 
+    let resourceJsonStructure;
+    const filePath = path.join(__dirname, '..', '..', 'resources.json');
+    try {
+      resourceJsonStructure = await fsReadJsonFile(filePath);
+    } catch (e) {
+      if (e === ERROR_FILE_NOT_FOUND) {
+        throw new Error(`${filePath} not found`);
+      } else if (e === ERROR_FILE_INVALID_JSON) {
+        throw new Error(`${filePath} is not valid JSON.`);
+      }
+      throw e;
+    }
+
     /**
      * check that at least one platform has been installed
      */
-    const resourceJsonStructure = await fsReadJsonFile('../lib/resources.json');
     const platformsDir = path.join(this.env.project.directory, 'platforms');
-
     const buildPlatforms = await getProjectPlatforms(resourceJsonStructure, platformsDir);
     if (buildPlatforms.length === 0) {
       throw new Error('No platforms have been added');
