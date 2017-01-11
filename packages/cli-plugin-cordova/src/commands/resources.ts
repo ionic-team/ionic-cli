@@ -7,7 +7,7 @@ import {
 } from '@ionic/cli-utils';
 
 import { ImageResource, SourceImage  } from '../definitions';
-import { getOrientationConfigData } from '../lib/configXmlUtils';
+// import { getOrientationConfigData } from '../lib/configXmlUtils';
 import {
   flattenResourceJsonStructure,
   getProjectPlatforms,
@@ -61,7 +61,6 @@ export class ResourcesCommand extends Command {
     const configFilePath = path.join(this.env.project.directory, 'config.xml');
 
     let configFileContents: string;
-    let resourceDirContents: string[] = [];
 
     /**
      * check that config file config.xml exists
@@ -92,10 +91,11 @@ export class ResourcesCommand extends Command {
     /**
      * check that at least one platform has been installed
      */
+    console.log(this.env);
     const platformsDir = path.join(this.env.project.directory, 'platforms');
     const buildPlatforms = await getProjectPlatforms(resourceJsonStructure, platformsDir);
     if (buildPlatforms.length === 0) {
-      throw new Error('No platforms have been added');
+      throw new Error(`No platforms have been added. '${platformsDir}'`);
     }
 
     /**
@@ -119,7 +119,7 @@ export class ResourcesCommand extends Command {
     /**
      * Get orientation config data
      */
-    const orientation = getOrientationConfigData(configFileContents);
+    // const orientation = getOrientationConfigData(configFileContents);
 
     /**
      * Check /resources and /resources/<platform> directories for src files
@@ -171,11 +171,5 @@ export class ResourcesCommand extends Command {
     Promise.all(
       imgResources.map(img => generateResourceImage(img))
     );
-
-    // generateResourceImages
-    // loadResourceImages
-    // updateCOnfigData
-
-    this.env.log.msg(`${configFileContents} ${resourceDirContents} ${orientation}`);
   }
 }

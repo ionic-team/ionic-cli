@@ -14,13 +14,14 @@ import { Client } from '../http';
 import { Project } from '../project';
 import { Session } from '../session';
 import { Shell } from '../shell';
+import { fsReadDir } from '../utils/fs';
 
 const CONFIG_FILE = 'config.json';
 const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
 const PROJECT_FILE = 'ionic.config.json';
 
 /**
- *
+ * Run the command provided within the CommandEnvironment provided and optionally provide it with arguments.
  */
 export async function runCommand(commandEnvironment: CommandEnvironment, pargv?: string[]): Promise<void> {
 
@@ -48,11 +49,12 @@ export async function runCommand(commandEnvironment: CommandEnvironment, pargv?:
 }
 
 /**
- *
+ * Create a command environment to execute commands within
  */
 export async function createCommandEnvironment(pargv: string[], env: { [k: string]: string }, namespace: INamespace): Promise<CommandEnvironment> {
 
   const argv = minimist(pargv);
+  const projectDir = await getProjectRootDir(process.env.PWD);
 
   const log = new Logger();
   if (argv['log-level']) {
@@ -64,7 +66,7 @@ export async function createCommandEnvironment(pargv: string[], env: { [k: strin
   await config.save();
 
   const client = new Client(c.urls.api);
-  const project = new Project('.', PROJECT_FILE);
+  const project = new Project(projectDir, PROJECT_FILE);
   const session = new Session(config, project, client);
   const app = new App(session, project, client);
   const shell = new Shell();
@@ -83,4 +85,28 @@ export async function createCommandEnvironment(pargv: string[], env: { [k: strin
   };
 
   return commandEnvironment;
+}
+
+/**
+ * Find the base project directory based on the dir input
+ */
+async function getProjectRootDir(dir: string): Promise<string> {
+  const dirInfo = path.parse(dir);
+  const directoriesToCheck = dirInfo.dir
+    .slice(dirInfo.root.length)
+    .split(path.sep)
+    .concat(dirInfo.base)
+    .map((segment: string, index: number, array: string[]) => {
+      let pathSegments = array.slice(0, (array.length - index));
+      return dirInfo.root + path.join(...pathSegments);
+    });
+
+  for (let i = 0; i < directoriesToCheck.length; i++) {
+    const results = await fsReadDir(dir);
+    if (results.indexOf(PROJECT_FILE) !== -1) {
+      return directoriesToCheck[i];
+    }
+  }
+
+  return '';
 }

@@ -45,7 +45,7 @@ export async function getProjectPlatforms (jsonStructure: any, platformsDir: str
     platformDirContents = await fsReadDir(platformsDir);
   } catch (e) {
     if (e.code === 'ENOENT') {
-      throw new Error('No platforms have been added.');
+      throw new Error(`No platforms have been added. '${platformsDir}'`);
     }
     throw e;
   }
