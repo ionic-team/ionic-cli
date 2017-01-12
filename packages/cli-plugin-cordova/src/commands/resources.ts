@@ -202,13 +202,16 @@ export class ResourcesCommand extends Command {
     const promiseList = imgResources.map((img, index): Promise<void> => {
       return generateResourceImage(img).then(() => {
         count += 1;
-        task.updateMsg(`Generating platform resources: ${count}/${imgResources.length} complete`);
+        task.updateMsg(`Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`);
       });
     });
 
     const generateImageResponses = await Promise.all(promiseList);
-    task.updateMsg(`Generating platform resources: ${imgResources.length}/${imgResources.length} complete`);
+    task.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
     this.env.log.debug(`${chalk.green('generateResourceImage')} completed - responses=${JSON.stringify(generateImageResponses, null, 2)}`);
+
+
+    // TODO: UPDATE CONFIG.XML DATA
 
     tasks.end();
     /**
