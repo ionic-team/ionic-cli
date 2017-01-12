@@ -17,6 +17,9 @@ export interface SourceImage {
   platform: string;
   resType: string;
   path: string;
+  vector: boolean;
+  width: number;
+  height: number;
 }
 
 export interface ImageUploadResponse {

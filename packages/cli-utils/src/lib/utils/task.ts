@@ -78,6 +78,13 @@ export class TaskChain {
     return this;
   }
 
+  updateMsg(msg: string): this {
+    if (this.currentTask) {
+      this.currentTask.msg = msg;
+    }
+    return this;
+  }
+
   end(): this {
     if (this.currentTask) {
       this.currentTask.succeed();

@@ -3,7 +3,8 @@ import * as chalk from 'chalk';
 import {
   ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON,
   fsReadJsonFile, CommandLineInputs,
-  CommandLineOptions, Command, CommandMetadata
+  CommandLineOptions, Command, CommandMetadata,
+  TaskChain
 } from '@ionic/cli-utils';
 
 import { ImageResource, SourceImage  } from '../definitions';
@@ -26,6 +27,7 @@ Accepted file types are .png, .ai, and .psd.
 Icons should be 192x192 px without rounded corners.
 Splashscreens should be 2208x2208 px, with the image centered in the middle.
 `;
+const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
 
 /*
 const SETTINGS = {
@@ -56,10 +58,16 @@ const SETTINGS = {
 export class ResourcesCommand extends Command {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
 
-    const resourceTypes = ['icon', 'splash'].filter(type => options[type]);
+    // if no resource filters are passed as arguments assume to use all.
+    let resourceTypes = AVAILABLE_RESOURCE_TYPES.filter((type, index, array) => options[type]);
+    resourceTypes = (resourceTypes.length) ? resourceTypes : AVAILABLE_RESOURCE_TYPES;
+
     const resourceDir = path.join(this.env.project.directory, 'resources');
 
     let configFileContents: string;
+
+    var tasks = new TaskChain();
+    tasks.next(`Collecting resource configuration and source images`);
 
     /**
      * check that config file config.xml exists
@@ -71,7 +79,7 @@ export class ResourcesCommand extends Command {
     }
 
     let resourceJsonStructure;
-    const filePath = path.join(__dirname, '..', '..', 'resources.json');
+      const filePath = path.join(__dirname, '..', '..', 'resources.json');
     try {
       resourceJsonStructure = await fsReadJsonFile(filePath);
     } catch (e) {
@@ -82,6 +90,7 @@ export class ResourcesCommand extends Command {
       }
       throw e;
     }
+    this.env.log.debug(`resourceJsonStructure=${Object.keys(resourceJsonStructure).length}`);
 
     /**
      * check that at least one platform has been installed
@@ -90,7 +99,7 @@ export class ResourcesCommand extends Command {
     if (buildPlatforms.length === 0) {
       throw new Error(`No platforms have been added. '${chalk.red(resourceDir)}'`);
     }
-    this.env.log.debug(`${chalk.green('getProjectPlatforms')} completed`);
+    this.env.log.debug(`${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);
 
     /**
      * Convert the resource structure to a flat array then filter the array
@@ -104,12 +113,13 @@ export class ResourcesCommand extends Command {
         ...img,
         dest: path.join(resourceDir, img.platform, img.resType, img.name)
       }));
+    this.env.log.debug(`imgResources=${imgResources.length}`);
 
     /**
      * Create the resource directories that are needed for the images we will create
      */
-    await createImgDestinationDirectories(imgResources);
-    this.env.log.debug(`${chalk.green('createImgDestinationDirectories')} completed`);
+    const buildDirResponses = await createImgDestinationDirectories(imgResources);
+    this.env.log.debug(`${chalk.green('createImgDestinationDirectories')} completed - length=${buildDirResponses.length}`);
 
 
     /**
@@ -117,7 +127,7 @@ export class ResourcesCommand extends Command {
      * Update imgResources to have their src attributes to equal the most speficic src img found
      */
     let srcImagesAvailable: SourceImage[] = await getSourceImages(buildPlatforms, resourceTypes, resourceDir);
-    this.env.log.debug(`${chalk.green('getSourceImages')} completed`);
+    this.env.log.debug(`${chalk.green('getSourceImages')} completed - ${srcImagesAvailable.length}`);
 
     imgResources = imgResources.map((imageResource: ImageResource): ImageResource => {
       const mostSpecificImageAvailable = findMostSpecificImage(imageResource, srcImagesAvailable);
@@ -140,18 +150,22 @@ export class ResourcesCommand extends Command {
           }
           return list;
         }, [])
-        .reduce((txt: string, imgText: string) => `${txt}, ${imgText}.`, '');
+        .join('\n');
 
-      throw new Error(`Source image files were not found for the following platforms/types: ${missingImageText}`);
+      throw new Error(`Source image files were not found for the following platforms/types: \n${missingImageText}`);
     }
+
+
+
+    tasks.next(`Uploading source images to prepare for transformations`);
 
     /**
      * Upload images to service to prepare for resource transformations
      */
     const imageUploadResponses = await uploadSourceImages(srcImagesAvailable);
-    this.env.log.debug(`${chalk.green('uploadSourceImages')} completed`);
+    this.env.log.debug(`${chalk.green('uploadSourceImages')} completed - responses=${JSON.stringify(imageUploadResponses, null, 2)}`);
 
-    srcImagesAvailable = srcImagesAvailable.map((img, index) => {
+    srcImagesAvailable = srcImagesAvailable.map((img: SourceImage, index): SourceImage => {
       return {
         ...img,
         width: imageUploadResponses[index].Width,
@@ -161,10 +175,52 @@ export class ResourcesCommand extends Command {
     });
 
     /**
+     * If any images are asking to be generated but are not of the correct size inform the user and continue on.
+     */
+    const imagesTooLargeForSource = imgResources.filter((imageResource: ImageResource) => {
+      const resourceSourceImage = srcImagesAvailable.find(srcImage => srcImage.imageId === imageResource.imageId);
+      if (resourceSourceImage === undefined) {
+        return true;
+      }
+
+      return !resourceSourceImage.vector &&
+        (imageResource.width > resourceSourceImage.width || imageResource.height > resourceSourceImage.height);
+    });
+
+    /**
+     * Remove all images too large for transformations
+     */
+    imgResources = imgResources.filter(imageResource => {
+      return !imagesTooLargeForSource.find(tooLargeForSourceImage => imageResource.name === tooLargeForSourceImage.name);
+    });
+
+    /**
      * Call the transform service and output images to appropriate destination
      */
-    Promise.all(
-      imgResources.map(img => generateResourceImage(img))
+    let task = tasks.next(`Generating platform resources`);
+    let count = 0;
+    const promiseList = imgResources.map((img, index): Promise<void> => {
+      return generateResourceImage(img).then(() => {
+        count += 1;
+        task.updateMsg(`Generating platform resources: ${count}/${imgResources.length} complete`);
+      });
+    });
+
+    const generateImageResponses = await Promise.all(promiseList);
+    task.updateMsg(`Generating platform resources: ${imgResources.length}/${imgResources.length} complete`);
+    this.env.log.debug(`${chalk.green('generateResourceImage')} completed - responses=${JSON.stringify(generateImageResponses, null, 2)}`);
+
+    tasks.end();
+    /**
+     * Print out all images that were not processed
+     */
+    this.env.log.msg(
+      imagesTooLargeForSource.map(imageResource => (
+        `    ${chalk.bold(imageResource.name)}     ${imageResource.platform} -> ${imageResource.resType}`
+      ))
+      .concat((imagesTooLargeForSource.length > 0) ? `\nThe following images were not created because their source image was too small:` : [])
+      .reverse()
+      .join('\n')
     );
   }
 }

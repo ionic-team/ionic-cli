@@ -96,6 +96,9 @@ export async function getSourceImages (buildPlatforms: string[], resourceTypes: 
             platform: srcDirList[index].platform,
             resType: path.basename(imgName, ext),
             path: path.join(srcDirList[index].path, imgName),
+            vector: false,
+            height: 0,
+            width: 0
           };
         })
         .filter((img: SourceImage) => SUPPORTED_SOURCE_EXTENSIONS.indexOf(img.ext) !== -1)
@@ -125,12 +128,6 @@ export function findMostSpecificImage(imageResource: ImageResource, srcImagesAva
   }, null);
 }
 
-function flatten(arr: any[]): any[] {
-  return arr.reduce(function (flat, toFlatten) {
-    return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-  }, []);
-}
-
 export async function uploadSourceImages(srcImages: SourceImage[]): Promise<ImageUploadResponse[]> {
   return Promise.all(
     srcImages.map(async function(srcImage) {
@@ -148,32 +145,45 @@ export async function uploadSourceImages(srcImages: SourceImage[]): Promise<Imag
   );
 }
 
-export async function generateResourceImage(imageResource: ImageResource) {
+export async function generateResourceImage(imageResource: ImageResource): Promise<void> {
+  const form = new FormData();
+  form.append('image_id', imageResource.imageId);
+  form.append('width', imageResource.width);
+  form.append('height', imageResource.height);
+  form.append('res_type', imageResource.resType);
+  form.append('crop', 'center');
+  form.append('encoding', 'png');
 
-  const formData = {
-    image_id: imageResource.imageId,
-    name: imageResource.name,
-    platform: imageResource.platform,
-    width: imageResource.width,
-    height: imageResource.height,
-    res_type: imageResource.resType,
-    crop: 'center',
-    encoding: 'png'
-  };
+  try {
+    const response = await fetch(TRANSFORM_URL, {
+      method: 'POST',
+      body: form
+    });
 
-  const response = await fetch(TRANSFORM_URL, {
-    method: 'POST',
-    body: encodeFormObj(formData)
-  });
+    if (response.status !== 200) {
+      const responseBody: string = await streamToString(response.body);
+      throw new Error(`STATUS: ${response.status} ${responseBody}`);
+    }
 
-  await writeStreamToFile(response.body, imageResource.dest);
+    await writeStreamToFile(response.body, imageResource.dest);
+  } catch (e) {
+    throw e;
+  }
 }
 
-function encodeFormObj(formObj: { [key: string]: string | number | null }): string {
-  return Object.keys(formObj)
-    .map((key): string => {
-      let value = formObj[key] + '';
-      return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-    })
-    .join('&');
+function flatten(arr: any[]): any[] {
+  return arr.reduce(function (flat, toFlatten) {
+    return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+  }, []);
+}
+
+function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
+  const chunks: Buffer[] = [];
+
+  return new Promise((resolve, reject) => {
+    stream
+      .on('error', reject)
+      .on('data', (chunk: Buffer) => chunks.push(chunk))
+      .on('end', () => resolve(Buffer.concat(chunks)));
+  });
 }

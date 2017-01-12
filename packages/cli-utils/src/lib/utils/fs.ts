@@ -117,7 +117,8 @@ export function getFileChecksum(filePath: string): Promise<string> {
     });
 
     hash.once('readable', function () {
-      resolve((<Buffer>hash.read()).toString('hex'));
+      const fullChecksum = (<Buffer>hash.read()).toString('hex');
+      resolve(fullChecksum);
     });
 
     input.pipe(hash);
@@ -127,9 +128,8 @@ export function getFileChecksum(filePath: string): Promise<string> {
 export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: string) {
   return new Promise((resolve, reject) => {
     const dest = fs.createWriteStream(destination);
-    stream
-      .pipe(dest)
-      .on('error', reject)
-      .on('end', resolve);
+    stream.pipe(dest);
+    dest.on('error', reject);
+    dest.on('finish', resolve);
   });
 }
