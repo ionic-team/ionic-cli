@@ -1,3 +1,20 @@
+<a name="2.2.0"></a>
+# [2.2.0](https://github.com/driftyco/ionic-cli/compare/v2.1.17...v2.2.0) (2017-01-13)
+
+
+### Bug Fixes
+
+* ensure that all ports are checked before running serve, run, or emulate. ([74d1253](https://github.com/driftyco/ionic-cli/commit/74d1253))
+* **lab:** ensure lab is passed to app-scripts. ([79e2d6e](https://github.com/driftyco/ionic-cli/commit/79e2d6e))
+* **run:** when target is passed to cordova through spawn remove quotes ([42fda29](https://github.com/driftyco/ionic-cli/commit/42fda29))
+
+
+### Features
+
+* **wizard:** Add starter wizard. ([8308de9](https://github.com/driftyco/ionic-cli/commit/8308de9))
+
+
+
 <a name="2.1.18"></a>
 ## [2.1.18](https://github.com/driftyco/ionic-cli/compare/v2.1.17...v2.1.18) (2016-12-22)
 
