@@ -2,8 +2,10 @@ import {
   Command,
   CommandLineInputs,
   CommandLineOptions,
-  CommandMetadata
+  CommandMetadata,
+  Shell
 } from '@ionic/cli-utils';
+import { resetSrcContent } from '../lib/utils/configXmlUtils';
 
 /**
  * Metadata about the platform command
@@ -22,6 +24,7 @@ import {
       name: 'noresources',
       description: 'Do not add default Ionic icons and splash screen resources',
       type: Boolean,
+      default: false,
       aliases: ['r']
     },
     {
@@ -34,6 +37,33 @@ import {
 })
 export class PlatformCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    this.env.log.msg('platform');
+    const isAddCmd = inputs.indexOf('add') !== -1;
+    const isRmCmd = inputs.indexOf('rm') !== -1 || argv._.indexOf('remove') !== -1;
+    const addResources = isAddCmd && !(options['noresources']);
+
+    // ensure the content node was set back to its original
+    await resetSrcContent(this.env.project.directory);
+
+    if (addResources) {
+      await IonicResources.copyIconFilesIntoResources(appDirectory)
+      await IonicResources.addIonicIcons(appDirectory, argumentName);
+    }
+    const optionList: string[] = filterArgumentsForCordova('platform', inputs, options);
+    await new Shell().run('cordova', optionList);
+
+    // We dont want to do anything if the cordova command failed
+    if (runCode !== 0 || argv.nosave) {
+      return;
+    }
+
+    if (isAddCmd) {
+      this.env.log.info('Saving platform to package.json file');
+      return State.savePlatform(appDirectory, argumentName);
+    }
+
+    if (isRmCmd) {
+      this.env.log.info('Removing platform from package.json file');
+      return State.removePlatform(appDirectory, argumentName);
+    }
   }
 }

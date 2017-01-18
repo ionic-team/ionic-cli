@@ -23,7 +23,7 @@ export class CompileCommand extends Command {
     /**
      *
      */
-    var optionList: string[] = filterArgumentsForCordova('compile', inputs, options);
+    const optionList: string[] = filterArgumentsForCordova('compile', inputs, options);
     await new Shell().run('cordova', optionList);
   }
 }

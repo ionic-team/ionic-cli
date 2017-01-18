@@ -42,6 +42,7 @@ export class BuildCommand extends Command {
 
     if (runPlatform === 'ios' && os.platform() !== 'darwin') {
       this.env.log.error('You cannot run iOS unless you are on Mac OSX.');
+      return;
     }
 
     await Promise.all([
@@ -65,7 +66,7 @@ export class BuildCommand extends Command {
     /**
      *
      */
-    var optionList: string[] = filterArgumentsForCordova('build', inputs, options);
+    const optionList: string[] = filterArgumentsForCordova('build', inputs, options);
     await new Shell().run('cordova', optionList);
   }
 }

@@ -1,9 +1,17 @@
+import * as os from 'os';
 import {
   Command,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata
 } from '@ionic/cli-utils';
+import { resetSrcContent } from '../lib/utils/configXmlUtils';
+import {
+  arePluginsInstalled,
+  getProjectPlatforms,
+  installPlatform,
+  installPlugins
+} from '../lib/utils/setup';
 
 /**
  * Metadata about the emulate command
@@ -66,6 +74,48 @@ import {
 })
 export class EmulateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    this.env.log.msg('emulate');
+    var hasBuildCommand = false;
+    var hasServeCommand = false;
+
+    var isLiveReload = options['livereload'];
+
+    const runPlatform = inputs[0] || 'ios';
+
+    if (runPlatform === 'ios' && os.platform() !== 'darwin') {
+      this.env.log.error('You cannot run iOS unless you are on Mac OSX.');
+      return;
+    }
+
+    await Promise.all([
+      getProjectPlatforms(this.env.project.directory).then((platforms): Promise<string | void> => {
+        if (platforms.indexOf(runPlatform) === -1) {
+          return installPlatform(runPlatform);
+        }
+        return Promise.resolve();
+      }),
+      arePluginsInstalled(this.env.project.directory).then((areInstalled): Promise<string[] | void> => {
+        if (!areInstalled) {
+          return installPlugins();
+        }
+        return Promise.resolve();
+      })
+    ]);
+
+    /**
+     * If it is not livereload then just run build.
+     */
+    if (!isLiveReload) {
+      return npmScripts.runIonicScript('build', inputs, options);
+    }
+
+    // using app-scripts and livereload is requested
+    // Also remove commandName from the rawArgs passed
+    await cordovaUtils.startAppScriptsServer(inputs, options);
+
+    // ensure the content node was set back to its original
+    await resetSrcContent(this.env.project.directory);
+
+    var optionList: string[] = filterArgumentsForCordova('emulate', inputs, options);
+    await new Shell().run('cordova', optionList);
   }
 }

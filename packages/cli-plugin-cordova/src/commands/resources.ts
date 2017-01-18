@@ -29,14 +29,6 @@ Splashscreens should be 2208x2208 px, with the image centered in the middle.
 `;
 const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
 
-/*
-const SETTINGS = {
-  generateThrottle: 4,
-  defaultMaxIconSize: 96,
-  cacheImages: false
-};
-*/
-
 @CommandMetadata({
   name: 'resources',
   description: RESOURCES_SUMMARY,
