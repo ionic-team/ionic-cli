@@ -35,25 +35,6 @@ export function flattenResourceJsonStructure (jsonStructure: any): ImageResource
 }
 
 /**
- * Get all platforms based on resource/platforms directories
- * TODO: should we get this from the config.xml or just the directories like app-lib
- */
-export async function getProjectPlatforms (jsonStructure: any, platformsDir: string): Promise<string[]> {
-  let platformDirContents: string[] = [];
-
-  try {
-    platformDirContents = await fsReadDir(platformsDir);
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      throw new Error(`No platforms have been added. '${platformsDir}'`);
-    }
-    throw e;
-  }
-
-  return Object.keys(jsonStructure).filter(platform => platformDirContents.indexOf(platform) !== -1);
-}
-
-/**
  *
  */
 export async function createImgDestinationDirectories (imgResources: ImageResource[]): Promise<void[]> {

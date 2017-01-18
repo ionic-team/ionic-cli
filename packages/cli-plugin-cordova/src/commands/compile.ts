@@ -2,8 +2,10 @@ import {
   Command,
   CommandLineInputs,
   CommandLineOptions,
-  CommandMetadata
+  CommandMetadata,
+  Shell
 } from '@ionic/cli-utils';
+import { resetSrcContent } from '../lib/utils/configXmlUtils';
 
 /**
  * Metadata about the compile command
@@ -14,6 +16,14 @@ import {
 })
 export class CompileCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    this.env.log.msg('compile');
+
+    // ensure the content node was set back to its original
+    await resetSrcContent(this.env.project.directory);
+
+    /**
+     *
+     */
+    var optionList: string[] = filterArgumentsForCordova('compile', inputs, options);
+    await new Shell().run('cordova', optionList);
   }
 }

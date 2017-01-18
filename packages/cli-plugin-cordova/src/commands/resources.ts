@@ -4,14 +4,14 @@ import {
   ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON,
   fsReadJsonFile, CommandLineInputs,
   CommandLineOptions, Command, CommandMetadata,
-  TaskChain
+  TaskChain,
 } from '@ionic/cli-utils';
 
 import { ImageResource, SourceImage  } from '../definitions';
-import { parseConfigXml } from '../lib/configXmlUtils';
+import { getProjectPlatforms } from '../lib/utils/setup';
+import { parseConfigXml } from '../lib/utils/configXmlUtils';
 import {
   flattenResourceJsonStructure,
-  getProjectPlatforms,
   createImgDestinationDirectories,
   getSourceImages,
   findMostSpecificImage,
@@ -95,7 +95,9 @@ export class ResourcesCommand extends Command {
     /**
      * check that at least one platform has been installed
      */
-    const buildPlatforms = await getProjectPlatforms(resourceJsonStructure, resourceDir);
+    const platformDirContents = await getProjectPlatforms(this.env.project.directory);
+    const buildPlatforms = Object.keys(resourceJsonStructure)
+      .filter(platform => platformDirContents.indexOf(platform) !== -1);
     if (buildPlatforms.length === 0) {
       throw new Error(`No platforms have been added. '${chalk.red(resourceDir)}'`);
     }
@@ -199,6 +201,7 @@ export class ResourcesCommand extends Command {
      */
     let task = tasks.next(`Generating platform resources`);
     let count = 0;
+
     const promiseList = imgResources.map((img, index): Promise<void> => {
       return generateResourceImage(img).then(() => {
         count += 1;
@@ -207,6 +210,8 @@ export class ResourcesCommand extends Command {
     });
 
     const generateImageResponses = await Promise.all(promiseList);
+
+
     task.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
     this.env.log.debug(`${chalk.green('generateResourceImage')} completed - responses=${JSON.stringify(generateImageResponses, null, 2)}`);
 
