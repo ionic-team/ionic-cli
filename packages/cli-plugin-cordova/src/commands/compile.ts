@@ -5,6 +5,7 @@ import {
   CommandMetadata,
   Shell
 } from '@ionic/cli-utils';
+import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { resetSrcContent } from '../lib/utils/configXmlUtils';
 
 /**

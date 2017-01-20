@@ -67,7 +67,7 @@ export class Logger implements ILogger {
         args[0] = util.format(prefix, args[0]);
       }
 
-      if (['ok', 'warn', 'error'].indexOf(level) !== -1) {
+      if (['ok', 'warn', 'error'].includes(level)) {
         for (let [i, arg] of args.entries()) {
           if (typeof arg === 'string') {
             args[i] = arg.split('\n').map((l, i) => i > 0 ? `${indent(level.length + 2)} ${l}` : l).join('\n');

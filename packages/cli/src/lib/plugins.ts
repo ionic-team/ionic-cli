@@ -59,14 +59,14 @@ export function resolvePlugin(projectDir: string, argv: string[]): [any, string[
    * Else it is likely a core command that should be loaded
    * from the 'core' plugin.
    */
-  if (argv.length > 0 && argv[0].indexOf(':') !== -1) {
+  if (argv.length > 0 && argv[0].includes(':')) {
 
     let [firstArg, ...restOfArguments] = argv;
     [pluginName, firstArg] = firstArg.split(':');
 
     inputs = [firstArg, ...restOfArguments];
 
-  } else if (knownPlugins.indexOf(argv[0]) !== -1) {
+  } else if (knownPlugins.includes(argv[0])) {
     [pluginName, ...inputs] = argv;
 
   } else {
@@ -90,7 +90,7 @@ export function resolvePlugin(projectDir: string, argv: string[]): [any, string[
      * based on whether we know the plugin exists.
      */
     if (e === ERROR_PLUGIN_NOT_FOUND) {
-      if (knownPlugins.indexOf(pluginName) !== -1) {
+      if (knownPlugins.includes(pluginName)) {
         throw new FatalException('This plugin is not currently installed. Please execute the following to install it.\n'
                                 + `    ${chalk.bold(`npm install ${PREFIX}${pluginName}`)}`);
       } else {

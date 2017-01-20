@@ -89,7 +89,7 @@ export class ResourcesCommand extends Command {
      */
     const platformDirContents = await getProjectPlatforms(this.env.project.directory);
     const buildPlatforms = Object.keys(resourceJsonStructure)
-      .filter(platform => platformDirContents.indexOf(platform) !== -1);
+      .filter(platform => platformDirContents.includes(platform));
     if (buildPlatforms.length === 0) {
       throw new Error(`No platforms have been added. '${chalk.red(resourceDir)}'`);
     }
@@ -101,8 +101,8 @@ export class ResourcesCommand extends Command {
      * items that remain.
      */
     let imgResources: ImageResource[] = flattenResourceJsonStructure(resourceJsonStructure)
-      .filter((img: ImageResource) => buildPlatforms.indexOf(img.platform) !== -1)
-      .filter((img: ImageResource) => resourceTypes.indexOf(img.resType) !== -1)
+      .filter((img: ImageResource) => buildPlatforms.includes(img.platform))
+      .filter((img: ImageResource) => resourceTypes.includes(img.resType))
       .map((img: ImageResource) => ({
         ...img,
         dest: path.join(resourceDir, img.platform, img.resType, img.name)
@@ -139,7 +139,7 @@ export class ResourcesCommand extends Command {
       const missingImageText = missingSrcImages
         .reduce((list: any[], img: ImageResource): any => {
           let str = `${img.resType}/${img.platform}`;
-          if (list.indexOf(str) !== -1) {
+          if (list.includes(str)) {
             list.push(str);
           }
           return list;

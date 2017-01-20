@@ -3,9 +3,11 @@ import {
   Command,
   CommandLineInputs,
   CommandLineOptions,
-  CommandMetadata
+  CommandMetadata,
+  Shell
 } from '@ionic/cli-utils';
 import { resetSrcContent } from '../lib/utils/configXmlUtils';
+import { startAppScriptsServer, filterArgumentsForCordova } from '../lib/utils/cordova';
 import {
   arePluginsInstalled,
   getProjectPlatforms,
@@ -74,11 +76,7 @@ import {
 })
 export class EmulateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    var hasBuildCommand = false;
-    var hasServeCommand = false;
-
-    var isLiveReload = options['livereload'];
-
+    const isLiveReload = options['livereload'];
     const runPlatform = inputs[0] || 'ios';
 
     if (runPlatform === 'ios' && os.platform() !== 'darwin') {
@@ -86,9 +84,12 @@ export class EmulateCommand extends Command {
       return;
     }
 
+    filterArgumentsForCordova(this.metadata, inputs, options);
+
+
     await Promise.all([
       getProjectPlatforms(this.env.project.directory).then((platforms): Promise<string | void> => {
-        if (platforms.indexOf(runPlatform) === -1) {
+        if (platforms.includes(runPlatform)) {
           return installPlatform(runPlatform);
         }
         return Promise.resolve();
@@ -105,12 +106,12 @@ export class EmulateCommand extends Command {
      * If it is not livereload then just run build.
      */
     if (!isLiveReload) {
-      return npmScripts.runIonicScript('build', inputs, options);
+      // return npmScripts.runIonicScript('build', inputs, options);
     }
 
     // using app-scripts and livereload is requested
     // Also remove commandName from the rawArgs passed
-    await cordovaUtils.startAppScriptsServer(inputs, options);
+    await startAppScriptsServer(inputs, options);
 
     // ensure the content node was set back to its original
     await resetSrcContent(this.env.project.directory);

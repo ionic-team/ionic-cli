@@ -85,7 +85,7 @@ async function getProjectRootDir(dir: string, projectFileName: string): Promise<
 
   for (let i = 0; i < directoriesToCheck.length; i++) {
     const results = await fsReadDir(directoriesToCheck[i]);
-    if (results.indexOf(projectFileName) !== -1) {
+    if (results.includes(projectFileName)) {
       return directoriesToCheck[i];
     }
   }

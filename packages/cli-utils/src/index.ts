@@ -1,4 +1,5 @@
 export * from './lib/command';
+export { normalizeOptionAliases, minimistOptionsToArray } from './lib/command/utils';
 export * from './lib/command/namespace';
 export * from './lib/command/commandEnvironment';
 export * from './lib/config';

@@ -1,3 +1,4 @@
+import * as os from 'os';
 import {
   Command,
   CommandLineInputs,
@@ -5,6 +6,7 @@ import {
   CommandMetadata,
   Shell
 } from '@ionic/cli-utils';
+import { startAppScriptsServer, filterArgumentsForCordova } from '../lib/utils/cordova';
 import { resetSrcContent } from '../lib/utils/configXmlUtils';
 import {
   arePluginsInstalled,
@@ -83,7 +85,7 @@ export class RunCommand extends Command {
     }
     await Promise.all([
       getProjectPlatforms(this.env.project.directory).then((platforms): Promise<string | void> => {
-        if (platforms.indexOf(runPlatform) === -1) {
+        if (platforms.includes(runPlatform)) {
           return installPlatform(runPlatform);
         }
         return Promise.resolve();
@@ -98,12 +100,12 @@ export class RunCommand extends Command {
 
 
     if (!isLiveReload) {
-      return npmScripts.runIonicScript('build', inputs, options);
+      // return npmScripts.runIonicScript('build', inputs, options);
     }
 
     // using app-scripts and livereload is requested
     // Also remove commandName from the rawArgs passed
-    await cordovaUtils.startAppScriptsServer(inputs, options);
+    await startAppScriptsServer(inputs, options);
 
     // ensure the content node was set back to its original
     await resetSrcContent(this.env.project.directory);

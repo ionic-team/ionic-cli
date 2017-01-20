@@ -5,6 +5,7 @@ import {
   CommandData,
   CommandOption,
   CommandLineInput,
+  CommandLineOptions,
   CommandOptionType,
   CommandOptionTypeDefaults,
   NormalizedCommandOption,
@@ -24,6 +25,36 @@ const typeDefaults: CommandOptionTypeDefaults = new Map<CommandOptionType, Comma
   .set(String, null)
   .set(Boolean, false);
 
+/**
+ * Take all command line options and normalize all aliases to their proper option names
+ */
+export function normalizeOptionAliases(metadata: CommandData, options: CommandLineOptions): CommandLineOptions {
+  if (!metadata) {
+    return options;
+  }
+  return Object.keys(options).reduce((results: any, optionName) => {
+      const metadataOptionFound = (metadata.options || []).find((mdOption) => (
+        mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
+      ));
+
+      if (metadataOptionFound) {
+        results[metadataOptionFound.name] = options[optionName];
+      }
+      return results;
+    }, {});
+}
+
+export function minimistOptionsToArray(metadata: CommandData, options: CommandLineOptions): string[] {
+  return (Object.keys(options || {})).reduce((results, optionName): string[] => {
+    if (options[optionName] === true) {
+      return results.concat(`--${optionName}`);
+    }
+    if (typeof options[optionName] === 'string') {
+      return results.concat(`--${optionName}=${options[optionName]}`);
+    }
+    return results;
+  }, <string[]>[]);
+}
 
 /**
  * Takes a Minimist command option and normalizes its values.

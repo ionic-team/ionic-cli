@@ -11,7 +11,7 @@
     "target": "es6",
     "lib": [
       "es2017.object",
-      "es6",
+      "es2016",
       "dom"
     ],
     "typeRoots": [

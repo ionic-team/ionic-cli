@@ -6,6 +6,7 @@ import {
   CommandMetadata,
   Shell
 } from '@ionic/cli-utils';
+import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { resetSrcContent } from '../lib/utils/configXmlUtils';
 import {
   arePluginsInstalled,
@@ -47,7 +48,7 @@ export class BuildCommand extends Command {
 
     await Promise.all([
       getProjectPlatforms(this.env.project.directory).then((platforms): Promise<string | void> => {
-        if (platforms.indexOf(runPlatform) === -1) {
+        if (platforms.includes(runPlatform)) {
           return installPlatform(runPlatform);
         }
         return Promise.resolve();

@@ -82,8 +82,8 @@ export async function getSourceImages (buildPlatforms: string[], resourceTypes: 
             width: 0
           };
         })
-        .filter((img: SourceImage) => SUPPORTED_SOURCE_EXTENSIONS.indexOf(img.ext) !== -1)
-        .filter((img: SourceImage) => resourceTypes.indexOf(img.resType) !== -1)
+        .filter((img: SourceImage) => SUPPORTED_SOURCE_EXTENSIONS.includes(img.ext))
+        .filter((img: SourceImage) => resourceTypes.includes(img.resType))
     ))
   );
 

@@ -3,9 +3,10 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  Shell
+  // Shell
 } from '@ionic/cli-utils';
-import { resetSrcContent } from '../lib/utils/configXmlUtils';
+// import { filterArgumentsForCordova } from '../lib/utils/cordova';
+// import { resetSrcContent } from '../lib/utils/configXmlUtils';
 
 /**
  * Metadata about the platform command
@@ -37,8 +38,9 @@ import { resetSrcContent } from '../lib/utils/configXmlUtils';
 })
 export class PlatformCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const isAddCmd = inputs.indexOf('add') !== -1;
-    const isRmCmd = inputs.indexOf('rm') !== -1 || argv._.indexOf('remove') !== -1;
+    /*
+    const isAddCmd = inputs.includes('add');
+    const isRmCmd = inputs.includes('rm') || inputs.includes('remove');
     const addResources = isAddCmd && !(options['noresources']);
 
     // ensure the content node was set back to its original
@@ -49,10 +51,10 @@ export class PlatformCommand extends Command {
       await IonicResources.addIonicIcons(appDirectory, argumentName);
     }
     const optionList: string[] = filterArgumentsForCordova('platform', inputs, options);
-    await new Shell().run('cordova', optionList);
+    const runCode = await new Shell().run('cordova', optionList);
 
     // We dont want to do anything if the cordova command failed
-    if (runCode !== 0 || argv.nosave) {
+    if (runCode !== '0' || options['nosave']) {
       return;
     }
 
@@ -65,5 +67,6 @@ export class PlatformCommand extends Command {
       this.env.log.info('Removing platform from package.json file');
       return State.removePlatform(appDirectory, argumentName);
     }
+    */
   }
 }
