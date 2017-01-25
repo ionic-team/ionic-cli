@@ -35,3 +35,6 @@ export function filterArgumentsForCordova(metadata: any, inputs: CommandLineInpu
 export async function startAppScriptsServer(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
   return Promise.resolve();
 }
+export async function runAppScriptsBuild(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  return Promise.resolve();
+}

@@ -7,13 +7,13 @@ import { fsReadDir, Shell } from '@ionic/cli-utils';
  */
 export async function getProjectPlatforms(projectDir: string): Promise<string[]> {
   let platformDirContents: string[] = [];
-  let platformsDir = path.join(projectDir, 'plugins');
+  let platformsDir = path.join(projectDir, 'platforms');
 
   try {
     platformDirContents = await fsReadDir(platformsDir);
   } catch (e) {
     if (e.code === 'ENOENT') {
-      throw new Error(`No platforms have been added. '${platformsDir}'`);
+      return [];
     }
     throw e;
   }

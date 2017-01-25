@@ -4,7 +4,7 @@ import {
   ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON,
   fsReadJsonFile, CommandLineInputs,
   CommandLineOptions, Command, CommandMetadata,
-  TaskChain,
+  TaskChain
 } from '@ionic/cli-utils';
 
 import { ImageResource, SourceImage  } from '../definitions';

@@ -1,9 +1,11 @@
+import * as chalk from 'chalk';
 import {
   Command,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  Shell
+  Shell,
+  TaskChain
 } from '@ionic/cli-utils';
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { resetSrcContent } from '../lib/utils/configXmlUtils';
@@ -18,6 +20,8 @@ import { resetSrcContent } from '../lib/utils/configXmlUtils';
 export class CompileCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
 
+    var tasks = new TaskChain();
+
     // ensure the content node was set back to its original
     await resetSrcContent(this.env.project.directory);
 
@@ -25,6 +29,8 @@ export class CompileCommand extends Command {
      *
      */
     const optionList: string[] = filterArgumentsForCordova('compile', inputs, options);
+
+    tasks.next(`Executing cordova build: ${chalk.bold('cordova ' + optionList.join(' '))}`);
     await new Shell().run('cordova', optionList);
   }
 }

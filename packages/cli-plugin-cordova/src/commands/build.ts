@@ -1,10 +1,12 @@
 import * as os from 'os';
+import * as chalk from 'chalk';
 import {
   Command,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  Shell
+  Shell,
+  TaskChain
 } from '@ionic/cli-utils';
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { resetSrcContent } from '../lib/utils/configXmlUtils';
@@ -46,15 +48,19 @@ export class BuildCommand extends Command {
       return;
     }
 
+    var tasks = new TaskChain();
+
     await Promise.all([
       getProjectPlatforms(this.env.project.directory).then((platforms): Promise<string | void> => {
-        if (platforms.includes(runPlatform)) {
+        if (!platforms.includes(runPlatform)) {
+          tasks.next(`Installing the platform: ${chalk.bold('cordova platform add ' + runPlatform)}`);
           return installPlatform(runPlatform);
         }
         return Promise.resolve();
       }),
       arePluginsInstalled(this.env.project.directory).then((areInstalled): Promise<string[] | void> => {
         if (!areInstalled) {
+          tasks.next(`Installing the project plugins: ${chalk.bold('cordova plugin add --save <plugin>')}`);
           return installPlugins();
         }
         return Promise.resolve();
@@ -64,10 +70,11 @@ export class BuildCommand extends Command {
     // ensure the content node was set back to its original
     await resetSrcContent(this.env.project.directory);
 
-    /**
-     *
-     */
-    const optionList: string[] = filterArgumentsForCordova('build', inputs, options);
+    const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
+
+    tasks.next(`Executing cordova build: ${chalk.bold('cordova ' + optionList.join(' '))}`);
     await new Shell().run('cordova', optionList);
+
+    tasks.end();
   }
 }

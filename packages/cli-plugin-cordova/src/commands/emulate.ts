@@ -1,13 +1,19 @@
 import * as os from 'os';
+import * as chalk from 'chalk';
 import {
   Command,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  Shell
+  Shell,
+  TaskChain
 } from '@ionic/cli-utils';
 import { resetSrcContent } from '../lib/utils/configXmlUtils';
-import { startAppScriptsServer, filterArgumentsForCordova } from '../lib/utils/cordova';
+import {
+  runAppScriptsBuild,
+  startAppScriptsServer,
+  filterArgumentsForCordova
+  } from '../lib/utils/cordova';
 import {
   arePluginsInstalled,
   getProjectPlatforms,
@@ -84,18 +90,19 @@ export class EmulateCommand extends Command {
       return;
     }
 
-    filterArgumentsForCordova(this.metadata, inputs, options);
-
+    var tasks = new TaskChain();
 
     await Promise.all([
       getProjectPlatforms(this.env.project.directory).then((platforms): Promise<string | void> => {
-        if (platforms.includes(runPlatform)) {
+        if (!platforms.includes(runPlatform)) {
+          tasks.next(`Installing the platform: ${chalk.bold('cordova platform add ' + runPlatform)}`);
           return installPlatform(runPlatform);
         }
         return Promise.resolve();
       }),
       arePluginsInstalled(this.env.project.directory).then((areInstalled): Promise<string[] | void> => {
         if (!areInstalled) {
+          tasks.next(`Installing the project plugins: ${chalk.bold('cordova plugin add --save <plugin>')}`);
           return installPlugins();
         }
         return Promise.resolve();
@@ -106,17 +113,25 @@ export class EmulateCommand extends Command {
      * If it is not livereload then just run build.
      */
     if (!isLiveReload) {
-      // return npmScripts.runIonicScript('build', inputs, options);
-    }
 
-    // using app-scripts and livereload is requested
-    // Also remove commandName from the rawArgs passed
-    await startAppScriptsServer(inputs, options);
+      tasks.next(`Running app-scripts build`);
+      await runAppScriptsBuild(inputs, options);
+    } else {
+
+      // using app-scripts and livereload is requested
+      // Also remove commandName from the rawArgs passed
+      tasks.next(`Starting app-scripts server`);
+      await startAppScriptsServer(inputs, options);
+    }
 
     // ensure the content node was set back to its original
     await resetSrcContent(this.env.project.directory);
 
-    var optionList: string[] = filterArgumentsForCordova('emulate', inputs, options);
+    const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
+
+    tasks.next(`Executing cordova build: ${chalk.bold('cordova ' + optionList.join(' '))}`);
     await new Shell().run('cordova', optionList);
+
+    tasks.end();
   }
 }
