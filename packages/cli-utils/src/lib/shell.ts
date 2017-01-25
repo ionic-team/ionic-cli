@@ -19,7 +19,7 @@ export class Shell implements IShell {
 
   async run(command: string, args?: string[], options: IShellRunOptions = {}): Promise<string> {
     if (typeof options.show === 'undefined') {
-      options.show = true;
+      options.show = false;
     }
 
     if (typeof options.fatal === 'undefined') {
