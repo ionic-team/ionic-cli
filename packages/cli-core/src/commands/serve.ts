@@ -93,5 +93,7 @@ export class ServeCommand extends Command {
 
     tasks.next(`Starting app-scripts server`);
     await appScriptsServe(args);
+
+    tasks.end();
   }
 }
