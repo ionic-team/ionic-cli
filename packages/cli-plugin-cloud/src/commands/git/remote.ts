@@ -18,7 +18,7 @@ export class GitRemoteCommand extends Command {
     const regex = /ionic\t(.+) \(\w+\)/;
 
     // would like to use get-url, but not available in git 2.0.0
-    const remotes = await this.env.shell.run('git', ['remote', '-v'], { show: false });
+    const remotes = await this.env.shell.run('git', ['remote', '-v'], { showError: false });
 
     let found = false;
     let matches = true;

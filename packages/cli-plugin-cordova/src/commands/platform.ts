@@ -11,9 +11,7 @@ import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { resetSrcContent } from '../lib/utils/configXmlUtils';
 import {
   copyIconFilesIntoResources,
-  addIonicIcons,
-  savePlatform,
-  removePlatform
+  addIonicIcons
 } from '../lib/platform';
 
 /**
@@ -21,11 +19,15 @@ import {
  */
 @CommandMetadata({
   name: 'platform',
-  description: 'Add platform target for building an Ionic app',
+  description: 'Add or remove a platform target for building an Ionic app',
   inputs: [
     {
+      name: 'action',
+      description: 'Add or remove the platform',
+    },
+    {
       name: 'platform',
-      description: 'the platform that you would like to build',
+      description: 'the platform that you would like to build (ios, android)',
     }
   ],
   options: [
@@ -47,15 +49,17 @@ import {
 export class PlatformCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
 
-    const addResources = inputs.includes('add') && !(options['noresources']);
-    const platformName = inputs[0];
+    let action = inputs[0];
+    action = (action === 'rm') ? 'remove' : action;
 
+    const platformName = inputs[1];
     var tasks = new TaskChain();
 
     // ensure the content node was set back to its original
     await resetSrcContent(this.env.project.directory);
 
-    if (addResources) {
+    if (action === 'add' && !(options['noresources'])) {
+      tasks.next(`Copying default image resources into ${chalk.bold('/resources/' + platformName)}`);
       await copyIconFilesIntoResources(this.env.project.directory);
       await addIonicIcons(this.env.project.directory, platformName);
     }
@@ -63,21 +67,13 @@ export class PlatformCommand extends Command {
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
 
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
-    const runCode = await new Shell().run('cordova', optionList);
-
-    // We dont want to do anything if the cordova command failed
-    if (runCode !== '0' || options['nosave']) {
-      return;
+    try {
+      await new Shell().run('cordova', optionList, {
+        showExecution: (this.env.log.level === 'debug')
+      });
+    } catch (e) {
+      throw e;
     }
-
-    if (inputs.includes('add')) {
-      this.env.log.info('Saving platform to package.json file');
-      return savePlatform(this.env.project.directory, platformName);
-    }
-
-    if (inputs.includes('rm') || inputs.includes('remove')) {
-      this.env.log.info('Removing platform from package.json file');
-      return removePlatform(this.env.project.directory, platformName);
-    }
+    tasks.end();
   }
 }

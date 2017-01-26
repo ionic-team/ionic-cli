@@ -104,7 +104,8 @@ export interface ISession {
 }
 
 export interface IShellRunOptions extends child_process.SpawnOptions {
-  show?: boolean;
+  showExecution?: boolean;
+  showError?: boolean;
   fatal?: boolean;
 }
 

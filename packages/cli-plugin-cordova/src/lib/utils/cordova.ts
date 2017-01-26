@@ -19,7 +19,8 @@ export function filterArgumentsForCordova(metadata: any, inputs: CommandLineInpu
     '--serverlogs',
     '--port',
     '--livereload-port',
-    '--address'
+    '--address',
+    '--noresources' // platform
   ];
 
   const cleanOptions = args.filter(function(arg, index, fullList) {
