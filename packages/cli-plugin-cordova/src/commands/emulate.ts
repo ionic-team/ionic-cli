@@ -129,7 +129,7 @@ export class EmulateCommand extends Command {
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
 
-    tasks.next(`Executing cordova build: ${chalk.bold('cordova ' + optionList.join(' '))}`);
+    tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
     await new Shell().run('cordova', optionList);
 
     tasks.end();

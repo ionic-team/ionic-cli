@@ -1,12 +1,20 @@
+import * as chalk from 'chalk';
 import {
   Command,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  // Shell
+  Shell,
+  TaskChain
 } from '@ionic/cli-utils';
-// import { filterArgumentsForCordova } from '../lib/utils/cordova';
-// import { resetSrcContent } from '../lib/utils/configXmlUtils';
+import { filterArgumentsForCordova } from '../lib/utils/cordova';
+import { resetSrcContent } from '../lib/utils/configXmlUtils';
+import {
+  copyIconFilesIntoResources,
+  addIonicIcons,
+  savePlatform,
+  removePlatform
+} from '../lib/platform';
 
 /**
  * Metadata about the platform command
@@ -38,19 +46,23 @@ import {
 })
 export class PlatformCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    /*
-    const isAddCmd = inputs.includes('add');
-    const isRmCmd = inputs.includes('rm') || inputs.includes('remove');
-    const addResources = isAddCmd && !(options['noresources']);
+
+    const addResources = inputs.includes('add') && !(options['noresources']);
+    const platformName = inputs[0];
+
+    var tasks = new TaskChain();
 
     // ensure the content node was set back to its original
     await resetSrcContent(this.env.project.directory);
 
     if (addResources) {
-      await IonicResources.copyIconFilesIntoResources(appDirectory)
-      await IonicResources.addIonicIcons(appDirectory, argumentName);
+      await copyIconFilesIntoResources(this.env.project.directory);
+      await addIonicIcons(this.env.project.directory, platformName);
     }
-    const optionList: string[] = filterArgumentsForCordova('platform', inputs, options);
+
+    const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
+
+    tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
     const runCode = await new Shell().run('cordova', optionList);
 
     // We dont want to do anything if the cordova command failed
@@ -58,15 +70,14 @@ export class PlatformCommand extends Command {
       return;
     }
 
-    if (isAddCmd) {
+    if (inputs.includes('add')) {
       this.env.log.info('Saving platform to package.json file');
-      return State.savePlatform(appDirectory, argumentName);
+      return savePlatform(this.env.project.directory, platformName);
     }
 
-    if (isRmCmd) {
+    if (inputs.includes('rm') || inputs.includes('remove')) {
       this.env.log.info('Removing platform from package.json file');
-      return State.removePlatform(appDirectory, argumentName);
+      return removePlatform(this.env.project.directory, platformName);
     }
-    */
   }
 }
