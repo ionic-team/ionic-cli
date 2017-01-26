@@ -7,8 +7,10 @@ import { STRIP_ANSI_REGEX } from './format';
  *
  */
 export function formatCommandHelp(cmdMetadata: CommandData): string {
+  let description = cmdMetadata.description.split('\n').join('\n  ');
+
   return `
-  ${chalk.bold(cmdMetadata.description)}
+  ${chalk.bold(description)}
   ${formatUsage(cmdMetadata)}${cmdMetadata.options ? formatOptions(cmdMetadata.options) : ''}${formatExamples(cmdMetadata)}
   `;
 }
