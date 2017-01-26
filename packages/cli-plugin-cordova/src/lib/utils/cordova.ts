@@ -9,7 +9,6 @@ import {
  * Filter and gather arguments from command line to be passed to Cordova
  */
 export function filterArgumentsForCordova(metadata: any, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
-
   const results = normalizeOptionAliases(metadata, options);
   const args = minimistOptionsToArray(metadata, results);
 
@@ -23,13 +22,15 @@ export function filterArgumentsForCordova(metadata: any, inputs: CommandLineInpu
     '--address'
   ];
 
-  return args.filter(function(arg, index, fullList) {
+  const cleanOptions = args.filter(function(arg, index, fullList) {
 
     // Only return true if the arg is not found in the ignore Cmds list
     return ignoreCmds.every(ignoreCmd => {
       return arg.search(ignoreCmd) !== 0;
     });
   });
+
+  return [metadata.name].concat(inputs, cleanOptions);
 }
 
 export async function startAppScriptsServer(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
