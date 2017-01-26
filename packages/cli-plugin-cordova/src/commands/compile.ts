@@ -25,19 +25,13 @@ export class CompileCommand extends Command {
     // ensure the content node was set back to its original
     await resetSrcContent(this.env.project.directory);
 
-    /**
-     *
-     */
-    const optionList: string[] = filterArgumentsForCordova('compile', inputs, options);
+    const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
 
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
-    try {
-      await new Shell().run('cordova', optionList, {
-        showExecution: (this.env.log.level === 'debug')
-      });
-    } catch (e) {
-      throw e;
-    }
+    await new Shell().run('cordova', optionList, {
+      showExecution: (this.env.log.level === 'debug')
+    });
+
     tasks.end();
   }
 }

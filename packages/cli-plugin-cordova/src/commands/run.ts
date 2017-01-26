@@ -109,20 +109,19 @@ export class RunCommand extends Command {
       })
     ]);
 
-
     /**
      * If it is not livereload then just run build.
      */
     if (!isLiveReload) {
 
       tasks.next(`Running app-scripts build`);
-      await runAppScriptsBuild(inputs, options);
+      await runAppScriptsBuild(this.metadata, inputs, options);
     } else {
 
       // using app-scripts and livereload is requested
       // Also remove commandName from the rawArgs passed
       tasks.next(`Starting app-scripts server`);
-      await startAppScriptsServer(inputs, options);
+      await startAppScriptsServer(this.metadata, inputs, options);
     }
 
     // ensure the content node was set back to its original
@@ -130,7 +129,11 @@ export class RunCommand extends Command {
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
 
-    tasks.next(`Executing cordova build: ${chalk.bold('cordova ' + optionList.join(' '))}`);
-    await new Shell().run('cordova', optionList);
+    tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
+    await new Shell().run('cordova', optionList, {
+      showExecution: (this.env.log.level === 'debug')
+    });
+
+    tasks.end();
   }
 }

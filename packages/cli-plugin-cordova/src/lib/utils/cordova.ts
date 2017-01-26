@@ -1,4 +1,11 @@
+import { setSrcContent } from './configXmlUtils';
 import {
+  appScriptsServe,
+  appScriptsBuild
+} from './appScripts';
+
+import {
+  CommandData,
   CommandLineInputs,
   CommandLineOptions,
   normalizeOptionAliases,
@@ -8,7 +15,7 @@ import {
 /**
  * Filter and gather arguments from command line to be passed to Cordova
  */
-export function filterArgumentsForCordova(metadata: any, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
+export function filterArgumentsForCordova(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
   const results = normalizeOptionAliases(metadata, options);
   const args = minimistOptionsToArray(metadata, results);
 
@@ -19,8 +26,7 @@ export function filterArgumentsForCordova(metadata: any, inputs: CommandLineInpu
     '--serverlogs',
     '--port',
     '--livereload-port',
-    '--address',
-    '--noresources' // platform
+    '--address'
   ];
 
   const cleanOptions = args.filter(function(arg, index, fullList) {
@@ -34,9 +40,26 @@ export function filterArgumentsForCordova(metadata: any, inputs: CommandLineInpu
   return [metadata.name].concat(inputs, cleanOptions);
 }
 
-export async function startAppScriptsServer(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-  return Promise.resolve();
+/**
+ * Start the app scripts server for emulator or device
+ */
+export async function startAppScriptsServer(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  const results = normalizeOptionAliases(metadata, options);
+  let args = minimistOptionsToArray(metadata, results);
+
+  // Serve specific options not related to the actual run or emulate code
+  args = args.concat([
+    '--iscordovaserve',
+    '--nobrowser'
+  ]);
+
+  const serveSettings = await appScriptsServe(args);
+  await setSrcContent(process.cwd(), serveSettings.url);
 }
-export async function runAppScriptsBuild(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-  return Promise.resolve();
+
+export async function runAppScriptsBuild(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  const results = normalizeOptionAliases(metadata, options);
+  let args = minimistOptionsToArray(metadata, results);
+
+  await appScriptsBuild(args);
 }

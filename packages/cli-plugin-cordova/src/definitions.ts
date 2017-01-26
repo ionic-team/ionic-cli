@@ -29,3 +29,10 @@ export interface ImageUploadResponse {
   Type: string;
   Vector: boolean;
 }
+
+export interface AppScriptsServeSettings {
+  url: string;
+  address: string;
+  port: number;
+  liveReloadPort: number;
+}
