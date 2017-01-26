@@ -1,15 +1,12 @@
 import { setSrcContent } from './configXmlUtils';
 import {
-  appScriptsServe,
-  appScriptsBuild
-} from './appScripts';
-
-import {
   CommandData,
   CommandLineInputs,
   CommandLineOptions,
   normalizeOptionAliases,
-  minimistOptionsToArray
+  minimistOptionsToArray,
+  appScriptsServe,
+  appScriptsBuild
 } from '@ionic/cli-utils';
 
 /**

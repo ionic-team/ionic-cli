@@ -27,6 +27,13 @@ export interface ILogger {
   msg: Function;
 }
 
+export interface AppScriptsServeSettings {
+  url: string;
+  address: string;
+  port: number;
+  liveReloadPort: number;
+}
+
 export interface ProjectFile {
   name: string;
   app_id: string;

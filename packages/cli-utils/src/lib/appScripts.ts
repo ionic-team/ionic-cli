@@ -1,4 +1,4 @@
-import { AppScriptsServeSettings } from '../../definitions';
+import { AppScriptsServeSettings } from '../definitions';
 
 /**
  * TODO: Expect app-scripts to hand back the ports being used.

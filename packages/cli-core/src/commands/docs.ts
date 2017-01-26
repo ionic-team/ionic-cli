@@ -1,5 +1,11 @@
-import { getIonicInfo, CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from '@ionic/cli-utils';
 import * as opn from 'opn';
+import {
+  getIonicInfo,
+  CommandLineInputs,
+  CommandLineOptions,
+  Command,
+  CommandMetadata
+} from '@ionic/cli-utils';
 
 /**
  * Metadata about the docs command
