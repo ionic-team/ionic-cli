@@ -1,4 +1,13 @@
-import { CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from '@ionic/cli-utils';
+import {
+  CommandLineInputs,
+  CommandLineOptions,
+  Command,
+  CommandMetadata,
+  appScriptsServe,
+  normalizeOptionAliases,
+  minimistOptionsToArray,
+  TaskChain
+} from '@ionic/cli-utils';
 
 @CommandMetadata({
   name: 'serve',
@@ -76,6 +85,13 @@ import { CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from 
 })
 export class ServeCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    this.env.log.msg(inputs, options);
+
+    var tasks = new TaskChain();
+
+    const results = normalizeOptionAliases(this.metadata, options);
+    let args = minimistOptionsToArray(this.metadata, results);
+
+    tasks.next(`Starting app-scripts server`);
+    await appScriptsServe(args);
   }
 }
