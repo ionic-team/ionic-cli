@@ -51,6 +51,7 @@
     "testRegex": "/__tests__/.*\\.(ts|js)$"
   },
   "dependencies": {
+    "@ionic/app-generators": "0.0.4",
     "opn": "^4.0.2"
   }
 }
