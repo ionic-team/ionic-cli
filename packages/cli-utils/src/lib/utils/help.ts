@@ -18,7 +18,7 @@ export function formatCommandHelp(cmdMetadata: CommandData): string {
 function formatUsage({ name, inputs }: CommandData): string {
   const headerLine = chalk.bold(`Usage`);
   const usageLine =
-      `$ ${name} ${
+      `$ ionic ${name} ${
         (inputs || []).map(command => '<' + command.name + '>').join(' ')}`;
 
   return `
@@ -54,13 +54,17 @@ function formatOptions(options: CommandOption[]): string {
   `;
 }
 
-function formatExamples({ name, inputs }: CommandData): string {
-  let headerLine = chalk.bold(`Examples`);
-  let exampleLine =
-    `$ ${name} ${(inputs || []).map(command => command.name).join(' ')}`;
+function formatExamples({ name, exampleCommands }: CommandData): string {
+  if (!Array.isArray(exampleCommands)) {
+    return '';
+  }
+
+  const headerLine = chalk.bold(`Examples`);
+  const exampleLines = exampleCommands.map(cmd => `$ ionic ${name} ${cmd} `);
 
   return `
     ${headerLine}
-      ${exampleLine}
+      ${exampleLines.join(`
+      `)}
   `;
 }

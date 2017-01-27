@@ -99,6 +99,7 @@ export interface CommandInput {
 export interface CommandData {
   name: string;
   description: string;
+  exampleCommands?: string[];
   aliases?: string[];
   inputs?: CommandInput[];
   options?: CommandOption[];

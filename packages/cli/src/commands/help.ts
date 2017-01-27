@@ -13,6 +13,7 @@ import { resolvePlugin } from '../lib/plugins';
 @CommandMetadata({
   name: 'help',
   description: 'Provides help for a certain command',
+  exampleCommands: ['start'],
   inputs: [
     {
       name: 'command',

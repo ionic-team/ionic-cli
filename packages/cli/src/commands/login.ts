@@ -4,6 +4,7 @@ import { validators } from '@ionic/cli-utils';
 @CommandMetadata({
   name: 'login',
   description: 'Login with your Ionic ID',
+  exampleCommands: ['john@example.com'],
   inputs: [
     {
       name: 'email',

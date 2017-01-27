@@ -12,6 +12,7 @@ import {
 @CommandMetadata({
   name: 'serve',
   description: 'Start a local development server for app dev/testing',
+  exampleCommands: ['--lab --consolelogs -s'],
   options: [
     {
       name: 'consolelogs',

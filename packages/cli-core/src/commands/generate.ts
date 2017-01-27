@@ -15,6 +15,7 @@ import * as appGenerator from '@ionic/app-generators';
   name: 'generate',
   aliases: ['g'],
   description: 'Genarete pages and components',
+  exampleCommands: ['page thingsList --skipScss --componentsDir="src/components"'],
   inputs: [
     {
       name: 'generator',
@@ -30,53 +31,53 @@ import * as appGenerator from '@ionic/app-generators';
       name: 'list',
       description: 'List available generators',
       type: Boolean,
-      default: true
+      default: false
     },
     {
       name: 'includeSpec',
       description: 'Create test spec basic to pages, components, directives, pipes and providers',
       type: Boolean,
-      default: true
+      default: false
     },
     {
       name: 'skipScss',
-      description: 'Not create scss for components and pages',
+      description: 'Do not create scss for components and pages',
       type: Boolean,
-      default: true
+      default: false
     },
     {
       name: 'componentsDir',
-      description: 'Path directory target is created component',
+      description: 'Project path where the component should be created',
       default: path.join('src', 'components'),
       type: String
     },
     {
       name: 'directivesDir',
-      description: 'Path directory target is created component',
+      description: 'Project path where the directive should be created',
       default: path.join('src', 'components'),
       type: String
     },
     {
       name: 'pagesDir',
-      description: 'Path directory target is created page',
+      description: 'Project path where the page should be created',
       default: path.join('src', 'pages'),
       type: String
     },
     {
       name: 'pipesDir',
-      description: 'Path directory target is created pipe',
+      description: 'Project path where the pipe should be created',
       default: path.join('src', 'pipes'),
       type: String
     },
     {
       name: 'providersDir',
-      description: 'Path directory target is created provider',
+      description: 'Project path where the provider should be created',
       default: path.join('src', 'providers'),
       type: String
     },
     {
       name: 'templateDir',
-      description: 'Path directory templates custom to pages, components, directives, pipes and providers',
+      description: 'Project path for templates custom to pages, components, directives, pipes and providers',
       default: path.join('node_modules', 'ionic-angular', 'templates'),
       type: String
     }
