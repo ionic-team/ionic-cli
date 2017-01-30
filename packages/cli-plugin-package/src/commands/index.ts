@@ -3,7 +3,7 @@ import { INamespaceMap, Namespace, NamespaceMap } from '@ionic/cli-utils';
 import { GitNamespace } from './git';
 import { SSHNamespace } from './ssh';
 
-export class CloudNamespace extends Namespace {
+export class AppsNamespace extends Namespace {
   public name: 'cloud';
 
   getNamespaces(): INamespaceMap {

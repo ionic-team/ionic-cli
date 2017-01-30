@@ -1,14 +1,14 @@
 import { getCommandMetadataList, createCommandEnvironment, runCommand } from '@ionic/cli-utils';
-import { CloudNamespace } from './commands';
+import { AppsNamespace } from './commands';
 
 export async function run(pargv: string[], env: { [k: string]: string }): Promise<void>  {
-  const cloudNamespace = new CloudNamespace();
-  const commandEnvironment = await createCommandEnvironment(pargv, env, cloudNamespace);
+  const appsNamespace = new AppsNamespace();
+  const commandEnvironment = await createCommandEnvironment(pargv, env, appsNamespace);
 
   await runCommand(commandEnvironment);
 }
 
 export function getAllCommandMetadata(): any[] {
-  const cloudNamespace = new CloudNamespace();
-  return getCommandMetadataList(cloudNamespace);
+  const appsNamespace = new AppsNamespace();
+  return getCommandMetadataList(appsNamespace);
 }

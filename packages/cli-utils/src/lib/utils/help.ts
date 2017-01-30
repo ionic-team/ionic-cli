@@ -1,6 +1,7 @@
 import * as chalk from 'chalk';
 
-import { CommandData, CommandOption } from '../../definitions';
+import { CommandData, CommandInput, CommandOption } from '../../definitions';
+import { validators } from '../validators';
 import { STRIP_ANSI_REGEX } from './format';
 
 /**
@@ -11,7 +12,8 @@ export function formatCommandHelp(cmdMetadata: CommandData): string {
 
   return `
   ${chalk.bold(description)}
-  ${formatUsage(cmdMetadata)}${cmdMetadata.options ? formatOptions(cmdMetadata.options) : ''}${formatExamples(cmdMetadata)}
+  ${formatUsage(cmdMetadata)}${formatInputs(cmdMetadata.inputs)}${formatOptions(cmdMetadata.options)}${formatExamples(cmdMetadata)}
+
   `;
 }
 
@@ -19,7 +21,14 @@ function formatUsage({ name, inputs }: CommandData): string {
   const headerLine = chalk.bold(`Usage`);
   const usageLine =
       `$ ionic ${name} ${
-        (inputs || []).map(command => '<' + command.name + '>').join(' ')}`;
+        (inputs || [])
+          .map(input => {
+            if (input.validators && input.validators.includes(validators.required)) {
+              return '<' + input.name + '>';
+            }
+            return '[' + input.name + ']';
+          })
+          .join(' ')}`;
 
   return `
     ${headerLine}
@@ -27,7 +36,29 @@ function formatUsage({ name, inputs }: CommandData): string {
   `;
 }
 
-function formatOptions(options: CommandOption[]): string {
+function formatInputs(inputs?: CommandInput[]): string {
+  if (!Array.isArray(inputs) || inputs.length === 0) {
+    return '';
+  }
+
+  const headerLine = chalk.bold(`Inputs`);
+
+  function inputLineFn({ name, description}: CommandOption) {
+    const optionList = chalk.green(`${name}`);
+    const optionListLength = optionList.replace(STRIP_ANSI_REGEX, '').length;
+    const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
+
+    return `${optionList} ${Array(fullLength - optionListLength).join('.')} ${description}`;
+  };
+
+  return `
+    ${headerLine}
+      ${inputs.map(inputLineFn).join(`
+      `)}
+  `;
+}
+
+function formatOptions(options?: CommandOption[]): string {
   if (!Array.isArray(options) || options.length === 0) {
     return '';
   }
