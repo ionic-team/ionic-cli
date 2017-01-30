@@ -17,7 +17,9 @@ interface LoginResponse extends APIResponseSuccess {
   data: {
     token: string;
   };
-} interface AuthTokenResponse extends APIResponseSuccess {
+}
+
+interface AuthTokenResponse extends APIResponseSuccess {
   data: {
     token: string;
     details: {
@@ -39,7 +41,7 @@ function isAuthTokenResponse(r: APIResponse): r is AuthTokenResponse {
     return false;
   }
 
-  if (typeof res.data[0] === 'object') {
+  if (res.data.length > 0) {
     return typeof res.data[0].token === 'string'
       && typeof res.data[0].details === 'object'
       && typeof res.data[0].details.app_id === 'string'
