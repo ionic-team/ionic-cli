@@ -85,8 +85,6 @@ export class LinkCommand extends Command {
         throw createFatalAPIFormat(req, res);
       }
 
-      const app = res.data;
-
       if (project.app_id) {
         const confirmation = await this.env.inquirer.prompt({
           type: 'confirm',

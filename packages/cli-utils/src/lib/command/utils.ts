@@ -9,7 +9,8 @@ import {
   CommandOptionType,
   CommandOptionTypeDefaults,
   NormalizedCommandOption,
-  Validator
+  Validator,
+  ValidationError
 } from '../../definitions';
 
 import { validators, combine as combineValidators } from '../validators';
@@ -134,6 +135,7 @@ export function validateInputs(argv: string[], metadata: CommandData) {
   for (let i in metadata.inputs) {
     const input = metadata.inputs[i];
     const skip = new Set<Validator>();
+    const errors = [];
 
     if (input.prompt) {
       skip.add(validators.required);
@@ -152,9 +154,15 @@ export function validateInputs(argv: string[], metadata: CommandData) {
           let r = validator(argv[i], input.name);
 
           if (r !== true) {
-            throw r;
+            errors.push(<ValidationError>{
+              message: r.toString(),
+              inputName: input.name
+            });
           }
         }
+      }
+      if (errors.length > 0) {
+        throw errors;
       }
     }
   }

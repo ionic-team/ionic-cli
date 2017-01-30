@@ -55,6 +55,7 @@
   "dependencies": {
     "form-data": "^2.1.2",
     "node-fetch": "^1.6.3",
-    "xml2js": "^0.4.17"
+    "xml2js": "^0.4.17",
+    "@ionic/cli-utils": "^0.0.1"
   }
 }

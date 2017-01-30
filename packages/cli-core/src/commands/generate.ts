@@ -1,12 +1,13 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
 import {
-  formatCommandHelp,
   CommandLineInputs,
   CommandLineOptions,
   Command,
   CommandMetadata,
-  TaskChain
+  TaskChain,
+  validators,
+  ValidationError
 } from '@ionic/cli-utils';
 
 import * as appGenerator from '@ionic/app-generators';
@@ -20,10 +21,12 @@ import * as appGenerator from '@ionic/app-generators';
     {
       name: 'generator',
       description: 'The generator that you would like to use',
+      validators: [validators.required]
     },
     {
       name: 'name',
       description: 'The name that you like for the file',
+      validators: [validators.required]
     }
   ],
   options: [
@@ -84,13 +87,17 @@ import * as appGenerator from '@ionic/app-generators';
   ]
 })
 export class GenerateCommand extends Command {
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    // If there are no inputs then show help command help.
-    if (inputs.length === 0) {
-      this.env.log.error('Invalid number of arguments.');
-      return this.env.log.msg(formatCommandHelp(this.metadata));
+  async run(inputs: CommandLineInputs, options: CommandLineOptions, validationErrors: ValidationError[]): Promise<void> {
+
+    if (options['list']) {
+      appGenerator.printAvailableGenerators();
+      return;
     }
 
+    if (validationErrors.length > 0) {
+      this.env.log.error(validationErrors.map(err => err.message).join('\n'));
+      return;
+    }
 
     var generatorOptions = {
       generatorType: inputs[0],

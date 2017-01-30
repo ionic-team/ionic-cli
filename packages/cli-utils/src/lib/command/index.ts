@@ -1,4 +1,3 @@
-import * as chalk from 'chalk';
 import * as superagent from 'superagent';
 import * as minimist from 'minimist';
 
@@ -9,7 +8,8 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   ICommand,
-  INamespace
+  INamespace,
+  ValidationError
 } from '../../definitions';
 
 import { FatalException } from '../errors';
@@ -30,11 +30,12 @@ export class Command implements ICommand {
   async load(): Promise<void> {}
   async unload(): Promise<void> {}
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
+  async run(inputs: CommandLineInputs, options: CommandLineOptions, validationErrors: ValidationError[]): Promise<void | number> {}
 
   async execute(inputs?: CommandLineInputs): Promise<void> {
     const options = metadataToMinimistOptions(this.metadata);
     const argv = minimist(this.env.pargv, options);
+    let validationErrors: ValidationError[] = [];
 
     if (inputs) {
       argv._ = inputs;
@@ -42,14 +43,14 @@ export class Command implements ICommand {
 
     try {
       validateInputs(argv._, this.metadata);
+
     } catch (e) {
-      console.error(chalk.red('>> ') + e);
-      return;
+      validationErrors = e;
     }
 
     await collectInputs(argv._, this.metadata);
 
-    const r = await this.run(argv._, argv);
+    const r = await this.run(argv._, argv, validationErrors);
 
     if (typeof r === 'number' && r > 0) {
       throw this.exit('', r);

@@ -82,6 +82,11 @@ export interface Validators {
   email: Validator;
 }
 
+export interface ValidationError {
+  message: string;
+  inputName: string;
+}
+
 export interface CommandInputPrompt {
   type?: string;
   message?: string;
@@ -208,7 +213,7 @@ export interface ICommand {
 
   load(): Promise<void>;
   unload(): Promise<void>;
-  run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
+  run(inputs: CommandLineInputs, options: CommandLineOptions, validationErrors: ValidationError[]): Promise<void | number>;
   execute(inputs?: CommandLineInputs): Promise<void>;
 }
 
