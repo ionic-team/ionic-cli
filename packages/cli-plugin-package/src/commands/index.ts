@@ -1,16 +1,20 @@
-import { INamespaceMap, Namespace, NamespaceMap } from '@ionic/cli-utils';
+import { Namespace, CommandMap, ICommandMap } from '@ionic/cli-utils';
 
-import { GitNamespace } from './git';
-import { SSHNamespace } from './ssh';
+import { BuildCommand } from './build';
+import { ListCommand } from './list';
+import { DownloadCommand } from './download';
+import { InfoCommand } from './info';
 
-export class AppsNamespace extends Namespace {
+export class PackageNamespace extends Namespace {
   public name: 'cloud';
 
-  getNamespaces(): INamespaceMap {
-    let m = new NamespaceMap();
+  getCommands(): ICommandMap {
+    let m = new CommandMap();
 
-    m.set('git', new GitNamespace());
-    m.set('ssh', new SSHNamespace());
+    m.set('build', new BuildCommand());
+    m.set('list', new ListCommand());
+    m.set('download', new DownloadCommand());
+    m.set('info', new InfoCommand());
 
     return m;
   }
