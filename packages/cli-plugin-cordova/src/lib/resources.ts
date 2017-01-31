@@ -31,7 +31,7 @@ import {
 const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];
 const UPLOAD_URL = 'http://res.ionic.io/api/v1/upload';
 const TRANSFORM_URL = 'http://res.ionic.io/api/v1/transform';
-const DEFAULT_RESOURCES_DIR = path.resolve(__dirname, '..', 'default-resources');
+const DEFAULT_RESOURCES_DIR = path.resolve(__dirname, '..', '..', 'default-resources');
 
 /**
  * Take the JSON structure for resources.json and turn it into a flat array
@@ -209,20 +209,26 @@ function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
 }
 
 export async function addDefaultImagesToResources(projectDirectory: string, platform: KnownPlatform): Promise<any> {
-  const resourcesDir = path.resolve(projectDirectory, 'resources');
-  await copyDirectory(path.resolve(DEFAULT_RESOURCES_DIR, platform), resourcesDir);
+
+  // Copy default resources into the platform directory
+  const resourcesDir = path.resolve(projectDirectory, 'resources', platform);
+  const platformResourceDir = path.resolve(DEFAULT_RESOURCES_DIR, platform);
+  await fsMkdirp(platformResourceDir);
+  await copyDirectory(platformResourceDir, resourcesDir);
 
   let configJson = await parseConfigXml(projectDirectory);
   const resourceJson = await getResourceConfigJson();
 
-  if (!configJson.widget.platform ||
-      (configJson.widget.platform.length === 1 && configJson.widget.platform[0]['$'].name !== platform)) {
-    configJson = addPlatformImages(configJson, platform, {
-      icon: resourceJson[platform]['icon'].images,
-      splash: resourceJson[platform]['splash'].images
-    });
-    configJson = addSplashScreenPreferences(configJson);
-
-    return writeConfigXml(projectDirectory, configJson);
+  if (!configJson.widget.platform || configJson.widget.platform.length === 0 ||
+    !configJson.widget.platform.find((pl: any) => pl['$'].name === platform)) {
+    return;
   }
+
+  configJson = addPlatformImages(configJson, platform, {
+    icon: resourceJson[platform]['icon'].images,
+    splash: resourceJson[platform]['splash'].images
+  });
+  configJson = addSplashScreenPreferences(configJson);
+
+  return writeConfigXml(projectDirectory, configJson);
 }

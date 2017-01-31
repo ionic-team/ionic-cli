@@ -21,11 +21,9 @@ export function loadPlugin(projectDir: string, name: string): any {
     var mPath = require.resolve(path.join(projectDir, 'node_modules', '@ionic', `${PREFIX}${name}`));
     m = require(mPath);
   } catch (e) {
-    console.log(e);
     if (e.code === 'MODULE_NOT_FOUND') {
       throw ERROR_PLUGIN_NOT_FOUND;
     }
-
     throw e;
   }
 

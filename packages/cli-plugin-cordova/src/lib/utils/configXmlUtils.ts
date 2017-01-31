@@ -40,16 +40,15 @@ export function addPlatformImages(configData: any, platform: KnownPlatform, imag
   function createImageElement(platform: KnownPlatform, resourceType: string) {
     return (image: ResourcesImageConfig) => {
       var iconDir = ['resources', platform, resourceType, image.name].join('/');
-      let resource: any;
       if (platform === 'android') {
-        resource = {
-            $: {
+        return {
+          $: {
             src: iconDir,
             density: image.density
           }
         };
-    } else {
-        resource = {
+      } else {
+        return {
           $: {
             src: iconDir,
             width: image.width,
@@ -60,18 +59,9 @@ export function addPlatformImages(configData: any, platform: KnownPlatform, imag
     };
   }
 
-  let platElem = {
-    $: {
-      name: platform
-    },
-    icon: images['icon'].map(createImageElement(platform, 'icon')),
-    splash: images['splash'].map(createImageElement(platform, 'splash'))
-  };
-
-  if (!configContents.widget.platform) {
-    configContents.widget.platform = [];
-  }
-  configContents.widget.platform.push(platElem);
+  const platformIndex = configContents.widget.platform.findIndex((pl: any) => pl['$'].name === platform);
+  configContents.widget.platform[platformIndex].icon = images['icon'].map(createImageElement(platform, 'icon'));
+  configContents.widget.platform[platformIndex].splash = images['splash'].map(createImageElement(platform, 'splash'));
 
   return configContents;
 }

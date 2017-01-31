@@ -69,6 +69,13 @@ export class PlatformCommand extends Command {
     // ensure the content node was set back to its original
     await resetSrcContent(this.env.project.directory);
 
+    const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
+
+    tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
+    await new Shell().run('cordova', optionList, {
+      showExecution: (this.env.log.level === 'debug')
+    });
+
     if (action === 'add' && !(options['noresources']) && ['ios', 'android', 'wp8'].includes(platformName)) {
       tasks.next(`Copying default image resources into ${chalk.bold('/resources/' + platformName)}`);
       try {
@@ -77,13 +84,6 @@ export class PlatformCommand extends Command {
         throw e;
       }
     }
-
-    const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
-
-    tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
-    await new Shell().run('cordova', optionList, {
-      showExecution: (this.env.log.level === 'debug')
-    });
 
     tasks.end();
   }
