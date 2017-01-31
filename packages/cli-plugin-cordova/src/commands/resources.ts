@@ -8,7 +8,12 @@ import {
   TaskChain
 } from '@ionic/cli-utils';
 
-import { ImageResource, SourceImage  } from '../definitions';
+import {
+  ImageResource,
+  SourceImage,
+  ResourcesConfig,
+  ResourcesImageConfig
+} from '../definitions';
 import { getProjectPlatforms } from '../lib/utils/setup';
 import { parseConfigXml } from '../lib/utils/configXmlUtils';
 import {
@@ -18,7 +23,8 @@ import {
   findMostSpecificImage,
   uploadSourceImages,
   generateResourceImage,
-  getResourceConfigJson
+  getResourceConfigJson,
+  addResourcesToConfigXml
 } from '../lib/resources';
 
 
@@ -194,14 +200,50 @@ export class ResourcesCommand extends Command {
       });
     });
 
-    const generateImageResponses = await Promise.all(promiseList);
-
-
-    task.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
-    this.env.log.debug(`${chalk.green('generateResourceImage')} completed - responses=${JSON.stringify(generateImageResponses, null, 2)}`);
+    try {
+      const generateImageResponses = await Promise.all(promiseList);
+      task.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
+      this.env.log.debug(`${chalk.green('generateResourceImage')} completed - responses=${JSON.stringify(generateImageResponses, null, 2)}`);
+    } catch (e) {
+      throw e;
+    }
 
 
     // TODO: UPDATE CONFIG.XML DATA
+    tasks.next(`Modify config.xml to add new image resources`);
+    try {
+      await addResourcesToConfigXml(this.env.project.directory, [], imgResources.reduce((rc, img) => {
+        if (!rc[img.platform]) {
+          rc[img.platform] = {
+            [img.resType]: {
+              images: [],
+              nodeName: '',
+              nodeAttributes: []
+            }
+          };
+        }
+        if (!rc[img.platform][img.resType]) {
+          rc[img.platform][img.resType] = {
+            images: [],
+            nodeName: '',
+            nodeAttributes: []
+          };
+        }
+        rc[img.platform][img.resType].images.push(<ResourcesImageConfig>{
+          name: img.name,
+          width: img.width,
+          height: img.height,
+          density: img.density || null
+        });
+        rc[img.platform][img.resType].nodeName = img.nodeName;
+        rc[img.platform][img.resType].nodeAttributes = img.nodeAttributes;
+
+        return rc;
+      }, <ResourcesConfig>{}));
+    } catch (e) {
+        throw e;
+    }
+
 
     tasks.end();
     /**

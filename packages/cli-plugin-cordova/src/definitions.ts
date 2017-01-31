@@ -39,13 +39,8 @@ export interface ImageUploadResponse {
 
 export interface ResourcesConfig {
   [propName: string]: {
-    icon: {
+    [imgType: string]: {
       images: ResourcesImageConfig[],
-      nodeName: string,
-      nodeAttributes: string[]
-    },
-    splash: {
-      images: ResourcesImageConfig[]
       nodeName: string,
       nodeAttributes: string[]
     }

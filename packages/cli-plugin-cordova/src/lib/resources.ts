@@ -155,12 +155,16 @@ export async function uploadSourceImages(srcImages: SourceImage[]): Promise<Imag
       form.append('image_id', srcImage.imageId);
       form.append('src', fs.createReadStream(srcImage.path));
 
-      const response = await fetch(UPLOAD_URL, {
-        method: 'POST',
-        body: form
-      });
-
-      return response.json();
+      try {
+        const response = await fetch(UPLOAD_URL, {
+          method: 'POST',
+          body: form
+        });
+        return response.json();
+      } catch (e) {
+        console.log(JSON.stringify(e, null, 2));
+        throw e;
+      }
     })
   );
 }
@@ -208,6 +212,9 @@ function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
   });
 }
 
+/**
+ *
+ */
 export async function addDefaultImagesToResources(projectDirectory: string, platform: KnownPlatform): Promise<any> {
 
   // Copy default resources into the platform directory
@@ -216,19 +223,28 @@ export async function addDefaultImagesToResources(projectDirectory: string, plat
   await fsMkdirp(platformResourceDir);
   await copyDirectory(platformResourceDir, resourcesDir);
 
-  let configJson = await parseConfigXml(projectDirectory);
   const resourceJson = await getResourceConfigJson();
 
-  if (!configJson.widget.platform || configJson.widget.platform.length === 0 ||
-    !configJson.widget.platform.find((pl: any) => pl['$'].name === platform)) {
-    return;
+  return addResourcesToConfigXml(projectDirectory, [platform], resourceJson);
+}
+
+export async function addResourcesToConfigXml(projectDirectory: string, platformList: KnownPlatform[], resourceJson: ResourcesConfig): Promise<any> {
+  let configJson = await parseConfigXml(projectDirectory);
+
+  if (!configJson.widget.platform || configJson.widget.platform.length === 0) {
+    throw `Config.xml does not contain a platform entry.`;
   }
 
-  configJson = addPlatformImages(configJson, platform, {
-    icon: resourceJson[platform]['icon'].images,
-    splash: resourceJson[platform]['splash'].images
+  platformList.forEach((platform) => {
+    if (!configJson.widget.platform.find((pl: any) => pl['$'].name === platform)) {
+      throw `Config.xml does not contain an entry for ${platform}`;
+    }
+    configJson = addPlatformImages(configJson, platform, {
+      icon: resourceJson[platform]['icon'].images,
+      splash: resourceJson[platform]['splash'].images
+    });
+    configJson = addSplashScreenPreferences(configJson);
   });
-  configJson = addSplashScreenPreferences(configJson);
 
   return writeConfigXml(projectDirectory, configJson);
 }
