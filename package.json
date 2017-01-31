@@ -4,6 +4,7 @@
   "devDependencies": {
     "@types/chalk": "^0.4.30",
     "@types/diff": "0.0.31",
+    "@types/form-data": "0.0.33",
     "@types/inquirer": "0.0.31",
     "@types/jest": "^16.0.1",
     "@types/lodash": "^4.14.38",

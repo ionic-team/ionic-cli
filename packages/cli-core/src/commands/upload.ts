@@ -1,29 +1,34 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import * as superagent from 'superagent';
-import * as chalk from 'chalk';
 import * as archiver from 'archiver';
+import * as chalk from 'chalk';
+import * as superagent from 'superagent';
+import * as FormData from 'form-data';
 
 import {
   APIResponse,
   APIResponseSuccess,
+  Command,
   CommandLineInputs,
   CommandLineOptions,
-  Command,
   CommandMetadata,
+  TaskChain,
   createFatalAPIFormat,
-  isAPIResponseSuccess
+  isAPIResponseSuccess,
+  promisify,
 } from '@ionic/cli-utils';
 
+interface Snapshot {
+  uuid: string;
+  presigned_post: {
+    url: string;
+    fields: Object;
+  };
+}
+
 interface SnapshotResponse extends APIResponseSuccess {
-  data: {
-    uuid: string;
-    presigned_post: {
-      url: string;
-      fields: Object;
-    };
-  }
+  data: Snapshot;
 }
 
 function isSnapshotResponse(r: APIResponse): r is SnapshotResponse {
@@ -44,54 +49,94 @@ function isSnapshotResponse(r: APIResponse): r is SnapshotResponse {
   exampleCommands: [''],
 })
 export class UploadCommand extends Command {
-  createZipStream(): Promise<NodeJS.ReadableStream> {
-    return new Promise((resolve, reject) => {
-      const archive = archiver('zip', { store: true });
+  private createZipStream(): NodeJS.ReadableStream {
+    const archive = archiver('zip');
 
-      archive.on('error', (err) => {
-        console.log('archive error');
-        reject(err);
-      });
+    archive.directory(path.join(this.env.project.directory, 'www'), 'www'); // TODO don't hardcode
 
-      archive.directory(path.join(this.env.project.directory, 'www')); // TODO don't hardcode
+    // archive.glob(path.join(this.env.project.directory, '**', '*'));
 
-      // archive.glob(path.join(this.env.project.directory, '**', '*'));
+    archive.finalize();
 
-      archive.finalize();
-
-      resolve(archive);
-    });
+    return archive;
   }
 
-  uploadSnapshot(zip: NodeJS.ReadableStream, token: string): Promise<APIResponseSuccess> {
-    return new Promise((resolve, reject) => {
-      const req = this.env.client.make('POST', '/deploy/snapshots')
-        .set('Authorization', `Bearer ${token}`);
+  private async requestSnapshotUpload(token: string): Promise<Snapshot> {
+    const req = this.env.client.make('POST', '/deploy/snapshots')
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
 
-      req.on('error', (err) => {
-        console.log('req error');
+    const res = await this.env.client.do(req);
+
+    if (!isSnapshotResponse(res)) {
+      throw createFatalAPIFormat(req, res);
+    }
+
+    return res.data;
+  }
+
+  private uploadSnapshot(snapshot: Snapshot, zip: NodeJS.ReadableStream): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const form = new FormData();
+
+      zip.on('error', (err: any) => {
         reject(err);
       });
 
-      req.on('end', (r) => {
-        console.log('req end');
-        resolve(r);
+      // TODO: how do people do this elegantly nowadays?
+      const fields = <any>snapshot.presigned_post.fields;
+      for (let k in snapshot.presigned_post.fields) {
+        form.append(k, fields[k]);
+      }
+
+      let bufs: Buffer[] = [];
+
+      zip.on('data', (buf: Buffer) => {
+        bufs.push(buf);
       });
 
-      zip.pipe(req);
+      zip.on('end', () => {
+        form.append('file', Buffer.concat(bufs));
 
-      this.env.client.do(req);
+        form.submit(snapshot.presigned_post.url, (err, res) => {
+          if (err) {
+            return reject(err);
+          }
+
+          let body = '';
+
+          res.on('data', (chunk: string) => {
+            body += chunk;
+          });
+
+          res.on('end', () => {
+            if (res.statusCode !== 204) {
+              // TODO: log body for debug purposes?
+              return reject(new Error(`Unexpected status code from AWS: ${res.statusCode}`));
+            }
+
+            resolve();
+          });
+
+          res.resume();
+        });
+      });
     });
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const token = await this.env.session.getAppUserToken();
-    const zip = await this.createZipStream();
-    const res = await this.uploadSnapshot(zip, token);
+    const zip = this.createZipStream();
 
-    console.log(res);
+    const tasks = new TaskChain();
 
-    // console.log(token);
-    this.env.log.ok(`Hi!`);
+    tasks.next('Requesting snapshot');
+    const snapshot = await this.requestSnapshotUpload(token);
+    tasks.next('Uploading snapshot'); // TODO: progress bar?
+    await this.uploadSnapshot(snapshot, zip);
+
+    tasks.end();
+
+    this.env.log.ok(`Uploaded snapshot ${chalk.bold(snapshot.uuid)}!`);
   }
 }
