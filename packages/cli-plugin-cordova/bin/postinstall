@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var chalk = require('chalk');
+var utils = require('@ionic/cli-utils');
+
+Promise.all([
+  utils.getCommandInfo('cordova', ['-v']),
+  utils.getCommandInfo('ios-deploy', ['--version']),
+  utils.getCommandInfo('ios-sim', ['--version'])
+]).then(function(data) {
+  var npmModules = []
+  if (data[0] === "Not installed") {
+    npmModules.push('cordova');
+  }
+  if (data[1] === "Not installed") {
+    npmModules.push('ios-deploy');
+  }
+  if (data[2] === "Not installed") {
+    npmModules.push('ios-sim');
+  }
+  if (npmModules.length > 0) {
+    console.log('You will need to install the following global dependencies in order to use this plugin.')
+    console.log(chalk.bold('npm install -g ' + npmModules.join(' ')) + '\n');
+  } else {
+    console.log(chalk.green('Looks like global dependencies are good to go!'));
+  }
+})

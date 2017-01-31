@@ -7,7 +7,7 @@ import * as globalPlugin from '../index';
 
 export const defaultPlugin = 'core';
 export const knownPlugins = [defaultPlugin, 'cloud', 'cordova'];
-export const PREFIX = '@ionic/cli-plugin-';
+export const PREFIX = 'cli-plugin-';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';
 export const ERROR_PLUGIN_INVALID = 'PLUGIN_INVALID';
 
@@ -18,9 +18,10 @@ export function loadPlugin(projectDir: string, name: string): any {
   let m: any;
 
   try {
-    var mPath = require.resolve(path.join(projectDir, 'node_modules', `${PREFIX}${name}`));
+    var mPath = require.resolve(path.join(projectDir, 'node_modules', '@ionic', `${PREFIX}${name}`));
     m = require(mPath);
   } catch (e) {
+    console.log(e);
     if (e.code === 'MODULE_NOT_FOUND') {
       throw ERROR_PLUGIN_NOT_FOUND;
     }

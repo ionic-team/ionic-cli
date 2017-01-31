@@ -12,7 +12,8 @@
     "clean": "rm -rf ./dist",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
     "test": "../../node_modules/.bin/jest",
-    "watch": "npm run clean && ../../node_modules/.bin/tsc --watch"
+    "watch": "npm run clean && ../../node_modules/.bin/tsc --watch",
+    "postinstall": "node ./bin/postinstall"
   },
   "keywords": [
     "ionic",
