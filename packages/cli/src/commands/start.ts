@@ -12,7 +12,8 @@ import {
   CommandLineOptions,
   Command,
   CommandMetadata,
-  getCommandInfo
+  getCommandInfo,
+  validators
 } from '@ionic/cli-utils';
 
 import {
@@ -20,7 +21,7 @@ import {
   pkgInstallProject,
   tarXvf,
   isSafeToCreateProjectIn,
-  getStarterTemplateText,
+  getStarterTemplateTextList,
   getHelloText
 } from '../lib/start';
 
@@ -69,14 +70,29 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
 
 @CommandMetadata({
   name: 'start',
-  description: 'Starts a new Ionic project in the specified PATH',
+  description: 'Starts a new Ionic project in a new directory.',
+  exampleCommands: ['mynewapp blank'],
   inputs: [
     {
       name: 'name',
-      description: 'directory and name for the new project'
-    }, {
+      description: 'directory and name for the new project',
+      validators: [validators.required],
+      prompt: {
+        message: 'What would you like to name your project'
+      }
+    },
+     {
       name: 'template',
-      description: 'Starter templates can either come from a named template (ex: tabs, sidemenu, blank)'
+      description: `Starter templates can either come from a named template (ex: ${STARTER_TEMPLATES.map(st => st.name).join(', ')})`,
+      validators: [validators.required],
+      prompt: {
+        type: 'list',
+        message: 'What starter would you like to use',
+        choices: getStarterTemplateTextList(STARTER_TEMPLATES).map((text, i) => ({
+          name: text,
+          value: STARTER_TEMPLATES[i].name
+        }))
+      }
     }
   ],
   options: [
@@ -109,8 +125,8 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
       aliases: ['l']
     },
     {
-      name: 'io-app-id',
-      description: 'The Ionic.io app ID to use',
+      name: 'cloud-app-id',
+      description: 'An existing Ionic.io app ID to link with',
       aliases: []
     }
   ]
@@ -120,13 +136,6 @@ export class StartCommand extends Command {
     let installer = 'npm';
     let projectRoot: string;
     let projectName: string;
-
-    /**
-     * If --list is provided print starters available and then exit
-     */
-    if (options['list']) {
-      return this.env.log.msg(getStarterTemplateText(STARTER_TEMPLATES));
-    }
 
     if (inputs.length < 1) {
       throw 'Please provide a name for your project.';
@@ -148,7 +157,7 @@ export class StartCommand extends Command {
     if (!pathExists.sync(projectName)) {
       fs.mkdirSync(projectRoot);
     } else if (!isSafeToCreateProjectIn(projectRoot)) {
-      throw `The directory ${projectName} contains file(s) that could conflict. Aborting.`;
+      throw `The directory ${projectName} contains file(s) that could conflict.`;
     }
 
     let starterTemplateName = inputs[1] || options['template'] || STARTER_TEMPLATE_DEFAULT;
@@ -161,15 +170,30 @@ export class StartCommand extends Command {
     /**
      * Download the starter template, gunzip, and untar into the project folder
      */
-    tasks.next('Downloading \'' + chalk.bold(`${starterTemplateName}`) + '\' starter template');
+    tasks.next(`Downloading '${chalk.bold(starterTemplateName.toString())}' starter template`);
 
-    const [
-      baseArchiveResponse,
-      archiveResponse
-    ] = await Promise.all([
-      fetch(starterTemplate.baseArchive),
-      fetch(starterTemplate.archive)
-    ]);
+    let baseArchiveResponse;
+    let archiveResponse;
+    try {
+      [ baseArchiveResponse, archiveResponse] = await Promise.all([
+        fetch(starterTemplate.baseArchive),
+        fetch(starterTemplate.archive)
+      ]);
+    } catch (e) {
+      if (['ETIMEOUT', 'ENOTFOUND'].includes(e.code)) {
+        this.env.log.debug(e);
+        this.env.log.error(`Unable to download starter template from github. Please check that you are ` +
+                          `able to access the following urls: \n${starterTemplate.baseArchive},\n${starterTemplate.archive}\n`);
+        return;
+      }
+      throw e;
+    }
+
+    if (!baseArchiveResponse || !archiveResponse) {
+      this.env.log.error(`Unable to download starter template from github. Please check that you are ` +
+                        `able to access the following urls: \n${starterTemplate.baseArchive},\n${starterTemplate.archive}\n`);
+      return;
+    }
 
     await Promise.all([
       tarXvf(baseArchiveResponse.body, projectRoot),
@@ -181,7 +205,7 @@ export class StartCommand extends Command {
      * Download the starter template, gunzip, and untar into the project folder
      */
     if (!options['skip-npm']) {
-      tasks.next('Executing: ' + chalk.bold(`${installer} install`));
+      tasks.next(`Executing: ${chalk.bold(installer + ' install')} within the newly created project directory`);
 
       if (options['yarn']) {
         let yarnVersion = await getCommandInfo('yarn', ['-version']);

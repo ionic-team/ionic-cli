@@ -21,21 +21,24 @@ import * as appGenerator from '@ionic/app-generators';
     {
       name: 'generator',
       description: 'The generator that you would like to use',
-      validators: [validators.required]
+      validators: [validators.required],
+      prompt: {
+        type: 'list',
+        message: 'What would you like to generate?',
+        // TODO get this from app-generators instead of having it hardcoded
+        choices: ['component', 'directive', 'page', 'pipe', 'provider', 'tabs']
+      }
     },
     {
       name: 'name',
       description: 'The name that you like for the file',
-      validators: [validators.required]
+      validators: [validators.required],
+      prompt: {
+        message: 'name'
+      }
     }
   ],
   options: [
-    {
-      name: 'list',
-      description: 'List available generators',
-      type: Boolean,
-      default: false
-    },
     {
       name: 'includeSpec',
       description: 'Create test spec basic to pages, components, directives, pipes and providers',
@@ -88,11 +91,6 @@ import * as appGenerator from '@ionic/app-generators';
 })
 export class GenerateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions, validationErrors: ValidationError[]): Promise<void> {
-
-    if (options['list']) {
-      appGenerator.printAvailableGenerators();
-      return;
-    }
 
     if (validationErrors.length > 0) {
       this.env.log.error(validationErrors.map(err => err.message).join('\n'));

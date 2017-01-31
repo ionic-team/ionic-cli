@@ -7,7 +7,7 @@ import { runcmd } from '@ionic/cli-utils';
 import { StarterTemplate } from '../definitions';
 
 /**
- * Spawn an npm install task from within 
+ * Spawn an npm install task from within
  */
 export async function pkgInstallProject(installer: string, root: string): Promise<any> {
   try {
@@ -18,7 +18,7 @@ export async function pkgInstallProject(installer: string, root: string): Promis
 }
 
 /**
- * 
+ *
  */
 export function tarXvf(readStream: NodeJS.ReadableStream, destination: string): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -40,7 +40,7 @@ export function tarXvf(readStream: NodeJS.ReadableStream, destination: string): 
 }
 
 /**
- * 
+ *
  */
 export function isProjectNameValid(name: string): boolean {
   return name !== '.';
@@ -62,26 +62,31 @@ export function isSafeToCreateProjectIn(root: string): boolean {
 }
 
 /**
- * 
+ *
  */
 export function getStarterTemplateText(templateList: StarterTemplate[]): string {
   let headerLine = chalk.bold(`Ionic Starter templates`);
+  let formattedTemplateList = getStarterTemplateTextList(templateList);
 
-  function optionLineFn({ name, description }: StarterTemplate) {
-    let templateName = chalk.green(name);
-
-    return `${templateName} ${Array(20 - name.length).join('.')} ${description}`;
-  };
 
   return `
     ${headerLine}
-      ${templateList.map(optionLineFn).join(`
+      ${formattedTemplateList.join(`
       `)}
   `;
 }
 
+export function getStarterTemplateTextList(templateList: StarterTemplate[]): string[] {
+
+  return templateList.map(({ name, description }) => {
+    let templateName = chalk.green(name);
+
+    return `${templateName} ${Array(20 - name.length).join('.')} ${description}`;
+  });
+}
+
 /**
- * 
+ *
  */
 export function getHelloText(): string {
   return `
