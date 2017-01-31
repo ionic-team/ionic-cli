@@ -5,7 +5,8 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   formatCommandHelp,
-  Command
+  Command,
+  validators
 } from '@ionic/cli-utils';
 
 import { resolvePlugin } from '../lib/plugins';
@@ -18,6 +19,7 @@ import { resolvePlugin } from '../lib/plugins';
     {
       name: 'command',
       description: 'The command you desire help with',
+      validators: [validators.required]
     }
   ]
 })
@@ -41,14 +43,19 @@ export class HelpCommand extends Command {
       const [plugin, argv] = resolvePlugin(this.env.project.directory, inputs);
 
       const commandMetadataList = await plugin.getAllCommandMetadata();
-      return commandMetadataList
-        .filter((cmd: any) => cmd.name === argv[0] || argv.length === 0)
-        .forEach((cmd: any) => this.env.log.msg(formatCommandHelp(cmd)));
+      const foundCommandList = commandMetadataList
+        .filter((cmd: any) => cmd.name === argv[0] || argv.length === 0);
+
+      // No command was found if the length is zero.
+      if (foundCommandList.length === 0) {
+        return this.env.log.error(`Unable to provide help on unknown command: ${chalk.bold(argv.join(' '))}`);
+      }
+
+      return foundCommandList.forEach((cmd: any) => this.env.log.msg(formatCommandHelp(cmd)));
 
     } catch (e) {
-      this.env.log.error(e);
+      return this.env.log.error(`Unable to find command: ${chalk.bold(argv.join(' '))}. It is possible that you are trying\n` +
+      `to get help on a project based command and you are not in a project directory.`);
     }
-
-    return this.env.log.error(`Command not found: ${chalk.bold(argv.join(' '))}.`);
   }
 };
