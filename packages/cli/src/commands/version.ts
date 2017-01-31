@@ -13,7 +13,6 @@ import {
 export class VersionCommand extends Command {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const info = await getCliInfo();
-
-    this.env.log.msg(`${info['cli']}`);
+    this.env.log.msg(`${info['version']}`);
   }
 }
