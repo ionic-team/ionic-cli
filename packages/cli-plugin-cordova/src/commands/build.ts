@@ -6,7 +6,8 @@ import {
   CommandLineOptions,
   CommandMetadata,
   Shell,
-  TaskChain
+  TaskChain,
+  validators
 } from '@ionic/cli-utils';
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { resetSrcContent } from '../lib/utils/configXmlUtils';
@@ -26,7 +27,11 @@ import {
   inputs: [
     {
       name: 'platform',
-      description: 'the platform that you would like to build'
+      description: 'the platform that you would like to build',
+      validators: [validators.required],
+      prompt: {
+        message: 'What platform would you like to build? (ex: ios, android)'
+      }
     }
   ],
   options: [
@@ -41,7 +46,7 @@ export class BuildCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
 
     // If there is not input then set default to an array containing ios
-    const runPlatform = inputs[0] || 'ios';
+    const runPlatform = inputs[0];
 
     if (runPlatform === 'ios' && os.platform() !== 'darwin') {
       this.env.log.error('You cannot run iOS unless you are on Mac OSX.');

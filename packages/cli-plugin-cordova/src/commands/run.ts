@@ -6,7 +6,8 @@ import {
   CommandLineOptions,
   CommandMetadata,
   Shell,
-  TaskChain
+  TaskChain,
+  validators
 } from '@ionic/cli-utils';
 import {
   runAppScriptsBuild,
@@ -30,7 +31,11 @@ import {
   inputs: [
     {
       name: 'platform',
-      description: 'the platform to emulate'
+      description: 'the platform to run',
+      validators: [validators.required],
+      prompt: {
+        message: 'What platform would you like to run? (ex: ios, android)'
+      }
     }
   ],
   options: [

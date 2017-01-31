@@ -5,7 +5,8 @@ import {
   CommandLineOptions,
   CommandMetadata,
   Shell,
-  TaskChain
+  TaskChain,
+  validators
 } from '@ionic/cli-utils';
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { resetSrcContent } from '../lib/utils/configXmlUtils';
@@ -24,10 +25,19 @@ import {
     {
       name: 'action',
       description: 'Add or remove the platform',
+      validators: [validators.required],
+      prompt: {
+        type: 'list',
+        choices: ['add', 'remove']
+      }
     },
     {
       name: 'platform',
-      description: 'the platform that you would like to build (ios, android)',
+      description: 'the platform that you would like to build (ex: ios, android)',
+      validators: [validators.required],
+      prompt: {
+        message: 'What platform would you like to build? (ex: ios, android)'
+      }
     }
   ],
   options: [
