@@ -8,12 +8,12 @@ import {
   TaskChain,
   validators
 } from '@ionic/cli-utils';
+import { KnownPlatform } from '../definitions';
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { resetSrcContent } from '../lib/utils/configXmlUtils';
 import {
-  copyIconFilesIntoResources,
-  addIonicIcons
-} from '../lib/platform';
+  addDefaultImagesToResources
+} from '../lib/resources';
 
 /**
  * Metadata about the platform command
@@ -69,10 +69,13 @@ export class PlatformCommand extends Command {
     // ensure the content node was set back to its original
     await resetSrcContent(this.env.project.directory);
 
-    if (action === 'add' && !(options['noresources'])) {
+    if (action === 'add' && !(options['noresources']) && ['ios', 'android', 'wp8'].includes(platformName)) {
       tasks.next(`Copying default image resources into ${chalk.bold('/resources/' + platformName)}`);
-      await copyIconFilesIntoResources(this.env.project.directory);
-      await addIonicIcons(this.env.project.directory, platformName);
+      try {
+        await addDefaultImagesToResources(this.env.project.directory, <KnownPlatform>platformName);
+      } catch (e) {
+        throw e;
+      }
     }
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);

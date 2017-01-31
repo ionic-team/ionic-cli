@@ -48,7 +48,7 @@ function formatInputs(inputs?: CommandInput[]): string {
     const optionListLength = optionList.replace(STRIP_ANSI_REGEX, '').length;
     const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
 
-    return `${optionList} ${Array(fullLength - optionListLength).join('.')} ${description}`;
+    return `${optionList} ${Array(fullLength - optionListLength).fill('.')} ${description}`;
   };
 
   return `
@@ -75,7 +75,7 @@ function formatOptions(options?: CommandOption[]): string {
     const optionListLength = optionList.replace(STRIP_ANSI_REGEX, '').length;
     const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
 
-    return `${optionList} ${Array(fullLength - optionListLength).join('.')} ${description}`;
+    return `${optionList} ${Array(fullLength - optionListLength).fill('.')} ${description}`;
   };
 
   return `

@@ -11,6 +11,13 @@ export interface ImageResource {
   nodeAttributes: string[];
 }
 
+export interface ResourcesImageConfig {
+  name: string;
+  width: number;
+  height: number;
+  density?: string;
+}
+
 export interface SourceImage {
   ext: string;
   imageId?: string;
@@ -29,3 +36,20 @@ export interface ImageUploadResponse {
   Type: string;
   Vector: boolean;
 }
+
+export interface ResourcesConfig {
+  [propName: string]: {
+    icon: {
+      images: ResourcesImageConfig[],
+      nodeName: string,
+      nodeAttributes: string[]
+    },
+    splash: {
+      images: ResourcesImageConfig[]
+      nodeName: string,
+      nodeAttributes: string[]
+    }
+  };
+}
+
+export type KnownPlatform = 'ios' | 'android' | 'wp8';

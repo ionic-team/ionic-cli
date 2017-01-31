@@ -1,5 +1,6 @@
 import * as xml2js from 'xml2js';
 import * as path from 'path';
+import { ResourcesImageConfig, KnownPlatform } from '../../definitions';
 import { ERROR_FILE_NOT_FOUND, fsReadFile, fsWriteFile, promisify } from '@ionic/cli-utils';
 
 
@@ -28,6 +29,95 @@ export function getPlatformConfigData(configData: any, platform: string): string
   return configData.widget.platform.find((d: any) => {
     return d && d.$ && d.$.name === platform;
   });
+}
+
+/**
+ *
+ */
+export function addPlatformImages(configData: any, platform: KnownPlatform, images: { icon: ResourcesImageConfig[], splash: ResourcesImageConfig[] }): any {
+  let configContents = JSON.parse(JSON.stringify(configData));
+
+  function createImageElement(platform: KnownPlatform, resourceType: string) {
+    return (image: ResourcesImageConfig) => {
+      var iconDir = ['resources', platform, resourceType, image.name].join('/');
+      let resource: any;
+      if (platform === 'android') {
+        resource = {
+            $: {
+            src: iconDir,
+            density: image.density
+          }
+        };
+    } else {
+        resource = {
+          $: {
+            src: iconDir,
+            width: image.width,
+            height: image.height
+          }
+        };
+      }
+    };
+  }
+
+  let platElem = {
+    $: {
+      name: platform
+    },
+    icon: images['icon'].map(createImageElement(platform, 'icon')),
+    splash: images['splash'].map(createImageElement(platform, 'splash'))
+  };
+
+  if (!configContents.widget.platform) {
+    configContents.widget.platform = [];
+  }
+  configContents.widget.platform.push(platElem);
+
+  return configContents;
+}
+
+/**
+ *
+ */
+export function addSplashScreenPreferences(configData: any): any {
+  let configContents = JSON.parse(JSON.stringify(configData));
+
+  let hasSplashScreen = false;
+  let hasSplashScreenDelay = false;
+
+  // Check for splash screen stuff
+  // <preference name="SplashScreen" value="screen"/>
+  // <preference name="SplashScreenDelay" value="3000"/>
+  if (!configContents.widget.preference) {
+    configContents.widget.preference = [];
+  }
+
+  configContents.widget.preference.forEach(function(pref: any) {
+    if (pref.$.name === 'SplashScreen') {
+      hasSplashScreen = true;
+    }
+    if (pref.$.name === 'SplashScreenDelay') {
+      hasSplashScreenDelay = true;
+    }
+  });
+
+  if (!hasSplashScreen) {
+    configContents.widget.preference.push({
+      $: {
+        name: 'SplashScreen',
+        value: 'screen'
+      }
+    });
+  }
+  if (!hasSplashScreenDelay) {
+    configContents.widget.preference.push({
+      $: {
+        name: 'SplashScreenDelay',
+        value: '3000'
+      }
+    });
+  }
+  return configContents;
 }
 
 /**

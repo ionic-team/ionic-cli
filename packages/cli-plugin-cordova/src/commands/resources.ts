@@ -1,9 +1,10 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
 import {
-  ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON,
-  fsReadJsonFile, CommandLineInputs,
-  CommandLineOptions, Command, CommandMetadata,
+  CommandLineInputs,
+  CommandLineOptions,
+  Command,
+  CommandMetadata,
   TaskChain
 } from '@ionic/cli-utils';
 
@@ -16,7 +17,8 @@ import {
   getSourceImages,
   findMostSpecificImage,
   uploadSourceImages,
-  generateResourceImage
+  generateResourceImage,
+  getResourceConfigJson
 } from '../lib/resources';
 
 
@@ -72,18 +74,7 @@ export class ResourcesCommand extends Command {
       throw e;
     }
 
-    let resourceJsonStructure;
-      const filePath = path.join(__dirname, '..', '..', 'resources.json');
-    try {
-      resourceJsonStructure = await fsReadJsonFile(filePath);
-    } catch (e) {
-      if (e === ERROR_FILE_NOT_FOUND) {
-        throw new Error(`${filePath} not found`);
-      } else if (e === ERROR_FILE_INVALID_JSON) {
-        throw new Error(`${filePath} is not valid JSON.`);
-      }
-      throw e;
-    }
+    const resourceJsonStructure = await getResourceConfigJson();
     this.env.log.debug(`resourceJsonStructure=${Object.keys(resourceJsonStructure).length}`);
 
     /**

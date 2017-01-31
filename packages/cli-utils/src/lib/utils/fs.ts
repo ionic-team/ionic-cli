@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 
 import * as inquirer from 'inquirer';
+import * as ncp from 'ncp';
 
 import { prettyPath } from './format';
 import { promisify } from './promisify';
@@ -125,11 +126,38 @@ export function getFileChecksum(filePath: string): Promise<string> {
   });
 }
 
-export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: string) {
+export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const dest = fs.createWriteStream(destination);
     stream.pipe(dest);
     dest.on('error', reject);
     dest.on('finish', resolve);
+  });
+}
+
+export function copyDirectory(source: string, destionation: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    ncp.ncp(source, destionation, (err: Error) => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+}
+
+export function copyFile(fileName: string, target: string, mode: number = 0o777) {
+  return new Promise((resolve, reject) => {
+    let readStream = fs.createReadStream(fileName);
+    let writeStream = fs.createWriteStream(target, { mode: mode });
+
+    readStream.on('error', reject);
+    writeStream.on('error', reject);
+
+    writeStream.on('open', function() {
+      readStream.pipe(writeStream);
+    });
+
+    writeStream.once('finish', resolve);
   });
 }

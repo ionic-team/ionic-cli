@@ -3,12 +3,35 @@ import * as fs from 'fs';
 import * as FormData from 'form-data';
 import fetch from 'node-fetch';
 
-import { ImageResource, SourceImage, ImageUploadResponse } from '../definitions';
-import { fsReadDir, fsMkdirp, getFileChecksum, writeStreamToFile } from '@ionic/cli-utils';
+import {
+  ImageResource,
+  SourceImage,
+  ImageUploadResponse,
+  ResourcesConfig,
+  KnownPlatform
+} from '../definitions';
+import {
+  fsReadDir,
+  fsMkdirp,
+  fsReadJsonFile,
+  ERROR_FILE_NOT_FOUND,
+  ERROR_FILE_INVALID_JSON,
+  getFileChecksum,
+  writeStreamToFile,
+  copyDirectory
+} from '@ionic/cli-utils';
+
+import {
+  writeConfigXml,
+  parseConfigXml,
+  addPlatformImages,
+  addSplashScreenPreferences
+} from './utils/configXmlUtils';
 
 const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];
 const UPLOAD_URL = 'http://res.ionic.io/api/v1/upload';
 const TRANSFORM_URL = 'http://res.ionic.io/api/v1/transform';
+const DEFAULT_RESOURCES_DIR = path.resolve(__dirname, '..', 'default-resources');
 
 /**
  * Take the JSON structure for resources.json and turn it into a flat array
@@ -44,6 +67,22 @@ export async function createImgDestinationDirectories (imgResources: ImageResour
     .map(dir => fsMkdirp(dir));
 
   return Promise.all(buildDirPromises);
+}
+
+export async function getResourceConfigJson(): Promise<ResourcesConfig> {
+  let resourceJsonStructure;
+  const filePath = path.join(__dirname, '..', '..', 'resources.json');
+  try {
+    resourceJsonStructure = await fsReadJsonFile(filePath);
+  } catch (e) {
+    if (e === ERROR_FILE_NOT_FOUND) {
+      throw new Error(`${filePath} not found`);
+    } else if (e === ERROR_FILE_INVALID_JSON) {
+      throw new Error(`${filePath} is not valid JSON.`);
+    }
+    throw e;
+  }
+  return <ResourcesConfig>resourceJsonStructure;
 }
 
 /**
@@ -167,4 +206,23 @@ function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
       .on('data', (chunk: Buffer) => chunks.push(chunk))
       .on('end', () => resolve(Buffer.concat(chunks)));
   });
+}
+
+export async function addDefaultImagesToResources(projectDirectory: string, platform: KnownPlatform): Promise<any> {
+  const resourcesDir = path.resolve(projectDirectory, 'resources');
+  await copyDirectory(path.resolve(DEFAULT_RESOURCES_DIR, platform), resourcesDir);
+
+  let configJson = await parseConfigXml(projectDirectory);
+  const resourceJson = await getResourceConfigJson();
+
+  if (!configJson.widget.platform ||
+      (configJson.widget.platform.length === 1 && configJson.widget.platform[0]['$'].name !== platform)) {
+    configJson = addPlatformImages(configJson, platform, {
+      icon: resourceJson[platform]['icon'].images,
+      splash: resourceJson[platform]['splash'].images
+    });
+    configJson = addSplashScreenPreferences(configJson);
+
+    return writeConfigXml(projectDirectory, configJson);
+  }
 }
