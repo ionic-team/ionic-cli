@@ -10,7 +10,7 @@ import {
 
 @CommandMetadata({
   name: 'info',
-  description: 'List information about the users runtime environment'
+  description: 'List information about the current runtime environment'
 })
 export class InfoCommand extends Command {
   async run(inputs?: CommandLineInputs, options?: CommandLineOptions): Promise<void> {
@@ -31,7 +31,7 @@ export class InfoCommand extends Command {
   Your system information:
 
     ${details
-      .filter(info => info[1] !== null && info[1] !== undefined)
+      .filter(info => info[1])
       .map(info => `${chalk.bold(info[0])}: ${info[1]}`).join('\n    ')}`);
   }
 }

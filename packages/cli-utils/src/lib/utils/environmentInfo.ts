@@ -53,7 +53,8 @@ function getPackageJsonContents(packageJsonPath: string): Promise<{ [key: string
  */
 export async function getCliInfo(): Promise<{ [key: string]: any; }>  {
   const packageJsonPath = path.resolve(
-    process.cwd(),
+    process.env.CLI_BIN_DIR,
+    '..',
     'package.json'
   );
 

@@ -5,4 +5,5 @@
 process.title = 'ionic';
 
 var cli = require('../');
+process.env.CLI_BIN_DIR = __dirname;
 cli.run(process.argv, process.env);
