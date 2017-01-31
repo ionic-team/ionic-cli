@@ -21,6 +21,7 @@ import {
 @CommandMetadata({
   name: 'platform',
   description: 'Add or remove a platform target for building an Ionic app',
+  exampleCommands: ['add android'],
   inputs: [
     {
       name: 'action',

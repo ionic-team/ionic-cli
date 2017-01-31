@@ -33,6 +33,7 @@ const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
 @CommandMetadata({
   name: 'resources',
   description: RESOURCES_SUMMARY,
+  exampleCommands: [''],
   options: [
     {
       name: 'icon',

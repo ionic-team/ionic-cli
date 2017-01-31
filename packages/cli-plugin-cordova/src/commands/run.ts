@@ -28,6 +28,7 @@ import {
 @CommandMetadata({
   name: 'run',
   description: 'Run an Ionic project on a connected device',
+  exampleCommands: ['ios --livereload -c -s'],
   inputs: [
     {
       name: 'platform',
