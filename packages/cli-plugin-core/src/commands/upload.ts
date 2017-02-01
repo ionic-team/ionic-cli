@@ -72,7 +72,7 @@ export class UploadCommand extends Command {
     return res.data;
   }
 
-  private uploadSnapshot(snapshot: Snapshot, zip: NodeJS.ReadableStream, progress: (p: { loaded: number, total: number }) => void): Promise<void> {
+  private uploadSnapshot(snapshot: Snapshot, zip: NodeJS.ReadableStream, progress: (loaded: number, total: number) => void): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       zip.on('error', (err: any) => {
         reject(err);
@@ -89,7 +89,7 @@ export class UploadCommand extends Command {
           .field(snapshot.presigned_post.fields)
           .field('file', Buffer.concat(bufs))
           .on('progress', (event) => {
-            progress(event);
+            progress(event.loaded, event.total);
           })
           .end((err, res) => {
             if (err) {
@@ -114,8 +114,8 @@ export class UploadCommand extends Command {
     tasks.next('Requesting snapshot');
     const snapshot = await this.requestSnapshotUpload(token);
     const uploadTask = tasks.next('Uploading snapshot');
-    await this.uploadSnapshot(snapshot, zip, (p) => {
-      uploadTask.progress(p.loaded, p.total);
+    await this.uploadSnapshot(snapshot, zip, (loaded, total) => {
+      uploadTask.progress(loaded, total);
     });
 
     tasks.end();
