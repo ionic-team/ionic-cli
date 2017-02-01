@@ -37,6 +37,11 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     log.level = argv['log-level'];
   }
 
+  // If verbose flag is passed the log.level becomes debug
+  if (argv['verbose']) {
+    log.level = 'debug';
+  }
+
   env['PROJECT_FILE'] = PROJECT_FILE;
   env['PROJECT_DIR'] = await getProjectRootDir(env['PWD'], env['PROJECT_FILE']);
 
