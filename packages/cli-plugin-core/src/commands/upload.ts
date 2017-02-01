@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
 import * as archiver from 'archiver';
@@ -15,7 +14,6 @@ import {
   TaskChain,
   createFatalAPIFormat,
   isAPIResponseSuccess,
-  promisify,
 } from '@ionic/cli-utils';
 
 interface Snapshot {
@@ -87,7 +85,7 @@ export class UploadCommand extends Command {
       });
 
       zip.on('end', () => {
-        const req = superagent.post(snapshot.presigned_post.url)
+        superagent.post(snapshot.presigned_post.url)
           .field(snapshot.presigned_post.fields)
           .field('file', Buffer.concat(bufs))
           .on('progress', (event) => {

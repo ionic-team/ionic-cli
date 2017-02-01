@@ -1,4 +1,4 @@
-import * as tty from 'tty'
+import * as tty from 'tty';
 
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
@@ -38,7 +38,7 @@ export class Task {
 
   start(): void {
     if (!this.running) {
-      this.intervalId = setInterval(() => { this.tick() }, 50);
+      this.intervalId = setInterval(() => { this.tick(); }, 50);
     }
 
     this.running = true;
@@ -49,20 +49,22 @@ export class Task {
   }
 
   progress(prog: number, total: number) {
-    if (!this.progressBar) {
-      const term = <any>tty; // TODO: type def issue
-      this.progressBar = new ProgressBar('[:bar] :percent :etas', {
-        total: total,
-        width: 15,
-        stream: new term.WriteStream(),
-      });
+    if (this.running) {
+      if (!this.progressBar) {
+        const term = <any>tty; // TODO: type def issue
+        this.progressBar = new ProgressBar('[:bar] :percent :etas', {
+          total: total,
+          width: 15,
+          stream: new term.WriteStream(),
+        });
+      }
+
+      const progbar = <any>this.progressBar; // TODO: type def issue
+      progbar.curr = prog;
+
+      this.progressBar.tick(0);
+      this.tick();
     }
-
-    const progbar = <any>this.progressBar; // TODO: type def issue
-    progbar.curr = prog;
-
-    this.progressBar.tick(0);
-    this.tick();
   }
 
   format(): string {
