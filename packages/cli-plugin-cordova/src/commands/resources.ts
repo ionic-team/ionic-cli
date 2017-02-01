@@ -13,7 +13,8 @@ import {
   SourceImage,
   ResourcesConfig,
   ResourcesImageConfig,
-  KnownPlatform
+  KnownPlatform,
+  ImageUploadResponse
 } from '../definitions';
 import { getProjectPlatforms } from '../lib/utils/setup';
 import { parseConfigXmlToJson } from '../lib/utils/configXmlUtils';
@@ -112,23 +113,31 @@ export class ResourcesCommand extends Command {
     /**
      * Create the resource directories that are needed for the images we will create
      */
-    const buildDirResponses = await createImgDestinationDirectories(imgResources);
-    this.env.log.debug(`${chalk.green('createImgDestinationDirectories')} completed - length=${buildDirResponses.length}`);
-
+    try {
+      const buildDirResponses = await createImgDestinationDirectories(imgResources);
+      this.env.log.debug(`${chalk.green('createImgDestinationDirectories')} completed - length=${buildDirResponses.length}`);
+    } catch (e) {
+      throw e;
+    }
 
     /**
      * Check /resources and /resources/<platform> directories for src files
      * Update imgResources to have their src attributes to equal the most speficic src img found
      */
-    let srcImagesAvailable: SourceImage[] = await getSourceImages(buildPlatforms, resourceTypes, resourceDir);
-    this.env.log.debug(`${chalk.green('getSourceImages')} completed - ${srcImagesAvailable.length}`);
+    let srcImagesAvailable: SourceImage[] = [];
+    try {
+      srcImagesAvailable = await getSourceImages(buildPlatforms, resourceTypes, resourceDir);
+      this.env.log.debug(`${chalk.green('getSourceImages')} completed - ${srcImagesAvailable.length}`);
+    } catch (e) {
+
+    }
 
     imgResources = imgResources.map((imageResource: ImageResource): ImageResource => {
       const mostSpecificImageAvailable = findMostSpecificImage(imageResource, srcImagesAvailable);
       return {
         ...imageResource,
         imageId: mostSpecificImageAvailable ? mostSpecificImageAvailable.imageId : null,
-     };
+      };
     });
 
     /**
@@ -156,8 +165,13 @@ export class ResourcesCommand extends Command {
     /**
      * Upload images to service to prepare for resource transformations
      */
-    const imageUploadResponses = await uploadSourceImages(srcImagesAvailable);
-    this.env.log.debug(`${chalk.green('uploadSourceImages')} completed - responses=${JSON.stringify(imageUploadResponses, null, 2)}`);
+    let imageUploadResponses: ImageUploadResponse[];
+    try {
+      imageUploadResponses = await uploadSourceImages(srcImagesAvailable);
+      this.env.log.debug(`${chalk.green('uploadSourceImages')} completed - responses=${JSON.stringify(imageUploadResponses, null, 2)}`);
+    } catch (e) {
+      throw e;
+    }
 
     srcImagesAvailable = srcImagesAvailable.map((img: SourceImage, index): SourceImage => {
       return {
@@ -248,7 +262,7 @@ export class ResourcesCommand extends Command {
     try {
       await addResourcesToConfigXml(this.env.project.directory, platformList, imageResourcesForConfig);
     } catch (e) {
-        throw e;
+      throw e;
     }
 
     tasks.end();
