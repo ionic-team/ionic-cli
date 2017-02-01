@@ -1,5 +1,5 @@
 {
-  "name": "@ionic/cli",
+  "name": "ionic",
   "version": "3.0.0",
   "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
