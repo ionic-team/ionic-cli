@@ -16,7 +16,7 @@ import {
   KnownPlatform
 } from '../definitions';
 import { getProjectPlatforms } from '../lib/utils/setup';
-import { parseConfigXml } from '../lib/utils/configXmlUtils';
+import { parseConfigXmlToJson } from '../lib/utils/configXmlUtils';
 import {
   flattenResourceJsonStructure,
   createImgDestinationDirectories,
@@ -76,7 +76,7 @@ export class ResourcesCommand extends Command {
      * check that config file config.xml exists
      */
     try {
-      configFileContents = await parseConfigXml(this.env.project.directory);
+      configFileContents = await parseConfigXmlToJson(this.env.project.directory);
     } catch (e) {
       throw e;
     }

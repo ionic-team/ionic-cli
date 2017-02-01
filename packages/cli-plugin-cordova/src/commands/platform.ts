@@ -10,7 +10,7 @@ import {
 } from '@ionic/cli-utils';
 import { KnownPlatform } from '../definitions';
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
-import { resetSrcContent } from '../lib/utils/configXmlUtils';
+import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import {
   addDefaultImagesToResources
 } from '../lib/resources';
@@ -67,7 +67,7 @@ export class PlatformCommand extends Command {
     var tasks = new TaskChain();
 
     // ensure the content node was set back to its original
-    await resetSrcContent(this.env.project.directory);
+    await resetConfigXmlContentSrc(this.env.project.directory);
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
 

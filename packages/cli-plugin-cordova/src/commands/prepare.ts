@@ -8,7 +8,7 @@ import {
   TaskChain
 } from '@ionic/cli-utils';
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
-import { resetSrcContent } from '../lib/utils/configXmlUtils';
+import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 
 /**
  * Metadata about the prepare command
@@ -23,7 +23,7 @@ export class PrepareCommand extends Command {
     var tasks = new TaskChain();
 
     // ensure the content node was set back to its original
-    await resetSrcContent(this.env.project.directory);
+    await resetConfigXmlContentSrc(this.env.project.directory);
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
 

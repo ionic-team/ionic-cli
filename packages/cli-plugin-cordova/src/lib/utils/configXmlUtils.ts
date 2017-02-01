@@ -5,7 +5,7 @@ import { ERROR_FILE_NOT_FOUND, fsReadFile, fsWriteFile, promisify } from '@ionic
 
 
 /**
- * get orientation information from the config.xml cordova file structure
+ * Get orientation information from the Json structure of Config.xml
  */
 export function getOrientationFromConfigJson(configJson: any): string | undefined {
   if (!configJson.widget.preference) {
@@ -20,7 +20,7 @@ export function getOrientationFromConfigJson(configJson: any): string | undefine
 }
 
 /**
- *
+ * Get the provided platforms information from the Json structure of Config.xml
  */
 export function getPlatformConfigJson(configJson: any, platform: string): string | undefined {
   if (!configJson.widget.platform) {
@@ -32,7 +32,7 @@ export function getPlatformConfigJson(configJson: any, platform: string): string
 }
 
 /**
- *
+ * Add provided images to the platform node of the Json structure of Config.xml
  */
 export function addPlatformImagesToConfigJson(configJson: any, platform: KnownPlatform, images: ResourcesConfig): any {
   let configContents = JSON.parse(JSON.stringify(configJson));
@@ -68,7 +68,7 @@ export function addPlatformImagesToConfigJson(configJson: any, platform: KnownPl
 }
 
 /**
- *
+ * Update splashscreen preferences within the provided Json structure of Config.xml
  */
 export function addSplashScreenPreferencesToConfigJson(configJson: any): any {
   let configContents = JSON.parse(JSON.stringify(configJson));
@@ -112,9 +112,9 @@ export function addSplashScreenPreferencesToConfigJson(configJson: any): any {
 }
 
 /**
- *
+ * Read the project's config.xml and convert it to Json.
  */
-export async function parseConfigXml(projectDir: string): Promise<any> {
+export async function parseConfigXmlToJson(projectDir: string): Promise<any> {
   const configFilePath = path.join(projectDir, 'config.xml');
   let configJson: any = null;
   const parseString = promisify<any, string>(xml2js.parseString);
@@ -136,7 +136,7 @@ export async function parseConfigXml(projectDir: string): Promise<any> {
 }
 
 /**
- *
+ * Convert provided Json to XML and write to the project's config.xml file.
  */
 export async function writeConfigXml(projectDir: string, configJson: any) {
   const builder = new xml2js.Builder();
@@ -147,10 +147,11 @@ export async function writeConfigXml(projectDir: string, configJson: any) {
 }
 
 /**
- *
+ * Update config.xml content src to be a dev server url. As part of this
+ * backup the original content src for a reset to occur at a later time.
  */
-export async function setSrcContent(projectDir: string, devServerUrl: string) {
-  const configJson = await parseConfigXml(projectDir);
+export async function writeConfigXmlContentSrc(projectDir: string, devServerUrl: string) {
+  const configJson = await parseConfigXmlToJson(projectDir);
 
   // If there is no content element then throw an error
   if (!configJson.widget.content) {
@@ -194,8 +195,8 @@ export async function setSrcContent(projectDir: string, devServerUrl: string) {
 /**
  * Set config.xml src url back to its original url
  */
-export async function resetSrcContent(projectDir: string) {
-  const configJson = await parseConfigXml(projectDir);
+export async function resetConfigXmlContentSrc(projectDir: string) {
+  const configJson = await parseConfigXmlToJson(projectDir);
 
   // If there is no content element then throw an error
   if (!configJson.widget.content) {

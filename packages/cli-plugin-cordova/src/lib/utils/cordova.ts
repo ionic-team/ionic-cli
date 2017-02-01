@@ -1,4 +1,4 @@
-import { setSrcContent } from './configXmlUtils';
+import { writeConfigXmlContentSrc } from './configXmlUtils';
 import {
   CommandData,
   CommandLineInputs,
@@ -51,7 +51,7 @@ export async function startAppScriptsServer(metadata: CommandData, inputs: Comma
   ]);
 
   const serveSettings = await appScriptsServe(args);
-  await setSrcContent(process.cwd(), serveSettings.url);
+  await writeConfigXmlContentSrc(process.cwd(), serveSettings.url);
 }
 
 export async function runAppScriptsBuild(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

@@ -23,7 +23,7 @@ import {
 
 import {
   writeConfigXml,
-  parseConfigXml,
+  parseConfigXmlToJson,
   addPlatformImagesToConfigJson,
   addSplashScreenPreferencesToConfigJson
 } from './utils/configXmlUtils';
@@ -250,7 +250,7 @@ export async function addDefaultImagesToResources(projectDirectory: string, plat
  *
  */
 export async function addResourcesToConfigXml(projectDirectory: string, platformList: KnownPlatform[], resourceJson: ResourcesConfig): Promise<any> {
-  let configJson = await parseConfigXml(projectDirectory);
+  let configJson = await parseConfigXmlToJson(projectDirectory);
 
   if (!configJson.widget.platform || configJson.widget.platform.length === 0) {
     throw `Config.xml does not contain a platform entry.`;

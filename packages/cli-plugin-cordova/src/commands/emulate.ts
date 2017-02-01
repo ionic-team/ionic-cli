@@ -9,7 +9,7 @@ import {
   TaskChain,
   validators
 } from '@ionic/cli-utils';
-import { resetSrcContent } from '../lib/utils/configXmlUtils';
+import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import {
   runAppScriptsBuild,
   startAppScriptsServer,
@@ -131,7 +131,7 @@ export class EmulateCommand extends Command {
     }
 
     // ensure the content node was set back to its original
-    await resetSrcContent(this.env.project.directory);
+    await resetConfigXmlContentSrc(this.env.project.directory);
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
 

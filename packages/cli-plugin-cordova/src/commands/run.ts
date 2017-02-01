@@ -14,7 +14,7 @@ import {
   startAppScriptsServer,
   filterArgumentsForCordova
 } from '../lib/utils/cordova';
-import { resetSrcContent } from '../lib/utils/configXmlUtils';
+import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import {
   arePluginsInstalled,
   getProjectPlatforms,
@@ -131,7 +131,7 @@ export class RunCommand extends Command {
     }
 
     // ensure the content node was set back to its original
-    await resetSrcContent(this.env.project.directory);
+    await resetConfigXmlContentSrc(this.env.project.directory);
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
 
