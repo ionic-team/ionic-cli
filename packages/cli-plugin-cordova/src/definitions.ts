@@ -48,3 +48,4 @@ export interface ResourcesConfig {
 }
 
 export type KnownPlatform = 'ios' | 'android' | 'wp8';
+export type KnownResourceType = 'icon' | 'splash';

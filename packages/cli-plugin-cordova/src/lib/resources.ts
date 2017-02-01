@@ -24,8 +24,8 @@ import {
 import {
   writeConfigXml,
   parseConfigXml,
-  addPlatformImages,
-  addSplashScreenPreferences
+  addPlatformImagesToConfigJson,
+  addSplashScreenPreferencesToConfigJson
 } from './utils/configXmlUtils';
 
 const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];
@@ -69,6 +69,9 @@ export async function createImgDestinationDirectories (imgResources: ImageResour
   return Promise.all(buildDirPromises);
 }
 
+/**
+ *
+ */
 export async function getResourceConfigJson(): Promise<ResourcesConfig> {
   let resourceJsonStructure;
   const filePath = path.join(__dirname, '..', '..', 'resources.json');
@@ -136,6 +139,9 @@ export async function getSourceImages (buildPlatforms: string[], resourceTypes: 
   }));
 }
 
+/**
+ *
+ */
 export function findMostSpecificImage(imageResource: ImageResource, srcImagesAvailable: SourceImage[]): SourceImage | null {
   return srcImagesAvailable.reduce((mostSpecificImage: SourceImage | null, sourceImage: SourceImage) => {
     if (sourceImage.platform === imageResource.platform && sourceImage.resType === imageResource.resType) {
@@ -148,6 +154,9 @@ export function findMostSpecificImage(imageResource: ImageResource, srcImagesAva
   }, null);
 }
 
+/**
+ *
+ */
 export async function uploadSourceImages(srcImages: SourceImage[]): Promise<ImageUploadResponse[]> {
   return Promise.all(
     srcImages.map(async function(srcImage) {
@@ -169,6 +178,9 @@ export async function uploadSourceImages(srcImages: SourceImage[]): Promise<Imag
   );
 }
 
+/**
+ *
+ */
 export async function generateResourceImage(imageResource: ImageResource): Promise<void> {
   const form = new FormData();
   form.append('image_id', imageResource.imageId);
@@ -195,12 +207,18 @@ export async function generateResourceImage(imageResource: ImageResource): Promi
   }
 }
 
+/**
+ *
+ */
 function flatten(arr: any[]): any[] {
   return arr.reduce(function (flat, toFlatten) {
     return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
   }, []);
 }
 
+/**
+ *
+ */
 function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
   const chunks: Buffer[] = [];
 
@@ -228,6 +246,9 @@ export async function addDefaultImagesToResources(projectDirectory: string, plat
   return addResourcesToConfigXml(projectDirectory, [platform], resourceJson);
 }
 
+/**
+ *
+ */
 export async function addResourcesToConfigXml(projectDirectory: string, platformList: KnownPlatform[], resourceJson: ResourcesConfig): Promise<any> {
   let configJson = await parseConfigXml(projectDirectory);
 
@@ -239,12 +260,10 @@ export async function addResourcesToConfigXml(projectDirectory: string, platform
     if (!configJson.widget.platform.find((pl: any) => pl['$'].name === platform)) {
       throw `Config.xml does not contain an entry for ${platform}`;
     }
-    configJson = addPlatformImages(configJson, platform, {
-      icon: resourceJson[platform]['icon'].images,
-      splash: resourceJson[platform]['splash'].images
-    });
-    configJson = addSplashScreenPreferences(configJson);
+    configJson = addPlatformImagesToConfigJson(configJson, platform, resourceJson);
   });
+
+  configJson = addSplashScreenPreferencesToConfigJson(configJson);
 
   return writeConfigXml(projectDirectory, configJson);
 }

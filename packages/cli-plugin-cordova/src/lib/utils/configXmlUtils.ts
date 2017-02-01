@@ -1,17 +1,17 @@
 import * as xml2js from 'xml2js';
 import * as path from 'path';
-import { ResourcesImageConfig, KnownPlatform } from '../../definitions';
+import { ResourcesImageConfig, KnownPlatform, ResourcesConfig } from '../../definitions';
 import { ERROR_FILE_NOT_FOUND, fsReadFile, fsWriteFile, promisify } from '@ionic/cli-utils';
 
 
 /**
  * get orientation information from the config.xml cordova file structure
  */
-export function getOrientationConfigData(configData: any): string | undefined {
-  if (!configData.widget.preference) {
+export function getOrientationFromConfigJson(configJson: any): string | undefined {
+  if (!configJson.widget.preference) {
     return;
   }
-  var n = configData.widget.preference.find((d: any) => {
+  var n = configJson.widget.preference.find((d: any) => {
     return d && d.$ && d.$.name && d.$.name.toLowerCase() === 'orientation';
   });
   if (n && n.$ && n.$.value) {
@@ -22,11 +22,11 @@ export function getOrientationConfigData(configData: any): string | undefined {
 /**
  *
  */
-export function getPlatformConfigData(configData: any, platform: string): string | undefined {
-  if (!configData.widget.platform) {
+export function getPlatformConfigJson(configJson: any, platform: string): string | undefined {
+  if (!configJson.widget.platform) {
     return;
   }
-  return configData.widget.platform.find((d: any) => {
+  return configJson.widget.platform.find((d: any) => {
     return d && d.$ && d.$.name === platform;
   });
 }
@@ -34,8 +34,8 @@ export function getPlatformConfigData(configData: any, platform: string): string
 /**
  *
  */
-export function addPlatformImages(configData: any, platform: KnownPlatform, images: { icon: ResourcesImageConfig[], splash: ResourcesImageConfig[] }): any {
-  let configContents = JSON.parse(JSON.stringify(configData));
+export function addPlatformImagesToConfigJson(configJson: any, platform: KnownPlatform, images: ResourcesConfig): any {
+  let configContents = JSON.parse(JSON.stringify(configJson));
 
   function createImageElement(platform: KnownPlatform, resourceType: string) {
     return (image: ResourcesImageConfig) => {
@@ -60,8 +60,9 @@ export function addPlatformImages(configData: any, platform: KnownPlatform, imag
   }
 
   const platformIndex = configContents.widget.platform.findIndex((pl: any) => pl['$'].name === platform);
-  configContents.widget.platform[platformIndex].icon = images['icon'].map(createImageElement(platform, 'icon'));
-  configContents.widget.platform[platformIndex].splash = images['splash'].map(createImageElement(platform, 'splash'));
+  Object.keys(images[platform]).forEach((resType) => {
+    configContents.widget.platform[platformIndex][resType] = images[platform][resType].images.map(createImageElement(platform, resType));
+  });
 
   return configContents;
 }
@@ -69,8 +70,8 @@ export function addPlatformImages(configData: any, platform: KnownPlatform, imag
 /**
  *
  */
-export function addSplashScreenPreferences(configData: any): any {
-  let configContents = JSON.parse(JSON.stringify(configData));
+export function addSplashScreenPreferencesToConfigJson(configJson: any): any {
+  let configContents = JSON.parse(JSON.stringify(configJson));
 
   let hasSplashScreen = false;
   let hasSplashScreenDelay = false;
@@ -137,9 +138,9 @@ export async function parseConfigXml(projectDir: string): Promise<any> {
 /**
  *
  */
-export async function writeConfigXml(projectDir: string, configData: any) {
+export async function writeConfigXml(projectDir: string, configJson: any) {
   const builder = new xml2js.Builder();
-  const xml = builder.buildObject(configData);
+  const xml = builder.buildObject(configJson);
   const configFilePath = path.join(projectDir, 'config.xml');
 
   await fsWriteFile(configFilePath, xml, { encoding: 'utf8' });

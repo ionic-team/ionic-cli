@@ -12,7 +12,8 @@ import {
   ImageResource,
   SourceImage,
   ResourcesConfig,
-  ResourcesImageConfig
+  ResourcesImageConfig,
+  KnownPlatform
 } from '../definitions';
 import { getProjectPlatforms } from '../lib/utils/setup';
 import { parseConfigXml } from '../lib/utils/configXmlUtils';
@@ -211,39 +212,44 @@ export class ResourcesCommand extends Command {
 
     // TODO: UPDATE CONFIG.XML DATA
     tasks.next(`Modify config.xml to add new image resources`);
-    try {
-      await addResourcesToConfigXml(this.env.project.directory, [], imgResources.reduce((rc, img) => {
-        if (!rc[img.platform]) {
-          rc[img.platform] = {
-            [img.resType]: {
-              images: [],
-              nodeName: '',
-              nodeAttributes: []
-            }
-          };
-        }
-        if (!rc[img.platform][img.resType]) {
-          rc[img.platform][img.resType] = {
+    const imageResourcesForConfig = imgResources.reduce((rc, img) => {
+      if (!rc[img.platform]) {
+        rc[img.platform] = {
+          [img.resType]: {
             images: [],
             nodeName: '',
             nodeAttributes: []
-          };
-        }
-        rc[img.platform][img.resType].images.push(<ResourcesImageConfig>{
-          name: img.name,
-          width: img.width,
-          height: img.height,
-          density: img.density || null
-        });
-        rc[img.platform][img.resType].nodeName = img.nodeName;
-        rc[img.platform][img.resType].nodeAttributes = img.nodeAttributes;
+          }
+        };
+      }
+      if (!rc[img.platform][img.resType]) {
+        rc[img.platform][img.resType] = {
+          images: [],
+          nodeName: '',
+          nodeAttributes: []
+        };
+      }
+      rc[img.platform][img.resType].images.push(<ResourcesImageConfig>{
+        name: img.name,
+        width: img.width,
+        height: img.height,
+        density: img.density || null
+      });
+      rc[img.platform][img.resType].nodeName = img.nodeName;
+      rc[img.platform][img.resType].nodeAttributes = img.nodeAttributes;
 
-        return rc;
-      }, <ResourcesConfig>{}));
+      return rc;
+    }, <ResourcesConfig>{});
+
+    const platformList: KnownPlatform[] = Object
+      .keys(imageResourcesForConfig)
+      .map(pn => <KnownPlatform>pn);
+
+    try {
+      await addResourcesToConfigXml(this.env.project.directory, platformList, imageResourcesForConfig);
     } catch (e) {
         throw e;
     }
-
 
     tasks.end();
     /**
