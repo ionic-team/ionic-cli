@@ -31,6 +31,7 @@ import {
 const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];
 const UPLOAD_URL = 'http://res.ionic.io/api/v1/upload';
 const TRANSFORM_URL = 'http://res.ionic.io/api/v1/transform';
+const RESOURCES_CONFIG_FILE = path.join(__dirname, '..', '..', 'resources.json');
 const DEFAULT_RESOURCES_DIR = path.resolve(__dirname, '..', '..', 'default-resources');
 
 /**
@@ -74,7 +75,7 @@ export async function createImgDestinationDirectories (imgResources: ImageResour
  */
 export async function getResourceConfigJson(): Promise<ResourcesConfig> {
   let resourceJsonStructure;
-  const filePath = path.join(__dirname, '..', '..', 'resources.json');
+  const filePath = RESOURCES_CONFIG_FILE;
   try {
     resourceJsonStructure = await fsReadJsonFile(filePath);
   } catch (e) {
