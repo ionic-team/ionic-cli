@@ -23,7 +23,7 @@ import {
   getSourceImages,
   findMostSpecificImage,
   uploadSourceImages,
-  generateResourceImage,
+  transformResourceImage,
   getResourceConfigJson,
   addResourcesToConfigXml
 } from '../lib/resources';
@@ -195,7 +195,7 @@ export class ResourcesCommand extends Command {
     let count = 0;
 
     const promiseList = imgResources.map((img, index): Promise<void> => {
-      return generateResourceImage(img).then(() => {
+      return transformResourceImage(img).then(() => {
         count += 1;
         task.updateMsg(`Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`);
       });

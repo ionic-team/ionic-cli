@@ -58,7 +58,7 @@ export function flattenResourceJsonStructure (jsonStructure: any): ImageResource
 }
 
 /**
- *
+ * Create the destination directories for the provided image resources.
  */
 export async function createImgDestinationDirectories (imgResources: ImageResource[]): Promise<void[]> {
   const buildDirPromises: Promise<void>[] = imgResources
@@ -70,7 +70,7 @@ export async function createImgDestinationDirectories (imgResources: ImageResour
 }
 
 /**
- *
+ * Read the resources config and return the Json.
  */
 export async function getResourceConfigJson(): Promise<ResourcesConfig> {
   let resourceJsonStructure;
@@ -89,7 +89,7 @@ export async function getResourceConfigJson(): Promise<ResourcesConfig> {
 }
 
 /**
- *
+ * Find all source images within the resources directory
  */
 export async function getSourceImages (buildPlatforms: string[], resourceTypes: string[], resourceDir: string): Promise<SourceImage[]> {
   const srcDirList = buildPlatforms
@@ -140,7 +140,7 @@ export async function getSourceImages (buildPlatforms: string[], resourceTypes: 
 }
 
 /**
- *
+ * Find the source image that matches the requirements of the image resource provided.
  */
 export function findMostSpecificImage(imageResource: ImageResource, srcImagesAvailable: SourceImage[]): SourceImage | null {
   return srcImagesAvailable.reduce((mostSpecificImage: SourceImage | null, sourceImage: SourceImage) => {
@@ -155,7 +155,8 @@ export function findMostSpecificImage(imageResource: ImageResource, srcImagesAva
 }
 
 /**
- *
+ * Upload the provided source image through the resources web service. This will make it available
+ * for transforms for the next 5 minutes.
  */
 export async function uploadSourceImages(srcImages: SourceImage[]): Promise<ImageUploadResponse[]> {
   return Promise.all(
@@ -179,9 +180,10 @@ export async function uploadSourceImages(srcImages: SourceImage[]): Promise<Imag
 }
 
 /**
- *
+ * Using the transformation web service transform the provided image resource
+ * into the appropiate w x h and then write this file to the provided destination directory.
  */
-export async function generateResourceImage(imageResource: ImageResource): Promise<void> {
+export async function transformResourceImage(imageResource: ImageResource): Promise<void> {
   const form = new FormData();
   form.append('image_id', imageResource.imageId);
   form.append('width', imageResource.width);
@@ -208,7 +210,7 @@ export async function generateResourceImage(imageResource: ImageResource): Promi
 }
 
 /**
- *
+ * Recursively flatten an array.
  */
 function flatten(arr: any[]): any[] {
   return arr.reduce(function (flat, toFlatten) {
@@ -217,7 +219,7 @@ function flatten(arr: any[]): any[] {
 }
 
 /**
- *
+ * Convert a provided ReadableStream to a string
  */
 function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
   const chunks: Buffer[] = [];
@@ -231,9 +233,10 @@ function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
 }
 
 /**
- *
+ * Add images within the Default resources directory to the resources directory for the provided platform.
+ * Also write this information to the project's config.xml file
  */
-export async function addDefaultImagesToResources(projectDirectory: string, platform: KnownPlatform): Promise<any> {
+export async function addDefaultImagesToProjectResources(projectDirectory: string, platform: KnownPlatform): Promise<void> {
 
   // Copy default resources into the platform directory
   const resourcesDir = path.resolve(projectDirectory, 'resources', platform);
@@ -247,13 +250,13 @@ export async function addDefaultImagesToResources(projectDirectory: string, plat
 }
 
 /**
- *
+ * Add image resource references for the provided platforms to the project's config.xml file.
  */
-export async function addResourcesToConfigXml(projectDirectory: string, platformList: KnownPlatform[], resourceJson: ResourcesConfig): Promise<any> {
+export async function addResourcesToConfigXml(projectDirectory: string, platformList: KnownPlatform[], resourceJson: ResourcesConfig): Promise<void> {
   let configJson = await parseConfigXmlToJson(projectDirectory);
 
   if (!configJson.widget.platform || configJson.widget.platform.length === 0) {
-    throw `Config.xml does not contain a platform entry.`;
+    throw `Config.xml does not contain a platform entry. Please compare your config.xml file with one of our starter projects.`;
   }
 
   platformList.forEach((platform) => {

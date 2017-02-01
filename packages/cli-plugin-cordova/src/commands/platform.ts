@@ -12,7 +12,7 @@ import { KnownPlatform } from '../definitions';
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import {
-  addDefaultImagesToResources
+  addDefaultImagesToProjectResources
 } from '../lib/resources';
 
 /**
@@ -79,7 +79,7 @@ export class PlatformCommand extends Command {
     if (action === 'add' && !(options['noresources']) && ['ios', 'android', 'wp8'].includes(platformName)) {
       tasks.next(`Copying default image resources into ${chalk.bold('/resources/' + platformName)}`);
       try {
-        await addDefaultImagesToResources(this.env.project.directory, <KnownPlatform>platformName);
+        await addDefaultImagesToProjectResources(this.env.project.directory, <KnownPlatform>platformName);
       } catch (e) {
         throw e;
       }
