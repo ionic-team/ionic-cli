@@ -54,6 +54,12 @@ export async function createCommandEnvironment(pargv: string[], env: { [k: strin
   const argv = minimist(pargv);
 
   const log = new Logger();
+
+  // If verbose flag is passed the log.level becomes debug
+  if (argv['verbose']) {
+    argv['log-level'] = 'debug';
+  }
+
   if (argv['log-level']) {
     log.level = argv['log-level'];
   }

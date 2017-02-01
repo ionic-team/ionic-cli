@@ -33,13 +33,13 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 
   const log = new Logger();
 
-  if (argv['log-level']) {
-    log.level = argv['log-level'];
-  }
-
   // If verbose flag is passed the log.level becomes debug
   if (argv['verbose']) {
-    log.level = 'debug';
+    argv['log-level'] = 'debug';
+  }
+
+  if (argv['log-level']) {
+    log.level = argv['log-level'];
   }
 
   env['PROJECT_FILE'] = PROJECT_FILE;
