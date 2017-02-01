@@ -4,7 +4,6 @@ import * as path from 'path';
 import * as archiver from 'archiver';
 import * as chalk from 'chalk';
 import * as superagent from 'superagent';
-import * as FormData from 'form-data';
 
 import {
   APIResponse,
@@ -75,19 +74,11 @@ export class UploadCommand extends Command {
     return res.data;
   }
 
-  private uploadSnapshot(snapshot: Snapshot, zip: NodeJS.ReadableStream): Promise<void> {
+  private uploadSnapshot(snapshot: Snapshot, zip: NodeJS.ReadableStream, progress: (p: { loaded: number, total: number }) => void): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const form = new FormData();
-
       zip.on('error', (err: any) => {
         reject(err);
       });
-
-      // TODO: how do people do this elegantly nowadays?
-      const fields = <any>snapshot.presigned_post.fields;
-      for (let k in snapshot.presigned_post.fields) {
-        form.append(k, fields[k]);
-      }
 
       let bufs: Buffer[] = [];
 
@@ -96,30 +87,22 @@ export class UploadCommand extends Command {
       });
 
       zip.on('end', () => {
-        form.append('file', Buffer.concat(bufs));
-
-        form.submit(snapshot.presigned_post.url, (err, res) => {
-          if (err) {
-            return reject(err);
-          }
-
-          let body = '';
-
-          res.on('data', (chunk: string) => {
-            body += chunk;
-          });
-
-          res.on('end', () => {
-            if (res.statusCode !== 204) {
-              // TODO: log body for debug purposes?
-              return reject(new Error(`Unexpected status code from AWS: ${res.statusCode}`));
+        const req = superagent.post(snapshot.presigned_post.url)
+          .field(snapshot.presigned_post.fields)
+          .field('file', Buffer.concat(bufs))
+          .on('progress', (event) => {
+            progress(event);
+          })
+          .end((err, res) => {
+            if (err) {
+              return reject(err);
             }
-
+            if (res.status !== 204) {
+              // TODO: log body for debug purposes?
+              return reject(new Error(`Unexpected status code from AWS: ${res.status}`));
+            }
             resolve();
           });
-
-          res.resume();
-        });
       });
     });
   }
@@ -132,8 +115,10 @@ export class UploadCommand extends Command {
 
     tasks.next('Requesting snapshot');
     const snapshot = await this.requestSnapshotUpload(token);
-    tasks.next('Uploading snapshot'); // TODO: progress bar?
-    await this.uploadSnapshot(snapshot, zip);
+    const uploadTask = tasks.next('Uploading snapshot');
+    await this.uploadSnapshot(snapshot, zip, (p) => {
+      uploadTask.progress(p.loaded, p.total);
+    });
 
     tasks.end();
 

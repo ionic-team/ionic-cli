@@ -93,10 +93,13 @@ declare module "superagent" {
         buffer(val?: boolean): this;
         clearTimeout(): this;
         end(callback?: CallbackHandler): this;
-        field(name: string, val: string): this;
+        field(name: string, val: string | Buffer): this;
+        field(fields: Object): this;
         get(field: string): string;
         on(name: string, handler: Function): this;
+        on(name: 'progress', handler: (event: { direction: string; lengthComputable: boolean; loaded: number; total: number; }) => void): this;
         on(name: 'error', handler: (err: any) => void): this;
+        on(name: 'end', handler: () => void): this;
         part(): this;
         pipe(stream: NodeJS.WritableStream, options?: Object): stream.Writable;
         query(val: Object): this;

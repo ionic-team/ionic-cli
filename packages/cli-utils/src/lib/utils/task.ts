@@ -1,6 +1,9 @@
+import * as tty from 'tty'
+
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
 import ui = inquirer.ui;
+import * as ProgressBar from 'progress';
 
 import { ICON_SUCCESS_GREEN, ICON_FAILURE_RED } from './format';
 
@@ -21,10 +24,11 @@ class Spinner {
 }
 
 export class Task {
-  public intervalId: NodeJS.Timer;
+  public intervalId?: NodeJS.Timer;
   public running: boolean = false;
   protected bottomBar: ui.BottomBar;
   private spinner: Spinner;
+  private progressBar?: ProgressBar;
 
   constructor(public msg: string) {
     this.spinner = new Spinner();
@@ -34,16 +38,44 @@ export class Task {
 
   start(): void {
     if (!this.running) {
-      this.intervalId = setInterval(() => {
-        this.bottomBar.updateBottomBar(`${chalk.bold(this.spinner.frame())} ${this.msg}`);
-      }, 50);
+      this.intervalId = setInterval(() => { this.tick() }, 50);
     }
 
     this.running = true;
   }
 
+  tick(): void {
+    this.bottomBar.updateBottomBar(this.format());
+  }
+
+  progress(prog: number, total: number) {
+    if (!this.progressBar) {
+      const term = <any>tty; // TODO: type def issue
+      this.progressBar = new ProgressBar('[:bar] :percent :etas', {
+        total: total,
+        width: 15,
+        stream: new term.WriteStream(),
+      });
+    }
+
+    const progbar = <any>this.progressBar; // TODO: type def issue
+    progbar.curr = prog;
+
+    this.progressBar.tick(0);
+    this.tick();
+  }
+
+  format(): string {
+    const progbar = <any>this.progressBar; // TODO: type def issue
+    const progress = progbar ? progbar.lastDraw.trim() : '';
+    return `${chalk.bold(this.spinner.frame())} ${this.msg} ${progress}`;
+  }
+
   clear(): void {
-    clearTimeout(this.intervalId);
+    if (typeof this.intervalId !== 'undefined') {
+      clearTimeout(this.intervalId);
+    }
+
     this.bottomBar.updateBottomBar('');
     this.bottomBar.close();
   }
@@ -67,7 +99,7 @@ export class Task {
 export class TaskChain {
   protected currentTask?: Task;
 
-  next(msg: string): this {
+  next(msg: string): Task {
     if (this.currentTask) {
       this.currentTask.succeed();
     }
@@ -75,7 +107,7 @@ export class TaskChain {
     this.currentTask = new Task(msg);
     this.currentTask.start();
 
-    return this;
+    return this.currentTask;
   }
 
   updateMsg(msg: string): this {
