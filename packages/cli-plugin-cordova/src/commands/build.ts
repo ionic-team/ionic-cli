@@ -73,7 +73,7 @@ export class BuildCommand extends Command {
       })
     ]);
 
-    // ensure the content node was set back to its original
+    // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
