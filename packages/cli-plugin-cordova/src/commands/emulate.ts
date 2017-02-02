@@ -96,7 +96,7 @@ export class EmulateCommand extends Command {
       return;
     }
 
-    var tasks = new TaskChain();
+    const tasks = new TaskChain();
 
     await Promise.all([
       getProjectPlatforms(this.env.project.directory).then((platforms): Promise<string | void> => {

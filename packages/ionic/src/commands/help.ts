@@ -40,7 +40,7 @@ export class HelpCommand extends Command {
 
     // Resolve the plugin based on the inputs to help
     try {
-      const [plugin, argv] = resolvePlugin(this.env.project.directory, inputs);
+      const [plugin, argv] = await resolvePlugin(this.env.project.directory, inputs);
 
       const commandMetadataList = await plugin.getAllCommandMetadata();
       const foundCommandList = commandMetadataList

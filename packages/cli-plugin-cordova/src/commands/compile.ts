@@ -20,7 +20,7 @@ import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 export class CompileCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
 
-    var tasks = new TaskChain();
+    const tasks = new TaskChain();
 
     // ensure the content node was set back to its original
     await resetConfigXmlContentSrc(this.env.project.directory);
