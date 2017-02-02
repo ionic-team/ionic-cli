@@ -35,7 +35,7 @@ export async function loadPlugin(projectDir: string, name: string): Promise<any>
     const answers: inquirer.Answers = await inquirer.prompt([{
       type: 'confirm',
       name: 'installPlugin',
-      message: `The command plugin ${chalk.green(pluginName)} is not installed would you like to install it and continue?`
+      message: `This command's plugin ${chalk.green(pluginName)} is not installed would you like to install it and continue?`
     }]);
 
     if (answers['installPlugin']) {
