@@ -3,11 +3,11 @@ import {
   CommandLineOptions,
   Command,
   CommandMetadata,
-  appScriptsServe,
   normalizeOptionAliases,
   minimistOptionsToArray,
   TaskChain
 } from '@ionic/cli-utils';
+import * as appScripts from '@ionic/app-scripts';
 
 @CommandMetadata({
   name: 'serve',
@@ -90,10 +90,14 @@ export class ServeCommand extends Command {
     var tasks = new TaskChain();
 
     const results = normalizeOptionAliases(this.metadata, options);
-    let args = minimistOptionsToArray(this.metadata, results);
+    const args = minimistOptionsToArray(this.metadata, results);
 
     tasks.next(`Starting app-scripts server`);
-    await appScriptsServe(args);
+
+    // Update process args so that app scripts can just read current process args.
+    process.argv = process.argv.slice(0, 3).concat(args);
+    let response = await appScripts.build({});
+    console.log(response);
 
     tasks.end();
   }

@@ -53,5 +53,8 @@
     "chalk": "^1.1.3",
     "opn": "^4.0.2",
     "superagent": "^3.4.1"
+  },
+  "peerDependencies": {
+    "@ionic/app-scripts": "^1.0.0"
   }
 }
