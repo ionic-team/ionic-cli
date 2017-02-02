@@ -89,8 +89,8 @@ export function resolvePlugin(projectDir: string, argv: string[]): [any, string[
      */
     if (e === ERROR_PLUGIN_NOT_FOUND) {
       if (knownPlugins.includes(pluginName)) {
-        throw new FatalException('This plugin is not currently installed. Please execute the following to install it.\n'
-                                + `    ${chalk.bold(`npm install @ionic/${PREFIX}${pluginName}`)}`);
+        throw new FatalException('This plugin is not currently installed. Please execute the following to install it.\n\n'
+                                + `    ${chalk.bold(`npm install --save @ionic/${PREFIX}${pluginName}`)}\n`);
       } else {
         throw new FatalException(`Unknown plugin: ${chalk.bold(PREFIX + pluginName)}.`);
       }
