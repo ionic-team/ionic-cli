@@ -4,10 +4,12 @@ import {
   Command,
   CommandMetadata,
   normalizeOptionAliases,
-  minimistOptionsToArray,
-  TaskChain
+  minimistOptionsToArray
 } from '@ionic/cli-utils';
-import * as appScripts from '@ionic/app-scripts';
+import {
+  generateContext,
+  serve
+} from '@ionic/app-scripts';
 
 @CommandMetadata({
   name: 'serve',
@@ -87,18 +89,12 @@ import * as appScripts from '@ionic/app-scripts';
 export class ServeCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
 
-    var tasks = new TaskChain();
-
     const results = normalizeOptionAliases(this.metadata, options);
     const args = minimistOptionsToArray(this.metadata, results);
 
-    tasks.next(`Starting app-scripts server`);
-
     // Update process args so that app scripts can just read current process args.
     process.argv = process.argv.slice(0, 3).concat(args);
-    let response = await appScripts.build({});
-    console.log(response);
-
-    tasks.end();
+    const context = generateContext();
+    await serve(context);
   }
 }

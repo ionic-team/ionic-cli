@@ -1,13 +1,15 @@
-import { writeConfigXmlContentSrc } from './configXmlUtils';
+ import { writeConfigXmlContentSrc } from './configXmlUtils';
 import {
   CommandData,
   CommandLineInputs,
   CommandLineOptions,
   normalizeOptionAliases,
   minimistOptionsToArray,
-  appScriptsServe,
-  appScriptsBuild
 } from '@ionic/cli-utils';
+import {
+  generateContext,
+  build
+} from '@ionic/app-scripts';
 
 /**
  * Filter and gather arguments from command line to be passed to Cordova
@@ -40,7 +42,7 @@ export function filterArgumentsForCordova(metadata: CommandData, inputs: Command
 /**
  * Start the app scripts server for emulator or device
  */
-export async function startAppScriptsServer(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+export async function startAppScriptsServer(projectDirectory: string, metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
   const results = normalizeOptionAliases(metadata, options);
   let args = minimistOptionsToArray(metadata, results);
 
@@ -50,13 +52,17 @@ export async function startAppScriptsServer(metadata: CommandData, inputs: Comma
     '--nobrowser'
   ]);
 
-  const serveSettings = await appScriptsServe(args);
-  await writeConfigXmlContentSrc(process.cwd(), serveSettings.url);
+  process.argv = process.argv.slice(0, 3).concat(args);
+  const context = generateContext();
+  const serverSettings = await build(context);
+  await writeConfigXmlContentSrc(projectDirectory, serverSettings.url);
 }
 
 export async function runAppScriptsBuild(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
   const results = normalizeOptionAliases(metadata, options);
   let args = minimistOptionsToArray(metadata, results);
 
-  await appScriptsBuild(args);
+  process.argv = process.argv.slice(0, 3).concat(args);
+  const context = generateContext();
+  await build(context);
 }

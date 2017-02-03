@@ -69,9 +69,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     } else {
       console.error(err);
     }
+    process.exit(exitCode);
   }
-
-  process.exit(exitCode);
 }
 
 /**

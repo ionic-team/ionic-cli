@@ -127,7 +127,7 @@ export class RunCommand extends Command {
       // using app-scripts and livereload is requested
       // Also remove commandName from the rawArgs passed
       tasks.next(`Starting app-scripts server`);
-      await startAppScriptsServer(this.metadata, inputs, options);
+      await startAppScriptsServer(this.env.project.directory, this.metadata, inputs, options);
     }
 
     // ensure the content node was set back to its original

@@ -205,19 +205,19 @@ export class ResourcesCommand extends Command {
     /**
      * Call the transform service and output images to appropriate destination
      */
-    let task = tasks.next(`Generating platform resources`);
+    tasks.next(`Generating platform resources`);
     let count = 0;
 
     const promiseList = imgResources.map((img, index): Promise<void> => {
       return transformResourceImage(img).then(() => {
         count += 1;
-        task.updateMsg(`Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`);
+        tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`);
       });
     });
 
     try {
       const generateImageResponses = await Promise.all(promiseList);
-      task.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
+      tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
       this.env.log.debug(`${chalk.green('generateResourceImage')} completed - responses=${JSON.stringify(generateImageResponses, null, 2)}`);
     } catch (e) {
       throw e;
