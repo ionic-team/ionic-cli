@@ -46,6 +46,9 @@
     "progress": "^1.1.8",
     "superagent": "^2.3.0"
   },
+  "files": [
+    "dist/"
+  ],
   "jest": {
     "moduleFileExtensions": [
       "ts",

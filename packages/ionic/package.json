@@ -22,6 +22,10 @@
     "globallink": "npm link",
     "watch": "npm run clean && ../../node_modules/.bin/concurrently -p '[{name}]' -n 'src,test' '../../node_modules/.bin/tsc --watch'"
   },
+  "files": [
+    "bin/",
+    "dist/"
+  ],
   "keywords": [
     "ionic",
     "ionic framework",

@@ -56,5 +56,11 @@
   },
   "peerDependencies": {
     "@ionic/app-scripts": "^1.0.0"
-  }
+  },
+  "files": [
+    "bin/",
+    "default-resources",
+    "dist/",
+    "resources.json"
+  ]
 }

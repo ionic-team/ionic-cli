@@ -1,4 +1,3 @@
- import { writeConfigXmlContentSrc } from './configXmlUtils';
 import {
   CommandData,
   CommandLineInputs,
@@ -8,7 +7,9 @@ import {
 } from '@ionic/cli-utils';
 import {
   generateContext,
-  build
+  build,
+  serve,
+  ServeConfig
 } from '@ionic/app-scripts';
 
 /**
@@ -42,7 +43,7 @@ export function filterArgumentsForCordova(metadata: CommandData, inputs: Command
 /**
  * Start the app scripts server for emulator or device
  */
-export async function startAppScriptsServer(projectDirectory: string, metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+export async function startAppScriptsServer(projectDirectory: string, metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeConfig> {
   const results = normalizeOptionAliases(metadata, options);
   let args = minimistOptionsToArray(metadata, results);
 
@@ -54,8 +55,8 @@ export async function startAppScriptsServer(projectDirectory: string, metadata: 
 
   process.argv = process.argv.slice(0, 3).concat(args);
   const context = generateContext();
-  const serverSettings = await build(context);
-  await writeConfigXmlContentSrc(projectDirectory, serverSettings.url);
+  const serverSettings = await serve(context);
+  return <ServeConfig>serverSettings;
 }
 
 export async function runAppScriptsBuild(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

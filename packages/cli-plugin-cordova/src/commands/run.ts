@@ -14,7 +14,7 @@ import {
   startAppScriptsServer,
   filterArgumentsForCordova
 } from '../lib/utils/cordova';
-import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
+import { resetConfigXmlContentSrc, writeConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import {
   arePluginsInstalled,
   getProjectPlatforms,
@@ -118,23 +118,27 @@ export class RunCommand extends Command {
     /**
      * If it is not livereload then just run build.
      */
+    let currentTask;
     if (!isLiveReload) {
 
-      tasks.next(`Running app-scripts build`);
+      // ensure the content node was set back to its original
+      await resetConfigXmlContentSrc(this.env.project.directory);
+
+      currentTask = tasks.next(`Running app-scripts build`);
+      currentTask.end();
       await runAppScriptsBuild(this.metadata, inputs, options);
     } else {
 
       // using app-scripts and livereload is requested
       // Also remove commandName from the rawArgs passed
-      tasks.next(`Starting app-scripts server`);
-      await startAppScriptsServer(this.env.project.directory, this.metadata, inputs, options);
+      currentTask = tasks.next(`Starting app-scripts server`);
+      currentTask.end();
+      const serverSettings = await startAppScriptsServer(this.env.project.directory, this.metadata, inputs, options);
+      await writeConfigXmlContentSrc(this.env.project.directory, serverSettings.hostBaseUrl);
     }
 
-    // ensure the content node was set back to its original
-    await resetConfigXmlContentSrc(this.env.project.directory);
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
-
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
     await new Shell().run('cordova', optionList, {
       showExecution: (this.env.log.level === 'debug')
