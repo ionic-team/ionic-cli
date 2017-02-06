@@ -6,7 +6,7 @@
   "homepage": "http://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
   "bin": {
-    "ionic-cli": "./bin/ionic"
+    "ionic": "./bin/ionic"
   },
   "engines": {
     "node": ">=6"
