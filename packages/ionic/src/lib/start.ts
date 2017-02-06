@@ -98,12 +98,9 @@ ${chalk.bold('Run your app in the browser (great for initial development):')}
   ionic serve
 
 ${chalk.bold('Run on a device or simulator:')}
-  ionic run ios[android,browser]
+  ionic cordova:run ios[android,browser]
 
-${chalk.bold('Test and share your app on device with Ionic View:')}
+${chalk.bold('Test and share your app on a device with the Ionic View app:')}
   http://view.ionic.io
-
-${chalk.bold('Build better Enterprise apps with expert Ionic support:')}
-  http://ionic.io/enterprise
   `;
 }

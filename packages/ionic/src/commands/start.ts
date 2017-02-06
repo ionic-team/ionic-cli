@@ -230,7 +230,7 @@ export class StartCommand extends Command {
     const confirmation = await this.env.inquirer.prompt({
       type: 'confirm',
       name: 'createAccount',
-      message: 'Create an Ionic Cloud account to add features like User Authentication, ' +
+      message: 'Create a free Ionic account to add features like User Authentication, ' +
            'Push Notifications, Live Updating, iOS builds, and more?'
     });
 
