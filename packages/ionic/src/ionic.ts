@@ -43,7 +43,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   }
 
   env['PROJECT_FILE'] = PROJECT_FILE;
-  env['PROJECT_DIR'] = await getProjectRootDir(env['PWD'], env['PROJECT_FILE']);
+  env['PROJECT_DIR'] = await getProjectRootDir(process.cwd(), env['PROJECT_FILE']);
 
   try {
     const [plugin, inputs] = await resolvePlugin(env['PROJECT_DIR'], pargv);

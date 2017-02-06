@@ -75,7 +75,7 @@ import {
     },
     {
       name: 'lab',
-      description: 'Test your apps on multiple screen sizes and platform types',
+      description: 'Test your apps on multiple platform types in the browser',
       type: Boolean,
       aliases: ['l']
     },
