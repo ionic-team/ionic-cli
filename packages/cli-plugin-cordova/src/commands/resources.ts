@@ -271,7 +271,7 @@ export class ResourcesCommand extends Command {
      */
     this.env.log.msg(
       imagesTooLargeForSource.map(imageResource => (
-        `    ${chalk.bold(imageResource.name)}     ${imageResource.platform} -> ${imageResource.resType}`
+        `    ${chalk.bold(imageResource.name)}     ${imageResource.platform}/${imageResource.resType} needed ${imageResource.width}w x ${imageResource.height}h`
       ))
       .concat((imagesTooLargeForSource.length > 0) ? `\nThe following images were not created because their source image was too small:` : [])
       .reverse()
