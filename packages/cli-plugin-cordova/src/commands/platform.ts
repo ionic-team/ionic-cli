@@ -25,7 +25,7 @@ import {
   inputs: [
     {
       name: 'action',
-      description: 'Add or remove the platform',
+      description: `${chalk.bold('add')} or ${chalk.bold('remove')} the platform`,
       validators: [validators.required],
       prompt: {
         type: 'list',
@@ -34,7 +34,7 @@ import {
     },
     {
       name: 'platform',
-      description: 'the platform that you would like to build (ex: ios, android)',
+      description: `the platform that you would like to build: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
       validators: [validators.required],
       prompt: {
         message: 'What platform would you like to build? (ex: ios, android)'

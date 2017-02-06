@@ -32,10 +32,10 @@ import {
   inputs: [
     {
       name: 'platform',
-      description: 'the platform to run',
+      description: `the platform to run: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
       validators: [validators.required],
       prompt: {
-        message: 'What platform would you like to run? (ex: ios, android)'
+        message: `What platform would you like to run? ${chalk.bold('ios')}, ${chalk.bold('android')}`
       }
     }
   ],
