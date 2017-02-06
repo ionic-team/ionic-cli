@@ -27,8 +27,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   let exitCode = 0;
   let err: Error | undefined;
 
-  // Check version?
-  pargv = pargv.slice(2);
+  pargv = mapArgsForLegacy(pargv.slice(2));
   const argv = minimist(pargv);
 
   const log = new Logger();
@@ -36,6 +35,11 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   // If verbose flag is passed the log.level becomes debug
   if (argv['verbose']) {
     argv['log-level'] = 'debug';
+  }
+
+  // If version flag is passed then run the version command
+  if (argv['version']) {
+    pargv = ['version'];
   }
 
   if (argv['log-level']) {
@@ -95,4 +99,19 @@ async function getProjectRootDir(dir: string, projectFileName: string): Promise<
   }
 
   return '';
+}
+
+function mapArgsForLegacy(pargv: string[]): string[] {
+  let modifiedArgArray: string[] = pargv.slice();
+
+  // If verbose flag is passed the log.level becomes debug
+  if (pargv.includes('--verbose')) {
+    modifiedArgArray.push('--log-level="debug"');
+  }
+
+  // If version flag is passed then run the version command
+  if (pargv.includes('--version')) {
+    modifiedArgArray = ['version'];
+  }
+  return modifiedArgArray;
 }
