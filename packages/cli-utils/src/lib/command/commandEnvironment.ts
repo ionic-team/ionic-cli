@@ -33,7 +33,7 @@ export async function runCommand(commandEnvironment: CommandEnvironment, pargv?:
     throw new FatalException(`Command not found: ${chalk.bold(argv._.join(' '))}.`);
   }
 
-  if (argv['help']) {
+  if (argv['help'] || argv['h']) {
     return console.log(formatCommandHelp(command.metadata));
   }
 
