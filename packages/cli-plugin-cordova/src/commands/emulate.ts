@@ -32,7 +32,7 @@ import {
   inputs: [
     {
       name: 'platform',
-      description: 'the platform to emulate',
+      description: `the platform to emulate: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
       validators: [validators.required],
       prompt: {
         message: `What platform would you like to build? ${chalk.bold('ios')}, ${chalk.bold('android')}`
