@@ -8,7 +8,7 @@ import * as globalPlugin from '../index';
 
 export const defaultPlugin = 'core';
 export const knownPlugins = [defaultPlugin, 'cloud', 'cordova'];
-export const PREFIX = 'cli-plugin-';
+export const PREFIX = '@ionic/cli-plugin-';
 export const ERROR_PLUGIN_NOT_INSTALLED = 'PLUGIN_NOT_INSTALLED';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';
 export const ERROR_PLUGIN_INVALID = 'PLUGIN_INVALID';
@@ -20,16 +20,20 @@ export async function loadPlugin(projectDir: string, name: string): Promise<any>
   let m: any;
 
   try {
-    var mPath = require.resolve(path.join(projectDir, 'node_modules', '@ionic', `${PREFIX}${name}`));
+    var mPath = require.resolve(path.join(projectDir, 'node_modules', '@ionic', `cli-plugin-${name}`));
     m = require(mPath);
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') {
       throw e;
-    } else if (!knownPlugins.includes(name)) {
-      throw ERROR_PLUGIN_NOT_FOUND;
+    }
+
+    // Unfortuantly we need to check the not only the code but the error message
+    let foundPackageNeeded = [knownPlugins].map(kp => `${PREFIX}${kp}`)
+      .find(kp => e.message && e.message.includes(kp));
+    if (!foundPackageNeeded) {
+      throw `Dependency missing for ${chalk.bold(PREFIX + name)}:\n\n  ${chalk.red('[ERROR]')}: ${e.message}`;
     }
   }
-
   if (!m) {
     const pluginName = `@ionic/${PREFIX}${name}`;
     const answers: inquirer.Answers = await inquirer.prompt([{
@@ -112,7 +116,7 @@ export async function resolvePlugin(projectDir: string, argv: string[]): Promise
      */
     if (e === ERROR_PLUGIN_NOT_INSTALLED) {
       throw new FatalException('This plugin is not currently installed. Please execute the following to install it.\n\n'
-                              + `    ${chalk.bold(`npm install --save @ionic/${PREFIX}${pluginName}`)}\n`);
+                              + `    ${chalk.bold(`npm install --save ${PREFIX}${pluginName}`)}\n`);
     } else if (e === ERROR_PLUGIN_NOT_FOUND) {
       throw new FatalException(`Unknown plugin: ${chalk.bold(PREFIX + pluginName)}.`);
     }
