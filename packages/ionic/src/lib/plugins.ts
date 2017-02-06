@@ -76,6 +76,11 @@ export async function resolvePlugin(projectDir: string, argv: string[]): Promise
     ];
   }
 
+  // If this we do not know the project directory and it is not a global command then we can't run it.
+  if (!projectDir) {
+    throw chalk.bold(`This is not a global command please run this in your Ionic project's directory.\n`);
+  }
+
   /**
    * If the first arguement supplied contains a ':' then
    * it is assumed that this is calling a command in another

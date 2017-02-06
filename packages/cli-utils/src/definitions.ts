@@ -37,6 +37,7 @@ export interface AppScriptsServeSettings {
 export interface ProjectFile {
   name: string;
   app_id: string;
+  v2: boolean;
 }
 
 export interface AppDetails {
