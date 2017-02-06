@@ -16,7 +16,7 @@ import * as appGenerator from '@ionic/app-generators';
   name: 'generate',
   aliases: ['g'],
   description: 'Genarete pages and components',
-  exampleCommands: ['page thingsList --skipScss --componentsDir="src/components"',' (for interactive)'],
+  exampleCommands: ['page thingsList --skipScss --componentsDir="src/components"', ' (for interactive)'],
   inputs: [
     {
       name: 'generator',

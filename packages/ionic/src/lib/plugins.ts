@@ -28,14 +28,14 @@ export async function loadPlugin(projectDir: string, name: string): Promise<any>
     }
 
     // Unfortuantly we need to check the not only the code but the error message
-    let foundPackageNeeded = [knownPlugins].map(kp => `${PREFIX}${kp}`)
+    let foundPackageNeeded = knownPlugins.map(kp => `${PREFIX}${kp}`)
       .find(kp => e.message && e.message.includes(kp));
     if (!foundPackageNeeded) {
       throw `Dependency missing for ${chalk.bold(PREFIX + name)}:\n\n  ${chalk.red('[ERROR]')}: ${e.message}`;
     }
   }
   if (!m) {
-    const pluginName = `@ionic/${PREFIX}${name}`;
+    const pluginName = `${PREFIX}${name}`;
     const answers: inquirer.Answers = await inquirer.prompt([{
       type: 'confirm',
       name: 'installPlugin',
