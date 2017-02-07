@@ -1,9 +1,10 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import * as zlib from 'zlib';
 import * as tar from 'tar';
 import * as chalk from 'chalk';
 
-import { runcmd } from '@ionic/cli-utils';
+import { runcmd, getCommandInfo, fsReadJsonFile, fsWriteJsonFile, ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON } from '@ionic/cli-utils';
 import { StarterTemplate } from '../definitions';
 
 /**
@@ -103,4 +104,28 @@ ${chalk.bold('Run on a device or simulator:')}
 ${chalk.bold('Test and share your app on a device with the Ionic View app:')}
   http://view.ionic.io
   `;
+}
+
+export async function updateDependenciesForCLI(pathToProject: string, releaseChannelName: string = 'latest') {
+  const filePath = path.resolve(pathToProject, 'package.json');
+  try {
+    let [jsonStructure, distTags ] = await Promise.all([
+      fsReadJsonFile(filePath),
+      getCommandInfo('npm', ['view', '@ionic/cli-plugin-core', 'dist-tags', '--json'])
+    ]);
+    jsonStructure['devDependencies']['@ionic/cli-plugin-core'] = JSON.parse(distTags)[releaseChannelName];
+
+    // TODO: eventually update ionic2-app-base and remove this.
+    jsonStructure['devDependencies']['@ionic/app-scripts'] = '1.0.1';
+
+    await fsWriteJsonFile(filePath, jsonStructure, { encoding: 'utf8' });
+
+  } catch (e) {
+    if (e === ERROR_FILE_NOT_FOUND) {
+      throw new Error(`${filePath} not found`);
+    } else if (e === ERROR_FILE_INVALID_JSON) {
+      throw new Error(`${filePath} is not valid JSON.`);
+    }
+    throw e;
+  }
 }

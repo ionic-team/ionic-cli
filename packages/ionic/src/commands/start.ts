@@ -22,9 +22,11 @@ import {
   tarXvf,
   isSafeToCreateProjectIn,
   getStarterTemplateTextList,
-  getHelloText
+  getHelloText,
+  updateDependenciesForCLI
 } from '../lib/start';
 
+import { getReleaseChannelName } from '../lib/plugins';
 import { StarterTemplate } from '../definitions';
 
 
@@ -199,6 +201,10 @@ export class StartCommand extends Command {
       tarXvf(baseArchiveResponse.body, projectRoot),
       tarXvf(archiveResponse.body, projectRoot)
     ]);
+
+    tasks.next(`Update project dependencies to add core plugins`);
+    const releaseChannelName = await getReleaseChannelName();
+    await updateDependenciesForCLI(projectRoot, releaseChannelName);
 
 
     /**

@@ -47,8 +47,8 @@ export async function loadPlugin(projectDir: string, name: string): Promise<any>
       const pluginInstallVersion = `${pluginName}` + (releaseChannelName ? `@${releaseChannelName}` : '');
       const tasks = new TaskChain();
 
-      tasks.next(`Executing npm command: ${chalk.bold(`npm install --save ${pluginInstallVersion}`)}`);
-      await new Shell().run('npm', ['install', '--save', pluginInstallVersion ]);
+      tasks.next(`Executing npm command: ${chalk.bold(`npm install --save-dev ${pluginInstallVersion}`)}`);
+      await new Shell().run('npm', ['install', '--save-dev', pluginInstallVersion ]);
       tasks.end();
 
       return loadPlugin(projectDir, name);
@@ -127,7 +127,7 @@ export async function resolvePlugin(projectDir: string, argv: string[]): Promise
       const pluginInstallVersion = `${PREFIX}${pluginName}` + (releaseChannelName ? `@${releaseChannelName}` : '');
 
       throw new FatalException('This plugin is not currently installed. Please execute the following to install it.\n\n'
-                              + `    ${chalk.bold(`npm install --save ${pluginInstallVersion}`)}\n`);
+                              + `    ${chalk.bold(`npm install --save-dev ${pluginInstallVersion}`)}\n`);
     } else if (e === ERROR_PLUGIN_NOT_FOUND) {
       throw new FatalException(`Unknown plugin: ${chalk.bold(PREFIX + pluginName)}.`);
     }
@@ -137,10 +137,10 @@ export async function resolvePlugin(projectDir: string, argv: string[]): Promise
 }
 
 export async function getReleaseChannelName(): Promise<string | undefined> {
-  let resourceJsonStructure: any;
-  const filePath = path.resolve('..', '..', 'package.json');
+  let jsonStructure: any;
+  const filePath = path.resolve(__dirname, '..', '..', 'package.json');
   try {
-    resourceJsonStructure = await fsReadJsonFile(filePath);
+    jsonStructure = await fsReadJsonFile(filePath);
   } catch (e) {
     if (e === ERROR_FILE_NOT_FOUND) {
       throw new Error(`${filePath} not found`);
@@ -149,10 +149,10 @@ export async function getReleaseChannelName(): Promise<string | undefined> {
     }
     throw e;
   }
-  if (resourceJsonStructure.version.includes('canary')) {
+  if (jsonStructure.version.includes('canary')) {
     return 'canary';
   }
-  if (resourceJsonStructure.version.includes('beta')) {
+  if (jsonStructure.version.includes('beta')) {
     return 'beta';
   }
 }
