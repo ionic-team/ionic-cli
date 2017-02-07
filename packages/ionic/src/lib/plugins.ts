@@ -149,7 +149,7 @@ export async function getReleaseChannelName(): Promise<string | undefined> {
     }
     throw e;
   }
-  if (jsonStructure.version.includes('canary')) {
+  if (jsonStructure.version.includes('alpha')) {
     return 'canary';
   }
   if (jsonStructure.version.includes('beta')) {
