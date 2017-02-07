@@ -1,5 +1,6 @@
 import * as minimist from 'minimist';
 import * as path from 'path';
+import * as chalk from 'chalk';
 import {
   FatalException,
   formatError as formatSuperAgentError,
@@ -27,23 +28,21 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   let exitCode = 0;
   let err: Error | undefined;
 
-  pargv = mapArgsForLegacy(pargv.slice(2));
+  pargv = mapOptionsForLegacy(pargv.slice(2));
   const argv = minimist(pargv);
 
   const log = new Logger();
 
-  // If verbose flag is passed the log.level becomes debug
-  if (argv['verbose']) {
-    argv['log-level'] = 'debug';
-  }
-
-  // If version flag is passed then run the version command
-  if (argv['version']) {
-    pargv = ['version'];
-  }
-
   if (argv['log-level']) {
     log.level = argv['log-level'];
+  }
+
+  // If an legacy command is being executed inform the user that there is a new command available
+  let foundCommand = mapLegacyCommand(argv._[0]);
+  if (foundCommand) {
+    log.error(`${chalk.bold(argv._[0])} is no longer available. To find out more about the equivalent please run:\n\n` +
+      `  ${chalk.green('ionic help ' + foundCommand)}\n`);
+    return;
   }
 
   env['PROJECT_FILE'] = PROJECT_FILE;
@@ -101,7 +100,10 @@ async function getProjectRootDir(dir: string, projectFileName: string): Promise<
   return '';
 }
 
-function mapArgsForLegacy(pargv: string[]): string[] {
+/**
+ * Map legacy options to their new equivalent
+ */
+function mapOptionsForLegacy(pargv: string[]): string[] {
   let modifiedArgArray: string[] = pargv.slice();
 
   // If verbose flag is passed the log.level becomes debug
@@ -114,4 +116,21 @@ function mapArgsForLegacy(pargv: string[]): string[] {
     modifiedArgArray = ['version'];
   }
   return modifiedArgArray;
+}
+
+/**
+ * Find the command that is the equivalent of a legacy command.
+ */
+function mapLegacyCommand(command: string): string | undefined {
+  const commandMap: { [command: string]: string} = {
+    'build': 'cordova:build',
+    'compile': 'cordova:compile',
+    'emulate': 'cordova:emulate',
+    'platform': 'cordova:platform',
+    'prepare': 'cordova:prepare',
+    'resources': 'cordova:resources',
+    'run': 'cordova:run',
+  };
+
+  return commandMap[command];
 }
