@@ -136,11 +136,18 @@ export class RunCommand extends Command {
       currentTask.end();
       const serverSettings = await startAppScriptsServer(this.env.project.directory, this.metadata, inputs, options);
 
-      console.log(JSON.stringify(getAvailableIPAddress()));
+      const availableIPs = getAvailableIPAddress();
+      let chosenIP = availableIPs[0];
+      if (availableIPs.length > 0) {
+        chosenIP = await this.env.inquirer.prompt({
+          type: 'list',
+          message: 'Which IP would you like to use expose the server on for the device?',
+          choices: availableIPs.map(ip => ip.address)
+        });
+      }
 
-      await writeConfigXmlContentSrc(this.env.project.directory, serverSettings.hostBaseUrl);
+      await writeConfigXmlContentSrc(this.env.project.directory, `http://${chosenIP}:${serverSettings.httpPort}`);
     }
-
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
