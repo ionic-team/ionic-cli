@@ -14,6 +14,7 @@ import {
   startAppScriptsServer,
   filterArgumentsForCordova
 } from '../lib/utils/cordova';
+import { getAvailableIPAddress } from '../lib/utils/network';
 import { resetConfigXmlContentSrc, writeConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import {
   arePluginsInstalled,
@@ -90,7 +91,7 @@ export class RunCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const isLiveReload = options['livereload'];
 
-    const runPlatform = inputs[0] || 'ios';
+    const runPlatform = inputs[0];
     if (runPlatform === 'ios' && os.platform() !== 'darwin') {
       this.env.log.error('You cannot run iOS unless you are on Mac OSX.');
       return;
@@ -134,6 +135,9 @@ export class RunCommand extends Command {
       currentTask = tasks.next(`Starting app-scripts server`);
       currentTask.end();
       const serverSettings = await startAppScriptsServer(this.env.project.directory, this.metadata, inputs, options);
+
+      console.log(JSON.stringify(getAvailableIPAddress()));
+
       await writeConfigXmlContentSrc(this.env.project.directory, serverSettings.hostBaseUrl);
     }
 
