@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
 
-import { FatalException, Shell, TaskChain } from '@ionic/cli-utils';
+import { FatalException, Shell, TaskChain, fsReadJsonFile, ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON } from '@ionic/cli-utils';
 import { IonicNamespace } from '../commands';
 import * as globalPlugin from '../index';
 
@@ -43,9 +43,12 @@ export async function loadPlugin(projectDir: string, name: string): Promise<any>
     }]);
 
     if (answers['installPlugin']) {
+      const releaseChannelName = await getReleaseChannelName();
+      const pluginInstallVersion = `${pluginName}` + (releaseChannelName ? `@${releaseChannelName}` : '');
       const tasks = new TaskChain();
-      tasks.next(`Executing npm command: ${chalk.bold('npm install --save ' + pluginName)}`);
-      await new Shell().run('npm', ['install', '--save', pluginName ]);
+
+      tasks.next(`Executing npm command: ${chalk.bold(`npm install --save ${pluginInstallVersion}`)}`);
+      await new Shell().run('npm', ['install', '--save', pluginInstallVersion ]);
       tasks.end();
 
       return loadPlugin(projectDir, name);
@@ -120,12 +123,36 @@ export async function resolvePlugin(projectDir: string, argv: string[]): Promise
      * based on whether we know the plugin exists.
      */
     if (e === ERROR_PLUGIN_NOT_INSTALLED) {
+      const releaseChannelName = await getReleaseChannelName();
+      const pluginInstallVersion = `${PREFIX}${pluginName}` + (releaseChannelName ? `@${releaseChannelName}` : '');
+
       throw new FatalException('This plugin is not currently installed. Please execute the following to install it.\n\n'
-                              + `    ${chalk.bold(`npm install --save ${PREFIX}${pluginName}`)}\n`);
+                              + `    ${chalk.bold(`npm install --save ${pluginInstallVersion}`)}\n`);
     } else if (e === ERROR_PLUGIN_NOT_FOUND) {
       throw new FatalException(`Unknown plugin: ${chalk.bold(PREFIX + pluginName)}.`);
     }
 
     throw e;
+  }
+}
+
+export async function getReleaseChannelName(): Promise<string | undefined> {
+  let resourceJsonStructure: any;
+  const filePath = path.resolve('..', '..', 'package.json');
+  try {
+    resourceJsonStructure = await fsReadJsonFile(filePath);
+  } catch (e) {
+    if (e === ERROR_FILE_NOT_FOUND) {
+      throw new Error(`${filePath} not found`);
+    } else if (e === ERROR_FILE_INVALID_JSON) {
+      throw new Error(`${filePath} is not valid JSON.`);
+    }
+    throw e;
+  }
+  if (resourceJsonStructure.version.includes('canary')) {
+    return 'canary';
+  }
+  if (resourceJsonStructure.version.includes('beta')) {
+    return 'beta';
   }
 }
