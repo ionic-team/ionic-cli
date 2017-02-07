@@ -28,14 +28,14 @@ export class HelpCommand extends Command {
 
     // If there are no inputs then show help command help.
     if (inputs.length === 0) {
-      return this.env.log.msg(formatCommandHelp(this.metadata));
+      return this.env.log.msg(formatCommandHelp(this.metadata, ''));
     }
 
     const [argv, command] = this.env.namespace.locateCommand(inputs);
 
     // If the command is located on the global namespace then show its help
     if (command) {
-      return this.env.log.msg(formatCommandHelp(command.metadata));
+      return this.env.log.msg(formatCommandHelp(command.metadata, command.metadata.name));
     }
 
     // Resolve the plugin based on the inputs to help
@@ -50,8 +50,10 @@ export class HelpCommand extends Command {
       if (foundCommandList.length === 0) {
         return this.env.log.error(`Unable to provide help on unknown command: ${chalk.bold(argv.join(' '))}`);
       }
-
-      return foundCommandList.forEach((cmd: any) => this.env.log.msg(formatCommandHelp(cmd)));
+      return foundCommandList.forEach((cmd: any) => {
+        const commandName = (plugin.hasOwnProperty('PLUGIN_NAME')) ? `${plugin.PLUGIN_NAME}:${cmd.name}` : cmd.name;
+        return this.env.log.msg(formatCommandHelp(cmd, commandName));
+      });
 
     } catch (e) {
       return this.env.log.error(`Unable to find command: ${chalk.bold(argv.join(' '))}. It is possible that you are trying\n` +

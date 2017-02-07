@@ -7,20 +7,22 @@ import { STRIP_ANSI_REGEX } from './format';
 /**
  *
  */
-export function formatCommandHelp(cmdMetadata: CommandData): string {
+export function formatCommandHelp(cmdMetadata: CommandData, commandName: string): string {
   let description = cmdMetadata.description.split('\n').join('\n  ');
 
   return `
   ${chalk.bold(description)}
-  ${formatUsage(cmdMetadata)}${formatInputs(cmdMetadata.inputs)}${formatOptions(cmdMetadata.options)}${formatExamples(cmdMetadata)}
-
-  `;
+  ` +
+  formatUsage(cmdMetadata.inputs, commandName) +
+  formatInputs(cmdMetadata.inputs) +
+  formatOptions(cmdMetadata.options) +
+  formatExamples(cmdMetadata, commandName);
 }
 
-function formatUsage({ name, inputs }: CommandData): string {
+function formatUsage(inputs: CommandInput[] = [], commandName: string): string {
   const headerLine = chalk.bold(`Usage`);
   const usageLine =
-      `$ ionic ${name} ${
+      `$ ionic ${commandName} ${
         (inputs || [])
           .map(input => {
             if (input.validators && input.validators.includes(validators.required)) {
@@ -36,8 +38,8 @@ function formatUsage({ name, inputs }: CommandData): string {
   `;
 }
 
-function formatInputs(inputs?: CommandInput[]): string {
-  if (!Array.isArray(inputs) || inputs.length === 0) {
+function formatInputs(inputs: CommandInput[] = []): string {
+  if (inputs.length === 0) {
     return '';
   }
 
@@ -58,8 +60,8 @@ function formatInputs(inputs?: CommandInput[]): string {
   `;
 }
 
-function formatOptions(options?: CommandOption[]): string {
-  if (!Array.isArray(options) || options.length === 0) {
+function formatOptions(options: CommandOption[] = []): string {
+  if (options.length === 0) {
     return '';
   }
 
@@ -85,13 +87,13 @@ function formatOptions(options?: CommandOption[]): string {
   `;
 }
 
-function formatExamples({ name, exampleCommands }: CommandData): string {
+function formatExamples({ exampleCommands }: CommandData, commandName: string): string {
   if (!Array.isArray(exampleCommands)) {
     return '';
   }
 
   const headerLine = chalk.bold(`Examples`);
-  const exampleLines = exampleCommands.map(cmd => `$ ionic ${name} ${cmd} `);
+  const exampleLines = exampleCommands.map(cmd => `$ ionic ${commandName} ${cmd} `);
 
   return `
     ${headerLine}

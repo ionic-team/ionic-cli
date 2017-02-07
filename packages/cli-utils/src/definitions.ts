@@ -199,6 +199,7 @@ export interface CommandEnvironment {
   session: ISession;
   shell: IShell;
   namespace: INamespace;
+  pluginName: string | undefined;
 }
 
 export interface INamespace {

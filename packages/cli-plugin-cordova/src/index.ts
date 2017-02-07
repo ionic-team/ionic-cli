@@ -2,9 +2,11 @@ import { FatalException, getCommandMetadataList, createCommandEnvironment, runCo
 import { CordovaNamespace } from './commands';
 import * as chalk from 'chalk';
 
+export const PLUGIN_NAME = 'cordova';
+
 export async function run(pargv: string[], env: { [k: string]: string }): Promise<void>  {
   const cordovaNamespace = new CordovaNamespace();
-  const commandEnvironment = await createCommandEnvironment(pargv, env, cordovaNamespace);
+  const commandEnvironment = await createCommandEnvironment(pargv, env, cordovaNamespace, PLUGIN_NAME);
 
   // This module does not support v1 projects.
   let projectData = await commandEnvironment.project.load();

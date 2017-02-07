@@ -7,7 +7,6 @@ import * as inquirer from 'inquirer';
 import { INamespace, CommandEnvironment } from '../../definitions';
 import { formatCommandHelp } from '../utils/help';
 import { Logger } from '../utils/logger';
-import { FatalException } from '../errors';
 import { App } from '../app';
 import { Config } from '../config';
 import { Client } from '../http';
@@ -29,12 +28,15 @@ export async function runCommand(commandEnvironment: CommandEnvironment, pargv?:
 
   let [inputs, command] = primaryNamespace.locateCommand(argv._);
 
+  // If the command was not found throw
   if (command === undefined) {
-    throw new FatalException(`Command not found: ${chalk.bold(argv._.join(' '))}.`);
+    throw `Command not found: ${chalk.bold(argv._.join(' '))}.`;
   }
 
+  const commandName = (commandEnvironment.pluginName) ? `${commandEnvironment.pluginName}:command` : command.metadata.name;
+
   if (argv['help'] || argv['h']) {
-    return console.log(formatCommandHelp(command.metadata));
+    return console.log(formatCommandHelp(command.metadata, commandName));
   }
 
   command.env = commandEnvironment;
@@ -49,10 +51,9 @@ export async function runCommand(commandEnvironment: CommandEnvironment, pargv?:
 /**
  * Create a command environment to execute commands within
  */
-export async function createCommandEnvironment(pargv: string[], env: { [k: string]: string }, namespace: INamespace): Promise<CommandEnvironment> {
+export async function createCommandEnvironment(pargv: string[], env: { [k: string]: string }, namespace: INamespace, pluginName?: string): Promise<CommandEnvironment> {
 
   const argv = minimist(pargv);
-
   const log = new Logger();
 
   // If verbose flag is passed the log.level becomes debug
@@ -84,7 +85,8 @@ export async function createCommandEnvironment(pargv: string[], env: { [k: strin
     project,
     session,
     shell,
-    namespace
+    namespace,
+    pluginName
   };
 
   return commandEnvironment;
