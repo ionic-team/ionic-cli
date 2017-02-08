@@ -225,7 +225,7 @@ export class ResourcesCommand extends Command {
 
 
     // TODO: UPDATE CONFIG.XML DATA
-    tasks.next(`Modify config.xml to add new image resources`);
+    tasks.next(`Modifying config.xml to add new image resources`);
     const imageResourcesForConfig = imgResources.reduce((rc, img) => {
       if (!rc[img.platform]) {
         rc[img.platform] = {

@@ -202,7 +202,7 @@ export class StartCommand extends Command {
       tarXvf(archiveResponse.body, projectRoot)
     ]);
 
-    tasks.next(`Update project dependencies to add core plugins`);
+    tasks.next(`Updating project dependencies to add core plugins`);
     const releaseChannelName = await getReleaseChannelName();
     await updateDependenciesForCLI(projectRoot, releaseChannelName);
 
