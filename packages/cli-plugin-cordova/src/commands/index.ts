@@ -4,6 +4,7 @@ import { BuildCommand } from './build';
 import { CompileCommand } from './compile';
 import { EmulateCommand } from './emulate';
 import { PlatformCommand } from './platform';
+import { PluginCommand } from './plugin';
 import { PrepareCommand } from './prepare';
 import { ResourcesCommand } from './resources';
 import { RunCommand } from './run';
@@ -17,6 +18,7 @@ export class CordovaNamespace extends Namespace implements INamespace {
     m.set('compile', new CompileCommand());
     m.set('emulate', new EmulateCommand());
     m.set('platform', new PlatformCommand());
+    m.set('plugin', new PluginCommand());
     m.set('prepare', new PrepareCommand());
     m.set('resources', new ResourcesCommand());
     m.set('run', new RunCommand());
