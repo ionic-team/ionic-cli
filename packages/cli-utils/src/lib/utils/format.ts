@@ -24,5 +24,16 @@ export function prettyPath(p: string): string {
 }
 
 export function indent(n: number = 4): string {
-  return new Array(n).fill(' ').reduce((a, b) => a + b);
+  return new Array(n).fill(' ').join('');
+}
+
+export function generateFillSpaceStringList(list: string[], optimalLength: number, fillCharacter: string = ' '): string[] {
+  const longestItem = Math.max(
+    ...list.map((item: string) => item.replace(STRIP_ANSI_REGEX, '').length)
+  );
+
+  const fullLength = longestItem > optimalLength ? longestItem + 1 : optimalLength;
+  const fullLengthString = Array(fullLength).fill(fillCharacter).join('');
+
+  return list.map(item => fullLengthString.substr(0, fullLength - item.length));
 }

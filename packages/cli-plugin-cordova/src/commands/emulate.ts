@@ -14,7 +14,7 @@ import {
   runAppScriptsBuild,
   startAppScriptsServer,
   filterArgumentsForCordova
-  } from '../lib/utils/cordova';
+} from '../lib/utils/cordova';
 import {
   arePluginsInstalled,
   getProjectPlatforms,

@@ -29,20 +29,21 @@ import {
   addResourcesToConfigXml
 } from '../lib/resources';
 
-
-const RESOURCES_SUMMARY = `
-Automatically create icon and splash screen resources.
+/*
+const RESOURCES_SUMMARY =
+`Automatically create icon and splash screen resources.
 Put your images in the ./resources directory, named splash or icon.
 Accepted file types are .png, .ai, and .psd.
 Icons should be 192x192 px without rounded corners.
 Splashscreens should be 2732x2732 px, with the image centered in the middle.
 `;
+*/
 
 const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
 
 @CommandMetadata({
   name: 'resources',
-  description: RESOURCES_SUMMARY,
+  description: 'Automatically create icon and splash screen resources',
   exampleCommands: [''],
   options: [
     {

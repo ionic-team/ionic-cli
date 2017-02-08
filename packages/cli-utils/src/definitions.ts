@@ -109,6 +109,7 @@ export interface CommandData {
   aliases?: string[];
   inputs?: CommandInput[];
   options?: CommandOption[];
+  fullName?: string;
 }
 
 export interface ISession {

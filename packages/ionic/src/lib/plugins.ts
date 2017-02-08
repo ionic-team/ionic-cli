@@ -7,7 +7,7 @@ import { IonicNamespace } from '../commands';
 import * as globalPlugin from '../index';
 
 export const defaultPlugin = 'core';
-export const knownPlugins = [defaultPlugin, 'cloud', 'cordova'];
+export const KNOWN_PLUGINS = [defaultPlugin, 'cordova'];
 export const PREFIX = '@ionic/cli-plugin-';
 export const ERROR_PLUGIN_NOT_INSTALLED = 'PLUGIN_NOT_INSTALLED';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';
@@ -16,7 +16,7 @@ export const ERROR_PLUGIN_INVALID = 'PLUGIN_INVALID';
 /**
  * Synchronously load a plugin
  */
-export async function loadPlugin(projectDir: string, name: string): Promise<any> {
+export async function loadPlugin(projectDir: string, name: string, askToInstall: boolean = true): Promise<any> {
   let m: any;
 
   try {
@@ -28,11 +28,14 @@ export async function loadPlugin(projectDir: string, name: string): Promise<any>
     }
 
     // Unfortuantly we need to check the not only the code but the error message
-    let foundPackageNeeded = knownPlugins.map(kp => `${PREFIX}${kp}`)
+    let foundPackageNeeded = KNOWN_PLUGINS.map(kp => `${PREFIX}${kp}`)
       .find(kp => e.message && e.message.includes(kp));
     if (!foundPackageNeeded) {
       throw `Dependency missing for ${chalk.bold(PREFIX + name)}:\n\n  ${chalk.red('[ERROR]')}: ${e.message}`;
     }
+  }
+  if (!m && !askToInstall) {
+    throw ERROR_PLUGIN_NOT_INSTALLED;
   }
   if (!m) {
     const pluginName = `${PREFIX}${name}`;
@@ -92,14 +95,14 @@ export async function resolvePlugin(projectDir: string, argv: string[]): Promise
    * Else it is likely a core command that should be loaded
    * from the 'core' plugin.
    */
-  if (argv.length > 0 && argv[0].includes(':')) {
+  if (argv[0].includes(':')) {
 
     let [firstArg, ...restOfArguments] = argv;
     [pluginName, firstArg] = firstArg.split(':');
 
     inputs = [firstArg, ...restOfArguments];
 
-  } else if (knownPlugins.includes(argv[0])) {
+  } else if (KNOWN_PLUGINS.includes(argv[0])) {
     [pluginName, ...inputs] = argv;
 
   } else {

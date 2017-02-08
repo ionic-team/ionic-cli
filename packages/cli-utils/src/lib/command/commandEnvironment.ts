@@ -4,7 +4,7 @@ import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
 
-import { INamespace, CommandEnvironment } from '../../definitions';
+import { INamespace, CommandEnvironment, CommandData } from '../../definitions';
 import { formatCommandHelp } from '../utils/help';
 import { Logger } from '../utils/logger';
 import { App } from '../app';
@@ -33,10 +33,13 @@ export async function runCommand(commandEnvironment: CommandEnvironment, pargv?:
     throw `Command not found: ${chalk.bold(argv._.join(' '))}.`;
   }
 
-  const commandName = (commandEnvironment.pluginName) ? `${commandEnvironment.pluginName}:command` : command.metadata.name;
+  const fullName = (commandEnvironment.pluginName) ? `${commandEnvironment.pluginName}:command` : command.metadata.name;
 
   if (argv['help'] || argv['h']) {
-    return console.log(formatCommandHelp(command.metadata, commandName));
+    return console.log(formatCommandHelp(<CommandData>{
+      ...command.metadata,
+      fullName
+    }));
   }
 
   command.env = commandEnvironment;

@@ -2,24 +2,33 @@ import * as chalk from 'chalk';
 
 import { CommandData, CommandInput, CommandOption } from '../../definitions';
 import { validators } from '../validators';
-import { STRIP_ANSI_REGEX } from './format';
+import { STRIP_ANSI_REGEX, generateFillSpaceStringList } from './format';
 
 /**
  *
  */
-export function formatCommandHelp(cmdMetadata: CommandData, commandName: string): string {
+export function formatCommandHelp(cmdMetadata: CommandData): string {
   let description = cmdMetadata.description.split('\n').join('\n  ');
+  let fullName = cmdMetadata.fullName || cmdMetadata.name;
 
   return `
   ${chalk.bold(description)}
   ` +
-  formatUsage(cmdMetadata.inputs, commandName) +
-  formatInputs(cmdMetadata.inputs) +
-  formatOptions(cmdMetadata.options) +
-  formatExamples(cmdMetadata, commandName);
+  formatCommandUsage(cmdMetadata.inputs, fullName) +
+  formatCommandInputs(cmdMetadata.inputs) +
+  formatCommandOptions(cmdMetadata.options) +
+  formatCommandExamples(cmdMetadata.exampleCommands, fullName);
 }
 
-function formatUsage(inputs: CommandInput[] = [], commandName: string): string {
+export function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[] {
+  const fillStringArray = generateFillSpaceStringList(cmdMetadataList.map(cmdMd => cmdMd.fullName || cmdMd.name), 25, '.');
+
+  return cmdMetadataList.map((cmdMd, index) =>
+    `${chalk.green(cmdMd.fullName || '')} ${fillStringArray[index]} ${cmdMd.description}`
+  );
+}
+
+function formatCommandUsage(inputs: CommandInput[] = [], commandName: string): string {
   const headerLine = chalk.bold(`Usage`);
   const usageLine =
       `$ ionic ${commandName} ${
@@ -38,19 +47,19 @@ function formatUsage(inputs: CommandInput[] = [], commandName: string): string {
   `;
 }
 
-function formatInputs(inputs: CommandInput[] = []): string {
+function formatCommandInputs(inputs: CommandInput[] = []): string {
   if (inputs.length === 0) {
     return '';
   }
 
   const headerLine = chalk.bold(`Inputs`);
 
-  function inputLineFn({ name, description}: CommandOption) {
-    const optionList = chalk.green(`${name}`);
-    const optionListLength = optionList.replace(STRIP_ANSI_REGEX, '').length;
-    const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
+  const fillStrings = generateFillSpaceStringList(inputs.map(input => input.name), 25, '.');
 
-    return `${optionList} ${Array(fullLength - optionListLength).fill('.').join('')} ${description}`;
+  function inputLineFn({ name, description}: CommandOption, index: number) {
+    const optionList = chalk.green(`${name}`);
+
+    return `${optionList} ${fillStrings[index]} ${description}`;
   };
 
   return `
@@ -60,7 +69,7 @@ function formatInputs(inputs: CommandInput[] = []): string {
   `;
 }
 
-function formatOptions(options: CommandOption[] = []): string {
+function formatCommandOptions(options: CommandOption[] = []): string {
   if (options.length === 0) {
     return '';
   }
@@ -87,7 +96,7 @@ function formatOptions(options: CommandOption[] = []): string {
   `;
 }
 
-function formatExamples({ exampleCommands }: CommandData, commandName: string): string {
+function formatCommandExamples(exampleCommands: string[] | undefined, commandName: string): string {
   if (!Array.isArray(exampleCommands)) {
     return '';
   }
