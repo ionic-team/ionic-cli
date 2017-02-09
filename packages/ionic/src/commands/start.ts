@@ -36,35 +36,35 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
   {
     name: 'blank',
     description: 'A blank starter project for Ionic',
-    path: 'https://github.com/driftyco/ionic2-starter-blank',
+    path: 'driftyco/ionic2-starter-blank',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic2-starter-blank/archive/master.tar.gz'
   },
   {
     name: 'tabs',
     description: 'A starting project for Ionic using a simple tabbed interface',
-    path: 'https://github.com/driftyco/ionic2-starter-tabs',
+    path: 'driftyco/ionic2-starter-tabs',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic2-starter-tabs/archive/master.tar.gz'
   },
   {
     name: 'sidemenu',
     description: 'A starting project for Ionic using a side menu with navigation in the content area',
-    path: 'https://github.com/driftyco/ionic2-starter-sidemenu',
+    path: 'driftyco/ionic2-starter-sidemenu',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic2-starter-sidemenu/archive/master.tar.gz'
   },
   {
     name: 'conference',
     description: 'A project for Ionic to demonstrate a realworld application',
-    path: 'https://github.com/driftyco/ionic-conference-app',
+    path: 'driftyco/ionic-conference-app',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic-conference-app/archive/master.tar.gz'
   },
   {
     name: 'tutorial',
     description: 'A tutorial based project for Ionic that goes along with the Ionic documentation',
-    path: 'https://github.com/driftyco/ionic2-starter-tutorial',
+    path: 'driftyco/ionic2-starter-tutorial',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic2-starter-tutorial/archive/master.tar.gz'
   }
@@ -92,6 +92,7 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
         message: 'What starter would you like to use',
         choices: getStarterTemplateTextList(STARTER_TEMPLATES).map((text, i) => ({
           name: text,
+          short: STARTER_TEMPLATES[i].name,
           value: STARTER_TEMPLATES[i].name
         }))
       }
