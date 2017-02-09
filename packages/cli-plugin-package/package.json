@@ -44,7 +44,10 @@
     "dist/"
   ],
   "jest": {
-    "moduleFileExtensions": ["ts", "js"],
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
     "transform": {
       "^.+\\.(ts)$": "<rootDir>/preprocessor.js"
     },
