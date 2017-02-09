@@ -3,9 +3,19 @@ import * as path from 'path';
 import * as zlib from 'zlib';
 import * as tar from 'tar';
 import * as chalk from 'chalk';
+import fetch from 'node-fetch';
 
-import { runcmd, getCommandInfo, fsReadJsonFile, fsWriteJsonFile, ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON } from '@ionic/cli-utils';
+import {
+  runcmd,
+  getCommandInfo,
+  fsReadJsonFile,
+  fsWriteJsonFile,
+  ERROR_FILE_NOT_FOUND,
+  ERROR_FILE_INVALID_JSON
+} from '@ionic/cli-utils';
 import { StarterTemplate } from '../definitions';
+
+const STARTER_CACHE_DIR = 'archives';
 
 /**
  * Spawn an npm install task from within
@@ -15,6 +25,39 @@ export async function pkgInstallProject(installer: string, root: string): Promis
     await runcmd(installer, ['install'], {cwd: root, stdio: 'ignore'});
   } catch (e) {
     throw `${installer} install failed`;
+  }
+}
+
+/*
+export function storeInCache(readStream: NodeJS.ReadableStream, configDirectory: string, starterTemplate: StarterTemplate) {
+  const [templateOrgId, templateProjectName] = starterTemplate.path.split('/');
+  const templateCacheDir = path.resolve(configDirectory, STARTER_CACHE_DIR, templateOrgId);
+
+  return writeStreamToFile(readStream, );
+}
+*/
+
+export async function shouldUseCache(configDirectory: string, starterTemplate: StarterTemplate) {
+  const [templateOrgId, templateProjectName] = starterTemplate.path.split('/');
+  const templateCacheDir = path.resolve(configDirectory, STARTER_CACHE_DIR, templateOrgId);
+
+  // Check to see if cache files even exists.
+
+  // Check Etag from github to decide if we need to use a new download or to use the cache
+  try {
+    let [ baseArchiveResponse, archiveResponse] = await Promise.all([
+      fetch(starterTemplate.baseArchive, { method: 'HEAD' }),
+      fetch(starterTemplate.archive, { method: 'HEAD' })
+    ]);
+
+    console.log(templateCacheDir, templateProjectName);
+    console.log(baseArchiveResponse.headers.get('Etag'));
+    console.log(archiveResponse.headers.get('Etag'));
+  } catch (e) {
+    if (['ETIMEOUT', 'ENOTFOUND'].includes(e.code)) {
+      return true;
+    }
+    console.log('finally');
   }
 }
 
