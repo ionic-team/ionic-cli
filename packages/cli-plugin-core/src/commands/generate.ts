@@ -24,14 +24,14 @@ import * as appGenerator from '@ionic/app-generators';
       validators: [validators.required],
       prompt: {
         type: 'list',
-        message: 'What would you like to generate?',
-        // TODO get this from app-generators instead of having it hardcoded
+        message: 'What would you like to generate:',
+        // TODO: get this from app-generators instead of having it hardcoded
         choices: ['component', 'directive', 'page', 'pipe', 'provider', 'tabs']
       }
     },
     {
       name: 'name',
-      description: 'The name that you like for the file',
+      description: 'What name that you like for the file:',
       validators: [validators.required],
       prompt: {
         message: 'name'

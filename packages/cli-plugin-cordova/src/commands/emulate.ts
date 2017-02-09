@@ -35,7 +35,7 @@ import {
       description: `the platform to emulate: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
       validators: [validators.required],
       prompt: {
-        message: `What platform would you like to build? ${chalk.bold('ios')}, ${chalk.bold('android')}`
+        message: `What platform would you like to emulate: ${chalk.bold('ios')}, ${chalk.bold('android')}`
       }
     }
   ],
@@ -92,7 +92,7 @@ export class EmulateCommand extends Command {
     const runPlatform = inputs[0];
 
     if (runPlatform === 'ios' && os.platform() !== 'darwin') {
-      this.env.log.error('You cannot run iOS unless you are on Mac OSX.');
+      this.env.log.error('You cannot emulate on iOS unless you are on Mac OSX.');
       return;
     }
 

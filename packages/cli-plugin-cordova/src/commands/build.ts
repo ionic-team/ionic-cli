@@ -31,7 +31,7 @@ import {
       description: `the platform that you would like to build: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
       validators: [validators.required],
       prompt: {
-        message: `What platform would you like to build? ${chalk.bold('ios')}, ${chalk.bold('android')}`
+        message: `What platform would you like to build: ${chalk.bold('ios')}, ${chalk.bold('android')}`
       }
     }
   ],
@@ -50,7 +50,7 @@ export class BuildCommand extends Command {
     const runPlatform = inputs[0];
 
     if (runPlatform === 'ios' && os.platform() !== 'darwin') {
-      this.env.log.error('You cannot run iOS unless you are on Mac OSX.');
+      this.env.log.error('You cannot build for iOS unless you are on Mac OSX.');
       return;
     }
 

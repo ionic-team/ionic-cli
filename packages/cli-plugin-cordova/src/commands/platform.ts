@@ -1,3 +1,4 @@
+import * as os from 'os';
 import * as chalk from 'chalk';
 import {
   Command,
@@ -34,10 +35,10 @@ import {
     },
     {
       name: 'platform',
-      description: `the platform that you would like to build: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
+      description: `the platform that you would like to add: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
       validators: [validators.required],
       prompt: {
-        message: 'What platform would you like to build? (ex: ios, android)'
+        message: 'What platform would you like to add? (ex: ios, android)'
       }
     }
   ],
@@ -65,6 +66,11 @@ export class PlatformCommand extends Command {
 
     const platformName = inputs[1];
     var tasks = new TaskChain();
+
+    if (platformName === 'ios' && os.platform() !== 'darwin') {
+      this.env.log.error('You cannot add the iOS platform unless you are on Mac OSX.');
+      return;
+    }
 
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);

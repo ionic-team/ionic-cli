@@ -80,7 +80,7 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
       description: 'directory and name for the new project',
       validators: [validators.required],
       prompt: {
-        message: 'What would you like to name your project'
+        message: 'What would you like to name your project:'
       }
     },
      {
@@ -101,7 +101,7 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
   options: [
     {
       name: 'appname',
-      description: 'Human readable name for the app (Use quotes around the name)',
+      description: 'Human readable name for the app (Use quotes around the name',
       aliases: ['a']
     },
     {
@@ -244,5 +244,6 @@ export class StartCommand extends Command {
     if (confirmation['createAccount']) {
       opn(IONIC_DASH_URL + '/signup');
     }
+    this.env.log.msg('\n');
   }
 }

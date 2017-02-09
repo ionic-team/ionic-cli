@@ -136,16 +136,14 @@ export function getHelloText(): string {
   return `
 ${chalk.bold('♬ ♫ ♬ ♫  Your Ionic app is ready to go! ♬ ♫ ♬ ♫')}
 
-${chalk.bold('Some helpful tips:')}
-
 ${chalk.bold('Run your app in the browser (great for initial development):')}
-  ionic serve
+  ${chalk.green('ionic serve')}
 
 ${chalk.bold('Run on a device or simulator:')}
-  ionic cordova:run ios[android,browser]
+  ${chalk.green('ionic cordova:run ios')}
 
 ${chalk.bold('Test and share your app on a device with the Ionic View app:')}
-  http://view.ionic.io
+  ${chalk.green('http://view.ionic.io')}
   `;
 }
 
