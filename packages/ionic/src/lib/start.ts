@@ -152,7 +152,7 @@ export async function updateDependenciesForCLI(pathToProject: string, releaseCha
   try {
     let [jsonStructure, coreDistTags, cordovaDistTags ] = await Promise.all([
       fsReadJsonFile(filePath),
-      getCommandInfo('npm', ['view', '@ionic/cli-plugin-core', 'dist-tags', '--json'])
+      getCommandInfo('npm', ['view', '@ionic/cli-plugin-core', 'dist-tags', '--json']),
       getCommandInfo('npm', ['view', '@ionic/cli-plugin-cordova', 'dist-tags', '--json'])
     ]);
     jsonStructure['devDependencies']['@ionic/cli-plugin-core'] = JSON.parse(coreDistTags)[releaseChannelName];

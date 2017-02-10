@@ -107,7 +107,7 @@ function mapOptionsForLegacy(pargv: string[]): string[] {
   let modifiedArgArray: string[] = pargv.slice();
 
   // If verbose flag is passed the log.level becomes debug
-  if (pargv.length === 1 && pargv.includes('--verbose'))) {
+  if (pargv.length === 1 && pargv.includes('--verbose')) {
     modifiedArgArray.push('--log-level="debug"');
   }
 

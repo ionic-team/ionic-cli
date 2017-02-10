@@ -12,7 +12,8 @@ import {
 import {
   runAppScriptsBuild,
   startAppScriptsServer,
-  filterArgumentsForCordova
+  filterArgumentsForCordova,
+  generateAppScriptsArguments
 } from '../lib/utils/cordova';
 import { getAvailableIPAddress } from '../lib/utils/network';
 import { resetConfigXmlContentSrc, writeConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
@@ -125,27 +126,34 @@ export class RunCommand extends Command {
       // ensure the content node was set back to its original
       await resetConfigXmlContentSrc(this.env.project.directory);
 
-      currentTask = tasks.next(`Running app-scripts build`);
-      currentTask.end();
-      await runAppScriptsBuild(this.metadata, inputs, options);
-    } else {
+      const appScriptsArgs = generateAppScriptsArguments(this.metadata, inputs, options);
 
-      // using app-scripts and livereload is requested
-      // Also remove commandName from the rawArgs passed
-      currentTask = tasks.next(`Starting app-scripts server`);
+      currentTask = tasks.next(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
       currentTask.end();
-      const serverSettings = await startAppScriptsServer(this.env.project.directory, this.metadata, inputs, options);
+
+      await runAppScriptsBuild(appScriptsArgs);
+    } else {
 
       const availableIPs = getAvailableIPAddress();
       let chosenIP = availableIPs[0];
-      if (availableIPs.length > 0) {
-        chosenIP = await this.env.inquirer.prompt({
+      if (availableIPs.length > 1) {
+        const promptAnswers = await this.env.inquirer.prompt({
           type: 'list',
-          message: 'Which IP would you like to use expose the server on for the device?',
+          name: 'ip',
+          message: 'Multiple addresses available. Please select which address to use:',
           choices: availableIPs.map(ip => ip.address)
         });
+        chosenIP = promptAnswers['ip'];
       }
 
+      const appScriptsArgs = generateAppScriptsArguments(this.metadata, inputs, options);
+
+      // using app-scripts and livereload is requested
+      // Also remove commandName from the rawArgs passed
+      currentTask = tasks.next(`Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
+      currentTask.end();
+
+      const serverSettings = await startAppScriptsServer(appScriptsArgs);
       await writeConfigXmlContentSrc(this.env.project.directory, `http://${chosenIP}:${serverSettings.httpPort}`);
     }
 

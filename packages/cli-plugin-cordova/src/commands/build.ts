@@ -9,7 +9,11 @@ import {
   TaskChain,
   validators
 } from '@ionic/cli-utils';
-import { runAppScriptsBuild, filterArgumentsForCordova } from '../lib/utils/cordova';
+import {
+  runAppScriptsBuild,
+  filterArgumentsForCordova,
+  generateAppScriptsArguments
+} from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import {
   arePluginsInstalled,
@@ -76,9 +80,12 @@ export class BuildCommand extends Command {
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);
 
-    const currentTask = tasks.next(`Running app-scripts build`);
+    const appScriptsArgs = generateAppScriptsArguments(this.metadata, inputs, options);
+
+    const currentTask = tasks.next(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
     currentTask.end();
-    await runAppScriptsBuild(this.metadata, inputs, options);
+
+    await runAppScriptsBuild(appScriptsArgs);
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
 

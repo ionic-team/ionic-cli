@@ -43,7 +43,7 @@ export function filterArgumentsForCordova(metadata: CommandData, inputs: Command
 /**
  * Start the app scripts server for emulator or device
  */
-export async function startAppScriptsServer(projectDirectory: string, metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeConfig> {
+export function generateAppScriptsArguments(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
   const results = normalizeOptionAliases(metadata, options);
   let args = minimistOptionsToArray(metadata, results);
 
@@ -53,17 +53,19 @@ export async function startAppScriptsServer(projectDirectory: string, metadata: 
     '--nobrowser'
   ]);
 
-  process.argv = process.argv.slice(0, 3).concat(args);
+  return args;
+}
+
+
+export async function startAppScriptsServer(args: string[]): Promise<ServeConfig> {
+  process.argv = args;
   const context = generateContext();
   const serverSettings = await serve(context);
   return <ServeConfig>serverSettings;
 }
 
-export async function runAppScriptsBuild(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-  const results = normalizeOptionAliases(metadata, options);
-  let args = minimistOptionsToArray(metadata, results);
-
-  process.argv = process.argv.slice(0, 3).concat(args);
+export async function runAppScriptsBuild(args: string[]): Promise<void> {
+  process.argv = args;
   const context = generateContext();
   await build(context);
 }
