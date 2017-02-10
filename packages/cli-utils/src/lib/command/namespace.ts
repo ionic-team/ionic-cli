@@ -6,6 +6,8 @@ import {
 } from '../../definitions';
 
 export class CommandMap extends Map<string, ICommand> {
+  /*
+  TODO: find a better way to handle aliases that does not duplicate within help doc list
   set(key: string, value?: ICommand): this {
     if (value && value.metadata && value.metadata.aliases) {
       for (let alias of value.metadata.aliases) {
@@ -15,6 +17,7 @@ export class CommandMap extends Map<string, ICommand> {
 
     return super.set(key, value);
   }
+  */
 }
 
 export class NamespaceMap extends Map<string, INamespace> {}
