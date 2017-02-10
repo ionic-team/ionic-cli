@@ -15,7 +15,7 @@ import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
  */
 @CommandMetadata({
   name: 'compile',
-  description: 'compile'
+  description: 'This is a subset of the build command. It only performs the compilation step without doing prepare'
 })
 export class CompileCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

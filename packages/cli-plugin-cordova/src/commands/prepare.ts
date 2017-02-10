@@ -15,7 +15,7 @@ import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
  */
 @CommandMetadata({
   name: 'prepare',
-  description: 'prepare'
+  description: 'This is a subset of the build command. It transforms metadata to manifests and copies required assets.'
 })
 export class PrepareCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
