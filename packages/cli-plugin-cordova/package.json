@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-plugin-cordova",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Ionic Cordova Plugin for Ionic CLI",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
@@ -48,7 +48,7 @@
     "testRegex": "/__tests__/.*\\.(ts|js)$"
   },
   "dependencies": {
-    "@ionic/cli-utils": "^0.0.2",
+    "@ionic/cli-utils": "^0.0.3",
     "chalk": "^1.1.3",
     "form-data": "^2.1.2",
     "node-fetch": "^1.6.3",
