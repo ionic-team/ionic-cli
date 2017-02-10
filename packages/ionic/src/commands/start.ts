@@ -35,35 +35,35 @@ const STARTER_TEMPLATE_DEFAULT = 'blank';
 const STARTER_TEMPLATES: StarterTemplate[] = [
   {
     name: 'blank',
-    description: 'A blank starter project for Ionic',
+    description: 'A blank starter project',
     path: 'driftyco/ionic2-starter-blank',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic2-starter-blank/archive/master.tar.gz'
   },
   {
     name: 'tabs',
-    description: 'A starting project for Ionic using a simple tabbed interface',
+    description: 'A starting project wth a simple tabbed interface',
     path: 'driftyco/ionic2-starter-tabs',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic2-starter-tabs/archive/master.tar.gz'
   },
   {
     name: 'sidemenu',
-    description: 'A starting project for Ionic using a side menu with navigation in the content area',
+    description: 'A starting project with a side menu with navigation in the content area',
     path: 'driftyco/ionic2-starter-sidemenu',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic2-starter-sidemenu/archive/master.tar.gz'
   },
   {
     name: 'conference',
-    description: 'A project for Ionic to demonstrate a realworld application',
+    description: 'A project that demonstrates a realworld application',
     path: 'driftyco/ionic-conference-app',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic-conference-app/archive/master.tar.gz'
   },
   {
     name: 'tutorial',
-    description: 'A tutorial based project for Ionic that goes along with the Ionic documentation',
+    description: 'A tutorial based project that goes along with the Ionic documentation',
     path: 'driftyco/ionic2-starter-tutorial',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic2-starter-tutorial/archive/master.tar.gz'
