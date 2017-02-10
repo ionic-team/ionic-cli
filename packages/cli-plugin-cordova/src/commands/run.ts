@@ -10,8 +10,6 @@ import {
   validators
 } from '@ionic/cli-utils';
 import {
-  runAppScriptsBuild,
-  startAppScriptsServer,
   filterArgumentsForCordova,
   generateAppScriptsArguments
 } from '../lib/utils/cordova';
@@ -121,17 +119,22 @@ export class RunCommand extends Command {
      * If it is not livereload then just run build.
      */
     let currentTask;
+
+    // We are using require because app-scripts reads process.argv during parse
+    const appScriptsArgs = generateAppScriptsArguments(this.metadata, inputs, options);
+    process.argv = appScriptsArgs;
+    const appScripts = require('@ionic/app-scripts');
+    const context = appScripts.generateContext();
+
     if (!isLiveReload) {
 
       // ensure the content node was set back to its original
       await resetConfigXmlContentSrc(this.env.project.directory);
 
-      const appScriptsArgs = generateAppScriptsArguments(this.metadata, inputs, options);
-
       currentTask = tasks.next(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
       currentTask.end();
 
-      await runAppScriptsBuild(appScriptsArgs);
+      await appScripts.build(context);
     } else {
 
       const availableIPs = getAvailableIPAddress();
@@ -146,14 +149,12 @@ export class RunCommand extends Command {
         chosenIP = promptAnswers['ip'];
       }
 
-      const appScriptsArgs = generateAppScriptsArguments(this.metadata, inputs, options);
-
       // using app-scripts and livereload is requested
       // Also remove commandName from the rawArgs passed
       currentTask = tasks.next(`Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
       currentTask.end();
 
-      const serverSettings = await startAppScriptsServer(appScriptsArgs);
+      const serverSettings = await appScripts.serve(context);
       await writeConfigXmlContentSrc(this.env.project.directory, `http://${chosenIP}:${serverSettings.httpPort}`);
     }
 

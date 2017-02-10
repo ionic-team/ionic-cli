@@ -5,12 +5,6 @@ import {
   normalizeOptionAliases,
   minimistOptionsToArray,
 } from '@ionic/cli-utils';
-import {
-  generateContext,
-  build,
-  serve,
-  ServeConfig
-} from '@ionic/app-scripts';
 
 /**
  * Filter and gather arguments from command line to be passed to Cordova
@@ -54,18 +48,4 @@ export function generateAppScriptsArguments(metadata: CommandData, inputs: Comma
   ]);
 
   return args;
-}
-
-
-export async function startAppScriptsServer(args: string[]): Promise<ServeConfig> {
-  process.argv = args;
-  const context = generateContext();
-  const serverSettings = await serve(context);
-  return <ServeConfig>serverSettings;
-}
-
-export async function runAppScriptsBuild(args: string[]): Promise<void> {
-  process.argv = args;
-  const context = generateContext();
-  await build(context);
 }

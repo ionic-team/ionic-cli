@@ -1,15 +1,13 @@
+import * as chalk from 'chalk';
 import {
   CommandLineInputs,
   CommandLineOptions,
   Command,
   CommandMetadata,
   normalizeOptionAliases,
-  minimistOptionsToArray
+  minimistOptionsToArray,
+  TaskChain
 } from '@ionic/cli-utils';
-import {
-  generateContext,
-  serve
-} from '@ionic/app-scripts';
 
 @CommandMetadata({
   name: 'serve',
@@ -89,12 +87,21 @@ import {
 export class ServeCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
 
+    var tasks = new TaskChain();
+
     const results = normalizeOptionAliases(this.metadata, options);
-    const args = minimistOptionsToArray(this.metadata, results);
+    let appScriptsArgs = minimistOptionsToArray(this.metadata, results);
+
+    const currentTask = tasks.next(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
+    currentTask.end();
 
     // Update process args so that app scripts can just read current process args.
-    process.argv = process.argv.slice(0, 3).concat(args);
-    const context = generateContext();
-    await serve(context);
+    process.argv = appScriptsArgs;
+
+    var appScripts = require('@ionic/app-scripts');
+    const context = appScripts.generateContext();
+    await appScripts.serve(context);
+
+    tasks.end();
   }
 }
