@@ -13,7 +13,8 @@ import {
   Command,
   CommandMetadata,
   getCommandInfo,
-  validators
+  validators,
+  rimrafp
 } from '@ionic/cli-utils';
 
 import {
@@ -31,7 +32,6 @@ import { StarterTemplate } from '../definitions';
 
 
 const IONIC_DASH_URL = 'https://apps.ionic.io';
-const STARTER_TEMPLATE_DEFAULT = 'blank';
 const STARTER_TEMPLATES: StarterTemplate[] = [
   {
     name: 'blank',
@@ -42,7 +42,7 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
   },
   {
     name: 'tabs',
-    description: 'A starting project wth a simple tabbed interface',
+    description: 'A starting project with a simple tabbed interface',
     path: 'driftyco/ionic2-starter-tabs',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     archive: 'https://github.com/driftyco/ionic2-starter-tabs/archive/master.tar.gz'
@@ -136,18 +136,15 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
 })
 export class StartCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    let [projectName, starterTemplateName] = inputs;
     let installer = 'npm';
     let projectRoot: string;
-    let projectName: string;
 
-    if (inputs.length < 1) {
-      throw 'Please provide a name for your project.';
-    }
-    if (!isProjectNameValid(inputs[0])) {
-      throw `Please name your Ionic project something meaningful other than ${chalk.red(inputs[0])}`;
+    if (!isProjectNameValid(projectName)) {
+      throw `Please name your Ionic project something meaningful other than ${chalk.red(projectName)}`;
     }
 
-    projectRoot = path.resolve(inputs[0]);
+    projectRoot = path.resolve(projectName);
     projectName = path.basename(projectRoot);
 
     var tasks = new TaskChain();
@@ -155,15 +152,31 @@ export class StartCommand extends Command {
     /**
      * Create the project directory
      */
-    tasks.next(`Creating directory ${chalk.green(projectRoot)}`);
 
     if (!pathExists.sync(projectName)) {
+      tasks.next(`Creating directory ${chalk.green(projectRoot)}`);
       fs.mkdirSync(projectRoot);
     } else if (!isSafeToCreateProjectIn(projectRoot)) {
-      throw `The directory ${projectName} contains file(s) that could conflict.`;
+      const response = await this.env.inquirer.prompt({
+        type: 'confirm',
+        name: 'overwrite',
+        message: `The directory ${chalk.green(projectName)} contains file(s) that could conflict. ` +
+            'Would you like to overwrite the directory with this new project?'
+      });
+
+      if (response['overwrite']) {
+        try {
+          tasks.next(`Creating directory ${chalk.green(projectRoot)}`);
+          await rimrafp(projectRoot);
+          fs.mkdirSync(projectRoot);
+        } catch (e) {
+          throw e;
+        }
+      } else {
+        throw `\nPlease provide a projectName that does not conflict with this directory.\n`;
+      }
     }
 
-    let starterTemplateName = inputs[1] || options['template'] || STARTER_TEMPLATE_DEFAULT;
     let starterTemplate = STARTER_TEMPLATES.find(tpl => tpl['name'] === starterTemplateName);
 
     if (!starterTemplate) {

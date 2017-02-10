@@ -44,6 +44,7 @@
     "ncp": "^2.0.0",
     "os-name": "^2.0.1",
     "progress": "^1.1.8",
+    "rimraf": "^2.5.4",
     "superagent": "^2.3.0"
   },
   "files": [
@@ -58,5 +59,8 @@
       "^.+\\.(ts)$": "<rootDir>/preprocessor.js"
     },
     "testRegex": "/__tests__/.*\\.(ts|js)$"
+  },
+  "devDependencies": {
+    "@types/rimraf": "0.0.28"
   }
 }
