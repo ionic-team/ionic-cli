@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 import { CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from '@ionic/cli-utils';
-import { combine, validators } from '@ionic/cli-utils';
+import { validators } from '@ionic/cli-utils';
 
 @CommandMetadata({
   name: 'login',

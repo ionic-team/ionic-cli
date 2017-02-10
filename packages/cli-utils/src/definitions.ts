@@ -216,7 +216,7 @@ export interface ICommand {
 
   load(): Promise<void>;
   unload(): Promise<void>;
-  prerun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
+  prerun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
   run(inputs: CommandLineInputs, options: CommandLineOptions, validationErrors: ValidationError[]): Promise<void | number>;
   execute(inputs?: CommandLineInputs): Promise<void>;
 }

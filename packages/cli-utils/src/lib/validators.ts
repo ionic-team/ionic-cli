@@ -4,7 +4,7 @@ import { Validator, Validators } from '../definitions';
 import { isValidEmail } from './utils';
 
 export const validators: Validators = {
-  required: function(input: string, key?: string): boolean | string {
+  required(input: string, key?: string): boolean | string {
     if (!input) {
       if (key) {
         return `${chalk.bold(key)} must not be empty.`;
@@ -15,7 +15,7 @@ export const validators: Validators = {
 
     return true;
   },
-  email: function(input: string, key?: string): boolean | string {
+  email(input: string, key?: string): boolean | string {
     if (!isValidEmail(input)) {
       if (key) {
         return `${chalk.bold(key)} is an invalid email address.`;
@@ -38,5 +38,11 @@ export function combine(validators: Validator[]): Validator {
     }
 
     return true;
+  };
+}
+
+export function contains(values: string[]): Validator {
+  return function(input: string): boolean | string {
+    return values.indexOf(input) !== 0;
   };
 }

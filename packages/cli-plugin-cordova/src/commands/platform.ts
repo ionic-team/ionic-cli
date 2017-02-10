@@ -29,14 +29,14 @@ import {
       name: 'action',
       description: `${chalk.bold('add')}, ${chalk.bold('remove')}, or ${chalk.bold('update')} a platform; ${chalk.bold('list')} all project platforms`,
       validators: [validators.required],
-      prompt: {
-        type: 'list',
-        choices: ['add', 'remove', 'update', 'list']
-      }
     },
     {
       name: 'platform',
       description: `the platform that you would like to add: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
+      validators: [validators.required],
+      prompt: {
+        message: 'What platform would you like to add (ios, android):',
+      },
     }
   ],
   options: [
@@ -57,33 +57,24 @@ import {
   ]
 })
 export class PlatformCommand extends Command {
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-
-    let action = inputs[0];
-    action = (action === 'rm') ? 'remove' : action;
-    action = (action === 'ls') ? 'list' : action;
+  async prerun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    inputs[0] = (typeof inputs[0] === 'undefined') ? 'list': inputs[0];
+    inputs[0] = (inputs[0] === 'rm') ? 'remove' : inputs[0];
+    inputs[0] = (inputs[0] === 'ls') ? 'list' : inputs[0];
 
     // If the action is list then lets just end here.
-    if (action === 'list') {
-      try {
-        var response = await new Shell().run('cordova', [this.metadata.name, action], {
-          showExecution: (this.env.log.level === 'debug')
-        });
-        return this.env.log.msg(response);
-      } catch (e) {
-        throw e;
-      }
-    }
-
-    let platformName = inputs[1];
-    if (!platformName) {
-      const promptResults = await this.env.inquirer.prompt({
-        message: 'What platform would you like to add (ios, android):',
-        type: 'input',
-        name: 'plugin',
+    if (inputs[0] === 'list') {
+      const response = await new Shell().run('cordova', [this.metadata.name, inputs[0]], {
+        showExecution: (this.env.log.level === 'debug')
       });
-      inputs[1] = platformName = promptResults['platformName'];
+
+      this.env.log.msg(response);
+      return 0;
     }
+  }
+
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    let [action, platformName] = inputs;
     if (platformName === 'ios' && os.platform() !== 'darwin') {
       this.env.log.error('You cannot add the iOS platform unless you are on Mac OSX.');
       return;
