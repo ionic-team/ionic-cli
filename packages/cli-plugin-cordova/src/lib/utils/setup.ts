@@ -57,7 +57,7 @@ export function installPlugins(): Promise<string[]> {
   ];
 
   return Promise.all(plugins.map(plugin => (
-    new Shell().run('cordova', ['plugin', 'add', '--save', plugin])
+    this.env.shell.run('cordova', ['plugin', 'add', '--save', plugin])
   )));
 }
 
@@ -68,5 +68,5 @@ export function installPlugins(): Promise<string[]> {
  * @return {Promise} Promise upon completion
  */
 export function installPlatform(platform: string): Promise<string> {
-  return new Shell().run('cordova', ['platform', 'add', platform]);
+  return this.env.shell.run('cordova', ['platform', 'add', platform]);
 }

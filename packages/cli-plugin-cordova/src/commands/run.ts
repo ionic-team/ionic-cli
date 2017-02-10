@@ -160,7 +160,7 @@ export class RunCommand extends Command {
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
-    await new Shell().run('cordova', optionList, {
+    await this.env.shell.run('cordova', optionList, {
       showExecution: (this.env.log.level === 'debug')
     });
 

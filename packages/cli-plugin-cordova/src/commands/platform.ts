@@ -64,7 +64,7 @@ export class PlatformCommand extends Command {
 
     // If the action is list then lets just end here.
     if (inputs[0] === 'list') {
-      const response = await new Shell().run('cordova', [this.metadata.name, inputs[0]], {
+      const response = await this.env.shell.run('cordova', [this.metadata.name, inputs[0]], {
         showExecution: (this.env.log.level === 'debug')
       });
 
@@ -93,7 +93,7 @@ export class PlatformCommand extends Command {
 
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
     try {
-      await new Shell().run('cordova', optionList, {
+      await this.env.shell.run('cordova', optionList, {
         showExecution: (this.env.log.level === 'debug')
       });
     } catch (e) {

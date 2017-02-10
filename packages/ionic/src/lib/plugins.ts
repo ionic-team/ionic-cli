@@ -51,7 +51,7 @@ export async function loadPlugin(projectDir: string, name: string, askToInstall:
       const tasks = new TaskChain();
 
       tasks.next(`Executing npm command: ${chalk.bold(`npm install --save-dev ${pluginInstallVersion}`)}`);
-      await new Shell().run('npm', ['install', '--save-dev', pluginInstallVersion ]);
+      await this.env.shell.run('npm', ['install', '--save-dev', pluginInstallVersion ]);
       tasks.end();
 
       return loadPlugin(projectDir, name);

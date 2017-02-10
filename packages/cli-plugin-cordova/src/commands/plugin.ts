@@ -60,7 +60,7 @@ export class PluginCommand extends Command {
     // If the action is list then lets just end here.
     if (action === 'list') {
       try {
-        var response = await new Shell().run('cordova', [this.metadata.name, action], {
+        var response = await this.env.shell.run('cordova', [this.metadata.name, action], {
           showExecution: (this.env.log.level === 'debug')
         });
         return this.env.log.msg(response);
@@ -92,7 +92,7 @@ export class PluginCommand extends Command {
 
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
     try {
-      await new Shell().run('cordova', optionList, {
+      await this.env.shell.run('cordova', optionList, {
         showExecution: (this.env.log.level === 'debug')
       });
     } catch (e) {

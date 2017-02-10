@@ -29,7 +29,7 @@ export class PrepareCommand extends Command {
 
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
     try {
-      await new Shell().run('cordova', optionList, {
+      await this.env.shell.run('cordova', optionList, {
         showExecution: (this.env.log.level === 'debug')
       });
     } catch (e) {
