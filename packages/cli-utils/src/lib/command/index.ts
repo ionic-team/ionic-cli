@@ -30,6 +30,7 @@ export class Command implements ICommand {
   async load(): Promise<void> {}
   async unload(): Promise<void> {}
 
+  async prerun(inputs: CommandLineInputs): Promise<void | number> {}
   async run(inputs: CommandLineInputs, options: CommandLineOptions, validationErrors: ValidationError[]): Promise<void | number> {}
 
   async execute(inputs?: CommandLineInputs): Promise<void> {
@@ -48,8 +49,8 @@ export class Command implements ICommand {
       validationErrors = e;
     }
 
+    await this.prerun(argv._, argv);
     await collectInputs(argv._, this.metadata);
-
     const r = await this.run(argv._, argv, validationErrors);
 
     if (typeof r === 'number' && r > 0) {
