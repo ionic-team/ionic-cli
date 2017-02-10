@@ -15,7 +15,7 @@ import * as appGenerator from '@ionic/app-generators';
 @CommandMetadata({
   name: 'generate',
   aliases: ['g'],
-  description: 'Genarete pages and components',
+  description: 'Generate pages and components',
   exampleCommands: ['page thingsList --skipScss --componentsDir="src/components"', ' (for interactive)'],
   inputs: [
     {
