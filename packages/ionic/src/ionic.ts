@@ -115,6 +115,12 @@ function mapOptionsForLegacy(pargv: string[]): string[] {
   if (pargv.length === 1 && (pargv.includes('--version') || pargv.includes('-v'))) {
     modifiedArgArray = ['version'];
   }
+
+  // If lab is the command then map to serve
+  if (pargv[0] === 'lab') {
+    modifiedArgArray[0] = 'serve';
+    modifiedArgArray.push('--lab');
+  }
   return modifiedArgArray;
 }
 
