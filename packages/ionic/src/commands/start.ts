@@ -257,6 +257,6 @@ export class StartCommand extends Command {
     if (confirmation['createAccount']) {
       opn(IONIC_DASH_URL + '/signup', { wait: false });
     }
-    this.env.log.msg(`\n\nGo to your newly created project: ${chalk.green(`cd projectRoot`)}\n`);
+    this.env.log.msg(`\n\nGo to your newly created project: ${chalk.green(`cd ${projectRoot}`)}\n`);
   }
 }
