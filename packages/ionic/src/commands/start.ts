@@ -155,7 +155,7 @@ export class StartCommand extends Command {
     /**
      * Create the project directory
      */
-    tasks.next(`Creating directory ${projectRoot}`);
+    tasks.next(`Creating directory ${chalk.green(projectRoot)}`);
 
     if (!pathExists.sync(projectName)) {
       fs.mkdirSync(projectRoot);
@@ -173,7 +173,7 @@ export class StartCommand extends Command {
     /**
      * Download the starter template, gunzip, and untar into the project folder
      */
-    tasks.next(`Downloading '${chalk.bold(starterTemplateName.toString())}' starter template`);
+    tasks.next(`Downloading '${chalk.green(starterTemplateName.toString())}' starter template`);
 
     let baseArchiveResponse;
     let archiveResponse;
@@ -212,7 +212,7 @@ export class StartCommand extends Command {
      * Download the starter template, gunzip, and untar into the project folder
      */
     if (!options['skip-npm']) {
-      tasks.next(`Executing: ${chalk.bold(installer + ' install')} within the newly created project directory`);
+      tasks.next(`Executing: ${chalk.green(installer + ' install')} within the newly created project directory`);
 
       if (options['yarn']) {
         let yarnVersion = await getCommandInfo('yarn', ['-version']);
