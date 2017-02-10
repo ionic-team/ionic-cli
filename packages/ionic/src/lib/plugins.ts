@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
 
-import { FatalException, Shell, TaskChain, fsReadJsonFile, ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON } from '@ionic/cli-utils';
+import { FatalException, TaskChain, fsReadJsonFile, ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON } from '@ionic/cli-utils';
 import { IonicNamespace } from '../commands';
 import * as globalPlugin from '../index';
 

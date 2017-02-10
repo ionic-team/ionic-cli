@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { fsReadDir, Shell } from '@ionic/cli-utils';
+import { fsReadDir } from '@ionic/cli-utils';
 
 /**
  * Get all platforms based on resource/platforms directories

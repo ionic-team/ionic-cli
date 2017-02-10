@@ -4,7 +4,6 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  Shell,
   TaskChain
 } from '@ionic/cli-utils';
 import { filterArgumentsForCordova } from '../lib/utils/cordova';

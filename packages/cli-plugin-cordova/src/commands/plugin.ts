@@ -4,7 +4,6 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  Shell,
   TaskChain,
   validators,
   normalizeOptionAliases
