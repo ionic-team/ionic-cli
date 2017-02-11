@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { fsReadDir } from '@ionic/cli-utils';
+import { fsReadDir, Shell } from '@ionic/cli-utils';
 
 /**
  * Get all platforms based on resource/platforms directories
@@ -57,7 +57,7 @@ export function installPlugins(): Promise<string[]> {
   ];
 
   return Promise.all(plugins.map(plugin => (
-    this.env.shell.run('cordova', ['plugin', 'add', '--save', plugin])
+    new Shell().run('cordova', ['plugin', 'add', '--save', plugin])
   )));
 }
 
@@ -68,5 +68,5 @@ export function installPlugins(): Promise<string[]> {
  * @return {Promise} Promise upon completion
  */
 export function installPlatform(platform: string): Promise<string> {
-  return this.env.shell.run('cordova', ['platform', 'add', platform]);
+  return new Shell().run('cordova', ['platform', 'add', platform]);
 }

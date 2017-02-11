@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
 
-import { FatalException, TaskChain, fsReadJsonFile, ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON } from '@ionic/cli-utils';
+import { Shell, FatalException, TaskChain, fsReadJsonFile, ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON } from '@ionic/cli-utils';
 import { IonicNamespace } from '../commands';
 import * as globalPlugin from '../index';
 
@@ -51,7 +51,7 @@ export async function loadPlugin(projectDir: string, name: string, askToInstall:
       const tasks = new TaskChain();
 
       tasks.next(`Executing npm command: ${chalk.bold(`npm install --save-dev ${pluginInstallVersion}`)}`);
-      await this.env.shell.run('npm', ['install', '--save-dev', pluginInstallVersion ]);
+      await new Shell().run('npm', ['install', '--save-dev', pluginInstallVersion ]);
       tasks.end();
 
       return loadPlugin(projectDir, name);
