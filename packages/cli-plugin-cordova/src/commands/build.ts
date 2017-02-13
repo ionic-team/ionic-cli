@@ -33,7 +33,7 @@ import {
       description: `the platform that you would like to build: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
       validators: [validators.required],
       prompt: {
-        message: `What platform would you like to build: ${chalk.bold('ios')}, ${chalk.bold('android')}`
+        message: `What platform would you like to build (${chalk.bold('ios')}, ${chalk.bold('android')}):`
       }
     }
   ],
