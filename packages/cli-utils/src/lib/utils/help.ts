@@ -21,7 +21,7 @@ export function formatCommandHelp(cmdMetadata: CommandData): string {
 }
 
 export function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[] {
-  const fillStringArray = generateFillSpaceStringList(cmdMetadataList.map(cmdMd => cmdMd.fullName || cmdMd.name), 25, '.');
+  const fillStringArray = generateFillSpaceStringList(cmdMetadataList.map(cmdMd => cmdMd.fullName || cmdMd.name), 18, '.');
 
   return cmdMetadataList.map((cmdMd, index) =>
     `${chalk.green(cmdMd.fullName || '')} ${fillStringArray[index]} ${cmdMd.description}`
