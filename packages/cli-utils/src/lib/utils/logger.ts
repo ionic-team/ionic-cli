@@ -51,8 +51,8 @@ export class Logger implements ILogger {
     this.log('error', ...args);
   }
 
-  msg(): void {
-    console.log.apply(console, arguments);
+  msg(...args: any[]): void {
+    console.log.apply(console, args);
   }
 
   private shouldLog(level: LogLevel): boolean {

@@ -12,9 +12,9 @@ export class CoreNamespace extends Namespace {
   getCommands(): ICommandMap {
     let m = new CommandMap();
 
+    m.set('serve', new ServeCommand());
     m.set('docs', new DocsCommand());
     m.set('ionitron', new IonitronCommand());
-    m.set('serve', new ServeCommand());
     m.set('generate', new GenerateCommand());
     m.set('link', new LinkCommand());
     m.set('upload', new UploadCommand());
