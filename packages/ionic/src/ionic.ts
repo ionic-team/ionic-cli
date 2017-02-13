@@ -28,7 +28,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   let exitCode = 0;
   let err: Error | undefined;
 
-  pargv = mapOptionsForLegacy(pargv.slice(2));
+  pargv = modifyArguments(pargv.slice(2));
   const argv = minimist(pargv);
 
   const log = new Logger();
@@ -103,24 +103,45 @@ async function getProjectRootDir(dir: string, projectFileName: string): Promise<
 /**
  * Map legacy options to their new equivalent
  */
-function mapOptionsForLegacy(pargv: string[]): string[] {
+function modifyArguments(pargv: string[]): string[] {
   let modifiedArgArray: string[] = pargv.slice();
+  const minimistArgv = minimist(pargv);
 
-  // If verbose flag is passed the log.level becomes debug
-  if (pargv.length === 1 && pargv.includes('--verbose')) {
-    modifiedArgArray.push('--log-level="debug"');
+  /**
+   * Replace command to be executed
+   */
+  if (pargv.length === 0) {
+    return ['help'];
   }
 
-  // If version flag is passed then run the version command
-  if (pargv.length === 1 && (pargv.includes('--version') || pargv.includes('-v'))) {
-    modifiedArgArray = ['version'];
+  if (minimistArgv['help'] || minimistArgv['h']) {
+    if (minimistArgv._.length > 0) {
+      return ['help', minimistArgv._[0]];
+    } else {
+      return ['help'];
+    }
   }
 
-  // If lab is the command then map to serve
-  if (pargv[0] === 'lab') {
+  if (minimistArgv._.length === 0 && (minimistArgv['version'] || minimistArgv['v'])) {
+    return modifiedArgArray = ['version'];
+  }
+
+  /**
+   * Change command executed
+   */
+  if (minimistArgv._[0] === 'lab') {
     modifiedArgArray[0] = 'serve';
     modifiedArgArray.push('--lab');
   }
+
+  /**
+   * Change command options
+   */
+  if (minimistArgv['verbose']) {
+    modifiedArgArray[modifiedArgArray.indexOf('--verbose')] = '--log-level="debug"';
+  }
+
+
   return modifiedArgArray;
 }
 
