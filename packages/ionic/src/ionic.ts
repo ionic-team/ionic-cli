@@ -40,8 +40,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   // If an legacy command is being executed inform the user that there is a new command available
   let foundCommand = mapLegacyCommand(argv._[0]);
   if (foundCommand) {
-    log.error(`${chalk.bold(argv._[0])} is no longer available. To find out more about the equivalent please run:\n\n` +
-      `  ${chalk.green('ionic help ' + foundCommand)}\n`);
+    log.msg(`The ${chalk.bold(argv._[0])} command is no longer available. To find out more about the equivalent please run:\n\n` +
+      `  ${chalk.green(`ionic ${foundCommand} --help`)}\n`);
     return;
   }
 
