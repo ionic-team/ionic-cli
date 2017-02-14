@@ -55,7 +55,7 @@
     "superagent": "^3.4.1"
   },
   "peerDependencies": {
-    "@ionic/app-scripts": "^1.0.1"
+    "@ionic/app-scripts": "^1.1.0"
   },
   "files": [
     "dist/"

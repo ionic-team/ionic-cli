@@ -159,7 +159,7 @@ export async function updateDependenciesForCLI(pathToProject: string, releaseCha
     jsonStructure['devDependencies']['@ionic/cli-plugin-cordova'] = JSON.parse(cordovaDistTags)[releaseChannelName];
 
     // TODO: eventually update ionic2-app-base and remove this.
-    jsonStructure['devDependencies']['@ionic/app-scripts'] = '1.0.1';
+    jsonStructure['devDependencies']['@ionic/app-scripts'] = '^1.1.0';
 
     await fsWriteJsonFile(filePath, jsonStructure, { encoding: 'utf8' });
 
