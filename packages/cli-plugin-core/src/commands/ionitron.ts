@@ -3,6 +3,7 @@ import { getIonitronString, ionitronStatements } from '../lib/ionitron';
 
 @CommandMetadata({
   name: 'ionitron',
+  unlisted: true,
   description: 'Print random ionitron messages',
   options: [
     {

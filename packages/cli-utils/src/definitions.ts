@@ -110,6 +110,7 @@ export interface CommandData {
   inputs?: CommandInput[];
   options?: CommandOption[];
   fullName?: string;
+  unlisted?: boolean;
 }
 
 export interface ISession {

@@ -18,6 +18,7 @@ const UNKOWN_COMMAND_ERROR = 'UNKOWN_COMMAND';
 
 @CommandMetadata({
   name: 'help',
+  unlisted: true,
   description: 'Provides help for a certain command',
   exampleCommands: ['start'],
   inputs: [
@@ -92,6 +93,7 @@ function getHelpDetails(pluginName: string | undefined, commandMetadataList: Com
 
   const foundCommandList: CommandData[] = commandMetadataList
     .filter((cmd: CommandData) => cmd.name === argv[0] || argv.length === 0)
+    .filter((cmd: CommandData) => !cmd.unlisted)
     .map((cmd: CommandData): CommandData => ({
       ...cmd,
       fullName: (pluginName) ? `${pluginName}:${cmd.name}` : cmd.name
