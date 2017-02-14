@@ -87,6 +87,10 @@ export class Config extends BaseConfig<ConfigFile> {
       results.tokens.appUser = {};
     }
 
+    if (!results.cliFlags) {
+      results.cliFlags = {};
+    }
+
     return results;
   }
 
@@ -95,6 +99,7 @@ export class Config extends BaseConfig<ConfigFile> {
       && typeof j.urls === 'object'
       && typeof j.urls.api === 'string'
       && typeof j.tokens === 'object'
-      && typeof j.tokens.appUser === 'object';
+      && typeof j.tokens.appUser === 'object'
+      && typeof j.cliFlags === 'object';
   }
 }

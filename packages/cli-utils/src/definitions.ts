@@ -140,6 +140,9 @@ export interface ConfigFile {
     user?: string;
     appUser: { [app_id: string]: string };
   };
+  cliFlags: {
+    promptForSignupOnStart?: boolean;
+  };
 }
 
 export interface IConfig<T> {

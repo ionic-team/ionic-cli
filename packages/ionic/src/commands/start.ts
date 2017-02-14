@@ -243,19 +243,23 @@ export class StartCommand extends Command {
      */
     this.env.log.msg(getHelloText());
 
-
     /**
      * Ask the user if they would like to create a cloud account
      */
-    const confirmation = await this.env.inquirer.prompt({
-      type: 'confirm',
-      name: 'createAccount',
-      message: 'Create a free Ionic account to add features like User Authentication, ' +
-           'Push Notifications, Live Updating, iOS builds, and more?'
-    });
+    let { cliFlags } = await this.env.config.load();
 
-    if (confirmation['createAccount']) {
-      opn(IONIC_DASH_URL + '/signup', { wait: false });
+    if (!cliFlags.promptForSignupOnStart) {
+      const confirmation = await this.env.inquirer.prompt({
+        type: 'confirm',
+        name: 'createAccount',
+        message: 'Create a free Ionic account to add features like User Authentication, ' +
+            'Push Notifications, Live Updating, iOS builds, and more?'
+      });
+
+      if (confirmation['createAccount']) {
+        opn(IONIC_DASH_URL + '/signup', { wait: false });
+      }
+      cliFlags.promptForSignupOnStart = true;
     }
     this.env.log.msg(`\n\nGo to your newly created project: ${chalk.green(`cd ${projectRoot}`)}\n`);
   }
