@@ -117,7 +117,6 @@ export class RunCommand extends Command {
     /**
      * If it is not livereload then just run build.
      */
-    let currentTask;
 
     // We are using require because app-scripts reads process.argv during parse
     const appScriptsArgs = generateAppScriptsArguments(this.metadata, inputs, options);
@@ -130,10 +129,9 @@ export class RunCommand extends Command {
       // ensure the content node was set back to its original
       await resetConfigXmlContentSrc(this.env.project.directory);
 
-      currentTask = tasks.next(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
-      currentTask.end();
-
+      this.env.log.msg(`  Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
       await appScripts.build(context);
+      tasks.next(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
     } else {
 
       const availableIPs = getAvailableIPAddress();
@@ -150,10 +148,10 @@ export class RunCommand extends Command {
 
       // using app-scripts and livereload is requested
       // Also remove commandName from the rawArgs passed
-      currentTask = tasks.next(`Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
-      currentTask.end();
 
+      this.env.log.msg(`  Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
       const serverSettings = await appScripts.serve(context);
+      tasks.next(`Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
       await writeConfigXmlContentSrc(this.env.project.directory, `http://${chosenIP}:${serverSettings.httpPort}`);
     }
 

@@ -80,14 +80,16 @@ export class BuildCommand extends Command {
 
     const appScriptsArgs = generateAppScriptsArguments(this.metadata, inputs, options);
 
-    const currentTask = tasks.next(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
-    currentTask.end();
+    tasks.end();
+    this.env.log.msg(`  Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
 
     // We are using require because app-scripts reads process.argv during parse
     process.argv = appScriptsArgs;
     const appScripts = require('@ionic/app-scripts');
     const context = appScripts.generateContext();
     await appScripts.build(context);
+
+    tasks.next(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
 

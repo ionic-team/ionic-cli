@@ -92,8 +92,7 @@ export class ServeCommand extends Command {
     const results = normalizeOptionAliases(this.metadata, options);
     let appScriptsArgs = minimistOptionsToArray(this.metadata, results);
 
-    const currentTask = tasks.next(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
-    currentTask.end();
+    this.env.log.msg(`  Starting app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
 
     // Update process args so that app scripts can just read current process args.
     process.argv = appScriptsArgs;
@@ -101,6 +100,7 @@ export class ServeCommand extends Command {
     var appScripts = require('@ionic/app-scripts');
     const context = appScripts.generateContext();
     await appScripts.serve(context);
+    tasks.next(`Starting app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
 
     tasks.end();
   }
