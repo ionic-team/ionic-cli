@@ -5,7 +5,8 @@ import {
   CommandLineOptions,
   Command,
   CommandMetadata,
-  TaskChain
+  TaskChain,
+  promptToLogin
 } from '@ionic/cli-utils';
 
 import {
@@ -61,6 +62,13 @@ const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
   ]
 })
 export class ResourcesCommand extends Command {
+  async prerun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const isLoggedIn = await this.env.session.isLoggedIn();
+    if (!isLoggedIn) {
+      this.env.log.msg(`You need to be logged into your Ionic account in order to run the ${chalk.bold(`cordova:resources`)} command.\n`);
+      await promptToLogin(this.env.inquirer, this.env.log, this.env.session);
+    }
+  }
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
 
     // if no resource filters are passed as arguments assume to use all.

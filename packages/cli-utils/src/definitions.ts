@@ -115,6 +115,7 @@ export interface CommandData {
 
 export interface ISession {
   login(email: string, password: string): Promise<void>;
+  isLoggedIn(): Promise<boolean>;
   getUserToken(): Promise<string>;
   getAppUserToken(app_id?: string): Promise<string>;
 }

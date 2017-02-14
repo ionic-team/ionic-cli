@@ -8,7 +8,6 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   ICommand,
-  INamespace,
   ValidationError
 } from '../../definitions';
 
@@ -23,7 +22,6 @@ export function CommandMetadata(metadata: CommandData) {
 }
 
 export class Command implements ICommand {
-  public cli: INamespace;
   public env: CommandEnvironment;
   public metadata: CommandData;
 

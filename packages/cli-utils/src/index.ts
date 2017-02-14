@@ -19,6 +19,7 @@ export * from './lib/config';
 export * from './lib/errors';
 export * from './lib/http';
 export * from './lib/project';
+export * from './lib/login';
 export * from './lib/session';
 export * from './lib/shell';
 export * from './lib/utils/task';

@@ -79,6 +79,11 @@ export class Session implements ISession {
     }
   }
 
+  async isLoggedIn(): Promise<boolean> {
+    const c = await this.config.load();
+    return !!c.tokens.user;
+  }
+
   async getUserToken(): Promise<string> {
     const c = await this.config.load();
 
