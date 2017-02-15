@@ -72,7 +72,7 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
 
 @CommandMetadata({
   name: 'start',
-  description: 'Starts a new Ionic project in a new directory.',
+  description: 'Creates a new project',
   exampleCommands: ['mynewapp blank'],
   inputs: [
     {
