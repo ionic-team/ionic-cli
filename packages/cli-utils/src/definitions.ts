@@ -131,6 +131,11 @@ export interface IShell {
   run(command: string, args?: string[], options?: IShellRunOptions): Promise<string>;
 }
 
+export interface ITelemetry {
+  sendCommand(command: string, args: string[]): Promise<void>;
+  sendError(error: any, type: string): Promise<void>;
+}
+
 export interface ConfigFile {
   lastUpdated: string;
   urls: {
@@ -138,10 +143,13 @@ export interface ConfigFile {
   };
   tokens: {
     user?: string;
+    telemetry?: string;
     appUser: { [app_id: string]: string };
   };
   cliFlags: {
-    promptForSignupOnStart?: boolean;
+    promptedForSignup?: boolean;
+    promptedForTelemetry?: boolean;
+    enableTelemetry?: boolean;
   };
 }
 
@@ -204,6 +212,7 @@ export interface CommandEnvironment {
   project: IProject;
   session: ISession;
   shell: IShell;
+  telemetry: ITelemetry;
   namespace: INamespace;
   pluginName: string | undefined;
 }

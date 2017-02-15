@@ -4,7 +4,7 @@ import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
 
-import { INamespace, CommandEnvironment, } from '../../definitions';
+import { INamespace, ICommand, CommandEnvironment } from '../../definitions';
 import { Logger } from '../utils/logger';
 import { App } from '../app';
 import { Config } from '../config';
@@ -12,6 +12,8 @@ import { Client } from '../http';
 import { Project } from '../project';
 import { Session } from '../session';
 import { Shell } from '../shell';
+import { Telemetry } from '../telemetry';
+import { getCliInfo } from '../utils/environmentInfo';
 
 const CONFIG_FILE = 'config.json';
 const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
@@ -28,17 +30,30 @@ export async function runCommand(commandEnvironment: CommandEnvironment, pargv?:
   let [inputs, command] = primaryNamespace.locateCommand(argv._);
 
   // If the command was not found throw
-  if (command === undefined) {
+  if (!command) {
     throw `Command not found: ${chalk.bold(argv._.join(' '))}.`;
   }
 
   command.env = commandEnvironment;
 
-  await command.load();
-  await command.execute(inputs);
-  await command.unload();
+  await Promise.all([
+    (async function(cmd: ICommand) {
+      const configData = await commandEnvironment.config.load();
+      if (configData.cliFlags.enableTelemetry) {
+        await cmd.env.telemetry.sendCommand(cmd.metadata.name, inputs);
+      }
+    })(command),
+    (async function(cmd: ICommand) {
 
-  await commandEnvironment.config.save();
+      await cmd.load();
+      await cmd.execute(inputs);
+      await cmd.unload();
+
+      await commandEnvironment.config.save();
+    })(command)
+  ]);
+
+
 }
 
 /**
@@ -61,12 +76,15 @@ export async function createCommandEnvironment(pargv: string[], env: { [k: strin
   const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
   const c = await config.load();
   await config.save();
+  const cliInfo = await getCliInfo();
 
   const client = new Client(c.urls.api);
   const project = new Project(env['PROJECT_DIR'], env['PROJECT_FILE']);
   const session = new Session(config, project, client);
   const app = new App(session, project, client);
   const shell = new Shell();
+
+  const telemetry = new Telemetry(config, cliInfo);
 
   const commandEnvironment: CommandEnvironment = {
     app,
@@ -78,6 +96,7 @@ export async function createCommandEnvironment(pargv: string[], env: { [k: strin
     project,
     session,
     shell,
+    telemetry,
     namespace,
     pluginName
   };

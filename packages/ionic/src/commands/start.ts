@@ -248,19 +248,32 @@ export class StartCommand extends Command {
      */
     let { cliFlags } = await this.env.config.load();
 
-    if (!cliFlags.promptForSignupOnStart) {
-      const confirmation = await this.env.inquirer.prompt({
+    if (!cliFlags.promptedForSignup) {
+      const { createAccount } = await this.env.inquirer.prompt({
         type: 'confirm',
         name: 'createAccount',
         message: 'Create a free Ionic account to add features like User Authentication, ' +
             'Push Notifications, Live Updating, iOS builds, and more?'
       });
 
-      if (confirmation['createAccount']) {
+      if (createAccount) {
         opn(IONIC_DASH_URL + '/signup', { wait: false });
       }
-      cliFlags.promptForSignupOnStart = true;
+      cliFlags.promptedForSignup = true;
+      this.env.log.msg(`\n`);
     }
-    this.env.log.msg(`\n\nGo to your newly created project: ${chalk.green(`cd ${projectRoot}`)}\n`);
+
+    if (!cliFlags.promptedForTelemetry) {
+      const { optIn } = await this.env.inquirer.prompt({
+        type: 'confirm',
+        name: 'optIn',
+        message: 'Would you like to help Ionic improve the CLI by providing anonymous ' +
+          'usage and error reporting information?'
+      });
+      cliFlags.promptedForTelemetry = true;
+      cliFlags.enableTelemetry = optIn;
+    }
+
+    this.env.log.msg(`\nGo to your newly created project: ${chalk.green(`cd ${projectRoot}`)}\n`);
   }
 }
