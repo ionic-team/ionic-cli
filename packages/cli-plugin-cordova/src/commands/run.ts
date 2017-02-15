@@ -135,7 +135,12 @@ export class RunCommand extends Command {
     } else {
 
       const availableIPs = getAvailableIPAddress();
-      let chosenIP = availableIPs[0];
+      if (availableIPs.length === 0) {
+        this.env.log.error(`It appears that you do not have any external network interfaces. ` +
+          `In order to use livereload with emulate you will need one.`
+        );
+      }
+      let chosenIP = availableIPs[0].address;
       if (availableIPs.length > 1) {
         const promptAnswers = await this.env.inquirer.prompt({
           type: 'list',
@@ -151,7 +156,7 @@ export class RunCommand extends Command {
 
       this.env.log.msg(`  Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
       const serverSettings = await appScripts.serve(context);
-      tasks.next(`Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
+      tasks.next(`Starting app-scripts server`);
       await writeConfigXmlContentSrc(this.env.project.directory, `http://${chosenIP}:${serverSettings.httpPort}`);
     }
 

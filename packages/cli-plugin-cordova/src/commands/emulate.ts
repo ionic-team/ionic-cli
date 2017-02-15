@@ -139,7 +139,12 @@ export class EmulateCommand extends Command {
       tasks.end();
 
       const availableIPs = getAvailableIPAddress();
-      let chosenIP = availableIPs[0];
+      if (availableIPs.length === 0) {
+        this.env.log.error(`It appears that you do not have any external network interfaces. ` +
+          `In order to use livereload with emulate you will need one.`
+        );
+      }
+      let chosenIP = availableIPs[0].address;
       if (availableIPs.length > 1) {
         const promptAnswers = await this.env.inquirer.prompt({
           type: 'list',
@@ -157,7 +162,7 @@ export class EmulateCommand extends Command {
       // We are using require because app-scripts reads process.argv during parse
       const serverSettings = await appScripts.serve(context);
       await writeConfigXmlContentSrc(this.env.project.directory, `http://${chosenIP}:${serverSettings.httpPort}`);
-      tasks.next(`Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
+      tasks.next(`Starting app-scripts server`);
     }
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);

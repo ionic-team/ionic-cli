@@ -89,7 +89,7 @@ export class BuildCommand extends Command {
     const context = appScripts.generateContext();
     await appScripts.build(context);
 
-    tasks.next(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
+    tasks.next(`Running app-scripts build`);
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
 
