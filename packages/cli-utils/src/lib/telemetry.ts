@@ -3,7 +3,7 @@ import * as uuid from 'uuid';
 
 import { ITelemetry, IConfig, ConfigFile } from '../definitions';
 
-const GA_CODE = 'UA-92003010-1';
+const GA_CODE = 'UA-44023830-30';
 
 export class Telemetry implements ITelemetry {
   private tracker: Leek;
