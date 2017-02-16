@@ -1,4 +1,5 @@
 import * as chalk from 'chalk';
+import * as opn from 'opn';
 
 import {
   APIResponse,
@@ -49,6 +50,8 @@ function isAppsResponse(r: APIResponse): r is AppsResponse {
 
   return true;
 }
+
+const CREATE_NEW_APP_CHOICE = 'createNewApp';
 
 /**
  * Metadata about the docs command
@@ -110,20 +113,34 @@ export class LinkCommand extends Command {
       }
 
       const apps = res.data.filter((app) => app.id !== project.app_id);
+      const createAppChoice = <App>{
+        name: 'Create a new app',
+        id: CREATE_NEW_APP_CHOICE
+      };
 
-      const appChoices = await this.env.inquirer.prompt({
+      const confirmation = await this.env.inquirer.prompt({
         type: 'list',
         name: 'choice',
         message: `Which app would you like to link`,
-        choices: apps.map((app) => ({ name: `${app.name} (${app.id})`, value: app.id }))
+        choices: apps.concat([createAppChoice]).map((app) => ({
+          name: app.id !== CREATE_NEW_APP_CHOICE ? `${app.name} (${app.id})` : chalk.bold(app.name),
+          value: app.id
+        }))
       });
 
-      appId = appChoices['choice'];
+      appId = confirmation['choice'];
     }
 
-    project.app_id = appId;
-    await this.env.project.save(project);
+    if (appId === CREATE_NEW_APP_CHOICE) {
+      const token = await this.env.session.getUserToken();
+      opn(`https://apps.ionic.io/?user_token=${token}`, { wait: false });
+      this.env.log.ok(`Rerun ${chalk.green(`ionic link`)} to link to the new app.`);
 
-    this.env.log.ok(`Project linked with app ${chalk.bold(appId)}!`);
+    } else {
+      project.app_id = appId;
+      await this.env.project.save(project);
+
+      this.env.log.ok(`Project linked with app ${chalk.bold(appId)}!`);
+    }
   }
 }
