@@ -3,6 +3,7 @@
 'use strict';
 
 process.title = 'ionic';
+process.on('unhandledRejection', r => console.log(r));
 
 var cli = require('../');
 process.env.CLI_BIN_DIR = __dirname;

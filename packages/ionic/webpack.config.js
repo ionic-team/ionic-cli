@@ -10,7 +10,8 @@ var nodeModules = Object.keys(Object.assign({},packageJSON.dependencies, package
 
 module.exports = {
   entry: {
-    index: './src/index.ts'
+    index: './src/index.ts',
+    ionic: './src/ionic.ts'
   },
 
   module: {
