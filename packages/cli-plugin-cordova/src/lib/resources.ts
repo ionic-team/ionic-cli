@@ -31,8 +31,8 @@ import {
 const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];
 const UPLOAD_URL = 'http://res.ionic.io/api/v1/upload';
 const TRANSFORM_URL = 'http://res.ionic.io/api/v1/transform';
-const RESOURCES_CONFIG_FILE = path.join(__dirname, '..', '..', 'resources.json');
-const DEFAULT_RESOURCES_DIR = path.resolve(__dirname, '..', '..', 'default-resources');
+const RESOURCES_CONFIG_FILE = path.resolve(__dirname, '..', 'resources.json');
+const DEFAULT_RESOURCES_DIR = path.resolve(__dirname, '..', 'default-resources');
 
 /**
  * Take the JSON structure for resources.json and turn it into a flat array

@@ -4,6 +4,7 @@ import * as inquirer from 'inquirer';
 
 import { Shell, FatalException, TaskChain, fsReadJsonFile, ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON } from '@ionic/cli-utils';
 import { IonicNamespace } from '../commands';
+import { load } from './utils/commonjs-loader';
 import * as globalPlugin from '../index';
 
 export const defaultPlugin = 'core';
@@ -20,8 +21,8 @@ export async function loadPlugin(projectDir: string, name: string, askToInstall:
   let m: any;
 
   try {
-    var mPath = require.resolve(path.join(projectDir, 'node_modules', '@ionic', `cli-plugin-${name}`));
-    m = require(mPath);
+    var mPath = path.join(projectDir, 'node_modules', '@ionic', `cli-plugin-${name}`);
+    m = load(mPath);
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') {
       throw e;

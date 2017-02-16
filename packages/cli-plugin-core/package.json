@@ -8,7 +8,7 @@
   "types": "./dist/main.d.ts",
   "scripts": {
     "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
-    "build": "npm run lint && npm run clean && ../../node_modules/.bin/tsc",
+    "build": "npm run lint && npm run clean && ../../node_modules/.bin/webpack",
     "clean": "rm -rf ./dist",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
     "test": "../../node_modules/.bin/jest",
@@ -47,12 +47,14 @@
     "testRegex": "/__tests__/.*\\.(ts|js)$"
   },
   "dependencies": {
-    "@ionic/app-generators": "0.0.4",
     "@ionic/cli-utils": "^0.0.4",
+    "superagent": "^3.4.1"
+  },
+  "devDependencies": {
+    "@ionic/app-generators": "0.0.4",
     "archiver": "^1.3.0",
     "chalk": "^1.1.3",
-    "opn": "^4.0.2",
-    "superagent": "^3.4.1"
+    "opn": "^4.0.2"
   },
   "peerDependencies": {
     "@ionic/app-scripts": "^1.1.0"
