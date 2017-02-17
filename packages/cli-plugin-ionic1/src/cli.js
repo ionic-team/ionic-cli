@@ -42,70 +42,69 @@ log.level = 'info';
  * @return {Promise}
  */
 Cli.run = function run(processArgv) {
-
   /*
-  * Before taking any more steps, lets check their
-  * environment and display any upgrade warnings
-  */
-  return Q.all([
-    Cli.doRuntimeCheck(),
-    Cli.checkLatestVersion()
-  ]).then(function() {
-    Cli.runr(processArgv);
-  }).catch(function(ex) {
-    return appLibUtils.fail(ex);
-  });
-};
-Cli.runr = function runr(processArgv) {
-  try {
-    var root = appLibUtils.cdIonicRoot();
-    var project = IonicProject.load(root);
-    argv.v2 = false;
+    * First we parse out the args to use them.
+    * Later, we will fetch the command they are trying to
+    * execute, grab those options, and reparse the arguments.
+    */
+  var rawCliArguments = processArgv.slice(2);
+  var argv = optimist(rawCliArguments).argv;
+  var taskList;
 
-    // For v1 projects ignore as this could have been skipped for faster start
-    // and gulp hooks aren't required
-    // For v2, print a warning as this is most likely not what they want
-    if (!fs.existsSync('node_modules')) {
-      log.debug('node_modules directory not found, not running gulp hooks');
+  var taskName = argv._[0];
+  var task = Cli.getTaskSettingsByName(taskName);
 
-      return Q.fcall(task.run.bind(task), Cli, argv, rawCliArguments);
-    }
+  var booleanOptions = Cli.getListOfBooleanOptions(task.options);
 
-    // Check if there are npm scripts in the package.json
-    var npmScripts = Cli.loadNpmScripts();
+  // Remove all possible task boolean options from the args
+  argv = optimist(rawCliArguments)
+    .boolean(booleanOptions)
+    .argv;
 
-    try {
-      var gulpLoaded = Cli.loadGulpfile();
-    } catch (e) {
-      if (e.code === 'MODULE_NOT_FOUND') {
-        log.info('Uh oh! Looks like you\'re missing a module in your gulpfile:');
-        log.error(e.message);
-        log.info('\nDo you need to run `npm install`?\n');
-        process.exit(1);
-      }
-      log.error(chalk.red('\nThere is an error in your gulpfile: '));
-      log.error(e.stack + '\n');
-      process.exit(1);
-    }
+  var root = appLibUtils.cdIonicRoot();
+  var project = IonicProject.load(root);
+  argv.v2 = false;
 
-    log.debug('\nNpm scripts:', npmScripts);
-    log.debug('Gulpfile found:', gulpLoaded, '\n');
-
-    if (npmScripts && (npmScripts.hasOwnProperty(taskName + ':before') || npmScripts.hasOwnProperty(taskName + ':after'))) {
-      return Cli.runWithNpmScripts(argv, task, rawCliArguments);
-    } else if (gulpLoaded) {
-      return Cli.runWithGulp(argv, task, rawCliArguments);
-    }
-
-    if (!gulpLoaded) {
-      log.debug('No gulpfile found, not running gulp hooks');
-    }
+  // For v1 projects ignore as this could have been skipped for faster start
+  // and gulp hooks aren't required
+  // For v2, print a warning as this is most likely not what they want
+  if (!fs.existsSync('node_modules')) {
+    log.debug('node_modules directory not found, not running gulp hooks');
 
     return Q.fcall(task.run.bind(task), Cli, argv, rawCliArguments);
-
-  } catch (ex) {
-    return appLibUtils.fail(ex);
   }
+
+  // Check if there are npm scripts in the package.json
+  var npmScripts = Cli.loadNpmScripts();
+
+  try {
+    var gulpLoaded = Cli.loadGulpfile();
+  } catch (e) {
+    if (e.code === 'MODULE_NOT_FOUND') {
+      log.info('Uh oh! Looks like you\'re missing a module in your gulpfile:');
+      log.error(e.message);
+      log.info('\nDo you need to run `npm install`?\n');
+      process.exit(1);
+    }
+    log.error(chalk.red('\nThere is an error in your gulpfile: '));
+    log.error(e.stack + '\n');
+    process.exit(1);
+  }
+
+  log.debug('\nNpm scripts:', npmScripts);
+  log.debug('Gulpfile found:', gulpLoaded, '\n');
+
+  if (npmScripts && (npmScripts.hasOwnProperty(taskName + ':before') || npmScripts.hasOwnProperty(taskName + ':after'))) {
+    return Cli.runWithNpmScripts(argv, task, rawCliArguments);
+  } else if (gulpLoaded) {
+    return Cli.runWithGulp(argv, task, rawCliArguments);
+  }
+
+  if (!gulpLoaded) {
+    log.debug('No gulpfile found, not running gulp hooks');
+  }
+
+  return Q.fcall(task.run.bind(task), Cli, argv, rawCliArguments);
 };
 
 Cli.runWithGulp = function runWithGulp(argv, taskInstance, rawCliArguments) {
@@ -449,28 +448,6 @@ Cli.fail = function fail(err, taskHelp) {
 
 Cli.getContentSrc = function getContentSrc() {
   return appLibUtils.getContentSrc(process.cwd());
-};
-
-Cli.doRuntimeCheck = function doRuntimeCheck(version) {
-  var semver = require('semver');
-  var lastVersionChecked = IonicConfig.get('lastVersionChecked');
-  var versionHasBeenChecked;
-
-  try {
-    versionHasBeenChecked = semver.satisfies(version, lastVersionChecked);
-  } catch (ex) {
-    log.info(ex);
-  }
-
-  if (!lastVersionChecked || !versionHasBeenChecked) {
-    return Info.gatherInfo().then(function(info) {
-      Info.checkRuntime(info);
-      IonicConfig.set('lastVersionChecked', version);
-      IonicConfig.save();
-    });
-  }
-
-  return Q();
 };
 
 module.exports = Cli;
