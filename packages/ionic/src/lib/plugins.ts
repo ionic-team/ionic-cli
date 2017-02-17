@@ -2,13 +2,14 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
 
-import { Shell, FatalException, TaskChain, fsReadJsonFile, ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON } from '@ionic/cli-utils';
+import { Project, Shell, FatalException, TaskChain, fsReadJsonFile, ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON } from '@ionic/cli-utils';
 import { IonicNamespace } from '../commands';
 import { load } from './utils/commonjs-loader';
 import * as globalPlugin from '../index';
 
 export const defaultPlugin = 'core';
-export const KNOWN_PLUGINS = [defaultPlugin, 'cordova'];
+export const v1Plugin = 'ionic1';
+export const KNOWN_PLUGINS = [defaultPlugin, 'cordova', v1Plugin];
 export const PREFIX = '@ionic/cli-plugin-';
 export const ERROR_PLUGIN_NOT_INSTALLED = 'PLUGIN_NOT_INSTALLED';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';
@@ -67,7 +68,7 @@ export async function loadPlugin(projectDir: string, name: string, askToInstall:
 /**
  * Get inputs and command class based on arguments supplied
  */
-export async function resolvePlugin(projectDir: string, argv: string[]): Promise<[any, string[]]> {
+export async function resolvePlugin(projectDir: string, projectFile: string, argv: string[]): Promise<[any, string[]]> {
   let pluginName: string;
   let inputs: string[] = [];
 
@@ -88,6 +89,9 @@ export async function resolvePlugin(projectDir: string, argv: string[]): Promise
     throw chalk.bold(`This is not a global command please run this in your Ionic project's directory.\n`);
   }
 
+  const project = new Project(projectDir, projectFile);
+  const projectData = await project.load();
+
   /**
    * If the first arguement supplied contains a ':' then
    * it is assumed that this is calling a command in another
@@ -106,8 +110,12 @@ export async function resolvePlugin(projectDir: string, argv: string[]): Promise
   } else if (KNOWN_PLUGINS.includes(argv[0])) {
     [pluginName, ...inputs] = argv;
 
-  } else {
+  } else if (projectData.v2) {
     pluginName = defaultPlugin;
+    inputs = argv;
+
+  } else {
+    pluginName = v1Plugin;
     inputs = argv;
   }
 
