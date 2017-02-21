@@ -21,7 +21,7 @@ setup [proper file permissions on OSX for npm](http://www.johnpapa.net/how-to-us
 
 *Please ensure that you have NodeJS 6+ installed. This is the new LTS version of Node.*
 
-## Ionic CLI v3 beta
+# Ionic CLI v3 beta
 
 We have rewritten the CLI from the ground up.  Our main focus was to:
 1. Decrease the amount of time to the first *start* execution
@@ -40,7 +40,7 @@ plugin contains commands that are specific to creating applications with cordova
 If you use CLI v3 to start a new project these plugins are installed automatically. If you are using the CLI v3 on an existing project you will need to install these
 new plugins within your project directory.
 
-## Using CLI v3 to start a new project
+## Using CLI v3 - start a new project
 ```bash
 $ npm install -g ionic@beta
 
@@ -49,7 +49,7 @@ $ ionic start myproject blank
 *Note: If you do not pass an inputs to the start command you will get an interactive prompt that allows you to provide a name and select from a list of
 starter templates.*
 
-## Using CLI v3 with an existing Ionic2 project
+## Using CLI v3 - existing Ionic2 project
 
 ```bash
 $ npm install --save-dev @ionic/cli-plugin-core@beta @ionic/cli-plugin-cordova@beta
@@ -57,7 +57,7 @@ $ npm install --save-dev @ionic/cli-plugin-core@beta @ionic/cli-plugin-cordova@b
 $ ionic help
 ```
 
-## Using CLI v3 with an existing Ionic1 project
+## Using CLI v3 - existing Ionic1 project
 
 **We are currently developing a plugin for Ionic1 applications but it is currently not available for beta. Please note that if you install Ionic CLI v3 you will not
 be able to work on Ionic1 applications until this plugin is released. Because of this we recommend that if you regularly work on Ionic1 applications you should
@@ -68,6 +68,10 @@ stick with Ionic CLI v2 for now.**
 We are currently actively seeking feedback from those that use CLI v3 Beta.  If you have questions or issues please feel free to open
 a new issue. Just be sure to note that you are using CLI v3 Beta.
 
+If your question is about functionality please be sure to start with the help command.
+
+
+# Addtional Documentation
 
 __Named template starters:__
 
