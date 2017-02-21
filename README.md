@@ -24,6 +24,7 @@ setup [proper file permissions on OSX for npm](http://www.johnpapa.net/how-to-us
 # Ionic CLI v3 beta
 
 We have rewritten the CLI from the ground up.  Our main focus was to:
+
 1. Decrease the amount of time to the first *start* execution
 2. Improve the responsiveness of every CLI command
 3. Make the architecture flexible for future platform support (PWA, electron, etc.)
