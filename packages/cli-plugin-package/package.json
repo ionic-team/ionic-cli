@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-plugin-package",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Ionic Package Plugin for Ionic CLI",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
@@ -40,7 +40,7 @@
     "chalk": "^1.1.3"
   },
   "dependencies": {
-    "@ionic/cli-utils": "^0.0.5"
+    "@ionic/cli-utils": "^0.0.6"
   },
   "files": [
     "dist/"

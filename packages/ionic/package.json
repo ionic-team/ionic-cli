@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "3.0.0-alpha.106",
+  "version": "3.0.0-alpha.107",
   "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
@@ -53,7 +53,7 @@
     "tar": "^2.2.1"
   },
   "dependencies": {
-    "@ionic/cli-utils": "^0.0.5",
+    "@ionic/cli-utils": "^0.0.6",
     "inquirer": "^3.0.1",
     "node-fetch": "^1.6.3"
   },
