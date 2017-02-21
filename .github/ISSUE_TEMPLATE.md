@@ -10,10 +10,16 @@ https://github.com/driftyco/ionic-app-scripts
 Please ensure that you are on the latest version of the CLI.
 `npm view ionic@latest version`
 
+#### What version of the CLI are you using? Output of `ionic --version`
+
+
+
 #### Short description of the problem:
 
 
+
 #### What behavior are you expecting?
+
 
 
 **Steps to reproduce:**
