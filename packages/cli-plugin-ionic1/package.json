@@ -40,7 +40,11 @@
     "transform": {
       "^.+\\.(ts)$": "<rootDir>/preprocessor.js"
     },
-    "testRegex": "/__tests__/.*\\.(ts|js)$"
+    "testRegex": "/__tests__/.*\\.(ts|js)$",
+    "rootDir": "/Users/joshthomas/Workspace/ionic-cli/packages/cli-plugin-ionic1",
+    "name": "-Users-joshthomas-Workspace-ionic-cli-packages-cli-plugin-ionic1",
+    "setupFiles": [],
+    "testRunner": "/Users/joshthomas/Workspace/ionic-cli/node_modules/jest-jasmine2/build/index.js"
   },
   "dependencies": {
     "@ionic/app-generators": "0.0.3",
@@ -66,5 +70,13 @@
     "shelljs": "0.2.6",
     "underscore": "1.7.0",
     "unzip": "0.1.9"
-  }
+  },
+  "devDependencies": {
+    "eslint": "^3.8.1",
+    "eslint-plugin-no-use-extend-native": "^0.3.11",
+    "mock-require": "1.3.0",
+    "rewire": "2.5.1"
+  },
+  "cordovaPlugins": [],
+  "cordovaPlatforms": []
 }

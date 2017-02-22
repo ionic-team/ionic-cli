@@ -1,10 +1,6 @@
 var Cli = {};
 var IonicAppLib = require('ionic-app-lib');
-var IonicStats = require('./utils/stats');
-var IonicStore = require('./utils/store');
-var IonicConfig = new IonicStore('ionic.config');
 var Info = IonicAppLib.info;
-var IonicProject = IonicAppLib.project;
 var optimist = require('optimist');
 var path = require('path');
 var fs = require('fs');
@@ -15,7 +11,6 @@ var appLibUtils = IonicAppLib.utils;
 var Logging = IonicAppLib.logging;
 var log = Logging.logger;
 var Q = require('q');
-var helpUtil = require('./utils/help');
 var EOL = require('os').EOL;
 var chalk = require('chalk');
 
@@ -41,15 +36,14 @@ log.level = 'info';
  * @param {Array} processArgv a list of command line arguments including
  * @return {Promise}
  */
-Cli.run = function run(processArgv) {
+Cli.run = function run(rawCliArguments) {
+
   /*
     * First we parse out the args to use them.
     * Later, we will fetch the command they are trying to
     * execute, grab those options, and reparse the arguments.
     */
-  var rawCliArguments = processArgv.slice(2);
   var argv = optimist(rawCliArguments).argv;
-  var taskList;
 
   var taskName = argv._[0];
   var task = Cli.getTaskSettingsByName(taskName);
@@ -61,8 +55,6 @@ Cli.run = function run(processArgv) {
     .boolean(booleanOptions)
     .argv;
 
-  var root = appLibUtils.cdIonicRoot();
-  var project = IonicProject.load(root);
   argv.v2 = false;
 
   // For v1 projects ignore as this could have been skipped for faster start
@@ -84,17 +76,18 @@ Cli.run = function run(processArgv) {
       log.info('Uh oh! Looks like you\'re missing a module in your gulpfile:');
       log.error(e.message);
       log.info('\nDo you need to run `npm install`?\n');
-      process.exit(1);
+      throw e;
     }
     log.error(chalk.red('\nThere is an error in your gulpfile: '));
     log.error(e.stack + '\n');
-    process.exit(1);
+    throw e;
   }
 
   log.debug('\nNpm scripts:', npmScripts);
   log.debug('Gulpfile found:', gulpLoaded, '\n');
 
-  if (npmScripts && (npmScripts.hasOwnProperty(taskName + ':before') || npmScripts.hasOwnProperty(taskName + ':after'))) {
+  if (npmScripts && (npmScripts.hasOwnProperty(taskName + ':before') ||
+    npmScripts.hasOwnProperty(taskName + ':after'))) {
     return Cli.runWithNpmScripts(argv, task, rawCliArguments);
   } else if (gulpLoaded) {
     return Cli.runWithGulp(argv, task, rawCliArguments);
@@ -119,7 +112,7 @@ Cli.runWithGulp = function runWithGulp(argv, taskInstance, rawCliArguments) {
     // Empty gulpfile (or one that doesn't require gulp?), and no gulp
     log.error(chalk.red('\nGulpfile detected, but gulp is not installed'));
     log.error(chalk.red('Do you need to run `npm install`?\n'));
-    return process.exit(1);
+    throw e;
   }
 
   // setup gulp logging
@@ -325,6 +318,25 @@ Cli.isBuildCommand = function isBuildCommand(cmdName) {
 };
 
 /**
+ * @method getTaskSettingsByName
+ * @param {String} taskName task name to look for
+ * @return {Object} Returns the task settings object that matches
+ */
+Cli.getTaskSettingsByName = function getTaskSettingsByName(taskName) {
+  var task;
+
+  Object.keys(Cli.ALL_TASKS).every(function(listName) {
+    if (listName === taskName) {
+      task = require(Cli.ALL_TASKS[listName]);
+      return false;
+    }
+    return true;
+  });
+
+  return task;
+};
+
+/**
  * Method accepts an object of 'task options' and returns all
  * boolean options that are available
  *
@@ -350,104 +362,6 @@ Cli.getListOfBooleanOptions = function getListOfBooleanOptions(taskOptionsObj) {
         });
       return list.concat(keyItems);
     }, []);
-};
-
-
-/**
- * @method getTaskSettingsByName
- * @param {String} taskName task name to look for
- * @return {Object} Returns the task settings object that matches
- */
-Cli.getTaskSettingsByName = function getTaskSettingsByName(taskName) {
-  var task;
-
-  Object.keys(Cli.ALL_TASKS).every(function(listName) {
-    if (listName === taskName) {
-      task = require(Cli.ALL_TASKS[listName]);
-      return false;
-    }
-    return true;
-  });
-
-  return task;
-};
-
-
-/**
- * @method getAllTaskSettings
- * @return {Array} Returns an array of task settings objects
- */
-Cli.getAllTaskSettings = function getAllTaskSettings() {
-  return orderedListOfTasks.map(function(listName) {
-    return require(Cli.ALL_TASKS[listName]);
-  });
-};
-
-
-Cli.processExit = function processExit(code) {
-  if (Cli.cliNews && Cli.cliNews.promise) {
-    Q.all([Cli.latestVersion.promise, Cli.cliNews.promise])
-    .then(function() {
-      process.exit(code);
-    });
-  } else {
-    Cli.latestVersion.promise.then(function() {
-      process.exit(code);
-    });
-  }
-};
-
-
-Cli.version = function version() {
-  log.info(settings.version + '\n');
-};
-
-Cli.handleUncaughtExceptions = function handleUncaughtExceptions(err) {
-  log.error(chalk.red.bold('An uncaught exception occurred and has been reported to Ionic'));
-  var errorMessage = typeof err === 'string' ? err : err.message;
-  appLibUtils.errorHandler(errorMessage);
-  process.exit(1);
-};
-
-Cli.attachErrorHandling = function attachErrorHandling() {
-  appLibUtils.errorHandler = function errorHandler(msg) {
-    log.debug('Cli.appLibUtils.errorHandler msg', msg, typeof msg);
-    var stack = typeof msg == 'string' ? '' : msg.stack;
-    var errorMessage = typeof msg == 'string' ? msg : msg.message;
-    var promise = Q();
-    if (msg) {
-      promise = Info.gatherInfo().then(function(info) {
-        var ionicCliVersion = info.ionic_cli;
-        if (stack && stack.length > 0) {
-          process.stderr.write('\n' + chalk.bold(stack) + '\n\n');
-        }
-        process.stderr.write('\n' + chalk.bold(errorMessage));
-        process.stderr.write(chalk.bold(' (CLI v' + ionicCliVersion + ')') + '\n');
-
-        Info.printInfo(info);
-      });
-    }
-    promise.then(function() {
-      process.stderr.write('\n');
-      process.exit(1);
-      return '';
-    }).catch(function(ex) {
-      console.log('errorHandler had an error', ex);
-      console.log(ex.stack);
-    });
-  };
-
-  // TODO Attach error reporter here
-};
-
-// Backwards compatability for those commands that havent been
-// converted yet.
-Cli.fail = function fail(err, taskHelp) {
-  appLibUtils.fail(err, taskHelp);
-};
-
-Cli.getContentSrc = function getContentSrc() {
-  return appLibUtils.getContentSrc(process.cwd());
 };
 
 module.exports = Cli;
