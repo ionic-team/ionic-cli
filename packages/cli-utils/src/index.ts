@@ -22,6 +22,7 @@ export * from './lib/project';
 export * from './lib/login';
 export * from './lib/session';
 export * from './lib/shell';
+export * from './lib/telemetry';
 export * from './lib/utils/task';
 export * from './lib/utils/logger';
 export * from './lib/utils/help';

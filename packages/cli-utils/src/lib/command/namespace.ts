@@ -23,7 +23,6 @@ export class CommandMap extends Map<string, ICommand> {
 export class NamespaceMap extends Map<string, INamespace> {}
 
 export class Namespace implements INamespace {
-  public name = '';
 
   getNamespaces(): INamespaceMap {
     return new NamespaceMap();
@@ -70,11 +69,6 @@ export class Namespace implements INamespace {
 export function getCommandMetadataList(namespace: INamespace, namespaceDepthList: string[] = []): [any] {
   const commandList = <any>[];
   const namespaces = namespace.getNamespaces();
-
-  // If the namespace has no name then it is not needed in the depth structure
-  if (namespace.name) {
-    namespaceDepthList.push(namespace.name);
-  }
 
   // If this namespace has children then get their commands
   if (namespaces.size > 0) {

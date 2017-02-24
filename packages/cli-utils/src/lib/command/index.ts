@@ -4,7 +4,7 @@ import * as minimist from 'minimist';
 import {
   APIResponse,
   CommandData,
-  CommandEnvironment,
+  IonicEnvironment,
   CommandLineInputs,
   CommandLineOptions,
   ICommand,
@@ -13,7 +13,7 @@ import {
 
 import { FatalException } from '../errors';
 import { createFatalAPIFormat } from '../http';
-import { collectInputs, metadataToMinimistOptions, validateInputs } from './utils';
+import { collectInputs, metadataToMinimistOptions, validateInputs, minimistOptionsToArray } from './utils';
 
 export function CommandMetadata(metadata: CommandData) {
   return function (target: Function) {
@@ -22,7 +22,7 @@ export function CommandMetadata(metadata: CommandData) {
 }
 
 export class Command implements ICommand {
-  public env: CommandEnvironment;
+  public env: IonicEnvironment;
   public metadata: CommandData;
 
   async load(): Promise<void> {}
@@ -58,7 +58,22 @@ export class Command implements ICommand {
 
     await collectInputs(argv._, this.metadata);
 
-    r = await this.run(argv._, argv, validationErrors);
+    const results = await Promise.all([
+      (async () => {
+        const configData = await this.env.config.load();
+        if (configData.cliFlags.enableTelemetry !== false) {
+          const cmdInputs = this.getCleanInputsForTelemetry(argv._, argv);
+          await this.env.telemetry.sendCommand(
+            (this.env.pluginName) ? `${this.env.pluginName}:${this.metadata.name}` : this.metadata.name,
+            cmdInputs
+          );
+        }
+      })(),
+      await this.run(argv._, argv, validationErrors)
+    ]);
+
+    r = results[1];
+
     if (typeof r === 'number') {
       if (r > 0) {
         throw this.exit('', r);
@@ -74,5 +89,33 @@ export class Command implements ICommand {
 
   exitAPIFormat(req: superagent.SuperAgentRequest, res: APIResponse): FatalException {
     return createFatalAPIFormat(req, res);
+  }
+
+  getCleanInputsForTelemetry(inputs: CommandLineInputs, options: CommandLineOptions) {
+    if (this.metadata.inputs) {
+      const mdi = this.metadata.inputs;
+      inputs = inputs
+        .filter((input, i) => {
+          return !mdi[i].private;
+        });
+    }
+
+    if (this.metadata.options) {
+      const mdo = this.metadata.options;
+      options = Object.keys(options)
+        .filter(optionName => {
+          const metadataOptionFound = mdo.find((mdOption) => (
+            mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
+          ));
+          return (metadataOptionFound) ? !metadataOptionFound.private : true;
+        })
+        .reduce((allOptions, optionName) => {
+          allOptions[optionName] = options[optionName];
+          return allOptions;
+        }, <CommandLineOptions>{});
+    }
+
+    let optionInputs = minimistOptionsToArray(options);
+    return inputs.concat(optionInputs);
   }
 }

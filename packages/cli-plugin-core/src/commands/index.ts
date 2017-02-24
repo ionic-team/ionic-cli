@@ -8,7 +8,6 @@ import { LinkCommand } from './link';
 import { UploadCommand } from './upload';
 
 export class CoreNamespace extends Namespace {
-  name: 'core';
   getCommands(): ICommandMap {
     let m = new CommandMap();
 

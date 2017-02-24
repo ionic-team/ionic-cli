@@ -1,7 +1,7 @@
 var IonicCli = require('./cli');
 
-function run(pargv, env) {
-  return IonicCli.run(process.argv);
+function run(envInstance) {
+  return IonicCli.run(envInstance);
 }
 
 function getAllCommandMetadata() {

@@ -1,9 +1,11 @@
-import { createCommandEnvironment, runCommand } from '@ionic/cli-utils';
+import { runCommand, IonicEnvironment } from '@ionic/cli-utils';
 import { IonicNamespace } from './commands';
 
-export async function run(pargv: string[], env: { [k: string]: string }): Promise<void>  {
+export async function run(envInstance: IonicEnvironment): Promise<void>  {
   const ionicNamespace = new IonicNamespace();
-  const commandEnvironment = await createCommandEnvironment(pargv, env, ionicNamespace);
 
-  await runCommand(commandEnvironment);
+  await runCommand({
+    namespace: ionicNamespace,
+    ...envInstance
+  });
 }

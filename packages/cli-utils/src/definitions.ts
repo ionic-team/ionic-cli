@@ -68,6 +68,7 @@ export interface CommandOption {
   type?: CommandOptionType;
   default?: CommandLineInput;
   aliases?: string[];
+  private?: boolean;
   intent?: string;
 }
 
@@ -101,6 +102,7 @@ export interface CommandInput {
   description: string;
   prompt?: CommandInputPrompt;
   validators?: Validator[];
+  private?: boolean;
 }
 
 export interface CommandData {
@@ -203,30 +205,29 @@ export interface IClient {
   do(res: superagent.Request): Promise<APIResponseSuccess>;
 }
 
-export interface CommandEnvironment {
+export interface IonicEnvironment {
   pargv: string[];
   app: IApp;
   client: IClient;
   config: IConfig<ConfigFile>;
-  inquirer: typeof inquirer;
   log: ILogger;
   project: IProject;
   session: ISession;
   shell: IShell;
   telemetry: ITelemetry;
-  namespace: INamespace;
-  pluginName: string | undefined;
+  inquirer: typeof inquirer;
+  namespace?: INamespace;
+  pluginName?: string;
 }
 
 export interface INamespace {
-  name: string;
   getNamespaces(): INamespaceMap;
   getCommands(): ICommandMap;
   locateCommand(argv: string[]): [string[], ICommand | undefined];
 }
 
 export interface ICommand {
-  env: CommandEnvironment;
+  env: IonicEnvironment;
   metadata: CommandData;
 
   load(): Promise<void>;

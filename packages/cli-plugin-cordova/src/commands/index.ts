@@ -10,7 +10,6 @@ import { ResourcesCommand } from './resources';
 import { RunCommand } from './run';
 
 export class CordovaNamespace extends Namespace implements INamespace {
-  name: 'cordova';
   getCommands(): ICommandMap {
     let m = new CommandMap();
 

@@ -1,18 +1,31 @@
-import * as minimist from 'minimist';
+import * as os from 'os';
 import * as path from 'path';
+import * as minimist from 'minimist';
 import * as chalk from 'chalk';
+import * as inquirer from 'inquirer';
 import {
+  IonicEnvironment,
   FatalException,
   formatError as formatSuperAgentError,
   isSuperAgentError,
   TASKS,
+  Shell,
   Logger,
+  Config,
+  Client,
+  getCliInfo,
+  Telemetry,
+  Project,
+  Session,
+  App,
   fsReadDir
 } from '@ionic/cli-utils';
 
 import { resolvePlugin } from './lib/plugins';
 
 const PROJECT_FILE = 'ionic.config.json';
+const CONFIG_FILE = 'config.json';
+const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
 
 function cleanup() {
   for (let task of TASKS) {
@@ -50,7 +63,32 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 
   try {
     const [plugin, inputs] = await resolvePlugin(env['PROJECT_DIR'], env['PROJECT_FILE'], pargv);
-    await plugin.run(inputs, env);
+
+    const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
+    const configData = await config.load();
+
+    const client = new Client(configData.urls.api);
+    const cliInfo = await getCliInfo();
+    const telemetry = new Telemetry(config, cliInfo);
+    const shell = new Shell();
+    const project = new Project(env['PROJECT_DIR'], env['PROJECT_FILE']);
+    const session = new Session(config, project, client);
+    const app = new App(session, project, client);
+    const ionicEnvironment: IonicEnvironment = {
+      pargv: inputs,
+      app,
+      client,
+      config,
+      log,
+      project,
+      session,
+      shell,
+      telemetry,
+      inquirer,
+      pluginName: plugin.PLUGIN_NAME
+    };
+
+    plugin.run(ionicEnvironment);
 
   } catch (e) {
     err = e;
@@ -64,7 +102,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     if (isSuperAgentError(err)) {
       console.error(formatSuperAgentError(err));
     } else if (err instanceof FatalException) {
-      exitCode = err.exitCode;
+      exitCode = err.exitCode || 1;
 
       if (err.message) {
         log.error(err.message);

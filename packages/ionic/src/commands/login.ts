@@ -13,7 +13,8 @@ import { validators } from '@ionic/cli-utils';
       prompt: {
         message: 'Email:'
       },
-      validators: [validators.required, validators.email]
+      validators: [validators.required, validators.email],
+      private: true
     },
     {
       name: 'password',
@@ -22,7 +23,8 @@ import { validators } from '@ionic/cli-utils';
         type: 'password',
         message: 'Password:'
       },
-      validators: [validators.required]
+      validators: [validators.required],
+      private: true
     }
   ]
 })

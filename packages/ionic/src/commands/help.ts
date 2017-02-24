@@ -32,6 +32,10 @@ const UNKOWN_COMMAND_ERROR = 'UNKOWN_COMMAND';
 export class HelpCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
 
+    if (!this.env.namespace) {
+      throw 'Namespace missing for help command';
+    }
+
     // If there are no inputs then show global command details.
     if (inputs.length === 0) {
       let allDetails: string[] = [];

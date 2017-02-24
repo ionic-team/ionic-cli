@@ -6,8 +6,6 @@ import { DownloadCommand } from './download';
 import { InfoCommand } from './info';
 
 export class PackageNamespace extends Namespace {
-  public name: 'cloud';
-
   getCommands(): ICommandMap {
     let m = new CommandMap();
 
