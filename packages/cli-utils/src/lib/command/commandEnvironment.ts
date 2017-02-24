@@ -39,7 +39,7 @@ export async function runCommand(commandEnvironment: CommandEnvironment, pargv?:
   await Promise.all([
     (async function(cmd: ICommand) {
       const configData = await commandEnvironment.config.load();
-      if (configData.cliFlags.enableTelemetry) {
+      if (configData.cliFlags.enableTelemetry !== false) {
         await cmd.env.telemetry.sendCommand(cmd.metadata.name, inputs);
       }
     })(command),
@@ -52,8 +52,6 @@ export async function runCommand(commandEnvironment: CommandEnvironment, pargv?:
       await commandEnvironment.config.save();
     })(command)
   ]);
-
-
 }
 
 /**
