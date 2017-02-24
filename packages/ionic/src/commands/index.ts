@@ -6,6 +6,7 @@ import { SignupCommand } from './signup';
 import { StartCommand } from './start';
 import { VersionCommand } from './version';
 import { HelpCommand } from './help';
+import { TelemetryCommand } from './telemetry';
 
 export class IonicNamespace extends Namespace {
   name: 'global';
@@ -19,6 +20,7 @@ export class IonicNamespace extends Namespace {
     m.set('login', new LoginCommand());
     m.set('signup', new SignupCommand());
     m.set('version', new VersionCommand());
+    m.set('telemetry', new TelemetryCommand());
 
     return m;
   }

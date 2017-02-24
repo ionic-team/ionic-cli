@@ -83,7 +83,7 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
         message: 'What would you like to name your project:'
       }
     },
-     {
+    {
       name: 'template',
       description: `Starter templates can either come from a named template (ex: ${STARTER_TEMPLATES.map(st => st.name).join(', ')})`,
       validators: [validators.required],

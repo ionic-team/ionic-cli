@@ -114,6 +114,14 @@ function modifyArguments(pargv: string[]): string[] {
     return ['help'];
   }
 
+  if (minimistArgv['stats-opt-out']) {
+    return ['telemetry', 'no'];
+  }
+
+  if (minimistArgv['stats-opt-in']) {
+    return ['telemetry', 'yes'];
+  }
+
   if (minimistArgv['help'] || minimistArgv['h']) {
     if (minimistArgv._.length > 0) {
       return ['help', minimistArgv._[0]];
