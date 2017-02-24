@@ -11,7 +11,8 @@ import {
 import { resetConfigXmlContentSrc, writeConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import {
   filterArgumentsForCordova,
-  generateAppScriptsArguments
+  generateAppScriptsArguments,
+  CORDOVA_INTENT
 } from '../lib/utils/cordova';
 import { getAvailableIPAddress } from '../lib/utils/network';
 import {
@@ -39,6 +40,7 @@ import {
     }
   ],
   options: [
+    // App Scripts Options
     {
       name: 'livereload',
       description: 'Live reload app dev files from the device',
@@ -75,13 +77,40 @@ import {
       aliases: ['r']
     },
     {
-      name: 'debug|--release',
-      description: '',
+      name: 'prod',
+      description: 'Create a prod build with app-scripts',
+      type: Boolean
+    },
+    // Cordova Options
+    {
+      name: 'list',
+      description: 'List all available cordova run targets',
       type: Boolean,
+      intent: CORDOVA_INTENT
     },
     {
-      name: 'device|--emulator|--target=FOO',
-      description: ''
+      name: 'debug',
+      description: 'Create a cordova debug build',
+      type: Boolean,
+      intent: CORDOVA_INTENT
+    },
+    {
+      name: 'release',
+      description: 'Create a cordova release build',
+      type: Boolean,
+      intent: CORDOVA_INTENT
+    },
+    {
+      name: 'device',
+      description: 'Deploy cordova build to a device',
+      type: Boolean,
+      intent: CORDOVA_INTENT
+    },
+    {
+      name: 'target',
+      description: 'Deploy cordova build to a device. Options available with --list.',
+      type: String,
+      intent: CORDOVA_INTENT
     }
   ]
 })

@@ -10,7 +10,8 @@ import {
 } from '@ionic/cli-utils';
 import {
   filterArgumentsForCordova,
-  generateAppScriptsArguments
+  generateAppScriptsArguments,
+  CORDOVA_INTENT
 } from '../lib/utils/cordova';
 import { getAvailableIPAddress } from '../lib/utils/network';
 import { resetConfigXmlContentSrc, writeConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
@@ -39,6 +40,7 @@ import {
     }
   ],
   options: [
+    // App Scripts Options
     {
       name: 'livereload',
       description: 'Live reload app dev files from the device',
@@ -75,13 +77,46 @@ import {
       aliases: ['r']
     },
     {
-      name: 'debug|--release',
-      description: '',
+      name: 'prod',
+      description: 'Create a prod build with app-scripts',
+      type: Boolean
+    },
+    // Cordova Options
+    {
+      name: 'list',
+      description: 'List all available cordova run targets',
       type: Boolean,
+      intent: CORDOVA_INTENT
     },
     {
-      name: 'device|--emulator|--target=FOO',
-      description: ''
+      name: 'debug',
+      description: 'Create a cordova debug build',
+      type: Boolean,
+      intent: CORDOVA_INTENT
+    },
+    {
+      name: 'release',
+      description: 'Create a cordova release build',
+      type: Boolean,
+      intent: CORDOVA_INTENT
+    },
+    {
+      name: 'device',
+      description: 'Deploy cordova build to a device',
+      type: Boolean,
+      intent: CORDOVA_INTENT
+    },
+    {
+      name: 'emulator',
+      description: 'Deploy cordova build to an emulator',
+      type: Boolean,
+      intent: CORDOVA_INTENT
+    },
+    {
+      name: 'target',
+      description: 'Deploy cordova build to a device. Options available with --list.',
+      type: String,
+      intent: CORDOVA_INTENT
     }
   ]
 })
@@ -153,7 +188,6 @@ export class RunCommand extends Command {
 
       // using app-scripts and livereload is requested
       // Also remove commandName from the rawArgs passed
-
       this.env.log.msg(`  Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
       const serverSettings = await appScripts.serve(context);
       tasks.next(`Starting app-scripts server`);

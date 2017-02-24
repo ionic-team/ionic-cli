@@ -40,12 +40,14 @@ export function normalizeOptionAliases(metadata: CommandData, options: CommandLi
 
       if (metadataOptionFound) {
         results[metadataOptionFound.name] = options[optionName];
+      } else {
+        results[optionName] = options[optionName];
       }
       return results;
     }, {});
 }
 
-export function minimistOptionsToArray(metadata: CommandData, options: CommandLineOptions): string[] {
+export function minimistOptionsToArray(options: CommandLineOptions): string[] {
   return (Object.keys(options || {})).reduce((results, optionName): string[] => {
     if (options[optionName] === true) {
       return results.concat(`--${optionName}`);

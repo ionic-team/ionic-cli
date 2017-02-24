@@ -10,7 +10,8 @@ import {
 } from '@ionic/cli-utils';
 import {
   filterArgumentsForCordova,
-  generateAppScriptsArguments
+  generateAppScriptsArguments,
+  CORDOVA_INTENT
 } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import {
@@ -38,10 +39,36 @@ import {
     }
   ],
   options: [
+    // App Scripts Options
     {
-      name: 'nohooks',
-      description: 'Do not add default Ionic hooks for Cordova',
+      name: 'prod',
+      description: 'Build the application for production',
       type: Boolean
+    },
+    // Cordova Options
+    {
+      name: 'debug',
+      description: 'Create a cordova debug build',
+      type: Boolean,
+      intent: CORDOVA_INTENT
+    },
+    {
+      name: 'release',
+      description: 'Create a cordova release build',
+      type: Boolean,
+      intent: CORDOVA_INTENT
+    },
+    {
+      name: 'device',
+      description: 'Deploy cordova build to a device',
+      type: Boolean,
+      intent: CORDOVA_INTENT
+    },
+    {
+      name: 'emulator',
+      description: 'Deploy cordova build to an emulator',
+      type: Boolean,
+      intent: CORDOVA_INTENT
     }
   ]
 })

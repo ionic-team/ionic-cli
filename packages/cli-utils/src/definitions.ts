@@ -68,6 +68,7 @@ export interface CommandOption {
   type?: CommandOptionType;
   default?: CommandLineInput;
   aliases?: string[];
+  intent?: string;
 }
 
 export interface NormalizedCommandOption extends CommandOption {

@@ -90,7 +90,7 @@ export class ServeCommand extends Command {
     var tasks = new TaskChain();
 
     const results = normalizeOptionAliases(this.metadata, options);
-    let appScriptsArgs = minimistOptionsToArray(this.metadata, results);
+    let appScriptsArgs = minimistOptionsToArray(results);
 
     this.env.log.msg(`  Starting app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
 
