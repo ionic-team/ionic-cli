@@ -27,13 +27,16 @@ function formatPluginDocs(pluginName, listFileCommands) {
   let headerLine = `# ${pluginName}`;
 
   function listCommandLink (cmdData) {
-    return `* [${cmdData.commandName}](${cmdData.fileName}.md)`;
+    return `[${cmdData.commandName}](${cmdData.fileName}.md) | ${cmdData.description}`;
   }
 
   return `
 ${headerLine}
-      ${listFileCommands.map(listCommandLink).join(`
-      `)}
+
+Command | Description
+------- | -----------
+${listFileCommands.map(listCommandLink).join(`
+`)}
 `
 }
 
@@ -51,7 +54,7 @@ function formatName(fullName, description) {
   const headerLine = `## NAME`;
   return `
 ${headerLine}
-      ${fullName} -- ${description}
+${fullName} -- ${description}
   `;
 }
 
@@ -70,7 +73,7 @@ function formatSynopsis(inputs, commandName) {
 
   return `
 ${headerLine}
-      ${usageLine}
+    ${usageLine}
   `;
 }
 
@@ -85,7 +88,7 @@ function formatDescription(inputs = [], options = [], description = '') {
     const description = input.description;
     const optionList = `${name}`;
 
-    return `${optionList} ${fillStrings[index]} ${description}`;
+    return `* ${optionList} ${fillStrings[index]} ${description}`;
   };
 
   function optionLineFn(option) {
@@ -102,18 +105,18 @@ function formatDescription(inputs = [], options = [], description = '') {
     const optionListLength = optionList.replace(cliUtils.STRIP_ANSI_REGEX, '').length;
     const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
 
-    return `${optionList} ${Array(fullLength - optionListLength).fill('.').join('')} ${description}`;
+    return `* ${optionList} ${Array(fullLength - optionListLength).fill('.').join('')} ${description}`;
   };
 
 
   return `
 ${headerLine}
-      ${description}
+${description}
 
-      ${inputs.map(inputLineFn).join(`
-      `)}
-      ${options.map(optionLineFn).join(`
-      `)}
+${inputs.map(inputLineFn).join(`
+`)}
+${options.map(optionLineFn).join(`
+`)}
 `
 }
 
@@ -123,11 +126,11 @@ function formatExamples(exampleCommands, commandName) {
   }
 
   const headerLine = `## EXAMPLES`;
-  const exampleLines = exampleCommands.map(cmd => `$ ionic ${commandName} ${cmd} `);
+  const exampleLines = exampleCommands.map(cmd => `ionic ${commandName} ${cmd} `);
 
   return `
 ${headerLine}
-      ${exampleLines.join(`
-      `)}
+    ${exampleLines.join(`
+    `)}
 `
 }

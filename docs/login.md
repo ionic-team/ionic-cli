@@ -1,16 +1,16 @@
 
 ## NAME
-      login -- Login with your Ionic ID
+login -- Login with your Ionic ID
   
 ## SYNOPSIS
-      ionic login <email> <password>
+    ionic login <email> <password>
   
 ## DESCRIPTION
-      Login with your Ionic ID
+Login with your Ionic ID
 
-      email .................... Your email address
-      password ................. Your password
-      
+* email .................... Your email address
+* password ................. Your password
+
 
 ## EXAMPLES
-      $ ionic login john@example.com 
+    ionic login john@example.com 

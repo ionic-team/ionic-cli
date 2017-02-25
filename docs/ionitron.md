@@ -1,12 +1,12 @@
 
 ## NAME
-      ionitron -- Print random ionitron messages
+ionitron -- Print random ionitron messages
   
 ## SYNOPSIS
-      ionic ionitron 
+    ionic ionitron 
   
 ## DESCRIPTION
-      Print random ionitron messages
+Print random ionitron messages
 
-      
-      --es ..................... Print in spanish
+
+* --es ..................... Print in spanish

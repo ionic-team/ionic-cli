@@ -1,15 +1,15 @@
 
 ## NAME
-      upload -- Upload a new snapshot of your app
+upload -- Upload a new snapshot of your app
   
 ## SYNOPSIS
-      ionic upload 
+    ionic upload 
   
 ## DESCRIPTION
-      Upload a new snapshot of your app
+Upload a new snapshot of your app
 
-      
-      
+
+
 
 ## EXAMPLES
-      $ ionic upload  
+    ionic upload  

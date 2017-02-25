@@ -1,12 +1,12 @@
 
 ## NAME
-      info -- List information about the current environment
+info -- List information about the current environment
   
 ## SYNOPSIS
-      ionic info 
+    ionic info 
   
 ## DESCRIPTION
-      List information about the current environment
+List information about the current environment
 
-      
-      
+
+

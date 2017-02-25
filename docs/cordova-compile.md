@@ -1,12 +1,12 @@
 
 ## NAME
-      cordova:compile -- Performs a cordova compile.
+cordova:compile -- Performs a cordova compile.
   
 ## SYNOPSIS
-      ionic cordova:compile 
+    ionic cordova:compile 
   
 ## DESCRIPTION
-      Performs a cordova compile.
+Performs a cordova compile.
 
-      
-      
+
+

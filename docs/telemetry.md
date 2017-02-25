@@ -1,12 +1,12 @@
 
 ## NAME
-      telemetry -- Opt in and out of telemetry
+telemetry -- Opt in and out of telemetry
   
 ## SYNOPSIS
-      ionic telemetry <opt-in>
+    ionic telemetry <opt-in>
   
 ## DESCRIPTION
-      Opt in and out of telemetry
+Opt in and out of telemetry
 
-      opt-in ................... opt-in or opt-out
-      
+* opt-in ................... opt-in or opt-out
+
