@@ -75,9 +75,9 @@ If your question is about functionality please be sure to start with the help co
 # Addtional Documentation
 These markdown files contain the same documenation that is available through the `ionic help` command.
 
-* [Ionic Commands](docs/ionic.md)
+* [Ionic Global Commands](docs/ionic.md)
 * [Core Project Commands](docs/cli-plugin-core.md)
-* [Cordova Commands](docs/cli-plugin-cordova.md)
+* [Cordova Project Commands](docs/cli-plugin-cordova.md)
 
 __Named template starters:__
 
