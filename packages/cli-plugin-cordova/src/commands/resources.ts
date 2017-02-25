@@ -101,8 +101,7 @@ export class ResourcesCommand extends Command {
     const buildPlatforms = Object.keys(resourceJsonStructure)
       .filter(platform => platformDirContents.includes(platform));
     if (buildPlatforms.length === 0) {
-      this.env.log.error(`No platforms have been added. Please run: ${chalk.green('ionic cordova:platform add')}`);
-      return;
+      throw `No platforms have been added. Please run: ${chalk.green('ionic cordova:platform add')}`;
     }
     this.env.log.debug(`${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);
 

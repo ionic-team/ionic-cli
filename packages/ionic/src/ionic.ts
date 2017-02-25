@@ -88,7 +88,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       pluginName: plugin.PLUGIN_NAME
     };
 
-    plugin.run(ionicEnvironment);
+    await plugin.run(ionicEnvironment);
 
   } catch (e) {
     err = e;
