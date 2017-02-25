@@ -28,6 +28,9 @@ import {
       name: 'action',
       description: `${chalk.bold('add')}, ${chalk.bold('remove')}, or ${chalk.bold('update')} a platform; ${chalk.bold('list')} all project platforms`,
       validators: [validators.required],
+      prompt: {
+        message: 'What action would you like to take (add, remove, or update):',
+      },
     },
     {
       name: 'platform',
