@@ -16,6 +16,12 @@ Use the `ionic --help` command for more detailed task information.
 $ npm install -g ionic@beta
 ```
 
+**Latest beta releases**
+ - ionic@3.0.0-beta.2
+ - @ionic/cli-plugin-cordova@0.0.8
+ - @ionic/cli-plugin-core@0.0.7
+
+
 *Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix the command with `sudo` or can 
 setup [proper file permissions on OSX for npm](http://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx/) to install without `sudo`. *
 
