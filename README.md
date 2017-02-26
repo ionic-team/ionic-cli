@@ -16,7 +16,13 @@ Use the `ionic --help` command for more detailed task information.
 $ npm install -g ionic@beta
 ```
 
-**Latest beta releases**
+#### Upgrading from a previous beta
+This process is a little cumbersome at the the moment (we will streamline this in the beta3 release).  You will need to the newly updated CLI globally and execute the following command in your Ionic project's root directory.
+```bash
+$ npm install -g @ionic/cli-plugin-cordova@beta @ionic/cli-plugin-core@beta
+```
+
+#### Latest beta release versions
  - ionic@3.0.0-beta.2
  - @ionic/cli-plugin-cordova@0.0.8
  - @ionic/cli-plugin-core@0.0.7
