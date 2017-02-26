@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-plugin-core",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Ionic CLI Core",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
@@ -47,7 +47,7 @@
     "testRegex": "/__tests__/.*\\.(ts|js)$"
   },
   "dependencies": {
-    "@ionic/cli-utils": "^0.0.6",
+    "@ionic/cli-utils": "^0.0.7",
     "superagent": "^3.4.1"
   },
   "devDependencies": {
