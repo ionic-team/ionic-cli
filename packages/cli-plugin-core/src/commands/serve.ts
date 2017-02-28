@@ -96,7 +96,6 @@ export class ServeCommand extends Command {
     });
 
     tasks.next(`Starting server`);
-
     tasks.end();
   }
 }

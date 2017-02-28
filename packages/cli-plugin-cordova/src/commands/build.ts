@@ -10,6 +10,7 @@ import {
   normalizeOptionAliases
 } from '@ionic/cli-utils';
 import {
+  generateBuildOptions,
   filterArgumentsForCordova,
   CORDOVA_INTENT
 } from '../lib/utils/cordova';
@@ -39,7 +40,7 @@ import {
     }
   ],
   options: [
-    // App Scripts Options
+    // Build Options
     {
       name: 'prod',
       description: 'Build the application for production',
@@ -111,7 +112,7 @@ export class BuildCommand extends Command {
     await this.env.emitEvent('build', {
       metadata: this.metadata,
       inputs,
-      options
+      options: generateBuildOptions(this.metadata, options)
     });
     tasks.next(`Running build`);
 

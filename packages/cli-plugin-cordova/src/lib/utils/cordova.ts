@@ -36,13 +36,13 @@ export function filterArgumentsForCordova(metadata: CommandData, inputs: Command
 /**
  * Start the app scripts server for emulator or device
  */
-export function generateAppScriptsArguments(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
+export function generateBuildOptions(metadata: CommandData, options: CommandLineOptions): CommandLineOptions {
   const results = filterByIntent(metadata, options);
-  let args = minimistOptionsToArray(results);
 
   // Serve specific options not related to the actual run or emulate code
-  return args.concat([
-    '--iscordovaserve',
-    '--nobrowser'
-  ]);
+  return {
+    ...results,
+    'iscordovaserve': true,
+    'nobrowser': true
+  };
 }

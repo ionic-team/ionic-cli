@@ -11,6 +11,7 @@ import {
 } from '@ionic/cli-utils';
 import { resetConfigXmlContentSrc, writeConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import {
+  generateBuildOptions,
   filterArgumentsForCordova,
   CORDOVA_INTENT
 } from '../lib/utils/cordova';
@@ -157,7 +158,7 @@ export class EmulateCommand extends Command {
       await this.env.emitEvent('build', {
         metadata: this.metadata,
         inputs,
-        options
+        options: generateBuildOptions(this.metadata, options)
       });
       tasks.next(`Starting build`);
     } else {
@@ -167,7 +168,7 @@ export class EmulateCommand extends Command {
       const serverSettings = await this.env.emitEvent('serve', {
         metadata: this.metadata,
         inputs,
-        options
+        options: generateBuildOptions(this.metadata, options)
       });
 
       await writeConfigXmlContentSrc(this.env.project.directory, `http://${serverSettings.ipAddress}:${serverSettings.httpPort}`);

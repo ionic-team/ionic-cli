@@ -6,7 +6,7 @@ import {
   CommandData,
 } from '@ionic/cli-utils';
 import { getAvailableIPAddress } from './utils/network';
-import { generateAppScriptsArguments } from './utils/arguments';
+import { minimistOptionsToArray } from './utils/arguments';
 
 export default async function serve(cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<{ [key: string]: any }> {
 
@@ -16,6 +16,7 @@ export default async function serve(cmdMetadata: CommandData, inputs: CommandLin
       `In order to use livereload with emulate you will need one.`
     );
   }
+
   let chosenIP = availableIPs[0].address;
   if (availableIPs.length > 1) {
     const promptAnswers = await inquirer.prompt({
@@ -27,7 +28,7 @@ export default async function serve(cmdMetadata: CommandData, inputs: CommandLin
     chosenIP = promptAnswers['ip'];
   }
 
-  const appScriptsArgs = generateAppScriptsArguments(cmdMetadata, inputs, options);
+  const appScriptsArgs = minimistOptionsToArray(options);
   process.argv = appScriptsArgs;
 
   const appScripts = require('@ionic/app-scripts');
@@ -35,6 +36,10 @@ export default async function serve(cmdMetadata: CommandData, inputs: CommandLin
 
   // using app-scripts and livereload is requested
   // Also remove commandName from the rawArgs passed
-  this.env.log.msg(`  Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
-  return appScripts.serve(context);
+  console.log(`  Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
+  const settings = await appScripts.serve(context);
+  return  {
+    publicIp: chosenIP,
+    ...settings
+  };
 }

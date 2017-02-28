@@ -4,15 +4,15 @@ import {
   CommandLineOptions,
   CommandData,
 } from '@ionic/cli-utils';
-import { generateAppScriptsArguments } from './utils/arguments';
+import { minimistOptionsToArray } from './utils/arguments';
 
-export default async function build(cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<{ [key: string]: any }> {
-  const appScriptsArgs = generateAppScriptsArguments(this.metadata, inputs, options);
+export default async function build(cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  const appScriptsArgs = minimistOptionsToArray(options);
   process.argv = appScriptsArgs;
 
   const appScripts = require('@ionic/app-scripts');
   const context = appScripts.generateContext();
 
-  this.env.log.msg(`  Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
-  return appScripts.build(context);
+  console.log(`  Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
+  await appScripts.build(context);
 }

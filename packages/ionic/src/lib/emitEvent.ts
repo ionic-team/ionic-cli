@@ -5,8 +5,9 @@ export const PREFIX = '@ionic/cli-build-';
 
 export default async function(projectDirectory: string): Promise<Function> {
   const projectJson = await getProjectInfo(projectDirectory);
-  const buildPlugins = Object.keys(projectJson['dependencies']).concat(projectJson['devDependencies'])
-    .filter(pkgName => pkgName.startsWith(PREFIX));
+  const buildPlugins = Object.keys(projectJson['dependencies'])
+    .concat(Object.keys(projectJson['devDependencies']))
+    .filter(pkgName => pkgName && pkgName.indexOf(PREFIX) === 0);
 
   const plugins = await Promise.all(
     buildPlugins.map(pkgName => {
@@ -14,9 +15,19 @@ export default async function(projectDirectory: string): Promise<Function> {
     })
   );
 
-  return function(eventName: string, options: { [key: string]: any } ) {
-    plugins.forEach(async function(plugin: any) {
-      await plugin.default(eventName, options);
-    });
+  return async function(eventName: string, options: { [key: string]: any }): Promise<any> {
+    let results = {};
+
+    for (let plugin of plugins) {
+      let pluginResult = await plugin.default(eventName, options);
+      if (pluginResult) {
+        results = {
+          ...results,
+          ...pluginResult
+        };
+      }
+    }
+
+    return results;
   };
 };
