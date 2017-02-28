@@ -2,7 +2,6 @@ import {
   CommandData,
   CommandLineInputs,
   CommandLineOptions,
-  normalizeOptionAliases,
   minimistOptionsToArray,
 } from '@ionic/cli-utils';
 
@@ -28,9 +27,7 @@ function filterByIntent(metadata: CommandData, options: CommandLineOptions, inte
  * Filter and gather arguments from command line to be passed to Cordova
  */
 export function filterArgumentsForCordova(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
-  let results = normalizeOptionAliases(metadata, options);
-  results = filterByIntent(metadata, results, CORDOVA_INTENT);
-
+  const results = filterByIntent(metadata, options, CORDOVA_INTENT);
   const args = minimistOptionsToArray(results);
 
   return [metadata.name].concat(inputs, args);
@@ -40,9 +37,7 @@ export function filterArgumentsForCordova(metadata: CommandData, inputs: Command
  * Start the app scripts server for emulator or device
  */
 export function generateAppScriptsArguments(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
-  let results = normalizeOptionAliases(metadata, options);
-  results = filterByIntent(metadata, results);
-
+  const results = filterByIntent(metadata, options);
   let args = minimistOptionsToArray(results);
 
   // Serve specific options not related to the actual run or emulate code

@@ -49,6 +49,18 @@ function getPackageJsonContents(packageJsonPath: string): Promise<{ [key: string
 }
 
 /**
+ * Get package.json contents for the project package
+ */
+export async function getProjectInfo(appDirectory: string): Promise<{ [key: string]: any; }>  {
+  const packageJsonPath = path.resolve(
+    appDirectory,
+    'package.json'
+  );
+
+  return await getPackageJsonContents(packageJsonPath);
+}
+
+/**
  * Get package.json contents for the ionic(cli) package
  */
 export async function getCliInfo(): Promise<{ [key: string]: any; }>  {

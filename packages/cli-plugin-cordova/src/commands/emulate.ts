@@ -5,16 +5,15 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  normalizeOptionAliases,
   TaskChain,
   validators
 } from '@ionic/cli-utils';
 import { resetConfigXmlContentSrc, writeConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import {
   filterArgumentsForCordova,
-  generateAppScriptsArguments,
   CORDOVA_INTENT
 } from '../lib/utils/cordova';
-import { getAvailableIPAddress } from '../lib/utils/network';
 import {
   arePluginsInstalled,
   getProjectPlatforms,
@@ -116,6 +115,9 @@ import {
 })
 export class EmulateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+
+    options = normalizeOptionAliases(this.metadata, options);
+
     const isLiveReload = options['livereload'];
     const runPlatform = inputs[0];
 
@@ -146,52 +148,30 @@ export class EmulateCommand extends Command {
     /**
      * If it is not livereload then just run build.
      */
-
-    // We are using require because app-scripts reads process.argv during parse
-    const appScriptsArgs = generateAppScriptsArguments(this.metadata, inputs, options);
-    process.argv = appScriptsArgs;
-    const appScripts = require('@ionic/app-scripts');
-    const context = appScripts.generateContext();
-
     if (!isLiveReload) {
 
       // ensure the content node was set back to its original
       await resetConfigXmlContentSrc(this.env.project.directory);
-
       tasks.end();
 
-      this.env.log.msg(`  Running app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
-      await appScripts.build(context);
-      tasks.next(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
+      await this.env.emitEvent('build', {
+        metadata: this.metadata,
+        inputs,
+        options
+      });
+      tasks.next(`Starting build`);
     } else {
 
       tasks.end();
 
-      const availableIPs = getAvailableIPAddress();
-      if (availableIPs.length === 0) {
-        this.env.log.error(`It appears that you do not have any external network interfaces. ` +
-          `In order to use livereload with emulate you will need one.`
-        );
-      }
-      let chosenIP = availableIPs[0].address;
-      if (availableIPs.length > 1) {
-        const promptAnswers = await this.env.inquirer.prompt({
-          type: 'list',
-          name: 'ip',
-          message: 'Multiple addresses available. Please select which address to use:',
-          choices: availableIPs.map(ip => ip.address)
-        });
-        chosenIP = promptAnswers['ip'];
-      }
+      const serverSettings = await this.env.emitEvent('serve', {
+        metadata: this.metadata,
+        inputs,
+        options
+      });
 
-      // using app-scripts and livereload is requested
-      // Also remove commandName from the rawArgs passed
-      this.env.log.msg(`  Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
-
-      // We are using require because app-scripts reads process.argv during parse
-      const serverSettings = await appScripts.serve(context);
-      await writeConfigXmlContentSrc(this.env.project.directory, `http://${chosenIP}:${serverSettings.httpPort}`);
-      tasks.next(`Starting app-scripts server`);
+      await writeConfigXmlContentSrc(this.env.project.directory, `http://${serverSettings.ipAddress}:${serverSettings.httpPort}`);
+      tasks.next(`Starting server`);
     }
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);

@@ -2,14 +2,13 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
 
-import { Project, Shell, FatalException, TaskChain, fsReadJsonFile, ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON } from '@ionic/cli-utils';
+import { Shell, FatalException, TaskChain, fsReadJsonFile, ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON } from '@ionic/cli-utils';
 import { IonicNamespace } from '../commands';
 import { load } from './utils/commonjs-loader';
 import * as globalPlugin from '../index';
 
 export const defaultPlugin = 'core';
-export const v1Plugin = 'ionic1';
-export const KNOWN_PLUGINS = [defaultPlugin, 'cordova', v1Plugin];
+export const KNOWN_PLUGINS = [defaultPlugin, 'cordova'];
 export const PREFIX = '@ionic/cli-plugin-';
 export const ERROR_PLUGIN_NOT_INSTALLED = 'PLUGIN_NOT_INSTALLED';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';
@@ -18,11 +17,11 @@ export const ERROR_PLUGIN_INVALID = 'PLUGIN_INVALID';
 /**
  * Synchronously load a plugin
  */
-export async function loadPlugin(projectDir: string, name: string, askToInstall: boolean = true): Promise<any> {
+export async function loadPlugin(projectDir: string, pluginName: string, askToInstall: boolean = true): Promise<any> {
   let m: any;
 
   try {
-    var mPath = path.join(projectDir, 'node_modules', '@ionic', `cli-plugin-${name}`);
+    var mPath = path.join(projectDir, 'node_modules', ...pluginName.split('/'));
     m = load(mPath);
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') {
@@ -33,14 +32,13 @@ export async function loadPlugin(projectDir: string, name: string, askToInstall:
     let foundPackageNeeded = KNOWN_PLUGINS.map(kp => `${PREFIX}${kp}`)
       .find(kp => e.message && e.message.includes(kp));
     if (!foundPackageNeeded) {
-      throw `Dependency missing for ${chalk.bold(PREFIX + name)}:\n\n  ${chalk.red('[ERROR]')}: ${e.message}`;
+      throw `Dependency missing for ${chalk.bold(pluginName)}:\n\n  ${chalk.red('[ERROR]')}: ${e.message}`;
     }
   }
   if (!m && !askToInstall) {
     throw ERROR_PLUGIN_NOT_INSTALLED;
   }
   if (!m) {
-    const pluginName = `${PREFIX}${name}`;
     const answers: inquirer.Answers = await inquirer.prompt([{
       type: 'confirm',
       name: 'installPlugin',
@@ -56,7 +54,7 @@ export async function loadPlugin(projectDir: string, name: string, askToInstall:
       await new Shell().run('npm', ['install', '--save-dev', pluginInstallVersion ]);
       tasks.end();
 
-      return loadPlugin(projectDir, name);
+      return loadPlugin(projectDir, pluginName);
     } else {
       throw ERROR_PLUGIN_NOT_INSTALLED;
     }
@@ -89,9 +87,6 @@ export async function resolvePlugin(projectDir: string, projectFile: string, arg
     throw chalk.bold(`This is not a global command please run this in your Ionic project's directory.\n`);
   }
 
-  const project = new Project(projectDir, projectFile);
-  const projectData = await project.load();
-
   /**
    * If the first arguement supplied contains a ':' then
    * it is assumed that this is calling a command in another
@@ -110,12 +105,8 @@ export async function resolvePlugin(projectDir: string, projectFile: string, arg
   } else if (KNOWN_PLUGINS.includes(argv[0])) {
     [pluginName, ...inputs] = argv;
 
-  } else if (projectData.v2) {
-    pluginName = defaultPlugin;
-    inputs = argv;
-
   } else {
-    pluginName = v1Plugin;
+    pluginName = defaultPlugin;
     inputs = argv;
   }
 
@@ -125,7 +116,7 @@ export async function resolvePlugin(projectDir: string, projectFile: string, arg
    */
   try {
     return [
-      await loadPlugin(projectDir, pluginName),
+      await loadPlugin(projectDir, `${PREFIX}${pluginName}`),
       inputs
     ];
   } catch (e) {

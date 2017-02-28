@@ -1,34 +1,18 @@
 {
-  "name": "@ionic/cli-plugin-cordova",
-  "version": "0.0.8",
-  "description": "Ionic Cordova Plugin for Ionic CLI",
+  "name": "@ionic/cli-build-ionic1",
+  "version": "0.0.1",
+  "description": "Ionic 1 build plugin",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
-  "main": "./dist/index.js",
-  "types": "./dist/main.d.ts",
+  "main": "./src/index.js",
   "scripts": {
     "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
     "build": "npm run lint && npm run clean && ../../node_modules/.bin/webpack",
     "clean": "rm -rf ./dist",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
     "test": "../../node_modules/.bin/jest",
-    "watch": "npm run clean && ../../node_modules/.bin/tsc --watch",
-    "postinstall": "node ./bin/postinstall"
+    "watch": "npm run clean && ../../node_modules/.bin/tsc --watch"
   },
-  "keywords": [
-    "ionic",
-    "cordova",
-    "ionic framework",
-    "ionicframework",
-    "ionic cordova",
-    "mobile",
-    "backend",
-    "app",
-    "hybrid",
-    "cordova",
-    "native",
-    "phonegap"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/driftyco/ionic-cli.git"
@@ -45,21 +29,18 @@
     "transform": {
       "^.+\\.(ts)$": "<rootDir>/preprocessor.js"
     },
-    "testRegex": "/__tests__/.*\\.(ts|js)$"
+    "testRegex": "/__tests__/.*\\.(ts|js)$",
+    "rootDir": "/Users/joshthomas/Workspace/ionic-cli/packages/cli-build-ionic1",
+    "name": "-Users-joshthomas-Workspace-ionic-cli-packages-cli-build-ionic1",
+    "setupFiles": [],
+    "testRunner": "/Users/joshthomas/Workspace/ionic-cli/node_modules/jest-jasmine2/build/index.js"
   },
   "dependencies": {
-    "@ionic/cli-utils": "^0.0.7",
-    "node-fetch": "^1.6.3"
+    "chalk": "^1.1.3"
   },
   "devDependencies": {
-    "chalk": "^1.1.3",
-    "form-data": "^2.1.2",
-    "xml2js": "^0.4.17"
+    "@ionic/cli-utils": "^0.0.7"
   },
-  "files": [
-    "bin/",
-    "default-resources",
-    "dist/",
-    "resources.json"
-  ]
+  "cordovaPlugins": [],
+  "cordovaPlatforms": []
 }

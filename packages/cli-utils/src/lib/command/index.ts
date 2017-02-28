@@ -69,7 +69,21 @@ export class Command implements ICommand {
           );
         }
       })(),
-      await this.run(argv._, argv, validationErrors)
+      (async() => {
+        await this.env.emitEvent('before:' + this.metadata.name, {
+          metadata: this.metadata,
+          inputs: argv._,
+          options: argv
+        });
+
+        await this.run(argv._, argv, validationErrors);
+
+        await this.env.emitEvent('after:' + this.metadata.name, {
+          metadata: this.metadata,
+          inputs: argv._,
+          options: argv
+        });
+      })()
     ]);
 
     r = results[1];

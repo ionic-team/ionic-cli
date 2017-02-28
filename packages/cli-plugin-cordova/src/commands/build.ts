@@ -6,11 +6,11 @@ import {
   CommandLineOptions,
   CommandMetadata,
   TaskChain,
-  validators
+  validators,
+  normalizeOptionAliases
 } from '@ionic/cli-utils';
 import {
   filterArgumentsForCordova,
-  generateAppScriptsArguments,
   CORDOVA_INTENT
 } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
@@ -75,6 +75,8 @@ import {
 export class BuildCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
 
+    options = normalizeOptionAliases(this.metadata, options);
+
     // If there is not input then set default to an array containing ios
     const runPlatform = inputs[0];
 
@@ -105,18 +107,13 @@ export class BuildCommand extends Command {
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);
 
-    const appScriptsArgs = generateAppScriptsArguments(this.metadata, inputs, options);
-
     tasks.end();
-    this.env.log.msg(`  Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
-
-    // We are using require because app-scripts reads process.argv during parse
-    process.argv = appScriptsArgs;
-    const appScripts = require('@ionic/app-scripts');
-    const context = appScripts.generateContext();
-    await appScripts.build(context);
-
-    tasks.next(`Running app-scripts build`);
+    await this.env.emitEvent('build', {
+      metadata: this.metadata,
+      inputs,
+      options
+    });
+    tasks.next(`Running build`);
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
 

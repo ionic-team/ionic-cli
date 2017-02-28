@@ -216,6 +216,7 @@ export interface IonicEnvironment {
   shell: IShell;
   telemetry: ITelemetry;
   inquirer: typeof inquirer;
+  emitEvent: Function;
   namespace?: INamespace;
   pluginName?: string;
 }

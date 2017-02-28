@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
+import createEmitEvent from './lib/emitEvent';
 import {
   IonicEnvironment,
   FatalException,
@@ -62,16 +63,22 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   env['PROJECT_DIR'] = await getProjectRootDir(process.cwd(), env['PROJECT_FILE']);
 
   try {
-    const [plugin, inputs] = await resolvePlugin(env['PROJECT_DIR'], env['PROJECT_FILE'], pargv);
 
     const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
-    const configData = await config.load();
+    const project = new Project(env['PROJECT_DIR'], env['PROJECT_FILE']);
+
+    // Load all async work at the same time
+    const [ pluginDetails, configData, cliInfo, emitEvent ] = await Promise.all([
+      resolvePlugin(env['PROJECT_DIR'], env['PROJECT_FILE'], pargv),
+      config.load(),
+      getCliInfo(),
+      createEmitEvent(project.directory)
+    ]);
+    const [plugin, inputs] = pluginDetails;
 
     const client = new Client(configData.urls.api);
-    const cliInfo = await getCliInfo();
     const telemetry = new Telemetry(config, cliInfo);
     const shell = new Shell();
-    const project = new Project(env['PROJECT_DIR'], env['PROJECT_FILE']);
     const session = new Session(config, project, client);
     const app = new App(session, project, client);
     const ionicEnvironment: IonicEnvironment = {
@@ -85,7 +92,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       shell,
       telemetry,
       inquirer,
-      pluginName: plugin.PLUGIN_NAME
+      pluginName: plugin.PLUGIN_NAME,
+      emitEvent
     };
 
     await plugin.run(ionicEnvironment);

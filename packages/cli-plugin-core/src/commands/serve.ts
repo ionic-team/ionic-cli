@@ -1,11 +1,9 @@
-import * as chalk from 'chalk';
 import {
   CommandLineInputs,
   CommandLineOptions,
   Command,
   CommandMetadata,
   normalizeOptionAliases,
-  minimistOptionsToArray,
   TaskChain
 } from '@ionic/cli-utils';
 
@@ -87,20 +85,17 @@ import {
 export class ServeCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
 
+    options = normalizeOptionAliases(this.metadata, options);
+
     var tasks = new TaskChain();
 
-    const results = normalizeOptionAliases(this.metadata, options);
-    let appScriptsArgs = minimistOptionsToArray(results);
+    await this.env.emitEvent('serve', {
+      metadata: this.metadata,
+      inputs,
+      options
+    });
 
-    this.env.log.msg(`  Starting app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
-
-    // Update process args so that app scripts can just read current process args.
-    process.argv = appScriptsArgs;
-
-    var appScripts = require('@ionic/app-scripts');
-    const context = appScripts.generateContext();
-    await appScripts.serve(context);
-    tasks.next(`Starting app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}`);
+    tasks.next(`Starting server`);
 
     tasks.end();
   }
