@@ -4,7 +4,7 @@
   "description": "Ionic App-Scripts build plugin",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
-  "main": "./src/index.js",
+  "main": "./dist/index.js",
   "scripts": {
     "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
     "build": "npm run lint && npm run clean && ../../node_modules/.bin/webpack",
