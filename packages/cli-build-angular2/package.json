@@ -1,7 +1,7 @@
 {
-  "name": "@ionic/cli-build-ionic1",
+  "name": "@ionic/cli-build-angular2",
   "version": "0.0.1",
-  "description": "Ionic 1 build plugin",
+  "description": "Ionic App-Scripts build plugin",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
   "main": "./dist/index.js",
@@ -30,8 +30,8 @@
       "^.+\\.(ts)$": "<rootDir>/preprocessor.js"
     },
     "testRegex": "/__tests__/.*\\.(ts|js)$",
-    "rootDir": "/Users/joshthomas/Workspace/ionic-cli/packages/cli-build-ionic1",
-    "name": "-Users-joshthomas-Workspace-ionic-cli-packages-cli-build-ionic1",
+    "rootDir": "/Users/joshthomas/Workspace/ionic-cli/packages/cli-plugin-app-scripts",
+    "name": "-Users-joshthomas-Workspace-ionic-cli-packages-cli-plugin-app-scripts",
     "setupFiles": [],
     "testRunner": "/Users/joshthomas/Workspace/ionic-cli/node_modules/jest-jasmine2/build/index.js"
   },
@@ -40,6 +40,9 @@
   },
   "devDependencies": {
     "@ionic/cli-utils": "^0.0.7"
+  },
+  "peerDependencies": {
+    "@ionic/app-scripts": "^1.1.0"
   },
   "cordovaPlugins": [],
   "cordovaPlatforms": []
