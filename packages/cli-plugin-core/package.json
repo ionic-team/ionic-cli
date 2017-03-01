@@ -56,9 +56,6 @@
     "chalk": "^1.1.3",
     "opn": "^4.0.2"
   },
-  "peerDependencies": {
-    "@ionic/app-scripts": "^1.1.0"
-  },
   "files": [
     "dist/"
   ]
