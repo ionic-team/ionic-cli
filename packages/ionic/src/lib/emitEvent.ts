@@ -15,11 +15,15 @@ export default async function(projectDirectory: string): Promise<Function> {
     })
   );
 
+  const pluginFns = plugins.map((plugin) => {
+    return plugin.default(projectDirectory);
+  });
+
   return async function(eventName: string, options: { [key: string]: any }): Promise<any> {
     let results = {};
 
-    for (let plugin of plugins) {
-      let pluginResult = await plugin.default(eventName, options);
+    for (let pluginFn of pluginFns) {
+      let pluginResult = await pluginFn(eventName, options);
       if (pluginResult) {
         results = {
           ...results,

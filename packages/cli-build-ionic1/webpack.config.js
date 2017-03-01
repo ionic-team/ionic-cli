@@ -23,7 +23,8 @@ module.exports = {
         test: /\.json$/,
         loaders: ['json-loader']
       }
-    ]
+    ],
+    noParse: [/commonjs-loader.ts/]
   },
 
   resolve: {
