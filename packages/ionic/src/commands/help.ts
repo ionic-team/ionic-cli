@@ -12,7 +12,7 @@ import {
   getCommandMetadataList
 } from '@ionic/cli-utils';
 
-import { KNOWN_PLUGINS, loadPlugin, resolvePlugin } from '../lib/plugins';
+import { KNOWN_PLUGINS, PREFIX, loadPlugin, resolvePlugin } from '../lib/plugins';
 
 const UNKOWN_COMMAND_ERROR = 'UNKOWN_COMMAND';
 
@@ -83,7 +83,7 @@ export class HelpCommand extends Command {
 };
 async function getPluginDetails(projectDirectory: string, pluginName: string): Promise<string[]> {
   try {
-    const plugin = await loadPlugin(projectDirectory, pluginName, false);
+    const plugin = await loadPlugin(projectDirectory, `${PREFIX}${pluginName}`, false);
     const commandMetadataList = plugin.getAllCommandMetadata();
     const helpDetails = getHelpDetails(plugin.PLUGIN_NAME, commandMetadataList, []);
 
