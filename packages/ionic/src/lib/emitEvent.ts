@@ -4,6 +4,12 @@ import { loadPlugin } from './plugins';
 export const PREFIX = '@ionic/cli-build-';
 
 export default async function(projectDirectory: string): Promise<Function> {
+
+  // If not in a project then we will not emit any events
+  if (!projectDirectory) {
+    return function(){};
+  }
+
   const projectJson = await getProjectInfo(projectDirectory);
   const buildPlugins = Object.keys(projectJson['dependencies'])
     .concat(Object.keys(projectJson['devDependencies']))
