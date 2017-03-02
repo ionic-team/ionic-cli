@@ -1,7 +1,7 @@
 {
-  "name": "@ionic/cli-build-angular2",
+  "name": "@ionic/cli-build-ionic-angular",
   "version": "0.0.1",
-  "description": "Ionic App-Scripts build plugin",
+  "description": "Ionic CLI build plugin for Ionic Angular projects",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
   "main": "./dist/index.js",
@@ -43,7 +43,5 @@
   },
   "peerDependencies": {
     "@ionic/app-scripts": "^1.1.0"
-  },
-  "cordovaPlugins": [],
-  "cordovaPlatforms": []
+  }
 }

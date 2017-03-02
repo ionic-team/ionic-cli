@@ -1,7 +1,7 @@
 {
-  "name": "@ionic/cli-build-angular1",
+  "name": "@ionic/cli-build-ionic1",
   "version": "0.0.1",
-  "description": "Ionic 1 build plugin",
+  "description": "Ionic CLI build plugin for Ionic1 projects",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
   "main": "./dist/index.js",
