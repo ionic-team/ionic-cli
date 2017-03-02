@@ -65,7 +65,8 @@ const CREATE_NEW_APP_CHOICE = 'createNewApp';
       name: 'app_id',
       description: 'The Ionic Cloud app id that you would like to link to.'
     }
-  ]
+  ],
+  requiresProject: true
 })
 export class LinkCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

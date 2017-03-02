@@ -44,6 +44,7 @@ function isSnapshotResponse(r: APIResponse): r is SnapshotResponse {
   name: 'upload',
   description: 'Upload a new snapshot of your app',
   exampleCommands: [''],
+  requiresProject: true
 })
 export class UploadCommand extends Command {
   private createZipStream(): NodeJS.ReadableStream {

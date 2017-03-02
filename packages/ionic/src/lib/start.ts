@@ -150,16 +150,11 @@ ${chalk.bold('Test and share your app on a device with the Ionic View app:')}
 export async function updateDependenciesForCLI(pathToProject: string, releaseChannelName: string = 'latest') {
   const filePath = path.resolve(pathToProject, 'package.json');
   try {
-    let [jsonStructure, coreDistTags, cordovaDistTags ] = await Promise.all([
+    let [jsonStructure, cordovaDistTags ] = await Promise.all([
       fsReadJsonFile(filePath),
-      getCommandInfo('npm', ['view', '@ionic/cli-plugin-core', 'dist-tags', '--json']),
       getCommandInfo('npm', ['view', '@ionic/cli-plugin-cordova', 'dist-tags', '--json'])
     ]);
-    jsonStructure['devDependencies']['@ionic/cli-plugin-core'] = JSON.parse(coreDistTags)[releaseChannelName];
     jsonStructure['devDependencies']['@ionic/cli-plugin-cordova'] = JSON.parse(cordovaDistTags)[releaseChannelName];
-
-    // TODO: eventually update ionic2-app-base and remove this.
-    jsonStructure['devDependencies']['@ionic/app-scripts'] = '^1.1.0';
 
     await fsWriteJsonFile(filePath, jsonStructure, { encoding: 'utf8' });
 

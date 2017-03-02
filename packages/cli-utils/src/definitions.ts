@@ -122,6 +122,7 @@ export interface CommandData {
   options?: CommandOption[];
   fullName?: string;
   unlisted?: boolean;
+  requiresProject?: boolean;
 }
 
 export interface ISession {

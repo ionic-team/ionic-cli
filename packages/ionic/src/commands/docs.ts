@@ -13,6 +13,7 @@ import {
 @CommandMetadata({
   name: 'docs',
   description: 'Opens up the Ionic documentation website',
+  requiresProject: true
 })
 export class DocsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

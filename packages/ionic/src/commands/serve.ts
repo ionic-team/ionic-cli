@@ -80,7 +80,8 @@ import {
       description: 'Start serve with a specific platform (ios/android)',
       aliases: ['t']
     }
-  ]
+  ],
+  requiresProject: true
 })
 export class ServeCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

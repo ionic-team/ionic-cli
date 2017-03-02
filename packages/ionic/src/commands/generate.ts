@@ -87,7 +87,8 @@ import * as appGenerator from '@ionic/app-generators';
       default: path.join('node_modules', 'ionic-angular', 'templates'),
       type: String
     }
-  ]
+  ],
+  requiresProject: true
 })
 export class GenerateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions, validationErrors: ValidationError[]): Promise<void> {

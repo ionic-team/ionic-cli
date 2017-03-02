@@ -40,11 +40,11 @@ export class HelpCommand extends Command {
     if (inputs.length === 0) {
       let allDetails: string[] = [];
       const globalMetadata = getCommandMetadataList(this.env.namespace);
-      allDetails = allDetails.concat(getHelpDetails(undefined, globalMetadata, inputs));
+      allDetails = allDetails.concat(this.getHelpDetails(undefined, globalMetadata, inputs));
 
       const pluginDetailList: string[][] = await Promise.all(
         KNOWN_PLUGINS.map(pluginName => (
-          getPluginDetails(this.env.project.directory, pluginName)
+          this.getPluginDetails(pluginName)
         ))
       );
 
@@ -65,7 +65,7 @@ export class HelpCommand extends Command {
     try {
       const [plugin, argv] = await resolvePlugin(this.env.project.directory, this.env.project.fileName, inputs);
       const commandMetadataList = plugin.getAllCommandMetadata();
-      const helpDetails = getHelpDetails(plugin.PLUGIN_NAME, commandMetadataList, argv);
+      const helpDetails = this.getHelpDetails(plugin.PLUGIN_NAME, commandMetadataList, argv);
 
       this.env.log.msg(
         `\n${chalk.bold(`Help Details:`)}\n\n` +
@@ -80,39 +80,41 @@ export class HelpCommand extends Command {
       `to get help on a project based command and you are not in a project directory.`);
     }
   }
+
+  async getPluginDetails(pluginName: string): Promise<string[]> {
+    try {
+      const plugin = await loadPlugin(this.env.project.directory, `${PREFIX}${pluginName}`, false);
+      const commandMetadataList = plugin.getAllCommandMetadata();
+      const helpDetails = this.getHelpDetails(plugin.PLUGIN_NAME, commandMetadataList, []);
+
+      return helpDetails;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  getHelpDetails(pluginName: string | undefined, commandMetadataList: CommandData[], argv: string[]): string[] {
+
+    const foundCommandList: CommandData[] = commandMetadataList
+      .filter((cmd: CommandData) => cmd.name === argv[0] || argv.length === 0)
+      .filter((cmd: CommandData) => !cmd.unlisted)
+      .filter((cmd: CommandData) => !cmd.requiresProject || (cmd.requiresProject && this.env.project.directory))
+      .map((cmd: CommandData): CommandData => ({
+        ...cmd,
+        fullName: (pluginName) ? `${pluginName}:${cmd.name}` : cmd.name
+      }));
+
+    // No command was found if the length is zero.
+    if (foundCommandList.length === 0) {
+      throw UNKOWN_COMMAND_ERROR;
+    }
+
+    // Only found one command so show details about that command
+    if (foundCommandList.length === 1) {
+      return [formatCommandHelp(foundCommandList[0])];
+    }
+
+    // We have a list so show the name and description
+    return getListOfCommandDetails(foundCommandList);
+  }
 };
-async function getPluginDetails(projectDirectory: string, pluginName: string): Promise<string[]> {
-  try {
-    const plugin = await loadPlugin(projectDirectory, `${PREFIX}${pluginName}`, false);
-    const commandMetadataList = plugin.getAllCommandMetadata();
-    const helpDetails = getHelpDetails(plugin.PLUGIN_NAME, commandMetadataList, []);
-
-    return helpDetails;
-  } catch (e) {
-    return [];
-  }
-}
-
-function getHelpDetails(pluginName: string | undefined, commandMetadataList: CommandData[], argv: string[]): string[] {
-
-  const foundCommandList: CommandData[] = commandMetadataList
-    .filter((cmd: CommandData) => cmd.name === argv[0] || argv.length === 0)
-    .filter((cmd: CommandData) => !cmd.unlisted)
-    .map((cmd: CommandData): CommandData => ({
-      ...cmd,
-      fullName: (pluginName) ? `${pluginName}:${cmd.name}` : cmd.name
-    }));
-
-  // No command was found if the length is zero.
-  if (foundCommandList.length === 0) {
-    throw UNKOWN_COMMAND_ERROR;
-  }
-
-  // Only found one command so show details about that command
-  if (foundCommandList.length === 1) {
-    return [formatCommandHelp(foundCommandList[0])];
-  }
-
-  // We have a list so show the name and description
-  return getListOfCommandDetails(foundCommandList);
-}

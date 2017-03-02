@@ -7,8 +7,7 @@ import { IonicNamespace } from '../commands';
 import { load } from './utils/commonjs-loader';
 import * as globalPlugin from '../index';
 
-export const defaultPlugin = 'core';
-export const KNOWN_PLUGINS = [defaultPlugin, 'cordova'];
+export const KNOWN_PLUGINS = ['cordova'];
 export const PREFIX = '@ionic/cli-plugin-';
 export const ERROR_PLUGIN_NOT_INSTALLED = 'PLUGIN_NOT_INSTALLED';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';
@@ -32,6 +31,7 @@ export async function loadPlugin(projectDir: string, pluginName: string, askToIn
     let foundPackageNeeded = KNOWN_PLUGINS.map(kp => `${PREFIX}${kp}`)
       .find(kp => e.message && e.message.includes(kp));
     if (!foundPackageNeeded) {
+      console.log(e);
       throw `Dependency missing for ${chalk.bold(pluginName)}:\n\n  ${chalk.red('[ERROR]')}: ${e.message}`;
     }
   }
@@ -67,7 +67,7 @@ export async function loadPlugin(projectDir: string, pluginName: string, askToIn
  * Get inputs and command class based on arguments supplied
  */
 export async function resolvePlugin(projectDir: string, projectFile: string, argv: string[]): Promise<[any, string[]]> {
-  let pluginName: string;
+  let pluginName: string = '';
   let inputs: string[] = [];
 
   /**
@@ -91,9 +91,6 @@ export async function resolvePlugin(projectDir: string, projectFile: string, arg
    * If the first arguement supplied contains a ':' then
    * it is assumed that this is calling a command in another
    * namespace. <namespaceName>:<commandName>
-   *
-   * Else it is likely a core command that should be loaded
-   * from the 'core' plugin.
    */
   if (argv[0].includes(':')) {
 
@@ -101,13 +98,6 @@ export async function resolvePlugin(projectDir: string, projectFile: string, arg
     [pluginName, firstArg] = firstArg.split(':');
 
     inputs = [firstArg, ...restOfArguments];
-
-  } else if (KNOWN_PLUGINS.includes(argv[0])) {
-    [pluginName, ...inputs] = argv;
-
-  } else {
-    pluginName = defaultPlugin;
-    inputs = argv;
   }
 
 
@@ -115,6 +105,9 @@ export async function resolvePlugin(projectDir: string, projectFile: string, arg
    * Load the plugin using the pluginName provided
    */
   try {
+    if (!pluginName) {
+      throw ERROR_PLUGIN_NOT_FOUND;
+    }
     return [
       await loadPlugin(projectDir, `${PREFIX}${pluginName}`),
       inputs
