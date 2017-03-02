@@ -214,6 +214,18 @@ export interface IClient {
   do(res: superagent.Request): Promise<APIResponseSuccess>;
 }
 
+export interface EventEnvironment {
+  app: IApp;
+  client: IClient;
+  config: IConfig<ConfigFile>;
+  log: ILogger;
+  project: IProject;
+  session: ISession;
+  shell: IShell;
+  telemetry: ITelemetry;
+  inquirer: typeof inquirer;
+}
+
 export interface IonicEnvironment {
   pargv: string[];
   app: IApp;

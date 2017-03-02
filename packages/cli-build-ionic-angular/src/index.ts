@@ -1,7 +1,8 @@
 import build from './build';
 import serve from './serve';
+ import { EventEnvironment } from '@ionic/cli-utils';
 
-export default function(projectDirectory: string)  {
+export default function(env: EventEnvironment)  {
 
   return function (eventName: string, options: { [key: string]: any }): Promise<any> {
 

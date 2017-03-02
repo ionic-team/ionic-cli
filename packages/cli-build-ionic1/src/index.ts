@@ -1,27 +1,28 @@
 import {
   checkEnvironment,
-  setupGulpInstance,
-  runGulpHook
+  // setupGulpInstance,
+  // runGulpHook
  } from './utils/gulp';
- import { IonicEnvironment } from '@ionic/cli-utils';
+ import { EventEnvironment } from '@ionic/cli-utils';
  import serve from './serve/index';
 
-export default function(ionicEnvironment: IonicEnvironment)  {
+export default function(env: EventEnvironment)  {
 
   return async function (eventName: string, options: { [key: string]: any }): Promise<any> {
 
     if ((eventName.endsWith(':before') || eventName.endsWith(':after')) &&
-        checkEnvironment(ionicEnvironment.project.directory)) {
+        checkEnvironment(env.project.directory)) {
 
-      let gulp = setupGulpInstance(ionicEnvironment.project.directory);
-      await runGulpHook(gulp, eventName);
-      return;
+      // let gulp = setupGulpInstance(env.project.directory);
+      try {
+        // await runGulpHook(gulp, eventName);
+      } catch (e) {
+        env.log.error(e);
+      }
     }
 
     if (eventName === 'serve') {
-      return serve(ionicEnvironment.project, options['metadata'], options['inputs'], options['options']);
+      return serve(env, options['metadata'], options['inputs'], options['options']);
     }
-
-    return Promise.resolve();
   };
 }

@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
-import * as inquirer from 'inquirer';
 import * as watch from 'glob-watcher';
 import * as opn from 'opn';
 import { stringToInt } from '../utils/helpers';
@@ -10,6 +9,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandData,
+  EventEnvironment,
   IProject
 } from '@ionic/cli-utils';
 import {
@@ -24,7 +24,7 @@ import {
 import { findClosestOpenPort, getAvailableIPAddress } from '../utils/network';
 import { minimistOptionsToArray } from '../utils/arguments';
 
-export default async function(project: IProject, cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<{ [key: string]: any }> {
+export default async function(env: EventEnvironment, cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<{ [key: string]: any }> {
 
   const args = minimistOptionsToArray(options);
   console.log(`  Starting server: ${chalk.bold(args.join(' '))}`);
@@ -40,7 +40,7 @@ export default async function(project: IProject, cmdMetadata: CommandData, input
 
   let chosenIP = availableIPs[0].address;
   if (availableIPs.length > 1) {
-    const promptAnswers = await inquirer.prompt({
+    const promptAnswers = await env.inquirer.prompt({
       type: 'list',
       name: 'ip',
       message: 'Multiple addresses available. Please select which address to use:',
@@ -51,8 +51,8 @@ export default async function(project: IProject, cmdMetadata: CommandData, input
 
   // Setup Options and defaults
   const serverOptions: ServerOptions = {
-    projectRoot: project.directory,
-    wwwDir: path.join(project.directory, 'www'),
+    projectRoot: env.project.directory,
+    wwwDir: path.join(env.project.directory, 'www'),
     address: <string>options['address'] || DEFAULT_ADDRESS,
     port: stringToInt(<string>options['port'], DEFAULT_SERVER_PORT),
     livereloadPort: stringToInt(<string>options['livereloadPort'], DEFAULT_LIVERELOAD_PORT),
@@ -84,9 +84,9 @@ export default async function(project: IProject, cmdMetadata: CommandData, input
   serverOptions.notificationPort = portResults[2];
 
   // Start up server
-  const settings = await setupServer(project, serverOptions);
+  const settings = await setupServer(env.project, serverOptions);
 
-  console.log(`dev server running: http://${serverOptions.address}:${serverOptions.port}`);
+  env.log.msg(`dev server running: http://${serverOptions.address}:${serverOptions.port}`);
   return  {
     publicIp: chosenIP,
     ...settings

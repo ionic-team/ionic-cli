@@ -68,11 +68,10 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     const project = new Project(env['PROJECT_DIR'], env['PROJECT_FILE']);
 
     // Load all async work at the same time
-    const [ pluginDetails, configData, cliInfo, emitEvent ] = await Promise.all([
+    const [ pluginDetails, configData, cliInfo ] = await Promise.all([
       resolvePlugin(env['PROJECT_DIR'], env['PROJECT_FILE'], pargv),
       config.load(),
       getCliInfo(),
-      createEmitEvent(project.directory)
     ]);
     const [plugin, inputs] = pluginDetails;
 
@@ -81,6 +80,19 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     const shell = new Shell();
     const session = new Session(config, project, client);
     const app = new App(session, project, client);
+
+    const emitEvent = await createEmitEvent({
+      app,
+      client,
+      config,
+      log,
+      project,
+      session,
+      shell,
+      telemetry,
+      inquirer,
+    });
+
     const ionicEnvironment: IonicEnvironment = {
       pargv: inputs,
       app,

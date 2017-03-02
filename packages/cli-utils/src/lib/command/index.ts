@@ -70,7 +70,7 @@ export class Command implements ICommand {
         }
       })(),
       (async() => {
-        await this.env.emitEvent('before:' + this.metadata.name, {
+        await this.env.emitEvent(this.metadata.name + ':before', {
           metadata: this.metadata,
           inputs: argv._,
           options: argv
@@ -78,7 +78,7 @@ export class Command implements ICommand {
 
         await this.run(argv._, argv, validationErrors);
 
-        await this.env.emitEvent('after:' + this.metadata.name, {
+        await this.env.emitEvent(this.metadata.name + ':after', {
           metadata: this.metadata,
           inputs: argv._,
           options: argv
