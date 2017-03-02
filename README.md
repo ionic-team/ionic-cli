@@ -84,7 +84,7 @@ a new issue. Just be sure to note that you are using CLI v3 Beta.
 If your question is about functionality please be sure to start with the help command.
 
 
-# Addtional Documentation
+# Additional Documentation
 These markdown files contain the same documenation that is available through the `ionic help` command.
 
 * [Ionic Global Commands](docs/ionic.md)
