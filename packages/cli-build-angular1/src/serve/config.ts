@@ -2,6 +2,7 @@ import * as path from 'path';
 
 export interface ServerOptions {
  projectRoot: string;
+ wwwDir: string;
  address: string;
  port: number;
  livereloadPort: number;
@@ -20,6 +21,11 @@ export interface ServerOptions {
  nosass: boolean;
 }
 
+export const WATCH_PATTERNS = [
+  'www/**/*',
+  '!www/lib/**/*',
+  '!www/**/*.map'
+];
 
 export const LOGGER_DIR = '__ion-dev-server';
 export const IONIC_LAB_URL = '/ionic-lab';

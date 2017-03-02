@@ -8,9 +8,11 @@ import {
   IONIC_LAB_URL,
   IOS_PLATFORM_PATH,
   ANDROID_PLATFORM_PATH
-} from './serve-config';
+} from './config';
+import {
+  IProject
+} from '@ionic/cli-utils';
 import * as proxyMiddleware from 'proxy-middleware';
-import { getProjectJson, IonicProject } from '../util/ionic-project';
 
 import { LabAppView, ApiCordovaProject } from './lab';
 
@@ -18,7 +20,7 @@ import { LabAppView, ApiCordovaProject } from './lab';
 /**
  * Create HTTP server
  */
-export function createHttpServer(options: ServerOptions): express.Application {
+export async function createHttpServer(project: IProject, options: ServerOptions): Promise<express.Application> {
 
   const app = express();
   app.set('serveConfig', options);
@@ -37,27 +39,27 @@ export function createHttpServer(options: ServerOptions): express.Application {
   app.get('/plugins/*', servePlatformResource);
 
   if (!options.noproxy) {
-    setupProxies(app);
+    await setupProxies(project, app);
   }
 
   return app;
 }
 
-function setupProxies(app: express.Application) {
+async function setupProxies(project: IProject, app: express.Application) {
 
-  getProjectJson().then(function(projectConfig: IonicProject) {
-    for (const proxy of projectConfig.proxies || []) {
-      let opts: any = url.parse(proxy.proxyUrl);
-      if (proxy.proxyNoAgent) {
-        opts.agent = false;
-      }
+  const projectConfig = await project.load();
 
-      opts.rejectUnauthorized = !(proxy.rejectUnauthorized === false);
-
-      app.use(proxy.path, proxyMiddleware(opts));
-      console.log('Proxy added:' + proxy.path + ' => ' + url.format(opts));
+  for (const proxy of projectConfig.proxies || []) {
+    let opts: any = url.parse(proxy.proxyUrl);
+    if (proxy.proxyNoAgent) {
+      opts.agent = false;
     }
-  });
+
+    opts.rejectUnauthorized = !(proxy.rejectUnauthorized === false);
+
+    app.use(proxy.path, <express.RequestHandler>proxyMiddleware(opts));
+    console.log('Proxy added:' + proxy.path + ' => ' + url.format(opts));
+  }
 }
 
 /**
@@ -99,9 +101,9 @@ function servePlatformResource(req: express.Request, res: express.Response, next
   }
 
   if (isUserAgentIOS(userAgent)) {
-    resourcePath = path.join(options.rootDir, IOS_PLATFORM_PATH);
+    resourcePath = path.join(options.projectRoot, IOS_PLATFORM_PATH);
   } else if (isUserAgentAndroid(userAgent)) {
-    resourcePath = path.join(options.rootDir, ANDROID_PLATFORM_PATH);
+    resourcePath = path.join(options.projectRoot, ANDROID_PLATFORM_PATH);
   }
 
   fs.stat(path.join(resourcePath, req.url), (err, stats) => {
@@ -111,8 +113,6 @@ function servePlatformResource(req: express.Request, res: express.Response, next
     res.sendFile(req.url, { root: resourcePath });
   });
 }
-
-
 
 function isUserAgentIOS(ua: string) {
   ua = ua.toLowerCase();

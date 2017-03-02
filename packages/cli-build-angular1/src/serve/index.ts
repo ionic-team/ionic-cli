@@ -1,22 +1,30 @@
+import * as path from 'path';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
+import * as watch from 'glob-watcher';
+import * as opn from 'opn';
+import { stringToInt } from '../utils/helpers';
+import { createHttpServer } from './http-server';
+import { createLiveReloadServer } from './live-reload';
 import {
   CommandLineInputs,
   CommandLineOptions,
   CommandData,
+  IProject
 } from '@ionic/cli-utils';
-import { serve } from './serve';
 import {
+  WATCH_PATTERNS,
+  IONIC_LAB_URL,
   DEFAULT_ADDRESS,
   DEFAULT_SERVER_PORT,
   DEFAULT_LIVERELOAD_PORT,
   DEFAULT_NOTIFICATION_PORT,
   ServerOptions
-} from './serve-config';
+} from './config';
 import { findClosestOpenPort, getAvailableIPAddress } from '../utils/network';
 import { minimistOptionsToArray } from '../utils/arguments';
 
-export default async function(projectDirectory: string, cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<{ [key: string]: any }> {
+export default async function(project: IProject, cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<{ [key: string]: any }> {
 
   const args = minimistOptionsToArray(options);
   console.log(`  Starting server: ${chalk.bold(args.join(' '))}`);
@@ -43,7 +51,8 @@ export default async function(projectDirectory: string, cmdMetadata: CommandData
 
   // Setup Options and defaults
   const serverOptions: ServerOptions = {
-    projectRoot: projectDirectory,
+    projectRoot: project.directory,
+    wwwDir: path.join(project.directory, 'www'),
     address: <string>options['address'] || DEFAULT_ADDRESS,
     port: stringToInt(<string>options['port'], DEFAULT_SERVER_PORT),
     livereloadPort: stringToInt(<string>options['livereloadPort'], DEFAULT_LIVERELOAD_PORT),
@@ -75,18 +84,33 @@ export default async function(projectDirectory: string, cmdMetadata: CommandData
   serverOptions.notificationPort = portResults[2];
 
   // Start up server
-  const settings = await serve(serverOptions);
+  const settings = await setupServer(project, serverOptions);
 
+  console.log(`dev server running: http://${serverOptions.address}:${serverOptions.port}`);
   return  {
     publicIp: chosenIP,
     ...settings
   };
 }
 
-function stringToInt(value: string, defaultValue: number): number {
-  const result = parseInt(value, 10);
-  if (result === NaN) {
-    return defaultValue;
+async function setupServer(project: IProject, options: ServerOptions): Promise<{ [key: string]: any }> {
+
+  const fileChangedFn = createLiveReloadServer(options);
+  await createHttpServer(project, options);
+
+  const watcher = watch(WATCH_PATTERNS);
+  watcher.on('change', function(path: string) {
+
+    fileChangedFn([path]);
+  });
+
+  if (!options.nobrowser || options.lab) {
+    const openOptions: string[] = [`http://${options.address}:${options.port}`]
+      .concat(options.lab ? [IONIC_LAB_URL] : [])
+      .concat(options.browseroption ? [options.browseroption] : [])
+      .concat(options.platform ? ['?ionicplatform=', options.platform] : []);
+
+    opn(openOptions.join(''));
   }
-  return result;
+  return options;
 }

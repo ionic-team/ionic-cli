@@ -13,8 +13,9 @@ let lastConfig: CordovaProject;
  * Parse and build a CordovaProject config object by parsing the
  * config.xml file in the project root.
  */
-export let buildCordovaConfig = (errCb: Function, cb: Function) => {
+export function buildCordovaConfig(errCb: Function, cb: Function) {
   var parser = new xml2js.Parser();
+
   fs.readFile('config.xml', (err: any, data: any) => {
     if (err) {
       errCb(err);
@@ -28,9 +29,9 @@ export let buildCordovaConfig = (errCb: Function, cb: Function) => {
       cb(parseConfig(result));
     });
   });
-};
+}
 
-export let parseConfig = (parsedConfig: any) : CordovaProject => {
+export function parseConfig(parsedConfig: any): CordovaProject {
   if (!parsedConfig.widget) {
     return {};
   }
@@ -52,4 +53,4 @@ export let parseConfig = (parsedConfig: any) : CordovaProject => {
   lastConfig = config;
 
   return config;
-};
+}

@@ -1,27 +1,21 @@
 import * as path from 'path';
 import * as tinylr from 'tiny-lr';
-import { ServerOptions } from './serve-config';
-import * as events from '../util/events';
+import { ServerOptions } from './config';
 
-export function createLiveReloadServer(options: ServerOptions) {
+export function createLiveReloadServer(options: ServerOptions): Function {
   const liveReloadServer = tinylr();
   liveReloadServer.listen(options.livereloadPort, options.address);
 
-  function fileChange(changedFiles: ChangedFile[]) {
+  return function fileChange(changedFiles: string[]) {
     liveReloadServer.changed({
       body: {
-        files: changedFiles.map(changedFile => '/' + path.relative(options.wwwDir, changedFile.filePath))
+        files: changedFiles.map(changedFile => (
+          '/' + path.relative(options.wwwDir, changedFile)
+        ))
       }
     });
-  }
-
-  events.on(events.EventType.FileChange, fileChange);
-
-  events.on(events.EventType.ReloadApp, () => {
-    fileChange([{ event: 'change', ext: '.html', filePath: 'index.html'}]);
-  });
+  };
 }
-
 
 export function injectLiveReloadScript(content: any, host: string, port: Number): any {
   let contentStr = content.toString();
@@ -49,6 +43,8 @@ function getLiveReloadScript(host: string, port: Number) {
   if (host === '0.0.0.0') {
     host = 'localhost';
   }
-  var src = `//${host}:${port}/livereload.js?snipver=1`;
-  return `  <!-- Ionic Dev Server: Injected LiveReload Script -->\n  <script src="${src}" async="" defer=""></script>`;
+  const src = `//${host}:${port}/livereload.js?snipver=1`;
+
+  return `  <!-- Ionic Dev Server: Injected LiveReload Script -->\n` +
+    `  <script src="${src}" async="" defer=""></script>`;
 }

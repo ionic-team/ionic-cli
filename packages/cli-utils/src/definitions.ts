@@ -34,10 +34,18 @@ export interface AppScriptsServeSettings {
   liveReloadPort: number;
 }
 
+export interface ProjectFileProxy {
+  proxyUrl: string;
+  proxyNoAgent: boolean;
+  rejectUnauthorized: boolean;
+  path: string;
+}
+
 export interface ProjectFile {
   name: string;
   app_id: string;
   v2: boolean;
+  proxies?: ProjectFileProxy[];
 }
 
 export interface AppDetails {
