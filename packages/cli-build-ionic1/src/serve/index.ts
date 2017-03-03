@@ -9,8 +9,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandData,
-  EventEnvironment,
-  IProject
+  EventEnvironment
 } from '@ionic/cli-utils';
 import {
   WATCH_PATTERNS,
@@ -66,7 +65,8 @@ export default async function(env: EventEnvironment, cmdMetadata: CommandData, i
     lab: <boolean>options['lab'] || false,
     iscordovaserve: <boolean>options['iscordovaserve'] || false,
     nogulp: <boolean>options['nogulp'] || false,
-    nosass: <boolean>options['nosass'] || false
+    nosass: <boolean>options['nosass'] || false,
+    gulpInstalled: true
   };
 
   // Clean up args based on environment state
@@ -78,8 +78,15 @@ export default async function(env: EventEnvironment, cmdMetadata: CommandData, i
   serverOptions.port = portResults[0];
   serverOptions.livereloadPort = portResults[1];
 
+  // Check if gulp is installed globally for sass
+  try {
+    await env.shell.run('gulp', ['-v']);
+  } catch (e) {
+    serverOptions.gulpInstalled = false;
+  }
+
   // Start up server
-  const settings = await setupServer(env.project, serverOptions);
+  const settings = await setupServer(env, serverOptions);
 
   env.log.msg(`dev server running: http://${serverOptions.address}:${serverOptions.port}`);
   return  {
@@ -88,15 +95,22 @@ export default async function(env: EventEnvironment, cmdMetadata: CommandData, i
   };
 }
 
-async function setupServer(project: IProject, options: ServerOptions): Promise<{ [key: string]: any }> {
+async function setupServer(env: EventEnvironment, options: ServerOptions): Promise<{ [key: string]: any }> {
 
-  const fileChangedFn = createLiveReloadServer(options);
-  await createHttpServer(project, options);
+  const liveReloadBrowser = createLiveReloadServer(options);
+  await createHttpServer(env.project, options);
 
   const watcher = watch(WATCH_PATTERNS);
-  watcher.on('change', function(path: string) {
+  watcher.on('change', async function(filePath: string) {
 
-    fileChangedFn([path]);
+    switch (path.extname(filePath)) {
+    case '.scss':
+      await processSassFile(env, options);
+      return;
+    default:
+      env.log.msg(`[${new Date().toTimeString().slice(0, 8)}] ${filePath} changed`);
+      liveReloadBrowser([filePath]);
+    }
   });
 
   if (!options.nobrowser || options.lab) {
@@ -109,3 +123,15 @@ async function setupServer(project: IProject, options: ServerOptions): Promise<{
   }
   return options;
 }
+
+async function processSassFile(env: EventEnvironment, options: ServerOptions): Promise<void> {
+  if (!options.gulpInstalled) {
+    env.log.error(`You are trying to build a sass file, but unfortunately Ionic1 projects require\n` +
+                  `gulp to build these files. In order to continue please execute the following\n` +
+                  `command to install gulp.\n\n` +
+                  `    ${chalk.green(`npm install -g gulp`)}`);
+    return;
+  }
+   await env.shell.run('gulp', ['sass'], { 'cwd': env.project.directory });
+}
+

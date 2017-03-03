@@ -18,9 +18,11 @@ export interface ServerOptions {
  iscordovaserve: boolean;
  nogulp: boolean;
  nosass: boolean;
+ gulpInstalled: boolean;
 }
 
 export const WATCH_PATTERNS = [
+  'scss/**/*',
   'www/**/*',
   '!www/lib/**/*',
   '!www/**/*.map'
