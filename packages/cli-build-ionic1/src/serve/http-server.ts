@@ -23,7 +23,7 @@ import { LabAppView, ApiCordovaProject } from './lab';
 export async function createHttpServer(project: IProject, options: ServerOptions): Promise<express.Application> {
 
   const app = express();
-  app.set('serveConfig', options);
+  app.set('serveOptions', options);
   app.listen(options.port, options.address);
 
   app.get('/', serveIndex);

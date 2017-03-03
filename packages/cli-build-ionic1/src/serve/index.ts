@@ -18,7 +18,6 @@ import {
   DEFAULT_ADDRESS,
   DEFAULT_SERVER_PORT,
   DEFAULT_LIVERELOAD_PORT,
-  DEFAULT_NOTIFICATION_PORT,
   ServerOptions
 } from './config';
 import { findClosestOpenPort, getAvailableIPAddress } from '../utils/network';
@@ -55,8 +54,7 @@ export default async function(env: EventEnvironment, cmdMetadata: CommandData, i
     wwwDir: path.join(env.project.directory, 'www'),
     address: <string>options['address'] || DEFAULT_ADDRESS,
     port: stringToInt(<string>options['port'], DEFAULT_SERVER_PORT),
-    livereloadPort: stringToInt(<string>options['livereloadPort'], DEFAULT_LIVERELOAD_PORT),
-    notificationPort: stringToInt(<string>options['notificationPort'], DEFAULT_NOTIFICATION_PORT),
+    livereloadPort: stringToInt(<string>options['livereload-port'], DEFAULT_LIVERELOAD_PORT),
     browser: <string>options['browser'],
     browseroption: <string>options['browseroption'],
     platform: <string>options['platform'],
@@ -71,17 +69,14 @@ export default async function(env: EventEnvironment, cmdMetadata: CommandData, i
     nosass: <boolean>options['nosass'] || false
   };
 
-
   // Clean up args based on environment state
   serverOptions.address = (serverOptions.address === '0.0.0.0') ? 'localhost' : serverOptions.address;
   const portResults = await Promise.all([
     findClosestOpenPort(serverOptions.address, serverOptions.port),
     findClosestOpenPort(serverOptions.address, serverOptions.livereloadPort),
-    findClosestOpenPort(serverOptions.address, serverOptions.notificationPort)
   ]);
   serverOptions.port = portResults[0];
   serverOptions.livereloadPort = portResults[1];
-  serverOptions.notificationPort = portResults[2];
 
   // Start up server
   const settings = await setupServer(env.project, serverOptions);
