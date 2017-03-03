@@ -17,7 +17,7 @@ export class Telemetry implements ITelemetry {
    return uuid.v4().toString();
   }
 
-  async setupTracker() {
+  private async setupTracker() {
     const configFile = await this.config.load();
     if (!configFile.tokens.telemetry) {
       configFile.tokens.telemetry = this.generateUniqueToken();
