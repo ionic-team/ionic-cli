@@ -29,46 +29,9 @@ import {
 
 import { getReleaseChannelName } from '../lib/plugins';
 import { StarterTemplate } from '../definitions';
-
+import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
 
 const IONIC_DASH_URL = 'https://apps.ionic.io';
-const STARTER_TEMPLATES: StarterTemplate[] = [
-  {
-    name: 'blank',
-    description: 'A blank starter project',
-    path: 'driftyco/ionic2-starter-blank',
-    baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
-    archive: 'https://github.com/driftyco/ionic2-starter-blank/archive/master.tar.gz'
-  },
-  {
-    name: 'tabs',
-    description: 'A starting project with a simple tabbed interface',
-    path: 'driftyco/ionic2-starter-tabs',
-    baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
-    archive: 'https://github.com/driftyco/ionic2-starter-tabs/archive/master.tar.gz'
-  },
-  {
-    name: 'sidemenu',
-    description: 'A starting project with a side menu with navigation in the content area',
-    path: 'driftyco/ionic2-starter-sidemenu',
-    baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
-    archive: 'https://github.com/driftyco/ionic2-starter-sidemenu/archive/master.tar.gz'
-  },
-  {
-    name: 'conference',
-    description: 'A project that demonstrates a realworld application',
-    path: 'driftyco/ionic-conference-app',
-    baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
-    archive: 'https://github.com/driftyco/ionic-conference-app/archive/master.tar.gz'
-  },
-  {
-    name: 'tutorial',
-    description: 'A tutorial based project that goes along with the Ionic documentation',
-    path: 'driftyco/ionic2-starter-tutorial',
-    baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
-    archive: 'https://github.com/driftyco/ionic2-starter-tutorial/archive/master.tar.gz'
-  }
-];
 
 @CommandMetadata({
   name: 'start',
@@ -99,6 +62,12 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
     }
   ],
   options: [
+    {
+      name: 'type',
+      description: `Type of project to start. The default is 'ionic-angular'. (ex: ${STARTER_TYPES.map(st => st.id).join(', ')})`,
+      type: String,
+      default: 'ionic-angular'
+    },
     {
       name: 'appname',
       description: 'Human readable name for the app (Use quotes around the name',
@@ -135,6 +104,16 @@ const STARTER_TEMPLATES: StarterTemplate[] = [
   ]
 })
 export class StartCommand extends Command {
+  async prerun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+
+    // If the action is list then lets just end here.
+    if (options['list']) {
+
+      this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES));
+      return 0;
+    }
+  }
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let [projectName, starterTemplateName] = inputs;
     let installer = 'npm';
@@ -177,7 +156,17 @@ export class StartCommand extends Command {
       }
     }
 
-    let starterTemplate = STARTER_TEMPLATES.find(tpl => tpl['name'] === starterTemplateName);
+    let starterType = STARTER_TYPES.find(type => type['id'] === options['type']);
+
+    if (!starterType) {
+      throw `Unable to find starter type for ${options['type']}`;
+    }
+
+    let starterTemplate = STARTER_TEMPLATES.find((starterType => {
+      return (tpl: StarterTemplate) => (
+        tpl['name'] === starterTemplateName && tpl['typeId'] === starterType.name
+      );
+    })(starterType));
 
     if (!starterTemplate) {
       throw `Unable to find starter template for ${starterTemplateName}`;
@@ -192,14 +181,14 @@ export class StartCommand extends Command {
     let archiveResponse;
     try {
       [ baseArchiveResponse, archiveResponse] = await Promise.all([
-        fetch(starterTemplate.baseArchive),
+        fetch(starterType.baseArchive),
         fetch(starterTemplate.archive)
       ]);
     } catch (e) {
       if (['ETIMEOUT', 'ENOTFOUND'].includes(e.code)) {
         this.env.log.debug(e);
         this.env.log.error(`Unable to download starter template from github. Please check that you are ` +
-                          `able to access the following urls: \n${starterTemplate.baseArchive},\n${starterTemplate.archive}\n`);
+                          `able to access the following urls: \n${starterType.baseArchive},\n${starterTemplate.archive}\n`);
         return;
       }
       throw e;
@@ -207,7 +196,7 @@ export class StartCommand extends Command {
 
     if (!baseArchiveResponse || !archiveResponse) {
       this.env.log.error(`Unable to download starter template from github. Please check that you are ` +
-                        `able to access the following urls: \n${starterTemplate.baseArchive},\n${starterTemplate.archive}\n`);
+                        `able to access the following urls: \n${starterType.baseArchive},\n${starterTemplate.archive}\n`);
       return;
     }
 
@@ -218,7 +207,7 @@ export class StartCommand extends Command {
 
     tasks.next(`Updating project dependencies to add required plugins`);
     const releaseChannelName = await getReleaseChannelName();
-    await updateDependenciesForCLI(projectRoot, releaseChannelName);
+    await updateDependenciesForCLI(starterType, projectRoot, releaseChannelName);
 
 
     /**

@@ -13,7 +13,7 @@ import {
   ERROR_FILE_NOT_FOUND,
   ERROR_FILE_INVALID_JSON
 } from '@ionic/cli-utils';
-import { StarterTemplate } from '../definitions';
+import { StarterTemplate, StarterTemplateType } from '../definitions';
 
 const STARTER_CACHE_DIR = 'archives';
 
@@ -37,7 +37,8 @@ export function storeInCache(readStream: NodeJS.ReadableStream, configDirectory:
 }
 */
 
-export async function shouldUseCache(configDirectory: string, starterTemplate: StarterTemplate) {
+// TODO: Make Use of this function with storeInCache
+export async function shouldUseCache(configDirectory: string, starterTemplate: StarterTemplate, starterType: StarterTemplateType) {
   const [templateOrgId, templateProjectName] = starterTemplate.path.split('/');
   const templateCacheDir = path.resolve(configDirectory, STARTER_CACHE_DIR, templateOrgId);
 
@@ -46,7 +47,7 @@ export async function shouldUseCache(configDirectory: string, starterTemplate: S
   // Check Etag from github to decide if we need to use a new download or to use the cache
   try {
     let [ baseArchiveResponse, archiveResponse] = await Promise.all([
-      fetch(starterTemplate.baseArchive, { method: 'HEAD' }),
+      fetch(starterType.baseArchive, { method: 'HEAD' }),
       fetch(starterTemplate.archive, { method: 'HEAD' })
     ]);
 
@@ -122,10 +123,10 @@ export function getStarterTemplateText(templateList: StarterTemplate[]): string 
 
 export function getStarterTemplateTextList(templateList: StarterTemplate[]): string[] {
 
-  return templateList.map(({ name, description }) => {
+  return templateList.map(({ name, typeId, description }) => {
     let templateName = chalk.green(name);
 
-    return `${templateName} ${Array(20 - name.length).join('.')} ${description}`;
+    return `${templateName} ${Array(20 - name.length).join('.')} ${typeId} ${description}`;
   });
 }
 
@@ -147,14 +148,19 @@ ${chalk.bold('Test and share your app on a device with the Ionic View app:')}
   `;
 }
 
-export async function updateDependenciesForCLI(pathToProject: string, releaseChannelName: string = 'latest') {
+export async function updateDependenciesForCLI(starterType: StarterTemplateType, pathToProject: string, releaseChannelName: string = 'latest') {
   const filePath = path.resolve(pathToProject, 'package.json');
+  const distTagPromises = starterType.buildDependencies.map(stDependency => (
+    getCommandInfo('npm', ['view', stDependency, 'dist-tags', '--json'])
+  ));
+
   try {
-    let [jsonStructure, cordovaDistTags ] = await Promise.all([
-      fsReadJsonFile(filePath),
-      getCommandInfo('npm', ['view', '@ionic/cli-plugin-cordova', 'dist-tags', '--json'])
-    ]);
-    jsonStructure['devDependencies']['@ionic/cli-plugin-cordova'] = JSON.parse(cordovaDistTags)[releaseChannelName];
+    let jsonStructure = await fsReadJsonFile(filePath);
+    let distTags = await Promise.all(distTagPromises);
+
+    starterType.buildDependencies.forEach((stDependency, index) => {
+      jsonStructure['devDependencies'][stDependency] = JSON.parse(distTags[index])[releaseChannelName];
+    });
 
     await fsWriteJsonFile(filePath, jsonStructure, { encoding: 'utf8' });
 
