@@ -102,7 +102,7 @@ export class GenerateCommand extends Command {
       generatorType: inputs[0],
       suppliedName: inputs[1],
       includeSpec: <boolean>options['includeSpec'],
-      includeSass: options['skipSass'] === false
+      includeSass: options['skipScss'] === false
     };
 
     var projectStructureOptions = {
