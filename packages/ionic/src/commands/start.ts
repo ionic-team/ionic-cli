@@ -24,7 +24,8 @@ import {
   isSafeToCreateProjectIn,
   getStarterTemplateTextList,
   getHelloText,
-  updateDependenciesForCLI
+  updatePackageJsonForCli,
+  createProjectConfig
 } from '../lib/start';
 
 import { getReleaseChannelName } from '../lib/plugins';
@@ -37,7 +38,9 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
   name: 'start',
   description: 'Creates a new project',
   exampleCommands: [
-    'mynewapp blank'
+    'mynewapp blank',
+    'mynewapp tabs --type=ionic-angular',
+    'mynewapp blank --type=ionic1'
   ],
   inputs: [
     {
@@ -50,7 +53,7 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
     },
     {
       name: 'template',
-      description: `Starter templates can either come from a named template (ex: ${STARTER_TEMPLATES.map(st => st.name).join(', ')})`,
+      description: `Starter templates can either come from a named template (ex: blank, tabs, maps)`,
       validators: [validators.required],
       prompt: {
         type: 'list',
@@ -80,24 +83,13 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
     {
       name: 'appname',
       description: 'Human readable name for the app (Use quotes around the name',
+      type: String,
       aliases: ['a']
-    },
-    {
-      name: 'id',
-      description: 'Package name for <widget id> config, ex: com.mycompany.myapp',
-      aliases: ['i']
     },
     {
       name: 'skip-npm',
       description:  'Skip npm package installation',
       type: Boolean,
-      aliases: []
-    },
-    {
-      name: 'no-cordova',
-      description:  'Create a basic structure without Cordova requirements',
-      type: Boolean,
-      aliases: ['w']
     },
     {
       name: 'list',
@@ -108,7 +100,7 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
     {
       name: 'cloud-app-id',
       description: 'An existing Ionic.io app ID to link with',
-      aliases: []
+      type: String
     }
   ]
 })
@@ -125,6 +117,8 @@ export class StartCommand extends Command {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let [projectName, starterTemplateName] = inputs;
+    let appName = <string>options['appname'] || projectName;
+    let cloudAppId = <string>options['cloud-app-id'] || '';
     let installer = 'npm';
     let projectRoot: string;
 
@@ -215,9 +209,13 @@ export class StartCommand extends Command {
       tarXvf(archiveResponse.body, projectRoot)
     ]);
 
+
     tasks.next(`Updating project dependencies to add required plugins`);
     const releaseChannelName = await getReleaseChannelName();
-    await updateDependenciesForCLI(starterType, projectRoot, releaseChannelName);
+    await updatePackageJsonForCli(appName, starterType, projectRoot, releaseChannelName);
+
+    tasks.next(`Creating configuration file for the new project`);
+    await createProjectConfig(appName, starterType, projectRoot, cloudAppId);
 
 
     /**

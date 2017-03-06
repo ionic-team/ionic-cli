@@ -148,7 +148,7 @@ ${chalk.bold('Test and share your app on a device with the Ionic View app:')}
   `;
 }
 
-export async function updateDependenciesForCLI(starterType: StarterTemplateType, pathToProject: string, releaseChannelName: string = 'latest') {
+export async function updatePackageJsonForCli(appName: string, starterType: StarterTemplateType, pathToProject: string, releaseChannelName: string = 'latest'): Promise<void> {
   const filePath = path.resolve(pathToProject, 'package.json');
   const distTagPromises = starterType.buildDependencies.map(stDependency => (
     getCommandInfo('npm', ['view', stDependency, 'dist-tags', '--json'])
@@ -156,8 +156,11 @@ export async function updateDependenciesForCLI(starterType: StarterTemplateType,
 
   try {
     let jsonStructure = await fsReadJsonFile(filePath);
-
     let distTags = await Promise.all(distTagPromises);
+
+    jsonStructure['name'] = appName;
+    jsonStructure['version'] = '0.0.1';
+    jsonStructure['description'] = 'An Ionic project';
 
     starterType.buildDependencies.forEach((stDependency, index) => {
       jsonStructure['devDependencies'][stDependency] = JSON.parse(distTags[index])[releaseChannelName];
@@ -173,4 +176,15 @@ export async function updateDependenciesForCLI(starterType: StarterTemplateType,
     }
     throw e;
   }
+}
+
+export async function createProjectConfig(appName: string, starterType: StarterTemplateType, pathToProject: string, cloudAppId: string): Promise<void> {
+  const filePath = path.resolve(pathToProject, 'ionic.config.json');
+  const jsonStructure = {
+    name: appName,
+    app_id: cloudAppId,
+    projectTypeId: starterType.id
+  };
+
+  await fsWriteJsonFile(filePath, jsonStructure, { encoding: 'utf8' });
 }
