@@ -126,7 +126,7 @@ export function getStarterTemplateTextList(templateList: StarterTemplate[]): str
   return templateList.map(({ name, typeId, description }) => {
     let templateName = chalk.green(name);
 
-    return `${templateName} ${Array(20 - name.length).join('.')} ${typeId} ${description}`;
+    return `${templateName} ${Array(20 - name.length).join('.')} ${chalk.bold(typeId)} ${description}`;
   });
 }
 
@@ -156,6 +156,7 @@ export async function updateDependenciesForCLI(starterType: StarterTemplateType,
 
   try {
     let jsonStructure = await fsReadJsonFile(filePath);
+
     let distTags = await Promise.all(distTagPromises);
 
     starterType.buildDependencies.forEach((stDependency, index) => {

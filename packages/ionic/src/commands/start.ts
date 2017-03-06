@@ -36,7 +36,9 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
 @CommandMetadata({
   name: 'start',
   description: 'Creates a new project',
-  exampleCommands: ['mynewapp blank'],
+  exampleCommands: [
+    'mynewapp blank'
+  ],
   inputs: [
     {
       name: 'name',
@@ -53,11 +55,18 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
       prompt: {
         type: 'list',
         message: 'What starter would you like to use',
-        choices: getStarterTemplateTextList(STARTER_TEMPLATES).map((text, i) => ({
-          name: text,
-          short: STARTER_TEMPLATES[i].name,
-          value: STARTER_TEMPLATES[i].name
-        }))
+        choices: () => {
+          function getAsChoice(text: string, index: number) {
+            return {
+              name: text,
+              short: STARTER_TEMPLATES[index].name,
+              value: STARTER_TEMPLATES[index].name
+            };
+          }
+          let starterTemplates = STARTER_TEMPLATES.filter(st => st.typeId === 'ionic-angular');
+          return getStarterTemplateTextList(starterTemplates)
+            .map(getAsChoice);
+        }
       }
     }
   ],
@@ -109,7 +118,7 @@ export class StartCommand extends Command {
     // If the action is list then lets just end here.
     if (options['list']) {
 
-      this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES));
+      this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES).join('\n'));
       return 0;
     }
   }
@@ -162,11 +171,12 @@ export class StartCommand extends Command {
       throw `Unable to find starter type for ${options['type']}`;
     }
 
-    let starterTemplate = STARTER_TEMPLATES.find((starterType => {
-      return (tpl: StarterTemplate) => (
-        tpl['name'] === starterTemplateName && tpl['typeId'] === starterType.name
-      );
-    })(starterType));
+    let starterTemplateMatches: StarterTemplate[] = STARTER_TEMPLATES.filter(startTemplate => startTemplate.name === starterTemplateName);
+    let starterTemplate: StarterTemplate | undefined = starterTemplateMatches[0];
+
+    if (starterTemplateMatches.length > 1) {
+      starterTemplate = starterTemplateMatches.find(startTemplate => startTemplate.typeId === options['type']);
+    }
 
     if (!starterTemplate) {
       throw `Unable to find starter template for ${starterTemplateName}`;
