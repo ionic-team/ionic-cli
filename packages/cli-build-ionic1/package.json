@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-build-ionic1",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Ionic CLI build plugin for Ionic1 projects",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
@@ -44,6 +44,6 @@
     "tiny-lr": "^1.0.3"
   },
   "devDependencies": {
-    "@ionic/cli-utils": "^0.0.7"
+    "@ionic/cli-utils": "^0.0.8"
   }
 }
