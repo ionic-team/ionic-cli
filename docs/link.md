@@ -8,7 +8,12 @@ link -- Links your app with Ionic Cloud.
 ## DESCRIPTION
 Links your app with Ionic Cloud.
 
-* app_id ................... The Ionic Cloud app id that you would like to link to.
+
+Input | Description
+----- | ----------
+`app_id` | The Ionic Cloud app id that you would like to link to.
+
+
 
 
 ## EXAMPLES

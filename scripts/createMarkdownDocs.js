@@ -4,10 +4,12 @@ const cliUtils = require(`../packages/cli-utils/dist/index.js`);
 const pluginName = process.argv[2];
 const plugin = require(`../packages/${pluginName}/dist/index.js`);
 
+const STRIP_ANSI_REGEX = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
+
 const fileList = plugin.getAllCommandMetadata().map((cmd) => {
   cmd.fullName = (plugin.PLUGIN_NAME) ? `${plugin.PLUGIN_NAME}:${cmd.name}` : cmd.name;
 
-  const output = formatCommandDoc(cmd);
+  const output = formatCommandDoc(cmd).replace(STRIP_ANSI_REGEX, '');
   const fileName = (plugin.PLUGIN_NAME) ? `${plugin.PLUGIN_NAME}-${cmd.name}` : cmd.name;
   fs.writeFileSync(path.resolve(__dirname, '..', 'docs', `${fileName}.md`), output);
 
@@ -81,14 +83,12 @@ ${headerLine}
 function formatDescription(inputs = [], options = [], description = '') {
   const headerLine = `## DESCRIPTION`;
 
-  const fillStrings = cliUtils.generateFillSpaceStringList(inputs.map(input => input.name), 25, '.');
-
   function inputLineFn(input, index) {
     const name = input.name;
     const description = input.description;
-    const optionList = `${name}`;
+    const optionList = `\`${name}\``;
 
-    return `* ${optionList} ${fillStrings[index]} ${description}`;
+    return `${optionList} | ${description}`;
   };
 
   function optionLineFn(option) {
@@ -96,16 +96,13 @@ function formatDescription(inputs = [], options = [], description = '') {
     const aliases = option.aliases;
     const description = option.description;
 
-    const optionList = `--${name}` +
+    const optionList = `\`--${name}\`` +
       (aliases && aliases.length > 0 ? ', ' +
        aliases
-         .map((alias) => `-${alias}`)
+         .map((alias) => `\`-${alias}\``)
          .join(', ') : '');
 
-    const optionListLength = optionList.replace(cliUtils.STRIP_ANSI_REGEX, '').length;
-    const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
-
-    return `* ${optionList} ${Array(fullLength - optionListLength).fill('.').join('')} ${description}`;
+    return `${optionList} | ${description}`;
   };
 
 
@@ -113,8 +110,15 @@ function formatDescription(inputs = [], options = [], description = '') {
 ${headerLine}
 ${description}
 
+${inputs.length > 0 ? `
+Input | Description
+----- | ----------` : ``}
 ${inputs.map(inputLineFn).join(`
 `)}
+
+${options.length > 0 ? `
+Option | Description
+------ | ----------` : ``}
 ${options.map(optionLineFn).join(`
 `)}
 `

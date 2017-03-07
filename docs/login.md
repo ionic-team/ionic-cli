@@ -8,8 +8,13 @@ login -- Login with your Ionic ID
 ## DESCRIPTION
 Login with your Ionic ID
 
-* email .................... Your email address
-* password ................. Your password
+
+Input | Description
+----- | ----------
+`email` | Your email address
+`password` | Your password
+
+
 
 
 ## EXAMPLES

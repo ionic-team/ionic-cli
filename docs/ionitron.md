@@ -9,4 +9,9 @@ ionitron -- Print random ionitron messages
 Print random ionitron messages
 
 
-* --es ..................... Print in spanish
+
+
+
+Option | Description
+------ | ----------
+`--es` | Print in spanish

@@ -8,5 +8,10 @@ telemetry -- Opt in and out of telemetry
 ## DESCRIPTION
 Opt in and out of telemetry
 
-* opt-in ................... opt-in or opt-out
+
+Input | Description
+----- | ----------
+`opt-in` | opt-in or opt-out
+
+
 

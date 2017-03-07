@@ -8,13 +8,20 @@ start -- Creates a new project
 ## DESCRIPTION
 Creates a new project
 
-* name ..................... directory and name for the new project
-* template ................. Starter templates can either come from a named template (ex: blank, tabs, maps)
-* --type ................... Type of project to start. The default is 'ionic-angular'. (ex: ionic-angular, ionic1)
-* --appname, -a ............ Human readable name for the app (Use quotes around the name
-* --skip-npm ............... Skip npm package installation
-* --list, -l ............... List starter templates available
-* --cloud-app-id ........... An existing Ionic.io app ID to link with
+
+Input | Description
+----- | ----------
+`name` | directory and name for the new project
+`template` | Starter templates can either come from a named template (ex: blank, tabs, maps)
+
+
+Option | Description
+------ | ----------
+`--type` | Type of project to start. The default is 'ionic-angular'. (ex: ionic-angular, ionic1)
+`--appname`, `-a` | Human readable name for the app (Use quotes around the name
+`--skip-npm` | Skip npm package installation
+`--list`, `-l` | List starter templates available
+`--cloud-app-id` | An existing Ionic.io app ID to link with
 
 ## EXAMPLES
     ionic start mynewapp blank 
