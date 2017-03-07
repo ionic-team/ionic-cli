@@ -14,13 +14,12 @@
   "main": "./dist/ionic.js",
   "typings": "./dist/ionic.d.ts",
   "scripts": {
-    "build": "npm run lint && npm run clean && ../../node_modules/.bin/concurrently -p '[{name}]' -n 'src' '../../node_modules/.bin/webpack'",
+    "build": "npm run lint && npm run clean && ../../node_modules/.bin/webpack",
     "clean": "rm -rf ./dist",
     "changelog": "../../node_modules/.bin/conventional-changelog -i CHANGELOG.md -s -p angular",
     "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
     "test": "../../node_modules/.bin/jest",
-    "globallink": "npm link",
-    "watch": "npm run clean && ../../node_modules/.bin/concurrently -p '[{name}]' -n 'src,test' '../../node_modules/.bin/tsc --watch'"
+    "globallink": "npm link"
   },
   "files": [
     "bin/",
