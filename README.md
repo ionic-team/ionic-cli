@@ -16,16 +16,21 @@ Use the `ionic --help` command for more detailed task information.
 $ npm install -g ionic@beta
 ```
 
-#### Upgrading from a previous beta
-This process is a little cumbersome at the the moment (we will streamline this in the beta3 release).  You will need to the newly updated CLI globally and execute the following command in your Ionic project's root directory.
+#### Upgrading from a previous beta releases to beta4
+You will need to install the newly updated CLI globally and execute the following command in your Ionic project's root directory.
 ```bash
-$ npm install -g @ionic/cli-plugin-cordova@beta @ionic/cli-plugin-core@beta
+$ npm uninstall @ionic/cli-plugin-core
+
+$ npm install --save-dev @ionic/cli-plugin-cordova@beta @ionic/cli-build-ionic-angular
 ```
 
 #### Latest beta release versions
- - ionic@3.0.0-beta.2
- - @ionic/cli-plugin-cordova@0.0.8
- - @ionic/cli-plugin-core@0.0.7
+ - ionic@3.0.0-beta.4
+ - @ionic/cli-plugin-cordova@0.0.9
+ - @ionic/cli-build-ionic-angular@0.0.2 (Ionic2 Specific)
+ - @ionic/cli-build-ionic1@0.0.3 (Ionic1 Specific)
+
+ - @ionic/cli-plugin-core (__deprecated__)
 
 
 *Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix the command with `sudo` or can 
@@ -42,39 +47,46 @@ We have rewritten the CLI from the ground up.  Our main focus was to:
 3. Make the architecture flexible for future platform support (PWA, electron, etc.)
 4. Provide better **help**, more guidance, and more feedback when executing commands.
 
-In doing so we decided to take a new approach to the CLI's structure.  The base CLI installation now ships with commands that are common
-all Ionic Applications. These include: *start*, *info*, *login*, *signup*, *help*, and *version*. All other commands
-are specific to an Ionic project version.
+In doing so we decided to take a new approach to the CLI's structure.  The base CLI installation now ships with commands that are common to all Ionic Applications. These commands are listed within the [Ionic Global Commands](docs/ionic.md) docs.
 
-So what does this mean for developers? There are now 2 common plugins that are installed when starting a new Ionic v2 project. These are **@ionic/cli-plugin-core** and
-**@ionic/cli-plugin-cordova** (Below is a list of commands for each plugin). The **core** plugin contains commands that are common to all Ionic v2 projects and the **cordova**
-plugin contains commands that are specific to creating applications with cordova.
+So what does this mean for developers? There is now a plugin that contains commands specific to cordova. This plugin name is `@ionic/cli-plugin-cordova`. These commands are listed within the [Cordova Project Commands](docs/cli-plugin-cordova.md) docs. 
 
-If you use CLI v3 to start a new project these plugins are installed automatically. If you are using the CLI v3 on an existing project you will need to install these
-new plugins within your project directory.
+If you use CLI v3 to start a new project the required plugins are installed automatically. If you are using CLI v3 on an existing project you will need to install these new plugins manually within your project directory. Details are below.
 
-## Using CLI v3 - start a new project
+## **Ionic2** - Using CLI v3
+### Start a new project
 ```bash
 $ npm install -g ionic@beta
 
-$ ionic start myproject blank
+$ ionic start myNewv2project blank
 ```
 *Note: If you do not pass an inputs to the start command you will get an interactive prompt that allows you to provide a name and select from a list of
 starter templates.*
 
-## Using CLI v3 - existing Ionic2 project
+### Existing Ionic2 project
 
 ```bash
-$ npm install --save-dev @ionic/cli-plugin-core@beta @ionic/cli-plugin-cordova@beta
+$ npm install -g ionic@beta
+$ npm install --save-dev @ionic/cli-build-ionic-angular@beta @ionic/cli-plugin-cordova@beta
 
 $ ionic help
 ```
 
-## Using CLI v3 - existing Ionic1 project
+## **Ionic1** - Using CLI v3
+### Start a new project
+```bash
+$ npm install -g ionic@beta
 
-**We are currently developing a plugin for Ionic1 applications but it is currently not available for beta. Please note that if you install Ionic CLI v3 you will not
-be able to work on Ionic1 applications until this plugin is released. Because of this we recommend that if you regularly work on Ionic1 applications you should
-stick with Ionic CLI v2 for now.**
+$ ionic start myNewv1project blank --type=ionic1
+```
+
+### Using CLI v3 with an existing Ionic1 project
+```bash
+$ npm install -g ionic@beta
+$ npm install --save-dev @ionic/cli-build-ionic1@beta @ionic/cli-plugin-cordova@beta
+
+$ ionic help
+```
 
 ## Feedback
 
@@ -88,13 +100,12 @@ If your question is about functionality please be sure to start with the help co
 These markdown files contain the same documenation that is available through the `ionic help` command.
 
 * [Ionic Global Commands](docs/ionic.md)
-* [Core Project Commands](docs/cli-plugin-core.md)
 * [Cordova Project Commands](docs/cli-plugin-cordova.md)
 
-__Named template starters:__
+__Ionic2 Named template starters:__
 
 * [blank](https://github.com/driftyco/ionic2-starter-blank)
-* [tabs](https://github.com/driftyco/ionic2-starter-tabs) (Default)
+* [tabs](https://github.com/driftyco/ionic2-starter-tabs)
 * [sidemenu](https://github.com/driftyco/ionic2-starter-sidemenu)
 * [conference](https://github.com/driftyco/ionic-conference-app)
 * [tutorial](https://github.com/driftyco/ionis2-starter-tutorial)
@@ -209,35 +220,6 @@ angular.module('starter.controllers', [])
 })
 ```
 
-See also [this gist](https://gist.github.com/jbavari/d9c1c94058c4fdd4e935) for more help.
-
-__Command-line flags/options:__
-
-    [--consolelogs|-c] ......  Print app console logs to Ionic CLI
-    [--serverlogs|-s] .......  Print dev server logs to Ionic CLI
-    [--port|-p] .............  Dev server HTTP port (8100 default)
-    [--livereload-port|-i] ..  Live Reload port (35729 default)
-    [--nobrowser|-b] ........  Disable launching a browser
-    [--nolivereload|-r] .....  Do not start live reload
-    [--noproxy|-x] ..........  Do not add proxies
-    [--address] .............  Serves in the browser at the specified address
-    [--lab] .................  Serves both iOS and Android in the browser
-    [--nogulp] ..............  Serve without running gulp tasks
-    [--platform|-t] .........  Serve the platform specific styles in the browser (ios/android)
-
-## Using Ionic Labs
-
-We've extended the serve command to open the new Lab UI that features iOS and Android side-by-side.
-
-```bash
-$ ionic serve --lab
-```
-
-If you've used the serve command before, you'll feel right at home with this one. Just like serve, it opens your app in a browser, but now it shows you what your app will look like on a phone, with both iOS and Android side by side.
-
-And of course, it supports Live Reload and all the other goodies we've added over the last couple of months.
-
-
 ## Packaging an app (beta)
 
 Using Ionic's service, you can compile and package your project into an app-store ready app without
@@ -333,9 +315,6 @@ To view all docs, `ionic docs ls`.
 
 To get help with a doc you may not remember, just type the name close enough: `ionic docs list` and you will be prompted for suggestions that may match.
 
-
-
-# Ionic CLI 2.0
 
 ## Ionic Generators
 
