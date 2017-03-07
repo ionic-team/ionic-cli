@@ -29,7 +29,6 @@ $ npm install --save-dev @ionic/cli-plugin-cordova@beta @ionic/cli-build-ionic-a
  - @ionic/cli-plugin-cordova@0.0.9
  - @ionic/cli-build-ionic-angular@0.0.2 (Ionic2 Specific)
  - @ionic/cli-build-ionic1@0.0.3 (Ionic1 Specific)
-
  - @ionic/cli-plugin-core (__deprecated__)
 
 
