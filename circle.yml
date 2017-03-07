@@ -1,5 +1,3 @@
-test:
-  override:
-    - nvm use 6 && npm test
-  post:
-    - nvm use 6 && npm run coveralls
+machine:
+  node:
+    version: v6.1.0
