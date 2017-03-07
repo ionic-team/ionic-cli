@@ -16,7 +16,7 @@ Use the `ionic --help` command for more detailed task information.
 $ npm install -g ionic@beta
 ```
 
-#### Upgrading from a previous beta releases to beta4
+#### Upgrading from a previous beta release to beta4
 You will need to install the newly updated CLI globally and execute the following command in your Ionic project's root directory.
 ```bash
 $ npm uninstall @ionic/cli-plugin-core
@@ -59,7 +59,7 @@ $ npm install -g ionic@beta
 
 $ ionic start myNewv2project blank
 ```
-*Note: If you do not pass an inputs to the start command you will get an interactive prompt that allows you to provide a name and select from a list of
+*Note: If you do not pass any inputs to the start command you will get an interactive prompt that allows you to provide a name and select from a list of
 starter templates.*
 
 ### Existing Ionic2 project
