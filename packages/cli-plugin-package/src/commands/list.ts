@@ -9,7 +9,7 @@ import {
  * Metadata about the docs command
  */
 @CommandMetadata({
-  name: 'lits',
+  name: 'list',
   description: 'Opens up the documentation for Ionic',
 })
 export class ListCommand extends Command {

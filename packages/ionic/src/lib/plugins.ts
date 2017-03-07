@@ -7,7 +7,7 @@ import { IonicNamespace } from '../commands';
 import { load } from './utils/commonjs-loader';
 import * as globalPlugin from '../index';
 
-export const KNOWN_PLUGINS = ['cordova'];
+export const KNOWN_PLUGINS = ['cordova', 'package'];
 export const PREFIX = '@ionic/cli-plugin-';
 export const ERROR_PLUGIN_NOT_INSTALLED = 'PLUGIN_NOT_INSTALLED';
 export const ERROR_PLUGIN_NOT_FOUND = 'PLUGIN_NOT_FOUND';
