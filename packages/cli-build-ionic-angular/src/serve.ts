@@ -28,7 +28,7 @@ export default async function(cmdMetadata: CommandData, inputs: CommandLineInput
     chosenIP = promptAnswers['ip'];
   }
 
-  const appScriptsArgs = minimistOptionsToArray(options);
+  const appScriptsArgs = minimistOptionsToArray(options, ' ');
   process.argv = appScriptsArgs;
 
   const appScripts = require('@ionic/app-scripts');
