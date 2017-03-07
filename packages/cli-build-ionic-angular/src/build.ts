@@ -7,7 +7,7 @@ import {
 import { minimistOptionsToArray } from './utils/arguments';
 
 export default async function build(cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-  const appScriptsArgs = minimistOptionsToArray(options);
+  const appScriptsArgs = minimistOptionsToArray(options, ' ');
   process.argv = appScriptsArgs;
 
   const appScripts = require('@ionic/app-scripts');
