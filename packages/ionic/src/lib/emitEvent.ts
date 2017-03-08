@@ -1,4 +1,5 @@
 import {
+  EmitEventFn,
   EventEnvironment,
   getProjectInfo
 } from '@ionic/cli-utils';
@@ -6,11 +7,11 @@ import { loadPlugin } from './plugins';
 
 export const PREFIX = '@ionic/cli-build-';
 
-export default async function createEmitEvent(environment: EventEnvironment): Promise<Function> {
+export default async function createEmitEvent(environment: EventEnvironment): Promise<EmitEventFn> {
 
   // If not in a project then we will not emit any events
   if (!environment.project.directory) {
-    return function(){};
+    return async (eventName: string): Promise<any> => {};
   }
 
   const projectJson = await getProjectInfo(environment.project.directory);
@@ -28,11 +29,11 @@ export default async function createEmitEvent(environment: EventEnvironment): Pr
     return plugin.default(environment);
   });
 
-  return async function(eventName: string, options: { [key: string]: any }): Promise<any> {
+  return async (eventName: string, options: { [key: string]: any }): Promise<any> => {
     let results = {};
 
     for (let pluginFn of pluginFns) {
-      let pluginResult = await pluginFn(eventName, options);
+      const pluginResult = await pluginFn(eventName, options);
       if (pluginResult) {
         results = {
           ...results,

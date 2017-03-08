@@ -226,6 +226,8 @@ export interface EventEnvironment {
   inquirer: typeof inquirer;
 }
 
+export type EmitEventFn = (eventName: string, options: { [key: string]: any }) => Promise<any>;
+
 export interface IonicEnvironment {
   pargv: string[];
   app: IApp;
@@ -237,7 +239,7 @@ export interface IonicEnvironment {
   shell: IShell;
   telemetry: ITelemetry;
   inquirer: typeof inquirer;
-  emitEvent: Function;
+  emitEvent: EmitEventFn;
   namespace?: INamespace;
   pluginName?: string;
 }

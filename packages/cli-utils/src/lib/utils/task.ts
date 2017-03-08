@@ -24,7 +24,7 @@ class Spinner {
 }
 
 export class Task {
-  public intervalId?: NodeJS.Timer;
+  public intervalId?: number;
   public running: boolean = false;
   protected bottomBar: ui.BottomBar;
   private spinner: Spinner;
