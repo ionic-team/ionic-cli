@@ -101,6 +101,11 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
       name: 'cloud-app-id',
       description: 'An existing Ionic.io app ID to link with',
       type: String
+    },
+    {
+      name: 'skip-link',
+      description: 'Do not link app to an Ionic Account',
+      type: Boolean
     }
   ]
 })
@@ -245,19 +250,25 @@ export class StartCommand extends Command {
      */
     let { cliFlags } = await this.env.config.load();
 
-    if (!cliFlags.promptedForSignup) {
-      const { createAccount } = await this.env.inquirer.prompt({
+    if (!options['skip-link']) {
+      const token = await this.env.session.getUserToken();
+      const { linkApp } = await this.env.inquirer.prompt({
         type: 'confirm',
-        name: 'createAccount',
-        message: 'Create a free Ionic account to add features like User Authentication, ' +
-            'Push Notifications, Live Updating, iOS builds, and more?'
+        name: 'linkApp',
+        message: 'Link this app to your Ionic Dashboard to use tools like Ionic View?'
       });
 
-      if (createAccount) {
+      if (linkApp && token) {
+        const token = await this.env.session.getUserToken();
+        opn(`https://apps.ionic.io/?user_token=${token}`, { wait: false });
+        this.env.log.ok(`\nRun ${chalk.green(`ionic link`)} to link to the app.`);
+
         opn(IONIC_DASH_URL + '/signup', { wait: false });
+      } else if (linkApp) {
+        this.env.log.msg(`You will need to login in order to link this app. Please run the following commands to do so.\n` +
+          ` ${chalk.green(`ionic login`)} - login first\n` +
+          ` ${chalk.green(`ionic link`)} - then link your app]n`);
       }
-      cliFlags.promptedForSignup = true;
-      this.env.log.msg(`\n`);
     }
 
     if (!cliFlags.promptedForTelemetry) {
