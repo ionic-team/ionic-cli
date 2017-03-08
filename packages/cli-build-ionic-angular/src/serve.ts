@@ -28,8 +28,8 @@ export default async function(cmdMetadata: CommandData, inputs: CommandLineInput
     chosenIP = promptAnswers['ip'];
   }
 
-  const appScriptsArgs = minimistOptionsToArray(options);
-  process.argv = appScriptsArgs;
+  let appScriptsArgs = minimistOptionsToArray(options);
+  process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
   const appScripts = require('@ionic/app-scripts');
   const context = appScripts.generateContext();

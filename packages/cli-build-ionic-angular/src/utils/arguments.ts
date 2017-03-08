@@ -8,7 +8,7 @@ export function minimistOptionsToArray(options: CommandLineOptions): string[] {
       return results.concat(`--${optionName}`);
     }
     if (typeof options[optionName] === 'string') {
-      return results.concat(`--${optionName}=${options[optionName]}`);
+      return results.concat(`--${optionName}`, <string>options[optionName]);
     }
     return results;
   }, <string[]>[]);
