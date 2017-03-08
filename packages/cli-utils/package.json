@@ -5,7 +5,7 @@
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
   "main": "./dist/index.js",
-  "types": "./dist/src/index.d.ts",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
     "build": "npm run lint && npm run clean && ../../node_modules/.bin/webpack",
