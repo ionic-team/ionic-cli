@@ -24,7 +24,7 @@ class Spinner {
 }
 
 export class Task {
-  public intervalId?: number;
+  public intervalId?: any;
   public running: boolean = false;
   protected bottomBar: ui.BottomBar;
   private spinner: Spinner;
