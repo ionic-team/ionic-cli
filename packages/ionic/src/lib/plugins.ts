@@ -31,7 +31,6 @@ export async function loadPlugin(projectDir: string, pluginName: string, askToIn
     let foundPackageNeeded = KNOWN_PLUGINS.map(kp => `${PREFIX}${kp}`)
       .find(kp => e.message && e.message.includes(kp));
     if (!foundPackageNeeded) {
-      console.log(e);
       throw `Dependency missing for ${chalk.bold(pluginName)}:\n\n  ${chalk.red('[ERROR]')}: ${e.message}`;
     }
   }
