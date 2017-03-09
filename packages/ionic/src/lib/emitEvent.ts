@@ -1,11 +1,12 @@
+import * as path from 'path';
 import {
   EmitEventFn,
   EventEnvironment,
-  getProjectInfo
+  fsReadDir
 } from '@ionic/cli-utils';
 import { loadPlugin } from './plugins';
 
-export const PREFIX = '@ionic/cli-build-';
+export const PREFIX = 'cli-build-';
 
 export default async function createEmitEvent(environment: EventEnvironment): Promise<EmitEventFn> {
 
@@ -14,10 +15,12 @@ export default async function createEmitEvent(environment: EventEnvironment): Pr
     return async (eventName: string): Promise<any> => {};
   }
 
-  const projectJson = await getProjectInfo(environment.project.directory);
-  const buildPlugins = Object.keys(projectJson['dependencies'])
-    .concat(Object.keys(projectJson['devDependencies']))
-    .filter(pkgName => pkgName && pkgName.indexOf(PREFIX) === 0);
+  const mPath = path.join(environment.project.directory, 'node_modules', '@ionic');
+  const ionicModules = await fsReadDir(mPath);
+
+  const buildPlugins = ionicModules
+    .filter(pkgName => pkgName && pkgName.indexOf(PREFIX) === 0)
+    .map(pkgName => `@ionic/${pkgName}`);
 
   const plugins = await Promise.all(
     buildPlugins.map(pkgName => {

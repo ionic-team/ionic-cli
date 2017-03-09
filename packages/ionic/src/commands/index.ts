@@ -13,6 +13,7 @@ import { ServeCommand } from './serve';
 import { GenerateCommand } from './generate';
 import { LinkCommand } from './link';
 import { UploadCommand } from './upload';
+import { RemoteCommand } from './remote';
 
 export class IonicNamespace extends Namespace {
   name: 'global';
@@ -25,6 +26,7 @@ export class IonicNamespace extends Namespace {
     m.set('help', new HelpCommand());
     m.set('info', new InfoCommand());
     m.set('login', new LoginCommand());
+    m.set('remote', new RemoteCommand());
     m.set('signup', new SignupCommand());
     m.set('version', new VersionCommand());
     m.set('telemetry', new TelemetryCommand());
