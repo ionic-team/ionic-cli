@@ -1,3 +1,4 @@
+import * as dgram from 'dgram';
 import {
   CommandLineInputs,
   CommandLineOptions,
@@ -47,6 +48,11 @@ import * as qrcode from 'qrcode-terminal';
       name: 'address',
       description: 'Use specific address or return with failure (0.0.0.0 default)',
       default: '0.0.0.0'
+    },
+    {
+      name: 'qrcode',
+      description: 'Print a QR code for Ionic View instead of network broadcasting',
+      type: Boolean
     }
   ],
   requiresProject: true
@@ -65,11 +71,37 @@ export class RemoteCommand extends Command {
     });
 
     tasks.next(`Starting server`);
+
+    if (options.qrcode) {
+      const codeString = await generateQrCode(`http://${response.publicIp}:${response.httpPort}`);
+      this.env.log.msg(`\n\n\n${codeString}`);
+
+    } else {
+      tasks.next(`Broadcasting server information`);
+      const appDetails = await this.env.project.load();
+
+      const message = JSON.stringify({
+        app_name: appDetails.name,
+        app_id: appDetails.app_id,
+        local_address: `http://${response.publicIp}:${response.httpPort}`
+      });
+      const server = dgram.createSocket('udp4');
+
+      server.on('listening', () => {
+        server.setBroadcast(true);
+        setInterval(() => {
+          try {
+            server.send(message, 41234, '255.255.255.255');
+          } catch (e) {
+            throw e;
+          }
+        }, 3000);
+      });
+
+      server.bind();
+    }
+
     tasks.end();
-
-    const codeString = await generateQrCode(`http://${response.publicIp}:${response.httpPort}`);
-    this.env.log.msg(`\n\n\n${codeString}`);
-
   }
 }
 
