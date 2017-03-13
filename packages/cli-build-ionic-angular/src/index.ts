@@ -1,6 +1,6 @@
 import build from './build';
 import serve from './serve';
- import { EventEnvironment } from '@ionic/cli-utils';
+import { EventEnvironment } from '@ionic/cli-utils';
 
 export default function(env: EventEnvironment)  {
 
