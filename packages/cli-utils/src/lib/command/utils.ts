@@ -49,11 +49,24 @@ export function normalizeOptionAliases(metadata: CommandData, options: CommandLi
 
 export function minimistOptionsToArray(options: CommandLineOptions): string[] {
   return (Object.keys(options || {})).reduce((results, optionName): string[] => {
-    if (options[optionName] === true) {
+    const daObject = options[optionName];
+
+    if (optionName === '_' || !daObject) {
+      return results;
+    }
+
+    if (daObject === true) {
       return results.concat(`--${optionName}`);
     }
-    if (typeof options[optionName] === 'string') {
-      return results.concat(`--${optionName}=${options[optionName]}`);
+    if (typeof daObject === 'string') {
+      return results.concat(`--${optionName}=${daObject}`);
+    }
+    if (Array.isArray(daObject)) {
+      return results.concat(
+        daObject.map((value: string) => (
+          `--${optionName}=${value}`
+        ))
+      );
     }
     return results;
   }, <string[]>[]);

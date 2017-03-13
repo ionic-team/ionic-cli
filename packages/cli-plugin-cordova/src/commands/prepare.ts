@@ -6,7 +6,7 @@ import {
   CommandMetadata,
   TaskChain
 } from '@ionic/cli-utils';
-import { filterArgumentsForCordova } from '../lib/utils/cordova';
+import { gatherArgumentsForCordova } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 
 /**
@@ -24,7 +24,7 @@ export class PrepareCommand extends Command {
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);
 
-    const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
+    const optionList: string[] = gatherArgumentsForCordova(this.metadata, inputs, options);
 
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
     try {

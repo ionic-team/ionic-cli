@@ -64,7 +64,7 @@ export interface IProject extends IConfig<ProjectFile> {
   loadAppId(): Promise<string>;
 }
 
-export type CommandLineInput = string | boolean | null | undefined;
+export type CommandLineInput = string | boolean | null | undefined | string[];
 export type CommandLineInputs = string[];
 export type CommandLineOptions = { [arg: string]: CommandLineInput };
 export type CommandOptionType = StringConstructor | BooleanConstructor;

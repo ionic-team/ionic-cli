@@ -10,7 +10,7 @@ import {
   normalizeOptionAliases
 } from '@ionic/cli-utils';
 import { KnownPlatform } from '../definitions';
-import { filterArgumentsForCordova } from '../lib/utils/cordova';
+import { gatherArgumentsForCordova } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import {
   addDefaultImagesToProjectResources
@@ -87,7 +87,7 @@ export class PlatformCommand extends Command {
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);
     const normalizedOptions = normalizeOptionAliases(this.metadata, options);
-    const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, normalizedOptions);
+    const optionList: string[] = gatherArgumentsForCordova(this.metadata, inputs, normalizedOptions);
 
     if (!optionList.includes('--nosave')) {
       optionList.push('--save');
