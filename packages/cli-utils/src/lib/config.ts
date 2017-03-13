@@ -6,7 +6,7 @@ import * as chalk from 'chalk';
 import { ConfigFile, IConfig } from '../definitions';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
-import { ERROR_FILE_NOT_FOUND, fsReadJsonFile, fsWriteJsonFile } from './utils/fs';
+import { ERROR_FILE_NOT_FOUND, fsMkdirp, fsStat, fsReadJsonFile, fsWriteJsonFile } from './utils/fs';
 import { cloneDeep, isEqual } from 'lodash';
 
 export abstract class BaseConfig<T> implements IConfig<T> {
@@ -56,6 +56,15 @@ export abstract class BaseConfig<T> implements IConfig<T> {
     }
 
     if (configFile && !isEqual(configFile, this.originalConfigFile)) {
+      const dirPath = path.dirname(this.filePath);
+      try {
+        let stats = await fsStat(dirPath);
+        if (!stats.isDirectory()) {
+          throw `${dirPath} must be a directory it is currently a file`;
+        }
+      } catch (e) {
+        await fsMkdirp(dirPath);
+      }
       await fsWriteJsonFile(this.filePath, configFile, { encoding: 'utf8' });
       this.configFile = configFile;
       this.originalConfigFile = cloneDeep(configFile);
