@@ -1,3 +1,4 @@
+import * as chalk from 'chalk';
 import * as superagent from 'superagent';
 import * as minimist from 'minimist';
 
@@ -29,13 +30,12 @@ export class Command implements ICommand {
   async unload(): Promise<void> {}
 
   async prerun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
-  async run(inputs: CommandLineInputs, options: CommandLineOptions, validationErrors: ValidationError[]): Promise<void | number> {}
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
 
   async execute(inputs?: CommandLineInputs): Promise<void> {
     const options = metadataToMinimistOptions(this.metadata);
     const argv = minimist(this.env.pargv, options);
     let r: number | void;
-    let validationErrors: ValidationError[] = [];
 
     if (inputs) {
       argv._ = inputs;
@@ -44,7 +44,9 @@ export class Command implements ICommand {
     try {
       validateInputs(argv._, this.metadata);
     } catch (e) {
-      validationErrors = e;
+      const errors = <ValidationError[]>e; // TODO: better way?
+      console.error(errors.map(err => chalk.red('>> ') + err.message).join('\n'));
+      return;
     }
 
     r = await this.prerun(argv._, argv);
@@ -76,7 +78,7 @@ export class Command implements ICommand {
           options: argv
         });
 
-        await this.run(argv._, argv, validationErrors);
+        await this.run(argv._, argv);
 
         await this.env.emitEvent(this.metadata.name + ':after', {
           metadata: this.metadata,
