@@ -150,7 +150,7 @@ export function validateInputs(argv: string[], metadata: CommandData) {
   for (let i in metadata.inputs) {
     const input = metadata.inputs[i];
     const skip = new Set<Validator>();
-    const errors = [];
+    const errors: ValidationError[] = [];
 
     if (input.prompt) {
       skip.add(validators.required);
@@ -169,13 +169,14 @@ export function validateInputs(argv: string[], metadata: CommandData) {
           let r = validator(argv[i], input.name);
 
           if (r !== true) {
-            errors.push(<ValidationError>{
+            errors.push({
               message: r.toString(),
               inputName: input.name
             });
           }
         }
       }
+
       if (errors.length > 0) {
         throw errors;
       }
