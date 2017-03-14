@@ -62,9 +62,10 @@ export class GenerateCommand extends Command {
         break;
       case 'directive':
         context = appScripts.generateContext();
-        tasks.next('Generating');
+        const directiveData = await this.genDirective(context, appScripts);
 
-        await appScripts.processDirectiveRequest(context, name);
+        tasks.next('Generating');
+        await appScripts.processDirectiveRequest(context, name, directiveData);
         break;
       case 'pipe':
         context = appScripts.generateContext();
@@ -132,6 +133,29 @@ export class GenerateCommand extends Command {
       return [providerUsage, providerPlaces];
     } else {
       return [providerUsage];
+    }
+  }
+
+  private async genDirective(context: any, appScripts: any) {
+    const directiveUsage = await this.env.inquirer.prompt({
+      type: 'confirm',
+      name: 'directiveUsage',
+      message: 'Will this directive be use in more than one template?'
+    });
+
+    if (!directiveUsage.directiveUsage) {
+      const fileChoices = await this.getPages(appScripts, context);
+
+      const directivePlaces = await this.env.inquirer.prompt({
+        type: 'list',
+        name: 'whereUsed',
+        message: 'Which page or component will be using this directive?',
+        choices: fileChoices
+      });
+
+      return [directiveUsage, directivePlaces];
+    } else {
+      return [directiveUsage];
     }
   }
 
