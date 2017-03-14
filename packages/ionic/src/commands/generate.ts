@@ -44,9 +44,10 @@ export class GenerateCommand extends Command {
     const appScripts = load('@ionic/app-scripts');
     const context = appScripts.generateContext();
 
-    appScripts.processPageRequest(context, name);
-
     tasks.next('Generating');
+
+    await appScripts.processPageRequest(context, name);
+
     tasks.end();
   }
 }
