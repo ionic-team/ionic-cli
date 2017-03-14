@@ -89,10 +89,6 @@ export class GenerateCommand extends Command {
   }
 
   private async genPipe(context: any) {
-    const pipeName = await this.env.inquirer.prompt({
-      name: 'pipeName',
-      message: 'What would you like to name this pipe?'
-    });
     const pipeUsage = await this.env.inquirer.prompt({
       type: 'confirm',
       name: 'pipeUsage',
@@ -121,9 +117,9 @@ export class GenerateCommand extends Command {
         choices: fileChoices
       });
 
-      return [pipeName, pipeUsage, pipePlaces];
+      return [pipeUsage, pipePlaces];
     } else {
-      return [pipeName, pipeUsage];
+      return [pipeUsage];
     }
   }
 }
