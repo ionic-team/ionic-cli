@@ -56,28 +56,28 @@ export class GenerateCommand extends Command {
         break;
       case 'component':
         context = appScripts.generateContext();
-        const componentData = await this.genComponent(context, appScripts);
+        const componentData = await this.promptQuestions('component', appScripts, context);
 
         tasks.next('Generating');
         await appScripts.processComponentRequest(context, name, componentData);
         break;
       case 'directive':
         context = appScripts.generateContext();
-        const directiveData = await this.genDirective(context, appScripts);
+        const directiveData = await this.promptQuestions('directive', appScripts, context);
 
         tasks.next('Generating');
         await appScripts.processDirectiveRequest(context, name, directiveData);
         break;
       case 'pipe':
         context = appScripts.generateContext();
-        const pipeData = await this.genPipe(context, appScripts);
+        const pipeData = await this.promptQuestions('pipe', appScripts, context);
 
         tasks.next('Generating');
         await appScripts.processPipeRequest(context, name, pipeData);
         break;
       case 'provider':
         context = appScripts.generateContext();
-        const providerData = await this.genProvider(context, appScripts);
+        const providerData = await this.promptQuestions('provider', appScripts, context);
 
         tasks.next('Generating');
         await appScripts.processProviderRequest(context, name, providerData);
@@ -91,98 +91,6 @@ export class GenerateCommand extends Command {
     tasks.end();
   }
 
-  private async genPipe(context: any, appScripts: any) {
-    const pipeUsage = await this.env.inquirer.prompt({
-      type: 'confirm',
-      name: 'pipeUsage',
-      message: 'Will this pipe be used in more than one template?'
-    });
-
-    if (!pipeUsage.pipeUsage) {
-      const fileChoices = await this.getPages(appScripts, context);
-
-      const pipePlaces = await this.env.inquirer.prompt({
-        type: 'list',
-        name: 'whereUsed',
-        message: 'Which page or component will be using this pipe?',
-        choices: fileChoices
-      });
-
-      return [pipeUsage, pipePlaces];
-    } else {
-      return [pipeUsage];
-    }
-  }
-
-  private async genProvider(context: any, appScripts: any) {
-    const providerUsage = await this.env.inquirer.prompt({
-      type: 'confirm',
-      name: 'providerUsage',
-      message: 'Will this provider be used in more than one template?'
-    });
-
-    if (!providerUsage.providerUsage) {
-      const fileChoices = await this.getPages(appScripts, context);
-
-      const providerPlaces = await this.env.inquirer.prompt({
-        type: 'list',
-        name: 'whereUsed',
-        message: 'Which page or component will be using this provider?',
-        choices: fileChoices
-      });
-
-      return [providerUsage, providerPlaces];
-    } else {
-      return [providerUsage];
-    }
-  }
-
-  private async genDirective(context: any, appScripts: any) {
-    const directiveUsage = await this.env.inquirer.prompt({
-      type: 'confirm',
-      name: 'directiveUsage',
-      message: 'Will this directive be used in more than one template?'
-    });
-
-    if (!directiveUsage.directiveUsage) {
-      const fileChoices = await this.getPages(appScripts, context);
-
-      const directivePlaces = await this.env.inquirer.prompt({
-        type: 'list',
-        name: 'whereUsed',
-        message: 'Which page or component will be using this directive?',
-        choices: fileChoices
-      });
-
-      return [directiveUsage, directivePlaces];
-    } else {
-      return [directiveUsage];
-    }
-  }
-
-  private async genComponent(context: any, appScripts: any) {
-    const componentUsage = await this.env.inquirer.prompt({
-      type: 'confirm',
-      name: 'componentUsage',
-      message: 'Will this component be used in more than one template?'
-    });
-
-    if (!componentUsage.componentUsage) {
-      const fileChoices = await this.getPages(appScripts, context);
-
-      const componentPlaces = await this.env.inquirer.prompt({
-        type: 'list',
-        name: 'whereUsed',
-        message: 'Which page or component will be using this component?',
-        choices: fileChoices
-      });
-
-      return [componentUsage, componentPlaces];
-    } else {
-      return [componentUsage];
-    }
-  }
-
   private async getPages(appScripts: any, context: any) {
     const fileChoices: string[] = [];
 
@@ -193,6 +101,29 @@ export class GenerateCommand extends Command {
     });
 
     return fileChoices;
+  }
+
+  private async promptQuestions(name: string, appScripts: any, context: any) {
+    const usageQuestion = await this.env.inquirer.prompt({
+      type: 'confirm',
+      name: `usage`,
+      message: `Will this ${name} be used in more than one template?`
+    });
+
+    if (!usageQuestion.usage) {
+      const fileChoices = await this.getPages(appScripts, context);
+
+      const usagePlaces = await this.env.inquirer.prompt({
+        type: 'list',
+        name: 'whereUsed',
+        message: `Which page or component will be using this ${name}`,
+        choices: fileChoices
+      });
+
+      return [usageQuestion, usagePlaces];
+    } else {
+      return [usageQuestion];
+    }
   }
 }
 
