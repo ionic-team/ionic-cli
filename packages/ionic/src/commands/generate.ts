@@ -56,9 +56,10 @@ export class GenerateCommand extends Command {
         break;
       case 'component':
         context = appScripts.generateContext();
-        tasks.next('Generating');
+        const componentData = await this.genComponent(context, appScripts);
 
-        await appScripts.processComponentRequest(context, name);
+        tasks.next('Generating');
+        await appScripts.processComponentRequest(context, name, componentData);
         break;
       case 'directive':
         context = appScripts.generateContext();
@@ -140,7 +141,7 @@ export class GenerateCommand extends Command {
     const directiveUsage = await this.env.inquirer.prompt({
       type: 'confirm',
       name: 'directiveUsage',
-      message: 'Will this directive be use in more than one template?'
+      message: 'Will this directive be used in more than one template?'
     });
 
     if (!directiveUsage.directiveUsage) {
@@ -156,6 +157,29 @@ export class GenerateCommand extends Command {
       return [directiveUsage, directivePlaces];
     } else {
       return [directiveUsage];
+    }
+  }
+
+  private async genComponent(context: any, appScripts: any) {
+    const componentUsage = await this.env.inquirer.prompt({
+      type: 'confirm',
+      name: 'componentUsage',
+      message: 'Will this component be used in more than one template?'
+    });
+
+    if (!componentUsage.componentUsage) {
+      const fileChoices = await this.getPages(appScripts, context);
+
+      const componentPlaces = await this.env.inquirer.prompt({
+        type: 'list',
+        name: 'whereUsed',
+        message: 'Which page or component will be using this component?',
+        choices: fileChoices
+      });
+
+      return [componentUsage, componentPlaces];
+    } else {
+      return [componentUsage];
     }
   }
 
