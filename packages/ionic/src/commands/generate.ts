@@ -7,7 +7,7 @@ import {
   validators,
 } from '@ionic/cli-utils';
 
-import * as fs from 'fs';
+import * as path from 'path';
 
 import { load } from '../lib/utils/commonjs-loader';
 
@@ -68,16 +68,17 @@ export class GenerateCommand extends Command {
         break;
       case 'pipe':
         context = appScripts.generateContext();
-        const pipeData = await this.genPipe(context);
+        const pipeData = await this.genPipe(context, appScripts);
 
         tasks.next('Generating');
         await appScripts.processPipeRequest(context, name, pipeData);
         break;
       case 'provider':
         context = appScripts.generateContext();
-        tasks.next('Generating');
+        const providerData = await this.genProvider(context, appScripts);
 
-        await appScripts.processProviderRequest(context, name);
+        tasks.next('Generating');
+        await appScripts.processProviderRequest(context, name, providerData);
       case 'tabs':
         context = appScripts.generateContext();
         tasks.next('Generating');
@@ -88,7 +89,7 @@ export class GenerateCommand extends Command {
     tasks.end();
   }
 
-  private async genPipe(context: any) {
+  private async genPipe(context: any, appScripts: any) {
     const pipeUsage = await this.env.inquirer.prompt({
       type: 'confirm',
       name: 'pipeUsage',
@@ -96,19 +97,7 @@ export class GenerateCommand extends Command {
     });
 
     if (!pipeUsage.pipeUsage) {
-      let components;
-      let fileChoices;
-
-      if (fs.existsSync(context.componentsDir)) {
-        components = fs.readdirSync(context.componentsDir);
-      }
-      const pages = fs.readdirSync(context.pagesDir);
-
-      if (components !== undefined) {
-        fileChoices = [...components, ...pages];
-      } else {
-        fileChoices = pages;
-      }
+      const fileChoices = await this.getPages(appScripts, context);
 
       const pipePlaces = await this.env.inquirer.prompt({
         type: 'list',
@@ -121,6 +110,41 @@ export class GenerateCommand extends Command {
     } else {
       return [pipeUsage];
     }
+  }
+
+  private async genProvider(context: any, appScripts: any) {
+    const providerUsage = await this.env.inquirer.prompt({
+      type: 'confirm',
+      name: 'providerUsage',
+      message: 'Will this provider be used in more than one template?'
+    });
+
+    if (!providerUsage.providerUsage) {
+      const fileChoices = await this.getPages(appScripts, context);
+
+      const providerPlaces = await this.env.inquirer.prompt({
+        type: 'list',
+        name: 'whereUsed',
+        message: 'Which page or component will be using this provider?',
+        choices: fileChoices
+      });
+
+      return [providerUsage, providerPlaces];
+    } else {
+      return [providerUsage];
+    }
+  }
+
+  private async getPages(appScripts: any, context: any) {
+    const fileChoices: string[] = [];
+
+    const pages = await appScripts.getNgModules(context, ['page', 'component']);
+
+    pages.forEach((page: any) => {
+      fileChoices.push(path.basename(page.absolutePath, '.module.ts'));
+    });
+
+    return fileChoices;
   }
 }
 
