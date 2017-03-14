@@ -7,6 +7,8 @@ import {
   validators,
 } from '@ionic/cli-utils';
 
+import * as fs from 'fs';
+
 import { load } from '../lib/utils/commonjs-loader';
 
 @CommandMetadata({
@@ -26,10 +28,10 @@ import { load } from '../lib/utils/commonjs-loader';
     },
     {
       name: 'name',
-      description: 'What name that you like for the file:',
+      description: 'The name of the file that gets generated',
       validators: [validators.required],
       prompt: {
-        message: 'name'
+        message: 'What would you like the name of this file to be:'
       }
     }
   ],
@@ -40,14 +42,90 @@ export class GenerateCommand extends Command {
     const [ type, name ] = inputs;
     const tasks = new TaskChain();
 
+    let context;
+
     process.argv = ['node', 'appscripts'];
     const appScripts = load('@ionic/app-scripts');
-    const context = appScripts.generateContext();
 
-    tasks.next('Generating');
+    switch (type) {
+      case 'page':
+        context = appScripts.generateContext();
+        tasks.next('Generating');
 
-    await appScripts.processPageRequest(context, name);
+        await appScripts.processPageRequest(context, name);
+        break;
+      case 'component':
+        context = appScripts.generateContext();
+        tasks.next('Generating');
+
+        await appScripts.processComponentRequest(context, name);
+        break;
+      case 'directive':
+        context = appScripts.generateContext();
+        tasks.next('Generating');
+
+        await appScripts.processDirectiveRequest(context, name);
+        break;
+      case 'pipe':
+        context = appScripts.generateContext();
+        const pipeData = await this.genPipe(context);
+
+        tasks.next('Generating');
+        await appScripts.processPipeRequest(context, name, pipeData);
+        break;
+      case 'provider':
+        context = appScripts.generateContext();
+        tasks.next('Generating');
+
+        await appScripts.processProviderRequest(context, name);
+      case 'tabs':
+        context = appScripts.generateContext();
+        tasks.next('Generating');
+
+        await appScripts.processTabsRequest(context, name);
+    }
 
     tasks.end();
   }
+
+  private async genPipe(context: any) {
+    const pipeName = await this.env.inquirer.prompt({
+      name: 'pipeName',
+      message: 'What would you like to name this pipe?'
+    });
+    const pipeUsage = await this.env.inquirer.prompt({
+      type: 'confirm',
+      name: 'pipeUsage',
+      message: 'Will this pipe be used in more than one template?'
+    });
+
+    if (!pipeUsage.pipeUsage) {
+      let components;
+      let fileChoices;
+
+      if (fs.existsSync(context.componentsDir)) {
+        components = fs.readdirSync(context.componentsDir);
+      }
+      const pages = fs.readdirSync(context.pagesDir);
+
+      if (components !== undefined) {
+        fileChoices = [...components, ...pages];
+      } else {
+        fileChoices = pages;
+      }
+
+      const pipePlaces = await this.env.inquirer.prompt({
+        type: 'list',
+        name: 'whereUsed',
+        message: 'Which page or component will be using this pipe?',
+        choices: fileChoices
+      });
+
+      return [pipeName, pipeUsage, pipePlaces];
+    } else {
+      return [pipeName, pipeUsage];
+    }
+  }
 }
+
+
