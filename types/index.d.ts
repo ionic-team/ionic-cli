@@ -7,3 +7,4 @@
 /// <reference path="./proxy-middleware.d.ts" />
 /// <reference path="./glob-watcher.d.ts" />
 /// <reference path="./tiny-lr.d.ts" />
+/// <reference path="./qrcode-terminal.d.ts" />
