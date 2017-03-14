@@ -37,7 +37,7 @@ import { load } from '../lib/utils/commonjs-loader';
 })
 export class GenerateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ type, name ] = inputs;
+    const [, name ] = inputs;
     const tasks = new TaskChain();
 
     process.argv = ['node', 'appscripts'];
