@@ -143,8 +143,6 @@ export class GenerateCommand extends Command {
       tabNames.push(nameQuestion.tabName);
     }
 
-    console.log(tabNames);
-
     return [howManyQuestion, tabNames];
   }
 }
