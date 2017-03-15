@@ -130,9 +130,9 @@ export class GenerateCommand extends Command {
         return file.fileName === usagePlaces.whereUsed;
       });
 
-      return [usageQuestion, chosenPath.absolutePath];
+      return [context.appNgModulePath, chosenPath.absolutePath];
     } else {
-      return [usageQuestion];
+      return [context.appNgModulePath];
     }
   }
 
