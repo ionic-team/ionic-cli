@@ -152,7 +152,7 @@ export class GenerateCommand extends Command {
       tabNames.push(nameQuestion.tabName);
     }
 
-    return [howManyQuestion, tabNames];
+    return tabNames;
   }
 }
 
