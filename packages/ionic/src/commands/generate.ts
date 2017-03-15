@@ -83,9 +83,10 @@ export class GenerateCommand extends Command {
         await appScripts.processProviderRequest(context, name, providerData);
       case 'tabs':
         context = appScripts.generateContext();
-        tasks.next('Generating');
+        const tabsData = await this.tabsPromptQuestions(appScripts, context);
 
-        await appScripts.processTabsRequest(context, name);
+        tasks.next('Generating');
+        await appScripts.processTabsRequest(context, name, tabsData);
     }
 
     tasks.end();
@@ -106,7 +107,7 @@ export class GenerateCommand extends Command {
   private async promptQuestions(name: string, appScripts: any, context: any) {
     const usageQuestion = await this.env.inquirer.prompt({
       type: 'confirm',
-      name: `usage`,
+      name: 'usage',
       message: `Will this ${name} be used in more than one template?`
     });
 
@@ -124,6 +125,27 @@ export class GenerateCommand extends Command {
     } else {
       return [usageQuestion];
     }
+  }
+
+  private async tabsPromptQuestions(appScripts: any, context: any) {
+    const tabNames = [];
+
+    const howManyQuestion = await this.env.inquirer.prompt({
+      name: 'howMany',
+      message: 'How many tabs do you need?'
+    });
+
+    for (let i = 0; i <= howManyQuestion.howMany; i++) {
+      const nameQuestion = await this.env.inquirer.prompt({
+        name: 'tabName',
+        message: `What should the name of this tab be?`
+      });
+      tabNames.push(nameQuestion.tabName);
+    }
+
+    console.log(tabNames);
+
+    return [howManyQuestion, tabNames];
   }
 }
 
