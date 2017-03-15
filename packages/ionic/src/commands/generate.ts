@@ -93,12 +93,12 @@ export class GenerateCommand extends Command {
   }
 
   private async getPages(appScripts: any, context: any) {
-    const fileChoices: string[] = [];
+    const fileChoices: any[] = [];
 
     const pages = await appScripts.getNgModules(context, ['page', 'component']);
 
     pages.forEach((page: any) => {
-      fileChoices.push(path.basename(page.absolutePath, '.module.ts'));
+      fileChoices.push({ fileName: path.basename(page.absolutePath, '.module.ts'), absolutePath: page.absolutePath });
     });
 
     return fileChoices;
@@ -112,16 +112,25 @@ export class GenerateCommand extends Command {
     });
 
     if (!usageQuestion.usage) {
+      const filteredChoices: any = [];
       const fileChoices = await this.getPages(appScripts, context);
+
+      fileChoices.forEach((file) => {
+        filteredChoices.push(file.fileName);
+      });
 
       const usagePlaces = await this.env.inquirer.prompt({
         type: 'list',
         name: 'whereUsed',
         message: `Which page or component will be using this ${name}`,
-        choices: fileChoices
+        choices: filteredChoices
       });
 
-      return [usageQuestion, usagePlaces];
+      const chosenPath = fileChoices.find((file): any => {
+        return file.fileName === usagePlaces.whereUsed;
+      });
+
+      return [usageQuestion, chosenPath.absolutePath];
     } else {
       return [usageQuestion];
     }
