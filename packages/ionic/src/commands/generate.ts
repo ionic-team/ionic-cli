@@ -96,11 +96,12 @@ export class GenerateCommand extends Command {
 
   private async getPages(appScripts: any, context: any) {
     const fileChoices: any[] = [];
+    console.log(context);
 
     const pages = await appScripts.getNgModules(context, ['page', 'component']);
 
     pages.forEach((page: any) => {
-      fileChoices.push({ fileName: path.basename(page.absolutePath, '.module.ts'), absolutePath: page.absolutePath });
+      fileChoices.push({ fileName: path.basename(page.absolutePath, '.module.ts'), absolutePath: page.absolutePath, relativePath: path.relative(context.rootDir, page.absolutePath) });
     });
 
     return fileChoices;
@@ -118,7 +119,7 @@ export class GenerateCommand extends Command {
       const fileChoices = await this.getPages(appScripts, context);
 
       fileChoices.forEach((file) => {
-        filteredChoices.push(file.fileName);
+        filteredChoices.push(file.relativePath);
       });
 
       const usagePlaces = await this.env.inquirer.prompt({
