@@ -147,7 +147,7 @@ export class GenerateCommand extends Command {
     for (let i = 0; i <= howManyQuestion.howMany; i++) {
       const nameQuestion = await this.env.inquirer.prompt({
         name: 'tabName',
-        message: `What should the name of this tab be?`
+        message: 'What should the name of this tab be?'
       });
       tabNames.push(nameQuestion.tabName);
     }
