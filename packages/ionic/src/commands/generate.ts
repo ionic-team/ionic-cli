@@ -81,12 +81,14 @@ export class GenerateCommand extends Command {
 
         tasks.next('Generating');
         await appScripts.processProviderRequest(context, name, providerData);
+        break;
       case 'tabs':
         context = appScripts.generateContext();
         const tabsData = await this.tabsPromptQuestions(appScripts, context);
 
         tasks.next('Generating');
         await appScripts.processTabsRequest(context, name, tabsData);
+        break;
     }
 
     tasks.end();
@@ -144,7 +146,7 @@ export class GenerateCommand extends Command {
       message: 'How many tabs do you need?'
     });
 
-    for (let i = 0; i <= howManyQuestion.howMany; i++) {
+    for (let i = 0; i < howManyQuestion.howMany; i++) {
       const nameQuestion = await this.env.inquirer.prompt({
         name: 'tabName',
         message: 'What should the name of this tab be?'
