@@ -110,7 +110,7 @@ export class GenerateCommand extends Command {
     const usageQuestion = await this.env.inquirer.prompt({
       type: 'confirm',
       name: 'usage',
-      message: `Will this ${name} be used in more than one template?`
+      message: `Use this ${name} in more than one template:`
     });
 
     if (!usageQuestion.usage) {
@@ -124,7 +124,7 @@ export class GenerateCommand extends Command {
       const usagePlaces = await this.env.inquirer.prompt({
         type: 'list',
         name: 'whereUsed',
-        message: `Which page or component will be using this ${name}`,
+        message: `Page or component that will be using this ${name}`,
         choices: filteredChoices
       });
 
@@ -143,13 +143,13 @@ export class GenerateCommand extends Command {
 
     const howManyQuestion = await this.env.inquirer.prompt({
       name: 'howMany',
-      message: 'How many tabs do you need?'
+      message: 'How many tabs?'
     });
 
     for (let i = 0; i < howManyQuestion.howMany; i++) {
       const nameQuestion = await this.env.inquirer.prompt({
         name: 'tabName',
-        message: 'What should the name of this tab be?'
+        message: 'Name of this tab:'
       });
       tabNames.push(nameQuestion.tabName);
     }
