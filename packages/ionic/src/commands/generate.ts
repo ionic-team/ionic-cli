@@ -31,7 +31,7 @@ import { load } from '../lib/utils/commonjs-loader';
       description: 'The name of the file that gets generated',
       validators: [validators.required],
       prompt: {
-        message: 'What would you like the name of this file to be:'
+        message: 'Name of this file:'
       }
     }
   ],
@@ -50,7 +50,7 @@ export class GenerateCommand extends Command {
     switch (type) {
       case 'page':
         context = appScripts.generateContext();
-        tasks.next('Generating');
+        tasks.next(`Generated a page named ${name}`);
 
         await appScripts.processPageRequest(context, name);
         break;
@@ -58,35 +58,35 @@ export class GenerateCommand extends Command {
         context = appScripts.generateContext();
         const componentData = await this.promptQuestions('component', appScripts, context);
 
-        tasks.next('Generating');
+        tasks.next(`Generated a component named ${name}`);
         await appScripts.processComponentRequest(context, name, componentData);
         break;
       case 'directive':
         context = appScripts.generateContext();
         const directiveData = await this.promptQuestions('directive', appScripts, context);
 
-        tasks.next('Generating');
+        tasks.next(`Generated a directive named ${name}`);
         await appScripts.processDirectiveRequest(context, name, directiveData);
         break;
       case 'pipe':
         context = appScripts.generateContext();
         const pipeData = await this.promptQuestions('pipe', appScripts, context);
 
-        tasks.next('Generating');
+        tasks.next(`Generated a pipe named ${name}`);
         await appScripts.processPipeRequest(context, name, pipeData);
         break;
       case 'provider':
         context = appScripts.generateContext();
         const providerData = await this.promptQuestions('provider', appScripts, context);
 
-        tasks.next('Generating');
+        tasks.next(`Generated a provider named ${name}`);
         await appScripts.processProviderRequest(context, name, providerData);
         break;
       case 'tabs':
         context = appScripts.generateContext();
         const tabsData = await this.tabsPromptQuestions(appScripts, context);
 
-        tasks.next('Generating');
+        tasks.next('Generated tabs');
         await appScripts.processTabsRequest(context, name, tabsData);
         break;
     }
@@ -110,7 +110,7 @@ export class GenerateCommand extends Command {
     const usageQuestion = await this.env.inquirer.prompt({
       type: 'confirm',
       name: 'usage',
-      message: `Use this ${name} in more than one template:`
+      message: `Use this ${name} in more than one template?`
     });
 
     if (!usageQuestion.usage) {
