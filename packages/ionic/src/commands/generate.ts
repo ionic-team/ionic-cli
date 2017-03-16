@@ -96,7 +96,6 @@ export class GenerateCommand extends Command {
 
   private async getPages(appScripts: any, context: any) {
     const fileChoices: any[] = [];
-    console.log(context);
 
     const pages = await appScripts.getNgModules(context, ['page', 'component']);
 
@@ -119,7 +118,7 @@ export class GenerateCommand extends Command {
       const fileChoices = await this.getPages(appScripts, context);
 
       fileChoices.forEach((file) => {
-        filteredChoices.push(file.relativePath);
+        filteredChoices.push(path.dirname(file.relativePath));
       });
 
       const usagePlaces = await this.env.inquirer.prompt({
