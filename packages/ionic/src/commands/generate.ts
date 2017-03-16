@@ -31,7 +31,7 @@ import { load } from '../lib/utils/commonjs-loader';
       description: 'The name of the file that gets generated',
       validators: [validators.required],
       prompt: {
-        message: 'Name of this file:'
+        message: 'What should the name be?'
       }
     }
   ],
@@ -118,20 +118,21 @@ export class GenerateCommand extends Command {
       const fileChoices = await this.getPages(appScripts, context);
 
       fileChoices.forEach((file) => {
-        filteredChoices.push(path.dirname(file.relativePath));
+        filteredChoices.push({ prettyName: path.dirname(file.relativePath), fullName: file.relativePath });
       });
 
       const usagePlaces = await this.env.inquirer.prompt({
         type: 'list',
         name: 'whereUsed',
         message: `Page or component that will be using this ${name}`,
-        choices: filteredChoices
+        choices: filteredChoices.map((choiceObject: any) => {
+          return choiceObject.prettyName;
+        })
       });
 
       const chosenPath = fileChoices.find((file): any => {
-        return file.fileName === usagePlaces.whereUsed;
+        return path.dirname(file.relativePath) === usagePlaces.whereUsed;
       });
-
       return chosenPath.absolutePath;
     } else {
       return context.appNgModulePath;
