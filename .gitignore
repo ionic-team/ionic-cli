@@ -5,6 +5,7 @@ node_modules/
 .vscode/
 coverage/
 .coveralls.yml
+.changelog/
 npm-debug.log*
 lerna-debug.log
 
