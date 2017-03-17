@@ -14,7 +14,7 @@ import { load } from '../lib/utils/commonjs-loader';
 @CommandMetadata({
   name: 'generate',
   aliases: ['g'],
-  description: 'Generate pages and components',
+  description: 'Generates pipes, components, pages, directives and tabs',
   inputs: [
     {
       name: 'type',
@@ -28,7 +28,7 @@ import { load } from '../lib/utils/commonjs-loader';
     },
     {
       name: 'name',
-      description: 'The name of the file that gets generated',
+      description: 'The name of the component being generated',
       validators: [validators.required],
       prompt: {
         message: 'What should the name be?'
