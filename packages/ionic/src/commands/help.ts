@@ -24,8 +24,7 @@ const UNKOWN_COMMAND_ERROR = 'UNKOWN_COMMAND';
   inputs: [
     {
       name: 'command',
-      description: 'The command you desire help with',
-      validators: [validators.required]
+      description: 'The command you desire help with'
     }
   ]
 })
