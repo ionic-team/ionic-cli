@@ -123,7 +123,7 @@ export class LinkCommand extends Command {
         type: 'list',
         name: 'choice',
         message: `Which app would you like to link`,
-        choices: apps.concat([createAppChoice]).map((app) => ({
+        choices: [createAppChoice, ...apps].map((app) => ({
           name: app.id !== CREATE_NEW_APP_CHOICE ? `${app.name} (${app.id})` : chalk.bold(app.name),
           value: app.id
         }))
