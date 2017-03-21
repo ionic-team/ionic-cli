@@ -37,16 +37,42 @@ function isSnapshotResponse(r: APIResponse): r is SnapshotResponse {
     && res.data.presigned_post.fields && typeof res.data.presigned_post.fields === 'object';
 }
 
-/**
- * Metadata about the docs command
- */
 @CommandMetadata({
   name: 'upload',
   description: 'Upload a new snapshot of your app',
   exampleCommands: [''],
+  options: [
+    {
+      name: 'note',
+      description: 'Give this snapshot a nice description',
+    },
+    {
+      name: 'deploy',
+      description: 'Deploys this snapshot to the given channel',
+      default: 'dev',
+    },
+  ],
   requiresProject: true
 })
 export class UploadCommand extends Command {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const token = await this.env.session.getAppUserToken();
+    const zip = this.createZipStream();
+
+    const tasks = new TaskChain();
+
+    tasks.next('Requesting snapshot');
+    const snapshot = await this.requestSnapshotUpload(token);
+    const uploadTask = tasks.next('Uploading snapshot');
+    await this.uploadSnapshot(snapshot, zip, (loaded, total) => {
+      uploadTask.progress(loaded, total);
+    });
+
+    tasks.end();
+
+    this.env.log.ok(`Uploaded snapshot ${chalk.bold(snapshot.uuid)}!`);
+  }
+
   private createZipStream(): NodeJS.ReadableStream {
     const archive = archiver('zip');
 
@@ -104,23 +130,5 @@ export class UploadCommand extends Command {
           });
       });
     });
-  }
-
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const token = await this.env.session.getAppUserToken();
-    const zip = this.createZipStream();
-
-    const tasks = new TaskChain();
-
-    tasks.next('Requesting snapshot');
-    const snapshot = await this.requestSnapshotUpload(token);
-    const uploadTask = tasks.next('Uploading snapshot');
-    await this.uploadSnapshot(snapshot, zip, (loaded, total) => {
-      uploadTask.progress(loaded, total);
-    });
-
-    tasks.end();
-
-    this.env.log.ok(`Uploaded snapshot ${chalk.bold(snapshot.uuid)}!`);
   }
 }

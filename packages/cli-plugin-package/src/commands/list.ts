@@ -2,18 +2,21 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   Command,
-  CommandMetadata
+  CommandMetadata,
+  runCommand,
 } from '@ionic/cli-utils';
 
+import * as archiver from 'archiver';
+
 /**
- * Metadata about the docs command
+ * Metadata about the package:list command
  */
 @CommandMetadata({
   name: 'list',
-  description: 'Opens up the documentation for Ionic',
+  description: 'Lists recent package builds',
 })
 export class ListCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-
+    runCommand(this.env, ['upload']);
   }
 }
