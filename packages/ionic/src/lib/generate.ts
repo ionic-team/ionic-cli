@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 
-async function getPages(appScripts: any, context: any) {
+export async function getPages(appScripts: any, context: any) {
   const fileChoices: any[] = [];
 
   const pages = await appScripts.getNgModules(context, ['page', 'component']);
@@ -46,7 +46,7 @@ export async function prompt(name: string, appScripts: any, context: any, inquir
   }
 }
 
-export async function tabsPrompt(appScripts: any, context: any, inquirer: any) {
+export async function tabsPrompt(appScripts: any, inquirer: any) {
   const tabNames = [];
 
   const howManyQuestion = await inquirer.prompt({

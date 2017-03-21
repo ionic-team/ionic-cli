@@ -99,9 +99,9 @@ export class GenerateCommand extends Command {
     return await prompt(name, appScripts, context, inquirer);
   }
 
-  private async tabsPromptQuestions(appScripts: any, context: any) {
+  private async tabsPromptQuestions(appScripts: any) {
     const inquirer = this.env.inquirer;
-    return await tabsPrompt(appScripts, context, inquirer);
+    return await tabsPrompt(appScripts, inquirer);
   }
 }
 
