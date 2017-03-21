@@ -14,7 +14,7 @@ import { prompt, tabsPrompt } from '../lib/generate';
 @CommandMetadata({
   name: 'generate',
   aliases: ['g'],
-  description: 'Generates pipes, components, pages, directives and tabs',
+  description: 'Generates pipes, components, pages, directives, and tabs',
   inputs: [
     {
       name: 'type',
@@ -42,49 +42,43 @@ export class GenerateCommand extends Command {
     const [ type, name ] = inputs;
     const tasks = new TaskChain();
 
-    let context;
-
     process.argv = ['node', 'appscripts'];
     const appScripts = load('@ionic/app-scripts');
 
+    const context = appScripts.generateContext();
+
     switch (type) {
       case 'page':
-        context = appScripts.generateContext();
         tasks.next(`Generated a page named ${name}`);
 
         await appScripts.processPageRequest(context, name);
         break;
       case 'component':
-        context = appScripts.generateContext();
         const componentData = await this.promptQuestions('component', appScripts, context);
 
         tasks.next(`Generated a component named ${name}`);
         await appScripts.processComponentRequest(context, name, componentData);
         break;
       case 'directive':
-        context = appScripts.generateContext();
         const directiveData = await this.promptQuestions('directive', appScripts, context);
 
         tasks.next(`Generated a directive named ${name}`);
         await appScripts.processDirectiveRequest(context, name, directiveData);
         break;
       case 'pipe':
-        context = appScripts.generateContext();
         const pipeData = await this.promptQuestions('pipe', appScripts, context);
 
         tasks.next(`Generated a pipe named ${name}`);
         await appScripts.processPipeRequest(context, name, pipeData);
         break;
       case 'provider':
-        context = appScripts.generateContext();
         const providerData = await this.promptQuestions('provider', appScripts, context);
 
         tasks.next(`Generated a provider named ${name}`);
         await appScripts.processProviderRequest(context, name, providerData);
         break;
       case 'tabs':
-        context = appScripts.generateContext();
-        const tabsData = await this.tabsPromptQuestions(appScripts, context);
+        const tabsData = await this.tabsPromptQuestions(appScripts);
 
         tasks.next('Generated tabs');
         await appScripts.processTabsRequest(context, name, tabsData);

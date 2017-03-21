@@ -2,36 +2,38 @@ import * as path from 'path';
 
 
 export async function getPages(appScripts: any, context: any) {
-  const fileChoices: any[] = [];
-
   const pages = await appScripts.getNgModules(context, ['page', 'component']);
 
-  pages.forEach((page: any) => {
-    fileChoices.push({ fileName: path.basename(page.absolutePath, '.module.ts'), absolutePath: page.absolutePath, relativePath: path.relative(context.rootDir, page.absolutePath) });
+  return pages.map((page: any) => {
+    return {
+      fileName: path.basename(page.absolutePath, 'module.ts'),
+      absolutePath: page.absolutePath,
+      relativePath: path.relative(context.rootDir, page.absolutePath)
+    };
   });
-
-  return fileChoices;
 }
 
-export async function prompt(name: string, appScripts: any, context: any, inquirer: any) {
+export async function prompt(type: string, appScripts: any, context: any, inquirer: any) {
   const usageQuestion = await inquirer.prompt({
     type: 'confirm',
     name: 'usage',
-    message: `Use this ${name} in more than one template?`
+    message: `Use this ${type} in more than one template?`
   });
 
   if (!usageQuestion.usage) {
-    const filteredChoices: any = [];
     const fileChoices = await getPages(appScripts, context);
 
-    fileChoices.forEach((file: any) => {
-      filteredChoices.push({ prettyName: path.dirname(file.relativePath), fullName: file.relativePath });
+    const filteredChoices = fileChoices.map((file: any) => {
+      return {
+        prettyName: path.dirname(file.relativePath),
+        fullName: file.relativePath
+      };
     });
 
     const usagePlaces = await inquirer.prompt({
       type: 'list',
       name: 'whereUsed',
-      message: `Page or component that will be using this ${name}`,
+      message: `Page or component that will be using this ${type}`,
       choices: filteredChoices.map((choiceObject: any) => {
         return choiceObject.prettyName;
       })
@@ -61,6 +63,6 @@ export async function tabsPrompt(appScripts: any, inquirer: any) {
     });
     tabNames.push(nameQuestion.tabName);
   }
-
+  console.log(tabNames);
   return tabNames;
 }
