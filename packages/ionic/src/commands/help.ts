@@ -8,7 +8,6 @@ import {
   formatCommandHelp,
   getListOfCommandDetails,
   Command,
-  validators,
   getCommandMetadataList
 } from '@ionic/cli-utils';
 
