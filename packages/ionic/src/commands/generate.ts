@@ -7,9 +7,9 @@ import {
   validators,
 } from '@ionic/cli-utils';
 
-import * as path from 'path';
-
 import { load } from '../lib/utils/commonjs-loader';
+
+import { prompt, tabsPrompt } from '../lib/generate';
 
 @CommandMetadata({
   name: 'generate',
@@ -94,68 +94,14 @@ export class GenerateCommand extends Command {
     tasks.end();
   }
 
-  private async getPages(appScripts: any, context: any) {
-    const fileChoices: any[] = [];
-
-    const pages = await appScripts.getNgModules(context, ['page', 'component']);
-
-    pages.forEach((page: any) => {
-      fileChoices.push({ fileName: path.basename(page.absolutePath, '.module.ts'), absolutePath: page.absolutePath, relativePath: path.relative(context.rootDir, page.absolutePath) });
-    });
-
-    return fileChoices;
-  }
-
   private async promptQuestions(name: string, appScripts: any, context: any) {
-    const usageQuestion = await this.env.inquirer.prompt({
-      type: 'confirm',
-      name: 'usage',
-      message: `Use this ${name} in more than one template?`
-    });
-
-    if (!usageQuestion.usage) {
-      const filteredChoices: any = [];
-      const fileChoices = await this.getPages(appScripts, context);
-
-      fileChoices.forEach((file) => {
-        filteredChoices.push({ prettyName: path.dirname(file.relativePath), fullName: file.relativePath });
-      });
-
-      const usagePlaces = await this.env.inquirer.prompt({
-        type: 'list',
-        name: 'whereUsed',
-        message: `Page or component that will be using this ${name}`,
-        choices: filteredChoices.map((choiceObject: any) => {
-          return choiceObject.prettyName;
-        })
-      });
-
-      const chosenPath = fileChoices.find((file): any => {
-        return path.dirname(file.relativePath) === usagePlaces.whereUsed;
-      });
-      return chosenPath.absolutePath;
-    } else {
-      return context.appNgModulePath;
-    }
+    const inquirer = this.env.inquirer;
+    return await prompt(name, appScripts, context, inquirer);
   }
 
   private async tabsPromptQuestions(appScripts: any, context: any) {
-    const tabNames = [];
-
-    const howManyQuestion = await this.env.inquirer.prompt({
-      name: 'howMany',
-      message: 'How many tabs?'
-    });
-
-    for (let i = 0; i < howManyQuestion.howMany; i++) {
-      const nameQuestion = await this.env.inquirer.prompt({
-        name: 'tabName',
-        message: 'Name of this tab:'
-      });
-      tabNames.push(nameQuestion.tabName);
-    }
-
-    return tabNames;
+    const inquirer = this.env.inquirer;
+    return await tabsPrompt(appScripts, context, inquirer);
   }
 }
 
