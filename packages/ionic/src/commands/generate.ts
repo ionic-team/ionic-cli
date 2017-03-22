@@ -39,7 +39,7 @@ import { prompt, tabsPrompt } from '../lib/generate';
 })
 export class GenerateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [, name ] = inputs;
+    const [ type, name ] = inputs;
     const tasks = new TaskChain();
 
     process.argv = ['node', 'appscripts'];
