@@ -27,12 +27,13 @@
       "js"
     ],
     "transform": {
-      "^.+\\.(ts)$": "<rootDir>/preprocessor.js"
+      ".(ts)": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "/__tests__/.*\\.(ts|js)$",
     "rootDir": "/Users/joshthomas/Workspace/ionic-cli/packages/cli-build-ionic1",
     "name": "-Users-joshthomas-Workspace-ionic-cli-packages-cli-build-ionic1",
     "setupFiles": [],
+    "testResultsProcessor": "<rootDir>/../../node_modules/ts-jest/coverageprocessor.js",
     "testRunner": "/Users/joshthomas/Workspace/ionic-cli/node_modules/jest-jasmine2/build/index.js"
   },
   "dependencies": {

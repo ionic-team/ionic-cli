@@ -51,8 +51,9 @@
       "js"
     ],
     "transform": {
-      "^.+\\.(ts)$": "<rootDir>/preprocessor.js"
+      ".(ts)": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
     },
-    "testRegex": "/__tests__/.*\\.(ts|js)$"
+    "testRegex": "/__tests__/.*\\.(ts|js)$",
+    "testResultsProcessor": "<rootDir>/../../node_modules/ts-jest/coverageprocessor.js"
   }
 }

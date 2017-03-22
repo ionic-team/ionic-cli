@@ -1,6 +1,5 @@
 import * as path from 'path';
 
-
 export async function getPages(appScripts: any, context: any) {
   const pages = await appScripts.getNgModules(context, ['page', 'component']);
   const ngModuleSuffix = await appScripts.getStringPropertyValue('IONIC_NG_MODULE_FILENAME_SUFFIX');
