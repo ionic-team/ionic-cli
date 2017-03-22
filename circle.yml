@@ -1,3 +1,15 @@
 machine:
   node:
     version: v6.1.0
+
+dependencies:
+  post:
+    - cd packages/cli-utils && npm install && npm run build
+    - ./node_modules/.bin/lerna bootstrap
+
+test:
+  pre:
+    - ./node_modules/.bin/lerna run lint
+    - ./node_modules/.bin/lerna run build
+  override:
+    - ./node_modules/.bin/lerna run test

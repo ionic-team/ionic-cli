@@ -1,3 +1,5 @@
+import * as dgram from 'dgram';
+import * as qrcode from 'qrcode-terminal';
 import {
   CommandLineInputs,
   CommandLineOptions,
@@ -79,6 +81,11 @@ import {
       name: 'platform',
       description: 'Start serve with a specific platform (ios/android)',
       aliases: ['t']
+    },
+    {
+      name: 'qrcode',
+      description: 'Print a QR code for Ionic View instead of network broadcasting',
+      type: Boolean
     }
   ],
   requiresProject: true
@@ -90,13 +97,61 @@ export class ServeCommand extends Command {
 
     var tasks = new TaskChain();
 
-    await this.env.emitEvent('serve', {
+    var response = await this.env.emitEvent('serve', {
       metadata: this.metadata,
       inputs,
       options
     });
 
     tasks.next(`Starting server`);
+
+    // If qrcode option then generate a qrcode on the Command Line.
+    if (options.qrcode) {
+      const codeString = await generateQrCode(
+        `${response.protocol}://${response.publicIp}:${response.httpPort}`
+      );
+      this.env.log.msg(`\n\n\n${codeString}`);
+    }
+
+    // If broadcast option then start udp server and broadcast info
+    if (options.broadcast) {
+      tasks.next(`Broadcasting server information`);
+      const appDetails = await this.env.project.load();
+
+      const message = JSON.stringify({
+        app_name: appDetails.name,
+        app_id: appDetails.app_id,
+        local_address: `${response.protocol}://${response.publicIp}:${response.httpPort}`
+      });
+      const server = dgram.createSocket('udp4');
+
+      server.on('listening', () => {
+        server.setBroadcast(true);
+        setInterval(() => {
+          try {
+            server.send(message, 41234, '255.255.255.255');
+          } catch (e) {
+            throw e;
+          }
+        }, 3000);
+      });
+
+      server.bind();
+    }
+
     tasks.end();
   }
+}
+
+function generateQrCode(input: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+
+    try {
+      qrcode.generate(input, (response: any) => {
+        resolve(response);
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
 }

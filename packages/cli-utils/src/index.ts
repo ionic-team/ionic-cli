@@ -3,6 +3,7 @@ export { normalizeOptionAliases, minimistOptionsToArray } from './lib/command/ut
 export * from './lib/command/namespace';
 export * from './lib/command/commandEnvironment';
 export * from './lib/config';
+export * from './lib/deploy';
 export * from './lib/errors';
 export * from './lib/http';
 export * from './lib/utils/format';

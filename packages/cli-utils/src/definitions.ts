@@ -54,6 +54,58 @@ export interface AppDetails {
   slug: string;
 }
 
+export interface AppResponse extends APIResponseSuccess {
+  data: AppDetails;
+}
+
+export interface AuthTokenResponse extends APIResponseSuccess {
+  data: {
+    token: string;
+    details: {
+      app_id: string;
+      type: 'app-user';
+      user_id: string;
+    };
+  }[];
+}
+
+export interface LoginResponse extends APIResponseSuccess {
+  data: {
+    token: string;
+  };
+}
+
+export interface DeploySnapshotRequest {
+  uuid: string;
+  presigned_post: {
+    url: string;
+    fields: Object;
+  };
+}
+
+export interface DeploySnapshotRequestResponse extends APIResponseSuccess {
+  data: DeploySnapshotRequest;
+}
+
+export interface DeployChannel {
+  uuid: string;
+  tag: string;
+}
+
+export interface DeployChannelResponse extends APIResponseSuccess {
+  data: DeployChannel;
+}
+
+export interface Deploy {
+  uuid: string;
+  snapshot: string;
+  channel: string;
+}
+
+export interface DeployResponse extends APIResponseSuccess {
+  data: Deploy;
+}
+
 export interface IApp {
   load(app_id?: string): Promise<AppDetails>;
 }
@@ -139,7 +191,6 @@ export interface IShellRunOptions extends child_process.SpawnOptions {
 }
 
 export interface IShell {
-  exists(command: string): Promise<boolean>;
   run(command: string, args?: string[], options?: IShellRunOptions): Promise<string>;
 }
 

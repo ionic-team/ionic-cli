@@ -14,7 +14,6 @@ import {
 
 interface App {
   name: string;
-  slug: string;
   id: string;
 }
 
@@ -29,7 +28,6 @@ interface AppsResponse extends APIResponseSuccess {
 function isApp(app: any): app is App {
   return app
     && typeof app.name === 'string'
-    && typeof app.slug === 'string'
     && typeof app.id === 'string';
 }
 
@@ -114,16 +112,16 @@ export class LinkCommand extends Command {
       }
 
       const apps = res.data.filter((app) => app.id !== project.app_id);
-      const createAppChoice = <App>{
+      const createAppChoice = {
         name: 'Create a new app',
-        id: CREATE_NEW_APP_CHOICE
+        id: CREATE_NEW_APP_CHOICE,
       };
 
       const confirmation = await this.env.inquirer.prompt({
         type: 'list',
         name: 'choice',
         message: `Which app would you like to link`,
-        choices: apps.concat([createAppChoice]).map((app) => ({
+        choices: [createAppChoice, ...apps].map((app) => ({
           name: app.id !== CREATE_NEW_APP_CHOICE ? `${app.name} (${app.id})` : chalk.bold(app.name),
           value: app.id
         }))

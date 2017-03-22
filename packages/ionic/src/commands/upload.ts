@@ -1,126 +1,87 @@
 import * as path from 'path';
 
-import * as archiver from 'archiver';
 import * as chalk from 'chalk';
-import * as superagent from 'superagent';
 
 import {
-  APIResponse,
-  APIResponseSuccess,
   Command,
+  CommandLineInput,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  DeployChannel,
+  DeployClient,
   TaskChain,
-  createFatalAPIFormat,
-  isAPIResponseSuccess,
+  createZipStream,
 } from '@ionic/cli-utils';
 
-interface Snapshot {
-  uuid: string;
-  presigned_post: {
-    url: string;
-    fields: Object;
-  };
-}
-
-interface SnapshotResponse extends APIResponseSuccess {
-  data: Snapshot;
-}
-
-function isSnapshotResponse(r: APIResponse): r is SnapshotResponse {
-  let res: SnapshotResponse = <SnapshotResponse>r;
-  return isAPIResponseSuccess(res)
-    && typeof res.data.uuid === 'string'
-    && typeof res.data.presigned_post === 'object'
-    && typeof res.data.presigned_post.url === 'string'
-    && res.data.presigned_post.fields && typeof res.data.presigned_post.fields === 'object';
-}
-
-/**
- * Metadata about the docs command
- */
 @CommandMetadata({
   name: 'upload',
   description: 'Upload a new snapshot of your app',
   exampleCommands: [''],
+  options: [
+    {
+      name: 'note',
+      description: 'Give this snapshot a nice description',
+    },
+    {
+      name: 'deploy',
+      description: 'Deploys this snapshot to the given channel',
+    },
+  ],
   requiresProject: true
 })
 export class UploadCommand extends Command {
-  private createZipStream(): NodeJS.ReadableStream {
-    const archive = archiver('zip');
-
-    archive.directory(path.join(this.env.project.directory, 'www'), 'www'); // TODO don't hardcode
-
-    // archive.glob(path.join(this.env.project.directory, '**', '*'));
-
-    archive.finalize();
-
-    return archive;
-  }
-
-  private async requestSnapshotUpload(token: string): Promise<Snapshot> {
-    const req = this.env.client.make('POST', '/deploy/snapshots')
-      .set('Authorization', `Bearer ${token}`)
-      .send({});
-
-    const res = await this.env.client.do(req);
-
-    if (!isSnapshotResponse(res)) {
-      throw createFatalAPIFormat(req, res);
+  resolveNote(input: CommandLineInput): string | undefined {
+    if (typeof input !== 'string') {
+      input = undefined;
     }
 
-    return res.data;
+    return input;
   }
 
-  private uploadSnapshot(snapshot: Snapshot, zip: NodeJS.ReadableStream, progress: (loaded: number, total: number) => void): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      zip.on('error', (err: any) => {
-        reject(err);
-      });
+  resolveChannelTag(input: CommandLineInput): string | undefined {
+    if (typeof input !== 'string') {
+      input = undefined;
+    } else if (input === '') {
+      input = 'dev';
+    }
 
-      let bufs: Buffer[] = [];
-
-      zip.on('data', (buf: Buffer) => {
-        bufs.push(buf);
-      });
-
-      zip.on('end', () => {
-        superagent.post(snapshot.presigned_post.url)
-          .field(snapshot.presigned_post.fields)
-          .field('file', Buffer.concat(bufs))
-          .on('progress', (event) => {
-            progress(event.loaded, event.total);
-          })
-          .end((err, res) => {
-            if (err) {
-              return reject(err);
-            }
-            if (res.status !== 204) {
-              // TODO: log body for debug purposes?
-              return reject(new Error(`Unexpected status code from AWS: ${res.status}`));
-            }
-            resolve();
-          });
-      });
-    });
+    return input;
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const token = await this.env.session.getAppUserToken();
-    const zip = this.createZipStream();
+    const note = this.resolveNote(options['note']);
+    const channelTag = this.resolveChannelTag(options['deploy']);
+    let channel: DeployChannel | undefined;
 
     const tasks = new TaskChain();
+    const token = await this.env.session.getAppUserToken();
+    const deploy = new DeployClient(token, this.env.client);
+
+    if (channelTag) {
+      tasks.next('Retrieving deploy channel');
+      channel = await deploy.getChannel(channelTag);
+    }
+
+    const wwwPath = path.join(this.env.project.directory, 'www'); // TODO don't hardcode
+    const zip = createZipStream(wwwPath);
 
     tasks.next('Requesting snapshot');
-    const snapshot = await this.requestSnapshotUpload(token);
+    const snapshot = await deploy.requestSnapshotUpload({ note });
     const uploadTask = tasks.next('Uploading snapshot');
-    await this.uploadSnapshot(snapshot, zip, (loaded, total) => {
+    await deploy.uploadSnapshot(snapshot, zip, (loaded, total) => {
       uploadTask.progress(loaded, total);
     });
 
     tasks.end();
-
     this.env.log.ok(`Uploaded snapshot ${chalk.bold(snapshot.uuid)}!`);
+
+    if (channel) {
+      tasks.next(`Deploying to '${channel.tag}' channel`);
+      await deploy.deploy(snapshot.uuid, channel.uuid);
+      tasks.end();
+      this.env.log.ok(`Deployed snapshot ${chalk.bold(snapshot.uuid)} to channel ${chalk.bold(channel.tag)}!`);
+    }
   }
+
 }

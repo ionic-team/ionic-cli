@@ -204,7 +204,7 @@ function modifyArguments(pargv: string[]): string[] {
    * Change command options
    */
   if (minimistArgv['verbose']) {
-    modifiedArgArray[modifiedArgArray.indexOf('--verbose')] = '--log-level="debug"';
+    modifiedArgArray[modifiedArgArray.indexOf('--verbose')] = '--log-level=debug';
   }
 
 

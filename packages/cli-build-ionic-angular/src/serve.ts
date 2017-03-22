@@ -40,6 +40,7 @@ export default async function(cmdMetadata: CommandData, inputs: CommandLineInput
   const settings = await appScripts.serve(context);
   return  {
     publicIp: chosenIP,
+    protocol: 'http',
     ...settings
   };
 }

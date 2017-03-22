@@ -3,5 +3,13 @@
   "version": "independent",
   "packages": [
     "packages/*"
-  ]
+  ],
+  "changelog": {
+    "repo": "driftyco/ionic-cli",
+    "labels": {
+      "fix": "Bug fix",
+      "feat": "New Feature"
+    },
+    "cacheDir": ".changelog"
+  }
 }

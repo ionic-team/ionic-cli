@@ -27,18 +27,18 @@ export const STARTER_TYPES: StarterTemplateType[] = [
 
 export const STARTER_TEMPLATES: StarterTemplate[] = [
   {
-    name: 'blank',
-    typeId: 'ionic-angular',
-    description: 'A blank starter project',
-    path: 'driftyco/ionic2-starter-blank',
-    archive: 'https://github.com/driftyco/ionic2-starter-blank/archive/master.tar.gz'
-  },
-  {
     name: 'tabs',
     typeId: 'ionic-angular',
     description: 'A starting project with a simple tabbed interface',
     path: 'driftyco/ionic2-starter-tabs',
     archive: 'https://github.com/driftyco/ionic2-starter-tabs/archive/master.tar.gz'
+  },
+  {
+    name: 'blank',
+    typeId: 'ionic-angular',
+    description: 'A blank starter project',
+    path: 'driftyco/ionic2-starter-blank',
+    archive: 'https://github.com/driftyco/ionic2-starter-blank/archive/master.tar.gz'
   },
   {
     name: 'sidemenu',
