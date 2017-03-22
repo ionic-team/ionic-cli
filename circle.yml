@@ -4,7 +4,7 @@ machine:
 
 dependencies:
   post:
-    - cd packages/cli-utils && npm install
+    - cd packages/cli-utils && npm install && npm run build
     - ./node_modules/.bin/lerna bootstrap
     - ./node_modules/.bin/lerna run lint
     - ./node_modules/.bin/lerna run build
