@@ -5,6 +5,8 @@ import {
   AuthTokenResponse,
   AppDetails,
   AppResponse,
+  DeployChannelResponse,
+  DeployResponse,
   DeploySnapshotRequestResponse,
   LogLevel,
   LoginResponse,
@@ -68,6 +70,21 @@ export function isLoginResponse(r: APIResponse): r is LoginResponse {
   return isAPIResponseSuccess(res) && typeof res.data.token === 'string';
 }
 
+export function isDeployResponse(r: APIResponse): r is DeployResponse {
+  let res: DeployResponse = <DeployResponse>r;
+  return isAPIResponseSuccess(res)
+    && typeof res.data.uuid === 'string'
+    && typeof res.data.snapshot === 'string'
+    && typeof res.data.channel === 'string';
+}
+
+export function isDeployChannelResponse(r: APIResponse): r is DeployChannelResponse {
+  let res: DeployChannelResponse = <DeployChannelResponse>r;
+  return isAPIResponseSuccess(res)
+    && typeof res.data.uuid === 'string'
+    && typeof res.data.tag === 'string';
+}
+
 export function isDeploySnapshotRequestResponse(r: APIResponse): r is DeploySnapshotRequestResponse {
   let res: DeploySnapshotRequestResponse = <DeploySnapshotRequestResponse>r;
   return isAPIResponseSuccess(res)
@@ -76,4 +93,3 @@ export function isDeploySnapshotRequestResponse(r: APIResponse): r is DeploySnap
     && typeof res.data.presigned_post.url === 'string'
     && res.data.presigned_post.fields && typeof res.data.presigned_post.fields === 'object';
 }
-

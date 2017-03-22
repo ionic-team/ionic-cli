@@ -1,16 +1,44 @@
 import * as archiver from 'archiver';
 import * as superagent from 'superagent';
 
-import { DeploySnapshotRequest, IClient } from '../definitions';
-import { isDeploySnapshotRequestResponse } from '../guards';
+import { Deploy, DeployChannel, DeploySnapshotRequest, IClient } from '../definitions';
+import { isDeployResponse, isDeployChannelResponse, isDeploySnapshotRequestResponse } from '../guards';
 import { createFatalAPIFormat } from './http';
 
 export class DeployClient {
-  constructor(protected client: IClient) {}
+  constructor(protected appUserToken: string, protected client: IClient) {}
 
-  async requestSnapshotUpload(appUserToken: string): Promise<DeploySnapshotRequest> {
+  async getChannel(uuidOrTag: string): Promise<DeployChannel> {
+    const req = this.client.make('GET', `/deploy/channels/${uuidOrTag}`)
+      .set('Authorization', `Bearer ${this.appUserToken}`)
+      .send();
+
+    const res = await this.client.do(req);
+
+    if (!isDeployChannelResponse(res)) {
+      throw createFatalAPIFormat(req, res);
+    }
+
+    return res.data;
+  }
+
+  async deploy(snapshot: string, channel: string): Promise<Deploy> {
+    const req = this.client.make('POST', '/deploy/deploys')
+      .set('Authorization', `Bearer ${this.appUserToken}`)
+      .send({ snapshot, channel });
+
+    const res = await this.client.do(req);
+
+    if (!isDeployResponse(res)) {
+      throw createFatalAPIFormat(req, res);
+    }
+
+    return res.data;
+  }
+
+  async requestSnapshotUpload(): Promise<DeploySnapshotRequest> {
     const req = this.client.make('POST', '/deploy/snapshots')
-      .set('Authorization', `Bearer ${appUserToken}`)
+      .set('Authorization', `Bearer ${this.appUserToken}`)
       .send({});
 
     const res = await this.client.do(req);

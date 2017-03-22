@@ -75,9 +75,6 @@ export interface LoginResponse extends APIResponseSuccess {
   };
 }
 
-export interface DeploySnapshot {
-}
-
 export interface DeploySnapshotRequest {
   uuid: string;
   presigned_post: {
@@ -88,6 +85,25 @@ export interface DeploySnapshotRequest {
 
 export interface DeploySnapshotRequestResponse extends APIResponseSuccess {
   data: DeploySnapshotRequest;
+}
+
+export interface DeployChannel {
+  uuid: string;
+  tag: string;
+}
+
+export interface DeployChannelResponse extends APIResponseSuccess {
+  data: DeployChannel;
+}
+
+export interface Deploy {
+  uuid: string;
+  snapshot: string;
+  channel: string;
+}
+
+export interface DeployResponse extends APIResponseSuccess {
+  data: Deploy;
 }
 
 export interface IApp {

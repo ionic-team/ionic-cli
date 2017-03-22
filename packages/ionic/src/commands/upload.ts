@@ -4,9 +4,11 @@ import * as chalk from 'chalk';
 
 import {
   Command,
+  CommandLineInput,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  DeployChannel,
   DeployClient,
   TaskChain,
   createZipStream,
@@ -29,31 +31,48 @@ import {
   requiresProject: true
 })
 export class UploadCommand extends Command {
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    if (options['deploy'] === '') {
-      options['deploy'] = 'dev';
+  resolveChannelTag(input: CommandLineInput): string | undefined {
+    if (typeof input !== 'string' && typeof input !== 'undefined') {
+      input = undefined;
+    } else if (input === '') {
+      input = 'dev';
     }
 
-    if (options['deploy']) {
-    }
+    return input;
+  }
+
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const channelTag = this.resolveChannelTag(options['deploy']);
+    let channel: DeployChannel | undefined;
 
     const tasks = new TaskChain();
-
     const token = await this.env.session.getAppUserToken();
+    const deploy = new DeployClient(token, this.env.client);
+
+    if (channelTag) {
+      tasks.next('Retrieving deploy channel');
+      channel = await deploy.getChannel(channelTag);
+    }
+
     const wwwPath = path.join(this.env.project.directory, 'www'); // TODO don't hardcode
     const zip = createZipStream(wwwPath);
 
-    const deploy = new DeployClient(this.env.client);
     tasks.next('Requesting snapshot');
-    const snapshot = await deploy.requestSnapshotUpload(token);
+    const snapshot = await deploy.requestSnapshotUpload();
     const uploadTask = tasks.next('Uploading snapshot');
     await deploy.uploadSnapshot(snapshot, zip, (loaded, total) => {
       uploadTask.progress(loaded, total);
     });
 
     tasks.end();
-
     this.env.log.ok(`Uploaded snapshot ${chalk.bold(snapshot.uuid)}!`);
+
+    if (channel) {
+      tasks.next(`Deploying to '${channel.tag}' channel`);
+      await deploy.deploy(snapshot.uuid, channel.uuid);
+      tasks.end();
+      this.env.log.ok(`Deployed snapshot ${chalk.bold(snapshot.uuid)} to channel ${chalk.bold(channel.tag)}!`);
+    }
   }
 
 }
