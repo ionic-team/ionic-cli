@@ -3,20 +3,6 @@ import { FatalException } from './errors';
 import { runcmd } from './utils/shell';
 
 export class Shell implements IShell {
-  async exists(command: string): Promise<boolean> {
-    try {
-      await runcmd('type', [command]);
-    } catch (e) {
-      if (Array.isArray(e)) {
-        return false;
-      }
-
-      throw e;
-    }
-
-    return true;
-  }
-
   async run(command: string, args?: string[], options: IShellRunOptions = {}): Promise<string> {
     if (typeof options.showExecution === 'undefined') {
       options.showExecution = false;

@@ -191,7 +191,6 @@ export interface IShellRunOptions extends child_process.SpawnOptions {
 }
 
 export interface IShell {
-  exists(command: string): Promise<boolean>;
   run(command: string, args?: string[], options?: IShellRunOptions): Promise<string>;
 }
 
