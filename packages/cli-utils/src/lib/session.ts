@@ -1,8 +1,6 @@
 import * as chalk from 'chalk';
 
 import {
-  APIResponse,
-  APIResponseSuccess,
   ConfigFile,
   IClient,
   IConfig,
@@ -10,47 +8,10 @@ import {
   ISession
 } from '../definitions';
 
+import { isAuthTokenResponse, isLoginResponse } from '../guards';
+
 import { FatalException } from './errors';
-import { createFatalAPIFormat, isAPIResponseSuccess } from './http';
-
-interface LoginResponse extends APIResponseSuccess {
-  data: {
-    token: string;
-  };
-}
-
-interface AuthTokenResponse extends APIResponseSuccess {
-  data: {
-    token: string;
-    details: {
-      app_id: string;
-      type: 'app-user';
-      user_id: string;
-    };
-  }[];
-}
-
-function isLoginResponse(r: APIResponse): r is LoginResponse {
-  let res: LoginResponse = <LoginResponse>r;
-  return isAPIResponseSuccess(res) && typeof res.data.token === 'string';
-}
-
-function isAuthTokenResponse(r: APIResponse): r is AuthTokenResponse {
-  let res: AuthTokenResponse = <AuthTokenResponse>r;
-  if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
-    return false;
-  }
-
-  if (res.data.length > 0) {
-    return typeof res.data[0].token === 'string'
-      && typeof res.data[0].details === 'object'
-      && typeof res.data[0].details.app_id === 'string'
-      && typeof res.data[0].details.type === 'string'
-      && typeof res.data[0].details.user_id === 'string';
-  }
-
-  return true;
-}
+import { createFatalAPIFormat } from './http';
 
 export class Session implements ISession {
   constructor(

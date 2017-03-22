@@ -1,6 +1,4 @@
 import {
-  APIResponse,
-  APIResponseSuccess,
   AppDetails,
   IApp,
   IClient,
@@ -8,24 +6,8 @@ import {
   ISession
 } from '../definitions';
 
-import { createFatalAPIFormat, isAPIResponseSuccess } from './http';
-
-interface AppResponse extends APIResponseSuccess {
-  data: AppDetails;
-}
-
-function isAppDetails(d: any): d is AppDetails {
-  let details: AppDetails = <AppDetails>d;
-  return details && typeof details === 'object'
-    && typeof details.id === 'string'
-    && typeof details.name === 'string'
-    && typeof details.slug === 'string';
-}
-
-function isAppResponse(r: APIResponse): r is AppResponse {
-  let res: AppResponse = <AppResponse>r;
-  return isAPIResponseSuccess(res) && isAppDetails(res.data);
-}
+import { createFatalAPIFormat } from './http';
+import { isAppResponse } from '../guards';
 
 export class App implements IApp {
   protected details: { [app_id: string]: AppDetails } = {};

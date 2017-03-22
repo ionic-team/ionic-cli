@@ -12,6 +12,7 @@ import {
   SuperAgentError
 } from '../definitions';
 
+import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
 import { FatalException } from './errors';
 
 const FORMAT_ERROR_BODY_MAX_LENGTH = 1000;
@@ -58,16 +59,6 @@ export class Client implements IClient {
 
     return r;
   }
-}
-
-export function isAPIResponseSuccess(r: APIResponse): r is APIResponseSuccess {
-  let res: APIResponseSuccess = <APIResponseSuccess>r;
-  return res && (typeof res.data === 'object' || typeof res.data === 'string');
-}
-
-export function isAPIResponseError(r: APIResponse): r is APIResponseError {
-  let res: APIResponseError = <APIResponseError>r;
-  return res && typeof res.error === 'object';
 }
 
 export function createFatalAPIFormat(req: superagent.SuperAgentRequest, res: APIResponse): FatalException {

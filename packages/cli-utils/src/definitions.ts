@@ -54,6 +54,42 @@ export interface AppDetails {
   slug: string;
 }
 
+export interface AppResponse extends APIResponseSuccess {
+  data: AppDetails;
+}
+
+export interface AuthTokenResponse extends APIResponseSuccess {
+  data: {
+    token: string;
+    details: {
+      app_id: string;
+      type: 'app-user';
+      user_id: string;
+    };
+  }[];
+}
+
+export interface LoginResponse extends APIResponseSuccess {
+  data: {
+    token: string;
+  };
+}
+
+export interface DeploySnapshot {
+}
+
+export interface DeploySnapshotRequest {
+  uuid: string;
+  presigned_post: {
+    url: string;
+    fields: Object;
+  };
+}
+
+export interface DeploySnapshotRequestResponse extends APIResponseSuccess {
+  data: DeploySnapshotRequest;
+}
+
 export interface IApp {
   load(app_id?: string): Promise<AppDetails>;
 }

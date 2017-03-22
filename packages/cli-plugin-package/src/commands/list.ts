@@ -6,8 +6,6 @@ import {
   runCommand,
 } from '@ionic/cli-utils';
 
-import * as archiver from 'archiver';
-
 /**
  * Metadata about the package:list command
  */
