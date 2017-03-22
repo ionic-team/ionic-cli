@@ -42,6 +42,7 @@ export async function prompt(type: string, appScripts: any, context: any, inquir
     const chosenPath = fileChoices.find((file: any): boolean => {
       return path.dirname(file.relativePath) === usagePlaces.whereUsed;
     });
+    
     return chosenPath.absolutePath;
   } else {
     return context.appNgModulePath;
@@ -63,6 +64,5 @@ export async function tabsPrompt(appScripts: any, inquirer: any) {
     });
     tabNames.push(nameQuestion.tabName);
   }
-  console.log(tabNames);
   return tabNames;
 }
