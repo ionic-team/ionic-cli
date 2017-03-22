@@ -1,5 +1,7 @@
 import * as path from 'path';
 
+import { inquirer } from '@ionic/cli-utils';
+
 export async function getPages(appScripts: any, context: any) {
   const pages = await appScripts.getNgModules(context, ['page', 'component']);
   const ngModuleSuffix = await appScripts.getStringPropertyValue('IONIC_NG_MODULE_FILENAME_SUFFIX');
@@ -13,13 +15,14 @@ export async function getPages(appScripts: any, context: any) {
   });
 }
 
-export async function prompt(type: string, appScripts: any, context: any, inquirer: any) {
+export async function prompt(type: string, appScripts: any, context: any) {
   const usageQuestion = await inquirer.prompt({
     type: 'confirm',
     name: 'usage',
     message: `Use this ${type} in more than one template?`
   });
 
+  console.log(usageQuestion);
   if (!usageQuestion.usage) {
     const fileChoices = await getPages(appScripts, context);
 
@@ -49,7 +52,7 @@ export async function prompt(type: string, appScripts: any, context: any, inquir
   }
 }
 
-export async function tabsPrompt(appScripts: any, inquirer: any) {
+export async function tabsPrompt(appScripts: any) {
   const tabNames = [];
 
   const howManyQuestion = await inquirer.prompt({

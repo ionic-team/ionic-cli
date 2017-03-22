@@ -1,38 +1,41 @@
-import { prompt, getPages, tabsPrompt } from '../generate';
+import { getPages } from '../generate';
 
 describe('prompt', () => {
 
   it('should return a file path to the main app module', async () => {
-    const inquirer = {
-      prompt: jest.fn()
-    };
-    inquirer.prompt
-      .mockReturnValueOnce({
-        usage: true
-      });
+    jest.resetModules();
+    jest.mock('@ionic/cli-utils', () => ({
+      inquirer: {
+        prompt: jest.fn().mockReturnValueOnce({
+          usage: true
+        })
+      }
+    }));
+
+    const generate = require('../generate');
 
     const context = {
       appNgModulePath: '/path/to/nowhere'
     };
 
-    const result = await prompt('pipe', {}, context, inquirer);
+    const result = await generate.prompt('pipe', {}, context);
     expect(result).toEqual(context.appNgModulePath);
   });
 
   it('should return a file path to a specific ngModule', async () => {
-    // mock inquirer
-    const inquirer = {
-      prompt: jest.fn(),
-      getNgModules: jest.fn()
-    };
-    inquirer.prompt
-      .mockReturnValueOnce({
-        usage: false
-      })
-      .mockReturnValueOnce({
-        prettyName: '/path/to/ngModule',
-        whereUsed: '../../../../../../../../../path/to'
-      });
+    jest.resetModules();
+    jest.mock('@ionic/cli-utils', () => ({
+      inquirer: {
+        prompt: jest.fn().mockReturnValueOnce({
+          usage: false
+        }).mockReturnValueOnce({
+          prettyName: '/path/to/ngModule',
+          whereUsed: '../../../../../../../../../path/to'
+        });
+      }
+    }));
+
+    const generate = require('../generate');
 
     // mock appScripts
     const appScripts = {
@@ -60,11 +63,40 @@ describe('prompt', () => {
       rootDir: 'my/cool/rootDir'
     };
 
-    const result = await prompt('pipe', appScripts, context, inquirer);
+    const result = await generate.prompt('pipe', appScripts, context);
     expect(result).toEqual('/path/to/ngModule');
   });
 
 });
+
+describe('tabsPrompt', () => {
+
+  it('should return an array', async () => {
+    jest.resetModules();
+    jest.mock('@ionic/cli-utils', () => ({
+      inquirer: {
+        prompt: jest.fn().mockReturnValueOnce({
+          howMany: 2
+        }).mockReturnValueOnce({
+          tabName: 'CoolTabOne'
+        }).mockReturnValueOnce({
+          tabName: 'CoolTabTwo'
+        });
+      }
+    }));
+
+    const generate = require('../generate');
+    const result = await generate.tabsPrompt({});
+
+    expect(result).toEqual([
+      'CoolTabOne',
+      'CoolTabTwo'
+    ]);
+
+  });
+
+});
+
 
 describe('getPages', () => {
 
@@ -105,32 +137,3 @@ describe('getPages', () => {
   });
 
 });
-
-describe('tabsPrompt', () => {
-
-  it('should return an array', async () => {
-    const inquirer = {
-      prompt: jest.fn()
-    };
-    inquirer.prompt
-      .mockReturnValueOnce({
-        howMany: 2
-      })
-      .mockReturnValueOnce({
-        tabName: 'CoolTabOne'
-      })
-      .mockReturnValueOnce({
-        tabName: 'CoolTabTwo'
-      });
-
-    const result = await tabsPrompt({}, inquirer);
-
-    expect(result).toEqual([
-      'CoolTabOne',
-      'CoolTabTwo'
-    ]);
-
-  });
-
-});
-

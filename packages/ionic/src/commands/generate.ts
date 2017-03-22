@@ -1,3 +1,5 @@
+import * as chalk from 'chalk';
+
 import {
   CommandLineInputs,
   CommandLineOptions,
@@ -8,8 +10,6 @@ import {
 } from '@ionic/cli-utils';
 
 import { load } from '../lib/utils/commonjs-loader';
-
-import { prompt, tabsPrompt } from '../lib/generate';
 
 @CommandMetadata({
   name: 'generate',
@@ -40,63 +40,13 @@ import { prompt, tabsPrompt } from '../lib/generate';
 export class GenerateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ type, name ] = inputs;
-    const tasks = new TaskChain();
 
-    process.argv = ['node', 'appscripts'];
-    const appScripts = load('@ionic/app-scripts');
+    const response = await this.env.emitEvent('generate', {
+      metadata: this.metadata,
+      inputs,
+      options
+    });
 
-    const context = appScripts.generateContext();
-
-    switch (type) {
-      case 'page':
-        tasks.next(`Generated a page named ${name}`);
-
-        await appScripts.processPageRequest(context, name);
-        break;
-      case 'component':
-        const componentData = await this.promptQuestions('component', appScripts, context);
-
-        tasks.next(`Generated a component named ${name}`);
-        await appScripts.processComponentRequest(context, name, componentData);
-        break;
-      case 'directive':
-        const directiveData = await this.promptQuestions('directive', appScripts, context);
-
-        tasks.next(`Generated a directive named ${name}`);
-        await appScripts.processDirectiveRequest(context, name, directiveData);
-        break;
-      case 'pipe':
-        const pipeData = await this.promptQuestions('pipe', appScripts, context);
-
-        tasks.next(`Generated a pipe named ${name}`);
-        await appScripts.processPipeRequest(context, name, pipeData);
-        break;
-      case 'provider':
-        const providerData = await this.promptQuestions('provider', appScripts, context);
-
-        tasks.next(`Generated a provider named ${name}`);
-        await appScripts.processProviderRequest(context, name, providerData);
-        break;
-      case 'tabs':
-        const tabsData = await this.tabsPromptQuestions(appScripts);
-
-        tasks.next('Generated tabs');
-        await appScripts.processTabsRequest(context, name, tabsData);
-        break;
-    }
-
-    tasks.end();
-  }
-
-  private async promptQuestions(name: string, appScripts: any, context: any) {
-    const inquirer = this.env.inquirer;
-    return await prompt(name, appScripts, context, inquirer);
-  }
-
-  private async tabsPromptQuestions(appScripts: any) {
-    const inquirer = this.env.inquirer;
-    return await tabsPrompt(appScripts, inquirer);
+    this.env.log.ok(`Generated a ${chalk.bold(type)} named ${chalk.bold(name)}!`);
   }
 }
-
-

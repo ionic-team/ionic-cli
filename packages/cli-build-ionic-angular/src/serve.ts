@@ -8,7 +8,7 @@ import {
 import { getAvailableIPAddress } from './utils/network';
 import { minimistOptionsToArray } from './utils/arguments';
 
-export default async function(cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<{ [key: string]: any }> {
+export async function serve(cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<{ [key: string]: any }> {
 
   const availableIPs = getAvailableIPAddress();
   if (availableIPs.length === 0) {
