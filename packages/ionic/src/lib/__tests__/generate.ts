@@ -7,9 +7,9 @@ describe('prompt', () => {
       prompt: jest.fn()
     };
     inquirer.prompt
-         .mockReturnValueOnce({
-           usage: true
-         });
+      .mockReturnValueOnce({
+        usage: true
+      });
 
     const context = {
       appNgModulePath: '/path/to/nowhere'
@@ -26,13 +26,13 @@ describe('prompt', () => {
       getNgModules: jest.fn()
     };
     inquirer.prompt
-        .mockReturnValueOnce({
-          usage: false
-        })
-        .mockReturnValueOnce({
-          prettyName: '/path/to/ngModule',
-          whereUsed: '../../../../../../../../../path/to'
-        });
+      .mockReturnValueOnce({
+        usage: false
+      })
+      .mockReturnValueOnce({
+        prettyName: '/path/to/ngModule',
+        whereUsed: '../../../../../../../../../path/to'
+      });
 
     // mock appScripts
     const appScripts = {
@@ -40,19 +40,19 @@ describe('prompt', () => {
       getStringPropertyValue: jest.fn()
     };
     appScripts.getNgModules
-        .mockReturnValueOnce([
-          {
-            relativePath: '/path/to/ngModule',
-            absolutePath: '/path/to/ngModule'
-          },
-          {
-            relativePath: '/path/to/ngModule',
-            absolutePath: '/path/to/ngModule'
-          }
-        ]);
+      .mockReturnValueOnce([
+        {
+          relativePath: '/path/to/ngModule',
+          absolutePath: '/path/to/ngModule'
+        },
+        {
+          relativePath: '/path/to/ngModule',
+          absolutePath: '/path/to/ngModule'
+        }
+      ]);
 
     appScripts.getStringPropertyValue
-        .mockReturnValueOnce('.module.ts');
+      .mockReturnValueOnce('.module.ts');
 
 
     // mock context
@@ -68,12 +68,13 @@ describe('prompt', () => {
 
 describe('getPages', () => {
 
-  // mock appScripts
-  const appScripts = {
-    getNgModules: jest.fn(),
-    getStringPropertyValue: jest.fn()
-  };
-  appScripts.getNgModules
+  it('should return an array', async () => {
+    // mock appScripts
+    const appScripts = {
+      getNgModules: jest.fn(),
+      getStringPropertyValue: jest.fn()
+    };
+    appScripts.getNgModules
       .mockReturnValueOnce([
         {
           absolutePath: '/path/to/nowhere'
@@ -82,16 +83,25 @@ describe('getPages', () => {
           absolutePath: '/my/awesome/path'
         }
       ]);
-  appScripts.getStringPropertyValue
+    appScripts.getStringPropertyValue
       .mockReturnValueOnce('.module.ts');
 
-  it('should return an array', async () => {
     const context = {
       rootDir: '/my/root/dir/path'
     };
 
     const result = await getPages(appScripts, context);
-    expect(result).toEqual(jasmine.any(Array));
+
+    expect(result).toEqual([{
+      fileName: 'nowhere',
+      absolutePath: '/path/to/nowhere',
+      relativePath: '../../../../path/to/nowhere'
+    },
+    {
+      fileName: 'path',
+      absolutePath: '/my/awesome/path',
+      relativePath: '../../../awesome/path'
+    }]);
   });
 
 });
@@ -103,12 +113,22 @@ describe('tabsPrompt', () => {
       prompt: jest.fn()
     };
     inquirer.prompt
-         .mockReturnValueOnce(2)
-         .mockReturnValueOnce('CoolTabOne')
-         .mockReturnValueOnce('CoolTabTwo');
+      .mockReturnValueOnce({
+        howMany: 2
+      })
+      .mockReturnValueOnce({
+        tabName: 'CoolTabOne'
+      })
+      .mockReturnValueOnce({
+        tabName: 'CoolTabTwo'
+      });
 
     const result = await tabsPrompt({}, inquirer);
-    expect(result).toEqual(jasmine.any(Array));
+
+    expect(result).toEqual([
+      'CoolTabOne',
+      'CoolTabTwo'
+    ]);
 
   });
 
