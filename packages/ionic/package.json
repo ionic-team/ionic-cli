@@ -14,10 +14,10 @@
   "main": "./dist/ionic.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "npm run lint && npm run clean && ../../node_modules/.bin/webpack",
+    "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
+    "build": "npm run clean && ../../node_modules/.bin/webpack",
     "clean": "rm -rf ./dist",
     "changelog": "../../node_modules/.bin/conventional-changelog -i CHANGELOG.md -s -p angular",
-    "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
     "test": "../../node_modules/.bin/jest",
     "globallink": "npm link"
   },

@@ -4,6 +4,7 @@ machine:
 
 dependencies:
   post:
+    - ./node_modules/.bin/lerna bootstrap
     - ./node_modules/.bin/lerna run lint
     - ./node_modules/.bin/lerna run build
 
