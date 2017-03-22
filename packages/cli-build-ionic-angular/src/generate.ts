@@ -5,7 +5,7 @@ import {
 } from '@ionic/cli-utils';
 import { minimistOptionsToArray } from './utils/arguments';
 
-import { prompt, tabsPrompt } from './utils/generate'
+import { prompt, tabsPrompt } from './utils/generate';
 
 export async function generate(cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
   const appScriptsArgs = minimistOptionsToArray(options);

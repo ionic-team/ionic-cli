@@ -5,11 +5,8 @@ import {
   CommandLineOptions,
   Command,
   CommandMetadata,
-  TaskChain,
   validators,
 } from '@ionic/cli-utils';
-
-import { load } from '../lib/utils/commonjs-loader';
 
 @CommandMetadata({
   name: 'generate',
@@ -41,7 +38,7 @@ export class GenerateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ type, name ] = inputs;
 
-    const response = await this.env.emitEvent('generate', {
+    await this.env.emitEvent('generate', {
       metadata: this.metadata,
       inputs,
       options

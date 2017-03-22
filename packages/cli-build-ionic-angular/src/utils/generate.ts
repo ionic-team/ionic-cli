@@ -22,7 +22,6 @@ export async function prompt(type: string, appScripts: any, context: any) {
     message: `Use this ${type} in more than one template?`
   });
 
-  console.log(usageQuestion);
   if (!usageQuestion.usage) {
     const fileChoices = await getPages(appScripts, context);
 
