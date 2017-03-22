@@ -61,7 +61,7 @@ describe('prompt', () => {
     };
 
     const result = await prompt('pipe', appScripts, context, inquirer);
-    expect(result);
+    expect(result).toEqual('/path/to/ngModule');
   });
 
 });
