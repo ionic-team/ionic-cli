@@ -1,3 +1,8 @@
+import * as archiver from 'archiver';
+import * as inquirer from 'inquirer';
+
+export { archiver, inquirer };
+
 export * from './lib/command';
 export { normalizeOptionAliases, minimistOptionsToArray } from './lib/command/utils';
 export * from './lib/command/namespace';
