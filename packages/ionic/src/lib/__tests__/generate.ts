@@ -1,5 +1,4 @@
 import { prompt, getPages, tabsPrompt } from '../generate';
-import * as inquirer from 'inquirer';
 
 describe('prompt', () => {
 
@@ -10,7 +9,7 @@ describe('prompt', () => {
     inquirer.prompt
          .mockReturnValueOnce({
            usage: true
-         })
+         });
 
     const context = {
       appNgModulePath: '/path/to/nowhere'
@@ -33,12 +32,12 @@ describe('prompt', () => {
         .mockReturnValueOnce({
           prettyName: '/path/to/ngModule',
           whereUsed: '../../../../../../../../../path/to'
-        })
+        });
 
     // mock appScripts
     const appScripts = {
       getNgModules: jest.fn()
-    }
+    };
     appScripts.getNgModules
         .mockReturnValueOnce([
           {
@@ -49,10 +48,10 @@ describe('prompt', () => {
             relativePath: '/path/to/ngModule',
             absolutePath: '/path/to/ngModule'
           }
-        ])
+        ]);
 
     // mock getPages
-    const getPages = jest.fn()
+    /*const getPages = jest.fn()
         .mockReturnValueOnce([
           {
             fileName: 'cool.module.ts',
@@ -64,15 +63,15 @@ describe('prompt', () => {
             absolutePath: '/path/to/ngModule',
             relativePath: '/path/to/ngModule'
           }
-        ]);
-    
-    //mock context
+        ]);*/
+
+    // mock context
     const context = {
       rootDir: 'my/cool/rootDir'
     };
 
     const result = await prompt('pipe', appScripts, context, inquirer);
-    expect(result)
+    expect(result);
   });
 
 });
@@ -112,7 +111,7 @@ describe('tabsPrompt', () => {
     inquirer.prompt
          .mockReturnValueOnce(2)
          .mockReturnValueOnce('CoolTabOne')
-         .mockReturnValueOnce('CoolTabTwo')
+         .mockReturnValueOnce('CoolTabTwo');
 
     const result = await tabsPrompt({}, inquirer);
     expect(result).toEqual(jasmine.any(Array));
