@@ -36,7 +36,8 @@ describe('prompt', () => {
 
     // mock appScripts
     const appScripts = {
-      getNgModules: jest.fn()
+      getNgModules: jest.fn(),
+      getStringPropertyValue: jest.fn()
     };
     appScripts.getNgModules
         .mockReturnValueOnce([
@@ -50,20 +51,9 @@ describe('prompt', () => {
           }
         ]);
 
-    // mock getPages
-    /*const getPages = jest.fn()
-        .mockReturnValueOnce([
-          {
-            fileName: 'cool.module.ts',
-            absolutePath: '/path/to/ngModule',
-            relativePath: '/path/to/ngModule'
-          },
-          {
-            fileName: 'cool.module.ts',
-            absolutePath: '/path/to/ngModule',
-            relativePath: '/path/to/ngModule'
-          }
-        ]);*/
+    appScripts.getStringPropertyValue
+        .mockReturnValueOnce('.module.ts');
+
 
     // mock context
     const context = {
@@ -78,18 +68,22 @@ describe('prompt', () => {
 
 describe('getPages', () => {
 
+  // mock appScripts
   const appScripts = {
-    getNgModules: jest.fn(() => {
-      return [
+    getNgModules: jest.fn(),
+    getStringPropertyValue: jest.fn()
+  };
+  appScripts.getNgModules
+      .mockReturnValueOnce([
         {
           absolutePath: '/path/to/nowhere'
         },
         {
           absolutePath: '/my/awesome/path'
         }
-      ];
-    })
-  };
+      ]);
+  appScripts.getStringPropertyValue
+      .mockReturnValueOnce('.module.ts');
 
   it('should return an array', async () => {
     const context = {
