@@ -31,8 +31,16 @@ import {
   requiresProject: true
 })
 export class UploadCommand extends Command {
+  resolveNote(input: CommandLineInput): string | undefined {
+    if (typeof input !== 'string') {
+      input = undefined;
+    }
+
+    return input;
+  }
+
   resolveChannelTag(input: CommandLineInput): string | undefined {
-    if (typeof input !== 'string' && typeof input !== 'undefined') {
+    if (typeof input !== 'string') {
       input = undefined;
     } else if (input === '') {
       input = 'dev';
@@ -42,6 +50,7 @@ export class UploadCommand extends Command {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const note = this.resolveNote(options['note']);
     const channelTag = this.resolveChannelTag(options['deploy']);
     let channel: DeployChannel | undefined;
 
@@ -58,7 +67,7 @@ export class UploadCommand extends Command {
     const zip = createZipStream(wwwPath);
 
     tasks.next('Requesting snapshot');
-    const snapshot = await deploy.requestSnapshotUpload();
+    const snapshot = await deploy.requestSnapshotUpload({ note });
     const uploadTask = tasks.next('Uploading snapshot');
     await deploy.uploadSnapshot(snapshot, zip, (loaded, total) => {
       uploadTask.progress(loaded, total);

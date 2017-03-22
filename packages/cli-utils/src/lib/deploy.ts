@@ -36,10 +36,10 @@ export class DeployClient {
     return res.data;
   }
 
-  async requestSnapshotUpload(): Promise<DeploySnapshotRequest> {
+  async requestSnapshotUpload(options: { note?: string } = {}): Promise<DeploySnapshotRequest> {
     const req = this.client.make('POST', '/deploy/snapshots')
       .set('Authorization', `Bearer ${this.appUserToken}`)
-      .send({});
+      .send(options);
 
     const res = await this.client.do(req);
 
