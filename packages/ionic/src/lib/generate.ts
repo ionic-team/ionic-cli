@@ -3,10 +3,11 @@ import * as path from 'path';
 
 export async function getPages(appScripts: any, context: any) {
   const pages = await appScripts.getNgModules(context, ['page', 'component']);
+  const ngModuleSuffix = await appScripts.getStringPropertyValue('IONIC_NG_MODULE_FILENAME_SUFFIX');
 
   return pages.map((page: any) => {
     return {
-      fileName: path.basename(page.absolutePath, 'module.ts'),
+      fileName: path.basename(page.absolutePath, ngModuleSuffix),
       absolutePath: page.absolutePath,
       relativePath: path.relative(context.rootDir, page.absolutePath)
     };
@@ -42,7 +43,7 @@ export async function prompt(type: string, appScripts: any, context: any, inquir
     const chosenPath = fileChoices.find((file: any): boolean => {
       return path.dirname(file.relativePath) === usagePlaces.whereUsed;
     });
-    
+
     return chosenPath.absolutePath;
   } else {
     return context.appNgModulePath;
