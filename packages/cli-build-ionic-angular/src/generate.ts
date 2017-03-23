@@ -1,3 +1,5 @@
+import * as AppScripts from '@ionic/app-scripts';
+
 import {
   CommandLineInputs,
   CommandLineOptions,
@@ -7,11 +9,11 @@ import { minimistOptionsToArray } from './utils/arguments';
 
 import { prompt, tabsPrompt } from './utils/generate';
 
-export async function generate(cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+export async function generate(cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<string[]> {
   const appScriptsArgs = minimistOptionsToArray(options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
-  const appScripts = require('@ionic/app-scripts');
+  const appScripts: typeof AppScripts = require('@ionic/app-scripts');
   const context = appScripts.generateContext();
 
   const [ type, name ] = inputs;
@@ -33,8 +35,10 @@ export async function generate(cmdMetadata: CommandData, inputs: CommandLineInpu
       return await appScripts.processProviderRequest(context, name, providerData);
     case 'tabs':
       const tabsData = await tabsPromptQuestions(appScripts);
-      return await appScripts.processTabsRequest(context, name, tabsData);
+      await appScripts.processTabsRequest(context, name, tabsData); // TODO: match return type
   }
+
+  return [];
 }
 
 async function promptQuestions(name: string, appScripts: any, context: any) {

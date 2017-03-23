@@ -1,15 +1,17 @@
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
+
+import * as AppScripts from '@ionic/app-scripts';
 import {
   CommandLineInputs,
   CommandLineOptions,
   CommandData,
 } from '@ionic/cli-utils';
+
 import { getAvailableIPAddress } from './utils/network';
 import { minimistOptionsToArray } from './utils/arguments';
 
 export async function serve(cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<{ [key: string]: any }> {
-
   const availableIPs = getAvailableIPAddress();
   if (availableIPs.length === 0) {
     throw new Error(`It appears that you do not have any external network interfaces. ` +
@@ -31,13 +33,18 @@ export async function serve(cmdMetadata: CommandData, inputs: CommandLineInputs,
   let appScriptsArgs = minimistOptionsToArray(options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
-  const appScripts = require('@ionic/app-scripts');
+  const appScripts: typeof AppScripts = require('@ionic/app-scripts');
   const context = appScripts.generateContext();
 
   // using app-scripts and livereload is requested
   // Also remove commandName from the rawArgs passed
   console.log(`  Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
   const settings = await appScripts.serve(context);
+
+  if (!settings) { // TODO: shouldn't be needed
+    throw new Error(`app-scripts serve unexpectedly failed.`);
+  }
+
   return  {
     publicIp: chosenIP,
     protocol: 'http',
