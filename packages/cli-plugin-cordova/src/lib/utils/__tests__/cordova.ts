@@ -60,6 +60,6 @@ describe('resources', () => {
     };
 
     const result = cordova.filterArgumentsForCordova(metadata, inputs, options);
-    expect(result).toEqual(['build', 'ios', '--nohooks']);
+    expect(result).toEqual(['build', 'ios']);
   });
 });

@@ -1,3 +1,4 @@
+import fetch from 'node-fetch';
 import * as path from 'path';
 import * as resources from '../resources';
 import * as util from '@ionic/cli-utils';
@@ -22,36 +23,6 @@ describe('resources', () => {
       density: undefined,
       nodeName: 'splash',
       nodeAttributes: ['src', 'width', 'height']
-    });
-  });
-
-  describe('getProjectPlatforms', () => {
-    it('should return an empty array if no valid platforms are found', async function() {
-      spyOn(util, 'fsReadDir').and.returnValue([]);
-      const result = await resources.getProjectPlatforms(resourcesJson, path.join(__dirname, 'platforms'));
-
-      expect(util.fsReadDir).toHaveBeenCalledWith(path.join(__dirname, 'platforms'));
-      expect(result).toEqual([]);
-    });
-
-    it('should throw an exception if the path is not valid', async function() {
-      spyOn(util, 'fsReadDir').and.callFake(() => {
-        throw({ code: 'ENOENT' });
-      });
-      try {
-        await resources.getProjectPlatforms(resourcesJson, path.join(__dirname, 'platforms'));
-      } catch (e) {
-        expect(e).toEqual(new Error('No platforms have been added.'));
-      }
-    });
-
-    it('should return a list of valid platforms ', async function() {
-      spyOn(util, 'fsReadDir').and.returnValue(['ios', 'android', 'otherthing']);
-      const result = await resources.getProjectPlatforms(resourcesJson, path.join(__dirname, 'platforms'));
-
-      expect(result.length).toEqual(2);
-      expect(result).toContain('ios');
-      expect(result).toContain('android');
     });
   });
 
@@ -142,38 +113,53 @@ describe('resources', () => {
       expect(sourceImages).toEqual([
         {
           ext: '.png',
+          height: 0,
           imageId: 'FJDKLFJDKL',
           platform: 'ios',
           resType: 'icon',
-          path: '/resourceDir/ios/icon.png'
+          path: '/resourceDir/ios/icon.png',
+          vector: false,
+          width: 0
         },
         {
           ext: '.ai',
+          height: 0,
           imageId: 'FJDKLFJDKL',
           platform: 'android',
           resType: 'icon',
-          path: '/resourceDir/android/icon.ai'
+          path: '/resourceDir/android/icon.ai',
+          vector: false,
+          width: 0
         },
         {
           ext: '.png',
+          height: 0,
           imageId: 'FJDKLFJDKL',
           platform: 'android',
           resType: 'splash',
-          path: '/resourceDir/android/splash.png'
+          path: '/resourceDir/android/splash.png',
+          vector: false,
+          width: 0
         },
         {
           ext: '.png',
+          height: 0,
           imageId: 'FJDKLFJDKL',
           platform: 'global',
           resType: 'icon',
-          path: '/resourceDir/icon.png'
+          path: '/resourceDir/icon.png',
+          vector: false,
+          width: 0
         },
         {
           ext: '.psd',
+          height: 0,
           imageId: 'FJDKLFJDKL',
           platform: 'global',
           resType: 'splash',
-          path: '/resourceDir/splash.psd'
+          path: '/resourceDir/splash.psd',
+          vector: false,
+          width: 0
         }
       ]);
     });
@@ -182,30 +168,45 @@ describe('resources', () => {
   describe('findMostSpecificImage', () => {
     const srcImagesAvailable: SourceImage[] = [
       {
+        width: 640,
+        height: 1136,
+        vector: false,
         ext: '.png',
         platform: 'ios',
         resType: 'icon',
         path: '/resourceDir/ios/icon.png'
       },
       {
+        width: 640,
+        height: 1136,
+        vector: false,
         ext: '.ai',
         platform: 'android',
         resType: 'icon',
         path: '/resourceDir/android/icon.ai'
       },
       {
+        width: 640,
+        height: 1136,
+        vector: false,
         ext: '.png',
         platform: 'android',
         resType: 'splash',
         path: '/resourceDir/android/splash.png'
       },
       {
+        width: 640,
+        height: 1136,
+        vector: false,
         ext: '.png',
         platform: 'global',
         resType: 'icon',
         path: '/resourceDir/icon.png'
       },
       {
+        width: 640,
+        height: 1136,
+        vector: false,
         ext: '.psd',
         platform: 'global',
         resType: 'splash',
@@ -230,6 +231,9 @@ describe('resources', () => {
       const result = resources.findMostSpecificImage(imgResource, srcImagesAvailable);
 
       expect(result).toEqual({
+        width: 640,
+        height: 1136,
+        vector: false,
         ext: '.psd',
         platform: 'global',
         resType: 'splash',
@@ -257,7 +261,10 @@ describe('resources', () => {
         ext: '.png',
         platform: 'ios',
         resType: 'icon',
-        path: '/resourceDir/ios/icon.png'
+        path: '/resourceDir/ios/icon.png',
+        width: 640,
+        height: 1136,
+        vector: false
       });
     });
   });
@@ -265,8 +272,23 @@ describe('resources', () => {
   // TODO: this is currently hitting the service, we should mock
   describe('uploadSourceImages', () => {
     it('should upload an image and receive back metadata', async function() {
+      const fetchSpy = {
+        json: () => ({
+          Error: '',
+          Width: 337,
+          Height: 421,
+          Type: 'png',
+          Vector: false
+        })
+      };
+
+      spyOn(fetch, 'default').and.returnValue(Promise.resolve(fetchSpy));
+
       const sourceImages: SourceImage[] = [{
         ext: '.png',
+        height: 421,
+        width: 337,
+        vector: false,
         platform: 'ios',
         resType: 'icon',
         path: path.join(__dirname, 'fixtures', 'icon.png'),
@@ -285,9 +307,21 @@ describe('resources', () => {
   });
 
   // TODO: this is currently hitting the service, we should mock
-  describe('generateResourceImage', () => {
+  describe('transformResourceImage', () => {
     it('should upload an image and write a stream to the destination', async function() {
+      const fetchSpy = {
+        status: 200,
+        body: {
+          Error: '',
+          Width: 320,
+          Height: 240,
+          Type: 'png',
+          Vector: false
+        }
+      };
+
       spyOn(util, 'writeStreamToFile');
+      spyOn(fetch, 'default').and.returnValue(Promise.resolve(fetchSpy));
 
       const imgResource: ImageResource = {
         platform: 'android',
@@ -298,11 +332,11 @@ describe('resources', () => {
         density: 'land-ldpi',
         nodeName: 'splash' ,
         nodeAttributes: ['src', 'density'],
-        imageId: null,
+        imageId: '60278b0fa1d5abf43d07c5ae0f8a0b41',
         dest: path.join(__dirname, 'fixtures', 'drawable-land-ldpi-screen.png')
       };
 
-      await resources.generateResourceImage(imgResource);
+      await resources.transformResourceImage(imgResource);
 
       expect(util.writeStreamToFile).toHaveBeenCalledWith(
         jasmine.any(Object), imgResource.dest
