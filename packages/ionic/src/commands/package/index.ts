@@ -8,7 +8,7 @@ export class PackageNamespace extends Namespace {
   getCommands() {
     let m = new CommandMap();
 
-    m.set('list', new PackageListCommand());
+    m.set('list', () => new PackageListCommand());
 
     return m;
   }

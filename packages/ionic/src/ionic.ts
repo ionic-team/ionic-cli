@@ -96,7 +96,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       shell,
       telemetry,
       inquirer,
-      namespace: plugin.getNamespace(),
+      namespace: plugin.namespace,
     };
 
     await loadPlugins(ionicEnvironment);

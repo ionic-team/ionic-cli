@@ -6,7 +6,7 @@ import {
   INamespaceMap
 } from '../../definitions';
 
-export class CommandMap extends Map<string, ICommand> {
+export class CommandMap extends Map<string, () => ICommand> {
   /*
   TODO: find a better way to handle aliases that does not duplicate within help doc list
   set(key: string, value?: ICommand): this {
@@ -21,17 +21,17 @@ export class CommandMap extends Map<string, ICommand> {
   */
 }
 
-export class NamespaceMap extends Map<string, INamespace> {}
+export class NamespaceMap extends Map<string, () => INamespace> {}
 
 export class Namespace implements INamespace {
 
   name = '';
 
-  getNamespaces(): INamespaceMap {
+  getNamespaces() {
     return new NamespaceMap();
   }
 
-  getCommands(): ICommandMap {
+  getCommands() {
     return new CommandMap();
   }
 
@@ -45,13 +45,13 @@ export class Namespace implements INamespace {
 
       if (!namespaces.has(inputs[0])) {
         const commands = ns.getCommands();
-        const command = commands.get(inputs[0]);
+        const cmdgetter = commands.get(inputs[0]);
 
-        if (!command) {
+        if (!cmdgetter) {
           return [argv, undefined];
         }
 
-        return [inputs.slice(1), command];
+        return [inputs.slice(1), cmdgetter()];
       }
 
       const nextNamespace = namespaces.get(inputs[0]);
@@ -74,7 +74,8 @@ export function getCommandMetadataList(namespace: INamespace, namespaceDepthList
 
   // If this namespace has children then get their commands
   if (namespaces.size > 0) {
-    namespaces.forEach((ns) => {
+    namespaces.forEach((nsgetter) => {
+      const ns = nsgetter();
       const cmds = getCommandMetadataList(ns, [...namespaceDepthList, ns.name]);
       commandList = commandList.concat(cmds);
     });
@@ -85,7 +86,8 @@ export function getCommandMetadataList(namespace: INamespace, namespaceDepthList
    * key value objects. Also keep a record of the namespace path.
    */
   const commands = namespace.getCommands();
-  commands.forEach((cmd) => {
+  commands.forEach((cmdgetter) => {
+    const cmd = cmdgetter();
     commandList.push(cmd.metadata);
   });
 

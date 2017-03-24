@@ -62,10 +62,9 @@ export class HelpCommand extends Command {
     // Resolve the plugin based on the inputs to help
     try {
       const [plugin, argv] = await resolvePlugin(this.env.project.directory, this.env.project.fileName, inputs);
-      if (plugin.getNamespace) {
-        const ns = plugin.getNamespace();
-        const commandMetadataList = getCommandMetadataList(ns);
-        const helpDetails = this.getHelpDetails(ns.name, commandMetadataList, argv);
+      if (plugin.namespace) {
+        const commandMetadataList = getCommandMetadataList(plugin.namespace);
+        const helpDetails = this.getHelpDetails(plugin.namespace.name, commandMetadataList, argv);
 
         this.env.log.msg(
           `\n${chalk.bold(`Help Details:`)}\n\n` +
@@ -87,10 +86,9 @@ export class HelpCommand extends Command {
   async getPluginDetails(pluginName: string): Promise<string[]> {
     try {
       const plugin = await loadPlugin(this.env.project.directory, `${ORG_PREFIX}/${PLUGIN_PREFIX}${pluginName}`, false);
-      if (plugin.getNamespace) {
-        const ns = plugin.getNamespace();
-        const commandMetadataList = getCommandMetadataList(ns);
-        const helpDetails = this.getHelpDetails(ns.name, commandMetadataList, []);
+      if (plugin.namespace) {
+        const commandMetadataList = getCommandMetadataList(plugin.namespace);
+        const helpDetails = this.getHelpDetails(plugin.namespace.name, commandMetadataList, []);
 
         return helpDetails;
       } else {

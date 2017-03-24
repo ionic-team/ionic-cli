@@ -317,7 +317,7 @@ export interface IonicEnvironment {
 }
 
 export interface Plugin {
-  getNamespace?(): INamespace;
+  namespace?: INamespace;
   registerEvents?(emitter: ICLIEventEmitter): void;
 }
 
@@ -340,5 +340,5 @@ export interface ICommand {
   execute(inputs?: CommandLineInputs): Promise<void>;
 }
 
-export interface INamespaceMap extends Map<string, INamespace> {}
-export interface ICommandMap extends Map<string, ICommand> {}
+export interface INamespaceMap extends Map<string, () => INamespace> {}
+export interface ICommandMap extends Map<string, () => ICommand> {}

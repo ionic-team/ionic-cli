@@ -75,7 +75,7 @@ export async function loadPlugin(projectDir: string, pluginName: string, askToIn
     throw ERROR_PLUGIN_NOT_INSTALLED;
   }
   if (!m) {
-    const answers: inquirer.Answers = await inquirer.prompt([{
+    const answers = await inquirer.prompt([{
       type: 'confirm',
       name: 'installPlugin',
       message: `This command's plugin ${chalk.green(pluginName)} is not installed would you like to install it and continue?`

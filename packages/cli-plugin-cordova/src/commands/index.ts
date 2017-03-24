@@ -12,17 +12,17 @@ import { RunCommand } from './run';
 export class CordovaNamespace extends Namespace implements INamespace {
   name = 'cordova';
 
-  getCommands(): ICommandMap {
+  getCommands() {
     let m = new CommandMap();
 
-    m.set('build', new BuildCommand());
-    m.set('compile', new CompileCommand());
-    m.set('emulate', new EmulateCommand());
-    m.set('platform', new PlatformCommand());
-    m.set('plugin', new PluginCommand());
-    m.set('prepare', new PrepareCommand());
-    m.set('resources', new ResourcesCommand());
-    m.set('run', new RunCommand());
+    m.set('build', () => new BuildCommand());
+    m.set('compile', () => new CompileCommand());
+    m.set('emulate', () => new EmulateCommand());
+    m.set('platform', () => new PlatformCommand());
+    m.set('plugin', () => new PluginCommand());
+    m.set('prepare', () => new PrepareCommand());
+    m.set('resources', () => new ResourcesCommand());
+    m.set('run', () => new RunCommand());
 
     return m;
   }
