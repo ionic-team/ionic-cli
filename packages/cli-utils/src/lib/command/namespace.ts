@@ -25,6 +25,8 @@ export class NamespaceMap extends Map<string, INamespace> {}
 
 export class Namespace implements INamespace {
 
+  name = '';
+
   getNamespaces(): INamespaceMap {
     return new NamespaceMap();
   }
@@ -32,7 +34,6 @@ export class Namespace implements INamespace {
   getCommands(): ICommandMap {
     return new CommandMap();
   }
-
 
   /**
    * Recursively inspect inputs supplied to walk down all the tree of namespaces
@@ -68,12 +69,15 @@ export class Namespace implements INamespace {
  * Get all commands for a namespace. Return a flat structure
  */
 export function getCommandMetadataList(namespace: INamespace, namespaceDepthList: string[] = []) {
-  const commandList: CommandData[] = [];
+  let commandList: CommandData[] = [];
   const namespaces = namespace.getNamespaces();
 
   // If this namespace has children then get their commands
   if (namespaces.size > 0) {
-    namespaces.forEach((ns) => commandList.concat(getCommandMetadataList(ns, namespaceDepthList)));
+    namespaces.forEach((ns) => {
+      const cmds = getCommandMetadataList(ns, [...namespaceDepthList, ns.name]);
+      commandList = commandList.concat(cmds);
+    });
   }
 
   /**

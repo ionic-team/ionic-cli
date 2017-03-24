@@ -296,6 +296,7 @@ export interface IonicEnvironment {
 }
 
 export interface INamespace {
+  name: string;
   getNamespaces(): INamespaceMap;
   getCommands(): ICommandMap;
   locateCommand(argv: string[]): [string[], ICommand | undefined];

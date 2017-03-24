@@ -1,4 +1,6 @@
-import { ICommandMap, Namespace, CommandMap } from '@ionic/cli-utils';
+import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils';
+
+import { PackageNamespace } from './package/index';
 
 import { InfoCommand } from './info';
 import { LoginCommand } from './login';
@@ -17,8 +19,16 @@ import { UploadCommand } from './upload';
 export class IonicNamespace extends Namespace {
   name: 'global';
 
-  getCommands(): ICommandMap {
-    let m = new CommandMap();
+  getNamespaces() {
+    const m = new NamespaceMap();
+
+    m.set('package', new PackageNamespace());
+
+    return m;
+  }
+
+  getCommands() {
+    const m = new CommandMap();
 
     m.set('start', new StartCommand());
     m.set('serve', new ServeCommand());
