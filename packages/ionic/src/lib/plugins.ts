@@ -18,7 +18,7 @@ import { IonicNamespace } from '../commands';
 import { load } from './utils/commonjs-loader';
 import * as globalPlugin from '../index';
 
-export const KNOWN_PLUGINS = ['cordova'];
+export const KNOWN_PLUGINS = ['ionic-angular', 'ionic1', 'cordova'];
 export const ORG_PREFIX = '@ionic';
 export const PLUGIN_PREFIX = 'cli-plugin-';
 export const ERROR_PLUGIN_NOT_INSTALLED = 'PLUGIN_NOT_INSTALLED';
@@ -44,6 +44,12 @@ export async function loadPlugins(env: IonicEnvironment) {
   );
 
   for (let plugin of plugins) {
+    const ns = plugin.namespace;
+
+    if (ns) {
+      env.namespace.namespaces.set(ns.name, () => ns);
+    }
+
     if (plugin.registerEvents) {
       plugin.registerEvents(env.emitter);
     }
@@ -108,14 +114,14 @@ export async function resolvePlugin(projectDir: string, projectFile: string, arg
 
   // If this module's primary namespace has the command then use it.
   const ionicNamespace = new IonicNamespace();
-  const ionicCommands = ionicNamespace.getCommands();
+  const ionicCommands = ionicNamespace.commands;
 
   const isGlobalCmd = ionicCommands.has(argv[0]);
   if (isGlobalCmd || argv.length === 0) {
     return [ globalPlugin, argv ];
   }
 
-  const ionicNamespaces = ionicNamespace.getNamespaces();
+  const ionicNamespaces = ionicNamespace.namespaces;
 
   // If the first arguement supplied contains a ':' then it is assumed that
   // this is calling a command in another namespace.
@@ -130,7 +136,7 @@ export async function resolvePlugin(projectDir: string, projectFile: string, arg
   // If this we do not know the project directory and it is not a global
   // command then we can't run it.
   if (!projectDir) {
-    throw chalk.bold(`This is not a global command please run this in your Ionic project's directory.\n`);
+    throw chalk.bold(`This is not a global command! Please run this in your Ionic project's directory.\n`);
   }
 
   // Load the plugin using the pluginName provided

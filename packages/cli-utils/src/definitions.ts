@@ -323,9 +323,9 @@ export interface Plugin {
 
 export interface INamespace {
   name: string;
+  namespaces: INamespaceMap;
+  commands: ICommandMap;
 
-  getNamespaces(): INamespaceMap;
-  getCommands(): ICommandMap;
   locateCommand(argv: string[]): [string[], ICommand | undefined];
 }
 

@@ -21,10 +21,10 @@ import {
   fsReadDir,
   getCliInfo,
   isSuperAgentError,
-  runCommand,
 } from '@ionic/cli-utils';
 
-import { loadPlugins, resolvePlugin } from './lib/plugins';
+import { namespace } from './index';
+import { loadPlugins } from './lib/plugins';
 
 const PROJECT_FILE = 'ionic.config.json';
 const CONFIG_FILE = 'config.json';
@@ -70,12 +70,10 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     const project = new Project(env['PROJECT_DIR'], env['PROJECT_FILE']);
 
     // Load all async work at the same time
-    const [ pluginDetails, configData, cliInfo ] = await Promise.all([
-      resolvePlugin(env['PROJECT_DIR'], env['PROJECT_FILE'], pargv),
+    const [ configData, cliInfo ] = await Promise.all([
       config.load(),
       getCliInfo(),
     ]);
-    const [plugin, inputs] = pluginDetails;
 
     const emitter = new CLIEventEmitter();
     const client = new Client(configData.urls.api);
@@ -85,7 +83,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     const app = new App(session, project, client);
 
     const ionicEnvironment: IonicEnvironment = {
-      pargv: inputs,
+      pargv,
       app,
       emitter,
       client,
@@ -96,12 +94,12 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       shell,
       telemetry,
       inquirer,
-      namespace: plugin.namespace,
+      namespace,
     };
 
     await loadPlugins(ionicEnvironment);
-
-    await runCommand(ionicEnvironment);
+    await namespace.runCommand(ionicEnvironment);
+    await ionicEnvironment.config.save();
 
   } catch (e) {
     err = e;

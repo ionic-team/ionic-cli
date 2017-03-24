@@ -1,4 +1,7 @@
-import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils';
+import * as chalk from 'chalk';
+import * as minimist from 'minimist';
+
+import { CommandMap, IonicEnvironment, Namespace, NamespaceMap } from '@ionic/cli-utils';
 
 import { PackageNamespace } from './package/index';
 
@@ -17,33 +20,39 @@ import { LinkCommand } from './link';
 import { UploadCommand } from './upload';
 
 export class IonicNamespace extends Namespace {
-  name: 'global';
+  namespaces = new NamespaceMap([
+    ['package', () => new PackageNamespace()],
+  ]);
 
-  getNamespaces() {
-    const m = new NamespaceMap();
+  commands = new CommandMap([
+    ['start', () => new StartCommand()],
+    ['serve', () => new ServeCommand()],
+    ['help', () => new HelpCommand()],
+    ['info', () => new InfoCommand()],
+    ['login', () => new LoginCommand()],
+    ['signup', () => new SignupCommand()],
+    ['version', () => new VersionCommand()],
+    ['telemetry', () => new TelemetryCommand()],
+    ['docs', () => new DocsCommand()],
+    ['ionitron', () => new IonitronCommand()],
+    ['generate', () => new GenerateCommand()],
+    ['link', () => new LinkCommand()],
+    ['upload', () => new UploadCommand()],
+  ]);
 
-    m.set('package', () => new PackageNamespace());
+  async runCommand(env: IonicEnvironment): Promise<void> {
+    const argv = minimist(env.pargv);
+    const [inputs, command] = this.locateCommand(argv._);
 
-    return m;
-  }
+    // If the command was not found throw
+    if (!command) {
+      throw `Command not found: ${chalk.bold(argv._.join(' '))}.`;
+    }
 
-  getCommands() {
-    const m = new CommandMap();
+    command.env = env;
 
-    m.set('start', () => new StartCommand());
-    m.set('serve', () => new ServeCommand());
-    m.set('help', () => new HelpCommand());
-    m.set('info', () => new InfoCommand());
-    m.set('login', () => new LoginCommand());
-    m.set('signup', () => new SignupCommand());
-    m.set('version', () => new VersionCommand());
-    m.set('telemetry', () => new TelemetryCommand());
-    m.set('docs', () => new DocsCommand());
-    m.set('ionitron', () => new IonitronCommand());
-    m.set('generate', () => new GenerateCommand());
-    m.set('link', () => new LinkCommand());
-    m.set('upload', () => new UploadCommand());
-
-    return m;
+    await command.load();
+    await command.execute(inputs);
+    await command.unload();
   }
 }

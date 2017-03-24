@@ -11,14 +11,15 @@ import {
   KnownPlatform
 } from '../definitions';
 import {
-  fsReadDir,
-  fsMkdirp,
-  fsReadJsonFile,
-  ERROR_FILE_NOT_FOUND,
   ERROR_FILE_INVALID_JSON,
+  ERROR_FILE_NOT_FOUND,
+  copyDirectory,
+  flattenArray,
+  fsMkdirp,
+  fsReadDir,
+  fsReadJsonFile,
   getFileChecksum,
   writeStreamToFile,
-  copyDirectory
 } from '@ionic/cli-utils';
 
 import {
@@ -40,7 +41,7 @@ const DEFAULT_RESOURCES_DIR = path.resolve(__dirname, '..', 'default-resources')
  * items.
  */
 export function flattenResourceJsonStructure (jsonStructure: any): ImageResource[] {
-  return flatten(Object.keys(jsonStructure).map(platform => (
+  return flattenArray(Object.keys(jsonStructure).map(platform => (
     Object.keys(jsonStructure[platform]).map(resType => (
       jsonStructure[platform][resType]['images'].map((imgInfo: any) => (
         {
@@ -109,7 +110,7 @@ export async function getSourceImages (buildPlatforms: string[], resourceTypes: 
     srcDirList.map((srcImgDir: any) => fsReadDir(srcImgDir.path))
   );
 
-  const sourceImages = flatten(
+  const sourceImages = flattenArray(
     srcImageDirContentList.map((srcImageDirContents, index) => (
       srcImageDirContents
         .map((imgName: string): SourceImage => {
@@ -208,15 +209,6 @@ export async function transformResourceImage(imageResource: ImageResource): Prom
   } catch (e) {
     throw e;
   }
-}
-
-/**
- * Recursively flatten an array.
- */
-function flatten(arr: any[]): any[] {
-  return arr.reduce(function (flat, toFlatten) {
-    return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-  }, []);
 }
 
 /**

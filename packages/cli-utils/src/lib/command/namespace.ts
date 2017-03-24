@@ -6,6 +6,8 @@ import {
   INamespaceMap
 } from '../../definitions';
 
+import { flattenArray } from '../utils/array';
+
 export class CommandMap extends Map<string, () => ICommand> {
   /*
   TODO: find a better way to handle aliases that does not duplicate within help doc list
@@ -24,27 +26,24 @@ export class CommandMap extends Map<string, () => ICommand> {
 export class NamespaceMap extends Map<string, () => INamespace> {}
 
 export class Namespace implements INamespace {
-
   name = '';
-
-  getNamespaces() {
-    return new NamespaceMap();
-  }
-
-  getCommands() {
-    return new CommandMap();
-  }
+  namespaces = new NamespaceMap();
+  commands = new CommandMap();
 
   /**
-   * Recursively inspect inputs supplied to walk down all the tree of namespaces
-   * available to find the command that we will execute.
+   * Recursively inspect inputs supplied to walk down all the tree of
+   * namespaces available to find the command that we will execute.
    */
   locateCommand(argv: string[]): [string[], ICommand | undefined] {
-    return (function ln(inputs: string[], ns: INamespace): [string[], ICommand | undefined] {
-      const namespaces = ns.getNamespaces();
+    function expandColons(inputs: string[]) {
+      return flattenArray(inputs.map((arg) => arg.split(':')));
+    }
 
-      if (!namespaces.has(inputs[0])) {
-        const commands = ns.getCommands();
+    function ln(inputs: string[], ns: INamespace): [string[], ICommand | undefined] {
+      const namespaceMap = ns.namespaces;
+
+      if (!namespaceMap.has(inputs[0])) {
+        const commands = ns.commands;
         const cmdgetter = commands.get(inputs[0]);
 
         if (!cmdgetter) {
@@ -54,14 +53,16 @@ export class Namespace implements INamespace {
         return [inputs.slice(1), cmdgetter()];
       }
 
-      const nextNamespace = namespaces.get(inputs[0]);
+      const nsgetter = namespaceMap.get(inputs[0]);
 
-      if (!nextNamespace) {
+      if (!nsgetter) {
         return [argv, undefined];
       }
 
-      return this(inputs.slice(1), nextNamespace);
-    }(argv, this));
+      return ln(inputs.slice(1), nsgetter());
+    }
+
+    return ln(expandColons(argv), this);
   }
 }
 
@@ -70,11 +71,11 @@ export class Namespace implements INamespace {
  */
 export function getCommandMetadataList(namespace: INamespace, namespaceDepthList: string[] = []) {
   let commandList: CommandData[] = [];
-  const namespaces = namespace.getNamespaces();
+  const namespaceMap = namespace.namespaces;
 
   // If this namespace has children then get their commands
-  if (namespaces.size > 0) {
-    namespaces.forEach((nsgetter) => {
+  if (namespaceMap.size > 0) {
+    namespaceMap.forEach((nsgetter) => {
       const ns = nsgetter();
       const cmds = getCommandMetadataList(ns, [...namespaceDepthList, ns.name]);
       commandList = commandList.concat(cmds);
@@ -85,7 +86,7 @@ export function getCommandMetadataList(namespace: INamespace, namespaceDepthList
    * Gather all commands for a namespace and turn them into simple
    * key value objects. Also keep a record of the namespace path.
    */
-  const commands = namespace.getCommands();
+  const commands = namespace.commands;
   commands.forEach((cmdgetter) => {
     const cmd = cmdgetter();
     commandList.push(cmd.metadata);
