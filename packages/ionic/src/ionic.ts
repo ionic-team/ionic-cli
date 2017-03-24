@@ -3,26 +3,28 @@ import * as path from 'path';
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
-import createEmitEvent from './lib/emitEvent';
+
 import {
-  IonicEnvironment,
-  FatalException,
-  formatError as formatSuperAgentError,
-  isSuperAgentError,
-  TASKS,
-  Shell,
-  Logger,
-  Config,
+  App,
+  CLIEventEmitter,
   Client,
-  getCliInfo,
-  Telemetry,
+  Config,
+  FatalException,
+  IonicEnvironment,
+  Logger,
   Project,
   Session,
-  App,
-  fsReadDir
+  Shell,
+  TASKS,
+  Telemetry,
+  formatError as formatSuperAgentError,
+  fsReadDir,
+  getCliInfo,
+  isSuperAgentError,
+  runCommand,
 } from '@ionic/cli-utils';
 
-import { resolvePlugin } from './lib/plugins';
+import { loadPlugins, resolvePlugin } from './lib/plugins';
 
 const PROJECT_FILE = 'ionic.config.json';
 const CONFIG_FILE = 'config.json';
@@ -75,27 +77,17 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     ]);
     const [plugin, inputs] = pluginDetails;
 
+    const emitter = new CLIEventEmitter();
     const client = new Client(configData.urls.api);
     const telemetry = new Telemetry(config, cliInfo);
     const shell = new Shell();
     const session = new Session(config, project, client);
     const app = new App(session, project, client);
 
-    const emitEvent = await createEmitEvent({
-      app,
-      client,
-      config,
-      log,
-      project,
-      session,
-      shell,
-      telemetry,
-      inquirer,
-    });
-
     const ionicEnvironment: IonicEnvironment = {
       pargv: inputs,
       app,
+      emitter,
       client,
       config,
       log,
@@ -104,11 +96,12 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       shell,
       telemetry,
       inquirer,
-      pluginName: plugin.PLUGIN_NAME,
-      emitEvent
+      namespace: plugin.getNamespace(),
     };
 
-    await plugin.run(ionicEnvironment);
+    await loadPlugins(ionicEnvironment);
+
+    await runCommand(ionicEnvironment);
 
   } catch (e) {
     err = e;

@@ -6,26 +6,27 @@ import { stringToInt } from '../utils/helpers';
 import { createHttpServer } from './http-server';
 import { createLiveReloadServer } from './live-reload';
 import {
+  CommandData,
   CommandLineInputs,
   CommandLineOptions,
-  CommandData,
-  EventEnvironment
+  CLIEventEmitterServeEventArgs,
+  IonicEnvironment,
 } from '@ionic/cli-utils';
 import {
-  WATCH_PATTERNS,
-  IONIC_LAB_URL,
   DEFAULT_ADDRESS,
-  DEFAULT_SERVER_PORT,
   DEFAULT_LIVERELOAD_PORT,
-  ServerOptions
+  DEFAULT_SERVER_PORT,
+  IONIC_LAB_URL,
+  ServerOptions,
+  WATCH_PATTERNS,
 } from './config';
 import { findClosestOpenPort, getAvailableIPAddress } from '../utils/network';
 import { minimistOptionsToArray } from '../utils/arguments';
 
-export default async function(env: EventEnvironment, cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<{ [key: string]: any }> {
+export async function serve(args: CLIEventEmitterServeEventArgs): Promise<{ [key: string]: any }> {
 
-  const args = minimistOptionsToArray(options);
-  console.log(`  Starting server: ${chalk.bold(args.join(' '))}`);
+  const appScriptsArgs = minimistOptionsToArray(args.options);
+  console.log(`  Starting server: ${chalk.bold(appScriptsArgs.join(' '))}`);
 
 
   // Find appropriate IP to use for cordova to reference
@@ -38,7 +39,7 @@ export default async function(env: EventEnvironment, cmdMetadata: CommandData, i
 
   let chosenIP = availableIPs[0].address;
   if (availableIPs.length > 1) {
-    const promptAnswers = await env.inquirer.prompt({
+    const promptAnswers = await args.env.inquirer.prompt({
       type: 'list',
       name: 'ip',
       message: 'Multiple addresses available. Please select which address to use:',
@@ -49,23 +50,23 @@ export default async function(env: EventEnvironment, cmdMetadata: CommandData, i
 
   // Setup Options and defaults
   const serverOptions: ServerOptions = {
-    projectRoot: env.project.directory,
-    wwwDir: path.join(env.project.directory, 'www'),
-    address: <string>options['address'] || DEFAULT_ADDRESS,
-    port: stringToInt(<string>options['port'], DEFAULT_SERVER_PORT),
-    livereloadPort: stringToInt(<string>options['livereload-port'], DEFAULT_LIVERELOAD_PORT),
-    browser: <string>options['browser'],
-    browseroption: <string>options['browseroption'],
-    platform: <string>options['platform'],
-    consolelogs: <boolean>options['consolelogs'] || false,
-    serverlogs: <boolean>options['serverlogs'] || false,
-    nobrowser: <boolean>options['nobrowser'] || false,
-    nolivereload: <boolean>options['nolivereload'] || false,
-    noproxy: <boolean>options['noproxy'] || false,
-    lab: <boolean>options['lab'] || false,
-    iscordovaserve: <boolean>options['iscordovaserve'] || false,
-    nogulp: <boolean>options['nogulp'] || false,
-    nosass: <boolean>options['nosass'] || false,
+    projectRoot: args.env.project.directory,
+    wwwDir: path.join(args.env.project.directory, 'www'),
+    address: <string>args.options['address'] || DEFAULT_ADDRESS,
+    port: stringToInt(<string>args.options['port'], DEFAULT_SERVER_PORT),
+    livereloadPort: stringToInt(<string>args.options['livereload-port'], DEFAULT_LIVERELOAD_PORT),
+    browser: <string>args.options['browser'],
+    browseroption: <string>args.options['browseroption'],
+    platform: <string>args.options['platform'],
+    consolelogs: <boolean>args.options['consolelogs'] || false,
+    serverlogs: <boolean>args.options['serverlogs'] || false,
+    nobrowser: <boolean>args.options['nobrowser'] || false,
+    nolivereload: <boolean>args.options['nolivereload'] || false,
+    noproxy: <boolean>args.options['noproxy'] || false,
+    lab: <boolean>args.options['lab'] || false,
+    iscordovaserve: <boolean>args.options['iscordovaserve'] || false,
+    nogulp: <boolean>args.options['nogulp'] || false,
+    nosass: <boolean>args.options['nosass'] || false,
     gulpInstalled: true
   };
 
@@ -80,22 +81,22 @@ export default async function(env: EventEnvironment, cmdMetadata: CommandData, i
 
   // Check if gulp is installed globally for sass
   try {
-    await env.shell.run('gulp', ['-v']);
+    await args.env.shell.run('gulp', ['-v']);
   } catch (e) {
     serverOptions.gulpInstalled = false;
   }
 
   // Start up server
-  const settings = await setupServer(env, serverOptions);
+  const settings = await setupServer(args.env, serverOptions);
 
-  env.log.msg(`dev server running: http://${serverOptions.address}:${serverOptions.port}`);
+  args.env.log.msg(`dev server running: http://${serverOptions.address}:${serverOptions.port}`);
   return  {
     publicIp: chosenIP,
     ...settings
   };
 }
 
-async function setupServer(env: EventEnvironment, options: ServerOptions): Promise<{ [key: string]: any }> {
+async function setupServer(env: IonicEnvironment, options: ServerOptions): Promise<{ [key: string]: any }> {
 
   const liveReloadBrowser = createLiveReloadServer(options);
   await createHttpServer(env.project, options);
@@ -124,7 +125,7 @@ async function setupServer(env: EventEnvironment, options: ServerOptions): Promi
   return options;
 }
 
-async function processSassFile(env: EventEnvironment, options: ServerOptions): Promise<void> {
+async function processSassFile(env: IonicEnvironment, options: ServerOptions): Promise<void> {
   if (!options.gulpInstalled) {
     env.log.error(`You are trying to build a sass file, but unfortunately Ionic1 projects require\n` +
                   `gulp to build these files. In order to continue please execute the following\n` +

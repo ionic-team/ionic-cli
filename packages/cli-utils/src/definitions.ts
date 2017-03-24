@@ -265,23 +265,46 @@ export interface IClient {
   do(res: superagent.Request): Promise<APIResponseSuccess>;
 }
 
-export interface EventEnvironment {
-  app: IApp;
-  client: IClient;
-  config: IConfig<ConfigFile>;
-  log: ILogger;
-  project: IProject;
-  session: ISession;
-  shell: IShell;
-  telemetry: ITelemetry;
-  inquirer: typeof inquirer;
+export interface CLIEventEmitterBuildEventArgs {
+  options: CommandLineOptions;
 }
 
-export type EmitEventFn = (eventName: string, options: { [key: string]: any }) => Promise<any>;
+export interface CLIEventEmitterGenerateEventArgs {
+  inputs: CommandLineInputs;
+  options: CommandLineOptions;
+}
+
+export interface CLIEventEmitterServeEventArgs {
+  env: IonicEnvironment;
+  options: CommandLineOptions;
+}
+
+export interface CLIEventEmitterCommandEventArgs {
+  cmd: ICommand;
+  inputs: CommandLineInputs;
+  options: CommandLineOptions;
+}
+
+export interface ICLIEventEmitter {
+  emit(evt: 'generate', args: CLIEventEmitterGenerateEventArgs): Promise<void[]>;
+  emit(evt: 'build', args: CLIEventEmitterBuildEventArgs): Promise<void[]>;
+  emit(evt: 'serve', args: CLIEventEmitterServeEventArgs): Promise<{ [key: string]: any }[]>;
+  emit(evt: 'command', args: CLIEventEmitterCommandEventArgs): Promise<void[]>;
+  emit<T, U>(evt: string, args: T): Promise<U[]>;
+
+  on(evt: 'generate', listener: (args: CLIEventEmitterGenerateEventArgs) => Promise<void>): this;
+  on(evt: 'build', listener: (args: CLIEventEmitterBuildEventArgs) => Promise<void>): this;
+  on(evt: 'serve', listener: (args: CLIEventEmitterServeEventArgs) => Promise<{ [key: string]: any }>): this;
+  on(evt: 'command', listener: (args: CLIEventEmitterCommandEventArgs) => Promise<void>): this;
+  on<T, U>(evt: string, listener: (args: T) => Promise<U>): this;
+
+  getListeners<T, U>(evt: string): ((args: T) => Promise<U>)[];
+}
 
 export interface IonicEnvironment {
   pargv: string[];
   app: IApp;
+  emitter: ICLIEventEmitter;
   client: IClient;
   config: IConfig<ConfigFile>;
   log: ILogger;
@@ -290,13 +313,17 @@ export interface IonicEnvironment {
   shell: IShell;
   telemetry: ITelemetry;
   inquirer: typeof inquirer;
-  emitEvent: EmitEventFn;
-  namespace?: INamespace;
-  pluginName?: string;
+  namespace: INamespace;
+}
+
+export interface Plugin {
+  getNamespace?(): INamespace;
+  registerEvents?(emitter: ICLIEventEmitter): void;
 }
 
 export interface INamespace {
   name: string;
+
   getNamespaces(): INamespaceMap;
   getCommands(): ICommandMap;
   locateCommand(argv: string[]): [string[], ICommand | undefined];

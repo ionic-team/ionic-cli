@@ -5,7 +5,7 @@ machine:
 dependencies:
   post:
     - cd packages/cli-utils && npm install && npm run build
-    - cd packages/cli-build-ionic-angular && npm install @ionic/app-scripts
+    - cd packages/cli-plugin-ionic-angular && npm install @ionic/app-scripts
     - ./node_modules/.bin/lerna bootstrap
 
 test:

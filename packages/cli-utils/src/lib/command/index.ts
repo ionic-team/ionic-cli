@@ -66,25 +66,13 @@ export class Command implements ICommand {
         if (configData.cliFlags.enableTelemetry !== false) {
           const cmdInputs = this.getCleanInputsForTelemetry(argv._, argv);
           await this.env.telemetry.sendCommand(
-            (this.env.pluginName) ? `${this.env.pluginName}:${this.metadata.name}` : this.metadata.name,
+            (this.env.namespace.name) ? `${this.env.namespace.name}:${this.metadata.name}` : this.metadata.name,
             cmdInputs
           );
         }
       })(),
       (async() => {
-        await this.env.emitEvent(this.metadata.name + ':before', {
-          metadata: this.metadata,
-          inputs: argv._,
-          options: argv
-        });
-
         await this.run(argv._, argv);
-
-        await this.env.emitEvent(this.metadata.name + ':after', {
-          metadata: this.metadata,
-          inputs: argv._,
-          options: argv
-        });
       })()
     ]);
 

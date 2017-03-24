@@ -10,6 +10,7 @@ export * from './lib/command/commandEnvironment';
 export * from './lib/config';
 export * from './lib/deploy';
 export * from './lib/errors';
+export * from './lib/events';
 export * from './lib/http';
 export * from './lib/utils/format';
 export * from './lib/utils/fs';

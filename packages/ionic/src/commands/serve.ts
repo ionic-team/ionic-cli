@@ -95,15 +95,17 @@ export class ServeCommand extends Command {
 
     options = normalizeOptionAliases(this.metadata, options);
 
-    var tasks = new TaskChain();
+    const tasks = new TaskChain();
 
-    var response = await this.env.emitEvent('serve', {
-      metadata: this.metadata,
-      inputs,
-      options
-    });
+    const numListeners = this.env.emitter.getListeners('serve').length;
 
-    tasks.next(`Starting server`);
+    if (numListeners === 0) {
+      throw this.exit('No listeners for serve event. Did you install the appropriate plugin?'); // TODO: make better?
+    } else if (numListeners > 1) {
+      throw this.exit(`Too many listeners for serve event (${numListeners}). Install only one plugin.`); // TODO: make better?
+    }
+
+    const [response] = await this.env.emitter.emit('serve', { env: this.env, options });
 
     // If qrcode option then generate a qrcode on the Command Line.
     if (options.qrcode) {

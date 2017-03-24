@@ -6,12 +6,13 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandData,
+  CLIEventEmitterServeEventArgs,
 } from '@ionic/cli-utils';
 
 import { getAvailableIPAddress } from './utils/network';
 import { minimistOptionsToArray } from './utils/arguments';
 
-export async function serve(cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<{ [key: string]: any }> {
+export async function serve(args: CLIEventEmitterServeEventArgs): Promise<{ [key: string]: any }> {
   const availableIPs = getAvailableIPAddress();
   if (availableIPs.length === 0) {
     throw new Error(`It appears that you do not have any external network interfaces. ` +
@@ -30,7 +31,7 @@ export async function serve(cmdMetadata: CommandData, inputs: CommandLineInputs,
     chosenIP = promptAnswers['ip'];
   }
 
-  let appScriptsArgs = minimistOptionsToArray(options);
+  let appScriptsArgs = minimistOptionsToArray(args.options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
   const appScripts: typeof AppScripts = require('@ionic/app-scripts');

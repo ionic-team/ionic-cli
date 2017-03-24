@@ -11,7 +11,7 @@ export const STARTER_TYPES: StarterTemplateType[] = [
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/master.tar.gz',
     buildDependencies: [
       '@ionic/cli-plugin-cordova',
-      '@ionic/cli-build-ionic-angular'
+      '@ionic/cli-plugin-ionic-angular'
     ]
   },
   {
@@ -20,7 +20,7 @@ export const STARTER_TYPES: StarterTemplateType[] = [
     baseArchive: 'https://github.com/driftyco/ionic-app-base/archive/master.tar.gz',
     buildDependencies: [
       '@ionic/cli-plugin-cordova',
-      '@ionic/cli-build-ionic1'
+      '@ionic/cli-plugin-ionic1'
     ]
   }
 ];

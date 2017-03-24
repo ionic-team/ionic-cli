@@ -1,5 +1,5 @@
 {
-  "name": "@ionic/cli-build-ionic-angular",
+  "name": "@ionic/cli-plugin-ionic-angular",
   "version": "0.0.3",
   "description": "Ionic CLI build plugin for Ionic Angular projects",
   "homepage": "https://ionic.io/",

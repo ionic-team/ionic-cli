@@ -1,11 +1,9 @@
-import { EventEnvironment } from '@ionic/cli-utils';
-import serve from './serve/index';
+import { ICLIEventEmitter } from '@ionic/cli-utils';
 
-export default function(env: EventEnvironment)  {
+import { serve } from './serve/index';
 
-  return async function (eventName: string, options: { [key: string]: any }): Promise<any> {
-    if (eventName === 'serve') {
-      return serve(env, options['metadata'], options['inputs'], options['options']);
-    }
-  };
+export function registerEvents(emitter: ICLIEventEmitter) {
+  emitter.on('serve', async (args) => {
+    return serve(args);
+  });
 }

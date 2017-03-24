@@ -1,17 +1,17 @@
 import * as chalk from 'chalk';
 
 import {
+  Command,
   CommandData,
-  CommandMetadata,
   CommandLineInputs,
   CommandLineOptions,
+  CommandMetadata,
   formatCommandHelp,
+  getCommandMetadataList,
   getListOfCommandDetails,
-  Command,
-  getCommandMetadataList
 } from '@ionic/cli-utils';
 
-import { KNOWN_PLUGINS, PREFIX, loadPlugin, resolvePlugin } from '../lib/plugins';
+import { KNOWN_PLUGINS, ORG_PREFIX, PLUGIN_PREFIX, loadPlugin, resolvePlugin } from '../lib/plugins';
 
 const UNKOWN_COMMAND_ERROR = 'UNKOWN_COMMAND';
 
@@ -62,13 +62,18 @@ export class HelpCommand extends Command {
     // Resolve the plugin based on the inputs to help
     try {
       const [plugin, argv] = await resolvePlugin(this.env.project.directory, this.env.project.fileName, inputs);
-      const commandMetadataList = plugin.getAllCommandMetadata();
-      const helpDetails = this.getHelpDetails(plugin.PLUGIN_NAME, commandMetadataList, argv);
+      if (plugin.getNamespace) {
+        const ns = plugin.getNamespace();
+        const commandMetadataList = getCommandMetadataList(ns);
+        const helpDetails = this.getHelpDetails(ns.name, commandMetadataList, argv);
 
-      this.env.log.msg(
-        `\n${chalk.bold(`Help Details:`)}\n\n` +
-        `${helpDetails.map(hd => `  ${hd}\n`).join('')}`
-      );
+        this.env.log.msg(
+          `\n${chalk.bold(`Help Details:`)}\n\n` +
+          `${helpDetails.map(hd => `  ${hd}\n`).join('')}`
+        );
+      } else {
+        // TODO?
+      }
 
     } catch (e) {
       if (e === UNKOWN_COMMAND_ERROR) {
@@ -81,11 +86,16 @@ export class HelpCommand extends Command {
 
   async getPluginDetails(pluginName: string): Promise<string[]> {
     try {
-      const plugin = await loadPlugin(this.env.project.directory, `${PREFIX}${pluginName}`, false);
-      const commandMetadataList = plugin.getAllCommandMetadata();
-      const helpDetails = this.getHelpDetails(plugin.PLUGIN_NAME, commandMetadataList, []);
+      const plugin = await loadPlugin(this.env.project.directory, `${ORG_PREFIX}/${PLUGIN_PREFIX}${pluginName}`, false);
+      if (plugin.getNamespace) {
+        const ns = plugin.getNamespace();
+        const commandMetadataList = getCommandMetadataList(ns);
+        const helpDetails = this.getHelpDetails(ns.name, commandMetadataList, []);
 
-      return helpDetails;
+        return helpDetails;
+      } else {
+        return []; // TODO?
+      }
     } catch (e) {
       return [];
     }

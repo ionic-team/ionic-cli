@@ -5,12 +5,13 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandData,
+  CLIEventEmitterBuildEventArgs,
 } from '@ionic/cli-utils';
 
 import { minimistOptionsToArray } from './utils/arguments';
 
-export async function build(cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-  const appScriptsArgs = minimistOptionsToArray(options);
+export async function build(args: CLIEventEmitterBuildEventArgs): Promise<void> {
+  const appScriptsArgs = minimistOptionsToArray(args.options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
   const appScripts: typeof AppScripts = require('@ionic/app-scripts');

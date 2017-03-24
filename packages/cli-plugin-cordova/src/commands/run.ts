@@ -148,18 +148,14 @@ export class RunCommand extends Command {
       })
     ]);
 
-    /**
-     * If it is not livereload then just run build.
-     */
+    // If it is not livereload then just run build.
     if (!isLiveReload) {
 
       // ensure the content node was set back to its original
       await resetConfigXmlContentSrc(this.env.project.directory);
       tasks.end();
 
-      await this.env.emitEvent('build', {
-        metadata: this.metadata,
-        inputs,
+      await this.env.emitter.emit('build', {
         options: generateBuildOptions(this.metadata, options)
       });
       tasks.next(`Starting build`);
@@ -167,11 +163,10 @@ export class RunCommand extends Command {
 
       tasks.end();
 
-      const serverSettings = await this.env.emitEvent('serve', {
-        metadata: this.metadata,
-        inputs,
-        options: generateBuildOptions(this.metadata, options)
-      });
+      const serverSettings = (await this.env.emitter.emit('serve', {
+        env: this.env,
+        options: generateBuildOptions(this.metadata, options),
+      }))[0];
 
       await writeConfigXmlContentSrc(this.env.project.directory, `http://${serverSettings.publicIp}:${serverSettings.httpPort}`);
       tasks.next(`Starting server`);

@@ -4,19 +4,20 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandData,
+  CLIEventEmitterGenerateEventArgs,
 } from '@ionic/cli-utils';
 import { minimistOptionsToArray } from './utils/arguments';
 
 import { prompt, tabsPrompt } from './utils/generate';
 
-export async function generate(cmdMetadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): Promise<string[]> {
-  const appScriptsArgs = minimistOptionsToArray(options);
+export async function generate(args: CLIEventEmitterGenerateEventArgs): Promise<string[]> {
+  const appScriptsArgs = minimistOptionsToArray(args.options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
   const appScripts: typeof AppScripts = require('@ionic/app-scripts');
   const context = appScripts.generateContext();
 
-  const [ type, name ] = inputs;
+  const [ type, name ] = args.inputs;
 
   switch (type) {
     case 'page':
