@@ -35,7 +35,7 @@ export function isAPIResponseError(r: APIResponse): r is APIResponseError {
   return res && typeof res.error === 'object';
 }
 
-export function isAppDetails(d: any): d is AppDetails {
+export function isAppDetails(d: Object): d is AppDetails {
   let details: AppDetails = <AppDetails>d;
   return details && typeof details === 'object'
     && typeof details.id === 'string'

@@ -1,4 +1,4 @@
-import { getCommandMetadataList, runCommand, IonicEnvironment } from '@ionic/cli-utils';
+import { CommandData, getCommandMetadataList, runCommand, IonicEnvironment } from '@ionic/cli-utils';
 import { CordovaNamespace } from './commands';
 
 export const PLUGIN_NAME = 'cordova';
@@ -12,7 +12,7 @@ export async function run(envInstance: IonicEnvironment): Promise<void>  {
   });
 }
 
-export function getAllCommandMetadata(): any[] {
+export function getAllCommandMetadata() {
   const cordovaNamespace = new CordovaNamespace();
   return getCommandMetadataList(cordovaNamespace);
 }

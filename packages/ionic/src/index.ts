@@ -1,7 +1,7 @@
-import { runCommand, IonicEnvironment, getCommandMetadataList } from '@ionic/cli-utils';
+import { CommandData, runCommand, IonicEnvironment, getCommandMetadataList } from '@ionic/cli-utils';
 import { IonicNamespace } from './commands';
 
-export async function run(envInstance: IonicEnvironment): Promise<void>  {
+export async function run(envInstance: IonicEnvironment): Promise<void> {
   const ionicNamespace = new IonicNamespace();
 
   await runCommand({
@@ -10,7 +10,7 @@ export async function run(envInstance: IonicEnvironment): Promise<void>  {
   });
 }
 
-export function getAllCommandMetadata(): any[] {
+export function getAllCommandMetadata() {
   const ionicNamespace = new IonicNamespace();
   return getCommandMetadataList(ionicNamespace);
 }

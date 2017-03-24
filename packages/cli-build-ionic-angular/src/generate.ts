@@ -41,10 +41,10 @@ export async function generate(cmdMetadata: CommandData, inputs: CommandLineInpu
   return [];
 }
 
-async function promptQuestions(name: string, appScripts: any, context: any) {
+async function promptQuestions(name: string, appScripts: typeof AppScripts, context: AppScripts.BuildContext) {
   return await prompt(name, appScripts, context);
 }
 
-async function tabsPromptQuestions(appScripts: any) {
+async function tabsPromptQuestions(appScripts: typeof AppScripts) {
   return await tabsPrompt(appScripts);
 }

@@ -1,4 +1,5 @@
 import {
+  CommandData,
   ICommand,
   ICommandMap,
   INamespace,
@@ -66,13 +67,13 @@ export class Namespace implements INamespace {
 /**
  * Get all commands for a namespace. Return a flat structure
  */
-export function getCommandMetadataList(namespace: INamespace, namespaceDepthList: string[] = []): [any] {
-  const commandList = <any>[];
+export function getCommandMetadataList(namespace: INamespace, namespaceDepthList: string[] = []) {
+  const commandList: CommandData[] = [];
   const namespaces = namespace.getNamespaces();
 
   // If this namespace has children then get their commands
   if (namespaces.size > 0) {
-    namespaces.forEach((ns) => commandList.concat(getCommandMetadataList(namespace, namespaceDepthList)));
+    namespaces.forEach((ns) => commandList.concat(getCommandMetadataList(ns, namespaceDepthList)));
   }
 
   /**
@@ -81,9 +82,7 @@ export function getCommandMetadataList(namespace: INamespace, namespaceDepthList
    */
   const commands = namespace.getCommands();
   commands.forEach((cmd) => {
-    let metadata = <any>cmd.metadata;
-    metadata.namespace = namespaceDepthList;
-    commandList.push(metadata);
+    commandList.push(cmd.metadata);
   });
 
   return commandList;
