@@ -18,7 +18,7 @@ import { IonicNamespace } from '../commands';
 import { load } from './utils/commonjs-loader';
 import * as globalPlugin from '../index';
 
-export const KNOWN_PLUGINS = ['ionic-angular', 'ionic1', 'cordova'];
+export const KNOWN_PLUGINS = ['cordova']; // known plugins with commands
 export const ORG_PREFIX = '@ionic';
 export const PLUGIN_PREFIX = 'cli-plugin-';
 export const ERROR_PLUGIN_NOT_INSTALLED = 'PLUGIN_NOT_INSTALLED';
@@ -103,67 +103,6 @@ export async function loadPlugin(projectDir: string, pluginName: string, askToIn
   }
 
   return m;
-}
-
-/**
- * Get inputs and command class based on arguments supplied
- */
-export async function resolvePlugin(projectDir: string, projectFile: string, argv: string[]): Promise<[Plugin, string[]]> {
-  let pluginName = '';
-  let inputs: string[] = [];
-
-  // If this module's primary namespace has the command then use it.
-  const ionicNamespace = new IonicNamespace();
-  const ionicCommands = ionicNamespace.commands;
-
-  const isGlobalCmd = ionicCommands.has(argv[0]);
-  if (isGlobalCmd || argv.length === 0) {
-    return [ globalPlugin, argv ];
-  }
-
-  const ionicNamespaces = ionicNamespace.namespaces;
-
-  // If the first arguement supplied contains a ':' then it is assumed that
-  // this is calling a command in another namespace.
-  // <namespaceName>:<commandName>
-  if (argv[0].includes(':')) {
-    let [firstArg, ...restOfArguments] = argv;
-    [pluginName, firstArg] = firstArg.split(':');
-
-    inputs = [firstArg, ...restOfArguments];
-  }
-
-  // If this we do not know the project directory and it is not a global
-  // command then we can't run it.
-  if (!projectDir) {
-    throw chalk.bold(`This is not a global command! Please run this in your Ionic project's directory.\n`);
-  }
-
-  // Load the plugin using the pluginName provided
-  try {
-    if (!pluginName) {
-      throw ERROR_PLUGIN_NOT_FOUND;
-    }
-    return [
-      await loadPlugin(projectDir, `${ORG_PREFIX}/${PLUGIN_PREFIX}${pluginName}`),
-      inputs
-    ];
-  } catch (e) {
-
-    // If plugin is not found then lets make a recommendation based on whether
-    // we know the plugin exists.
-    if (e === ERROR_PLUGIN_NOT_INSTALLED) {
-      const releaseChannelName = await getReleaseChannelName();
-      const pluginInstallVersion = `${ORG_PREFIX}/${PLUGIN_PREFIX}${pluginName}` + (releaseChannelName ? `@${releaseChannelName}` : '');
-
-      throw new FatalException('This plugin is not currently installed. Please execute the following to install it.\n\n'
-                              + `    ${chalk.bold(`npm install --save-dev ${pluginInstallVersion}`)}\n`);
-    } else if (e === ERROR_PLUGIN_NOT_FOUND) {
-      throw new FatalException(`Unknown plugin: ${chalk.bold(ORG_PREFIX + '/' + PLUGIN_PREFIX + pluginName)}.`);
-    }
-
-    throw e;
-  }
 }
 
 export async function getReleaseChannelName(): Promise<string | undefined> {

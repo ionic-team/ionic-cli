@@ -9,6 +9,8 @@ import {
   isCommand,
 } from '@ionic/cli-utils';
 
+import { ERROR_PLUGIN_NOT_INSTALLED, KNOWN_PLUGINS, ORG_PREFIX, PLUGIN_PREFIX, loadPlugin } from '../lib/plugins'
+
 import { PackageNamespace } from './package/index';
 
 import { InfoCommand } from './info';
@@ -51,6 +53,18 @@ export class IonicNamespace extends Namespace {
     const [inputs, cmdOrNamespace] = this.locate(argv._);
 
     if (!isCommand(cmdOrNamespace)) {
+      if (env.project.directory && KNOWN_PLUGINS.indexOf(inputs[0]) !== -1) {
+        try {
+          await loadPlugin(env.project.directory, `${ORG_PREFIX}/${PLUGIN_PREFIX}${inputs[0]}`);
+        } catch(e) {
+          if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
+            throw e;
+          }
+        }
+
+        return;
+      }
+
       return HelpCommand.showHelp(env, argv._);
     }
 
