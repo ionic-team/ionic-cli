@@ -1,11 +1,4 @@
-import {
-  CommandData,
-  ICommand,
-  ICommandMap,
-  INamespace,
-  INamespaceMap
-} from '../../definitions';
-
+import { CommandData, ICommand, INamespace } from '../../definitions';
 import { flattenArray } from '../utils/array';
 
 export class CommandMap extends Map<string, () => ICommand> {
@@ -32,65 +25,63 @@ export class Namespace implements INamespace {
 
   /**
    * Recursively inspect inputs supplied to walk down all the tree of
-   * namespaces available to find the command that we will execute.
+   * namespaces available to find the command that we will execute or the
+   * right-most namespace matched if the command is not found.
    */
-  locateCommand(argv: string[]): [string[], ICommand | undefined] {
+  locate(argv: string[]): [string[], ICommand | INamespace] {
     function expandColons(inputs: string[]) {
       return flattenArray(inputs.map((arg) => arg.split(':')));
     }
 
-    function ln(inputs: string[], ns: INamespace): [string[], ICommand | undefined] {
-      const namespaceMap = ns.namespaces;
-
-      if (!namespaceMap.has(inputs[0])) {
+    function _locate(inputs: string[], ns: INamespace): [string[], ICommand | INamespace] {
+      if (!ns.namespaces.has(inputs[0])) {
         const commands = ns.commands;
         const cmdgetter = commands.get(inputs[0]);
 
-        if (!cmdgetter) {
-          return [argv, undefined];
+        if (cmdgetter) {
+          return [inputs.slice(1), cmdgetter()];
         }
-
-        return [inputs.slice(1), cmdgetter()];
       }
 
-      const nsgetter = namespaceMap.get(inputs[0]);
+      const nsgetter = ns.namespaces.get(inputs[0]);
 
       if (!nsgetter) {
-        return [argv, undefined];
+        return [inputs, ns];
       }
 
-      return ln(inputs.slice(1), nsgetter());
+      return _locate(inputs.slice(1), nsgetter());
     }
 
-    return ln(expandColons(argv), this);
-  }
-}
-
-/**
- * Get all commands for a namespace. Return a flat structure
- */
-export function getCommandMetadataList(namespace: INamespace, namespaceDepthList: string[] = []) {
-  let commandList: CommandData[] = [];
-  const namespaceMap = namespace.namespaces;
-
-  // If this namespace has children then get their commands
-  if (namespaceMap.size > 0) {
-    namespaceMap.forEach((nsgetter) => {
-      const ns = nsgetter();
-      const cmds = getCommandMetadataList(ns, [...namespaceDepthList, ns.name]);
-      commandList = commandList.concat(cmds);
-    });
+    return _locate(expandColons(argv), this);
   }
 
   /**
-   * Gather all commands for a namespace and turn them into simple
-   * key value objects. Also keep a record of the namespace path.
+   * Get all command metadata in a flat structure.
    */
-  const commands = namespace.commands;
-  commands.forEach((cmdgetter) => {
-    const cmd = cmdgetter();
-    commandList.push(cmd.metadata);
-  });
+  getCommandMetadataList(): CommandData[] {
+    function _getCommandMetadataList(namespace: INamespace, namespaceDepthList: string[]) {
+      let commandList: CommandData[] = [];
 
-  return commandList;
+      // If this namespace has children then get their commands
+      if (namespace.namespaces.size > 0) {
+        namespace.namespaces.forEach((nsgetter) => {
+          const ns = nsgetter();
+          const cmds = _getCommandMetadataList(ns, [...namespaceDepthList, ns.name]);
+          commandList = commandList.concat(cmds);
+        });
+      }
+
+      // Gather all commands for a namespace and turn them into simple key value
+      // objects. Also keep a record of the namespace path.
+      namespace.commands.forEach((cmdgetter) => {
+        const cmd = cmdgetter();
+        cmd.metadata.fullName = [...namespaceDepthList, cmd.metadata.name].join(' ');
+        commandList.push(cmd.metadata);
+      });
+
+      return commandList;
+    }
+
+    return _getCommandMetadataList(this, [this.name]);
+  }
 }

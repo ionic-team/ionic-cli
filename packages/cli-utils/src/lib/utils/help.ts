@@ -1,23 +1,61 @@
 import * as chalk from 'chalk';
 
-import { CommandData, CommandInput, CommandOption } from '../../definitions';
+import {
+  CommandData,
+  CommandInput,
+  CommandOption,
+  ICommand,
+  INamespace,
+} from '../../definitions';
+import { isCommand } from '../../guards';
 import { validators } from '../validators';
 import { STRIP_ANSI_REGEX, generateFillSpaceStringList } from './format';
 
-/**
- *
- */
+export function formatHelp(cmdOrNamespace: ICommand | INamespace, inputs: string[], inProject: boolean = false) {
+  // If the command is located on the global namespace then show its help
+  if (!isCommand(cmdOrNamespace)) {
+    return getFormattedHelpDetails(cmdOrNamespace, inputs, inProject);
+  }
+
+  const command = cmdOrNamespace;
+
+  return formatCommandHelp(command.metadata);
+}
+
+export function getFormattedHelpDetails(ns: INamespace, inputs: string[], inProject: boolean = false) {
+  const globalMetadata = ns.getCommandMetadataList();
+  const details = getHelpDetails(globalMetadata, inputs);
+
+  return `\n${chalk.bold(`Help Details:`)}\n\n${details.map(hd => `  ${hd}\n`).join('')}`;
+}
+
+function getHelpDetails(commandMetadataList: CommandData[], argv: string[], inProject: boolean = false): string[] {
+  const foundCommandList: CommandData[] = commandMetadataList
+    .filter((cmd) => !cmd.unlisted)
+    .filter((cmd) => !cmd.requiresProject || (cmd.requiresProject && !inProject));
+
+  // No command was found if the length is zero.
+  if (foundCommandList.length === 0) {
+    throw 'UNKNOWN_COMMAND';
+  }
+
+  // We have a list so show the name and description
+  return getListOfCommandDetails(foundCommandList);
+}
+
 export function formatCommandHelp(cmdMetadata: CommandData): string {
   let description = cmdMetadata.description.split('\n').join('\n  ');
-  let fullName = cmdMetadata.fullName || cmdMetadata.name;
+  if (!cmdMetadata.fullName) {
+    cmdMetadata.fullName = cmdMetadata.name;
+  }
 
   return `
   ${chalk.bold(description)}
   ` +
-  formatCommandUsage(cmdMetadata.inputs, fullName) +
+  formatCommandUsage(cmdMetadata.inputs, cmdMetadata.fullName) +
   formatCommandInputs(cmdMetadata.inputs) +
   formatCommandOptions(cmdMetadata.options) +
-  formatCommandExamples(cmdMetadata.exampleCommands, fullName);
+  formatCommandExamples(cmdMetadata.exampleCommands, cmdMetadata.fullName);
 }
 
 export function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[] {

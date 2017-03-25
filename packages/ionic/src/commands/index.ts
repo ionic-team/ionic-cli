@@ -1,7 +1,13 @@
 import * as chalk from 'chalk';
 import * as minimist from 'minimist';
 
-import { CommandMap, IonicEnvironment, Namespace, NamespaceMap } from '@ionic/cli-utils';
+import {
+  CommandMap,
+  IonicEnvironment,
+  Namespace,
+  NamespaceMap,
+  isCommand,
+} from '@ionic/cli-utils';
 
 import { PackageNamespace } from './package/index';
 
@@ -42,12 +48,13 @@ export class IonicNamespace extends Namespace {
 
   async runCommand(env: IonicEnvironment): Promise<void> {
     const argv = minimist(env.pargv);
-    const [inputs, command] = this.locateCommand(argv._);
+    const [inputs, cmdOrNamespace] = this.locate(argv._);
 
-    // If the command was not found throw
-    if (!command) {
-      throw `Command not found: ${chalk.bold(argv._.join(' '))}.`;
+    if (!isCommand(cmdOrNamespace)) {
+      return HelpCommand.showHelp(env, argv._);
     }
+
+    const command = cmdOrNamespace;
 
     command.env = env;
 

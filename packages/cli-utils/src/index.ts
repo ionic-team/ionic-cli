@@ -4,6 +4,7 @@ import * as inquirer from 'inquirer';
 export { archiver, inquirer };
 
 export * from './lib/command';
+export * from './lib/command/command';
 export { normalizeOptionAliases, minimistOptionsToArray } from './lib/command/utils';
 export * from './lib/command/namespace';
 export * from './lib/config';

@@ -326,7 +326,8 @@ export interface INamespace {
   namespaces: INamespaceMap;
   commands: ICommandMap;
 
-  locateCommand(argv: string[]): [string[], ICommand | undefined];
+  locate(argv: string[]): [string[], ICommand | INamespace];
+  getCommandMetadataList(): CommandData[];
 }
 
 export interface ICommand {

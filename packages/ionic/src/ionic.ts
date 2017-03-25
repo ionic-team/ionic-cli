@@ -173,7 +173,7 @@ function modifyArguments(pargv: string[]): string[] {
 
   if (minimistArgv['help'] || minimistArgv['h']) {
     if (minimistArgv._.length > 0) {
-      return ['help', minimistArgv._[0]];
+      return ['help', ...minimistArgv._];
     } else {
       return ['help'];
     }
@@ -207,13 +207,13 @@ function modifyArguments(pargv: string[]): string[] {
  */
 function mapLegacyCommand(command: string): string | undefined {
   const commandMap: { [command: string]: string} = {
-    'build': 'cordova:build',
-    'compile': 'cordova:compile',
-    'emulate': 'cordova:emulate',
-    'platform': 'cordova:platform',
-    'prepare': 'cordova:prepare',
-    'resources': 'cordova:resources',
-    'run': 'cordova:run',
+    'build': 'cordova build',
+    'compile': 'cordova compile',
+    'emulate': 'cordova emulate',
+    'platform': 'cordova platform',
+    'prepare': 'cordova prepare',
+    'resources': 'cordova resources',
+    'run': 'cordova run',
   };
 
   return commandMap[command];
