@@ -2,12 +2,7 @@ import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
 
 import * as AppScripts from '@ionic/app-scripts';
-import {
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandData,
-  CLIEventEmitterServeEventArgs,
-} from '@ionic/cli-utils';
+import { CLIEventEmitterServeEventArgs } from '@ionic/cli-utils';
 
 import { getAvailableIPAddress } from './utils/network';
 import { minimistOptionsToArray } from './utils/arguments';

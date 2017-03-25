@@ -1,12 +1,7 @@
 import * as chalk from 'chalk';
 
 import * as AppScripts from '@ionic/app-scripts';
-import {
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandData,
-  CLIEventEmitterBuildEventArgs,
-} from '@ionic/cli-utils';
+import { CLIEventEmitterBuildEventArgs } from '@ionic/cli-utils';
 
 import { minimistOptionsToArray } from './utils/arguments';
 

@@ -2,12 +2,10 @@ import * as chalk from 'chalk';
 
 import {
   Command,
-  CommandData,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
   IonicEnvironment,
-  INamespace,
   formatHelp,
   getFormattedHelpDetails,
   isCommand,
@@ -40,7 +38,6 @@ export class HelpCommand extends Command {
 
     const [slicedInputs, cmdOrNamespace] = env.namespace.locate(inputs);
     if (!isCommand(cmdOrNamespace)) {
-      const ns = cmdOrNamespace;
       let extra = '';
 
       if (!env.project.directory) {

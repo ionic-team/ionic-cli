@@ -5,7 +5,6 @@ import * as inquirer from 'inquirer';
 import {
   ERROR_FILE_INVALID_JSON,
   ERROR_FILE_NOT_FOUND,
-  FatalException,
   IonicEnvironment,
   Plugin,
   Shell,
@@ -14,9 +13,7 @@ import {
   fsReadJsonFile,
 } from '@ionic/cli-utils';
 
-import { IonicNamespace } from '../commands';
 import { load } from './utils/commonjs-loader';
-import * as globalPlugin from '../index';
 
 export const KNOWN_PLUGINS = ['cordova']; // known plugins with commands
 export const ORG_PREFIX = '@ionic';

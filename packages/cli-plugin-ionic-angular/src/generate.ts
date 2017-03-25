@@ -1,11 +1,6 @@
 import * as AppScripts from '@ionic/app-scripts';
 
-import {
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandData,
-  CLIEventEmitterGenerateEventArgs,
-} from '@ionic/cli-utils';
+import { CLIEventEmitterGenerateEventArgs } from '@ionic/cli-utils';
 import { minimistOptionsToArray } from './utils/arguments';
 
 import { prompt, tabsPrompt } from './utils/generate';

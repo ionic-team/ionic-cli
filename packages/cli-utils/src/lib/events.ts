@@ -1,10 +1,4 @@
-import * as events from 'events';
-import {
-  CommandLineInputs,
-  CommandLineOptions,
-  ICommand,
-  ICLIEventEmitter,
-} from '../definitions';
+import { ICLIEventEmitter } from '../definitions';
 
 export class CLIEventEmitter implements ICLIEventEmitter {
 

@@ -5,13 +5,7 @@ import * as opn from 'opn';
 import { stringToInt } from '../utils/helpers';
 import { createHttpServer } from './http-server';
 import { createLiveReloadServer } from './live-reload';
-import {
-  CommandData,
-  CommandLineInputs,
-  CommandLineOptions,
-  CLIEventEmitterServeEventArgs,
-  IonicEnvironment,
-} from '@ionic/cli-utils';
+import { CLIEventEmitterServeEventArgs, IonicEnvironment } from '@ionic/cli-utils';
 import {
   DEFAULT_ADDRESS,
   DEFAULT_LIVERELOAD_PORT,
