@@ -1,5 +1,6 @@
 import { CommandData, ICommand, INamespace } from '../../definitions';
 import { flattenArray } from '../utils/array';
+import { strcmp } from '../utils/string';
 
 export class CommandMap extends Map<string, () => ICommand> {
   /*
@@ -60,16 +61,7 @@ export class Namespace implements INamespace {
    */
   getCommandMetadataList(): CommandData[] {
     function _getCommandMetadataList(namespace: INamespace, namespaceDepthList: string[]) {
-      let commandList: CommandData[] = [];
-
-      // If this namespace has children then get their commands
-      if (namespace.namespaces.size > 0) {
-        namespace.namespaces.forEach((nsgetter) => {
-          const ns = nsgetter();
-          const cmds = _getCommandMetadataList(ns, [...namespaceDepthList, ns.name]);
-          commandList = commandList.concat(cmds);
-        });
-      }
+      const commandList: CommandData[] = [];
 
       // Gather all commands for a namespace and turn them into simple key value
       // objects. Also keep a record of the namespace path.
@@ -79,7 +71,22 @@ export class Namespace implements INamespace {
         commandList.push(cmd.metadata);
       });
 
-      return commandList;
+      commandList.sort((a, b) => strcmp(a.name, b.name));
+
+      let namespacedCommandList: CommandData[] = [];
+
+      // If this namespace has children then get their commands
+      if (namespace.namespaces.size > 0) {
+        namespace.namespaces.forEach((nsgetter) => {
+          const ns = nsgetter();
+          const cmds = _getCommandMetadataList(ns, [...namespaceDepthList, ns.name]);
+          namespacedCommandList = namespacedCommandList.concat(cmds);
+        });
+      }
+
+      namespacedCommandList.sort((a, b) => strcmp(a.fullName, b.fullName));
+
+      return commandList.concat(namespacedCommandList);
     }
 
     return _getCommandMetadataList(this, [this.name]);
