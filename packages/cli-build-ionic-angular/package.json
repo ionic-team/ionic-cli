@@ -40,6 +40,6 @@
     "chalk": "^1.1.3"
   },
   "peerDependencies": {
-    "@ionic/app-scripts": "^1.1.0"
+    "@ionic/app-scripts": "^1.2.2"
   }
 }
