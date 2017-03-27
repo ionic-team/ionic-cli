@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-plugin-cordova",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Ionic Cordova Plugin for Ionic CLI",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
@@ -49,7 +49,7 @@
     "testResultsProcessor": "<rootDir>/../../node_modules/ts-jest/coverageprocessor.js"
   },
   "dependencies": {
-    "@ionic/cli-utils": "^0.0.8",
+    "@ionic/cli-utils": "^0.0.9",
     "node-fetch": "^1.6.3"
   },
   "devDependencies": {

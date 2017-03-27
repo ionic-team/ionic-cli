@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-build-ionic-angular",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Ionic CLI build plugin for Ionic Angular projects",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
@@ -34,7 +34,7 @@
     "testResultsProcessor": "<rootDir>/../../node_modules/ts-jest/coverageprocessor.js"
   },
   "dependencies": {
-    "@ionic/cli-utils": "^0.0.8"
+    "@ionic/cli-utils": "^0.0.9"
   },
   "devDependencies": {
     "@types/semver": "^5.3.31",
