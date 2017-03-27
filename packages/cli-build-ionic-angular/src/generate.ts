@@ -1,9 +1,11 @@
 import * as AppScripts from '@ionic/app-scripts';
+import * as semver from 'semver';
 
 import {
   CommandLineInputs,
   CommandLineOptions,
   CommandData,
+  getIonicInfo
 } from '@ionic/cli-utils';
 import { minimistOptionsToArray } from './utils/arguments';
 
@@ -14,6 +16,12 @@ export async function generate(cmdMetadata: CommandData, inputs: CommandLineInpu
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
   const appScripts: typeof AppScripts = require('@ionic/app-scripts');
+  const ionicInfo = await getIonicInfo();
+
+  if (!semver.gte(ionicInfo.version, '3.0.0')) {
+    throw new Error(`The generate command is only available for projects that use ionic-angular >= 3.0.0`);
+  }
+
   const context = appScripts.generateContext();
 
   const [ type, name ] = inputs;
