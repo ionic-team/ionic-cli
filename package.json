@@ -33,7 +33,6 @@
     "ts-jest": "^19.0.2",
     "tslint": "^4.0.0-dev.0",
     "tslint-ionic-rules": "^0.0.8",
-    "typescript": "^2.2.1",
-    "webpack": "^2.2.1"
+    "typescript": "^2.2.1"
   }
 }

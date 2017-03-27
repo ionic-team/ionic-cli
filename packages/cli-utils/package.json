@@ -8,7 +8,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
-    "build": "npm run clean && ../../node_modules/.bin/webpack",
+    "build": "npm run clean && ../../node_modules/.bin/tsc",
     "clean": "rm -rf ./dist",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
     "test": "../../node_modules/.bin/jest",
