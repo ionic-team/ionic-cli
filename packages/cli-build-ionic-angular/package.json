@@ -34,10 +34,10 @@
     "testResultsProcessor": "<rootDir>/../../node_modules/ts-jest/coverageprocessor.js"
   },
   "dependencies": {
-    "chalk": "^1.1.3"
+    "@ionic/cli-utils": "^0.0.8"
   },
   "devDependencies": {
-    "@ionic/cli-utils": "^0.0.8"
+    "chalk": "^1.1.3"
   },
   "peerDependencies": {
     "@ionic/app-scripts": "^1.1.0"
