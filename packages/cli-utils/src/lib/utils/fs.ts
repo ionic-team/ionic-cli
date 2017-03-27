@@ -3,11 +3,9 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import * as rimraf from 'rimraf';
 
-import * as inquirer from 'inquirer';
-import * as ncp from 'ncp';
-
 import { prettyPath } from './format';
 import { promisify } from './promisify';
+import { load } from '../modules';
 
 export const ERROR_FILE_NOT_FOUND = 'FILE_NOT_FOUND';
 export const ERROR_FILE_INVALID_JSON = 'FILE_INVALID_JSON';
@@ -74,6 +72,7 @@ export async function fsWriteFilePromptOverwrite(p: string, data: any, options: 
   }
 
   if (stats && stats.isFile()) {
+    const inquirer = load('inquirer');
     const confirmation = await inquirer.prompt({
       type: 'confirm',
       name: 'apply',
@@ -139,6 +138,7 @@ export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: st
 
 export function copyDirectory(source: string, destionation: string): Promise<any> {
   return new Promise((resolve, reject) => {
+    const ncp = load('ncp');
     ncp.ncp(source, destionation, (err: Error) => {
       if (err) {
         reject(err);

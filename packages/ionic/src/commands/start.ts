@@ -1,20 +1,19 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import * as opn from 'opn';
 import * as chalk from 'chalk';
-import * as pathExists from 'path-exists';
 import fetch from 'node-fetch';
 
 import {
-  TaskChain,
+  Command,
   CommandLineInputs,
   CommandLineOptions,
-  Command,
   CommandMetadata,
+  TaskChain,
   getCommandInfo,
+  load,
+  rimrafp,
   validators,
-  rimrafp
 } from '@ionic/cli-utils';
 
 import {
@@ -140,11 +139,13 @@ export class StartCommand extends Command {
      * Create the project directory
      */
 
+    const pathExists = load('path-exists');
     if (!pathExists.sync(projectName)) {
       tasks.next(`Creating directory ${chalk.green(projectRoot)}`);
       fs.mkdirSync(projectRoot);
     } else if (!isSafeToCreateProjectIn(projectRoot)) {
-      const response = await this.env.inquirer.prompt({
+      const inquirer = load('inquirer');
+      const response = await inquirer.prompt({
         type: 'confirm',
         name: 'overwrite',
         message: `The directory ${chalk.green(projectName)} contains file(s) that could conflict. ` +
@@ -251,14 +252,16 @@ export class StartCommand extends Command {
     let { cliFlags } = await this.env.config.load();
 
     if (!options['skip-link']) {
+      const inquirer = load('inquirer');
       const token = await this.env.session.getUserToken();
-      const { linkApp } = await this.env.inquirer.prompt({
+      const { linkApp } = await inquirer.prompt({
         type: 'confirm',
         name: 'linkApp',
         message: 'Link this app to your Ionic Dashboard to use tools like Ionic View?'
       });
 
       if (linkApp && token) {
+        const opn = load('opn');
         const token = await this.env.session.getUserToken();
         opn(`https://apps.ionic.io/?user_token=${token}`, { wait: false });
         this.env.log.ok(`\nRun ${chalk.green(`ionic link`)} to link to the app.`);
@@ -272,7 +275,8 @@ export class StartCommand extends Command {
     }
 
     if (!cliFlags.promptedForTelemetry) {
-      const { optIn } = await this.env.inquirer.prompt({
+      const inquirer = load('inquirer');
+      const { optIn } = await inquirer.prompt({
         type: 'confirm',
         name: 'optIn',
         message: 'Would you like to help Ionic improve the CLI by providing anonymous ' +

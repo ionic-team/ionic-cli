@@ -1,11 +1,9 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
-import * as watch from 'glob-watcher';
-import * as opn from 'opn';
 import { stringToInt } from '../utils/helpers';
 import { createHttpServer } from './http-server';
 import { createLiveReloadServer } from './live-reload';
-import { CLIEventEmitterServeEventArgs, IonicEnvironment } from '@ionic/cli-utils';
+import { CLIEventEmitterServeEventArgs, IonicEnvironment, load } from '@ionic/cli-utils';
 import {
   DEFAULT_ADDRESS,
   DEFAULT_LIVERELOAD_PORT,
@@ -33,7 +31,8 @@ export async function serve(args: CLIEventEmitterServeEventArgs): Promise<{ [key
 
   let chosenIP = availableIPs[0].address;
   if (availableIPs.length > 1) {
-    const promptAnswers = await args.env.inquirer.prompt({
+    const inquirer = load('inquirer');
+    const promptAnswers = await inquirer.prompt({
       type: 'list',
       name: 'ip',
       message: 'Multiple addresses available. Please select which address to use:',
@@ -95,6 +94,7 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
   const liveReloadBrowser = createLiveReloadServer(options);
   await createHttpServer(env.project, options);
 
+  const watch = load('glob-watcher');
   const watcher = watch(WATCH_PATTERNS);
   watcher.on('change', async function(filePath: string) {
 
@@ -114,6 +114,7 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
       .concat(options.browseroption ? [options.browseroption] : [])
       .concat(options.platform ? ['?ionicplatform=', options.platform] : []);
 
+    const opn = load('opn');
     opn(openOptions.join(''));
   }
   return options;

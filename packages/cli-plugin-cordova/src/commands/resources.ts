@@ -6,7 +6,7 @@ import {
   Command,
   CommandMetadata,
   TaskChain,
-  promptToLogin
+  promptToLogin,
 } from '@ionic/cli-utils';
 
 import {
@@ -66,7 +66,7 @@ export class ResourcesCommand extends Command {
     const isLoggedIn = await this.env.session.isLoggedIn();
     if (!isLoggedIn) {
       this.env.log.msg(`You need to be logged into your Ionic account in order to run the ${chalk.bold(`cordova:resources`)} command.\n`);
-      await promptToLogin(this.env.inquirer, this.env.log, this.env.session);
+      await promptToLogin(this.env.log, this.env.session);
     }
   }
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {},
   "devDependencies": {
+    "@ionic/app-scripts": "^1.2.2",
     "@types/archiver": "^0.15.36",
     "@types/chalk": "^0.4.30",
     "@types/clean-css": "^3.4.30",

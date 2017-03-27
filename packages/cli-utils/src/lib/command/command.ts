@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import * as superagent from 'superagent';
+import * as superagentType from 'superagent';
 import * as minimist from 'minimist';
 
 import {
@@ -84,7 +84,7 @@ export class Command implements ICommand {
     return new FatalException(msg, code);
   }
 
-  exitAPIFormat(req: superagent.SuperAgentRequest, res: APIResponse): FatalException {
+  exitAPIFormat(req: superagentType.SuperAgentRequest, res: APIResponse): FatalException {
     return createFatalAPIFormat(req, res);
   }
 

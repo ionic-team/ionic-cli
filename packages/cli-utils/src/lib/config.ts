@@ -1,13 +1,11 @@
 import * as path from 'path';
-import * as lodash from 'lodash';
-
 import * as chalk from 'chalk';
 
 import { ConfigFile, IConfig } from '../definitions';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
 import { ERROR_FILE_NOT_FOUND, fsMkdirp, fsStat, fsReadJsonFile, fsWriteJsonFile } from './utils/fs';
-import { cloneDeep, isEqual } from 'lodash';
+import { load } from './modules';
 
 export abstract class BaseConfig<T> implements IConfig<T> {
   public filePath: string;
@@ -40,7 +38,8 @@ export abstract class BaseConfig<T> implements IConfig<T> {
 
       if (this.is<T>(o)) {
         this.configFile = o;
-        this.originalConfigFile = cloneDeep(o);
+        const lodash = load('lodash');
+        this.originalConfigFile = lodash.cloneDeep(o);
       } else {
         throw new FatalException(`The config file (${chalk.bold(prettyPath(this.filePath))}) has an unrecognized format.\n`
                                + `Try deleting the file.`);
@@ -55,26 +54,31 @@ export abstract class BaseConfig<T> implements IConfig<T> {
       configFile = this.configFile;
     }
 
-    if (configFile && !isEqual(configFile, this.originalConfigFile)) {
-      const dirPath = path.dirname(this.filePath);
-      try {
-        let stats = await fsStat(dirPath);
-        if (!stats.isDirectory()) {
-          throw `${dirPath} must be a directory it is currently a file`;
+    if (configFile) {
+      const lodash = load('lodash');
+
+      if (!lodash.isEqual(configFile, this.originalConfigFile)) {
+        const dirPath = path.dirname(this.filePath);
+        try {
+          let stats = await fsStat(dirPath);
+          if (!stats.isDirectory()) {
+            throw `${dirPath} must be a directory it is currently a file`;
+          }
+        } catch (e) {
+          await fsMkdirp(dirPath);
         }
-      } catch (e) {
-        await fsMkdirp(dirPath);
+        await fsWriteJsonFile(this.filePath, configFile, { encoding: 'utf8' });
+        this.configFile = configFile;
+        this.originalConfigFile = lodash.cloneDeep(configFile);
       }
-      await fsWriteJsonFile(this.filePath, configFile, { encoding: 'utf8' });
-      this.configFile = configFile;
-      this.originalConfigFile = cloneDeep(configFile);
     }
   }
 }
 
 export class Config extends BaseConfig<ConfigFile> {
   provideDefaults(o: any): any {
-    var results = lodash.cloneDeep(o);
+    const lodash = load('lodash');
+    const results = lodash.cloneDeep(o);
 
     if (!results.lastUpdated) {
       results.lastUpdated = new Date().toISOString();

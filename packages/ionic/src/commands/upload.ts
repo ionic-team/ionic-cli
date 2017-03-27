@@ -36,7 +36,7 @@ export class UploadCommand extends Command {
       input = undefined;
     }
 
-    return input;
+    return input as string | undefined; // TODO: strictNullChecks
   }
 
   resolveChannelTag(input: CommandLineInput) {
@@ -46,7 +46,7 @@ export class UploadCommand extends Command {
       input = 'dev';
     }
 
-    return input;
+    return input as string | undefined; // TODO: strictNullChecks
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

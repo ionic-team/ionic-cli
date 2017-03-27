@@ -1,11 +1,12 @@
 import * as tty from 'tty';
 
 import * as chalk from 'chalk';
-import * as inquirer from 'inquirer';
-import ui = inquirer.ui;
-import * as ProgressBar from 'progress';
+import * as inquirerType from 'inquirer';
+import ui = inquirerType.ui;
+import * as ProgressBarType from 'progress';
 
 import { ICON_SUCCESS_GREEN, ICON_FAILURE_RED } from './format';
+import { load } from '../modules';
 
 const FRAMES = process.platform === 'win32' ?
   ['-', '\\', '|', '/'] :
@@ -28,10 +29,11 @@ export class Task {
   public running: boolean = false;
   protected bottomBar: ui.BottomBar;
   private spinner: Spinner;
-  private progressBar?: ProgressBar;
+  private progressBar?: ProgressBarType;
 
   constructor(public msg: string) {
     this.spinner = new Spinner();
+    const inquirer = load('inquirer');
     this.bottomBar = new inquirer.ui.BottomBar();
     TASKS.push(this);
   }
@@ -52,6 +54,7 @@ export class Task {
     if (this.running) {
       if (!this.progressBar) {
         const term = <any>tty; // TODO: type def issue
+        const ProgressBar = load('progress');
         this.progressBar = new ProgressBar('[:bar] :percent :etas', {
           total: total,
           width: 15,

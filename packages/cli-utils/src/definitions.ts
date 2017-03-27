@@ -1,9 +1,9 @@
-import * as child_process from 'cross-spawn';
-import * as inquirer from 'inquirer';
-import * as superagent from 'superagent';
+import * as crossSpawnType from 'cross-spawn';
+import * as inquirerType from 'inquirer';
+import * as superagentType from 'superagent';
 
 export interface SuperAgentError extends Error {
-  response: superagent.Response;
+  response: superagentType.Response;
 }
 
 export type LogFn = (message?: any, ...args: any[]) => void;
@@ -153,7 +153,7 @@ export interface ValidationError {
 export interface CommandInputPrompt {
   type?: string;
   message?: string;
-  choices?: inquirer.ChoiceType[] | ((answers: inquirer.Answers) => inquirer.ChoiceType[]);
+  choices?: inquirerType.ChoiceType[] | ((answers: inquirerType.Answers) => inquirerType.ChoiceType[]);
   filter?(input: string): string;
 }
 
@@ -184,7 +184,7 @@ export interface ISession {
   getAppUserToken(app_id?: string): Promise<string>;
 }
 
-export interface IShellRunOptions extends child_process.SpawnOptions {
+export interface IShellRunOptions extends crossSpawnType.SpawnOptions {
   showExecution?: boolean;
   showError?: boolean;
   fatal?: boolean;
@@ -261,8 +261,8 @@ export interface APIResponseSuccess {
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' | 'HEAD' | 'OPTIONS';
 
 export interface IClient {
-  make(method: HttpMethod, path: string): superagent.Request;
-  do(res: superagent.Request): Promise<APIResponseSuccess>;
+  make(method: HttpMethod, path: string): superagentType.Request;
+  do(res: superagentType.Request): Promise<APIResponseSuccess>;
 }
 
 export interface CLIEventEmitterBuildEventArgs {
@@ -312,7 +312,6 @@ export interface IonicEnvironment {
   session: ISession;
   shell: IShell;
   telemetry: ITelemetry;
-  inquirer: typeof inquirer;
   namespace: INamespace;
 }
 

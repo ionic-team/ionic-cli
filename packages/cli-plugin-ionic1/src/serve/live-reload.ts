@@ -1,8 +1,9 @@
 import * as path from 'path';
-import * as tinylr from 'tiny-lr';
+import { load } from '@ionic/cli-utils';
 import { ServerOptions } from './config';
 
 export function createLiveReloadServer(options: ServerOptions): Function {
+  const tinylr = load('tiny-lr');
   const liveReloadServer = tinylr();
   liveReloadServer.listen(options.livereloadPort, options.address);
 

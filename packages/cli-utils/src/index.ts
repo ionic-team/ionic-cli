@@ -1,8 +1,3 @@
-import * as archiver from 'archiver';
-import * as inquirer from 'inquirer';
-
-export { archiver, inquirer };
-
 export * from './definitions';
 export * from './guards';
 
@@ -15,11 +10,10 @@ export * from './lib/config';
 export * from './lib/config';
 export * from './lib/deploy';
 export * from './lib/errors';
-export * from './lib/errors';
 export * from './lib/events';
 export * from './lib/http';
-export * from './lib/http';
 export * from './lib/login';
+export * from './lib/modules';
 export * from './lib/project';
 export * from './lib/session';
 export * from './lib/shell';

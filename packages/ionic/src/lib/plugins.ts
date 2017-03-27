@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
-import * as inquirer from 'inquirer';
 
 import {
   ERROR_FILE_INVALID_JSON,
@@ -11,9 +10,8 @@ import {
   TaskChain,
   fsReadDir,
   fsReadJsonFile,
+  load,
 } from '@ionic/cli-utils';
-
-import { load } from './utils/commonjs-loader';
 
 export const KNOWN_PLUGINS = ['cordova']; // known plugins with commands
 export const ORG_PREFIX = '@ionic';
@@ -60,8 +58,8 @@ export async function loadPlugin(projectDir: string, pluginName: string, askToIn
   let m: Plugin | undefined;
 
   try {
-    var mPath = path.join(projectDir, 'node_modules', ...pluginName.split('/'));
-    m = load(mPath);
+    const mPath = path.join(projectDir, 'node_modules', ...pluginName.split('/'));
+    m = require(mPath);
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') {
       throw e;
@@ -78,6 +76,7 @@ export async function loadPlugin(projectDir: string, pluginName: string, askToIn
     throw ERROR_PLUGIN_NOT_INSTALLED;
   }
   if (!m) {
+    const inquirer = load('inquirer');
     const answers = await inquirer.prompt([{
       type: 'confirm',
       name: 'installPlugin',

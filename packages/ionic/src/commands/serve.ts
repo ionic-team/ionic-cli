@@ -1,12 +1,11 @@
-import * as dgram from 'dgram';
-import * as qrcode from 'qrcode-terminal';
 import {
+  Command,
   CommandLineInputs,
   CommandLineOptions,
-  Command,
   CommandMetadata,
+  TaskChain,
+  load,
   normalizeOptionAliases,
-  TaskChain
 } from '@ionic/cli-utils';
 
 @CommandMetadata({
@@ -125,6 +124,7 @@ export class ServeCommand extends Command {
         app_id: appDetails.app_id,
         local_address: `${response.protocol}://${response.publicIp}:${response.httpPort}`
       });
+      const dgram = load('dgram');
       const server = dgram.createSocket('udp4');
 
       server.on('listening', () => {
@@ -149,6 +149,7 @@ function generateQrCode(input: string): Promise<string> {
   return new Promise((resolve, reject) => {
 
     try {
+      const qrcode = load('qrcode');
       qrcode.generate(input, (response: any) => {
         resolve(response);
       });

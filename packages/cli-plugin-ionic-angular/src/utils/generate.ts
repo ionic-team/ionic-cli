@@ -1,11 +1,12 @@
 import * as path from 'path';
 
-import * as AppScripts from '@ionic/app-scripts';
-import { inquirer } from '@ionic/cli-utils';
+import * as AppScriptsType from '@ionic/app-scripts';
+import { load } from '@ionic/cli-utils';
 
-export async function getPages(appScripts: typeof AppScripts, context: AppScripts.BuildContext) {
-  const pages = await appScripts.getNgModules(context, ['page', 'component']);
-  const ngModuleSuffix = await appScripts.getStringPropertyValue('IONIC_NG_MODULE_FILENAME_SUFFIX');
+export async function getPages(context: AppScriptsType.BuildContext) {
+  const AppScripts = load('@ionic/app-scripts');
+  const pages = await AppScripts.getNgModules(context, ['page', 'component']);
+  const ngModuleSuffix = await AppScripts.getStringPropertyValue('IONIC_NG_MODULE_FILENAME_SUFFIX');
 
   return pages.map((page) => {
     return {
@@ -16,7 +17,8 @@ export async function getPages(appScripts: typeof AppScripts, context: AppScript
   });
 }
 
-export async function prompt(type: string, appScripts: typeof AppScripts, context: AppScripts.BuildContext) {
+export async function prompt(type: string, context: AppScriptsType.BuildContext) {
+  const inquirer = load('inquirer');
   const usageQuestion = await inquirer.prompt({
     type: 'confirm',
     name: 'usage',
@@ -24,7 +26,7 @@ export async function prompt(type: string, appScripts: typeof AppScripts, contex
   });
 
   if (!usageQuestion.usage) {
-    const fileChoices = await getPages(appScripts, context);
+    const fileChoices = await getPages(context);
 
     const filteredChoices = fileChoices.map((file) => {
       return {
@@ -52,9 +54,10 @@ export async function prompt(type: string, appScripts: typeof AppScripts, contex
   }
 }
 
-export async function tabsPrompt(appScripts: typeof AppScripts) {
+export async function tabsPrompt() {
   const tabNames = [];
 
+  const inquirer = load('inquirer');
   const howManyQuestion = await inquirer.prompt({
     name: 'howMany',
     message: 'How many tabs?'

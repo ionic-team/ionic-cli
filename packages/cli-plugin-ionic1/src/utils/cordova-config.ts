@@ -1,5 +1,6 @@
 import * as fs from 'fs';
-import * as xml2js from 'xml2js';
+
+import { load } from '@ionic/cli-utils';
 
 export interface CordovaProject {
   name?: string;
@@ -14,7 +15,8 @@ let lastConfig: CordovaProject;
  * config.xml file in the project root.
  */
 export function buildCordovaConfig(errCb: Function, cb: Function) {
-  var parser = new xml2js.Parser();
+  const xml2js = load('xml2js');
+  const parser = new xml2js.Parser();
 
   fs.readFile('config.xml', (err: any, data: any) => {
     if (err) {

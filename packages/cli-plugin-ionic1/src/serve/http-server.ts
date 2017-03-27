@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { injectLiveReloadScript } from './live-reload';
-import * as express from 'express';
+import * as expressType from 'express';
 import * as fs from 'fs';
 import * as url from 'url';
 import {
@@ -9,10 +9,7 @@ import {
   IOS_PLATFORM_PATH,
   ANDROID_PLATFORM_PATH
 } from './config';
-import {
-  IProject
-} from '@ionic/cli-utils';
-import * as proxyMiddleware from 'proxy-middleware';
+import { IProject, load } from '@ionic/cli-utils';
 
 import { LabAppView, ApiCordovaProject } from './lab';
 
@@ -20,8 +17,8 @@ import { LabAppView, ApiCordovaProject } from './lab';
 /**
  * Create HTTP server
  */
-export async function createHttpServer(project: IProject, options: ServerOptions): Promise<express.Application> {
-
+export async function createHttpServer(project: IProject, options: ServerOptions): Promise<expressType.Application> {
+  const express = load('express');
   const app = express();
   app.set('serveOptions', options);
   app.listen(options.port, options.address);
@@ -45,7 +42,7 @@ export async function createHttpServer(project: IProject, options: ServerOptions
   return app;
 }
 
-async function setupProxies(project: IProject, app: express.Application) {
+async function setupProxies(project: IProject, app: expressType.Application) {
 
   const projectConfig = await project.load();
 
@@ -57,7 +54,8 @@ async function setupProxies(project: IProject, app: express.Application) {
 
     opts.rejectUnauthorized = !(proxy.rejectUnauthorized === false);
 
-    app.use(proxy.path, <express.RequestHandler>proxyMiddleware(opts));
+    const proxyMiddleware = load('proxy-middleware');
+    app.use(proxy.path, <expressType.RequestHandler>proxyMiddleware(opts));
     console.log('Proxy added:' + proxy.path + ' => ' + url.format(opts));
   }
 }
@@ -65,7 +63,7 @@ async function setupProxies(project: IProject, app: express.Application) {
 /**
  * http responder for /index.html base entrypoint
  */
-function serveIndex(req: express.Request, res: express.Response)  {
+function serveIndex(req: expressType.Request, res: expressType.Response)  {
   const options: ServerOptions = req.app.get('serveOptions');
 
   // respond with the index.html file
@@ -83,7 +81,7 @@ function serveIndex(req: express.Request, res: express.Response)  {
 /**
  * http responder for cordova.js file
  */
-function serveMockCordovaJS(req: express.Request, res: express.Response) {
+function serveMockCordovaJS(req: expressType.Request, res: expressType.Response) {
   res.set('Content-Type', 'application/javascript');
   res.send('// mock cordova file during development');
 }
@@ -91,7 +89,7 @@ function serveMockCordovaJS(req: express.Request, res: express.Response) {
 /**
  * Middleware to serve platform resources
  */
-function servePlatformResource(req: express.Request, res: express.Response, next: express.NextFunction) {
+function servePlatformResource(req: expressType.Request, res: expressType.Response, next: expressType.NextFunction) {
   const options: ServerOptions = req.app.get('serveOptions');
   const userAgent = req.header('user-agent');
   let resourcePath = options.wwwDir;

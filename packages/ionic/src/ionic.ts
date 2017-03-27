@@ -2,7 +2,6 @@ import * as os from 'os';
 import * as path from 'path';
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
-import * as inquirer from 'inquirer';
 
 import {
   App,
@@ -93,7 +92,6 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       session,
       shell,
       telemetry,
-      inquirer,
       namespace,
     };
 

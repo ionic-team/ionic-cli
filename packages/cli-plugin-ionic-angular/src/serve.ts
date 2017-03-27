@@ -1,8 +1,6 @@
 import * as chalk from 'chalk';
-import * as inquirer from 'inquirer';
 
-import * as AppScripts from '@ionic/app-scripts';
-import { CLIEventEmitterServeEventArgs } from '@ionic/cli-utils';
+import { CLIEventEmitterServeEventArgs, load } from '@ionic/cli-utils';
 
 import { getAvailableIPAddress } from './utils/network';
 import { minimistOptionsToArray } from './utils/arguments';
@@ -17,6 +15,7 @@ export async function serve(args: CLIEventEmitterServeEventArgs): Promise<{ [key
 
   let chosenIP = availableIPs[0].address;
   if (availableIPs.length > 1) {
+    const inquirer = load('inquirer');
     const promptAnswers = await inquirer.prompt({
       type: 'list',
       name: 'ip',
@@ -29,13 +28,13 @@ export async function serve(args: CLIEventEmitterServeEventArgs): Promise<{ [key
   let appScriptsArgs = minimistOptionsToArray(args.options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
-  const appScripts: typeof AppScripts = require('@ionic/app-scripts');
-  const context = appScripts.generateContext();
+  const AppScripts = load('@ionic/app-scripts');
+  const context = AppScripts.generateContext();
 
   // using app-scripts and livereload is requested
   // Also remove commandName from the rawArgs passed
   console.log(`  Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
-  const settings = await appScripts.serve(context);
+  const settings = await AppScripts.serve(context);
 
   if (!settings) { // TODO: shouldn't be needed
     throw new Error(`app-scripts serve unexpectedly failed.`);

@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
-import { load } from './commonjs-loader';
 
 export function checkEnvironment(projectDirectory: string): boolean {
   try {
@@ -19,7 +18,7 @@ export function checkEnvironment(projectDirectory: string): boolean {
 
 export function setupGulpInstance(projectDirectory: string): any {
   try {
-    var gulp = load(path.join(projectDirectory, 'node_modules', 'gulp'));
+    var gulp = require(path.join(projectDirectory, 'node_modules', 'gulp'));
   } catch (e) {
 
     // Empty gulpfile (or one that doesn't require gulp?), and no gulp
@@ -49,7 +48,7 @@ function doesGulpFileExist(projectDirectory: string): boolean {
   var names = ['gulpfile.js', 'Gulpfile.js'];
   for (var i = 0, ii = names.length; i < ii; i += 1) {
     try {
-      load(path.join(projectDirectory, names[i]));
+      require(path.join(projectDirectory, names[i]));
       return true;
     } catch (e) {
       if (e.code === 'MODULE_NOT_FOUND' && e.message.indexOf(names[i]) !== -1) {

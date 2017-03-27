@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import * as FormData from 'form-data';
 import fetch from 'node-fetch';
 
 import {
@@ -19,6 +18,7 @@ import {
   fsReadDir,
   fsReadJsonFile,
   getFileChecksum,
+  load,
   writeStreamToFile,
 } from '@ionic/cli-utils';
 
@@ -163,6 +163,7 @@ export function findMostSpecificImage(imageResource: ImageResource, srcImagesAva
 export async function uploadSourceImages(srcImages: SourceImage[]): Promise<ImageUploadResponse[]> {
   return Promise.all(
     srcImages.map(async function(srcImage) {
+      const FormData = load('form-data');
       const form = new FormData();
       form.append('image_id', srcImage.imageId);
       form.append('src', fs.createReadStream(srcImage.path));
@@ -186,6 +187,7 @@ export async function uploadSourceImages(srcImages: SourceImage[]): Promise<Imag
  * into the appropiate w x h and then write this file to the provided destination directory.
  */
 export async function transformResourceImage(imageResource: ImageResource): Promise<void> {
+  const FormData = load('form-data');
   const form = new FormData();
   form.append('image_id', imageResource.imageId);
   form.append('width', imageResource.width);

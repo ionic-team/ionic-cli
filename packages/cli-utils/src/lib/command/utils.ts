@@ -1,4 +1,4 @@
-import * as inquirer from 'inquirer';
+import * as inquirerType from 'inquirer';
 import { Opts as MinimistOpts } from 'minimist';
 
 import {
@@ -13,6 +13,7 @@ import {
   ValidationError
 } from '../../definitions';
 
+import { load } from '../modules';
 import { validators, combine as combineValidators } from '../validators';
 
 export interface NormalizedMinimistOpts extends MinimistOpts {
@@ -118,8 +119,8 @@ export function metadataToMinimistOptions(metadata: CommandData): NormalizedMini
   return options;
 }
 
-export function metadataToInquirerQuestions(metadata: CommandData): inquirer.Question[] {
-  let questions: inquirer.Question[] = [];
+export function metadataToInquirerQuestions(metadata: CommandData): inquirerType.Question[] {
+  let questions: inquirerType.Question[] = [];
 
   if (!metadata.inputs) {
     return questions;
@@ -212,6 +213,7 @@ export async function collectInputs(argv: string[], metadata: CommandData) {
       questions.splice(i, 1);
     }
 
+    const inquirer = load('inquirer');
     const answers = await inquirer.prompt(questions);
 
     Object.keys(answers).forEach(function(name) {

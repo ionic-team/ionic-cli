@@ -1,7 +1,6 @@
-import * as xml2js from 'xml2js';
 import * as path from 'path';
 import { ResourcesImageConfig, KnownPlatform, ResourcesConfig } from '../../definitions';
-import { ERROR_FILE_NOT_FOUND, fsReadFile, fsWriteFile, promisify } from '@ionic/cli-utils';
+import { ERROR_FILE_NOT_FOUND, fsReadFile, fsWriteFile, load, promisify } from '@ionic/cli-utils';
 
 
 /**
@@ -117,6 +116,7 @@ export function addSplashScreenPreferencesToConfigJson(configJson: any): any {
 export async function parseConfigXmlToJson(projectDir: string): Promise<any> {
   const configFilePath = path.join(projectDir, 'config.xml');
   let configJson: any = null;
+  const xml2js = load('xml2js');
   const parseString = promisify<any, string>(xml2js.parseString);
 
   try {
@@ -139,6 +139,7 @@ export async function parseConfigXmlToJson(projectDir: string): Promise<any> {
  * Convert provided Json to XML and write to the project's config.xml file.
  */
 export async function writeConfigXml(projectDir: string, configJson: any) {
+  const xml2js = load('xml2js');
   const builder = new xml2js.Builder();
   const xml = builder.buildObject(configJson);
   const configFilePath = path.join(projectDir, 'config.xml');
