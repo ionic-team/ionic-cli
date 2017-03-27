@@ -25,11 +25,11 @@ $ npm install --save-dev @ionic/cli-plugin-cordova@beta @ionic/cli-build-ionic-a
 ```
 
 #### Latest beta release versions
- - ionic@3.0.0-beta.4
- - @ionic/cli-plugin-cordova@0.0.9
- - @ionic/cli-build-ionic-angular@0.0.3 (Ionic2 Specific)
- - @ionic/cli-build-ionic1@0.0.3 (Ionic1 Specific)
- - @ionic/cli-plugin-core (__deprecated__)
+
+ - ionic@3.0.0-beta.5
+ - @ionic/cli-plugin-cordova@0.0.10
+ - @ionic/cli-build-ionic-angular@0.0.4
+ - @ionic/cli-build-ionic1@0.0.4
 
 
 *Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix the command with `sudo` or can 

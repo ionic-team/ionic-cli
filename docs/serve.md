@@ -26,6 +26,7 @@ Option | Description
 `--browseroption`, `-o` | Specifies a path to open to (/#/tab/dash)
 `--lab`, `-l` | Test your apps on multiple platform types in the browser
 `--platform`, `-t` | Start serve with a specific platform (ios/android)
+`--qrcode` | Print a QR code for Ionic View instead of network broadcasting
 
 ## EXAMPLES
     ionic serve --lab --consolelogs -s 

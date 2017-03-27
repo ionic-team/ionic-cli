@@ -22,6 +22,7 @@ Option | Description
 `--skip-npm` | Skip npm package installation
 `--list`, `-l` | List starter templates available
 `--cloud-app-id` | An existing Ionic.io app ID to link with
+`--skip-link` | Do not link app to an Ionic Account
 
 ## EXAMPLES
     ionic start mynewapp blank 

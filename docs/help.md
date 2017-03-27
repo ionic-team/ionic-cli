@@ -3,7 +3,7 @@
 help -- Provides help for a certain command
   
 ## SYNOPSIS
-    ionic help <command>
+    ionic help [command]
   
 ## DESCRIPTION
 Provides help for a certain command

@@ -13,6 +13,6 @@ Command | Description
 [telemetry](telemetry.md) | Opt in and out of telemetry
 [docs](docs.md) | Opens up the Ionic documentation website
 [ionitron](ionitron.md) | Print random ionitron messages
-[generate](generate.md) | Generate pages and components
+[generate](generate.md) | Generates pipes, components, pages, directives, and tabs [1m(ionic-angular >= 3.0.0)[22m
 [link](link.md) | Links your app with Ionic Cloud.
 [upload](upload.md) | Upload a new snapshot of your app
