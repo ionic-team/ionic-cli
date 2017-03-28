@@ -109,11 +109,7 @@ export class BuildCommand extends Command {
     await resetConfigXmlContentSrc(this.env.project.directory);
 
     tasks.end();
-    await this.env.emitEvent('build', {
-      metadata: this.metadata,
-      inputs,
-      options: generateBuildOptions(this.metadata, options)
-    });
+    await this.env.emitter.emit('build', { options: generateBuildOptions(this.metadata, options) });
     tasks.next(`Running build`);
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);

@@ -1,5 +1,4 @@
 import * as chalk from 'chalk';
-import * as opn from 'opn';
 
 import {
   APIResponse,
@@ -9,7 +8,8 @@ import {
   Command,
   CommandMetadata,
   createFatalAPIFormat,
-  isAPIResponseSuccess
+  isAPIResponseSuccess,
+  load,
 } from '@ionic/cli-utils';
 
 interface App {
@@ -88,7 +88,8 @@ export class LinkCommand extends Command {
       }
 
       if (project.app_id) {
-        const confirmation = await this.env.inquirer.prompt({
+        const inquirer = load('inquirer');
+        const confirmation = await inquirer.prompt({
           type: 'confirm',
           name: 'apply',
           message: `App ID ${chalk.green(project.app_id)} exists in project config. Overwrite?`
@@ -117,7 +118,8 @@ export class LinkCommand extends Command {
         id: CREATE_NEW_APP_CHOICE,
       };
 
-      const confirmation = await this.env.inquirer.prompt({
+      const inquirer = load('inquirer');
+      const confirmation = await inquirer.prompt({
         type: 'list',
         name: 'choice',
         message: `Which app would you like to link`,
@@ -132,6 +134,7 @@ export class LinkCommand extends Command {
 
     if (appId === CREATE_NEW_APP_CHOICE) {
       const token = await this.env.session.getUserToken();
+      const opn = load('opn');
       opn(`https://apps.ionic.io/?user_token=${token}`, { wait: false });
       this.env.log.ok(`Rerun ${chalk.green(`ionic link`)} to link to the new app.`);
 

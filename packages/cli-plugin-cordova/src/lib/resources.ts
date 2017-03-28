@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import * as FormData from 'form-data';
 import fetch from 'node-fetch';
 
 import {
@@ -11,14 +10,16 @@ import {
   KnownPlatform
 } from '../definitions';
 import {
-  fsReadDir,
-  fsMkdirp,
-  fsReadJsonFile,
-  ERROR_FILE_NOT_FOUND,
   ERROR_FILE_INVALID_JSON,
+  ERROR_FILE_NOT_FOUND,
+  copyDirectory,
+  flattenArray,
+  fsMkdirp,
+  fsReadDir,
+  fsReadJsonFile,
   getFileChecksum,
+  load,
   writeStreamToFile,
-  copyDirectory
 } from '@ionic/cli-utils';
 
 import {
@@ -40,7 +41,7 @@ const DEFAULT_RESOURCES_DIR = path.resolve(__dirname, '..', 'default-resources')
  * items.
  */
 export function flattenResourceJsonStructure (jsonStructure: any): ImageResource[] {
-  return flatten(Object.keys(jsonStructure).map(platform => (
+  return flattenArray(Object.keys(jsonStructure).map(platform => (
     Object.keys(jsonStructure[platform]).map(resType => (
       jsonStructure[platform][resType]['images'].map((imgInfo: any) => (
         {
@@ -109,7 +110,7 @@ export async function getSourceImages (buildPlatforms: string[], resourceTypes: 
     srcDirList.map((srcImgDir: any) => fsReadDir(srcImgDir.path))
   );
 
-  const sourceImages = flatten(
+  const sourceImages = flattenArray(
     srcImageDirContentList.map((srcImageDirContents, index) => (
       srcImageDirContents
         .map((imgName: string): SourceImage => {
@@ -162,6 +163,7 @@ export function findMostSpecificImage(imageResource: ImageResource, srcImagesAva
 export async function uploadSourceImages(srcImages: SourceImage[]): Promise<ImageUploadResponse[]> {
   return Promise.all(
     srcImages.map(async function(srcImage) {
+      const FormData = load('form-data');
       const form = new FormData();
       form.append('image_id', srcImage.imageId);
       form.append('src', fs.createReadStream(srcImage.path));
@@ -185,6 +187,7 @@ export async function uploadSourceImages(srcImages: SourceImage[]): Promise<Imag
  * into the appropiate w x h and then write this file to the provided destination directory.
  */
 export async function transformResourceImage(imageResource: ImageResource): Promise<void> {
+  const FormData = load('form-data');
   const form = new FormData();
   form.append('image_id', imageResource.imageId);
   form.append('width', imageResource.width);
@@ -208,15 +211,6 @@ export async function transformResourceImage(imageResource: ImageResource): Prom
   } catch (e) {
     throw e;
   }
-}
-
-/**
- * Recursively flatten an array.
- */
-function flatten(arr: any[]): any[] {
-  return arr.reduce(function (flat, toFlatten) {
-    return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-  }, []);
 }
 
 /**

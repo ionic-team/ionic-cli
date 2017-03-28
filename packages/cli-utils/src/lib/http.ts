@@ -1,7 +1,7 @@
 import * as util from 'util';
 
 import * as chalk from 'chalk';
-import * as superagent from 'superagent';
+import * as superagentType from 'superagent';
 
 import {
   APIResponse,
@@ -13,6 +13,7 @@ import {
 } from '../definitions';
 
 import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
+import { load } from './modules';
 import { FatalException } from './errors';
 
 const FORMAT_ERROR_BODY_MAX_LENGTH = 1000;
@@ -23,7 +24,7 @@ export const ERROR_UNKNOWN_RESPONSE_FORMAT = 'UNKNOWN_RESPONSE_FORMAT';
 export class Client implements IClient {
   constructor(public host: string) {}
 
-  static transform(r: superagent.Response): APIResponse {
+  static transform(r: superagentType.Response): APIResponse {
     if (r.status === 204 && !r.body) {
       r.body = { data: null, meta: { status: 204, version: '', request_id: '' } };
     }
@@ -41,14 +42,15 @@ export class Client implements IClient {
     return j;
   }
 
-  make(method: HttpMethod, path: string): superagent.Request {
+  make(method: HttpMethod, path: string): superagentType.Request {
+    const superagent = load('superagent');
     return superagent(method, `${this.host}${path}`)
       .timeout(10000) // 10 second timeout
       .set('Content-Type', CONTENT_TYPE_JSON)
       .set('Accept', CONTENT_TYPE_JSON);
   }
 
-  async do(req: superagent.Request): Promise<APIResponseSuccess> {
+  async do(req: superagentType.Request): Promise<APIResponseSuccess> {
     const res = await Promise.resolve(req); // TODO: should be able to just do `await req`
     const r = Client.transform(res);
 
@@ -61,7 +63,7 @@ export class Client implements IClient {
   }
 }
 
-export function createFatalAPIFormat(req: superagent.SuperAgentRequest, res: APIResponse): FatalException {
+export function createFatalAPIFormat(req: superagentType.SuperAgentRequest, res: APIResponse): FatalException {
   return new FatalException('API request was successful, but the response format was unrecognized.\n'
                           + formatAPIResponse(req, res));
 }
@@ -89,7 +91,7 @@ export function formatError(e: SuperAgentError): string {
   return chalk.bold(chalk.red(f));
 }
 
-export function formatAPIResponse(req: superagent.SuperAgentRequest, r: APIResponse) {
+export function formatAPIResponse(req: superagentType.SuperAgentRequest, r: APIResponse) {
   if (isAPIResponseSuccess(r)) {
     return util.inspect(r);
   } else {
@@ -97,7 +99,7 @@ export function formatAPIResponse(req: superagent.SuperAgentRequest, r: APIRespo
   }
 }
 
-export function formatAPIError(req: superagent.SuperAgentRequest, r: APIResponseError): string {
+export function formatAPIError(req: superagentType.SuperAgentRequest, r: APIResponseError): string {
   return `API Error ${r.meta.status}: ${req.method} ${req.url}\n`
        + util.inspect(r.error);
 }

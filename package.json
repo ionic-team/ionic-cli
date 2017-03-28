@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {},
   "devDependencies": {
+    "@ionic/app-scripts": "^1.2.2",
     "@types/archiver": "^0.15.36",
     "@types/chalk": "^0.4.30",
     "@types/clean-css": "^3.4.30",
@@ -19,7 +20,7 @@
     "@types/path-exists": "^1.0.29",
     "@types/progress": "^1.1.28",
     "@types/rimraf": "0.0.28",
-    "@types/semver": "^5.3.30",
+    "@types/semver": "^5.3.31",
     "@types/tar": "^1.0.28",
     "@types/uuid": "^2.0.29",
     "@types/xml2js": "0.0.32",
@@ -33,7 +34,6 @@
     "ts-jest": "^19.0.2",
     "tslint": "^4.0.0-dev.0",
     "tslint-ionic-rules": "^0.0.8",
-    "typescript": "^2.2.1",
-    "webpack": "^2.2.1"
+    "typescript": "^2.2.1"
   }
 }

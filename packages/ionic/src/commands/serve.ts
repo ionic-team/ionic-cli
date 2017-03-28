@@ -1,12 +1,11 @@
-import * as dgram from 'dgram';
-import * as qrcode from 'qrcode-terminal';
 import {
+  Command,
   CommandLineInputs,
   CommandLineOptions,
-  Command,
   CommandMetadata,
+  TaskChain,
+  load,
   normalizeOptionAliases,
-  TaskChain
 } from '@ionic/cli-utils';
 
 @CommandMetadata({
@@ -95,15 +94,17 @@ export class ServeCommand extends Command {
 
     options = normalizeOptionAliases(this.metadata, options);
 
-    var tasks = new TaskChain();
+    const tasks = new TaskChain();
 
-    var response = await this.env.emitEvent('serve', {
-      metadata: this.metadata,
-      inputs,
-      options
-    });
+    const numListeners = this.env.emitter.getListeners('serve').length;
 
-    tasks.next(`Starting server`);
+    if (numListeners === 0) {
+      throw this.exit('No listeners for serve event. Did you install the appropriate plugin?'); // TODO: make better?
+    } else if (numListeners > 1) {
+      throw this.exit(`Too many listeners for serve event (${numListeners}). Install only one plugin.`); // TODO: make better?
+    }
+
+    const [response] = await this.env.emitter.emit('serve', { env: this.env, options });
 
     // If qrcode option then generate a qrcode on the Command Line.
     if (options.qrcode) {
@@ -123,6 +124,7 @@ export class ServeCommand extends Command {
         app_id: appDetails.app_id,
         local_address: `${response.protocol}://${response.publicIp}:${response.httpPort}`
       });
+      const dgram = load('dgram');
       const server = dgram.createSocket('udp4');
 
       server.on('listening', () => {
@@ -147,6 +149,7 @@ function generateQrCode(input: string): Promise<string> {
   return new Promise((resolve, reject) => {
 
     try {
+      const qrcode = load('qrcode');
       qrcode.generate(input, (response: any) => {
         resolve(response);
       });

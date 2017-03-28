@@ -1,4 +1,4 @@
-import { ICommandMap, INamespace, Namespace, CommandMap } from '@ionic/cli-utils';
+import { INamespace, Namespace, CommandMap } from '@ionic/cli-utils';
 
 import { BuildCommand } from './build';
 import { CompileCommand } from './compile';
@@ -10,18 +10,15 @@ import { ResourcesCommand } from './resources';
 import { RunCommand } from './run';
 
 export class CordovaNamespace extends Namespace implements INamespace {
-  getCommands(): ICommandMap {
-    let m = new CommandMap();
-
-    m.set('build', new BuildCommand());
-    m.set('compile', new CompileCommand());
-    m.set('emulate', new EmulateCommand());
-    m.set('platform', new PlatformCommand());
-    m.set('plugin', new PluginCommand());
-    m.set('prepare', new PrepareCommand());
-    m.set('resources', new ResourcesCommand());
-    m.set('run', new RunCommand());
-
-    return m;
-  }
+  name = 'cordova';
+  commands = new CommandMap([
+    ['build', () => new BuildCommand()],
+    ['compile', () => new CompileCommand()],
+    ['emulate', () => new EmulateCommand()],
+    ['platform', () => new PlatformCommand()],
+    ['plugin', () => new PluginCommand()],
+    ['prepare', () => new PrepareCommand()],
+    ['resources', () => new ResourcesCommand()],
+    ['run', () => new RunCommand()],
+  ]);
 }
