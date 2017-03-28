@@ -36,6 +36,12 @@
   "bugs": {
     "url": "https://github.com/driftyco/ionic-cli/issues"
   },
+  "files": [
+    "bin/",
+    "default-resources",
+    "dist/",
+    "resources.json"
+  ],
   "license": "MIT",
   "jest": {
     "moduleFileExtensions": [
@@ -56,11 +62,5 @@
     "chalk": "^1.1.3",
     "form-data": "^2.1.2",
     "xml2js": "^0.4.17"
-  },
-  "files": [
-    "bin/",
-    "default-resources",
-    "dist/",
-    "resources.json"
-  ]
+  }
 }

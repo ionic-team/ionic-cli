@@ -20,6 +20,9 @@
   "bugs": {
     "url": "https://github.com/driftyco/ionic-cli/issues"
   },
+  "files": [
+    "dist/"
+  ],
   "license": "MIT",
   "jest": {
     "moduleFileExtensions": [
