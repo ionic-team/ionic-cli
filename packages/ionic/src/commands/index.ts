@@ -1,4 +1,16 @@
-import { ICommandMap, Namespace, CommandMap } from '@ionic/cli-utils';
+import * as minimist from 'minimist';
+
+import {
+  CommandMap,
+  IonicEnvironment,
+  Namespace,
+  NamespaceMap,
+  isCommand,
+} from '@ionic/cli-utils';
+
+import { ERROR_PLUGIN_NOT_INSTALLED, KNOWN_PLUGINS, ORG_PREFIX, PLUGIN_PREFIX, loadPlugin } from '../lib/plugins';
+
+import { PackageNamespace } from './package/index';
 
 import { InfoCommand } from './info';
 import { LoginCommand } from './login';
@@ -15,25 +27,52 @@ import { LinkCommand } from './link';
 import { UploadCommand } from './upload';
 
 export class IonicNamespace extends Namespace {
-  name: 'global';
+  namespaces = new NamespaceMap([
+    ['package', () => new PackageNamespace()],
+  ]);
 
-  getCommands(): ICommandMap {
-    let m = new CommandMap();
+  commands = new CommandMap([
+    ['start', () => new StartCommand()],
+    ['serve', () => new ServeCommand()],
+    ['help', () => new HelpCommand()],
+    ['info', () => new InfoCommand()],
+    ['login', () => new LoginCommand()],
+    ['signup', () => new SignupCommand()],
+    ['version', () => new VersionCommand()],
+    ['telemetry', () => new TelemetryCommand()],
+    ['docs', () => new DocsCommand()],
+    ['ionitron', () => new IonitronCommand()],
+    ['generate', () => new GenerateCommand()],
+    ['link', () => new LinkCommand()],
+    ['upload', () => new UploadCommand()],
+  ]);
 
-    m.set('start', new StartCommand());
-    m.set('serve', new ServeCommand());
-    m.set('help', new HelpCommand());
-    m.set('info', new InfoCommand());
-    m.set('login', new LoginCommand());
-    m.set('signup', new SignupCommand());
-    m.set('version', new VersionCommand());
-    m.set('telemetry', new TelemetryCommand());
-    m.set('docs', new DocsCommand());
-    m.set('ionitron', new IonitronCommand());
-    m.set('generate', new GenerateCommand());
-    m.set('link', new LinkCommand());
-    m.set('upload', new UploadCommand());
+  async runCommand(env: IonicEnvironment): Promise<void> {
+    const argv = minimist(env.pargv);
+    const [inputs, cmdOrNamespace] = this.locate(argv._);
 
-    return m;
+    if (!isCommand(cmdOrNamespace)) {
+      if (env.project.directory && KNOWN_PLUGINS.indexOf(inputs[0]) !== -1) {
+        try {
+          await loadPlugin(env.project.directory, `${ORG_PREFIX}/${PLUGIN_PREFIX}${inputs[0]}`);
+        } catch (e) {
+          if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
+            throw e;
+          }
+        }
+
+        return;
+      }
+
+      return HelpCommand.showHelp(env, argv._);
+    }
+
+    const command = cmdOrNamespace;
+
+    command.env = env;
+
+    await command.load();
+    await command.execute(inputs);
+    await command.unload();
   }
 }

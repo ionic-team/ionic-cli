@@ -1,9 +1,9 @@
-import * as child_process from 'cross-spawn';
-import * as inquirer from 'inquirer';
-import * as superagent from 'superagent';
+import * as crossSpawnType from 'cross-spawn';
+import * as inquirerType from 'inquirer';
+import * as superagentType from 'superagent';
 
 export interface SuperAgentError extends Error {
-  response: superagent.Response;
+  response: superagentType.Response;
 }
 
 export type LogFn = (message?: any, ...args: any[]) => void;
@@ -153,7 +153,7 @@ export interface ValidationError {
 export interface CommandInputPrompt {
   type?: string;
   message?: string;
-  choices?: inquirer.ChoiceType[] | ((answers: inquirer.Answers) => inquirer.ChoiceType[]);
+  choices?: inquirerType.ChoiceType[] | ((answers: inquirerType.Answers) => inquirerType.ChoiceType[]);
   filter?(input: string): string;
 }
 
@@ -184,7 +184,7 @@ export interface ISession {
   getAppUserToken(app_id?: string): Promise<string>;
 }
 
-export interface IShellRunOptions extends child_process.SpawnOptions {
+export interface IShellRunOptions extends crossSpawnType.SpawnOptions {
   showExecution?: boolean;
   showError?: boolean;
   fatal?: boolean;
@@ -261,27 +261,50 @@ export interface APIResponseSuccess {
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' | 'HEAD' | 'OPTIONS';
 
 export interface IClient {
-  make(method: HttpMethod, path: string): superagent.Request;
-  do(res: superagent.Request): Promise<APIResponseSuccess>;
+  make(method: HttpMethod, path: string): superagentType.Request;
+  do(res: superagentType.Request): Promise<APIResponseSuccess>;
 }
 
-export interface EventEnvironment {
-  app: IApp;
-  client: IClient;
-  config: IConfig<ConfigFile>;
-  log: ILogger;
-  project: IProject;
-  session: ISession;
-  shell: IShell;
-  telemetry: ITelemetry;
-  inquirer: typeof inquirer;
+export interface CLIEventEmitterBuildEventArgs {
+  options: CommandLineOptions;
 }
 
-export type EmitEventFn = (eventName: string, options: { [key: string]: any }) => Promise<any>;
+export interface CLIEventEmitterGenerateEventArgs {
+  inputs: CommandLineInputs;
+  options: CommandLineOptions;
+}
+
+export interface CLIEventEmitterServeEventArgs {
+  env: IonicEnvironment;
+  options: CommandLineOptions;
+}
+
+export interface CLIEventEmitterCommandEventArgs {
+  cmd: ICommand;
+  inputs: CommandLineInputs;
+  options: CommandLineOptions;
+}
+
+export interface ICLIEventEmitter {
+  emit(evt: 'generate', args: CLIEventEmitterGenerateEventArgs): Promise<void[]>;
+  emit(evt: 'build', args: CLIEventEmitterBuildEventArgs): Promise<void[]>;
+  emit(evt: 'serve', args: CLIEventEmitterServeEventArgs): Promise<{ [key: string]: any }[]>;
+  emit(evt: 'command', args: CLIEventEmitterCommandEventArgs): Promise<void[]>;
+  emit<T, U>(evt: string, args: T): Promise<U[]>;
+
+  on(evt: 'generate', listener: (args: CLIEventEmitterGenerateEventArgs) => Promise<void>): this;
+  on(evt: 'build', listener: (args: CLIEventEmitterBuildEventArgs) => Promise<void>): this;
+  on(evt: 'serve', listener: (args: CLIEventEmitterServeEventArgs) => Promise<{ [key: string]: any }>): this;
+  on(evt: 'command', listener: (args: CLIEventEmitterCommandEventArgs) => Promise<void>): this;
+  on<T, U>(evt: string, listener: (args: T) => Promise<U>): this;
+
+  getListeners<T, U>(evt: string): ((args: T) => Promise<U>)[];
+}
 
 export interface IonicEnvironment {
   pargv: string[];
   app: IApp;
+  emitter: ICLIEventEmitter;
   client: IClient;
   config: IConfig<ConfigFile>;
   log: ILogger;
@@ -289,16 +312,21 @@ export interface IonicEnvironment {
   session: ISession;
   shell: IShell;
   telemetry: ITelemetry;
-  inquirer: typeof inquirer;
-  emitEvent: EmitEventFn;
+  namespace: INamespace;
+}
+
+export interface Plugin {
   namespace?: INamespace;
-  pluginName?: string;
+  registerEvents?(emitter: ICLIEventEmitter): void;
 }
 
 export interface INamespace {
-  getNamespaces(): INamespaceMap;
-  getCommands(): ICommandMap;
-  locateCommand(argv: string[]): [string[], ICommand | undefined];
+  name: string;
+  namespaces: INamespaceMap;
+  commands: ICommandMap;
+
+  locate(argv: string[]): [string[], ICommand | INamespace];
+  getCommandMetadataList(): CommandData[];
 }
 
 export interface ICommand {
@@ -312,5 +340,5 @@ export interface ICommand {
   execute(inputs?: CommandLineInputs): Promise<void>;
 }
 
-export interface INamespaceMap extends Map<string, INamespace> {}
-export interface ICommandMap extends Map<string, ICommand> {}
+export interface INamespaceMap extends Map<string, () => INamespace> {}
+export interface ICommandMap extends Map<string, () => ICommand> {}

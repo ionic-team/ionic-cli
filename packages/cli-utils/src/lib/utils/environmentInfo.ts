@@ -1,7 +1,7 @@
-import * as osName from 'os-name';
-import { spawn } from 'cross-spawn';
 import * as path from 'path';
 import * as fs from 'fs';
+
+import { load } from '../modules';
 
 /**
  * Get the output of a commandline program
@@ -9,7 +9,8 @@ import * as fs from 'fs';
 export function getCommandInfo(cmd: string, args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
     let info: string = '';
-    const proc = spawn(cmd, args);
+    const crossSpawn = load('cross-spawn');
+    const proc = crossSpawn.spawn(cmd, args);
 
     proc.stdout.on('data', (data: Buffer) => {
       info += data.toString('utf8');
@@ -92,7 +93,7 @@ export async function getIonicInfo(): Promise<{ [key: string]: any; }>  {
  * Get all useful environment information
  */
 export async function gatherEnvironmentInfo(): Promise<{ [key: string]: any; }>  {
-
+  const osName = load('os-name');
   const os = osName();
   const node = process.version;
   let cordovaVersion: string;

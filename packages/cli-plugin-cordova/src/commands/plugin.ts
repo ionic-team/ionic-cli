@@ -5,8 +5,9 @@ import {
   CommandLineOptions,
   CommandMetadata,
   TaskChain,
+  load,
+  normalizeOptionAliases,
   validators,
-  normalizeOptionAliases
 } from '@ionic/cli-utils';
 import { gatherArgumentsForCordova } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
@@ -71,7 +72,8 @@ export class PluginCommand extends Command {
 
     let pluginName = inputs[1];
     if (!pluginName) {
-      const promptResults = await this.env.inquirer.prompt({
+      const inquirer = load('inquirer');
+      const promptResults = await inquirer.prompt({
         message: 'What plugin would you like to add:',
         type: 'input',
         name: 'plugin',

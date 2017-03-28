@@ -2,27 +2,28 @@ import * as os from 'os';
 import * as path from 'path';
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
-import * as inquirer from 'inquirer';
-import createEmitEvent from './lib/emitEvent';
+
 import {
-  IonicEnvironment,
-  FatalException,
-  formatError as formatSuperAgentError,
-  isSuperAgentError,
-  TASKS,
-  Shell,
-  Logger,
-  Config,
+  App,
+  CLIEventEmitter,
   Client,
-  getCliInfo,
-  Telemetry,
+  Config,
+  FatalException,
+  IonicEnvironment,
+  Logger,
   Project,
   Session,
-  App,
-  fsReadDir
+  Shell,
+  TASKS,
+  Telemetry,
+  formatError as formatSuperAgentError,
+  fsReadDir,
+  getCliInfo,
+  isSuperAgentError,
 } from '@ionic/cli-utils';
 
-import { resolvePlugin } from './lib/plugins';
+import { namespace } from './index';
+import { loadPlugins } from './lib/plugins';
 
 const PROJECT_FILE = 'ionic.config.json';
 const CONFIG_FILE = 'config.json';
@@ -68,34 +69,22 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     const project = new Project(env['PROJECT_DIR'], env['PROJECT_FILE']);
 
     // Load all async work at the same time
-    const [ pluginDetails, configData, cliInfo ] = await Promise.all([
-      resolvePlugin(env['PROJECT_DIR'], env['PROJECT_FILE'], pargv),
+    const [ configData, cliInfo ] = await Promise.all([
       config.load(),
       getCliInfo(),
     ]);
-    const [plugin, inputs] = pluginDetails;
 
+    const emitter = new CLIEventEmitter();
     const client = new Client(configData.urls.api);
     const telemetry = new Telemetry(config, cliInfo);
     const shell = new Shell();
     const session = new Session(config, project, client);
     const app = new App(session, project, client);
 
-    const emitEvent = await createEmitEvent({
-      app,
-      client,
-      config,
-      log,
-      project,
-      session,
-      shell,
-      telemetry,
-      inquirer,
-    });
-
     const ionicEnvironment: IonicEnvironment = {
-      pargv: inputs,
+      pargv,
       app,
+      emitter,
       client,
       config,
       log,
@@ -103,12 +92,12 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       session,
       shell,
       telemetry,
-      inquirer,
-      pluginName: plugin.PLUGIN_NAME,
-      emitEvent
+      namespace,
     };
 
-    await plugin.run(ionicEnvironment);
+    await loadPlugins(ionicEnvironment);
+    await namespace.runCommand(ionicEnvironment);
+    await ionicEnvironment.config.save();
 
   } catch (e) {
     err = e;
@@ -182,7 +171,7 @@ function modifyArguments(pargv: string[]): string[] {
 
   if (minimistArgv['help'] || minimistArgv['h']) {
     if (minimistArgv._.length > 0) {
-      return ['help', minimistArgv._[0]];
+      return ['help', ...minimistArgv._];
     } else {
       return ['help'];
     }
@@ -216,13 +205,13 @@ function modifyArguments(pargv: string[]): string[] {
  */
 function mapLegacyCommand(command: string): string | undefined {
   const commandMap: { [command: string]: string} = {
-    'build': 'cordova:build',
-    'compile': 'cordova:compile',
-    'emulate': 'cordova:emulate',
-    'platform': 'cordova:platform',
-    'prepare': 'cordova:prepare',
-    'resources': 'cordova:resources',
-    'run': 'cordova:run',
+    'build': 'cordova build',
+    'compile': 'cordova compile',
+    'emulate': 'cordova emulate',
+    'platform': 'cordova platform',
+    'prepare': 'cordova prepare',
+    'resources': 'cordova resources',
+    'run': 'cordova run',
   };
 
   return commandMap[command];

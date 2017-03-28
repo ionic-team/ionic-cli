@@ -1,7 +1,7 @@
 import * as chalk from 'chalk';
 
 import { Validator, Validators } from '../definitions';
-import { isValidEmail } from './utils';
+import { isValidEmail } from './utils/string';
 
 export const validators: Validators = {
   required(input: string, key?: string): boolean | string {

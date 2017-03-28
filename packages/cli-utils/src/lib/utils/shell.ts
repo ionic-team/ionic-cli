@@ -1,8 +1,11 @@
-import * as child_process from 'cross-spawn';
+import * as crossSpawnType from 'cross-spawn';
 
-export function runcmd(command: string, args?: string[], options?: child_process.SpawnOptions): Promise<string> {
+import { load } from '../modules';
+
+export function runcmd(command: string, args?: string[], options?: crossSpawnType.SpawnOptions): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    const p = child_process.spawn(command, args, options);
+    const crossSpawn = load('cross-spawn');
+    const p = crossSpawn.spawn(command, args, options);
     let stdoutBuf = Buffer.from([]);
     let stderrBuf = Buffer.from([]);
 

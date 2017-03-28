@@ -21,15 +21,15 @@ You will need to install the newly updated CLI globally and execute the followin
 ```bash
 $ npm uninstall @ionic/cli-plugin-core
 
-$ npm install --save-dev @ionic/cli-plugin-cordova@beta @ionic/cli-build-ionic-angular
+$ npm install --save-dev @ionic/cli-plugin-cordova@beta @ionic/cli-plugin-ionic-angular
 ```
 
 #### Latest beta release versions
 
  - ionic@3.0.0-beta.5
  - @ionic/cli-plugin-cordova@0.0.10
- - @ionic/cli-build-ionic-angular@0.0.4
- - @ionic/cli-build-ionic1@0.0.4
+ - @ionic/cli-plugin-ionic-angular@0.0.4
+ - @ionic/cli-plugin-ionic1@0.0.4
 
 
 *Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix the command with `sudo` or can 
@@ -66,7 +66,7 @@ starter templates.*
 
 ```bash
 $ npm install -g ionic@beta
-$ npm install --save-dev @ionic/cli-build-ionic-angular@beta @ionic/cli-plugin-cordova@beta
+$ npm install --save-dev @ionic/cli-plugin-ionic-angular@beta @ionic/cli-plugin-cordova@beta
 
 $ ionic help
 ```
@@ -82,7 +82,7 @@ $ ionic start myNewv1project blank --type=ionic1
 ### Using CLI v3 with an existing Ionic1 project
 ```bash
 $ npm install -g ionic@beta
-$ npm install --save-dev @ionic/cli-build-ionic1@beta @ionic/cli-plugin-cordova@beta
+$ npm install --save-dev @ionic/cli-plugin-ionic1@beta @ionic/cli-plugin-cordova@beta
 
 $ ionic help
 ```

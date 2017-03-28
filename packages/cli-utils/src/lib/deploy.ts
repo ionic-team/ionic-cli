@@ -1,9 +1,7 @@
-import * as archiver from 'archiver';
-import * as superagent from 'superagent';
-
 import { Deploy, DeployChannel, DeploySnapshotRequest, IClient } from '../definitions';
 import { isDeployResponse, isDeployChannelResponse, isDeploySnapshotRequestResponse } from '../guards';
 import { createFatalAPIFormat } from './http';
+import { load } from './modules';
 
 export class DeployClient {
   constructor(protected appUserToken: string, protected client: IClient) {}
@@ -63,30 +61,33 @@ export class DeployClient {
       });
 
       zip.on('end', () => {
-        superagent.post(snapshot.presigned_post.url)
-        .field(snapshot.presigned_post.fields)
-        .field('file', Buffer.concat(bufs))
-        .on('progress', (event) => {
-          if (progress) {
-            progress(event.loaded, event.total);
-          }
-        })
-        .end((err, res) => {
-          if (err) {
-            return reject(err);
-          }
-          if (res.status !== 204) {
-            // TODO: log body for debug purposes?
-            return reject(new Error(`Unexpected status code from AWS: ${res.status}`));
-          }
-          resolve();
-        });
+        const request = load('superagent');
+
+        request.post(snapshot.presigned_post.url)
+          .field(snapshot.presigned_post.fields)
+          .field('file', Buffer.concat(bufs))
+          .on('progress', (event) => {
+            if (progress) {
+              progress(event.loaded, event.total);
+            }
+          })
+          .end((err, res) => {
+            if (err) {
+              return reject(err);
+            }
+            if (res.status !== 204) {
+              // TODO: log body for debug purposes?
+              return reject(new Error(`Unexpected status code from AWS: ${res.status}`));
+            }
+            resolve();
+          });
       });
     });
   }
 }
 
 export function createZipStream(wwwPath: string): NodeJS.ReadableStream {
+  const archiver = load('archiver');
   const archive = archiver('zip');
 
   archive.directory(wwwPath, 'www');

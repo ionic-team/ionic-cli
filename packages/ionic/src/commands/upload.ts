@@ -31,22 +31,22 @@ import {
   requiresProject: true
 })
 export class UploadCommand extends Command {
-  resolveNote(input: CommandLineInput): string | undefined {
+  resolveNote(input: CommandLineInput) {
     if (typeof input !== 'string') {
       input = undefined;
     }
 
-    return input;
+    return input as string | undefined; // TODO: strictNullChecks
   }
 
-  resolveChannelTag(input: CommandLineInput): string | undefined {
+  resolveChannelTag(input: CommandLineInput) {
     if (typeof input !== 'string') {
       input = undefined;
     } else if (input === '') {
       input = 'dev';
     }
 
-    return input;
+    return input as string | undefined; // TODO: strictNullChecks
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

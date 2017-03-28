@@ -9,7 +9,7 @@
     "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "./dist",
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "target": "es6",
     "lib": [
       "es2017.object",

@@ -2,18 +2,24 @@ import {
   APIResponse,
   APIResponseError,
   APIResponseSuccess,
-  AuthTokenResponse,
   AppDetails,
   AppResponse,
+  AuthTokenResponse,
   DeployChannelResponse,
   DeployResponse,
   DeploySnapshotRequestResponse,
+  ICommand,
+  INamespace,
   LogLevel,
   LoginResponse,
   SuperAgentError,
 } from './definitions';
 
 export const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'ok', 'warn', 'error'];
+
+export function isCommand(cmd: ICommand | INamespace): cmd is ICommand {
+  return typeof (<ICommand>cmd).run !== 'undefined';
+}
 
 export function isLogLevel(l: string): l is LogLevel {
   const loglevel: LogLevel = <LogLevel>l;
@@ -35,7 +41,7 @@ export function isAPIResponseError(r: APIResponse): r is APIResponseError {
   return res && typeof res.error === 'object';
 }
 
-export function isAppDetails(d: any): d is AppDetails {
+export function isAppDetails(d: Object): d is AppDetails {
   let details: AppDetails = <AppDetails>d;
   return details && typeof details === 'object'
     && typeof details.id === 'string'

@@ -1,12 +1,12 @@
-import * as Leek from 'leek';
-import * as uuid from 'uuid';
+import * as leek from 'leek';
 
 import { ITelemetry, IConfig, ConfigFile } from '../definitions';
+import { load } from './modules';
 
 const GA_CODE = 'UA-44023830-30';
 
 export class Telemetry implements ITelemetry {
-  private tracker: Leek;
+  private tracker: leek;
 
   constructor(
     protected config: IConfig<ConfigFile>,
@@ -14,7 +14,8 @@ export class Telemetry implements ITelemetry {
   ) {}
 
   private generateUniqueToken() {
-   return uuid.v4().toString();
+    const uuid = load('uuid');
+    return uuid.v4().toString();
   }
 
   private async setupTracker() {
@@ -22,6 +23,7 @@ export class Telemetry implements ITelemetry {
     if (!configFile.tokens.telemetry) {
       configFile.tokens.telemetry = this.generateUniqueToken();
     }
+    const Leek = load('leek');
     this.tracker = new Leek({
       name:         configFile.tokens.telemetry,
       trackingCode: GA_CODE,
