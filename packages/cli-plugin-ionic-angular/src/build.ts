@@ -1,8 +1,9 @@
 import * as chalk from 'chalk';
 
-import { CLIEventEmitterBuildEventArgs, load } from '@ionic/cli-utils';
+import { CLIEventEmitterBuildEventArgs } from '@ionic/cli-utils';
 
 import { minimistOptionsToArray } from './utils/arguments';
+import { load } from './lib/modules';
 
 export async function build(args: CLIEventEmitterBuildEventArgs): Promise<void> {
   const appScriptsArgs = minimistOptionsToArray(args.options);

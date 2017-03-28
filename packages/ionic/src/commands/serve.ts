@@ -4,9 +4,10 @@ import {
   CommandLineOptions,
   CommandMetadata,
   TaskChain,
-  load,
   normalizeOptionAliases,
 } from '@ionic/cli-utils';
+
+import { load } from '../lib/modules';
 
 @CommandMetadata({
   name: 'serve',

@@ -18,10 +18,10 @@ import {
   fsReadDir,
   fsReadJsonFile,
   getFileChecksum,
-  load,
   writeStreamToFile,
 } from '@ionic/cli-utils';
 
+import { load } from '../lib/modules';
 import {
   writeConfigXml,
   parseConfigXmlToJson,

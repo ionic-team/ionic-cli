@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import * as AppScriptsType from '@ionic/app-scripts';
-import { load } from '@ionic/cli-utils';
+import { load } from '../lib/modules';
 
 export async function getPages(context: AppScriptsType.BuildContext) {
   const AppScripts = load('@ionic/app-scripts');

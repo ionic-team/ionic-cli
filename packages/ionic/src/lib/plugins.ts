@@ -10,8 +10,9 @@ import {
   TaskChain,
   fsReadDir,
   fsReadJsonFile,
-  load,
 } from '@ionic/cli-utils';
+
+import { load } from '../lib/modules';
 
 export const KNOWN_PLUGINS = ['cordova']; // known plugins with commands
 export const ORG_PREFIX = '@ionic';

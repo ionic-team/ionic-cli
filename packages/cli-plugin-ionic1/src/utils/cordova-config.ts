@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-import { load } from '@ionic/cli-utils';
+import { load } from '../lib/modules';
 
 export interface CordovaProject {
   name?: string;

@@ -5,10 +5,11 @@ import {
   CommandLineOptions,
   CommandMetadata,
   TaskChain,
-  load,
   normalizeOptionAliases,
   validators,
 } from '@ionic/cli-utils';
+
+import { load } from '../lib/modules';
 import { gatherArgumentsForCordova } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 

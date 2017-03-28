@@ -11,6 +11,9 @@
     "outDir": "./dist",
     "strictNullChecks": false,
     "target": "es6",
+    "typeRoots": [
+      "../../node_modules/@types"
+    ],
     "lib": [
       "es2017.object",
       "es2016",
@@ -18,7 +21,10 @@
     ]
   },
   "include": [
-    "../../types/index.d.ts",
+    "../../types/cross-spawn.d.ts",
+    "../../types/superagent.d.ts",
+    "../../types/leek.d.ts",
+    "../../types/os-name.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

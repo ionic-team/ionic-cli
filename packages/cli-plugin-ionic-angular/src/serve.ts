@@ -1,7 +1,8 @@
 import * as chalk from 'chalk';
 
-import { CLIEventEmitterServeEventArgs, load } from '@ionic/cli-utils';
+import { CLIEventEmitterServeEventArgs } from '@ionic/cli-utils';
 
+import { load } from './lib/modules';
 import { getAvailableIPAddress } from './utils/network';
 import { minimistOptionsToArray } from './utils/arguments';
 

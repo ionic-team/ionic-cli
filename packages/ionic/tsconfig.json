@@ -16,7 +16,9 @@
     ]
   },
   "include": [
-    "../../types/index.d.ts",
+    "../../types/cross-spawn.d.ts",
+    "../../types/superagent.d.ts",
+    "../../types/qrcode-terminal.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

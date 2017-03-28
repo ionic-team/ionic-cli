@@ -9,8 +9,9 @@ import {
   CommandMetadata,
   createFatalAPIFormat,
   isAPIResponseSuccess,
-  load,
 } from '@ionic/cli-utils';
+
+import { load } from '../lib/modules';
 
 interface App {
   name: string;

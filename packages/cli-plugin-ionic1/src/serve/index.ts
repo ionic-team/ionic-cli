@@ -3,7 +3,7 @@ import * as chalk from 'chalk';
 import { stringToInt } from '../utils/helpers';
 import { createHttpServer } from './http-server';
 import { createLiveReloadServer } from './live-reload';
-import { CLIEventEmitterServeEventArgs, IonicEnvironment, load } from '@ionic/cli-utils';
+import { CLIEventEmitterServeEventArgs, IonicEnvironment } from '@ionic/cli-utils';
 import {
   DEFAULT_ADDRESS,
   DEFAULT_LIVERELOAD_PORT,
@@ -14,6 +14,7 @@ import {
 } from './config';
 import { findClosestOpenPort, getAvailableIPAddress } from '../utils/network';
 import { minimistOptionsToArray } from '../utils/arguments';
+import { load } from '../lib/modules';
 
 export async function serve(args: CLIEventEmitterServeEventArgs): Promise<{ [key: string]: any }> {
 

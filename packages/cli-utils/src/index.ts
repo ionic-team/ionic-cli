@@ -13,7 +13,6 @@ export * from './lib/errors';
 export * from './lib/events';
 export * from './lib/http';
 export * from './lib/login';
-export * from './lib/modules';
 export * from './lib/project';
 export * from './lib/session';
 export * from './lib/shell';

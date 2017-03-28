@@ -1,6 +1,8 @@
 import * as path from 'path';
+import { ERROR_FILE_NOT_FOUND, fsReadFile, fsWriteFile, promisify } from '@ionic/cli-utils';
+
 import { ResourcesImageConfig, KnownPlatform, ResourcesConfig } from '../../definitions';
-import { ERROR_FILE_NOT_FOUND, fsReadFile, fsWriteFile, load, promisify } from '@ionic/cli-utils';
+import { load } from '../modules';
 
 
 /**

@@ -1,8 +1,9 @@
 import * as AppScriptsType from '@ionic/app-scripts';
 
-import { CLIEventEmitterGenerateEventArgs, getIonicInfo, load } from '@ionic/cli-utils';
-import { minimistOptionsToArray } from './utils/arguments';
+import { CLIEventEmitterGenerateEventArgs, getIonicInfo } from '@ionic/cli-utils';
 
+import { load } from './lib/modules';
+import { minimistOptionsToArray } from './utils/arguments';
 import { prompt, tabsPrompt } from './utils/generate';
 
 export async function generate(args: CLIEventEmitterGenerateEventArgs): Promise<string[]> {

@@ -4,8 +4,9 @@ import {
   CommandLineOptions,
   Command,
   CommandMetadata,
-  load,
 } from '@ionic/cli-utils';
+
+import { load } from '../lib/modules';
 
 /**
  * Metadata about the docs command

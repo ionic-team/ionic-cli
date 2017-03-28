@@ -9,10 +9,10 @@ import {
   IOS_PLATFORM_PATH,
   ANDROID_PLATFORM_PATH
 } from './config';
-import { IProject, load } from '@ionic/cli-utils';
+import { IProject } from '@ionic/cli-utils';
 
 import { LabAppView, ApiCordovaProject } from './lab';
-
+import { load } from '../lib/modules';
 
 /**
  * Create HTTP server
