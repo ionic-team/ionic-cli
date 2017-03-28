@@ -41,9 +41,7 @@
     "cross-spawn": "^4.0.2",
     "inquirer": "^1.2.2",
     "superagent": "^2.3.0",
-    "leek": "0.0.24"
-  },
-  "devDependencies": {
+    "leek": "0.0.24",
     "chalk": "^1.1.3",
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",

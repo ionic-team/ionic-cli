@@ -103,7 +103,7 @@ export async function loadPlugin(projectDir: string, pluginName: string, askToIn
 
 export async function getReleaseChannelName(): Promise<string | undefined> {
   let jsonStructure: any;
-  const filePath = path.resolve(__dirname, '..', 'package.json');
+  const filePath = path.resolve(__dirname, '..', '..', 'package.json');
   try {
     jsonStructure = await fsReadJsonFile(filePath);
   } catch (e) {
