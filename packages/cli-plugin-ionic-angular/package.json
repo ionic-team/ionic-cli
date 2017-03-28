@@ -43,9 +43,14 @@
     "semver": "^5.3.0"
   },
   "devDependencies": {
+    "@angular/compiler": "^4.0.0",
+    "@angular/compiler-cli": "^4.0.0",
+    "@angular/core": "^4.0.0",
     "@types/chalk": "^0.4.31",
+    "@types/clean-css": "^3.4.30",
     "@types/inquirer": "0.0.32",
-    "@types/semver": "^5.3.31"
+    "@types/semver": "^5.3.31",
+    "rxjs": "^5.2.0"
   },
   "peerDependencies": {
     "@ionic/app-scripts": "^1.2.2"
