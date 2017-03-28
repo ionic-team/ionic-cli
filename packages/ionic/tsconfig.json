@@ -7,7 +7,7 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "outDir": "./dist",
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "target": "es6",
     "lib": [
       "es2017.object",

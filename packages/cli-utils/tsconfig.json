@@ -9,7 +9,7 @@
     "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "./dist",
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "target": "es6",
     "typeRoots": [
       "../../node_modules/@types"
