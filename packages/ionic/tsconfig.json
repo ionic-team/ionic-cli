@@ -13,9 +13,6 @@
       "es2017.object",
       "es2016",
       "dom"
-    ],
-    "typeRoots": [
-      "../../node_modules/@types"
     ]
   },
   "include": [
