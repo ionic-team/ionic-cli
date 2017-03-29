@@ -35,6 +35,11 @@ export class PackageListCommand extends Command {
     tasks.next('Retrieving package builds');
     const builds = await pkg.getBuilds();
 
+    if (builds.length === 0) {
+      tasks.end();
+      return this.env.log.warn(`You don't have any builds yet! Run ${chalk.bold('ionic package build -h')} to learn how.`);
+    }
+
     const buildsMatrix = builds.map(({ id, created, completed, platform, status, mode }) => {
       return [
         String(id),

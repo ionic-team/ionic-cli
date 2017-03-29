@@ -95,8 +95,15 @@ export function isDeployResponse(r: APIResponse): r is DeployResponse {
 
 export function isPackageBuildsResponse(r: APIResponse): r is PackageBuildsResponse {
   let res: PackageBuildsResponse = <PackageBuildsResponse>r;
-  return isAPIResponseSuccess(res)
-    && typeof res.data[0].id === 'number';
+  if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
+    return false;
+  }
+
+  if (res.data.length > 0) {
+    return typeof res.data[0].id === 'number';
+  }
+
+  return true;
 }
 
 export function isDeployChannelResponse(r: APIResponse): r is DeployChannelResponse {
