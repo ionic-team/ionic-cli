@@ -12,6 +12,7 @@ import {
   INamespace,
   LogLevel,
   LoginResponse,
+  PackageBuildsResponse,
   SuperAgentError,
 } from './definitions';
 
@@ -82,6 +83,12 @@ export function isDeployResponse(r: APIResponse): r is DeployResponse {
     && typeof res.data.uuid === 'string'
     && typeof res.data.snapshot === 'string'
     && typeof res.data.channel === 'string';
+}
+
+export function isPackageBuildsResponse(r: APIResponse): r is PackageBuildsResponse {
+  let res: PackageBuildsResponse = <PackageBuildsResponse>r;
+  return isAPIResponseSuccess(res)
+    && typeof res.data[0].id === 'number';
 }
 
 export function isDeployChannelResponse(r: APIResponse): r is DeployChannelResponse {

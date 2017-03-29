@@ -55,6 +55,10 @@ export class Logger implements ILogger {
     console.log.apply(console, args);
   }
 
+  nl(num: number = 1): void {
+    console.log('\n'.repeat(num - 1));
+  }
+
   private shouldLog(level: LogLevel): boolean {
     return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(this.level);
   }

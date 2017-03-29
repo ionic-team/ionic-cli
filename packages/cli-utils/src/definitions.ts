@@ -24,7 +24,8 @@ export interface ILogger {
   ok: LogFn;
   warn: LogFn;
   error: LogFn;
-  msg: Function;
+  msg: LogFn;
+  nl(num?: number): void;
 }
 
 export interface AppScriptsServeSettings {
@@ -104,6 +105,19 @@ export interface Deploy {
 
 export interface DeployResponse extends APIResponseSuccess {
   data: Deploy;
+}
+
+export interface PackageBuild {
+  id: number;
+  created: string;
+  completed: string | null;
+  platform: string;
+  status: string;
+  mode: string;
+}
+
+export interface PackageBuildsResponse extends APIResponseSuccess {
+  data: PackageBuild[];
 }
 
 export interface IApp {

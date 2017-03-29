@@ -27,13 +27,48 @@ export function indent(n: number = 4): string {
   return new Array(n).fill(' ').join('');
 }
 
-export function generateFillSpaceStringList(list: string[], optimalLength: number, fillCharacter: string = ' '): string[] {
+export function generateFillSpaceStringList(list: string[], optimalLength: number = 1, fillCharacter: string = ' '): string[] {
   const longestItem = Math.max(
-    ...list.map((item: string) => item.replace(STRIP_ANSI_REGEX, '').length)
+    ...list.map((item) => item.replace(STRIP_ANSI_REGEX, '').length)
   );
 
   const fullLength = longestItem > optimalLength ? longestItem + 1 : optimalLength;
   const fullLengthString = Array(fullLength).fill(fillCharacter).join('');
 
-  return list.map(item => fullLengthString.substr(0, fullLength - item.length));
+  return list.map(item => fullLengthString.substr(0, fullLength - item.replace(STRIP_ANSI_REGEX, '').length));
+}
+
+export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk.dim('|'), columnHeaders }: { hsep?: string, vsep?: string, columnHeaders: string[] }) {
+  const rowCount = columnHeaders.length;
+  const columns = [...columnHeaders.map(header => [chalk.bold(header)])];
+
+  for (let row of rows) {
+    for (let i in row) {
+      if (columns[i]) {
+        columns[i].push(row[i]);
+      }
+    }
+  }
+
+  const paddedColumns = columns.map((col, i) => {
+    if (i < rowCount - 1) {
+      const spaceCol = generateFillSpaceStringList(col);
+      return col.map((cell, i) => `${cell}${spaceCol[i]}${vsep} `);
+    } else {
+      return col;
+    }
+  });
+
+  let longestRowLength = 0;
+  const singleColumn = paddedColumns.reduce((a, b) => {
+    return a.map((_, i) => {
+      const r = a[i] + b[i];
+      longestRowLength = Math.max(longestRowLength, r.replace(STRIP_ANSI_REGEX, '').length);
+      return r;
+    });
+  });
+
+  singleColumn.splice(1, 0, hsep.repeat(longestRowLength));
+
+  return singleColumn.join('\n');
 }
