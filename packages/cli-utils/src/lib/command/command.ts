@@ -11,6 +11,7 @@ import {
   IonicEnvironment,
   ValidationError,
 } from '../../definitions';
+import { isValidationErrorArray } from '../../guards';
 import { createFatalAPIFormat } from '../http';
 import { FatalException } from '../errors';
 import { collectInputs, metadataToMinimistOptions, validateInputs, minimistOptionsToArray } from './utils';
@@ -37,9 +38,12 @@ export class Command implements ICommand {
     try {
       validateInputs(argv._, this.metadata);
     } catch (e) {
-      const errors = <ValidationError[]>e; // TODO: better way?
-      console.error(errors.map(err => chalk.red('>> ') + err.message).join('\n'));
-      return;
+      if (isValidationErrorArray(e)) {
+        console.error(e.map(err => chalk.red('>> ') + err.message).join('\n'));
+        return;
+      } else {
+        throw e;
+      }
     }
 
     r = await this.prerun(argv._, argv);

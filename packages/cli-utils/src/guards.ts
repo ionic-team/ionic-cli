@@ -14,6 +14,7 @@ import {
   LoginResponse,
   PackageBuildsResponse,
   SuperAgentError,
+  ValidationError,
 } from './definitions';
 
 export const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'ok', 'warn', 'error'];
@@ -25,6 +26,13 @@ export function isCommand(cmd: ICommand | INamespace): cmd is ICommand {
 export function isLogLevel(l: string): l is LogLevel {
   const loglevel: LogLevel = <LogLevel>l;
   return LOG_LEVELS.includes(loglevel);
+}
+
+export function isValidationErrorArray(e: Object[]): e is ValidationError[] {
+  const err = <ValidationError[]>e;
+  return err && err[0]
+    && typeof err[0].message === 'string'
+    && typeof err[0].inputName === 'string';
 }
 
 export function isSuperAgentError(e: Error): e is SuperAgentError {
