@@ -65,7 +65,7 @@ export function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[
     `${chalk.green(cmdMd.fullName || '')} ` +
     `${fillStringArray[index]} ` +
     `${cmdMd.description}` +
-    `${cmdMd.aliases.length > 0 ? ' (alias' + (cmdMd.aliases.length === 1 ? '' : 'es') + ': ' + cmdMd.aliases.map((a) => chalk.green(a)).join(', ') + ')' : ''}`
+    `${cmdMd.aliases && cmdMd.aliases.length > 0 ? ' (alias' + (cmdMd.aliases.length === 1 ? '' : 'es') + ': ' + cmdMd.aliases.map((a) => chalk.green(a)).join(', ') + ')' : ''}`
   );
 }
 
