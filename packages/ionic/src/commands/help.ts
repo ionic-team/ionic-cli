@@ -11,6 +11,8 @@ import {
   isCommand,
 } from '@ionic/cli-utils';
 
+import { ERROR_PLUGIN_NOT_INSTALLED, KNOWN_PLUGINS, ORG_PREFIX, PLUGIN_PREFIX, loadPlugin } from '../lib/plugins';
+
 @CommandMetadata({
   name: 'help',
   unlisted: true,
@@ -28,7 +30,7 @@ export class HelpCommand extends Command {
     HelpCommand.showHelp(this.env, inputs);
   }
 
-  static showHelp(env: IonicEnvironment, inputs: string[]) {
+  static async showHelp(env: IonicEnvironment, inputs: string[]) {
     const inProject = env.project.directory ? true : false;
 
     // If there are no inputs then show global command details.
@@ -37,10 +39,21 @@ export class HelpCommand extends Command {
     }
 
     const [slicedInputs, cmdOrNamespace] = env.namespace.locate(inputs);
+
     if (!isCommand(cmdOrNamespace)) {
       let extra = '';
 
-      if (!env.project.directory) {
+      if (env.project.directory) {
+        if (KNOWN_PLUGINS.indexOf(slicedInputs[0]) !== -1) {
+          try {
+            await loadPlugin(env.project.directory, `${ORG_PREFIX}/${PLUGIN_PREFIX}${slicedInputs[0]}`);
+          } catch (e) {
+            if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
+              throw e;
+            }
+          }
+        }
+      } else {
         extra = '\nYou may need to be in an Ionic project directory.';
       }
 

@@ -34,13 +34,15 @@ export class Namespace implements INamespace {
       return flattenArray(inputs.map((arg) => arg.split(':')));
     }
 
-    function _locate(inputs: string[], ns: INamespace): [string[], ICommand | INamespace] {
+    function _locate(inputs: string[], ns: INamespace, namespaceDepthList: string[]): [string[], ICommand | INamespace] {
       if (!ns.namespaces.has(inputs[0])) {
         const commands = ns.commands;
         const cmdgetter = commands.get(inputs[0]);
 
         if (cmdgetter) {
-          return [inputs.slice(1), cmdgetter()];
+          const cmd = cmdgetter();
+          cmd.metadata.fullName = [...namespaceDepthList.slice(1), cmd.metadata.name].join(' ');
+          return [inputs.slice(1), cmd];
         }
       }
 
@@ -50,10 +52,11 @@ export class Namespace implements INamespace {
         return [inputs, ns];
       }
 
-      return _locate(inputs.slice(1), nsgetter());
+      const newNamespace = nsgetter();
+      return _locate(inputs.slice(1), newNamespace, [...namespaceDepthList, newNamespace.name]);
     }
 
-    return _locate(expandColons(argv), this);
+    return _locate(expandColons(argv), this, [this.name]);
   }
 
   /**
@@ -67,7 +70,7 @@ export class Namespace implements INamespace {
       // objects. Also keep a record of the namespace path.
       namespace.commands.forEach((cmdgetter) => {
         const cmd = cmdgetter();
-        cmd.metadata.fullName = [...namespaceDepthList, cmd.metadata.name].join(' ');
+        cmd.metadata.fullName = [...namespaceDepthList.slice(1), cmd.metadata.name].join(' ');
         commandList.push(cmd.metadata);
       });
 
