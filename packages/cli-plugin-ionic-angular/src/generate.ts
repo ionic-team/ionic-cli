@@ -12,8 +12,7 @@ export async function generate(args: CLIEventEmitterGenerateEventArgs): Promise<
 
   const ionicInfo = await getIonicInfo();
 
-  const semver = load('semver');
-  if (!semver.gte(ionicInfo.version, '3.0.0')) {
+  if (ionicInfo.version.charAt(0) < 3) {
     throw new Error(`The generate command is only available for projects that use ionic-angular >= 3.0.0`);
   }
 
