@@ -354,5 +354,12 @@ export interface ICommand {
   execute(inputs?: CommandLineInputs): Promise<void>;
 }
 
-export interface INamespaceMap extends Map<string, () => INamespace> {}
-export interface ICommandMap extends Map<string, () => ICommand> {}
+export type NamespaceMapGetter = () => INamespace;
+export type CommandMapGetter = () => ICommand;
+
+export interface INamespaceMap extends Map<string, NamespaceMapGetter> {}
+
+export interface ICommandMap extends Map<string, string | CommandMapGetter> {
+  getAliases(): Map<string, string[]>;
+  resolveAliases(cmdName: string): undefined | CommandMapGetter;
+}

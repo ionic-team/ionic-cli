@@ -10,7 +10,6 @@ import {
 
 @CommandMetadata({
   name: 'generate',
-  aliases: ['g'],
   description: `Generates pipes, components, pages, directives, and tabs ${chalk.bold(`(ionic-angular >= 3.0.0)`)}`,
   inputs: [
     {

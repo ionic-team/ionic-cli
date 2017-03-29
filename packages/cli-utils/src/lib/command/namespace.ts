@@ -1,23 +1,40 @@
-import { CommandData, ICommand, INamespace } from '../../definitions';
+import {
+  CommandData,
+  CommandMapGetter,
+  ICommand,
+  ICommandMap,
+  INamespace,
+  NamespaceMapGetter,
+} from '../../definitions';
 import { flattenArray } from '../utils/array';
 import { strcmp } from '../utils/string';
 
-export class CommandMap extends Map<string, () => ICommand> {
-  /*
-  TODO: find a better way to handle aliases that does not duplicate within help doc list
-  set(key: string, value?: ICommand): this {
-    if (value && value.metadata && value.metadata.aliases) {
-      for (let alias of value.metadata.aliases) {
-        super.set(alias, value);
-      }
+export class CommandMap extends Map<string, string | CommandMapGetter> {
+  getAliases(): Map<string, string[]> {
+    const cmdAliases = new Map<string, string[]>();
+    const cmdMapContents: ReadonlyArray<[string, string | CommandMapGetter]> = Array.from(this.entries());
+    const aliasToCmd = cmdMapContents.filter((value): value is [string, string] => typeof value[1] === 'string');
+    aliasToCmd.forEach(([alias, cmd]) => {
+      const aliases = cmdAliases.get(cmd) || [];
+      aliases.push(alias);
+      cmdAliases.set(cmd, aliases);
+    });
+
+    return cmdAliases;
+  }
+
+  resolveAliases(cmdName: string): undefined | CommandMapGetter {
+    const r = this.get(cmdName);
+
+    if (typeof r !== 'string') {
+      return r;
     }
 
-    return super.set(key, value);
+    return this.resolveAliases(r);
   }
-  */
 }
 
-export class NamespaceMap extends Map<string, () => INamespace> {}
+export class NamespaceMap extends Map<string, NamespaceMapGetter> {}
 
 export class Namespace implements INamespace {
   name = '';
@@ -30,25 +47,22 @@ export class Namespace implements INamespace {
    * right-most namespace matched if the command is not found.
    */
   locate(argv: string[]): [string[], ICommand | INamespace] {
-    function expandColons(inputs: string[]) {
+    function _expandColons(inputs: string[]) {
       return flattenArray(inputs.map((arg) => arg.split(':')));
     }
 
     function _locate(inputs: string[], ns: INamespace, namespaceDepthList: string[]): [string[], ICommand | INamespace] {
-      if (!ns.namespaces.has(inputs[0])) {
+      const nsgetter = ns.namespaces.get(inputs[0]);
+      if (!nsgetter) {
         const commands = ns.commands;
-        const cmdgetter = commands.get(inputs[0]);
+        const cmdgetter = commands.resolveAliases(inputs[0]);
 
         if (cmdgetter) {
           const cmd = cmdgetter();
           cmd.metadata.fullName = [...namespaceDepthList.slice(1), cmd.metadata.name].join(' ');
           return [inputs.slice(1), cmd];
         }
-      }
 
-      const nsgetter = ns.namespaces.get(inputs[0]);
-
-      if (!nsgetter) {
         return [inputs, ns];
       }
 
@@ -56,7 +70,7 @@ export class Namespace implements INamespace {
       return _locate(inputs.slice(1), newNamespace, [...namespaceDepthList, newNamespace.name]);
     }
 
-    return _locate(expandColons(argv), this, [this.name]);
+    return _locate(_expandColons(argv), this, [this.name]);
   }
 
   /**
@@ -65,12 +79,18 @@ export class Namespace implements INamespace {
   getCommandMetadataList(): CommandData[] {
     function _getCommandMetadataList(namespace: INamespace, namespaceDepthList: string[]) {
       const commandList: CommandData[] = [];
+      const aliases = namespace.commands.getAliases();
 
       // Gather all commands for a namespace and turn them into simple key value
       // objects. Also keep a record of the namespace path.
       namespace.commands.forEach((cmdgetter) => {
+        if (typeof cmdgetter === 'string') {
+          return;
+        }
+
         const cmd = cmdgetter();
         cmd.metadata.fullName = [...namespaceDepthList.slice(1), cmd.metadata.name].join(' ');
+        cmd.metadata.aliases = aliases.get(cmd.metadata.name) || [];
         commandList.push(cmd.metadata);
       });
 

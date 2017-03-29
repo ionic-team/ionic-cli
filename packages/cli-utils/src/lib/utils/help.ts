@@ -62,7 +62,10 @@ export function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[
   const fillStringArray = generateFillSpaceStringList(cmdMetadataList.map(cmdMd => cmdMd.fullName || cmdMd.name), 18, '.');
 
   return cmdMetadataList.map((cmdMd, index) =>
-    `${chalk.green(cmdMd.fullName || '')} ${fillStringArray[index]} ${cmdMd.description}`
+    `${chalk.green(cmdMd.fullName || '')} ` +
+    `${fillStringArray[index]} ` +
+    `${cmdMd.description}` +
+    `${cmdMd.aliases.length > 0 ? ' (alias' + (cmdMd.aliases.length === 1 ? '' : 'es') + ': ' + cmdMd.aliases.map((a) => chalk.green(a)).join(', ') + ')' : ''}`
   );
 }
 

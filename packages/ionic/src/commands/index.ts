@@ -43,6 +43,7 @@ export class IonicNamespace extends Namespace {
     ['docs', () => new DocsCommand()],
     ['ionitron', () => new IonitronCommand()],
     ['generate', () => new GenerateCommand()],
+    ['g', 'generate'],
     ['link', () => new LinkCommand()],
     ['upload', () => new UploadCommand()],
   ]);
