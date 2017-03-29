@@ -3,12 +3,34 @@
 'use strict';
 
 var chalk = require('chalk');
-var utils = require('@ionic/cli-utils');
+var crossSpawn = require('cross-spawn');
+
+function getCommandInfo(cmd, args) {
+  return new Promise((resolve, reject) => {
+    let info = '';
+    const proc = crossSpawn.spawn(cmd, args);
+
+    proc.stdout.on('data', (data) => {
+      info += data.toString('utf8');
+    });
+
+    proc.on('error', () => {
+      resolve('Not installed');
+    });
+
+    proc.on('close', (code) => {
+      if (code !== 0) {
+        return resolve('Not installed');
+      }
+      resolve(info.replace('\n', ' '));
+    });
+  });
+}
 
 Promise.all([
-  utils.getCommandInfo('cordova', ['-v']),
-  utils.getCommandInfo('ios-deploy', ['--version']),
-  utils.getCommandInfo('ios-sim', ['--version'])
+  getCommandInfo('cordova', ['-v']),
+  getCommandInfo('ios-deploy', ['--version']),
+  getCommandInfo('ios-sim', ['--version'])
 ]).then(function(data) {
   var npmModules = []
   if (data[0] === "Not installed") {
