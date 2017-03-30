@@ -42,7 +42,7 @@ export class PackageDownloadCommand extends Command {
     let { destination, y } = options;
     const destDir = path.resolve(destination || this.env.project.directory);
     const skipPrompts = y || false;
-    let buildId: undefined | number = Number(id) !== NaN ? Number(id) : undefined;
+    let buildId = Number(id) !== NaN ? Number(id) : undefined;
 
     const tasks = new TaskChain();
     const token = await this.env.session.getAppUserToken();

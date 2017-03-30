@@ -65,7 +65,10 @@ export class Task {
       const progbar = <any>this.progressBar; // TODO: type def issue
       progbar.curr = prog;
 
-      this.progressBar.tick(0);
+      if (prog < total) {
+        this.progressBar.tick(0);
+      }
+
       this.tick();
     }
   }
@@ -77,27 +80,30 @@ export class Task {
   }
 
   clear(): void {
-    if (typeof this.intervalId !== 'undefined') {
-      clearTimeout(this.intervalId);
-    }
+    clearInterval(this.intervalId);
 
     this.bottomBar.updateBottomBar('');
     this.bottomBar.close();
   }
 
   end(): void {
-    this.clear();
     this.running = false;
+    this.tick();
+    this.clear();
   }
 
   succeed(): void {
-    this.end();
-    console.log(`${chalk.green(ICON_SUCCESS_GREEN)} ${this.msg} - done!`);
+    if (this.running) {
+      this.end();
+      console.log(`${chalk.green(ICON_SUCCESS_GREEN)} ${this.msg} - done!`);
+    }
   }
 
   fail(): void {
-    this.end();
-    console.error(`${chalk.red(ICON_FAILURE_RED)} ${this.msg} - failed!`);
+    if (this.running) {
+      this.end();
+      console.error(`${chalk.red(ICON_FAILURE_RED)} ${this.msg} - failed!`);
+    }
   }
 }
 
@@ -125,6 +131,7 @@ export class TaskChain {
   end(): this {
     if (this.currentTask) {
       this.currentTask.succeed();
+      this.currentTask = undefined;
     }
 
     return this;
