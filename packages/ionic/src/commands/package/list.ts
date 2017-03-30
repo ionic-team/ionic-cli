@@ -33,7 +33,7 @@ export class PackageListCommand extends Command {
     const pkg = new PackageClient(token, this.env.client);
 
     tasks.next('Retrieving package builds');
-    const builds = await pkg.getBuilds();
+    const builds = await pkg.getBuilds({});
 
     if (builds.length === 0) {
       tasks.end();

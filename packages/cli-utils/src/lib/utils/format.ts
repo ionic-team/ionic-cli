@@ -11,11 +11,14 @@ export const ICON_SUCCESS_GREEN = chalk.green(ICON_SUCCESS);
 export const ICON_FAILURE_RED = chalk.red(ICON_FAILURE);
 
 export function prettyPath(p: string): string {
+  const cwd = process.cwd();
   const d = path.dirname(p);
   const h = os.homedir();
 
-  if (process.cwd() === d) {
+  if (cwd === d) {
     return './' + path.basename(p);
+  } else if (d.startsWith(cwd)) {
+    return './' + p.substring(cwd.length + 1);
   } else if (p.indexOf(h) === 0) {
     return '~/' + p.substring(h.length + 1);
   }

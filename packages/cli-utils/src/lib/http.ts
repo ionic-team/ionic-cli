@@ -93,13 +93,20 @@ export function formatError(e: SuperAgentError): string {
 
 export function formatAPIResponse(req: superagentType.SuperAgentRequest, r: APIResponse) {
   if (isAPIResponseSuccess(r)) {
-    return util.inspect(r);
+    return formatAPISuccess(req, r);
   } else {
     return formatAPIError(req, r);
   }
 }
 
+export function formatAPISuccess(req: superagentType.SuperAgentRequest, r: APIResponseSuccess): string {
+  return `Request: ${req.method} ${req.url}\n`
+    + `Response: ${r.meta.status}\n`
+    + `Body: \n${util.inspect(r.data)}`;
+}
+
 export function formatAPIError(req: superagentType.SuperAgentRequest, r: APIResponseError): string {
-  return `API Error ${r.meta.status}: ${req.method} ${req.url}\n`
-       + util.inspect(r.error);
+  return `Request: ${req.method} ${req.url}\n`
+    + `Response: ${r.meta.status}\n`
+    + `Body: \n${util.inspect(r.error)}`;
 }

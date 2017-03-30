@@ -55,9 +55,9 @@ export class Task {
       if (!this.progressBar) {
         const term = <any>tty; // TODO: type def issue
         const ProgressBar = load('progress');
-        this.progressBar = new ProgressBar('[:bar] :percent :etas', {
+        this.progressBar = new ProgressBar('[:bar] :percent', {
           total: total,
-          width: 15,
+          width: 30,
           stream: new term.WriteStream(),
         });
       }

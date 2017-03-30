@@ -118,7 +118,7 @@ function formatCommandOptions(options: CommandOption[] = []): string {
   const headerLine = chalk.bold(`Options`);
 
   function optionLineFn({ name, aliases, description}: CommandOption) {
-    const optionList = chalk.green(`--${name}`) +
+    const optionList = chalk.green(`-${name.length > 1 ? '-' : ''}${name}`) +
       (aliases && aliases.length > 0 ? ', ' +
        aliases
          .map((alias) => chalk.green(`-${alias}`))

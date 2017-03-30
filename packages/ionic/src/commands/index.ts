@@ -50,6 +50,7 @@ export class IonicNamespace extends Namespace {
 
   async runCommand(env: IonicEnvironment): Promise<void> {
     const argv = minimist(env.pargv);
+    argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
     const [inputs, cmdOrNamespace] = this.locate(argv._);
 
     if (!isCommand(cmdOrNamespace)) {

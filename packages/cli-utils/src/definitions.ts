@@ -109,11 +109,17 @@ export interface DeployResponse extends APIResponseSuccess {
 
 export interface PackageBuild {
   id: number;
+  name: string;
   created: string;
   completed: string | null;
-  platform: string;
+  platform: 'android' | 'ios';
   status: string;
   mode: string;
+  url?: string | null;
+}
+
+export interface PackageBuildResponse extends APIResponseSuccess {
+  data: PackageBuild;
 }
 
 export interface PackageBuildsResponse extends APIResponseSuccess {

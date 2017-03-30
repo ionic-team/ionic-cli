@@ -2,7 +2,6 @@ import {
   CommandData,
   CommandMapGetter,
   ICommand,
-  ICommandMap,
   INamespace,
   NamespaceMapGetter,
 } from '../../definitions';

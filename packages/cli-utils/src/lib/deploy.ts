@@ -61,9 +61,8 @@ export class DeployClient {
       });
 
       zip.on('end', () => {
-        const request = load('superagent');
-
-        request.post(snapshot.presigned_post.url)
+        const superagent = load('superagent');
+        superagent.post(snapshot.presigned_post.url)
           .field(snapshot.presigned_post.fields)
           .field('file', Buffer.concat(bufs))
           .on('progress', (event) => {
@@ -86,6 +85,7 @@ export class DeployClient {
   }
 }
 
+// TODO: generalize
 export function createZipStream(wwwPath: string): NodeJS.ReadableStream {
   const archiver = load('archiver');
   const archive = archiver('zip');

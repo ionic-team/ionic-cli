@@ -9,7 +9,6 @@ import {
   CommandLineOptions,
   ICommand,
   IonicEnvironment,
-  ValidationError,
 } from '../../definitions';
 import { isValidationErrorArray } from '../../guards';
 import { createFatalAPIFormat } from '../http';
