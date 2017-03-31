@@ -48,8 +48,10 @@ export class PackageDownloadCommand extends Command {
     const token = await this.env.session.getAppUserToken();
     const pkg = new PackageClient(token, this.env.client);
 
-    if (!buildId) {
-      tasks.next('Retrieving latest build');
+    if (buildId) {
+      tasks.next(`Retrieving information about build ${chalk.bold(String(buildId))}`);
+    } else {
+      tasks.next('Retrieving latest build information');
       const latestBuilds = await pkg.getBuilds({ pageSize: 1 });
 
       if (latestBuilds.length === 0) {

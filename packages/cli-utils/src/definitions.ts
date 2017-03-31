@@ -113,9 +113,10 @@ export interface PackageBuild {
   created: string;
   completed: string | null;
   platform: 'android' | 'ios';
-  status: string;
+  status: 'SUCCESS' | 'FAILED' | 'QUEUED' | 'BUILDING';
   mode: string;
   url?: string | null;
+  output?: string | null;
 }
 
 export interface PackageBuildResponse extends APIResponseSuccess {

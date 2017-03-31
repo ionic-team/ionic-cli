@@ -5,6 +5,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  PackageBuild,
   PackageClient,
   TaskChain,
   columnar,
@@ -16,17 +17,6 @@ import {
   exampleCommands: [''],
 })
 export class PackageListCommand extends Command {
-  colorStatus(status: string) {
-    switch (status) {
-      case 'SUCCESS':
-        return chalk.green('SUCCESS');
-      case 'FAILED':
-        return chalk.red('FAILED');
-    }
-
-    return status;
-  }
-
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const tasks = new TaskChain();
     const token = await this.env.session.getAppUserToken();
@@ -40,19 +30,22 @@ export class PackageListCommand extends Command {
       return this.env.log.warn(`You don't have any builds yet! Run ${chalk.bold('ionic package build -h')} to learn how.`);
     }
 
-    const buildsMatrix = builds.map(({ id, created, completed, platform, status, mode }) => {
-      return [
-        String(id),
-        this.colorStatus(status),
-        platform,
-        mode,
-        new Date(created).toLocaleString(),
-        completed ? new Date(completed).toLocaleString() : '',
-      ];
+    const attrs: (keyof PackageBuild)[] =  ['id', 'status', 'platform', 'mode', 'created', 'completed'];
+    const buildsMatrix = builds.map((build) => {
+      const formattedBuild = pkg.formatBuildValues(build);
+      return attrs.map(attr => formattedBuild[attr] || '');
     });
 
     const table = columnar(buildsMatrix, {
-      columnHeaders: ['id', 'status', 'platform', 'mode', 'started', 'finished'],
+      columnHeaders: attrs.map((attr) => {
+        if (attr === 'created') {
+          return 'started';
+        } else if (attr === 'completed') {
+          return 'finished';
+        }
+
+        return attr;
+      }),
     });
 
     tasks.end();

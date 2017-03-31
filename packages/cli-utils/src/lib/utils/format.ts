@@ -41,9 +41,17 @@ export function generateFillSpaceStringList(list: string[], optimalLength: numbe
   return list.map(item => fullLengthString.substr(0, fullLength - item.replace(STRIP_ANSI_REGEX, '').length));
 }
 
-export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk.dim('|'), columnHeaders }: { hsep?: string, vsep?: string, columnHeaders: string[] }) {
-  const rowCount = columnHeaders.length;
-  const columns = [...columnHeaders.map(header => [chalk.bold(header)])];
+export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk.dim('|'), columnHeaders }: { hsep?: string, vsep?: string, columnHeaders?: string[] }) {
+  const includeHeaders = columnHeaders ? true : false;
+
+  if (!rows[0]) {
+    return '';
+  }
+
+  const columnCount = columnHeaders ? columnHeaders.length : rows[0].length;
+  const columns = columnHeaders ?
+    columnHeaders.map(header => [chalk.bold(header)]) :
+    new Array<string[]>(columnCount).fill(<string[]>[]).map(() => []);
 
   for (let row of rows) {
     for (let i in row) {
@@ -54,7 +62,7 @@ export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk
   }
 
   const paddedColumns = columns.map((col, i) => {
-    if (i < rowCount - 1) {
+    if (i < columnCount - 1) {
       const spaceCol = generateFillSpaceStringList(col);
       return col.map((cell, i) => `${cell}${spaceCol[i]}${vsep} `);
     } else {
@@ -71,7 +79,9 @@ export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk
     });
   });
 
-  singleColumn.splice(1, 0, hsep.repeat(longestRowLength));
+  if (includeHeaders) {
+    singleColumn.splice(1, 0, hsep.repeat(longestRowLength));
+  }
 
   return singleColumn.join('\n');
 }

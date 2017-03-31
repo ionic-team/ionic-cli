@@ -1,5 +1,7 @@
 import * as http from 'http';
 
+import * as chalk from 'chalk';
+
 import { IClient, PackageBuild } from '../definitions';
 import { isPackageBuildResponse, isPackageBuildsResponse } from '../guards';
 import { createFatalAPIFormat } from './http';
@@ -83,6 +85,28 @@ export class PackageClient {
         })
         .pipe(dest);
     });
+  }
+
+  colorStatus(s: PackageBuild['status']) {
+    switch (s) {
+      case 'SUCCESS':
+        return chalk.green(s);
+      case 'FAILED':
+        return chalk.red(s);
+    }
+
+    return s;
+  }
+
+  formatBuildValues(build: PackageBuild): { [P in keyof PackageBuild]?: string } {
+    return {
+      id: String(build.id),
+      status: this.colorStatus(build.status),
+      platform: build.platform,
+      mode: build.mode,
+      created: new Date(build.created).toLocaleString(),
+      completed: build.completed ? new Date(build.completed).toLocaleString() : '',
+    };
   }
 
 }
