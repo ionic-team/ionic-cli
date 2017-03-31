@@ -15,15 +15,21 @@ export async function serve(args: CLIEventEmitterServeEventArgs): Promise<{ [key
   }
 
   let chosenIP = (availableIPs.length === 0) ? '0.0.0.0' : availableIPs[0].address;
+
   if (availableIPs.length > 1) {
-    const inquirer = load('inquirer');
-    const promptAnswers = await inquirer.prompt({
-      type: 'list',
-      name: 'ip',
-      message: 'Multiple addresses available. Please select which address to use:',
-      choices: availableIPs.map(ip => ip.address)
-    });
-    chosenIP = promptAnswers['ip'];
+    console.log(availableIPs, args.options);
+    if (availableIPs.find(({address}) => address === args.options.address)) {
+      chosenIP = args.options.address;
+    } else {
+      const inquirer = load('inquirer');
+      const promptAnswers = await inquirer.prompt({
+        type: 'list',
+        name: 'ip',
+        message: 'Multiple addresses available. Please select which address to use:',
+        choices: availableIPs.map(ip => ip.address)
+      });
+      chosenIP = promptAnswers['ip'];
+    }
   }
 
   let appScriptsArgs = minimistOptionsToArray(args.options);
