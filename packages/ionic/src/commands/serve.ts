@@ -105,7 +105,13 @@ export class ServeCommand extends Command {
       throw this.exit(`Too many listeners for serve event (${numListeners}). Install only one plugin.`); // TODO: make better?
     }
 
-    const [response] = await this.env.emitter.emit('serve', { env: this.env, options });
+    const [response] = await this.env.emitter.emit('serve', {
+      env: this.env,
+      options: {
+        ...options,
+        externalIpRequired: options.qrcode || options.broadcast
+      }
+    });
 
     // If qrcode option then generate a qrcode on the Command Line.
     if (options.qrcode) {

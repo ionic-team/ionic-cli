@@ -8,13 +8,13 @@ import { minimistOptionsToArray } from './utils/arguments';
 
 export async function serve(args: CLIEventEmitterServeEventArgs): Promise<{ [key: string]: any }> {
   const availableIPs = getAvailableIPAddress();
-  if (availableIPs.length === 0) {
+  if (availableIPs.length === 0 && args.options.externalIpRequired) {
     throw new Error(`It appears that you do not have any external network interfaces. ` +
       `In order to use livereload with emulate you will need one.`
     );
   }
 
-  let chosenIP = availableIPs[0].address;
+  let chosenIP = (availableIPs.length === 0) ? '0.0.0.0' : availableIPs[0].address;
   if (availableIPs.length > 1) {
     const inquirer = load('inquirer');
     const promptAnswers = await inquirer.prompt({

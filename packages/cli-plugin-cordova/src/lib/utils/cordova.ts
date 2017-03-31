@@ -53,6 +53,7 @@ export function generateBuildOptions(metadata: CommandData, options: CommandLine
   return {
     ...results,
     'iscordovaserve': true,
+    'externalIpRequired': true,
     'nobrowser': true
   };
 }
