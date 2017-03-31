@@ -11,6 +11,7 @@ import {
   CommandMetadata,
   TaskChain,
   getCommandInfo,
+  getReleaseChannelName,
   rimrafp,
   validators,
 } from '@ionic/cli-utils';
@@ -27,7 +28,6 @@ import {
 } from '../lib/start';
 
 import { load } from '../lib/modules';
-import { getReleaseChannelName } from '../lib/plugins';
 import { StarterTemplate } from '../definitions';
 import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
 

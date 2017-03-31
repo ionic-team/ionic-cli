@@ -6,6 +6,8 @@ import {
   Namespace,
   NamespaceMap,
   isCommand,
+  showHelp,
+  metadataToMinimistOptions,
 } from '@ionic/cli-utils';
 
 import { PackageNamespace } from './package/index';
@@ -54,15 +56,24 @@ export class IonicNamespace extends Namespace {
     const [inputs, cmdOrNamespace] = this.locate(argv._);
 
     if (!isCommand(cmdOrNamespace)) {
-      return HelpCommand.showHelp(env, argv._);
+      return showHelp(env, argv._);
     }
 
     const command = cmdOrNamespace;
+    const minimistOptions = metadataToMinimistOptions(command.metadata);
+    const options = minimist(env.pargv, minimistOptions);
 
     command.env = env;
+    const validationErrors = command.validate(inputs);
 
-    await command.load();
-    await command.execute(inputs);
-    await command.unload();
+    if (validationErrors.length > 0) {
+      for (let e of validationErrors) {
+        env.log.error(e.message);
+      }
+
+      return showHelp(env, argv._);
+    }
+
+    await command.execute(inputs, options);
   }
 }

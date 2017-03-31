@@ -1,18 +1,11 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
 
-import {
-  ERROR_FILE_INVALID_JSON,
-  ERROR_FILE_NOT_FOUND,
-  IonicEnvironment,
-  Plugin,
-  Shell,
-  TaskChain,
-  fsReadDir,
-  fsReadJsonFile,
-} from '@ionic/cli-utils';
-
-import { load } from '../lib/modules';
+import { IonicEnvironment, Plugin } from '../definitions';
+import { load } from './modules';
+import { Shell } from './shell';
+import { ERROR_FILE_INVALID_JSON, ERROR_FILE_NOT_FOUND, fsReadDir, fsReadJsonFile } from './utils/fs';
+import { TaskChain } from './utils/task';
 
 export const KNOWN_PLUGINS = ['cordova']; // known plugins with commands
 export const ORG_PREFIX = '@ionic';

@@ -1,6 +1,4 @@
-import * as chalk from 'chalk';
 import * as superagentType from 'superagent';
-import * as minimist from 'minimist';
 
 import {
   APIResponse,
@@ -9,43 +7,38 @@ import {
   CommandLineOptions,
   ICommand,
   IonicEnvironment,
+  ValidationError,
 } from '../../definitions';
 import { isValidationErrorArray } from '../../guards';
 import { createFatalAPIFormat } from '../http';
 import { FatalException } from '../errors';
-import { collectInputs, metadataToMinimistOptions, validateInputs, minimistOptionsToArray } from './utils';
+import { collectInputs, validateInputs, minimistOptionsToArray } from './utils';
 
 export class Command implements ICommand {
   public env: IonicEnvironment;
   public metadata: CommandData;
 
-  async load(): Promise<void> {}
-  async unload(): Promise<void> {}
-
   async prerun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
 
-  async execute(inputs?: CommandLineInputs): Promise<void> {
-    const options = metadataToMinimistOptions(this.metadata);
-    const argv = minimist(this.env.pargv, options);
-    let r: number | void;
-
-    if (inputs) {
-      argv._ = inputs;
-    }
-
+  validate(inputs: CommandLineInputs): ValidationError[] {
     try {
-      validateInputs(argv._, this.metadata);
+      validateInputs(inputs, this.metadata);
     } catch (e) {
       if (isValidationErrorArray(e)) {
-        console.error(e.map(err => chalk.red('>> ') + err.message).join('\n'));
-        return;
+        return e;
       } else {
         throw e;
       }
     }
 
-    r = await this.prerun(argv._, argv);
+    return [];
+  }
+
+  async execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    let r: number | void;
+
+    r = await this.prerun(inputs, options);
     if (typeof r === 'number') {
       if (r > 0) {
         throw this.exit('', r);
@@ -54,21 +47,21 @@ export class Command implements ICommand {
       return;
     }
 
-    await collectInputs(argv._, this.metadata);
+    await collectInputs(inputs, this.metadata);
 
     const results = await Promise.all([
       (async () => {
         const configData = await this.env.config.load();
         if (configData.cliFlags.enableTelemetry !== false) {
-          const cmdInputs = this.getCleanInputsForTelemetry(argv._, argv);
+          const cmdInputs = this.getCleanInputsForTelemetry(inputs, options);
           await this.env.telemetry.sendCommand(
             (this.env.namespace.name) ? `${this.env.namespace.name}:${this.metadata.name}` : this.metadata.name,
             cmdInputs
           );
         }
       })(),
-      (async() => {
-        await this.run(argv._, argv);
+      (async () => {
+        await this.run(inputs, options);
       })()
     ]);
 

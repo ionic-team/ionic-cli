@@ -4,12 +4,50 @@ import {
   CommandData,
   CommandInput,
   CommandOption,
+  IonicEnvironment,
   ICommand,
   INamespace,
-} from '../../definitions';
-import { isCommand } from '../../guards';
-import { validators } from '../validators';
-import { STRIP_ANSI_REGEX, generateFillSpaceStringList } from './format';
+} from '../definitions';
+import { isCommand } from '../guards';
+import { validators } from './validators';
+import { STRIP_ANSI_REGEX, generateFillSpaceStringList } from './utils/format';
+
+import { ERROR_PLUGIN_NOT_INSTALLED, KNOWN_PLUGINS, ORG_PREFIX, PLUGIN_PREFIX, loadPlugin } from './plugins';
+
+export async function showHelp(env: IonicEnvironment, inputs: string[]) {
+  const inProject = env.project.directory ? true : false;
+
+  // If there are no inputs then show global command details.
+  if (inputs.length === 0) {
+    return env.log.msg(getFormattedHelpDetails(env.namespace, inputs, inProject));
+  }
+
+  const [slicedInputs, cmdOrNamespace] = env.namespace.locate(inputs);
+
+  if (!isCommand(cmdOrNamespace)) {
+    let extra = '';
+
+    if (env.project.directory) {
+      if (KNOWN_PLUGINS.indexOf(slicedInputs[0]) !== -1) {
+        try {
+          await loadPlugin(env.project.directory, `${ORG_PREFIX}/${PLUGIN_PREFIX}${slicedInputs[0]}`);
+        } catch (e) {
+          if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
+            throw e;
+          }
+        }
+      }
+    } else {
+      extra = '\nYou may need to be in an Ionic project directory.';
+    }
+
+    if (slicedInputs.length > 0) {
+      env.log.error(`Unable to find command: ${chalk.bold(inputs.join(' '))}.${extra}`);
+    }
+  }
+
+  env.log.msg(formatHelp(cmdOrNamespace, inputs, inProject));
+}
 
 export function formatHelp(cmdOrNamespace: ICommand | INamespace, inputs: string[], inProject: boolean = false) {
   // If the command is located on the global namespace then show its help

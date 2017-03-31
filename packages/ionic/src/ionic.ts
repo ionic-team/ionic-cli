@@ -20,10 +20,10 @@ import {
   fsReadDir,
   getCliInfo,
   isSuperAgentError,
+  loadPlugins,
 } from '@ionic/cli-utils';
 
 import { namespace } from './index';
-import { loadPlugins } from './lib/plugins';
 
 const PROJECT_FILE = 'ionic.config.json';
 const CONFIG_FILE = 'config.json';

@@ -354,11 +354,10 @@ export interface ICommand {
   env: IonicEnvironment;
   metadata: CommandData;
 
-  load(): Promise<void>;
-  unload(): Promise<void>;
+  validate(inputs: CommandLineInputs): ValidationError[];
   prerun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
   run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
-  execute(inputs?: CommandLineInputs): Promise<void>;
+  execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
 }
 
 export type NamespaceMapGetter = () => INamespace;
