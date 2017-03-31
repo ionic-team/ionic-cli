@@ -123,6 +123,8 @@ export class StartCommand extends Command {
     let [projectName, starterTemplateName] = inputs;
     let appName = <string>options['appname'] || projectName;
     let cloudAppId = <string>options['cloud-app-id'] || '';
+    let starterBranchName = <string>options['starterBranchName'] || 'master';
+    let wrapperBranchName = <string>options['wrapperBranchName'] || 'master';
     let installer = 'npm';
     let projectRoot: string;
 
@@ -189,10 +191,12 @@ export class StartCommand extends Command {
 
     let baseArchiveResponse;
     let archiveResponse;
+    let wrapperBranchPath = starterType.baseArchive.replace('<BRANCH_NAME>', wrapperBranchName);
+    let starterBranchPath = starterTemplate.archive.replace('<BRANCH_NAME>', starterBranchName);
     try {
       [ baseArchiveResponse, archiveResponse] = await Promise.all([
-        fetch(starterType.baseArchive),
-        fetch(starterTemplate.archive)
+        fetch(wrapperBranchPath),
+        fetch(starterBranchPath)
       ]);
     } catch (e) {
       if (['ETIMEOUT', 'ENOTFOUND'].includes(e.code)) {
