@@ -75,7 +75,7 @@ export class PluginCommand extends Command {
     if (!pluginName) {
       const inquirer = load('inquirer');
       const promptResults = await inquirer.prompt({
-        message: 'What plugin would you like to add:',
+        message: `What plugin would you like to ${action}:`,
         type: 'input',
         name: 'plugin',
       });
