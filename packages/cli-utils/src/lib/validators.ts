@@ -28,7 +28,7 @@ export const validators: Validators = {
   }
 };
 
-export function combine(validators: Validator[]): Validator {
+export function combine(...validators: Validator[]): Validator {
   return function(input: string): boolean | string {
     for (let v of validators) {
       let o = v(input);
@@ -41,8 +41,16 @@ export function combine(validators: Validator[]): Validator {
   };
 }
 
-export function contains(values: string[]): Validator {
-  return function(input: string): boolean | string {
-    return values.indexOf(input) !== 0;
+export function contains(...values: string[]): Validator {
+  return function(input: string, key?: string): boolean | string {
+    if (values.indexOf(input) === -1) {
+      if (key) {
+        return `${chalk.bold(key)} must be one of: (${values.map(v => chalk.bold(v)).join(', ')})`;
+      } else {
+        return `Must be one of: (${values.map(v => chalk.bold(v)).join(', ')})`;
+      }
+    }
+
+    return true;
   };
 }

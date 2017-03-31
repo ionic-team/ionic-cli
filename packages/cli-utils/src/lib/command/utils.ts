@@ -131,7 +131,7 @@ export function metadataToInquirerQuestions(metadata: CommandData): inquirerType
       let o: Object[] = [];
 
       if (input.validators) {
-        o.push({ validate: combineValidators(input.validators) });
+        o.push({ validate: combineValidators(...input.validators) });
       }
 
       o.push(input.prompt);
