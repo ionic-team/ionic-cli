@@ -5,6 +5,8 @@ import {
   AppDetails,
   AppResponse,
   AuthTokenResponse,
+  CommandPreInputs,
+  CommandPreRun,
   DeployChannelResponse,
   DeployResponse,
   DeploySnapshotRequestResponse,
@@ -22,7 +24,15 @@ import {
 export const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'ok', 'warn', 'error'];
 
 export function isCommand(cmd: ICommand | INamespace): cmd is ICommand {
-  return typeof (<ICommand>cmd).run !== 'undefined';
+  return typeof (<ICommand>cmd).run === 'function';
+}
+
+export function isCommandPreRun(cmd: ICommand): cmd is CommandPreRun {
+  return typeof (<CommandPreRun>cmd).preRun === 'function';
+}
+
+export function isCommandPreInputs(cmd: ICommand): cmd is CommandPreInputs {
+  return typeof (<CommandPreInputs>cmd).preInputs === 'function';
 }
 
 export function isLogLevel(l: string): l is LogLevel {

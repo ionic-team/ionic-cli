@@ -5,6 +5,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  CommandPreRun,
   TaskChain,
   validators,
   normalizeOptionAliases
@@ -58,8 +59,8 @@ import {
     }
   ]
 })
-export class PlatformCommand extends Command {
-  async prerun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+export class PlatformCommand extends Command implements CommandPreRun {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     inputs[0] = (typeof inputs[0] === 'undefined') ? 'list' : inputs[0];
     inputs[0] = (inputs[0] === 'rm') ? 'remove' : inputs[0];
     inputs[0] = (inputs[0] === 'ls') ? 'list' : inputs[0];

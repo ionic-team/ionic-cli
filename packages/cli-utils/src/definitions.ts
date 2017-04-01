@@ -1,6 +1,7 @@
 import * as crossSpawnType from 'cross-spawn';
 import * as inquirerType from 'inquirer';
 import * as superagentType from 'superagent';
+import * as minimistType from 'minimist';
 
 export interface SuperAgentError extends Error {
   response: superagentType.Response;
@@ -300,29 +301,22 @@ export interface CLIEventEmitterServeEventArgs {
   options: CommandLineOptions;
 }
 
-export interface CLIEventEmitterCommandEventArgs {
-  cmd: ICommand;
-  inputs: CommandLineInputs;
-  options: CommandLineOptions;
-}
-
 export interface ICLIEventEmitter {
   emit(evt: 'generate', args: CLIEventEmitterGenerateEventArgs): Promise<void[]>;
   emit(evt: 'build', args: CLIEventEmitterBuildEventArgs): Promise<void[]>;
   emit(evt: 'serve', args: CLIEventEmitterServeEventArgs): Promise<{ [key: string]: any }[]>;
-  emit(evt: 'command', args: CLIEventEmitterCommandEventArgs): Promise<void[]>;
   emit<T, U>(evt: string, args: T): Promise<U[]>;
 
   on(evt: 'generate', listener: (args: CLIEventEmitterGenerateEventArgs) => Promise<void>): this;
   on(evt: 'build', listener: (args: CLIEventEmitterBuildEventArgs) => Promise<void>): this;
   on(evt: 'serve', listener: (args: CLIEventEmitterServeEventArgs) => Promise<{ [key: string]: any }>): this;
-  on(evt: 'command', listener: (args: CLIEventEmitterCommandEventArgs) => Promise<void>): this;
   on<T, U>(evt: string, listener: (args: T) => Promise<U>): this;
 
   getListeners<T, U>(evt: string): ((args: T) => Promise<U>)[];
 }
 
 export interface IonicEnvironment {
+  argv: minimistType.ParsedArgs;
   pargv: string[];
   app: IApp;
   emitter: ICLIEventEmitter;
@@ -354,10 +348,18 @@ export interface ICommand {
   env: IonicEnvironment;
   metadata: CommandData;
 
+  showHelp(): void;
   validate(inputs: CommandLineInputs): ValidationError[];
-  prerun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
   run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
   execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
+}
+
+export interface CommandPreInputs extends ICommand {
+  preInputs(): void;
+}
+
+export interface CommandPreRun extends ICommand {
+  preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
 }
 
 export type NamespaceMapGetter = () => INamespace;

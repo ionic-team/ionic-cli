@@ -81,7 +81,11 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     const session = new Session(config, project, client);
     const app = new App(session, project, client);
 
+    const argv = minimist(pargv);
+    argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
+
     const ionicEnvironment: IonicEnvironment = {
+      argv,
       pargv,
       app,
       emitter,

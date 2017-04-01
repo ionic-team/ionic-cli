@@ -9,6 +9,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  CommandPreRun,
   TaskChain,
   getCommandInfo,
   getReleaseChannelName,
@@ -108,8 +109,8 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
     }
   ]
 })
-export class StartCommand extends Command {
-  async prerun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+export class StartCommand extends Command implements CommandPreRun {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
 
     // If the action is list then lets just end here.
     if (options['list']) {

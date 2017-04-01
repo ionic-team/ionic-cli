@@ -9,7 +9,8 @@ import {
   IonicEnvironment,
   ValidationError,
 } from '../../definitions';
-import { isValidationErrorArray } from '../../guards';
+import { isValidationErrorArray, isCommandPreRun, isCommandPreInputs} from '../../guards';
+import { showHelp } from '../help';
 import { createFatalAPIFormat } from '../http';
 import { FatalException } from '../errors';
 import { collectInputs, validateInputs, minimistOptionsToArray } from './utils';
@@ -18,8 +19,11 @@ export class Command implements ICommand {
   public env: IonicEnvironment;
   public metadata: CommandData;
 
-  async prerun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
+
+  showHelp() {
+    showHelp(this.env, this.env.argv._);
+  }
 
   validate(inputs: CommandLineInputs): ValidationError[] {
     try {
@@ -38,16 +42,22 @@ export class Command implements ICommand {
   async execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let r: number | void;
 
-    r = await this.prerun(inputs, options);
-    if (typeof r === 'number') {
-      if (r > 0) {
-        throw this.exit('', r);
-      }
-
-      return;
+    if (isCommandPreInputs(this)) {
+      this.preInputs();
     }
 
     await collectInputs(inputs, this.metadata);
+
+    if (isCommandPreRun(this)) {
+      r = await this.preRun(inputs, options);
+      if (typeof r === 'number') {
+        if (r > 0) {
+          throw this.exit('', r);
+        }
+
+        return;
+      }
+    }
 
     const results = await Promise.all([
       (async () => {

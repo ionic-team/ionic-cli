@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import { CommandLineInputs, CommandLineOptions, Command, CommandMetadata } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, Command, CommandMetadata, CommandPreInputs } from '@ionic/cli-utils';
 import { validators } from '@ionic/cli-utils';
 
 @CommandMetadata({
@@ -28,8 +28,8 @@ import { validators } from '@ionic/cli-utils';
     }
   ]
 })
-export class LoginCommand extends Command {
-  async prerun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+export class LoginCommand extends Command implements CommandPreInputs {
+  preInputs() {
     this.env.log.msg(`Log into your Ionic account\n` +
                      `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`);
   }

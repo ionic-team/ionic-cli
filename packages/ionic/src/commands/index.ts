@@ -51,19 +51,18 @@ export class IonicNamespace extends Namespace {
   ]);
 
   async runCommand(env: IonicEnvironment): Promise<void> {
-    const argv = minimist(env.pargv);
-    argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
-    const [inputs, cmdOrNamespace] = this.locate(argv._);
+    const [inputs, cmdOrNamespace] = this.locate(env.argv._);
 
     if (!isCommand(cmdOrNamespace)) {
-      return showHelp(env, argv._);
+      return showHelp(env, env.argv._);
     }
 
     const command = cmdOrNamespace;
     const minimistOptions = metadataToMinimistOptions(command.metadata);
     const options = minimist(env.pargv, minimistOptions);
-
+    env.argv = options;
     command.env = env;
+
     const validationErrors = command.validate(inputs);
 
     if (validationErrors.length > 0) {
@@ -71,7 +70,7 @@ export class IonicNamespace extends Namespace {
         env.log.error(e.message);
       }
 
-      return showHelp(env, argv._);
+      return showHelp(env, env.argv._);
     }
 
     await command.execute(inputs, options);
