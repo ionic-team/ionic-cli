@@ -17,6 +17,9 @@ import {
   PackageBuild,
   PackageBuildResponse,
   PackageBuildsResponse,
+  SecurityProfile,
+  SecurityProfileResponse,
+  SecurityProfilesResponse,
   SuperAgentError,
   ValidationError,
 } from './definitions';
@@ -116,6 +119,31 @@ export function isPackageBuild(o: Object): o is PackageBuild {
     && typeof obj.status === 'string'
     && typeof obj.mode === 'string'
     && (!obj.url || typeof obj.url === 'string');
+}
+
+export function isSecurityProfile(o: Object): o is SecurityProfile {
+  const obj = <SecurityProfile>o;
+  return obj && typeof obj === 'object'
+    && typeof obj.name === 'string'
+    && typeof obj.tag === 'string';
+}
+
+export function isSecurityProfileResponse(r: APIResponse): r is SecurityProfileResponse {
+  const res: SecurityProfileResponse = <SecurityProfileResponse>r;
+  return isAPIResponseSuccess(res) && isSecurityProfile(res.data);
+}
+
+export function isSecurityProfilesResponse(r: APIResponse): r is SecurityProfilesResponse {
+  const res: SecurityProfilesResponse = <SecurityProfilesResponse>r;
+  if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
+    return false;
+  }
+
+  if (res.data.length > 0) {
+    return isSecurityProfile(res.data[0]);
+  }
+
+  return true;
 }
 
 export function isPackageBuildResponse(r: APIResponse): r is PackageBuildResponse {

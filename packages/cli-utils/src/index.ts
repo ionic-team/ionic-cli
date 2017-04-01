@@ -17,6 +17,7 @@ export * from './lib/login';
 export * from './lib/package';
 export * from './lib/plugins';
 export * from './lib/project';
+export * from './lib/security';
 export * from './lib/session';
 export * from './lib/shell';
 export * from './lib/telemetry';

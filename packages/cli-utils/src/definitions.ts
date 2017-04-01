@@ -128,6 +128,25 @@ export interface PackageBuildsResponse extends APIResponseSuccess {
   data: PackageBuild[];
 }
 
+export interface SecurityProfile {
+  name: string;
+  tag: string;
+  type: 'development' | 'production';
+  created: string;
+  credentials: {
+    android?: Object;
+    ios?: Object;
+  }
+}
+
+export interface SecurityProfileResponse extends APIResponseSuccess {
+  data: SecurityProfile;
+}
+
+export interface SecurityProfilesResponse extends APIResponseSuccess {
+  data: SecurityProfile[];
+}
+
 export interface IApp {
   load(app_id?: string): Promise<AppDetails>;
 }
