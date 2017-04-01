@@ -1,7 +1,3 @@
-import * as http from 'http';
-
-import * as chalk from 'chalk';
-
 import { IClient, SecurityProfile } from '../definitions';
 import { isSecurityProfileResponse, isSecurityProfilesResponse } from '../guards';
 import { createFatalAPIFormat } from './http';

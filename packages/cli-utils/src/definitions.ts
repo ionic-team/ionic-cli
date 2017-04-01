@@ -136,7 +136,7 @@ export interface SecurityProfile {
   credentials: {
     android?: Object;
     ios?: Object;
-  }
+  };
 }
 
 export interface SecurityProfileResponse extends APIResponseSuccess {

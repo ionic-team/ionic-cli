@@ -1,0 +1,106 @@
+import * as chalk from 'chalk';
+
+import {
+  Command,
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandMetadata,
+  CommandPreRun,
+  PackageBuild,
+  PackageClient,
+  SecurityClient,
+  TaskChain,
+  contains,
+  validators,
+} from '@ionic/cli-utils';
+
+import { upload } from '../../lib/upload';
+
+@CommandMetadata({
+  name: 'build',
+  description: 'Start a package build',
+  inputs: [
+    {
+      name: 'platform',
+      description: `The platform to target: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
+      validators: [validators.required, contains('ios', 'android')],
+      prompt: {
+        type: 'list',
+        message: 'What platform would you like to target:',
+        choices: ['ios', 'android'],
+      },
+    },
+  ],
+  options: [
+    {
+      name: 'release',
+      description: 'Mark this build as a release build',
+      type: Boolean,
+    },
+    {
+      name: 'profile',
+      description: 'The security profile to use with this build',
+      type: String,
+      aliases: ['p'],
+    },
+    {
+      name: 'note',
+      description: 'Give the package snapshot a note',
+    },
+  ],
+  exampleCommands: [''],
+})
+export class PackageBuildCommand extends Command implements CommandPreRun {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    let [ platform ] = inputs;
+    let { release, profile } = options;
+
+    const token = await this.env.session.getAppUserToken();
+    const pkg = new PackageClient(token, this.env.client);
+
+    if (!profile && (platform === 'ios' || (platform === 'android' && release))) {
+      this.env.log.error(`${chalk.bold('--profile')} is required for ${pkg.formatPlatform(platform) + (release ? ' release' : '')} builds!`);
+      this.showHelp();
+      return 1;
+    }
+  }
+
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    let [ platform ] = <[PackageBuild['platform']]>inputs;
+    let { release, profile, note } = options;
+
+    if (typeof note !== 'string') {
+      note = 'Ionic Package Upload';
+    }
+
+    const tasks = new TaskChain();
+
+    const token = await this.env.session.getAppUserToken();
+    const sec = new SecurityClient(token, this.env.client);
+    const pkg = new PackageClient(token, this.env.client);
+
+    if (typeof profile === 'string') {
+      tasks.next(`Retrieving security profile ${chalk.bold(profile)}`);
+      const p = await sec.getProfile(profile.toLowerCase()); // TODO: gracefully handle 404
+      tasks.end();
+
+      if (!p.credentials[platform]) {
+        this.env.log.error(`Profile ${chalk.bold(p.tag)} (${chalk.bold(p.name)}) was found, but didn't have credentials for ${pkg.formatPlatform(platform)}.`); // TODO: link to docs
+        return 1;
+      }
+
+      if (release && p.type !== 'production') {
+        this.env.log.error(`Profile ${chalk.bold(p.tag)} (${chalk.bold(p.name)}) is a ${chalk.bold(p.type)} profile, which won't work for release builds.\n` +
+                           `Please use a production security profile.`); // TODO: link to docs
+        return 1;
+      }
+    }
+
+    tasks.end();
+    const snapshot = await upload(this.env, { note });
+
+    tasks.next('Requesting project upload');
+
+    console.log(snapshot); // TODO
+  }
+}

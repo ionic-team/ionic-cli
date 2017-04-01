@@ -125,7 +125,10 @@ export function isSecurityProfile(o: Object): o is SecurityProfile {
   const obj = <SecurityProfile>o;
   return obj && typeof obj === 'object'
     && typeof obj.name === 'string'
-    && typeof obj.tag === 'string';
+    && typeof obj.tag === 'string'
+    && typeof obj.type === 'string'
+    && typeof obj.created === 'string'
+    && typeof obj.credentials === 'object';
 }
 
 export function isSecurityProfileResponse(r: APIResponse): r is SecurityProfileResponse {

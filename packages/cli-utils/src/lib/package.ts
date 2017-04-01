@@ -10,11 +10,6 @@ import { load } from './modules';
 export class PackageClient {
   constructor(protected appUserToken: string, protected client: IClient) {}
 
-  formatFilename(build: PackageBuild) {
-    const extension = build.platform === 'android' ? 'apk' : 'ipa';
-    return `${build.name}.${extension}`;
-  }
-
   async getBuild(id: number, { fields = [] }: { fields?: string[] }): Promise<PackageBuild> {
     if (fields.indexOf('url') === -1) {
       fields.push('url');
@@ -87,7 +82,7 @@ export class PackageClient {
     });
   }
 
-  colorStatus(s: PackageBuild['status']) {
+  colorStatus(s: PackageBuild['status']): string {
     switch (s) {
       case 'SUCCESS':
         return chalk.green(s);
@@ -98,11 +93,27 @@ export class PackageClient {
     return s;
   }
 
+  formatFilename(build: PackageBuild) {
+    const extension = build.platform === 'android' ? 'apk' : 'ipa';
+    return `${build.name}.${extension}`;
+  }
+
+  formatPlatform(p: PackageBuild['platform']): string {
+    switch (p) {
+      case 'ios':
+        return 'iOS';
+      case 'android':
+        return 'Android';
+    }
+
+    return p;
+  }
+
   formatBuildValues(build: PackageBuild): { [P in keyof PackageBuild]?: string } {
     return {
       id: String(build.id),
       status: this.colorStatus(build.status),
-      platform: build.platform,
+      platform: this.formatPlatform(build.platform),
       mode: build.mode,
       created: new Date(build.created).toLocaleString(),
       completed: build.completed ? new Date(build.completed).toLocaleString() : '',
