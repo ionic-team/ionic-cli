@@ -129,6 +129,7 @@ export function isPackageBuild(o: Object): o is PackageBuild {
     && typeof obj.platform === 'string'
     && typeof obj.status === 'string'
     && typeof obj.mode === 'string'
+    && (!obj.security_profile_tag || typeof obj.security_profile_tag === 'string')
     && (!obj.url || typeof obj.url === 'string');
 }
 

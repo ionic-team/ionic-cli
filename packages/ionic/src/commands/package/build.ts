@@ -120,7 +120,13 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     tasks.next('Queuing build');
 
     const snapshot = await deploy.getSnapshot(snapshotRequest.uuid, {});
-    const build = await pkg.queueBuild({ platform, mode: release ? 'release' : 'debug', zipUrl: snapshot.url, projectId: project.id });
+    const build = await pkg.queueBuild({
+      platform,
+      mode: release ? 'release' : 'debug',
+      zipUrl: snapshot.url,
+      projectId: project.id,
+      profileTag: typeof profile === 'string' ? profile : undefined,
+    });
 
     tasks.end();
     this.env.log.ok(`Build ${build.id} has been submitted!`);

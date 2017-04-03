@@ -49,8 +49,22 @@ export class PackageInfoCommand extends Command {
     const formattedBuild = pkg.formatBuildValues(build);
     tasks.end();
 
-    const attrs: (keyof PackageBuild)[] = ['id', 'status', 'platform', 'mode', 'created', 'completed'];
-    const table = columnar(attrs.map(attr => [chalk.bold(attr), formattedBuild[attr] || '']), {});
+    const attrs: (keyof PackageBuild)[] = ['id', 'status', 'platform', 'mode', 'security_profile_tag', 'created', 'completed'];
+    const formatAttr = (attr: keyof PackageBuild): string => {
+      let r: string = attr;
+
+      if (attr === 'created') {
+        r = 'started';
+      } else if (attr === 'completed') {
+        r = 'finished';
+      } else if (attr === 'security_profile_tag') {
+        r = 'profile';
+      }
+
+      return chalk.bold(r);
+    };
+
+    const table = columnar(attrs.map(attr => [formatAttr(attr), formattedBuild[attr] || '']), {});
 
     this.env.log.nl();
     this.env.log.msg(table);

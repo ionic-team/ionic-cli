@@ -136,6 +136,7 @@ export interface PackageBuild {
   platform: 'android' | 'ios';
   status: 'SUCCESS' | 'FAILED' | 'QUEUED' | 'BUILDING';
   mode: 'debug' | 'release';
+  security_profile_tag: string | null;
   url?: string | null;
   output?: string | null;
 }

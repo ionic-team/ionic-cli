@@ -45,7 +45,7 @@ export class PackageClient {
     return res.data;
   }
 
-  async queueBuild({ platform, mode, zipUrl, projectId }: { platform: PackageBuild['platform'], mode: PackageBuild['mode'], zipUrl: string, projectId: number }): Promise<PackageBuild> {
+  async queueBuild({ platform, mode, zipUrl, projectId, profileTag }: { platform: PackageBuild['platform'], mode: PackageBuild['mode'], zipUrl: string, projectId: number, profileTag?: string }): Promise<PackageBuild> {
     const req = this.client.make('POST', '/package/builds')
       .set('Authorization', `Bearer ${this.appUserToken}`)
       .send({
@@ -53,6 +53,7 @@ export class PackageClient {
         build_mode: mode,
         zip_url: zipUrl,
         project_id: projectId,
+        security_profile_tag: profileTag,
       });
 
     const res = await this.client.do(req);
@@ -151,6 +152,7 @@ export class PackageClient {
       status: this.colorStatus(build.status),
       platform: this.formatPlatform(build.platform),
       mode: build.mode,
+      security_profile_tag: build.security_profile_tag || '',
       created: new Date(build.created).toLocaleString(),
       completed: build.completed ? new Date(build.completed).toLocaleString() : '',
     };
