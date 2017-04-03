@@ -18,6 +18,7 @@
     ]
   },
   "include": [
+    "../../types/archiver.d.ts",
     "../../types/cross-spawn.d.ts",
     "../../types/superagent.d.ts",
     "src/**/*.ts"

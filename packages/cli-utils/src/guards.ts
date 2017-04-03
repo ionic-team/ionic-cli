@@ -10,6 +10,7 @@ import {
   DeployChannelResponse,
   DeployResponse,
   DeploySnapshotRequestResponse,
+  DeploySnapshotResponse,
   ICommand,
   INamespace,
   LogLevel,
@@ -17,6 +18,7 @@ import {
   PackageBuild,
   PackageBuildResponse,
   PackageBuildsResponse,
+  PackageProjectRequestResponse,
   SecurityProfile,
   SecurityProfileResponse,
   SecurityProfilesResponse,
@@ -108,11 +110,20 @@ export function isDeployResponse(r: APIResponse): r is DeployResponse {
     && typeof res.data.channel === 'string';
 }
 
+export function isPackageProjectRequestResponse(r: APIResponse): r is PackageProjectRequestResponse {
+  const res: PackageProjectRequestResponse = <PackageProjectRequestResponse>r;
+  return isAPIResponseSuccess(res)
+    && typeof res.data.id === 'number'
+    && typeof res.data.presigned_post === 'object'
+    && typeof res.data.presigned_post.url === 'string'
+    && res.data.presigned_post.fields && typeof res.data.presigned_post.fields === 'object';
+}
+
 export function isPackageBuild(o: Object): o is PackageBuild {
   const obj = <PackageBuild>o;
   return obj && typeof obj === 'object'
     && typeof obj.id === 'number'
-    && typeof obj.name === 'string'
+    && (!obj.name) || typeof obj.name === 'string'
     && typeof obj.created === 'string'
     && (!obj.completed || typeof obj.completed === 'string')
     && typeof obj.platform === 'string'
@@ -172,6 +183,13 @@ export function isDeployChannelResponse(r: APIResponse): r is DeployChannelRespo
   return isAPIResponseSuccess(res)
     && typeof res.data.uuid === 'string'
     && typeof res.data.tag === 'string';
+}
+
+export function isDeploySnapshotResponse(r: APIResponse): r is DeploySnapshotResponse {
+  const res: DeploySnapshotRequestResponse = <DeploySnapshotRequestResponse>r;
+  return isAPIResponseSuccess(res)
+    && typeof res.data.uuid === 'string'
+    && typeof res.data.url === 'string';
 }
 
 export function isDeploySnapshotRequestResponse(r: APIResponse): r is DeploySnapshotRequestResponse {

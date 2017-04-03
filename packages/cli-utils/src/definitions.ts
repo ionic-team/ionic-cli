@@ -77,12 +77,20 @@ export interface LoginResponse extends APIResponseSuccess {
   };
 }
 
-export interface DeploySnapshotRequest {
+export interface DeploySnapshot {
   uuid: string;
+  url: string;
+}
+
+export interface DeploySnapshotRequest extends DeploySnapshot {
   presigned_post: {
     url: string;
     fields: Object;
   };
+}
+
+export interface DeploySnapshotResponse extends APIResponseSuccess {
+  data: DeploySnapshot;
 }
 
 export interface DeploySnapshotRequestResponse extends APIResponseSuccess {
@@ -108,14 +116,26 @@ export interface DeployResponse extends APIResponseSuccess {
   data: Deploy;
 }
 
+export interface PackageProjectRequest {
+  id: number;
+  presigned_post: {
+    url: string;
+    fields: Object;
+  };
+}
+
+export interface PackageProjectRequestResponse extends APIResponseSuccess {
+  data: PackageProjectRequest;
+}
+
 export interface PackageBuild {
   id: number;
-  name: string;
+  name: string | null;
   created: string;
   completed: string | null;
   platform: 'android' | 'ios';
   status: 'SUCCESS' | 'FAILED' | 'QUEUED' | 'BUILDING';
-  mode: string;
+  mode: 'debug' | 'release';
   url?: string | null;
   output?: string | null;
 }

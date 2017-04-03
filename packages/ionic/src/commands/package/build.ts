@@ -6,11 +6,13 @@ import {
   CommandLineOptions,
   CommandMetadata,
   CommandPreRun,
+  DeployClient,
   PackageBuild,
   PackageClient,
   SecurityClient,
   TaskChain,
   contains,
+  createArchive,
   validators,
 } from '@ionic/cli-utils';
 
@@ -76,6 +78,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     const tasks = new TaskChain();
 
     const token = await this.env.session.getAppUserToken();
+    const deploy = new DeployClient(token, this.env.client);
     const sec = new SecurityClient(token, this.env.client);
     const pkg = new PackageClient(token, this.env.client);
 
@@ -97,10 +100,29 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     }
 
     tasks.end();
-    const snapshot = await upload(this.env, { note });
+    const snapshotRequest = await upload(this.env, { note });
 
     tasks.next('Requesting project upload');
 
-    console.log(snapshot); // TODO
+    const uploadTask = tasks.next('Uploading project');
+    const project = await pkg.requestProjectUpload();
+
+    const zip = createArchive('zip');
+    zip.file('package.json');
+    zip.file('config.xml');
+    zip.directory('resources');
+    zip.finalize();
+
+    await pkg.uploadProject(project, zip, { progress: (loaded, total) => {
+      uploadTask.progress(loaded, total);
+    }});
+
+    tasks.next('Queuing build');
+
+    const snapshot = await deploy.getSnapshot(snapshotRequest.uuid, {});
+    const build = await pkg.queueBuild({ platform, mode: release ? 'release' : 'debug', zipUrl: snapshot.url, projectId: project.id });
+
+    tasks.end();
+    this.env.log.ok(`Build ${build.id} has been submitted!`);
   }
 }

@@ -5,7 +5,7 @@ export class Exception extends Error {
   constructor(public message: string) {
     super(message);
     this.name = 'Exception';
-    this.stack = (<any>new Error()).stack;
+    this.stack = (new Error()).stack || '';
   }
 
   public toString() {

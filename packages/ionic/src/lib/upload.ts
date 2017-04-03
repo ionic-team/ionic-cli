@@ -8,7 +8,7 @@ import {
   DeploySnapshotRequest,
   IonicEnvironment,
   TaskChain,
-  createZipStream,
+  createArchive,
 } from '@ionic/cli-utils';
 
 export async function upload(env: IonicEnvironment, { note, channelTag }: { note?: string, channelTag?: string }): Promise<DeploySnapshotRequest> {
@@ -24,9 +24,11 @@ export async function upload(env: IonicEnvironment, { note, channelTag }: { note
   }
 
   const wwwPath = path.join(env.project.directory, 'www'); // TODO don't hardcode
-  const zip = createZipStream(wwwPath);
+  const zip = createArchive('zip');
+  zip.directory(wwwPath, 'www');
+  zip.finalize();
 
-  tasks.next('Requesting snapshot');
+  tasks.next('Requesting snapshot upload');
   const snapshot = await deploy.requestSnapshotUpload({ note });
   const uploadTask = tasks.next('Uploading snapshot');
   await deploy.uploadSnapshot(snapshot, zip, (loaded, total) => {

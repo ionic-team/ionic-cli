@@ -21,6 +21,7 @@ export * from './lib/security';
 export * from './lib/session';
 export * from './lib/shell';
 export * from './lib/telemetry';
+export * from './lib/utils/archive';
 export * from './lib/utils/array';
 export * from './lib/utils/environmentInfo';
 export * from './lib/utils/format';

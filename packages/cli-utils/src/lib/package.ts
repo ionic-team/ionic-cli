@@ -2,9 +2,10 @@ import * as http from 'http';
 
 import * as chalk from 'chalk';
 
-import { IClient, PackageBuild } from '../definitions';
-import { isPackageBuildResponse, isPackageBuildsResponse } from '../guards';
+import { IClient, PackageBuild, PackageProjectRequest } from '../definitions';
+import { isPackageBuildResponse, isPackageBuildsResponse, isPackageProjectRequestResponse } from '../guards';
 import { createFatalAPIFormat } from './http';
+import { s3SignedUpload } from './utils/aws';
 import { load } from './modules';
 
 export class PackageClient {
@@ -42,6 +43,43 @@ export class PackageClient {
     }
 
     return res.data;
+  }
+
+  async queueBuild({ platform, mode, zipUrl, projectId }: { platform: PackageBuild['platform'], mode: PackageBuild['mode'], zipUrl: string, projectId: number }): Promise<PackageBuild> {
+    const req = this.client.make('POST', '/package/builds')
+      .set('Authorization', `Bearer ${this.appUserToken}`)
+      .send({
+        platform,
+        build_mode: mode,
+        zip_url: zipUrl,
+        project_id: projectId,
+      });
+
+    const res = await this.client.do(req);
+
+    if (!isPackageBuildResponse(res)) {
+      throw createFatalAPIFormat(req, res);
+    }
+
+    return res.data;
+  }
+
+  async requestProjectUpload(): Promise<PackageProjectRequest> {
+    const req = this.client.make('POST', '/package/projects')
+      .set('Authorization', `Bearer ${this.appUserToken}`)
+      .send({});
+
+    const res = await this.client.do(req);
+
+    if (!isPackageProjectRequestResponse(res)) {
+      throw createFatalAPIFormat(req, res);
+    }
+
+    return res.data;
+  }
+
+  async uploadProject(project: PackageProjectRequest, zip: NodeJS.ReadableStream, { progress }: { progress?: (loaded: number, total: number) => void }): Promise<void> {
+    return s3SignedUpload(project.presigned_post, zip, { progress });
   }
 
   downloadBuild(build: PackageBuild, dest: NodeJS.WritableStream, { progress }: { progress?: (loaded: number, total: number) => void }): Promise<void> {

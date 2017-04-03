@@ -65,7 +65,6 @@
     "testResultsProcessor": "<rootDir>/../../node_modules/ts-jest/coverageprocessor.js"
   },
   "devDependencies": {
-    "@types/archiver": "^0.15.37",
     "@types/chalk": "^0.4.31",
     "@types/inquirer": "0.0.32",
     "@types/lodash": "^4.14.58",
