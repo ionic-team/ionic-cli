@@ -1,3 +1,4 @@
+import { createRequest } from '../http';
 import { load } from '../modules';
 
 export function s3SignedUpload(
@@ -17,8 +18,7 @@ export function s3SignedUpload(
     });
 
     zip.on('end', () => {
-      const superagent = load('superagent');
-      superagent.post(presignedPostParams.url)
+      createRequest('post', presignedPostParams.url)
         .field(presignedPostParams.fields)
         .field('file', Buffer.concat(bufs))
         .on('progress', (event) => {

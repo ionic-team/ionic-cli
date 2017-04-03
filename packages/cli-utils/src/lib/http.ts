@@ -21,6 +21,11 @@ const CONTENT_TYPE_JSON = 'application/json';
 export const ERROR_UNKNOWN_CONTENT_TYPE = 'UNKNOWN_CONTENT_TYPE';
 export const ERROR_UNKNOWN_RESPONSE_FORMAT = 'UNKNOWN_RESPONSE_FORMAT';
 
+export function createRequest(method: string, url: string): superagentType.Request {
+  const superagent = load('superagent');
+  return superagent(method, url);
+}
+
 export class Client implements IClient {
   constructor(public host: string) {}
 
@@ -43,8 +48,7 @@ export class Client implements IClient {
   }
 
   make(method: HttpMethod, path: string): superagentType.Request {
-    const superagent = load('superagent');
-    return superagent(method, `${this.host}${path}`)
+    return createRequest(method, `${this.host}${path}`)
       .timeout(10000) // 10 second timeout
       .set('Content-Type', CONTENT_TYPE_JSON)
       .set('Accept', CONTENT_TYPE_JSON);

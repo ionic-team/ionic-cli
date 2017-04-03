@@ -4,7 +4,7 @@ import * as chalk from 'chalk';
 
 import { IClient, PackageBuild, PackageProjectRequest } from '../definitions';
 import { isPackageBuildResponse, isPackageBuildsResponse, isPackageProjectRequestResponse } from '../guards';
-import { createFatalAPIFormat } from './http';
+import { createRequest, createFatalAPIFormat } from './http';
 import { s3SignedUpload } from './utils/aws';
 import { load } from './modules';
 
@@ -92,8 +92,6 @@ export class PackageClient {
         return reject(new Error('Build must have URL.'));
       }
 
-      const superagent = load('superagent');
-
       dest.on('error', (err: any) => {
         reject(err);
       });
@@ -102,7 +100,7 @@ export class PackageClient {
         resolve();
       });
 
-      superagent.get(build.url)
+      createRequest('get', build.url)
         .on('response', (res: http.IncomingMessage) => {
           if (progress) {
             let loaded = 0;
