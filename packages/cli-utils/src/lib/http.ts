@@ -16,14 +16,38 @@ import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
 import { load } from './modules';
 import { FatalException } from './errors';
 
+let superagent: undefined | typeof superagentType;
 const FORMAT_ERROR_BODY_MAX_LENGTH = 1000;
 const CONTENT_TYPE_JSON = 'application/json';
 export const ERROR_UNKNOWN_CONTENT_TYPE = 'UNKNOWN_CONTENT_TYPE';
 export const ERROR_UNKNOWN_RESPONSE_FORMAT = 'UNKNOWN_RESPONSE_FORMAT';
 
+export function getGlobalProxy(): string | undefined {
+  return process.env.http_proxy || process.env.https_proxy || process.env.proxy || process.env.HTTP_PROXY || process.env.HTTPS_PROXY || process.env.PROXY;
+}
+
+function getSuperagent() {
+  if (!superagent) {
+    const proxy = getGlobalProxy();
+    superagent = load('superagent');
+
+    if (proxy) {
+      load('superagent-proxy')(superagent);
+    }
+  }
+
+  return superagent;
+}
+
 export function createRequest(method: string, url: string): superagentType.Request {
-  const superagent = load('superagent');
-  return superagent(method, url);
+  const proxy = getGlobalProxy();
+  let req = getSuperagent()(method, url);
+
+  if (proxy && req.proxy) {
+    req = req.proxy(proxy);
+  }
+
+  return req;
 }
 
 export class Client implements IClient {

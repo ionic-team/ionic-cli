@@ -176,7 +176,7 @@ __Service Proxies:__
 
 The `serve` command can add some proxies to the http server. These proxies are useful if you are developing in the browser and you need to make calls to an external API. With this feature you can proxy request to the external api through the ionic http server preventing the `No 'Access-Control-Allow-Origin' header is present on the requested resource` error.
 
-In the `ionic.project` file you can add a property with an array of proxies you want to add. The proxies are object with the following properties:
+In the `ionic.config.json` file you can add a property with an array of proxies you want to add. The proxies are object with the following properties:
 
 * `path`: string that will be matched against the beginning of the incoming request URL.
 * `proxyUrl`: a string with the url of where the proxied request should go.
@@ -237,21 +237,14 @@ Ionic uses Cordova underneath, so you can also substitute Cordova commands to pr
 
 *Note: we occasionally send anonymous usage statistics to the Ionic team to make the tool better.*
 
-## Working around proxies
+## Using a proxy
 
-If you have a proxy you need to get around, you can pass that proxy with the default `http_proxy` [node environment variable](https://www.npmjs.org/doc/misc/npm-config.html#proxy) or an environment variable `proxy`.
-
-A few ways to set up and use the environment variable:
+Ionic will use any of the following environment variables:
 
 ```bash
-export http_proxy=internal.proxy.com
-# Or
-export PROXY=internal.proxy.com
-
-ionic start my_app
-
-# Additionally, pass in line
-PROXY=internal.proxy.com ionic start my_app
+export http_proxy=http://internal.proxy.com
+export HTTP_PROXY=http://internal.proxy.com
+export PROXY=http://internal.proxy.com
 ```
 
 

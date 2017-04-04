@@ -18,6 +18,7 @@ export function load(modulePath: 'ncp'): typeof ncpType;
 export function load(modulePath: 'os-name'): typeof osNameType;
 export function load(modulePath: 'progress'): typeof ProgressBarType;
 export function load(modulePath: 'superagent'): typeof superagentType;
+export function load(modulePath: 'superagent-proxy'): (superagent: typeof superagentType) => void;
 export function load(modulePath: 'uuid'): typeof uuidType;
 export function load(modulePath: string): any {
   return require(modulePath);

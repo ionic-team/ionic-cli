@@ -48,6 +48,7 @@
     "progress": "^1.1.8",
     "rimraf": "^2.5.4",
     "superagent": "^2.3.0",
+    "superagent-proxy": "^1.0.2",
     "uuid": "^3.0.1"
   },
   "files": [

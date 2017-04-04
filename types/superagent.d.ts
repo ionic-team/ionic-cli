@@ -120,6 +120,7 @@ declare module "superagent" {
         write(data: string, encoding?: string): this;
         write(data: Buffer, encoding?: string): this;
         parse(fn: (res: Response, callback: (err: Error | null, body: any) => void) => void): this;
+        proxy?(uri: string): this;
       }
 
   }
