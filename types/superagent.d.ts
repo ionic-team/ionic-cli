@@ -7,6 +7,7 @@
 
 
 declare module "superagent" {
+  import http = require('http');
   import stream = require('stream');
 
   type CallbackHandler = (err: any, res: request.Response) => void;
@@ -83,7 +84,7 @@ declare module "superagent" {
           get(header: string): string;
       }
 
-      interface Request extends Promise<Response> /* extends NodeJS.WritableStream */ {
+      interface Request extends Promise<Response>, NodeJS.ReadableStream /* (extending ReadableStream is a lie) */{
         method: string;
         url: string;
         abort(): void;
@@ -100,6 +101,7 @@ declare module "superagent" {
         on(name: 'progress', handler: (event: { direction: string; lengthComputable: boolean; loaded: number; total: number; }) => void): this;
         on(name: 'error', handler: (err: any) => void): this;
         on(name: 'end', handler: () => void): this;
+        on(name: 'response', handler: (err: http.IncomingMessage) => void): this;
         part(): this;
         pipe(stream: NodeJS.WritableStream, options?: Object): stream.Writable;
         query(val: Object): this;

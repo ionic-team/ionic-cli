@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import * as chalk from 'chalk';
-import fetch from 'node-fetch';
 
 import {
   Command,
@@ -20,7 +19,7 @@ import {
 import {
   isProjectNameValid,
   pkgInstallProject,
-  tarXvf,
+  tarXvfFromUrl,
   isSafeToCreateProjectIn,
   getStarterTemplateTextList,
   getHelloText,
@@ -190,36 +189,13 @@ export class StartCommand extends Command implements CommandPreRun {
      */
     tasks.next(`Downloading '${chalk.green(starterTemplateName.toString())}' starter template`);
 
-    let baseArchiveResponse;
-    let archiveResponse;
-    let wrapperBranchPath = starterType.baseArchive.replace('<BRANCH_NAME>', wrapperBranchName);
-    let starterBranchPath = starterTemplate.archive.replace('<BRANCH_NAME>', starterBranchName);
-    try {
-      [ baseArchiveResponse, archiveResponse] = await Promise.all([
-        fetch(wrapperBranchPath),
-        fetch(starterBranchPath)
-      ]);
-    } catch (e) {
-      if (['ETIMEOUT', 'ENOTFOUND'].includes(e.code)) {
-        this.env.log.debug(e);
-        this.env.log.error(`Unable to download starter template from github. Please check that you are ` +
-                          `able to access the following urls: \n${starterType.baseArchive},\n${starterTemplate.archive}\n`);
-        return;
-      }
-      throw e;
-    }
-
-    if (!baseArchiveResponse || !archiveResponse) {
-      this.env.log.error(`Unable to download starter template from github. Please check that you are ` +
-                        `able to access the following urls: \n${starterType.baseArchive},\n${starterTemplate.archive}\n`);
-      return;
-    }
+    const wrapperBranchPath = starterType.baseArchive.replace('<BRANCH_NAME>', wrapperBranchName);
+    const starterBranchPath = starterTemplate.archive.replace('<BRANCH_NAME>', starterBranchName);
 
     await Promise.all([
-      tarXvf(baseArchiveResponse.body, projectRoot),
-      tarXvf(archiveResponse.body, projectRoot)
+      tarXvfFromUrl(wrapperBranchPath, projectRoot),
+      tarXvfFromUrl(starterBranchPath, projectRoot)
     ]);
-
 
     tasks.next(`Updating project dependencies to add required plugins`);
     const releaseChannelName = await getReleaseChannelName();

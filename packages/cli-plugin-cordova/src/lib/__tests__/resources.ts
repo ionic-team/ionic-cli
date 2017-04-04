@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import * as path from 'path';
 import * as resources from '../resources';
 import * as util from '@ionic/cli-utils';
@@ -269,20 +268,25 @@ describe('resources', () => {
     });
   });
 
-  // TODO: this is currently hitting the service, we should mock
   describe('uploadSourceImages', () => {
     it('should upload an image and receive back metadata', async function() {
-      const fetchSpy = {
-        json: () => ({
-          Error: '',
-          Width: 337,
-          Height: 421,
-          Type: 'png',
-          Vector: false
-        })
+      const createRequestSpy = jest.spyOn(util, 'createRequest');
+      const createRequestMock = {
+        timeout: jest.fn().mockReturnThis(),
+        type: jest.fn().mockReturnThis(),
+        attach: jest.fn().mockReturnThis(),
+        field: jest.fn(() => Promise.resolve({
+          body: {
+            Error: '',
+            Width: 337,
+            Height: 421,
+            Type: 'png',
+            Vector: false
+          }
+        }))
       };
 
-      spyOn(fetch, 'default').and.returnValue(Promise.resolve(fetchSpy));
+      createRequestSpy.mockImplementationOnce(() => createRequestMock);
 
       const sourceImages: SourceImage[] = [{
         ext: '.png',
@@ -306,22 +310,18 @@ describe('resources', () => {
     });
   });
 
-  // TODO: this is currently hitting the service, we should mock
   describe('transformResourceImage', () => {
     it('should upload an image and write a stream to the destination', async function() {
-      const fetchSpy = {
-        status: 200,
-        body: {
-          Error: '',
-          Width: 320,
-          Height: 240,
-          Type: 'png',
-          Vector: false
-        }
+      jest.spyOn(util, 'writeStreamToFile').mockImplementationOnce(() => Promise.resolve());
+      const createRequestSpy = jest.spyOn(util, 'createRequest');
+      const createRequestMock = {
+        timeout: jest.fn().mockReturnThis(),
+        type: jest.fn().mockReturnThis(),
+        send: jest.fn().mockReturnThis(),
+        on: jest.fn().mockReturnThis(),
       };
 
-      spyOn(util, 'writeStreamToFile');
-      spyOn(fetch, 'default').and.returnValue(Promise.resolve(fetchSpy));
+      createRequestSpy.mockImplementationOnce(() => createRequestMock);
 
       const imgResource: ImageResource = {
         platform: 'android',
@@ -339,7 +339,7 @@ describe('resources', () => {
       await resources.transformResourceImage(imgResource);
 
       expect(util.writeStreamToFile).toHaveBeenCalledWith(
-        jasmine.any(Object), imgResource.dest
+        createRequestMock, imgResource.dest
       );
     });
   });

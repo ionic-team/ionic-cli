@@ -1,5 +1,3 @@
-import * as http from 'http';
-
 import * as chalk from 'chalk';
 
 import { IClient, PackageBuild, PackageProjectRequest } from '../definitions';
@@ -102,7 +100,7 @@ export class PackageClient {
       });
 
       createRequest('get', build.url)
-        .on('response', (res: http.IncomingMessage) => {
+        .on('response', (res) => {
           if (progress) {
             let loaded = 0;
             const total = Number(res.headers['content-length']);

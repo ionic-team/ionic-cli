@@ -1,17 +1,18 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as zlib from 'zlib';
+
 import * as tar from 'tar';
 import * as chalk from 'chalk';
-import fetch from 'node-fetch';
 
 import {
-  runcmd,
-  getCommandInfo,
+  ERROR_FILE_INVALID_JSON,
+  ERROR_FILE_NOT_FOUND,
+  createRequest,
   fsReadJsonFile,
   fsWriteJsonFile,
-  ERROR_FILE_NOT_FOUND,
-  ERROR_FILE_INVALID_JSON
+  getCommandInfo,
+  runcmd,
 } from '@ionic/cli-utils';
 import { StarterTemplate, StarterTemplateType } from '../definitions';
 
@@ -28,45 +29,32 @@ export async function pkgInstallProject(installer: string, root: string): Promis
   }
 }
 
-/*
-export function storeInCache(readStream: NodeJS.ReadableStream, configDirectory: string, starterTemplate: StarterTemplate) {
-  const [templateOrgId, templateProjectName] = starterTemplate.path.split('/');
-  const templateCacheDir = path.resolve(configDirectory, STARTER_CACHE_DIR, templateOrgId);
+export function tarXvfFromUrl(url: string, destination: string) {
+  return new Promise<void>((resolve, reject) => {
+    const archiveRequest = createRequest('get', url)
+      .timeout(30000)
+      .on('response', (res) => {
+        if (res.statusCode != 200) {
+          reject(new Error(`encountered bad status code (${res.statusCode}) for ${url}`));
+        }
+      })
+      .on('error', (err) => {
+        if (err.code === 'ECONNABORTED') {
+          reject(new Error(`timeout of ${err.timeout}ms reached for ${url}`));
+        } else {
+          reject(err);
+        }
+      });
 
-  return writeStreamToFile(readStream, );
-}
-*/
-
-// TODO: Make Use of this function with storeInCache
-export async function shouldUseCache(configDirectory: string, starterTemplate: StarterTemplate, starterType: StarterTemplateType) {
-  const [templateOrgId, templateProjectName] = starterTemplate.path.split('/');
-  const templateCacheDir = path.resolve(configDirectory, STARTER_CACHE_DIR, templateOrgId);
-
-  // Check to see if cache files even exists.
-
-  // Check Etag from github to decide if we need to use a new download or to use the cache
-  try {
-    let [ baseArchiveResponse, archiveResponse] = await Promise.all([
-      fetch(starterType.baseArchive, { method: 'HEAD' }),
-      fetch(starterTemplate.archive, { method: 'HEAD' })
-    ]);
-
-    console.log(templateCacheDir, templateProjectName);
-    console.log(baseArchiveResponse.headers.get('Etag'));
-    console.log(archiveResponse.headers.get('Etag'));
-  } catch (e) {
-    if (['ETIMEOUT', 'ENOTFOUND'].includes(e.code)) {
-      return true;
-    }
-    console.log('finally');
-  }
+    tarXvf(archiveRequest, destination).then(resolve, reject);
+  });
 }
 
 /**
  *
  */
-export function tarXvf(readStream: NodeJS.ReadableStream, destination: string): Promise<any> {
-  return new Promise((resolve, reject) => {
+export function tarXvf(readStream: NodeJS.ReadableStream, destination: string) {
+  return new Promise<void>((resolve, reject) => {
     const baseArchiveExtract = tar.Extract({
         path: destination,
         strip: 1
@@ -75,8 +63,8 @@ export function tarXvf(readStream: NodeJS.ReadableStream, destination: string): 
       .on('end', resolve);
     try {
       readStream
-        .pipe(zlib.createUnzip())
         .on('error', reject)
+        .pipe(zlib.createUnzip())
         .pipe(baseArchiveExtract);
     } catch (e) {
       reject(e);

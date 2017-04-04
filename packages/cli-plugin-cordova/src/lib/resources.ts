@@ -1,6 +1,4 @@
 import * as path from 'path';
-import * as fs from 'fs';
-import fetch from 'node-fetch';
 
 import {
   ImageResource,
@@ -13,6 +11,7 @@ import {
   ERROR_FILE_INVALID_JSON,
   ERROR_FILE_NOT_FOUND,
   copyDirectory,
+  createRequest,
   flattenArray,
   fsMkdirp,
   fsReadDir,
@@ -162,22 +161,13 @@ export function findMostSpecificImage(imageResource: ImageResource, srcImagesAva
  */
 export async function uploadSourceImages(srcImages: SourceImage[]): Promise<ImageUploadResponse[]> {
   return Promise.all(
-    srcImages.map(async function(srcImage) {
-      const FormData = load('form-data');
-      const form = new FormData();
-      form.append('image_id', srcImage.imageId);
-      form.append('src', fs.createReadStream(srcImage.path));
-
-      try {
-        const response = await fetch(UPLOAD_URL, {
-          method: 'POST',
-          body: form
-        });
-        return response.json();
-      } catch (e) {
-        console.log(JSON.stringify(e, null, 2));
-        throw e;
-      }
+    srcImages.map(async (srcImage) => {
+      const res = await createRequest('POST', UPLOAD_URL)
+        .timeout(30000)
+        .type('form')
+        .attach('src', srcImage.path)
+        .field('image_id', srcImage.imageId || '');
+      return res.body;
     })
   );
 }
@@ -186,31 +176,34 @@ export async function uploadSourceImages(srcImages: SourceImage[]): Promise<Imag
  * Using the transformation web service transform the provided image resource
  * into the appropiate w x h and then write this file to the provided destination directory.
  */
-export async function transformResourceImage(imageResource: ImageResource): Promise<void> {
-  const FormData = load('form-data');
-  const form = new FormData();
-  form.append('image_id', imageResource.imageId);
-  form.append('width', imageResource.width);
-  form.append('height', imageResource.height);
-  form.append('res_type', imageResource.resType);
-  form.append('crop', 'center');
-  form.append('encoding', 'png');
+export function transformResourceImage(imageResource: ImageResource) {
+  return new Promise<void>((resolve, reject) => {
+    const req = createRequest('POST', TRANSFORM_URL)
+      .timeout(30000)
+      .type('form')
+      .send({
+        'image_id': imageResource.imageId,
+        'width': imageResource.width,
+        'height': imageResource.height,
+        'res_type': imageResource.resType,
+        'crop': 'center',
+        'encoding': 'png',
+      })
+      .on('response', (res) => {
+        if (res.statusCode != 200) {
+          reject(new Error(`encountered bad status code (${res.statusCode}) for ${TRANSFORM_URL}`));
+        }
+      })
+      .on('error', (err) => {
+        if (err.code === 'ECONNABORTED') {
+          reject(new Error(`timeout of ${err.timeout}ms reached for ${TRANSFORM_URL}`));
+        } else {
+          reject(err);
+        }
+      });
 
-  try {
-    const response = await fetch(TRANSFORM_URL, {
-      method: 'POST',
-      body: form
-    });
-
-    if (response.status !== 200) {
-      const responseBody: string = await streamToString(response.body);
-      throw new Error(`STATUS: ${response.status} ${responseBody}`);
-    }
-
-    await writeStreamToFile(response.body, imageResource.dest);
-  } catch (e) {
-    throw e;
-  }
+    writeStreamToFile(req, imageResource.dest).then(resolve, reject);
+  });
 }
 
 /**

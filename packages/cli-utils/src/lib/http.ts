@@ -55,7 +55,7 @@ export class Client implements IClient {
   }
 
   async do(req: superagentType.Request): Promise<APIResponseSuccess> {
-    const res = await Promise.resolve(req); // TODO: should be able to just do `await req`
+    const res = await req;
     const r = Client.transform(res);
 
     if (isAPIResponseError(r)) {
