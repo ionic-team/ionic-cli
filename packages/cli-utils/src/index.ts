@@ -14,6 +14,7 @@ export * from './lib/events';
 export * from './lib/help';
 export * from './lib/http';
 export * from './lib/login';
+export * from './lib/modules';
 export * from './lib/package';
 export * from './lib/plugins';
 export * from './lib/project';

@@ -245,6 +245,7 @@ Ionic will use any of the following environment variables:
 export http_proxy=http://internal.proxy.com
 export HTTP_PROXY=http://internal.proxy.com
 export PROXY=http://internal.proxy.com
+export IONIC_HTTP_PROXY=http://internal.proxy.com
 ```
 
 

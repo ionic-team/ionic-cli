@@ -30,7 +30,7 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]) {
     if (env.project.directory) {
       if (KNOWN_PLUGINS.indexOf(slicedInputs[0]) !== -1) {
         try {
-          await loadPlugin(env.project.directory, `${ORG_PREFIX}/${PLUGIN_PREFIX}${slicedInputs[0]}`);
+          await loadPlugin(env.project.directory, `${ORG_PREFIX}/${PLUGIN_PREFIX}${slicedInputs[0]}`, {});
         } catch (e) {
           if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
             throw e;

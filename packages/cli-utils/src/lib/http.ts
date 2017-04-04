@@ -22,26 +22,22 @@ const CONTENT_TYPE_JSON = 'application/json';
 export const ERROR_UNKNOWN_CONTENT_TYPE = 'UNKNOWN_CONTENT_TYPE';
 export const ERROR_UNKNOWN_RESPONSE_FORMAT = 'UNKNOWN_RESPONSE_FORMAT';
 
-export function getGlobalProxy(): string | undefined {
-  return process.env.http_proxy || process.env.https_proxy || process.env.proxy || process.env.HTTP_PROXY || process.env.HTTPS_PROXY || process.env.PROXY;
-}
+export function getGlobalProxy(): [string, string] | [undefined, undefined] {
+  const envvars = ['IONIC_HTTP_PROXY', 'HTTPS_PROXY', 'HTTP_PROXY', 'PROXY', 'https_proxy', 'http_proxy', 'proxy'];
 
-function getSuperagent() {
-  if (!superagent) {
-    const proxy = getGlobalProxy();
-    superagent = load('superagent');
-
-    if (proxy) {
-      load('superagent-proxy')(superagent);
+  for (let envvar of envvars) {
+    if (process.env[envvar]) {
+      return [process.env[envvar], envvar]
     }
   }
 
-  return superagent;
+  return [undefined, undefined];
 }
 
 export function createRequest(method: string, url: string): superagentType.Request {
-  const proxy = getGlobalProxy();
-  let req = getSuperagent()(method, url);
+  const [ proxy, ] = getGlobalProxy();
+  const superagent = load('superagent');
+  let req = superagent(method, url);
 
   if (proxy && req.proxy) {
     req = req.proxy(proxy);

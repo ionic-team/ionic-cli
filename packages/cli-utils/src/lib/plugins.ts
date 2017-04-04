@@ -6,8 +6,9 @@ import { load } from './modules';
 import { Shell } from './shell';
 import { ERROR_FILE_INVALID_JSON, ERROR_FILE_NOT_FOUND, fsReadDir, fsReadJsonFile } from './utils/fs';
 import { TaskChain } from './utils/task';
+import { getGlobalProxy } from './http';
 
-export const KNOWN_PLUGINS = ['cordova']; // known plugins with commands
+export const KNOWN_PLUGINS = ['cordova', 'proxy']; // known plugins with commands
 export const ORG_PREFIX = '@ionic';
 export const PLUGIN_PREFIX = 'cli-plugin-';
 export const ERROR_PLUGIN_NOT_INSTALLED = 'PLUGIN_NOT_INSTALLED';
@@ -16,7 +17,7 @@ export const ERROR_PLUGIN_INVALID = 'PLUGIN_INVALID';
 
 export async function loadPlugins(env: IonicEnvironment) {
   if (!env.project.directory) {
-    return async (eventName: string): Promise<any> => {};
+    return async (): Promise<void> => {};
   }
 
   const mPath = path.join(env.project.directory, 'node_modules', '@ionic');
@@ -28,9 +29,24 @@ export async function loadPlugins(env: IonicEnvironment) {
 
   const plugins = await Promise.all(
     pluginPkgs.map(pkgName => {
-      return loadPlugin(env.project.directory, pkgName, false);
+      return loadPlugin(env.project.directory, pkgName, { askToInstall: false });
     })
   );
+
+  const proxyPluginPkg = `${ORG_PREFIX}/${PLUGIN_PREFIX}proxy`;
+  const [ proxy, proxyVar ] = getGlobalProxy();
+  if (proxyVar && !pluginPkgs.includes(proxyPluginPkg)) {
+    try {
+      await loadPlugin(env.project.directory, proxyPluginPkg, {
+        askToInstall: true,
+        message: `${chalk.green(proxyVar)} environment variable detected, but the plugin ${chalk.green(proxyPluginPkg)} is required to proxy requests. Would you like to install it and continue?`,
+      });
+    } catch (e) {
+      if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
+        throw e;
+      }
+    }
+  }
 
   for (let plugin of plugins) {
     const ns = plugin.namespace;
@@ -48,8 +64,12 @@ export async function loadPlugins(env: IonicEnvironment) {
 /**
  * Synchronously load a plugin
  */
-export async function loadPlugin(projectDir: string, pluginName: string, askToInstall: boolean = true): Promise<Plugin> {
+export async function loadPlugin(projectDir: string, pluginName: string, { message, askToInstall = true }: { message?: string, askToInstall?: boolean }): Promise<Plugin> {
   let m: Plugin | undefined;
+
+  if (!message) {
+    message = `The plugin ${chalk.green(pluginName)} is not installed. Would you like to install it and continue?`;
+  }
 
   try {
     const mPath = path.join(projectDir, 'node_modules', ...pluginName.split('/'));
@@ -74,7 +94,7 @@ export async function loadPlugin(projectDir: string, pluginName: string, askToIn
     const answers = await inquirer.prompt([{
       type: 'confirm',
       name: 'installPlugin',
-      message: `This command's plugin ${chalk.green(pluginName)} is not installed would you like to install it and continue?`
+      message,
     }]);
 
     if (answers['installPlugin']) {
@@ -86,7 +106,7 @@ export async function loadPlugin(projectDir: string, pluginName: string, askToIn
       await new Shell().run('npm', ['install', '--save-dev', pluginInstallVersion ]);
       tasks.end();
 
-      return loadPlugin(projectDir, pluginName);
+      return loadPlugin(projectDir, pluginName, { askToInstall });
     } else {
       throw ERROR_PLUGIN_NOT_INSTALLED;
     }
