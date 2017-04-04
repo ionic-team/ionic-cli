@@ -34,7 +34,7 @@ export async function loadPlugins(env: IonicEnvironment) {
   );
 
   const proxyPluginPkg = `${ORG_PREFIX}/${PLUGIN_PREFIX}proxy`;
-  const [ proxy, proxyVar ] = getGlobalProxy();
+  const [ , proxyVar ] = getGlobalProxy();
   if (proxyVar && !pluginPkgs.includes(proxyPluginPkg)) {
     try {
       await loadPlugin(env.project.directory, proxyPluginPkg, {

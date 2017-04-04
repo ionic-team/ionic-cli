@@ -4,7 +4,6 @@ import { IClient, PackageBuild, PackageProjectRequest } from '../definitions';
 import { isPackageBuildResponse, isPackageBuildsResponse, isPackageProjectRequestResponse } from '../guards';
 import { createRequest, createFatalAPIFormat } from './http';
 import { s3SignedUpload } from './utils/aws';
-import { load } from './modules';
 
 export class PackageClient {
   constructor(protected appUserToken: string, protected client: IClient) {}

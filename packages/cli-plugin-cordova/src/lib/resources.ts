@@ -20,7 +20,6 @@ import {
   writeStreamToFile,
 } from '@ionic/cli-utils';
 
-import { load } from '../lib/modules';
 import {
   writeConfigXml,
   parseConfigXmlToJson,
@@ -190,7 +189,7 @@ export function transformResourceImage(imageResource: ImageResource) {
         'encoding': 'png',
       })
       .on('response', (res) => {
-        if (res.statusCode != 200) {
+        if (res.statusCode !== 200) {
           reject(new Error(`encountered bad status code (${res.statusCode}) for ${TRANSFORM_URL}`));
         }
       })
@@ -203,20 +202,6 @@ export function transformResourceImage(imageResource: ImageResource) {
       });
 
     writeStreamToFile(req, imageResource.dest).then(resolve, reject);
-  });
-}
-
-/**
- * Convert a provided ReadableStream to a string
- */
-function streamToString(stream: NodeJS.ReadableStream): Promise<string> {
-  const chunks: Buffer[] = [];
-
-  return new Promise((resolve, reject) => {
-    stream
-      .on('error', reject)
-      .on('data', (chunk: Buffer) => chunks.push(chunk))
-      .on('end', () => resolve(Buffer.concat(chunks)));
   });
 }
 

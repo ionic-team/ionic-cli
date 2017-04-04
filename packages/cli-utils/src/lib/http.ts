@@ -16,7 +16,6 @@ import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
 import { load } from './modules';
 import { FatalException } from './errors';
 
-let superagent: undefined | typeof superagentType;
 const FORMAT_ERROR_BODY_MAX_LENGTH = 1000;
 const CONTENT_TYPE_JSON = 'application/json';
 export const ERROR_UNKNOWN_CONTENT_TYPE = 'UNKNOWN_CONTENT_TYPE';
@@ -27,7 +26,7 @@ export function getGlobalProxy(): [string, string] | [undefined, undefined] {
 
   for (let envvar of envvars) {
     if (process.env[envvar]) {
-      return [process.env[envvar], envvar]
+      return [process.env[envvar], envvar];
     }
   }
 

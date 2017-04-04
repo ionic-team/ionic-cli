@@ -16,8 +16,6 @@ import {
 } from '@ionic/cli-utils';
 import { StarterTemplate, StarterTemplateType } from '../definitions';
 
-const STARTER_CACHE_DIR = 'archives';
-
 /**
  * Spawn an npm install task from within
  */
@@ -34,7 +32,7 @@ export function tarXvfFromUrl(url: string, destination: string) {
     const archiveRequest = createRequest('get', url)
       .timeout(30000)
       .on('response', (res) => {
-        if (res.statusCode != 200) {
+        if (res.statusCode !== 200) {
           reject(new Error(`encountered bad status code (${res.statusCode}) for ${url}`));
         }
       })

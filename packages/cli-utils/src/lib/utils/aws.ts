@@ -1,5 +1,4 @@
 import { createRequest } from '../http';
-import { load } from '../modules';
 
 export function s3SignedUpload(
   presignedPostParams: { url: string, fields: Object },
