@@ -1,6 +1,8 @@
 {
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "watch": "lerna run watch --no-sort --stream"
+  },
   "devDependencies": {
     "@types/node": "^6.0.68",
     "awesome-typescript-loader": "^3.1.2",
