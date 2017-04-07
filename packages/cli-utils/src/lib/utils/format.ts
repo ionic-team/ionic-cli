@@ -2,10 +2,10 @@ import * as os from 'os';
 import * as path from 'path';
 
 import * as chalk from 'chalk';
+import * as stripAnsi from 'strip-ansi';
 
 export const ICON_SUCCESS = '✔';
 export const ICON_FAILURE = '✖';
-export const STRIP_ANSI_REGEX = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
 
 export const ICON_SUCCESS_GREEN = chalk.green(ICON_SUCCESS);
 export const ICON_FAILURE_RED = chalk.red(ICON_FAILURE);
@@ -32,13 +32,13 @@ export function indent(n: number = 4): string {
 
 export function generateFillSpaceStringList(list: string[], optimalLength: number = 1, fillCharacter: string = ' '): string[] {
   const longestItem = Math.max(
-    ...list.map((item) => item.replace(STRIP_ANSI_REGEX, '').length)
+    ...list.map((item) => stripAnsi(item).length)
   );
 
   const fullLength = longestItem > optimalLength ? longestItem + 1 : optimalLength;
   const fullLengthString = Array(fullLength).fill(fillCharacter).join('');
 
-  return list.map(item => fullLengthString.substr(0, fullLength - item.replace(STRIP_ANSI_REGEX, '').length));
+  return list.map(item => fullLengthString.substr(0, fullLength - stripAnsi(item).length));
 }
 
 export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk.dim('|'), columnHeaders }: { hsep?: string, vsep?: string, columnHeaders?: string[] }) {
@@ -74,7 +74,7 @@ export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk
   const singleColumn = paddedColumns.reduce((a, b) => {
     return a.map((_, i) => {
       const r = a[i] + b[i];
-      longestRowLength = Math.max(longestRowLength, r.replace(STRIP_ANSI_REGEX, '').length);
+      longestRowLength = Math.max(longestRowLength, stripAnsi(r).length);
       return r;
     });
   });

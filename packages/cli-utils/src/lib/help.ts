@@ -1,4 +1,5 @@
 import * as chalk from 'chalk';
+import * as stripAnsi from 'strip-ansi';
 
 import {
   CommandData,
@@ -10,7 +11,7 @@ import {
 } from '../definitions';
 import { isCommand } from '../guards';
 import { validators } from './validators';
-import { STRIP_ANSI_REGEX, generateFillSpaceStringList } from './utils/format';
+import { generateFillSpaceStringList } from './utils/format';
 
 import { ERROR_PLUGIN_NOT_INSTALLED, KNOWN_PLUGINS, ORG_PREFIX, PLUGIN_PREFIX, loadPlugin } from './plugins';
 
@@ -162,7 +163,7 @@ function formatCommandOptions(options: CommandOption[] = []): string {
          .map((alias) => chalk.green(`-${alias}`))
          .join(', ') : '');
 
-    const optionListLength = optionList.replace(STRIP_ANSI_REGEX, '').length;
+    const optionListLength = stripAnsi(optionList).length;
     const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
 
     return `${optionList} ${Array(fullLength - optionListLength).fill('.').join('')} ${description}`;

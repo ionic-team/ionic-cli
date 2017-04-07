@@ -24,6 +24,7 @@
     "../../types/archiver.d.ts",
     "../../types/cross-spawn.d.ts",
     "../../types/superagent.d.ts",
+    "../../types/strip-ansi.d.ts",
     "../../types/leek.d.ts",
     "../../types/os-name.d.ts",
     "src/**/*.ts"
