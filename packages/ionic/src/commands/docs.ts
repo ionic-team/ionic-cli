@@ -1,9 +1,11 @@
 import {
-  getIonicInfo,
+  Command,
   CommandLineInputs,
   CommandLineOptions,
-  Command,
   CommandMetadata,
+  createRequest,
+  isSuperAgentError,
+  getIonicInfo,
 } from '@ionic/cli-utils';
 
 import { load } from '../lib/modules';
@@ -18,9 +20,26 @@ import { load } from '../lib/modules';
 })
 export class DocsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const ionicInfo = await getIonicInfo();
-
     const opn = load('opn');
-    opn(`http://ionicframework.com/docs/v${ionicInfo['version'].charAt(0)}/${ionicInfo['version']}/api`, { wait: false });
+    const ionicInfo = await getIonicInfo();
+    const docsHomepage = 'https://ionicframework.com/docs';
+    const version = ionicInfo['version'];
+    const url = `${docsHomepage}/${version}/api`;
+
+    try {
+      await createRequest('head', url);
+    } catch (e) {
+      if (isSuperAgentError(e)) {
+        if (e.response.status === 404) {
+          this.env.log.warn(`Docs for Ionic ${version} not found. Directing you to latest docs.`);
+          opn(`${docsHomepage}/api`, { wait: false });
+          return;
+        }
+      }
+
+      throw e;
+    }
+
+    opn(url, { wait: false });
   }
 }
