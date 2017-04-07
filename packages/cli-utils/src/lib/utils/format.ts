@@ -4,6 +4,8 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as stripAnsi from 'strip-ansi';
 
+import { load } from '../modules';
+
 export const ICON_SUCCESS = '✔';
 export const ICON_FAILURE = '✖';
 
@@ -31,6 +33,8 @@ export function indent(n: number = 4): string {
 }
 
 export function generateFillSpaceStringList(list: string[], optimalLength: number = 1, fillCharacter: string = ' '): string[] {
+  const sliceAnsi = load('slice-ansi');
+
   const longestItem = Math.max(
     ...list.map((item) => stripAnsi(item).length)
   );
@@ -38,7 +42,7 @@ export function generateFillSpaceStringList(list: string[], optimalLength: numbe
   const fullLength = longestItem > optimalLength ? longestItem + 1 : optimalLength;
   const fullLengthString = Array(fullLength).fill(fillCharacter).join('');
 
-  return list.map(item => fullLengthString.substr(0, fullLength - stripAnsi(item).length));
+  return list.map(item => sliceAnsi(fullLengthString, 0, fullLength - stripAnsi(item).length));
 }
 
 export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk.dim('|'), columnHeaders }: { hsep?: string, vsep?: string, columnHeaders?: string[] }) {

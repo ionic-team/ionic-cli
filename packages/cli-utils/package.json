@@ -50,6 +50,7 @@
     "os-name": "^2.0.1",
     "progress": "^1.1.8",
     "rimraf": "^2.5.4",
+    "slice-ansi": "0.0.4",
     "superagent": "^3.5.2",
     "uuid": "^3.0.1"
   },
