@@ -64,15 +64,19 @@ export function cloneRequest(req: superagentType.SuperAgentRequest): superagentT
 export class Client implements IClient {
   constructor(public host: string) {}
 
-  make(method: HttpMethod, path: string): superagentType.Request {
+  make(method: HttpMethod, path: string): superagentType.SuperAgentRequest {
     return createRequest(method, `${this.host}${path}`)
       .timeout(10000) // 10 second timeout
       .set('Content-Type', CONTENT_TYPE_JSON)
       .set('Accept', CONTENT_TYPE_JSON);
   }
 
-  do(req: superagentType.Request): Promise<APIResponseSuccess> {
+  do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess> {
     return doAPIRequest(req);
+  }
+
+  paginate<T extends Response<Object[]>>(req: superagentType.SuperAgentRequest, guard: (res: APIResponseSuccess) => res is T): Paginator<T> {
+    return new Paginator<T>(req, guard, {});
   }
 }
 

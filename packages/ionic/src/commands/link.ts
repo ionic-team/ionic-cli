@@ -8,7 +8,6 @@ import {
   CommandLineOptions,
   Command,
   CommandMetadata,
-  Paginator,
   TaskChain,
   createFatalAPIFormat,
   isAPIResponseSuccess,
@@ -83,11 +82,10 @@ export class LinkCommand extends Command {
       const req = this.env.client.make('GET', `/apps`)
         .set('Authorization', `Bearer ${token}`);
 
-      const paginator = new Paginator(req, isAppsResponse, {});
       let apps: AppDetails[] = [];
 
-      for (let req of paginator) {
-        const res = await req;
+      for (let r of this.env.client.paginate(req, isAppsResponse)) {
+        const res = await r;
         apps = apps.concat(res.data);
       }
 

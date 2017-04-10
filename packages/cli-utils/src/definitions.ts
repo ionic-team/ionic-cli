@@ -280,8 +280,9 @@ export interface APIResponseSuccess {
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' | 'HEAD' | 'OPTIONS';
 
 export interface IClient {
-  make(method: HttpMethod, path: string): superagentType.Request;
-  do(res: superagentType.Request): Promise<APIResponseSuccess>;
+  make(method: HttpMethod, path: string): superagentType.SuperAgentRequest;
+  do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess>;
+  paginate<T extends Response<Object[]>>(req: superagentType.SuperAgentRequest, guard: (res: APIResponseSuccess) => res is T): IterableIterator<Promise<T>>;
 }
 
 export interface CLIEventEmitterBuildEventArgs {
