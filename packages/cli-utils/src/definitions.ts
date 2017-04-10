@@ -282,12 +282,10 @@ export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' |
 export interface IClient {
   make(method: HttpMethod, path: string): superagentType.SuperAgentRequest;
   do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess>;
-  paginate<T extends Response<Object[]>>(req: superagentType.SuperAgentRequest, guard: (res: APIResponseSuccess) => res is T): IPaginator<T>;
+  paginate<T extends Response<Object[]>>(reqgen: () => superagentType.SuperAgentRequest, guard: (res: APIResponseSuccess) => res is T): IPaginator<T>;
 }
 
-export interface IPaginator<T extends Response<Object[]>> extends IterableIterator<Promise<T>> {
-  pageSize: number;
-}
+export interface IPaginator<T extends Response<Object[]>> extends IterableIterator<Promise<T>> {}
 
 export interface CLIEventEmitterBuildEventArgs {
   options: CommandLineOptions;

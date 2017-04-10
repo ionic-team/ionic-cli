@@ -5,7 +5,7 @@ import {
   IClient,
   IConfig,
   IProject,
-  ISession
+  ISession,
 } from '../definitions';
 
 import { isAuthTokensResponse, isLoginResponse } from '../guards';
@@ -63,20 +63,18 @@ export class Session implements ISession {
     const c = await this.config.load();
 
     if (!c.tokens.appUser[app_id]) {
-      const req = this.client.make('GET', '/auth/tokens')
-        .set('Authorization', `Bearer ${await this.getUserToken()}`)
-        .query({ type: 'app-user' })
-        .send();
+      const token = await this.getUserToken();
+      const paginator = this.client.paginate(
+        () => this.client.make('GET', '/auth/tokens').set('Authorization', `Bearer ${token}`).query({ 'page_size': 100, type: 'app-user' }),
+        isAuthTokensResponse
+      );
 
-      const res = await this.client.do(req);
+      for (let r of paginator) {
+        const res = await r;
 
-      if (!isAuthTokensResponse(res)) {
-        throw createFatalAPIFormat(req, res);
-      }
-
-      // TODO: pagination
-      for (let token of res.data) {
-        c.tokens.appUser[token.details.app_id] = token.token;
+        for (let token of res.data) {
+          c.tokens.appUser[token.details.app_id] = token.token;
+        }
       }
     }
 

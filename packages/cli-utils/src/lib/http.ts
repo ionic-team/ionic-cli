@@ -47,21 +47,6 @@ export function createRequest(method: string, url: string): superagentType.Super
   return req;
 }
 
-// TODO: .clone() should be built into superagent =( (https://github.com/visionmedia/superagent/pull/627)
-export function cloneRequest(req: superagentType.SuperAgentRequest): superagentType.SuperAgentRequest {
-  const req2 = createRequest(req.method, req.url);
-  // querystring
-  req2.qs = req.qs;
-  // headers
-  const originalRequest = req.request();
-  req2.set(originalRequest._headers);
-  // data and other stuff
-  req2._data = req._data;
-  req2._buffer = req._buffer;
-  req2._timeout = req._timeout;
-  return req2;
-}
-
 export class Client implements IClient {
   constructor(public host: string) {}
 
@@ -72,43 +57,59 @@ export class Client implements IClient {
       .set('Accept', CONTENT_TYPE_JSON);
   }
 
-  do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess> {
-    return doAPIRequest(req);
+  async do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess> {
+    const res = await req;
+    const r = transformAPIResponse(res);
+
+    if (isAPIResponseError(r)) {
+      throw new FatalException('API request was successful, but the response output format was that of an error.\n'
+                             + formatAPIError(req, r));
+    }
+
+    return r;
   }
 
-  paginate<T extends Response<Object[]>>(req: superagentType.SuperAgentRequest, guard: (res: APIResponseSuccess) => res is T): Paginator<T> {
-    return new Paginator<T>(req, guard, {});
+  paginate<T extends Response<Object[]>>(reqgen: () => superagentType.SuperAgentRequest, guard: (res: APIResponseSuccess) => res is T): Paginator<T> {
+    return new Paginator<T>(this, reqgen, guard);
   }
 }
 
 export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
-  public readonly pageSize: number;
-  protected previousReq: superagentType.SuperAgentRequest;
+  protected previousReq?: superagentType.SuperAgentRequest;
+  protected done = false;
 
   constructor(
-    protected req: superagentType.SuperAgentRequest,
+    protected client: IClient,
+    protected reqgen: () => superagentType.SuperAgentRequest,
     protected guard: (res: APIResponseSuccess) => res is T,
-    { pageSize = 25 }: { pageSize?: number },
-  ) {
-    this.pageSize = pageSize;
-    if (req.method !== 'GET') {
-      throw new Error(`Pagination only works with GET requests (not ${req.method}).`);
-    }
-
-    this.previousReq = req;
-  }
+  ) {}
 
   next(): IteratorResult<Promise<T>> {
+    if (this.done) {
+      return { done: true } as IteratorResult<Promise<T>>; // TODO: why can't I exclude value?
+    }
+
     return {
       done: false,
-      value: (async (): Promise<T> => {
-        const req = cloneRequest(this.previousReq);
-        req.query({ 'page': this.previousReq.qs.page ? this.previousReq.qs.page + 1 : 1, 'page_size': this.previousReq.qs.page_size || this.pageSize });
-        const ps = Number(req.qs.page_size) !== NaN ? Number(req.qs.page_size) : this.pageSize;
-        const res = await doAPIRequest(req);
+      value: (async () => {
+        const req = this.reqgen();
 
+        if (!this.previousReq) {
+          this.previousReq = req;
+        }
+
+        const page = this.previousReq.qs.page && Number(this.previousReq.qs.page) !== NaN ? this.previousReq.qs.page + 1 : 1;
+        const pageSize = this.previousReq.qs.page_size && Number(this.previousReq.qs.page_size) !== NaN ? this.previousReq.qs.page_size : 25;
+
+        req.query({ page, 'page_size': pageSize });
+
+        const res = await this.client.do(req);
         if (!this.guard(res)) {
           throw createFatalAPIFormat(req, res);
+        }
+
+        if (res.data.length === 0 || res.data.length < pageSize) {
+          this.done = true;
         }
 
         this.previousReq = req;
@@ -120,18 +121,6 @@ export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
   [Symbol.iterator](): this {
     return this;
   }
-}
-
-export async function doAPIRequest(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess> {
-  const res = await req;
-  const r = transformAPIResponse(res);
-
-  if (isAPIResponseError(r)) {
-    throw new FatalException('API request was successful, but the response output format was that of an error.\n'
-                           + formatAPIError(req, r));
-  }
-
-  return r;
 }
 
 export function transformAPIResponse(r: superagentType.Response): APIResponse {

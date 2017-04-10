@@ -78,21 +78,17 @@ export class LinkCommand extends Command {
 
     } else {
       tasks.next(`Looking up your apps`);
+      let apps: AppDetails[] = [];
 
       const token = await this.env.session.getUserToken();
-      const req = this.env.client.make('GET', `/apps`)
-        .set('Authorization', `Bearer ${token}`);
-
-      const paginator = this.env.client.paginate(req, isAppsResponse);
-      let apps: AppDetails[] = [];
+      const paginator = this.env.client.paginate(
+        () => this.env.client.make('GET', '/apps').set('Authorization', `Bearer ${token}`),
+        isAppsResponse
+      );
 
       for (let r of paginator) {
         const res = await r;
         apps = apps.concat(res.data);
-
-        if (res.data.length === 0 || res.data.length < paginator.pageSize) {
-          break;
-        }
       }
 
       tasks.end();
