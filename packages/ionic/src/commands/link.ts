@@ -4,10 +4,11 @@ import {
   APIResponse,
   APIResponseSuccess,
   AppDetails,
+  Command,
   CommandLineInputs,
   CommandLineOptions,
-  Command,
   CommandMetadata,
+  Paginator,
   TaskChain,
   createFatalAPIFormat,
   isAPIResponseSuccess,
@@ -82,11 +83,16 @@ export class LinkCommand extends Command {
       const req = this.env.client.make('GET', `/apps`)
         .set('Authorization', `Bearer ${token}`);
 
+      const paginator = this.env.client.paginate(req, isAppsResponse);
       let apps: AppDetails[] = [];
 
-      for (let r of this.env.client.paginate(req, isAppsResponse)) {
+      for (let r of paginator) {
         const res = await r;
         apps = apps.concat(res.data);
+
+        if (res.data.length === 0 || res.data.length < paginator.pageSize) {
+          break;
+        }
       }
 
       tasks.end();

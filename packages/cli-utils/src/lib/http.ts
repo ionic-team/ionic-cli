@@ -8,6 +8,7 @@ import {
   APIResponseError,
   APIResponseSuccess,
   IClient,
+  IPaginator,
   HttpMethod,
   Response,
   SuperAgentError,
@@ -80,10 +81,9 @@ export class Client implements IClient {
   }
 }
 
-export class Paginator<T extends Response<Object[]>> implements IterableIterator<Promise<T>> {
+export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
+  public readonly pageSize: number;
   protected previousReq: superagentType.SuperAgentRequest;
-  protected done = false;
-  protected pageSize: number;
 
   constructor(
     protected req: superagentType.SuperAgentRequest,
@@ -100,7 +100,7 @@ export class Paginator<T extends Response<Object[]>> implements IterableIterator
 
   next(): IteratorResult<Promise<T>> {
     return {
-      done: this.done,
+      done: false,
       value: (async (): Promise<T> => {
         const req = cloneRequest(this.previousReq);
         req.query({ 'page': this.previousReq.qs.page ? this.previousReq.qs.page + 1 : 1, 'page_size': this.previousReq.qs.page_size || this.pageSize });
@@ -109,10 +109,6 @@ export class Paginator<T extends Response<Object[]>> implements IterableIterator
 
         if (!this.guard(res)) {
           throw createFatalAPIFormat(req, res);
-        }
-
-        if (res.data.length === 0 || res.data.length < ps) {
-          this.done = true;
         }
 
         this.previousReq = req;
