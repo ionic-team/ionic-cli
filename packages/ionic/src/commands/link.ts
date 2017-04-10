@@ -9,46 +9,11 @@ import {
   CommandMetadata,
   createFatalAPIFormat,
   isAPIResponseSuccess,
+  isAppResponse,
+  isAppsResponse,
 } from '@ionic/cli-utils';
 
 import { load } from '../lib/modules';
-
-interface App {
-  name: string;
-  id: string;
-}
-
-interface AppResponse extends APIResponseSuccess {
-  data: App;
-}
-
-interface AppsResponse extends APIResponseSuccess {
-  data: App[];
-}
-
-function isApp(app: any): app is App {
-  return app
-    && typeof app.name === 'string'
-    && typeof app.id === 'string';
-}
-
-function isAppResponse(r: APIResponse): r is AppResponse {
-  let res: AppResponse = <AppResponse>r;
-  return isAPIResponseSuccess(res) && isApp(res.data);
-}
-
-function isAppsResponse(r: APIResponse): r is AppsResponse {
-  let res: AppsResponse = <AppsResponse>r;
-  if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
-    return false;
-  }
-
-  if (res.data.length > 0) {
-    return isApp(res.data[0]);
-  }
-
-  return true;
-}
 
 const CREATE_NEW_APP_CHOICE = 'createNewApp';
 

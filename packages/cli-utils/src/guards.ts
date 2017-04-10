@@ -4,6 +4,7 @@ import {
   APIResponseSuccess,
   AppDetails,
   AppResponse,
+  AppsResponse,
   AuthTokenResponse,
   CommandPreInputs,
   CommandPreRun,
@@ -78,6 +79,19 @@ export function isAppDetails(d: Object): d is AppDetails {
 export function isAppResponse(r: APIResponse): r is AppResponse {
   const res: AppResponse = <AppResponse>r;
   return isAPIResponseSuccess(res) && isAppDetails(res.data);
+}
+
+export function isAppsResponse(r: APIResponse): r is AppsResponse {
+  let res: AppsResponse = <AppsResponse>r;
+  if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
+    return false;
+  }
+
+  if (res.data.length > 0) {
+    return isAppDetails(res.data[0]);
+  }
+
+  return true;
 }
 
 export function isAuthTokenResponse(r: APIResponse): r is AuthTokenResponse {

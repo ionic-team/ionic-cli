@@ -60,6 +60,10 @@ export interface AppResponse extends APIResponseSuccess {
   data: AppDetails;
 }
 
+export interface AppsResponse extends APIResponseSuccess {
+  data: AppDetails[];
+}
+
 export interface AuthTokenResponse extends APIResponseSuccess {
   data: {
     token: string;
