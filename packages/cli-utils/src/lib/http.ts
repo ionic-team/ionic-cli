@@ -9,7 +9,8 @@ import {
   APIResponseSuccess,
   IClient,
   HttpMethod,
-  SuperAgentError
+  Response,
+  SuperAgentError,
 } from '../definitions';
 
 import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
@@ -33,7 +34,7 @@ export function getGlobalProxy(): [string, string] | [undefined, undefined] {
   return [undefined, undefined];
 }
 
-export function createRequest(method: string, url: string): superagentType.Request {
+export function createRequest(method: string, url: string): superagentType.SuperAgentRequest {
   const [ proxy, ] = getGlobalProxy();
   const superagent = load('superagent');
   let req = superagent(method, url);
@@ -45,26 +46,23 @@ export function createRequest(method: string, url: string): superagentType.Reque
   return req;
 }
 
+// TODO: .clone() should be built into superagent =( (https://github.com/visionmedia/superagent/pull/627)
+export function cloneRequest(req: superagentType.SuperAgentRequest): superagentType.SuperAgentRequest {
+  const req2 = createRequest(req.method, req.url);
+  // querystring
+  req2.qs = req.qs;
+  // headers
+  const originalRequest = req.request();
+  req2.set(originalRequest._headers);
+  // data and other stuff
+  req2._data = req._data;
+  req2._buffer = req._buffer;
+  req2._timeout = req._timeout;
+  return req2;
+}
+
 export class Client implements IClient {
   constructor(public host: string) {}
-
-  static transform(r: superagentType.Response): APIResponse {
-    if (r.status === 204 && !r.body) {
-      r.body = { data: null, meta: { status: 204, version: '', request_id: '' } };
-    }
-
-    if (r.type !== CONTENT_TYPE_JSON) {
-      throw ERROR_UNKNOWN_CONTENT_TYPE;
-    }
-
-    let j = <APIResponse>r.body;
-
-    if (!j.meta) {
-      throw ERROR_UNKNOWN_RESPONSE_FORMAT;
-    }
-
-    return j;
-  }
 
   make(method: HttpMethod, path: string): superagentType.Request {
     return createRequest(method, `${this.host}${path}`)
@@ -73,17 +71,85 @@ export class Client implements IClient {
       .set('Accept', CONTENT_TYPE_JSON);
   }
 
-  async do(req: superagentType.Request): Promise<APIResponseSuccess> {
-    const res = await req;
-    const r = Client.transform(res);
+  do(req: superagentType.Request): Promise<APIResponseSuccess> {
+    return doAPIRequest(req);
+  }
+}
 
-    if (isAPIResponseError(r)) {
-      throw new FatalException('API request was successful, but the response output format was that of an error.\n'
-                             + formatAPIError(req, r));
+export class Paginator<T extends Response<Object[]>> implements IterableIterator<Promise<T>> {
+  protected previousReq: superagentType.SuperAgentRequest;
+  protected done = false;
+  protected pageSize: number;
+
+  constructor(
+    protected req: superagentType.SuperAgentRequest,
+    protected guard: (res: APIResponseSuccess) => res is T,
+    { pageSize = 25 }: { pageSize?: number },
+  ) {
+    this.pageSize = pageSize;
+    if (req.method !== 'GET') {
+      throw new Error(`Pagination only works with GET requests (not ${req.method}).`);
     }
 
-    return r;
+    this.previousReq = req;
   }
+
+  next(): IteratorResult<Promise<T>> {
+    return {
+      done: this.done,
+      value: (async (): Promise<T> => {
+        const req = cloneRequest(this.previousReq);
+        req.query({ 'page': this.previousReq.qs.page ? this.previousReq.qs.page + 1 : 1, 'page_size': this.previousReq.qs.page_size || this.pageSize });
+        const ps = Number(req.qs.page_size) !== NaN ? Number(req.qs.page_size) : this.pageSize;
+        const res = await doAPIRequest(req);
+
+        if (!this.guard(res)) {
+          throw createFatalAPIFormat(req, res);
+        }
+
+        if (res.data.length === 0 || res.data.length < ps) {
+          this.done = true;
+        }
+
+        this.previousReq = req;
+        return res;
+      })(),
+    };
+  }
+
+  [Symbol.iterator](): this {
+    return this;
+  }
+}
+
+export async function doAPIRequest(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess> {
+  const res = await req;
+  const r = transformAPIResponse(res);
+
+  if (isAPIResponseError(r)) {
+    throw new FatalException('API request was successful, but the response output format was that of an error.\n'
+                           + formatAPIError(req, r));
+  }
+
+  return r;
+}
+
+export function transformAPIResponse(r: superagentType.Response): APIResponse {
+  if (r.status === 204 && !r.body) {
+    r.body = { data: null, meta: { status: 204, version: '', request_id: '' } };
+  }
+
+  if (r.type !== CONTENT_TYPE_JSON) {
+    throw ERROR_UNKNOWN_CONTENT_TYPE;
+  }
+
+  let j = <APIResponse>r.body;
+
+  if (!j.meta) {
+    throw ERROR_UNKNOWN_RESPONSE_FORMAT;
+  }
+
+  return j;
 }
 
 export function createFatalAPIFormat(req: superagentType.SuperAgentRequest, res: APIResponse): FatalException {
@@ -99,7 +165,7 @@ export function formatError(e: SuperAgentError): string {
   let f = '';
 
   try {
-    const r = Client.transform(res);
+    const r = transformAPIResponse(res);
     f += formatAPIResponse(req, r);
   } catch (e) {
     f += `HTTP Error ${statusCode}: ${req.method} ${req.url}\n`;

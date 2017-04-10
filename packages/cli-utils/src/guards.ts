@@ -3,26 +3,20 @@ import {
   APIResponseError,
   APIResponseSuccess,
   AppDetails,
-  AppResponse,
-  AppsResponse,
-  AuthTokenResponse,
+  AuthToken,
   CommandPreInputs,
   CommandPreRun,
-  DeployChannelResponse,
-  DeployResponse,
-  DeploySnapshotRequestResponse,
-  DeploySnapshotResponse,
+  Deploy,
+  DeployChannel,
+  DeploySnapshot,
+  DeploySnapshotRequest,
   ICommand,
   INamespace,
   LogLevel,
-  LoginResponse,
   PackageBuild,
-  PackageBuildResponse,
-  PackageBuildsResponse,
-  PackageProjectRequestResponse,
+  PackageProjectRequest,
+  Response,
   SecurityProfile,
-  SecurityProfileResponse,
-  SecurityProfilesResponse,
   SuperAgentError,
   ValidationError,
 } from './definitions';
@@ -76,13 +70,13 @@ export function isAppDetails(d: Object): d is AppDetails {
     && typeof details.slug === 'string';
 }
 
-export function isAppResponse(r: APIResponse): r is AppResponse {
-  const res: AppResponse = <AppResponse>r;
+export function isAppResponse(r: APIResponse): r is Response<AppDetails> {
+  const res = <Response<AppDetails>>r;
   return isAPIResponseSuccess(res) && isAppDetails(res.data);
 }
 
-export function isAppsResponse(r: APIResponse): r is AppsResponse {
-  let res: AppsResponse = <AppsResponse>r;
+export function isAppsResponse(r: APIResponse): r is Response<AppDetails[]> {
+  let res = <Response<AppDetails[]>>r;
   if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
     return false;
   }
@@ -94,8 +88,8 @@ export function isAppsResponse(r: APIResponse): r is AppsResponse {
   return true;
 }
 
-export function isAuthTokenResponse(r: APIResponse): r is AuthTokenResponse {
-  const res: AuthTokenResponse = <AuthTokenResponse>r;
+export function isAuthTokensResponse(r: APIResponse): r is Response<AuthToken[]> {
+  const res = <Response<AuthToken>>r;
   if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
     return false;
   }
@@ -111,21 +105,21 @@ export function isAuthTokenResponse(r: APIResponse): r is AuthTokenResponse {
   return true;
 }
 
-export function isLoginResponse(r: APIResponse): r is LoginResponse {
-  const res: LoginResponse = <LoginResponse>r;
+export function isLoginResponse(r: APIResponse): r is Response<{ token: string }> {
+  const res = <Response<{ token: string }>>r;
   return isAPIResponseSuccess(res) && typeof res.data.token === 'string';
 }
 
-export function isDeployResponse(r: APIResponse): r is DeployResponse {
-  const res: DeployResponse = <DeployResponse>r;
+export function isDeployResponse(r: APIResponse): r is Response<Deploy> {
+  const res = <Response<Deploy>>r;
   return isAPIResponseSuccess(res)
     && typeof res.data.uuid === 'string'
     && typeof res.data.snapshot === 'string'
     && typeof res.data.channel === 'string';
 }
 
-export function isPackageProjectRequestResponse(r: APIResponse): r is PackageProjectRequestResponse {
-  const res: PackageProjectRequestResponse = <PackageProjectRequestResponse>r;
+export function isPackageProjectRequestResponse(r: APIResponse): r is Response<PackageProjectRequest> {
+  const res = <Response<PackageProjectRequest>>r;
   return isAPIResponseSuccess(res)
     && typeof res.data.id === 'number'
     && typeof res.data.presigned_post === 'object'
@@ -157,13 +151,13 @@ export function isSecurityProfile(o: Object): o is SecurityProfile {
     && typeof obj.credentials === 'object';
 }
 
-export function isSecurityProfileResponse(r: APIResponse): r is SecurityProfileResponse {
-  const res: SecurityProfileResponse = <SecurityProfileResponse>r;
+export function isSecurityProfileResponse(r: APIResponse): r is Response<SecurityProfile> {
+  const res = <Response<SecurityProfile>>r;
   return isAPIResponseSuccess(res) && isSecurityProfile(res.data);
 }
 
-export function isSecurityProfilesResponse(r: APIResponse): r is SecurityProfilesResponse {
-  const res: SecurityProfilesResponse = <SecurityProfilesResponse>r;
+export function isSecurityProfilesResponse(r: APIResponse): r is Response<SecurityProfile[]> {
+  const res = <Response<SecurityProfile[]>>r;
   if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
     return false;
   }
@@ -175,13 +169,13 @@ export function isSecurityProfilesResponse(r: APIResponse): r is SecurityProfile
   return true;
 }
 
-export function isPackageBuildResponse(r: APIResponse): r is PackageBuildResponse {
-  const res: PackageBuildResponse = <PackageBuildResponse>r;
+export function isPackageBuildResponse(r: APIResponse): r is Response<PackageBuild> {
+  const res = <Response<PackageBuild>>r;
   return isAPIResponseSuccess(res) && isPackageBuild(res.data);
 }
 
-export function isPackageBuildsResponse(r: APIResponse): r is PackageBuildsResponse {
-  const res: PackageBuildsResponse = <PackageBuildsResponse>r;
+export function isPackageBuildsResponse(r: APIResponse): r is Response<PackageBuild[]> {
+  const res = <Response<PackageBuild[]>>r;
   if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
     return false;
   }
@@ -193,22 +187,22 @@ export function isPackageBuildsResponse(r: APIResponse): r is PackageBuildsRespo
   return true;
 }
 
-export function isDeployChannelResponse(r: APIResponse): r is DeployChannelResponse {
-  const res: DeployChannelResponse = <DeployChannelResponse>r;
+export function isDeployChannelResponse(r: APIResponse): r is Response<DeployChannel> {
+  const res = <Response<DeployChannel>>r;
   return isAPIResponseSuccess(res)
     && typeof res.data.uuid === 'string'
     && typeof res.data.tag === 'string';
 }
 
-export function isDeploySnapshotResponse(r: APIResponse): r is DeploySnapshotResponse {
-  const res: DeploySnapshotRequestResponse = <DeploySnapshotRequestResponse>r;
+export function isDeploySnapshotResponse(r: APIResponse): r is Response<DeploySnapshot> {
+  const res = <Response<DeploySnapshot>>r;
   return isAPIResponseSuccess(res)
     && typeof res.data.uuid === 'string'
     && typeof res.data.url === 'string';
 }
 
-export function isDeploySnapshotRequestResponse(r: APIResponse): r is DeploySnapshotRequestResponse {
-  const res: DeploySnapshotRequestResponse = <DeploySnapshotRequestResponse>r;
+export function isDeploySnapshotRequestResponse(r: APIResponse): r is Response<DeploySnapshotRequest> {
+  const res = <Response<DeploySnapshotRequest>>r;
   return isAPIResponseSuccess(res)
     && typeof res.data.uuid === 'string'
     && typeof res.data.presigned_post === 'object'

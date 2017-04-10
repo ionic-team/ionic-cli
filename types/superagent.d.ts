@@ -87,6 +87,12 @@ declare module "superagent" {
       interface Request extends Promise<Response>, NodeJS.ReadableStream /* (extending ReadableStream is a lie) */{
         method: string;
         url: string;
+        qs: { [key: string]: string };
+        request(): any;
+        header: any;
+        _data: any;
+        _buffer: any;
+        _timeout: number;
         abort(): void;
         accept(type: string): this;
         attach(field: string, file: string, filename?: string): this;

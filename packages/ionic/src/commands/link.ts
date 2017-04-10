@@ -3,10 +3,13 @@ import * as chalk from 'chalk';
 import {
   APIResponse,
   APIResponseSuccess,
+  AppDetails,
   CommandLineInputs,
   CommandLineOptions,
   Command,
   CommandMetadata,
+  Paginator,
+  TaskChain,
   createFatalAPIFormat,
   isAPIResponseSuccess,
   isAppResponse,
@@ -34,10 +37,15 @@ const CREATE_NEW_APP_CHOICE = 'createNewApp';
 })
 export class LinkCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    let [ appId ] = inputs;
+
+    const config = await this.env.config.load();
     const project = await this.env.project.load();
-    let [appId] = inputs;
+    const tasks = new TaskChain();
 
     if (appId) {
+      tasks.next(`Looking up app ${chalk.bold(appId)}`);
+
       if (appId === project.app_id) {
         return this.env.log.ok(`Already linked with app ${chalk.bold(appId)}.`);
       }
@@ -53,6 +61,8 @@ export class LinkCommand extends Command {
         throw createFatalAPIFormat(req, res);
       }
 
+      tasks.end();
+
       if (project.app_id) {
         const inquirer = load('inquirer');
         const confirmation = await inquirer.prompt({
@@ -67,18 +77,22 @@ export class LinkCommand extends Command {
       }
 
     } else {
+      tasks.next(`Looking up your apps`);
+
       const token = await this.env.session.getUserToken();
       const req = this.env.client.make('GET', `/apps`)
-        .set('Authorization', `Bearer ${token}`)
-        .send();
+        .set('Authorization', `Bearer ${token}`);
 
-      const res = await this.env.client.do(req);
+      const paginator = new Paginator(req, isAppsResponse, {});
+      let apps: AppDetails[] = [];
 
-      if (!isAppsResponse(res)) {
-        throw createFatalAPIFormat(req, res);
+      for (let req of paginator) {
+        const res = await req;
+        apps = apps.concat(res.data);
       }
 
-      const apps = res.data.filter((app) => app.id !== project.app_id);
+      tasks.end();
+
       const createAppChoice = {
         name: 'Create a new app',
         id: CREATE_NEW_APP_CHOICE,
@@ -101,7 +115,7 @@ export class LinkCommand extends Command {
     if (appId === CREATE_NEW_APP_CHOICE) {
       const token = await this.env.session.getUserToken();
       const opn = load('opn');
-      opn(`https://apps.ionic.io/?user_token=${token}`, { wait: false });
+      opn(`${config.urls.dash}/?user_token=${token}`, { wait: false });
       this.env.log.ok(`Rerun ${chalk.green(`ionic link`)} to link to the new app.`);
 
     } else {

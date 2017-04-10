@@ -8,7 +8,7 @@ import {
   ISession
 } from '../definitions';
 
-import { isAuthTokenResponse, isLoginResponse } from '../guards';
+import { isAuthTokensResponse, isLoginResponse } from '../guards';
 
 import { FatalException } from './errors';
 import { createFatalAPIFormat } from './http';
@@ -70,7 +70,7 @@ export class Session implements ISession {
 
       const res = await this.client.do(req);
 
-      if (!isAuthTokenResponse(res)) {
+      if (!isAuthTokensResponse(res)) {
         throw createFatalAPIFormat(req, res);
       }
 

@@ -50,34 +50,22 @@ export interface ProjectFile {
   proxies?: ProjectFileProxy[];
 }
 
+export interface Response<T> extends APIResponseSuccess {
+  data: T;
+}
+
 export interface AppDetails {
   id: string;
   name: string;
   slug: string;
 }
 
-export interface AppResponse extends APIResponseSuccess {
-  data: AppDetails;
-}
-
-export interface AppsResponse extends APIResponseSuccess {
-  data: AppDetails[];
-}
-
-export interface AuthTokenResponse extends APIResponseSuccess {
-  data: {
-    token: string;
-    details: {
-      app_id: string;
-      type: 'app-user';
-      user_id: string;
-    };
-  }[];
-}
-
-export interface LoginResponse extends APIResponseSuccess {
-  data: {
-    token: string;
+export interface AuthToken {
+  token: string;
+  details: {
+    app_id: string;
+    type: 'app-user';
+    user_id: string;
   };
 }
 
@@ -93,21 +81,9 @@ export interface DeploySnapshotRequest extends DeploySnapshot {
   };
 }
 
-export interface DeploySnapshotResponse extends APIResponseSuccess {
-  data: DeploySnapshot;
-}
-
-export interface DeploySnapshotRequestResponse extends APIResponseSuccess {
-  data: DeploySnapshotRequest;
-}
-
 export interface DeployChannel {
   uuid: string;
   tag: string;
-}
-
-export interface DeployChannelResponse extends APIResponseSuccess {
-  data: DeployChannel;
 }
 
 export interface Deploy {
@@ -116,20 +92,12 @@ export interface Deploy {
   channel: string;
 }
 
-export interface DeployResponse extends APIResponseSuccess {
-  data: Deploy;
-}
-
 export interface PackageProjectRequest {
   id: number;
   presigned_post: {
     url: string;
     fields: Object;
   };
-}
-
-export interface PackageProjectRequestResponse extends APIResponseSuccess {
-  data: PackageProjectRequest;
 }
 
 export interface PackageBuild {
@@ -145,14 +113,6 @@ export interface PackageBuild {
   output?: string | null;
 }
 
-export interface PackageBuildResponse extends APIResponseSuccess {
-  data: PackageBuild;
-}
-
-export interface PackageBuildsResponse extends APIResponseSuccess {
-  data: PackageBuild[];
-}
-
 export interface SecurityProfile {
   name: string;
   tag: string;
@@ -162,14 +122,6 @@ export interface SecurityProfile {
     android?: Object;
     ios?: Object;
   };
-}
-
-export interface SecurityProfileResponse extends APIResponseSuccess {
-  data: SecurityProfile;
-}
-
-export interface SecurityProfilesResponse extends APIResponseSuccess {
-  data: SecurityProfile[];
 }
 
 export interface IApp {
@@ -269,6 +221,7 @@ export interface ConfigFile {
   lastUpdated: string;
   urls: {
     api: string;
+    dash: string;
   };
   tokens: {
     user?: string;

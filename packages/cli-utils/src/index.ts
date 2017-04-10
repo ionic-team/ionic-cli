@@ -7,7 +7,6 @@ export * from './lib/command/command';
 export * from './lib/command/namespace';
 export * from './lib/command/utils';
 export * from './lib/config';
-export * from './lib/config';
 export * from './lib/deploy';
 export * from './lib/errors';
 export * from './lib/events';

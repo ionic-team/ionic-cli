@@ -92,6 +92,10 @@ export class Config extends BaseConfig<ConfigFile> {
       results.urls.api = 'https://api.ionic.io';
     }
 
+    if (!results.urls.dash) {
+      results.urls.dash = 'https://apps.ionic.io';
+    }
+
     if (!results.tokens) {
       results.tokens = {};
     }
@@ -111,6 +115,7 @@ export class Config extends BaseConfig<ConfigFile> {
     return typeof j.lastUpdated === 'string'
       && typeof j.urls === 'object'
       && typeof j.urls.api === 'string'
+      && typeof j.urls.dash === 'string'
       && typeof j.tokens === 'object'
       && typeof j.tokens.appUser === 'object'
       && typeof j.cliFlags === 'object';
