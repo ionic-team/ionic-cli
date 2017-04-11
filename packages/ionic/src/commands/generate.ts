@@ -10,11 +10,12 @@ import {
 
 @CommandMetadata({
   name: 'generate',
-  description: `Generates pipes, components, pages, directives, and tabs ${chalk.bold(`(ionic-angular >= 3.0.0)`)}`,
+  description: `Generate pipes, components, pages, directives, and tabs ${chalk.bold(`(ionic-angular >= 3.0.0)`)}`,
+  exampleCommands: ['', 'component', 'directive', 'page', 'pipe', 'provider', 'tabs', 'component foo', 'page Login', 'pipe MyFilterPipe'],
   inputs: [
     {
       name: 'type',
-      description: 'The type of generator that you would like to use',
+      description: `The type of generator (e.g. ${['page', 'component', 'tabs'].map(t => chalk.green(t)).join(', ')})`,
       validators: [validators.required],
       prompt: {
         type: 'list',

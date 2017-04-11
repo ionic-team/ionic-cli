@@ -43,7 +43,14 @@ export class Command implements ICommand {
     let r: number | void;
 
     if (isCommandPreInputs(this)) {
-      this.preInputs();
+      r = await this.preInputs();
+      if (typeof r === 'number') {
+        if (r > 0) {
+          throw this.exit('', r);
+        }
+
+        return;
+      }
     }
 
     await collectInputs(inputs, this.metadata);

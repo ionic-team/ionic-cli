@@ -355,7 +355,7 @@ export interface ICommand {
 }
 
 export interface CommandPreInputs extends ICommand {
-  preInputs(): void;
+  preInputs(): Promise<void | number>;
 }
 
 export interface CommandPreRun extends ICommand {

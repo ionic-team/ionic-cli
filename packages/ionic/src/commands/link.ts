@@ -25,12 +25,12 @@ const CREATE_NEW_APP_CHOICE = 'createNewApp';
  */
 @CommandMetadata({
   name: 'link',
-  description: 'Links your app with Ionic Cloud.',
-  exampleCommands: [''],
+  description: 'Connect your local app to Ionic',
+  exampleCommands: ['', 'a1b2c3d4'],
   inputs: [
     {
       name: 'app_id',
-      description: 'The Ionic Cloud app id that you would like to link to.'
+      description: `The ID of the app to link (e.g. ${chalk.bold('a1b2c3d4')})`
     }
   ],
   requiresProject: true

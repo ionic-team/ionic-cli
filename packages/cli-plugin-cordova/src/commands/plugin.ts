@@ -18,12 +18,12 @@ import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
  */
 @CommandMetadata({
   name: 'plugin',
-  description: 'Manage cordova plugins',
+  description: 'Manage Cordova plugins',
   exampleCommands: ['add cordova-plugin-inappbrowser@latest', 'list'],
   inputs: [
     {
       name: 'action',
-      description: `${chalk.bold('add')} or ${chalk.bold('remove')} a plugin; ${chalk.bold('list')} all project plugins`,
+      description: `${chalk.green('add')} or ${chalk.green('remove')} a plugin; ${chalk.green('list')} all project plugins`,
       validators: [validators.required],
       prompt: {
         type: 'list',
@@ -32,20 +32,20 @@ import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
     },
     {
       name: 'plugin',
-      description: `the plugin that you would like to add or remove`,
+      description: `The name of the plugin (corresponds to ${chalk.green('add')} and ${chalk.green('remove')})`,
     }
   ],
   options: [
     {
       name: 'nosave',
-      description: 'Do not update the config.xml (add, remove)',
+      description: `Do not update config.xml (corresponds to ${chalk.green('add')} and ${chalk.green('remove')})`,
       type: Boolean,
       default: false,
       aliases: ['e']
     },
     {
       name: 'force',
-      description: 'Update the plugin even if the same file already exists (add)',
+      description: `Forve overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
       type: Boolean,
       default: false
     }

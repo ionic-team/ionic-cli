@@ -98,7 +98,7 @@ export function formatCommandHelp(cmdMetadata: CommandData): string {
 }
 
 export function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[] {
-  const fillStringArray = generateFillSpaceStringList(cmdMetadataList.map(cmdMd => cmdMd.fullName || cmdMd.name), 18, chalk.dim('.'));
+  const fillStringArray = generateFillSpaceStringList(cmdMetadataList.map(cmdMd => cmdMd.fullName || cmdMd.name), 20, chalk.dim('.'));
 
   return cmdMetadataList.map((cmdMd, index) =>
     `${chalk.green(cmdMd.fullName || '')} ` +

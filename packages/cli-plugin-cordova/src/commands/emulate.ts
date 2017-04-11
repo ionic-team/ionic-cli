@@ -66,13 +66,13 @@ import {
     },
     {
       name: 'port',
-      description: 'Dev server HTTP port (8100 default)',
+      description: 'Dev server HTTP port',
       default: '8100',
       aliases: ['p']
     },
     {
       name: 'livereload-port',
-      description: 'Live Reload port (35729 default)',
+      description: 'Live Reload port',
       default: '35729',
       aliases: ['r']
     },

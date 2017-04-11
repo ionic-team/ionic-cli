@@ -27,7 +27,7 @@ import {
   inputs: [
     {
       name: 'action',
-      description: `${chalk.bold('add')}, ${chalk.bold('remove')}, or ${chalk.bold('update')} a platform; ${chalk.bold('list')} all project platforms`,
+      description: `${chalk.green('add')}, ${chalk.green('remove')}, or ${chalk.green('update')} a platform; ${chalk.green('list')} all project platforms`,
       validators: [validators.required],
       prompt: {
         message: 'What action would you like to take (add, remove, or update):',
@@ -35,7 +35,7 @@ import {
     },
     {
       name: 'platform',
-      description: `the platform that you would like to add: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
+      description: `The platform that you would like to add (e.g. ${chalk.bold('ios')}, ${chalk.bold('android')})`,
       validators: [validators.required],
       prompt: {
         message: 'What platform would you like to add (ios, android):',
@@ -45,14 +45,14 @@ import {
   options: [
     {
       name: 'noresources',
-      description: 'Do not add default Ionic icons and splash screen resources (add)',
+      description: `Do not add default Ionic icons and splash screen resources (corresponds to ${chalk.green('add')})`,
       type: Boolean,
       default: false,
       aliases: ['r']
     },
     {
       name: 'nosave',
-      description: 'Do not update the config.xml (add, remove, update)',
+      description: `Do not update the config.xml (corresponds to ${chalk.green('add')}, ${chalk.green('remove')}, ${chalk.green('update')})`,
       type: Boolean,
       default: false,
       aliases: ['e']

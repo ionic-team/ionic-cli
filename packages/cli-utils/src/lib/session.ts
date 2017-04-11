@@ -82,7 +82,7 @@ export class Session implements ISession {
     // TODO: if tokens are invalidated, what do (hint: app tokens)
 
     if (!c.tokens.appUser[app_id]) {
-      throw new FatalException(`A token does not exist for your account on App '${app_id}'.`);
+      throw new FatalException(`A token does not exist for your account on app ${chalk.bold(app_id)}.`);
     }
 
     return c.tokens.appUser[app_id];

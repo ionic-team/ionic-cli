@@ -9,12 +9,9 @@ import {
 import { gatherArgumentsForCordova } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 
-/**
- * Metadata about the prepare command
- */
 @CommandMetadata({
   name: 'prepare',
-  description: 'Transforms metadata to manifests and copies required assets.'
+  description: 'Transform metadata to platform manifests and copies assets to Cordova platforms'
 })
 export class PrepareCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

@@ -15,7 +15,7 @@ import { load } from '../lib/modules';
  */
 @CommandMetadata({
   name: 'docs',
-  description: 'Opens up the Ionic documentation website',
+  description: 'Open the Ionic documentation website',
   requiresProject: true
 })
 export class DocsCommand extends Command {

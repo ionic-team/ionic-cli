@@ -9,12 +9,9 @@ import {
 import { gatherArgumentsForCordova } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 
-/**
- * Metadata about the compile command
- */
 @CommandMetadata({
   name: 'compile',
-  description: 'Performs a cordova compile.'
+  description: 'Compile native platform code'
 })
 export class CompileCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

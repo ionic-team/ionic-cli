@@ -8,7 +8,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  CommandPreRun,
+  CommandPreInputs,
   TaskChain,
   getCommandInfo,
   getReleaseChannelName,
@@ -35,16 +35,16 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
 
 @CommandMetadata({
   name: 'start',
-  description: 'Creates a new project',
+  description: 'Create a new project',
   exampleCommands: [
     'mynewapp blank',
-    'mynewapp tabs --type=ionic-angular',
-    'mynewapp blank --type=ionic1'
+    'mynewapp tabs --type ionic-angular',
+    'mynewapp blank --type ionic1'
   ],
   inputs: [
     {
       name: 'name',
-      description: 'directory and name for the new project',
+      description: 'The name of your project directory',
       validators: [validators.required],
       prompt: {
         message: 'What would you like to name your project:'
@@ -52,11 +52,11 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
     },
     {
       name: 'template',
-      description: `Starter templates can either come from a named template (ex: blank, tabs, maps)`,
+      description: `The starter template to use (e.g. ${['blank', 'tabs'].map(t => chalk.green(t)).join(', ')}; use ${chalk.green('--list')} to see all)`,
       validators: [validators.required],
       prompt: {
         type: 'list',
-        message: 'What starter would you like to use',
+        message: 'What starter would you like to use:',
         choices: () => {
           function getAsChoice(text: string, index: number) {
             return {
@@ -75,15 +75,15 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
   options: [
     {
       name: 'type',
-      description: `Type of project to start. The default is 'ionic-angular'. (ex: ${STARTER_TYPES.map(st => st.id).join(', ')})`,
+      description: `Type of project to start (e.g. ${STARTER_TYPES.map(st => chalk.green(st.id)).join(', ')})`,
       type: String,
       default: 'ionic-angular'
     },
     {
-      name: 'appname',
-      description: 'Human readable name for the app (Use quotes around the name',
+      name: 'app-name',
+      description: 'Human-readable name (use quotes around the name)',
       type: String,
-      aliases: ['a']
+      aliases: ['n']
     },
     {
       name: 'skip-npm',
@@ -96,11 +96,11 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
       type: Boolean,
       aliases: ['l']
     },
-    {
-      name: 'cloud-app-id',
-      description: 'An existing Ionic.io app ID to link with',
-      type: String
-    },
+    // {
+    //   name: 'cloud-app-id',
+    //   description: 'An existing Ionic.io app ID to link with',
+    //   type: String
+    // },
     {
       name: 'skip-link',
       description: 'Do not link app to an Ionic Account',
@@ -108,11 +108,10 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
     }
   ]
 })
-export class StartCommand extends Command implements CommandPreRun {
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-
+export class StartCommand extends Command implements CommandPreInputs {
+  async preInputs() {
     // If the action is list then lets just end here.
-    if (options['list']) {
+    if (this.env.argv['list']) {
 
       this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES).join('\n'));
       return 0;
@@ -121,7 +120,7 @@ export class StartCommand extends Command implements CommandPreRun {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let [projectName, starterTemplateName] = inputs;
-    let appName = <string>options['appname'] || projectName;
+    let appName = <string>options['app-name'] || projectName;
     let cloudAppId = <string>options['cloud-app-id'] || '';
     let starterBranchName = <string>options['starterBranchName'] || 'master';
     let wrapperBranchName = <string>options['wrapperBranchName'] || 'master';

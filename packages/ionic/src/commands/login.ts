@@ -5,7 +5,7 @@ import { validators } from '@ionic/cli-utils';
 @CommandMetadata({
   name: 'login',
   description: 'Login with your Ionic ID',
-  exampleCommands: ['john@example.com'],
+  exampleCommands: ['', 'john@example.com', 'hello@example.com secret'],
   inputs: [
     {
       name: 'email',
@@ -29,7 +29,7 @@ import { validators } from '@ionic/cli-utils';
   ]
 })
 export class LoginCommand extends Command implements CommandPreInputs {
-  preInputs() {
+  async preInputs() {
     this.env.log.msg(`Log into your Ionic account\n` +
                      `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`);
   }
