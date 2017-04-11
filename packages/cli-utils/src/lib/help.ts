@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import * as stripAnsi from 'strip-ansi';
+import * as stringWidth from 'string-width';
 
 import {
   CommandData,
@@ -163,7 +163,7 @@ function formatCommandOptions(options: CommandOption[] = []): string {
          .map((alias) => chalk.green(`-${alias}`))
          .join(', ') : '');
 
-    const optionListLength = stripAnsi(optionList).length;
+    const optionListLength = stringWidth(optionList);
     const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
 
     return `${optionList} ${Array(fullLength - optionListLength).fill('.').join('')} ${description}`;

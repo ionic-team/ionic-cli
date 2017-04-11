@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 
 import * as chalk from 'chalk';
-import * as stripAnsi from 'strip-ansi';
+import * as stringWidth from 'string-width';
 
 import { load } from '../modules';
 
@@ -36,13 +36,13 @@ export function generateFillSpaceStringList(list: string[], optimalLength: numbe
   const sliceAnsi = load('slice-ansi');
 
   const longestItem = Math.max(
-    ...list.map((item) => stripAnsi(item).length)
+    ...list.map((item) => stringWidth(item))
   );
 
   const fullLength = longestItem > optimalLength ? longestItem + 1 : optimalLength;
   const fullLengthString = Array(fullLength).fill(fillCharacter).join('');
 
-  return list.map(item => sliceAnsi(fullLengthString, 0, fullLength - stripAnsi(item).length));
+  return list.map(item => sliceAnsi(fullLengthString, 0, fullLength - stringWidth(item)));
 }
 
 export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk.dim('|'), columnHeaders }: { hsep?: string, vsep?: string, columnHeaders?: string[] }) {
@@ -78,7 +78,7 @@ export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk
   const singleColumn = paddedColumns.reduce((a, b) => {
     return a.map((_, i) => {
       const r = a[i] + b[i];
-      longestRowLength = Math.max(longestRowLength, stripAnsi(r).length);
+      longestRowLength = Math.max(longestRowLength, stringWidth(r));
       return r;
     });
   });

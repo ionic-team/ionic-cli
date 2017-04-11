@@ -43,7 +43,7 @@
     "archiver": "^1.3.0",
     "chalk": "^1.1.3",
     "cross-spawn": "^4.0.2",
-    "inquirer": "^1.2.2",
+    "inquirer": "^3.0.6",
     "leek": "0.0.24",
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",
@@ -51,6 +51,7 @@
     "progress": "^1.1.8",
     "rimraf": "^2.5.4",
     "slice-ansi": "0.0.4",
+    "string-width": "^2.0.0",
     "superagent": "^3.5.2",
     "uuid": "^3.0.1"
   },
