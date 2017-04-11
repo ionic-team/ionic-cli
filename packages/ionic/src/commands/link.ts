@@ -1,17 +1,13 @@
 import * as chalk from 'chalk';
 
 import {
-  APIResponse,
-  APIResponseSuccess,
   AppDetails,
   Command,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  Paginator,
   TaskChain,
   createFatalAPIFormat,
-  isAPIResponseSuccess,
   isAppResponse,
   isAppsResponse,
 } from '@ionic/cli-utils';

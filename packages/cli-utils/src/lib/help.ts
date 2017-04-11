@@ -11,7 +11,6 @@ import {
 } from '../definitions';
 import { isCommand } from '../guards';
 import { validators } from './validators';
-import { load } from './modules';
 import { generateFillSpaceStringList } from './utils/format';
 
 import { ERROR_PLUGIN_NOT_INSTALLED, KNOWN_PLUGINS, ORG_PREFIX, PLUGIN_PREFIX, loadPlugin } from './plugins';
