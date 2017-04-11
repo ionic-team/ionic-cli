@@ -11,6 +11,7 @@ import {
 } from '../definitions';
 import { isCommand } from '../guards';
 import { validators } from './validators';
+import { load } from './modules';
 import { generateFillSpaceStringList } from './utils/format';
 
 import { ERROR_PLUGIN_NOT_INSTALLED, KNOWN_PLUGINS, ORG_PREFIX, PLUGIN_PREFIX, loadPlugin } from './plugins';
@@ -83,13 +84,12 @@ function getHelpDetails(commandMetadataList: CommandData[], argv: string[], inPr
 }
 
 export function formatCommandHelp(cmdMetadata: CommandData): string {
-  let description = cmdMetadata.description.split('\n').join('\n  ');
   if (!cmdMetadata.fullName) {
     cmdMetadata.fullName = cmdMetadata.name;
   }
 
   return `
-  ${chalk.bold(description)}
+  ${chalk.bold(cmdMetadata.description)}
   ` +
   formatCommandUsage(cmdMetadata.inputs, cmdMetadata.fullName) +
   formatCommandInputs(cmdMetadata.inputs) +
@@ -114,7 +114,7 @@ function formatCommandUsage(inputs: CommandInput[] = [], commandName: string): s
       `$ ionic ${commandName} ${
         (inputs || [])
           .map(input => {
-            if (input.validators && input.validators.includes(validators.required)) {
+            if (input.validators && (input.validators.includes(validators.required) && !input.prompt)) {
               return '<' + input.name + '>';
             }
             return '[' + input.name + ']';
@@ -154,19 +154,19 @@ function formatCommandOptions(options: CommandOption[] = []): string {
     return '';
   }
 
-  const headerLine = chalk.bold(`Options`);
+  const headerLine = chalk.bold('Options');
 
-  function optionLineFn({ name, aliases, description}: CommandOption) {
-    const optionList = chalk.green(`-${name.length > 1 ? '-' : ''}${name}`) +
-      (aliases && aliases.length > 0 ? ', ' +
-       aliases
+  function optionLineFn(opt: CommandOption) {
+    const optionList = chalk.green(`-${opt.name.length > 1 ? '-' : ''}${opt.name}`) +
+      (opt.aliases && opt.aliases.length > 0 ? ', ' +
+       opt.aliases
          .map((alias) => chalk.green(`-${alias}`))
          .join(', ') : '');
 
     const optionListLength = stringWidth(optionList);
     const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
 
-    return `${optionList} ${Array(fullLength - optionListLength).fill('.').join('')} ${description}`;
+    return `${optionList} ${Array(fullLength - optionListLength).fill('.').join('')} ${opt.description}${typeof opt.default === 'string' ? ' (default: ' + chalk.green(opt.default) + ')' : ''}`;
   };
 
   return `
