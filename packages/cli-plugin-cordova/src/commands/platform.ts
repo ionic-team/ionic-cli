@@ -35,7 +35,7 @@ import {
     },
     {
       name: 'platform',
-      description: `The platform that you would like to add (e.g. ${chalk.bold('ios')}, ${chalk.bold('android')})`,
+      description: `The platform that you would like to add (e.g. ${chalk.green('ios')}, ${chalk.green('android')})`,
       validators: [validators.required],
       prompt: {
         message: 'What platform would you like to add (ios, android):',
