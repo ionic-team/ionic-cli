@@ -17,41 +17,8 @@ export async function getPages(context: AppScriptsType.BuildContext) {
   });
 }
 
-export async function prompt(type: string, context: AppScriptsType.BuildContext) {
-  const inquirer = load('inquirer');
-  const usageQuestion = await inquirer.prompt({
-    type: 'confirm',
-    name: 'usage',
-    message: `Use this ${type} in more than one template?`
-  });
-
-  if (!usageQuestion.usage) {
-    const fileChoices = await getPages(context);
-
-    const filteredChoices = fileChoices.map((file) => {
-      return {
-        prettyName: path.dirname(file.relativePath),
-        fullName: file.relativePath
-      };
-    });
-
-    const usagePlaces = await inquirer.prompt({
-      type: 'list',
-      name: 'whereUsed',
-      message: `Page or component that will be using this ${type}`,
-      choices: filteredChoices.map((choiceObject) => {
-        return choiceObject.prettyName;
-      })
-    });
-
-    const chosenPath = fileChoices.find((file): boolean => {
-      return path.dirname(file.relativePath) === usagePlaces.whereUsed;
-    });
-
-    return chosenPath.absolutePath;
-  } else {
-    return context.appNgModulePath;
-  }
+export async function prompt(context: AppScriptsType.BuildContext) {
+  return context.appNgModulePath;
 }
 
 export async function tabsPrompt() {

@@ -16,49 +16,8 @@ describe('prompt', () => {
       appNgModulePath: '/path/to/nowhere'
     };
 
-    const result = await generate.prompt('pipe', context);
+    const result = await generate.prompt(context);
     expect(result).toEqual(context.appNgModulePath);
-  });
-
-  it('should return a file path to a specific ngModule', async () => {
-    jest.resetModules();
-    jest.mock('@ionic/cli-utils', () => ({
-      load: jest.fn((modulePath) => {
-        switch (modulePath) {
-          case 'inquirer':
-            return {
-              prompt: jest.fn().mockReturnValueOnce({
-                usage: false
-              }).mockReturnValueOnce({
-                prettyName: '/path/to/ngModule',
-                whereUsed: '../../../../../../../../../path/to'
-              });
-            };
-          case '@ionic/app-scripts':
-            return {
-              getNgModules: jest.fn().mockReturnValueOnce([
-                {
-                  relativePath: '/path/to/ngModule',
-                  absolutePath: '/path/to/ngModule'
-                },
-                {
-                  relativePath: '/path/to/ngModule',
-                  absolutePath: '/path/to/ngModule'
-                }
-              ]),
-              getStringPropertyValue: jest.fn().mockReturnValueOnce('.module.ts')
-            };
-        }
-      })
-    }));
-
-    const generate = require('../generate');
-
-    // mock context
-    const context = { rootDir: 'my/cool/rootDir' };
-
-    const result = await generate.prompt('pipe', context);
-    expect(result).toEqual('/path/to/ngModule');
   });
 
 });
@@ -75,7 +34,7 @@ describe('tabsPrompt', () => {
           tabName: 'CoolTabOne'
         }).mockReturnValueOnce({
           tabName: 'CoolTabTwo'
-        });
+        })
       })
     }));
 

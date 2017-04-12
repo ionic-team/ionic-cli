@@ -25,16 +25,16 @@ export async function generate(args: CLIEventEmitterGenerateEventArgs): Promise<
     case 'page':
       return await AppScripts.processPageRequest(context, name);
     case 'component':
-      const componentData = await promptQuestions('component', context);
+      const componentData = await promptQuestions(context);
       return await AppScripts.processComponentRequest(context, name, componentData);
     case 'directive':
-      const directiveData = await promptQuestions('directive', context);
+      const directiveData = await promptQuestions(context);
       return await AppScripts.processDirectiveRequest(context, name, directiveData);
     case 'pipe':
-      const pipeData = await promptQuestions('pipe', context);
+      const pipeData = await promptQuestions(context);
       return await AppScripts.processPipeRequest(context, name, pipeData);
     case 'provider':
-      const providerData = await promptQuestions('provider', context);
+      const providerData = await promptQuestions(context);
       return await AppScripts.processProviderRequest(context, name, providerData);
     case 'tabs':
       const tabsData = await tabsPromptQuestions();
@@ -44,8 +44,8 @@ export async function generate(args: CLIEventEmitterGenerateEventArgs): Promise<
   return [];
 }
 
-async function promptQuestions(name: string, context: AppScriptsType.BuildContext) {
-  return await prompt(name, context);
+async function promptQuestions(context: AppScriptsType.BuildContext) {
+  return await prompt(context);
 }
 
 async function tabsPromptQuestions() {
