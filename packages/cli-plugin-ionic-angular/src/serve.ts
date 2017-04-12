@@ -17,7 +17,6 @@ export async function serve(args: CLIEventEmitterServeEventArgs): Promise<{ [key
   let chosenIP = (availableIPs.length === 0) ? '0.0.0.0' : availableIPs[0].address;
 
   if (availableIPs.length > 1) {
-    console.log(availableIPs, args.options);
     if (availableIPs.find(({address}) => address === args.options.address)) {
       chosenIP = args.options.address;
     } else {
