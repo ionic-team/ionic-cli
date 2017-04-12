@@ -92,38 +92,6 @@ export interface Deploy {
   channel: string;
 }
 
-export interface PackageProjectRequest {
-  id: number;
-  presigned_post: {
-    url: string;
-    fields: Object;
-  };
-}
-
-export interface PackageBuild {
-  id: number;
-  name: string | null;
-  created: string;
-  completed: string | null;
-  platform: 'android' | 'ios';
-  status: 'SUCCESS' | 'FAILED' | 'QUEUED' | 'BUILDING';
-  mode: 'debug' | 'release';
-  security_profile_tag: string | null;
-  url?: string | null;
-  output?: string | null;
-}
-
-export interface SecurityProfile {
-  name: string;
-  tag: string;
-  type: 'development' | 'production';
-  created: string;
-  credentials: {
-    android?: Object;
-    ios?: Object;
-  };
-}
-
 export interface IApp {
   load(app_id?: string): Promise<AppDetails>;
 }

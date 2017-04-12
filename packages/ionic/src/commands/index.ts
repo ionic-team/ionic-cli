@@ -4,13 +4,10 @@ import {
   CommandMap,
   IonicEnvironment,
   Namespace,
-  NamespaceMap,
   isCommand,
   showHelp,
   metadataToMinimistOptions,
 } from '@ionic/cli-utils';
-
-import { PackageNamespace } from './package/index';
 
 import { InfoCommand } from './info';
 import { LoginCommand } from './login';
@@ -28,10 +25,6 @@ import { UploadCommand } from './upload';
 
 export class IonicNamespace extends Namespace {
   name = 'ionic';
-
-  namespaces = new NamespaceMap([
-    ['package', () => new PackageNamespace()],
-  ]);
 
   commands = new CommandMap([
     ['start', () => new StartCommand()],
