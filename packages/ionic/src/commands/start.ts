@@ -23,6 +23,7 @@ import {
   isSafeToCreateProjectIn,
   getStarterTemplateTextList,
   getHelloText,
+  patchPackageJsonForCli,
   updatePackageJsonForCli,
   createProjectConfig
 } from '../lib/start';
@@ -199,6 +200,7 @@ export class StartCommand extends Command implements CommandPreRun {
 
     tasks.next(`Updating project dependencies to add required plugins`);
     const releaseChannelName = await getReleaseChannelName();
+    await patchPackageJsonForCli(appName, starterType, projectRoot, releaseChannelName);
     await updatePackageJsonForCli(appName, starterType, projectRoot, releaseChannelName);
 
     tasks.next(`Creating configuration file for the new project`);

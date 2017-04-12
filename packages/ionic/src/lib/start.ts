@@ -13,6 +13,7 @@ import {
   fsWriteJsonFile,
   getCommandInfo,
   runcmd,
+  load
 } from '@ionic/cli-utils';
 import { StarterTemplate, StarterTemplateType } from '../definitions';
 
@@ -132,6 +133,44 @@ ${chalk.bold('Run on a device or simulator:')}
 ${chalk.bold('Test and share your app on a device with the Ionic View app:')}
   ${chalk.green('http://view.ionic.io')}
   `;
+}
+
+export async function patchPackageJsonForCli(appName: string, starterType: StarterTemplateType, pathToProject: string, releaseChannelName: string = 'latest'): Promise<void> {
+  const patchPackagePath = path.resolve(pathToProject, 'patch.package.json');
+  const packagePath = path.resolve(pathToProject, 'package.json');
+
+  let pkg;
+  let patch;
+
+  try {
+    pkg = await fsReadJsonFile(packagePath);
+  } catch (e) {
+    if (e === ERROR_FILE_NOT_FOUND) {
+      throw new Error(`${packagePath} is not valid JSON.`);
+    } else if (e === ERROR_FILE_INVALID_JSON) {
+      throw new Error(`${packagePath} is not valid JSON.`);
+    }
+    throw e;
+  }
+
+  try {
+    patch = await fsReadJsonFile(patchPackagePath);
+
+    const lodash = load('lodash');
+    let finalPackage = lodash.merge(pkg, patch);
+
+    await fsWriteJsonFile(packagePath, finalPackage, { encoding: 'utf8' });
+    fs.unlink(patchPackagePath);
+
+  } catch (e) {
+    if (e === ERROR_FILE_NOT_FOUND) {
+      // no need to do anything
+    } else if (e === ERROR_FILE_INVALID_JSON) {
+      throw new Error(`${patchPackagePath} is not valid JSON.`);
+    } else {
+      throw e;
+    }
+  }
 }
 
 export async function updatePackageJsonForCli(appName: string, starterType: StarterTemplateType, pathToProject: string, releaseChannelName: string = 'latest'): Promise<void> {
