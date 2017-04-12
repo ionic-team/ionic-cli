@@ -7,10 +7,10 @@ const plugin = require(`../packages/${pluginName}/dist/index.js`);
 const STRIP_ANSI_REGEX = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
 
 const fileList = plugin.namespace.getCommandMetadataList().map((cmd) => {
-  cmd.fullName = (plugin.PLUGIN_NAME) ? `${plugin.PLUGIN_NAME}:${cmd.name}` : cmd.name;
+  cmd.fullName = (plugin.PLUGIN_NAME) ? `${plugin.namespace.name}:${cmd.name}` : cmd.name;
 
   const output = formatCommandDoc(cmd).replace(STRIP_ANSI_REGEX, '');
-  const fileName = (plugin.PLUGIN_NAME) ? `${plugin.PLUGIN_NAME}-${cmd.name}` : cmd.name;
+  const fileName = (plugin.namespace.name) ? `${plugin.namespace.name}-${cmd.name}` : cmd.name;
   fs.writeFileSync(path.resolve(__dirname, '..', 'docs', `${fileName}.md`), output);
 
   return {

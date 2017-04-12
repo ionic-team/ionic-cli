@@ -1,9 +1,9 @@
 
 ## NAME
-cordova:emulate -- Emulate an Ionic project on a simulator or emulator
+emulate -- Emulate an Ionic project on a simulator or emulator
   
 ## SYNOPSIS
-    ionic cordova:emulate <platform>
+    ionic emulate <platform>
   
 ## DESCRIPTION
 Emulate an Ionic project on a simulator or emulator
@@ -20,8 +20,8 @@ Option | Description
 `--address` | Use specific address (livereload req.)
 `--consolelogs`, `-c` | Print app console logs to Ionic CLI
 `--serverlogs`, `-s` | Print dev server logs to Ionic CLI
-`--port`, `-p` | Dev server HTTP port (8100 default)
-`--livereload-port`, `-r` | Live Reload port (35729 default)
+`--port`, `-p` | Dev server HTTP port
+`--livereload-port`, `-r` | Live Reload port
 `--prod` | Create a prod build with app-scripts
 `--list` | List all available cordova run targets
 `--debug` | Create a cordova debug build
@@ -30,4 +30,4 @@ Option | Description
 `--target` | Deploy cordova build to a device. Options available with --list.
 
 ## EXAMPLES
-    ionic cordova:emulate ios --livereload -c -s 
+    ionic emulate ios --livereload -c -s 
