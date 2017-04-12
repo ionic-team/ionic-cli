@@ -8,7 +8,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  CommandPreInputs,
+  CommandPreInputsPrompt,
   TaskChain,
   getCommandInfo,
   getReleaseChannelName,
@@ -108,8 +108,8 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
     }
   ]
 })
-export class StartCommand extends Command implements CommandPreInputs {
-  async preInputs() {
+export class StartCommand extends Command implements CommandPreInputsPrompt {
+  async preInputsPrompt() {
     // If the action is list then lets just end here.
     if (this.env.argv['list']) {
 

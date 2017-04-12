@@ -5,7 +5,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  CommandPreRun,
+  CommandPreInputsPrompt,
   TaskChain,
   validators,
   normalizeOptionAliases
@@ -35,7 +35,7 @@ import {
     },
     {
       name: 'platform',
-      description: `The platform that you would like to add (e.g. ${chalk.bold('ios')}, ${chalk.bold('android')})`,
+      description: `The platform that you would like to add (e.g. ${chalk.green('ios')}, ${chalk.green('android')})`,
       validators: [validators.required],
       prompt: {
         message: 'What platform would you like to add (ios, android):',
@@ -59,8 +59,8 @@ import {
     }
   ]
 })
-export class PlatformCommand extends Command implements CommandPreRun {
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+export class PlatformCommand extends Command implements CommandPreInputsPrompt {
+  async preInputsPrompt(inputs: CommandLineInputs): Promise<void | number> {
     inputs[0] = (typeof inputs[0] === 'undefined') ? 'list' : inputs[0];
     inputs[0] = (inputs[0] === 'rm') ? 'remove' : inputs[0];
     inputs[0] = (inputs[0] === 'ls') ? 'list' : inputs[0];

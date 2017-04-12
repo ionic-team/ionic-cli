@@ -32,10 +32,10 @@ import {
   inputs: [
     {
       name: 'platform',
-      description: `the platform to emulate: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
+      description: `The platform to emulate: ${chalk.green('ios')}, ${chalk.green('android')}`,
       validators: [validators.required],
       prompt: {
-        message: `What platform would you like to emulate (${chalk.bold('ios')}, ${chalk.bold('android')}):`
+        message: `What platform would you like to emulate (${chalk.green('ios')}, ${chalk.green('android')}):`
       }
     }
   ],
@@ -84,31 +84,31 @@ import {
     // Cordova Options
     {
       name: 'list',
-      description: 'List all available cordova run targets',
+      description: 'List all available Cordova run targets',
       type: Boolean,
       intent: CORDOVA_INTENT
     },
     {
       name: 'debug',
-      description: 'Create a cordova debug build',
+      description: 'Create a Cordova debug build',
       type: Boolean,
       intent: CORDOVA_INTENT
     },
     {
       name: 'release',
-      description: 'Create a cordova release build',
+      description: 'Create a Cordova release build',
       type: Boolean,
       intent: CORDOVA_INTENT
     },
     {
       name: 'device',
-      description: 'Deploy cordova build to a device',
+      description: 'Deploy Cordova build to a device',
       type: Boolean,
       intent: CORDOVA_INTENT
     },
     {
       name: 'target',
-      description: 'Deploy cordova build to a device. Options available with --list.',
+      description: `Deploy Cordova build to a device (use ${chalk.green('--list')} to see all)`,
       type: String,
       intent: CORDOVA_INTENT
     }

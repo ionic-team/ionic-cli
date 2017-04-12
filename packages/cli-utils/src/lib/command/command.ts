@@ -9,7 +9,7 @@ import {
   IonicEnvironment,
   ValidationError,
 } from '../../definitions';
-import { isValidationErrorArray, isCommandPreRun, isCommandPreInputs} from '../../guards';
+import { isValidationErrorArray, isCommandPreRun, isCommandPreInputsPrompt } from '../../guards';
 import { showHelp } from '../help';
 import { createFatalAPIFormat } from '../http';
 import { FatalException } from '../errors';
@@ -42,8 +42,8 @@ export class Command implements ICommand {
   async execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let r: number | void;
 
-    if (isCommandPreInputs(this)) {
-      r = await this.preInputs();
+    if (isCommandPreInputsPrompt(this)) {
+      r = await this.preInputsPrompt(inputs);
       if (typeof r === 'number') {
         if (r > 0) {
           throw this.exit('', r);

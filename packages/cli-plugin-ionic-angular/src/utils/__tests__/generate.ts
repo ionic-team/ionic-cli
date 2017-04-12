@@ -2,7 +2,7 @@ describe('prompt', () => {
 
   it('should return a file path to the main app module', async () => {
     jest.resetModules();
-    jest.mock('@ionic/cli-utils', () => ({
+    jest.mock('../../lib/modules', () => ({
       load: jest.fn().mockReturnValue({
         prompt: jest.fn().mockReturnValueOnce({
           usage: true
@@ -26,7 +26,7 @@ describe('tabsPrompt', () => {
 
   it('should return an array', async () => {
     jest.resetModules();
-    jest.mock('@ionic/cli-utils', () => ({
+    jest.mock('../../lib/modules', () => ({
       load: jest.fn().mockReturnValue({
         prompt: jest.fn().mockReturnValueOnce({
           howMany: 2
@@ -54,7 +54,7 @@ describe('getPages', () => {
 
   it('should return an array', async () => {
     jest.resetModules();
-    jest.mock('@ionic/cli-utils', () => ({
+    jest.mock('../../lib/modules', () => ({
       load: jest.fn().mockReturnValue({
         getNgModules: jest.fn().mockReturnValueOnce([
           {
