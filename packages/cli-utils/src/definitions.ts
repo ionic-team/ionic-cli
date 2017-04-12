@@ -354,8 +354,8 @@ export interface ICommand {
   execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
 }
 
-export interface CommandPreInputs extends ICommand {
-  preInputs(): Promise<void | number>;
+export interface CommandPreInputsPrompt extends ICommand {
+  preInputsPrompt(inputs?: CommandLineInputs): Promise<void | number>;
 }
 
 export interface CommandPreRun extends ICommand {

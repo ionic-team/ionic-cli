@@ -4,7 +4,7 @@ import {
   APIResponseSuccess,
   AppDetails,
   AuthToken,
-  CommandPreInputs,
+  CommandPreInputsPrompt,
   CommandPreRun,
   Deploy,
   DeployChannel,
@@ -31,8 +31,8 @@ export function isCommandPreRun(cmd: ICommand): cmd is CommandPreRun {
   return typeof (<CommandPreRun>cmd).preRun === 'function';
 }
 
-export function isCommandPreInputs(cmd: ICommand): cmd is CommandPreInputs {
-  return typeof (<CommandPreInputs>cmd).preInputs === 'function';
+export function isCommandPreInputsPrompt(cmd: ICommand): cmd is CommandPreInputsPrompt {
+  return typeof (<CommandPreInputsPrompt>cmd).preInputsPrompt === 'function';
 }
 
 export function isLogLevel(l: string): l is LogLevel {
