@@ -3,16 +3,20 @@
 
 Command | Description
 ------- | -----------
-[start](start.md) | Creates a new project
-[serve](serve.md) | Start a local development server for app dev/testing
+[docs](docs.md) | Open the Ionic documentation website
+[generate](generate.md) | Generate pipes, components, pages, directives, and tabs [1m(ionic-angular >= 3.0.0)[22m
 [help](help.md) | Provides help for a certain command
-[info](info.md) | List information about the current environment
-[login](login.md) | Login with your Ionic ID
-[signup](signup.md) | Create an Ionic account
-[version](version.md) | Returns the current CLI version
-[telemetry](telemetry.md) | Opt in and out of telemetry
-[docs](docs.md) | Opens up the Ionic documentation website
+[info](info.md) | Print system/environment info
 [ionitron](ionitron.md) | Print random ionitron messages
-[generate](generate.md) | Generates pipes, components, pages, directives, and tabs [1m(ionic-angular >= 3.0.0)[22m
-[link](link.md) | Links your app with Ionic Cloud.
+[link](link.md) | Connect your local app to Ionic
+[login](login.md) | Login with your Ionic ID
+[serve](serve.md) | Start a local development server for app dev/testing
+[signup](signup.md) | Create an Ionic account
+[start](start.md) | Create a new project
+[telemetry](telemetry.md) | Opt in and out of telemetry
 [upload](upload.md) | Upload a new snapshot of your app
+[version](version.md) | Returns the current CLI version
+[build](build.md) | Start a package build
+[download](download.md) | Download your packaged app
+[info](info.md) | Get info about a build
+[list](list.md) | List your cloud builds

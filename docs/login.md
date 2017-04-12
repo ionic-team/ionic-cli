@@ -18,4 +18,6 @@ Input | Description
 
 
 ## EXAMPLES
+    ionic login  
     ionic login john@example.com 
+    ionic login hello@example.com secret 

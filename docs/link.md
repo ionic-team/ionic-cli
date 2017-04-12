@@ -1,20 +1,21 @@
 
 ## NAME
-link -- Links your app with Ionic Cloud.
+link -- Connect your local app to Ionic
   
 ## SYNOPSIS
     ionic link [app_id]
   
 ## DESCRIPTION
-Links your app with Ionic Cloud.
+Connect your local app to Ionic
 
 
 Input | Description
 ----- | ----------
-`app_id` | The Ionic Cloud app id that you would like to link to.
+`app_id` | The ID of the app to link (e.g. a1b2c3d4)
 
 
 
 
 ## EXAMPLES
     ionic link  
+    ionic link a1b2c3d4 

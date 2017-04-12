@@ -1,12 +1,12 @@
 
 ## NAME
-docs -- Opens up the Ionic documentation website
+docs -- Open the Ionic documentation website
   
 ## SYNOPSIS
     ionic docs 
   
 ## DESCRIPTION
-Opens up the Ionic documentation website
+Open the Ionic documentation website
 
 
 

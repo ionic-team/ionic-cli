@@ -1,15 +1,20 @@
 
 ## NAME
-info -- List information about the current environment
+info -- Get info about a build
   
 ## SYNOPSIS
-    ionic info 
+    ionic info [id]
   
 ## DESCRIPTION
-List information about the current environment
+Get info about a build
+
+
+Input | Description
+----- | ----------
+`id` | The build ID. Defaults to the latest build
 
 
 
 
-
-
+## EXAMPLES
+    ionic info  
