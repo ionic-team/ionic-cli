@@ -1,0 +1,1 @@
+@ionic/cli-plugin-ionic-angular
