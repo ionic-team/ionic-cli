@@ -1,9 +1,9 @@
 
 ## NAME
-upload -- Upload a new snapshot of your app
+ionic upload -- Upload a new snapshot of your app
   
 ## SYNOPSIS
-    ionic upload 
+    ionic ionic upload 
   
 ## DESCRIPTION
 Upload a new snapshot of your app
@@ -18,4 +18,4 @@ Option | Description
 `--deploy` | Deploys this snapshot to the given channel
 
 ## EXAMPLES
-    ionic upload  
+    ionic ionic upload 

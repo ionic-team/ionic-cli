@@ -1,9 +1,9 @@
 
 ## NAME
-platform -- Add or remove a platform target for building an Ionic app
+cordova platform -- Add or remove a platform target for building an Ionic app
   
 ## SYNOPSIS
-    ionic platform <action> <platform>
+    ionic cordova platform <action> <platform>
   
 ## DESCRIPTION
 Add or remove a platform target for building an Ionic app
@@ -21,4 +21,4 @@ Option | Description
 `--nosave`, `-e` | Do not update the config.xml (corresponds to add, remove, update)
 
 ## EXAMPLES
-    ionic platform add android 
+    ionic cordova platform add android

@@ -1,9 +1,9 @@
 
 ## NAME
-version -- Returns the current CLI version
+ionic version -- Returns the current CLI version
   
 ## SYNOPSIS
-    ionic version 
+    ionic ionic version 
   
 ## DESCRIPTION
 Returns the current CLI version

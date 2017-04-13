@@ -1,9 +1,9 @@
 
 ## NAME
-ionitron -- Print random ionitron messages
+ionic ionitron -- Print random ionitron messages
   
 ## SYNOPSIS
-    ionic ionitron 
+    ionic ionic ionitron 
   
 ## DESCRIPTION
 Print random ionitron messages

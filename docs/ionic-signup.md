@@ -1,9 +1,9 @@
 
 ## NAME
-signup -- Create an Ionic account
+ionic signup -- Create an Ionic account
   
 ## SYNOPSIS
-    ionic signup 
+    ionic ionic signup 
   
 ## DESCRIPTION
 Create an Ionic account

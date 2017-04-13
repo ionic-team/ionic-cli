@@ -1,9 +1,9 @@
 
 ## NAME
-compile -- Compile native platform code
+cordova compile -- Compile native platform code
   
 ## SYNOPSIS
-    ionic compile 
+    ionic cordova compile 
   
 ## DESCRIPTION
 Compile native platform code

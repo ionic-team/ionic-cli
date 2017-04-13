@@ -1,9 +1,9 @@
 
 ## NAME
-run -- Run an Ionic project on a connected device
+cordova run -- Run an Ionic project on a connected device
   
 ## SYNOPSIS
-    ionic run <platform>
+    ionic cordova run <platform>
   
 ## DESCRIPTION
 Run an Ionic project on a connected device
@@ -11,7 +11,7 @@ Run an Ionic project on a connected device
 
 Input | Description
 ----- | ----------
-`platform` | the platform to run: ios, android
+`platform` | The platform to run: ios, android
 
 
 Option | Description
@@ -20,15 +20,15 @@ Option | Description
 `--address` | Use specific address (livereload req.)
 `--consolelogs`, `-c` | Print app console logs to Ionic CLI
 `--serverlogs`, `-s` | Print dev server logs to Ionic CLI
-`--port`, `-p` | Dev server HTTP port (8100 default)
-`--livereload-port`, `-r` | Live Reload port (35729 default)
+`--port`, `-p` | Dev server HTTP port
+`--livereload-port`, `-r` | Live Reload port
 `--prod` | Create a prod build with app-scripts
-`--list` | List all available cordova run targets
-`--debug` | Create a cordova debug build
-`--release` | Create a cordova release build
-`--device` | Deploy cordova build to a device
-`--emulator` | Deploy cordova build to an emulator
-`--target` | Deploy cordova build to a device. Options available with --list.
+`--list` | List all available Cordova run targets
+`--debug` | Create a Cordova debug build
+`--release` | Create a Cordova release build
+`--device` | Deploy Cordova build to a device
+`--emulator` | Deploy Cordova build to an emulator
+`--target` | Deploy Cordova build to a device (use --list to see all)
 
 ## EXAMPLES
-    ionic run ios --livereload -c -s 
+    ionic cordova run ios --livereload -c -s

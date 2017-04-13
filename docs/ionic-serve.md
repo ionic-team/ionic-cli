@@ -1,9 +1,9 @@
 
 ## NAME
-serve -- Start a local development server for app dev/testing
+ionic serve -- Start a local development server for app dev/testing
   
 ## SYNOPSIS
-    ionic serve 
+    ionic ionic serve 
   
 ## DESCRIPTION
 Start a local development server for app dev/testing
@@ -29,4 +29,4 @@ Option | Description
 `--qrcode` | Print a QR code for Ionic View instead of network broadcasting
 
 ## EXAMPLES
-    ionic serve --lab --consolelogs -s 
+    ionic ionic serve --lab --consolelogs -s

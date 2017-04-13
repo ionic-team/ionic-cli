@@ -1,9 +1,9 @@
 
 ## NAME
-prepare -- Transform metadata to platform manifests and copies assets to Cordova platforms
+cordova prepare -- Transform metadata to platform manifests and copies assets to Cordova platforms
   
 ## SYNOPSIS
-    ionic prepare 
+    ionic cordova prepare 
   
 ## DESCRIPTION
 Transform metadata to platform manifests and copies assets to Cordova platforms

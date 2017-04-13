@@ -1,9 +1,9 @@
 
 ## NAME
-telemetry -- Opt in and out of telemetry
+ionic telemetry -- Opt in and out of telemetry
   
 ## SYNOPSIS
-    ionic telemetry <opt-in>
+    ionic ionic telemetry <opt-in>
   
 ## DESCRIPTION
 Opt in and out of telemetry

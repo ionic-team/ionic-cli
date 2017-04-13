@@ -1,9 +1,9 @@
 
 ## NAME
-help -- Provides help for a certain command
+ionic help -- Provides help for a certain command
   
 ## SYNOPSIS
-    ionic help [command]
+    ionic ionic help [command]
   
 ## DESCRIPTION
 Provides help for a certain command
@@ -17,4 +17,4 @@ Input | Description
 
 
 ## EXAMPLES
-    ionic help start 
+    ionic ionic help start
