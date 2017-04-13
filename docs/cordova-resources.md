@@ -3,7 +3,7 @@
 cordova resources -- Automatically create icon and splash screen resources
   
 ## SYNOPSIS
-    ionic cordova resources 
+    cordova resources 
   
 ## DESCRIPTION
 Automatically create icon and splash screen resources
@@ -18,4 +18,4 @@ Option | Description
 `--splash`, `-s` | Generate splash screen resources
 
 ## EXAMPLES
-    ionic cordova resources 
+    cordova resources 

@@ -3,7 +3,7 @@
 cordova plugin -- Manage Cordova plugins
   
 ## SYNOPSIS
-    ionic cordova plugin <action> [plugin]
+    cordova plugin <action> [plugin]
   
 ## DESCRIPTION
 Manage Cordova plugins
@@ -21,5 +21,5 @@ Option | Description
 `--force` | Forve overwrite the plugin if it exists (corresponds to add)
 
 ## EXAMPLES
-    ionic cordova plugin add cordova-plugin-inappbrowser@latest
-    ionic cordova plugin list
+    cordova plugin add cordova-plugin-inappbrowser@latest
+    cordova plugin list

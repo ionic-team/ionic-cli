@@ -63,7 +63,7 @@ ${fullName} -- ${description}
 function formatSynopsis(inputs, commandName) {
   const headerLine = `## SYNOPSIS`;
   const usageLine =
-      `ionic ${commandName} ${
+      `${commandName} ${
         (inputs || [])
           .map(input => {
             if (input.validators && input.validators.includes(cliUtils.validators.required)) {
@@ -130,7 +130,7 @@ function formatExamples(exampleCommands, commandName) {
   }
 
   const headerLine = `## EXAMPLES`;
-  const exampleLines = exampleCommands.map(cmd => `ionic ${commandName} ${cmd}`);
+  const exampleLines = exampleCommands.map(cmd => `${commandName} ${cmd}`);
 
   return `
 ${headerLine}

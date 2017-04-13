@@ -3,7 +3,7 @@
 ionic ionitron -- Print random ionitron messages
   
 ## SYNOPSIS
-    ionic ionic ionitron 
+    ionic ionitron 
   
 ## DESCRIPTION
 Print random ionitron messages

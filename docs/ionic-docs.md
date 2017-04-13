@@ -3,7 +3,7 @@
 ionic docs -- Open the Ionic documentation website
   
 ## SYNOPSIS
-    ionic ionic docs 
+    ionic docs 
   
 ## DESCRIPTION
 Open the Ionic documentation website

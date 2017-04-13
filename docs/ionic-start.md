@@ -3,7 +3,7 @@
 ionic start -- Create a new project
   
 ## SYNOPSIS
-    ionic ionic start <name> <template>
+    ionic start <name> <template>
   
 ## DESCRIPTION
 Create a new project
@@ -24,6 +24,6 @@ Option | Description
 `--skip-link` | Do not link app to an Ionic Account
 
 ## EXAMPLES
-    ionic ionic start mynewapp blank
-    ionic ionic start mynewapp tabs --type ionic-angular
-    ionic ionic start mynewapp blank --type ionic1
+    ionic start mynewapp blank
+    ionic start mynewapp tabs --type ionic-angular
+    ionic start mynewapp blank --type ionic1

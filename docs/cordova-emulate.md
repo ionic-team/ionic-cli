@@ -3,7 +3,7 @@
 cordova emulate -- Emulate an Ionic project on a simulator or emulator
   
 ## SYNOPSIS
-    ionic cordova emulate <platform>
+    cordova emulate <platform>
   
 ## DESCRIPTION
 Emulate an Ionic project on a simulator or emulator
@@ -30,4 +30,4 @@ Option | Description
 `--target` | Deploy Cordova build to a device (use --list to see all)
 
 ## EXAMPLES
-    ionic cordova emulate ios --livereload -c -s
+    cordova emulate ios --livereload -c -s

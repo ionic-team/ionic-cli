@@ -3,7 +3,7 @@
 ionic version -- Returns the current CLI version
   
 ## SYNOPSIS
-    ionic ionic version 
+    ionic version 
   
 ## DESCRIPTION
 Returns the current CLI version

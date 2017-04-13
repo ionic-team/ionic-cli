@@ -3,7 +3,7 @@
 cordova run -- Run an Ionic project on a connected device
   
 ## SYNOPSIS
-    ionic cordova run <platform>
+    cordova run <platform>
   
 ## DESCRIPTION
 Run an Ionic project on a connected device
@@ -31,4 +31,4 @@ Option | Description
 `--target` | Deploy Cordova build to a device (use --list to see all)
 
 ## EXAMPLES
-    ionic cordova run ios --livereload -c -s
+    cordova run ios --livereload -c -s

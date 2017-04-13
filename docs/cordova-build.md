@@ -3,7 +3,7 @@
 cordova build -- Build (prepare + compile) an Ionic project for a given platform
   
 ## SYNOPSIS
-    ionic cordova build <platform>
+    cordova build <platform>
   
 ## DESCRIPTION
 Build (prepare + compile) an Ionic project for a given platform
@@ -23,4 +23,4 @@ Option | Description
 `--emulator` | Deploy cordova build to an emulator
 
 ## EXAMPLES
-    ionic cordova build ios
+    cordova build ios

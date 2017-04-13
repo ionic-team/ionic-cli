@@ -3,7 +3,7 @@
 ionic telemetry -- Opt in and out of telemetry
   
 ## SYNOPSIS
-    ionic ionic telemetry <opt-in>
+    ionic telemetry <opt-in>
   
 ## DESCRIPTION
 Opt in and out of telemetry

@@ -3,7 +3,7 @@
 ionic generate -- Generate pipes, components, pages, directives, and tabs (ionic-angular >= 3.0.0)
   
 ## SYNOPSIS
-    ionic ionic generate <type> <name>
+    ionic generate <type> <name>
   
 ## DESCRIPTION
 Generate pipes, components, pages, directives, and tabs (ionic-angular >= 3.0.0)
@@ -18,13 +18,13 @@ Input | Description
 
 
 ## EXAMPLES
-    ionic ionic generate 
-    ionic ionic generate component
-    ionic ionic generate directive
-    ionic ionic generate page
-    ionic ionic generate pipe
-    ionic ionic generate provider
-    ionic ionic generate tabs
-    ionic ionic generate component foo
-    ionic ionic generate page Login
-    ionic ionic generate pipe MyFilterPipe
+    ionic generate 
+    ionic generate component
+    ionic generate directive
+    ionic generate page
+    ionic generate pipe
+    ionic generate provider
+    ionic generate tabs
+    ionic generate component foo
+    ionic generate page Login
+    ionic generate pipe MyFilterPipe

@@ -3,7 +3,7 @@
 ionic login -- Login with your Ionic ID
   
 ## SYNOPSIS
-    ionic ionic login <email> <password>
+    ionic login <email> <password>
   
 ## DESCRIPTION
 Login with your Ionic ID
@@ -18,6 +18,6 @@ Input | Description
 
 
 ## EXAMPLES
-    ionic ionic login 
-    ionic ionic login john@example.com
-    ionic ionic login hello@example.com secret
+    ionic login 
+    ionic login john@example.com
+    ionic login hello@example.com secret
