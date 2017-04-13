@@ -7,7 +7,7 @@ const plugin = require(`../packages/${pluginName}/dist/index.js`);
 const STRIP_ANSI_REGEX = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
 
 const fileList = plugin.namespace.getCommandMetadataList().map((cmd) => {
-  cmd.fullName = (plugin.PLUGIN_NAME) ? `${plugin.namespace.name}:${cmd.name}` : cmd.name;
+  cmd.fullName = (plugin.namespace.name) ? `${plugin.namespace.name} ${cmd.name}` : cmd.name;
 
   const output = formatCommandDoc(cmd).replace(STRIP_ANSI_REGEX, '');
   const fileName = (plugin.namespace.name) ? `${plugin.namespace.name}-${cmd.name}` : cmd.name;
@@ -29,7 +29,7 @@ function formatPluginDocs(pluginName, listFileCommands) {
   let headerLine = `# ${pluginName}`;
 
   function listCommandLink (cmdData) {
-    return `[${cmdData.commandName}](${cmdData.fileName}.md) | ${cmdData.description}`;
+    return `[${cmdData.commandName}](${cmdData.fileName}.md) | ${cmdData.description.replace(STRIP_ANSI_REGEX, '')}`;
   }
 
   return `
@@ -44,7 +44,7 @@ ${listFileCommands.map(listCommandLink).join(`
 
 
 function formatCommandDoc(cmdMetadata) {
-  let description = cmdMetadata.description.split('\n').join('\n  ');
+  let description = cmdMetadata.description.replace(STRIP_ANSI_REGEX, '').split('\n').join('\n  ');
 
   return formatName(cmdMetadata.fullName, description) +
     formatSynopsis(cmdMetadata.inputs, cmdMetadata.fullName) +
@@ -130,7 +130,7 @@ function formatExamples(exampleCommands, commandName) {
   }
 
   const headerLine = `## EXAMPLES`;
-  const exampleLines = exampleCommands.map(cmd => `ionic ${commandName} ${cmd} `);
+  const exampleLines = exampleCommands.map(cmd => `ionic ${commandName} ${cmd}`);
 
   return `
 ${headerLine}
