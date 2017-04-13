@@ -282,7 +282,7 @@ For example:
 $ HTTP_PROXY=http://internal.proxy.com ionic login
 ```
 
-# Ionic Docs
+## Ionic Docs
 
 To open Ionic documentation from the Ionic CLI, use `ionic docs`.
 
