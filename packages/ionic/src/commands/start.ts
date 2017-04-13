@@ -233,14 +233,13 @@ export class StartCommand extends Command implements CommandPreInputsPrompt {
 
     if (!options['skip-link']) {
       const inquirer = load('inquirer');
-      const token = await this.env.session.getUserToken();
       const { linkApp } = await inquirer.prompt({
         type: 'confirm',
         name: 'linkApp',
         message: 'Link this app to your Ionic Dashboard to use tools like Ionic View?'
       });
 
-      if (linkApp && token) {
+      if (linkApp && await this.env.session.isLoggedIn()) {
         const opn = load('opn');
         const token = await this.env.session.getUserToken();
         opn(`https://apps.ionic.io/?user_token=${token}`, { wait: false });
