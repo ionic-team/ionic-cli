@@ -49,7 +49,7 @@ export class Session implements ISession {
     const c = await this.config.load();
 
     if (!c.tokens.user) {
-      throw new FatalException(`You are not logged in! Run '${chalk.bold('ionic login')}'.`);
+      throw new FatalException(`You are not logged in! Run '${chalk.green('ionic login')}'.`);
     }
 
     return c.tokens.user;

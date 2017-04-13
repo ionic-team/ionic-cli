@@ -66,7 +66,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     const isLoggedIn = await this.env.session.isLoggedIn();
     if (!isLoggedIn) {
-      this.env.log.msg(`You need to be logged into your Ionic account in order to run the ${chalk.bold(`cordova:resources`)} command.\n`);
+      this.env.log.msg(`You need to be logged into your Ionic account in order to run the ${chalk.green(`cordova resources`)} command.\n`);
       await promptToLogin(this.env.log, this.env.session);
     }
   }
@@ -102,7 +102,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     const buildPlatforms = Object.keys(resourceJsonStructure)
       .filter(platform => platformDirContents.includes(platform));
     if (buildPlatforms.length === 0) {
-      throw `No platforms have been added. Please run: ${chalk.green('ionic cordova:platform add')}`;
+      throw `No platforms have been added. Please run: ${chalk.green('ionic cordova platform add')}`;
     }
     this.env.log.debug(`${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);
 

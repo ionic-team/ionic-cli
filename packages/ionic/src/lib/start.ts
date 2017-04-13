@@ -127,7 +127,7 @@ ${chalk.bold('Run your app in the browser (great for initial development):')}
   ${chalk.green('ionic serve')}
 
 ${chalk.bold('Run on a device or simulator:')}
-  ${chalk.green('ionic cordova:run ios')}
+  ${chalk.green('ionic cordova run ios')}
 
 ${chalk.bold('Test and share your app on a device with the Ionic View app:')}
   ${chalk.green('http://view.ionic.io')}

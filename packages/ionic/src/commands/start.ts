@@ -248,9 +248,9 @@ export class StartCommand extends Command implements CommandPreInputsPrompt {
 
         opn(IONIC_DASH_URL + '/signup', { wait: false });
       } else if (linkApp) {
-        this.env.log.msg(`You will need to login in order to link this app. Please run the following commands to do so.\n` +
-          ` ${chalk.green(`ionic login`)} - login first\n` +
-          ` ${chalk.green(`ionic link`)} - then link your app]n`);
+        this.env.log.msg(`\nYou will need to login in order to link this app. Please run the following commands to do so.\n` +
+          `  ${chalk.green(`ionic login`)} - login first\n` +
+          `  ${chalk.green(`ionic link`)} - then link your app`);
       }
     }
 
