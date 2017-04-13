@@ -1,3 +1,7 @@
+**v3 beta7 testing**
+
+Please ensure that you have updated your dependent packages.  We have changed a few of the package names. https://github.com/driftyco/ionic-cli/tree/v3#existing-ionic2-project
+
 **Note: for support questions, please use one of these channels:**
 
 https://forum.ionicframework.com/
