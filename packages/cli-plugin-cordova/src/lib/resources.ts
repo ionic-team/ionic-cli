@@ -28,8 +28,8 @@ import {
 } from './utils/configXmlUtils';
 
 const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];
-const UPLOAD_URL = 'http://res.ionic.io/api/v1/upload';
-const TRANSFORM_URL = 'http://res.ionic.io/api/v1/transform';
+const UPLOAD_URL = 'https://res.ionic.io/api/v1/upload';
+const TRANSFORM_URL = 'https://res.ionic.io/api/v1/transform';
 const RESOURCES_CONFIG_FILE = path.resolve(__dirname, '..', 'resources.json');
 const DEFAULT_RESOURCES_DIR = path.resolve(__dirname, '..', 'default-resources');
 
@@ -181,6 +181,7 @@ export function transformResourceImage(imageResource: ImageResource) {
       .timeout(30000)
       .type('form')
       .send({
+        'name': imageResource.name,
         'image_id': imageResource.imageId,
         'width': imageResource.width,
         'height': imageResource.height,
@@ -190,7 +191,16 @@ export function transformResourceImage(imageResource: ImageResource) {
       })
       .on('response', (res) => {
         if (res.statusCode !== 200) {
-          reject(new Error(`encountered bad status code (${res.statusCode}) for ${TRANSFORM_URL}`));
+          let buf = Buffer.from([]);
+
+          res.on('data', (chunk: Buffer) => {
+            buf = Buffer.concat([buf, chunk]);
+          });
+
+          res.on('end', () => {
+            const body = buf.toString();
+            reject(new Error(`encountered bad status code (${res.statusCode}) for ${TRANSFORM_URL}\nbody: ${body}`));
+          });
         }
       })
       .on('error', (err) => {
