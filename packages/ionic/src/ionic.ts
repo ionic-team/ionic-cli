@@ -213,6 +213,7 @@ function mapLegacyCommand(command: string): string | undefined {
     'compile': 'cordova compile',
     'emulate': 'cordova emulate',
     'platform': 'cordova platform',
+    'plugin': 'cordova plugin',
     'prepare': 'cordova prepare',
     'resources': 'cordova resources',
     'run': 'cordova run',
