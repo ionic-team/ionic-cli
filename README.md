@@ -77,7 +77,7 @@ $ npm install --save-dev @ionic/cli-plugin-cordova @ionic/cli-plugin-ionic-angul
  - @ionic/cli-plugin-ionic-angular@0.0.6
  - @ionic/cli-plugin-ionic1@0.0.6
 
-## Ionic Framework - Using CLI 3
+## Ionic-Angular - Using CLI 3
 
 ### Start a new project
 ```bash
