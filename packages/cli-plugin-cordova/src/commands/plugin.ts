@@ -86,7 +86,6 @@ export class PluginCommand extends Command {
     // ensure the content node was set back to its original
     await resetConfigXmlContentSrc(this.env.project.directory);
     const normalizedOptions = normalizeOptionAliases(this.metadata, options);
-    console.log(normalizedOptions);
     const optionList: string[] = gatherArgumentsForCordova(this.metadata, inputs, normalizedOptions);
     if (!optionList.includes('--nosave')) {
       optionList.push('--save');
