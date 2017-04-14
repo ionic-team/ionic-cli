@@ -23,6 +23,21 @@ issues on GitHub should be reserved for bug reports and feature requests.
 $ npm install -g ionic@beta
 ```
 
+## Changes from CLI 2
+
+A brief summary of changes in CLI 3. For more details and reasoning, see
+[CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/v3/CHANGELOG.md).
+
+* Removed commands: `setup`, `share`, `lib`, `io`, `security`, `push`,
+  `package`, `config`, `service`, `add`, `remove`, `list`, `hooks`, `state`.
+* Added commands: `signup`.
+* Cordova commands have been namespaced (e.g. `ionic cordova build`, not `ionic
+  build`).
+* Many command arguments, options, and flags have changed. Please use `ionic
+  help <commands>` for command usage.
+* `generate` command has been overhauled to interactively generate components,
+  pages, etc.
+
 #### Upgrading from a previous beta release to beta7
 
 You will need to install the newly updated CLI globally and execute the
@@ -46,7 +61,7 @@ the command with `sudo` or can setup [proper file permissions on OSX for
 npm](http://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx/) to
 install without `sudo`.*
 
-# Ionic CLI v3 beta
+# Ionic CLI 3
 
 We have rewritten the CLI from the ground up.  Our main focus was to:
 
@@ -63,14 +78,14 @@ Commands](docs/ionic.md) docs.
 So what does this mean for developers? There is now a plugin that contains
 commands specific to cordova. This plugin name is `@ionic/cli-plugin-cordova`.
 These commands are listed within the [Cordova Project
-Commands](docs/cli-plugin-cordova.md) docs. 
+Commands](docs/cli-plugin-cordova.md) docs.
 
-If you use CLI v3 to start a new project, the required plugins are installed
-automatically. If you are using CLI v3 on an existing project you will need to
+If you use CLI 3 to start a new project, the required plugins are installed
+automatically. If you are using CLI 3 on an existing project you will need to
 install these new plugins manually within your project directory. Details are
 below.
 
-## **Ionic Framework** - Using CLI v3
+## **Ionic Framework** - Using CLI 3
 ### Start a new project
 ```bash
 $ npm install -g ionic@beta
@@ -87,7 +102,7 @@ $ npm install --save-dev @ionic/cli-plugin-ionic-angular@beta @ionic/cli-plugin-
 $ ionic help
 ```
 
-## **Ionic 1** - Using CLI v3
+## **Ionic 1** - Using CLI 3
 ### Start a new project
 ```bash
 $ npm install -g ionic@beta
@@ -105,7 +120,7 @@ $ ionic help
 
 ## Feedback
 
-We are currently actively seeking feedback from those that use CLI v3 Beta. If
+We are currently actively seeking feedback from those that use CLI 3 Beta. If
 you have questions or issues please feel free to open a new issue.
 
 
