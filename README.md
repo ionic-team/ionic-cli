@@ -8,6 +8,10 @@ and emulate [Ionic](http://ionicframework.com/) apps.
 
 Use the `ionic help` command for more detailed task information.
 
+**Support/Questions?**: Please see our [Support
+Page](http://ionicframework.com/support) for general support questions. The
+issues on GitHub should be reserved for bug reports and feature requests.
+
 ## Requirements
 
 * Node 6+
