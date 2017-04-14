@@ -29,6 +29,17 @@ export interface ILogger {
   nl(num?: number): void;
 }
 
+export interface EnvironmentInfo {
+  cordovaVersion: string;
+  xcode: string;
+  iosDeploy: string;
+  iosSim: string;
+  ionic: string;
+  cli: string;
+  os: string;
+  node: string;
+}
+
 export interface AppScriptsServeSettings {
   url: string;
   address: string;

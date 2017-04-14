@@ -45,7 +45,7 @@ export function generateFillSpaceStringList(list: string[], optimalLength: numbe
   return list.map(item => sliceAnsi(fullLengthString, 0, fullLength - stringWidth(item)));
 }
 
-export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk.dim('|'), columnHeaders }: { hsep?: string, vsep?: string, columnHeaders?: string[] }) {
+export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk.dim('|'), columnHeaders }: { hsep?: string, vsep?: string, columnHeaders?: string[] } = {}) {
   const includeHeaders = columnHeaders ? true : false;
 
   if (!rows[0]) {

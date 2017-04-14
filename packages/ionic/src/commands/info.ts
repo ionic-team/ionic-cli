@@ -5,6 +5,8 @@ import {
   CommandLineOptions,
   Command,
   CommandMetadata,
+  Task,
+  columnar,
   gatherEnvironmentInfo
 } from '@ionic/cli-utils';
 
@@ -14,24 +16,21 @@ import {
 })
 export class InfoCommand extends Command {
   async run(inputs?: CommandLineInputs, options?: CommandLineOptions): Promise<void> {
+    const task = new Task('Gathering environment info').start();
     const info = await gatherEnvironmentInfo();
+    task.end();
 
     const details: [string, string][] = [
-      ['Cordova CLI', info['cordovaVersion']],
-      ['Ionic Framework Version', info['ionic']],
-      ['Ionic CLI Version', info['cli']],
-      ['ios-deploy version', info['iosDeploy']],
-      ['ios-sim version', info['iosSim']],
-      ['OS', info['os']],
-      ['Node Version', info['node']],
-      ['Xcode version', info['xcode']]
-    ];
+      ['Cordova CLI Version', info.cordovaVersion],
+      ['Ionic Framework Version', info.ionic],
+      ['Ionic CLI Version', info.cli],
+      ['ios-deploy version', info.iosDeploy],
+      ['ios-sim version', info.iosSim],
+      ['OS', info.os],
+      ['Node Version', info.node],
+      ['Xcode version', info.xcode]
+    ].map((detail): [string, string] => [chalk.bold(detail[0]), detail[1]]);
 
-    this.env.log.msg(`
-  Your system information:
-
-    ${details
-      .filter(info => info[1])
-      .map(info => `${chalk.bold(info[0])}: ${info[1]}`).join('\n    ')}`);
+    this.env.log.msg(`\n    ${columnar(details).split('\n').join('\n    ')}\n`);
   }
 }

@@ -38,19 +38,22 @@ export class Task {
     TASKS.push(this);
   }
 
-  start(): void {
+  start(): this {
     if (!this.running) {
       this.intervalId = setInterval(() => { this.tick(); }, 50);
     }
 
     this.running = true;
+
+    return this;
   }
 
-  tick(): void {
+  tick(): this {
     this.bottomBar.updateBottomBar(this.format());
+    return this;
   }
 
-  progress(prog: number, total: number) {
+  progress(prog: number, total: number): this {
     if (this.running) {
       if (!this.progressBar) {
         const term = <any>tty; // TODO: type def issue
@@ -71,6 +74,8 @@ export class Task {
 
       this.tick();
     }
+
+    return this;
   }
 
   format(): string {
@@ -79,31 +84,39 @@ export class Task {
     return `${chalk.bold(this.spinner.frame())} ${this.msg} ${progress}`;
   }
 
-  clear(): void {
+  clear(): this {
     clearInterval(this.intervalId);
 
     this.bottomBar.updateBottomBar('');
     this.bottomBar.close();
+
+    return this;
   }
 
-  end(): void {
+  end(): this {
     this.running = false;
     this.tick();
     this.clear();
+
+    return this;
   }
 
-  succeed(): void {
+  succeed(): this {
     if (this.running) {
       this.end();
       console.log(`${chalk.green(ICON_SUCCESS_GREEN)} ${this.msg} - done!`);
     }
+
+    return this;
   }
 
-  fail(): void {
+  fail(): this {
     if (this.running) {
       this.end();
       console.error(`${chalk.red(ICON_FAILURE_RED)} ${this.msg} - failed!`);
     }
+
+    return this;
   }
 }
 

@@ -1,32 +1,17 @@
 import * as path from 'path';
 import * as fs from 'fs';
 
+import { EnvironmentInfo } from '../../definitions';
 import { load } from '../modules';
+import { runcmd } from './shell';
 
-/**
- * Get the output of a commandline program
- */
-export function getCommandInfo(cmd: string, args: string[]): Promise<string> {
-  return new Promise((resolve, reject) => {
-    let info: string = '';
-    const crossSpawn = load('cross-spawn');
-    const proc = crossSpawn.spawn(cmd, args);
-
-    proc.stdout.on('data', (data: Buffer) => {
-      info += data.toString('utf8');
-    });
-
-    proc.on('error', () => {
-      resolve('Not installed');
-    });
-
-    proc.on('close', (code: any) => {
-      if (code !== 0) {
-        return resolve('Not installed');
-      }
-      resolve(info.replace('\n', ' '));
-    });
-  });
+export async function getCommandInfo(cmd: string, args: string[]): Promise<string> {
+  try {
+    const out = await runcmd(cmd, args);
+    return out.split('\n').join(' ');
+  } catch (e) {
+    return 'Not installed';
+  }
 }
 
 /**
@@ -52,7 +37,7 @@ function getPackageJsonContents(packageJsonPath: string): Promise<{ [key: string
 /**
  * Get package.json contents for the project package
  */
-export async function getProjectInfo(appDirectory: string): Promise<{ [key: string]: any; }>  {
+export async function getProjectInfo(appDirectory: string) {
   const packageJsonPath = path.resolve(
     appDirectory,
     'package.json'
@@ -64,7 +49,7 @@ export async function getProjectInfo(appDirectory: string): Promise<{ [key: stri
 /**
  * Get package.json contents for the ionic(cli) package
  */
-export async function getCliInfo(): Promise<{ [key: string]: any; }>  {
+export async function getCliInfo() {
   const packageJsonPath = path.resolve(
     process.env.CLI_BIN_DIR,
     '..',
@@ -77,7 +62,7 @@ export async function getCliInfo(): Promise<{ [key: string]: any; }>  {
 /**
  * Get package.json contents for the ionic-angular package
  */
-export async function getIonicInfo(): Promise<{ [key: string]: any; }>  {
+export async function getIonicInfo() {
   const appDirectory = '.'; /* TODO: change this */
   const packageJsonPath = path.resolve(
     appDirectory,
@@ -92,7 +77,7 @@ export async function getIonicInfo(): Promise<{ [key: string]: any; }>  {
 /**
  * Get all useful environment information
  */
-export async function gatherEnvironmentInfo(): Promise<{ [key: string]: any; }>  {
+export async function gatherEnvironmentInfo(): Promise<EnvironmentInfo> {
   const osName = load('os-name');
   const os = osName();
   const node = process.version;
