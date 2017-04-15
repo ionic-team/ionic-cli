@@ -146,7 +146,7 @@ export function createFatalAPIFormat(req: superagentType.SuperAgentRequest, res:
                           + formatAPIResponse(req, res));
 }
 
-export function formatError(e: SuperAgentError): string {
+export function formatSuperAgentError(e: SuperAgentError): string {
   const res = e.response;
   const req = res.request;
   const statusCode = e.response.status;

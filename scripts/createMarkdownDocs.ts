@@ -1,8 +1,9 @@
-const fs = require('fs');
-const path = require('path');
-const cliUtils = require(`../packages/cli-utils/dist/index.js`);
+import * as fs from 'fs';
+import * as path from 'path';
+
+const cliUtils = require('../packages/cli-utils');
 const pluginName = process.argv[2];
-const plugin = require(`../packages/${pluginName}/dist/index.js`);
+const plugin = require(`../packages/${pluginName}`);
 
 const STRIP_ANSI_REGEX = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
 

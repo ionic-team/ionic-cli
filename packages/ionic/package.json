@@ -11,7 +11,7 @@
   "engines": {
     "node": ">=6"
   },
-  "main": "./dist/ionic.js",
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
