@@ -1,6 +1,8 @@
 import { ICLIEventEmitter, getCommandInfo } from '@ionic/cli-utils';
 import { CordovaNamespace } from './commands';
 
+export const version = '__VERSION__';
+
 export const namespace = new CordovaNamespace();
 
 export function registerEvents(emitter: ICLIEventEmitter) {

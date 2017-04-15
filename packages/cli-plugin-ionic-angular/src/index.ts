@@ -6,6 +6,8 @@ import { build } from './build';
 import { generate } from './generate';
 import { serve } from './serve';
 
+export const version = '__VERSION__';
+
 export function registerEvents(emitter: ICLIEventEmitter) {
   emitter.on('docs', async () => {
     const appDirectory = '.'; // TODO: change this

@@ -4,6 +4,8 @@ import { ICLIEventEmitter, fsReadJsonFile } from '@ionic/cli-utils';
 
 import { serve } from './serve/index';
 
+export const version = '__VERSION__';
+
 export function registerEvents(emitter: ICLIEventEmitter) {
   emitter.on('docs', async () => {
     return 'https://ionicframework.com/docs/v1/';

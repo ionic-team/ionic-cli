@@ -10,7 +10,8 @@
     "build": "npm run clean && ../../node_modules/.bin/tsc",
     "clean": "rm -rf ./dist",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
-    "prepublish": "npm run build",
+    "prepublish": "npm run build && npm run version",
+    "version": "node ../../scripts/versionPackage.js cli-plugin-ionic1",
     "test": "../../node_modules/.bin/jest",
     "watch": "npm run clean && ../../node_modules/.bin/tsc --watch"
   },

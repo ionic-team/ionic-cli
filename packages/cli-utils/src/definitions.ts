@@ -306,6 +306,7 @@ export interface ICLIEventEmitter {
 }
 
 export interface IonicEnvironment {
+  versions: { cli: string };
   argv: minimistType.ParsedArgs;
   pargv: string[];
   app: IApp;
@@ -321,6 +322,7 @@ export interface IonicEnvironment {
 }
 
 export interface Plugin {
+  version: string;
   namespace?: INamespace;
   registerEvents?(emitter: ICLIEventEmitter): void;
 }

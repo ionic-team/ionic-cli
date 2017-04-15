@@ -10,7 +10,8 @@
     "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
     "build": "npm run clean && ../../node_modules/.bin/tsc",
     "clean": "rm -rf ./dist",
-    "prepublish": "npm run build",
+    "prepublish": "npm run build && npm run version",
+    "version": "node ../../scripts/versionPackage.js cli-plugin-proxy",
     "test": "../../node_modules/.bin/jest",
     "watch": "npm run clean && ../../node_modules/.bin/tsc --watch"
   },

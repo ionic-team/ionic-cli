@@ -24,8 +24,6 @@ import {
   isSuperAgentError,
   load,
   loadPlugins,
-  readCliPackageJsonFile,
-  readPackageJsonFile,
 } from '@ionic/cli-utils';
 
 import { IonicNamespace } from './commands';
@@ -44,6 +42,7 @@ function cleanup() {
   }
 }
 
+export const version = '__VERSION__';
 export const namespace = new IonicNamespace();
 
 export function registerEvents(emitter: ICLIEventEmitter) {
@@ -51,8 +50,6 @@ export function registerEvents(emitter: ICLIEventEmitter) {
     const osName = load('os-name');
     const os = osName();
     const node = process.version;
-
-    const packageJson = await readPackageJsonFile(path.resolve(process.env.CLI_BIN_DIR, '..', 'package.json')); // TODO
 
     const [
       xcode,
@@ -65,7 +62,7 @@ export function registerEvents(emitter: ICLIEventEmitter) {
     ]);
 
     return [
-      ['Ionic CLI', packageJson.version],
+      ['Ionic CLI', version],
       ['Node', node],
       ['OS', os],
       ['Xcode', xcode],
@@ -104,15 +101,11 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
     const project = new Project(env['PROJECT_DIR'], env['PROJECT_FILE']);
 
-    // Load all async work at the same time
-    const [ configData, cliInfo ] = await Promise.all([
-      config.load(),
-      readCliPackageJsonFile(),
-    ]);
+    const configData = await config.load();
 
     const emitter = new CLIEventEmitter();
     const client = new Client(configData.urls.api);
-    const telemetry = new Telemetry(config, cliInfo);
+    const telemetry = new Telemetry(config, version);
     const shell = new Shell();
     const session = new Session(config, project, client);
     const app = new App(session, project, client);
@@ -123,6 +116,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     registerEvents(emitter);
 
     const ionicEnvironment: IonicEnvironment = {
+      versions: { cli: version },
       argv,
       pargv,
       app,

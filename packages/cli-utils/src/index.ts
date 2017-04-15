@@ -31,3 +31,5 @@ export * from './lib/utils/shell';
 export * from './lib/utils/string';
 export * from './lib/utils/task';
 export * from './lib/validators'
+
+export const version = '__VERSION__';
