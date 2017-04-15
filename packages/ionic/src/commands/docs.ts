@@ -5,7 +5,6 @@ import {
   CommandMetadata,
   createRequest,
   isSuperAgentError,
-  readIonicAngularPackageJsonFile,
 } from '@ionic/cli-utils';
 
 import { load } from '../lib/modules';
@@ -21,17 +20,17 @@ import { load } from '../lib/modules';
 export class DocsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const opn = load('opn');
-    const ionicAngularPackageJson = await readIonicAngularPackageJsonFile();
+
     const docsHomepage = 'https://ionicframework.com/docs';
-    const version = ionicAngularPackageJson.version;
-    const url = `${docsHomepage}/${version}/api`;
+    const results = await this.env.emitter.emit('docs');
+    const [ url ] = results;
 
     try {
       await createRequest('head', url);
     } catch (e) {
       if (isSuperAgentError(e)) {
         if (e.response.status === 404) {
-          this.env.log.warn(`Docs for Ionic ${version} not found. Directing you to latest docs.`);
+          this.env.log.warn(`Docs not found for your specific version of Ionic. Directing you to latest docs.`);
           opn(`${docsHomepage}/api`, { wait: false });
           return;
         }

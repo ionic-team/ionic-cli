@@ -25,27 +25,10 @@ export async function readProjectPackageJsonFile(appDirectory: string): Promise<
 }
 
 /**
- * Get package.json contents for the ionic-angular package
- */
-export async function readIonicAngularPackageJsonFile(): Promise<PackageJson> {
-  const appDirectory = '.'; /* TODO: change this */
-  const packageJsonPath = path.resolve(appDirectory, 'node_modules', 'ionic-angular', 'package.json');
-  return await readPackageJsonFile(packageJsonPath);
-}
-
-/**
  * Get package.json contents for the ionic(cli) package
  */
 export async function readCliPackageJsonFile() {
   const packageJsonPath = path.resolve(process.env.CLI_BIN_DIR, '..', 'package.json');
-  return await readPackageJsonFile(packageJsonPath);
-}
-
-/**
- */
-export async function readAppScriptsPackageJsonFile(): Promise<PackageJson> {
-  const appDirectory = '.'; /* TODO: change this */
-  const packageJsonPath = path.resolve(appDirectory, 'node_modules', '@ionic', 'app-scripts', 'package.json');
   return await readPackageJsonFile(packageJsonPath);
 }
 

@@ -1,6 +1,7 @@
-import * as AppScriptsType from '@ionic/app-scripts';
+import * as path from 'path';
 
-import { CLIEventEmitterGenerateEventArgs, readIonicAngularPackageJsonFile } from '@ionic/cli-utils';
+import * as AppScriptsType from '@ionic/app-scripts';
+import { CLIEventEmitterGenerateEventArgs, readPackageJsonFile } from '@ionic/cli-utils';
 
 import { load } from './lib/modules';
 import { minimistOptionsToArray } from './utils/arguments';
@@ -10,7 +11,8 @@ export async function generate(args: CLIEventEmitterGenerateEventArgs): Promise<
   const appScriptsArgs = minimistOptionsToArray(args.options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
-  const ionicInfo = await readIonicAngularPackageJsonFile();
+  const appDirectory = '.'; // TODO: change this
+  const ionicInfo = await readPackageJsonFile(path.resolve(appDirectory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
 
   if (Number(ionicInfo.version.charAt(0)) < 3) {
     throw new Error(`The generate command is only available for projects that use ionic-angular >= 3.0.0`);

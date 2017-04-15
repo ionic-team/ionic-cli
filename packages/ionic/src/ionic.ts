@@ -23,7 +23,7 @@ import {
   readCliPackageJsonFile,
 } from '@ionic/cli-utils';
 
-import { namespace } from './index';
+import { namespace, registerEvents } from './index';
 
 const PROJECT_FILE = 'ionic.config.json';
 const CONFIG_FILE = 'config.json';
@@ -83,6 +83,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 
     const argv = minimist(pargv);
     argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
+
+    registerEvents(emitter);
 
     const ionicEnvironment: IonicEnvironment = {
       argv,

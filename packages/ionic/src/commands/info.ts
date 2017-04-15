@@ -7,7 +7,7 @@ import {
   CommandMetadata,
   Task,
   columnar,
-  gatherEnvironmentInfo
+  strcmp,
 } from '@ionic/cli-utils';
 
 @CommandMetadata({
@@ -17,20 +17,15 @@ import {
 export class InfoCommand extends Command {
   async run(inputs?: CommandLineInputs, options?: CommandLineOptions): Promise<void> {
     const task = new Task('Gathering environment info').start();
-    const info = await gatherEnvironmentInfo();
-    task.end();
 
-    const details: [string, string][] = [
-      ['Ionic Framework', info.ionic],
-      ['Ionic CLI', info.cli],
-      ['app-scripts', info.appScripts],
-      ['Cordova CLI', info.cordovaVersion],
-      ['ios-deploy', info.iosDeploy],
-      ['ios-sim', info.iosSim],
-      ['OS', info.os],
-      ['Node', info.node],
-      ['Xcode', info.xcode],
-    ].map((detail): [string, string] => [chalk.bold(detail[0]), detail[1]]);
+    const initialValue: [string, string][] = [];
+    const results = await this.env.emitter.emit('info');
+    const details = results
+      .reduce((acc, currentValue) => acc.concat(currentValue), initialValue)
+      .sort((a, b) => strcmp(a[0], b[0]))
+      .map((detail): [string, string] => [chalk.bold(detail[0]), detail[1]]);
+
+    task.end();
 
     this.env.log.msg(`\n    ${columnar(details).split('\n').join('\n    ')}\n`);
   }

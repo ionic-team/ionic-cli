@@ -290,15 +290,17 @@ export interface CLIEventEmitterServeEventArgs {
 }
 
 export interface ICLIEventEmitter {
+  emit(evt: 'docs', args?: Object): Promise<string[]>;
   emit(evt: 'generate', args: CLIEventEmitterGenerateEventArgs): Promise<void[]>;
+  emit(evt: 'info', args?: Object): Promise<[string, string][][]>;
   emit(evt: 'build', args: CLIEventEmitterBuildEventArgs): Promise<void[]>;
   emit(evt: 'serve', args: CLIEventEmitterServeEventArgs): Promise<{ [key: string]: any }[]>;
-  emit<T, U>(evt: string, args: T): Promise<U[]>;
 
+  on(evt: 'docs', listener: (args?: Object) => Promise<string>): this;
   on(evt: 'generate', listener: (args: CLIEventEmitterGenerateEventArgs) => Promise<void>): this;
+  on(evt: 'info', listener: (args?: Object) => Promise<[string, string][]>): this;
   on(evt: 'build', listener: (args: CLIEventEmitterBuildEventArgs) => Promise<void>): this;
   on(evt: 'serve', listener: (args: CLIEventEmitterServeEventArgs) => Promise<{ [key: string]: any }>): this;
-  on<T, U>(evt: string, listener: (args: T) => Promise<U>): this;
 
   getListeners<T, U>(evt: string): ((args: T) => Promise<U>)[];
 }
