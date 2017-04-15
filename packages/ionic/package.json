@@ -19,6 +19,7 @@
     "clean": "rm -rf ./dist",
     "changelog": "../../node_modules/.bin/conventional-changelog -i CHANGELOG.md -s -p angular",
     "test": "../../node_modules/.bin/jest",
+    "prepublish": "npm run build",
     "globallink": "npm link"
   },
   "files": [
