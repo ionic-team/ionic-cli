@@ -62,6 +62,7 @@
     "@types/path-exists": "^1.0.29",
     "@types/tar": "^1.0.29"
   },
+  "peerDependencies": {},
   "jest": {
     "moduleFileExtensions": [
       "ts",

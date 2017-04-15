@@ -5,7 +5,7 @@ import {
   CommandMetadata,
   createRequest,
   isSuperAgentError,
-  getIonicInfo,
+  readIonicAngularPackageJsonFile,
 } from '@ionic/cli-utils';
 
 import { load } from '../lib/modules';
@@ -21,9 +21,9 @@ import { load } from '../lib/modules';
 export class DocsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const opn = load('opn');
-    const ionicInfo = await getIonicInfo();
+    const ionicAngularPackageJson = await readIonicAngularPackageJsonFile();
     const docsHomepage = 'https://ionicframework.com/docs';
-    const version = ionicInfo['version'];
+    const version = ionicAngularPackageJson.version;
     const url = `${docsHomepage}/${version}/api`;
 
     try {

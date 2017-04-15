@@ -21,14 +21,15 @@ export class InfoCommand extends Command {
     task.end();
 
     const details: [string, string][] = [
-      ['Cordova CLI Version', info.cordovaVersion],
-      ['Ionic Framework Version', info.ionic],
-      ['Ionic CLI Version', info.cli],
-      ['ios-deploy version', info.iosDeploy],
-      ['ios-sim version', info.iosSim],
+      ['Ionic Framework', info.ionic],
+      ['Ionic CLI', info.cli],
+      ['app-scripts', info.appScripts],
+      ['Cordova CLI', info.cordovaVersion],
+      ['ios-deploy', info.iosDeploy],
+      ['ios-sim', info.iosSim],
       ['OS', info.os],
-      ['Node Version', info.node],
-      ['Xcode version', info.xcode]
+      ['Node', info.node],
+      ['Xcode', info.xcode],
     ].map((detail): [string, string] => [chalk.bold(detail[0]), detail[1]]);
 
     this.env.log.msg(`\n    ${columnar(details).split('\n').join('\n    ')}\n`);

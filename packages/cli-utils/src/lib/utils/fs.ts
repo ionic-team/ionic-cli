@@ -4,7 +4,7 @@ import * as crypto from 'crypto';
 import * as rimraf from 'rimraf';
 
 import { prettyPath } from './format';
-import { promisify } from './promisify';
+import { promisify } from './promise';
 import { load } from '../modules';
 
 export const ERROR_FILE_NOT_FOUND = 'FILE_NOT_FOUND';
@@ -124,12 +124,12 @@ export function getFileChecksum(filePath: string): Promise<string> {
     const hash = crypto.createHash('md5');
     const input = fs.createReadStream(filePath);
 
-    input.on('error', function (err: any) {
+    input.on('error', (err: Error) => {
       reject(err);
     });
 
-    hash.once('readable', function () {
-      const fullChecksum = (<Buffer>hash.read()).toString('hex');
+    hash.once('readable', () => {
+      const fullChecksum = hash.digest().toString('hex');
       resolve(fullChecksum);
     });
 

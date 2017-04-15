@@ -13,6 +13,7 @@ import {
   ICommand,
   INamespace,
   LogLevel,
+  PackageJson,
   Response,
   SuperAgentError,
   ValidationError,
@@ -33,8 +34,18 @@ export function isCommandPreInputsPrompt(cmd: ICommand): cmd is CommandPreInputs
 }
 
 export function isLogLevel(l: string): l is LogLevel {
-  const loglevel: LogLevel = <LogLevel>l;
+  const loglevel = <LogLevel>l;
   return LOG_LEVELS.includes(loglevel);
+}
+
+export function isPackageJson(o: Object): o is PackageJson {
+  const obj = <PackageJson>o;
+  return obj
+    && typeof obj.version === 'string'
+    && typeof obj.name === 'string'
+    && typeof obj.dependencies === 'object'
+    && typeof obj.devDependencies === 'object'
+    && typeof obj.peerDependencies === 'object';
 }
 
 export function isValidationErrorArray(e: Object[]): e is ValidationError[] {
@@ -45,22 +56,22 @@ export function isValidationErrorArray(e: Object[]): e is ValidationError[] {
 }
 
 export function isSuperAgentError(e: Error): e is SuperAgentError {
-  const err: SuperAgentError = <SuperAgentError>e;
+  const err = <SuperAgentError>e;
   return e && err.response && typeof err.response === 'object';
 }
 
 export function isAPIResponseSuccess(r: APIResponse): r is APIResponseSuccess {
-  const res: APIResponseSuccess = <APIResponseSuccess>r;
+  const res = <APIResponseSuccess>r;
   return res && (typeof res.data === 'object' || typeof res.data === 'string');
 }
 
 export function isAPIResponseError(r: APIResponse): r is APIResponseError {
-  const res: APIResponseError = <APIResponseError>r;
+  const res = <APIResponseError>r;
   return res && typeof res.error === 'object';
 }
 
 export function isAppDetails(d: Object): d is AppDetails {
-  const details: AppDetails = <AppDetails>d;
+  const details = <AppDetails>d;
   return details && typeof details === 'object'
     && typeof details.id === 'string'
     && typeof details.name === 'string'

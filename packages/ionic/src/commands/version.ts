@@ -3,7 +3,7 @@ import {
   CommandLineOptions,
   Command,
   CommandMetadata,
-  getCliInfo
+  readCliPackageJsonFile,
 } from '@ionic/cli-utils';
 
 @CommandMetadata({
@@ -13,7 +13,7 @@ import {
 })
 export class VersionCommand extends Command {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const info = await getCliInfo();
-    this.env.log.msg(`${info['version']}`);
+    const cliPackageJson = await readCliPackageJsonFile();
+    this.env.log.msg(`${cliPackageJson.version}`);
   }
 }

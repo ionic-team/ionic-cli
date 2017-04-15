@@ -18,9 +18,9 @@ import {
   Telemetry,
   formatError as formatSuperAgentError,
   fsReadDir,
-  getCliInfo,
   isSuperAgentError,
   loadPlugins,
+  readCliPackageJsonFile,
 } from '@ionic/cli-utils';
 
 import { namespace } from './index';
@@ -71,7 +71,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     // Load all async work at the same time
     const [ configData, cliInfo ] = await Promise.all([
       config.load(),
-      getCliInfo(),
+      readCliPackageJsonFile(),
     ]);
 
     const emitter = new CLIEventEmitter();

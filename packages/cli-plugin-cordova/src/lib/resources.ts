@@ -191,13 +191,14 @@ export function transformResourceImage(imageResource: ImageResource) {
       })
       .on('response', (res) => {
         if (res.statusCode !== 200) {
-          let buf = Buffer.from([]);
+          let bufs: Buffer[] = [];
 
           res.on('data', (chunk: Buffer) => {
-            buf = Buffer.concat([buf, chunk]);
+            bufs.push(chunk);
           });
 
           res.on('end', () => {
+            const buf = Buffer.concat(bufs);
             const body = buf.toString();
             reject(new Error(`encountered bad status code (${res.statusCode}) for ${TRANSFORM_URL}\nbody: ${body}`));
           });

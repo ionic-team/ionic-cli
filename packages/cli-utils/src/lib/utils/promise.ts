@@ -23,30 +23,3 @@ export const promisify: Promisify = function(func: any) {
     });
   };
 };
-
-export async function promiseMap(promiseFunc: Function, list: any[], threadLimit: number): Promise<any[]> {
-  let threads = [];
-  let results: any[] = Array(list.length);
-  let items = list.map((value: any, index) => ({
-    index,
-    value,
-  }));
-
-  function callFunc(item: any): Promise<void> | undefined {
-    if (!item) {
-      return;
-    }
-    return promiseFunc(item.value, item.index, list)
-      .then((result: any) => {
-        results[item.index] = result;
-        return callFunc(items.pop());
-      });
-  }
-
-  for (var i = 0; i < list.length && i < threadLimit; i += 1) {
-    threads.push(callFunc(items.pop()));
-  }
-
-  return Promise.all(threads).then(() => results);
-}
-
