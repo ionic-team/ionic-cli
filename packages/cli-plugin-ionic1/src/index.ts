@@ -16,7 +16,8 @@ export function registerEvents(emitter: ICLIEventEmitter) {
     const ionicVersionJson = await fsReadJsonFile(path.resolve(appDirectory, 'www', 'lib', 'ionic', 'version.json')); // TODO
 
     return [
-      ['Ionic Framework', `ionic1 ${ionicVersionJson['version'] || 'unknown'}`],
+      { type: 'local-npm', name: 'Ionic Framework', version: `ionic1 ${ionicVersionJson['version'] || 'unknown'}` },
+      { type: 'local-npm', name: '@ionic/cli-plugin-ionic1', version: version },
     ];
   });
 

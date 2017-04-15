@@ -24,6 +24,7 @@ import {
   isSuperAgentError,
   load,
   loadPlugins,
+  registerEvents as cliUtilsRegisterEvents,
 } from '@ionic/cli-utils';
 
 import { IonicNamespace } from './commands';
@@ -62,12 +63,12 @@ export function registerEvents(emitter: ICLIEventEmitter) {
     ]);
 
     return [
-      ['Ionic CLI', version],
-      ['Node', node],
-      ['OS', os],
-      ['Xcode', xcode],
-      ['ios-deploy', iosDeploy],
-      ['ios-sim', iosSim],
+      { type: 'global-npm', name: 'ionic', version: version },
+      { type: 'system', name: 'Node', version: node },
+      { type: 'system', name: 'OS', version: os },
+      { type: 'system', name: 'Xcode', version: xcode },
+      { type: 'system', name: 'ios-deploy', version: iosDeploy },
+      { type: 'system', name: 'ios-sim', version: iosSim },
     ];
   });
 }
@@ -114,6 +115,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
 
     registerEvents(emitter);
+    cliUtilsRegisterEvents(emitter);
 
     const ionicEnvironment: IonicEnvironment = {
       versions: { cli: version },

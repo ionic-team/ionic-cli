@@ -29,8 +29,9 @@ export function registerEvents(emitter: ICLIEventEmitter) {
     const appScriptsPackageJson = await readPackageJsonFile(path.resolve(appDirectory, 'node_modules', '@ionic', 'app-scripts', 'package.json')); // TODO
 
     return [
-      ['Ionic Framework', `ionic-angular ${ionicAngularPackageJson.version}`],
-      ['app-scripts', appScriptsPackageJson.version],
+      { type: 'local-npm', name: 'Ionic Framework', version: `ionic-angular ${ionicAngularPackageJson.version}` },
+      { type: 'local-npm', name: '@ionic/cli-plugin-ionic-angular', version: version },
+      { type: 'local-npm', name: '@ionic/app-scripts', version: appScriptsPackageJson.version },
     ];
   });
 

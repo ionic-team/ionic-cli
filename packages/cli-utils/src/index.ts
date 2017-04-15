@@ -1,3 +1,5 @@
+import { ICLIEventEmitter } from './definitions';
+
 export * from './definitions';
 export * from './guards';
 
@@ -33,3 +35,11 @@ export * from './lib/utils/task';
 export * from './lib/validators'
 
 export const version = '__VERSION__';
+
+export function registerEvents(emitter: ICLIEventEmitter) {
+  emitter.on('info', async () => {
+    return [
+      { type: 'global-npm', name: '@ionic/cli-utils', version: version },
+    ];
+  });
+}

@@ -289,16 +289,22 @@ export interface CLIEventEmitterServeEventArgs {
   options: CommandLineOptions;
 }
 
+export interface CLIEventEmitterInfoEventItem {
+  type: 'system' | 'global-npm' | 'local-npm';
+  name: string;
+  version: string;
+}
+
 export interface ICLIEventEmitter {
   emit(evt: 'docs', args?: Object): Promise<string[]>;
   emit(evt: 'generate', args: CLIEventEmitterGenerateEventArgs): Promise<void[]>;
-  emit(evt: 'info', args?: Object): Promise<[string, string][][]>;
+  emit(evt: 'info', args?: Object): Promise<CLIEventEmitterInfoEventItem[][]>;
   emit(evt: 'build', args: CLIEventEmitterBuildEventArgs): Promise<void[]>;
   emit(evt: 'serve', args: CLIEventEmitterServeEventArgs): Promise<{ [key: string]: any }[]>;
 
   on(evt: 'docs', listener: (args?: Object) => Promise<string>): this;
   on(evt: 'generate', listener: (args: CLIEventEmitterGenerateEventArgs) => Promise<void>): this;
-  on(evt: 'info', listener: (args?: Object) => Promise<[string, string][]>): this;
+  on(evt: 'info', listener: (args?: Object) => Promise<CLIEventEmitterInfoEventItem[]>): this;
   on(evt: 'build', listener: (args: CLIEventEmitterBuildEventArgs) => Promise<void>): this;
   on(evt: 'serve', listener: (args: CLIEventEmitterServeEventArgs) => Promise<{ [key: string]: any }>): this;
 
