@@ -155,19 +155,22 @@ export class EmulateCommand extends Command {
       await resetConfigXmlContentSrc(this.env.project.directory);
       tasks.end();
 
-      await this.env.emitter.emit('build', { options: generateBuildOptions(this.metadata, options) });
-      tasks.next(`Starting build`);
-    } else {
+      await this.env.hooks.fire('build', {
+        env: this.env,
+        options: generateBuildOptions(this.metadata, options)
+      });
 
+      tasks.next('Starting build');
+    } else {
       tasks.end();
 
-      const serverSettings = (await this.env.emitter.emit('serve', {
+      const serverSettings = (await this.env.hooks.fire('serve', {
         env: this.env,
         options: generateBuildOptions(this.metadata, options),
       }))[0];
 
       await writeConfigXmlContentSrc(this.env.project.directory, `http://${serverSettings.publicIp}:${serverSettings.httpPort}`);
-      tasks.next(`Starting server`);
+      tasks.next('Starting server');
     }
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);

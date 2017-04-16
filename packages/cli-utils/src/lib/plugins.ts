@@ -55,8 +55,8 @@ export async function loadPlugins(env: IonicEnvironment) {
       env.namespace.namespaces.set(ns.name, () => ns);
     }
 
-    if (plugin.registerEvents) {
-      plugin.registerEvents(env.emitter);
+    if (plugin.registerHooks) {
+      plugin.registerHooks(env.hooks);
     }
   }
 }

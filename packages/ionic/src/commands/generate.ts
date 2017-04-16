@@ -38,7 +38,7 @@ export class GenerateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ type, name ] = inputs;
 
-    await this.env.emitter.emit('generate', { inputs, options });
+    await this.env.hooks.fire('generate', { env: this.env, inputs, options });
 
     this.env.log.ok(`Generated a ${chalk.bold(type)} named ${chalk.bold(name)}!`);
   }

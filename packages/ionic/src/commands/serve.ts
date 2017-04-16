@@ -97,7 +97,7 @@ export class ServeCommand extends Command {
 
     const tasks = new TaskChain();
 
-    const numListeners = this.env.emitter.getListeners('serve').length;
+    const numListeners = this.env.hooks.getRegistered('serve').length;
 
     if (numListeners === 0) {
       throw this.exit('No listeners for serve event. Did you install the appropriate plugin?'); // TODO: make better?
@@ -105,7 +105,7 @@ export class ServeCommand extends Command {
       throw this.exit(`Too many listeners for serve event (${numListeners}). Install only one plugin.`); // TODO: make better?
     }
 
-    const [response] = await this.env.emitter.emit('serve', {
+    const [response] = await this.env.hooks.fire('serve', {
       env: this.env,
       options: {
         ...options,

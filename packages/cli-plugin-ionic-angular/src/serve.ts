@@ -1,12 +1,12 @@
 import * as chalk from 'chalk';
 
-import { CLIEventEmitterServeEventArgs } from '@ionic/cli-utils';
+import { ServeHookArgs } from '@ionic/cli-utils';
 
 import { load } from './lib/modules';
 import { getAvailableIPAddress } from './utils/network';
 import { minimistOptionsToArray } from './utils/arguments';
 
-export async function serve(args: CLIEventEmitterServeEventArgs): Promise<{ [key: string]: any }> {
+export async function serve(args: ServeHookArgs): Promise<{ [key: string]: any }> {
   const availableIPs = getAvailableIPAddress();
   if (availableIPs.length === 0 && args.options.externalIpRequired) {
     throw new Error(`It appears that you do not have any external network interfaces. ` +

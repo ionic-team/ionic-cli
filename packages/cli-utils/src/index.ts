@@ -1,4 +1,4 @@
-import { ICLIEventEmitter } from './definitions';
+import { IHookEngine } from './definitions';
 
 export * from './definitions';
 export * from './guards';
@@ -11,8 +11,8 @@ export * from './lib/command/utils';
 export * from './lib/config';
 export * from './lib/deploy';
 export * from './lib/errors';
-export * from './lib/events';
 export * from './lib/help';
+export * from './lib/hooks';
 export * from './lib/http';
 export * from './lib/login';
 export * from './lib/modules';
@@ -36,8 +36,8 @@ export * from './lib/validators'
 
 export const version = '__VERSION__';
 
-export function registerEvents(emitter: ICLIEventEmitter) {
-  emitter.on('info', async () => {
+export function registerHooks(hooks: IHookEngine) {
+  hooks.register('info', async () => {
     return [
       { type: 'global-npm', name: '@ionic/cli-utils', version: version },
     ];

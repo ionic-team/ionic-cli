@@ -275,40 +275,43 @@ export interface IClient {
 
 export interface IPaginator<T extends Response<Object[]>> extends IterableIterator<Promise<T>> {}
 
-export interface CLIEventEmitterBuildEventArgs {
+export interface HookArgs {
+  env: IonicEnvironment;
+}
+
+export interface BuildHookArgs extends HookArgs {
   options: CommandLineOptions;
 }
 
-export interface CLIEventEmitterGenerateEventArgs {
+export interface GenerateHookArgs extends HookArgs {
   inputs: CommandLineInputs;
   options: CommandLineOptions;
 }
 
-export interface CLIEventEmitterServeEventArgs {
-  env: IonicEnvironment;
+export interface ServeHookArgs extends HookArgs {
   options: CommandLineOptions;
 }
 
-export interface CLIEventEmitterInfoEventItem {
+export interface InfoHookItem {
   type: 'system' | 'global-npm' | 'local-npm';
   name: string;
   version: string;
 }
 
-export interface ICLIEventEmitter {
-  emit(evt: 'docs', args?: Object): Promise<string[]>;
-  emit(evt: 'generate', args: CLIEventEmitterGenerateEventArgs): Promise<void[]>;
-  emit(evt: 'info', args?: Object): Promise<CLIEventEmitterInfoEventItem[][]>;
-  emit(evt: 'build', args: CLIEventEmitterBuildEventArgs): Promise<void[]>;
-  emit(evt: 'serve', args: CLIEventEmitterServeEventArgs): Promise<{ [key: string]: any }[]>;
+export interface IHookEngine {
+  fire(hook: 'docs', args?: Object): Promise<string[]>;
+  fire(hook: 'generate', args: GenerateHookArgs): Promise<void[]>;
+  fire(hook: 'info', args?: Object): Promise<InfoHookItem[][]>;
+  fire(hook: 'build', args: BuildHookArgs): Promise<void[]>;
+  fire(hook: 'serve', args: ServeHookArgs): Promise<{ [key: string]: any }[]>;
 
-  on(evt: 'docs', listener: (args?: Object) => Promise<string>): this;
-  on(evt: 'generate', listener: (args: CLIEventEmitterGenerateEventArgs) => Promise<void>): this;
-  on(evt: 'info', listener: (args?: Object) => Promise<CLIEventEmitterInfoEventItem[]>): this;
-  on(evt: 'build', listener: (args: CLIEventEmitterBuildEventArgs) => Promise<void>): this;
-  on(evt: 'serve', listener: (args: CLIEventEmitterServeEventArgs) => Promise<{ [key: string]: any }>): this;
+  register(hook: 'docs', listener: (args?: Object) => Promise<string>): this;
+  register(hook: 'generate', listener: (args: GenerateHookArgs) => Promise<void>): this;
+  register(hook: 'info', listener: (args?: Object) => Promise<InfoHookItem[]>): this;
+  register(hook: 'build', listener: (args: BuildHookArgs) => Promise<void>): this;
+  register(hook: 'serve', listener: (args: ServeHookArgs) => Promise<{ [key: string]: any }>): this;
 
-  getListeners<T, U>(evt: string): ((args: T) => Promise<U>)[];
+  getRegistered<T, U>(evt: string): ((args: T) => Promise<U>)[];
 }
 
 export interface IonicEnvironment {
@@ -316,7 +319,7 @@ export interface IonicEnvironment {
   argv: minimistType.ParsedArgs;
   pargv: string[];
   app: IApp;
-  emitter: ICLIEventEmitter;
+  hooks: IHookEngine;
   client: IClient;
   config: IConfig<ConfigFile>;
   log: ILogger;
@@ -330,7 +333,7 @@ export interface IonicEnvironment {
 export interface Plugin {
   version: string;
   namespace?: INamespace;
-  registerEvents?(emitter: ICLIEventEmitter): void;
+  registerHooks?(hooks: IHookEngine): void;
 }
 
 export interface INamespace {

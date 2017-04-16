@@ -5,7 +5,7 @@ import {
   CommandLineOptions,
   Command,
   CommandMetadata,
-  CLIEventEmitterInfoEventItem,
+  InfoHookItem,
   Task,
   columnar,
   strcmp,
@@ -19,15 +19,15 @@ export class InfoCommand extends Command {
   async run(inputs?: CommandLineInputs, options?: CommandLineOptions): Promise<void> {
     const task = new Task('Gathering environment info').start();
 
-    const initialValue: CLIEventEmitterInfoEventItem[] = [];
-    const results = await this.env.emitter.emit('info');
+    const initialValue: InfoHookItem[] = [];
+    const results = await this.env.hooks.fire('info');
     const flattenedResults = results.reduce((acc, currentValue) => acc.concat(currentValue), initialValue);
 
     const globalNpmDetails = flattenedResults.filter((item) => item.type === 'global-npm');
     const localNpmDetails = flattenedResults.filter((item) => item.type === 'local-npm');
     const systemDetails = flattenedResults.filter((item) => item.type === 'system');
 
-    const prettify = (ary: CLIEventEmitterInfoEventItem[]) => ary
+    const prettify = (ary: InfoHookItem[]) => ary
       .sort((a, b) => strcmp(a.name, b.name))
       .map((item): [string, string] => [item.name, chalk.dim(item.version)]);
 

@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { ICLIEventEmitter, readPackageJsonFile } from '@ionic/cli-utils';
+import { IHookEngine, readPackageJsonFile } from '@ionic/cli-utils';
 
 import { build } from './build';
 import { generate } from './generate';
@@ -8,8 +8,8 @@ import { serve } from './serve';
 
 export const version = '__VERSION__';
 
-export function registerEvents(emitter: ICLIEventEmitter) {
-  emitter.on('docs', async () => {
+export function registerHooks(hooks: IHookEngine) {
+  hooks.register('docs', async () => {
     const appDirectory = '.'; // TODO: change this
     const ionicAngularPackageJson = await readPackageJsonFile(path.resolve(appDirectory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
     const docsHomepage = 'https://ionicframework.com/docs';
@@ -19,11 +19,11 @@ export function registerEvents(emitter: ICLIEventEmitter) {
     return url;
   });
 
-  emitter.on('generate', async (args) => {
+  hooks.register('generate', async (args) => {
     await generate(args);
   });
 
-  emitter.on('info', async () => {
+  hooks.register('info', async () => {
     const appDirectory = '.'; // TODO: change this
     const ionicAngularPackageJson = await readPackageJsonFile(path.resolve(appDirectory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
     const appScriptsPackageJson = await readPackageJsonFile(path.resolve(appDirectory, 'node_modules', '@ionic', 'app-scripts', 'package.json')); // TODO
@@ -35,11 +35,11 @@ export function registerEvents(emitter: ICLIEventEmitter) {
     ];
   });
 
-  emitter.on('serve', async (args) => {
+  hooks.register('serve', async (args) => {
     return serve(args);
   });
 
-  emitter.on('build', async (args) => {
+  hooks.register('build', async (args) => {
     await build(args);
   });
 }

@@ -22,7 +22,7 @@ export class DocsCommand extends Command {
     const opn = load('opn');
 
     const docsHomepage = 'https://ionicframework.com/docs';
-    const results = await this.env.emitter.emit('docs');
+    const results = await this.env.hooks.fire('docs');
     const [ url ] = results;
 
     try {

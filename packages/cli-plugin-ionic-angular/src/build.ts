@@ -1,11 +1,11 @@
 import * as chalk from 'chalk';
 
-import { CLIEventEmitterBuildEventArgs } from '@ionic/cli-utils';
+import { BuildHookArgs } from '@ionic/cli-utils';
 
 import { minimistOptionsToArray } from './utils/arguments';
 import { load } from './lib/modules';
 
-export async function build(args: CLIEventEmitterBuildEventArgs): Promise<void> {
+export async function build(args: BuildHookArgs): Promise<void> {
   const appScriptsArgs = minimistOptionsToArray(args.options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 

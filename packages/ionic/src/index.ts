@@ -6,11 +6,11 @@ import * as chalk from 'chalk';
 
 import {
   App,
-  CLIEventEmitter,
   Client,
   Config,
   FatalException,
-  ICLIEventEmitter,
+  HookEngine,
+  IHookEngine,
   IonicEnvironment,
   Logger,
   Project,
@@ -24,7 +24,7 @@ import {
   isSuperAgentError,
   load,
   loadPlugins,
-  registerEvents as cliUtilsRegisterEvents,
+  registerHooks as cliUtilsRegisterHooks,
 } from '@ionic/cli-utils';
 
 import { IonicNamespace } from './commands';
@@ -46,8 +46,8 @@ function cleanup() {
 export const version = '__VERSION__';
 export const namespace = new IonicNamespace();
 
-export function registerEvents(emitter: ICLIEventEmitter) {
-  emitter.on('info', async () => {
+export function registerHooks(hooks: IHookEngine) {
+  hooks.register('info', async () => {
     const osName = load('os-name');
     const os = osName();
     const node = process.version;
@@ -104,7 +104,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 
     const configData = await config.load();
 
-    const emitter = new CLIEventEmitter();
+    const hooks = new HookEngine();
     const client = new Client(configData.urls.api);
     const telemetry = new Telemetry(config, version);
     const shell = new Shell();
@@ -114,23 +114,23 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     const argv = minimist(pargv);
     argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
 
-    registerEvents(emitter);
-    cliUtilsRegisterEvents(emitter);
+    registerHooks(hooks);
+    cliUtilsRegisterHooks(hooks);
 
     const ionicEnvironment: IonicEnvironment = {
-      versions: { cli: version },
-      argv,
-      pargv,
       app,
-      emitter,
+      argv,
       client,
       config,
+      hooks,
       log,
+      namespace,
+      pargv,
       project,
       session,
       shell,
       telemetry,
-      namespace,
+      versions: { cli: version },
     };
 
     await loadPlugins(ionicEnvironment);
