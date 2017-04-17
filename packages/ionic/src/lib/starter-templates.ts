@@ -34,6 +34,13 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     archive: 'https://github.com/driftyco/ionic2-starter-tabs/archive/<BRANCH_NAME>.tar.gz'
   },
   {
+    name: 'aws',
+    typeId: 'ionic-angular',
+    description: 'AWS Mobile Hub Starter',
+    path: 'driftyco/ionic2-starter-aws',
+    archive: 'https://github.com/driftyco/ionic2-starter-aws/archive/<BRANCH_NAME>.tar.gz'
+  },
+  {
     name: 'blank',
     typeId: 'ionic-angular',
     description: 'A blank starter project',
