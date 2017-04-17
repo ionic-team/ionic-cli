@@ -166,7 +166,7 @@ export class EmulateCommand extends Command {
         options: generateBuildOptions(this.metadata, options),
       }))[0];
 
-      await writeConfigXmlContentSrc(this.env.project.directory, `http://${serverSettings.ipAddress}:${serverSettings.httpPort}`);
+      await writeConfigXmlContentSrc(this.env.project.directory, `http://${serverSettings.publicIp}:${serverSettings.httpPort}`);
       tasks.next(`Starting server`);
     }
 
