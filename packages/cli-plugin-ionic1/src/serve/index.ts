@@ -3,7 +3,7 @@ import * as chalk from 'chalk';
 import { stringToInt } from '../utils/helpers';
 import { createHttpServer } from './http-server';
 import { createLiveReloadServer } from './live-reload';
-import { ServeHookArg, IonicEnvironment } from '@ionic/cli-utils';
+import { CommandHookArgs, IonicEnvironment } from '@ionic/cli-utils';
 import {
   DEFAULT_ADDRESS,
   DEFAULT_LIVERELOAD_PORT,
@@ -16,7 +16,7 @@ import { findClosestOpenPort, getAvailableIPAddress } from '../utils/network';
 import { minimistOptionsToArray } from '../utils/arguments';
 import { load } from '../lib/modules';
 
-export async function serve(args: ServeHookArgs): Promise<{ [key: string]: any }> {
+export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any }> {
 
   const appScriptsArgs = minimistOptionsToArray(args.options);
   console.log(`  Starting server: ${chalk.bold(appScriptsArgs.join(' '))}`);

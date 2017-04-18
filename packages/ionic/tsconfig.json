@@ -5,14 +5,14 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "commonjs",
+    "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "./dist",
+    "removeComments": true,
     "strictNullChecks": true,
     "target": "es6",
     "lib": [
-      "es2017.object",
-      "es2016",
-      "dom"
+      "es2016"
     ]
   },
   "include": [

@@ -1,13 +1,13 @@
 import * as path from 'path';
 
 import * as AppScriptsType from '@ionic/app-scripts';
-import { GenerateHookArgs, readPackageJsonFile } from '@ionic/cli-utils';
+import { CommandHookArgs, readPackageJsonFile } from '@ionic/cli-utils';
 
 import { load } from './lib/modules';
 import { minimistOptionsToArray } from './utils/arguments';
 import { prompt, tabsPrompt } from './utils/generate';
 
-export async function generate(args: GenerateHookArgs): Promise<string[]> {
+export async function generate(args: CommandHookArgs): Promise<string[]> {
   const appScriptsArgs = minimistOptionsToArray(args.options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 

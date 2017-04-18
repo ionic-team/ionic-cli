@@ -80,7 +80,7 @@ declare module "superagent" {
           notFound: boolean;
           forbidden: boolean;
           request: Request;
-          xhr: XMLHttpRequest;
+          // xhr: XMLHttpRequest;
           get(header: string): string;
       }
 
