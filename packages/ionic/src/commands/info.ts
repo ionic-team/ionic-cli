@@ -16,11 +16,11 @@ import {
   description: 'Print system/environment info'
 })
 export class InfoCommand extends Command {
-  async run(inputs?: CommandLineInputs, options?: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const task = new Task('Gathering environment info').start();
 
     const initialValue: InfoHookItem[] = [];
-    const results = await this.env.hooks.fire('info');
+    const results = await this.env.hooks.fire('command:info', { env: this.env, inputs, options });
     const flattenedResults = results.reduce((acc, currentValue) => acc.concat(currentValue), initialValue);
 
     const globalNpmDetails = flattenedResults.filter((item) => item.type === 'global-npm');

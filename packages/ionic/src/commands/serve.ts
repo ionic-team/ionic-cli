@@ -105,8 +105,9 @@ export class ServeCommand extends Command {
       throw this.exit(`Too many listeners for serve event (${numListeners}). Install only one plugin.`); // TODO: make better?
     }
 
-    const [response] = await this.env.hooks.fire('serve', {
+    const [response] = await this.env.hooks.fire('command:serve', {
       env: this.env,
+      inputs,
       options: {
         ...options,
         externalIpRequired: options.qrcode || options.broadcast

@@ -37,7 +37,7 @@ export * from './lib/validators'
 export const version = '__VERSION__';
 
 export function registerHooks(hooks: IHookEngine) {
-  hooks.register('info', async () => {
+  hooks.register('command:info', async () => {
     return [
       { type: 'global-npm', name: '@ionic/cli-utils', version: version },
     ];

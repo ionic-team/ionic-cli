@@ -279,16 +279,8 @@ export interface HookArgs {
   env: IonicEnvironment;
 }
 
-export interface BuildHookArgs extends HookArgs {
-  options: CommandLineOptions;
-}
-
-export interface GenerateHookArgs extends HookArgs {
+export interface CommandHookArgs extends HookArgs {
   inputs: CommandLineInputs;
-  options: CommandLineOptions;
-}
-
-export interface ServeHookArgs extends HookArgs {
   options: CommandLineOptions;
 }
 
@@ -299,17 +291,17 @@ export interface InfoHookItem {
 }
 
 export interface IHookEngine {
-  fire(hook: 'docs', args?: Object): Promise<string[]>;
-  fire(hook: 'generate', args: GenerateHookArgs): Promise<void[]>;
-  fire(hook: 'info', args?: Object): Promise<InfoHookItem[][]>;
-  fire(hook: 'build', args: BuildHookArgs): Promise<void[]>;
-  fire(hook: 'serve', args: ServeHookArgs): Promise<{ [key: string]: any }[]>;
+  fire(hook: 'command:docs', args: CommandHookArgs): Promise<string[]>;
+  fire(hook: 'command:generate', args: CommandHookArgs): Promise<void[]>;
+  fire(hook: 'command:info', args: CommandHookArgs): Promise<InfoHookItem[][]>;
+  fire(hook: 'command:build', args: CommandHookArgs): Promise<void[]>;
+  fire(hook: 'command:serve', args: CommandHookArgs): Promise<{ [key: string]: any }[]>;
 
-  register(hook: 'docs', listener: (args?: Object) => Promise<string>): this;
-  register(hook: 'generate', listener: (args: GenerateHookArgs) => Promise<void>): this;
-  register(hook: 'info', listener: (args?: Object) => Promise<InfoHookItem[]>): this;
-  register(hook: 'build', listener: (args: BuildHookArgs) => Promise<void>): this;
-  register(hook: 'serve', listener: (args: ServeHookArgs) => Promise<{ [key: string]: any }>): this;
+  register(hook: 'command:docs', listener: (args: CommandHookArgs) => Promise<string>): this;
+  register(hook: 'command:generate', listener: (args: CommandHookArgs) => Promise<void>): this;
+  register(hook: 'command:info', listener: (args: CommandHookArgs) => Promise<InfoHookItem[]>): this;
+  register(hook: 'command:build', listener: (args: CommandHookArgs) => Promise<void>): this;
+  register(hook: 'command:serve', listener: (args: CommandHookArgs) => Promise<{ [key: string]: any }>): this;
 
   getRegistered<T, U>(evt: string): ((args: T) => Promise<U>)[];
 }

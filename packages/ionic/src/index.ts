@@ -47,7 +47,7 @@ export const version = '__VERSION__';
 export const namespace = new IonicNamespace();
 
 export function registerHooks(hooks: IHookEngine) {
-  hooks.register('info', async () => {
+  hooks.register('command:info', async () => {
     const osName = load('os-name');
     const os = osName();
     const node = process.version;

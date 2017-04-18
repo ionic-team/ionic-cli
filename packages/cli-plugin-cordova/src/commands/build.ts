@@ -109,12 +109,19 @@ export class BuildCommand extends Command {
     await resetConfigXmlContentSrc(this.env.project.directory);
 
     tasks.end();
-    await this.env.hooks.fire('build', { env: this.env, options: generateBuildOptions(this.metadata, options) });
-    tasks.next(`Running build`);
+
+    await this.env.hooks.fire('command:build', {
+      env: this.env,
+      inputs,
+      options: generateBuildOptions(this.metadata, options)
+    });
+
+    tasks.next('Running build');
 
     const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
 
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
+
     await this.env.shell.run('cordova', optionList, {
       showExecution: (this.env.log.level === 'debug')
     });

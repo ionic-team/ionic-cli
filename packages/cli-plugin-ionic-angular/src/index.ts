@@ -9,7 +9,7 @@ import { serve } from './serve';
 export const version = '__VERSION__';
 
 export function registerHooks(hooks: IHookEngine) {
-  hooks.register('docs', async () => {
+  hooks.register('command:docs', async () => {
     const appDirectory = '.'; // TODO: change this
     const ionicAngularPackageJson = await readPackageJsonFile(path.resolve(appDirectory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
     const docsHomepage = 'https://ionicframework.com/docs';
@@ -19,11 +19,11 @@ export function registerHooks(hooks: IHookEngine) {
     return url;
   });
 
-  hooks.register('generate', async (args) => {
+  hooks.register('command:generate', async (args) => {
     await generate(args);
   });
 
-  hooks.register('info', async () => {
+  hooks.register('command:info', async () => {
     const appDirectory = '.'; // TODO: change this
     const ionicAngularPackageJson = await readPackageJsonFile(path.resolve(appDirectory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
     const appScriptsPackageJson = await readPackageJsonFile(path.resolve(appDirectory, 'node_modules', '@ionic', 'app-scripts', 'package.json')); // TODO
@@ -35,11 +35,11 @@ export function registerHooks(hooks: IHookEngine) {
     ];
   });
 
-  hooks.register('serve', async (args) => {
+  hooks.register('command:serve', async (args) => {
     return serve(args);
   });
 
-  hooks.register('build', async (args) => {
+  hooks.register('command:build', async (args) => {
     await build(args);
   });
 }

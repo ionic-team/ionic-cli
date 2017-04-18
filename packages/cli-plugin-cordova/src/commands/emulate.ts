@@ -155,8 +155,9 @@ export class EmulateCommand extends Command {
       await resetConfigXmlContentSrc(this.env.project.directory);
       tasks.end();
 
-      await this.env.hooks.fire('build', {
+      await this.env.hooks.fire('command:build', {
         env: this.env,
+        inputs,
         options: generateBuildOptions(this.metadata, options)
       });
 
@@ -164,8 +165,9 @@ export class EmulateCommand extends Command {
     } else {
       tasks.end();
 
-      const serverSettings = (await this.env.hooks.fire('serve', {
+      const serverSettings = (await this.env.hooks.fire('command:serve', {
         env: this.env,
+        inputs,
         options: generateBuildOptions(this.metadata, options),
       }))[0];
 
