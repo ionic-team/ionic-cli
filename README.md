@@ -121,7 +121,7 @@ you have questions or issues please feel free to open a new issue.
 * [tabs](https://github.com/driftyco/ionic2-starter-tabs)
 * [sidemenu](https://github.com/driftyco/ionic2-starter-sidemenu)
 * [conference](https://github.com/driftyco/ionic-conference-app)
-* [tutorial](https://github.com/driftyco/ionis2-starter-tutorial)
+* [tutorial](https://github.com/driftyco/ionic2-starter-tutorial)
 
 ## Service Proxies
 
