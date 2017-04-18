@@ -2,7 +2,9 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "docs": "node ./scripts/createMarkdownDocs.js ionic && node ./scripts/createMarkdownDocs.js cli-plugin-cordova"
+    "docs": "node ./scripts/createMarkdownDocs.js ionic && node ./scripts/createMarkdownDocs.js cli-plugin-cordova",
+    "publish:canary": "lerna publish --canary --exact --npm-tag canary",
+    "publish:beta": "lerna publish --npm-tag beta"
   },
   "devDependencies": {
     "@types/node": "^6.0.68",
