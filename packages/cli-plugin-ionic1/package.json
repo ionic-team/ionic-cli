@@ -6,14 +6,17 @@
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
   "main": "./dist/index.js",
   "scripts": {
-    "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
-    "build": "npm run clean && ../../node_modules/.bin/tsc",
     "clean": "rm -rf ./dist",
-    "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
-    "prepublish": "npm run build && npm run prepublish-script",
-    "prepublish-script": "node ../../scripts/prepublish.js cli-plugin-ionic1",
+    "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
+    "build": "npm run clean && npm run build-ts && npm run build-js",
+    "build-ts": "../../node_modules/.bin/tsc",
+    "build-js": "npm run -s script-prepublish",
+    "watch": "npm run clean && ../../node_modules/.bin/concurrently -p '{name} ' -n 'TS,JS' -c 'cyan.bold,yellow.dim' 'npm run watch-ts' 'npm run watch-js'",
+    "watch-ts": "../../node_modules/.bin/tsc -w",
+    "watch-js": "../../node_modules/.bin/chokidar --silent 'dist/**/*.js' -c 'npm run build-js'",
+    "script-prepublish": "node ../../scripts/prepublish.js cli-plugin-ionic1",
     "test": "../../node_modules/.bin/jest",
-    "watch": "npm run clean && ../../node_modules/.bin/tsc --watch"
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
