@@ -34,12 +34,13 @@ export * from './lib/utils/string';
 export * from './lib/utils/task';
 export * from './lib/validators'
 
+export const name = '__NAME__';
 export const version = '__VERSION__';
 
 export function registerHooks(hooks: IHookEngine) {
-  hooks.register('command:info', async () => {
+  hooks.register(name, 'command:info', async () => {
     return [
-      { type: 'global-npm', name: '@ionic/cli-utils', version: version },
+      { type: 'global-npm', name, version },
     ];
   });
 }

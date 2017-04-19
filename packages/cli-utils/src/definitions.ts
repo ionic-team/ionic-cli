@@ -290,6 +290,12 @@ export interface InfoHookItem {
   version: string;
 }
 
+export interface IHook<T, U> {
+  source: string;
+  name: string;
+  callable: (args: T) => Promise<U>;
+}
+
 export interface IHookEngine {
   fire(hook: 'command:docs', args: CommandHookArgs): Promise<string[]>;
   fire(hook: 'command:generate', args: CommandHookArgs): Promise<void[]>;
@@ -297,13 +303,13 @@ export interface IHookEngine {
   fire(hook: 'command:build', args: CommandHookArgs): Promise<void[]>;
   fire(hook: 'command:serve', args: CommandHookArgs): Promise<{ [key: string]: any }[]>;
 
-  register(hook: 'command:docs', listener: (args: CommandHookArgs) => Promise<string>): this;
-  register(hook: 'command:generate', listener: (args: CommandHookArgs) => Promise<void>): this;
-  register(hook: 'command:info', listener: (args: CommandHookArgs) => Promise<InfoHookItem[]>): this;
-  register(hook: 'command:build', listener: (args: CommandHookArgs) => Promise<void>): this;
-  register(hook: 'command:serve', listener: (args: CommandHookArgs) => Promise<{ [key: string]: any }>): this;
+  register(source: string, hook: 'command:docs', listener: (args: CommandHookArgs) => Promise<string>): void;
+  register(source: string, hook: 'command:generate', listener: (args: CommandHookArgs) => Promise<void>): void;
+  register(source: string, hook: 'command:info', listener: (args: CommandHookArgs) => Promise<InfoHookItem[]>): void;
+  register(source: string, hook: 'command:build', listener: (args: CommandHookArgs) => Promise<void>): void;
+  register(source: string, hook: 'command:serve', listener: (args: CommandHookArgs) => Promise<{ [key: string]: any }>): void;
 
-  getRegistered<T, U>(evt: string): ((args: T) => Promise<U>)[];
+  getRegistered<T, U>(evt: string): IHook<T, U>[];
 }
 
 export interface IonicEnvironment {

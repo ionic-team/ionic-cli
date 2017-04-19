@@ -11,8 +11,8 @@
     "build": "npm run clean && cp ./resources.json ./dist/resources.json && ../../node_modules/.bin/tsc",
     "clean": "rm -rf ./dist && mkdir ./dist",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
-    "prepublish": "npm run build && npm run version",
-    "version": "node ../../scripts/versionPackage.js cli-plugin-cordova",
+    "prepublish": "npm run build && npm run prepublish-script",
+    "prepublish-script": "node ../../scripts/prepublish.js cli-plugin-cordova",
     "test": "../../node_modules/.bin/jest",
     "watch": "npm run clean && ../../node_modules/.bin/tsc --watch",
     "postinstall": "node ./bin/postinstall"

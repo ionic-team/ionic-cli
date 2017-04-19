@@ -19,8 +19,8 @@
     "clean": "rm -rf ./dist",
     "changelog": "../../node_modules/.bin/conventional-changelog -i CHANGELOG.md -s -p angular",
     "test": "../../node_modules/.bin/jest",
-    "prepublish": "npm run build && npm run version",
-    "version": "node ../../scripts/versionPackage.js ionic",
+    "prepublish": "npm run build && npm run prepublish-script",
+    "prepublish-script": "node ../../scripts/prepublish.js ionic",
     "globallink": "npm link"
   },
   "files": [
