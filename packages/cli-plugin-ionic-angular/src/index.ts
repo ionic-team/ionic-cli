@@ -25,8 +25,10 @@ export function registerHooks(hooks: IHookEngine) {
 
   hooks.register('command:info', async () => {
     const appDirectory = '.'; // TODO: change this
-    const ionicAngularPackageJson = await readPackageJsonFile(path.resolve(appDirectory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
-    const appScriptsPackageJson = await readPackageJsonFile(path.resolve(appDirectory, 'node_modules', '@ionic', 'app-scripts', 'package.json')); // TODO
+    const [ ionicAngularPackageJson, appScriptsPackageJson ] = await Promise.all([
+      readPackageJsonFile(path.resolve(appDirectory, 'node_modules', 'ionic-angular', 'package.json')), // TODO
+      readPackageJsonFile(path.resolve(appDirectory, 'node_modules', '@ionic', 'app-scripts', 'package.json')), // TODO
+    ]);
 
     return [
       { type: 'local-npm', name: 'Ionic Framework', version: `ionic-angular ${ionicAngularPackageJson.version}` },
