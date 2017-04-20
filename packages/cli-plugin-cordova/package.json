@@ -11,7 +11,7 @@
     "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
     "build": "npm run clean && npm run build-ts && npm run build-js",
     "build-ts": "../../node_modules/.bin/tsc",
-    "build-js": "npm run -s script-prepublish",
+    "build-js": "npm run -s script-prepublish && cp ./resources.json ./dist/resources.json",
     "watch": "npm run clean && ../../node_modules/.bin/concurrently -p '{name} ' -n 'TS,JS' -c 'cyan.bold,yellow.dim' 'npm run watch-ts' 'npm run watch-js'",
     "watch-ts": "../../node_modules/.bin/tsc -w",
     "watch-js": "../../node_modules/.bin/chokidar --silent 'dist/**/*.js' -c 'npm run build-js'",

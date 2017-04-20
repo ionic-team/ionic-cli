@@ -42,12 +42,10 @@ export async function arePluginsInstalled(projectDir: string): Promise<boolean> 
 }
 
 /**
- * Install ionic required plugins
- *
- * @return {Promise} Promise upon completion
+ * Install required Cordova plugins for Ionic
  */
-export function installPlugins(): Promise<string[]> {
-  var plugins = [
+export async function installPlugins(): Promise<void> {
+  const plugins = [
     'cordova-plugin-device',
     'cordova-plugin-console',
     'cordova-plugin-whitelist',
@@ -56,9 +54,13 @@ export function installPlugins(): Promise<string[]> {
     'ionic-plugin-keyboard'
   ];
 
-  return Promise.all(plugins.map(plugin => (
-    new Shell().run('cordova', ['plugin', 'add', '--save', plugin])
-  )));
+  const shell = new Shell();
+
+  for (let plugin of plugins) {
+    await shell.run('cordova', ['plugin', 'add', '--save', plugin], {
+      fatalOnNotFound: false,
+    });
+  }
 }
 
 /**
@@ -68,5 +70,5 @@ export function installPlugins(): Promise<string[]> {
  * @return {Promise} Promise upon completion
  */
 export function installPlatform(platform: string): Promise<string> {
-  return new Shell().run('cordova', ['platform', 'add', platform]);
+  return new Shell().run('cordova', ['platform', 'add', '--save', platform], {});
 }

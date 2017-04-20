@@ -122,7 +122,7 @@ export async function loadPlugin(projectDir: string, pluginName: string, { messa
       const tasks = new TaskChain();
 
       tasks.next(`Executing npm command: ${chalk.bold(`npm install --save-dev ${pluginInstallVersion}`)}`);
-      await new Shell().run('npm', ['install', '--save-dev', pluginInstallVersion ]);
+      await new Shell().run('npm', ['install', '--save-dev', pluginInstallVersion ], {});
       tasks.end();
 
       return loadPlugin(projectDir, pluginName, { askToInstall });

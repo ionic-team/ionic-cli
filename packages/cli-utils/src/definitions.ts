@@ -203,11 +203,13 @@ export interface ISession {
 export interface IShellRunOptions extends crossSpawnType.SpawnOptions {
   showExecution?: boolean;
   showError?: boolean;
-  fatal?: boolean;
+  fatalOnNotFound?: boolean;
+  fatalOnError?: boolean;
+  truncateErrorOutput?: number;
 }
 
 export interface IShell {
-  run(command: string, args?: string[], options?: IShellRunOptions): Promise<string>;
+  run(command: string, args: string[], options: IShellRunOptions): Promise<string>;
 }
 
 export interface ITelemetry {

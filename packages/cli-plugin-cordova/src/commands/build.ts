@@ -1,31 +1,18 @@
-import * as os from 'os';
 import * as chalk from 'chalk';
+
 import {
-  Command,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  ERROR_SHELL_COMMAND_NOT_FOUND,
   TaskChain,
   normalizeOptionAliases,
   validators,
 } from '@ionic/cli-utils';
-import {
-  generateBuildOptions,
-  filterArgumentsForCordova,
-  CORDOVA_INTENT
-} from '../lib/utils/cordova';
-import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
-import {
-  arePluginsInstalled,
-  getProjectPlatforms,
-  installPlatform,
-  installPlugins
-} from '../lib/utils/setup';
 
-/**
- * Metadata about the build command
- */
+import { generateBuildOptions, filterArgumentsForCordova, CORDOVA_INTENT } from '../lib/utils/cordova';
+import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
+import { CordovaPlatformCommand } from './base';
+
 @CommandMetadata({
   name: 'build',
   type: 'project',
@@ -75,42 +62,16 @@ import {
     }
   ]
 })
-export class BuildCommand extends Command {
+export class BuildCommand extends CordovaPlatformCommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-
     options = normalizeOptionAliases(this.metadata, options);
 
-    // If there is not input then set default to an array containing ios
-    const runPlatform = inputs[0];
-
-    if (runPlatform === 'ios' && os.platform() !== 'darwin') {
-      this.env.log.error('You cannot build for iOS unless you are on Mac OSX.');
-      return;
-    }
-
-    var tasks = new TaskChain();
-
-    await Promise.all([
-      getProjectPlatforms(this.env.project.directory).then((platforms): Promise<string | void> => {
-        if (!platforms.includes(runPlatform)) {
-          tasks.next(`Installing the platform: ${chalk.bold('cordova platform add ' + runPlatform)}`);
-          return installPlatform(runPlatform);
-        }
-        return Promise.resolve();
-      }),
-      arePluginsInstalled(this.env.project.directory).then((areInstalled): Promise<string[] | void> => {
-        if (!areInstalled) {
-          tasks.next(`Installing the project plugins: ${chalk.bold('cordova plugin add --save <plugin>')}`);
-          return installPlugins();
-        }
-        return Promise.resolve();
-      })
-    ]);
+    const tasks = new TaskChain();
 
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);
 
-    tasks.end();
+    tasks.next('Running build');
 
     await this.env.hooks.fire('command:build', {
       env: this.env,
@@ -118,26 +79,8 @@ export class BuildCommand extends Command {
       options: generateBuildOptions(this.metadata, options)
     });
 
-    tasks.next('Running build');
-
-    const optionList: string[] = filterArgumentsForCordova(this.metadata, inputs, options);
-
-    tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
-
-    try {
-      await this.env.shell.run('cordova', optionList, {
-        showExecution: this.env.log.level === 'debug',
-        fatal: false,
-      });
-    } catch (e) {
-      if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
-        throw this.exit(`The Cordova CLI was not found on your PATH. Please install Cordova globally:\n\n` +
-                        `${chalk.green('npm install -g cordova')}\n`);
-      }
-
-      throw e;
-    }
-
     tasks.end();
+
+    await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options));
   }
 }

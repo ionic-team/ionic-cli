@@ -1,11 +1,10 @@
 import * as chalk from 'chalk';
+
 import {
-  Command,
   CommandLineInputs,
   CommandLineOptions,
+  CommandPreInputsPrompt,
   CommandMetadata,
-  ERROR_SHELL_COMMAND_NOT_FOUND,
-  TaskChain,
   normalizeOptionAliases,
   validators,
 } from '@ionic/cli-utils';
@@ -13,10 +12,8 @@ import {
 import { load } from '../lib/modules';
 import { gatherArgumentsForCordova } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
+import { CordovaCommand } from './base';
 
-/**
- * Metadata about the compile command
- */
 @CommandMetadata({
   name: 'plugin',
   type: 'project',
@@ -27,10 +24,6 @@ import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
       name: 'action',
       description: `${chalk.green('add')} or ${chalk.green('remove')} a plugin; ${chalk.green('list')} all project plugins`,
       validators: [validators.required],
-      prompt: {
-        type: 'list',
-        choices: ['add', 'remove', 'list']
-      }
     },
     {
       name: 'plugin',
@@ -39,13 +32,6 @@ import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
   ],
   options: [
     {
-      name: 'nosave',
-      description: `Do not update config.xml (corresponds to ${chalk.green('add')} and ${chalk.green('remove')})`,
-      type: Boolean,
-      default: false,
-      aliases: ['e']
-    },
-    {
       name: 'force',
       description: `Forve overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
       type: Boolean,
@@ -53,27 +39,23 @@ import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
     }
   ]
 })
-export class PluginCommand extends Command {
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-
-    let action = inputs[0];
-    action = (action === 'rm') ? 'remove' : action;
-    action = (action === 'ls') ? 'list' : action;
+export class PluginCommand extends CordovaCommand implements CommandPreInputsPrompt {
+  async preInputsPrompt(inputs: CommandLineInputs): Promise<void | number> {
+    inputs[0] = (typeof inputs[0] === 'undefined') ? 'list' : inputs[0];
+    inputs[0] = (inputs[0] === 'rm') ? 'remove' : inputs[0];
+    inputs[0] = (inputs[0] === 'ls') ? 'list' : inputs[0];
 
     // If the action is list then lets just end here.
-    if (action === 'list') {
-      try {
-        var response = await this.env.shell.run('cordova', [this.metadata.name, action], {
-          showExecution: (this.env.log.level === 'debug')
-        });
-        return this.env.log.msg(response);
-      } catch (e) {
-        throw e;
-      }
+    if (inputs[0] === 'list') {
+      const response = await this.runCordova(['plugin', 'list']);
+      this.env.log.msg(response);
+      return 0;
     }
+  }
 
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    let [ action, pluginName ] = inputs;
 
-    let pluginName = inputs[1];
     if (!pluginName) {
       const inquirer = load('inquirer');
       const promptResults = await inquirer.prompt({
@@ -81,34 +63,14 @@ export class PluginCommand extends Command {
         type: 'input',
         name: 'plugin',
       });
+
       inputs[1] = pluginName = promptResults['pluginName'];
     }
-    const tasks = new TaskChain();
 
     // ensure the content node was set back to its original
     await resetConfigXmlContentSrc(this.env.project.directory);
+
     const normalizedOptions = normalizeOptionAliases(this.metadata, options);
-    const optionList: string[] = gatherArgumentsForCordova(this.metadata, inputs, normalizedOptions);
-    if (!optionList.includes('--nosave')) {
-      optionList.push('--save');
-    }
-
-    tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
-
-    try {
-      await this.env.shell.run('cordova', optionList, {
-        showExecution: this.env.log.level === 'debug',
-        fatal: false,
-      });
-    } catch (e) {
-      if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
-        throw this.exit(`The Cordova CLI was not found on your PATH. Please install Cordova globally:\n\n` +
-                        `${chalk.green('npm install -g cordova')}\n`);
-      }
-
-      throw e;
-    }
-
-    tasks.end();
+    await this.runCordova(gatherArgumentsForCordova(this.metadata, inputs, normalizedOptions));
   }
 }
