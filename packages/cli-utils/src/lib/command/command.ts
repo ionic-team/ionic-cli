@@ -71,11 +71,15 @@ export class Command implements ICommand {
         // TODO: get telemetry for commands that aborted above
         const configData = await this.env.config.load();
         if (configData.cliFlags.enableTelemetry !== false) {
-          const cmdInputs = this.getCleanInputsForTelemetry(inputs, options);
-          await this.env.telemetry.sendCommand(
-            (this.env.namespace.name) ? `${this.env.namespace.name}:${this.metadata.name}` : this.metadata.name,
-            cmdInputs
-          );
+          let cmdInputs: CommandLineInputs = [];
+
+          if (this.metadata.name === 'help') {
+            cmdInputs = inputs;
+          } else {
+            cmdInputs = this.getCleanInputsForTelemetry(inputs, options);
+          }
+
+          await this.env.telemetry.sendCommand(`ionic ${this.metadata.fullName}`, cmdInputs);
         }
       })(),
       (async () => {
@@ -96,10 +100,6 @@ export class Command implements ICommand {
 
   exit(msg: string, code: number = 1): FatalException {
     return new FatalException(msg, code);
-  }
-
-  exitAPIFormat(req: superagentType.SuperAgentRequest, res: APIResponse): FatalException {
-    return createFatalAPIFormat(req, res);
   }
 
   getCleanInputsForTelemetry(inputs: CommandLineInputs, options: CommandLineOptions) {
