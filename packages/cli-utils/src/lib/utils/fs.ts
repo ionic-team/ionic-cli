@@ -45,7 +45,7 @@ export async function fsReadJsonFile(filePath: string, options: FSReadFileOption
 }
 
 export async function fsWriteJsonFile(filePath: string, json: { [key: string]: any}, options: FSWriteFileOptions): Promise<void> {
-  return fsWriteFile(filePath, JSON.stringify(json, null, 2), options);
+  return fsWriteFile(filePath, JSON.stringify(json, null, 2) + '\n', options);
 }
 
 export async function fileToString(filepath: string): Promise<string> {

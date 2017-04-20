@@ -208,7 +208,7 @@ export async function createProjectConfig(appName: string, starterType: StarterT
   const jsonStructure = {
     name: appName,
     app_id: cloudAppId,
-    projectTypeId: starterType.id
+    type: starterType.id
   };
 
   await fsWriteJsonFile(filePath, jsonStructure, { encoding: 'utf8' });

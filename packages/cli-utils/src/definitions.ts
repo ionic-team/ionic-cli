@@ -34,7 +34,13 @@ export interface PackageJson {
   version: string;
   dependencies: { [key: string]: string };
   devDependencies: { [key: string]: string };
-  peerDependencies: { [key: string]: string };
+  peerDependencies?: { [key: string]: string };
+}
+
+export interface BowerJson {
+  name: string;
+  dependencies?: { [key: string]: string };
+  devDependencies?: { [key: string]: string };
 }
 
 export interface EnvironmentInfo {
@@ -63,10 +69,12 @@ export interface ProjectFileProxy {
   path: string;
 }
 
+export type ProjectType = 'ionic-angular' | 'ionic1';
+
 export interface ProjectFile {
   name: string;
+  type: ProjectType;
   app_id: string;
-  v2: boolean;
   proxies?: ProjectFileProxy[];
 }
 
@@ -120,6 +128,8 @@ export interface IProject extends IConfig<ProjectFile> {
   directory: string;
 
   loadAppId(): Promise<string>;
+  loadPackageJson(): Promise<PackageJson>;
+  loadBowerJson(): Promise<BowerJson>;
 }
 
 export type CommandLineInput = string | boolean | null | undefined | string[];
@@ -293,7 +303,8 @@ export interface InfoHookItem {
 export interface IHook<T, U> {
   source: string;
   name: string;
-  callable: (args: T) => Promise<U>;
+
+  fire(args: T): Promise<U>;
 }
 
 export interface IHookEngine {
@@ -309,7 +320,10 @@ export interface IHookEngine {
   register(source: string, hook: 'command:build', listener: (args: CommandHookArgs) => Promise<void>): void;
   register(source: string, hook: 'command:serve', listener: (args: CommandHookArgs) => Promise<{ [key: string]: any }>): void;
 
-  getRegistered<T, U>(evt: string): IHook<T, U>[];
+  getSources(hook: string): string[];
+  hasSources(hook: string, sources: string[]): boolean;
+
+  getRegistered<T, U>(hook: string): IHook<T, U>[];
 }
 
 export interface IonicEnvironment {

@@ -92,20 +92,11 @@ import { load } from '../lib/modules';
 })
 export class ServeCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-
     options = normalizeOptionAliases(this.metadata, options);
 
     const tasks = new TaskChain();
 
-    const numListeners = this.env.hooks.getRegistered('serve').length;
-
-    if (numListeners === 0) {
-      throw this.exit('No listeners for serve event. Did you install the appropriate plugin?'); // TODO: make better?
-    } else if (numListeners > 1) {
-      throw this.exit(`Too many listeners for serve event (${numListeners}). Install only one plugin.`); // TODO: make better?
-    }
-
-    const [response] = await this.env.hooks.fire('command:serve', {
+    const [ response ] = await this.env.hooks.fire('command:serve', {
       env: this.env,
       inputs,
       options: {

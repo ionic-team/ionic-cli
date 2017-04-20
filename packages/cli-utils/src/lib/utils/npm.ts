@@ -1,10 +1,9 @@
-import * as path from 'path';
-
-import { PackageJson } from '../../definitions';
-import { isPackageJson } from '../../guards';
+import { BowerJson, PackageJson } from '../../definitions';
+import { isBowerJson, isPackageJson } from '../../guards';
 import { fsReadJsonFile } from './fs';
 
 export const ERROR_INVALID_PACKAGE_JSON = 'INVALID_PACKAGE_JSON';
+export const ERROR_INVALID_BOWER_JSON = 'INVALID_BOWER_JSON';
 
 export async function readPackageJsonFile(path: string): Promise<PackageJson> {
   const packageJson = await fsReadJsonFile(path);
@@ -16,11 +15,12 @@ export async function readPackageJsonFile(path: string): Promise<PackageJson> {
   return packageJson;
 }
 
-/**
- * Get package.json contents for the project package
- */
-export async function readProjectPackageJsonFile(appDirectory: string): Promise<PackageJson> {
-  const packageJsonPath = path.resolve(appDirectory, 'package.json');
-  return await readPackageJsonFile(packageJsonPath);
-}
+export async function readBowerJsonFile(path: string): Promise<BowerJson> {
+  const bowerJson = await fsReadJsonFile(path);
 
+  if (!isBowerJson(bowerJson)) {
+    throw ERROR_INVALID_PACKAGE_JSON;
+  }
+
+  return bowerJson;
+}

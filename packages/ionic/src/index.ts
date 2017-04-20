@@ -1,11 +1,12 @@
 import * as path from 'path';
-import * as os from 'os';
 
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 
 import {
   App,
+  CONFIG_DIRECTORY,
+  CONFIG_FILE,
   Client,
   Config,
   FatalException,
@@ -13,6 +14,7 @@ import {
   IHookEngine,
   IonicEnvironment,
   Logger,
+  PROJECT_FILE,
   Project,
   Session,
   Shell,
@@ -28,10 +30,6 @@ import {
 } from '@ionic/cli-utils';
 
 import { IonicNamespace } from './commands';
-
-const PROJECT_FILE = 'ionic.config.json';
-const CONFIG_FILE = 'config.json';
-const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
 
 function cleanup() {
   for (let task of TASKS) {
@@ -99,7 +97,6 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   env['PROJECT_DIR'] = await getProjectRootDir(process.cwd(), env['PROJECT_FILE']);
 
   try {
-
     const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
     const project = new Project(env['PROJECT_DIR'], env['PROJECT_FILE']);
 
@@ -136,7 +133,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 
     await loadPlugins(ionicEnvironment);
     await namespace.runCommand(ionicEnvironment);
-    await ionicEnvironment.config.save();
+    await Promise.all([config.save(), project.save()]);
 
   } catch (e) {
     err = e;

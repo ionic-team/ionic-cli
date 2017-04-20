@@ -1,4 +1,6 @@
 import * as path from 'path';
+import * as os from 'os';
+
 import * as chalk from 'chalk';
 
 import { ConfigFile, IConfig } from '../definitions';
@@ -8,15 +10,23 @@ import { ERROR_FILE_NOT_FOUND, fsMkdirp, fsStat, fsReadJsonFile, fsWriteJsonFile
 import { load } from './modules';
 
 export abstract class BaseConfig<T> implements IConfig<T> {
+  public directory: string;
   public filePath: string;
   protected configFile?: T;
-  protected originalConfigFile?: T;
+  protected originalConfigFile?: { [key: string]: any };
 
-  constructor(public directory: string, public fileName: string) {
+  constructor(directory: string, public fileName: string) {
+    // TODO: better way to check if in project
+    if (directory) {
+      this.directory = path.resolve(directory);
+    } else {
+      this.directory = '';
+    }
+
     this.filePath = path.resolve(directory, fileName);
   }
 
-  abstract provideDefaults(o: { [key: string]: any }): { [key: string]: any };
+  abstract provideDefaults(o: { [key: string]: any }): Promise<{ [key: string]: any }>;
 
   abstract is<T>(o: { [key: string]: any }): o is T;
 
@@ -34,12 +44,13 @@ export abstract class BaseConfig<T> implements IConfig<T> {
         }
       }
 
-      o = this.provideDefaults(o);
+      const lodash = load('lodash');
+      this.originalConfigFile = lodash.cloneDeep(o);
+
+      o = await this.provideDefaults(o);
 
       if (this.is<T>(o)) {
         this.configFile = o;
-        const lodash = load('lodash');
-        this.originalConfigFile = lodash.cloneDeep(o);
       } else {
         throw new FatalException(`The config file (${chalk.bold(prettyPath(this.filePath))}) has an unrecognized format.\n`
                                + `Try deleting the file.`);
@@ -75,8 +86,11 @@ export abstract class BaseConfig<T> implements IConfig<T> {
   }
 }
 
+export const CONFIG_FILE = 'config.json';
+export const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
+
 export class Config extends BaseConfig<ConfigFile> {
-  provideDefaults(o: any): any {
+  async provideDefaults(o: any): Promise<any> {
     const lodash = load('lodash');
     const results = lodash.cloneDeep(o);
 

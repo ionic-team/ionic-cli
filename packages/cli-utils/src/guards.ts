@@ -4,6 +4,7 @@ import {
   APIResponseSuccess,
   AppDetails,
   AuthToken,
+  BowerJson,
   CommandPreInputsPrompt,
   CommandPreRun,
   Deploy,
@@ -44,8 +45,12 @@ export function isPackageJson(o: Object): o is PackageJson {
     && typeof obj.version === 'string'
     && typeof obj.name === 'string'
     && typeof obj.dependencies === 'object'
-    && typeof obj.devDependencies === 'object'
-    && typeof obj.peerDependencies === 'object';
+    && typeof obj.devDependencies === 'object';
+}
+
+export function isBowerJson(o: Object): o is BowerJson {
+  const obj = <BowerJson>o;
+  return obj && typeof obj.name === 'string';
 }
 
 export function isValidationErrorArray(e: Object[]): e is ValidationError[] {
