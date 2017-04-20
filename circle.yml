@@ -1,4 +1,6 @@
 machine:
+  environment:
+    IONIC_SKIP_CORDOVA_CHECK: 1
   node:
     version: v6.1.0
 

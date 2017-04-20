@@ -27,6 +27,10 @@ function getCommandInfo(cmd, args) {
   });
 }
 
+if (process.env['IONIC_SKIP_CORDOVA_CHECK']) {
+  process.exit(0);
+}
+
 getCommandInfo('cordova', ['-v']).then(function(data) {
   if (data === "Not installed") {
     console.log('###########################################################################################')
