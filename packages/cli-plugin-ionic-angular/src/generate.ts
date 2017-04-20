@@ -8,11 +8,14 @@ import { minimistOptionsToArray } from './utils/arguments';
 import { prompt, tabsPrompt } from './utils/generate';
 
 export async function generate(args: CommandHookArgs): Promise<string[]> {
+  if (!args.env.project.directory) {
+    return [];
+  }
+
   const appScriptsArgs = minimistOptionsToArray(args.options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
-  const appDirectory = '.'; // TODO: change this
-  const ionicInfo = await readPackageJsonFile(path.resolve(appDirectory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
+  const ionicInfo = await readPackageJsonFile(path.resolve(args.env.project.directory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
 
   if (Number(ionicInfo.version.charAt(0)) < 3) {
     throw new Error(`The generate command is only available for projects that use ionic-angular >= 3.0.0`);

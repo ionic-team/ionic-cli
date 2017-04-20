@@ -10,10 +10,14 @@ export const name = '__NAME__';
 export const version = '__VERSION__';
 
 export function registerHooks(hooks: IHookEngine) {
-  hooks.register(name, 'command:docs', async () => {
-    const appDirectory = '.'; // TODO: change this
-    const ionicAngularPackageJson = await readPackageJsonFile(path.resolve(appDirectory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
+  hooks.register(name, 'command:docs', async ({ env }) => {
     const docsHomepage = 'https://ionicframework.com/docs';
+
+    if (!env.project.directory) {
+      return docsHomepage;
+    }
+
+    const ionicAngularPackageJson = await readPackageJsonFile(path.resolve(env.project.directory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
     const version = ionicAngularPackageJson.version;
     const url = `${docsHomepage}/${version}/api`;
 
@@ -24,11 +28,14 @@ export function registerHooks(hooks: IHookEngine) {
     await generate(args);
   });
 
-  hooks.register(name, 'command:info', async () => {
-    const appDirectory = '.'; // TODO: change this
+  hooks.register(name, 'command:info', async ({ env }) => {
+    if (!env.project.directory) {
+      return [];
+    }
+
     const [ ionicAngularPackageJson, appScriptsPackageJson ] = await Promise.all([
-      readPackageJsonFile(path.resolve(appDirectory, 'node_modules', 'ionic-angular', 'package.json')), // TODO
-      readPackageJsonFile(path.resolve(appDirectory, 'node_modules', '@ionic', 'app-scripts', 'package.json')), // TODO
+      readPackageJsonFile(path.resolve(env.project.directory, 'node_modules', 'ionic-angular', 'package.json')), // TODO
+      readPackageJsonFile(path.resolve(env.project.directory, 'node_modules', '@ionic', 'app-scripts', 'package.json')), // TODO
     ]);
 
     return [

@@ -12,9 +12,12 @@ export function registerHooks(hooks: IHookEngine) {
     return 'https://ionicframework.com/docs/v1/';
   });
 
-  hooks.register(name, 'command:info', async () => {
-    const appDirectory = '.'; // TODO: change this
-    const ionicVersionJson = await fsReadJsonFile(path.resolve(appDirectory, 'www', 'lib', 'ionic', 'version.json')); // TODO
+  hooks.register(name, 'command:info', async ({ env }) => {
+    if (!env.project.directory) {
+      return [];
+    }
+
+    const ionicVersionJson = await fsReadJsonFile(path.resolve(env.project.directory, 'www', 'lib', 'ionic', 'version.json')); // TODO
 
     return [
       { type: 'local-npm', name: 'Ionic Framework', version: `ionic1 ${ionicVersionJson['version'] || 'unknown'}` },
