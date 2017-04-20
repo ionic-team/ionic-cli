@@ -31,7 +31,7 @@ export async function pkgInstallProject(installer: string, root: string): Promis
 export function tarXvfFromUrl(url: string, destination: string) {
   return new Promise<void>((resolve, reject) => {
     const archiveRequest = createRequest('get', url)
-      .timeout(30000)
+      .timeout(25000)
       .on('response', (res) => {
         if (res.statusCode !== 200) {
           reject(new Error(`encountered bad status code (${res.statusCode}) for ${url}`));

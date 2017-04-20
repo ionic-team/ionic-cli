@@ -162,7 +162,7 @@ export async function uploadSourceImages(srcImages: SourceImage[]): Promise<Imag
   return Promise.all(
     srcImages.map(async (srcImage) => {
       const res = await createRequest('POST', UPLOAD_URL)
-        .timeout(30000)
+        .timeout(25000)
         .type('form')
         .attach('src', srcImage.path)
         .field('image_id', srcImage.imageId || '');
@@ -178,7 +178,7 @@ export async function uploadSourceImages(srcImages: SourceImage[]): Promise<Imag
 export function transformResourceImage(imageResource: ImageResource) {
   return new Promise<void>((resolve, reject) => {
     const req = createRequest('POST', TRANSFORM_URL)
-      .timeout(30000)
+      .timeout(25000)
       .type('form')
       .send({
         'name': imageResource.name,
