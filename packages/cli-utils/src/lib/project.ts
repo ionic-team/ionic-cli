@@ -63,6 +63,8 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
     }
 
     delete results.projectTypeId;
+    delete results.typescript;
+    delete results.v2;
 
     return results;
   }
