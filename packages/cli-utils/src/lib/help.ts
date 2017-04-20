@@ -61,13 +61,22 @@ export function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INa
 
 export function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, inputs: string[]) {
   const globalMetadata = ns.getCommandMetadataList();
-  const globalCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'global']);
-  const projectCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'project']);
 
-  return `\n${chalk.bold('Global Commands')}\n\n` +
-    `${globalCommandDetails.map(hd => `  ${hd}\n`).join('')}\n` +
-    `${chalk.bold('Project Commands')}\n\n` +
-    `${projectCommandDetails.map(hd => `  ${hd}\n`).join('')}`;
+  const formatList = (details: string[]) => details.map(hd => `  ${hd}\n`).join('');
+
+  if (ns.root) {
+    const globalCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'global']);
+    const projectCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'project']);
+
+    return `\n${chalk.bold('Global Commands')}\n\n` +
+      `${formatList(globalCommandDetails)}\n` +
+      `${chalk.bold('Project Commands')}\n\n` +
+      `${formatList(projectCommandDetails)}`;
+  } else {
+    const commandDetails = getHelpDetails(env, globalMetadata, []);
+    return `\n${chalk.bold('Commands')}\n\n` +
+      `${formatList(commandDetails)}\n`;
+  }
 }
 
 function getHelpDetails(env: IonicEnvironment, commandMetadataList: CommandData[], filters: ((cmd: CommandData) => boolean)[] = []): string[] {
@@ -76,11 +85,6 @@ function getHelpDetails(env: IonicEnvironment, commandMetadataList: CommandData[
   }
 
   const foundCommandList = commandMetadataList.filter((cmd) => typeof cmd.visible === 'undefined' ? true : cmd.visible);
-
-  // No command was found if the length is zero.
-  if (foundCommandList.length === 0) {
-    throw 'UNKNOWN_COMMAND';
-  }
 
   return getListOfCommandDetails(foundCommandList);
 }

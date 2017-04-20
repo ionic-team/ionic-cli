@@ -24,6 +24,7 @@ import { LinkCommand } from './link';
 import { UploadCommand } from './upload';
 
 export class IonicNamespace extends Namespace {
+  root = true;
   name = 'ionic';
 
   commands = new CommandMap([

@@ -349,6 +349,7 @@ export interface Plugin {
 }
 
 export interface INamespace {
+  root: boolean;
   name: string;
   namespaces: INamespaceMap;
   commands: ICommandMap;

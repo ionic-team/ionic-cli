@@ -36,6 +36,7 @@ export class CommandMap extends Map<string, string | CommandMapGetter> {
 export class NamespaceMap extends Map<string, NamespaceMapGetter> {}
 
 export class Namespace implements INamespace {
+  root = false;
   name = '';
   namespaces = new NamespaceMap();
   commands = new CommandMap();
