@@ -98,11 +98,6 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
       type: Boolean,
       aliases: ['l']
     },
-    // {
-    //   name: 'cloud-app-id',
-    //   description: 'An existing Ionic.io app ID to link with',
-    //   type: String
-    // },
     {
       name: 'skip-link',
       description: 'Do not link app to an Ionic Account',
@@ -114,7 +109,6 @@ export class StartCommand extends Command implements CommandPreInputsPrompt {
   async preInputsPrompt() {
     // If the action is list then lets just end here.
     if (this.env.argv['list']) {
-
       this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES).join('\n'));
       return 0;
     }
@@ -138,10 +132,7 @@ export class StartCommand extends Command implements CommandPreInputsPrompt {
 
     var tasks = new TaskChain();
 
-    /**
-     * Create the project directory
-     */
-
+    // Create the project directory
     const pathExists = load('path-exists');
     if (!pathExists.sync(projectName)) {
       tasks.next(`Creating directory ${chalk.green(projectRoot)}`);

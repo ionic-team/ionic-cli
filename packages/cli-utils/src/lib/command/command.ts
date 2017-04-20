@@ -40,28 +40,35 @@ export class Command implements ICommand {
   }
 
   async execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let preInputsResult, preRunResult: number | void;
+    let r: number | void;
 
     if (isCommandPreInputsPrompt(this)) {
-      preInputsResult = await this.preInputsPrompt(inputs);
-      if (typeof preInputsResult === 'number' && preInputsResult > 0) {
-        throw this.exit('', preInputsResult);
+      r = await this.preInputsPrompt(inputs);
+      if (typeof r === 'number') {
+        if (r > 0) {
+          throw this.exit('', r);
+        }
+
+        return;
       }
     }
 
     await collectInputs(inputs, this.metadata);
 
     if (isCommandPreRun(this)) {
-      preRunResult = await this.preRun(inputs, options);
-      if (typeof preRunResult === 'number') {
-        if (preRunResult > 0) {
-          throw this.exit('', preRunResult);
+      r = await this.preRun(inputs, options);
+      if (typeof r === 'number') {
+        if (r > 0) {
+          throw this.exit('', r);
         }
+
+        return;
       }
     }
 
     const results = await Promise.all([
       (async () => {
+        // TODO: get telemetry for commands that aborted above
         const configData = await this.env.config.load();
         if (configData.cliFlags.enableTelemetry !== false) {
           const cmdInputs = this.getCleanInputsForTelemetry(inputs, options);
@@ -72,17 +79,15 @@ export class Command implements ICommand {
         }
       })(),
       (async () => {
-        if (typeof preInputsResult === 'undefined' && typeof preRunResult === 'undefined') {
-          await this.run(inputs, options);
-        }
+        await this.run(inputs, options);
       })()
     ]);
 
-    const runResult = results[1];
+    r = results[1];
 
-    if (typeof runResult === 'number') {
-      if (runResult > 0) {
-        throw this.exit('', runResult);
+    if (typeof r === 'number') {
+      if (r > 0) {
+        throw this.exit('', r);
       }
 
       return;

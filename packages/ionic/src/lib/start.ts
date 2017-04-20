@@ -113,7 +113,7 @@ export function getStarterTemplateTextList(templateList: StarterTemplate[]): str
   return templateList.map(({ name, typeId, description }) => {
     let templateName = chalk.green(name);
 
-    return `${templateName} ${Array(20 - name.length).join('.')} ${chalk.bold(typeId)} ${description}`;
+    return `${templateName} ${Array(20 - name.length).join(chalk.dim('.'))} ${chalk.bold(typeId)} ${description}`;
   });
 }
 
