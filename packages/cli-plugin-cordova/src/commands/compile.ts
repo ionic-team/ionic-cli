@@ -4,7 +4,8 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  TaskChain
+  ERROR_SHELL_COMMAND_NOT_FOUND,
+  TaskChain,
 } from '@ionic/cli-utils';
 import { gatherArgumentsForCordova } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
@@ -23,11 +24,21 @@ export class CompileCommand extends Command {
     await resetConfigXmlContentSrc(this.env.project.directory);
 
     const optionList: string[] = gatherArgumentsForCordova(this.metadata, inputs, options);
-
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
-    await this.env.shell.run('cordova', optionList, {
-      showExecution: (this.env.log.level === 'debug')
-    });
+
+    try {
+      await this.env.shell.run('cordova', optionList, {
+        showExecution: this.env.log.level === 'debug',
+        fatal: false,
+      });
+    } catch (e) {
+      if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
+        throw this.exit(`The Cordova CLI was not found on your PATH. Please install Cordova globally:\n\n` +
+                        `${chalk.green('npm install -g cordova')}\n`);
+      }
+
+      throw e;
+    }
 
     tasks.end();
   }

@@ -5,9 +5,10 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  ERROR_SHELL_COMMAND_NOT_FOUND,
   TaskChain,
+  normalizeOptionAliases,
   validators,
-  normalizeOptionAliases
 } from '@ionic/cli-utils';
 import {
   generateBuildOptions,
@@ -33,10 +34,10 @@ import {
   inputs: [
     {
       name: 'platform',
-      description: `the platform that you would like to build: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
+      description: `The platform to build: ${chalk.green('ios')}, ${chalk.green('android')}`,
       validators: [validators.required],
       prompt: {
-        message: `What platform would you like to build (${chalk.bold('ios')}, ${chalk.bold('android')}):`
+        message: `What platform would you like to build: ${chalk.green('ios')}, ${chalk.green('android')}:`
       }
     }
   ],
@@ -123,9 +124,19 @@ export class BuildCommand extends Command {
 
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
 
-    await this.env.shell.run('cordova', optionList, {
-      showExecution: (this.env.log.level === 'debug')
-    });
+    try {
+      await this.env.shell.run('cordova', optionList, {
+        showExecution: this.env.log.level === 'debug',
+        fatal: false,
+      });
+    } catch (e) {
+      if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
+        throw this.exit(`The Cordova CLI was not found on your PATH. Please install Cordova globally:\n\n` +
+                        `${chalk.green('npm install -g cordova')}\n`);
+      }
+
+      throw e;
+    }
 
     tasks.end();
   }

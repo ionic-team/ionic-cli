@@ -6,9 +6,10 @@ import {
   CommandLineOptions,
   CommandMetadata,
   CommandPreInputsPrompt,
+  ERROR_SHELL_COMMAND_NOT_FOUND,
   TaskChain,
+  normalizeOptionAliases,
   validators,
-  normalizeOptionAliases
 } from '@ionic/cli-utils';
 import { KnownPlatform } from '../definitions';
 import { gatherArgumentsForCordova } from '../lib/utils/cordova';
@@ -31,7 +32,7 @@ import {
       description: `${chalk.green('add')}, ${chalk.green('remove')}, or ${chalk.green('update')} a platform; ${chalk.green('list')} all project platforms`,
       validators: [validators.required],
       prompt: {
-        message: 'What action would you like to take (add, remove, or update):',
+        message: `What action would you like to take: ${chalk.green('add')}, ${chalk.green('remove')}, or ${chalk.green('update')}:`,
       },
     },
     {
@@ -68,12 +69,22 @@ export class PlatformCommand extends Command implements CommandPreInputsPrompt {
 
     // If the action is list then lets just end here.
     if (inputs[0] === 'list') {
-      const response = await this.env.shell.run('cordova', [this.metadata.name, inputs[0]], {
-        showExecution: (this.env.log.level === 'debug')
-      });
+      try {
+        const response = await this.env.shell.run('cordova', [this.metadata.name, inputs[0]], {
+          showExecution: this.env.log.level === 'debug',
+          fatal: false,
+        });
 
-      this.env.log.msg(response);
-      return 0;
+        this.env.log.msg(response);
+        return 0;
+      } catch (e) {
+        if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
+          throw this.exit(`The Cordova CLI was not found on your PATH. Please install Cordova globally:\n\n` +
+                          `${chalk.green('npm install -g cordova')}\n`);
+        }
+
+        throw e;
+      }
     }
   }
 
@@ -96,11 +107,18 @@ export class PlatformCommand extends Command implements CommandPreInputsPrompt {
     }
 
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
+
     try {
       await this.env.shell.run('cordova', optionList, {
-        showExecution: (this.env.log.level === 'debug')
+        showExecution: this.env.log.level === 'debug',
+        fatal: false,
       });
     } catch (e) {
+      if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
+        throw this.exit(`The Cordova CLI was not found on your PATH. Please install Cordova globally:\n\n` +
+                        `${chalk.green('npm install -g cordova')}\n`);
+      }
+
       throw e;
     }
 

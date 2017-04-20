@@ -2,6 +2,8 @@ import { IShell, IShellRunOptions } from '../definitions';
 import { FatalException } from './errors';
 import { runcmd } from './utils/shell';
 
+export const ERROR_SHELL_COMMAND_NOT_FOUND = 'SHELL_COMMAND_NOT_FOUND';
+
 export class Shell implements IShell {
   async run(command: string, args?: string[], options: IShellRunOptions = {}): Promise<string> {
     if (typeof options.showExecution === 'undefined') {
@@ -30,7 +32,11 @@ export class Shell implements IShell {
       return out;
     } catch (e) {
       if (e.code === 'ENOENT') {
-        throw new FatalException(`Command not found: ${command}`, 127);
+        if (options.fatal) {
+          throw new FatalException(`Command not found: ${command}`, 127);
+        } else {
+          throw ERROR_SHELL_COMMAND_NOT_FOUND;
+        }
       }
 
       if (!Array.isArray(e)) {

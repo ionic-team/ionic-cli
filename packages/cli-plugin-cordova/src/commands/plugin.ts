@@ -4,6 +4,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  ERROR_SHELL_COMMAND_NOT_FOUND,
   TaskChain,
   normalizeOptionAliases,
   validators,
@@ -93,11 +94,18 @@ export class PluginCommand extends Command {
     }
 
     tasks.next(`Executing cordova command: ${chalk.bold('cordova ' + optionList.join(' '))}`);
+
     try {
       await this.env.shell.run('cordova', optionList, {
-        showExecution: (this.env.log.level === 'debug')
+        showExecution: this.env.log.level === 'debug',
+        fatal: false,
       });
     } catch (e) {
+      if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
+        throw this.exit(`The Cordova CLI was not found on your PATH. Please install Cordova globally:\n\n` +
+                        `${chalk.green('npm install -g cordova')}\n`);
+      }
+
       throw e;
     }
 
