@@ -49,6 +49,9 @@ getCommandInfo('cordova', ['-v']).then(function(data) {
     console.log('>>>>>                                                                                 <<<<<');
     console.log('>>>>>                 ' + chalk.green('npm install --save-dev @ionic/cli-plugin-cordova') + '                <<<<<');
     console.log('>>>>>                                                                                 <<<<<');
+    console.log(">>>>>      " + chalk.dim("(if you know what you're doing and want to kill this error, try this):") + "     <<<<<");
+    console.log('>>>>>   ' + chalk.dim('IONIC_SKIP_CORDOVA_CHECK=1 npm install --save-dev @ionic/cli-plugin-cordova') + '   <<<<<');
+    console.log('>>>>>                                                                                 <<<<<');
     console.log('###########################################################################################')
 
     process.exit(1);
