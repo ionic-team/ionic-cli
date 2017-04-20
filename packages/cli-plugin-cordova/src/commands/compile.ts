@@ -11,6 +11,7 @@ import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 
 @CommandMetadata({
   name: 'compile',
+  type: 'project',
   description: 'Compile native platform code'
 })
 export class CompileCommand extends Command {

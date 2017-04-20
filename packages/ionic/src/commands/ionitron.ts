@@ -3,7 +3,7 @@ import { getIonitronString, ionitronStatements } from '../lib/ionitron';
 
 @CommandMetadata({
   name: 'ionitron',
-  unlisted: true,
+  type: 'global',
   description: 'Print random ionitron messages',
   options: [
     {
@@ -11,7 +11,8 @@ import { getIonitronString, ionitronStatements } from '../lib/ionitron';
       description: 'Print in spanish',
       type: Boolean,
     }
-  ]
+  ],
+  visible: false,
 })
 export class IonitronCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

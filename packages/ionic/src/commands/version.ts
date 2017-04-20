@@ -7,8 +7,9 @@ import {
 
 @CommandMetadata({
   name: 'version',
-  unlisted: true,
+  type: 'global',
   description: 'Returns the current CLI version',
+  visible: false,
 })
 export class VersionCommand extends Command {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

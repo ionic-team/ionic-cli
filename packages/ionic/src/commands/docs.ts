@@ -14,8 +14,8 @@ import { load } from '../lib/modules';
  */
 @CommandMetadata({
   name: 'docs',
+  type: 'global',
   description: 'Open the Ionic documentation website',
-  requiresProject: true
 })
 export class DocsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

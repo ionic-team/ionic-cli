@@ -27,6 +27,7 @@ import {
  */
 @CommandMetadata({
   name: 'emulate',
+  type: 'project',
   description: 'Emulate an Ionic project on a simulator or emulator',
   exampleCommands: ['ios --livereload -c -s'],
   inputs: [

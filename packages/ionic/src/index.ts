@@ -214,7 +214,7 @@ function modifyArguments(pargv: string[]): string[] {
   }
 
   if (minimistArgv._.length === 0 && (minimistArgv['version'] || minimistArgv['v'])) {
-    return modifiedArgArray = ['version'];
+    return ['version'];
   }
 
   /**

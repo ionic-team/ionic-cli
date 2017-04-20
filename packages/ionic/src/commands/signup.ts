@@ -11,6 +11,7 @@ import {
  */
 @CommandMetadata({
   name: 'signup',
+  type: 'global',
   description: 'Create an Ionic account',
 })
 export class SignupCommand extends Command {

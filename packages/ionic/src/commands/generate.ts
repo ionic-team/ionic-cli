@@ -10,6 +10,7 @@ import {
 
 @CommandMetadata({
   name: 'generate',
+  type: 'project',
   description: `Generate pipes, components, pages, directives, and tabs ${chalk.bold(`(ionic-angular >= 3.0.0)`)}`,
   exampleCommands: ['', 'component', 'directive', 'page', 'pipe', 'provider', 'tabs', 'component foo', 'page Login', 'pipe MyFilterPipe'],
   inputs: [
@@ -32,7 +33,6 @@ import {
       }
     }
   ],
-  requiresProject: true
 })
 export class GenerateCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

@@ -11,6 +11,7 @@ import { load } from '../lib/modules';
 
 @CommandMetadata({
   name: 'serve',
+  type: 'project',
   description: 'Start a local development server for app dev/testing',
   exampleCommands: ['--lab --consolelogs -s'],
   options: [
@@ -88,7 +89,6 @@ import { load } from '../lib/modules';
       type: Boolean
     }
   ],
-  requiresProject: true
 })
 export class ServeCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

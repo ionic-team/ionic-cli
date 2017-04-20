@@ -13,6 +13,7 @@ import {
 
 @CommandMetadata({
   name: 'info',
+  type: 'global',
   description: 'Print system/environment info'
 })
 export class InfoCommand extends Command {

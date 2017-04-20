@@ -8,7 +8,7 @@ import {
 
 @CommandMetadata({
   name: 'telemetry',
-  unlisted: true,
+  type: 'global',
   description: 'Opt in and out of telemetry',
   inputs: [
     {
@@ -31,7 +31,8 @@ import {
         ]
       }
     }
-  ]
+  ],
+  visible: false,
 })
 export class TelemetryCommand extends Command {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

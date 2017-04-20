@@ -8,7 +8,7 @@ import {
 
 @CommandMetadata({
   name: 'help',
-  unlisted: true,
+  type: 'global',
   description: 'Provides help for a certain command',
   exampleCommands: ['start'],
   inputs: [
@@ -16,7 +16,8 @@ import {
       name: 'command',
       description: 'The command you desire help with'
     }
-  ]
+  ],
+  visible: false,
 })
 export class HelpCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

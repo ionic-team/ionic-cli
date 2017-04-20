@@ -36,6 +36,7 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
 
 @CommandMetadata({
   name: 'start',
+  type: 'global',
   description: 'Create a new project',
   exampleCommands: [
     'mynewapp blank',

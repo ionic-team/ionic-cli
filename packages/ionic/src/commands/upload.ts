@@ -10,6 +10,7 @@ import { upload } from '../lib/upload';
 
 @CommandMetadata({
   name: 'upload',
+  type: 'project',
   description: 'Upload a new snapshot of your app',
   exampleCommands: [''],
   options: [
@@ -22,7 +23,6 @@ import { upload } from '../lib/upload';
       description: 'Deploys this snapshot to the given channel',
     },
   ],
-  requiresProject: true
 })
 export class UploadCommand extends Command {
   resolveNote(input: CommandLineInput) {

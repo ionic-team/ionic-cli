@@ -18,6 +18,7 @@ import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
  */
 @CommandMetadata({
   name: 'plugin',
+  type: 'project',
   description: 'Manage Cordova plugins',
   exampleCommands: ['add cordova-plugin-inappbrowser@latest', 'list'],
   inputs: [

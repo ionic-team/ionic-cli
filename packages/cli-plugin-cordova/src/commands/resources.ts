@@ -45,6 +45,7 @@ const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
 
 @CommandMetadata({
   name: 'resources',
+  type: 'project',
   description: 'Automatically create icon and splash screen resources',
   exampleCommands: [''],
   options: [

@@ -21,6 +21,7 @@ const CREATE_NEW_APP_CHOICE = 'createNewApp';
  */
 @CommandMetadata({
   name: 'link',
+  type: 'project',
   description: 'Connect your local app to Ionic',
   exampleCommands: ['', 'a1b2c3d4'],
   inputs: [
@@ -29,7 +30,6 @@ const CREATE_NEW_APP_CHOICE = 'createNewApp';
       description: `The ID of the app to link (e.g. ${chalk.bold('a1b2c3d4')})`
     }
   ],
-  requiresProject: true
 })
 export class LinkCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

@@ -27,6 +27,7 @@ import {
  */
 @CommandMetadata({
   name: 'build',
+  type: 'project',
   description: 'Build (prepare + compile) an Ionic project for a given platform',
   exampleCommands: ['ios'],
   inputs: [

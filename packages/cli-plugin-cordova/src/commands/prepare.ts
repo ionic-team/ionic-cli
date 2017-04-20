@@ -11,6 +11,7 @@ import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 
 @CommandMetadata({
   name: 'prepare',
+  type: 'project',
   description: 'Transform metadata to platform manifests and copies assets to Cordova platforms'
 })
 export class PrepareCommand extends Command {

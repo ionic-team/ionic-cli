@@ -16,11 +16,9 @@ import { generateFillSpaceStringList } from './utils/format';
 import { ERROR_PLUGIN_NOT_INSTALLED, KNOWN_PLUGINS, ORG_PREFIX, PLUGIN_PREFIX, loadPlugin } from './plugins';
 
 export async function showHelp(env: IonicEnvironment, inputs: string[]) {
-  const inProject = env.project.directory ? true : false;
-
   // If there are no inputs then show global command details.
   if (inputs.length === 0) {
-    return env.log.msg(getFormattedHelpDetails(env.namespace, inputs, inProject));
+    return env.log.msg(getFormattedHelpDetails(env, env.namespace, inputs));
   }
 
   const [slicedInputs, cmdOrNamespace] = env.namespace.locate(inputs);
@@ -47,13 +45,13 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]) {
     }
   }
 
-  env.log.msg(formatHelp(cmdOrNamespace, inputs, inProject));
+  env.log.msg(formatHelp(env, cmdOrNamespace, inputs));
 }
 
-export function formatHelp(cmdOrNamespace: ICommand | INamespace, inputs: string[], inProject: boolean = false) {
+export function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INamespace, inputs: string[]) {
   // If the command is located on the global namespace then show its help
   if (!isCommand(cmdOrNamespace)) {
-    return getFormattedHelpDetails(cmdOrNamespace, inputs, inProject);
+    return getFormattedHelpDetails(env, cmdOrNamespace, inputs);
   }
 
   const command = cmdOrNamespace;
@@ -61,24 +59,29 @@ export function formatHelp(cmdOrNamespace: ICommand | INamespace, inputs: string
   return formatCommandHelp(command.metadata);
 }
 
-export function getFormattedHelpDetails(ns: INamespace, inputs: string[], inProject: boolean = false) {
+export function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, inputs: string[]) {
   const globalMetadata = ns.getCommandMetadataList();
-  const details = getHelpDetails(globalMetadata, inputs);
+  const globalCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'global']);
+  const projectCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'project']);
 
-  return `\n${chalk.bold(`Help Details:`)}\n\n${details.map(hd => `  ${hd}\n`).join('')}`;
+  return `\n${chalk.bold('Global Commands')}\n\n` +
+    `${globalCommandDetails.map(hd => `  ${hd}\n`).join('')}\n` +
+    `${chalk.bold('Project Commands')}\n\n` +
+    `${projectCommandDetails.map(hd => `  ${hd}\n`).join('')}`;
 }
 
-function getHelpDetails(commandMetadataList: CommandData[], argv: string[], inProject: boolean = false): string[] {
-  const foundCommandList: CommandData[] = commandMetadataList
-    .filter((cmd) => !cmd.unlisted)
-    .filter((cmd) => !cmd.requiresProject || (cmd.requiresProject && !inProject));
+function getHelpDetails(env: IonicEnvironment, commandMetadataList: CommandData[], filters: ((cmd: CommandData) => boolean)[] = []): string[] {
+  for (let f of filters) {
+    commandMetadataList = commandMetadataList.filter(f);
+  }
+
+  const foundCommandList = commandMetadataList.filter((cmd) => typeof cmd.visible === 'undefined' ? true : cmd.visible);
 
   // No command was found if the length is zero.
   if (foundCommandList.length === 0) {
     throw 'UNKNOWN_COMMAND';
   }
 
-  // We have a list so show the name and description
   return getListOfCommandDetails(foundCommandList);
 }
 

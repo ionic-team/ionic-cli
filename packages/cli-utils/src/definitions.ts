@@ -183,14 +183,14 @@ export interface CommandInput {
 
 export interface CommandData {
   name: string;
+  type: 'global' | 'project';
   description: string;
   exampleCommands?: string[];
   aliases?: string[];
   inputs?: CommandInput[];
   options?: CommandOption[];
   fullName?: string;
-  unlisted?: boolean;
-  requiresProject?: boolean;
+  visible?: boolean;
 }
 
 export interface ISession {
