@@ -4,7 +4,7 @@ import * as chalk from 'chalk';
 import { IonicEnvironment, Plugin } from '../definitions';
 import { load } from './modules';
 import { Shell } from './shell';
-import { ERROR_FILE_INVALID_JSON, ERROR_FILE_NOT_FOUND, fsReadDir, fsReadJsonFile } from './utils/fs';
+import { ERROR_FILE_INVALID_JSON, ERROR_FILE_NOT_FOUND, readDir, fsReadJsonFile } from './utils/fs';
 import { TaskChain } from './utils/task';
 import { getGlobalProxy } from './http';
 
@@ -25,7 +25,7 @@ export async function loadPlugins(env: IonicEnvironment) {
   }
 
   const mPath = path.join(env.project.directory, 'node_modules', '@ionic');
-  const ionicModules = await fsReadDir(mPath);
+  const ionicModules = await readDir(mPath);
 
   const pluginPkgs = ionicModules
     .filter(pkgName => pkgName.indexOf(PLUGIN_PREFIX) === 0)

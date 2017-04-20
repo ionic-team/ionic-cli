@@ -14,9 +14,9 @@ import {
   createRequest,
   flattenArray,
   fsMkdirp,
-  fsReadDir,
   fsReadJsonFile,
   getFileChecksum,
+  readDir,
   writeStreamToFile,
 } from '@ionic/cli-utils';
 
@@ -91,7 +91,7 @@ export async function getResourceConfigJson(): Promise<ResourcesConfig> {
 /**
  * Find all source images within the resources directory
  */
-export async function getSourceImages (buildPlatforms: string[], resourceTypes: string[], resourceDir: string): Promise<SourceImage[]> {
+export async function getSourceImages(buildPlatforms: string[], resourceTypes: string[], resourceDir: string): Promise<SourceImage[]> {
   const srcDirList = buildPlatforms
     .map((platform: string) => (
       {
@@ -105,7 +105,7 @@ export async function getSourceImages (buildPlatforms: string[], resourceTypes: 
     });
 
   const srcImageDirContentList = await Promise.all(
-    srcDirList.map((srcImgDir: any) => fsReadDir(srcImgDir.path))
+    srcDirList.map((srcImgDir: any) => readDir(srcImgDir.path))
   );
 
   const sourceImages = flattenArray(

@@ -29,6 +29,18 @@ export const fsWriteFile = promisify<void, string, any, FSWriteFileOptions>(fs.w
 export const fsReadDir = promisify<string[], string>(fs.readdir);
 export const rimrafp = promisify<void, string>(rimraf);
 
+export async function readDir(filePath: string): Promise<string[]> {
+  try {
+    return await fsReadDir(filePath);
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      return [];
+    }
+
+    throw e;
+  }
+}
+
 export async function fsReadJsonFile(filePath: string, options: FSReadFileOptions = { encoding: 'utf8' }): Promise<{ [key: string]: any }> {
   try {
     const f = await fsReadFile(filePath, options);

@@ -5,7 +5,8 @@ import * as chalk from 'chalk';
 import { BowerJson, IProject, PackageJson, ProjectFile, ProjectType } from '../definitions';
 import { BaseConfig } from './config';
 import { FatalException } from './errors';
-import { readBowerJsonFile, readPackageJsonFile } from './utils/npm';
+import { ERROR_FILE_INVALID_JSON } from './utils/fs';
+import { ERROR_INVALID_PACKAGE_JSON, ERROR_INVALID_BOWER_JSON, readBowerJsonFile, readPackageJsonFile } from './utils/npm';
 import { prettyPath } from './utils/format';
 import { load } from './modules';
 
@@ -31,7 +32,17 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
   async loadPackageJson(): Promise<PackageJson> {
     if (!this.packageJsonFile) {
       const packageJsonPath = path.resolve(this.directory, 'package.json');
-      this.packageJsonFile = await readPackageJsonFile(packageJsonPath);
+      try {
+        this.packageJsonFile = await readPackageJsonFile(packageJsonPath);
+      } catch (e) {
+        if (e === ERROR_FILE_INVALID_JSON) {
+          throw new FatalException(`Could not parse ${chalk.bold('package.json')}. Is it a valid JSON file?`);
+        } else if (e === ERROR_INVALID_PACKAGE_JSON) {
+          throw new FatalException(`The ${chalk.bold('package.json')} file seems malformed.\nMake sure it has the following attributes: ${['name', 'version', 'dependencies', 'devDependencies'].map(v => chalk.bold(v)).join(', ')}.`);
+        }
+
+        throw e; // Probably file not found
+      }
     }
 
     return this.packageJsonFile;
@@ -40,7 +51,17 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
   async loadBowerJson(): Promise<BowerJson> {
     if (!this.bowerJsonFile) {
       const bowerJsonPath = path.resolve(this.directory, 'bower.json');
-      this.bowerJsonFile = await readBowerJsonFile(bowerJsonPath);
+      try {
+        this.bowerJsonFile = await readBowerJsonFile(bowerJsonPath);
+      } catch (e) {
+        if (e === ERROR_FILE_INVALID_JSON) {
+          throw new FatalException(`Could not parse ${chalk.bold('bower.json')}. Is it a valid JSON file?`);
+        } else if (e === ERROR_INVALID_PACKAGE_JSON) {
+          throw new FatalException(`The ${chalk.bold('bower.json')} file seems malformed.\nMake sure it has the following attributes: ${['name', 'dependencies', 'devDependencies'].map(v => chalk.bold(v)).join(', ')}.`);
+        }
+
+        throw e; // Probably file not found
+      }
     }
 
     return this.bowerJsonFile;
@@ -76,7 +97,11 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
       if (typeof packageJson.dependencies['ionic-angular'] === 'string') {
         return 'ionic-angular';
       }
-    } catch (e) {}
+    } catch (e) {
+      if (e instanceof FatalException) {
+        throw e;
+      }
+    }
 
     try {
       const bowerJson = await this.loadBowerJson();
@@ -84,7 +109,11 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
       if ((bowerJson.dependencies && typeof bowerJson.dependencies['ionic'] === 'string') || (bowerJson.devDependencies && typeof bowerJson.devDependencies['ionic'] === 'string')) {
         return 'ionic1';
       }
-    } catch (e) {}
+    } catch (e) {
+      if (e instanceof FatalException) {
+        throw e;
+      }
+    }
 
     throw new FatalException(`Could not determine project type.\n\n`
                            + `For Ionic Angular projects, make sure 'ionic-angular' exists in the ${chalk.bold('dependencies')} attribute of ${chalk.bold('package.json')}.\n`

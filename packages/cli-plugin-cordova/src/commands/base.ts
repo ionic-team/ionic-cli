@@ -10,7 +10,7 @@ import {
   ERROR_SHELL_COMMAND_NOT_FOUND,
 } from '@ionic/cli-utils';
 
-import { arePluginsInstalled, getProjectPlatforms, installPlatform, installPlugins } from '../lib/utils/setup';
+import { getProjectPlugins, getProjectPlatforms, installPlatform, installPlugins } from '../lib/utils/setup';
 
 export class CordovaCommand extends Command {
   checkForMac(platform: string) {
@@ -45,16 +45,16 @@ export class CordovaPlatformCommand extends CordovaCommand implements CommandPre
     if (runPlatform) {
       this.checkForMac(runPlatform);
 
-      const [ platforms, areInstalled ] = await Promise.all([
+      const [ platforms, plugins ] = await Promise.all([
         getProjectPlatforms(this.env.project.directory),
-        arePluginsInstalled(this.env.project.directory),
+        getProjectPlugins(this.env.project.directory),
       ]);
 
       if (!platforms.includes(runPlatform)) {
         await installPlatform(runPlatform);
       }
 
-      if (!areInstalled) {
+      if (plugins.length === 0) {
         await installPlugins();
       }
     }

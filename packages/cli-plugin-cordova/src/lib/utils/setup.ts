@@ -1,44 +1,19 @@
 import * as path from 'path';
-import { fsReadDir, Shell } from '@ionic/cli-utils';
+import { readDir, Shell } from '@ionic/cli-utils';
 
 /**
- * Get all platforms based on resource/platforms directories
+ * Get all platforms based on platforms directory
  * TODO: should we get this from the config.xml or just the directories like app-lib
  */
 export async function getProjectPlatforms(projectDir: string): Promise<string[]> {
-  let platformDirContents: string[] = [];
-  let platformsDir = path.join(projectDir, 'platforms');
-
-  try {
-    platformDirContents = await fsReadDir(platformsDir);
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      return [];
-    }
-    throw e;
-  }
-  return platformDirContents;
+  return readDir(path.join(projectDir, 'platforms'));
 }
 
 /**
- * Returns true or false after checking if any plugin is installed
- * Synchronous
- *
- * @param {String} baseDir The projects base directory
- * @return {Boolean} True if any plugin is installed
+ * Get all plugins based on plugins directory
  */
-export async function arePluginsInstalled(projectDir: string): Promise<boolean> {
-  let pluginDir = path.join(projectDir, 'plugins');
-  let hasPlugins = false;
-
-  try {
-    await fsReadDir(pluginDir);
-    hasPlugins = true;
-  } catch (ex) {
-    hasPlugins = false;
-  }
-
-  return hasPlugins;
+export async function getProjectPlugins(projectDir: string): Promise<string[]> {
+  return readDir(path.join(projectDir, 'plugins'));
 }
 
 /**
