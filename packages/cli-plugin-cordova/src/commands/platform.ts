@@ -26,7 +26,6 @@ import { CordovaCommand } from './base';
     {
       name: 'action',
       description: `${chalk.green('add')}, ${chalk.green('remove')}, or ${chalk.green('update')} a platform; ${chalk.green('list')} all project platforms`,
-      validators: [validators.required],
     },
     {
       // TODO: fix words to use the action above, not just add

@@ -23,7 +23,6 @@ import { CordovaCommand } from './base';
     {
       name: 'action',
       description: `${chalk.green('add')} or ${chalk.green('remove')} a plugin; ${chalk.green('list')} all project plugins`,
-      validators: [validators.required],
     },
     {
       name: 'plugin',

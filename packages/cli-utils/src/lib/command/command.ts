@@ -40,29 +40,23 @@ export class Command implements ICommand {
   }
 
   async execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let r: number | void;
+    let preInputsResult, preRunResult: number | void;
 
     if (isCommandPreInputsPrompt(this)) {
-      r = await this.preInputsPrompt(inputs);
-      if (typeof r === 'number') {
-        if (r > 0) {
-          throw this.exit('', r);
-        }
-
-        return;
+      preInputsResult = await this.preInputsPrompt(inputs);
+      if (typeof preInputsResult === 'number' && preInputsResult > 0) {
+        throw this.exit('', preInputsResult);
       }
     }
 
     await collectInputs(inputs, this.metadata);
 
     if (isCommandPreRun(this)) {
-      r = await this.preRun(inputs, options);
-      if (typeof r === 'number') {
-        if (r > 0) {
-          throw this.exit('', r);
+      preRunResult = await this.preRun(inputs, options);
+      if (typeof preRunResult === 'number') {
+        if (preRunResult > 0) {
+          throw this.exit('', preRunResult);
         }
-
-        return;
       }
     }
 
@@ -78,15 +72,17 @@ export class Command implements ICommand {
         }
       })(),
       (async () => {
-        await this.run(inputs, options);
+        if (typeof preInputsResult === 'undefined' && typeof preRunResult === 'undefined') {
+          await this.run(inputs, options);
+        }
       })()
     ]);
 
-    r = results[1];
+    const runResult = results[1];
 
-    if (typeof r === 'number') {
-      if (r > 0) {
-        throw this.exit('', r);
+    if (typeof runResult === 'number') {
+      if (runResult > 0) {
+        throw this.exit('', runResult);
       }
 
       return;
@@ -117,7 +113,7 @@ export class Command implements ICommand {
           const metadataOptionFound = mdo.find((mdOption) => (
             mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
           ));
-          return (metadataOptionFound) ? !metadataOptionFound.private : true;
+          return metadataOptionFound ? !metadataOptionFound.private : true;
         })
         .reduce((allOptions, optionName) => {
           allOptions[optionName] = options[optionName];
