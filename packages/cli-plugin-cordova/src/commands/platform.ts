@@ -31,7 +31,6 @@ import { CordovaCommand } from './base';
       // TODO: fix words to use the action above, not just add
       name: 'platform',
       description: `The platform that you would like to add (e.g. ${chalk.green('ios')}, ${chalk.green('android')})`,
-      validators: [validators.required],
       prompt: {
         message: `What platform would you like to add (${chalk.green('ios')}, ${chalk.green('android')}):`,
       },

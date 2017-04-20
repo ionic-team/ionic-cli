@@ -119,8 +119,8 @@ export function metadataToMinimistOptions(metadata: CommandData): NormalizedMini
   return options;
 }
 
-export function metadataToInquirerQuestions(metadata: CommandData): inquirerType.Question[] {
-  let questions: inquirerType.Question[] = [];
+export function metadataToInquirerQuestions(metadata: CommandData): (inquirerType.Question | undefined)[] {
+  const questions: (inquirerType.Question | undefined)[] = [];
 
   if (!metadata.inputs) {
     return questions;
@@ -137,6 +137,8 @@ export function metadataToInquirerQuestions(metadata: CommandData): inquirerType
       o.push(input.prompt);
 
       questions.push(Object.assign({ name: input.name, message: input.description }, ...o));
+    } else {
+      questions.push(undefined);
     }
   }
 
@@ -198,13 +200,15 @@ export async function collectInputs(argv: string[], metadata: CommandData) {
 
   if (questions) {
     for (let question of questions) {
-      let i = inputIndexByName.get(question.name || '');
+      if (question) {
+        let i = inputIndexByName.get(question.name || '');
 
-      if (i !== undefined) {
-        let v = argv[i];
+        if (i !== undefined) {
+          let v = argv[i];
 
-        if (v !== undefined) {
-          questionsToRemove.push(i);
+          if (v !== undefined) {
+            questionsToRemove.push(i);
+          }
         }
       }
     }
@@ -214,7 +218,8 @@ export async function collectInputs(argv: string[], metadata: CommandData) {
     }
 
     const inquirer = load('inquirer');
-    const answers = await inquirer.prompt(questions);
+    const inquirerQuestions = <inquirerType.Question[]>questions.filter(q => typeof q !== 'undefined'); // TODO
+    const answers = await inquirer.prompt(inquirerQuestions);
 
     Object.keys(answers).forEach(function(name) {
       let i = inputIndexByName.get(name);
