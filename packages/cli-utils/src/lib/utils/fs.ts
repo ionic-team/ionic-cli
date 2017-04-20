@@ -141,7 +141,8 @@ export function getFileChecksum(filePath: string): Promise<string> {
     });
 
     hash.once('readable', () => {
-      const fullChecksum = hash.digest().toString('hex');
+      // const fullChecksum = hash.digest().toString('hex');
+      const fullChecksum = (<Buffer>hash.read()).toString('hex'); // TODO: digest() already called?
       resolve(fullChecksum);
     });
 
