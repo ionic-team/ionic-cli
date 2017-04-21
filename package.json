@@ -7,7 +7,7 @@
     "docs": "node ./scripts/createMarkdownDocs.js ionic && node ./scripts/createMarkdownDocs.js cli-plugin-cordova",
     "publish:canary": "lerna publish --canary --exact --npm-tag canary",
     "publish:beta": "lerna publish --npm-tag beta",
-    "precommit": "npm run lint"
+    "prepush": "npm run lint"
   },
   "devDependencies": {
     "@types/node": "^6.0.68",
