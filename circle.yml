@@ -13,7 +13,15 @@ dependencies:
 
 test:
   pre:
-    - ./node_modules/.bin/lerna run lint
+    - npm run lint
     - ./node_modules/.bin/lerna run build
   override:
     - ./node_modules/.bin/lerna run test
+
+deployment:
+  pre:
+    - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+  npm:
+    branch: v3
+    commands:
+      - npm run publish:canary
