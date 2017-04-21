@@ -18,7 +18,7 @@ const fileList = plugin.namespace.getCommandMetadataList().map((cmd) => {
     commandName: cmd.fullName,
     description: cmd.description,
     fileName
-  }
+  };
 });
 
 const output = formatPluginDocs(pluginName, fileList);
@@ -40,7 +40,7 @@ Command | Description
 ------- | -----------
 ${listFileCommands.map(listCommandLink).join(`
 `)}
-`
+`;
 }
 
 
@@ -122,7 +122,7 @@ Option | Description
 ------ | ----------` : ``}
 ${options.map(optionLineFn).join(`
 `)}
-`
+`;
 }
 
 function formatExamples(exampleCommands, commandName) {
@@ -137,5 +137,5 @@ function formatExamples(exampleCommands, commandName) {
 ${headerLine}
     ${exampleLines.join(`
     `)}
-`
+`;
 }
