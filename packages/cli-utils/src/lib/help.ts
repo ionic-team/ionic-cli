@@ -62,21 +62,34 @@ export function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INa
 export function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, inputs: string[]) {
   const globalMetadata = ns.getCommandMetadataList();
 
-  const formatList = (details: string[]) => details.map(hd => `  ${hd}\n`).join('');
+  const formatList = (details: string[]) => details.map(hd => `    ${hd}\n`).join('');
 
   if (ns.root) {
     const globalCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'global']);
     const projectCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'project']);
 
-    return `\n${chalk.bold('Global Commands')}\n\n` +
+    return `${formatHeader(env)}\n\n` +
+      `  ${chalk.bold('Usage')}:\n\n` +
+      `    ${chalk.dim('$')} ${chalk.green('ionic <command> [args/options]')}\n` +
+      `    ${chalk.dim('$')} ${chalk.green('ionic help <command>')} (for command details)\n\n` +
+      `  ${chalk.bold('Global Commands')}:\n\n` +
       `${formatList(globalCommandDetails)}\n` +
-      `${chalk.bold('Project Commands')}\n\n` +
+      `  ${chalk.bold('Project Commands')}:\n\n` +
       `${formatList(projectCommandDetails)}`;
   } else {
     const commandDetails = getHelpDetails(env, globalMetadata, []);
-    return `\n${chalk.bold('Commands')}\n\n` +
-      `${formatList(commandDetails)}\n`;
+    return `\n  ${chalk.bold('Commands')}:\n\n` +
+      `${formatList(commandDetails)}`;
   }
+}
+
+function formatHeader(env: IonicEnvironment) {
+  return `   _             _
+  (_)           (_)
+   _  ___  _ __  _  ___
+  | |/ _ \\| '_ \\| |/ __|
+  | | (_) | | | | | (__
+  |_|\\___/|_| |_|_|\\___|  CLI ${env.versions.cli}\n`;
 }
 
 function getHelpDetails(env: IonicEnvironment, commandMetadataList: CommandData[], filters: ((cmd: CommandData) => boolean)[] = []): string[] {
@@ -115,11 +128,9 @@ export function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[
 }
 
 function formatCommandUsage(inputs: CommandInput[] = [], commandName: string): string {
-  const headerLine = chalk.bold(`Usage`);
   const usageLine =
-      `$ ionic ${commandName} ${
-        (inputs || [])
-          .map(input => {
+      `$ ${chalk.green('ionic ' + commandName + ' ' +
+          inputs.map(input => {
             if (input.validators && (input.validators.includes(validators.required) && !input.prompt)) {
               return '<' + input.name + '>';
             }
@@ -128,8 +139,8 @@ function formatCommandUsage(inputs: CommandInput[] = [], commandName: string): s
           .join(' ')}`;
 
   return `
-    ${headerLine}
-      ${usageLine}
+  ${chalk.bold('Usage')}:
+    ${usageLine}
   `;
 }
 
@@ -137,8 +148,6 @@ function formatCommandInputs(inputs: CommandInput[] = []): string {
   if (inputs.length === 0) {
     return '';
   }
-
-  const headerLine = chalk.bold(`Inputs`);
 
   const fillStrings = generateFillSpaceStringList(inputs.map(input => input.name), 25, '.');
 
@@ -149,9 +158,9 @@ function formatCommandInputs(inputs: CommandInput[] = []): string {
   };
 
   return `
-    ${headerLine}
-      ${inputs.map(inputLineFn).join(`
-      `)}
+  ${chalk.bold('Inputs')}:
+    ${inputs.map(inputLineFn).join(`
+    `)}
   `;
 }
 
@@ -159,8 +168,6 @@ function formatCommandOptions(options: CommandOption[] = []): string {
   if (options.length === 0) {
     return '';
   }
-
-  const headerLine = chalk.bold('Options');
 
   function optionLineFn(opt: CommandOption) {
     const optionList = chalk.green(`-${opt.name.length > 1 ? '-' : ''}${opt.name}`) +
@@ -176,9 +183,9 @@ function formatCommandOptions(options: CommandOption[] = []): string {
   };
 
   return `
-    ${headerLine}
-      ${options.map(optionLineFn).join(`
-      `)}
+  ${chalk.bold('Options')}:
+    ${options.map(optionLineFn).join(`
+    `)}
   `;
 }
 
@@ -187,12 +194,11 @@ function formatCommandExamples(exampleCommands: string[] | undefined, commandNam
     return '';
   }
 
-  const headerLine = chalk.bold(`Examples`);
   const exampleLines = exampleCommands.map(cmd => `$ ionic ${commandName} ${cmd} `);
 
   return `
-    ${headerLine}
-      ${exampleLines.join(`
-      `)}
+  ${chalk.bold('Examples')}:
+    ${exampleLines.join(`
+    `)}
   `;
 }
