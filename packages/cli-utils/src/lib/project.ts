@@ -12,6 +12,10 @@ import { load } from './modules';
 
 export const PROJECT_FILE = 'ionic.config.json';
 export const PROJECT_TYPES: ProjectType[] = ['ionic-angular', 'ionic1'];
+export const PROJECT_TYPES_PRETTY = new Map<ProjectType, string>([
+  ['ionic-angular', 'Ionic Angular'],
+  ['ionic1', 'Ionic 1'],
+]);
 
 export class Project extends BaseConfig<ProjectFile> implements IProject {
   public directory: string;
@@ -116,8 +120,8 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
     }
 
     throw new FatalException(`Could not determine project type.\n\n`
-                           + `For Ionic Angular projects, make sure 'ionic-angular' exists in the ${chalk.bold('dependencies')} attribute of ${chalk.bold('package.json')}.\n`
-                           + `For Ionic 1 projects, make sure 'ionic' exists in the ${chalk.bold('devDependencies')} attribute of ${chalk.bold('bower.json')}.\n\n`
+                           + `For ${PROJECT_TYPES_PRETTY.get('ionic-angular')} projects, make sure 'ionic-angular' exists in the ${chalk.bold('dependencies')} attribute of ${chalk.bold('package.json')}.\n`
+                           + `For ${PROJECT_TYPES_PRETTY.get('ionic1')} projects, make sure 'ionic' exists in the ${chalk.bold('devDependencies')} attribute of ${chalk.bold('bower.json')}.\n\n`
                            + `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold('ionic.config.json')} to one of: ${PROJECT_TYPES.map(v => '\'' + v + '\'').join(', ')}\n`);
   }
 

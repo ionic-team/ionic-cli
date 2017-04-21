@@ -12,6 +12,7 @@ import {
   TaskChain,
   getCommandInfo,
   getReleaseChannelName,
+  prettyPath,
   rimrafp,
   validators,
 } from '@ionic/cli-utils';
@@ -254,6 +255,6 @@ export class StartCommand extends Command implements CommandPreInputsPrompt {
       cliFlags.enableTelemetry = optIn;
     }
 
-    this.env.log.msg(`\nGo to your newly created project: ${chalk.green(`cd ${projectRoot}`)}\n`);
+    this.env.log.msg(`\nGo to your newly created project: ${chalk.green(`cd ${prettyPath(projectRoot)}`)}\n`);
   }
 }

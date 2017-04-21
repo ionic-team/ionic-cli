@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 
 import { IonicEnvironment, Plugin } from '../definitions';
+import { PROJECT_TYPES_PRETTY } from './project';
 import { load } from './modules';
 import { readDir } from './utils/fs';
 import { getGlobalProxy } from './http';
@@ -44,7 +45,7 @@ export async function loadPlugins(env: IonicEnvironment) {
     try {
       await loadPlugin(env, projectPlugin, {
         askToInstall: true,
-        message: `The type of this Ionic project is '${chalk.bold(project.type)}', but the plugin ${chalk.green(projectPlugin)} is not installed. Would you like to install it and continue?`,
+        message: `Looks like this is an ${PROJECT_TYPES_PRETTY.get(project.type)} project, would you like to install ${chalk.green(projectPlugin)} and continue?`,
       });
     } catch (e) {
       if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
@@ -59,7 +60,7 @@ export async function loadPlugins(env: IonicEnvironment) {
     try {
       await loadPlugin(env, proxyPluginPkg, {
         askToInstall: true,
-        message: `'${chalk.green(proxyVar)}' environment variable detected, but the plugin ${chalk.green(proxyPluginPkg)} is needed if you want to proxy requests in the Ionic CLI. Would you like to install it and continue?`,
+        message: `Detected '${chalk.green(proxyVar)}' in environment, but to proxy CLI requests, you'll need ${chalk.green(proxyPluginPkg)}. Would you like to install it and continue?`,
       });
     } catch (e) {
       if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
