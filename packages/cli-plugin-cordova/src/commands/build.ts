@@ -66,20 +66,14 @@ export class BuildCommand extends CordovaPlatformCommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     options = normalizeOptionAliases(this.metadata, options);
 
-    const tasks = new TaskChain();
-
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);
-
-    tasks.next('Running build');
 
     await this.env.hooks.fire('command:build', {
       env: this.env,
       inputs,
       options: generateBuildOptions(this.metadata, options)
     });
-
-    tasks.end();
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options));
   }
