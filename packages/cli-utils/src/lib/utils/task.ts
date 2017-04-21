@@ -58,10 +58,12 @@ export class Task {
       if (!this.progressBar) {
         const term = <any>tty; // TODO: type def issue
         const ProgressBar = load('progress');
+        const s = new term.WriteStream();
+        s.columns = s.columns || 80;
         this.progressBar = new ProgressBar('[:bar] :percent', {
           total: total,
           width: 30,
-          stream: new term.WriteStream(),
+          stream: s,
         });
       }
 
