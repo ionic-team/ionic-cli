@@ -62,7 +62,7 @@ export class PluginCommand extends CordovaCommand implements CommandPreInputsPro
         name: 'plugin',
       });
 
-      inputs[1] = pluginName = promptResults['pluginName'];
+      inputs[1] = pluginName = promptResults['plugin'];
     }
 
     // ensure the content node was set back to its original
