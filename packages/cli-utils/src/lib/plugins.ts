@@ -4,8 +4,7 @@ import * as chalk from 'chalk';
 import { IonicEnvironment, Plugin } from '../definitions';
 import { load } from './modules';
 import { Shell } from './shell';
-import { ERROR_FILE_INVALID_JSON, ERROR_FILE_NOT_FOUND, readDir, fsReadJsonFile } from './utils/fs';
-import { TaskChain } from './utils/task';
+import { readDir } from './utils/fs';
 import { getGlobalProxy } from './http';
 
 export const KNOWN_PLUGINS = ['cordova', 'proxy', 'ionic1', 'ionic-angular'];
@@ -33,7 +32,7 @@ export async function loadPlugins(env: IonicEnvironment) {
 
   const plugins = await Promise.all(
     pluginPkgs.map(pkgName => {
-      return loadPlugin(env.project.directory, pkgName, { askToInstall: false });
+      return loadPlugin(env, pkgName, { askToInstall: false });
     })
   );
 
@@ -44,7 +43,7 @@ export async function loadPlugins(env: IonicEnvironment) {
 
   if (!pluginPkgs.includes(projectPlugin)) {
     try {
-      await loadPlugin(env.project.directory, projectPlugin, {
+      await loadPlugin(env, projectPlugin, {
         askToInstall: true,
         message: `The type of this Ionic project is '${chalk.bold(project.type)}', but the plugin ${chalk.green(projectPlugin)} is not installed. Would you like to install it and continue?`,
       });
@@ -59,7 +58,7 @@ export async function loadPlugins(env: IonicEnvironment) {
   const [ , proxyVar ] = getGlobalProxy();
   if (proxyVar && !pluginPkgs.includes(proxyPluginPkg)) {
     try {
-      await loadPlugin(env.project.directory, proxyPluginPkg, {
+      await loadPlugin(env, proxyPluginPkg, {
         askToInstall: true,
         message: `'${chalk.green(proxyVar)}' environment variable detected, but the plugin ${chalk.green(proxyPluginPkg)} is required to proxy requests. Would you like to install it and continue?`,
       });
@@ -83,7 +82,7 @@ export async function loadPlugins(env: IonicEnvironment) {
   }
 }
 
-export async function loadPlugin(projectDir: string, pluginName: string, { message, askToInstall = true }: { message?: string, askToInstall?: boolean }): Promise<Plugin> {
+export async function loadPlugin(env: IonicEnvironment, pluginName: string, { message, askToInstall = true }: { message?: string, askToInstall?: boolean }): Promise<Plugin> {
   let m: Plugin | undefined;
 
   if (!message) {
@@ -91,7 +90,7 @@ export async function loadPlugin(projectDir: string, pluginName: string, { messa
   }
 
   try {
-    const mPath = path.join(projectDir, 'node_modules', ...pluginName.split('/'));
+    const mPath = path.join(env.project.directory, 'node_modules', ...pluginName.split('/'));
     m = require(mPath);
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') {
@@ -117,15 +116,10 @@ export async function loadPlugin(projectDir: string, pluginName: string, { messa
     }]);
 
     if (answers['installPlugin']) {
-      const releaseChannelName = await getReleaseChannelName();
-      const pluginInstallVersion = `${pluginName}` + (releaseChannelName ? `@${releaseChannelName}` : '');
-      const tasks = new TaskChain();
-
-      tasks.next(`Executing npm command: ${chalk.bold(`npm install --save-dev ${pluginInstallVersion}`)}`);
+      const pluginInstallVersion = `${pluginName}@${getReleaseChannelName(env)}`;
       await new Shell().run('npm', ['install', '--save-dev', pluginInstallVersion ], {});
-      tasks.end();
 
-      return loadPlugin(projectDir, pluginName, { askToInstall });
+      return loadPlugin(env, pluginName, { askToInstall });
     } else {
       throw ERROR_PLUGIN_NOT_INSTALLED;
     }
@@ -134,23 +128,14 @@ export async function loadPlugin(projectDir: string, pluginName: string, { messa
   return m;
 }
 
-export async function getReleaseChannelName(): Promise<string | undefined> {
-  let jsonStructure: any;
-  const filePath = path.resolve(__dirname, '..', '..', 'package.json');
-  try {
-    jsonStructure = await fsReadJsonFile(filePath);
-  } catch (e) {
-    if (e === ERROR_FILE_NOT_FOUND) {
-      throw new Error(`${filePath} not found`);
-    } else if (e === ERROR_FILE_INVALID_JSON) {
-      throw new Error(`${filePath} is not valid JSON.`);
-    }
-    throw e;
-  }
-  if (jsonStructure.version.includes('alpha')) {
+export function getReleaseChannelName(env: IonicEnvironment): 'canary' | 'beta' | 'latest' {
+  if (env.versions.cli.includes('alpha')) {
     return 'canary';
   }
-  if (jsonStructure.version.includes('beta')) {
+
+  if (env.versions.cli.includes('beta')) {
     return 'beta';
   }
+
+  return 'latest';
 }

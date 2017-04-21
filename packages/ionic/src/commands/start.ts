@@ -188,7 +188,7 @@ export class StartCommand extends Command implements CommandPreInputsPrompt {
     await tarXvfFromUrl(starterBranchPath, projectRoot);
 
     tasks.next(`Updating project dependencies to add required plugins`);
-    const releaseChannelName = await getReleaseChannelName();
+    const releaseChannelName = getReleaseChannelName(this.env);
 
     await patchPackageJsonForCli(appName, starterType, projectRoot, releaseChannelName);
     await updatePackageJsonForCli(appName, starterType, projectRoot, releaseChannelName);
