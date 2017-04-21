@@ -1,9 +1,8 @@
 import * as chalk from 'chalk';
 
-import { CommandHookArgs } from '@ionic/cli-utils';
+import { CommandHookArgs, getAvailableIPAddress } from '@ionic/cli-utils';
 
 import { load } from './lib/modules';
-import { getAvailableIPAddress } from './utils/network';
 import { minimistOptionsToArray } from './utils/arguments';
 
 export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any }> {
@@ -30,6 +29,8 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
       chosenIP = promptAnswers['ip'];
     }
   }
+
+  args.options.address = chosenIP;
 
   let appScriptsArgs = minimistOptionsToArray(args.options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);

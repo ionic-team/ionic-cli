@@ -27,6 +27,7 @@ export * from './lib/utils/environmentInfo';
 export * from './lib/utils/format';
 export * from './lib/utils/fs';
 export * from './lib/utils/logger';
+export * from './lib/utils/network';
 export * from './lib/utils/npm';
 export * from './lib/utils/promise';
 export * from './lib/utils/shell';
