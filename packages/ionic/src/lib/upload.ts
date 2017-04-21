@@ -25,7 +25,7 @@ export async function upload(env: IonicEnvironment, { note, channelTag }: { note
 
   const wwwPath = path.join(env.project.directory, 'www'); // TODO don't hardcode
   const zip = createArchive('zip');
-  zip.directory(wwwPath, 'www');
+  zip.directory(wwwPath, '.');
   zip.finalize();
 
   tasks.next('Requesting snapshot upload');
