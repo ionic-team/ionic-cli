@@ -29,13 +29,13 @@ Minimal node requirements:
 To start a Ionic 1x app, run:
 
 ```bash
-$ ionic start myapp [template]
+$ ionic start myapp [template] --v1
 ```
 
 To start a Ionic 2 app, run:
 
 ```bash
-$ ionic start myapp [template] --v2
+$ ionic start myapp [template]
 ```
 
 Starter templates can either come from a named template, a Github repo, a Codepen, or a local directory. A starter template is what becomes the `www` directory for a V1 project, and a `src` directory for a V2 project
