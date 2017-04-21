@@ -108,24 +108,18 @@ export class EmulateCommand extends CordovaPlatformCommand {
     options = normalizeOptionAliases(this.metadata, options);
 
     const isLiveReload = options['livereload'];
-    const tasks = new TaskChain();
 
     // If it is not livereload then just run build.
     if (!isLiveReload) {
 
       // ensure the content node was set back to its original
       await resetConfigXmlContentSrc(this.env.project.directory);
-
-      tasks.next('Starting build');
-
       await this.env.hooks.fire('command:build', {
         env: this.env,
         inputs,
         options: generateBuildOptions(this.metadata, options)
       });
     } else {
-      tasks.next('Starting server');
-
       const [ serverSettings ] = await this.env.hooks.fire('command:serve', {
         env: this.env,
         inputs,
@@ -134,8 +128,6 @@ export class EmulateCommand extends CordovaPlatformCommand {
 
       await writeConfigXmlContentSrc(this.env.project.directory, `http://${serverSettings.publicIp}:${serverSettings.httpPort}`);
     }
-
-    tasks.end();
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options));
   }

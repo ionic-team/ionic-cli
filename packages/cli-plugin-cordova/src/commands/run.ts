@@ -111,25 +111,18 @@ import { CordovaPlatformCommand } from './base';
 export class RunCommand extends CordovaPlatformCommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const isLiveReload = options['livereload'];
-    const tasks = new TaskChain();
 
     // If it is not livereload then just run build.
     if (!isLiveReload) {
 
       // ensure the content node was set back to its original
       await resetConfigXmlContentSrc(this.env.project.directory);
-      tasks.end();
-
       await this.env.hooks.fire('command:build', {
         env: this.env,
         inputs,
         options: generateBuildOptions(this.metadata, options),
       });
-
-      tasks.next('Starting build');
     } else {
-      tasks.end();
-
       const serverSettings = (await this.env.hooks.fire('command:serve', {
         env: this.env,
         inputs,
@@ -137,10 +130,7 @@ export class RunCommand extends CordovaPlatformCommand {
       }))[0];
 
       await writeConfigXmlContentSrc(this.env.project.directory, `http://${serverSettings.publicIp}:${serverSettings.httpPort}`);
-      tasks.next('Starting server');
     }
-
-    tasks.end();
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options));
   }

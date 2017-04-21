@@ -17,7 +17,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   let chosenIP = (availableIPs.length === 0) ? '0.0.0.0' : availableIPs[0].address;
 
   if (availableIPs.length > 1) {
-    if (availableIPs.find(({address}) => address === args.options.address)) {
+    if (availableIPs.find(({ address }) => address === args.options.address)) {
       chosenIP = args.options.address;
     } else {
       const inquirer = load('inquirer');
