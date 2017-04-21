@@ -43,10 +43,12 @@ export async function loadPlugins(env: IonicEnvironment) {
 
   if (!pluginPkgs.includes(projectPlugin)) {
     try {
-      await loadPlugin(env, projectPlugin, {
+      const plugin = await loadPlugin(env, projectPlugin, {
         askToInstall: true,
         message: `Looks like this is an ${PROJECT_TYPES_PRETTY.get(project.type)} project, would you like to install ${chalk.green(projectPlugin)} and continue?`,
       });
+
+      plugins.push(plugin);
     } catch (e) {
       if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
         throw e;
@@ -58,10 +60,12 @@ export async function loadPlugins(env: IonicEnvironment) {
   const [ , proxyVar ] = getGlobalProxy();
   if (proxyVar && !pluginPkgs.includes(proxyPluginPkg)) {
     try {
-      await loadPlugin(env, proxyPluginPkg, {
+      const plugin = await loadPlugin(env, proxyPluginPkg, {
         askToInstall: true,
         message: `Detected '${chalk.green(proxyVar)}' in environment, but to proxy CLI requests, you'll need ${chalk.green(proxyPluginPkg)}. Would you like to install it and continue?`,
       });
+
+      plugins.push(plugin);
     } catch (e) {
       if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
         throw e;
