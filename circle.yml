@@ -24,4 +24,4 @@ deployment:
   npm:
     branch: v3
     commands:
-      - npm run publish:canary
+      - npm run publish:ci
