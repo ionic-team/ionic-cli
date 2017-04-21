@@ -73,38 +73,43 @@ import { CordovaPlatformCommand } from './base';
       name: 'list',
       description: 'List all available Cordova run targets',
       type: Boolean,
-      intent: CORDOVA_INTENT
+      intent: CORDOVA_INTENT,
     },
     {
       name: 'debug',
       description: 'Create a Cordova debug build',
       type: Boolean,
-      intent: CORDOVA_INTENT
+      intent: CORDOVA_INTENT,
     },
     {
       name: 'release',
       description: 'Create a Cordova release build',
       type: Boolean,
-      intent: CORDOVA_INTENT
+      intent: CORDOVA_INTENT,
     },
     {
       name: 'device',
       description: 'Deploy Cordova build to a device',
       type: Boolean,
-      intent: CORDOVA_INTENT
+      intent: CORDOVA_INTENT,
     },
     {
       name: 'emulator',
       description: 'Deploy Cordova build to an emulator',
       type: Boolean,
-      intent: CORDOVA_INTENT
+      intent: CORDOVA_INTENT,
     },
     {
       name: 'target',
       description: `Deploy Cordova build to a device (use ${chalk.green('--list')} to see all)`,
       type: String,
-      intent: CORDOVA_INTENT
-    }
+      intent: CORDOVA_INTENT,
+    },
+    {
+      name: 'buildConfig',
+      description: 'Use the specified Cordova build configuration',
+      intent: CORDOVA_INTENT,
+    },
   ]
 })
 export class RunCommand extends CordovaPlatformCommand {

@@ -230,3 +230,19 @@ export async function collectInputs(argv: string[], metadata: CommandData) {
     });
   }
 }
+
+export function filterOptionsByIntent(metadata: CommandData, options: CommandLineOptions, intentName?: string): CommandLineOptions {
+  return Object.keys(options).reduce((allOptions, optionName) => {
+    const metadataOptionFound = (metadata.options || []).find((mdOption) => (
+      mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
+    ));
+    if (metadataOptionFound) {
+        if (intentName && metadataOptionFound.intent === intentName) {
+          allOptions[optionName] = options[optionName];
+        } else if (!intentName && !metadataOptionFound.intent) {
+          allOptions[optionName] = options[optionName];
+        }
+    }
+    return allOptions;
+  }, <CommandLineOptions>{});
+}

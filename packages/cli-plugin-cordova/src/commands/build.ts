@@ -37,28 +37,33 @@ import { CordovaPlatformCommand } from './base';
     // Cordova Options
     {
       name: 'debug',
-      description: 'Create a cordova debug build',
+      description: 'Create a Cordova debug build',
       type: Boolean,
-      intent: CORDOVA_INTENT
+      intent: CORDOVA_INTENT,
     },
     {
       name: 'release',
-      description: 'Create a cordova release build',
+      description: 'Create a Cordova release build',
       type: Boolean,
-      intent: CORDOVA_INTENT
+      intent: CORDOVA_INTENT,
     },
     {
       name: 'device',
-      description: 'Deploy cordova build to a device',
+      description: 'Deploy Cordova build to a device',
       type: Boolean,
-      intent: CORDOVA_INTENT
+      intent: CORDOVA_INTENT,
     },
     {
       name: 'emulator',
-      description: 'Deploy cordova build to an emulator',
+      description: 'Deploy Cordova build to an emulator',
       type: Boolean,
-      intent: CORDOVA_INTENT
-    }
+      intent: CORDOVA_INTENT,
+    },
+    {
+      name: 'buildConfig',
+      description: 'Use the specified Cordova build configuration',
+      intent: CORDOVA_INTENT,
+    },
   ]
 })
 export class BuildCommand extends CordovaPlatformCommand {
