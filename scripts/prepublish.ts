@@ -17,5 +17,7 @@ if (!plugin.version) {
   throw new Error(`Plugin ${pluginName} MUST define and export a 'version' attribute`);
 }
 
-replace({ regex: nameMatchStr, replacement: pkg.name, paths: [path.join(pluginPath, 'dist', 'index.js')], recursive: false });
-replace({ regex: versionMatchStr, replacement: pkg.version, paths: [path.join(pluginPath, 'dist', 'index.js')], recursive: false });
+const replacePath = path.join(pluginPath, pkg.main);
+
+replace({ regex: nameMatchStr, replacement: pkg.name, paths: [replacePath], recursive: false });
+replace({ regex: versionMatchStr, replacement: pkg.version, paths: [replacePath], recursive: false });
