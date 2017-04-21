@@ -74,19 +74,19 @@ describe('resources', () => {
 
   describe('getSourceImages', () => {
     it('should look in resources directory and platform directories to find images', async function() {
-      spyOn(util, 'fsReadDir').and.returnValue(Promise.resolve([]));
+      spyOn(util, 'readDir').and.returnValue(Promise.resolve([]));
 
       await resources.getSourceImages(['ios', 'android'], ['splash', 'icon'], '/resourceDir');
 
-      expect((<jasmine.Spy>util.fsReadDir).calls.count()).toEqual(3);
-      expect((<jasmine.Spy>util.fsReadDir).calls.argsFor(0)).toEqual(['/resourceDir/ios']);
-      expect((<jasmine.Spy>util.fsReadDir).calls.argsFor(1)).toEqual(['/resourceDir/android']);
-      expect((<jasmine.Spy>util.fsReadDir).calls.argsFor(2)).toEqual(['/resourceDir']);
+      expect((<jasmine.Spy>util.readDir).calls.count()).toEqual(3);
+      expect((<jasmine.Spy>util.readDir).calls.argsFor(0)).toEqual(['/resourceDir/ios']);
+      expect((<jasmine.Spy>util.readDir).calls.argsFor(1)).toEqual(['/resourceDir/android']);
+      expect((<jasmine.Spy>util.readDir).calls.argsFor(2)).toEqual(['/resourceDir']);
     });
 
     it('should find all sourceImages available and prioritize based on specificity', async function() {
       spyOn(util, 'getFileChecksum').and.returnValue(Promise.resolve('FJDKLFJDKL'));
-      spyOn(util, 'fsReadDir').and.callFake((dir) => {
+      spyOn(util, 'readDir').and.callFake((dir) => {
         switch (dir) {
         case '/resourceDir/ios':
           return Promise.resolve([
