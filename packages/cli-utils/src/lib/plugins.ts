@@ -3,7 +3,6 @@ import * as chalk from 'chalk';
 
 import { IonicEnvironment, Plugin } from '../definitions';
 import { load } from './modules';
-import { Shell } from './shell';
 import { readDir } from './utils/fs';
 import { getGlobalProxy } from './http';
 
@@ -60,7 +59,7 @@ export async function loadPlugins(env: IonicEnvironment) {
     try {
       await loadPlugin(env, proxyPluginPkg, {
         askToInstall: true,
-        message: `'${chalk.green(proxyVar)}' environment variable detected, but the plugin ${chalk.green(proxyPluginPkg)} is required to proxy requests. Would you like to install it and continue?`,
+        message: `'${chalk.green(proxyVar)}' environment variable detected, but the plugin ${chalk.green(proxyPluginPkg)} is needed if you want to proxy requests in the Ionic CLI. Would you like to install it and continue?`,
       });
     } catch (e) {
       if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
@@ -117,7 +116,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
 
     if (answers['installPlugin']) {
       const pluginInstallVersion = `${pluginName}@${getReleaseChannelName(env)}`;
-      await new Shell().run('npm', ['install', '--save-dev', pluginInstallVersion ], {});
+      await env.shell.run('npm', ['install', '--save-dev', pluginInstallVersion ], {});
 
       return loadPlugin(env, pluginName, { askToInstall });
     } else {

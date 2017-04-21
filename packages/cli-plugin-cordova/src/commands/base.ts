@@ -51,11 +51,11 @@ export class CordovaPlatformCommand extends CordovaCommand implements CommandPre
       ]);
 
       if (!platforms.includes(runPlatform)) {
-        await installPlatform(runPlatform);
+        await installPlatform(this.env, runPlatform);
       }
 
       if (plugins.length === 0) {
-        await installPlugins();
+        await installPlugins(this.env);
       }
     }
   }

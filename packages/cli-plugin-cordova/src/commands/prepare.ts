@@ -35,7 +35,7 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
         name: 'platform',
       });
 
-      await installPlatform(promptResults['platform']);
+      await installPlatform(this.env, promptResults['platform']);
     }
 
     await this.runCordova(gatherArgumentsForCordova(this.metadata, inputs, options));

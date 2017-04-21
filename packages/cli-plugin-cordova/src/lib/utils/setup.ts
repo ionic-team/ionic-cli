@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { readDir, Shell } from '@ionic/cli-utils';
+import { IonicEnvironment, readDir } from '@ionic/cli-utils';
 
 /**
  * Get all platforms based on platforms directory
@@ -19,7 +19,7 @@ export async function getProjectPlugins(projectDir: string): Promise<string[]> {
 /**
  * Install required Cordova plugins for Ionic
  */
-export async function installPlugins(): Promise<void> {
+export async function installPlugins(env: IonicEnvironment): Promise<void> {
   const plugins = [
     'cordova-plugin-device',
     'cordova-plugin-console',
@@ -29,10 +29,8 @@ export async function installPlugins(): Promise<void> {
     'ionic-plugin-keyboard'
   ];
 
-  const shell = new Shell();
-
   for (let plugin of plugins) {
-    await shell.run('cordova', ['plugin', 'add', '--save', plugin], {
+    await env.shell.run('cordova', ['plugin', 'add', '--save', plugin], {
       fatalOnNotFound: false,
     });
   }
@@ -44,6 +42,6 @@ export async function installPlugins(): Promise<void> {
  * @param {String} platform The platform to install (ios, android, etc.)
  * @return {Promise} Promise upon completion
  */
-export function installPlatform(platform: string): Promise<string> {
-  return new Shell().run('cordova', ['platform', 'add', '--save', platform], {});
+export function installPlatform(env: IonicEnvironment, platform: string): Promise<string> {
+  return env.shell.run('cordova', ['platform', 'add', '--save', platform], {});
 }
