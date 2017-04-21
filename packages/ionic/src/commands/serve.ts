@@ -79,6 +79,16 @@ import { load } from '../lib/modules';
       aliases: ['l']
     },
     {
+      name: 'nogulp',
+      description: 'Disable gulp',
+      type: Boolean,
+    },
+    {
+      name: 'nosass',
+      description: 'Disable sass',
+      type: Boolean,
+    },
+    {
       name: 'platform',
       description: 'Start serve with a specific platform (ios/android)',
       aliases: ['t']

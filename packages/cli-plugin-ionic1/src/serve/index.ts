@@ -75,7 +75,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
 
   // Check if gulp is installed globally for sass
   try {
-    await args.env.shell.run('gulp', ['-v']);
+    await args.env.shell.run('gulp', ['-v'], { showExecution: false });
   } catch (e) {
     serverOptions.gulpInstalled = false;
   }
@@ -101,7 +101,9 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
 
     switch (path.extname(filePath)) {
     case '.scss':
-      await processSassFile(env, options);
+      if (!options.nosass) {
+        await processSassFile(env, options);
+      }
       return;
     default:
       env.log.msg(`[${new Date().toTimeString().slice(0, 8)}] ${filePath} changed`);
@@ -122,6 +124,10 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
 }
 
 async function processSassFile(env: IonicEnvironment, options: ServerOptions): Promise<void> {
+  if (options.nogulp) {
+    return;
+  }
+
   if (!options.gulpInstalled) {
     env.log.error(`You are trying to build a sass file, but unfortunately Ionic1 projects require\n` +
                   `gulp to build these files. In order to continue please execute the following\n` +
@@ -129,6 +135,7 @@ async function processSassFile(env: IonicEnvironment, options: ServerOptions): P
                   `    ${chalk.green(`npm install -g gulp`)}`);
     return;
   }
-   await env.shell.run('gulp', ['sass'], { 'cwd': env.project.directory });
+
+  await env.shell.run('gulp', ['sass'], { 'cwd': env.project.directory });
 }
 
