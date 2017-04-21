@@ -14,8 +14,10 @@
   into a CLI _plugin_, which is installed by default with new Ionic projects
   and can be installed in existing Ionic projects with `npm i --save
   @ionic/cli-plugin-cordova`.
-* Many command arguments, options, and flags have changed. Please use `ionic
-  help <commands>` for command usage.
+* Many command arguments, options, and flags have changed. For example, the
+  `--v1` and `--v2` flags in `ionic start` have been removed in favor of
+  `--type` with respective values `ionic-angular` and `ionic1`. Please use
+  `ionic help <commands>` for new command usage.
 * `generate` command has been overhauled to interactively generate components,
   pages, directives, etc. It uses the power of
   [app-scripts](https://github.com/driftyco/ionic-app-scripts/) to hook up
