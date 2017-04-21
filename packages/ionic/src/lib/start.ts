@@ -12,9 +12,9 @@ import {
   fsReadJsonFile,
   fsWriteJsonFile,
   getCommandInfo,
-  runcmd,
-  load
+  load,
 } from '@ionic/cli-utils';
+
 import { StarterTemplate, StarterTemplateType } from '../definitions';
 
 export function tarXvfFromUrl(url: string, destination: string) {
