@@ -17,17 +17,6 @@ import {
 } from '@ionic/cli-utils';
 import { StarterTemplate, StarterTemplateType } from '../definitions';
 
-/**
- * Spawn an npm install task from within
- */
-export async function pkgInstallProject(installer: string, root: string): Promise<any> {
-  try {
-    await runcmd(installer, ['install'], {cwd: root, stdio: 'ignore'});
-  } catch (e) {
-    throw `${installer} install failed`;
-  }
-}
-
 export function tarXvfFromUrl(url: string, destination: string) {
   return new Promise<void>((resolve, reject) => {
     const archiveRequest = createRequest('get', url)

@@ -18,7 +18,6 @@ import {
 
 import {
   isProjectNameValid,
-  pkgInstallProject,
   tarXvfFromUrl,
   isSafeToCreateProjectIn,
   getStarterTemplateTextList,
@@ -196,23 +195,20 @@ export class StartCommand extends Command implements CommandPreInputsPrompt {
     tasks.next(`Creating configuration file for the new project`);
     await createProjectConfig(appName, starterType, projectRoot, cloudAppId);
 
+    tasks.end();
 
-    /**
-     * Download the starter template, gunzip, and untar into the project folder
-     */
+    this.env.log.info('\nInstalling dependencies can take several minutes!');
+
     if (!options['skip-npm']) {
-      tasks.next(`Executing: ${chalk.green(installer + ' install')} within the newly created project directory`);
-
       if (options['yarn']) {
         let yarnVersion = await getCommandInfo('yarn', ['-version']);
         if (yarnVersion) {
           installer = 'yarn';
         }
       }
-      await pkgInstallProject(installer, projectRoot);
-    }
-    tasks.end();
 
+      await this.env.shell.run(installer, ['install'], { cwd: projectRoot });
+    }
 
     /**
      * Print out hello text about how to get started
