@@ -18,8 +18,7 @@ import { load } from '../lib/modules';
 export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any }> {
 
   const appScriptsArgs = minimistOptionsToArray(args.options);
-  console.log(`  Starting server: ${chalk.bold(appScriptsArgs.join(' '))}`);
-
+  console.log(`Starting server: ${chalk.bold(appScriptsArgs.join(' '))}\n`);
 
   // Find appropriate IP to use for cordova to reference
   const availableIPs = getAvailableIPAddress();

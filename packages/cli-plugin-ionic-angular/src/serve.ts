@@ -40,7 +40,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
 
   // using app-scripts and livereload is requested
   // Also remove commandName from the rawArgs passed
-  console.log(`  Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}`);
+  console.log(`Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))}\n`);
   const settings = await AppScripts.serve(context);
 
   if (!settings) { // TODO: shouldn't be needed
