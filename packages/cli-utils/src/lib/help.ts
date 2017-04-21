@@ -128,15 +128,15 @@ export function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[
 }
 
 function formatCommandUsage(inputs: CommandInput[] = [], commandName: string): string {
-  const usageLine =
-      `$ ${chalk.green('ionic ' + commandName + ' ' +
-          inputs.map(input => {
-            if (input.validators && (input.validators.includes(validators.required) && !input.prompt)) {
-              return '<' + input.name + '>';
-            }
-            return '[' + input.name + ']';
-          })
-          .join(' ')}`;
+  const formatInput = (input: CommandInput) => {
+    if (input.validators && (input.validators.includes(validators.required) && !input.prompt)) {
+      return '<' + input.name + '>';
+    }
+
+    return '[' + input.name + ']';
+  };
+
+  const usageLine = `$ ${chalk.green('ionic ' + commandName + ' ' + inputs.map(formatInput).join(' '))}`;
 
   return `
   ${chalk.bold('Usage')}:
@@ -149,7 +149,7 @@ function formatCommandInputs(inputs: CommandInput[] = []): string {
     return '';
   }
 
-  const fillStrings = generateFillSpaceStringList(inputs.map(input => input.name), 25, '.');
+  const fillStrings = generateFillSpaceStringList(inputs.map(input => input.name), 25, chalk.dim('.'));
 
   function inputLineFn({ name, description}: CommandOption, index: number) {
     const optionList = chalk.green(`${name}`);
@@ -179,7 +179,7 @@ function formatCommandOptions(options: CommandOption[] = []): string {
     const optionListLength = stringWidth(optionList);
     const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
 
-    return `${optionList} ${Array(fullLength - optionListLength).fill('.').join('')} ${opt.description}${typeof opt.default === 'string' ? ' (default: ' + chalk.green(opt.default) + ')' : ''}`;
+    return `${optionList} ${Array(fullLength - optionListLength).fill(chalk.dim('.')).join('')} ${opt.description}${typeof opt.default === 'string' ? ' (default: ' + chalk.green(opt.default) + ')' : ''}`;
   };
 
   return `
