@@ -6,7 +6,6 @@ import {
   CommandPreInputsPrompt,
   CommandMetadata,
   normalizeOptionAliases,
-  validators,
 } from '@ionic/cli-utils';
 
 import { load } from '../lib/modules';

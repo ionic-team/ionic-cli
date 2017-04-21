@@ -7,7 +7,6 @@ import {
   CommandPreInputsPrompt,
   TaskChain,
   normalizeOptionAliases,
-  validators,
 } from '@ionic/cli-utils';
 
 import { KnownPlatform } from '../definitions';

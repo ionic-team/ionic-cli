@@ -4,7 +4,6 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  TaskChain,
   validators,
 } from '@ionic/cli-utils';
 

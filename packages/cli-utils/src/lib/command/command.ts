@@ -1,7 +1,4 @@
-import * as superagentType from 'superagent';
-
 import {
-  APIResponse,
   CommandData,
   CommandLineInputs,
   CommandLineOptions,
@@ -11,7 +8,6 @@ import {
 } from '../../definitions';
 import { isValidationErrorArray, isCommandPreRun, isCommandPreInputsPrompt } from '../../guards';
 import { showHelp } from '../help';
-import { createFatalAPIFormat } from '../http';
 import { FatalException } from '../errors';
 import { collectInputs, validateInputs, minimistOptionsToArray } from './utils';
 
