@@ -26,19 +26,25 @@ Minimal node requirements:
 
 ## Starting an Ionic App
 
-To start a Ionic 1x app, run:
-
-```bash
-$ ionic start myapp [template] --v1
-```
-
-To start a Ionic 2 app, run:
+To start a Ionic app with the current version, run:
 
 ```bash
 $ ionic start myapp [template]
 ```
 
-Starter templates can either come from a named template, a Github repo, a Codepen, or a local directory. A starter template is what becomes the `www` directory for a V1 project, and a `src` directory for a V2 project
+To start a Ionic 1 app, run:
+
+```bash
+$ ionic start myapp [template] --v1
+```
+
+Starter templates can either come from a named template, a Github repo, a Codepen, or a local directory. A starter template is what becomes the `src` directory for a current version project, and the `www` directory for a v1 project.
+
+__Named current version template starters:__
+
+* [tabs](https://github.com/driftyco/ionic2-starter-tabs) (Default)
+* [sidemenu](https://github.com/driftyco/ionic2-starter-sidemenu)
+* [blank](https://github.com/driftyco/ionic2-starter-blank)
 
 __Named V1 template starters:__
 
@@ -48,16 +54,9 @@ __Named V1 template starters:__
 * [salesforce](https://github.com/driftyco/ionic-starter-salesforce)
 * [blank](https://github.com/driftyco/ionic-starter-blank)
 
-__Named V2 template starters:__
-
-* [tabs](https://github.com/driftyco/ionic2-starter-tabs) (Default)
-* [sidemenu](https://github.com/driftyco/ionic2-starter-sidemenu)
-* [blank](https://github.com/driftyco/ionic2-starter-blank)
-
-
 __Github Repo starters:__
 
-* Any Github repo url, ex: [https://github.com/driftyco/ionic-starter-tabs](https://github.com/driftyco/ionic-starter-tabs)
+* Any Github repo url, ex: [https://github.com/driftyco/ionic2-starter-tabs](https://github.com/driftyco/ionic-starter-tabs)
 * Named templates are simply aliases to Ionic starter repos
 
 __Codepen URL starters:__
