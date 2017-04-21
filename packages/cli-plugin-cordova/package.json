@@ -18,7 +18,7 @@
     "script-prepublish": "node ../../scripts/prepublish.js cli-plugin-cordova",
     "test": "../../node_modules/.bin/jest",
     "prepublish": "npm run build",
-    "preinstall": "node ./bin/preinstall"
+    "postinstall": "node ./bin/postinstall"
   },
   "keywords": [
     "ionic",
