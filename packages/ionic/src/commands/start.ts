@@ -195,6 +195,11 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     await tarXvfFromUrl(wrapperBranchPath, projectRoot);
     await tarXvfFromUrl(starterBranchPath, extractDir);
 
+    if (options['type'] === 'ionic1') {
+      tasks.next('Downloading resources');
+      await tarXvfFromUrl('https://github.com/driftyco/ionic-default-resources/archive/master.tar.gz', path.join(projectRoot, 'resources'));
+    }
+
     tasks.next(`Updating project dependencies to add required plugins`);
     const releaseChannelName = getReleaseChannelName(this.env);
 
