@@ -33,13 +33,13 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     path: 'driftyco/ionic2-starter-tabs',
     archive: 'https://github.com/driftyco/ionic2-starter-tabs/archive/<BRANCH_NAME>.tar.gz'
   },
-  {
-    name: 'aws',
-    type: 'ionic-angular',
-    description: 'AWS Mobile Hub Starter',
-    path: 'driftyco/ionic2-starter-aws',
-    archive: 'https://github.com/driftyco/ionic2-starter-aws/archive/<BRANCH_NAME>.tar.gz'
-  },
+  // {
+  //   name: 'aws',
+  //   type: 'ionic-angular',
+  //   description: 'AWS Mobile Hub Starter',
+  //   path: 'driftyco/ionic2-starter-aws',
+  //   archive: 'https://github.com/driftyco/ionic2-starter-aws/archive/<BRANCH_NAME>.tar.gz'
+  // },
   {
     name: 'blank',
     type: 'ionic-angular',
@@ -95,13 +95,6 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     description: 'A blank starter project for Ionic',
     path: 'driftyco/ionic-starter-maps',
     archive: 'https://github.com/driftyco/ionic-starter-blank/archive/<BRANCH_NAME>.tar.gz'
-  },
-  {
-    name: 'salesforce',
-    type: 'ionic1',
-    description: 'A starter project for Ionic and Salesforce',
-    path: 'driftyco/ionic-starter-maps',
-    archive: 'https://github.com/driftyco/ionic-starter-salesforce/archive/<BRANCH_NAME>.tar.gz'
   },
   {
     name: 'complex-list',
