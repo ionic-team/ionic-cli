@@ -30,8 +30,6 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
     }
   }
 
-  args.options.address = chosenIP;
-
   let appScriptsArgs = minimistOptionsToArray(args.options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 

@@ -1,3 +1,5 @@
+import * as chalk from 'chalk';
+
 import {
   Command,
   CommandLineInputs,
@@ -59,12 +61,12 @@ import { load } from '../lib/modules';
     },
     {
       name: 'address',
-      description: 'Use specific address or return with failure',
+      description: 'Network address for server',
       default: '0.0.0.0'
     },
     {
       name: 'browser',
-      description: 'Specifies the browser to use (safari, firefox, chrome)',
+      description: `Specifies the browser to use (${['safari', 'firefox', 'chrome'].map(b => chalk.green(b)).join(', ')})`,
       aliases: ['w']
     },
     {
