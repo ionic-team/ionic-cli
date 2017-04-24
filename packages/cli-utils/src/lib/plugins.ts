@@ -18,6 +18,42 @@ export function formatFullPluginName(name: string) {
   return `${ORG_PREFIX}/${PLUGIN_PREFIX}${name}`;
 }
 
+export async function promptToInstallProjectPlugin(env: IonicEnvironment, { message }: { message?: string }) {
+  const project = await env.project.load();
+  const projectPlugin = formatFullPluginName(project.type);
+
+  if (!message) {
+    message = `Looks like this is an ${PROJECT_TYPES_PRETTY.get(project.type)} project, would you like to install ${chalk.green(projectPlugin)} and continue?`;
+  }
+
+  return await promptToInstallPlugin(env, projectPlugin, { message });
+}
+
+export async function promptToInstallPlugin(env: IonicEnvironment, pluginName: string, { message }: { message?: string}) {
+  try {
+    return await loadPlugin(env, pluginName, {
+      askToInstall: true,
+      message,
+    });
+  } catch (e) {
+    if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
+      throw e;
+    }
+  }
+}
+
+export async function installPlugin(env: IonicEnvironment, plugin: Plugin) {
+  const ns = plugin.namespace;
+
+  if (ns) {
+    env.namespace.namespaces.set(ns.name, () => ns);
+  }
+
+  if (plugin.registerHooks) {
+    plugin.registerHooks(env.hooks);
+  }
+}
+
 export async function loadPlugins(env: IonicEnvironment) {
   if (!env.project.directory) {
     return async (): Promise<void> => {};
@@ -36,53 +72,33 @@ export async function loadPlugins(env: IonicEnvironment) {
     })
   );
 
+  // TODO: remember the responses of the requests below
+
   const project = await env.project.load();
   const projectPlugin = formatFullPluginName(project.type);
 
-  // TODO: remember the responses of the requests below
-
   if (!pluginPkgs.includes(projectPlugin)) {
-    try {
-      const plugin = await loadPlugin(env, projectPlugin, {
-        askToInstall: true,
-        message: `Looks like this is an ${PROJECT_TYPES_PRETTY.get(project.type)} project, would you like to install ${chalk.green(projectPlugin)} and continue?`,
-      });
+    const plugin = await promptToInstallProjectPlugin(env, {});
 
+    if (plugin) {
       plugins.push(plugin);
-    } catch (e) {
-      if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
-        throw e;
-      }
     }
   }
 
   const proxyPluginPkg = formatFullPluginName('proxy');
   const [ , proxyVar ] = getGlobalProxy();
   if (proxyVar && !pluginPkgs.includes(proxyPluginPkg)) {
-    try {
-      const plugin = await loadPlugin(env, proxyPluginPkg, {
-        askToInstall: true,
-        message: `Detected '${chalk.green(proxyVar)}' in environment, but to proxy CLI requests, you'll need ${chalk.green(proxyPluginPkg)}. Would you like to install it and continue?`,
-      });
+    const plugin = await promptToInstallPlugin(env, proxyPluginPkg, {
+      message: `Detected '${chalk.green(proxyVar)}' in environment, but to proxy CLI requests, you'll need ${chalk.green(proxyPluginPkg)}. Would you like to install it and continue?`,
+    });
 
+    if (plugin) {
       plugins.push(plugin);
-    } catch (e) {
-      if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
-        throw e;
-      }
     }
   }
 
   for (let plugin of plugins) {
-    const ns = plugin.namespace;
-
-    if (ns) {
-      env.namespace.namespaces.set(ns.name, () => ns);
-    }
-
-    if (plugin.registerHooks) {
-      plugin.registerHooks(env.hooks);
-    }
+    installPlugin(env, plugin);
   }
 }
 
