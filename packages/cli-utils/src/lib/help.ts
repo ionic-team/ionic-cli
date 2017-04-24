@@ -22,7 +22,7 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]) {
     return env.log.msg(getFormattedHelpDetails(env, env.namespace, inputs));
   }
 
-  const [slicedInputs, cmdOrNamespace] = env.namespace.locate(inputs);
+  let [ slicedInputs, cmdOrNamespace ] = env.namespace.locate(inputs);
 
   if (!isCommand(cmdOrNamespace)) {
     let extra = '';
@@ -33,6 +33,7 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]) {
 
         if (plugin) {
           installPlugin(env, plugin);
+          [ slicedInputs, cmdOrNamespace ] = env.namespace.locate(inputs);
         }
       }
     } else {
