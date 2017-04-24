@@ -8,7 +8,6 @@ import {
   CommandMetadata,
   installPlugin,
   promptToInstallProjectPlugin,
-  validators,
 } from '@ionic/cli-utils';
 
 import { load } from '../lib/modules';
