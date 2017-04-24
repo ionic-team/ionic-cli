@@ -48,7 +48,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
       });
 
       if (plugin) {
-        installPlugin(plugin);
+        installPlugin(this.env, plugin);
       } else {
         return 1;
       }
