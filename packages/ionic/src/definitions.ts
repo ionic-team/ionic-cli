@@ -1,6 +1,8 @@
+import { ProjectType } from '@ionic/cli-utils';
+
 export interface StarterTemplate {
   name: string;
-  typeId: string;
+  type: ProjectType;
   description: string;
   path: string;
   archive: string;

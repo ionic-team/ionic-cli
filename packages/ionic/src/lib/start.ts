@@ -99,10 +99,10 @@ export function getStarterTemplateText(templateList: StarterTemplate[]): string 
 
 export function getStarterTemplateTextList(templateList: StarterTemplate[]): string[] {
 
-  return templateList.map(({ name, typeId, description }) => {
+  return templateList.map(({ name, type, description }) => {
     let templateName = chalk.green(name);
 
-    return `${templateName} ${Array(20 - name.length).join(chalk.dim('.'))} ${chalk.bold(typeId)} ${description}`;
+    return `${templateName} ${Array(20 - name.length).join(chalk.dim('.'))} ${chalk.bold(type)} ${description}`;
   });
 }
 

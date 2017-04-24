@@ -8,6 +8,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  CommandPreRun,
   CommandPreInputsPrompt,
   TaskChain,
   getCommandInfo,
@@ -55,23 +56,6 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
     {
       name: 'template',
       description: `The starter template to use (e.g. ${['blank', 'tabs'].map(t => chalk.green(t)).join(', ')}; use ${chalk.green('--list')} to see all)`,
-      validators: [validators.required],
-      prompt: {
-        type: 'list',
-        message: 'What starter would you like to use:',
-        choices: () => {
-          function getAsChoice(text: string, index: number) {
-            return {
-              name: text,
-              short: STARTER_TEMPLATES[index].name,
-              value: STARTER_TEMPLATES[index].name
-            };
-          }
-          let starterTemplates = STARTER_TEMPLATES.filter(st => st.typeId === 'ionic-angular');
-          return getStarterTemplateTextList(starterTemplates)
-            .map(getAsChoice);
-        }
-      }
     }
   ],
   options: [
@@ -105,7 +89,7 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
     }
   ]
 })
-export class StartCommand extends Command implements CommandPreInputsPrompt {
+export class StartCommand extends Command implements CommandPreRun, CommandPreInputsPrompt {
   async preInputsPrompt() {
     // If the action is list then lets just end here.
     if (this.env.argv['list']) {
@@ -114,8 +98,32 @@ export class StartCommand extends Command implements CommandPreInputsPrompt {
     }
   }
 
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const inquirer = load('inquirer');
+
+    const response = await inquirer.prompt({
+      type: 'list',
+      name: 'template',
+      message: 'What starter would you like to use:',
+      choices: () => {
+        const starterTemplates = STARTER_TEMPLATES.filter(st => st.type === options['type']);
+
+        return getStarterTemplateTextList(starterTemplates)
+          .map((text: string, index: number) => {
+            return {
+              name: text,
+              short: starterTemplates[index].name,
+              value: starterTemplates[index].name
+            };
+          });
+      }
+    });
+
+    inputs[1] = response['template'];
+  }
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let [projectName, starterTemplateName] = inputs;
+    let [ projectName, starterTemplateName ] = inputs;
     let appName = <string>options['app-name'] || projectName;
     let cloudAppId = <string>options['cloud-app-id'] || '';
     let starterBranchName = <string>options['starterBranchName'] || 'master';
@@ -165,27 +173,27 @@ export class StartCommand extends Command implements CommandPreInputsPrompt {
       throw `Unable to find starter type for ${options['type']}`;
     }
 
-    let starterTemplateMatches: StarterTemplate[] = STARTER_TEMPLATES.filter(startTemplate => startTemplate.name === starterTemplateName);
+    let starterTemplateMatches: StarterTemplate[] = STARTER_TEMPLATES.filter(t => t.type === options['type'] && t.name === starterTemplateName);
     let starterTemplate: StarterTemplate | undefined = starterTemplateMatches[0];
 
     if (starterTemplateMatches.length > 1) {
-      starterTemplate = starterTemplateMatches.find(startTemplate => startTemplate.typeId === options['type']);
+      starterTemplate = starterTemplateMatches.find(t => t.type === options['type']);
     }
 
     if (!starterTemplate) {
       throw `Unable to find starter template for ${starterTemplateName}`;
     }
 
-    /**
-     * Download the starter template, gunzip, and untar into the project folder
-     */
+    // Download the starter template, gunzip, and untar into the project folder
     tasks.next(`Downloading '${chalk.green(starterTemplateName.toString())}' starter template`);
 
     const wrapperBranchPath = starterType.baseArchive.replace('<BRANCH_NAME>', wrapperBranchName);
     const starterBranchPath = starterTemplate.archive.replace('<BRANCH_NAME>', starterBranchName);
 
+    const extractDir = options['type'] === 'ionic1' ? path.join(projectRoot, 'www') : projectRoot;
+
     await tarXvfFromUrl(wrapperBranchPath, projectRoot);
-    await tarXvfFromUrl(starterBranchPath, projectRoot);
+    await tarXvfFromUrl(starterBranchPath, extractDir);
 
     tasks.next(`Updating project dependencies to add required plugins`);
     const releaseChannelName = getReleaseChannelName(this.env);
@@ -193,12 +201,12 @@ export class StartCommand extends Command implements CommandPreInputsPrompt {
     await patchPackageJsonForCli(appName, starterType, projectRoot, releaseChannelName);
     await updatePackageJsonForCli(appName, starterType, projectRoot, releaseChannelName);
 
-    tasks.next(`Creating configuration file for the new project`);
+    tasks.next('Creating configuration file for the new project');
     await createProjectConfig(appName, starterType, projectRoot, cloudAppId);
 
     tasks.end();
 
-    this.env.log.info('\nInstalling dependencies can take several minutes!');
+    this.env.log.info('\nInstalling dependencies may take several minutes!');
 
     if (!options['skip-npm']) {
       if (options['yarn']) {
@@ -211,14 +219,10 @@ export class StartCommand extends Command implements CommandPreInputsPrompt {
       await this.env.shell.run(installer, ['install'], { cwd: projectRoot });
     }
 
-    /**
-     * Print out hello text about how to get started
-     */
+    // Print out hello text about how to get started
     this.env.log.msg(getHelloText());
 
-    /**
-     * Ask the user if they would like to create a cloud account
-     */
+    // Ask the user if they would like to create a cloud account
     let { cliFlags } = await this.env.config.load();
 
     if (!options['skip-link']) {
