@@ -95,6 +95,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     const buildPlatforms = Object.keys(resourceJsonStructure)
       .filter(platform => platformDirContents.includes(platform));
     if (buildPlatforms.length === 0) {
+      tasks.end();
       throw `No platforms have been added. Please run: ${chalk.green('ionic cordova platform add')}`;
     }
     this.env.log.debug(`${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);

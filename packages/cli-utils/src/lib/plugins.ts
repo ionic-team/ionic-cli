@@ -42,7 +42,7 @@ export async function promptToInstallPlugin(env: IonicEnvironment, pluginName: s
   }
 }
 
-export async function installPlugin(env: IonicEnvironment, plugin: Plugin) {
+export function installPlugin(env: IonicEnvironment, plugin: Plugin) {
   const ns = plugin.namespace;
 
   if (ns) {
