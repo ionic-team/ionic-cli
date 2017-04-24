@@ -12,8 +12,9 @@ import {
 import { isCommand } from '../guards';
 import { validators } from './validators';
 import { generateFillSpaceStringList } from './utils/format';
+import { promptToInstallPlugin } from './plugins';
 
-import { ERROR_PLUGIN_NOT_INSTALLED, KNOWN_PLUGINS, ORG_PREFIX, PLUGIN_PREFIX, loadPlugin } from './plugins';
+import { KNOWN_PLUGINS, ORG_PREFIX, PLUGIN_PREFIX } from './plugins';
 
 export async function showHelp(env: IonicEnvironment, inputs: string[]) {
   // If there are no inputs then show global command details.
@@ -28,13 +29,7 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]) {
 
     if (env.project.directory) {
       if (KNOWN_PLUGINS.indexOf(slicedInputs[0]) !== -1) {
-        try {
-          await loadPlugin(env, `${ORG_PREFIX}/${PLUGIN_PREFIX}${slicedInputs[0]}`, {});
-        } catch (e) {
-          if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
-            throw e;
-          }
-        }
+        await promptToInstallPlugin(env, `${ORG_PREFIX}/${PLUGIN_PREFIX}${slicedInputs[0]}`, {});
       }
     } else {
       extra = '\nYou may need to be in an Ionic project directory.';
