@@ -95,11 +95,6 @@ import { load } from '../lib/modules';
       description: 'Start serve with a specific platform (ios/android)',
       aliases: ['t']
     },
-    {
-      name: 'qrcode',
-      description: 'Print a QR code for Ionic View instead of network broadcasting',
-      type: Boolean
-    }
   ],
 })
 export class ServeCommand extends Command {
@@ -113,17 +108,9 @@ export class ServeCommand extends Command {
       inputs,
       options: {
         ...options,
-        externalIpRequired: options.qrcode || options.broadcast
+        externalIpRequired: options.broadcast
       }
     });
-
-    // If qrcode option then generate a qrcode on the Command Line.
-    if (options.qrcode) {
-      const codeString = await generateQrCode(
-        `${response.protocol}://${response.publicIp}:${response.httpPort}`
-      );
-      this.env.log.msg(`\n\n\n${codeString}`);
-    }
 
     // If broadcast option then start udp server and broadcast info
     if (options.broadcast) {
@@ -154,18 +141,4 @@ export class ServeCommand extends Command {
 
     tasks.end();
   }
-}
-
-function generateQrCode(input: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-
-    try {
-      const qrcode = load('qrcode');
-      qrcode.generate(input, (response: any) => {
-        resolve(response);
-      });
-    } catch (e) {
-      reject(e);
-    }
-  });
 }
