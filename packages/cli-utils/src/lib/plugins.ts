@@ -138,6 +138,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
     if (answers['installPlugin']) {
       const pluginInstallVersion = `${pluginName}@${getReleaseChannelName(env)}`;
       await env.shell.run('npm', ['install', '--save-dev', pluginInstallVersion], {});
+      // await env.shell.run('npm', ['link', pluginName], {});
 
       return loadPlugin(env, pluginName, { askToInstall });
     } else {

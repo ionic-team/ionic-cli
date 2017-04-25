@@ -3,10 +3,15 @@ import * as minimist from 'minimist';
 import {
   CommandMap,
   IonicEnvironment,
+  KNOWN_PLUGINS,
   Namespace,
+  ORG_PREFIX,
+  PLUGIN_PREFIX,
+  installPlugin,
   isCommand,
-  showHelp,
   metadataToMinimistOptions,
+  promptToInstallPlugin,
+  showHelp,
 } from '@ionic/cli-utils';
 
 import { InfoCommand } from './info';
@@ -45,7 +50,16 @@ export class IonicNamespace extends Namespace {
   ]);
 
   async runCommand(env: IonicEnvironment): Promise<void> {
-    const [inputs, cmdOrNamespace] = this.locate(env.argv._);
+    let [ inputs, cmdOrNamespace ] = this.locate(env.argv._);
+
+    if (cmdOrNamespace === this && KNOWN_PLUGINS.indexOf(inputs[0]) !== -1) {
+      const plugin = await promptToInstallPlugin(env, `${ORG_PREFIX}/${PLUGIN_PREFIX}${inputs[0]}`, {});
+
+      if (plugin) {
+        installPlugin(env, plugin);
+        [ inputs, cmdOrNamespace ] = env.namespace.locate(inputs);
+      }
+    }
 
     if (!isCommand(cmdOrNamespace)) {
       return showHelp(env, env.argv._);
