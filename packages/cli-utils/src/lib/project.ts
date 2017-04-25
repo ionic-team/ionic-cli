@@ -42,7 +42,7 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
         if (e === ERROR_FILE_INVALID_JSON) {
           throw new FatalException(`Could not parse ${chalk.bold('package.json')}. Is it a valid JSON file?`);
         } else if (e === ERROR_INVALID_PACKAGE_JSON) {
-          throw new FatalException(`The ${chalk.bold('package.json')} file seems malformed.\nMake sure it has the following attributes: ${['name', 'version', 'dependencies', 'devDependencies'].map(v => chalk.bold(v)).join(', ')}.`);
+          throw new FatalException(`The ${chalk.bold('package.json')} file seems malformed.\nMake sure it has the following attributes: ${['name', 'dependencies', 'devDependencies'].map(v => chalk.bold(v)).join(', ')}.`);
         }
 
         throw e; // Probably file not found

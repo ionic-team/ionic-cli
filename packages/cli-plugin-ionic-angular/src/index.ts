@@ -18,8 +18,8 @@ export function registerHooks(hooks: IHookEngine) {
     }
 
     const ionicAngularPackageJson = await readPackageJsonFile(path.resolve(env.project.directory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
-    const version = ionicAngularPackageJson.version;
-    const url = `${docsHomepage}/${version}/api`;
+    const ionicAngularVersion = ionicAngularPackageJson.version ? ionicAngularPackageJson.version + '/' : '';
+    const url = `${docsHomepage}/${ionicAngularVersion}api`;
 
     return url;
   });
