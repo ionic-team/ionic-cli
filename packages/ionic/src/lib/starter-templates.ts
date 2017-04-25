@@ -72,30 +72,30 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     name: 'tabs',
     type: 'ionic1',
     description: 'A starting project for Ionic using a simple tabbed interface',
-    path: 'driftyco/ionic-starter-maps',
+    path: 'driftyco/ionic-starter-tabs',
     archive: 'https://github.com/driftyco/ionic-starter-tabs/archive/<BRANCH_NAME>.tar.gz'
   },
   {
     name: 'blank',
     type: 'ionic1',
     description: 'A blank starter project for Ionic',
-    path: 'driftyco/ionic-starter-maps',
+    path: 'driftyco/ionic-starter-blank',
     archive: 'https://github.com/driftyco/ionic-starter-blank/archive/<BRANCH_NAME>.tar.gz'
   },
   {
     name: 'sidemenu',
     type: 'ionic1',
     description: 'A starting project for Ionic using a side menu with navigation in the content area',
-    path: 'driftyco/ionic-starter-maps',
+    path: 'driftyco/ionic-starter-sidemenu',
     archive: 'https://github.com/driftyco/ionic-starter-sidemenu/archive/<BRANCH_NAME>.tar.gz'
   },
-  {
-    name: 'complex-list',
-    type: 'ionic1',
-    description: 'A complex list starter template',
-    path: 'driftyco/ionic-starter-maps',
-    archive: 'https://github.com/driftyco/ionic-starter-complex-list/archive/<BRANCH_NAME>.tar.gz'
-  },
+  // {
+  //   name: 'complex-list',
+  //   type: 'ionic1',
+  //   description: 'A complex list starter template',
+  //   path: 'driftyco/ionic-starter-maps',
+  //   archive: 'https://github.com/driftyco/ionic-starter-complex-list/archive/<BRANCH_NAME>.tar.gz'
+  // },
   {
     name: 'maps',
     type: 'ionic1',
