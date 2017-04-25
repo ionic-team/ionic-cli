@@ -53,7 +53,9 @@ export class DeployClient {
     return res.data;
   }
 
-  async requestSnapshotUpload(options: { note?: string } = {}): Promise<DeploySnapshotRequest> {
+  async requestSnapshotUpload(options: { legacy_duplication?: string; note?: string } = {}): Promise<DeploySnapshotRequest> {
+    options.legacy_duplication = '1'
+
     const req = this.client.make('POST', '/deploy/snapshots')
       .set('Authorization', `Bearer ${this.appUserToken}`)
       .send(options);
