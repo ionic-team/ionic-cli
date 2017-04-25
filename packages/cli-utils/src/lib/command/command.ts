@@ -6,8 +6,8 @@ import {
   IonicEnvironment,
   ValidationError,
 } from '../../definitions';
+
 import { isValidationErrorArray, isCommandPreRun, isCommandPreInputsPrompt } from '../../guards';
-import { showHelp } from '../help';
 import { FatalException } from '../errors';
 import { collectInputs, validateInputs, minimistOptionsToArray } from './utils';
 
@@ -16,10 +16,6 @@ export class Command implements ICommand {
   public metadata: CommandData;
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
-
-  showHelp() {
-    showHelp(this.env, this.env.argv._);
-  }
 
   validate(inputs: CommandLineInputs): ValidationError[] {
     try {

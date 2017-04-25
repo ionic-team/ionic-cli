@@ -364,7 +364,6 @@ export interface ICommand {
   env: IonicEnvironment;
   metadata: CommandData;
 
-  showHelp(): void;
   validate(inputs: CommandLineInputs): ValidationError[];
   run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
   execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
