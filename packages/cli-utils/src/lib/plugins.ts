@@ -169,7 +169,7 @@ export async function checkForUpdates(env: IonicEnvironment) {
       if (ionicDistTag === distTag) {
         const latestVersion = await getLatestPluginVersion(env, plugin);
 
-        if (semver.gt(latestVersion, plugin.version)) {
+        if (semver.gt(latestVersion, plugin.version) || (ionicDistTag === 'canary' && latestVersion !== plugin.version)) {
           env.log.warn(`Locally installed CLI Plugin ${chalk.green(plugin.name)} has an update available! Please upgrade:\n\n    ${chalk.green('npm install --save-dev ' + plugin.name + '@' + distTag)}\n\n`);
         }
       } else {
