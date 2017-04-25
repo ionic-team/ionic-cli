@@ -88,7 +88,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   // If an legacy command is being executed inform the user that there is a new command available
   let foundCommand = mapLegacyCommand(argv._[0]);
   if (foundCommand) {
-    log.msg(`The ${chalk.bold(argv._[0])} command is no longer available. To find out more about the equivalent please run:\n\n` +
+    log.msg(`The ${chalk.bold(argv._[0])} command has been renamed. To find out more, run:\n\n` +
       `  ${chalk.green(`ionic ${foundCommand} --help`)}\n`);
     return;
   }
@@ -232,7 +232,6 @@ function modifyArguments(pargv: string[]): string[] {
     modifiedArgArray[modifiedArgArray.indexOf('--verbose')] = '--log-level=debug';
   }
 
-
   return modifiedArgArray;
 }
 
@@ -249,6 +248,14 @@ function mapLegacyCommand(command: string): string | undefined {
     'prepare': 'cordova prepare',
     'resources': 'cordova resources',
     'run': 'cordova run',
+    'cordova:build': 'cordova build',
+    'cordova:compile': 'cordova compile',
+    'cordova:emulate': 'cordova emulate',
+    'cordova:platform': 'cordova platform',
+    'cordova:plugin': 'cordova plugin',
+    'cordova:prepare': 'cordova prepare',
+    'cordova:resources': 'cordova resources',
+    'cordova:run': 'cordova run',
   };
 
   return commandMap[command];

@@ -47,10 +47,6 @@ export class Namespace implements INamespace {
    * right-most namespace matched if the command is not found.
    */
   locate(argv: string[]): [string[], ICommand | INamespace] {
-    function _expandColons(inputs: string[]) {
-      return flattenArray(inputs.map((arg) => arg.split(':')));
-    }
-
     function _locate(inputs: string[], ns: INamespace, namespaceDepthList: string[]): [string[], ICommand | INamespace] {
       const nsgetter = ns.namespaces.get(inputs[0]);
       if (!nsgetter) {
@@ -70,7 +66,7 @@ export class Namespace implements INamespace {
       return _locate(inputs.slice(1), newNamespace, [...namespaceDepthList, newNamespace.name]);
     }
 
-    return _locate(_expandColons(argv), this, [this.name]);
+    return _locate(argv, this, [this.name]);
   }
 
   /**
