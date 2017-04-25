@@ -101,25 +101,27 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const inquirer = load('inquirer');
 
-    const response = await inquirer.prompt({
-      type: 'list',
-      name: 'template',
-      message: 'What starter would you like to use:',
-      choices: () => {
-        const starterTemplates = STARTER_TEMPLATES.filter(st => st.type === options['type']);
+    if (!inputs[1]) {
+      const response = await inquirer.prompt({
+        type: 'list',
+        name: 'template',
+        message: 'What starter would you like to use:',
+        choices: () => {
+          const starterTemplates = STARTER_TEMPLATES.filter(st => st.type === options['type']);
 
-        return getStarterTemplateTextList(starterTemplates)
-          .map((text: string, index: number) => {
-            return {
-              name: text,
-              short: starterTemplates[index].name,
-              value: starterTemplates[index].name
-            };
-          });
-      }
-    });
+          return getStarterTemplateTextList(starterTemplates)
+            .map((text: string, index: number) => {
+              return {
+                name: text,
+                short: starterTemplates[index].name,
+                value: starterTemplates[index].name
+              };
+            });
+        }
+      });
 
-    inputs[1] = response['template'];
+      inputs[1] = response['template'];
+    }
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
