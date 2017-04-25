@@ -49,7 +49,8 @@ export class Session implements ISession {
     const c = await this.config.load();
 
     if (!c.tokens.user) {
-      throw new FatalException(`You are not logged in! Run '${chalk.green('ionic login')}'.`);
+      throw new FatalException(`Oops, sorry! You'll need to log in:\n\n    ${chalk.green('ionic login')}\n\n` +
+                               `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`);
     }
 
     return c.tokens.user;
