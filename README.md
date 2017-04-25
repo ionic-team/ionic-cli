@@ -115,7 +115,7 @@ $ ionic help
 We are currently actively seeking feedback from those that use CLI 3 Beta. If
 you have questions or issues please feel free to open a new issue.
 
-**Ionic 2 template starters:**
+**Ionic template starters:**
 
 * [blank](https://github.com/driftyco/ionic2-starter-blank)
 * [tabs](https://github.com/driftyco/ionic2-starter-tabs)
