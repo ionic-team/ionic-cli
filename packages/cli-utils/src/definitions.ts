@@ -218,7 +218,7 @@ export interface ITelemetry {
 }
 
 export interface ConfigFile {
-  lastUpdated: string;
+  lastCommand: string;
   urls: {
     api: string;
     dash: string;
@@ -329,7 +329,6 @@ export interface IHookEngine {
 }
 
 export interface IonicEnvironment {
-  versions: { cli: string };
   argv: minimistType.ParsedArgs;
   pargv: string[];
   app: IApp;
@@ -338,6 +337,10 @@ export interface IonicEnvironment {
   config: IConfig<ConfigFile>;
   log: ILogger;
   project: IProject;
+  plugins: {
+    ionic: Plugin;
+    [key: string]: Plugin;
+  };
   session: ISession;
   shell: IShell;
   telemetry: ITelemetry;
@@ -345,6 +348,7 @@ export interface IonicEnvironment {
 }
 
 export interface Plugin {
+  name: string;
   version: string;
   namespace?: INamespace;
   registerHooks?(hooks: IHookEngine): void;

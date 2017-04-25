@@ -77,7 +77,7 @@ function formatHeader(env: IonicEnvironment) {
    _  ___  _ __  _  ___
   | |/ _ \\| '_ \\| |/ __|
   | | (_) | | | | | (__
-  |_|\\___/|_| |_|_|\\___|  CLI ${env.versions.cli}\n`;
+  |_|\\___/|_| |_|_|\\___|  CLI ${env.plugins.ionic.version}\n`;
 }
 
 function getHelpDetails(env: IonicEnvironment, commandMetadataList: CommandData[], filters: ((cmd: CommandData) => boolean)[] = []): string[] {

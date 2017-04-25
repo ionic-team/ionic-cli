@@ -20,6 +20,7 @@ import {
   Shell,
   TASKS,
   Telemetry,
+  checkForUpdates,
   formatSuperAgentError,
   fsReadDir,
   getCommandInfo,
@@ -73,6 +74,7 @@ export function registerHooks(hooks: IHookEngine) {
 }
 
 export async function run(pargv: string[], env: { [k: string]: string }) {
+  const now = new Date();
   let exitCode = 0;
   let err: Error | undefined;
 
@@ -124,15 +126,29 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       log,
       namespace,
       pargv,
+      plugins: {
+        ionic: {
+          name,
+          version,
+          namespace,
+          registerHooks,
+        },
+      },
       project,
       session,
       shell,
       telemetry,
-      versions: { cli: version },
     };
 
     await loadPlugins(ionicEnvironment);
+
+    if (now.getTime() - new Date(configData.lastCommand).getTime() >= 3600000) {
+      await checkForUpdates(ionicEnvironment);
+    }
+
     await namespace.runCommand(ionicEnvironment);
+
+    configData.lastCommand = now.toISOString();
     await Promise.all([config.save(), project.save()]);
 
   } catch (e) {

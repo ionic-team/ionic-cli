@@ -5,7 +5,7 @@ import {
   INamespace,
   NamespaceMapGetter,
 } from '../../definitions';
-import { flattenArray } from '../utils/array';
+
 import { strcmp } from '../utils/string';
 
 export class CommandMap extends Map<string, string | CommandMapGetter> {

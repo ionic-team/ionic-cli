@@ -94,8 +94,8 @@ export class Config extends BaseConfig<ConfigFile> {
     const lodash = load('lodash');
     const results = lodash.cloneDeep(o);
 
-    if (!results.lastUpdated) {
-      results.lastUpdated = new Date().toISOString();
+    if (!results.lastCommand) {
+      results.lastCommand = new Date().toISOString();
     }
 
     if (!results.urls) {
@@ -122,11 +122,13 @@ export class Config extends BaseConfig<ConfigFile> {
       results.cliFlags = {};
     }
 
+    delete results.lastUpdated;
+
     return results;
   }
 
   is<ConfigFile>(j: any): j is ConfigFile {
-    return typeof j.lastUpdated === 'string'
+    return typeof j.lastCommand === 'string'
       && typeof j.urls === 'object'
       && typeof j.urls.api === 'string'
       && typeof j.urls.dash === 'string'

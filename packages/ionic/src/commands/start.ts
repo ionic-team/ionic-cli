@@ -203,7 +203,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     }
 
     tasks.next(`Updating project dependencies to add required plugins`);
-    const releaseChannelName = getReleaseChannelName(this.env);
+    const releaseChannelName = getReleaseChannelName(this.env.plugins.ionic.version);
 
     await patchPackageJsonForCli(appName, starterType, projectRoot, releaseChannelName);
     await updatePackageJsonForCli(appName, starterType, projectRoot, releaseChannelName);

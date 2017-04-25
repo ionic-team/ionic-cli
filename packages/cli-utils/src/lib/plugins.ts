@@ -52,6 +52,8 @@ export function installPlugin(env: IonicEnvironment, plugin: Plugin) {
   if (plugin.registerHooks) {
     plugin.registerHooks(env.hooks);
   }
+
+  env.plugins[plugin.name] = plugin;
 }
 
 export async function loadPlugins(env: IonicEnvironment) {
@@ -136,7 +138,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
     }]);
 
     if (answers['installPlugin']) {
-      const pluginInstallVersion = `${pluginName}@${getReleaseChannelName(env)}`;
+      const pluginInstallVersion = `${pluginName}@${getReleaseChannelName(env.plugins.ionic.version)}`;
       await env.shell.run('npm', ['install', '--save-dev', pluginInstallVersion], {});
       // await env.shell.run('npm', ['link', pluginName], {});
 
@@ -149,12 +151,54 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
   return m;
 }
 
-export function getReleaseChannelName(env: IonicEnvironment): 'canary' | 'beta' | 'latest' {
-  if (env.versions.cli.includes('alpha')) {
+export async function checkForUpdates(env: IonicEnvironment) {
+  const semver = load('semver');
+
+  const ionicLatestVersion = await getLatestPluginVersion(env, env.plugins.ionic);
+  const ionicDistTag = getReleaseChannelName(env.plugins.ionic.version);
+
+  if (semver.gt(ionicLatestVersion, env.plugins.ionic.version)) {
+    env.log.warn(`The Ionic CLI has an update available! Please upgrade (you might need ${chalk.green('sudo')}):\n\n    ${chalk.green('npm install -g ionic@' + ionicDistTag)}\n\n`);
+  }
+
+  for (let pluginName in env.plugins) {
+    if (pluginName !== 'ionic') {
+      const plugin = env.plugins[pluginName];
+      const distTag = getReleaseChannelName(plugin.version);
+
+      if (ionicDistTag === distTag) {
+        const latestVersion = await getLatestPluginVersion(env, plugin);
+
+        if (semver.gt(latestVersion, plugin.version)) {
+          env.log.warn(`Locally installed CLI Plugin ${chalk.green(plugin.name)} has an update available! Please upgrade:\n\n    ${chalk.green('npm install --save-dev ' + plugin.name + '@' + distTag)}\n\n`);
+        }
+      } else {
+        env.log.warn(`Locally installed CLI Plugin ${chalk.green(plugin.name + chalk.bold('@' + distTag))} has a different distribution tag than the Ionic CLI (${chalk.green.bold('@' + ionicDistTag)}).\n` +
+                     `Please install the matching plugin version:\n\n    ${chalk.green('npm install --save-dev ' + plugin.name + '@' + ionicDistTag)}\n\n`);
+      }
+    }
+  }
+}
+
+export async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Promise<string> {
+  const distTag = getReleaseChannelName(plugin.version);
+
+  // TODO: might belong in utils/npm.ts
+  const cmdResult = JSON.parse(await env.shell.run('npm', ['view', plugin.name, `dist-tags.${distTag}`, '--json'], { showExecution: false }));
+
+  if (!cmdResult) {
+    return plugin.version;
+  }
+
+  return cmdResult.trim();
+}
+
+export function getReleaseChannelName(version: string): 'canary' | 'beta' | 'latest' {
+  if (version.includes('alpha')) {
     return 'canary';
   }
 
-  if (env.versions.cli.includes('beta')) {
+  if (version.includes('beta')) {
     return 'beta';
   }
 

@@ -55,6 +55,7 @@
     "os-name": "^2.0.1",
     "progress": "^1.1.8",
     "rimraf": "^2.5.4",
+    "semver": "^5.3.0",
     "slice-ansi": "0.0.4",
     "string-width": "^2.0.0",
     "superagent": "^3.5.2",
@@ -68,6 +69,7 @@
     "@types/ncp": "^2.0.0",
     "@types/progress": "^1.1.28",
     "@types/rimraf": "0.0.28",
+    "@types/semver": "^5.3.31",
     "@types/uuid": "^2.0.29"
   },
   "peerDependencies": {
