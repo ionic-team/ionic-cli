@@ -17,10 +17,19 @@ export function registerHooks(hooks: IHookEngine) {
       return [];
     }
 
-    const ionicVersionJson = await fsReadJsonFile(path.resolve(env.project.directory, 'www', 'lib', 'ionic', 'version.json')); // TODO
+    const getIonic1Version = async (): Promise<string | undefined> => {
+      try {
+        const ionicVersionJson = await fsReadJsonFile(path.resolve(env.project.directory, 'www', 'lib', 'ionic', 'version.json')); // TODO
+        return ionicVersionJson['version'];
+      } catch (e) {
+        env.log.error('Error with ionic version.json file:', e);
+      }
+    };
+
+    const ionic1Version = await getIonic1Version();
 
     return [
-      { type: 'local-npm', name: 'Ionic Framework', version: `ionic1 ${ionicVersionJson['version'] || 'unknown'}` },
+      { type: 'local-npm', name: 'Ionic Framework', version: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown' },
       { type: 'local-npm', name, version },
     ];
   });

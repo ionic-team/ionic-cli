@@ -19,7 +19,7 @@ export async function readBowerJsonFile(path: string): Promise<BowerJson> {
   const bowerJson = await fsReadJsonFile(path);
 
   if (!isBowerJson(bowerJson)) {
-    throw ERROR_INVALID_PACKAGE_JSON;
+    throw ERROR_INVALID_BOWER_JSON;
   }
 
   return bowerJson;

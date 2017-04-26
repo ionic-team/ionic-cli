@@ -46,5 +46,6 @@ export class DocsCommand extends Command {
     }
 
     opn(url, { wait: false });
+    this.env.log.ok('Launched Ionic docs in your browser!');
   }
 }
