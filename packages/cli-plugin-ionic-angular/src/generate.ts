@@ -15,10 +15,14 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
   const appScriptsArgs = minimistOptionsToArray(args.options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
-  const ionicInfo = await readPackageJsonFile(path.resolve(args.env.project.directory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
+  try {
+    const ionicInfo = await readPackageJsonFile(path.resolve(args.env.project.directory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
 
-  if (Number(ionicInfo.version.charAt(0)) < 3) {
-    throw new Error(`The generate command is only available for projects that use ionic-angular >= 3.0.0`);
+    if (Number(ionicInfo.version.charAt(0)) < 3) {
+      throw new Error(`The generate command is only available for projects that use ionic-angular >= 3.0.0`);
+    }
+  } catch (e) {
+    args.env.log.error('Error with ionic-angular package.json file:', e);
   }
 
   const AppScripts = load('@ionic/app-scripts');
