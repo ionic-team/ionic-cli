@@ -59,24 +59,13 @@ see [CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/v3/CHANGELOG.md).
 * `generate` command has been overhauled to interactively generate components,
   pages, etc.
 
-#### Upgrading from a previous beta release to beta8
-
-You will need to install the newly updated CLI globally and execute the
-following command in your Ionic project directory.
-
-```bash
-$ npm install -g ionic@beta
-$ npm uninstall --save-dev @ionic/cli-plugin-core @ionic/cli-build-ionic-angular
-$ npm install --save-dev @ionic/cli-plugin-cordova @ionic/cli-plugin-ionic-angular
-```
-
 #### Latest beta release versions
 
- - ionic@3.0.0-beta8
- - @ionic/cli-plugin-cordova@0.0.13
- - @ionic/cli-plugin-ionic-angular@0.0.7
- - @ionic/cli-plugin-ionic1@0.0.7
- - @ionic/cli-plugin-proxy@0.0.4
+ - ionic@3.0.0-beta9
+ - @ionic/cli-plugin-cordova@1.0.0-beta0
+ - @ionic/cli-plugin-ionic-angular@1.0.0-beta0
+ - @ionic/cli-plugin-ionic1@1.0.0-beta0
+ - @ionic/cli-plugin-proxy@1.0.0-beta0
 
 ## Ionic-Angular - Using CLI 3
 
