@@ -19,11 +19,17 @@ import { load } from '../lib/modules';
 })
 export class DocsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    let url = '';
     const opn = load('opn');
 
     const docsHomepage = 'https://ionicframework.com/docs';
     const results = await this.env.hooks.fire('command:docs', { env: this.env, inputs, options });
-    const [ url ] = results;
+
+    if (results.length === 0) {
+      url = docsHomepage;
+    } else {
+      [ url ] = results;
+    }
 
     try {
       await createRequest('head', url);
