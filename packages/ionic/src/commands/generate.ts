@@ -15,7 +15,7 @@ import { load } from '../lib/modules';
 @CommandMetadata({
   name: 'generate',
   type: 'project',
-  description: `Generate pipes, components, pages, directives, and tabs ${chalk.bold(`(ionic-angular >= 3.0.0)`)}`,
+  description: `Generate pipes, components, pages, directives, providers, and tabs ${chalk.bold(`(ionic-angular >= 3.0.0)`)}`,
   exampleCommands: ['', 'component', 'directive', 'page', 'pipe', 'provider', 'tabs', 'component foo', 'page Login', 'pipe MyFilterPipe'],
   inputs: [
     {
