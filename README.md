@@ -59,7 +59,7 @@ see [CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/v3/CHANGELOG.md).
 * `generate` command has been overhauled to interactively generate components,
   pages, etc.
 
-#### Upgrading from a previous beta release to beta7
+#### Upgrading from a previous beta release to beta8
 
 You will need to install the newly updated CLI globally and execute the
 following command in your Ionic project directory.
