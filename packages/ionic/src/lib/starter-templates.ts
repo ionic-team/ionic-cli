@@ -33,13 +33,6 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     path: 'driftyco/ionic2-starter-tabs',
     archive: 'https://github.com/driftyco/ionic2-starter-tabs/archive/<BRANCH_NAME>.tar.gz'
   },
-  // {
-  //   name: 'aws',
-  //   type: 'ionic-angular',
-  //   description: 'AWS Mobile Hub Starter',
-  //   path: 'driftyco/ionic2-starter-aws',
-  //   archive: 'https://github.com/driftyco/ionic2-starter-aws/archive/<BRANCH_NAME>.tar.gz'
-  // },
   {
     name: 'blank',
     type: 'ionic-angular',
@@ -67,6 +60,13 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     description: 'A tutorial based project that goes along with the Ionic documentation',
     path: 'driftyco/ionic2-starter-tutorial',
     archive: 'https://github.com/driftyco/ionic2-starter-tutorial/archive/<BRANCH_NAME>.tar.gz'
+  },
+  {
+    name: 'aws',
+    type: 'ionic-angular',
+    description: 'AWS Mobile Hub Starter',
+    path: 'driftyco/ionic2-starter-aws',
+    archive: 'https://github.com/driftyco/ionic2-starter-aws/archive/<BRANCH_NAME>.tar.gz'
   },
   {
     name: 'tabs',
