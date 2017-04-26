@@ -29,7 +29,7 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]) {
     }
 
     if (slicedInputs.length > 0) {
-      env.log.error(`Unable to find command: ${chalk.bold(inputs.join(' '))}.${extra}`);
+      env.log.error(`Unable to find command: ${chalk.green(inputs.join(' '))}${extra}\n`);
     }
   }
 

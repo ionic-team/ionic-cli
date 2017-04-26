@@ -30,6 +30,10 @@ export async function promptToInstallProjectPlugin(env: IonicEnvironment, { mess
 }
 
 export async function promptToInstallPlugin(env: IonicEnvironment, pluginName: string, { message }: { message?: string}) {
+  if (!env.project.directory) {
+    return;
+  }
+
   try {
     return await loadPlugin(env, pluginName, {
       askToInstall: true,

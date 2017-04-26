@@ -1,3 +1,4 @@
+import * as chalk from 'chalk';
 import * as minimist from 'minimist';
 
 import {
@@ -79,6 +80,11 @@ export class IonicNamespace extends Namespace {
       }
 
       return showHelp(env, env.argv._);
+    }
+
+    if (!env.project.directory && command.metadata.type === 'project') {
+      env.log.error(`Sorry! ${chalk.green('ionic ' + command.metadata.fullName)} can only be run in an Ionic project directory.`);
+      return;
     }
 
     await command.execute(inputs, options);
