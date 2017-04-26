@@ -63,7 +63,7 @@ export function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, i
       `  ${chalk.bold('Global Commands')}:\n\n` +
       `${formatList(globalCommandDetails)}\n` +
       `  ${chalk.bold('Project Commands')}:\n\n` +
-      `${formatList(projectCommandDetails)}`;
+      `${env.project.directory ? formatList(projectCommandDetails) : '    You are not in a project directory.\n'}`;
   } else {
     const commandDetails = getHelpDetails(env, globalMetadata, []);
     return `\n  ${chalk.bold('Commands')}:\n\n` +
