@@ -14,7 +14,7 @@ async function getIonicAngularVersion(env: IonicEnvironment): Promise<string | u
     const ionicAngularPackageJson = await readPackageJsonFile(path.resolve(env.project.directory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
     return ionicAngularPackageJson.version;
   } catch (e) {
-    env.log.error('Error with ionic-angular package.json file:', e)
+    env.log.error('Error with ionic-angular package.json file:', e);
   }
 };
 
@@ -23,7 +23,7 @@ async function getAppScriptsVersion(env: IonicEnvironment): Promise<string | und
     const appScriptsPackageJson = await readPackageJsonFile(path.resolve(env.project.directory, 'node_modules', '@ionic', 'app-scripts', 'package.json')); // TODO
     return appScriptsPackageJson.version;
   } catch (e) {
-    env.log.error('Error with @ionic/app-scripts package.json file:', e)
+    env.log.error('Error with @ionic/app-scripts package.json file:', e);
   }
 };
 
