@@ -60,7 +60,7 @@ export class PlatformCommand extends CordovaCommand implements CommandPreInputsP
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let [action, platformName] = inputs;
+    let [ action, platformName ] = inputs;
 
     this.checkForMac(platformName);
 
@@ -71,7 +71,7 @@ export class PlatformCommand extends CordovaCommand implements CommandPreInputsP
 
     const platforms = await getProjectPlatforms(this.env.project.directory);
 
-    if (platforms.includes(platformName)) {
+    if (action === 'add' && platforms.includes(platformName)) {
       this.env.log.ok(`Platform ${platformName} already exists.`);
       return;
     }
