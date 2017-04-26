@@ -10,8 +10,8 @@ export const STARTER_TYPES: StarterTemplateType[] = [
     name: 'v2',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/<BRANCH_NAME>.tar.gz',
     buildDependencies: [
+      '@ionic/cli-plugin-ionic-angular',
       '@ionic/cli-plugin-cordova',
-      '@ionic/cli-plugin-ionic-angular'
     ]
   },
   {
@@ -19,8 +19,8 @@ export const STARTER_TYPES: StarterTemplateType[] = [
     name: 'v1',
     baseArchive: 'https://github.com/driftyco/ionic-app-base/archive/<BRANCH_NAME>.tar.gz',
     buildDependencies: [
+      '@ionic/cli-plugin-ionic1',
       '@ionic/cli-plugin-cordova',
-      '@ionic/cli-plugin-ionic1'
     ]
   }
 ];

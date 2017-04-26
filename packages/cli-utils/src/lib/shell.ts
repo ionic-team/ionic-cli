@@ -9,7 +9,7 @@ export const ERROR_SHELL_COMMAND_NOT_FOUND = 'SHELL_COMMAND_NOT_FOUND';
 export class Shell implements IShell {
   async run(command: string, args: string[], { showExecution = true, showError = true, fatalOnNotFound = true, fatalOnError = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<string> {
     const fullCmd = command + ' ' + (args.length > 0 ? args.join(' ') : '');
-    const truncatedCmd = fullCmd.length > 50 ? fullCmd.substring(0, 70) + '...' : fullCmd;
+    const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
 
     if (showExecution) {
       console.log(`\n> ${chalk.green(fullCmd)}\n`);

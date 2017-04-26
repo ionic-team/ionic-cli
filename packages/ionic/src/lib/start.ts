@@ -11,7 +11,6 @@ import {
   createRequest,
   fsReadJsonFile,
   fsWriteJsonFile,
-  getCommandInfo,
   load,
 } from '@ionic/cli-utils';
 
@@ -124,7 +123,7 @@ ${chalk.bold('Test and share your app on a device with the Ionic View app:')}
   `;
 }
 
-export async function patchPackageJsonForCli(appName: string, starterType: StarterTemplateType, pathToProject: string, releaseChannelName: string = 'latest'): Promise<void> {
+export async function patchPackageJsonForCli(appName: string, starterType: StarterTemplateType, pathToProject: string): Promise<void> {
   const patchPackagePath = path.resolve(pathToProject, 'patch.package.json');
   const packagePath = path.resolve(pathToProject, 'package.json');
 
@@ -162,23 +161,14 @@ export async function patchPackageJsonForCli(appName: string, starterType: Start
   }
 }
 
-export async function updatePackageJsonForCli(appName: string, starterType: StarterTemplateType, pathToProject: string, releaseChannelName: string = 'latest'): Promise<void> {
+export async function updatePackageJsonForCli(appName: string, starterType: StarterTemplateType, pathToProject: string): Promise<void> {
   const filePath = path.resolve(pathToProject, 'package.json');
-  const distTagPromises = starterType.buildDependencies.map(stDependency => (
-    getCommandInfo('npm', ['view', stDependency, 'dist-tags', '--json'])
-  ));
-
   try {
     let jsonStructure = await fsReadJsonFile(filePath);
-    let distTags = await Promise.all(distTagPromises);
 
     jsonStructure['name'] = appName;
     jsonStructure['version'] = '0.0.1';
     jsonStructure['description'] = 'An Ionic project';
-
-    starterType.buildDependencies.forEach((stDependency, index) => {
-      jsonStructure['devDependencies'][stDependency] = JSON.parse(distTags[index])[releaseChannelName];
-    });
 
     await fsWriteJsonFile(filePath, jsonStructure, { encoding: 'utf8' });
 

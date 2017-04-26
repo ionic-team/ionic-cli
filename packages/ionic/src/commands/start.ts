@@ -11,7 +11,6 @@ import {
   CommandPreRun,
   CommandPreInputsPrompt,
   TaskChain,
-  getCommandInfo,
   getReleaseChannelName,
   prettyPath,
   rimrafp,
@@ -130,7 +129,6 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     let cloudAppId = <string>options['cloud-app-id'] || '';
     let starterBranchName = <string>options['starterBranchName'] || 'master';
     let wrapperBranchName = <string>options['wrapperBranchName'] || 'master';
-    let installer = 'npm';
     let projectRoot: string;
 
     if (!isProjectNameValid(projectName)) {
@@ -203,27 +201,24 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     }
 
     tasks.next(`Updating project dependencies to add required plugins`);
-    const releaseChannelName = getReleaseChannelName(this.env.plugins.ionic.version);
 
-    await patchPackageJsonForCli(appName, starterType, projectRoot, releaseChannelName);
-    await updatePackageJsonForCli(appName, starterType, projectRoot, releaseChannelName);
+    await patchPackageJsonForCli(appName, starterType, projectRoot);
+    await updatePackageJsonForCli(appName, starterType, projectRoot);
 
     tasks.next('Creating configuration file for the new project');
     await createProjectConfig(appName, starterType, projectRoot, cloudAppId);
 
     tasks.end();
 
-    this.env.log.info('\nInstalling dependencies may take several minutes!');
-
     if (!options['skip-npm']) {
-      if (options['yarn']) {
-        let yarnVersion = await getCommandInfo('yarn', ['-version']);
-        if (yarnVersion) {
-          installer = 'yarn';
-        }
-      }
+      this.env.log.info('\nInstalling dependencies may take several minutes!');
+      const distTag = getReleaseChannelName(this.env.plugins.ionic.version);
 
-      await this.env.shell.run(installer, ['install'], { cwd: projectRoot });
+      await this.env.shell.run('npm', ['install'], { cwd: projectRoot });
+
+      for (let dep of starterType.buildDependencies) {
+        await this.env.shell.run('npm', ['install', '--save-dev', `${dep}@${distTag}`], { cwd: projectRoot });
+      }
     }
 
     // Print out hello text about how to get started
