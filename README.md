@@ -72,10 +72,11 @@ $ npm install --save-dev @ionic/cli-plugin-cordova @ionic/cli-plugin-ionic-angul
 
 #### Latest beta release versions
 
- - ionic@3.0.0-beta7
- - @ionic/cli-plugin-cordova@0.0.12
- - @ionic/cli-plugin-ionic-angular@0.0.6
- - @ionic/cli-plugin-ionic1@0.0.6
+ - ionic@3.0.0-beta8
+ - @ionic/cli-plugin-cordova@0.0.13
+ - @ionic/cli-plugin-ionic-angular@0.0.7
+ - @ionic/cli-plugin-ionic1@0.0.7
+ - @ionic/cli-plugin-proxy@0.0.4
 
 ## Ionic-Angular - Using CLI 3
 
