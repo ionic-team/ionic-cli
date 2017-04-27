@@ -74,7 +74,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   const inquirer = loadFromUtils('inquirer');
   const bottomBar = new inquirer.ui.BottomBar();
   const bottomBarHack = <any>bottomBar;
-  try { bottomBarHack.rl.output.mute(); } catch (e) {} // TODO
+  try { bottomBarHack.rl.output.mute(); } catch (e) {}// TODO
   const log = new Logger({ stream: bottomBar.log });
   const tasks = new TaskChain(bottomBar);
 

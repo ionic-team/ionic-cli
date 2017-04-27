@@ -6,7 +6,6 @@ import {
   Command,
   CommandMetadata,
   InfoHookItem,
-  Task,
   columnar,
   strcmp,
 } from '@ionic/cli-utils';
@@ -18,7 +17,7 @@ import {
 })
 export class InfoCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const task = new Task('Gathering environment info').start();
+    const task = this.env.tasks.next('Gathering environment info');
 
     const initialValue: InfoHookItem[] = [];
     const results = await this.env.hooks.fire('command:info', { env: this.env, inputs, options });

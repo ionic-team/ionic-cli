@@ -234,7 +234,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
         const opn = load('opn');
         const token = await this.env.session.getUserToken();
         opn(`https://apps.ionic.io/?user_token=${token}`, { wait: false });
-        this.env.log.ok(`\nRun ${chalk.green(`ionic link`)} to link to the app.`);
+        this.env.log.ok(`Run ${chalk.green(`ionic link`)} to link to the app.`);
 
         opn(IONIC_DASH_URL + '/signup', { wait: false });
       } else if (linkApp) {

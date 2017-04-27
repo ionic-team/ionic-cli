@@ -25,21 +25,18 @@ describe('prompt', () => {
 describe('tabsPrompt', () => {
 
   it('should return an array', async () => {
-    jest.resetModules();
-    jest.mock('../../lib/modules', () => ({
-      load: jest.fn().mockReturnValue({
-        prompt: jest.fn().mockReturnValueOnce({
-          howMany: 2
-        }).mockReturnValueOnce({
-          tabName: 'CoolTabOne'
-        }).mockReturnValueOnce({
-          tabName: 'CoolTabTwo'
-        })
+    const env = {
+      prompt: jest.fn().mockReturnValueOnce({
+        howMany: 2
+      }).mockReturnValueOnce({
+        tabName: 'CoolTabOne'
+      }).mockReturnValueOnce({
+        tabName: 'CoolTabTwo'
       })
-    }));
+    };
 
     const generate = require('../generate');
-    const result = await generate.tabsPrompt();
+    const result = await generate.tabsPrompt(env);
 
     expect(result).toEqual([
       'CoolTabOne',

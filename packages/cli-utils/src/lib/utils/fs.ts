@@ -3,7 +3,6 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import * as rimraf from 'rimraf';
 
-import { prettyPath } from './format';
 import { promisify } from './promise';
 import { load } from '../modules';
 
