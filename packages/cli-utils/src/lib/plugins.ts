@@ -6,6 +6,7 @@ import { PROJECT_TYPES_PRETTY } from './project';
 import { load } from './modules';
 import { readDir } from './utils/fs';
 import { getGlobalProxy } from './http';
+import { pkgInstall } from './utils/npm';
 
 export const KNOWN_PLUGINS = ['cordova', 'proxy', 'ionic1', 'ionic-angular'];
 export const ORG_PREFIX = '@ionic';
@@ -143,8 +144,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
 
     if (answers['installPlugin']) {
       const pluginInstallVersion = `${pluginName}@${getReleaseChannelName(env.plugins.ionic.version)}`;
-      await env.shell.run('npm', ['install', '--save-dev', pluginInstallVersion], {});
-      // await env.shell.run('npm', ['link', pluginName], {});
+      await pkgInstall(env.shell, pluginInstallVersion); // TODO for local dev somehow make this link
 
       return loadPlugin(env, pluginName, { askToInstall });
     } else {

@@ -128,7 +128,8 @@ export class Config extends BaseConfig<ConfigFile> {
   }
 
   is<ConfigFile>(j: any): j is ConfigFile {
-    return typeof j.lastCommand === 'string'
+    return j
+      && typeof j.lastCommand === 'string'
       && typeof j.urls === 'object'
       && typeof j.urls.api === 'string'
       && typeof j.urls.dash === 'string'

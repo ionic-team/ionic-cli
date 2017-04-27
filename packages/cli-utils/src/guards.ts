@@ -41,10 +41,7 @@ export function isLogLevel(l: string): l is LogLevel {
 
 export function isPackageJson(o: Object): o is PackageJson {
   const obj = <PackageJson>o;
-  return obj
-    && typeof obj.name === 'string'
-    && typeof obj.dependencies === 'object'
-    && typeof obj.devDependencies === 'object';
+  return obj && typeof obj.name === 'string';
 }
 
 export function isBowerJson(o: Object): o is BowerJson {

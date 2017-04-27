@@ -12,6 +12,7 @@ import {
   CommandPreInputsPrompt,
   TaskChain,
   getReleaseChannelName,
+  pkgInstall,
   prettyPath,
   rimrafp,
   validators,
@@ -25,7 +26,7 @@ import {
   getHelloText,
   patchPackageJsonForCli,
   updatePackageJsonForCli,
-  createProjectConfig
+  createProjectConfig,
 } from '../lib/start';
 
 import { load } from '../lib/modules';
@@ -39,6 +40,7 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
   type: 'global',
   description: 'Create a new project',
   exampleCommands: [
+    '',
     'mynewapp blank',
     'mynewapp tabs --type ionic-angular',
     'mynewapp blank --type ionic1'
@@ -71,15 +73,15 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
       aliases: ['n']
     },
     {
-      name: 'skip-npm',
-      description:  'Skip npm package installation',
-      type: Boolean,
-    },
-    {
       name: 'list',
       description:  'List starter templates available',
       type: Boolean,
       aliases: ['l']
+    },
+    {
+      name: 'skip-deps',
+      description:  'Skip npm/yarn package installation of dependencies',
+      type: Boolean,
     },
     {
       name: 'skip-link',
@@ -210,14 +212,14 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
 
     tasks.end();
 
-    if (!options['skip-npm']) {
+    if (!options['skip-deps']) {
       this.env.log.info('\nInstalling dependencies may take several minutes!');
       const distTag = getReleaseChannelName(this.env.plugins.ionic.version);
 
-      await this.env.shell.run('npm', ['install'], { cwd: projectRoot });
+      await pkgInstall(this.env.shell, undefined, { cwd: projectRoot });
 
       for (let dep of starterType.buildDependencies) {
-        await this.env.shell.run('npm', ['install', '--save-dev', `${dep}@${distTag}`], { cwd: projectRoot });
+        await pkgInstall(this.env.shell, `${dep}@${distTag}`, { cwd: projectRoot });
       }
     }
 

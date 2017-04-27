@@ -42,7 +42,7 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
         if (e === ERROR_FILE_INVALID_JSON) {
           throw new FatalException(`Could not parse ${chalk.bold('package.json')}. Is it a valid JSON file?`);
         } else if (e === ERROR_INVALID_PACKAGE_JSON) {
-          throw new FatalException(`The ${chalk.bold('package.json')} file seems malformed.\nMake sure it has the following attributes: ${['name', 'dependencies', 'devDependencies'].map(v => chalk.bold(v)).join(', ')}.`);
+          throw new FatalException(`The ${chalk.bold('package.json')} file seems malformed.`);
         }
 
         throw e; // Probably file not found
@@ -61,7 +61,7 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
         if (e === ERROR_FILE_INVALID_JSON) {
           throw new FatalException(`Could not parse ${chalk.bold('bower.json')}. Is it a valid JSON file?`);
         } else if (e === ERROR_INVALID_BOWER_JSON) {
-          throw new FatalException(`The ${chalk.bold('bower.json')} file seems malformed.\nMake sure it has the following attributes: ${['name', 'dependencies', 'devDependencies'].map(v => chalk.bold(v)).join(', ')}.`);
+          throw new FatalException(`The ${chalk.bold('bower.json')} file seems malformed.`);
         }
 
         throw e; // Probably file not found
@@ -98,7 +98,7 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
     try {
       const packageJson = await this.loadPackageJson();
 
-      if (typeof packageJson.dependencies['ionic-angular'] === 'string') {
+      if (packageJson.dependencies && typeof packageJson.dependencies['ionic-angular'] === 'string') {
         return 'ionic-angular';
       }
     } catch (e) {
@@ -126,6 +126,6 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
   }
 
   is<ProjectFile>(j: any): j is ProjectFile {
-    return typeof j.name === 'string' && typeof j.app_id === 'string';
+    return j && typeof j.name === 'string' && typeof j.app_id === 'string';
   }
 }
