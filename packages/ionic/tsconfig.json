@@ -6,10 +6,9 @@
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "noImplicitAny": true,
     "outDir": "./dist",
     "removeComments": true,
-    "strictNullChecks": true,
+    "strict": true,
     "target": "es6",
     "lib": [
       "es2016"

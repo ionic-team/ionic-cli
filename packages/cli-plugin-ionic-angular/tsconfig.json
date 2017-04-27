@@ -7,9 +7,9 @@
     "experimentalDecorators": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "noImplicitAny": true,
     "outDir": "./dist",
     "removeComments": true,
+    "strict": true,
     "strictNullChecks": false,
     "target": "es6",
     "lib": [

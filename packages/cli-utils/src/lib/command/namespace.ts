@@ -12,7 +12,7 @@ export class CommandMap extends Map<string, string | CommandMapGetter> {
   getAliases(): Map<string, string[]> {
     const cmdAliases = new Map<string, string[]>();
     const cmdMapContents: ReadonlyArray<[string, string | CommandMapGetter]> = Array.from(this.entries());
-    const aliasToCmd = cmdMapContents.filter((value): value is [string, string] => typeof value[1] === 'string');
+    const aliasToCmd = <ReadonlyArray<[string, string]>>cmdMapContents.filter((value): value is [string, string] => typeof value[1] === 'string'); // TODO: typescript bug?
     aliasToCmd.forEach(([alias, cmd]) => {
       const aliases = cmdAliases.get(cmd) || [];
       aliases.push(alias);
