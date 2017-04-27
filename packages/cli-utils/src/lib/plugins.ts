@@ -135,8 +135,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
     throw ERROR_PLUGIN_NOT_INSTALLED;
   }
   if (!m) {
-    const inquirer = load('inquirer');
-    const answers = await inquirer.prompt([{
+    const answers = await env.prompt([{
       type: 'confirm',
       name: 'installPlugin',
       message,

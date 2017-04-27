@@ -1,5 +1,7 @@
 import * as path from 'path';
 
+import { IonicEnvironment } from '@ionic/cli-utils';
+
 import * as AppScriptsType from '@ionic/app-scripts';
 import { load } from '../lib/modules';
 
@@ -21,17 +23,16 @@ export async function prompt(context: AppScriptsType.BuildContext) {
   return context.appNgModulePath;
 }
 
-export async function tabsPrompt() {
+export async function tabsPrompt(env: IonicEnvironment) {
   const tabNames = [];
 
-  const inquirer = load('inquirer');
-  const howManyQuestion = await inquirer.prompt({
+  const howManyQuestion = await env.prompt({
     name: 'howMany',
     message: 'How many tabs?'
   });
 
   for (let i = 0; i < howManyQuestion.howMany; i++) {
-    const nameQuestion = await inquirer.prompt({
+    const nameQuestion = await env.prompt({
       name: 'tabName',
       message: 'Name of this tab:'
     });

@@ -6,7 +6,6 @@ import {
   Command,
   CommandMetadata,
   CommandPreRun,
-  TaskChain,
   promptToLogin,
 } from '@ionic/cli-utils';
 
@@ -68,7 +67,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     const isLoggedIn = await this.env.session.isLoggedIn();
     if (!isLoggedIn) {
       this.env.log.msg(`You need to be logged into your Ionic account in order to run ${chalk.green(`ionic cordova resources`)}.\n`);
-      await promptToLogin(this.env.log, this.env.session);
+      await promptToLogin(this.env);
     }
   }
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
@@ -81,8 +80,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
     let configFileContents: string;
 
-    var tasks = new TaskChain();
-    tasks.next(`Collecting resource configuration and source images`);
+    this.env.tasks.next(`Collecting resource configuration and source images`);
 
     // check that config file config.xml exists
     configFileContents = await parseConfigXmlToJson(this.env.project.directory);
@@ -95,7 +93,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     const buildPlatforms = Object.keys(resourceJsonStructure)
       .filter(platform => platformDirContents.includes(platform));
     if (buildPlatforms.length === 0) {
-      tasks.end();
+      this.env.tasks.end();
       throw `No platforms have been added. Please run: ${chalk.green('ionic cordova platform add')}`;
     }
     this.env.log.debug(`${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);
@@ -152,7 +150,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
       throw new Error(`Source image files were not found for the following platforms/types: \n${missingImageText}`);
     }
 
-    tasks.next(`Uploading source images to prepare for transformations`);
+    this.env.tasks.next(`Uploading source images to prepare for transformations`);
 
     // Upload images to service to prepare for resource transformations
     let imageUploadResponses: ImageUploadResponse[];
@@ -186,21 +184,21 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     });
 
     // Call the transform service and output images to appropriate destination
-    tasks.next(`Generating platform resources`);
+    this.env.tasks.next(`Generating platform resources`);
     let count = 0;
 
     const promiseList = imgResources.map(async (img, index): Promise<void> => {
       await transformResourceImage(img);
       count += 1;
-      tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`);
+      this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`);
     });
 
     const generateImageResponses = await Promise.all(promiseList);
-    tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
+    this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
     this.env.log.debug(`${chalk.green('generateResourceImage')} completed - responses=${JSON.stringify(generateImageResponses, null, 2)}`);
 
     // TODO: UPDATE CONFIG.XML DATA
-    tasks.next(`Modifying config.xml to add new image resources`);
+    this.env.tasks.next(`Modifying config.xml to add new image resources`);
     const imageResourcesForConfig = imgResources.reduce((rc, img) => {
       if (!rc[img.platform]) {
         rc[img.platform] = {
@@ -236,7 +234,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
     await addResourcesToConfigXml(this.env.project.directory, platformList, imageResourcesForConfig);
 
-    tasks.end();
+    this.env.tasks.end();
 
     // Print out all images that were not processed
     this.env.log.msg(

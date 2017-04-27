@@ -63,7 +63,7 @@
   },
   "devDependencies": {
     "@types/chalk": "^0.4.31",
-    "@types/inquirer": "0.0.32",
+    "@types/inquirer": "0.0.34",
     "@types/lodash": "^4.14.58",
     "@types/minimist": "^1.2.0",
     "@types/ncp": "^2.0.0",

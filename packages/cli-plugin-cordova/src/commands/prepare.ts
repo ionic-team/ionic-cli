@@ -7,7 +7,6 @@ import {
   CommandMetadata,
 } from '@ionic/cli-utils';
 
-import { load } from '../lib/modules';
 import { gatherArgumentsForCordova } from '../lib/utils/cordova';
 import { getProjectPlatforms, installPlatform } from '../lib/utils/setup';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
@@ -28,8 +27,7 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
     const platforms = await getProjectPlatforms(this.env.project.directory);
 
     if (platforms.length === 0) {
-      const inquirer = load('inquirer');
-      const promptResults = await inquirer.prompt({
+      const promptResults = await this.env.prompt({
         message: `You have no Cordova platforms added! Which platform would you like to install (${chalk.green('ios')}, ${chalk.green('android')}):`,
         type: 'input',
         name: 'platform',

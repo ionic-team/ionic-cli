@@ -5,14 +5,14 @@ import * as inquirerType from 'inquirer';
 import ui = inquirerType.ui;
 import * as ProgressBarType from 'progress';
 
+import { ITask, ITaskChain } from '../../definitions';
+
 import { ICON_SUCCESS_GREEN, ICON_FAILURE_RED } from './format';
 import { load } from '../modules';
 
 const FRAMES = process.platform === 'win32' ?
   ['-', '\\', '|', '/'] :
   ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-
-export const TASKS: Task[] = [];
 
 class Spinner {
   public i: number = 0;
@@ -24,18 +24,14 @@ class Spinner {
   }
 }
 
-export class Task {
+export class Task implements ITask {
   public intervalId?: any;
   public running: boolean = false;
-  protected bottomBar: ui.BottomBar;
   private spinner: Spinner;
   private progressBar?: ProgressBarType;
 
-  constructor(public msg: string) {
+  constructor(public msg: string, public bottomBar: ui.BottomBar) {
     this.spinner = new Spinner();
-    const inquirer = load('inquirer');
-    this.bottomBar = new inquirer.ui.BottomBar();
-    TASKS.push(this);
   }
 
   start(): this {
@@ -90,7 +86,6 @@ export class Task {
     clearInterval(this.intervalId);
 
     this.bottomBar.updateBottomBar('');
-    this.bottomBar.close();
 
     return this;
   }
@@ -106,7 +101,7 @@ export class Task {
   succeed(): this {
     if (this.running) {
       this.end();
-      console.log(`${chalk.green(ICON_SUCCESS_GREEN)} ${this.msg} - done!`);
+      this.bottomBar.log.write(`${chalk.green(ICON_SUCCESS_GREEN)} ${this.msg} - done!`);
     }
 
     return this;
@@ -115,25 +110,33 @@ export class Task {
   fail(): this {
     if (this.running) {
       this.end();
-      console.error(`${chalk.red(ICON_FAILURE_RED)} ${this.msg} - failed!`);
+      this.bottomBar.log.write(`${chalk.red(ICON_FAILURE_RED)} ${this.msg} - failed!`);
     }
 
     return this;
   }
 }
 
-export class TaskChain {
+export class TaskChain implements ITaskChain {
   protected currentTask?: Task;
+  public tasks: ITask[];
+
+  constructor(public bottomBar: ui.BottomBar) {
+    this.tasks = [];
+  }
 
   next(msg: string): Task {
     if (this.currentTask) {
       this.currentTask.succeed();
     }
 
-    this.currentTask = new Task(msg);
-    this.currentTask.start();
+    const task = new Task(msg, this.bottomBar);
+    this.tasks.push(task);
+    this.currentTask = task;
 
-    return this.currentTask;
+    task.start();
+
+    return task;
   }
 
   updateMsg(msg: string): this {
@@ -156,6 +159,20 @@ export class TaskChain {
     if (this.currentTask) {
       this.currentTask.fail();
     }
+
+    return this;
+  }
+
+  cleanup(): this {
+    for (let task of this.tasks) {
+      if (task.running) {
+        task.fail();
+      }
+
+      task.clear();
+    }
+
+    this.bottomBar.close();
 
     return this;
   }

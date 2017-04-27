@@ -22,7 +22,7 @@ export function registerHooks(hooks: IHookEngine) {
         const ionicVersionJson = await fsReadJsonFile(path.resolve(env.project.directory, 'www', 'lib', 'ionic', 'version.json')); // TODO
         return ionicVersionJson['version'];
       } catch (e) {
-        env.log.error('Error with ionic version.json file:', e);
+        env.log.error(`Error with ionic version.json file: ${e}`);
       }
     };
 

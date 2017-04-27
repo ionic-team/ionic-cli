@@ -11,7 +11,7 @@ import {
   createRequest,
   fsReadJsonFile,
   fsWriteJsonFile,
-  load,
+  load as loadFromUtils,
 } from '@ionic/cli-utils';
 
 import { StarterTemplate, StarterTemplateType } from '../definitions';
@@ -119,7 +119,7 @@ ${chalk.bold('Run on a device or simulator:')}
   ${chalk.green('ionic cordova run ios')}
 
 ${chalk.bold('Test and share your app on a device with the Ionic View app:')}
-  ${chalk.green('http://view.ionic.io')}
+  http://view.ionic.io
   `;
 }
 
@@ -144,7 +144,7 @@ export async function patchPackageJsonForCli(appName: string, starterType: Start
   try {
     patch = await fsReadJsonFile(patchPackagePath);
 
-    const lodash = load('lodash');
+    const lodash = loadFromUtils('lodash');
     let finalPackage = lodash.merge(pkg, patch);
 
     await fsWriteJsonFile(packagePath, finalPackage, { encoding: 'utf8' });

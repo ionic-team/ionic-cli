@@ -8,7 +8,6 @@ import {
   normalizeOptionAliases,
 } from '@ionic/cli-utils';
 
-import { load } from '../lib/modules';
 import { gatherArgumentsForCordova } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import { CordovaCommand } from './base';
@@ -55,8 +54,7 @@ export class PluginCommand extends CordovaCommand implements CommandPreInputsPro
     let [ action, pluginName ] = inputs;
 
     if (!pluginName) {
-      const inquirer = load('inquirer');
-      const promptResults = await inquirer.prompt({
+      const promptResults = await this.env.prompt({
         message: `What plugin would you like to ${action}:`,
         type: 'input',
         name: 'plugin',

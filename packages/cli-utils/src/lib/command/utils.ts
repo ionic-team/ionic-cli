@@ -8,12 +8,12 @@ import {
   CommandLineOptions,
   CommandOptionType,
   CommandOptionTypeDefaults,
+  IonicEnvironment,
   NormalizedCommandOption,
   Validator,
   ValidationError
 } from '../../definitions';
 
-import { load } from '../modules';
 import { validators, combine as combineValidators } from '../validators';
 
 export interface NormalizedMinimistOpts extends MinimistOpts {
@@ -187,7 +187,7 @@ export function validateInputs(argv: string[], metadata: CommandData) {
   }
 }
 
-export async function collectInputs(argv: string[], metadata: CommandData) {
+export async function collectInputs(env: IonicEnvironment, argv: string[], metadata: CommandData) {
   if (!metadata.inputs) {
     return;
   }
@@ -217,9 +217,8 @@ export async function collectInputs(argv: string[], metadata: CommandData) {
       questions.splice(i, 1);
     }
 
-    const inquirer = load('inquirer');
     const inquirerQuestions = <inquirerType.Question[]>questions.filter(q => typeof q !== 'undefined'); // TODO
-    const answers = await inquirer.prompt(inquirerQuestions);
+    const answers = await env.prompt(inquirerQuestions);
 
     Object.keys(answers).forEach(function(name) {
       let i = inputIndexByName.get(name);

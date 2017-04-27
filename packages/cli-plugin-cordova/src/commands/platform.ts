@@ -5,7 +5,6 @@ import {
   CommandLineOptions,
   CommandMetadata,
   CommandPreInputsPrompt,
-  TaskChain,
   normalizeOptionAliases,
 } from '@ionic/cli-utils';
 
@@ -64,8 +63,6 @@ export class PlatformCommand extends CordovaCommand implements CommandPreInputsP
 
     this.checkForMac(platformName);
 
-    const tasks = new TaskChain();
-
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);
 
@@ -80,10 +77,10 @@ export class PlatformCommand extends CordovaCommand implements CommandPreInputsP
     await this.runCordova(gatherArgumentsForCordova(this.metadata, inputs, normalizedOptions));
 
     if (action === 'add' && !(options['noresources']) && ['ios', 'android', 'wp8'].includes(platformName)) {
-      tasks.next(`Copying default image resources into ${chalk.bold('./resources/' + platformName)}`);
+      this.env.tasks.next(`Copying default image resources into ${chalk.bold('./resources/' + platformName)}`);
       await addDefaultImagesToProjectResources(this.env.project.directory, <KnownPlatform>platformName);
     }
 
-    tasks.end();
+    this.env.tasks.end();
   }
 }

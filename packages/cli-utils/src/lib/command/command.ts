@@ -45,7 +45,7 @@ export class Command implements ICommand {
       }
     }
 
-    await collectInputs(inputs, this.metadata);
+    await collectInputs(this.env, inputs, this.metadata);
 
     if (isCommandPreRun(this)) {
       r = await this.preRun(inputs, options);

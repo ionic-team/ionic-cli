@@ -58,5 +58,6 @@
   "dependencies": {
     "@ionic/cli-utils": "1.0.0-beta0",
     "superagent-proxy": "^1.0.2"
-  }
+  },
+  "devDependencies": {}
 }

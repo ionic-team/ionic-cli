@@ -10,8 +10,6 @@ import {
   promptToInstallProjectPlugin,
 } from '@ionic/cli-utils';
 
-import { load } from '../lib/modules';
-
 @CommandMetadata({
   name: 'generate',
   type: 'project',
@@ -39,7 +37,6 @@ export class GenerateCommand extends Command implements CommandPreRun {
     // TODO: specific to Ionic Angular
 
     const TYPE_CHOICES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
-    const inquirer = load('inquirer');
     const hooks = this.env.hooks.getRegistered('command:generate');
 
     if (hooks.length === 0) {
@@ -55,7 +52,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
     }
 
     if (!inputs[0]) {
-      const response = await inquirer.prompt({
+      const response = await this.env.prompt({
         type: 'list',
         name: 'type',
         message: 'What would you like to generate:',
@@ -66,7 +63,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
     }
 
     if (!inputs[1]) {
-      const response = await inquirer.prompt({
+      const response = await this.env.prompt({
         name: 'name',
         message: 'What should the name be?',
       });

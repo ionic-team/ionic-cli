@@ -8,9 +8,8 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  CommandPreRun,
   CommandPreInputsPrompt,
-  TaskChain,
+  CommandPreRun,
   getReleaseChannelName,
   pkgInstall,
   prettyPath,
@@ -100,10 +99,8 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const inquirer = load('inquirer');
-
     if (!inputs[1]) {
-      const response = await inquirer.prompt({
+      const response = await this.env.prompt({
         type: 'list',
         name: 'template',
         message: 'What starter would you like to use:',
@@ -140,16 +137,13 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     projectRoot = path.resolve(projectName);
     projectName = path.basename(projectRoot);
 
-    var tasks = new TaskChain();
-
     // Create the project directory
     const pathExists = load('path-exists');
     if (!pathExists.sync(projectName)) {
-      tasks.next(`Creating directory ${chalk.green(projectRoot)}`);
+      this.env.tasks.next(`Creating directory ${chalk.green(projectRoot)}`);
       fs.mkdirSync(projectRoot);
     } else if (!isSafeToCreateProjectIn(projectRoot)) {
-      const inquirer = load('inquirer');
-      const response = await inquirer.prompt({
+      const response = await this.env.prompt({
         type: 'confirm',
         name: 'overwrite',
         message: `The directory ${chalk.green(projectName)} contains file(s) that could conflict. ` +
@@ -158,7 +152,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
 
       if (response['overwrite']) {
         try {
-          tasks.next(`Creating directory ${chalk.green(projectRoot)}`);
+          this.env.tasks.next(`Creating directory ${chalk.green(projectRoot)}`);
           await rimrafp(projectRoot);
           fs.mkdirSync(projectRoot);
         } catch (e) {
@@ -187,7 +181,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     }
 
     // Download the starter template, gunzip, and untar into the project folder
-    tasks.next(`Downloading '${chalk.green(starterTemplateName.toString())}' starter template`);
+    this.env.tasks.next(`Downloading '${chalk.bold(starterTemplateName.toString())}' starter template`);
 
     const wrapperBranchPath = starterType.baseArchive.replace('<BRANCH_NAME>', wrapperBranchName);
     const starterBranchPath = starterTemplate.archive.replace('<BRANCH_NAME>', starterBranchName);
@@ -198,22 +192,22 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     await tarXvfFromUrl(starterBranchPath, extractDir);
 
     if (options['type'] === 'ionic1') {
-      tasks.next('Downloading resources');
+      this.env.tasks.next('Downloading resources');
       await tarXvfFromUrl('https://github.com/driftyco/ionic-default-resources/archive/master.tar.gz', path.join(projectRoot, 'resources'));
     }
 
-    tasks.next(`Updating project dependencies to add required plugins`);
+    this.env.tasks.next(`Updating project dependencies to add required plugins`);
 
     await patchPackageJsonForCli(appName, starterType, projectRoot);
     await updatePackageJsonForCli(appName, starterType, projectRoot);
 
-    tasks.next('Creating configuration file for the new project');
+    this.env.tasks.next('Creating configuration file for the new project');
     await createProjectConfig(appName, starterType, projectRoot, cloudAppId);
 
-    tasks.end();
+    this.env.tasks.end();
 
     if (!options['skip-deps']) {
-      this.env.log.info('\nInstalling dependencies may take several minutes!');
+      this.env.log.info('Installing dependencies may take several minutes!');
       const distTag = getReleaseChannelName(this.env.plugins.ionic.version);
 
       await pkgInstall(this.env.shell, undefined, { cwd: projectRoot });
@@ -230,8 +224,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     let { cliFlags } = await this.env.config.load();
 
     if (!options['skip-link']) {
-      const inquirer = load('inquirer');
-      const { linkApp } = await inquirer.prompt({
+      const { linkApp } = await this.env.prompt({
         type: 'confirm',
         name: 'linkApp',
         message: 'Link this app to your Ionic Dashboard to use tools like Ionic View?'
@@ -252,8 +245,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     }
 
     if (!cliFlags.promptedForTelemetry) {
-      const inquirer = load('inquirer');
-      const { optIn } = await inquirer.prompt({
+      const { optIn } = await this.env.prompt({
         type: 'confirm',
         name: 'optIn',
         message: 'Would you like to help Ionic improve the CLI by providing anonymous ' +

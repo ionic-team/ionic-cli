@@ -7,18 +7,19 @@ export interface SuperAgentError extends Error {
   response: superagentType.Response;
 }
 
-export type LogFn = (message?: any, ...args: any[]) => void;
-
+export type LogFn = (msg: string) => void;
 export type LogLevel = 'debug' | 'info' | 'ok' | 'warn' | 'error';
 
 export interface LoggerOptions {
   level?: LogLevel;
   prefix?: string;
+  stream?: NodeJS.WritableStream;
 }
 
 export interface ILogger {
   level: string;
   prefix: string;
+  stream: NodeJS.WritableStream;
 
   debug: LogFn;
   info: LogFn;
@@ -27,6 +28,23 @@ export interface ILogger {
   error: LogFn;
   msg: LogFn;
   nl(num?: number): void;
+}
+
+export interface ITask {
+  running: boolean;
+
+  start(): this;
+  progress(prog: number, total: number): this;
+  clear(): this;
+  succeed(): this;
+  fail(): this;
+}
+
+export interface ITaskChain {
+  next(msg: string): ITask;
+  updateMsg(msg: string): this;
+  end(): this;
+  fail(): this;
 }
 
 export interface PackageJson {
@@ -336,6 +354,7 @@ export interface IonicEnvironment {
   client: IClient;
   config: IConfig<ConfigFile>;
   log: ILogger;
+  prompt: inquirerType.PromptModule;
   project: IProject;
   plugins: {
     ionic: Plugin;
@@ -343,6 +362,7 @@ export interface IonicEnvironment {
   };
   session: ISession;
   shell: IShell;
+  tasks: ITaskChain;
   telemetry: ITelemetry;
   namespace: INamespace;
 }

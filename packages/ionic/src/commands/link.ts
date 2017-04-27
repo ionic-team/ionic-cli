@@ -6,7 +6,6 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  TaskChain,
   createFatalAPIFormat,
   isAppResponse,
   isAppsResponse,
@@ -16,9 +15,6 @@ import { load } from '../lib/modules';
 
 const CREATE_NEW_APP_CHOICE = 'createNewApp';
 
-/**
- * Metadata about the docs command
- */
 @CommandMetadata({
   name: 'link',
   type: 'project',
@@ -37,10 +33,9 @@ export class LinkCommand extends Command {
 
     const config = await this.env.config.load();
     const project = await this.env.project.load();
-    const tasks = new TaskChain();
 
     if (appId) {
-      tasks.next(`Looking up app ${chalk.bold(appId)}`);
+      this.env.tasks.next(`Looking up app ${chalk.bold(appId)}`);
 
       if (appId === project.app_id) {
         return this.env.log.ok(`Already linked with app ${chalk.bold(appId)}.`);
@@ -57,11 +52,10 @@ export class LinkCommand extends Command {
         throw createFatalAPIFormat(req, res);
       }
 
-      tasks.end();
+      this.env.tasks.end();
 
       if (project.app_id) {
-        const inquirer = load('inquirer');
-        const confirmation = await inquirer.prompt({
+        const confirmation = await this.env.prompt({
           type: 'confirm',
           name: 'apply',
           message: `App ID ${chalk.green(project.app_id)} exists in project config. Overwrite?`
@@ -73,7 +67,7 @@ export class LinkCommand extends Command {
       }
 
     } else {
-      tasks.next(`Looking up your apps`);
+      this.env.tasks.next(`Looking up your apps`);
       let apps: AppDetails[] = [];
 
       const token = await this.env.session.getUserToken();
@@ -87,15 +81,14 @@ export class LinkCommand extends Command {
         apps = apps.concat(res.data);
       }
 
-      tasks.end();
+      this.env.tasks.end();
 
       const createAppChoice = {
         name: 'Create a new app',
         id: CREATE_NEW_APP_CHOICE,
       };
 
-      const inquirer = load('inquirer');
-      const confirmation = await inquirer.prompt({
+      const confirmation = await this.env.prompt({
         type: 'list',
         name: 'choice',
         message: `Which app would you like to link`,

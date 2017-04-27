@@ -72,43 +72,6 @@ export async function fileToString(filepath: string): Promise<string> {
   }
 }
 
-export async function permissionToOverwrite(p: string) {
-  let stats: fs.Stats | undefined;
-
-  try {
-    stats = await fsStat(p);
-  } catch (e) {
-    if (e.code !== 'ENOENT') {
-      throw e;
-    }
-
-    return true;
-  }
-
-  if (stats.isFile()) {
-    const inquirer = load('inquirer');
-    const confirmation = await inquirer.prompt({
-      type: 'confirm',
-      name: 'apply',
-      message: `File exists: '${prettyPath(p)}'. Overwrite?`
-    });
-
-    if (!confirmation['apply']) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-export async function fsWriteFilePromptOverwrite(p: string, data: any, options: FSWriteFileOptions): Promise<void> {
-  if (!(await permissionToOverwrite(p))) {
-    throw ERROR_OVERWRITE_DENIED;
-  }
-
-  return fsWriteFile(p, data, options);
-}
-
 export async function fsMkdirp(p: string, mode?: number): Promise<void> {
   if (typeof mode === 'undefined') {
     mode = 0o777 & (~process.umask());

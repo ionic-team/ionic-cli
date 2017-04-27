@@ -19,8 +19,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
     if (availableIPs.find(({ address }) => address === args.options.address)) {
       chosenIP = args.options.address;
     } else {
-      const inquirer = load('inquirer');
-      const promptAnswers = await inquirer.prompt({
+      const promptAnswers = await args.env.prompt({
         type: 'list',
         name: 'ip',
         message: 'Multiple addresses available. Please select which address to use:',

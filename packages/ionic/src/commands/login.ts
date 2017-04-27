@@ -1,7 +1,6 @@
 import * as chalk from 'chalk';
 import { CommandLineInputs, CommandLineOptions, Command, CommandMetadata, CommandPreInputsPrompt } from '@ionic/cli-utils';
 import { validators } from '@ionic/cli-utils';
-import { load } from '../lib/modules';
 
 @CommandMetadata({
   name: 'login',
@@ -33,8 +32,7 @@ import { load } from '../lib/modules';
 export class LoginCommand extends Command implements CommandPreInputsPrompt {
   async preInputsPrompt(): Promise<void | number> {
     if (await this.env.session.isLoggedIn()) {
-      const inquirer = load('inquirer');
-      const response = await inquirer.prompt({
+      const response = await this.env.prompt({
         type: 'confirm',
         name: 'login_again',
         message: 'You are already logged in! Do you want to log in to another account?',

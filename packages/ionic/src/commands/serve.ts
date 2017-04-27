@@ -5,7 +5,6 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  TaskChain,
   normalizeOptionAliases,
 } from '@ionic/cli-utils';
 
@@ -101,8 +100,6 @@ export class ServeCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     options = normalizeOptionAliases(this.metadata, options);
 
-    const tasks = new TaskChain();
-
     const [ response ] = await this.env.hooks.fire('command:serve', {
       env: this.env,
       inputs,
@@ -114,7 +111,7 @@ export class ServeCommand extends Command {
 
     // If broadcast option then start udp server and broadcast info
     if (options.broadcast) {
-      tasks.next(`Broadcasting server information`);
+      this.env.tasks.next(`Broadcasting server information`);
       const appDetails = await this.env.project.load();
 
       const message = JSON.stringify({
@@ -139,6 +136,6 @@ export class ServeCommand extends Command {
       server.bind();
     }
 
-    tasks.end();
+    this.env.tasks.end();
   }
 }

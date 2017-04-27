@@ -18,29 +18,19 @@ import {
   Project,
   Session,
   Shell,
-  TASKS,
+  TaskChain,
   Telemetry,
   checkForUpdates,
   formatSuperAgentError,
   fsReadDir,
   getCommandInfo,
   isSuperAgentError,
-  load,
+  load as loadFromUtils,
   loadPlugins,
   registerHooks as cliUtilsRegisterHooks,
 } from '@ionic/cli-utils';
 
 import { IonicNamespace } from './commands';
-
-function cleanup() {
-  for (let task of TASKS) {
-    if (task.running) {
-      task.fail();
-    }
-
-    task.clear();
-  }
-}
 
 export const name = '__NAME__';
 export const version = '__VERSION__';
@@ -48,7 +38,7 @@ export const namespace = new IonicNamespace();
 
 export function registerHooks(hooks: IHookEngine) {
   hooks.register(name, 'command:info', async () => {
-    const osName = load('os-name');
+    const osName = loadFromUtils('os-name');
     const os = osName();
     const node = process.version;
 
@@ -81,7 +71,12 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   pargv = modifyArguments(pargv.slice(2));
   const argv = minimist(pargv);
 
-  const log = new Logger();
+  const inquirer = loadFromUtils('inquirer');
+  const bottomBar = new inquirer.ui.BottomBar();
+  const bottomBarHack = <any>bottomBar;
+  try { bottomBarHack.rl.output.mute(); } catch (e) {} // TODO
+  const log = new Logger({ stream: bottomBar.log });
+  const tasks = new TaskChain(bottomBar);
 
   if (argv['log-level']) {
     log.level = argv['log-level'];
@@ -107,7 +102,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     const hooks = new HookEngine();
     const client = new Client(configData.urls.api);
     const telemetry = new Telemetry(config, version);
-    const shell = new Shell();
+    const shell = new Shell(tasks, log);
     const session = new Session(config, project, client);
     const app = new App(session, project, client);
 
@@ -134,9 +129,11 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
           registerHooks,
         },
       },
+      prompt: inquirer.createPromptModule(),
       project,
       session,
       shell,
+      tasks,
       telemetry,
     };
 
@@ -155,8 +152,6 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     err = e;
   }
 
-  cleanup();
-
   if (err) {
     exitCode = 1;
 
@@ -173,6 +168,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     }
     process.exit(exitCode);
   }
+
+  tasks.cleanup();
 }
 
 /**

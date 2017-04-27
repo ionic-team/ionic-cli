@@ -11,10 +11,12 @@ export class Logger implements ILogger {
 
   protected _level: LogLevel;
   public prefix: string;
+  public stream: NodeJS.WritableStream;
 
-  constructor(opts: LoggerOptions = {}) {
-    this.level = opts.level || 'info';
-    this.prefix = opts.prefix || '';
+  constructor({ level = 'info', prefix = '', stream = process.stdout }: LoggerOptions) {
+    this.level = level;
+    this.prefix = prefix;
+    this.stream = stream;
   }
 
   get level(): LogLevel {
@@ -31,32 +33,32 @@ export class Logger implements ILogger {
     this._level = s;
   }
 
-  debug(...args: any[]): void {
-    this.log('debug', ...args);
+  debug(msg: string): void {
+    this.log('debug', msg);
   }
 
-  info(...args: any[]): void {
-    this.log('info', ...args);
+  info(msg: string): void {
+    this.log('info', msg);
   }
 
-  ok(...args: any[]): void {
-    this.log('ok', ...args);
+  ok(msg: string): void {
+    this.log('ok', msg);
   }
 
-  warn(...args: any[]): void {
-    this.log('warn', ...args);
+  warn(msg: string): void {
+    this.log('warn', msg);
   }
 
-  error(...args: any[]): void {
-    this.log('error', ...args);
+  error(msg: string): void {
+    this.log('error', msg);
   }
 
-  msg(...args: any[]): void {
-    console.log.apply(console, args);
+  msg(msg: string): void {
+    this.stream.write(msg);
   }
 
   nl(num: number = 1): void {
-    console.log('\n'.repeat(num - 1));
+    this.stream.write('\n'.repeat(num));
   }
 
   private shouldLog(level: LogLevel): boolean {
@@ -85,16 +87,16 @@ export class Logger implements ILogger {
       switch (level) {
       case 'debug':
       case 'info':
-        console.info(util.format.apply(util, args));
+        this.stream.write(util.format.apply(util, args));
         break;
       case 'ok':
-        console.info(util.format.apply(util, [b('[') + status.green('OK') + b(']'), ...args]));
+        this.stream.write(util.format.apply(util, [b('[') + status.green('OK') + b(']'), ...args]));
         break;
       case 'warn':
-        console.warn(util.format.apply(util, [b('[') + status.yellow('WARN') + b(']'), ...args]));
+        this.stream.write(util.format.apply(util, [b('[') + status.yellow('WARN') + b(']'), ...args]));
         break;
       case 'error':
-        console.error(util.format.apply(util, [b('[') + status.red('ERROR') + b(']'), ...args]));
+        this.stream.write(util.format.apply(util, [b('[') + status.red('ERROR') + b(']'), ...args]));
         break;
       }
     }

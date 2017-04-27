@@ -22,7 +22,7 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
       throw new Error(`The generate command is only available for projects that use ionic-angular >= 3.0.0`);
     }
   } catch (e) {
-    args.env.log.error('Error with ionic-angular package.json file:', e);
+    args.env.log.error(`Error with ionic-angular package.json file: ${e}`);
   }
 
   const AppScripts = load('@ionic/app-scripts');
@@ -46,7 +46,7 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
       const providerData = await promptQuestions(context);
       return await AppScripts.processProviderRequest(context, name, providerData);
     case 'tabs':
-      const tabsData = await tabsPromptQuestions();
+      const tabsData = await tabsPrompt(args.env);
       await AppScripts.processTabsRequest(context, name, tabsData); // TODO: match return type
   }
 
@@ -55,8 +55,4 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
 
 async function promptQuestions(context: AppScriptsType.BuildContext) {
   return await prompt(context);
-}
-
-async function tabsPromptQuestions() {
-  return await tabsPrompt();
 }
