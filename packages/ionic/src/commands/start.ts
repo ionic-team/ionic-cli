@@ -50,8 +50,8 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
       description: 'The name of your project directory',
       validators: [validators.required],
       prompt: {
-        message: 'What would you like to name your project:'
-      }
+        message: 'What would you like to name your project:',
+      },
     },
     {
       name: 'template',
@@ -63,29 +63,34 @@ const IONIC_DASH_URL = 'https://apps.ionic.io';
       name: 'type',
       description: `Type of project to start (e.g. ${STARTER_TYPES.map(st => chalk.green(st.id)).join(', ')})`,
       type: String,
-      default: 'ionic-angular'
+      default: 'ionic-angular',
     },
     {
       name: 'app-name',
       description: 'Human-readable name (use quotes around the name)',
       type: String,
-      aliases: ['n']
+      aliases: ['n'],
     },
     {
       name: 'list',
-      description:  'List starter templates available',
+      description: 'List starter templates available',
       type: Boolean,
       aliases: ['l']
     },
     {
       name: 'skip-deps',
-      description:  'Skip npm/yarn package installation of dependencies',
+      description: 'Skip npm/yarn package installation of dependencies',
+      type: Boolean,
+    },
+    {
+      name: 'yarn',
+      description: 'Opt-in to using yarn (instead of npm)',
       type: Boolean,
     },
     {
       name: 'skip-link',
       description: 'Do not link app to an Ionic Account',
-      type: Boolean
+      type: Boolean,
     }
   ]
 })
@@ -220,15 +225,22 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
 
     this.env.tasks.end();
 
+    const config = await this.env.config.load();
+
+    if (options['yarn']) {
+      this.env.log.debug('Opting into yarn!');
+      config.cliFlags.yarn = true;
+    }
+
     if (!options['skip-deps']) {
       this.env.log.info('Installing dependencies may take several minutes!');
       const distTag = getReleaseChannelName(this.env.plugins.ionic.version);
       const options = { cwd: projectRoot };
 
-      await pkgInstall(this.env.shell, undefined, options);
+      await pkgInstall(this.env, undefined, options);
 
       for (let dep of starterType.buildDependencies) {
-        await pkgInstall(this.env.shell, `${dep}@${distTag}`, options);
+        await pkgInstall(this.env, `${dep}@${distTag}`, options);
       }
     }
 
@@ -236,8 +248,6 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     this.env.log.msg(getHelloText());
 
     // Ask the user if they would like to create a cloud account
-    let { cliFlags } = await this.env.config.load();
-
     if (!options['skip-link']) {
       const { linkApp } = await this.env.prompt({
         type: 'confirm',
@@ -259,15 +269,15 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
       }
     }
 
-    if (!cliFlags.promptedForTelemetry) {
+    if (!config.cliFlags.promptedForTelemetry) {
       const { optIn } = await this.env.prompt({
         type: 'confirm',
         name: 'optIn',
         message: 'Would you like to help Ionic improve the CLI by providing anonymous ' +
           'usage and error reporting information?'
       });
-      cliFlags.promptedForTelemetry = true;
-      cliFlags.enableTelemetry = optIn;
+      config.cliFlags.promptedForTelemetry = true;
+      config.cliFlags.enableTelemetry = optIn;
     }
 
     this.env.log.msg(`\nGo to your newly created project: ${chalk.green(`cd ${prettyPath(projectRoot)}`)}\n`);

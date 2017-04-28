@@ -253,6 +253,7 @@ export interface ConfigFile {
     promptedForSignup?: boolean;
     promptedForTelemetry?: boolean;
     enableTelemetry?: boolean;
+    yarn?: boolean;
   };
 }
 

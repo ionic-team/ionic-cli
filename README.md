@@ -116,7 +116,7 @@ capabilities to your app.
 ### Requirements
 
 * For iOS development (macOS required), see the [iOS Platform
-  Guide](https://cordova.apache.org/docs/en/latest/guide/platforms/ios/index.html)
+  Guide](https://cordova.apache.org/docs/en/latest/guide/platforms/ios/index.html).
 * For Android development, see the [Android Platform
   Guide](https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html).
 

@@ -1,4 +1,4 @@
-import { BowerJson, IShell, IShellRunOptions, PackageJson } from '../../definitions';
+import { BowerJson, IonicEnvironment, IShellRunOptions, PackageJson } from '../../definitions';
 import { isBowerJson, isPackageJson } from '../../guards';
 import { fsReadJsonFile } from './fs';
 import { runcmd } from './shell';
@@ -28,18 +28,20 @@ export async function readBowerJsonFile(path: string): Promise<BowerJson> {
   return bowerJson;
 }
 
-export async function pkgInstall(shell: IShell, pkg?: string, options?: IShellRunOptions) {
-  if (!options) {
-    options = {};
-  }
+export async function pkgInstall(env: IonicEnvironment, pkg?: string, options: IShellRunOptions = {}) {
+  const config = await env.config.load();
 
-  if (!installer) {
-    try {
-      await runcmd('yarn', ['--version']);
-      installer = 'yarn';
-    } catch (e) {
-      installer = 'npm';
+  if (config.cliFlags.yarn) {
+    if (!installer) {
+      try {
+        await runcmd('yarn', ['--version']);
+        installer = 'yarn';
+      } catch (e) {
+        installer = 'npm';
+      }
     }
+  } else {
+    installer = 'npm';
   }
 
   let installerArgs = [];
@@ -60,5 +62,5 @@ export async function pkgInstall(shell: IShell, pkg?: string, options?: IShellRu
     }
   }
 
-  return shell.run(installer, installerArgs, options);
+  return env.shell.run(installer, installerArgs, options);
 }
