@@ -17,7 +17,7 @@ import {
   KnownPlatform,
   ImageUploadResponse
 } from '../definitions';
-import { getProjectPlatforms } from '../lib/utils/setup';
+import { getProjectPlatforms, installPlatform } from '../lib/utils/setup';
 import { parseConfigXmlToJson } from '../lib/utils/configXmlUtils';
 import {
   flattenResourceJsonStructure,
@@ -47,6 +47,12 @@ const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
   type: 'project',
   description: 'Automatically create icon and splash screen resources',
   exampleCommands: [''],
+  inputs: [
+    {
+      name: 'platform',
+      description: `The platform for which you would like to generate resources (e.g. ${chalk.green('ios')}, ${chalk.green('android')})`,
+    }
+  ],
   options: [
     {
       name: 'icon',
@@ -71,12 +77,13 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     }
   }
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const [ platform ] = inputs;
 
     // if no resource filters are passed as arguments assume to use all.
     let resourceTypes = AVAILABLE_RESOURCE_TYPES.filter((type, index, array) => options[type]);
     resourceTypes = (resourceTypes.length) ? resourceTypes : AVAILABLE_RESOURCE_TYPES;
 
-    const resourceDir = path.join(this.env.project.directory, 'resources');
+    const resourceDir = path.join(this.env.project.directory, 'resources'); // TODO: hard-coded
 
     let configFileContents: string;
 
@@ -89,12 +96,31 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     this.env.log.debug(`resourceJsonStructure=${Object.keys(resourceJsonStructure).length}`);
 
     // check that at least one platform has been installed
-    const platformDirContents = await getProjectPlatforms(this.env.project.directory);
-    const buildPlatforms = Object.keys(resourceJsonStructure)
-      .filter(platform => platformDirContents.includes(platform));
+    let platformDirContents = await getProjectPlatforms(this.env.project.directory);
+    this.env.log.debug(`platformDirContents=${platformDirContents}`);
+
+    if (platform && !platformDirContents.includes(platform)) {
+      this.env.tasks.end();
+      const promptResults = await this.env.prompt({
+        message: `Platform ${chalk.green(platform)} is not installed! Would you like to install it?`,
+        type: 'confirm',
+        name: 'install',
+      });
+
+      if (promptResults['install']) {
+        await installPlatform(this.env, platform);
+        platformDirContents = await getProjectPlatforms(this.env.project.directory);
+        this.env.log.debug(`platformDirContents=${platformDirContents}`);
+      } else {
+        throw this.exit(`Platform ${chalk.green(platform)} not installed.`);
+      }
+    }
+
+    const buildPlatforms = Object.keys(resourceJsonStructure).filter(p => platformDirContents.includes(p));
+    this.env.log.debug(`buildPlatforms=${buildPlatforms}`);
     if (buildPlatforms.length === 0) {
       this.env.tasks.end();
-      throw `No platforms have been added. Please run: ${chalk.green('ionic cordova platform add')}`;
+      throw this.exit(`No platforms have been added. Please run: ${chalk.green('ionic cordova platform add')}`);
     }
     this.env.log.debug(`${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);
 
@@ -102,12 +128,17 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     // that it only has img resources that we need. Finally add src path to the
     // items that remain.
     let imgResources: ImageResource[] = flattenResourceJsonStructure(resourceJsonStructure)
-      .filter((img: ImageResource) => buildPlatforms.includes(img.platform))
-      .filter((img: ImageResource) => resourceTypes.includes(img.resType))
-      .map((img: ImageResource) => ({
+      .filter((img) => buildPlatforms.includes(img.platform))
+      .filter((img) => resourceTypes.includes(img.resType))
+      .map((img) => ({
         ...img,
         dest: path.join(resourceDir, img.platform, img.resType, img.name)
       }));
+
+    if (platform) {
+      imgResources = imgResources.filter((img) => img.platform === platform);
+    }
+
     this.env.log.debug(`imgResources=${imgResources.length}`);
 
     // Create the resource directories that are needed for the images we will create

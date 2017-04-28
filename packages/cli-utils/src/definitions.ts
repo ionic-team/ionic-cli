@@ -38,6 +38,7 @@ export interface ITask {
   clear(): this;
   succeed(): this;
   fail(): this;
+  end(): this;
 }
 
 export interface ITaskChain {
