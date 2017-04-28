@@ -24,7 +24,11 @@ export class Shell implements IShell {
     }
 
     if (showCommand) {
-      this.tasks.next(`running command: ${chalk.green(fullCmd)}`);
+      if (showExecution) {
+        this.log.msg(`running command: ${chalk.green(fullCmd)}`);
+      } else {
+        this.tasks.next(`running command: ${chalk.green(fullCmd)}`);
+      }
     }
 
     try {
@@ -35,7 +39,9 @@ export class Shell implements IShell {
           this.log.nl();
         }
 
-        this.tasks.end();
+        if (showCommand && !showExecution) {
+          this.tasks.end();
+        }
 
         return out;
       } catch (e) {
@@ -69,7 +75,9 @@ export class Shell implements IShell {
         throw e;
       }
     } catch (e) {
-      this.tasks.fail();
+      if (showCommand && !showExecution) {
+        this.tasks.fail();
+      }
       throw e;
     }
   }

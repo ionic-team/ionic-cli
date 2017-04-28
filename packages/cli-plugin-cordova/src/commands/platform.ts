@@ -74,7 +74,14 @@ export class PlatformCommand extends CordovaCommand implements CommandPreInputsP
     }
 
     const normalizedOptions = normalizeOptionAliases(this.metadata, options);
-    await this.runCordova(gatherArgumentsForCordova(this.metadata, inputs, normalizedOptions));
+    const optionList = gatherArgumentsForCordova(this.metadata, inputs, normalizedOptions);
+
+    if ((action === 'add' || action === 'remove') && !optionList.includes('--save')) {
+      optionList.push('--save');
+    }
+
+    const response = await this.runCordova(optionList);
+    this.env.log.msg(response);
 
     if (action === 'add' && !(options['noresources']) && ['ios', 'android', 'wp8'].includes(platformName)) {
       this.env.tasks.next(`Copying default image resources into ${chalk.bold('./resources/' + platformName)}`);

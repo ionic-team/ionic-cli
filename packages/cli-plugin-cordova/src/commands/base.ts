@@ -8,6 +8,7 @@ import {
   CommandLineOptions,
   CommandPreRun,
   ERROR_SHELL_COMMAND_NOT_FOUND,
+  IShellRunOptions,
 } from '@ionic/cli-utils';
 
 import { getProjectPlugins, getProjectPlatforms, installPlatform, installPlugins } from '../lib/utils/setup';
@@ -19,12 +20,9 @@ export class CordovaCommand extends Command {
     }
   }
 
-  async runCordova(optionList: string[]): Promise<string> {
+  async runCordova(argList: string[], { fatalOnNotFound = false, truncateErrorOutput = 5000, ...options }: IShellRunOptions = {}): Promise<string> {
     try {
-      return await this.env.shell.run('cordova', optionList, {
-        fatalOnNotFound: false,
-        truncateErrorOutput: 5000,
-      });
+      return await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, ...options });
     } catch (e) {
       if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
         throw this.exit(`The Cordova CLI was not found on your PATH. Please install Cordova globally:\n\n` +
@@ -33,6 +31,7 @@ export class CordovaCommand extends Command {
 
       this.env.log.nl();
       this.env.log.error('Cordova encountered an error.\nYou may get more insight by running the Cordova command above directly.\n');
+
       throw e;
     }
   }

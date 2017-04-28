@@ -136,6 +136,6 @@ export class RunCommand extends CordovaPlatformCommand {
       await writeConfigXmlContentSrc(this.env.project.directory, `http://${serverSettings.publicIp}:${serverSettings.httpPort}`);
     }
 
-    await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options));
+    await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });
   }
 }

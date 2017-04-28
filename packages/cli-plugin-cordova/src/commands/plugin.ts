@@ -67,6 +67,14 @@ export class PluginCommand extends CordovaCommand implements CommandPreInputsPro
     await resetConfigXmlContentSrc(this.env.project.directory);
 
     const normalizedOptions = normalizeOptionAliases(this.metadata, options);
-    await this.runCordova(gatherArgumentsForCordova(this.metadata, inputs, normalizedOptions));
+    const optionList = gatherArgumentsForCordova(this.metadata, inputs, normalizedOptions);
+
+    if (!optionList.includes('--save')) {
+      optionList.push('--save');
+    }
+
+    // TODO: showExecution and filter out double newlines from cordova
+    const response = await this.runCordova(optionList);
+    this.env.log.msg(response);
   }
 }
