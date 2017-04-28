@@ -72,7 +72,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
 
   // Check if gulp is installed globally for sass
   try {
-    await args.env.shell.run('gulp', ['-v'], { showExecution: false });
+    await args.env.shell.run('gulp', ['-v'], { showCommand: false });
   } catch (e) {
     serverOptions.gulpInstalled = false;
   }

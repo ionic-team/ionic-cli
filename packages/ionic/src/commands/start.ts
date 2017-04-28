@@ -195,7 +195,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     }
 
     // Download the starter template, gunzip, and untar into the project folder
-    this.env.tasks.next(`Downloading '${chalk.bold(starterTemplateName.toString())}' starter template`);
+    this.env.tasks.next(`Downloading ${chalk.bold(starterTemplateName.toString())} starter template`);
 
     const wrapperBranchPath = starterType.baseArchive.replace('<BRANCH_NAME>', wrapperBranchName);
     const starterBranchPath = starterTemplate.archive.replace('<BRANCH_NAME>', starterBranchName);
@@ -223,11 +223,12 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     if (!options['skip-deps']) {
       this.env.log.info('Installing dependencies may take several minutes!');
       const distTag = getReleaseChannelName(this.env.plugins.ionic.version);
+      const options = { cwd: projectRoot };
 
-      await pkgInstall(this.env.shell, undefined, { cwd: projectRoot });
+      await pkgInstall(this.env.shell, undefined, options);
 
       for (let dep of starterType.buildDependencies) {
-        await pkgInstall(this.env.shell, `${dep}@${distTag}`, { cwd: projectRoot });
+        await pkgInstall(this.env.shell, `${dep}@${distTag}`, options);
       }
     }
 

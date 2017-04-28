@@ -2,31 +2,36 @@ import * as chalk from 'chalk';
 
 import { ILogger, IShell, IShellRunOptions, ITaskChain } from '../definitions';
 import { FatalException } from './errors';
-import { runcmd } from './utils/shell';
+import { RunCmdOptions, runcmd } from './utils/shell';
 
 export const ERROR_SHELL_COMMAND_NOT_FOUND = 'SHELL_COMMAND_NOT_FOUND';
 
 export class Shell implements IShell {
   constructor(protected tasks: ITaskChain, protected log: ILogger) {}
 
-  async run(command: string, args: string[], { showExecution = true, showError = true, fatalOnNotFound = true, fatalOnError = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<string> {
-    let inheritStdio = crossSpawnOptions.stdio === 'inherit';
+  async run(command: string, args: string[], { showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, showExecution, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<string> {
     const fullCmd = command + ' ' + (args.length > 0 ? args.join(' ') : '');
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
+    const options: RunCmdOptions = {...crossSpawnOptions};
 
-    if (inheritStdio) {
-      crossSpawnOptions.stdio = [process.stdin, this.log.stream, this.log.stream];
+    if (typeof showExecution === 'undefined') {
+      showExecution = this.log.shouldLog('debug');
     }
 
     if (showExecution) {
+      options.stdoutPipe = this.log.stream;
+      options.stderrPipe = this.log.stream;
+    }
+
+    if (showCommand) {
       this.tasks.next(`running command: ${chalk.green(fullCmd)}`);
     }
 
     try {
       try {
-        const out = await runcmd(command, args, crossSpawnOptions);
+        const out = await runcmd(command, args, options);
 
-        if (inheritStdio) {
+        if (showExecution) {
           this.log.nl();
         }
 
@@ -54,7 +59,7 @@ export class Shell implements IShell {
 
         if (fatalOnError) {
           if (showError) {
-            const helpLine = inheritStdio ? '.\n' : (err ? `:\n\n${err}` : ' with no output.\n');
+            const helpLine = showExecution ? '.\n' : (err ? `:\n\n${err}` : ' with no output.\n');
             throw new FatalException(`An error occurred while running ${chalk.green(truncatedCmd)} (exit code ${code})` + helpLine, code);
           } else {
             throw new FatalException(`Subprocess (${chalk.green(command)}) encountered an error (exit code ${code}).`, code);

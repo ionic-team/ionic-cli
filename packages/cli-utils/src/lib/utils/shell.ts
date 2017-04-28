@@ -2,7 +2,12 @@ import * as crossSpawnType from 'cross-spawn';
 
 import { load } from '../modules';
 
-export function runcmd(command: string, args?: string[], options?: crossSpawnType.SpawnOptions): Promise<string> {
+export interface RunCmdOptions extends crossSpawnType.SpawnOptions {
+  stdoutPipe?: NodeJS.WritableStream;
+  stderrPipe?: NodeJS.WritableStream;
+}
+
+export function runcmd(command: string, args?: string[], options: RunCmdOptions = {}): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const crossSpawn = load('cross-spawn');
     const p = crossSpawn.spawn(command, args, options);
@@ -12,24 +17,32 @@ export function runcmd(command: string, args?: string[], options?: crossSpawnTyp
 
     if (p.stdout) {
       p.stdout.on('data', (chunk) => {
-        if (Buffer.isBuffer(chunk)) {
-          stdoutBufs.push(chunk);
-          dualBufs.push(chunk);
+        if (options.stdoutPipe) {
+          options.stdoutPipe.write(chunk);
         } else {
-          stdoutBufs.push(Buffer.from(chunk));
-          dualBufs.push(Buffer.from(chunk));
+          if (Buffer.isBuffer(chunk)) {
+            stdoutBufs.push(chunk);
+            dualBufs.push(chunk);
+          } else {
+            stdoutBufs.push(Buffer.from(chunk));
+            dualBufs.push(Buffer.from(chunk));
+          }
         }
       });
     }
 
     if (p.stderr) {
       p.stderr.on('data', (chunk) => {
-        if (Buffer.isBuffer(chunk)) {
-          stderrBufs.push(chunk);
-          dualBufs.push(chunk);
+        if (options.stderrPipe) {
+          options.stderrPipe.write(chunk);
         } else {
-          stderrBufs.push(Buffer.from(chunk));
-          dualBufs.push(Buffer.from(chunk));
+          if (Buffer.isBuffer(chunk)) {
+            stderrBufs.push(chunk);
+            dualBufs.push(chunk);
+          } else {
+            stderrBufs.push(Buffer.from(chunk));
+            dualBufs.push(Buffer.from(chunk));
+          }
         }
       });
     }

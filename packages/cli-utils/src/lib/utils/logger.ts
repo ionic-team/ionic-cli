@@ -61,7 +61,7 @@ export class Logger implements ILogger {
     this.stream.write('\n'.repeat(num));
   }
 
-  private shouldLog(level: LogLevel): boolean {
+  shouldLog(level: LogLevel): boolean {
     return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(this.level);
   }
 

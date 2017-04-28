@@ -187,7 +187,7 @@ export async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plug
   const distTag = getReleaseChannelName(plugin.version);
 
   // TODO: might belong in utils/npm.ts
-  const cmdResult = JSON.parse(await env.shell.run('npm', ['view', plugin.name, `dist-tags.${distTag}`, '--json'], { showExecution: false }));
+  const cmdResult = JSON.parse(await env.shell.run('npm', ['view', plugin.name, `dist-tags.${distTag}`, '--json'], { showCommand: false }));
 
   if (!cmdResult) {
     return plugin.version;

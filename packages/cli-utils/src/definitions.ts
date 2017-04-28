@@ -28,6 +28,7 @@ export interface ILogger {
   error: LogFn;
   msg: LogFn;
   nl(num?: number): void;
+  shouldLog(level: LogLevel): boolean;
 }
 
 export interface ITask {
@@ -220,6 +221,7 @@ export interface ISession {
 }
 
 export interface IShellRunOptions extends crossSpawnType.SpawnOptions {
+  showCommand?: boolean;
   showExecution?: boolean;
   showError?: boolean;
   fatalOnNotFound?: boolean;
