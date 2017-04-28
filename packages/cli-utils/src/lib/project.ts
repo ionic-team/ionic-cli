@@ -27,7 +27,7 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
 
     if (!p.app_id) {
       throw new FatalException(`Your project file (${chalk.bold(prettyPath(this.filePath))}) does not contain '${chalk.bold('app_id')}'. `
-                             + `Run '${chalk.bold('ionic link')}'.`);
+                             + `Run ${chalk.green('ionic link')}.`);
     }
 
     return p.app_id;

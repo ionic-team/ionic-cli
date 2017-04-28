@@ -1,6 +1,7 @@
+import * as chalk from 'chalk';
 import * as path from 'path';
 
-import { IonicEnvironment, IHookEngine, readPackageJsonFile } from '@ionic/cli-utils';
+import { IonicEnvironment, IHookEngine, readPackageJsonFile, prettyPath } from '@ionic/cli-utils';
 
 import { build } from './build';
 import { generate } from './generate';
@@ -10,20 +11,24 @@ export const name = '__NAME__';
 export const version = '__VERSION__';
 
 async function getIonicAngularVersion(env: IonicEnvironment): Promise<string | undefined> {
+  const ionicAngularPackageJsonFilePath = path.resolve(env.project.directory, 'node_modules', 'ionic-angular', 'package.json'); // TODO
+
   try {
-    const ionicAngularPackageJson = await readPackageJsonFile(path.resolve(env.project.directory, 'node_modules', 'ionic-angular', 'package.json')); // TODO
+    const ionicAngularPackageJson = await readPackageJsonFile(ionicAngularPackageJsonFilePath);
     return ionicAngularPackageJson.version;
   } catch (e) {
-    env.log.error(`Error with ionic-angular package.json file: ${e}`);
+    env.log.error(`Error with ${chalk.bold(prettyPath(ionicAngularPackageJsonFilePath))} file: ${e}`);
   }
 };
 
 async function getAppScriptsVersion(env: IonicEnvironment): Promise<string | undefined> {
+  const appScriptsPackageJsonFilePath = path.resolve(env.project.directory, 'node_modules', '@ionic', 'app-scripts', 'package.json'); // TODO
+
   try {
-    const appScriptsPackageJson = await readPackageJsonFile(path.resolve(env.project.directory, 'node_modules', '@ionic', 'app-scripts', 'package.json')); // TODO
+    const appScriptsPackageJson = await readPackageJsonFile(appScriptsPackageJsonFilePath);
     return appScriptsPackageJson.version;
   } catch (e) {
-    env.log.error(`Error with @ionic/app-scripts package.json file: ${e}`);
+    env.log.error(`Error with ${chalk.bold(prettyPath(appScriptsPackageJsonFilePath))} file: ${e}`);
   }
 };
 

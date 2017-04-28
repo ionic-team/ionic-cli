@@ -1,3 +1,4 @@
+import * as chalk from 'chalk';
 import * as path from 'path';
 
 import { IHookEngine, fsReadJsonFile } from '@ionic/cli-utils';
@@ -18,11 +19,13 @@ export function registerHooks(hooks: IHookEngine) {
     }
 
     const getIonic1Version = async (): Promise<string | undefined> => {
+      const ionicVersionFilePath = path.resolve(env.project.directory, 'www', 'lib', 'ionic', 'version.json'); // TODO
+
       try {
-        const ionicVersionJson = await fsReadJsonFile(path.resolve(env.project.directory, 'www', 'lib', 'ionic', 'version.json')); // TODO
+        const ionicVersionJson = await fsReadJsonFile(ionicVersionFilePath);
         return ionicVersionJson['version'];
       } catch (e) {
-        env.log.error(`Error with ionic version.json file: ${e}`);
+        env.log.error(`Error with ${chalk.bold(ionicVersionFilePath)} file: ${e}`);
       }
     };
 
