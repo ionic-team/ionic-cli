@@ -9,7 +9,6 @@ import {
   CONFIG_FILE,
   Client,
   Config,
-  FatalException,
   HookEngine,
   IHookEngine,
   IonicEnvironment,
@@ -66,7 +65,7 @@ export function registerHooks(hooks: IHookEngine) {
 export async function run(pargv: string[], env: { [k: string]: string }) {
   const now = new Date();
   let exitCode = 0;
-  let err: Error | undefined;
+  let err: any;
 
   pargv = modifyArguments(pargv.slice(2));
   const argv = minimist(pargv);
@@ -157,7 +156,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 
     if (isSuperAgentError(err)) {
       console.error(formatSuperAgentError(err));
-    } else if (err instanceof FatalException) {
+    } else if (err.fatal) {
       exitCode = err.exitCode || 1;
 
       if (err.message) {

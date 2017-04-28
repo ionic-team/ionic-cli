@@ -102,7 +102,7 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
         return 'ionic-angular';
       }
     } catch (e) {
-      if (e instanceof FatalException) {
+      if (e.fatal) {
         throw e;
       }
     }
@@ -114,7 +114,7 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
         return 'ionic1';
       }
     } catch (e) {
-      if (e instanceof FatalException) {
+      if (e.fatal) {
         throw e;
       }
     }
