@@ -1,10 +1,12 @@
 export class Exception extends Error {
+  public message: string;
   public name: string;
   public stack: string;
 
-  constructor(public message: string) {
+  constructor(message: string) {
     super(message);
     this.name = 'Exception';
+    this.message = message;
     this.stack = (new Error()).stack || '';
   }
 
