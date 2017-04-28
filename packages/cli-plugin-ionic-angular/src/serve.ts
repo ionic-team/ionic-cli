@@ -6,26 +6,30 @@ import { load } from './lib/modules';
 import { minimistOptionsToArray } from './utils/arguments';
 
 export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any }> {
-  const availableIPs = getAvailableIPAddress();
-  if (availableIPs.length === 0 && args.options.externalIpRequired) {
-    throw new Error(`It appears that you do not have any external network interfaces. ` +
-      `In order to use livereload with emulate you will need one.`
-    );
-  }
+  let chosenIP = 'localhost';
 
-  let chosenIP = (availableIPs.length === 0) ? '0.0.0.0' : availableIPs[0].address;
+  if (args.options.externalIpRequired) {
+    const availableIPs = getAvailableIPAddress();
+    if (availableIPs.length === 0) {
+      throw new Error(`It appears that you do not have any external network interfaces. ` +
+        `In order to use livereload with emulate you will need one.`
+      );
+    }
 
-  if (availableIPs.length > 1) {
-    if (availableIPs.find(({ address }) => address === args.options.address)) {
-      chosenIP = args.options.address;
-    } else {
-      const promptAnswers = await args.env.prompt({
-        type: 'list',
-        name: 'ip',
-        message: 'Multiple addresses available. Please select which address to use:',
-        choices: availableIPs.map(ip => ip.address)
-      });
-      chosenIP = promptAnswers['ip'];
+    chosenIP = (availableIPs.length === 0) ? '0.0.0.0' : availableIPs[0].address;
+
+    if (availableIPs.length > 1) {
+      if (availableIPs.find(({ address }) => address === args.options.address)) {
+        chosenIP = args.options.address;
+      } else {
+        const promptAnswers = await args.env.prompt({
+          type: 'list',
+          name: 'ip',
+          message: 'Multiple addresses available. Please select which address to use:',
+          choices: availableIPs.map(ip => ip.address)
+        });
+        chosenIP = promptAnswers['ip'];
+      }
     }
   }
 

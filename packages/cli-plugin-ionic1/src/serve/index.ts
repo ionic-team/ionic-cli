@@ -16,28 +16,31 @@ import { minimistOptionsToArray } from '../utils/arguments';
 import { load } from '../lib/modules';
 
 export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any }> {
+  let chosenIP = 'localhost';
 
-  const appScriptsArgs = minimistOptionsToArray(args.options);
-  console.log(`Starting server: ${chalk.bold(appScriptsArgs.join(' '))}\n`);
+  if (args.options.externalIpRequired) {
+    // Find appropriate IP to use for cordova to reference
+    const availableIPs = getAvailableIPAddress();
+    if (availableIPs.length === 0) {
+      throw new Error(`It appears that you do not have any external network interfaces. ` +
+        `In order to use livereload with emulate you will need one.`
+      );
+    }
 
-  // Find appropriate IP to use for cordova to reference
-  const availableIPs = getAvailableIPAddress();
-  if (availableIPs.length === 0) {
-    throw new Error(`It appears that you do not have any external network interfaces. ` +
-      `In order to use livereload with emulate you will need one.`
-    );
+    chosenIP = availableIPs[0].address;
+    if (availableIPs.length > 1) {
+      const promptAnswers = await args.env.prompt({
+        type: 'list',
+        name: 'ip',
+        message: 'Multiple addresses available. Please select which address to use:',
+        choices: availableIPs.map(ip => ip.address)
+      });
+      chosenIP = promptAnswers['ip'];
+    }
   }
 
-  let chosenIP = availableIPs[0].address;
-  if (availableIPs.length > 1) {
-    const promptAnswers = await args.env.prompt({
-      type: 'list',
-      name: 'ip',
-      message: 'Multiple addresses available. Please select which address to use:',
-      choices: availableIPs.map(ip => ip.address)
-    });
-    chosenIP = promptAnswers['ip'];
-  }
+  const serverArgs = minimistOptionsToArray(args.options);
+  console.log(`Starting server: ${chalk.bold(serverArgs.join(' '))}\n`);
 
   // Setup Options and defaults
   const serverOptions: ServerOptions = {
