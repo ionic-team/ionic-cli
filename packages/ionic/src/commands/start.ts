@@ -96,6 +96,20 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
       this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES).join('\n'));
       return 0;
     }
+
+    if (this.env.project.directory) {
+      const response = await this.env.prompt({
+        type: 'confirm',
+        name: 'continue',
+        message: 'You are already in an Ionic project directory. Do you really want to start another project here?',
+        default: false,
+      });
+
+      if (!response['continue']) {
+        return 0;
+      }
+    }
+
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
