@@ -37,6 +37,10 @@ export async function pkgInstall(env: IonicEnvironment, pkg?: string, options: I
         await runcmd('yarn', ['--version']);
         installer = 'yarn';
       } catch (e) {
+        if (e.code === 'ENOENT') {
+          env.log.warn(`You have opted into yarn, but ${chalk.green('yarn')} was not found in PATH`);
+        }
+
         installer = 'npm';
       }
     }
