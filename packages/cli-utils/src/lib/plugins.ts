@@ -197,11 +197,11 @@ export async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plug
 }
 
 export function getReleaseChannelName(version: string): 'canary' | 'beta' | 'latest' {
-  if (version.includes('alpha')) {
+  if (version.includes('-alpha')) {
     return 'canary';
   }
 
-  if (version.includes('beta')) {
+  if (version.includes('-beta') || version.includes('-rc')) {
     return 'beta';
   }
 
