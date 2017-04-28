@@ -23,8 +23,8 @@ export class InfoCommand extends Command {
     const results = await this.env.hooks.fire('command:info', { env: this.env, inputs, options });
     const flattenedResults = results.reduce((acc, currentValue) => acc.concat(currentValue), initialValue);
 
-    const globalNpmDetails = flattenedResults.filter((item) => item.type === 'global-npm');
-    const localNpmDetails = flattenedResults.filter((item) => item.type === 'local-npm');
+    const globalNpmDetails = flattenedResults.filter((item) => item.type === 'global-packages' || <string>item.type === 'global-npm'); // TODO: take out global-npm
+    const localNpmDetails = flattenedResults.filter((item) => item.type === 'local-packages' || <string>item.type === 'local-npm'); // TODO: take out local-npm
     const systemDetails = flattenedResults.filter((item) => item.type === 'system');
 
     const prettify = (ary: InfoHookItem[]) => ary
@@ -36,12 +36,12 @@ export class InfoCommand extends Command {
     task.end();
 
     if (globalNpmDetails.length > 0) {
-      this.env.log.msg('\n' + chalk.bold('npm (global):'));
+      this.env.log.msg('\n' + chalk.bold('global packages:'));
       this.env.log.msg(`\n    ${format(prettify(globalNpmDetails))}`);
     }
 
     if (localNpmDetails.length > 0) {
-      this.env.log.msg('\n' + chalk.bold('npm (local):'));
+      this.env.log.msg('\n' + chalk.bold('local packages:'));
       this.env.log.msg(`\n    ${format(prettify(localNpmDetails))}`);
     }
 

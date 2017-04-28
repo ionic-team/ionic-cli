@@ -316,7 +316,7 @@ export interface CommandHookArgs extends HookArgs {
 }
 
 export interface InfoHookItem {
-  type: 'system' | 'global-npm' | 'local-npm';
+  type: 'system' | 'global-packages' | 'local-packages';
   name: string;
   version: string;
 }

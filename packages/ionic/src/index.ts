@@ -53,7 +53,7 @@ export function registerHooks(hooks: IHookEngine) {
     ]);
 
     return [
-      { type: 'global-npm', name: 'ionic', version: version },
+      { type: 'global-packages', name: 'ionic', version: version },
       { type: 'system', name: 'Node', version: node },
       { type: 'system', name: 'OS', version: os },
       { type: 'system', name: 'Xcode', version: xcode },

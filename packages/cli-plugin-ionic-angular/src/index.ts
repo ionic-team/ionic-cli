@@ -58,9 +58,9 @@ export function registerHooks(hooks: IHookEngine) {
     const [ ionicAngularVersion, appScriptsVersion ] = await Promise.all([getIonicAngularVersion(env), getAppScriptsVersion(env)]);
 
     return [
-      { type: 'local-npm', name: 'Ionic Framework', version: ionicAngularVersion ? `ionic-angular ${ionicAngularVersion}` : 'not installed' },
-      { type: 'local-npm', name, version },
-      { type: 'local-npm', name: '@ionic/app-scripts', version: appScriptsVersion ? appScriptsVersion : 'not installed' },
+      { type: 'local-packages', name: 'Ionic Framework', version: ionicAngularVersion ? `ionic-angular ${ionicAngularVersion}` : 'not installed' },
+      { type: 'local-packages', name, version },
+      { type: 'local-packages', name: '@ionic/app-scripts', version: appScriptsVersion ? appScriptsVersion : 'not installed' },
     ];
   });
 

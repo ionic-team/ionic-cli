@@ -32,8 +32,8 @@ export function registerHooks(hooks: IHookEngine) {
     const ionic1Version = await getIonic1Version();
 
     return [
-      { type: 'local-npm', name: 'Ionic Framework', version: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown' },
-      { type: 'local-npm', name, version },
+      { type: 'local-packages', name: 'Ionic Framework', version: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown' },
+      { type: 'local-packages', name, version },
     ];
   });
 

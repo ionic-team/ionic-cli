@@ -41,7 +41,7 @@ export const version = '__VERSION__';
 export function registerHooks(hooks: IHookEngine) {
   hooks.register(name, 'command:info', async () => {
     return [
-      { type: 'global-npm', name, version },
+      { type: 'global-packages', name, version },
     ];
   });
 }
