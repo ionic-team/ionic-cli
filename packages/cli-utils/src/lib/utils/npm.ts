@@ -48,13 +48,13 @@ export async function pkgInstall(shell: IShell, pkg?: string, options?: IShellRu
 
   if (installer === 'npm') {
     if (pkg) {
-      installerArgs = ['install', '--save-dev', pkg];
+      installerArgs = ['install', '--save-dev', '--save-exact', pkg];
     } else {
       installerArgs = ['install'];
     }
   } else {
     if (pkg) {
-      installerArgs = ['add', '--dev', '--non-interactive', pkg];
+      installerArgs = ['add', '--non-interactive', '--dev', '--exact', pkg];
     } else {
       installerArgs = ['install', '--non-interactive'];
     }
