@@ -8,7 +8,7 @@ and emulate [Ionic](http://ionicframework.com/) apps.
 
 Use the `ionic help` command for more detailed task information.
 
-**Support/Questions?**: Please see our [Support
+:mega: **Support/Questions?**: Please see our [Support
 Page](http://ionicframework.com/support) for general support questions. The
 issues on GitHub should be reserved for bug reports and feature requests.
 
@@ -23,7 +23,7 @@ issues on GitHub should be reserved for bug reports and feature requests.
 $ npm install -g ionic@beta
 ```
 
-*Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix
+:memo: *Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix
 the command with `sudo` or can setup [proper file permissions on OSX for
 npm](http://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx/) to
 install without `sudo`.*
@@ -57,25 +57,31 @@ see [CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/v3/CHANGELOG.md).
 * Many command arguments, options, and flags have changed. Please use `ionic
   help <commands>` for command usage.
 * `generate` command has been overhauled to interactively generate components,
-  pages, etc.
+  pages, etc. Going forward, generators will continue to be improved.
 
-#### Latest beta release versions
+## Starter Templates
 
- - ionic@3.0.0-beta9
- - @ionic/cli-plugin-cordova@1.0.0-beta0
- - @ionic/cli-plugin-ionic-angular@1.0.0-beta0
- - @ionic/cli-plugin-ionic1@1.0.0-beta0
- - @ionic/cli-plugin-proxy@1.0.0-beta0
+* [blank](https://github.com/driftyco/ionic2-starter-blank)
+* [tabs](https://github.com/driftyco/ionic2-starter-tabs)
+* [sidemenu](https://github.com/driftyco/ionic2-starter-sidemenu)
+* [conference](https://github.com/driftyco/ionic-conference-app)
+* [tutorial](https://github.com/driftyco/ionic2-starter-tutorial)
 
-## Ionic-Angular - Using CLI 3
+```bash
+$ ionic start --list
+```
 
-### Start a new project
+## Ionic Angular
+
+#### Start a new project
 ```bash
 $ npm install -g ionic@beta
 $ ionic start myNewProject
+$ cd ./myNewProject
+$ ionic serve
 ```
 
-### Existing project
+#### Existing project
 
 ```bash
 $ npm install -g ionic@beta
@@ -83,16 +89,18 @@ $ npm install --save-dev @ionic/cli-plugin-ionic-angular@beta @ionic/cli-plugin-
 $ ionic help
 ```
 
-## Ionic 1 - Using CLI 3
+## Ionic 1
 
-### Start a new project
+#### Start a new project
 
 ```bash
 $ npm install -g ionic@beta
 $ ionic start myNewProject blank --type ionic1
+$ cd ./myNewProject
+$ ionic serve
 ```
 
-### Existing project
+#### Existing project
 
 ```bash
 $ npm install -g ionic@beta
@@ -100,18 +108,24 @@ $ npm install --save-dev @ionic/cli-plugin-ionic1@beta @ionic/cli-plugin-cordova
 $ ionic help
 ```
 
-## Feedback
+## Using Cordova
 
-We are currently actively seeking feedback from those that use CLI 3 Beta. If
-you have questions or issues please feel free to open a new issue.
+Integrate Ionic with [Cordova](https://cordova.apache.org/) to bring native
+capabilities to your app.
 
-**Ionic template starters:**
+### Requirements
 
-* [blank](https://github.com/driftyco/ionic2-starter-blank)
-* [tabs](https://github.com/driftyco/ionic2-starter-tabs)
-* [sidemenu](https://github.com/driftyco/ionic2-starter-sidemenu)
-* [conference](https://github.com/driftyco/ionic-conference-app)
-* [tutorial](https://github.com/driftyco/ionic2-starter-tutorial)
+* For iOS development (macOS required), see the [iOS Platform
+  Guide](https://cordova.apache.org/docs/en/latest/guide/platforms/ios/index.html)
+* For Android development, see the [Android Platform
+  Guide](https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html).
+
+```bash
+$ npm install -g cordova
+$ npm install --save-dev @ionic/cli-plugin-cordova@beta
+$ ionic cordova -h
+$ ionic cordova run ios
+```
 
 ## Service Proxies
 
@@ -149,14 +163,6 @@ you want to add. The proxies are object with the following properties:
 Using the above configuration, you can now make requests to your local server
 at `http://localhost:8100/v1` to have it proxy out requests to
 `https://api.instagram.com/v1`
-
-## Cordova Commands
-
-Ionic uses Cordova underneath, so you can also substitute Cordova commands to
-`prepare`/`build`/`emulate`/`run`, or to add additional plugins.
-
-*Note: We occasionally send anonymous usage statistics to the Ionic team to
-make the tool better.*
 
 ## Using a Proxy
 
