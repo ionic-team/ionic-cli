@@ -10,7 +10,7 @@ export function registerHooks(hooks: IHookEngine) {
   hooks.register(name, 'command:info', async() => {
     const cordova = await getCommandInfo('cordova', ['-v']);
     return [
-      { type: 'global-packages', name: 'cordova', version: cordova },
+      { type: 'global-packages', name: 'Cordova CLI', version: cordova },
       { type: 'local-packages', name, version },
     ];
   });
