@@ -29,10 +29,13 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
 
     chosenIP = availableIPs[0].address;
     if (availableIPs.length > 1) {
+      args.env.log.warn(`${chalk.bold('Multiple network interfaces detected!')}\n` +
+                        'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
+                        `You may also use the ${chalk.green('--address')} option to skip this prompt.\n`);
       const promptAnswers = await args.env.prompt({
         type: 'list',
         name: 'ip',
-        message: 'Multiple addresses available. Please select which address to use:',
+        message: 'Please select which IP to use:',
         choices: availableIPs.map(ip => ip.address)
       });
       chosenIP = promptAnswers['ip'];
