@@ -37,7 +37,7 @@ getCommandInfo('cordova', ['-v']).then(function(data) {
     console.log('>>>>>                                                                                 <<<<<');
     console.log('>>>>>                    ' + chalk.bold('Cordova CLI was not found on your PATH.') + '                      <<<<<');
     console.log('>>>>>                                                                                 <<<<<');
-    console.log('>>>>>    This plugin needs Cordova intalled globally. Please try the following:       <<<<<');
+    console.log('>>>>>    This plugin needs Cordova installed globally. Please try the following:      <<<<<');
     console.log('>>>>>                                                                                 <<<<<');
     console.log('>>>>>                            ' + chalk.green('npm install -g cordova') + '                               <<<<<');
     console.log('>>>>>                                                                                 <<<<<');
