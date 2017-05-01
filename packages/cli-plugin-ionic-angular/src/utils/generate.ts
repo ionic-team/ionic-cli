@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { IonicEnvironment } from '@ionic/cli-utils';
+import { IonicEnvironment, validators } from '@ionic/cli-utils';
 
 import * as AppScriptsType from '@ionic/app-scripts';
 import { load } from '../lib/modules';
@@ -28,7 +28,8 @@ export async function tabsPrompt(env: IonicEnvironment) {
 
   const howManyQuestion = await env.prompt({
     name: 'howMany',
-    message: 'How many tabs?'
+    message: 'How many tabs?',
+    validate: (input: string) => validators.numeric(input),
   });
 
   for (let i = 0; i < howManyQuestion.howMany; i++) {

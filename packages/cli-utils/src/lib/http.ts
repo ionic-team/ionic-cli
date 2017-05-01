@@ -98,8 +98,8 @@ export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
           this.previousReq = req;
         }
 
-        const page = this.previousReq.qs.page && Number(this.previousReq.qs.page) !== NaN ? this.previousReq.qs.page + 1 : 1;
-        const pageSize = this.previousReq.qs.page_size && Number(this.previousReq.qs.page_size) !== NaN ? this.previousReq.qs.page_size : 25;
+        const page = this.previousReq.qs.page && !isNaN(Number(this.previousReq.qs.page)) ? this.previousReq.qs.page + 1 : 1;
+        const pageSize = this.previousReq.qs.page_size && !isNaN(Number(this.previousReq.qs.page_size)) ? this.previousReq.qs.page_size : 25;
 
         req.query({ page, 'page_size': pageSize });
 

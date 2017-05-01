@@ -179,6 +179,7 @@ export type Validator = (input: string, key?: string) => boolean | string;
 export interface Validators {
   required: Validator;
   email: Validator;
+  numeric: Validator;
 }
 
 export interface ValidationError {

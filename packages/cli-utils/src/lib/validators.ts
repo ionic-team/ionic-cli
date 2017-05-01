@@ -25,7 +25,18 @@ export const validators: Validators = {
     }
 
     return true;
-  }
+  },
+  numeric(input: string, key?: string): boolean | string {
+    if (isNaN(Number(input))) {
+      if (key) {
+        return `${chalk.bold(key)} must be numeric.`;
+      } else {
+        return 'Must be numeric.';
+      }
+    }
+
+    return true;
+  },
 };
 
 export function combine(...validators: Validator[]): Validator {
