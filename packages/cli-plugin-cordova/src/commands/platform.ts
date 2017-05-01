@@ -23,7 +23,7 @@ import { CordovaCommand } from './base';
   inputs: [
     {
       name: 'action',
-      description: `${chalk.green('add')}, ${chalk.green('remove')}, or ${chalk.green('update')} a platform; ${chalk.green('list')} all project platforms`,
+      description: `${chalk.green('add')}, ${chalk.green('remove')}, or ${chalk.green('update')} a platform; ${chalk.green('list')}, ${chalk.green('check')}, or ${chalk.green('save')} all project platforms`,
     },
     {
       // TODO: fix words to use the action above, not just add
@@ -51,8 +51,8 @@ export class PlatformCommand extends CordovaCommand implements CommandPreInputsP
     inputs[0] = (inputs[0] === 'ls') ? 'list' : inputs[0];
 
     // If the action is list then lets just end here.
-    if (inputs[0] === 'list') {
-      const response = await this.runCordova(['platform', 'list']);
+    if (['list', 'check', 'save'].includes(inputs[0])) {
+      const response = await this.runCordova(['platform', inputs[0]]);
       this.env.log.msg(response);
       return 0;
     }
