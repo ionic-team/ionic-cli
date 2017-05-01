@@ -142,7 +142,7 @@ export async function parseConfigXmlToJson(projectDir: string): Promise<any> {
  */
 export async function writeConfigXml(projectDir: string, configJson: any) {
   const xml2js = load('xml2js');
-  const builder = new xml2js.Builder();
+  const builder = new xml2js.Builder({ renderOpts: { pretty: true, indent: '    ', } });
   const xml = builder.buildObject(configJson);
   const configFilePath = path.join(projectDir, 'config.xml');
 
