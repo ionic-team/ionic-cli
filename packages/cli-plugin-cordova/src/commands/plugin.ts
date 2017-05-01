@@ -20,7 +20,7 @@ import { CordovaCommand } from './base';
   inputs: [
     {
       name: 'action',
-      description: `${chalk.green('add')} or ${chalk.green('remove')} a plugin; ${chalk.green('list')} all project plugins`,
+      description: `${chalk.green('add')} or ${chalk.green('remove')} a plugin; ${chalk.green('list')} or ${chalk.green('save')} all project plugins`,
     },
     {
       name: 'plugin',
@@ -43,8 +43,8 @@ export class PluginCommand extends CordovaCommand implements CommandPreInputsPro
     inputs[0] = (inputs[0] === 'ls') ? 'list' : inputs[0];
 
     // If the action is list then lets just end here.
-    if (inputs[0] === 'list') {
-      const response = await this.runCordova(['plugin', 'list']);
+    if (['list', 'save'].includes(inputs[0])) {
+      const response = await this.runCordova(['plugin', inputs[0]]);
       this.env.log.msg(response);
       return 0;
     }
