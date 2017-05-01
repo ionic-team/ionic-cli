@@ -10,6 +10,7 @@ import {
   CommandMetadata,
   CommandPreInputsPrompt,
   CommandPreRun,
+  getCommandInfo,
   getReleaseChannelName,
   pkgInstall,
   prettyPath,
@@ -151,6 +152,30 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
       throw `Please name your Ionic project something meaningful other than ${chalk.red(projectName)}`;
     }
 
+    let starterType = STARTER_TYPES.find(type => type['id'] === options['type']);
+
+    if (!starterType) {
+      throw `Unable to find starter type for ${options['type']}`;
+    }
+
+    if (!options['skip-deps']) {
+      // Check global dependencies
+
+      for (let dep of starterType.globalDependencies) {
+        const cmdInstalled = await getCommandInfo(dep);
+
+        if (typeof cmdInstalled === 'undefined') {
+          if (dep === 'cordova') {
+            throw this.exit(`Cordova CLI not found on your PATH. Please install Cordova globally (you may need ${chalk.green('sudo')}):\n\n` +
+                            `${chalk.green('npm install -g cordova')}\n\n` +
+                            `If that doesn't work, see the installation docs: https://cordova.apache.org/docs/en/latest/guide/cli/#installing-the-cordova-cli`);
+          } else {
+            throw this.exit(`Sorry, ${chalk.green(dep)} is a global dependency, but it was not found on your PATH.`);
+          }
+        }
+      }
+    }
+
     projectRoot = path.resolve(projectName);
     projectName = path.basename(projectRoot);
 
@@ -178,12 +203,6 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
       } else {
         throw `\nPlease provide a projectName that does not conflict with this directory.\n`;
       }
-    }
-
-    let starterType = STARTER_TYPES.find(type => type['id'] === options['type']);
-
-    if (!starterType) {
-      throw `Unable to find starter type for ${options['type']}`;
     }
 
     let starterTemplateMatches: StarterTemplate[] = STARTER_TEMPLATES.filter(t => t.type === options['type'] && t.name === starterTemplateName);
@@ -231,13 +250,15 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     }
 
     if (!options['skip-deps']) {
+      // Install local dependencies
+
       this.env.log.info('Installing dependencies may take several minutes!');
       const distTag = getReleaseChannelName(this.env.plugins.ionic.version);
       const options = { cwd: projectRoot };
 
       await pkgInstall(this.env, undefined, options);
 
-      for (let dep of starterType.buildDependencies) {
+      for (let dep of starterType.localDependencies) {
         await pkgInstall(this.env, `${dep}@${distTag}`, options);
       }
     }

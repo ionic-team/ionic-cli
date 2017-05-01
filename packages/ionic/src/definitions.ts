@@ -12,5 +12,6 @@ export interface StarterTemplateType {
   id: string;
   name: string;
   baseArchive: string;
-  buildDependencies: string[];
+  globalDependencies: string[];
+  localDependencies: string[];
 }

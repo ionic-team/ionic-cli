@@ -55,9 +55,9 @@ export function registerHooks(hooks: IHookEngine) {
       { type: 'global-packages', name: 'Ionic CLI', version: version },
       { type: 'system', name: 'Node', version: node },
       { type: 'system', name: 'OS', version: os },
-      { type: 'system', name: 'Xcode', version: xcode },
-      { type: 'system', name: 'ios-deploy', version: iosDeploy },
-      { type: 'system', name: 'ios-sim', version: iosSim },
+      { type: 'system', name: 'Xcode', version: xcode || 'not installed' },
+      { type: 'system', name: 'ios-deploy', version: iosDeploy || 'not installed' },
+      { type: 'system', name: 'ios-sim', version: iosSim || 'not installed' },
     ];
   });
 }

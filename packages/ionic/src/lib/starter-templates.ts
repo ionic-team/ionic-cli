@@ -9,20 +9,16 @@ export const STARTER_TYPES: StarterTemplateType[] = [
     id: 'ionic-angular',
     name: 'v2',
     baseArchive: 'https://github.com/driftyco/ionic2-app-base/archive/<BRANCH_NAME>.tar.gz',
-    buildDependencies: [
-      '@ionic/cli-plugin-ionic-angular',
-      '@ionic/cli-plugin-cordova',
-    ]
+    globalDependencies: ['cordova'],
+    localDependencies: ['@ionic/cli-plugin-ionic-angular', '@ionic/cli-plugin-cordova'],
   },
   {
     id: 'ionic1',
     name: 'v1',
     baseArchive: 'https://github.com/driftyco/ionic-app-base/archive/<BRANCH_NAME>.tar.gz',
-    buildDependencies: [
-      '@ionic/cli-plugin-ionic1',
-      '@ionic/cli-plugin-cordova',
-    ]
-  }
+    globalDependencies: ['cordova'],
+    localDependencies: ['@ionic/cli-plugin-ionic1', '@ionic/cli-plugin-cordova'],
+  },
 ];
 
 export const STARTER_TEMPLATES: StarterTemplate[] = [
