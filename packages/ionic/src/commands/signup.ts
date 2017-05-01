@@ -16,6 +16,8 @@ import {
 })
 export class SignupCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    opn(`https://apps.ionic.io/signup`, { wait: false });
+    const config = await this.env.config.load();
+    opn(`${config.urls.dash}/signup`, { wait: false });
+    this.env.log.ok('Launched signup form in your browser!');
   }
 }

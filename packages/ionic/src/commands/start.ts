@@ -32,8 +32,6 @@ import { load } from '../lib/modules';
 import { StarterTemplate } from '../definitions';
 import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
 
-const IONIC_DASH_URL = 'https://apps.ionic.io';
-
 @CommandMetadata({
   name: 'start',
   type: 'global',
@@ -258,10 +256,10 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
       if (linkApp && await this.env.session.isLoggedIn()) {
         const opn = load('opn');
         const token = await this.env.session.getUserToken();
-        opn(`https://apps.ionic.io/?user_token=${token}`, { wait: false });
+        opn(`${config.urls.dash}/?user_token=${token}`, { wait: false });
         this.env.log.ok(`Run ${chalk.green(`ionic link`)} to link to the app.`);
 
-        opn(IONIC_DASH_URL + '/signup', { wait: false });
+        opn(`${config.urls.dash}/signup`, { wait: false });
       } else if (linkApp) {
         this.env.log.msg(`\nYou will need to login in order to link this app. Please run the following commands to do so.\n` +
           `  ${chalk.green(`ionic login`)} - login first\n` +
