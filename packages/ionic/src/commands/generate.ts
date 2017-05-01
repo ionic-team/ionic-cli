@@ -62,6 +62,10 @@ export class GenerateCommand extends Command implements CommandPreRun {
       inputs[0] = response['type'];
     }
 
+    if (!TYPE_CHOICES.includes(inputs[0])) {
+      throw this.exit(`${chalk.bold(inputs[0])} is not a valid generator type.`);
+    }
+
     if (!inputs[1]) {
       const response = await this.env.prompt({
         name: 'name',
@@ -69,10 +73,6 @@ export class GenerateCommand extends Command implements CommandPreRun {
       });
 
       inputs[1] = response['name'];
-    }
-
-    if (!TYPE_CHOICES.includes(inputs[0])) {
-      throw this.exit(`${chalk.bold(inputs[0])} is not a valid generator type.`);
     }
   }
 
