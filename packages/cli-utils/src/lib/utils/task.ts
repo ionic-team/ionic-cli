@@ -172,8 +172,6 @@ export class TaskChain implements ITaskChain {
       task.clear();
     }
 
-    this.bottomBar.close();
-
     return this;
   }
 }

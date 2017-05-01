@@ -73,7 +73,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   const inquirer = loadFromUtils('inquirer');
   const bottomBar = new inquirer.ui.BottomBar();
   const bottomBarHack = <any>bottomBar;
-  try { bottomBarHack.rl.output.mute(); } catch (e) {}// TODO
+  try { bottomBarHack.rl.output.mute(); } catch (e) {} // TODO
   const log = new Logger({ stream: bottomBar.log });
   const tasks = new TaskChain(bottomBar);
 
@@ -84,91 +84,91 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   // If an legacy command is being executed inform the user that there is a new command available
   let foundCommand = mapLegacyCommand(argv._[0]);
   if (foundCommand) {
-    log.msg(`The ${chalk.bold(argv._[0])} command has been renamed. To find out more, run:\n\n` +
-      `  ${chalk.green(`ionic ${foundCommand} --help`)}\n`);
-    return;
-  }
+    log.msg(`The ${chalk.green(argv._[0])} command has been renamed. To find out more, run:\n\n` +
+      `  ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`);
+  } else {
+    env['PROJECT_FILE'] = PROJECT_FILE;
+    env['PROJECT_DIR'] = await getProjectRootDir(process.cwd(), env['PROJECT_FILE']);
 
-  env['PROJECT_FILE'] = PROJECT_FILE;
-  env['PROJECT_DIR'] = await getProjectRootDir(process.cwd(), env['PROJECT_FILE']);
+    try {
+      const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
+      const project = new Project(env['PROJECT_DIR'], env['PROJECT_FILE']);
 
-  try {
-    const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
-    const project = new Project(env['PROJECT_DIR'], env['PROJECT_FILE']);
+      const configData = await config.load();
 
-    const configData = await config.load();
+      const hooks = new HookEngine();
+      const client = new Client(configData.urls.api);
+      const telemetry = new Telemetry(config, version);
+      const shell = new Shell(tasks, log);
+      const session = new Session(config, project, client);
+      const app = new App(session, project, client);
 
-    const hooks = new HookEngine();
-    const client = new Client(configData.urls.api);
-    const telemetry = new Telemetry(config, version);
-    const shell = new Shell(tasks, log);
-    const session = new Session(config, project, client);
-    const app = new App(session, project, client);
+      const argv = minimist(pargv);
+      argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
 
-    const argv = minimist(pargv);
-    argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
+      registerHooks(hooks);
+      cliUtilsRegisterHooks(hooks);
 
-    registerHooks(hooks);
-    cliUtilsRegisterHooks(hooks);
-
-    const ionicEnvironment: IonicEnvironment = {
-      app,
-      argv,
-      client,
-      config,
-      hooks,
-      log,
-      namespace,
-      pargv,
-      plugins: {
-        ionic: {
-          name,
-          version,
-          namespace,
-          registerHooks,
+      const ionicEnvironment: IonicEnvironment = {
+        app,
+        argv,
+        client,
+        config,
+        hooks,
+        log,
+        namespace,
+        pargv,
+        plugins: {
+          ionic: {
+            name,
+            version,
+            namespace,
+            registerHooks,
+          },
         },
-      },
-      prompt: inquirer.createPromptModule(),
-      project,
-      session,
-      shell,
-      tasks,
-      telemetry,
-    };
+        prompt: inquirer.createPromptModule(),
+        project,
+        session,
+        shell,
+        tasks,
+        telemetry,
+      };
 
-    await loadPlugins(ionicEnvironment);
+      await loadPlugins(ionicEnvironment);
 
-    if (now.getTime() - new Date(configData.lastCommand).getTime() >= 3600000) {
-      await checkForUpdates(ionicEnvironment);
-    }
-
-    await namespace.runCommand(ionicEnvironment);
-
-    configData.lastCommand = now.toISOString();
-    await Promise.all([config.save(), project.save()]);
-
-  } catch (e) {
-    err = e;
-  }
-
-  if (err) {
-    exitCode = 1;
-
-    if (isSuperAgentError(err)) {
-      console.error(formatSuperAgentError(err));
-    } else if (err.fatal) {
-      exitCode = err.exitCode || 1;
-
-      if (err.message) {
-        log.error(err.message);
+      if (now.getTime() - new Date(configData.lastCommand).getTime() >= 3600000) {
+        await checkForUpdates(ionicEnvironment);
       }
-    } else {
-      console.error(err);
+
+      await namespace.runCommand(ionicEnvironment);
+
+      configData.lastCommand = now.toISOString();
+      await Promise.all([config.save(), project.save()]);
+
+    } catch (e) {
+      err = e;
     }
-    process.exit(exitCode);
+
+    if (err) {
+      exitCode = 1;
+
+      if (isSuperAgentError(err)) {
+        console.error(formatSuperAgentError(err));
+      } else if (err.fatal) {
+        exitCode = err.exitCode || 1;
+
+        if (err.message) {
+          log.error(err.message);
+        }
+      } else {
+        console.error(err);
+      }
+      process.exit(exitCode);
+    }
   }
 
   tasks.cleanup();
+  bottomBar.close();
 }
 
 /**
