@@ -22,6 +22,11 @@ import { upload } from '../lib/upload';
       name: 'deploy',
       description: 'Deploys this snapshot to the given channel',
     },
+    {
+      name: 'nobuild',
+      description: 'Do not invoke a build for this upload',
+      type: Boolean,
+    },
   ],
 })
 export class UploadCommand extends Command {
@@ -46,6 +51,14 @@ export class UploadCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const note = this.resolveNote(options['note']);
     const channelTag = this.resolveChannelTag(options['deploy']);
+
+    if (!options['nobuild']) {
+      await this.env.hooks.fire('command:build', {
+        env: this.env,
+        inputs,
+        options,
+      });
+    }
 
     await upload(this.env, { note, channelTag });
   }
