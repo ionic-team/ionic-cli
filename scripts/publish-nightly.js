@@ -1,36 +1,36 @@
-var execSync = require('child_process').execSync;
-var fs = require('fs');
-var path = require('path');
+const execSync = require('child_process').execSync;
+const fs = require('fs');
+const path = require('path');
 
-var packageJsonPath = path.join(__dirname, '..', 'package.json');
-var tempPackageJsonPath = path.join(__dirname, '..', 'package-orig.json');
-var originalPackageJson = require(packageJsonPath);
+const packageJsonPath = path.join(__dirname, '..', 'package.json');
+const tempPackageJsonPath = path.join(__dirname, '..', 'package-orig.json');
+const originalPackageJson = require(packageJsonPath);
 
 /*
  * This script assumes the `build` step was run prior to it
  */
 
 function backupOriginalPackageJson() {
-  var originalContent = JSON.stringify(originalPackageJson, null, 2);
+  const originalContent = JSON.stringify(originalPackageJson, null, 2);
   fs.writeFileSync(tempPackageJsonPath, originalContent);
 }
 
 function createNightlyVersionInPackageJson() {
-  var originalVersion = originalPackageJson.version;
-  originalPackageJson.version = originalVersion + '-' + createTimestamp();
+  const originalVersion = originalPackageJson.version;
+  originalPackageJson.version = `${originalVersion}-${createTimestamp()}`;
   fs.writeFileSync(packageJsonPath, JSON.stringify(originalPackageJson, null, 2));
 }
 
 function revertPackageJson() {
-  var fileContent = fs.readFileSync(tempPackageJsonPath);
-  fileContent = fileContent + '\n';
+  let fileContent = fs.readFileSync(tempPackageJsonPath);
+  fileContent = `${fileContent}\n`;
   fs.writeFileSync(packageJsonPath, fileContent);
   fs.unlinkSync(tempPackageJsonPath);
 }
 
 function createTimestamp() {
   // YYYYMMDDHHMM
-  var d = new Date();
+  const d = new Date();
   return d.getUTCFullYear() + // YYYY
           ('0' + (d.getUTCMonth() + 1)).slice(-2) + // MM
           ('0' + (d.getUTCDate())).slice(-2) + // DD
@@ -39,7 +39,7 @@ function createTimestamp() {
 }
 
 function publishToNpm() {
-  var command = `npm publish --tag=nightly ${process.cwd()}`;
+  const command = `npm publish --tag=nightly ${process.cwd()}`;
   execSync(command);
 }
 
