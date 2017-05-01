@@ -347,6 +347,7 @@ export interface IHookEngine {
 
   getSources(hook: string): string[];
   hasSources(hook: string, sources: string[]): boolean;
+  deleteSource(source: string): void;
 
   getRegistered<T, U>(hook: string): IHook<T, U>[];
 }

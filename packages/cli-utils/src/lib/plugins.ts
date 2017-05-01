@@ -30,7 +30,7 @@ export async function promptToInstallProjectPlugin(env: IonicEnvironment, { mess
   return await promptToInstallPlugin(env, projectPlugin, { message });
 }
 
-export async function promptToInstallPlugin(env: IonicEnvironment, pluginName: string, { message }: { message?: string}) {
+export async function promptToInstallPlugin(env: IonicEnvironment, pluginName: string, { message, reinstall = false }: { message?: string, reinstall?: boolean }) {
   if (!env.project.directory) {
     return;
   }
@@ -38,6 +38,7 @@ export async function promptToInstallPlugin(env: IonicEnvironment, pluginName: s
   try {
     return await loadPlugin(env, pluginName, {
       askToInstall: true,
+      reinstall,
       message,
     });
   } catch (e) {
@@ -59,6 +60,16 @@ export function installPlugin(env: IonicEnvironment, plugin: Plugin) {
   }
 
   env.plugins[plugin.name] = plugin;
+}
+
+export function uninstallPlugin(env: IonicEnvironment, plugin: Plugin) {
+  if (plugin.namespace) {
+    env.namespace.namespaces.delete(plugin.namespace.name);
+  }
+
+  env.hooks.deleteSource(plugin.name);
+
+  delete env.plugins[plugin.name];
 }
 
 export async function loadPlugins(env: IonicEnvironment) {
@@ -109,7 +120,7 @@ export async function loadPlugins(env: IonicEnvironment) {
   }
 }
 
-export async function loadPlugin(env: IonicEnvironment, pluginName: string, { message, askToInstall = true }: { message?: string, askToInstall?: boolean }): Promise<Plugin> {
+export async function loadPlugin(env: IonicEnvironment, pluginName: string, { message, askToInstall = true, reinstall = false }: { message?: string, askToInstall?: boolean, reinstall?: boolean }): Promise<Plugin> {
   let m: Plugin | undefined;
 
   if (!message) {
@@ -117,7 +128,8 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
   }
 
   try {
-    const mPath = path.join(env.project.directory, 'node_modules', ...pluginName.split('/'));
+    const mPath = require.resolve(path.join(env.project.directory, 'node_modules', ...pluginName.split('/')));
+    delete require.cache[mPath];
     m = require(mPath);
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') {
@@ -134,7 +146,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
   if (!m && !askToInstall) {
     throw ERROR_PLUGIN_NOT_INSTALLED;
   }
-  if (!m) {
+  if (!m || reinstall) {
     const answers = await env.prompt([{
       type: 'confirm',
       name: 'installPlugin',
@@ -155,6 +167,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
 }
 
 export async function checkForUpdates(env: IonicEnvironment) {
+  let warnonly = false;
   const semver = load('semver');
 
   const ionicLatestVersion = await getLatestPluginVersion(env, env.plugins.ionic);
@@ -162,6 +175,7 @@ export async function checkForUpdates(env: IonicEnvironment) {
 
   if (semver.gt(ionicLatestVersion, env.plugins.ionic.version)) {
     env.log.warn(`The Ionic CLI has an update available! Please upgrade (you might need ${chalk.green('sudo')}):\n\n    ${chalk.green('npm install -g ionic@' + ionicDistTag)}\n\n`);
+    warnonly = true;
   }
 
   for (let pluginName in env.plugins) {
@@ -172,8 +186,20 @@ export async function checkForUpdates(env: IonicEnvironment) {
       if (ionicDistTag === distTag) {
         const latestVersion = await getLatestPluginVersion(env, plugin);
 
-        if (semver.gt(latestVersion, plugin.version) || (ionicDistTag === 'canary' && latestVersion !== plugin.version)) {
-          env.log.warn(`Locally installed CLI Plugin ${chalk.green(plugin.name)} has an update available! Please upgrade:\n\n    ${chalk.green('npm install --save-dev ' + plugin.name + '@' + distTag)}\n\n`);
+        if (warnonly) {
+          env.log.warn(`Locally installed CLI Plugin ${chalk.green(plugin.name + '@' + chalk.bold(plugin.version))} has an update available (${chalk.green.bold(latestVersion)})! Please upgrade:\n\n    ${chalk.green('npm install --save-dev ' + plugin.name + '@' + distTag)}\n\n`);
+        } else {
+          if (semver.gt(latestVersion, plugin.version) || (ionicDistTag === 'canary' && latestVersion !== plugin.version)) {
+            const p = await promptToInstallPlugin(env, plugin.name, {
+              message: `Locally installed CLI Plugin ${chalk.green(plugin.name + '@' + chalk.bold(plugin.version))} has an update available (${chalk.green.bold(latestVersion)})! Would you like to install it and continue?`,
+              reinstall: true,
+            });
+
+            if (p) {
+              uninstallPlugin(env, plugin);
+              installPlugin(env, p);
+            }
+          }
         }
       } else {
         env.log.warn(`Locally installed CLI Plugin ${chalk.green(plugin.name + chalk.bold('@' + distTag))} has a different distribution tag than the Ionic CLI (${chalk.green.bold('@' + ionicDistTag)}).\n` +
