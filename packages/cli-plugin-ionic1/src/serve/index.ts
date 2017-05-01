@@ -43,7 +43,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   }
 
   const serverArgs = minimistOptionsToArray(args.options);
-  console.log(`Starting server: ${chalk.bold(serverArgs.join(' '))}\n`);
+  args.env.log.info(`Starting server: ${chalk.bold(serverArgs.join(' '))} - Ctrl+C to cancel\n`);
 
   // Setup Options and defaults
   const serverOptions: ServerOptions = {
