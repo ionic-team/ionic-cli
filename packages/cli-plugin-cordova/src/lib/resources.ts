@@ -49,6 +49,7 @@ export function flattenResourceJsonStructure (jsonStructure: any): ImageResource
           width: imgInfo.width,
           height: imgInfo.height,
           density: imgInfo.density,
+          orientation: imgInfo.orientation,
           nodeName: jsonStructure[platform][resType]['nodeName'],
           nodeAttributes: jsonStructure[platform][resType]['nodeAttributes']
         }

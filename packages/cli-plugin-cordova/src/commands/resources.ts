@@ -18,7 +18,7 @@ import {
   ImageUploadResponse
 } from '../definitions';
 import { getProjectPlatforms, installPlatform } from '../lib/utils/setup';
-import { parseConfigXmlToJson } from '../lib/utils/configXmlUtils';
+import { getOrientationFromConfigJson, parseConfigXmlToJson } from '../lib/utils/configXmlUtils';
 import {
   flattenResourceJsonStructure,
   createImgDestinationDirectories,
@@ -85,12 +85,10 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
     const resourceDir = path.join(this.env.project.directory, 'resources'); // TODO: hard-coded
 
-    let configFileContents: string;
-
     this.env.tasks.next(`Collecting resource configuration and source images`);
 
     // check that config file config.xml exists
-    configFileContents = await parseConfigXmlToJson(this.env.project.directory);
+    const configJson = await parseConfigXmlToJson(this.env.project.directory);
 
     const resourceJsonStructure = await getResourceConfigJson();
     this.env.log.debug(`resourceJsonStructure=${Object.keys(resourceJsonStructure).length}`);
@@ -124,10 +122,13 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     }
     this.env.log.debug(`${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);
 
+    const orientation = getOrientationFromConfigJson(configJson) || 'default';
+
     // Convert the resource structure to a flat array then filter the array so
     // that it only has img resources that we need. Finally add src path to the
     // items that remain.
     let imgResources: ImageResource[] = flattenResourceJsonStructure(resourceJsonStructure)
+      .filter((img) => orientation === 'default' || typeof img.orientation === 'undefined' || img.orientation === orientation)
       .filter((img) => buildPlatforms.includes(img.platform))
       .filter((img) => resourceTypes.includes(img.resType))
       .map((img) => ({

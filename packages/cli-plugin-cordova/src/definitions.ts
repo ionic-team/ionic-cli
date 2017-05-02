@@ -3,6 +3,7 @@ export interface ImageResource {
   width: number;
   height: number;
   density: string;
+  orientation: 'landscape' | 'portrait';
   platform: string;
   resType: string;
   dest: string;
@@ -16,6 +17,7 @@ export interface ResourcesImageConfig {
   width: number;
   height: number;
   density?: string;
+  orientation?: 'landscape' | 'portrait';
 }
 
 export interface SourceImage {
