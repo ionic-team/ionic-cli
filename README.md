@@ -50,7 +50,7 @@ Here is a brief summary of changes in CLI 3. For more details and reasoning,
 see [CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/v3/CHANGELOG.md).
 
 * Removed commands: `setup`, `share`, `lib`, `io`, `security`, `push`,
-  `package`, `config`, `service`, `add`, `remove`, `list`, `hooks`, `state`.
+  `config`, `service`, `add`, `remove`, `list`, `hooks`, `state`.
 * Added commands: `signup`.
 * Cordova commands have been namespaced (e.g. `ionic cordova build`, not `ionic
   build`).

@@ -6,6 +6,7 @@ import {
   IonicEnvironment,
   KNOWN_PLUGINS,
   Namespace,
+  NamespaceMap,
   ORG_PREFIX,
   PLUGIN_PREFIX,
   installPlugin,
@@ -14,6 +15,8 @@ import {
   promptToInstallPlugin,
   showHelp,
 } from '@ionic/cli-utils';
+
+import { PackageNamespace } from './package/index';
 
 import { InfoCommand } from './info';
 import { LoginCommand } from './login';
@@ -32,6 +35,10 @@ import { UploadCommand } from './upload';
 export class IonicNamespace extends Namespace {
   root = true;
   name = 'ionic';
+
+  namespaces = new NamespaceMap([
+    ['package', () => new PackageNamespace()],
+  ]);
 
   commands = new CommandMap([
     ['start', () => new StartCommand()],

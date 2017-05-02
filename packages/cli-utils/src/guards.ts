@@ -15,7 +15,10 @@ import {
   INamespace,
   LogLevel,
   PackageJson,
+  PackageBuild,
+  PackageProjectRequest,
   Response,
+  SecurityProfile,
   SuperAgentError,
   ValidationError,
 } from './definitions';
@@ -125,6 +128,75 @@ export function isDeployResponse(r: APIResponse): r is Response<Deploy> {
     && typeof res.data.uuid === 'string'
     && typeof res.data.snapshot === 'string'
     && typeof res.data.channel === 'string';
+}
+
+export function isPackageProjectRequestResponse(r: APIResponse): r is Response<PackageProjectRequest> {
+  const res = <Response<PackageProjectRequest>>r;
+  return isAPIResponseSuccess(res)
+    && typeof res.data.id === 'number'
+    && typeof res.data.presigned_post === 'object'
+    && typeof res.data.presigned_post.url === 'string'
+    && res.data.presigned_post.fields && typeof res.data.presigned_post.fields === 'object';
+}
+
+export function isPackageBuild(o: Object): o is PackageBuild {
+  const obj = <PackageBuild>o;
+  return obj && typeof obj === 'object'
+    && typeof obj.id === 'number'
+    && (!obj.name) || typeof obj.name === 'string'
+    && typeof obj.created === 'string'
+    && (!obj.completed || typeof obj.completed === 'string')
+    && typeof obj.platform === 'string'
+    && typeof obj.status === 'string'
+    && typeof obj.mode === 'string'
+    && (!obj.security_profile_tag || typeof obj.security_profile_tag === 'string')
+    && (!obj.url || typeof obj.url === 'string');
+}
+
+export function isSecurityProfile(o: Object): o is SecurityProfile {
+  const obj = <SecurityProfile>o;
+  return obj && typeof obj === 'object'
+    && typeof obj.name === 'string'
+    && typeof obj.tag === 'string'
+    && typeof obj.type === 'string'
+    && typeof obj.created === 'string'
+    && typeof obj.credentials === 'object';
+}
+
+export function isSecurityProfileResponse(r: APIResponse): r is Response<SecurityProfile> {
+  const res = <Response<SecurityProfile>>r;
+  return isAPIResponseSuccess(res) && isSecurityProfile(res.data);
+}
+
+export function isSecurityProfilesResponse(r: APIResponse): r is Response<SecurityProfile[]> {
+  const res = <Response<SecurityProfile[]>>r;
+  if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
+    return false;
+  }
+
+  if (res.data.length > 0) {
+    return isSecurityProfile(res.data[0]);
+  }
+
+  return true;
+}
+
+export function isPackageBuildResponse(r: APIResponse): r is Response<PackageBuild> {
+  const res = <Response<PackageBuild>>r;
+  return isAPIResponseSuccess(res) && isPackageBuild(res.data);
+}
+
+export function isPackageBuildsResponse(r: APIResponse): r is Response<PackageBuild[]> {
+  const res = <Response<PackageBuild[]>>r;
+  if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
+    return false;
+  }
+
+  if (res.data.length > 0) {
+    return isPackageBuild(res.data[0]);
+  }
+
+  return true;
 }
 
 export function isDeployChannelResponse(r: APIResponse): r is Response<DeployChannel> {
