@@ -2,11 +2,28 @@
 
 ## Changes from CLI 2
 
-* Removed commands: `setup`, `share`, `lib`, `io`, `security`, `push`,
-  `package`, `config`, `service`, `add`, `remove`, `list`, `hooks`, `state`.
-  Most removed commands provide legacy or broken functionality. `package` will
-  be addressed in a later release. `state` should now [be managed entirely by
+### Removed Commands
+
+* `setup`: This was only used to setup sass in Ionic 1 projects, which now is
+  now handled in `start`.
+* `share`: Please use the [Dashboard](https://apps.ionic.io/) to manage
+  collaborators.
+* `lib`, `add`, `remove`, `list`: For v1 projects, we recommend using
+  [bower](https://bower.io/).
+* `io`: Please configure apps in the [Dashboard](https://apps.ionic.io/) and
+  use `link` to associate your local project.
+* `security`: Please manage security profiles in the
+  [Dashboard](https://apps.ionic.io/).
+* `push`: Please manage push credentials (through security profiles) in the
+  [Dashboard](https://apps.ionic.io/).
+* `config`: Please manually edit the `ionic.config.json` file.
+* `service`: Please migrate your app to use the [Ionic Cloud
+  Client](https://github.com/driftyco/ionic-cloud).
+* `state`: The plugins and platforms can [be managed entirely by
   Cordova](https://cordova.apache.org/docs/en/latest/platform_plugin_versioning_ref/).
+
+### Additional Changes
+
 * Added commands: `signup`. Signup will change in the future, but as for now it
   simply opens up the signup page.
 * Cordova commands have been namespaced to allow for future platform support
