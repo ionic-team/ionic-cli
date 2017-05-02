@@ -61,8 +61,6 @@ export class PlatformCommand extends CordovaCommand implements CommandPreInputsP
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let [ action, platformName ] = inputs;
 
-    this.checkForMac(platformName);
-
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);
 

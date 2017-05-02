@@ -1,5 +1,3 @@
-import * as os from 'os';
-
 import * as chalk from 'chalk';
 
 import {
@@ -14,12 +12,6 @@ import {
 import { getProjectPlugins, getProjectPlatforms, installPlatform, installPlugins } from '../lib/utils/setup';
 
 export class CordovaCommand extends Command {
-  checkForMac(platform: string) {
-    if (platform === 'ios' && os.platform() !== 'darwin') {
-      throw this.exit('You cannot use Cordova for iOS unless you are on macOS.');
-    }
-  }
-
   async runCordova(argList: string[], { fatalOnNotFound = false, truncateErrorOutput = 5000, ...options }: IShellRunOptions = {}): Promise<string> {
     try {
       return await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, ...options });
@@ -42,8 +34,6 @@ export class CordovaPlatformCommand extends CordovaCommand implements CommandPre
     const [ runPlatform ] = inputs;
 
     if (runPlatform) {
-      this.checkForMac(runPlatform);
-
       const [ platforms, plugins ] = await Promise.all([
         getProjectPlatforms(this.env.project.directory),
         getProjectPlugins(this.env.project.directory),
