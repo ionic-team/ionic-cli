@@ -150,10 +150,11 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     }
 
     if (err) {
+      tasks.fail();
       exitCode = 1;
 
       if (isSuperAgentError(err)) {
-        console.error(formatSuperAgentError(err));
+        log.msg(formatSuperAgentError(err));
       } else if (err.fatal) {
         exitCode = err.exitCode || 1;
 
@@ -161,7 +162,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
           log.error(err.message);
         }
       } else {
-        console.error(err);
+        log.msg(err);
       }
       process.exit(exitCode);
     }

@@ -157,9 +157,9 @@ export function formatSuperAgentError(e: SuperAgentError): string {
     const r = transformAPIResponse(res);
     f += formatAPIResponse(req, r);
   } catch (e) {
-    f += `HTTP Error ${statusCode}: ${req.method} ${req.url}\n`;
+    f += `HTTP Error ${statusCode}: ${req.method.toUpperCase()} ${req.url}\n`;
     // TODO: do this only if verbose?
-    f += '\n' + res.text ? res.text.substring(0, FORMAT_ERROR_BODY_MAX_LENGTH) : '<no body>';
+    f += '\n' + res.text ? res.text.substring(0, FORMAT_ERROR_BODY_MAX_LENGTH) : '<no buffered body>';
 
     if (res.text && res.text.length > FORMAT_ERROR_BODY_MAX_LENGTH) {
       f += ` ...\n\n[ truncated ${res.text.length - FORMAT_ERROR_BODY_MAX_LENGTH} characters ]`;

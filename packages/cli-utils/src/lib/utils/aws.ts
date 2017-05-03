@@ -18,6 +18,7 @@ export function s3SignedUpload(
 
     zip.on('end', () => {
       createRequest('post', presignedPostParams.url)
+        .buffer()
         .field(presignedPostParams.fields)
         .field('file', Buffer.concat(bufs))
         .on('progress', (event) => {
