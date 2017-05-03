@@ -34,6 +34,18 @@ export class LinkCommand extends Command {
     const config = await this.env.config.load();
     const project = await this.env.project.load();
 
+    if (project.app_id) {
+      const confirmation = await this.env.prompt({
+        type: 'confirm',
+        name: 'apply',
+        message: `App ID ${chalk.green(project.app_id)} already exists in project config. Would you like to link a different app?`
+      });
+
+      if (!confirmation['apply']) {
+        return;
+      }
+    }
+
     if (appId) {
       this.env.tasks.next(`Looking up app ${chalk.bold(appId)}`);
 
@@ -53,18 +65,6 @@ export class LinkCommand extends Command {
       }
 
       this.env.tasks.end();
-
-      if (project.app_id) {
-        const confirmation = await this.env.prompt({
-          type: 'confirm',
-          name: 'apply',
-          message: `App ID ${chalk.green(project.app_id)} exists in project config. Overwrite?`
-        });
-
-        if (!confirmation['apply']) {
-          return;
-        }
-      }
 
     } else {
       this.env.tasks.next(`Looking up your apps`);
