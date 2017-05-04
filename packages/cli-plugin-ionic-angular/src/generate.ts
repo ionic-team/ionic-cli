@@ -29,7 +29,7 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
   }
 
   const AppScripts = load('@ionic/app-scripts');
-  const context = AppScripts.generateContext();
+  const context = AppScripts.generateContext({ rootDir: args.env.project.directory });
 
   const [ type, name ] = args.inputs;
 
