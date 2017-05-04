@@ -286,17 +286,6 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
       }
     }
 
-    if (!config.cliFlags.promptedForTelemetry) {
-      const { optIn } = await this.env.prompt({
-        type: 'confirm',
-        name: 'optIn',
-        message: 'Would you like to help Ionic improve the CLI by providing anonymous ' +
-          'usage and error reporting information?'
-      });
-      config.cliFlags.promptedForTelemetry = true;
-      config.cliFlags.enableTelemetry = optIn;
-    }
-
     this.env.log.msg(`\nGo to your newly created project: ${chalk.green(`cd ${prettyPath(projectRoot)}`)}\n`);
   }
 }

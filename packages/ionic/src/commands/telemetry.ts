@@ -19,7 +19,6 @@ import {
       validators: [contains([undefined, 'on', 'off'], { caseSensitive: false })],
     }
   ],
-  visible: false,
 })
 export class TelemetryCommand extends Command {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
@@ -35,6 +34,10 @@ export class TelemetryCommand extends Command {
       this.env.log.ok(`Telemetry: ${chalk.bold(config.cliFlags.enableTelemetry ? 'ON' : 'OFF')}`);
     } else {
       this.env.log.msg(`Telemetry: ${chalk.bold(config.cliFlags.enableTelemetry ? 'ON' : 'OFF')}`);
+    }
+
+    if (config.cliFlags.enableTelemetry) {
+      this.env.log.msg('Thank you for making the CLI better! ❤️');
     }
   }
 }

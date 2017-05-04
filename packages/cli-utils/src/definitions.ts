@@ -284,7 +284,6 @@ export interface ConfigFile {
   };
   cliFlags: {
     promptedForSignup?: boolean;
-    promptedForTelemetry?: boolean;
     enableTelemetry?: boolean;
     yarn?: boolean;
   };

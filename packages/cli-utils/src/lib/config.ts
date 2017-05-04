@@ -122,7 +122,12 @@ export class Config extends BaseConfig<ConfigFile> {
       results.cliFlags = {};
     }
 
+    if (typeof results.cliFlags.enableTelemetry === 'undefined') {
+      results.cliFlags.enableTelemetry = true;
+    }
+
     delete results.lastUpdated;
+    delete results.cliFlags.promptedForTelemetry;
 
     return results;
   }
