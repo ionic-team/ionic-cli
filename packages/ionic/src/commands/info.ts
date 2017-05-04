@@ -35,6 +35,10 @@ export class InfoCommand extends Command {
 
     task.end();
 
+    if (!this.env.project.directory) {
+      this.env.log.warn('You are not in an Ionic project directory. Project context may be missing.');
+    }
+
     if (globalNpmDetails.length > 0) {
       this.env.log.msg('\n' + chalk.bold('global packages:'));
       this.env.log.msg(`\n    ${format(prettify(globalNpmDetails))}`);
