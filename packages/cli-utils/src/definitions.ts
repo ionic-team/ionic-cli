@@ -206,7 +206,7 @@ export interface NormalizedCommandOption extends CommandOption {
   aliases: string[];
 }
 
-export type Validator = (input: string, key?: string) => boolean | string;
+export type Validator = (input?: string, key?: string) => boolean | string;
 
 export interface Validators {
   required: Validator;

@@ -1,9 +1,11 @@
+import * as chalk from 'chalk';
+
 import {
   CommandLineInputs,
   CommandLineOptions,
   Command,
   CommandMetadata,
-  validators
+  contains,
 } from '@ionic/cli-utils';
 
 @CommandMetadata({
@@ -12,32 +14,27 @@ import {
   description: 'Opt in and out of telemetry',
   inputs: [
     {
-      name: 'opt-in',
-      description: `opt-in or opt-out`,
-      validators: [validators.required],
-      prompt: {
-        type: 'list',
-        message: 'Would you like to help Ionic improve the CLI by providing anonymous ' +
-          'usage and error reporting information?',
-        choices: [
-          {
-            name: 'Yes',
-            value: 'yes'
-          },
-          {
-            name: 'No',
-            value: 'no'
-          }
-        ]
-      }
+      name: 'status',
+      description: `${chalk.green('on')} or ${chalk.green('off')}`,
+      validators: [contains([undefined, 'on', 'off'], { caseSensitive: false })],
     }
   ],
   visible: false,
 })
 export class TelemetryCommand extends Command {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const configContents = await this.env.config.load();
-    const optIn = inputs[0] === 'yes';
-    configContents.cliFlags.enableTelemetry = optIn;
+    const config = await this.env.config.load();
+    const [ status ] = inputs;
+    const enableTelemetry = config.cliFlags.enableTelemetry;
+
+    if (typeof status === 'string') {
+      config.cliFlags.enableTelemetry = status.toLowerCase() === 'on';
+    }
+
+    if (typeof status === 'string' || enableTelemetry !== config.cliFlags.enableTelemetry) {
+      this.env.log.ok(`Telemetry: ${chalk.bold(config.cliFlags.enableTelemetry ? 'ON' : 'OFF')}`);
+    } else {
+      this.env.log.msg(`Telemetry: ${chalk.bold(config.cliFlags.enableTelemetry ? 'ON' : 'OFF')}`);
+    }
   }
 }
