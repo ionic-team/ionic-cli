@@ -12,6 +12,7 @@ import {
   SecurityClient,
   contains,
   createArchive,
+  filterOptionsByIntent,
   validators,
 } from '@ionic/cli-utils';
 
@@ -34,6 +35,12 @@ import { upload } from '../../lib/upload';
     },
   ],
   options: [
+    {
+      name: 'prod',
+      description: 'Mark this build as a production build',
+      type: Boolean,
+      intent: 'app-scripts',
+    },
     {
       name: 'release',
       description: 'Mark this build as a release build',
@@ -68,12 +75,13 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     let [ platform ] = <[PackageBuild['platform']]>inputs;
-    let { release, profile, note } = options;
+    let { prod, release, profile, note } = options;
 
     if (typeof note !== 'string') {
       note = 'Ionic Package Upload';
     }
 
+    const project = await this.env.project.load();
     const token = await this.env.session.getAppUserToken();
     const deploy = new DeployClient(token, this.env.client);
     const sec = new SecurityClient(token, this.env.client);
@@ -96,13 +104,24 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
       }
     }
 
+    if (project.type === 'ionic-angular' && release && !prod) {
+      this.env.log.warn(`We recommend using ${chalk.green('--prod')} for production builds when using ${chalk.green('--release')}.`);
+    }
+
     this.env.tasks.end();
+
+    await this.env.hooks.fire('command:build', {
+      env: this.env,
+      inputs,
+      options: filterOptionsByIntent(this.metadata, options, 'app-scripts'),
+    });
+
     const snapshotRequest = await upload(this.env, { note });
 
     this.env.tasks.next('Requesting project upload');
 
     const uploadTask = this.env.tasks.next('Uploading project');
-    const project = await pkg.requestProjectUpload();
+    const proj = await pkg.requestProjectUpload();
 
     const zip = createArchive('zip');
     zip.file('package.json');
@@ -110,7 +129,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     zip.directory('resources');
     zip.finalize();
 
-    await pkg.uploadProject(project, zip, { progress: (loaded, total) => {
+    await pkg.uploadProject(proj, zip, { progress: (loaded, total) => {
       uploadTask.progress(loaded, total);
     }});
 
@@ -121,7 +140,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
       platform,
       mode: release ? 'release' : 'debug',
       zipUrl: snapshot.url,
-      projectId: project.id,
+      projectId: proj.id,
       profileTag: typeof profile === 'string' ? profile : undefined,
     });
 
