@@ -62,14 +62,40 @@ import { upload } from '../../lib/upload';
 export class PackageBuildCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     let [ platform ] = inputs;
-    let { release, profile } = options;
 
     const token = await this.env.session.getAppUserToken();
     const pkg = new PackageClient(token, this.env.client);
+    const sec = new SecurityClient(token, this.env.client);
 
-    if (!profile && (platform === 'ios' || (platform === 'android' && release))) {
-      this.env.log.error(`${chalk.bold('--profile')} is required for ${pkg.formatPlatform(platform) + (release ? ' release' : '')} builds!`);
-      return 1;
+    if (!options['profile'] && (platform === 'ios' || (platform === 'android' && options['release']))) {
+      this.env.tasks.next(`Build requires security profile, but ${chalk.green('--profile')} was not provided. Looking up your profiles`);
+      const allProfiles = await sec.getProfiles({});
+      this.env.tasks.end();
+      const desiredProfileType = options['release'] ? 'production' : 'development';
+      const profiles = allProfiles.filter(p => p.type === desiredProfileType);
+
+      if (profiles.length === 0) {
+        this.env.log.error(`Sorry--a valid ${chalk.bold(desiredProfileType)} security profile is required for ${pkg.formatPlatform(platform)} ${options['release'] ? 'release' : 'debug'} builds.`);
+        return 1;
+      }
+
+      if (profiles.length === 1) {
+        this.env.log.warn(`Attempting to use ${chalk.bold(profiles[0].tag)} (${chalk.bold(profiles[0].name)}), as it is your only ${chalk.bold(desiredProfileType)} security profile.`);
+        options['profile'] = profiles[0].tag;
+      } else {
+        const response = await this.env.prompt({
+          type: 'list',
+          name: 'profile',
+          message: 'Please choose a security profile to use with this build',
+          choices: profiles.map(p => ({
+            name: p.name,
+            short: p.name,
+            value: p.tag,
+          })),
+        });
+
+        options['profile'] = response['profile'];
+      }
     }
   }
 
