@@ -20,6 +20,7 @@
     "chokidar-cli": "^1.2.0",
     "concurrently": "^3.4.0",
     "coveralls": "^2.2.0",
+    "cross-env": "^4.0.0",
     "eslint-config-ionic": "0.0.2",
     "husky": "^0.13.3",
     "jest": "^19.0.2",

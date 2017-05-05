@@ -6,7 +6,7 @@ import { PROJECT_TYPES_PRETTY } from './project';
 import { load } from './modules';
 import { readDir } from './utils/fs';
 import { getGlobalProxy } from './http';
-import { pkgInstall } from './utils/npm';
+import { PkgInstallOptions, pkgInstall } from './utils/npm';
 
 export const KNOWN_PLUGINS = ['cordova', 'proxy', 'ionic1', 'ionic-angular'];
 export const ORG_PREFIX = '@ionic';
@@ -154,9 +154,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
     }]);
 
     if (answers['installPlugin']) {
-      const pluginInstallVersion = `${pluginName}@${getReleaseChannelName(env.plugins.ionic.version)}`;
-      await pkgInstall(env, pluginInstallVersion); // TODO for local dev somehow make this link
-
+      await pkgInstallPlugin(env, pluginName);
       return loadPlugin(env, pluginName, { askToInstall });
     } else {
       throw ERROR_PLUGIN_NOT_INSTALLED;
@@ -212,17 +210,41 @@ export async function checkForUpdates(env: IonicEnvironment) {
 export async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Promise<string> {
   const distTag = getReleaseChannelName(plugin.version);
 
-  // TODO: might belong in utils/npm.ts
-  const cmdResult = JSON.parse(await env.shell.run('npm', ['view', plugin.name, `dist-tags.${distTag}`, '--json'], { showCommand: false }));
-
-  if (!cmdResult) {
+  if (distTag === 'local') {
     return plugin.version;
   }
 
-  return cmdResult.trim();
+  env.log.debug(`Checking for latest plugin version of ${chalk.bold(plugin.name + '@' + distTag)}.`);
+
+  // TODO: might belong in utils/npm.ts
+  const cmdResult = await env.shell.run('npm', ['view', plugin.name, `dist-tags.${distTag}`, '--json'], { showCommand: false });
+  env.log.debug(`Latest version of ${chalk.bold(plugin.name + '@' + distTag)} is ${cmdResult}.`);
+  const latestVersion = JSON.parse(cmdResult);
+
+  if (!latestVersion) {
+    return plugin.version;
+  }
+
+  return latestVersion.trim();
 }
 
-export function getReleaseChannelName(version: string): 'canary' | 'beta' | 'latest' {
+export async function pkgInstallPlugin(env: IonicEnvironment, name: string, options: PkgInstallOptions = {}) {
+  const releaseChannelName = getReleaseChannelName(env.plugins.ionic.version);
+  let pluginInstallVersion = `${name}@${releaseChannelName}`;
+
+  if (releaseChannelName === 'local') {
+    options.link = true;
+    pluginInstallVersion = name;
+  }
+
+  await pkgInstall(env, pluginInstallVersion, options);
+}
+
+export function getReleaseChannelName(version: string): 'local' | 'canary' | 'beta' | 'latest' {
+  if (version.includes('-local')) {
+    return 'local';
+  }
+
   if (version.includes('-alpha')) {
     return 'canary';
   }

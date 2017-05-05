@@ -30,7 +30,11 @@ export async function readBowerJsonFile(path: string): Promise<BowerJson> {
   return bowerJson;
 }
 
-export async function pkgInstall(env: IonicEnvironment, pkg?: string, options: IShellRunOptions = {}) {
+export interface PkgInstallOptions extends IShellRunOptions {
+  link?: boolean;
+}
+
+export async function pkgInstall(env: IonicEnvironment, pkg?: string, options: PkgInstallOptions = {}) {
   const config = await env.config.load();
 
   if (config.cliFlags.yarn) {
@@ -56,13 +60,21 @@ export async function pkgInstall(env: IonicEnvironment, pkg?: string, options: I
 
   if (installer === 'npm') {
     if (pkg) {
-      installerArgs = ['install', '--save-dev', '--save-exact', pkg];
+      if (options.link) {
+        installerArgs = ['link', pkg];
+      } else {
+        installerArgs = ['install', '--save-dev', '--save-exact', pkg];
+      }
     } else {
       installerArgs = ['install'];
     }
   } else {
     if (pkg) {
-      installerArgs = ['add', '--non-interactive', '--dev', '--exact', pkg];
+      if (options.link) {
+        installerArgs = ['link', pkg];
+      } else {
+        installerArgs = ['add', '--non-interactive', '--dev', '--exact', pkg];
+      }
     } else {
       installerArgs = ['install', '--non-interactive'];
     }

@@ -11,8 +11,8 @@ import {
   CommandPreInputsPrompt,
   CommandPreRun,
   getCommandInfo,
-  getReleaseChannelName,
   pkgInstall,
+  pkgInstallPlugin,
   prettyPath,
   rimrafp,
   validators,
@@ -253,13 +253,12 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
       // Install local dependencies
 
       this.env.log.info('Installing dependencies may take several minutes!');
-      const distTag = getReleaseChannelName(this.env.plugins.ionic.version);
       const options = { cwd: projectRoot };
 
       await pkgInstall(this.env, undefined, options);
 
       for (let dep of starterType.localDependencies) {
-        await pkgInstall(this.env, `${dep}@${distTag}`, options);
+        await pkgInstallPlugin(this.env, dep, options);
       }
     }
 
