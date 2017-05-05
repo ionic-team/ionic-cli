@@ -20,7 +20,7 @@ import {
       description: 'The build ID. Defaults to the latest build',
     },
   ],
-  exampleCommands: [''],
+  exampleCommands: ['', '15'],
 })
 export class PackageInfoCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
