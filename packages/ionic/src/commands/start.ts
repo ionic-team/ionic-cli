@@ -216,15 +216,15 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
       throw `Unable to find starter template for ${starterTemplateName}`;
     }
 
-    // Download the starter template, gunzip, and untar into the project folder
-    this.env.tasks.next(`Downloading ${chalk.bold(starterTemplateName.toString())} starter template`);
-
     const wrapperBranchPath = starterType.baseArchive.replace('<BRANCH_NAME>', wrapperBranchName);
     const starterBranchPath = starterTemplate.archive.replace('<BRANCH_NAME>', starterBranchName);
 
     const extractDir = options['type'] === 'ionic1' ? path.join(projectRoot, 'www') : projectRoot;
 
+    this.env.tasks.next(`Downloading app base (${chalk.dim(wrapperBranchPath)})`);
     await tarXvfFromUrl(wrapperBranchPath, projectRoot);
+
+    this.env.tasks.next(`Downloading starter template ${chalk.bold(starterTemplateName.toString())} (${chalk.dim(starterBranchPath)})`);
     await tarXvfFromUrl(starterBranchPath, extractDir);
 
     if (options['type'] === 'ionic1') {
