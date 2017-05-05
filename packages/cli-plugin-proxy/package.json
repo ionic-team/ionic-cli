@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-plugin-proxy",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "description": "Ionic CLI plugin for proxying all CLI HTTP requests",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
@@ -57,7 +57,7 @@
     "testResultsProcessor": "<rootDir>/../../node_modules/ts-jest/coverageprocessor.js"
   },
   "dependencies": {
-    "@ionic/cli-utils": "1.0.0-rc.1",
+    "@ionic/cli-utils": "1.0.0-rc.2",
     "superagent-proxy": "^1.0.2"
   },
   "devDependencies": {}
