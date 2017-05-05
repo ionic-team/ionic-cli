@@ -228,16 +228,17 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     await tarXvfFromUrl(starterBranchPath, extractDir);
 
     if (options['type'] === 'ionic1') {
-      this.env.tasks.next('Downloading resources');
-      await tarXvfFromUrl('https://github.com/driftyco/ionic-default-resources/archive/master.tar.gz', path.join(projectRoot, 'resources'));
+      const resourcesPath = 'https://github.com/driftyco/ionic-default-resources/archive/master.tar.gz';
+      this.env.tasks.next(`Downloading resources (${chalk.dim(resourcesPath)})`);
+      await tarXvfFromUrl(resourcesPath, path.join(projectRoot, 'resources'));
     }
 
-    this.env.tasks.next(`Updating project dependencies to add required plugins`);
+    this.env.tasks.next(`Updating ${chalk.bold('package.json')} with app details`);
 
     await patchPackageJsonForCli(appName, starterType, projectRoot);
     await updatePackageJsonForCli(appName, starterType, projectRoot);
 
-    this.env.tasks.next('Creating configuration file for the new project');
+    this.env.tasks.next(`Creating configuration file ${chalk.bold('ionic.config.json')}`);
     await createProjectConfig(appName, starterType, projectRoot, cloudAppId);
 
     this.env.tasks.end();
