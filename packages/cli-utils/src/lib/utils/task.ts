@@ -50,7 +50,7 @@ export class Task implements ITask {
   }
 
   progress(prog: number, total: number): this {
-    if (this.running) {
+    if (this.running && process.platform !== 'win32') {
       if (!this.progressBar) {
         const term = <any>tty; // TODO: type def issue
         const ProgressBar = load('progress');
