@@ -13,6 +13,8 @@ import { isCommand } from '../guards';
 import { validators } from './validators';
 import { generateFillSpaceStringList } from './utils/format';
 
+const HELP_DOTS_WIDTH = 20;
+
 export async function showHelp(env: IonicEnvironment, inputs: string[]) {
   // If there are no inputs then show global command details.
   if (inputs.length === 0) {
@@ -53,17 +55,26 @@ export function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, i
   const formatList = (details: string[]) => details.map(hd => `    ${hd}\n`).join('');
 
   if (ns.root) {
+    const options = [
+      ['--verbose', 'Verbose output for debugging'],
+      ['--help', 'Show help for provided command'],
+    ];
+
     const globalCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'global']);
     const projectCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'project']);
+    const fillStrings = generateFillSpaceStringList(options.map(v => v[0]), HELP_DOTS_WIDTH, chalk.dim('.'));
+    const optionDetails = options.map((opt, i) => chalk.green(opt[0]) + ' ' + fillStrings[i] + ' ' + opt[1]);
 
     return `${formatHeader(env)}\n\n` +
       `  ${chalk.bold('Usage')}:\n\n` +
-      `    ${chalk.dim('$')} ${chalk.green('ionic <command> [args/options]')}\n` +
-      `    ${chalk.dim('$')} ${chalk.green('ionic help <command>')} (for command details)\n\n` +
+      `    ${chalk.dim('$')} ${chalk.green('ionic <command> [arguments] [options]')}\n` +
+      `    ${chalk.dim('$')} ${chalk.green('ionic <command> --help')} (for command details)\n\n` +
       `  ${chalk.bold('Global Commands')}:\n\n` +
       `${formatList(globalCommandDetails)}\n` +
       `  ${chalk.bold('Project Commands')}:\n\n` +
-      `${env.project.directory ? formatList(projectCommandDetails) : '    You are not in a project directory.\n'}\n`;
+      `${env.project.directory ? formatList(projectCommandDetails) : '    You are not in a project directory.\n'}\n` +
+      `  ${chalk.bold('Options')}:\n\n` +
+      `${formatList(optionDetails)}\n`;
   } else {
     const commandDetails = getHelpDetails(env, globalMetadata, []);
     return `\n  ${chalk.bold('Commands')}:\n\n` +
@@ -105,7 +116,7 @@ export function formatCommandHelp(cmdMetadata: CommandData): string {
 }
 
 export function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[] {
-  const fillStringArray = generateFillSpaceStringList(cmdMetadataList.map(cmdMd => cmdMd.fullName || cmdMd.name), 20, chalk.dim('.'));
+  const fillStringArray = generateFillSpaceStringList(cmdMetadataList.map(cmdMd => cmdMd.fullName || cmdMd.name), HELP_DOTS_WIDTH, chalk.dim('.'));
 
   return cmdMetadataList.map((cmdMd, index) =>
     `${chalk.green(cmdMd.fullName || '')} ` +
