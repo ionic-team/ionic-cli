@@ -38,7 +38,7 @@ export class PackageInfoCommand extends Command {
 
       if (latestBuilds.length === 0) {
         this.env.tasks.end();
-        return this.env.log.warn(`You don't have any builds yet! Run ${chalk.green('ionic package build -h')} to learn how.`);
+        return this.env.log.warn(`You don't have any builds yet! Run ${chalk.green('ionic package build --help')} to learn how.`);
       }
 
       buildId = latestBuilds[0].id;

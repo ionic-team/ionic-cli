@@ -126,7 +126,7 @@ capabilities to your app.
 ```bash
 $ npm install -g cordova
 $ npm install --save-dev @ionic/cli-plugin-cordova@beta
-$ ionic cordova -h
+$ ionic cordova --help
 $ ionic cordova run ios
 ```
 

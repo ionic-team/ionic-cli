@@ -26,7 +26,7 @@ export class PackageListCommand extends Command {
 
     if (builds.length === 0) {
       this.env.tasks.end();
-      return this.env.log.warn(`You don't have any builds yet! Run ${chalk.green('ionic package build -h')} to learn how.`);
+      return this.env.log.warn(`You don't have any builds yet! Run ${chalk.green('ionic package build --help')} to learn how.`);
     }
 
     const attrs: (keyof PackageBuild)[] =  ['id', 'status', 'platform', 'mode', 'created', 'completed'];
