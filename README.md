@@ -12,6 +12,9 @@ Use the `ionic help` command for more detailed task information.
 Page](http://ionicframework.com/support) for general support questions. The
 issues on GitHub should be reserved for bug reports and feature requests.
 
+:heart: **Want to contribute?**: Please see
+[CONTRIBUTING.md](https://github.com/driftyco/ionic-cli/blob/v3/CONTRIBUTING.md).
+
 ## Requirements
 
 * Node 6+

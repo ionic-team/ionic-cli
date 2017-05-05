@@ -1,6 +1,9 @@
 {
   "private": true,
   "scripts": {
+    "bootstrap": "npm run build && npm run cli-utils:setup && npm run cli-plugin-ionic-angular:setup && lerna bootstrap",
+    "cli-utils:setup": "cd packages/cli-utils && npm install && npm run build",
+    "cli-plugin-ionic-angular:setup": "cd packages/cli-plugin-ionic-angular && npm install @ionic/app-scripts",
     "lint": "tslint -c tslint.json 'packages/*/src/**/*.ts' 'scripts/**/*.ts'",
     "build": "tsc",
     "watch": "tsc -w",
