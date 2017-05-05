@@ -27,6 +27,7 @@
     "url": "https://github.com/driftyco/ionic-cli/issues"
   },
   "files": [
+    "lab/",
     "dist/"
   ],
   "license": "MIT",
