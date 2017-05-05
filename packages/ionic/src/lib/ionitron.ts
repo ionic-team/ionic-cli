@@ -1,3 +1,5 @@
+import * as chalk from 'chalk';
+
 export function getIonitronString(quote: string) {
   const quoteFormatted = quote
     .split('\n')
@@ -10,7 +12,7 @@ export function getIonitronString(quote: string) {
     })
     .join('\n');
 
-  return `\n\n\n
+  return chalk.blue(`\n\n\n
                                h
                             \`-oooooo/\`.++
                           ::-oooooooo...
@@ -44,9 +46,9 @@ export function getIonitronString(quote: string) {
                   -ooooooooooooooooooooooooooooooooooooooooooo:\`
                    \`:ooooooooooooooooooooooooooooooooooooooo/\`
                       ./ooooooooooooooooooooooooooooooooo+-\`
-                        \`-/ooooooooooooooooooooooooooo/-\`\\
-                            \`-:+ooooooooooooooooo+/-.    \\ \\
-                                  '\\:--::::--/'          |  \\
+                        \`-/ooooooooooooooooooooooooooo/-\``) + `\\
+                            ` + chalk.blue(`\`-:+ooooooooooooooooo+/-.`) + `    \\ \\
+                                  ` + chalk.blue(`'\\:--::::--/'`) + `          |  \\
                                                          /   \\
          -----------------------------------------------*     *----------
         /                                                                \\
