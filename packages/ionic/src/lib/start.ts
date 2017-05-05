@@ -22,12 +22,14 @@ export function tarXvfFromUrl(url: string, destination: string) {
       .timeout(25000)
       .on('response', (res) => {
         if (res.statusCode !== 200) {
-          reject(new Error(`encountered bad status code (${res.statusCode}) for ${url}`));
+          reject(new Error(`Encountered bad status code (${res.statusCode}) for ${url}\n` +
+                           `This could mean the server is experiencing difficulties right now--please try again later.\n\n` +
+                           `If you're behind a firewall, you can proxy requests by using the HTTP_PROXY or IONIC_HTTP_PROXY environment variables.`));
         }
       })
       .on('error', (err) => {
         if (err.code === 'ECONNABORTED') {
-          reject(new Error(`timeout of ${err.timeout}ms reached for ${url}`));
+          reject(new Error(`Timeout of ${err.timeout}ms reached for ${url}`));
         } else {
           reject(err);
         }
