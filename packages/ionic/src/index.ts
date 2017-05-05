@@ -134,9 +134,21 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
         telemetry,
       };
 
-      await loadPlugins(ionicEnvironment);
+      let updates: undefined | string[];
 
-      if (now.getTime() - new Date(configData.lastCommand).getTime() >= 3600000) {
+      try {
+        await loadPlugins(ionicEnvironment);
+      } catch (e) {
+        log.error(chalk.red.bold('Error occurred while loading plugins. CLI functionality may be limited.\nChecking for CLI updates now...'));
+        log.debug(chalk.red(chalk.bold('Plugin error: ') + (e.stack ? e.stack : e)));
+        updates = await checkForUpdates(ionicEnvironment);
+
+        if (updates.length === 0) {
+          log.error('No updates found after plugin error--please report this issue.');
+        }
+      }
+
+      if (typeof updates === 'undefined' && now.getTime() - new Date(configData.lastCommand).getTime() >= 3600000) {
         await checkForUpdates(ionicEnvironment);
       }
 
@@ -146,6 +158,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       await Promise.all([config.save(), project.save()]);
 
     } catch (e) {
+      log.debug(chalk.red.bold('!!! ERROR ENCOUNTERED !!!'));
       err = e;
     }
 
@@ -162,7 +175,11 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
           log.error(err.message);
         }
       } else {
-        log.msg(err);
+        log.msg(chalk.red(String(err)));
+
+        if (err.stack) {
+          log.debug(chalk.red(err.stack));
+        }
       }
       process.exit(exitCode);
     }

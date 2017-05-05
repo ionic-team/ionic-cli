@@ -164,8 +164,10 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
   return m;
 }
 
-export async function checkForUpdates(env: IonicEnvironment) {
+export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> {
+  const updates: string[] = [];
   let warnonly = false;
+
   const semver = load('semver');
 
   const ionicLatestVersion = await getLatestPluginVersion(env, env.plugins.ionic);
@@ -174,6 +176,7 @@ export async function checkForUpdates(env: IonicEnvironment) {
   if (semver.gt(ionicLatestVersion, env.plugins.ionic.version)) {
     env.log.warn(`The Ionic CLI has an update available! Please upgrade (you might need ${chalk.green('sudo')}):\n\n    ${chalk.green('npm install -g ionic@' + ionicDistTag)}\n\n`);
     warnonly = true;
+    updates.push(env.plugins.ionic.name);
   }
 
   for (let pluginName in env.plugins) {
@@ -184,10 +187,12 @@ export async function checkForUpdates(env: IonicEnvironment) {
       if (ionicDistTag === distTag) {
         const latestVersion = await getLatestPluginVersion(env, plugin);
 
-        if (warnonly) {
-          env.log.warn(`Locally installed CLI Plugin ${chalk.green(plugin.name + '@' + chalk.bold(plugin.version))} has an update available (${chalk.green.bold(latestVersion)})! Please upgrade:\n\n    ${chalk.green('npm install --save-dev ' + plugin.name + '@' + distTag)}\n\n`);
-        } else {
-          if (semver.gt(latestVersion, plugin.version) || (ionicDistTag === 'canary' && latestVersion !== plugin.version)) {
+        if (semver.gt(latestVersion, plugin.version) || (ionicDistTag === 'canary' && latestVersion !== plugin.version)) {
+          updates.push(pluginName);
+
+          if (warnonly) {
+            env.log.warn(`Locally installed CLI Plugin ${chalk.green(plugin.name + '@' + chalk.bold(plugin.version))} has an update available (${chalk.green.bold(latestVersion)})! Please upgrade:\n\n    ${chalk.green('npm install --save-dev ' + plugin.name + '@' + distTag)}\n\n`);
+          } else {
             const p = await promptToInstallPlugin(env, plugin.name, {
               message: `Locally installed CLI Plugin ${chalk.green(plugin.name + '@' + chalk.bold(plugin.version))} has an update available (${chalk.green.bold(latestVersion)})! Would you like to install it and continue?`,
               reinstall: true,
@@ -202,9 +207,12 @@ export async function checkForUpdates(env: IonicEnvironment) {
       } else {
         env.log.warn(`Locally installed CLI Plugin ${chalk.green(plugin.name + chalk.bold('@' + distTag))} has a different distribution tag than the Ionic CLI (${chalk.green.bold('@' + ionicDistTag)}).\n` +
                      `Please install the matching plugin version:\n\n    ${chalk.green('npm install --save-dev ' + plugin.name + '@' + ionicDistTag)}\n\n`);
+        updates.push(pluginName);
       }
     }
   }
+
+  return updates;
 }
 
 export async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Promise<string> {
