@@ -32,6 +32,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
           choices: availableIPs.map(ip => ip.address)
         });
         chosenIP = promptAnswers['ip'];
+        args.options.address = chosenIP;
       }
     }
   }
