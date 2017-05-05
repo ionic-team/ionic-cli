@@ -40,7 +40,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
   const AppScripts = load('@ionic/app-scripts');
-  const context = AppScripts.generateContext({ rootDir: args.env.project.directory });
+  const context = AppScripts.generateContext();
 
   // using app-scripts and livereload is requested
   // Also remove commandName from the rawArgs passed

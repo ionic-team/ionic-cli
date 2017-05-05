@@ -10,7 +10,7 @@ export async function build(args: CommandHookArgs): Promise<void> {
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
   const AppScripts = load('@ionic/app-scripts');
-  const context = AppScripts.generateContext({ rootDir: args.env.project.directory });
+  const context = AppScripts.generateContext();
 
   console.log(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}\n`);
   return await AppScripts.build(context);
