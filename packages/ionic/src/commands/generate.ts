@@ -81,6 +81,6 @@ export class GenerateCommand extends Command implements CommandPreRun {
 
     await this.env.hooks.fire('command:generate', { env: this.env, inputs, options });
 
-    this.env.log.ok(`Generated a ${chalk.bold(type)} named ${chalk.bold(name)}!`);
+    this.env.log.ok(`Generated a ${chalk.bold(type)}${type === 'tabs' ? ' page' : ''} named ${chalk.bold(name)}!`);
   }
 }
