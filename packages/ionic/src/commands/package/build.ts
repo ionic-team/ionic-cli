@@ -25,7 +25,7 @@ import { upload } from '../../lib/upload';
   inputs: [
     {
       name: 'platform',
-      description: `The platform to target: ${chalk.bold('ios')}, ${chalk.bold('android')}`,
+      description: `The platform to target: ${chalk.green('ios')}, ${chalk.green('android')}`,
       validators: [validators.required, contains(['ios', 'android'], {})],
       prompt: {
         type: 'list',
