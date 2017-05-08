@@ -64,8 +64,13 @@ export function registerHooks(hooks: IHookEngine) {
   });
 }
 
-export async function generateIonicEnvironment(log: ILogger, tasks: ITaskChain, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
+export async function generateIonicEnvironment(pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
   const inquirer = loadFromUtils('inquirer');
+  const bottomBar = new inquirer.ui.BottomBar();
+  const bottomBarHack = <any>bottomBar;
+  try { bottomBarHack.rl.output.mute(); } catch (e) {} // TODO
+  const log = new Logger({ stream: bottomBar.log });
+  const tasks = new TaskChain(bottomBar);
 
   env['PROJECT_FILE'] = PROJECT_FILE;
   env['PROJECT_DIR'] = await getProjectRootDir(process.cwd(), env['PROJECT_FILE']);
@@ -111,6 +116,12 @@ export async function generateIonicEnvironment(log: ILogger, tasks: ITaskChain, 
     shell,
     tasks,
     telemetry,
+
+    close() {
+      tasks.cleanup();
+      bottomBar.close();
+    },
+
   };
 }
 
@@ -120,81 +131,74 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   let err: any;
 
   pargv = modifyArguments(pargv.slice(2));
-  const argv = minimist(pargv);
+  const ienv = await generateIonicEnvironment(pargv, env);
 
-  const inquirer = loadFromUtils('inquirer');
-  const bottomBar = new inquirer.ui.BottomBar();
-  const bottomBarHack = <any>bottomBar;
-  try { bottomBarHack.rl.output.mute(); } catch (e) {} // TODO
-  const log = new Logger({ stream: bottomBar.log });
-  const tasks = new TaskChain(bottomBar);
+  try {
+    const argv = minimist(pargv);
 
-  if (argv['log-level']) {
-    log.level = argv['log-level'];
-  }
+    if (argv['log-level']) {
+      ienv.log.level = argv['log-level'];
+    }
 
-  // If an legacy command is being executed inform the user that there is a new command available
-  let foundCommand = mapLegacyCommand(argv._[0]);
-  if (foundCommand) {
-    log.msg(`The ${chalk.green(argv._[0])} command has been renamed. To find out more, run:\n\n` +
-      `  ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`);
-  } else {
-    try {
-      const ionicEnvironment = await generateIonicEnvironment(log, tasks, pargv, env);
-      const configData = await ionicEnvironment.config.load();
+    // If an legacy command is being executed inform the user that there is a new command available
+    const foundCommand = mapLegacyCommand(argv._[0]);
+    if (foundCommand) {
+      ienv.log.msg(`The ${chalk.green(argv._[0])} command has been renamed. To find out more, run:\n\n` +
+                   `  ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`);
+    } else {
+      const configData = await ienv.config.load();
       let updates: undefined | string[];
 
       try {
-        await loadPlugins(ionicEnvironment);
+        await loadPlugins(ienv);
       } catch (e) {
-        log.error(chalk.red.bold('Error occurred while loading plugins. CLI functionality may be limited.\nChecking for CLI updates now...'));
-        log.debug(chalk.red(chalk.bold('Plugin error: ') + (e.stack ? e.stack : e)));
-        updates = await checkForUpdates(ionicEnvironment);
+        ienv.log.error(chalk.red.bold('Error occurred while loading plugins. CLI functionality may be limited.\nChecking for CLI updates now...'));
+        ienv.log.debug(chalk.red(chalk.bold('Plugin error: ') + (e.stack ? e.stack : e)));
+        updates = await checkForUpdates(ienv);
 
         if (updates.length === 0) {
-          log.error('No updates found after plugin error--please report this issue.');
+          ienv.log.error('No updates found after plugin error--please report this issue.');
         }
       }
 
       if (typeof updates === 'undefined' && now.getTime() - new Date(configData.lastCommand).getTime() >= 3600000) {
-        await checkForUpdates(ionicEnvironment);
+        await checkForUpdates(ienv);
       }
 
-      await namespace.runCommand(ionicEnvironment);
+      await namespace.runCommand(ienv);
 
       configData.lastCommand = now.toISOString();
-      await Promise.all([ionicEnvironment.config.save(), ionicEnvironment.project.save()]);
-
-    } catch (e) {
-      log.debug(chalk.red.bold('!!! ERROR ENCOUNTERED !!!'));
-      err = e;
+      await Promise.all([ienv.config.save(), ienv.project.save()]);
     }
 
-    if (err) {
-      tasks.fail();
-      exitCode = 1;
-
-      if (isSuperAgentError(err)) {
-        log.msg(formatSuperAgentError(err));
-      } else if (err.fatal) {
-        exitCode = err.exitCode || 1;
-
-        if (err.message) {
-          log.error(err.message);
-        }
-      } else {
-        log.msg(chalk.red(String(err)));
-
-        if (err.stack) {
-          log.debug(chalk.red(err.stack));
-        }
-      }
-      process.exit(exitCode);
-    }
+  } catch (e) {
+    ienv.log.debug(chalk.red.bold('!!! ERROR ENCOUNTERED !!!'));
+    err = e;
   }
 
-  tasks.cleanup();
-  bottomBar.close();
+  if (err) {
+    ienv.tasks.fail();
+    exitCode = 1;
+
+    if (isSuperAgentError(err)) {
+      ienv.log.msg(formatSuperAgentError(err));
+    } else if (err.fatal) {
+      exitCode = err.exitCode || 1;
+
+      if (err.message) {
+        ienv.log.error(err.message);
+      }
+    } else {
+      ienv.log.msg(chalk.red(String(err)));
+
+      if (err.stack) {
+        ienv.log.debug(chalk.red(err.stack));
+      }
+    }
+    process.exit(exitCode);
+  }
+
+  ienv.close();
 }
 
 /**

@@ -402,6 +402,8 @@ export interface IonicEnvironment {
   tasks: ITaskChain;
   telemetry: ITelemetry;
   namespace: INamespace;
+
+  close(): void;
 }
 
 export interface Plugin {
