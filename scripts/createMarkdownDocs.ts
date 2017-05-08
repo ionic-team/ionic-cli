@@ -1,73 +1,179 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
-const cliUtils = require('../packages/cli-utils');
-const pluginName = process.argv[2];
-const plugin = require(`../packages/${pluginName}`);
+import { generateIonicEnvironment } from '../packages/ionic';
+import {
+  CommandData,
+  CommandInput,
+  CommandOption,
+  INamespace,
+  fsMkdirp,
+  fsWriteFile,
+  installPlugin,
+  load,
+  readDir,
+  validators,
+} from '../packages/cli-utils';
 
-const STRIP_ANSI_REGEX = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
+const stripAnsi = load('strip-ansi');
 
-const fileList = plugin.namespace.getCommandMetadataList().map((cmd) => {
-  cmd.fullName = (plugin.namespace.name) ? `${plugin.namespace.name} ${cmd.name}` : cmd.name;
+async function run() {
+  const env = await generateIonicEnvironment(process.argv.slice(2), process.env);
+  const mPath = path.resolve(__dirname, '..', 'packages');
+  const ionicModules = (await readDir(mPath))
+    .filter(m => m.startsWith('cli-plugin-'))
+    .map(m => require(path.resolve(mPath, m)));
 
-  const output = formatCommandDoc(cmd).replace(STRIP_ANSI_REGEX, '');
-  const fileName = (plugin.namespace.name) ? `${plugin.namespace.name}-${cmd.name}` : cmd.name;
-  fs.writeFileSync(path.resolve(__dirname, '..', 'docs', `${fileName}.md`), output);
-
-  return {
-    commandName: cmd.fullName,
-    description: cmd.description,
-    fileName
-  };
-});
-
-const output = formatPluginDocs(pluginName, fileList);
-fs.writeFileSync(path.resolve(__dirname, '..', 'docs', `${pluginName}.md`), output);
-
-
-
-function formatPluginDocs(pluginName, listFileCommands) {
-  let headerLine = `# ${pluginName}`;
-
-  function listCommandLink (cmdData) {
-    return `[${cmdData.commandName}](${cmdData.fileName}.md) | ${cmdData.description.replace(STRIP_ANSI_REGEX, '')}`;
+  for (let mod of ionicModules) {
+    installPlugin(env, mod);
   }
 
-  return `
-${headerLine}
+  const nsPath = path.resolve(__dirname, '..', 'docs', 'index.md');
+  const nsDoc = formatIonicPage(env.namespace);
+
+  await fsMkdirp(path.dirname(nsPath));
+  await fsWriteFile(nsPath, nsDoc, { encoding: 'utf8' });
+
+  const commands = env.namespace.getCommandMetadataList().filter(cmd => cmd.visible !== false);
+  const commandPromises = commands.map(async (cmd) => {
+    if (!cmd.fullName) {
+      console.error(`${cmd.name} has no fullName`);
+      return;
+    }
+
+    const cmdPath = path.resolve(__dirname, '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
+    const cmdDoc = formatCommandDoc(cmd);
+
+    await fsMkdirp(path.dirname(cmdPath));
+    await fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
+  });
+
+  await Promise.all(commandPromises);
+
+  env.close();
+}
+
+run().then(() => console.log('done!')).catch(err => console.error(err));
+
+
+function formatIonicPage(ns: INamespace) {
+  let headerLine = formatNamespaceHeader(ns);
+
+  function listCommandLink(cmdData: CommandData) {
+    if (!cmdData.fullName) {
+      console.error(`${cmdData.name} has no fullName`);
+      return;
+    }
+
+    return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '), 'index.md')}) | ${stripAnsi(cmdData.description)}`;
+  }
+
+  const commands = ns.getCommandMetadataList();
+
+  return `${headerLine}
+
+The Ionic CLI is your go-to tool for developing Ionic apps. You can follow CLI
+development on [Github](https://github.com/driftyco/ionic-cli).
+
+## Installation
+
+Please make sure
+[Node](https://ionicframework.com/docs/resources/what-is/#node) 6+ and
+[NPM](https://ionicframework.com/docs/resources/what-is/#npm) 3+ are
+installed.
+
+Then, install the CLI globally (you may need sudo):
+
+\`\`\`bash
+$ npm install -g ionic@latest
+\`\`\`
+
+## Getting Started
+
+Start a new Ionic project using \`ionic start\`:
+
+\`\`\`bash
+ionic start myNewProject tabs
+cd ./myNewProject
+\`\`\`
+
+This will create a new app named \`myNewProject\`. Once you \`cd\` into your
+project's directory, a few new commands become available to you, such as
+\`serve\`:
+
+\`\`\`bash
+ionic serve
+\`\`\`
+
+## Commands
+
+Here is a full list of Ionic commands. You can also see the list on the command
+line with \`ionic --help\`.
 
 Command | Description
 ------- | -----------
-${listFileCommands.map(listCommandLink).join(`
+${commands.filter(cmd => cmd.visible !== false).map(listCommandLink).join(`
 `)}
 `;
 }
 
+function formatNamespaceHeader(ns: INamespace) {
+  return `---
+layout: fluid/docs_base
+category: cli
+id: cli-intro
+title: Ionic CLI Documentation
+---
 
-function formatCommandDoc(cmdMetadata) {
-  let description = cmdMetadata.description.replace(STRIP_ANSI_REGEX, '').split('\n').join('\n  ');
+# ${ns.name}
+`;
+}
 
-  return formatName(cmdMetadata.fullName, description) +
+function formatCommandHeader(cmd: CommandData) {
+  if (!cmd.fullName) {
+    console.error(`${cmd.name} has no fullName`);
+    return;
+  }
+
+  return `---
+layout: fluid/docs_cli_base
+category: cli
+id: cli-${cmd.fullName.split(' ').join('-')}
+command_name: ${cmd.fullName}
+title: ${cmd.fullName} Command
+header_sub_title: Ionic CLI
+---
+
+# ${cmd.fullName} Command
+
+`;
+}
+
+function formatCommandDoc(cmdMetadata: CommandData) {
+  let description = stripAnsi(cmdMetadata.description).split('\n').join('\n  ');
+
+  return formatCommandHeader(cmdMetadata) +
+    formatName(cmdMetadata.fullName || '', description) +
     formatSynopsis(cmdMetadata.inputs, cmdMetadata.fullName) +
     formatDescription(cmdMetadata.inputs, cmdMetadata.options, description) +
     formatExamples(cmdMetadata.exampleCommands, cmdMetadata.fullName);
 }
 
-function formatName(fullName, description) {
-  const headerLine = `## NAME`;
+function formatName(fullName: string, description: string) {
+  const headerLine = `## Name`;
   return `
 ${headerLine}
+
 ${fullName} -- ${description}
   `;
 }
 
 function formatSynopsis(inputs, commandName) {
-  const headerLine = `## SYNOPSIS`;
+  const headerLine = `## Synopsis`;
   const usageLine =
       `${commandName} ${
         (inputs || [])
           .map(input => {
-            if (input.validators && input.validators.includes(cliUtils.validators.required)) {
+            if (input.validators && input.validators.includes(validators.required)) {
               return '<' + input.name + '>';
             }
             return '[' + input.name + ']';
@@ -76,17 +182,20 @@ function formatSynopsis(inputs, commandName) {
 
   return `
 ${headerLine}
-    ${usageLine}
+
+\`\`\`bash
+$ ionic ${usageLine}
+\`\`\`
   `;
 }
 
 
-function formatDescription(inputs = [], options = [], description = '') {
-  const headerLine = `## DESCRIPTION`;
+function formatDescription(inputs: CommandInput[] = [], options: CommandOption[] = [], description: string = '') {
+  const headerLine = `## Description`;
 
   function inputLineFn(input, index) {
     const name = input.name;
-    const description = input.description;
+    const description = stripAnsi(input.description);
     const optionList = `\`${name}\``;
 
     return `${optionList} | ${description}`;
@@ -95,7 +204,7 @@ function formatDescription(inputs = [], options = [], description = '') {
   function optionLineFn(option) {
     const name = option.name;
     const aliases = option.aliases;
-    const description = option.description;
+    const description = stripAnsi(option.description);
 
     const optionList = `\`--${name}\`` +
       (aliases && aliases.length > 0 ? ', ' +
@@ -109,6 +218,7 @@ function formatDescription(inputs = [], options = [], description = '') {
 
   return `
 ${headerLine}
+
 ${description}
 
 ${inputs.length > 0 ? `
@@ -130,12 +240,14 @@ function formatExamples(exampleCommands, commandName) {
     return '';
   }
 
-  const headerLine = `## EXAMPLES`;
-  const exampleLines = exampleCommands.map(cmd => `${commandName} ${cmd}`);
+  const headerLine = `## Examples`;
+  const exampleLines = exampleCommands.map(cmd => `$ ionic ${commandName} ${cmd}`);
 
   return `
 ${headerLine}
-    ${exampleLines.join(`
-    `)}
+
+\`\`\`bash
+${exampleLines.join('\n')}
+\`\`\`
 `;
 }
