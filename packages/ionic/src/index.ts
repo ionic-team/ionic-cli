@@ -11,6 +11,8 @@ import {
   Config,
   HookEngine,
   IHookEngine,
+  ILogger,
+  ITaskChain,
   IonicEnvironment,
   Logger,
   PROJECT_FILE,
@@ -62,6 +64,56 @@ export function registerHooks(hooks: IHookEngine) {
   });
 }
 
+export async function generateIonicEnvironment(log: ILogger, tasks: ITaskChain, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
+  const inquirer = loadFromUtils('inquirer');
+
+  env['PROJECT_FILE'] = PROJECT_FILE;
+  env['PROJECT_DIR'] = await getProjectRootDir(process.cwd(), env['PROJECT_FILE']);
+
+  const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
+  const project = new Project(env['PROJECT_DIR'], env['PROJECT_FILE']);
+
+  const configData = await config.load();
+
+  const hooks = new HookEngine();
+  const client = new Client(configData.urls.api);
+  const telemetry = new Telemetry(config, version);
+  const shell = new Shell(tasks, log);
+  const session = new Session(config, project, client);
+  const app = new App(session, project, client);
+
+  const argv = minimist(pargv);
+  argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
+
+  registerHooks(hooks);
+  cliUtilsRegisterHooks(hooks);
+
+  return {
+    app,
+    argv,
+    client,
+    config,
+    hooks,
+    log,
+    namespace,
+    pargv,
+    plugins: {
+      ionic: {
+        name,
+        version,
+        namespace,
+        registerHooks,
+      },
+    },
+    prompt: inquirer.createPromptModule(),
+    project,
+    session,
+    shell,
+    tasks,
+    telemetry,
+  };
+}
+
 export async function run(pargv: string[], env: { [k: string]: string }) {
   const now = new Date();
   let exitCode = 0;
@@ -87,53 +139,9 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     log.msg(`The ${chalk.green(argv._[0])} command has been renamed. To find out more, run:\n\n` +
       `  ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`);
   } else {
-    env['PROJECT_FILE'] = PROJECT_FILE;
-    env['PROJECT_DIR'] = await getProjectRootDir(process.cwd(), env['PROJECT_FILE']);
-
     try {
-      const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
-      const project = new Project(env['PROJECT_DIR'], env['PROJECT_FILE']);
-
-      const configData = await config.load();
-
-      const hooks = new HookEngine();
-      const client = new Client(configData.urls.api);
-      const telemetry = new Telemetry(config, version);
-      const shell = new Shell(tasks, log);
-      const session = new Session(config, project, client);
-      const app = new App(session, project, client);
-
-      const argv = minimist(pargv);
-      argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
-
-      registerHooks(hooks);
-      cliUtilsRegisterHooks(hooks);
-
-      const ionicEnvironment: IonicEnvironment = {
-        app,
-        argv,
-        client,
-        config,
-        hooks,
-        log,
-        namespace,
-        pargv,
-        plugins: {
-          ionic: {
-            name,
-            version,
-            namespace,
-            registerHooks,
-          },
-        },
-        prompt: inquirer.createPromptModule(),
-        project,
-        session,
-        shell,
-        tasks,
-        telemetry,
-      };
-
+      const ionicEnvironment = await generateIonicEnvironment(log, tasks, pargv, env);
+      const configData = await ionicEnvironment.config.load();
       let updates: undefined | string[];
 
       try {
@@ -155,7 +163,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       await namespace.runCommand(ionicEnvironment);
 
       configData.lastCommand = now.toISOString();
-      await Promise.all([config.save(), project.save()]);
+      await Promise.all([ionicEnvironment.config.save(), ionicEnvironment.project.save()]);
 
     } catch (e) {
       log.debug(chalk.red.bold('!!! ERROR ENCOUNTERED !!!'));
