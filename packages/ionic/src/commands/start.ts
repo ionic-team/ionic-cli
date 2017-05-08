@@ -221,15 +221,21 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
 
     const extractDir = options['type'] === 'ionic1' ? path.join(projectRoot, 'www') : projectRoot;
 
-    this.env.tasks.next(`Downloading app base (${chalk.dim(wrapperBranchPath)})`);
+    this.env.tasks.end();
+    this.env.log.info(`Fetching app base (${chalk.dim(wrapperBranchPath)})`);
+    this.env.tasks.next('Downloading');
     await tarXvfFromUrl(wrapperBranchPath, projectRoot);
 
-    this.env.tasks.next(`Downloading starter template ${chalk.bold(starterTemplateName.toString())} (${chalk.dim(starterBranchPath)})`);
+    this.env.tasks.end();
+    this.env.log.info(`Fetching starter template ${chalk.bold(starterTemplateName.toString())} (${chalk.dim(starterBranchPath)})`);
+    this.env.tasks.next('Downloading');
     await tarXvfFromUrl(starterBranchPath, extractDir);
 
     if (options['type'] === 'ionic1') {
       const resourcesPath = 'https://github.com/driftyco/ionic-default-resources/archive/master.tar.gz';
-      this.env.tasks.next(`Downloading resources (${chalk.dim(resourcesPath)})`);
+      this.env.tasks.end();
+      this.env.log.info(`Fetching resources (${chalk.dim(resourcesPath)})`);
+      this.env.tasks.next('Downloading');
       await tarXvfFromUrl(resourcesPath, path.join(projectRoot, 'resources'));
     }
 

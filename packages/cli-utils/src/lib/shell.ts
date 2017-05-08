@@ -24,10 +24,10 @@ export class Shell implements IShell {
     }
 
     if (showCommand) {
-      if (showExecution) {
-        this.log.msg(`running command: ${chalk.green(fullCmd)}`);
-      } else {
-        this.tasks.next(`running command: ${chalk.green(fullCmd)}`);
+      this.log.msg(`> ${chalk.green(fullCmd)}`);
+
+      if (!showExecution) {
+        this.tasks.next('Running command');
       }
     }
 
