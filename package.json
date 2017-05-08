@@ -7,7 +7,7 @@
     "lint": "tslint -c tslint.json 'packages/*/src/**/*.ts' 'scripts/**/*.ts'",
     "build": "tsc",
     "watch": "tsc -w",
-    "docs": "node ./scripts/createMarkdownDocs.js ionic && node ./scripts/createMarkdownDocs.js cli-plugin-cordova",
+    "docs": "node ./scripts/createMarkdownDocs.js",
     "publish:canary": "lerna publish --canary --exact --npm-tag canary",
     "publish:beta": "lerna publish --exact --npm-tag beta",
     "publish:rc": "lerna publish --exact --npm-tag beta",
