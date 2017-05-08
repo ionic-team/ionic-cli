@@ -8,6 +8,44 @@ title: Ionic CLI Documentation
 # ionic
 
 
+The Ionic CLI is your go-to tool for developing Ionic apps. You can follow CLI
+development on [Github](https://github.com/driftyco/ionic-cli).
+
+## Installation
+
+Please make sure
+[Node](https://ionicframework.com/docs/resources/what-is/#node) 6+ and
+[NPM](https://ionicframework.com/docs/resources/what-is/#npm) 3+ are
+installed.
+
+Then, install the CLI globally (you may need sudo):
+
+```bash
+$ npm install -g ionic@latest
+```
+
+## Getting Started
+
+Start a new Ionic project using `ionic start`:
+
+```bash
+ionic start myNewProject tabs
+cd ./myNewProject
+```
+
+This will create a new app named `myNewProject`. Once you `cd` into your
+project's directory, a few new commands become available to you, such as
+`serve`:
+
+```bash
+ionic serve
+```
+
+## Commands
+
+Here is a full list of Ionic commands. You can also see the list on the command
+line with `ionic --help`.
+
 Command | Description
 ------- | -----------
 [docs](docs/index.md) | Open the Ionic documentation website

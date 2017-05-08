@@ -27,18 +27,11 @@ async function run() {
     installPlugin(env, mod);
   }
 
-  // const namespaces = [env.namespace, ...Array.from(env.namespace.namespaces.entries()).map(v => v[1]())];
-  const namespaces = [env.namespace];
-  const namespacePromises = namespaces.map(async (ns) => {
-    const nsName = ns.name === 'ionic' ? '' : ns.name;
-    const nsPath = path.resolve(__dirname, '..', 'docs', nsName, 'index.md');
-    const nsDoc = formatNamespaceDocs(ns);
+  const nsPath = path.resolve(__dirname, '..', 'docs', 'index.md');
+  const nsDoc = formatIonicPage(env.namespace);
 
-    await fsMkdirp(path.dirname(nsPath));
-    await fsWriteFile(nsPath, nsDoc, { encoding: 'utf8' });
-  });
-
-  await Promise.all(namespacePromises);
+  await fsMkdirp(path.dirname(nsPath));
+  await fsWriteFile(nsPath, nsDoc, { encoding: 'utf8' });
 
   const commands = env.namespace.getCommandMetadataList().filter(cmd => cmd.visible !== false);
   const commandPromises = commands.map(async (cmd) => {
@@ -62,7 +55,7 @@ async function run() {
 run().then(() => console.log('done!')).catch(err => console.error(err));
 
 
-function formatNamespaceDocs(ns) {
+function formatIonicPage(ns: INamespace) {
   let headerLine = formatNamespaceHeader(ns);
 
   function listCommandLink(cmdData: CommandData) {
@@ -77,6 +70,44 @@ function formatNamespaceDocs(ns) {
   const commands = ns.getCommandMetadataList();
 
   return `${headerLine}
+
+The Ionic CLI is your go-to tool for developing Ionic apps. You can follow CLI
+development on [Github](https://github.com/driftyco/ionic-cli).
+
+## Installation
+
+Please make sure
+[Node](https://ionicframework.com/docs/resources/what-is/#node) 6+ and
+[NPM](https://ionicframework.com/docs/resources/what-is/#npm) 3+ are
+installed.
+
+Then, install the CLI globally (you may need sudo):
+
+\`\`\`bash
+$ npm install -g ionic@latest
+\`\`\`
+
+## Getting Started
+
+Start a new Ionic project using \`ionic start\`:
+
+\`\`\`bash
+ionic start myNewProject tabs
+cd ./myNewProject
+\`\`\`
+
+This will create a new app named \`myNewProject\`. Once you \`cd\` into your
+project's directory, a few new commands become available to you, such as
+\`serve\`:
+
+\`\`\`bash
+ionic serve
+\`\`\`
+
+## Commands
+
+Here is a full list of Ionic commands. You can also see the list on the command
+line with \`ionic --help\`.
 
 Command | Description
 ------- | -----------
