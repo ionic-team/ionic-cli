@@ -1,161 +1,222 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
-const cliUtils = require('../packages/cli-utils');
-const ionicPkg = require('../packages/ionic');
+import { generateIonicEnvironment } from '../packages/ionic';
+import {
+  CommandData,
+  CommandInput,
+  CommandOption,
+  INamespace,
+  fsMkdirp,
+  fsWriteFile,
+  installPlugin,
+  load,
+  readDir,
+  validators,
+} from '../packages/cli-utils';
+
+const stripAnsi = load('strip-ansi');
 
 async function run() {
-  const env = await ionicPkg.generateIonicEnvironment();
+  const env = await generateIonicEnvironment(process.argv.slice(2), process.env);
+  const mPath = path.resolve(__dirname, '..', 'packages');
+  const ionicModules = (await readDir(mPath))
+    .filter(m => m.startsWith('cli-plugin-'))
+    .map(m => require(path.resolve(mPath, m)));
+
+  for (let mod of ionicModules) {
+    installPlugin(env, mod);
+  }
+
+  // const namespaces = [env.namespace, ...Array.from(env.namespace.namespaces.entries()).map(v => v[1]())];
+  const namespaces = [env.namespace];
+  const namespacePromises = namespaces.map(async (ns) => {
+    const nsName = ns.name === 'ionic' ? '' : ns.name;
+    const nsPath = path.resolve(__dirname, '..', 'docs', nsName, 'index.md');
+    const nsDoc = formatNamespaceDocs(ns);
+
+    await fsMkdirp(path.dirname(nsPath));
+    await fsWriteFile(nsPath, nsDoc, { encoding: 'utf8' });
+  });
+
+  await Promise.all(namespacePromises);
+
+  const commands = env.namespace.getCommandMetadataList().filter(cmd => cmd.visible !== false);
+  const commandPromises = commands.map(async (cmd) => {
+    if (!cmd.fullName) {
+      console.error(`${cmd.name} has no fullName`);
+      return;
+    }
+
+    const cmdPath = path.resolve(__dirname, '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
+    const cmdDoc = formatCommandDoc(cmd);
+
+    await fsMkdirp(path.dirname(cmdPath));
+    await fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
+  });
+
+  await Promise.all(commandPromises);
+
+  env.close();
 }
 
 run().then(() => console.log('done!')).catch(err => console.error(err));
 
-console.log(ionicPkg);
 
-// const STRIP_ANSI_REGEX = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g;
+function formatNamespaceDocs(ns) {
+  let headerLine = formatNamespaceHeader(ns);
 
-// const promises: Promise<{ commandName: string, description: string, fileName: string }>[] = [];
+  function listCommandLink(cmdData: CommandData) {
+    if (!cmdData.fullName) {
+      console.error(`${cmdData.name} has no fullName`);
+      return;
+    }
 
-// plugin.namespace.getCommandMetadataList().map((cmd) => {
-//   const output = formatCommandDoc(cmd).replace(STRIP_ANSI_REGEX, '');
-//   const fileName = cmd.fullName.replace(/ /g, '/');
-//   const filePath = path.resolve(__dirname, '..', 'docs', plugin.namespace.name === 'ionic' ? 'ionic' : `ionic/${plugin.namespace.name}`, fileName, 'index.md');
+    return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '), 'index.md')}) | ${stripAnsi(cmdData.description)}`;
+  }
 
-//   promises.push(cliUtils.fsMkdirp(path.dirname(filePath))
-//     .then(() => {
-//       return cliUtils.fsWriteFile(filePath, output);
-//     })
-//     .then(() => {
-//       return {
-//         commandName: cmd.fullName,
-//         description: cmd.description,
-//         fileName
-//       };
-//     }));
-// });
+  const commands = ns.getCommandMetadataList();
 
-// Promise.all(promises).then((fileList) => {
-//   const output = formatPluginDocs(plugin, fileList);
-//   const filePath = path.resolve(__dirname, '..', 'docs', plugin.namespace.name === 'ionic' ? 'ionic' : `ionic/${plugin.namespace.name}`, 'index.md');
-//   return cliUtils.fsMkdirp(path.dirname(filePath)).then(() => {
-//     return cliUtils.fsWriteFile(filePath, output);
-//   });
-// }).catch((err) => {
-//   console.error(err);
-//   process.exit(1);
-// });
+  return `${headerLine}
 
+Command | Description
+------- | -----------
+${commands.filter(cmd => cmd.visible !== false).map(listCommandLink).join(`
+`)}
+`;
+}
 
-// function formatPluginDocs(plugin, listFileCommands) {
-//   let headerLine = `# ${plugin.namespace.name}`;
+function formatNamespaceHeader(ns: INamespace) {
+  return `---
+layout: fluid/docs_base
+category: cli
+id: cli-intro
+title: Ionic CLI Documentation
+---
 
-//   function listCommandLink (cmdData) {
-//     return `[${cmdData.commandName}](${path.join(cmdData.fileName, 'index.md')}) | ${cmdData.description.replace(STRIP_ANSI_REGEX, '')}`;
-//   }
+# ${ns.name}
+`;
+}
 
-//   return `
-// ${headerLine}
+function formatCommandHeader(cmd: CommandData) {
+  if (!cmd.fullName) {
+    console.error(`${cmd.name} has no fullName`);
+    return;
+  }
 
-// Command | Description
-// ------- | -----------
-// ${listFileCommands.map(listCommandLink).join(`
-// `)}
-// `;
-// }
+  return `---
+layout: fluid/docs_cli_base
+category: cli
+id: cli-${cmd.fullName.split(' ').join('-')}
+command_name: ${cmd.fullName}
+title: ${cmd.fullName} Command
+header_sub_title: Ionic CLI
+---
 
+# ${cmd.fullName} Command
 
-// function formatCommandDoc(cmdMetadata) {
-//   let description = cmdMetadata.description.replace(STRIP_ANSI_REGEX, '').split('\n').join('\n  ');
+`;
+}
 
-//   return formatName(cmdMetadata.fullName, description) +
-//     formatSynopsis(cmdMetadata.inputs, cmdMetadata.fullName) +
-//     formatDescription(cmdMetadata.inputs, cmdMetadata.options, description) +
-//     formatExamples(cmdMetadata.exampleCommands, cmdMetadata.fullName);
-// }
+function formatCommandDoc(cmdMetadata: CommandData) {
+  let description = stripAnsi(cmdMetadata.description).split('\n').join('\n  ');
 
-// function formatName(fullName, description) {
-//   const headerLine = `## NAME`;
-//   return `
-// ${headerLine}
-// ${fullName} -- ${description}
-//   `;
-// }
+  return formatCommandHeader(cmdMetadata) +
+    formatName(cmdMetadata.fullName || '', description) +
+    formatSynopsis(cmdMetadata.inputs, cmdMetadata.fullName) +
+    formatDescription(cmdMetadata.inputs, cmdMetadata.options, description) +
+    formatExamples(cmdMetadata.exampleCommands, cmdMetadata.fullName);
+}
 
-// function formatSynopsis(inputs, commandName) {
-//   const headerLine = `## SYNOPSIS`;
-//   const usageLine =
-//       `${commandName} ${
-//         (inputs || [])
-//           .map(input => {
-//             if (input.validators && input.validators.includes(cliUtils.validators.required)) {
-//               return '<' + input.name + '>';
-//             }
-//             return '[' + input.name + ']';
-//           })
-//           .join(' ')}`;
+function formatName(fullName: string, description: string) {
+  const headerLine = `## Name`;
+  return `
+${headerLine}
 
-//   return `
-// ${headerLine}
-//     $ ionic ${usageLine}
-//   `;
-// }
+${fullName} -- ${description}
+  `;
+}
 
+function formatSynopsis(inputs, commandName) {
+  const headerLine = `## Synopsis`;
+  const usageLine =
+      `${commandName} ${
+        (inputs || [])
+          .map(input => {
+            if (input.validators && input.validators.includes(validators.required)) {
+              return '<' + input.name + '>';
+            }
+            return '[' + input.name + ']';
+          })
+          .join(' ')}`;
 
-// function formatDescription(inputs = [], options = [], description = '') {
-//   const headerLine = `## DESCRIPTION`;
+  return `
+${headerLine}
 
-//   function inputLineFn(input, index) {
-//     const name = input.name;
-//     const description = input.description;
-//     const optionList = `\`${name}\``;
-
-//     return `${optionList} | ${description}`;
-//   };
-
-//   function optionLineFn(option) {
-//     const name = option.name;
-//     const aliases = option.aliases;
-//     const description = option.description;
-
-//     const optionList = `\`--${name}\`` +
-//       (aliases && aliases.length > 0 ? ', ' +
-//        aliases
-//          .map((alias) => `\`-${alias}\``)
-//          .join(', ') : '');
-
-//     return `${optionList} | ${description}`;
-//   };
+\`\`\`bash
+$ ionic ${usageLine}
+\`\`\`
+  `;
+}
 
 
-//   return `
-// ${headerLine}
-// ${description}
+function formatDescription(inputs: CommandInput[] = [], options: CommandOption[] = [], description: string = '') {
+  const headerLine = `## Description`;
 
-// ${inputs.length > 0 ? `
-// Input | Description
-// ----- | ----------` : ``}
-// ${inputs.map(inputLineFn).join(`
-// `)}
+  function inputLineFn(input, index) {
+    const name = input.name;
+    const description = stripAnsi(input.description);
+    const optionList = `\`${name}\``;
 
-// ${options.length > 0 ? `
-// Option | Description
-// ------ | ----------` : ``}
-// ${options.map(optionLineFn).join(`
-// `)}
-// `;
-// }
+    return `${optionList} | ${description}`;
+  };
 
-// function formatExamples(exampleCommands, commandName) {
-//   if (!Array.isArray(exampleCommands)) {
-//     return '';
-//   }
+  function optionLineFn(option) {
+    const name = option.name;
+    const aliases = option.aliases;
+    const description = stripAnsi(option.description);
 
-//   const headerLine = `## EXAMPLES`;
-//   const exampleLines = exampleCommands.map(cmd => `$ ionic ${commandName} ${cmd}`);
+    const optionList = `\`--${name}\`` +
+      (aliases && aliases.length > 0 ? ', ' +
+       aliases
+         .map((alias) => `\`-${alias}\``)
+         .join(', ') : '');
 
-//   return `
-// ${headerLine}
-//     ${exampleLines.join(`
-//     `)}
-// `;
-// }
+    return `${optionList} | ${description}`;
+  };
+
+
+  return `
+${headerLine}
+
+${description}
+
+${inputs.length > 0 ? `
+Input | Description
+----- | ----------` : ``}
+${inputs.map(inputLineFn).join(`
+`)}
+
+${options.length > 0 ? `
+Option | Description
+------ | ----------` : ``}
+${options.map(optionLineFn).join(`
+`)}
+`;
+}
+
+function formatExamples(exampleCommands, commandName) {
+  if (!Array.isArray(exampleCommands)) {
+    return '';
+  }
+
+  const headerLine = `## Examples`;
+  const exampleLines = exampleCommands.map(cmd => `$ ionic ${commandName} ${cmd}`);
+
+  return `
+${headerLine}
+
+\`\`\`bash
+${exampleLines.join('\n')}
+\`\`\`
+`;
+}

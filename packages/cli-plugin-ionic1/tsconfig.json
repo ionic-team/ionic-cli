@@ -22,6 +22,7 @@
     "../../types/tiny-lr.d.ts",
     "../../types/cross-spawn.d.ts",
     "../../types/slice-ansi.d.ts",
+    "../../types/strip-ansi.d.ts",
     "../../types/string-width.d.ts",
     "../../types/superagent.d.ts",
     "../../types/leek.d.ts",

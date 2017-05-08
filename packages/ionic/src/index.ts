@@ -11,8 +11,6 @@ import {
   Config,
   HookEngine,
   IHookEngine,
-  ILogger,
-  ITaskChain,
   IonicEnvironment,
   Logger,
   PROJECT_FILE,
