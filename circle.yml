@@ -18,7 +18,6 @@ dependencies:
 test:
   pre:
     - npm run lint
-    - ./node_modules/.bin/lerna run build
   override:
     - ./node_modules/.bin/lerna run test
 
