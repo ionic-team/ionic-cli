@@ -259,13 +259,13 @@ async function copyToIonicSite(commands) {
 
   // get a list of commands for the nav
   await fsWriteFile(
-    path.resolve(ionicSitePath, 'content', '_data', 'cliData.json'), 
+    path.resolve(ionicSitePath, 'content', '_data', 'cliData.json'),
     JSON.stringify(
       commands.map((command) => {
-        return { 
-          id: `cli-${command.fullName.split(' ').join('-')}`, 
+        return {
+          id: `cli-${command.fullName.split(' ').join('-')}`,
           name: command.fullName,
-          url: command.fullName.split(' ').join('/') 
+          url: command.fullName.split(' ').join('/')
         }
       }).sort((a, b) => a.name.localeCompare(b.name))
     ), { encoding: 'utf8' });
