@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-package-download
 command_name: package download
-title: package download Command
+title: package download
 header_sub_title: Ionic CLI
 ---
 
-# package download Command
+# `$ package download`
 
-
-## Name
-
-package download -- Download your packaged app
-  
+Download your packaged app
 ## Synopsis
 
 ```bash
 $ ionic package download [id]
 ```
   
-## Description
-
-Download your packaged app
+## Details
 
 
 Input | Description

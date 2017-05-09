@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-info
 command_name: info
-title: info Command
+title: info
 header_sub_title: Ionic CLI
 ---
 
-# info Command
+# `$ info`
 
-
-## Name
-
-info -- Print system/environment info
-  
+Print system/environment info
 ## Synopsis
 
 ```bash
 $ ionic info 
 ```
   
-## Description
-
-Print system/environment info
+## Details
 
 
 

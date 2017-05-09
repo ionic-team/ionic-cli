@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-start
 command_name: start
-title: start Command
+title: start
 header_sub_title: Ionic CLI
 ---
 
-# start Command
+# `$ start`
 
-
-## Name
-
-start -- Create a new project
-  
+Create a new project
 ## Synopsis
 
 ```bash
 $ ionic start <name> [template]
 ```
   
-## Description
-
-Create a new project
+## Details
 
 
 Input | Description

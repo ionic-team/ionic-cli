@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-cordova-prepare
 command_name: cordova prepare
-title: cordova prepare Command
+title: cordova prepare
 header_sub_title: Ionic CLI
 ---
 
-# cordova prepare Command
+# `$ cordova prepare`
 
-
-## Name
-
-cordova prepare -- Transform metadata to platform manifests and copies assets to Cordova platforms
-  
+Transform metadata to platform manifests and copies assets to Cordova platforms
 ## Synopsis
 
 ```bash
 $ ionic cordova prepare [platform]
 ```
   
-## Description
-
-Transform metadata to platform manifests and copies assets to Cordova platforms
+## Details
 
 
 Input | Description

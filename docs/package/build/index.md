@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-package-build
 command_name: package build
-title: package build Command
+title: package build
 header_sub_title: Ionic CLI
 ---
 
-# package build Command
+# `$ package build`
 
-
-## Name
-
-package build -- Start a package build
-  
+Start a package build
 ## Synopsis
 
 ```bash
 $ ionic package build <platform>
 ```
   
-## Description
-
-Start a package build
+## Details
 
 
 Input | Description

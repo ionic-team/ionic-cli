@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-cordova-run
 command_name: cordova run
-title: cordova run Command
+title: cordova run
 header_sub_title: Ionic CLI
 ---
 
-# cordova run Command
+# `$ cordova run`
 
-
-## Name
-
-cordova run -- Run an Ionic project on a connected device
-  
+Run an Ionic project on a connected device
 ## Synopsis
 
 ```bash
 $ ionic cordova run <platform>
 ```
   
-## Description
-
-Run an Ionic project on a connected device
+## Details
 
 
 Input | Description

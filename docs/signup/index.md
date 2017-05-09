@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-signup
 command_name: signup
-title: signup Command
+title: signup
 header_sub_title: Ionic CLI
 ---
 
-# signup Command
+# `$ signup`
 
-
-## Name
-
-signup -- Create an Ionic account
-  
+Create an Ionic account
 ## Synopsis
 
 ```bash
 $ ionic signup 
 ```
   
-## Description
-
-Create an Ionic account
+## Details
 
 
 

@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-serve
 command_name: serve
-title: serve Command
+title: serve
 header_sub_title: Ionic CLI
 ---
 
-# serve Command
+# `$ serve`
 
-
-## Name
-
-serve -- Start a local development server for app dev/testing
-  
+Start a local development server for app dev/testing
 ## Synopsis
 
 ```bash
 $ ionic serve 
 ```
   
-## Description
-
-Start a local development server for app dev/testing
+## Details
 
 
 

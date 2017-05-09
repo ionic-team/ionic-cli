@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-cordova-emulate
 command_name: cordova emulate
-title: cordova emulate Command
+title: cordova emulate
 header_sub_title: Ionic CLI
 ---
 
-# cordova emulate Command
+# `$ cordova emulate`
 
-
-## Name
-
-cordova emulate -- Emulate an Ionic project on a simulator or emulator
-  
+Emulate an Ionic project on a simulator or emulator
 ## Synopsis
 
 ```bash
 $ ionic cordova emulate <platform>
 ```
   
-## Description
-
-Emulate an Ionic project on a simulator or emulator
+## Details
 
 
 Input | Description

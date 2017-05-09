@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-cordova-compile
 command_name: cordova compile
-title: cordova compile Command
+title: cordova compile
 header_sub_title: Ionic CLI
 ---
 
-# cordova compile Command
+# `$ cordova compile`
 
-
-## Name
-
-cordova compile -- Compile native platform code
-  
+Compile native platform code
 ## Synopsis
 
 ```bash
 $ ionic cordova compile <platform>
 ```
   
-## Description
-
-Compile native platform code
+## Details
 
 
 Input | Description

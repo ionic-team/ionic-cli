@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-cordova-platform
 command_name: cordova platform
-title: cordova platform Command
+title: cordova platform
 header_sub_title: Ionic CLI
 ---
 
-# cordova platform Command
+# `$ cordova platform`
 
-
-## Name
-
-cordova platform -- Add or remove a platform target for building an Ionic app
-  
+Add or remove a platform target for building an Ionic app
 ## Synopsis
 
 ```bash
 $ ionic cordova platform [action] [platform]
 ```
   
-## Description
-
-Add or remove a platform target for building an Ionic app
+## Details
 
 
 Input | Description

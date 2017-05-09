@@ -5,8 +5,10 @@ import {
   CommandData,
   CommandInput,
   CommandOption,
+  copyDirectory,
   INamespace,
   fsMkdirp,
+  fsStat,
   fsWriteFile,
   installPlugin,
   load,
@@ -48,6 +50,7 @@ async function run() {
   });
 
   await Promise.all(commandPromises);
+  await copyToIonicSite();
 
   env.close();
 }
@@ -135,15 +138,15 @@ function formatCommandHeader(cmd: CommandData) {
   }
 
   return `---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-${cmd.fullName.split(' ').join('-')}
 command_name: ${cmd.fullName}
-title: ${cmd.fullName} Command
+title: ${cmd.fullName}
 header_sub_title: Ionic CLI
 ---
 
-# ${cmd.fullName} Command
+# \`$ ${cmd.fullName}\`
 
 `;
 }
@@ -159,12 +162,7 @@ function formatCommandDoc(cmdMetadata: CommandData) {
 }
 
 function formatName(fullName: string, description: string) {
-  const headerLine = `## Name`;
-  return `
-${headerLine}
-
-${fullName} -- ${description}
-  `;
+  return description;
 }
 
 function formatSynopsis(inputs, commandName) {
@@ -191,7 +189,7 @@ $ ionic ${usageLine}
 
 
 function formatDescription(inputs: CommandInput[] = [], options: CommandOption[] = [], description: string = '') {
-  const headerLine = `## Description`;
+  const headerLine = `## Details`;
 
   function inputLineFn(input, index) {
     const name = input.name;
@@ -218,8 +216,6 @@ function formatDescription(inputs: CommandInput[] = [], options: CommandOption[]
 
   return `
 ${headerLine}
-
-${description}
 
 ${inputs.length > 0 ? `
 Input | Description
@@ -251,3 +247,18 @@ ${exampleLines.join('\n')}
 \`\`\`
 `;
 }
+
+async function copyToIonicSite() {
+  const ionicSitePath = path.resolve(__dirname, '..', '..', 'ionic-site');
+
+  let dirData = await fsStat(ionicSitePath);
+  if (!dirData.size) {
+    // ionic-site not present, fail silently
+    return
+  } 
+
+  return copyDirectory(
+    path.resolve(__dirname, '..', 'docs'), 
+    path.resolve(ionicSitePath, 'content', 'docs', 'cli'));
+}
+

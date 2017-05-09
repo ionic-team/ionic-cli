@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-generate
 command_name: generate
-title: generate Command
+title: generate
 header_sub_title: Ionic CLI
 ---
 
-# generate Command
+# `$ generate`
 
-
-## Name
-
-generate -- Generate pipes, components, pages, directives, providers, and tabs (ionic-angular >= 3.0.0)
-  
+Generate pipes, components, pages, directives, providers, and tabs (ionic-angular >= 3.0.0)
 ## Synopsis
 
 ```bash
 $ ionic generate [type] [name]
 ```
   
-## Description
-
-Generate pipes, components, pages, directives, providers, and tabs (ionic-angular >= 3.0.0)
+## Details
 
 
 Input | Description

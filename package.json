@@ -7,12 +7,20 @@
     "lint": "tslint -c tslint.json 'packages/*/src/**/*.ts' 'scripts/**/*.ts'",
     "build": "tsc",
     "watch": "tsc -w",
-    "docs": "node ./scripts/createMarkdownDocs.js",
+    "docs": "npm run build && node ./scripts/createMarkdownDocs.js",
+    "watch:docs": "npm-watch docs",
     "publish:canary": "lerna publish --canary --exact --npm-tag canary",
     "publish:beta": "lerna publish --exact --npm-tag beta",
     "publish:rc": "lerna publish --exact --npm-tag beta",
     "publish:ci": "npm run publish:canary -- --yes",
     "prepush": "npm run lint"
+  },
+  "watch": {
+    "docs": {
+      "patterns": [ "packages", "scripts" ],
+      "extensions": "ts",
+      "quiet": false
+    }
   },
   "devDependencies": {
     "@types/node": "^6.0.68",
@@ -26,6 +34,7 @@
     "jest": "^19.0.2",
     "jest-cli": "^19.0.2",
     "lerna": "2.0.0-beta.38",
+    "npm-watch": "^0.1.9",
     "replace": "^0.3.0",
     "ts-jest": "^19.0.7",
     "tslint": "^4.0.0-dev.0",

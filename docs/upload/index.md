@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-upload
 command_name: upload
-title: upload Command
+title: upload
 header_sub_title: Ionic CLI
 ---
 
-# upload Command
+# `$ upload`
 
-
-## Name
-
-upload -- Upload a new snapshot of your app
-  
+Upload a new snapshot of your app
 ## Synopsis
 
 ```bash
 $ ionic upload 
 ```
   
-## Description
-
-Upload a new snapshot of your app
+## Details
 
 
 

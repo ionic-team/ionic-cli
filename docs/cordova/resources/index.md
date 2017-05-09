@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-cordova-resources
 command_name: cordova resources
-title: cordova resources Command
+title: cordova resources
 header_sub_title: Ionic CLI
 ---
 
-# cordova resources Command
+# `$ cordova resources`
 
-
-## Name
-
-cordova resources -- Automatically create icon and splash screen resources
-  
+Automatically create icon and splash screen resources
 ## Synopsis
 
 ```bash
 $ ionic cordova resources [platform]
 ```
   
-## Description
-
-Automatically create icon and splash screen resources
+## Details
 
 
 Input | Description

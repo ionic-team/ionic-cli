@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-cordova-build
 command_name: cordova build
-title: cordova build Command
+title: cordova build
 header_sub_title: Ionic CLI
 ---
 
-# cordova build Command
+# `$ cordova build`
 
-
-## Name
-
-cordova build -- Build (prepare + compile) an Ionic project for a given platform
-  
+Build (prepare + compile) an Ionic project for a given platform
 ## Synopsis
 
 ```bash
 $ ionic cordova build <platform>
 ```
   
-## Description
-
-Build (prepare + compile) an Ionic project for a given platform
+## Details
 
 
 Input | Description

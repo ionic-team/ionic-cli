@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-cordova-plugin
 command_name: cordova plugin
-title: cordova plugin Command
+title: cordova plugin
 header_sub_title: Ionic CLI
 ---
 
-# cordova plugin Command
+# `$ cordova plugin`
 
-
-## Name
-
-cordova plugin -- Manage Cordova plugins
-  
+Manage Cordova plugins
 ## Synopsis
 
 ```bash
 $ ionic cordova plugin [action] [plugin]
 ```
   
-## Description
-
-Manage Cordova plugins
+## Details
 
 
 Input | Description

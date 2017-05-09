@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-package-info
 command_name: package info
-title: package info Command
+title: package info
 header_sub_title: Ionic CLI
 ---
 
-# package info Command
+# `$ package info`
 
-
-## Name
-
-package info -- Get info about a build
-  
+Get info about a build
 ## Synopsis
 
 ```bash
 $ ionic package info [id]
 ```
   
-## Description
-
-Get info about a build
+## Details
 
 
 Input | Description

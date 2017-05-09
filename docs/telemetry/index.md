@@ -1,28 +1,22 @@
 ---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-telemetry
 command_name: telemetry
-title: telemetry Command
+title: telemetry
 header_sub_title: Ionic CLI
 ---
 
-# telemetry Command
+# `$ telemetry`
 
-
-## Name
-
-telemetry -- Opt in and out of telemetry
-  
+Opt in and out of telemetry
 ## Synopsis
 
 ```bash
 $ ionic telemetry [status]
 ```
   
-## Description
-
-Opt in and out of telemetry
+## Details
 
 
 Input | Description
