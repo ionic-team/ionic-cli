@@ -13,6 +13,7 @@
     "publish:beta": "lerna publish --exact --npm-tag beta",
     "publish:rc": "lerna publish --exact --npm-tag beta",
     "publish:ci": "npm run publish:canary -- --yes",
+    "publish": "lerna publish --exact",
     "prepush": "npm run lint"
   },
   "watch": {
