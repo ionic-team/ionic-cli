@@ -6,7 +6,12 @@ machine:
 
 dependencies:
   cache_directories:
-    - packages/*/node_modules
+    - packages/cli-plugin-cordova/node_modules
+    - packages/cli-plugin-ionic-angular/node_modules
+    - packages/cli-plugin-ionic1/node_modules
+    - packages/cli-plugin-proxy/node_modules
+    - packages/cli-utils/node_modules
+    - packages/ionic/node_modules
   post:
     - npm run bootstrap
 
