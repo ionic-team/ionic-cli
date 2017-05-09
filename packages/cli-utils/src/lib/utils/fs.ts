@@ -121,10 +121,10 @@ export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: st
   });
 }
 
-export function copyDirectory(source: string, destionation: string): Promise<any> {
+export function copyDirectory(source: string, destination: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const ncp = load('ncp');
-    ncp.ncp(source, destionation, (err: Error) => {
+    ncp.ncp(source, destination, (err: Error) => {
       if (err) {
         reject(err);
       }
