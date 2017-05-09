@@ -21,6 +21,11 @@
   Client](https://github.com/driftyco/ionic-cloud).
 * `state`: The plugins and platforms can [be managed entirely by
   Cordova](https://cordova.apache.org/docs/en/latest/platform_plugin_versioning_ref/).
+  Please remove the `cordovaPlatforms` and `cordovaPlugins` keys from your
+  `package.json` file. If you're using Cordova 7, please [review the
+  announcement](https://cordova.apache.org/news/2017/05/04/cordova-7.html)
+  about how Cordova uses `config.xml` and `package.json` to manage plugins and
+  platforms.
 
 ### Additional Changes
 
