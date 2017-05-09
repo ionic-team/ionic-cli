@@ -50,7 +50,7 @@ async function run() {
   });
 
   await Promise.all(commandPromises);
-  await copyToIonicSite();
+  await copyToIonicSite(commands);
 
   env.close();
 }
@@ -67,7 +67,7 @@ function formatIonicPage(ns: INamespace) {
       return;
     }
 
-    return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '), 'index.md')}) | ${stripAnsi(cmdData.description)}`;
+    return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '))}) | ${stripAnsi(cmdData.description)}`;
   }
 
   const commands = ns.getCommandMetadataList();
@@ -248,7 +248,7 @@ ${exampleLines.join('\n')}
 `;
 }
 
-async function copyToIonicSite() {
+async function copyToIonicSite(commands) {
   const ionicSitePath = path.resolve(__dirname, '..', '..', 'ionic-site');
 
   let dirData = await fsStat(ionicSitePath);
@@ -256,6 +256,19 @@ async function copyToIonicSite() {
     // ionic-site not present, fail silently
     return;
   }
+
+  // get a list of commands for the nav
+  await fsWriteFile(
+    path.resolve(ionicSitePath, 'content', '_data', 'cliData.json'), 
+    JSON.stringify(
+      commands.map((command) => {
+        return { 
+          id: `cli-${command.fullName.split(' ').join('-')}`, 
+          name: command.fullName,
+          url: command.fullName.split(' ').join('/') 
+        }
+      }).sort((a, b) => a.name.localeCompare(b.name))
+    ), { encoding: 'utf8' });
 
   return copyDirectory(
     path.resolve(__dirname, '..', 'docs'),

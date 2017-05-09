@@ -38,7 +38,7 @@ function run() {
             yield cli_utils_1.fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
         }));
         yield Promise.all(commandPromises);
-        yield copyToIonicSite();
+        yield copyToIonicSite(commands);
         env.close();
     });
 }
@@ -50,7 +50,7 @@ function formatIonicPage(ns) {
             console.error(`${cmdData.name} has no fullName`);
             return;
         }
-        return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '), 'index.md')}) | ${stripAnsi(cmdData.description)}`;
+        return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '))}) | ${stripAnsi(cmdData.description)}`;
     }
     const commands = ns.getCommandMetadataList();
     return `${headerLine}
@@ -208,7 +208,7 @@ ${exampleLines.join('\n')}
 \`\`\`
 `;
 }
-function copyToIonicSite() {
+function copyToIonicSite(commands) {
     return __awaiter(this, void 0, void 0, function* () {
         const ionicSitePath = path.resolve(__dirname, '..', '..', 'ionic-site');
         let dirData = yield cli_utils_1.fsStat(ionicSitePath);
@@ -216,6 +216,14 @@ function copyToIonicSite() {
             // ionic-site not present, fail silently
             return;
         }
+        // get a list of commands for the nav
+        yield cli_utils_1.fsWriteFile(path.resolve(ionicSitePath, 'content', '_data', 'cliData.json'), JSON.stringify(commands.map((command) => {
+            return {
+                id: `cli-${command.fullName.split(' ').join('-')}`,
+                name: command.fullName,
+                url: command.fullName.split(' ').join('/')
+            };
+        }).sort((a, b) => a.name.localeCompare(b.name))), { encoding: 'utf8' });
         return cli_utils_1.copyDirectory(path.resolve(__dirname, '..', 'docs'), path.resolve(ionicSitePath, 'content', 'docs', 'cli'));
     });
 }
