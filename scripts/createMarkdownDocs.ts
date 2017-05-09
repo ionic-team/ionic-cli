@@ -266,7 +266,7 @@ async function copyToIonicSite(commands) {
           id: `cli-${command.fullName.split(' ').join('-')}`,
           name: command.fullName,
           url: command.fullName.split(' ').join('/')
-        }
+        };
       }).sort((a, b) => a.name.localeCompare(b.name))
     ), { encoding: 'utf8' });
 
