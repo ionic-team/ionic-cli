@@ -7,7 +7,7 @@ title: cordova build
 header_sub_title: Ionic CLI
 ---
 
-# `$ cordova build`
+# `$ ionic cordova build`
 
 Build (prepare + compile) an Ionic project for a given platform
 ## Synopsis

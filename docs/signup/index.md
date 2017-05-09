@@ -7,7 +7,7 @@ title: signup
 header_sub_title: Ionic CLI
 ---
 
-# `$ signup`
+# `$ ionic signup`
 
 Create an Ionic account
 ## Synopsis

@@ -7,7 +7,7 @@ title: package info
 header_sub_title: Ionic CLI
 ---
 
-# `$ package info`
+# `$ ionic package info`
 
 Get info about a build
 ## Synopsis

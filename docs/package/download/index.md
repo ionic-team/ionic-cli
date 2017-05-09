@@ -7,7 +7,7 @@ title: package download
 header_sub_title: Ionic CLI
 ---
 
-# `$ package download`
+# `$ ionic package download`
 
 Download your packaged app
 ## Synopsis

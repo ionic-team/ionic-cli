@@ -7,7 +7,7 @@ title: telemetry
 header_sub_title: Ionic CLI
 ---
 
-# `$ telemetry`
+# `$ ionic telemetry`
 
 Opt in and out of telemetry
 ## Synopsis

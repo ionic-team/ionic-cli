@@ -7,7 +7,7 @@ title: generate
 header_sub_title: Ionic CLI
 ---
 
-# `$ generate`
+# `$ ionic generate`
 
 Generate pipes, components, pages, directives, providers, and tabs (ionic-angular >= 3.0.0)
 ## Synopsis

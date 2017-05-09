@@ -124,7 +124,7 @@ title: ${cmd.fullName}
 header_sub_title: Ionic CLI
 ---
 
-# \`$ ${cmd.fullName}\`
+# \`$ ionic ${cmd.fullName}\`
 
 `;
 }

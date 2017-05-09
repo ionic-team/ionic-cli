@@ -7,7 +7,7 @@ title: upload
 header_sub_title: Ionic CLI
 ---
 
-# `$ upload`
+# `$ ionic upload`
 
 Upload a new snapshot of your app
 ## Synopsis

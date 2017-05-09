@@ -7,7 +7,7 @@ title: start
 header_sub_title: Ionic CLI
 ---
 
-# `$ start`
+# `$ ionic start`
 
 Create a new project
 ## Synopsis

@@ -7,7 +7,7 @@ title: login
 header_sub_title: Ionic CLI
 ---
 
-# `$ login`
+# `$ ionic login`
 
 Login with your Ionic ID
 ## Synopsis

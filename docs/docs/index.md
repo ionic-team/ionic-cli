@@ -7,7 +7,7 @@ title: docs
 header_sub_title: Ionic CLI
 ---
 
-# `$ docs`
+# `$ ionic docs`
 
 Open the Ionic documentation website
 ## Synopsis
