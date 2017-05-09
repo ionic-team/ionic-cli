@@ -13,7 +13,7 @@ Page](http://ionicframework.com/support) for general support questions. The
 issues on GitHub should be reserved for bug reports and feature requests.
 
 :heart: **Want to contribute?**: Please see
-[CONTRIBUTING.md](https://github.com/driftyco/ionic-cli/blob/v3/CONTRIBUTING.md).
+[CONTRIBUTING.md](https://github.com/driftyco/ionic-cli/blob/master/CONTRIBUTING.md).
 
 ## Requirements
 
@@ -50,7 +50,8 @@ Ionic projects with `npm i --save @ionic/cli-plugin-cordova`. For full details,
 see below.
 
 Here is a brief summary of changes in CLI 3. For more details and reasoning,
-see [CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/v3/CHANGELOG.md).
+see
+[CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/CHANGELOG.md).
 
 * Removed commands: `setup`, `share`, `lib`, `io`, `security`, `push`,
   `config`, `service`, `add`, `remove`, `list`, `hooks`, `state`.

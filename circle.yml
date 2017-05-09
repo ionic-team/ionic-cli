@@ -25,6 +25,6 @@ deployment:
   pre:
     - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
   npm:
-    branch: v3
+    branch: master
     commands:
       - npm run publish:ci
