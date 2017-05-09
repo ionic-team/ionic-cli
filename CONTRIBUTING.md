@@ -6,9 +6,12 @@ issues on GitHub should be reserved for bug reports and feature requests.
 
 ### Bug Reports
 
-Please copy/paste the output of the `ionic info` command into your issue and be
-as descriptive as possible. Include any steps that might help us reproduce your
-issue.
+Run the command(s) with `--verbose` to produce debugging output. We may ask for
+the full command output, including debug statements.
+
+Please also copy/paste the output of the `ionic info` command into your issue
+and be as descriptive as possible. Include any steps that might help us
+reproduce your issue.
 
 ### Feature Requests
 
