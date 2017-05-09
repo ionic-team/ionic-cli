@@ -7,7 +7,7 @@ title: cordova compile
 header_sub_title: Ionic CLI
 ---
 
-# `$ cordova compile`
+# `$ ionic cordova compile`
 
 Compile native platform code
 ## Synopsis

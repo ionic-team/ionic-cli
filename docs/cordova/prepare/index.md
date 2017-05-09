@@ -7,7 +7,7 @@ title: cordova prepare
 header_sub_title: Ionic CLI
 ---
 
-# `$ cordova prepare`
+# `$ ionic cordova prepare`
 
 Transform metadata to platform manifests and copies assets to Cordova platforms
 ## Synopsis

@@ -7,7 +7,7 @@ title: serve
 header_sub_title: Ionic CLI
 ---
 
-# `$ serve`
+# `$ ionic serve`
 
 Start a local development server for app dev/testing
 ## Synopsis

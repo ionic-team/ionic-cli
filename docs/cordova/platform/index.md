@@ -7,7 +7,7 @@ title: cordova platform
 header_sub_title: Ionic CLI
 ---
 
-# `$ cordova platform`
+# `$ ionic cordova platform`
 
 Add or remove a platform target for building an Ionic app
 ## Synopsis

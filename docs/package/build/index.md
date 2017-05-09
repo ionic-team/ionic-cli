@@ -7,7 +7,7 @@ title: package build
 header_sub_title: Ionic CLI
 ---
 
-# `$ package build`
+# `$ ionic package build`
 
 Start a package build
 ## Synopsis
