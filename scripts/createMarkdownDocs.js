@@ -38,6 +38,7 @@ function run() {
             yield cli_utils_1.fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
         }));
         yield Promise.all(commandPromises);
+        yield copyToIonicSite();
         env.close();
     });
 }
@@ -115,15 +116,15 @@ function formatCommandHeader(cmd) {
         return;
     }
     return `---
-layout: fluid/docs_cli_base
+layout: fluid/docs_base
 category: cli
 id: cli-${cmd.fullName.split(' ').join('-')}
 command_name: ${cmd.fullName}
-title: ${cmd.fullName} Command
+title: ${cmd.fullName}
 header_sub_title: Ionic CLI
 ---
 
-# ${cmd.fullName} Command
+# \`$ ${cmd.fullName}\`
 
 `;
 }
@@ -136,12 +137,7 @@ function formatCommandDoc(cmdMetadata) {
         formatExamples(cmdMetadata.exampleCommands, cmdMetadata.fullName);
 }
 function formatName(fullName, description) {
-    const headerLine = `## Name`;
-    return `
-${headerLine}
-
-${fullName} -- ${description}
-  `;
+    return description;
 }
 function formatSynopsis(inputs, commandName) {
     const headerLine = `## Synopsis`;
@@ -162,7 +158,7 @@ $ ionic ${usageLine}
   `;
 }
 function formatDescription(inputs = [], options = [], description = '') {
-    const headerLine = `## Description`;
+    const headerLine = `## Details`;
     function inputLineFn(input, index) {
         const name = input.name;
         const description = stripAnsi(input.description);
@@ -184,8 +180,6 @@ function formatDescription(inputs = [], options = [], description = '') {
     ;
     return `
 ${headerLine}
-
-${description}
 
 ${inputs.length > 0 ? `
 Input | Description
@@ -213,4 +207,15 @@ ${headerLine}
 ${exampleLines.join('\n')}
 \`\`\`
 `;
+}
+function copyToIonicSite() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const ionicSitePath = path.resolve(__dirname, '..', '..', 'ionic-site');
+        let dirData = yield cli_utils_1.fsStat(ionicSitePath);
+        if (!dirData.size) {
+            // ionic-site not present, fail silently
+            return;
+        }
+        return cli_utils_1.copyDirectory(path.resolve(__dirname, '..', 'docs'), path.resolve(ionicSitePath, 'content', 'docs', 'cli'));
+    });
 }
