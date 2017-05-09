@@ -1,8 +1,12 @@
 # Changelog
 
-## Changes from CLI 2
+## 3.0.0
 
-### Removed Commands
+[CLI v3 Blog Post](http://blog.ionic.io/announcing-ionic-cli-v3/) :tada:
+
+### Changes from CLI 2
+
+#### Removed Commands
 
 * `setup`: This was only used to setup sass in Ionic 1 projects, which now is
   now handled in `start`.
@@ -27,7 +31,7 @@
   about how Cordova uses `config.xml` and `package.json` to manage plugins and
   platforms.
 
-### Additional Changes
+#### Additional Changes
 
 * Added commands: `signup`. Signup will change in the future, but as for now it
   simply opens up the signup page.
