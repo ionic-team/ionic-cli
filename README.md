@@ -23,7 +23,7 @@ issues on GitHub should be reserved for bug reports and feature requests.
 ## Install
 
 ```bash
-$ npm install -g ionic@beta
+$ npm install -g ionic@latest
 ```
 
 :memo: *Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix
@@ -79,7 +79,7 @@ $ ionic start --list
 
 #### Start a new project
 ```bash
-$ npm install -g ionic@beta
+$ npm install -g ionic@latest
 $ ionic start myNewProject
 $ cd ./myNewProject
 $ ionic serve
@@ -88,8 +88,8 @@ $ ionic serve
 #### Existing project
 
 ```bash
-$ npm install -g ionic@beta
-$ npm install --save-dev @ionic/cli-plugin-ionic-angular@beta @ionic/cli-plugin-cordova@beta
+$ npm install -g ionic@latest
+$ npm install --save-dev @ionic/cli-plugin-ionic-angular@latest @ionic/cli-plugin-cordova@latest
 $ ionic help
 ```
 
@@ -98,7 +98,7 @@ $ ionic help
 #### Start a new project
 
 ```bash
-$ npm install -g ionic@beta
+$ npm install -g ionic@latest
 $ ionic start myNewProject blank --type ionic1
 $ cd ./myNewProject
 $ ionic serve
@@ -107,8 +107,8 @@ $ ionic serve
 #### Existing project
 
 ```bash
-$ npm install -g ionic@beta
-$ npm install --save-dev @ionic/cli-plugin-ionic1@beta @ionic/cli-plugin-cordova@beta
+$ npm install -g ionic@latest
+$ npm install --save-dev @ionic/cli-plugin-ionic1@latest @ionic/cli-plugin-cordova@latest
 $ ionic help
 ```
 
@@ -126,7 +126,7 @@ capabilities to your app.
 
 ```bash
 $ npm install -g cordova
-$ npm install --save-dev @ionic/cli-plugin-cordova@beta
+$ npm install --save-dev @ionic/cli-plugin-cordova@latest
 $ ionic cordova --help
 $ ionic cordova run ios
 ```
@@ -194,6 +194,14 @@ $ HTTP_PROXY=http://internal.proxy.com ionic login
 ## Ionic Docs
 
 To open Ionic documentation from the Ionic CLI, use `ionic docs`.
+
+## Legacy Version
+
+The old version of the CLI can be installed with the `legacy` tag:
+
+```bash
+npm install -g ionic@legacy
+```
 
 [circle-badge]: https://circleci.com/gh/driftyco/ionic-cli.svg?style=shield
 [circle-badge-url]: https://circleci.com/gh/driftyco/ionic-cli
