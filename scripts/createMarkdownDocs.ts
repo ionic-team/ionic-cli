@@ -254,11 +254,11 @@ async function copyToIonicSite() {
   let dirData = await fsStat(ionicSitePath);
   if (!dirData.size) {
     // ionic-site not present, fail silently
-    return
-  } 
+    return;
+  }
 
   return copyDirectory(
-    path.resolve(__dirname, '..', 'docs'), 
+    path.resolve(__dirname, '..', 'docs'),
     path.resolve(ionicSitePath, 'content', 'docs', 'cli'));
 }
 
