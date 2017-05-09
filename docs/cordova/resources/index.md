@@ -7,7 +7,7 @@ title: cordova resources
 header_sub_title: Ionic CLI
 ---
 
-# `$ cordova resources`
+# `$ ionic cordova resources`
 
 Automatically create icon and splash screen resources
 ## Synopsis

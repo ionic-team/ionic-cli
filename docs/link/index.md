@@ -7,7 +7,7 @@ title: link
 header_sub_title: Ionic CLI
 ---
 
-# `$ link`
+# `$ ionic link`
 
 Connect your local app to Ionic
 ## Synopsis

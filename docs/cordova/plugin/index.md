@@ -7,7 +7,7 @@ title: cordova plugin
 header_sub_title: Ionic CLI
 ---
 
-# `$ cordova plugin`
+# `$ ionic cordova plugin`
 
 Manage Cordova plugins
 ## Synopsis

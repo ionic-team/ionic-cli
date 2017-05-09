@@ -7,7 +7,7 @@ title: cordova emulate
 header_sub_title: Ionic CLI
 ---
 
-# `$ cordova emulate`
+# `$ ionic cordova emulate`
 
 Emulate an Ionic project on a simulator or emulator
 ## Synopsis

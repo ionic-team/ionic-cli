@@ -7,7 +7,7 @@ title: info
 header_sub_title: Ionic CLI
 ---
 
-# `$ info`
+# `$ ionic info`
 
 Print system/environment info
 ## Synopsis

@@ -7,7 +7,7 @@ title: package list
 header_sub_title: Ionic CLI
 ---
 
-# `$ package list`
+# `$ ionic package list`
 
 List your cloud builds
 ## Synopsis

@@ -7,7 +7,7 @@ title: cordova run
 header_sub_title: Ionic CLI
 ---
 
-# `$ cordova run`
+# `$ ionic cordova run`
 
 Run an Ionic project on a connected device
 ## Synopsis
