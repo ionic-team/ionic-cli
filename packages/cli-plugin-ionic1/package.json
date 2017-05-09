@@ -16,7 +16,8 @@
     "watch-js": "../../node_modules/.bin/cross-env IONIC_PREPUBLISH_PLUGIN_VERSION=${npm_package_version}-local 'npm run watch-js-chokidar'",
     "watch-js-chokidar": "../../node_modules/.bin/chokidar --silent 'dist/**/*.js' -c 'npm run build-js'",
     "script-prepublish": "node ../../scripts/prepublish.js cli-plugin-ionic1",
-    "test": "../../node_modules/.bin/jest"
+    "test": "../../node_modules/.bin/jest",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",

@@ -18,6 +18,7 @@
     "watch-js-chokidar": "../../node_modules/.bin/chokidar --silent 'dist/**/*.js' -c 'npm run build-js'",
     "script-prepublish": "node ../../scripts/prepublish.js cli-plugin-cordova",
     "test": "../../node_modules/.bin/jest",
+    "prepublish": "npm run build",
     "postinstall": "node ./bin/postinstall"
   },
   "keywords": [

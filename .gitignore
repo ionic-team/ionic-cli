@@ -8,6 +8,5 @@ coverage/
 .changelog/
 npm-debug.log*
 lerna-debug.log
-scripts/*.js
 
 dist
