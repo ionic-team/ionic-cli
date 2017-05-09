@@ -89,7 +89,7 @@ $ ionic serve
 
 ```bash
 $ npm install -g ionic@latest
-$ npm install --save-dev @ionic/cli-plugin-ionic-angular@latest @ionic/cli-plugin-cordova@latest
+$ npm install --save-dev --save-exact @ionic/cli-plugin-ionic-angular@latest @ionic/cli-plugin-cordova@latest
 $ ionic help
 ```
 
@@ -108,7 +108,7 @@ $ ionic serve
 
 ```bash
 $ npm install -g ionic@latest
-$ npm install --save-dev @ionic/cli-plugin-ionic1@latest @ionic/cli-plugin-cordova@latest
+$ npm install --save-dev --save-exact @ionic/cli-plugin-ionic1@latest @ionic/cli-plugin-cordova@latest
 $ ionic help
 ```
 
@@ -126,7 +126,7 @@ capabilities to your app.
 
 ```bash
 $ npm install -g cordova
-$ npm install --save-dev @ionic/cli-plugin-cordova@latest
+$ npm install --save-dev --save-exact @ionic/cli-plugin-cordova@latest
 $ ionic cordova --help
 $ ionic cordova run ios
 ```
@@ -173,7 +173,7 @@ at `http://localhost:8100/v1` to have it proxy out requests to
 To proxy CLI requests, you will first need to install a CLI plugin:
 
 ```bash
-$ npm install --save-dev @ionic/cli-plugin-proxy
+$ npm install --save-dev --save-exact @ionic/cli-plugin-proxy
 ```
 
 Then, set any of the following environment variables:
