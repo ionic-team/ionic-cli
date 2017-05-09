@@ -8,10 +8,10 @@
     "build": "tsc",
     "watch": "tsc -w",
     "docs": "node ./scripts/createMarkdownDocs.js",
-    "publish:canary": "lerna run build && lerna publish --canary --exact --npm-tag canary",
-    "publish:beta": "lerna run build && lerna publish --exact --npm-tag beta",
-    "publish:rc": "lerna run build && lerna publish --exact --npm-tag beta",
-    "publish:ci": "lerna run build && npm run publish:canary -- --yes",
+    "publish:canary": "lerna run build && lerna run script-prepublish && lerna publish --canary --exact --npm-tag canary",
+    "publish:beta": "lerna run build && lerna run script-prepublish && lerna publish --exact --npm-tag beta",
+    "publish:rc": "lerna run build && lerna run script-prepublish && lerna publish --exact --npm-tag beta",
+    "publish:ci": "npm run publish:canary -- --yes",
     "prepush": "npm run lint"
   },
   "devDependencies": {
