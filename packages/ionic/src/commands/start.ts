@@ -182,7 +182,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     // Create the project directory
     const pathExists = load('path-exists');
     if (!pathExists.sync(projectName)) {
-      this.env.tasks.next(`Creating directory ${chalk.green(projectRoot)}`);
+      this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
       fs.mkdirSync(projectRoot);
     } else if (!isSafeToCreateProjectIn(projectRoot)) {
       const response = await this.env.prompt({
@@ -194,7 +194,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
 
       if (response['overwrite']) {
         try {
-          this.env.tasks.next(`Creating directory ${chalk.green(projectRoot)}`);
+          this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
           await rimrafp(projectRoot);
           fs.mkdirSync(projectRoot);
         } catch (e) {
