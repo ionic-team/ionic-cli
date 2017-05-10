@@ -99,7 +99,7 @@ export class Command implements ICommand {
       const mdi = this.metadata.inputs;
       inputs = inputs
         .filter((input, i) => {
-          return !mdi[i].private;
+          return mdi[i] && !mdi[i].private;
         });
     }
 
