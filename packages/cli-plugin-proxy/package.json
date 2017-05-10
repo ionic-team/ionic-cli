@@ -53,8 +53,7 @@
     "transform": {
       ".(ts)": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
     },
-    "testRegex": "/__tests__/.*\\.(ts|js)$",
-    "testResultsProcessor": "<rootDir>/../../node_modules/ts-jest/coverageprocessor.js"
+    "testRegex": "/__tests__/.*\\.(ts|js)$"
   },
   "dependencies": {
     "@ionic/cli-utils": "1.0.0",
