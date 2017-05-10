@@ -23,7 +23,7 @@ issues on GitHub should be reserved for bug reports and feature requests.
 ## Install
 
 ```bash
-$ npm install -g ionic@latest
+$ npm install -g ionic
 ```
 
 :memo: *Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix
