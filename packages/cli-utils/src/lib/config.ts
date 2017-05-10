@@ -23,7 +23,7 @@ export abstract class BaseConfig<T> implements IConfig<T> {
       this.directory = '';
     }
 
-    this.filePath = path.resolve(directory, fileName);
+    this.filePath = path.resolve(this.directory, fileName);
   }
 
   abstract provideDefaults(o: { [key: string]: any }): Promise<{ [key: string]: any }>;
