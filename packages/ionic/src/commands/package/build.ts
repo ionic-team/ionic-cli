@@ -37,13 +37,13 @@ import { upload } from '../../lib/upload';
   options: [
     {
       name: 'prod',
-      description: 'Mark this build as a production build',
+      description: 'Mark as a production build',
       type: Boolean,
       intent: 'app-scripts',
     },
     {
       name: 'release',
-      description: 'Mark this build as a release build',
+      description: 'Mark as a release build',
       type: Boolean,
     },
     {
