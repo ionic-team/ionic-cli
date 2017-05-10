@@ -159,7 +159,7 @@ export class CordovaRunCommand extends CordovaPlatformCommand implements Command
         message: `What platform would you like to run: ${chalk.green('ios')}, ${chalk.green('android')}`,
       });
 
-      inputs[0] = response['platform'];
+      inputs[0] = response['platform'].trim();
     }
 
     await super.preRun(inputs, options);
