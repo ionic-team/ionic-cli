@@ -58,26 +58,18 @@ published as `ionic`.
 1. `npm install` to install the dev tools.
 1. `npm run bootstrap` (will install package dependencies and link packages
    together)
-1. For each package you plan to modify, `cd` into its `packages/*` directory
-   and run `npm run watch`.
-    * You should see `TS` and `JS` colored prefixes. We run the Typescript
-      compiler as well as a JS file watcher for some string replacements.
-    * You should **always** run `npm run watch` in the `packages/cli-utils` and
-      `packages/ionic` directories.
+1. `npm run watch` will spin up TS & JS watch scripts for all packages.
 1. Typescript source files are in `packages/*/src`.
 1. Good luck! :muscle: Please open an issue if you have questions or something
    is unclear.
 
 ###### Running Dev CLI
 
-1. Within each `packages/cli-*` (not `packages/ionic`) directory, run `npm
-   link` (you may need `sudo`). This will let the CLI install local versions of
-   plugins.
-1. Put `alias i=/path/to/ionic-cli/packages/ionic/bin/ionic` (making sure to
-   change `/path/to` to your installation directory) in `~/.bashrc` (or
+1. Put `alias ionic-local=/path/to/ionic-cli/packages/ionic/bin/ionic` (making
+   sure to change `/path/to` to your installation directory) in `~/.bashrc` (or
    equivalent) and `source ~/.bashrc`.
-1. You should now be able to run `i help` and see your locally installed
-   version.
+1. You should now be able to run `ionic-local help` and see your locally
+   installed version.
 
 ##### Code Structure
 
@@ -85,7 +77,7 @@ TODO: Be helpful about where to look for commands, utilities, etc.
 
 ##### Publishing Notes
 
-Cancel **ALL** watch scripts before proceeding.
+Cancel any watch scripts before proceeding.
 
 * **canary releases**: `npm run publish:canary`
 * **beta releases**: `npm run publish:beta`

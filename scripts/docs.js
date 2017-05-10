@@ -1,39 +1,27 @@
-import * as path from 'path';
+#!/usr/bin/env node
 
-import { generateIonicEnvironment } from '../packages/ionic';
-import {
-  CommandData,
-  CommandInput,
-  CommandOption,
-  copyDirectory,
-  INamespace,
-  fsMkdirp,
-  fsStat,
-  fsWriteFile,
-  installPlugin,
-  load,
-  readDir,
-  validators,
-} from '../packages/cli-utils';
+const path = require('path');
+const ionicPkg = require('../packages/ionic');
+const utilsPkg = require('../packages/cli-utils');
 
-const stripAnsi = load('strip-ansi');
+const stripAnsi = utilsPkg.load('strip-ansi');
 
 async function run() {
-  const env = await generateIonicEnvironment(process.argv.slice(2), process.env);
+  const env = await ionicPkg.generateIonicEnvironment(process.argv.slice(2), process.env);
   const mPath = path.resolve(__dirname, '..', 'packages');
-  const ionicModules = (await readDir(mPath))
+  const ionicModules = (await utilsPkg.readDir(mPath))
     .filter(m => m.startsWith('cli-plugin-'))
     .map(m => require(path.resolve(mPath, m)));
 
   for (let mod of ionicModules) {
-    installPlugin(env, mod);
+    utilsPkg.installPlugin(env, mod);
   }
 
   const nsPath = path.resolve(__dirname, '..', 'docs', 'index.md');
   const nsDoc = formatIonicPage(env.namespace);
 
-  await fsMkdirp(path.dirname(nsPath));
-  await fsWriteFile(nsPath, nsDoc, { encoding: 'utf8' });
+  await utilsPkg.fsMkdirp(path.dirname(nsPath));
+  await utilsPkg.fsWriteFile(nsPath, nsDoc, { encoding: 'utf8' });
 
   const commands = env.namespace.getCommandMetadataList().filter(cmd => cmd.visible !== false);
   const commandPromises = commands.map(async (cmd) => {
@@ -45,8 +33,8 @@ async function run() {
     const cmdPath = path.resolve(__dirname, '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
     const cmdDoc = formatCommandDoc(cmd);
 
-    await fsMkdirp(path.dirname(cmdPath));
-    await fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
+    await utilsPkg.fsMkdirp(path.dirname(cmdPath));
+    await utilsPkg.fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
   });
 
   await Promise.all(commandPromises);
@@ -55,13 +43,12 @@ async function run() {
   env.close();
 }
 
-run().then(() => console.log('done!')).catch(err => console.error(err));
+run().then(() => console.log('done!')).catch((err) => console.error(err));
 
-
-function formatIonicPage(ns: INamespace) {
+function formatIonicPage(ns) {
   let headerLine = formatNamespaceHeader(ns);
 
-  function listCommandLink(cmdData: CommandData) {
+  function listCommandLink(cmdData) {
     if (!cmdData.fullName) {
       console.error(`${cmdData.name} has no fullName`);
       return;
@@ -119,7 +106,7 @@ ${commands.filter(cmd => cmd.visible !== false).map(listCommandLink).join(`
 `;
 }
 
-function formatNamespaceHeader(ns: INamespace) {
+function formatNamespaceHeader(ns) {
   return `---
 layout: fluid/docs_base
 category: cli
@@ -131,7 +118,7 @@ title: Ionic CLI Documentation
 `;
 }
 
-function formatCommandHeader(cmd: CommandData) {
+function formatCommandHeader(cmd) {
   if (!cmd.fullName) {
     console.error(`${cmd.name} has no fullName`);
     return;
@@ -151,7 +138,7 @@ header_sub_title: Ionic CLI
 `;
 }
 
-function formatCommandDoc(cmdMetadata: CommandData) {
+function formatCommandDoc(cmdMetadata) {
   let description = stripAnsi(cmdMetadata.description).split('\n').join('\n  ');
 
   return formatCommandHeader(cmdMetadata) +
@@ -161,7 +148,7 @@ function formatCommandDoc(cmdMetadata: CommandData) {
     formatExamples(cmdMetadata.exampleCommands, cmdMetadata.fullName);
 }
 
-function formatName(fullName: string, description: string) {
+function formatName(fullName, description) {
   return description;
 }
 
@@ -171,7 +158,7 @@ function formatSynopsis(inputs, commandName) {
       `${commandName} ${
         (inputs || [])
           .map(input => {
-            if (input.validators && input.validators.includes(validators.required)) {
+            if (input.validators && input.validators.includes(utilsPkg.validators.required)) {
               return '<' + input.name + '>';
             }
             return '[' + input.name + ']';
@@ -188,7 +175,7 @@ $ ionic ${usageLine}
 }
 
 
-function formatDescription(inputs: CommandInput[] = [], options: CommandOption[] = [], description: string = '') {
+function formatDescription(inputs = [], options = [], description = '') {
   const headerLine = `## Details`;
 
   function inputLineFn(input, index) {
@@ -197,7 +184,7 @@ function formatDescription(inputs: CommandInput[] = [], options: CommandOption[]
     const optionList = `\`${name}\``;
 
     return `${optionList} | ${description}`;
-  };
+  }
 
   function optionLineFn(option) {
     const name = option.name;
@@ -211,8 +198,7 @@ function formatDescription(inputs: CommandInput[] = [], options: CommandOption[]
          .join(', ') : '');
 
     return `${optionList} | ${description}`;
-  };
-
+  }
 
   return `
 ${headerLine}
@@ -251,14 +237,14 @@ ${exampleLines.join('\n')}
 async function copyToIonicSite(commands) {
   const ionicSitePath = path.resolve(__dirname, '..', '..', 'ionic-site');
 
-  let dirData = await fsStat(ionicSitePath);
+  let dirData = await utilsPkg.fsStat(ionicSitePath);
   if (!dirData.size) {
     // ionic-site not present, fail silently
     return;
   }
 
   // get a list of commands for the nav
-  await fsWriteFile(
+  await utilsPkg.fsWriteFile(
     path.resolve(ionicSitePath, 'content', '_data', 'cliData.json'),
     JSON.stringify(
       commands.map((command) => {
@@ -270,7 +256,7 @@ async function copyToIonicSite(commands) {
       }).sort((a, b) => a.name.localeCompare(b.name))
     ), { encoding: 'utf8' });
 
-  return copyDirectory(
+  return utilsPkg.copyDirectory(
     path.resolve(__dirname, '..', 'docs'),
     path.resolve(ionicSitePath, 'content', 'docs', 'cli'));
 }

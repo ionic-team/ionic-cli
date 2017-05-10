@@ -35,7 +35,7 @@ export * from './lib/utils/promise';
 export * from './lib/utils/shell';
 export * from './lib/utils/string';
 export * from './lib/utils/task';
-export * from './lib/validators'
+export * from './lib/validators';
 
 export const name = '__NAME__';
 export const version = '__VERSION__';

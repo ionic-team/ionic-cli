@@ -129,7 +129,7 @@ export async function parseConfigXmlToJson(projectDir: string): Promise<any> {
       throw new Error(`Cordova config.xml file was not found in ${projectDir}`);
     }
     throw e;
-  };
+  }
 
   if (!configJson.widget) {
     throw new Error('\nYour config.xml file is invalid. You must have a <widget> element.');

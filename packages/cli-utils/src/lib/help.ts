@@ -154,7 +154,7 @@ function formatCommandInputs(inputs: CommandInput[] = []): string {
     const optionList = chalk.green(`${name}`);
 
     return `${optionList} ${fillStrings[index]} ${description}`;
-  };
+  }
 
   return `
   ${chalk.bold('Inputs')}:
@@ -179,7 +179,7 @@ function formatCommandOptions(options: CommandOption[] = []): string {
     const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
 
     return `${optionList} ${Array(fullLength - optionListLength).fill(chalk.dim('.')).join('')} ${opt.description}${typeof opt.default === 'string' ? ' (default: ' + chalk.green(opt.default) + ')' : ''}`;
-  };
+  }
 
   return `
   ${chalk.bold('Options')}:

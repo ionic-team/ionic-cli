@@ -27,7 +27,7 @@ export function setupGulpInstance(projectDirectory: string): any {
 
   // setup gulp logging
   return patchGulpEventLogging(gulp);
-};
+}
 
 export function runGulpHook(gulp: any, hookName: string): Promise<any> {
 
@@ -42,7 +42,7 @@ export function runGulpHook(gulp: any, hookName: string): Promise<any> {
       resolve(results);
     });
   });
-};
+}
 
 function doesGulpFileExist(projectDirectory: string): boolean {
   var names = ['gulpfile.js', 'Gulpfile.js'];
@@ -60,7 +60,7 @@ function doesGulpFileExist(projectDirectory: string): boolean {
     }
   }
   return false;
-};
+}
 
 function patchGulpEventLogging(gulpInst: any): any {
 
@@ -87,7 +87,7 @@ function patchGulpEventLogging(gulpInst: any): any {
   });
 
   return gulpInst;
-};
+}
 
 // Format orchestrator errors
 function formatGulpError(e: any) {
@@ -107,5 +107,4 @@ function formatGulpError(e: any) {
 
   // Unknown (string, number, etc.)
   return new Error(String(e.err)).stack;
-};
-
+}

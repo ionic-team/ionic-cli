@@ -19,7 +19,7 @@ async function getIonicAngularVersion(env: IonicEnvironment): Promise<string | u
   } catch (e) {
     env.log.error(`Error with ${chalk.bold(prettyPath(ionicAngularPackageJsonFilePath))} file: ${e}`);
   }
-};
+}
 
 async function getAppScriptsVersion(env: IonicEnvironment): Promise<string | undefined> {
   const appScriptsPackageJsonFilePath = path.resolve(env.project.directory, 'node_modules', '@ionic', 'app-scripts', 'package.json'); // TODO
@@ -30,7 +30,7 @@ async function getAppScriptsVersion(env: IonicEnvironment): Promise<string | und
   } catch (e) {
     env.log.error(`Error with ${chalk.bold(prettyPath(appScriptsPackageJsonFilePath))} file: ${e}`);
   }
-};
+}
 
 export function registerHooks(hooks: IHookEngine) {
   hooks.register(name, 'command:docs', async ({ env }) => {

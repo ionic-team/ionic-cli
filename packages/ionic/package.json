@@ -15,17 +15,17 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf ./dist",
-    "lint": "../../node_modules/.bin/tslint -c ../../tslint.json 'src/**/*.ts'",
+    "lint": "tslint -c ../../tslint.json \"src/**/*.ts\"",
     "build": "npm run clean && npm run build-ts && npm run build-js",
-    "build-ts": "../../node_modules/.bin/tsc",
-    "build-js": "npm run -s script-prepublish",
-    "watch": "npm run clean && ../../node_modules/.bin/concurrently -p '{name} ' -n 'TS,JS' -c 'cyan.bold,yellow.dim' 'npm run watch-ts' 'npm run watch-js'",
-    "watch-ts": "../../node_modules/.bin/tsc -w",
-    "watch-js": "../../node_modules/.bin/cross-env IONIC_PREPUBLISH_PLUGIN_VERSION=${npm_package_version}-local 'npm run watch-js-chokidar'",
-    "watch-js-chokidar": "../../node_modules/.bin/chokidar --silent 'dist/**/*.js' -c 'npm run build-js'",
-    "script-prepublish": "node ../../scripts/prepublish.js ionic",
-    "test": "../../node_modules/.bin/jest",
-    "prepublish": "npm run build"
+    "build-ts": "tsc",
+    "build-js": "npm run script-prepublish",
+    "watch": "concurrently -p \"{name} \" -n \"TS,JS\" -c \"cyan.bold,yellow.dim\" \"npm run watch-ts\" \"npm run watch-js\"",
+    "watch-ts": "tsc -w",
+    "watch-js": "cross-env IONIC_PREPUBLISH_PLUGIN_VERSION=${npm_package_version}-local \"npm run watch-js-chokidar\"",
+    "watch-js-chokidar": "chokidar --silent \"dist/**/*.js\" -c \"npm run build-js\"",
+    "script-prepublish": "cli-scripts-prepublish ionic",
+    "test": "jest",
+    "prepublish": "in-publish && npm run build || not-in-publish"
   },
   "files": [
     "bin/",
@@ -63,7 +63,8 @@
     "@types/minimist": "^1.2.0",
     "@types/opn": "^3.0.28",
     "@types/path-exists": "^1.0.29",
-    "@types/tar": "^1.0.29"
+    "@types/tar": "^1.0.29",
+    "@ionic/cli-scripts": "*"
   },
   "peerDependencies": {},
   "jest": {
