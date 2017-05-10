@@ -46,6 +46,7 @@ published as `ionic`.
 
 ##### Toolset
 
+* We recommend Node 7.6+.
 * Our codebase is written in [Typescript](https://www.typescriptlang.org/). If
   you're unfamiliar with Typescript, we recommend using [VS
   Code](https://code.visualstudio.com/) and finding a tutorial to familiarize
