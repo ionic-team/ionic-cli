@@ -14,10 +14,15 @@ export const CORDOVA_INTENT = 'CORDOVA';
 export function filterArgumentsForCordova(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
   const results = filterOptionsByIntent(metadata, options, CORDOVA_INTENT);
   const args = minimistOptionsToArray(results);
+  let unparsedCdvArgs: string[] = [];
+  const indexOfSep = inputs.indexOf('--');
 
-  return [metadata.name].concat(inputs, args);
+  if (indexOfSep >= 0) {
+    unparsedCdvArgs = inputs.splice(indexOfSep);
+  }
+
+  return [metadata.name].concat(inputs, args, unparsedCdvArgs);
 }
-
 
 /**
  * Gather arguments from command line to be passed to Cordova

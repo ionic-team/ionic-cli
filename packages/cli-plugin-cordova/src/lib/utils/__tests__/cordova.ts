@@ -1,65 +1,58 @@
-import * as cordova from '../cordova';
+import { CORDOVA_INTENT, filterArgumentsForCordova } from '../cordova';
 
-describe('resources', () => {
-  it('filterArgumentsForCordova should return the command name and inputs if no options passed', () => {
+describe('@ionic/cli-plugin-cordova filterArgumentsForCordova', () => {
+  const metadata = {
+    name: 'build',
+    description: '',
+    inputs: [
+      {
+        name: 'platform',
+        description: ''
+      }
+    ],
+    options: [
+      {
+        name: 'boolopt',
+        description: '',
+        type: Boolean,
+        default: false,
+      },
+      {
+        name: 'cdvopt1',
+        description: '',
+        intent: CORDOVA_INTENT,
+      },
+      {
+        name: 'cdvopt2',
+        description: '',
+        type: Boolean,
+        intent: CORDOVA_INTENT,
+      },
+    ]
+  };
 
-    let metadata = {
-      name: 'build',
-      description: 'Build (prepare + compile) an Ionic project for a given platform.',
-      inputs: [
-        {
-          name: 'platform',
-          description: 'the platform that you would like to build'
-        }
-      ],
-      options: [
-        {
-          name: 'nohooks',
-          description: 'Do not add default Ionic hooks for Cordova',
-          default: false,
-          aliases: []
-        }
-      ]
-    };
-    let inputs = [
-      'ios'
-    ];
-    let options = {
-      nohooks: false
-    };
+  it('should return the command name and inputs if no options passed', () => {
+    let inputs = ['ios'];
+    let options = { boolopt: false, cdvopt1: null, cdvopt2: false };
 
-    const result = cordova.filterArgumentsForCordova(metadata, inputs, options);
+    const result = filterArgumentsForCordova(metadata, inputs, options);
     expect(result).toEqual(['build', 'ios']);
   });
 
-  it('filterArgumentsForCordova should include options if they are not on the ignored list', () => {
+  it('should only include options with the Cordova intent', () => {
+    let inputs = ['ios'];
+    let options = { boolopt: true, cdvopt1: 'foo', cdvopt2: true };
 
-    let metadata = {
-      name: 'build',
-      description: 'Build (prepare + compile) an Ionic project for a given platform.',
-      inputs: [
-        {
-          name: 'platform',
-          description: 'the platform that you would like to build'
-        }
-      ],
-      options: [
-        {
-          name: 'nohooks',
-          description: 'Do not add default Ionic hooks for Cordova',
-          default: false,
-          aliases: []
-        }
-      ]
-    };
-    let inputs = [
-      'ios'
-    ];
-    let options = {
-      nohooks: true
-    };
-
-    const result = cordova.filterArgumentsForCordova(metadata, inputs, options);
-    expect(result).toEqual(['build', 'ios']);
+    const result = filterArgumentsForCordova(metadata, inputs, options);
+    expect(result).toEqual(['build', 'ios', '--cdvopt1=foo', '--cdvopt2']);
   });
+
+  it('should include unparsed options', () => {
+    let inputs = ['android', '--', '--gradleArg=-PcdvBuildMultipleApks=true'];
+    let options = { boolopt: true, cdvopt1: 'foo', cdvopt2: true };
+
+    const result = filterArgumentsForCordova(metadata, inputs, options);
+    expect(result).toEqual(['build', 'android', '--cdvopt1=foo', '--cdvopt2', '--', '--gradleArg=-PcdvBuildMultipleApks=true']);
+  });
+
 });

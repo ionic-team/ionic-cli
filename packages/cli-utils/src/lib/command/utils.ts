@@ -236,11 +236,11 @@ export function filterOptionsByIntent(metadata: CommandData, options: CommandLin
       mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
     ));
     if (metadataOptionFound) {
-        if (intentName && metadataOptionFound.intent === intentName) {
-          allOptions[optionName] = options[optionName];
-        } else if (!intentName && !metadataOptionFound.intent) {
-          allOptions[optionName] = options[optionName];
-        }
+      if (intentName && metadataOptionFound.intent === intentName) {
+        allOptions[optionName] = options[optionName];
+      } else if (!intentName && !metadataOptionFound.intent) {
+        allOptions[optionName] = options[optionName];
+      }
     }
     return allOptions;
   }, <CommandLineOptions>{});
