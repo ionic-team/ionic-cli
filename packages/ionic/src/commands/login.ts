@@ -43,7 +43,7 @@ export class LoginCommand extends Command implements CommandPreInputsPrompt {
       }
     } else {
       this.env.log.msg(`Log into your Ionic account\n` +
-                       `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`);
+        `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`);
     }
   }
 

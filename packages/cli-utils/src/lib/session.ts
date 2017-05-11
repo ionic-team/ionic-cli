@@ -18,7 +18,7 @@ export class Session implements ISession {
     protected config: IConfig<ConfigFile>,
     protected project: IProject,
     protected client: IClient
-  ) {}
+  ) { }
 
   async login(email: string, password: string): Promise<void> {
     let req = this.client.make('POST', '/login')
@@ -50,7 +50,7 @@ export class Session implements ISession {
 
     if (!c.tokens.user) {
       throw new FatalException(`Oops, sorry! You'll need to log in:\n\n    ${chalk.green('ionic login')}\n\n` +
-                               `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`);
+        `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`);
     }
 
     return c.tokens.user;

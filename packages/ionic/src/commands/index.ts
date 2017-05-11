@@ -58,14 +58,14 @@ export class IonicNamespace extends Namespace {
   ]);
 
   async runCommand(env: IonicEnvironment): Promise<void> {
-    let [ inputs, cmdOrNamespace ] = this.locate(env.argv._);
+    let [inputs, cmdOrNamespace] = this.locate(env.argv._);
 
     if (cmdOrNamespace === this && KNOWN_PLUGINS.indexOf(inputs[0]) !== -1) {
       const plugin = await promptToInstallPlugin(env, `${ORG_PREFIX}/${PLUGIN_PREFIX}${inputs[0]}`, {});
 
       if (plugin) {
         installPlugin(env, plugin);
-        [ inputs, cmdOrNamespace ] = env.namespace.locate(inputs);
+        [inputs, cmdOrNamespace] = env.namespace.locate(inputs);
       }
     }
 

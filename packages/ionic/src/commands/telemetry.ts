@@ -23,7 +23,7 @@ import {
 export class TelemetryCommand extends Command {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const config = await this.env.config.load();
-    const [ status ] = inputs;
+    const [status] = inputs;
     const enableTelemetry = config.cliFlags.enableTelemetry;
 
     if (typeof status === 'string') {

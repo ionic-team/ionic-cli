@@ -36,7 +36,7 @@ export function getGlobalProxy(): [string, string] | [undefined, undefined] {
 }
 
 export function createRequest(method: string, url: string): superagentType.SuperAgentRequest {
-  const [ proxy, ] = getGlobalProxy();
+  const [proxy, ] = getGlobalProxy();
   const superagent = load('superagent');
   let req = superagent(method, url);
 
@@ -48,7 +48,7 @@ export function createRequest(method: string, url: string): superagentType.Super
 }
 
 export class Client implements IClient {
-  constructor(public host: string) {}
+  constructor(public host: string) { }
 
   make(method: HttpMethod, path: string): superagentType.SuperAgentRequest {
     return createRequest(method, `${this.host}${path}`)
@@ -56,21 +56,20 @@ export class Client implements IClient {
       .set('Content-Type', CONTENT_TYPE_JSON)
       .set('Accept', CONTENT_TYPE_JSON);
   }
-
   async do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess> {
     const res = await req;
     const r = transformAPIResponse(res);
 
     if (isAPIResponseError(r)) {
       throw new FatalException('API request was successful, but the response output format was that of an error.\n'
-                             + formatAPIError(req, r));
+        + formatAPIError(req, r));
     }
 
     return r;
   }
 
   paginate<T extends Response<Object[]>>(reqgen: () => superagentType.SuperAgentRequest, guard: (res: APIResponseSuccess) => res is T): Paginator<T> {
-    return new Paginator<T>(this, reqgen, guard);
+    return new Paginator<T> (this, reqgen, guard);
   }
 }
 
@@ -82,7 +81,7 @@ export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
     protected client: IClient,
     protected reqgen: () => superagentType.SuperAgentRequest,
     protected guard: (res: APIResponseSuccess) => res is T,
-  ) {}
+  ) { }
 
   next(): IteratorResult<Promise<T>> {
     if (this.done) {
@@ -143,7 +142,7 @@ export function transformAPIResponse(r: superagentType.Response): APIResponse {
 
 export function createFatalAPIFormat(req: superagentType.SuperAgentRequest, res: APIResponse): FatalException {
   return new FatalException('API request was successful, but the response format was unrecognized.\n'
-                          + formatAPIResponse(req, res));
+    + formatAPIResponse(req, res));
 }
 
 export function formatSuperAgentError(e: SuperAgentError): string {

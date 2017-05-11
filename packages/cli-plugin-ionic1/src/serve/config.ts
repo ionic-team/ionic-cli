@@ -1,24 +1,24 @@
 import * as path from 'path';
 
 export interface ServerOptions {
- projectRoot: string;
- wwwDir: string;
- address: string;
- port: number;
- livereloadPort: number;
- browser: string | undefined;
- browseroption: string | undefined;
- platform: string | undefined;
- consolelogs: boolean;
- serverlogs: boolean;
- nobrowser: boolean;
- nolivereload: boolean;
- noproxy: boolean;
- lab: boolean;
- iscordovaserve: boolean;
- nogulp: boolean;
- nosass: boolean;
- gulpInstalled: boolean;
+  projectRoot: string;
+  wwwDir: string;
+  address: string;
+  port: number;
+  livereloadPort: number;
+  browser: string | undefined;
+  browseroption: string | undefined;
+  platform: string | undefined;
+  consolelogs: boolean;
+  serverlogs: boolean;
+  nobrowser: boolean;
+  nolivereload: boolean;
+  noproxy: boolean;
+  lab: boolean;
+  iscordovaserve: boolean;
+  nogulp: boolean;
+  nosass: boolean;
+  gulpInstalled: boolean;
 }
 
 export const WATCH_PATTERNS = [

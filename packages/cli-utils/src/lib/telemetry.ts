@@ -11,7 +11,7 @@ export class Telemetry implements ITelemetry {
   constructor(
     protected config: IConfig<ConfigFile>,
     protected cliVersion: string
-  ) {}
+  ) { }
 
   private generateUniqueToken() {
     const uuid = load('uuid');
@@ -25,11 +25,11 @@ export class Telemetry implements ITelemetry {
     }
     const Leek = load('leek');
     this.tracker = new Leek({
-      name:         configFile.tokens.telemetry,
+      name: configFile.tokens.telemetry,
       trackingCode: GA_CODE,
-      globalName:   'ionic',
-      version:      this.cliVersion,
-      silent:       configFile.cliFlags.enableTelemetry !== true
+      globalName: 'ionic',
+      version: this.cliVersion,
+      silent: configFile.cliFlags.enableTelemetry !== true
     });
   }
 

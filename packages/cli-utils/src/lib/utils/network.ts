@@ -13,8 +13,7 @@ export function getAvailableIPAddress() {
         internal: item.internal
       }))
     ))
-  )
-  .filter(item => !item.internal && item.family === 'IPv4');
+  ).filter(item => !item.internal && item.family === 'IPv4');
 }
 
 export async function findClosestOpenPort(host: string, port: number): Promise<number> {
@@ -35,21 +34,21 @@ export function isPortTaken(host: string, port: number): Promise<boolean> {
     var net = require('net');
 
     var tester = net.createServer()
-    .once('error', function(err: any) {
-      if (err.code !== 'EADDRINUSE') {
-        return resolve(true);
-      }
-      resolve(true);
-    })
-    .once('listening', function() {
-      tester.once('close', function() {
-        resolve(false);
+      .once('error', function(err: any) {
+        if (err.code !== 'EADDRINUSE') {
+          return resolve(true);
+        }
+        resolve(true);
       })
-      .close();
-    })
-    .on('error', (err: any) => {
-      reject(err);
-    })
-    .listen(port, host);
+      .once('listening', function() {
+        tester.once('close', function() {
+          resolve(false);
+        })
+          .close();
+      })
+      .on('error', (err: any) => {
+        reject(err);
+      })
+      .listen(port, host);
   });
 }

@@ -74,7 +74,7 @@ export function uninstallPlugin(env: IonicEnvironment, plugin: Plugin) {
 
 export async function loadPlugins(env: IonicEnvironment) {
   if (!env.project.directory) {
-    return async (): Promise<void> => {};
+    return async (): Promise<void> => { };
   }
 
   const mPath = path.join(env.project.directory, 'node_modules', '@ionic');
@@ -104,7 +104,7 @@ export async function loadPlugins(env: IonicEnvironment) {
   }
 
   const proxyPluginPkg = formatFullPluginName('proxy');
-  const [ , proxyVar ] = getGlobalProxy();
+  const [, proxyVar] = getGlobalProxy();
   if (proxyVar && !pluginPkgs.includes(proxyPluginPkg)) {
     const plugin = await promptToInstallPlugin(env, proxyPluginPkg, {
       message: `Detected '${chalk.green(proxyVar)}' in environment, but to proxy CLI requests, you'll need ${chalk.green(proxyPluginPkg)}. Would you like to install it and continue?`,
@@ -206,7 +206,7 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
         }
       } else {
         env.log.warn(`Locally installed CLI Plugin ${chalk.green(plugin.name + chalk.bold('@' + distTag))} has a different distribution tag than the Ionic CLI (${chalk.green.bold('@' + ionicDistTag)}).\n` +
-                     `Please install the matching plugin version:\n\n    ${chalk.green('npm install --save-dev ' + plugin.name + '@' + ionicDistTag)}\n\n`);
+          `Please install the matching plugin version:\n\n    ${chalk.green('npm install --save-dev ' + plugin.name + '@' + ionicDistTag)}\n\n`);
         updates.push(pluginName);
       }
     }

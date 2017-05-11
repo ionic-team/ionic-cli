@@ -156,7 +156,7 @@ export async function writeConfigXmlContentSrc(projectDir: string, devServerUrl:
   // If there is no content element then throw an error
   if (!configJson.widget.content) {
     throw new Error('\nYour config.xml file does not have a <content> element. ' +
-                    '\nAdd something like: <content src="index.html"/>');
+      '\nAdd something like: <content src="index.html"/>');
   }
 
   if (!configJson.widget.content[0].$['original-src']) {
@@ -176,10 +176,10 @@ export async function writeConfigXmlContentSrc(projectDir: string, devServerUrl:
 
     if (!allowNavigation) {
       // They don't have any allow-navigations, so we need to create a new node
-      configJson.widget['allow-navigation'] = [ allowNavNode ];
+      configJson.widget['allow-navigation'] = [allowNavNode];
     } else {
       var foundAllowNav = false;
-      for (var i = 0 ; i < allowNavigation.length; i++) {
+      for (var i = 0; i < allowNavigation.length; i++) {
         if (allowNavigation[i].$.href === devServerUrl) {
           foundAllowNav = true;
         }
@@ -201,7 +201,7 @@ export async function resetConfigXmlContentSrc(projectDir: string) {
   // If there is no content element then throw an error
   if (!configJson.widget.content) {
     throw new Error('\nYour config.xml file does not have a <content> element. ' +
-                    '\nAdd something like: <content src="index.html"/>');
+      '\nAdd something like: <content src="index.html"/>');
   }
 
   /**

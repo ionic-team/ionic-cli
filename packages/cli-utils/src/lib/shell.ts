@@ -7,12 +7,12 @@ import { RunCmdOptions, runcmd } from './utils/shell';
 export const ERROR_SHELL_COMMAND_NOT_FOUND = 'SHELL_COMMAND_NOT_FOUND';
 
 export class Shell implements IShell {
-  constructor(protected tasks: ITaskChain, protected log: ILogger) {}
+  constructor(protected tasks: ITaskChain, protected log: ILogger) { }
 
-  async run(command: string, args: string[], { showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, showExecution, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<string> {
+  async run(command: string, args: string[], { showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, showExecution, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise < string > {
     const fullCmd = command + ' ' + (args.length > 0 ? args.join(' ') : '');
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
-    const options: RunCmdOptions = {...crossSpawnOptions};
+    const options: RunCmdOptions = {...crossSpawnOptions };
 
     if (typeof showExecution === 'undefined') {
       showExecution = this.log.shouldLog('debug');

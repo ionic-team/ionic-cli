@@ -15,7 +15,7 @@ export class Command implements ICommand {
   public env: IonicEnvironment;
   public metadata: CommandData;
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> { }
 
   validate(inputs: CommandLineInputs): ValidationError[] {
     try {

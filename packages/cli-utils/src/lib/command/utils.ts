@@ -35,17 +35,17 @@ export function normalizeOptionAliases(metadata: CommandData, options: CommandLi
     return options;
   }
   return Object.keys(options).reduce((results: any, optionName) => {
-      const metadataOptionFound = (metadata.options || []).find((mdOption) => (
-        mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
-      ));
+    const metadataOptionFound = (metadata.options || []).find((mdOption) => (
+      mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
+    ));
 
-      if (metadataOptionFound) {
-        results[metadataOptionFound.name] = options[optionName];
-      } else {
-        results[optionName] = options[optionName];
-      }
-      return results;
-    }, {});
+    if (metadataOptionFound) {
+      results[metadataOptionFound.name] = options[optionName];
+    } else {
+      results[optionName] = options[optionName];
+    }
+    return results;
+  }, {});
 }
 
 export function minimistOptionsToArray(options: CommandLineOptions): string[] {

@@ -30,8 +30,8 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
     chosenIP = availableIPs[0].address;
     if (availableIPs.length > 1) {
       args.env.log.warn(`${chalk.bold('Multiple network interfaces detected!')}\n` +
-                        'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
-                        `You may also use the ${chalk.green('--address')} option to skip this prompt.\n`);
+        'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
+        `You may also use the ${chalk.green('--address')} option to skip this prompt.\n`);
       const promptAnswers = await args.env.prompt({
         type: 'list',
         name: 'ip',
@@ -87,7 +87,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   const settings = await setupServer(args.env, serverOptions);
 
   args.env.log.msg(`dev server running: http://${serverOptions.address}:${serverOptions.port}`);
-  return  {
+  return {
     publicIp: chosenIP,
     ...settings
   };
@@ -103,14 +103,14 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
   watcher.on('change', async function(filePath: string) {
 
     switch (path.extname(filePath)) {
-    case '.scss':
-      if (!options.nosass) {
-        await processSassFile(env, options);
-      }
-      return;
-    default:
-      env.log.msg(`[${new Date().toTimeString().slice(0, 8)}] ${filePath} changed`);
-      liveReloadBrowser([filePath]);
+      case '.scss':
+        if (!options.nosass) {
+          await processSassFile(env, options);
+        }
+        return;
+      default:
+        env.log.msg(`[${new Date().toTimeString().slice(0, 8)}] ${filePath} changed`);
+        liveReloadBrowser([filePath]);
     }
   });
 
@@ -133,12 +133,11 @@ async function processSassFile(env: IonicEnvironment, options: ServerOptions): P
 
   if (!options.gulpInstalled) {
     env.log.error(`You are trying to build a sass file, but unfortunately Ionic1 projects require\n` +
-                  `gulp to build these files. In order to continue please execute the following\n` +
-                  `command to install gulp.\n\n` +
-                  `    ${chalk.green(`npm install -g gulp`)}`);
+      `gulp to build these files. In order to continue please execute the following\n` +
+      `command to install gulp.\n\n` +
+      `    ${chalk.green(`npm install -g gulp`)}`);
     return;
   }
 
   await env.shell.run('gulp', ['sass'], { 'cwd': env.project.directory });
 }
-

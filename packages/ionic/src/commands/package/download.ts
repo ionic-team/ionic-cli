@@ -32,7 +32,7 @@ import {
 })
 export class PackageDownloadCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let [ id ] = inputs;
+    let [id] = inputs;
     let { destination } = options;
     const destDir = path.resolve(destination || this.env.project.directory);
     let buildId = isNaN(Number(id)) ? undefined : Number(id);
@@ -60,9 +60,11 @@ export class PackageDownloadCommand extends Command {
 
     const ws = fs.createWriteStream(buildFilename);
     const downloadTask = this.env.tasks.next(`Downloading build ${chalk.bold(String(build.id))}`);
-    await pkg.downloadBuild(build, ws, { progress: (loaded, total) => {
-      downloadTask.progress(loaded, total);
-    }});
+    await pkg.downloadBuild(build, ws, {
+      progress: (loaded, total) => {
+        downloadTask.progress(loaded, total);
+      }
+    });
 
     this.env.tasks.end();
     this.env.log.ok(`Build ${chalk.bold(String(build.id))} downloaded as ${chalk.bold(prettyPath(buildFilename))}.`);

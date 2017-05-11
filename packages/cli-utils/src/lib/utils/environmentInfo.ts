@@ -4,5 +4,5 @@ export async function getCommandInfo(cmd: string, args: string[] = []): Promise<
   try {
     const out = await runcmd(cmd, args);
     return out.split('\n').join(' ');
-  } catch (e) {}
+  } catch (e) { }
 }

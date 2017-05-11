@@ -1,10 +1,20 @@
-@font-face {font-family: 'AvenirNextLTPro-Regular';src: url('http://code.ionicframework.com/assets/fonts/28882F_0_0.eot');src: url('http://code.ionicframework.com/assets/fonts/28882F_0_0.eot?#iefix') format('embedded-opentype'),url('http://code.ionicframework.com/assets/fonts/28882F_0_0.woff') format('woff'),url('http://code.ionicframework.com/assets/fonts/28882F_0_0.ttf') format('truetype');}
+@font-face {
+  font-family: 'AvenirNextLTPro-Regular';
+  src: url('http://code.ionicframework.com/assets/fonts/28882F_0_0.eot');
+  src: url('http://code.ionicframework.com/assets/fonts/28882F_0_0.eot?#iefix') format('embedded-opentype'), url('http://code.ionicframework.com/assets/fonts/28882F_0_0.woff') format('woff'), url('http://code.ionicframework.com/assets/fonts/28882F_0_0.ttf') format('truetype');
+}
 
+@font-face {
+  font-family: 'AvenirNextLTPro-Medium';
+  src: url('http://code.ionicframework.com/assets/fonts/28882F_1_0.eot');
+  src: url('http://code.ionicframework.com/assets/fonts/28882F_1_0.eot?#iefix') format('embedded-opentype'), url('http://code.ionicframework.com/assets/fonts/28882F_1_0.woff') format('woff'), url('http://code.ionicframework.com/assets/fonts/28882F_1_0.ttf') format('truetype');
+}
 
-@font-face {font-family: 'AvenirNextLTPro-Medium';src: url('http://code.ionicframework.com/assets/fonts/28882F_1_0.eot');src: url('http://code.ionicframework.com/assets/fonts/28882F_1_0.eot?#iefix') format('embedded-opentype'),url('http://code.ionicframework.com/assets/fonts/28882F_1_0.woff') format('woff'),url('http://code.ionicframework.com/assets/fonts/28882F_1_0.ttf') format('truetype');}
-
-
-@font-face {font-family: 'AvenirNextLTPro-UltLt';src: url('http://code.ionicframework.com/assets/fonts/29CC36_0_0.eot');src: url('http://code.ionicframework.com/assets/fonts/29CC36_0_0.eot?#iefix') format('embedded-opentype'),url('http://code.ionicframework.com/assets/fonts/29CC36_0_0.woff') format('woff'),url('http://code.ionicframework.com/assets/fonts/29CC36_0_0.ttf') format('truetype');}
+@font-face {
+  font-family: 'AvenirNextLTPro-UltLt';
+  src: url('http://code.ionicframework.com/assets/fonts/29CC36_0_0.eot');
+  src: url('http://code.ionicframework.com/assets/fonts/29CC36_0_0.eot?#iefix') format('embedded-opentype'), url('http://code.ionicframework.com/assets/fonts/29CC36_0_0.woff') format('woff'), url('http://code.ionicframework.com/assets/fonts/29CC36_0_0.ttf') format('truetype');
+}
 
 html, body {
   height: 100%;
@@ -17,6 +27,7 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
 }
+
 h2 {
   color: #fff;
   font-family: 'AvenirNextLTPro-Regular', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
@@ -32,6 +43,7 @@ h2 a {
   height: 100%;
   position: relative;
 }
+
 .dropdown-toggle {
   color: #858D9B;
   display: block;
@@ -45,6 +57,7 @@ h2 a {
   outline: none;
   font-family: 'AvenirNextLTPro-Medium', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
 }
+
 .dropdown-menu {
   display: none;
   position: absolute;
@@ -52,38 +65,45 @@ h2 a {
   width: 150px;
   right: -10px;
   background-color: white;
-  box-shadow: 0 6px 10px rgba(0,0,0,.08), 0 0px 6px rgba(0,0,0,.05);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, .08), 0 0px 6px rgba(0, 0, 0, .05);
 }
-.dropdown-menu > li {
+
+.dropdown-menu>li {
   padding: 6px 5px;
 }
+
 .dropdown:hover .dropdown-toggle {
   /* increase the hit box when hovering */
   padding-left: 100px;
 }
+
 .dropdown:hover .dropdown-menu {
   display: block;
 }
+
 .dropdown li {
   list-style: none;
 }
+
 .dropdown ul {
   margin: 0;
   padding: 0;
 }
+
 .dropdown-caret {
   width: 0;
   height: 0;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-
   border-top: 5px solid #858D9B;
   display: inline-block;
 }
+
 .dropdown-menu input {
   cursor: pointer;
   background-color: #4D82E9;
 }
+
 .dropdown-menu label {
   font-size: 13px;
   margin-left: 5px;
@@ -103,48 +123,56 @@ h2 a {
   width: 100%;
   height: 50px;
   background-color: white;
-  box-shadow: 0px 1px 3px rgba(0,0,0, 0.15);
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.15);
 }
+
 #header-left {
   float: left;
   line-height: 50px;
 }
+
 #header a:hover {
   opacity: 1;
 }
+
 #header-right {
   float: right;
   margin-right: 15px;
   height: 100%;
 }
+
 #footer {
   width: 100%;
-  border-top: 1px solid rgba(0,0,0,0.06);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
   background-color: #f8f9fb;
 }
+
 #footer-left {
   float: left;
   padding: 14px 0 14px 15px;
   font-size: 13px;
 }
+
 #app-info {
   color: #828080;
 }
+
 #footer-right {
   float: right;
   padding: 14px 15px 14px 5px;
   font-size: 13px;
 }
+
 #footer-right a {
   margin-left: 10px;
   color: #a2a9b4;
   text-decoration: none;
   font-family: 'AvenirNextLTPro-Medium', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
 }
+
 #logo {
   display: inline-block;
   vertical-align: middle;
-
   width: 64px;
   height: 28px;
   margin-left: 15px;
@@ -156,15 +184,18 @@ h2 a {
 #logo img {
   max-width: 100%;
 }
+
 .phone {
   display: inline-block;
   margin: 20px 20px 0 20px;
   vertical-align: middle;
 }
+
 .phone h2 {
   text-align: left;
   vertical-align: middle;
 }
+
 .phone-icon {
   display: inline-block;
   vertical-align: middle;
@@ -174,30 +205,37 @@ h2 a {
   height: 16px;
   background-size: 100%;
 }
+
 #iphone .phone-icon {
   background-position: 0px 0px;
 }
+
 #android .phone-icon {
   background-position: 0px -16px;
 }
+
 #windows .phone-icon {
   background-position: 0px -32px;
 }
+
 .frame {
   border: none;
 }
+
 .phone-frame-wrap {
   position: relative;
   width: 375px;
   height: 667px;
   border-radius: 3px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.08), 0 0px 6px rgba(0,0,0,.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .08), 0 0px 6px rgba(0, 0, 0, .1);
   overflow: hidden;
 }
+
 .phone-frame-wrap iframe {
   width: 100%;
   height: 100%;
 }
+
 .statusbar {
   position: absolute;
   top: 0;
@@ -210,17 +248,22 @@ h2 a {
   background-position: center;
   border-radius: 3px 3px 0 0;
 }
+
 #iphone-frame .statusbar {
   background-image: url(../img/ios-statusbar.png);
 }
+
 #android-frame .statusbar {
   background-image: url(../img/android-statusbar.png);
 }
+
 #windows-frame .statusbar {
   background-image: url(../img/wp-statusbar.png)
 }
 
+
 /* Android and windows don't make space for the statusbar like iOS does */
+
 #android-frame iframe, #windows-frame iframe {
   height: 647px;
   margin-top: 20px;
@@ -234,15 +277,18 @@ h2 a {
   bottom: 15px;
   left: 15px;
 }
+
 #view-popup .view-popup-wrapper {
   position: relative;
 }
+
 #view-popup .ionitron {
   background: url('../img/popup-ionitron.png') no-repeat transparent;
   width: 90px;
   height: 90px;
   background-size: 100%;
 }
+
 #view-popup .content {
   box-sizing: border-box;
   background: url('../img/popup-view-bubble.png') no-repeat transparent;
@@ -254,13 +300,16 @@ h2 a {
   text-align: center;
   color: white;
 }
+
 #view-popup .content a {
   color: #fff;
   font-weight: bold;
 }
+
 #view-popup .content h2 {
   margin-bottom: 5px;
 }
+
 #view-popup .content p {
   font-size: 13px;
   max-width: 220px;
@@ -292,7 +341,6 @@ preview {
   flex-direction: row;
 }
 
-
 @media screen and (max-height: 800px) {
   #header {
     height: 40px;
@@ -323,7 +371,6 @@ preview {
   .phone-frame h2 {
     display: none;
   }
-
   @media screen and (max-width: 500px) {
     #footer {
       display: none;
@@ -344,6 +391,7 @@ preview {
     margin-top: 20px;
   }
 }
+
 @media screen and (max-height: 680px) {
   .statusbar {
     width: 325px;

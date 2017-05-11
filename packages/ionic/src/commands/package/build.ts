@@ -61,7 +61,7 @@ import { upload } from '../../lib/upload';
 })
 export class PackageBuildCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-    let [ platform ] = inputs;
+    let [platform] = inputs;
 
     const token = await this.env.session.getAppUserToken();
     const pkg = new PackageClient(token, this.env.client);
@@ -100,7 +100,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-    let [ platform ] = <[PackageBuild['platform']]>inputs;
+    let [platform] = <[PackageBuild['platform']]>inputs;
     let { prod, release, profile, note } = options;
 
     if (typeof note !== 'string') {
@@ -125,7 +125,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
 
       if (release && p.type !== 'production') {
         this.env.log.error(`Profile ${chalk.bold(p.tag)} (${chalk.bold(p.name)}) is a ${chalk.bold(p.type)} profile, which won't work for release builds.\n` +
-                           `Please use a production security profile.`); // TODO: link to docs
+          `Please use a production security profile.`); // TODO: link to docs
         return 1;
       }
     }
@@ -155,9 +155,11 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     zip.directory('resources');
     zip.finalize();
 
-    await pkg.uploadProject(proj, zip, { progress: (loaded, total) => {
-      uploadTask.progress(loaded, total);
-    }});
+    await pkg.uploadProject(proj, zip, {
+      progress: (loaded, total) => {
+        uploadTask.progress(loaded, total);
+      }
+    });
 
     this.env.tasks.next('Queuing build');
 

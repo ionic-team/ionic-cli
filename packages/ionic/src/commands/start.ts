@@ -141,7 +141,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let [ projectName, starterTemplateName ] = inputs;
+    let [projectName, starterTemplateName] = inputs;
     let appName = <string>options['app-name'] || projectName;
     let cloudAppId = <string>options['cloud-app-id'] || '';
     let starterBranchName = <string>options['starterBranchName'] || 'master';
@@ -167,8 +167,8 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
         if (typeof cmdInstalled === 'undefined') {
           if (dep === 'cordova') {
             throw this.exit(`Cordova CLI not found on your PATH. Please install Cordova globally (you may need ${chalk.green('sudo')}):\n\n` +
-                            `${chalk.green('npm install -g cordova')}\n\n` +
-                            `If that doesn't work, see the installation docs: https://cordova.apache.org/docs/en/latest/guide/cli/#installing-the-cordova-cli`);
+              `${chalk.green('npm install -g cordova')}\n\n` +
+              `If that doesn't work, see the installation docs: https://cordova.apache.org/docs/en/latest/guide/cli/#installing-the-cordova-cli`);
           } else {
             throw this.exit(`Sorry, ${chalk.green(dep)} is a global dependency, but it was not found on your PATH.`);
           }
@@ -189,7 +189,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
         type: 'confirm',
         name: 'overwrite',
         message: `The directory ${chalk.green(projectName)} contains file(s) that could conflict. ` +
-            'Would you like to overwrite the directory with this new project?'
+        'Would you like to overwrite the directory with this new project?'
       });
 
       if (response['overwrite']) {

@@ -5,7 +5,7 @@ var API_ROOT = '/ionic-lab/api/v1';
 function tryShowViewPopup() {
   var view = window.localStorage.getItem('ionic_viewpop');
 
-  if(!view) {
+  if (!view) {
     $('#view-popup').style.display = 'block';
     $('#view-popup .close').addEventListener('click', function(e) {
       window.localStorage.setItem('ionic_viewpop', true);
@@ -28,7 +28,7 @@ function bindToggles() {
   var windows = $('#device-windows');
 
   var devices = [iphone, android, windows];
-  for(i in devices) {
+  for (i in devices) {
     devices[i].addEventListener('change', function(e) {
       var device = this.name;
       console.log('Device changed', device, this.checked);
@@ -44,7 +44,7 @@ function showDevice(device, isShowing) {
   $('#device-' + device).checked = isShowing;
 
   var rendered = $('#' + device);
-  if(!rendered) {
+  if (!rendered) {
     var template = $('#' + device + '-frame-template');
     var clone = document.importNode(template, true);
     $('preview').appendChild(clone.content);
@@ -55,15 +55,15 @@ function showDevice(device, isShowing) {
 
 function saveLastDevices(newDevice, didAdd) {
   var last = window.localStorage.getItem('ionic_lastdevices');
-  if(!last && didAdd) {
+  if (!last && didAdd) {
     window.localStorage.setItem('ionic_lastdevices', newDevice);
     return;
   }
   var devices = last.split(',');
   var di = devices.indexOf(newDevice);
-  if(di == -1 && didAdd) {
+  if (di == -1 && didAdd) {
     window.localStorage.setItem('ionic_lastdevices', devices.join(',') + ',' + newDevice);
-  } else if(di >= 0) {
+  } else if (di >= 0) {
     devices.splice(di, 1);
     window.localStorage.setItem('ionic_lastdevices', devices.join(','));
   }
@@ -71,13 +71,13 @@ function saveLastDevices(newDevice, didAdd) {
 
 function showLastDevices() {
   var last = window.localStorage.getItem('ionic_lastdevices');
-  if(!last) {
+  if (!last) {
     showDevice('iphone', true);
     return;
   }
 
   var devices = last.split(',');
-  for(var i = 0; i < devices.length; i++) {
+  for (var i = 0; i < devices.length; i++) {
     showDevice(devices[i], true);
   }
 }
@@ -85,7 +85,7 @@ function showLastDevices() {
 function setCordovaInfo(data) {
   let el = $('#app-info');
   el.innerHTML = data.name + ' - v' + data.version;
-  if(data.name) {
+  if (data.name) {
     document.title = data.name + ' - Ionic Lab';
   }
 }

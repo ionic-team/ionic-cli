@@ -21,7 +21,7 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]) {
     return env.log.msg(getFormattedHelpDetails(env, env.namespace, inputs));
   }
 
-  let [ slicedInputs, cmdOrNamespace ] = env.namespace.locate(inputs);
+  let [slicedInputs, cmdOrNamespace] = env.namespace.locate(inputs);
 
   if (!isCommand(cmdOrNamespace)) {
     let extra = '';
@@ -109,10 +109,10 @@ export function formatCommandHelp(cmdMetadata: CommandData): string {
   return `
   ${chalk.bold(cmdMetadata.description)}
   ` +
-  formatCommandUsage(cmdMetadata.inputs, cmdMetadata.fullName) +
-  formatCommandInputs(cmdMetadata.inputs) +
-  formatCommandOptions(cmdMetadata.options) +
-  formatCommandExamples(cmdMetadata.exampleCommands, cmdMetadata.fullName);
+    formatCommandUsage(cmdMetadata.inputs, cmdMetadata.fullName) +
+    formatCommandInputs(cmdMetadata.inputs) +
+    formatCommandOptions(cmdMetadata.options) +
+    formatCommandExamples(cmdMetadata.exampleCommands, cmdMetadata.fullName);
 }
 
 export function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[] {
@@ -171,9 +171,9 @@ function formatCommandOptions(options: CommandOption[] = []): string {
   function optionLineFn(opt: CommandOption) {
     const optionList = chalk.green(`-${opt.name.length > 1 ? '-' : ''}${opt.name}`) +
       (opt.aliases && opt.aliases.length > 0 ? ', ' +
-       opt.aliases
-         .map((alias) => chalk.green(`-${alias}`))
-         .join(', ') : '');
+        opt.aliases
+          .map((alias) => chalk.green(`-${alias}`))
+          .join(', ') : '');
 
     const optionListLength = stringWidth(optionList);
     const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;

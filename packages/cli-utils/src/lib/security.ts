@@ -3,7 +3,7 @@ import { isSecurityProfileResponse, isSecurityProfilesResponse } from '../guards
 import { createFatalAPIFormat } from './http';
 
 export class SecurityClient {
-  constructor(protected appUserToken: string, protected client: IClient) {}
+  constructor(protected appUserToken: string, protected client: IClient) { }
 
   async getProfile(tag: string): Promise<SecurityProfile> {
     const req = this.client.make('GET', `/security/profiles/${tag}`)

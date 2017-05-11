@@ -28,7 +28,7 @@ export class DocsCommand extends Command {
     if (results.length === 0) {
       url = docsHomepage;
     } else {
-      [ url ] = results;
+      [url] = results;
     }
 
     try {

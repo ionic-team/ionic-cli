@@ -5,7 +5,7 @@ export class Hook<T, U> implements IHook<T, U> {
     public source: string,
     public name: string,
     protected callable: (args: T) => Promise<U>
-  ) {}
+  ) { }
 
   fire(args: T): Promise<U> {
     return this.callable(args);
@@ -35,7 +35,7 @@ export class HookEngine implements IHookEngine {
   }
 
   deleteSource(source: string) {
-    for (let [ hookName, hooks ] of this.hooks.entries()) {
+    for (let [hookName, hooks] of this.hooks.entries()) {
       this.hooks.set(hookName, hooks.filter((h) => h.source !== source));
     }
   }

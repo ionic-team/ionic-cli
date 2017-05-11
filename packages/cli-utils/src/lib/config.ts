@@ -53,7 +53,7 @@ export abstract class BaseConfig<T> implements IConfig<T> {
         this.configFile = o;
       } else {
         throw new FatalException(`The config file (${chalk.bold(prettyPath(this.filePath))}) has an unrecognized format.\n`
-                               + `Try deleting the file.`);
+          + `Try deleting the file.`);
       }
     }
 

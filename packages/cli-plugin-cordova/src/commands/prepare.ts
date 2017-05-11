@@ -28,7 +28,7 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ platform ] = inputs;
+    const [platform] = inputs;
 
     if (platform) {
       const configJson = await parseConfigXmlToJson(this.env.project.directory);
