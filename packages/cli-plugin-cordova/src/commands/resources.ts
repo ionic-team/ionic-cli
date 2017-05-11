@@ -136,7 +136,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
       dest: path.join(resourceDir, img.platform, img.resType, img.name)
       }));
 
-  if(platform) {
+  if (platform) {
     imgResources = imgResources.filter((img) => img.platform === platform);
   }
 

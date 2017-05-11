@@ -36,7 +36,7 @@ export function getGlobalProxy(): [string, string] | [undefined, undefined] {
 }
 
 export function createRequest(method: string, url: string): superagentType.SuperAgentRequest {
-  const [proxy,] = getGlobalProxy();
+  const [proxy, ] = getGlobalProxy();
   const superagent = load('superagent');
   let req = superagent(method, url);
 
@@ -56,7 +56,6 @@ export class Client implements IClient {
       .set('Content-Type', CONTENT_TYPE_JSON)
       .set('Accept', CONTENT_TYPE_JSON);
   }
-
   async do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess> {
     const res = await req;
     const r = transformAPIResponse(res);
@@ -70,7 +69,7 @@ export class Client implements IClient {
   }
 
   paginate<T extends Response<Object[]>>(reqgen: () => superagentType.SuperAgentRequest, guard: (res: APIResponseSuccess) => res is T): Paginator<T> {
-    return new Paginator<T>(this, reqgen, guard);
+    return new Paginator<T> (this, reqgen, guard);
   }
 }
 
