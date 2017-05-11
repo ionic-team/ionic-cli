@@ -20,14 +20,11 @@ export function getOrientationFromConfigJson(configJson: any): string | undefine
   }
 }
 
-/**
- * Get the provided platforms information from the Json structure of Config.xml
- */
-export function getPlatformConfigJson(configJson: any, platform: string): string | undefined {
-  if (!configJson.widget.platform) {
+export function getPlatformEngine(configJson: any, platform: string) {
+  if (!configJson.widget.engine) {
     return;
   }
-  return configJson.widget.platform.find((d: any) => {
+  return configJson.widget.engine.find((d: any) => {
     return d && d.$ && d.$.name === platform;
   });
 }
