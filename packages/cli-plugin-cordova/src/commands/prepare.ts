@@ -28,7 +28,7 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ platform ] = inputs;
+    const [platform] = inputs;
 
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);

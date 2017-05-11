@@ -24,7 +24,7 @@ import {
 })
 export class PackageInfoCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ id ] = inputs;
+    const [id] = inputs;
     let buildId = isNaN(Number(id)) ? undefined : Number(id);
 
     const token = await this.env.session.getAppUserToken();

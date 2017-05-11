@@ -1,5 +1,5 @@
 declare module "glob-watcher" {
-  namespace globWatcher {}
+  namespace globWatcher { }
   function globWatcher(globs: string[]): NodeJS.EventEmitter;
 
   export = globWatcher;

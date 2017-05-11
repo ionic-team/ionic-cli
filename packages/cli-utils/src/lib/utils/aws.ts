@@ -3,7 +3,7 @@ import { createRequest } from '../http';
 export function s3SignedUpload(
   presignedPostParams: { url: string, fields: Object },
   zip: NodeJS.ReadableStream,
-  { progress }: {  progress?: (loaded: number, total: number) => void }
+  { progress }: { progress?: (loaded: number, total: number) => void }
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     zip.on('error', (err: any) => {

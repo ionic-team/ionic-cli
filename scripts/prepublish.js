@@ -22,5 +22,15 @@ const replacePath = path.join(pluginPath, pkg.main);
 
 const pluginVersion = process.env['IONIC_PREPUBLISH_PLUGIN_VERSION'] || pkg.version;
 
-replace({ regex: nameMatchStr, replacement: pkg.name, paths: [replacePath], recursive: false });
-replace({ regex: versionMatchStr, replacement: pluginVersion, paths: [replacePath], recursive: false });
+replace({
+  regex: nameMatchStr,
+  replacement: pkg.name,
+  paths: [replacePath],
+  recursive: false
+});
+replace({
+  regex: versionMatchStr,
+  replacement: pluginVersion,
+  paths: [replacePath],
+  recursive: false
+});

@@ -38,19 +38,19 @@ describe('@ionic/cli-utils filterOptionsByIntent', () => {
   it('should only return options with no intent with no intent supplied', () => {
     const results = filterOptionsByIntent(metadata, givenOptions);
     const { foo, bar, baz, ...expected } = givenOptions;
-    expect(results).toEqual(expected);
+expect(results).toEqual(expected);
   });
 
-  it('should only return options that match the intent supplied', () => {
-    const results = filterOptionsByIntent(metadata, givenOptions, 'foobar');
-    const { baz, intentless, ...expected } = givenOptions;
-    expect(results).toEqual(expected);
+it('should only return options that match the intent supplied', () => {
+  const results = filterOptionsByIntent(metadata, givenOptions, 'foobar');
+  const { baz, intentless, ...expected } = givenOptions;
+expect(results).toEqual(expected);
   });
 
-  it('should return no options with a bogus intent supplied', () => {
-    const results = filterOptionsByIntent(metadata, givenOptions, 'literally bogus');
-    const expected = {};
-    expect(results).toEqual(expected);
-  });
+it('should return no options with a bogus intent supplied', () => {
+  const results = filterOptionsByIntent(metadata, givenOptions, 'literally bogus');
+  const expected = {};
+  expect(results).toEqual(expected);
+});
 
 });

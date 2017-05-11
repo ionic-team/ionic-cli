@@ -27,7 +27,7 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
 
     if (!p.app_id) {
       throw new FatalException(`Your project file (${chalk.bold(prettyPath(this.filePath))}) does not contain '${chalk.bold('app_id')}'. `
-                             + `Run ${chalk.green('ionic link')}.`);
+        + `Run ${chalk.green('ionic link')}.`);
     }
 
     return p.app_id;
@@ -120,9 +120,9 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
     }
 
     throw new FatalException(`Could not determine project type.\n\n`
-                           + `For ${PROJECT_TYPES_PRETTY.get('ionic-angular')} projects, make sure 'ionic-angular' exists in the ${chalk.bold('dependencies')} attribute of ${chalk.bold('package.json')}.\n`
-                           + `For ${PROJECT_TYPES_PRETTY.get('ionic1')} projects, make sure 'ionic' exists in the ${chalk.bold('devDependencies')} attribute of ${chalk.bold('bower.json')}.\n\n`
-                           + `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold('ionic.config.json')} to one of: ${PROJECT_TYPES.map(v => '\'' + v + '\'').join(', ')}\n`);
+      + `For ${PROJECT_TYPES_PRETTY.get('ionic-angular')} projects, make sure 'ionic-angular' exists in the ${chalk.bold('dependencies')} attribute of ${chalk.bold('package.json')}.\n`
+      + `For ${PROJECT_TYPES_PRETTY.get('ionic1')} projects, make sure 'ionic' exists in the ${chalk.bold('devDependencies')} attribute of ${chalk.bold('bower.json')}.\n\n`
+      + `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold('ionic.config.json')} to one of: ${PROJECT_TYPES.map(v => '\'' + v + '\'').join(', ')}\n`);
   }
 
   is<ProjectFile>(j: any): j is ProjectFile {

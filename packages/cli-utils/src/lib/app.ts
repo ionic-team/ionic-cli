@@ -12,7 +12,7 @@ import { isAppResponse } from '../guards';
 export class App implements IApp {
   protected details: { [app_id: string]: AppDetails } = {};
 
-  constructor(protected session: ISession, protected project: IProject, protected client: IClient) {}
+  constructor(protected session: ISession, protected project: IProject, protected client: IClient) { }
 
   async load(app_id?: string): Promise<AppDetails> {
     if (!app_id) {

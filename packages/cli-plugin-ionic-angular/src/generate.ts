@@ -31,7 +31,7 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
   const AppScripts = load('@ionic/app-scripts');
   const context = AppScripts.generateContext();
 
-  const [ type, name ] = args.inputs;
+  const [type, name] = args.inputs;
 
   switch (type) {
     case 'page':

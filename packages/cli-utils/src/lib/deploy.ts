@@ -4,7 +4,7 @@ import { createFatalAPIFormat } from './http';
 import { s3SignedUpload } from './utils/aws';
 
 export class DeployClient {
-  constructor(protected appUserToken: string, protected client: IClient) {}
+  constructor(protected appUserToken: string, protected client: IClient) { }
 
   async getChannel(uuidOrTag: string): Promise<DeployChannel> {
     const req = this.client.make('GET', `/deploy/channels/${uuidOrTag}`)
@@ -34,7 +34,7 @@ export class DeployClient {
     return res.data;
   }
 
-  async getSnapshot(uuid: string, { fields = [] }: { fields?: string[] }): Promise<DeploySnapshot> {
+  async getSnapshot(uuid: string, { fields = []}: { fields?: string[] }): Promise<DeploySnapshot> {
     if (fields.indexOf('url') === -1) {
       fields.push('url');
     }

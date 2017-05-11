@@ -38,7 +38,7 @@ const DEFAULT_RESOURCES_DIR = path.resolve(__dirname, '..', 'default-resources')
  * that contains only images and turns all struture info into attributes of the image
  * items.
  */
-export function flattenResourceJsonStructure (jsonStructure: any): ImageResource[] {
+export function flattenResourceJsonStructure(jsonStructure: any): ImageResource[] {
   return flattenArray(Object.keys(jsonStructure).map(platform => (
     Object.keys(jsonStructure[platform]).map(resType => (
       jsonStructure[platform][resType]['images'].map((imgInfo: any) => (
@@ -61,7 +61,7 @@ export function flattenResourceJsonStructure (jsonStructure: any): ImageResource
 /**
  * Create the destination directories for the provided image resources.
  */
-export async function createImgDestinationDirectories (imgResources: ImageResource[]): Promise<void[]> {
+export async function createImgDestinationDirectories(imgResources: ImageResource[]): Promise<void[]> {
   const buildDirPromises: Promise<void>[] = imgResources
     .map(img => path.dirname(img.dest))
     .filter((dir, index, dirNames) => dirNames.indexOf(dir) === index)

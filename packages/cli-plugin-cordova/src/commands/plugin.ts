@@ -51,7 +51,7 @@ export class PluginCommand extends CordovaCommand implements CommandPreInputsPro
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let [ action, pluginName ] = inputs;
+    let [action, pluginName] = inputs;
 
     if (!pluginName) {
       const promptResults = await this.env.prompt({

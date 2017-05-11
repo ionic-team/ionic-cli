@@ -36,7 +36,7 @@ export function getGlobalProxy(): [string, string] | [undefined, undefined] {
 }
 
 export function createRequest(method: string, url: string): superagentType.SuperAgentRequest {
-  const [ proxy, ] = getGlobalProxy();
+  const [proxy,] = getGlobalProxy();
   const superagent = load('superagent');
   let req = superagent(method, url);
 
@@ -48,7 +48,7 @@ export function createRequest(method: string, url: string): superagentType.Super
 }
 
 export class Client implements IClient {
-  constructor(public host: string) {}
+  constructor(public host: string) { }
 
   make(method: HttpMethod, path: string): superagentType.SuperAgentRequest {
     return createRequest(method, `${this.host}${path}`)
@@ -63,7 +63,7 @@ export class Client implements IClient {
 
     if (isAPIResponseError(r)) {
       throw new FatalException('API request was successful, but the response output format was that of an error.\n'
-                             + formatAPIError(req, r));
+        + formatAPIError(req, r));
     }
 
     return r;
@@ -82,7 +82,7 @@ export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
     protected client: IClient,
     protected reqgen: () => superagentType.SuperAgentRequest,
     protected guard: (res: APIResponseSuccess) => res is T,
-  ) {}
+  ) { }
 
   next(): IteratorResult<Promise<T>> {
     if (this.done) {
@@ -143,7 +143,7 @@ export function transformAPIResponse(r: superagentType.Response): APIResponse {
 
 export function createFatalAPIFormat(req: superagentType.SuperAgentRequest, res: APIResponse): FatalException {
   return new FatalException('API request was successful, but the response format was unrecognized.\n'
-                          + formatAPIResponse(req, res));
+    + formatAPIResponse(req, res));
 }
 
 export function formatSuperAgentError(e: SuperAgentError): string {

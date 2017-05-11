@@ -23,27 +23,27 @@ declare module "archiver" {
 
   namespace archiver {
 
-      export function create(format: string, options?: Options): Archiver;
+    export function create(format: string, options?: Options): Archiver;
 
 
-      export interface nameInterface {
-          name?: string;
-      }
+    export interface nameInterface {
+      name?: string;
+    }
 
-      export interface Archiver extends STREAM.Transform {
-          append(source: STREAM.Readable | Buffer | string, name: nameInterface): void;
+    export interface Archiver extends STREAM.Transform {
+      append(source: STREAM.Readable | Buffer | string, name: nameInterface): void;
 
-          file(f: string, destpath?: nameInterface | string): void;
-          directory(dirpath: string, destpath?: nameInterface | string): void;
-          directory(dirpath: string, destpath: nameInterface | string, data: any | Function): void;
+      file(f: string, destpath?: nameInterface | string): void;
+      directory(dirpath: string, destpath?: nameInterface | string): void;
+      directory(dirpath: string, destpath: nameInterface | string, data: any | Function): void;
 
-          bulk(mappings: any): void;
-          finalize(): void;
-      }
+      bulk(mappings: any): void;
+      finalize(): void;
+    }
 
-      export interface Options {
+    export interface Options {
 
-      }
+    }
   }
 
   export = archiver;

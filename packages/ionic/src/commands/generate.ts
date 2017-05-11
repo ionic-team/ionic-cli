@@ -77,7 +77,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ type, name ] = inputs;
+    const [type, name] = inputs;
 
     await this.env.hooks.fire('command:generate', { env: this.env, inputs, options });
 

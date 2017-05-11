@@ -339,7 +339,7 @@ export interface IClient {
   paginate<T extends Response<Object[]>>(reqgen: () => superagentType.SuperAgentRequest, guard: (res: APIResponseSuccess) => res is T): IPaginator<T>;
 }
 
-export interface IPaginator<T extends Response<Object[]>> extends IterableIterator<Promise<T>> {}
+export interface IPaginator<T extends Response<Object[]>> extends IterableIterator<Promise<T>> { }
 
 export interface HookArgs {
   env: IonicEnvironment;
@@ -443,7 +443,7 @@ export interface CommandPreRun extends ICommand {
 export type NamespaceMapGetter = () => INamespace;
 export type CommandMapGetter = () => ICommand;
 
-export interface INamespaceMap extends Map<string, NamespaceMapGetter> {}
+export interface INamespaceMap extends Map<string, NamespaceMapGetter> { }
 
 export interface ICommandMap extends Map<string, string | CommandMapGetter> {
   getAliases(): Map<string, string[]>;

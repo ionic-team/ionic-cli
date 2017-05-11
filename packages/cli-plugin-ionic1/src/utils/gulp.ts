@@ -7,10 +7,10 @@ export function checkEnvironment(projectDirectory: string): boolean {
   } catch (e) {
     if (e.code === 'MODULE_NOT_FOUND') {
       throw 'Uh oh! Looks like you\'re missing a module in your gulpfile:\n' +
-        '\nDo you need to run `npm install`?\n';
+      '\nDo you need to run `npm install`?\n';
     }
     throw `${chalk.red('\nThere is an error in your gulpfile: ')}\n` +
-      `e.stack\n`;
+    `e.stack\n`;
   }
 
   return gulpFileExists;

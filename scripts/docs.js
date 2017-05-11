@@ -21,10 +21,12 @@ async function run() {
   const nsDoc = formatIonicPage(env.namespace);
 
   await utilsPkg.fsMkdirp(path.dirname(nsPath));
-  await utilsPkg.fsWriteFile(nsPath, nsDoc, { encoding: 'utf8' });
+  await utilsPkg.fsWriteFile(nsPath, nsDoc, {
+    encoding: 'utf8'
+  });
 
   const commands = env.namespace.getCommandMetadataList().filter(cmd => cmd.visible !== false);
-  const commandPromises = commands.map(async (cmd) => {
+  const commandPromises = commands.map(async(cmd) => {
     if (!cmd.fullName) {
       console.error(`${cmd.name} has no fullName`);
       return;
@@ -34,7 +36,9 @@ async function run() {
     const cmdDoc = formatCommandDoc(cmd);
 
     await utilsPkg.fsMkdirp(path.dirname(cmdPath));
-    await utilsPkg.fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
+    await utilsPkg.fsWriteFile(cmdPath, cmdDoc, {
+      encoding: 'utf8'
+    });
   });
 
   await Promise.all(commandPromises);
@@ -155,7 +159,7 @@ function formatName(fullName, description) {
 function formatSynopsis(inputs, commandName) {
   const headerLine = `## Synopsis`;
   const usageLine =
-      `${commandName} ${
+    `${commandName} ${
         (inputs || [])
           .map(input => {
             if (input.validators && input.validators.includes(utilsPkg.validators.required)) {
@@ -193,9 +197,9 @@ function formatDescription(inputs = [], options = [], description = '') {
 
     const optionList = `\`--${name}\`` +
       (aliases && aliases.length > 0 ? ', ' +
-       aliases
-         .map((alias) => `\`-${alias}\``)
-         .join(', ') : '');
+        aliases
+        .map((alias) => `\`-${alias}\``)
+        .join(', ') : '');
 
     return `${optionList} | ${description}`;
   }
@@ -254,10 +258,11 @@ async function copyToIonicSite(commands) {
           url: command.fullName.split(' ').join('/')
         };
       }).sort((a, b) => a.name.localeCompare(b.name))
-    ), { encoding: 'utf8' });
+    ), {
+      encoding: 'utf8'
+    });
 
   return utilsPkg.copyDirectory(
     path.resolve(__dirname, '..', 'docs'),
     path.resolve(ionicSitePath, 'content', 'docs', 'cli'));
 }
-

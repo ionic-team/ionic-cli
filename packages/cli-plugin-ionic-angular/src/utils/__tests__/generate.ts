@@ -74,11 +74,11 @@ describe('getPages', () => {
       absolutePath: '/path/to/nowhere',
       relativePath: '../../../../path/to/nowhere'
     },
-    {
-      fileName: 'path',
-      absolutePath: '/my/awesome/path',
-      relativePath: '../../../awesome/path'
-    }]);
+      {
+        fileName: 'path',
+        absolutePath: '/my/awesome/path',
+        relativePath: '../../../awesome/path'
+      }]);
   });
 
 });

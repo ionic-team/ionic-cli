@@ -17,4 +17,4 @@ import { CORDOVA_RUN_COMMAND_OPTIONS, CordovaRunCommand } from './base';
   ],
   options: CORDOVA_RUN_COMMAND_OPTIONS,
 })
-export class RunCommand extends CordovaRunCommand {}
+export class RunCommand extends CordovaRunCommand { }

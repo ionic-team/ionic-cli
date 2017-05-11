@@ -29,7 +29,7 @@ const CREATE_NEW_APP_CHOICE = 'createNewApp';
 })
 export class LinkCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let [ appId ] = inputs;
+    let [appId] = inputs;
 
     const config = await this.env.config.load();
     const project = await this.env.project.load();

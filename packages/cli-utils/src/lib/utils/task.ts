@@ -17,7 +17,7 @@ const FRAMES = process.platform === 'win32' ?
 class Spinner {
   public i: number = 0;
 
-  constructor(public frames: string[] = FRAMES) {}
+  constructor(public frames: string[] = FRAMES) { }
 
   frame(): string {
     return this.frames[this.i = ++this.i % this.frames.length];

@@ -85,21 +85,21 @@ export class Logger implements ILogger {
       const b = chalk.dim;
 
       switch (level) {
-      case 'debug':
-        this.stream.write(util.format.apply(util, [b('[') + status.magenta('DEBUG') + b(']'), ...args]));
-      break;
-      case 'info':
-        this.stream.write(util.format.apply(util, args));
-        break;
-      case 'ok':
-        this.stream.write(util.format.apply(util, [b('[') + status.green('OK') + b(']'), ...args]));
-        break;
-      case 'warn':
-        this.stream.write(util.format.apply(util, [b('[') + status.yellow('WARN') + b(']'), ...args]));
-        break;
-      case 'error':
-        this.stream.write(util.format.apply(util, [b('[') + status.red('ERROR') + b(']'), ...args]));
-        break;
+        case 'debug':
+          this.stream.write(util.format.apply(util, [b('[') + status.magenta('DEBUG') + b(']'), ...args]));
+          break;
+        case 'info':
+          this.stream.write(util.format.apply(util, args));
+          break;
+        case 'ok':
+          this.stream.write(util.format.apply(util, [b('[') + status.green('OK') + b(']'), ...args]));
+          break;
+        case 'warn':
+          this.stream.write(util.format.apply(util, [b('[') + status.yellow('WARN') + b(']'), ...args]));
+          break;
+        case 'error':
+          this.stream.write(util.format.apply(util, [b('[') + status.red('ERROR') + b(']'), ...args]));
+          break;
       }
     }
   }

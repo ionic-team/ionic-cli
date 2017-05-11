@@ -100,42 +100,42 @@ export class ServeCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     options = normalizeOptionAliases(this.metadata, options);
 
-    const [ response ] = await this.env.hooks.fire('command:serve', {
+    const [response] = await this.env.hooks.fire('command:serve', {
       env: this.env,
       inputs,
       options: {
         ...options,
-        externalIpRequired: options.broadcast
+      externalIpRequired: options.broadcast
       }
-    });
+});
 
-    // If broadcast option then start udp server and broadcast info
-    if (options.broadcast) {
-      this.env.tasks.next(`Broadcasting server information`);
-      const appDetails = await this.env.project.load();
+// If broadcast option then start udp server and broadcast info
+if (options.broadcast) {
+  this.env.tasks.next(`Broadcasting server information`);
+  const appDetails = await this.env.project.load();
 
-      const message = JSON.stringify({
-        app_name: appDetails.name,
-        app_id: appDetails.app_id,
-        local_address: `${response.protocol}://${response.publicIp}:${response.httpPort}`
-      });
-      const dgram = load('dgram');
-      const server = dgram.createSocket('udp4');
+  const message = JSON.stringify({
+    app_name: appDetails.name,
+    app_id: appDetails.app_id,
+    local_address: `${response.protocol}://${response.publicIp}:${response.httpPort}`
+  });
+  const dgram = load('dgram');
+  const server = dgram.createSocket('udp4');
 
-      server.on('listening', () => {
-        server.setBroadcast(true);
-        setInterval(() => {
-          try {
-            server.send(message, 41234, '255.255.255.255');
-          } catch (e) {
-            throw e;
-          }
-        }, 3000);
-      });
+  server.on('listening', () => {
+    server.setBroadcast(true);
+    setInterval(() => {
+      try {
+        server.send(message, 41234, '255.255.255.255');
+      } catch (e) {
+        throw e;
+      }
+    }, 3000);
+  });
 
-      server.bind();
-    }
+  server.bind();
+}
 
-    this.env.tasks.end();
+this.env.tasks.end();
   }
 }
