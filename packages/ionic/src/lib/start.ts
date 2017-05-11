@@ -16,7 +16,7 @@ import {
 
 import { StarterTemplate, StarterTemplateType } from '../definitions';
 
-export function tarXvfFromUrl(url: string, destination: string) {
+export function tarXvfFromUrl(url: string, destination: string, { progress }: {  progress?: (loaded: number, total: number) => void }) {
   return new Promise<void>((resolve, reject) => {
     const archiveRequest = createRequest('get', url)
       .timeout(25000)
@@ -25,6 +25,15 @@ export function tarXvfFromUrl(url: string, destination: string) {
           reject(new Error(`Encountered bad status code (${res.statusCode}) for ${url}\n` +
                            `This could mean the server is experiencing difficulties right now--please try again later.\n\n` +
                            `If you're behind a firewall, you can proxy requests by using the HTTP_PROXY or IONIC_HTTP_PROXY environment variables.`));
+        }
+
+        if (progress) {
+          let loaded = 0;
+          const total = Number(res.headers['content-length']);
+          res.on('data', (chunk) => {
+            loaded += chunk.length;
+            progress(loaded, total);
+          });
         }
       })
       .on('error', (err) => {

@@ -223,20 +223,26 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
 
     this.env.tasks.end();
     this.env.log.info(`Fetching app base (${chalk.dim(wrapperBranchPath)})`);
-    this.env.tasks.next('Downloading');
-    await tarXvfFromUrl(wrapperBranchPath, projectRoot);
+    const d1Task = this.env.tasks.next('Downloading');
+    await tarXvfFromUrl(wrapperBranchPath, projectRoot, { progress: (loaded, total) => {
+      d1Task.progress(loaded, total);
+    }});
 
     this.env.tasks.end();
     this.env.log.info(`Fetching starter template ${chalk.bold(starterTemplateName.toString())} (${chalk.dim(starterBranchPath)})`);
-    this.env.tasks.next('Downloading');
-    await tarXvfFromUrl(starterBranchPath, extractDir);
+    const d2Task = this.env.tasks.next('Downloading');
+    await tarXvfFromUrl(starterBranchPath, extractDir, { progress: (loaded, total) => {
+      d2Task.progress(loaded, total);
+    }});
 
     if (options['type'] === 'ionic1') {
       const resourcesPath = 'https://github.com/driftyco/ionic-default-resources/archive/master.tar.gz';
       this.env.tasks.end();
       this.env.log.info(`Fetching resources (${chalk.dim(resourcesPath)})`);
-      this.env.tasks.next('Downloading');
-      await tarXvfFromUrl(resourcesPath, path.join(projectRoot, 'resources'));
+      const d3Task = this.env.tasks.next('Downloading');
+      await tarXvfFromUrl(resourcesPath, path.join(projectRoot, 'resources'), { progress: (loaded, total) => {
+        d3Task.progress(loaded, total);
+      }});
     }
 
     this.env.tasks.next(`Updating ${chalk.bold('package.json')} with app details`);
