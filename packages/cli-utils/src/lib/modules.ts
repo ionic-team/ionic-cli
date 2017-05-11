@@ -1,5 +1,4 @@
 import * as LeekType from 'leek';
-import * as ProgressBarType from 'progress';
 import * as archiverType from 'archiver';
 import * as crossSpawnType from 'cross-spawn';
 import * as inquirerType from 'inquirer';
@@ -19,7 +18,6 @@ export function load(modulePath: 'leek'): typeof LeekType;
 export function load(modulePath: 'lodash'): typeof lodashType;
 export function load(modulePath: 'ncp'): typeof ncpType;
 export function load(modulePath: 'os-name'): typeof osNameType;
-export function load(modulePath: 'progress'): typeof ProgressBarType;
 export function load(modulePath: 'semver'): typeof semverType;
 export function load(modulePath: 'slice-ansi'): typeof sliceAnsiType;
 export function load(modulePath: 'strip-ansi'): typeof stripAnsiType;

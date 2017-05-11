@@ -3,7 +3,6 @@ import * as tty from 'tty';
 import * as chalk from 'chalk';
 import * as inquirerType from 'inquirer';
 import ui = inquirerType.ui;
-import * as ProgressBarType from 'progress';
 
 import { ITask, ITaskChain } from '../../definitions';
 
@@ -28,7 +27,7 @@ export class Task implements ITask {
   public intervalId?: any;
   public running: boolean = false;
   private spinner: Spinner;
-  private progressBar?: ProgressBarType;
+  public progressRatio = -1;
 
   constructor(public msg: string, public bottomBar: ui.BottomBar) {
     this.spinner = new Spinner();
@@ -50,36 +49,15 @@ export class Task implements ITask {
   }
 
   progress(prog: number, total: number): this {
-    if (this.running && process.platform !== 'win32') {
-      if (!this.progressBar) {
-        const term = <any>tty; // TODO: type def issue
-        const ProgressBar = load('progress');
-        const s = new term.WriteStream();
-        s.columns = s.columns || 80;
-        this.progressBar = new ProgressBar('[:bar] :percent', {
-          total: total,
-          width: 30,
-          stream: s,
-        });
-      }
-
-      const progbar = <any>this.progressBar; // TODO: type def issue
-      progbar.curr = prog;
-
-      if (prog < total) {
-        this.progressBar.tick(0);
-      }
-
-      this.tick();
-    }
+    this.progressRatio = prog / total;
+    this.tick();
 
     return this;
   }
 
   format(): string {
-    const progbar = <any>this.progressBar; // TODO: type def issue
-    const progress = progbar ? progbar.lastDraw.trim() : '';
-    return `${chalk.bold(this.spinner.frame())} ${this.msg} ${progress}`;
+    const progress = this.progressRatio >= 0 ? (this.progressRatio * 100).toFixed(2) : '';
+    return `${chalk.bold(this.spinner.frame())} ${this.msg}${progress ? ' (' + chalk.bold(String(progress) + '%') + ')' : ''} `;
   }
 
   clear(): this {

@@ -54,7 +54,6 @@
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",
     "os-name": "^2.0.1",
-    "progress": "^1.1.8",
     "rimraf": "^2.5.4",
     "semver": "^5.3.0",
     "slice-ansi": "0.0.4",
@@ -63,16 +62,15 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
+    "@ionic/cli-scripts": "*",
     "@types/chalk": "^0.4.31",
     "@types/inquirer": "0.0.34",
     "@types/lodash": "^4.14.58",
     "@types/minimist": "^1.2.0",
     "@types/ncp": "^2.0.0",
-    "@types/progress": "^1.1.28",
     "@types/rimraf": "0.0.28",
     "@types/semver": "^5.3.31",
-    "@types/uuid": "^2.0.29",
-    "@ionic/cli-scripts": "*"
+    "@types/uuid": "^2.0.29"
   },
   "peerDependencies": {
     "strip-ansi": "^3.0.1"
