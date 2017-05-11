@@ -56,7 +56,7 @@ export class PackageClient {
 
   const res = await this.client.do(req);
 
-  if(!isPackageBuildResponse(res)) {
+  if (!isPackageBuildResponse(res)) {
   throw createFatalAPIFormat(req, res);
 }
 
@@ -70,7 +70,7 @@ async requestProjectUpload(): Promise < PackageProjectRequest > {
 
   const res = await this.client.do(req);
 
-  if(!isPackageProjectRequestResponse(res)) {
+  if (!isPackageProjectRequestResponse(res)) {
   throw createFatalAPIFormat(req, res);
 }
 
