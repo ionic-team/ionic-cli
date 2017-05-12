@@ -210,18 +210,20 @@ h2 a {
   background-position: center;
   border-radius: 3px 3px 0 0;
 }
+
 #iphone-frame .statusbar {
   background-image: url(../img/ios-statusbar.png);
 }
+
 #android-frame .statusbar {
   background-image: url(../img/android-statusbar.png);
 }
+
 #windows-frame .statusbar {
   background-image: url(../img/wp-statusbar.png)
 }
 
-/* Android and windows don't make space for the statusbar like iOS does */
-#android-frame iframe, #windows-frame iframe {
+.phone-frame-wrap iframe {
   height: 647px;
   margin-top: 20px;
 }
@@ -335,11 +337,13 @@ preview {
   .statusbar {
     width: 340px;
   }
+
   .phone-frame-wrap {
     width: 340px;
     height: 605px;
   }
-  #android-frame iframe, #windows-frame iframe {
+
+  .phone-frame-wrap iframe {
     height: 585px;
     margin-top: 20px;
   }
@@ -348,11 +352,13 @@ preview {
   .statusbar {
     width: 325px;
   }
+
   .phone-frame-wrap {
     width: 325px;
     height: 578px;
   }
-  #android-frame iframe, #windows-frame iframe {
+
+  .phone-frame-wrap iframe {
     height: 558px;
     margin-top: 20px;
   }
