@@ -44,6 +44,13 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     archive: 'https://github.com/driftyco/ionic2-starter-sidemenu/archive/<BRANCH_NAME>.tar.gz'
   },
   {
+    name: 'super',
+    type: 'ionic-angular',
+    description: 'A starting project complete with pre-built pages, providers and best practices for Ionic development.',
+    path: 'driftyco/ionic-starter-super',
+    archive: 'https://github.com/driftyco/ionic-starter-super/archive/<BRANCH_NAME>.tar.gz'
+  },
+  {
     name: 'conference',
     type: 'ionic-angular',
     description: 'A project that demonstrates a realworld application',
