@@ -150,6 +150,10 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       try {
         await loadPlugins(ienv);
       } catch (e) {
+        if (e.fatal) {
+          throw e;
+        }
+
         ienv.log.error(chalk.red.bold('Error occurred while loading plugins. CLI functionality may be limited.\nChecking for CLI updates now...'));
         ienv.log.debug(chalk.red(chalk.bold('Plugin error: ') + (e.stack ? e.stack : e)));
         updates = await checkForUpdates(ienv);

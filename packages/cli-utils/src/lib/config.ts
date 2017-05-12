@@ -6,7 +6,7 @@ import * as chalk from 'chalk';
 import { ConfigFile, IConfig } from '../definitions';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
-import { ERROR_FILE_NOT_FOUND, fsMkdirp, fsStat, fsReadJsonFile, fsWriteJsonFile } from './utils/fs';
+import { ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON, fsMkdirp, fsStat, fsReadJsonFile, fsWriteJsonFile } from './utils/fs';
 import { load } from './modules';
 
 export abstract class BaseConfig<T> implements IConfig<T> {
@@ -39,6 +39,11 @@ export abstract class BaseConfig<T> implements IConfig<T> {
       } catch (e) {
         if (e === ERROR_FILE_NOT_FOUND) {
           o = {};
+        } else if (e === ERROR_FILE_INVALID_JSON) {
+          throw new FatalException(
+            `The config file (${chalk.bold(prettyPath(this.filePath))}) is not valid JSON format.\n\n` +
+            `Please fix any JSON errors in the file.`
+          );
         } else {
           throw e;
         }
@@ -52,8 +57,11 @@ export abstract class BaseConfig<T> implements IConfig<T> {
       if (this.is<T>(o)) {
         this.configFile = o;
       } else {
-        throw new FatalException(`The config file (${chalk.bold(prettyPath(this.filePath))}) has an unrecognized format.\n`
-                               + `Try deleting the file.`);
+        throw new FatalException(
+          `The config file (${chalk.bold(prettyPath(this.filePath))}) has an unrecognized JSON format.\n\n` +
+          `This usually means a key had an unexpected value. Please look through it and fix any issues.\n` +
+          `If all else fails--the CLI will recreate the file if you delete it.`
+        );
       }
     }
 
