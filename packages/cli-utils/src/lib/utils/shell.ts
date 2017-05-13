@@ -1,3 +1,4 @@
+import * as os from 'os';
 import * as crossSpawnType from 'cross-spawn';
 
 import { load } from '../modules';
@@ -7,9 +8,24 @@ export interface RunCmdOptions extends crossSpawnType.SpawnOptions {
   stderrPipe?: NodeJS.WritableStream;
 }
 
+const TILDE_PATH_REGEX = /^~($|\/|\\)/;
+
+export function expandTildePath(p: string) {
+  const h = os.homedir();
+  return p.replace(TILDE_PATH_REGEX, `${h}$1`);
+}
+
 export function runcmd(command: string, args?: string[], options: RunCmdOptions = {}): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const crossSpawn = load('cross-spawn');
+
+    if (!options.env) {
+      options.env = {
+        ...process.env,
+        PATH: process.env.PATH.split(':').map(expandTildePath).join(':'),
+      };
+    }
+
     const p = crossSpawn.spawn(command, args, options);
     let stdoutBufs: Buffer[] = [];
     let stderrBufs: Buffer[] = [];
