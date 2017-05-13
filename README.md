@@ -4,12 +4,12 @@
 # Ionic CLI
 
 The Ionic command line interface (CLI) is your go-to tool for developing
-[Ionic](http://ionicframework.com/) apps.
+[Ionic](https://ionicframework.com/) apps.
 
 Use the `ionic help` command for more detailed task information.
 
 :mega: **Support/Questions?**: Please see our [Support
-Page](http://ionicframework.com/support) for general support questions. The
+Page](https://ionicframework.com/support) for general support questions. The
 issues on GitHub should be reserved for bug reports and feature requests.
 
 :heart: **Want to contribute?**: Please see
@@ -28,7 +28,7 @@ $ npm install -g ionic
 
 :memo: *Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix
 the command with `sudo` or can setup [proper file permissions on OSX for
-npm](http://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx/) to
+npm](https://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx/) to
 install without `sudo`.*
 
 ## Changes from CLI 2
@@ -147,7 +147,7 @@ you want to add. The proxies are object with the following properties:
 * `proxyUrl`: a string with the url of where the proxied request should go.
 * `proxyNoAgent`: (optional) true/false, if true opts out of connection
   pooling, see
-  [HttpAgent](http://nodejs.org/api/http.html#http_class_http_agent)
+  [HttpAgent](https://nodejs.org/api/http.html#http_class_http_agent)
 
 ```json
 {
