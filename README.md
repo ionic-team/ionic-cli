@@ -4,7 +4,7 @@
 # Ionic CLI
 
 The Ionic command line interface (CLI) is your go-to tool for developing
-[Ionic](http://ionicframework.com/) apps.
+[Ionic](https://ionicframework.com/) apps.
 
 Use the `ionic help` command for more detailed task information.
 
@@ -70,6 +70,7 @@ see
 * [sidemenu](https://github.com/driftyco/ionic2-starter-sidemenu)
 * [conference](https://github.com/driftyco/ionic-conference-app)
 * [tutorial](https://github.com/driftyco/ionic2-starter-tutorial)
+* [super](https://github.com/driftyco/ionic-starter-super)
 
 ```bash
 $ ionic start --list
@@ -147,7 +148,7 @@ you want to add. The proxies are object with the following properties:
 * `proxyUrl`: a string with the url of where the proxied request should go.
 * `proxyNoAgent`: (optional) true/false, if true opts out of connection
   pooling, see
-  [HttpAgent](http://nodejs.org/api/http.html#http_class_http_agent)
+  [HttpAgent](https://nodejs.org/api/http.html#http_class_http_agent)
 
 ```json
 {
