@@ -75,15 +75,17 @@ published as `ionic`.
    
 ###### Windows
 1. Create a `ionic-local.cmd` file at `%AppData%\npm\` with the following content:
-```
-@IF EXIST "%~dp0\node.exe" (
-  "%~dp0\node.exe"  "C:\path\to\ionic-cli\packages\ionic\bin\ionic" %*
-) ELSE (
-  @SETLOCAL
-  @SET PATHEXT=%PATHEXT:;.JS;=;%
-  node  "C:\path\to\ionic-cli\packages\ionic\bin\ionic" %*
-)
-```
+
+    ```batch
+    @IF EXIST "%~dp0\node.exe" (
+      "%~dp0\node.exe"  "C:\path\to\ionic-cli\packages\ionic\bin\ionic" %*
+    ) ELSE (
+      @SETLOCAL
+      @SET PATHEXT=%PATHEXT:;.JS;=;%
+      node  "C:\path\to\ionic-cli\packages\ionic\bin\ionic" %*
+    )
+    ```
+
 1. You should now be able to run `ionic-local help` and see your locally
    installed version without change the existing ionic installation.
 
