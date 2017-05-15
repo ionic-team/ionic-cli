@@ -51,6 +51,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
     wwwDir: path.join(args.env.project.directory, 'www'),
     address: <string>args.options['address'] || DEFAULT_ADDRESS,
     port: stringToInt(<string>args.options['port'], DEFAULT_SERVER_PORT),
+    httpPort: stringToInt(<string>args.options['port'], DEFAULT_SERVER_PORT),
     livereloadPort: stringToInt(<string>args.options['livereload-port'], DEFAULT_LIVERELOAD_PORT),
     browser: <string>args.options['browser'],
     browseroption: <string>args.options['browseroption'],
@@ -73,7 +74,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
     findClosestOpenPort(serverOptions.address, serverOptions.port),
     findClosestOpenPort(serverOptions.address, serverOptions.livereloadPort),
   ]);
-  serverOptions.port = portResults[0];
+  serverOptions.port = serverOptions.httpPort = portResults[0];
   serverOptions.livereloadPort = portResults[1];
 
   // Check if gulp is installed globally for sass
