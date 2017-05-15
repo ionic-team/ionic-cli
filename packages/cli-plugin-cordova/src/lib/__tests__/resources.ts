@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as resources from '../resources';
-import * as util from '@ionic/cli-utils';
+import * as cliUtils from '@ionic/cli-utils';
 
 import { ImageResource, SourceImage } from '../../definitions';
 
@@ -63,30 +63,30 @@ describe('resources', () => {
       }));
 
     it('should create directories that required for all of the images', async function() {
-      spyOn(util, 'fsMkdirp').and.callFake((dir) => Promise.resolve(dir));
+      spyOn(cliUtils, 'fsMkdirp').and.callFake((dir) => Promise.resolve(dir));
       await resources.createImgDestinationDirectories(imgResources);
 
-      expect((<jasmine.Spy>util.fsMkdirp).calls.count()).toEqual(2);
-      expect((<jasmine.Spy>util.fsMkdirp).calls.argsFor(0)).toEqual(['/resourcesDir/ios/splash']);
-      expect((<jasmine.Spy>util.fsMkdirp).calls.argsFor(1)).toEqual(['/resourcesDir/android/splash']);
+      expect((<jasmine.Spy>cliUtils.fsMkdirp).calls.count()).toEqual(2);
+      expect((<jasmine.Spy>cliUtils.fsMkdirp).calls.argsFor(0)).toEqual(['/resourcesDir/ios/splash']);
+      expect((<jasmine.Spy>cliUtils.fsMkdirp).calls.argsFor(1)).toEqual(['/resourcesDir/android/splash']);
     });
   });
 
   describe('getSourceImages', () => {
     it('should look in resources directory and platform directories to find images', async function() {
-      spyOn(util, 'readDir').and.returnValue(Promise.resolve([]));
+      spyOn(cliUtils, 'readDir').and.returnValue(Promise.resolve([]));
 
       await resources.getSourceImages(['ios', 'android'], ['splash', 'icon'], '/resourceDir');
 
-      expect((<jasmine.Spy>util.readDir).calls.count()).toEqual(3);
-      expect((<jasmine.Spy>util.readDir).calls.argsFor(0)).toEqual(['/resourceDir/ios']);
-      expect((<jasmine.Spy>util.readDir).calls.argsFor(1)).toEqual(['/resourceDir/android']);
-      expect((<jasmine.Spy>util.readDir).calls.argsFor(2)).toEqual(['/resourceDir']);
+      expect((<jasmine.Spy>cliUtils.readDir).calls.count()).toEqual(3);
+      expect((<jasmine.Spy>cliUtils.readDir).calls.argsFor(0)).toEqual(['/resourceDir/ios']);
+      expect((<jasmine.Spy>cliUtils.readDir).calls.argsFor(1)).toEqual(['/resourceDir/android']);
+      expect((<jasmine.Spy>cliUtils.readDir).calls.argsFor(2)).toEqual(['/resourceDir']);
     });
 
     it('should find all sourceImages available and prioritize based on specificity', async function() {
-      spyOn(util, 'getFileChecksum').and.returnValue(Promise.resolve('FJDKLFJDKL'));
-      spyOn(util, 'readDir').and.callFake((dir) => {
+      spyOn(cliUtils, 'getFileChecksum').and.returnValue(Promise.resolve('FJDKLFJDKL'));
+      spyOn(cliUtils, 'readDir').and.callFake((dir) => {
         switch (dir) {
         case '/resourceDir/ios':
           return Promise.resolve([
@@ -270,7 +270,7 @@ describe('resources', () => {
 
   describe('uploadSourceImages', () => {
     it('should upload an image and receive back metadata', async function() {
-      const createRequestSpy = jest.spyOn(util, 'createRequest');
+      const createRequestSpy = jest.spyOn(cliUtils, 'createRequest');
       const createRequestMock = {
         timeout: jest.fn().mockReturnThis(),
         type: jest.fn().mockReturnThis(),
@@ -312,8 +312,8 @@ describe('resources', () => {
 
   describe('transformResourceImage', () => {
     it('should upload an image and write a stream to the destination', async function() {
-      jest.spyOn(util, 'writeStreamToFile').mockImplementationOnce(() => Promise.resolve());
-      const createRequestSpy = jest.spyOn(util, 'createRequest');
+      jest.spyOn(cliUtils, 'writeStreamToFile').mockImplementationOnce(() => Promise.resolve());
+      const createRequestSpy = jest.spyOn(cliUtils, 'createRequest');
       const createRequestMock = {
         timeout: jest.fn().mockReturnThis(),
         type: jest.fn().mockReturnThis(),
@@ -338,7 +338,7 @@ describe('resources', () => {
 
       await resources.transformResourceImage(imgResource);
 
-      expect(util.writeStreamToFile).toHaveBeenCalledWith(
+      expect(cliUtils.writeStreamToFile).toHaveBeenCalledWith(
         createRequestMock, imgResource.dest
       );
     });

@@ -206,7 +206,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 /**
  * Find the base project directory based on the dir input
  */
-async function getProjectRootDir(dir: string, projectFileName: string): Promise<string> {
+export async function getProjectRootDir(dir: string, projectFileName: string): Promise<string> {
+  dir = path.normalize(dir);
   const dirInfo = path.parse(dir);
   const directoriesToCheck = dirInfo.dir
     .slice(dirInfo.root.length)
