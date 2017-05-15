@@ -37,7 +37,7 @@ describe('ionic getProjectRootDir', () => {
       .mockImplementationOnce(() => Promise.resolve(['really']))
       .mockImplementationOnce(() => Promise.resolve(['is']))
       .mockImplementationOnce(() => Promise.resolve(['that']))
-      .mockImplementationOnce(() => Promise.resolve(['dir', 'foo']))
+      .mockImplementationOnce(() => Promise.resolve(['dir', 'foo']));
     const result = await getProjectRootDir('/some/dir/that/is/really/nested', 'foo');
     expect(result).toEqual('/some');
   });
@@ -82,7 +82,7 @@ describe('ionic getProjectRootDir', () => {
         .mockImplementationOnce(() => Promise.resolve(['really']))
         .mockImplementationOnce(() => Promise.resolve(['is']))
         .mockImplementationOnce(() => Promise.resolve(['that']))
-        .mockImplementationOnce(() => Promise.resolve(['dir', 'foo']))
+        .mockImplementationOnce(() => Promise.resolve(['dir', 'foo']));
       const result = await getProjectRootDir('C:\\some\\dir\\\\that\\is\\really\\nested', 'foo');
       expect(result).toEqual('C:\\some');
     });
