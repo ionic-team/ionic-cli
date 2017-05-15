@@ -1,4 +1,5 @@
 import * as os from 'os';
+import * as path from 'path';
 import * as crossSpawnType from 'cross-spawn';
 
 import { load } from '../modules';
@@ -22,7 +23,7 @@ export function runcmd(command: string, args?: string[], options: RunCmdOptions 
     if (!options.env) {
       options.env = {
         ...process.env,
-        PATH: process.env.PATH.split(':').map(expandTildePath).join(':'),
+        PATH: process.env.PATH.split(path.delimiter).map(expandTildePath).join(path.delimiter),
       };
     }
 
