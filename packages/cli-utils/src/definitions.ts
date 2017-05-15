@@ -179,6 +179,7 @@ export interface IApp {
 export interface IProject extends IConfig<ProjectFile> {
   directory: string;
 
+  formatType(input: ProjectType): string;
   loadAppId(): Promise<string>;
   loadPackageJson(): Promise<PackageJson>;
   loadBowerJson(): Promise<BowerJson>;

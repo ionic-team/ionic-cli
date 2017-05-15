@@ -2,7 +2,6 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 
 import { IonicEnvironment, Plugin } from '../definitions';
-import { PROJECT_TYPES_PRETTY } from './project';
 import { load } from './modules';
 import { readDir } from './utils/fs';
 import { getGlobalProxy } from './http';
@@ -24,7 +23,7 @@ export async function promptToInstallProjectPlugin(env: IonicEnvironment, { mess
   const projectPlugin = formatFullPluginName(project.type);
 
   if (!message) {
-    message = `Looks like this is an ${PROJECT_TYPES_PRETTY.get(project.type)} project, would you like to install ${chalk.green(projectPlugin)} and continue?`;
+    message = `Looks like this is an ${env.project.formatType(project.type)} project, would you like to install ${chalk.green(projectPlugin)} and continue?`;
   }
 
   return await promptToInstallPlugin(env, projectPlugin, { message });

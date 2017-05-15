@@ -15,7 +15,6 @@ import {
   pkgInstallPlugin,
   prettyPath,
   rimrafp,
-  validators,
 } from '@ionic/cli-utils';
 
 import {
@@ -47,10 +46,6 @@ import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
     {
       name: 'name',
       description: 'The name of your project directory',
-      validators: [validators.required],
-      prompt: {
-        message: 'What would you like to name your project:',
-      },
     },
     {
       name: 'template',
@@ -117,6 +112,25 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (options['v1'] || options['v2']) {
+      const type = options['v1'] ? 'ionic1' : 'ionic-angular';
+
+      throw this.exit(
+        `Sorry! The ${chalk.green('--v1')} and ${chalk.green('--v2')} flags have been removed.\n` +
+        `Use the ${chalk.green('--type')} option. (${chalk.green('ionic start --help')})\n\n` +
+        `For ${chalk.bold(this.env.project.formatType(type))} projects, try ${chalk.green('ionic start ' + (inputs.length > 0 ? inputs.join(' ') + ' ' : '') + '--type ' + type)}`
+      );
+    }
+
+    if (!inputs[0]) {
+      const response = await this.env.prompt({
+        name: 'name',
+        message: 'What would you like to name your project:',
+      });
+
+      inputs[0] = response['name'];
+    }
+
     if (!inputs[1]) {
       const response = await this.env.prompt({
         type: 'list',
