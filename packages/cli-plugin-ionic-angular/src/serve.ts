@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 
-import { CommandHookArgs, getAvailableIPAddress } from '@ionic/cli-utils';
+import { CommandHookArgs, FatalException, getAvailableIPAddress } from '@ionic/cli-utils';
 
 import { load } from './lib/modules';
 import { minimistOptionsToArray } from './utils/arguments';
@@ -48,7 +48,11 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   const settings = await AppScripts.serve(context);
 
   if (!settings) { // TODO: shouldn't be needed
-    throw new Error(`app-scripts serve unexpectedly failed.`);
+    throw new FatalException(
+      `app-scripts serve unexpectedly failed.` +
+      `settings: ${settings}` +
+      `context: ${context}`
+    );
   }
 
   return  {
