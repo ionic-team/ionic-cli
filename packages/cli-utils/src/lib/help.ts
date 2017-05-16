@@ -139,6 +139,7 @@ function formatCommandUsage(inputs: CommandInput[] = [], commandName: string): s
 
   return `
   ${chalk.bold('Usage')}:
+
     ${usageLine}
   `;
 }
@@ -158,6 +159,7 @@ function formatCommandInputs(inputs: CommandInput[] = []): string {
 
   return `
   ${chalk.bold('Inputs')}:
+
     ${inputs.map(inputLineFn).join(`
     `)}
   `;
@@ -191,6 +193,7 @@ function formatCommandOptions(options: CommandOption[] = []): string {
 
   return `
   ${chalk.bold('Options')}:
+
     ${options.map(formatOptionLine).join(`
     `)}
   `;
@@ -205,6 +208,7 @@ function formatCommandExamples(exampleCommands: string[] | undefined, commandNam
 
   return `
   ${chalk.bold('Examples')}:
+
     ${exampleLines.join(`
     `)}
   `;
