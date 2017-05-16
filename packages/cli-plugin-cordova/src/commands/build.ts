@@ -49,6 +49,11 @@ import { CordovaPlatformCommand } from './base';
       description: 'Minify CSS for this build',
       type: Boolean
     },
+    {
+      name: 'optimizejs',
+      description: 'Perform JS optimizations for this build',
+      type: Boolean
+    },
     // Cordova Options
     {
       name: 'debug',

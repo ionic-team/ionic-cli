@@ -81,6 +81,11 @@ export const CORDOVA_RUN_COMMAND_OPTIONS = [
     type: Boolean
   },
   {
+    name: 'optimizejs',
+    description: 'Perform JS optimizations for this build',
+    type: Boolean
+  },
+  {
     name: 'debug',
     description: 'Mark as a debug build',
     type: Boolean,
