@@ -212,10 +212,25 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
   }
 
   for (let pluginName in env.plugins) {
-    if (pluginName !== 'ionic') {
-      const plugin = env.plugins[pluginName];
-      const distTag = getReleaseChannelName(plugin.version);
+    if (pluginName === 'ionic') {
+      continue;
+    }
 
+    const plugin = env.plugins[pluginName];
+    const distTag = getReleaseChannelName(plugin.version);
+
+    if (plugin.preferGlobal) {
+      if (ionicDistTag === distTag) {
+        const latestVersion = await getLatestPluginVersion(env, plugin);
+
+        if (semver.gt(latestVersion, plugin.version) || (ionicDistTag === 'canary' && latestVersion !== plugin.version)) {
+          env.log.warn(`Globally installed CLI Plugin ${chalk.green(plugin.name + '@' + chalk.bold(plugin.version))} has an update available (${chalk.green.bold(latestVersion)})! Please upgrade:\n\n    ${chalk.green('npm install -g ' + plugin.name + '@' + distTag)}\n\n`);
+        }
+      } else {
+        env.log.warn(`Globally installed CLI Plugin ${chalk.green(plugin.name + chalk.bold('@' + distTag))} has a different distribution tag than the Ionic CLI (${chalk.green.bold('@' + ionicDistTag)}).\n` +
+                     `Please install the matching plugin version:\n\n    ${chalk.green('npm install -g ' + plugin.name + '@' + ionicDistTag)}\n\n`);
+      }
+    } else {
       if (ionicDistTag === distTag) {
         const latestVersion = await getLatestPluginVersion(env, plugin);
 

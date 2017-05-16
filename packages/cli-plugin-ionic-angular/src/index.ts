@@ -9,6 +9,7 @@ import { serve } from './serve';
 
 export const name = '__NAME__';
 export const version = '__VERSION__';
+export const preferGlobal = false;
 
 async function getIonicAngularVersion(env: IonicEnvironment): Promise<string | undefined> {
   const ionicAngularPackageJsonFilePath = path.resolve(env.project.directory, 'node_modules', 'ionic-angular', 'package.json'); // TODO

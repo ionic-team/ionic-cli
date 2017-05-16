@@ -410,6 +410,7 @@ export interface IonicEnvironment {
 export interface Plugin {
   name: string;
   version: string;
+  preferGlobal?: boolean;
   namespace?: INamespace;
   registerHooks?(hooks: IHookEngine): void;
 }

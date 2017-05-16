@@ -3,6 +3,7 @@ import { CordovaNamespace } from './commands';
 
 export const name = '__NAME__';
 export const version = '__VERSION__';
+export const preferGlobal = false;
 
 export const namespace = new CordovaNamespace();
 

@@ -7,6 +7,7 @@ import { serve } from './serve/index';
 
 export const name = '__NAME__';
 export const version = '__VERSION__';
+export const preferGlobal = false;
 
 export function registerHooks(hooks: IHookEngine) {
   hooks.register(name, 'command:docs', async () => {
