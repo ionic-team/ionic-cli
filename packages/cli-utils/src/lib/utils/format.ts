@@ -18,11 +18,11 @@ export function prettyPath(p: string): string {
   const h = os.homedir();
 
   if (cwd === d) {
-    return './' + path.basename(p);
+    return '.' + path.sep + path.basename(p);
   } else if (d.startsWith(cwd)) {
-    return './' + p.substring(cwd.length + 1);
+    return '.' + path.sep + p.substring(cwd.length + 1);
   } else if (p.indexOf(h) === 0) {
-    return '~/' + p.substring(h.length + 1);
+    return '~' + path.sep + p.substring(h.length + 1);
   }
 
   return p;
