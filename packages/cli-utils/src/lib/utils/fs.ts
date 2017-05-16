@@ -22,7 +22,7 @@ export interface FSWriteFileOptions {
 }
 
 export const fsAccess = promisify<NodeJS.ErrnoException, string>(fs.access);
-export const fsMkdir = promisify<void, string, number>(fs.mkdir);
+export const fsMkdir = promisify<void, string, number | undefined>(fs.mkdir);
 export const fsStat = promisify<fs.Stats, string>(fs.stat);
 export const fsReadFile = promisify<string, string, FSReadFileOptions>(fs.readFile);
 export const fsWriteFile = promisify<void, string, any, FSWriteFileOptions>(fs.writeFile);
@@ -73,10 +73,6 @@ export async function fileToString(filepath: string): Promise<string> {
 }
 
 export async function fsMkdirp(p: string, mode?: number): Promise<void> {
-  if (typeof mode === 'undefined') {
-    mode = 0o777 & (~process.umask());
-  }
-
   const absPath = path.resolve(p);
   const pathObj = path.parse(absPath);
   const dirnames = absPath.split(path.sep).splice(1);

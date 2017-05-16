@@ -160,7 +160,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     }
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<number | void> {
     let [ projectName, starterTemplateName ] = inputs;
     let appName = <string>options['app-name'] || projectName;
     let cloudAppId = <string>options['cloud-app-id'] || '';

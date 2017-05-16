@@ -118,14 +118,14 @@ export const CORDOVA_RUN_COMMAND_OPTIONS = [
 ];
 
 export class CordovaCommand extends Command implements CommandPreInputsPrompt {
-  async preInputsPrompt(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async preInputsPrompt(inputs: CommandLineInputs): Promise<void> {
     if (this.env.project.directory) {
       const wwwPath = path.join(this.env.project.directory, 'www');
       const wwwExists = await pathExists(wwwPath); // TODO: hard-coded
 
       if (!wwwExists) {
         this.env.tasks.next(`Creating ${chalk.bold(prettyPath(wwwPath))} directory for you`);
-        await fsMkdir(wwwPath);
+        await fsMkdir(wwwPath, undefined);
         this.env.tasks.end();
       }
     }

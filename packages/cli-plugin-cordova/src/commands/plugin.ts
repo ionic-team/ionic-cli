@@ -48,6 +48,8 @@ export class PluginCommand extends CordovaCommand implements CommandPreInputsPro
       this.env.log.msg(response);
       return 0;
     }
+
+    await super.preInputsPrompt(inputs);
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
