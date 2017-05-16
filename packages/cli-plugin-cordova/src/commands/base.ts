@@ -29,61 +29,61 @@ export const CORDOVA_RUN_COMMAND_OPTIONS = [
     name: 'livereload',
     description: 'Spin up server to live-reload www files',
     type: Boolean,
-    aliases: ['l']
+    aliases: ['l'],
   },
   {
     name: 'consolelogs',
     description: 'Print out console logs to terminal',
     type: Boolean,
-    aliases: ['c']
+    aliases: ['c'],
   },
   {
     name: 'serverlogs',
     description: 'Print out dev server logs to terminal',
     type: Boolean,
-    aliases: ['s']
+    aliases: ['s'],
   },
   {
     name: 'address',
     description: 'Use specific address for dev/live-reload server',
-    default: '0.0.0.0'
+    default: '0.0.0.0',
   },
   {
     name: 'port',
     description: 'Use specific port for the dev server',
     default: '8100',
-    aliases: ['p']
+    aliases: ['p'],
   },
   {
     name: 'livereload-port',
     description: 'Use specific port for live-reload server',
     default: '35729',
-    aliases: ['r']
+    aliases: ['r'],
   },
   {
     name: 'prod',
     description: 'Mark as a production build',
-    type: Boolean
+    type: Boolean,
   },
   {
     name: 'aot',
     description: 'Perform ahead-of-time compilation for this build',
-    type: Boolean
+    type: Boolean,
   },
   {
     name: 'minifyjs',
     description: 'Minify JS for this build',
-    type: Boolean
+    type: Boolean,
   },
   {
     name: 'minifycss',
     description: 'Minify CSS for this build',
-    type: Boolean
+    type: Boolean,
   },
   {
     name: 'optimizejs',
     description: 'Perform JS optimizations for this build',
-    type: Boolean
+    type: Boolean,
   },
   {
     name: 'debug',

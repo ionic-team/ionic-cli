@@ -70,7 +70,7 @@ import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
       name: 'list',
       description: 'List starter templates available',
       type: Boolean,
-      aliases: ['l']
+      aliases: ['l'],
     },
     {
       name: 'skip-deps',
@@ -78,9 +78,10 @@ import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
       type: Boolean,
     },
     {
-      name: 'no-cordova',
+      name: 'cordova',
       description: 'Skip automatic Cordova integration',
       type: Boolean,
+      default: true,
     },
     {
       name: 'yarn',
@@ -181,7 +182,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     if (!options['skip-deps']) {
       // Check global dependencies
       const globalDeps = starterType.globalDependencies.filter(dep => {
-        return dep !== 'cordova' || options['no-cordova'];
+        return dep !== 'cordova' || !options['cordova'];
       });
 
       this.env.log.debug(`globalDeps=${globalDeps}`);
@@ -298,7 +299,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
       await pkgInstall(this.env, undefined, o);
 
       const localDeps = starterType.localDependencies.filter(dep => {
-        return dep !== '@ionic/cli-plugin-cordova' || options['no-cordova'];
+        return dep !== '@ionic/cli-plugin-cordova' || !options['cordova'];
       });
 
       this.env.log.debug(`localDeps=${localDeps}`);

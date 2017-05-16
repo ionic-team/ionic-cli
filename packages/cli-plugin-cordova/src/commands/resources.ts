@@ -58,13 +58,13 @@ const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
       name: 'icon',
       description: 'Generate icon resources',
       type: Boolean,
-      aliases: ['i']
+      aliases: ['i'],
     },
     {
       name: 'splash',
       description: 'Generate splash screen resources',
       type: Boolean,
-      aliases: ['s']
+      aliases: ['s'],
     }
   ]
 })

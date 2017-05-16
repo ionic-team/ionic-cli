@@ -162,28 +162,36 @@ function formatCommandInputs(inputs: CommandInput[] = []): string {
     `)}
   `;
 }
+function formatOptionDefault(opt: CommandOption) {
+  if (typeof opt.default === 'string') {
+    return chalk.dim(' (default: ') + chalk.green(opt.default) + chalk.dim(')');
+  } else {
+    return '';
+  }
+}
+
+function formatOptionLine(opt: CommandOption) {
+  const showInverse = opt.type === Boolean && opt.default === true && opt.name.length > 1;
+  const optionList = (showInverse ? chalk.green(`--no-${opt.name}`) : chalk.green(`-${opt.name.length > 1 ? '-' : ''}${opt.name}`)) +
+    (!showInverse && opt.aliases && opt.aliases.length > 0 ? ', ' +
+      opt.aliases
+      .map((alias) => chalk.green(`-${alias}`))
+      .join(', ') : '');
+
+  const optionListLength = stringWidth(optionList);
+  const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
+
+  return `${optionList} ${Array(fullLength - optionListLength).fill(chalk.dim('.')).join('')} ${opt.description}${formatOptionDefault(opt)}`;
+}
 
 function formatCommandOptions(options: CommandOption[] = []): string {
   if (options.length === 0) {
     return '';
   }
 
-  function optionLineFn(opt: CommandOption) {
-    const optionList = chalk.green(`-${opt.name.length > 1 ? '-' : ''}${opt.name}`) +
-      (opt.aliases && opt.aliases.length > 0 ? ', ' +
-       opt.aliases
-         .map((alias) => chalk.green(`-${alias}`))
-         .join(', ') : '');
-
-    const optionListLength = stringWidth(optionList);
-    const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
-
-    return `${optionList} ${Array(fullLength - optionListLength).fill(chalk.dim('.')).join('')} ${opt.description}${typeof opt.default === 'string' ? ' (default: ' + chalk.green(opt.default) + ')' : ''}`;
-  }
-
   return `
   ${chalk.bold('Options')}:
-    ${options.map(optionLineFn).join(`
+    ${options.map(formatOptionLine).join(`
     `)}
   `;
 }

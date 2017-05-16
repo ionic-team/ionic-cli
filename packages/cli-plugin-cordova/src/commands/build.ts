@@ -32,27 +32,27 @@ import { CordovaPlatformCommand } from './base';
     {
       name: 'prod',
       description: 'Build the application for production',
-      type: Boolean
+      type: Boolean,
     },
     {
       name: 'aot',
       description: 'Perform ahead-of-time compilation for this build',
-      type: Boolean
+      type: Boolean,
     },
     {
       name: 'minifyjs',
       description: 'Minify JS for this build',
-      type: Boolean
+      type: Boolean,
     },
     {
       name: 'minifycss',
       description: 'Minify CSS for this build',
-      type: Boolean
+      type: Boolean,
     },
     {
       name: 'optimizejs',
       description: 'Perform JS optimizations for this build',
-      type: Boolean
+      type: Boolean,
     },
     // Cordova Options
     {

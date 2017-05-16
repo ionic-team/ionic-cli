@@ -20,64 +20,64 @@ import { load } from '../lib/modules';
       name: 'consolelogs',
       description: 'Print app console logs to Ionic CLI',
       type: Boolean,
-      aliases: ['c']
+      aliases: ['c'],
     },
     {
       name: 'serverlogs',
       description: 'Print dev server logs to Ionic CLI',
       type: Boolean,
-      aliases: ['s']
+      aliases: ['s'],
     },
     {
       name: 'port',
       description: 'Dev server HTTP port',
       default: '8100',
-      aliases: ['p']
+      aliases: ['p'],
     },
     {
       name: 'livereload-port',
       description: 'Live Reload port',
       default: '35729',
-      aliases: ['r']
+      aliases: ['r'],
     },
     {
       name: 'nobrowser',
       description: 'Disable launching a browser',
       type: Boolean,
-      aliases: ['b']
+      aliases: ['b'],
     },
     {
       name: 'nolivereload',
       description: 'Do not start live reload',
       type: Boolean,
-      aliases: ['d']
+      aliases: ['d'],
     },
     {
       name: 'noproxy',
       description: 'Do not add proxies',
       type: Boolean,
-      aliases: ['x']
+      aliases: ['x'],
     },
     {
       name: 'address',
       description: 'Network address for server',
-      default: '0.0.0.0'
+      default: '0.0.0.0',
     },
     {
       name: 'browser',
       description: `Specifies the browser to use (${['safari', 'firefox', 'chrome'].map(b => chalk.green(b)).join(', ')})`,
-      aliases: ['w']
+      aliases: ['w'],
     },
     {
       name: 'browseroption',
       description: 'Specifies a path to open to (/#/tab/dash)',
-      aliases: ['o']
+      aliases: ['o'],
     },
     {
       name: 'lab',
       description: 'Test your apps on multiple platform types in the browser',
       type: Boolean,
-      aliases: ['l']
+      aliases: ['l'],
     },
     {
       name: 'nogulp',
@@ -92,7 +92,7 @@ import { load } from '../lib/modules';
     {
       name: 'platform',
       description: 'Start serve with a specific platform (ios/android)',
-      aliases: ['t']
+      aliases: ['t'],
     },
   ],
 })

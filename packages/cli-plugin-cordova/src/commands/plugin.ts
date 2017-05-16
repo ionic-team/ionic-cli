@@ -32,7 +32,7 @@ import { CordovaCommand } from './base';
       name: 'force',
       description: `Forve overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
       type: Boolean,
-      default: false
+      default: false,
     }
   ]
 })

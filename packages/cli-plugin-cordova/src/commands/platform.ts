@@ -40,7 +40,7 @@ import { CordovaCommand } from './base';
       description: `Do not add default Ionic icons and splash screen resources (corresponds to ${chalk.green('add')})`,
       type: Boolean,
       default: false,
-      aliases: ['r']
+      aliases: ['r'],
     },
   ]
 })
