@@ -11,7 +11,7 @@
     "publish:canary": "lerna publish --canary --exact --npm-tag canary",
     "publish:beta": "lerna publish --exact --npm-tag beta",
     "publish:ci": "npm run publish:canary -- --yes",
-    "publish": "lerna publish --exact",
+    "publish": "lerna publish --exact --conventional-commits",
     "prepush": "npm run lint"
   },
   "devDependencies": {
