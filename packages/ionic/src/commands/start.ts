@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
 import * as chalk from 'chalk';
@@ -10,6 +9,7 @@ import {
   CommandMetadata,
   CommandPreInputsPrompt,
   CommandPreRun,
+  fsMkdir,
   getCommandInfo,
   pathExists,
   pkgInstall,
@@ -182,7 +182,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     if (!options['skip-deps']) {
       // Check global dependencies
       const globalDeps = starterType.globalDependencies.filter(dep => {
-        return dep !== 'cordova' || !options['cordova'];
+        return dep !== 'cordova' || options['cordova'];
       });
 
       this.env.log.debug(`globalDeps=${globalDeps}`);
@@ -210,8 +210,8 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     // Create the project directory
     if (!projectExists) {
       this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
-      fs.mkdirSync(projectRoot);
-    } else if (!isSafeToCreateProjectIn(projectRoot)) {
+      await fsMkdir(projectRoot, undefined);
+    } else if (!(await isSafeToCreateProjectIn(projectRoot))) {
       const response = await this.env.prompt({
         type: 'confirm',
         name: 'overwrite',
@@ -223,7 +223,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
         try {
           this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
           await rimrafp(projectRoot);
-          fs.mkdirSync(projectRoot);
+          await fsMkdir(projectRoot, undefined);
         } catch (e) {
           throw e;
         }
@@ -299,7 +299,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
       await pkgInstall(this.env, undefined, o);
 
       const localDeps = starterType.localDependencies.filter(dep => {
-        return dep !== '@ionic/cli-plugin-cordova' || !options['cordova'];
+        return dep !== '@ionic/cli-plugin-cordova' || options['cordova'];
       });
 
       this.env.log.debug(`localDeps=${localDeps}`);

@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import * as zlib from 'zlib';
 
@@ -9,7 +8,9 @@ import {
   ERROR_FILE_INVALID_JSON,
   ERROR_FILE_NOT_FOUND,
   createRequest,
+  fsReadDir,
   fsReadJsonFile,
+  fsUnlink,
   fsWriteJsonFile,
   load as loadFromUtils,
 } from '@ionic/cli-utils';
@@ -82,14 +83,16 @@ export function isProjectNameValid(name: string): boolean {
  * We also special case IJ-based products .idea because it integrates with CRA:
  * https://github.com/facebookincubator/create-react-app/pull/368#issuecomment-243446094
  */
-export function isSafeToCreateProjectIn(root: string): boolean {
-  var validFiles = [
+export async function isSafeToCreateProjectIn(root: string): Promise<boolean> {
+  const validFiles = [
     '.DS_Store', 'Thumbs.db', '.git', '.gitignore', '.idea', 'README.md', 'LICENSE'
   ];
-  return fs.readdirSync(root)
-    .every(function(file) {
-      return validFiles.indexOf(file) >= 0;
-    });
+
+  const entries = await fsReadDir(root);
+
+  return entries.every((file) => {
+    return validFiles.indexOf(file) >= 0;
+  });
 }
 
 /**
@@ -159,7 +162,7 @@ export async function patchPackageJsonForCli(appName: string, starterType: Start
     let finalPackage = lodash.merge(pkg, patch);
 
     await fsWriteJsonFile(packagePath, finalPackage, { encoding: 'utf8' });
-    fs.unlink(patchPackagePath);
+    fsUnlink(patchPackagePath); // no await
 
   } catch (e) {
     if (e === ERROR_FILE_NOT_FOUND) {

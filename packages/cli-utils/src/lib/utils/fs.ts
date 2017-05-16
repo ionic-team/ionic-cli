@@ -21,9 +21,10 @@ export interface FSWriteFileOptions {
   flag?: string;
 }
 
-export const fsAccess = promisify<NodeJS.ErrnoException, string>(fs.access);
+export const fsAccess = promisify<void, string>(fs.access);
 export const fsMkdir = promisify<void, string, number | undefined>(fs.mkdir);
 export const fsStat = promisify<fs.Stats, string>(fs.stat);
+export const fsUnlink = promisify<void, string>(fs.unlink);
 export const fsReadFile = promisify<string, string, FSReadFileOptions>(fs.readFile);
 export const fsWriteFile = promisify<void, string, any, FSWriteFileOptions>(fs.writeFile);
 export const fsReadDir = promisify<string[], string>(fs.readdir);
