@@ -26,6 +26,8 @@ import {
   isSuperAgentError,
   load as loadFromUtils,
   loadPlugins,
+  pathExists,
+  pkgInstall,
   registerHooks as cliUtilsRegisterHooks,
 } from '@ionic/cli-utils';
 
@@ -136,6 +138,23 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 
     if (argv['log-level']) {
       ienv.log.level = argv['log-level'];
+    }
+
+    if (ienv.project.directory) {
+      const nodeModulesExists = await pathExists(path.join(ienv.project.directory, 'node_modules'));
+
+      if (!nodeModulesExists) {
+        const response = await ienv.prompt({
+          type: 'confirm',
+          name: 'install',
+          message: `Looks like a fresh checkout! No ${chalk.green('./node_modules')} directory found. Would you like to install project dependencies?`,
+        });
+
+        if (response['install']) {
+          ienv.log.info('Installing dependencies may take several minutes!');
+          await pkgInstall(ienv, undefined, {});
+        }
+      }
     }
 
     // If an legacy command is being executed inform the user that there is a new command available
