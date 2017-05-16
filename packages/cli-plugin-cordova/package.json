@@ -18,8 +18,7 @@
     "watch-js-chokidar": "chokidar --silent \"dist/**/*.js\" -c \"npm run build-js\"",
     "script-prepublish": "cli-scripts-prepublish cli-plugin-cordova",
     "test": "jest",
-    "prepublish": "in-publish && npm run build || not-in-publish",
-    "postinstall": "node ./bin/postinstall"
+    "prepublish": "in-publish && npm run build || not-in-publish"
   },
   "keywords": [
     "ionic",

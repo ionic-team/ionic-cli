@@ -77,6 +77,11 @@ import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
       type: Boolean,
     },
     {
+      name: 'no-cordova',
+      description: 'Skip automatic Cordova integration',
+      type: Boolean,
+    },
+    {
       name: 'yarn',
       description: 'Opt-in to using yarn (instead of npm)',
       type: Boolean,
@@ -85,7 +90,7 @@ import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
       name: 'skip-link',
       description: 'Do not link app to an Ionic Account',
       type: Boolean,
-    }
+    },
   ]
 })
 export class StartCommand extends Command implements CommandPreRun, CommandPreInputsPrompt {
@@ -174,8 +179,13 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
 
     if (!options['skip-deps']) {
       // Check global dependencies
+      const globalDeps = starterType.globalDependencies.filter(dep => {
+        return dep !== 'cordova' || options['no-cordova'];
+      });
 
-      for (let dep of starterType.globalDependencies) {
+      this.env.log.debug(`globalDeps=${globalDeps}`);
+
+      for (let dep of globalDeps) {
         const cmdInstalled = await getCommandInfo(dep);
 
         if (typeof cmdInstalled === 'undefined') {
@@ -284,7 +294,13 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
 
       await pkgInstall(this.env, undefined, options);
 
-      for (let dep of starterType.localDependencies) {
+      const localDeps = starterType.localDependencies.filter(dep => {
+        return dep !== '@ionic/cli-plugin-cordova' || options['no-cordova'];
+      });
+
+      this.env.log.debug(`localDeps=${localDeps}`);
+
+      for (let dep of localDeps) {
         await pkgInstallPlugin(this.env, dep, options);
       }
     }
