@@ -290,9 +290,9 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
       // Install local dependencies
 
       this.env.log.info('Installing dependencies may take several minutes!');
-      const options = { cwd: projectRoot };
+      const o = { cwd: projectRoot };
 
-      await pkgInstall(this.env, undefined, options);
+      await pkgInstall(this.env, undefined, o);
 
       const localDeps = starterType.localDependencies.filter(dep => {
         return dep !== '@ionic/cli-plugin-cordova' || options['no-cordova'];
@@ -301,7 +301,7 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
       this.env.log.debug(`localDeps=${localDeps}`);
 
       for (let dep of localDeps) {
-        await pkgInstallPlugin(this.env, dep, options);
+        await pkgInstallPlugin(this.env, dep, o);
       }
     }
 
