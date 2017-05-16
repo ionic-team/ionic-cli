@@ -56,7 +56,7 @@ export function getIonitronString(quote: string) {
 ${quoteFormatted}
        \\                                                                  /
         \\                                                                /
-         *--------------------------------------------------------------*\n`;
+         *--------------------------------------------------------------*\n\n`;
 }
 
 export const ionitronStatements = {
