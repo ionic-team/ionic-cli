@@ -1,12 +1,17 @@
+import * as path from 'path';
 import * as chalk from 'chalk';
 
 import {
   Command,
   CommandLineInputs,
   CommandLineOptions,
+  CommandPreInputsPrompt,
   CommandPreRun,
   ERROR_SHELL_COMMAND_NOT_FOUND,
   IShellRunOptions,
+  fsMkdir,
+  pathExists,
+  prettyPath,
 } from '@ionic/cli-utils';
 
 import { generateBuildOptions, filterArgumentsForCordova, CORDOVA_INTENT } from '../lib/utils/cordova';
@@ -112,7 +117,20 @@ export const CORDOVA_RUN_COMMAND_OPTIONS = [
   },
 ];
 
-export class CordovaCommand extends Command {
+export class CordovaCommand extends Command implements CommandPreInputsPrompt {
+  async preInputsPrompt(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (this.env.project.directory) {
+      const wwwPath = path.join(this.env.project.directory, 'www');
+      const wwwExists = await pathExists(wwwPath); // TODO: hard-coded
+
+      if (!wwwExists) {
+        this.env.tasks.next(`Creating ${chalk.bold(prettyPath(wwwPath))} directory for you`);
+        await fsMkdir(wwwPath);
+        this.env.tasks.end();
+      }
+    }
+  }
+
   async runCordova(argList: string[], { fatalOnNotFound = false, truncateErrorOutput = 5000, ...options }: IShellRunOptions = {}): Promise<string> {
     try {
       return await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, ...options });

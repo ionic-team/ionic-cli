@@ -76,6 +76,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
       await promptToLogin(this.env);
     }
   }
+
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ platform ] = inputs;
 
