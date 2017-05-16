@@ -32,15 +32,7 @@ import { validators } from '@ionic/cli-utils';
 export class LoginCommand extends Command implements CommandPreInputsPrompt {
   async preInputsPrompt(): Promise<void | number> {
     if (await this.env.session.isLoggedIn()) {
-      const response = await this.env.prompt({
-        type: 'confirm',
-        name: 'login_again',
-        message: 'You are already logged in! Do you want to log in to another account?',
-      });
-
-      if (!response['login_again']) {
-        return 0;
-      }
+      this.env.log.warn('You are already logged in! Prompting for new credentials.');
     } else {
       this.env.log.msg(`Log into your Ionic account\n` +
                        `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`);
