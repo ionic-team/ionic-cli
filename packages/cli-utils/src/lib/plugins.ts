@@ -227,7 +227,7 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
           env.log.warn(`Globally installed CLI Plugin ${chalk.green(plugin.name + '@' + chalk.bold(plugin.version))} has an update available (${chalk.green.bold(latestVersion)})! Please upgrade:\n\n    ${chalk.green('npm install -g ' + plugin.name + '@' + distTag)}\n\n`);
         }
       } else {
-        env.log.warn(`Globally installed CLI Plugin ${chalk.green(plugin.name + chalk.bold('@' + distTag))} has a different distribution tag than the Ionic CLI (${chalk.green.bold('@' + ionicDistTag)}).\n` +
+        env.log.warn(`Globally installed CLI Plugin ${chalk.green(plugin.name + chalk.bold('@' + distTag))} has a different dist-tag than the Ionic CLI (${chalk.green.bold('@' + ionicDistTag)}).\n` +
                      `Please install the matching plugin version:\n\n    ${chalk.green('npm install -g ' + plugin.name + '@' + ionicDistTag)}\n\n`);
       }
     } else {
@@ -252,7 +252,7 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
           }
         }
       } else {
-        env.log.warn(`Locally installed CLI Plugin ${chalk.green(plugin.name + chalk.bold('@' + distTag))} has a different distribution tag than the Ionic CLI (${chalk.green.bold('@' + ionicDistTag)}).\n` +
+        env.log.warn(`Locally installed CLI Plugin ${chalk.green(plugin.name + chalk.bold('@' + distTag))} has a different dist-tag than the Ionic CLI (${chalk.green.bold('@' + ionicDistTag)}).\n` +
                      `Please install the matching plugin version:\n\n    ${chalk.green('npm install --save-dev ' + plugin.name + '@' + ionicDistTag)}\n\n`);
         updates.push(pluginName);
       }
