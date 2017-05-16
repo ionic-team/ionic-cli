@@ -1,17 +1,49 @@
 # Changelog
 
-## 3.0.0
+The Ionic CLI is made up of several packages, all of which have individual
+CHANGELOG files. Changes made in one (especially `@ionic/cli-utils`) may affect
+the other, but in general you can expect changes relating to Cordova to be made
+in `@ionic/cli-plugin-cordova`, etc.
 
-[CLI v3 Blog Post](http://blog.ionic.io/announcing-ionic-cli-v3/) :tada:
+**Global**:
 
-### Upgrading from CLI 2
+* [`ionic`](https://github.com/driftyco/ionic-cli/blob/master/packages/ionic)
+  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/ionic/CHANGELOG.md)):
+  The CLI executable.
+* [`@ionic/cli-utils`](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-utils)
+  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-utils/CHANGELOG.md):
+  The CLI utilities library.
+* [`@ionic/cli-plugin-proxy`](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-proxy)
+  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-proxy/CHANGELOG.md)):
+  The plugin for proxying CLI requests through a firewall.
+
+**Local**:
+
+* [`@ionic/cli-plugin-cordova`](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-cordova)
+  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-cordova/CHANGELOG.md)):
+  The plugin for Cordova integration. Essential for an Ionic/Cordova app.
+* [`@ionic/cli-plugin-ionic-angular`](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-ionic-angular)
+  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-ionic-angular/CHANGELOG.md)):
+  The project plugin for Ionic Angular projects. Provides useful build tools
+  and generators.
+* [`@ionic/cli-plugin-ionic1`](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-ionic1)
+  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-ionic1/CHANGELOG.md)):
+  The project plugin for Ionic 1 that has functionality ported from the legacy
+  CLI.
+
+## CLI v3
+
+[CLI v3 Blog Post](https://blog.ionic.io/announcing-ionic-cli-v3/) :tada:
+
+### Upgrading from CLI v2
 
 #### Required Changes
 
 * If you're using Ionic Deploy, you'll need to update
   [`ionic-plugin-deploy`](https://github.com/driftyco/ionic-plugin-deploy) to
-  the latest version. See https://github.com/driftyco/ionic-cli/issues/2237 and
-  https://github.com/driftyco/ionic-plugin-deploy/issues/122.
+  the latest version. See
+  [#2237](https://github.com/driftyco/ionic-cli/issues/2237) and
+  [driftyco/ionic-plugin-deploy#122](https://github.com/driftyco/ionic-plugin-deploy/issues/122).
 
 #### Removed Commands
 
