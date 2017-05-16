@@ -34,6 +34,21 @@ import { CordovaPlatformCommand } from './base';
       description: 'Build the application for production',
       type: Boolean
     },
+    {
+      name: 'aot',
+      description: 'Perform ahead-of-time compilation for this build',
+      type: Boolean
+    },
+    {
+      name: 'minifyjs',
+      description: 'Minify JS for this build',
+      type: Boolean
+    },
+    {
+      name: 'minifycss',
+      description: 'Minify CSS for this build',
+      type: Boolean
+    },
     // Cordova Options
     {
       name: 'debug',

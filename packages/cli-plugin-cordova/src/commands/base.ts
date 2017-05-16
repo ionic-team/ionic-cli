@@ -61,6 +61,21 @@ export const CORDOVA_RUN_COMMAND_OPTIONS = [
     type: Boolean
   },
   {
+    name: 'aot',
+    description: 'Perform ahead-of-time compilation for this build',
+    type: Boolean
+  },
+  {
+    name: 'minifyjs',
+    description: 'Minify JS for this build',
+    type: Boolean
+  },
+  {
+    name: 'minifycss',
+    description: 'Minify CSS for this build',
+    type: Boolean
+  },
+  {
     name: 'debug',
     description: 'Mark as a debug build',
     type: Boolean,
