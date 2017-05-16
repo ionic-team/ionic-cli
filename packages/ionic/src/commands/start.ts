@@ -11,6 +11,7 @@ import {
   CommandPreInputsPrompt,
   CommandPreRun,
   getCommandInfo,
+  pathExists,
   pkgInstall,
   pkgInstallPlugin,
   prettyPath,
@@ -203,9 +204,10 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
     projectRoot = path.resolve(projectName);
     projectName = path.basename(projectRoot);
 
+    const projectExists = await pathExists(projectName);
+
     // Create the project directory
-    const pathExists = load('path-exists');
-    if (!pathExists.sync(projectName)) {
+    if (!projectExists) {
       this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
       fs.mkdirSync(projectRoot);
     } else if (!isSafeToCreateProjectIn(projectRoot)) {
@@ -225,7 +227,8 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
           throw e;
         }
       } else {
-        throw `\nPlease provide a projectName that does not conflict with this directory.\n`;
+        this.env.log.msg('\nPlease provide a projectName that does not conflict with this directory.\n\n');
+        return 0;
       }
     }
 

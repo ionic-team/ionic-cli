@@ -21,6 +21,7 @@ export interface FSWriteFileOptions {
   flag?: string;
 }
 
+export const fsAccess = promisify<NodeJS.ErrnoException, string>(fs.access);
 export const fsMkdir = promisify<void, string, number>(fs.mkdir);
 export const fsStat = promisify<fs.Stats, string>(fs.stat);
 export const fsReadFile = promisify<string, string, FSReadFileOptions>(fs.readFile);
@@ -135,8 +136,8 @@ export function copyDirectory(source: string, destination: string): Promise<any>
 
 export function copyFile(fileName: string, target: string, mode: number = 0o777) {
   return new Promise((resolve, reject) => {
-    let readStream = fs.createReadStream(fileName);
-    let writeStream = fs.createWriteStream(target, { mode: mode });
+    const readStream = fs.createReadStream(fileName);
+    const writeStream = fs.createWriteStream(target, { mode: mode });
 
     readStream.on('error', reject);
     writeStream.on('error', reject);
@@ -147,4 +148,14 @@ export function copyFile(fileName: string, target: string, mode: number = 0o777)
 
     writeStream.once('finish', resolve);
   });
+}
+
+export async function pathExists(filePath: string): Promise<boolean> {
+  try {
+    await fsAccess(filePath);
+  } catch (e) {
+    return false;
+  }
+
+  return true;
 }
