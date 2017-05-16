@@ -4,7 +4,14 @@
 
 [CLI v3 Blog Post](http://blog.ionic.io/announcing-ionic-cli-v3/) :tada:
 
-### Changes from CLI 2
+### Upgrading from CLI 2
+
+#### Required Changes
+
+* If you're using Ionic Deploy, you'll need to update
+  [`ionic-plugin-deploy`](https://github.com/driftyco/ionic-plugin-deploy) to
+  the latest version. See https://github.com/driftyco/ionic-cli/issues/2237 and
+  https://github.com/driftyco/ionic-plugin-deploy/issues/122.
 
 #### Removed Commands
 
