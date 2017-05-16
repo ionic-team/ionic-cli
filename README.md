@@ -171,10 +171,10 @@ at `http://localhost:8100/v1` to have it proxy out requests to
 
 ## Using a Proxy
 
-To proxy CLI requests, you will first need to install a CLI plugin:
+To proxy CLI requests, you will need to install the global CLI proxy plugin:
 
 ```bash
-$ npm install --save-dev --save-exact @ionic/cli-plugin-proxy
+$ npm install -g @ionic/cli-plugin-proxy
 ```
 
 Then, set any of the following environment variables:
@@ -189,7 +189,7 @@ $ export IONIC_HTTP_PROXY=http://internal.proxy.com
 For example:
 
 ```bash
-$ HTTP_PROXY=http://internal.proxy.com ionic login
+$ HTTP_PROXY=http://internal.proxy.com ionic start
 ```
 
 ## Ionic Docs

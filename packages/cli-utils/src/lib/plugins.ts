@@ -7,7 +7,8 @@ import { readDir } from './utils/fs';
 import { getGlobalProxy } from './http';
 import { PkgInstallOptions, pkgInstall } from './utils/npm';
 
-export const KNOWN_PLUGINS = ['cordova', 'proxy', 'ionic1', 'ionic-angular'];
+export const KNOWN_PLUGINS = ['cordova', 'ionic1', 'ionic-angular'];
+export const KNOWN_GLOBAL_PLUGINS = ['proxy'];
 export const ORG_PREFIX = '@ionic';
 export const PLUGIN_PREFIX = 'cli-plugin-';
 export const ERROR_PLUGIN_NOT_INSTALLED = 'PLUGIN_NOT_INSTALLED';
@@ -72,9 +73,41 @@ export function uninstallPlugin(env: IonicEnvironment, plugin: Plugin) {
 }
 
 export async function loadPlugins(env: IonicEnvironment) {
-  if (!env.project.directory) {
-    return async (): Promise<void> => {};
+  // GLOBAL PLUGINS
+  const globalPluginPkgs = KNOWN_GLOBAL_PLUGINS.map(formatFullPluginName);
+  const globalPluginPromises = globalPluginPkgs.map(async (pkgName) => {
+    try {
+      return await loadPlugin(env, pkgName, { askToInstall: false, global: true });
+    } catch (e) {
+      if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
+        throw e;
+      }
+    }
+  });
+
+  for (let p of globalPluginPromises) {
+    const plugin = await p;
+
+    if (plugin) {
+      installPlugin(env, plugin);
+    }
   }
+
+  const proxyPluginPkg = formatFullPluginName('proxy');
+  const [ , proxyVar ] = getGlobalProxy();
+  if (proxyVar && !(proxyPluginPkg in env.plugins)) {
+    env.log.warn(
+      `Detected ${chalk.green(proxyVar)} in environment, but to proxy CLI requests,\n` +
+      `you'll need ${chalk.green(proxyPluginPkg)} installed globally:\n\n` +
+      `    ${chalk.green('npm install -g ' + proxyPluginPkg)}\n`
+    );
+  }
+
+  if (!env.project.directory) {
+    return;
+  }
+
+  // LOCAL PLUGINS
 
   const mPath = path.join(env.project.directory, 'node_modules', '@ionic');
   const ionicModules = await readDir(mPath);
@@ -83,11 +116,15 @@ export async function loadPlugins(env: IonicEnvironment) {
     .filter(pkgName => pkgName.indexOf(PLUGIN_PREFIX) === 0)
     .map(pkgName => `${ORG_PREFIX}/${pkgName}`);
 
-  const plugins = await Promise.all(
-    pluginPkgs.map(pkgName => {
-      return loadPlugin(env, pkgName, { askToInstall: false });
-    })
-  );
+  const plugins: Plugin[] = [];
+  const pluginPromises = pluginPkgs.map(pkgName => {
+    return loadPlugin(env, pkgName, { askToInstall: false });
+  });
+
+  for (let p of pluginPromises) {
+    const plugin = await p;
+    plugins.push(plugin);
+  }
 
   // TODO: remember the responses of the requests below
 
@@ -102,24 +139,19 @@ export async function loadPlugins(env: IonicEnvironment) {
     }
   }
 
-  const proxyPluginPkg = formatFullPluginName('proxy');
-  const [ , proxyVar ] = getGlobalProxy();
-  if (proxyVar && !pluginPkgs.includes(proxyPluginPkg)) {
-    const plugin = await promptToInstallPlugin(env, proxyPluginPkg, {
-      message: `Detected '${chalk.green(proxyVar)}' in environment, but to proxy CLI requests, you'll need ${chalk.green(proxyPluginPkg)}. Would you like to install it and continue?`,
-    });
-
-    if (plugin) {
-      plugins.push(plugin);
-    }
-  }
-
   for (let plugin of plugins) {
     installPlugin(env, plugin);
   }
 }
 
-export async function loadPlugin(env: IonicEnvironment, pluginName: string, { message, askToInstall = true, reinstall = false }: { message?: string, askToInstall?: boolean, reinstall?: boolean }): Promise<Plugin> {
+export interface LoadPluginOptions {
+  message?: string;
+  askToInstall?: boolean;
+  reinstall?: boolean;
+  global?: boolean;
+}
+
+export async function loadPlugin(env: IonicEnvironment, pluginName: string, { message, askToInstall = true, reinstall = false, global = false }: LoadPluginOptions): Promise<Plugin> {
   let m: Plugin | undefined;
 
   if (!message) {
@@ -127,22 +159,23 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
   }
 
   try {
-    const mPath = require.resolve(path.join(env.project.directory, 'node_modules', ...pluginName.split('/')));
-    delete require.cache[mPath];
-    m = require(mPath);
+    if (global) {
+      env.log.debug(`Load global plugin ${chalk.bold(pluginName)}`);
+      m = require(pluginName);
+    } else {
+      const modulePath = path.join(env.project.directory, 'node_modules', ...pluginName.split('/'));
+      env.log.debug(`Load local plugin ${chalk.bold(pluginName)} from ${chalk.bold(modulePath)}`);
+      const resolvedModulePath = require.resolve(modulePath);
+      delete require.cache[resolvedModulePath];
+      m = require(resolvedModulePath);
+    }
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') {
       throw e;
     }
-
-    // Unfortunately we need to check not only the code but the error message
-    let foundPackageNeeded = KNOWN_PLUGINS.map(kp => formatFullPluginName(kp))
-      .find(kp => e.message && e.message.includes(kp));
-    if (!foundPackageNeeded) {
-      throw `Dependency missing for ${chalk.bold(pluginName)}:\n\n  ${chalk.red('[ERROR]')}: ${e.message}`;
-    }
   }
   if (!m && !askToInstall) {
+    env.log.debug(`Throwing ${chalk.red(ERROR_PLUGIN_NOT_INSTALLED)} for ${chalk.bold(pluginName)}`);
     throw ERROR_PLUGIN_NOT_INSTALLED;
   }
   if (!m || reinstall) {
