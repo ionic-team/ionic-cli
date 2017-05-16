@@ -1,0 +1,12 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/driftyco/ionic-cli/compare/@ionic/cli-plugin-ionic1@1.0.0...@ionic/cli-plugin-ionic1@1.1.0) (2017-05-16)
+
+
+### Bug Fixes
+
+* **lab:** treat ios statusbar the same (fixes https://github.com/driftyco/ionic-cli/issues/2268) ([c8f4e7e](https://github.com/driftyco/ionic-cli/commit/c8f4e7e))
