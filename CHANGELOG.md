@@ -11,13 +11,13 @@ in `@ionic/cli-plugin-cordova`, etc.
   ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/ionic/CHANGELOG.md)):
   The CLI executable.
 * [`@ionic/cli-utils`](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-utils)
-  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-utils/CHANGELOG.md):
+  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-utils/CHANGELOG.md)):
   The CLI utilities library.
 * [`@ionic/cli-plugin-proxy`](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-proxy)
   ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-proxy/CHANGELOG.md)):
   The plugin for proxying CLI requests through a firewall.
 
-**Local**:
+**Local** (per project):
 
 * [`@ionic/cli-plugin-cordova`](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-cordova)
   ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-cordova/CHANGELOG.md)):
