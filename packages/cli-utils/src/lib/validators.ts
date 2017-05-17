@@ -1,7 +1,26 @@
 import * as chalk from 'chalk';
 
-import { Validator, Validators } from '../definitions';
+import { Validator, Validators, ValidationError } from '../definitions';
 import { isValidEmail } from './utils/string';
+
+export function validate(input: string, key: string, validators: Validator[]) {
+  const errors: ValidationError[] = [];
+
+  for (let validator of validators) {
+    const r = validator(input, key);
+
+    if (r !== true) {
+      errors.push({
+        message: r,
+        inputName: key,
+      });
+    }
+  }
+
+  if (errors.length > 0) {
+    throw errors;
+  }
+}
 
 // TODO: typescript isn't enforcing input?: string
 export const validators: Validators = {

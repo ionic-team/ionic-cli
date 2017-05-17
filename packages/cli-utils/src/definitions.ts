@@ -190,7 +190,7 @@ export type CommandLineInputs = string[];
 
 export interface CommandLineOptions extends minimistType.ParsedArgs {
   [arg: string]: CommandLineInput;
-};
+}
 
 export type CommandOptionType = StringConstructor | BooleanConstructor;
 export type CommandOptionTypeDefaults = Map<CommandOptionType, CommandLineInput>;

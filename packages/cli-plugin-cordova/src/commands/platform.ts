@@ -5,6 +5,8 @@ import {
   CommandLineOptions,
   CommandMetadata,
   CommandPreRun,
+  contains,
+  validate,
 } from '@ionic/cli-utils';
 
 import { KnownPlatform } from '../definitions';
@@ -46,6 +48,8 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
     inputs[0] = (typeof inputs[0] === 'undefined') ? 'ls' : inputs[0];
     inputs[0] = (inputs[0] === 'rm') ? 'remove' : inputs[0];
     inputs[0] = (inputs[0] === 'list') ? 'ls' : inputs[0];
+
+    validate(inputs[0], 'action', [contains(['add', 'remove', 'update', 'ls', 'check', 'save'], {})]);
 
     // If the action is list, check, or save, then just end here.
     if (['ls', 'check', 'save'].includes(inputs[0])) {

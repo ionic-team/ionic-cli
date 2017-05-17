@@ -5,6 +5,8 @@ import {
   CommandLineOptions,
   CommandPreRun,
   CommandMetadata,
+  contains,
+  validate,
 } from '@ionic/cli-utils';
 
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
@@ -42,6 +44,8 @@ export class PluginCommand extends CordovaCommand implements CommandPreRun {
     inputs[0] = (typeof inputs[0] === 'undefined') ? 'ls' : inputs[0];
     inputs[0] = (inputs[0] === 'rm') ? 'remove' : inputs[0];
     inputs[0] = (inputs[0] === 'list') ? 'ls' : inputs[0];
+
+    validate(inputs[0], 'action', [contains(['add', 'remove', 'ls', 'save'], {})]);
 
     // If the action is list then lets just end here.
     if (['ls', 'save'].includes(inputs[0])) {

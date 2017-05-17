@@ -33,7 +33,7 @@ describe('@ionic/cli-plugin-cordova filterArgumentsForCordova', () => {
 
   it('should return the command name and inputs if no options passed', () => {
     let inputs = ['ios'];
-    let options = { boolopt: false, cdvopt1: null, cdvopt2: false };
+    let options = { _: [], boolopt: false, cdvopt1: null, cdvopt2: false };
 
     const result = filterArgumentsForCordova(metadata, inputs, options);
     expect(result).toEqual(['build', 'ios']);
@@ -41,7 +41,7 @@ describe('@ionic/cli-plugin-cordova filterArgumentsForCordova', () => {
 
   it('should only include options with the Cordova intent', () => {
     let inputs = ['ios'];
-    let options = { boolopt: true, cdvopt1: 'foo', cdvopt2: true };
+    let options = { _: [], boolopt: true, cdvopt1: 'foo', cdvopt2: true };
 
     const result = filterArgumentsForCordova(metadata, inputs, options);
     expect(result).toEqual(['build', 'ios', '--cdvopt1=foo', '--cdvopt2']);
@@ -49,7 +49,7 @@ describe('@ionic/cli-plugin-cordova filterArgumentsForCordova', () => {
 
   it('should include unparsed options', () => {
     let inputs = ['android', '--', '--gradleArg=-PcdvBuildMultipleApks=true'];
-    let options = { boolopt: true, cdvopt1: 'foo', cdvopt2: true };
+    let options = { _: [], boolopt: true, cdvopt1: 'foo', cdvopt2: true };
 
     const result = filterArgumentsForCordova(metadata, inputs, options);
     expect(result).toEqual(['build', 'android', '--cdvopt1=foo', '--cdvopt2', '--', '--gradleArg=-PcdvBuildMultipleApks=true']);

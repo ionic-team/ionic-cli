@@ -24,6 +24,7 @@ import {
   fsReadDir,
   getCommandInfo,
   isSuperAgentError,
+  isValidationErrorArray,
   load as loadFromUtils,
   loadPlugins,
   pathExists,
@@ -201,7 +202,12 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     ienv.tasks.fail();
     exitCode = 1;
 
-    if (isSuperAgentError(err)) {
+    if (isValidationErrorArray(err)) {
+      for (let e of err) {
+        ienv.log.error(e.message);
+      }
+      ienv.log.msg(`Use the ${chalk.green('--help')} flag for more details.`);
+    } else if (isSuperAgentError(err)) {
       ienv.log.msg(formatSuperAgentError(err));
     } else if (err.fatal) {
       exitCode = err.exitCode || 1;
@@ -216,6 +222,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
         ienv.log.debug(chalk.red(err.stack));
       }
     }
+
     process.exit(exitCode);
   }
 

@@ -14,10 +14,9 @@ import {
   NormalizedCommandOption,
   NormalizedMinimistOpts,
   Validator,
-  ValidationError
 } from '../../definitions';
 
-import { validators } from '../validators';
+import { validate, validators } from '../validators';
 import { load } from '../modules';
 
 const typeDefaults: CommandOptionTypeDefaults = new Map<CommandOptionType, CommandLineInput>()
@@ -90,23 +89,9 @@ export function validateInputs(argv: string[], metadata: CommandData) {
 
   for (let i in metadata.inputs) {
     const input = metadata.inputs[i];
-    const errors: ValidationError[] = [];
 
     if (argv[i] && input.validators) { // only run validators if input given
-      for (let validator of input.validators) {
-        const r = validator(argv[i], input.name);
-
-        if (r !== true) {
-          errors.push({
-            message: r,
-            inputName: input.name
-          });
-        }
-      }
-
-      if (errors.length > 0) {
-        throw errors;
-      }
+      validate(argv[i], input.name, input.validators);
     }
   }
 }
