@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.2"></a>
+## [1.1.2](https://github.com/driftyco/ionic-cli/compare/@ionic/cli-plugin-cordova@1.1.1...@ionic/cli-plugin-cordova@1.1.2) (2017-05-17)
+
+
+### Bug Fixes
+
+* **cordova:** restore resources.json in built package ([0cafe8b](https://github.com/driftyco/ionic-cli/commit/0cafe8b))
+
+
+
+
 <a name="1.1.1"></a>
 ## [1.1.1](https://github.com/driftyco/ionic-cli/compare/@ionic/cli-plugin-cordova@1.1.0...@ionic/cli-plugin-cordova@1.1.1) (2017-05-16)
 

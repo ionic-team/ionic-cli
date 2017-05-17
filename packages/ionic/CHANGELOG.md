@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.1.2"></a>
+## [3.1.2](https://github.com/driftyco/ionic-cli/compare/ionic@3.1.1...ionic@3.1.2) (2017-05-17)
+
+
+### Bug Fixes
+
+* **cordova:** do not include cordova integration by default ([a2de983](https://github.com/driftyco/ionic-cli/commit/a2de983))
+
+
+
+
 <a name="3.1.1"></a>
 ## [3.1.1](https://github.com/driftyco/ionic-cli/compare/ionic@3.1.0...ionic@3.1.1) (2017-05-16)
 
