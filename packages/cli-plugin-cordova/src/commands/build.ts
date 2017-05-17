@@ -86,12 +86,12 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
     await this.checkForAssetsFolder();
 
     if (!inputs[0]) {
-      const response = await this.env.prompt({
+      const { platform } = await this.env.prompt({
         name: 'platform',
         message: `What platform would you like to build: ${chalk.green('ios')}, ${chalk.green('android')}:`
       });
 
-      inputs[0] = response['platform'];
+      inputs[0] = platform.trim();
     }
 
     await this.checkForPlatformInstallation(inputs[0]);

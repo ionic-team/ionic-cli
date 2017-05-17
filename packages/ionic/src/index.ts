@@ -145,13 +145,13 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       const nodeModulesExists = await pathExists(path.join(ienv.project.directory, 'node_modules'));
 
       if (!nodeModulesExists) {
-        const response = await ienv.prompt({
+        const { confirm } = await ienv.prompt({
           type: 'confirm',
-          name: 'install',
+          name: 'confirm',
           message: `Looks like a fresh checkout! No ${chalk.green('./node_modules')} directory found. Would you like to install project dependencies?`,
         });
 
-        if (response['install']) {
+        if (confirm) {
           ienv.log.info('Installing dependencies may take several minutes!');
           await pkgInstall(ienv, undefined, {});
         }

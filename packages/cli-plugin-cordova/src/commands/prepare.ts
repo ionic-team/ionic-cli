@@ -36,13 +36,13 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
       const platformEngine = getPlatformEngine(configJson, platform);
 
       if (!platformEngine) {
-        const promptResults = await this.env.prompt({
+        const { confirm } = await this.env.prompt({
           message: `Platform ${chalk.green(platform)} is not installed! Would you like to install it?`,
           type: 'confirm',
-          name: 'install',
+          name: 'confirm',
         });
 
-        if (promptResults['install']) {
+        if (confirm) {
           await installPlatform(this.env, platform);
         } else {
           throw this.exit(`Can't prepare for ${chalk.green(platform)} unless the platform is installed. Did you mean just ${chalk.green('ionic cordova prepare')}?`);

@@ -53,21 +53,19 @@ export class PluginCommand extends CordovaCommand implements CommandPreRun {
       this.env.log.msg(response);
       return 0;
     }
-  }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let [ action, pluginName ] = inputs;
-
-    if (!pluginName) {
-      const promptResults = await this.env.prompt({
-        message: `What plugin would you like to ${action}:`,
+    if (!inputs[1]) {
+      const { plugin } = await this.env.prompt({
+        message: `What plugin would you like to ${inputs[0]}:`,
         type: 'input',
         name: 'plugin',
       });
 
-      inputs[1] = pluginName = promptResults['plugin'];
+      inputs[1] = plugin;
     }
+  }
 
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     // ensure the content node was set back to its original
     await resetConfigXmlContentSrc(this.env.project.directory);
 

@@ -52,14 +52,14 @@ export class GenerateCommand extends Command implements CommandPreRun {
     }
 
     if (!inputs[0]) {
-      const response = await this.env.prompt({
+      const { generatorType } = await this.env.prompt({
         type: 'list',
-        name: 'type',
+        name: 'generatorType',
         message: 'What would you like to generate:',
         choices: TYPE_CHOICES,
       });
 
-      inputs[0] = response['type'];
+      inputs[0] = generatorType;
     }
 
     if (!TYPE_CHOICES.includes(inputs[0])) {
@@ -67,12 +67,12 @@ export class GenerateCommand extends Command implements CommandPreRun {
     }
 
     if (!inputs[1]) {
-      const response = await this.env.prompt({
-        name: 'name',
+      const { generatorName } = await this.env.prompt({
+        name: 'generatorName',
         message: 'What should the name be?',
       });
 
-      inputs[1] = response['name'];
+      inputs[1] = generatorName;
     }
   }
 

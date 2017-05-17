@@ -61,14 +61,14 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     const sec = new SecurityClient(token, this.env.client);
 
     if (!inputs[0]) {
-      const response = await this.env.prompt({
+      const { platform } = await this.env.prompt({
         type: 'list',
         name: 'platform',
         message: 'What platform would you like to target:',
         choices: ['ios', 'android'],
       });
 
-      inputs[0] = response['platform'];
+      inputs[0] = platform;
     }
 
     if (!options['profile'] && (inputs[0] === 'ios' || (inputs[0] === 'android' && options['release']))) {
@@ -87,7 +87,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
         this.env.log.warn(`Attempting to use ${chalk.bold(profiles[0].tag)} (${chalk.bold(profiles[0].name)}), as it is your only ${chalk.bold(desiredProfileType)} security profile.`);
         options['profile'] = profiles[0].tag;
       } else {
-        const response = await this.env.prompt({
+        const { profile } = await this.env.prompt({
           type: 'list',
           name: 'profile',
           message: 'Please choose a security profile to use with this build',
@@ -98,7 +98,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
           })),
         });
 
-        options['profile'] = response['profile'];
+        options['profile'] = profile;
       }
     }
   }

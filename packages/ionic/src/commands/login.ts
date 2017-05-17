@@ -38,28 +38,28 @@ export class LoginCommand extends Command implements CommandPreRun {
     }
 
     if (!inputs[0]) {
-      const response = await this.env.prompt({
+      const { email } = await this.env.prompt({
         name: 'email',
         message: 'Email:',
         validate: v => validators.email(v),
       });
 
-      inputs[0] = response['email'];
+      inputs[0] = email;
     }
 
     if (!inputs[1]) {
-      const response = await this.env.prompt({
+      const { password } = await this.env.prompt({
         type: 'password',
         name: 'password',
         message: 'Password:',
       });
 
-      inputs[1] = response['password'];
+      inputs[1] = password;
     }
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let [email, password] = inputs;
+    const [email, password] = inputs;
 
     await this.env.session.login(email, password);
     this.env.log.ok('You are logged in!');

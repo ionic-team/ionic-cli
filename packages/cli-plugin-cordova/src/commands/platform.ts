@@ -59,12 +59,12 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
     }
 
     if (!inputs[1]) {
-      const response = await this.env.prompt({
+      const { platform } = await this.env.prompt({
         name: 'platform',
         message: `What platform would you like to ${inputs[0]} ${chalk.green('ios')}, ${chalk.green('android')}:`,
       });
 
-      inputs[1] = response['platform'];
+      inputs[1] = platform.trim();
     }
   }
 

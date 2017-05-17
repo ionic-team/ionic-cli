@@ -26,18 +26,19 @@ export async function prompt(context: AppScriptsType.BuildContext) {
 export async function tabsPrompt(env: IonicEnvironment) {
   const tabNames = [];
 
-  const howManyQuestion = await env.prompt({
+  const { howMany } = await env.prompt({
     name: 'howMany',
     message: 'How many tabs?',
     validate: v => validators.numeric(v),
   });
 
-  for (let i = 0; i < howManyQuestion.howMany; i++) {
-    const nameQuestion = await env.prompt({
+  for (let i = 0; i < howMany; i++) {
+    const { tabName } = await env.prompt({
       name: 'tabName',
       message: 'Name of this tab:'
     });
-    tabNames.push(nameQuestion.tabName);
+
+    tabNames.push(tabName);
   }
   return tabNames;
 }

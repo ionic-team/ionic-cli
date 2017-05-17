@@ -35,13 +35,13 @@ export class LinkCommand extends Command {
     const project = await this.env.project.load();
 
     if (project.app_id) {
-      const confirmation = await this.env.prompt({
+      const { confirm } = await this.env.prompt({
         type: 'confirm',
-        name: 'apply',
+        name: 'confirm',
         message: `App ID ${chalk.green(project.app_id)} already exists in project config. Would you like to link a different app?`
       });
 
-      if (!confirmation['apply']) {
+      if (!confirm) {
         return;
       }
     }
@@ -88,9 +88,9 @@ export class LinkCommand extends Command {
         id: CREATE_NEW_APP_CHOICE,
       };
 
-      const confirmation = await this.env.prompt({
+      const { linkedApp } = await this.env.prompt({
         type: 'list',
-        name: 'choice',
+        name: 'linkedApp',
         message: `Which app would you like to link`,
         choices: [createAppChoice, ...apps].map((app) => ({
           name: app.id !== CREATE_NEW_APP_CHOICE ? `${app.name} (${app.id})` : chalk.bold(app.name),
@@ -98,7 +98,7 @@ export class LinkCommand extends Command {
         }))
       });
 
-      appId = confirmation['choice'];
+      appId = linkedApp;
     }
 
     if (appId === CREATE_NEW_APP_CHOICE) {

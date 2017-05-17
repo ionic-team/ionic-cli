@@ -102,14 +102,14 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     if (this.env.project.directory) {
-      const response = await this.env.prompt({
+      const { confirm } = await this.env.prompt({
         type: 'confirm',
-        name: 'continue',
+        name: 'confirm',
         message: 'You are already in an Ionic project directory. Do you really want to start another project here?',
         default: false,
       });
 
-      if (!response['continue']) {
+      if (!confirm) {
         return 0;
       }
     }
@@ -125,16 +125,16 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     if (!inputs[0]) {
-      const response = await this.env.prompt({
+      const { name } = await this.env.prompt({
         name: 'name',
         message: 'What would you like to name your project:',
       });
 
-      inputs[0] = response['name'];
+      inputs[0] = name;
     }
 
     if (!inputs[1]) {
-      const response = await this.env.prompt({
+      const { template } = await this.env.prompt({
         type: 'list',
         name: 'template',
         message: 'What starter would you like to use:',
@@ -152,7 +152,7 @@ export class StartCommand extends Command implements CommandPreRun {
         }
       });
 
-      inputs[1] = response['template'];
+      inputs[1] = template;
     }
   }
 
@@ -207,14 +207,14 @@ export class StartCommand extends Command implements CommandPreRun {
       this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
       await fsMkdir(projectRoot, undefined);
     } else if (!(await isSafeToCreateProjectIn(projectRoot))) {
-      const response = await this.env.prompt({
+      const { confirm } = await this.env.prompt({
         type: 'confirm',
-        name: 'overwrite',
+        name: 'confirm',
         message: `The directory ${chalk.green(projectName)} contains file(s) that could conflict. ` +
             'Would you like to overwrite the directory with this new project?'
       });
 
-      if (response['overwrite']) {
+      if (confirm) {
         try {
           this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
           await rimrafp(projectRoot);
@@ -309,18 +309,18 @@ export class StartCommand extends Command implements CommandPreRun {
 
     // Ask the user if they would like to create a cloud account
     if (!options['skip-link']) {
-      const { linkApp } = await this.env.prompt({
+      const { linkedApp } = await this.env.prompt({
         type: 'confirm',
-        name: 'linkApp',
+        name: 'linkedApp',
         message: 'Link this app to your Ionic Dashboard to use tools like Ionic View?'
       });
 
-      if (linkApp && await this.env.session.isLoggedIn()) {
+      if (linkedApp && await this.env.session.isLoggedIn()) {
         const opn = load('opn');
         const token = await this.env.session.getUserToken();
         opn(`${config.urls.dash}/?user_token=${token}`, { wait: false });
         this.env.log.ok(`Run ${chalk.green(`ionic link`)} to link to the app.`);
-      } else if (linkApp) {
+      } else if (linkedApp) {
         this.env.log.msg(`\nYou will need to login in order to link this app. Please run the following commands to do so.\n` +
           `  ${chalk.green(`ionic login`)} - login first\n` +
           `  ${chalk.green(`ionic link`)} - then link your app`);
