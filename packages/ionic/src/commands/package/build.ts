@@ -26,12 +26,7 @@ import { upload } from '../../lib/upload';
     {
       name: 'platform',
       description: `The platform to target: ${chalk.green('ios')}, ${chalk.green('android')}`,
-      validators: [validators.required, contains(['ios', 'android'], {})],
-      prompt: {
-        type: 'list',
-        message: 'What platform would you like to target:',
-        choices: ['ios', 'android'],
-      },
+      validators: [contains([undefined, 'ios', 'android'], {})],
     },
   ],
   options: [
@@ -61,13 +56,22 @@ import { upload } from '../../lib/upload';
 })
 export class PackageBuildCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-    let [ platform ] = inputs;
-
     const token = await this.env.session.getAppUserToken();
     const pkg = new PackageClient(token, this.env.client);
     const sec = new SecurityClient(token, this.env.client);
 
-    if (!options['profile'] && (platform === 'ios' || (platform === 'android' && options['release']))) {
+    if (!inputs[0]) {
+      const response = await this.env.prompt({
+        type: 'list',
+        name: 'platform',
+        message: 'What platform would you like to target:',
+        choices: ['ios', 'android'],
+      });
+
+      inputs[0] = response['platform'];
+    }
+
+    if (!options['profile'] && (inputs[0] === 'ios' || (inputs[0] === 'android' && options['release']))) {
       this.env.tasks.next(`Build requires security profile, but ${chalk.green('--profile')} was not provided. Looking up your profiles`);
       const allProfiles = await sec.getProfiles({});
       this.env.tasks.end();
@@ -75,7 +79,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
       const profiles = allProfiles.filter(p => p.type === desiredProfileType);
 
       if (profiles.length === 0) {
-        this.env.log.error(`Sorry--a valid ${chalk.bold(desiredProfileType)} security profile is required for ${pkg.formatPlatform(platform)} ${options['release'] ? 'release' : 'debug'} builds.`);
+        this.env.log.error(`Sorry--a valid ${chalk.bold(desiredProfileType)} security profile is required for ${pkg.formatPlatform(inputs[0])} ${options['release'] ? 'release' : 'debug'} builds.`);
         return 1;
       }
 

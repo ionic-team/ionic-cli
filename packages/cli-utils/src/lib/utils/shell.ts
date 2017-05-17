@@ -28,9 +28,9 @@ export function runcmd(command: string, args?: string[], options: RunCmdOptions 
     }
 
     const p = crossSpawn.spawn(command, args, options);
-    let stdoutBufs: Buffer[] = [];
-    let stderrBufs: Buffer[] = [];
-    let dualBufs: Buffer[] = [];
+    const stdoutBufs: Buffer[] = [];
+    const stderrBufs: Buffer[] = [];
+    const dualBufs: Buffer[] = [];
 
     if (p.stdout) {
       p.stdout.on('data', (chunk) => {

@@ -4,7 +4,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  CommandPreInputsPrompt,
+  CommandPreRun,
   normalizeOptionAliases,
 } from '@ionic/cli-utils';
 
@@ -23,15 +23,11 @@ import { CordovaCommand } from './base';
   inputs: [
     {
       name: 'action',
-      description: `${chalk.green('add')}, ${chalk.green('remove')}, or ${chalk.green('update')} a platform; ${chalk.green('list')}, ${chalk.green('check')}, or ${chalk.green('save')} all project platforms`,
+      description: `${chalk.green('add')}, ${chalk.green('remove')}, or ${chalk.green('update')} a platform; ${chalk.green('ls')}, ${chalk.green('check')}, or ${chalk.green('save')} all project platforms`,
     },
     {
-      // TODO: fix words to use the action above, not just add
       name: 'platform',
       description: `The platform that you would like to add (e.g. ${chalk.green('ios')}, ${chalk.green('android')})`,
-      prompt: {
-        message: `What platform would you like to add (${chalk.green('ios')}, ${chalk.green('android')}):`,
-      },
     }
   ],
   options: [
@@ -44,20 +40,29 @@ import { CordovaCommand } from './base';
     },
   ]
 })
-export class PlatformCommand extends CordovaCommand implements CommandPreInputsPrompt {
-  async preInputsPrompt(inputs: CommandLineInputs): Promise<void | number> {
-    inputs[0] = (typeof inputs[0] === 'undefined') ? 'list' : inputs[0];
-    inputs[0] = (inputs[0] === 'rm') ? 'remove' : inputs[0];
-    inputs[0] = (inputs[0] === 'ls') ? 'list' : inputs[0];
+export class PlatformCommand extends CordovaCommand implements CommandPreRun {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    await this.checkForAssetsFolder();
 
-    // If the action is list then lets just end here.
-    if (['list', 'check', 'save'].includes(inputs[0])) {
+    inputs[0] = (typeof inputs[0] === 'undefined') ? 'ls' : inputs[0];
+    inputs[0] = (inputs[0] === 'rm') ? 'remove' : inputs[0];
+    inputs[0] = (inputs[0] === 'list') ? 'ls' : inputs[0];
+
+    // If the action is list, check, or save, then just end here.
+    if (['ls', 'check', 'save'].includes(inputs[0])) {
       const response = await this.runCordova(['platform', inputs[0]]);
       this.env.log.msg(response);
       return 0;
     }
 
-    await super.preInputsPrompt(inputs);
+    if (!inputs[1]) {
+      const response = await this.env.prompt({
+        name: 'platform',
+        message: `What platform would you like to ${inputs[0]} ${chalk.green('ios')}, ${chalk.green('android')}:`,
+      });
+
+      inputs[1] = response['platform'];
+    }
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

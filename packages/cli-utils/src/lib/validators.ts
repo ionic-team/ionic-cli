@@ -5,18 +5,7 @@ import { isValidEmail } from './utils/string';
 
 // TODO: typescript isn't enforcing input?: string
 export const validators: Validators = {
-  required(input: string, key?: string): boolean | string {
-    if (!input) {
-      if (key) {
-        return `${chalk.bold(key)} must not be empty.`;
-      } else {
-        return 'Must not be empty.';
-      }
-    }
-
-    return true;
-  },
-  email(input: string, key?: string): boolean | string {
+  email(input: string, key?: string): true | string {
     if (!isValidEmail(input)) {
       if (key) {
         return `${chalk.bold(key)} is an invalid email address.`;
@@ -27,7 +16,7 @@ export const validators: Validators = {
 
     return true;
   },
-  numeric(input: string, key?: string): boolean | string {
+  numeric(input: string, key?: string): true | string {
     if (isNaN(Number(input))) {
       if (key) {
         return `${chalk.bold(key)} must be numeric.`;
@@ -40,25 +29,12 @@ export const validators: Validators = {
   },
 };
 
-export function combine(...validators: Validator[]): Validator {
-  return function(input: string): boolean | string {
-    for (let v of validators) {
-      let o = v(input);
-      if (o !== true) {
-        return o;
-      }
-    }
-
-    return true;
-  };
-}
-
 export function contains(values: (string | undefined)[], { caseSensitive = true }: { caseSensitive?: boolean }): Validator {
   if (!caseSensitive) {
     values = values.map(v => typeof v === 'string' ? v.toLowerCase() : v);
   }
 
-  return function(input?: string, key?: string): boolean | string {
+  return function(input?: string, key?: string): true | string {
     if (!caseSensitive && typeof input === 'string') {
       input = input.toLowerCase();
     }

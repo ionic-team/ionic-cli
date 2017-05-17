@@ -1,6 +1,13 @@
 import * as chalk from 'chalk';
-import { CommandLineInputs, CommandLineOptions, Command, CommandMetadata, CommandPreInputsPrompt } from '@ionic/cli-utils';
-import { validators } from '@ionic/cli-utils';
+
+import {
+  CommandLineInputs,
+  CommandLineOptions,
+  Command,
+  CommandMetadata,
+  CommandPreRun,
+  validators,
+} from '@ionic/cli-utils';
 
 @CommandMetadata({
   name: 'login',
@@ -11,31 +18,43 @@ import { validators } from '@ionic/cli-utils';
     {
       name: 'email',
       description: 'Your email address',
-      prompt: {
-        message: 'Email:'
-      },
-      validators: [validators.required, validators.email],
-      private: true
+      validators: [validators.email],
+      private: true,
     },
     {
       name: 'password',
       description: 'Your password',
-      prompt: {
-        type: 'password',
-        message: 'Password:'
-      },
-      validators: [validators.required],
-      private: true
+      private: true,
     }
   ]
 })
-export class LoginCommand extends Command implements CommandPreInputsPrompt {
-  async preInputsPrompt(): Promise<void | number> {
+export class LoginCommand extends Command implements CommandPreRun {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     if (await this.env.session.isLoggedIn()) {
-      this.env.log.warn('You are already logged in! Prompting for new credentials.');
+      this.env.log.warn(`You are already logged in! ${!inputs[0] || !inputs[1] ? 'Prompting for new credentials.' : 'Attempting login.'}`);
     } else {
       this.env.log.msg(`Log into your Ionic account\n` +
                        `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`);
+    }
+
+    if (!inputs[0]) {
+      const response = await this.env.prompt({
+        name: 'email',
+        message: 'Email:',
+        validate: v => validators.email(v),
+      });
+
+      inputs[0] = response['email'];
+    }
+
+    if (!inputs[1]) {
+      const response = await this.env.prompt({
+        type: 'password',
+        name: 'password',
+        message: 'Password:',
+      });
+
+      inputs[1] = response['password'];
     }
   }
 

@@ -4,13 +4,13 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  CommandPreRun,
   normalizeOptionAliases,
-  validators,
 } from '@ionic/cli-utils';
 
 import { generateBuildOptions, filterArgumentsForCordova, CORDOVA_INTENT } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
-import { CordovaPlatformCommand } from './base';
+import { CordovaCommand } from './base';
 
 @CommandMetadata({
   name: 'build',
@@ -21,10 +21,6 @@ import { CordovaPlatformCommand } from './base';
     {
       name: 'platform',
       description: `The platform to build: ${chalk.green('ios')}, ${chalk.green('android')}`,
-      validators: [validators.required],
-      prompt: {
-        message: `What platform would you like to build: ${chalk.green('ios')}, ${chalk.green('android')}:`
-      }
     }
   ],
   options: [
@@ -86,7 +82,22 @@ import { CordovaPlatformCommand } from './base';
     },
   ]
 })
-export class BuildCommand extends CordovaPlatformCommand {
+export class BuildCommand extends CordovaCommand implements CommandPreRun {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    await this.checkForAssetsFolder();
+
+    if (!inputs[0]) {
+      const response = await this.env.prompt({
+        name: 'platform',
+        message: `What platform would you like to build: ${chalk.green('ios')}, ${chalk.green('android')}:`
+      });
+
+      inputs[0] = response['platform'];
+    }
+
+    await this.checkForPlatformInstallation(inputs[0]);
+  }
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     options = normalizeOptionAliases(this.metadata, options);
 

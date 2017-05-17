@@ -5,7 +5,6 @@ import {
   AppDetails,
   AuthToken,
   BowerJson,
-  CommandPreInputsPrompt,
   CommandPreRun,
   Deploy,
   DeployChannel,
@@ -31,10 +30,6 @@ export function isCommand(cmd: ICommand | INamespace): cmd is ICommand {
 
 export function isCommandPreRun(cmd: ICommand): cmd is CommandPreRun {
   return typeof (<CommandPreRun>cmd).preRun === 'function';
-}
-
-export function isCommandPreInputsPrompt(cmd: ICommand): cmd is CommandPreInputsPrompt {
-  return typeof (<CommandPreInputsPrompt>cmd).preInputsPrompt === 'function';
 }
 
 export function isLogLevel(l: string): l is LogLevel {

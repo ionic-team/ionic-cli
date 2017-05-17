@@ -5,7 +5,6 @@ import {
   Command,
   CommandLineInputs,
   CommandLineOptions,
-  CommandPreInputsPrompt,
   CommandPreRun,
   ERROR_SHELL_COMMAND_NOT_FOUND,
   IShellRunOptions,
@@ -122,8 +121,8 @@ export const CORDOVA_RUN_COMMAND_OPTIONS = [
   },
 ];
 
-export class CordovaCommand extends Command implements CommandPreInputsPrompt {
-  async preInputsPrompt(inputs: CommandLineInputs): Promise<void> {
+export class CordovaCommand extends Command {
+  async checkForAssetsFolder(): Promise<void> {
     if (this.env.project.directory) {
       const wwwPath = path.join(this.env.project.directory, 'www');
       const wwwExists = await pathExists(wwwPath); // TODO: hard-coded
@@ -151,12 +150,8 @@ export class CordovaCommand extends Command implements CommandPreInputsPrompt {
       throw e;
     }
   }
-}
 
-export class CordovaPlatformCommand extends CordovaCommand implements CommandPreRun {
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ runPlatform ] = inputs;
-
+  async checkForPlatformInstallation(runPlatform: string) {
     if (runPlatform) {
       const [ platforms, plugins ] = await Promise.all([
         getProjectPlatforms(this.env.project.directory),
@@ -174,8 +169,10 @@ export class CordovaPlatformCommand extends CordovaCommand implements CommandPre
   }
 }
 
-export class CordovaRunCommand extends CordovaPlatformCommand implements CommandPreRun {
+export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    await this.checkForAssetsFolder();
+
     if (options['list']) {
       const args = filterArgumentsForCordova(this.metadata, inputs, options);
       if (!options['device'] && !options['emulator']) {
@@ -194,13 +191,13 @@ export class CordovaRunCommand extends CordovaPlatformCommand implements Command
       const response = await this.env.prompt({
         type: 'input',
         name: 'platform',
-        message: `What platform would you like to run: ${chalk.green('ios')}, ${chalk.green('android')}`,
+        message: `What platform would you like to run: ${chalk.green('ios')}, ${chalk.green('android')}:`,
       });
 
       inputs[0] = response['platform'].trim();
     }
 
-    await super.preRun(inputs, options);
+    await this.checkForPlatformInstallation(inputs[0]);
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

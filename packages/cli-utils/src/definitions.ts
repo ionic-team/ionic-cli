@@ -207,10 +207,9 @@ export interface NormalizedCommandOption extends CommandOption {
   aliases: string[];
 }
 
-export type Validator = (input?: string, key?: string) => boolean | string;
+export type Validator = (input?: string, key?: string) => true | string;
 
 export interface Validators {
-  required: Validator;
   email: Validator;
   numeric: Validator;
 }
@@ -230,7 +229,6 @@ export interface CommandInputPrompt {
 export interface CommandInput {
   name: string;
   description: string;
-  prompt?: CommandInputPrompt;
   validators?: Validator[];
   private?: boolean;
 }
@@ -432,10 +430,6 @@ export interface ICommand {
   validate(inputs: CommandLineInputs): ValidationError[];
   run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
   execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
-}
-
-export interface CommandPreInputsPrompt extends ICommand {
-  preInputsPrompt(inputs?: CommandLineInputs): Promise<void | number>;
 }
 
 export interface CommandPreRun extends ICommand {

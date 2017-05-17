@@ -7,7 +7,6 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  CommandPreInputsPrompt,
   CommandPreRun,
   fsMkdir,
   getCommandInfo,
@@ -95,10 +94,10 @@ import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
     },
   ]
 })
-export class StartCommand extends Command implements CommandPreRun, CommandPreInputsPrompt {
-  async preInputsPrompt() {
+export class StartCommand extends Command implements CommandPreRun {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<number | void> {
     // If the action is list then lets just end here.
-    if (this.env.argv['list']) {
+    if (options['list']) {
       this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES).join('\n'));
       return 0;
     }
@@ -116,9 +115,6 @@ export class StartCommand extends Command implements CommandPreRun, CommandPreIn
       }
     }
 
-  }
-
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (options['v1'] || options['v2']) {
       const type = options['v1'] ? 'ionic1' : 'ionic-angular';
 

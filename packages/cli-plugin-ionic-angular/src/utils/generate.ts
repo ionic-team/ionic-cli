@@ -29,7 +29,7 @@ export async function tabsPrompt(env: IonicEnvironment) {
   const howManyQuestion = await env.prompt({
     name: 'howMany',
     message: 'How many tabs?',
-    validate: (input: string) => validators.numeric(input),
+    validate: v => validators.numeric(v),
   });
 
   for (let i = 0; i < howManyQuestion.howMany; i++) {

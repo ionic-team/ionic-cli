@@ -25,6 +25,7 @@ import { CordovaCommand } from './base';
 })
 export class PrepareCommand extends CordovaCommand implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    await this.checkForAssetsFolder();
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

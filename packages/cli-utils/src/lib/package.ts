@@ -132,7 +132,7 @@ export class PackageClient {
     return `${build.name}.${extension}`;
   }
 
-  formatPlatform(p: PackageBuild['platform']): string {
+  formatPlatform(p: PackageBuild['platform'] | string): string {
     switch (p) {
       case 'ios':
         return 'iOS';

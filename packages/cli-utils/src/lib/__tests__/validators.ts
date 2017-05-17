@@ -5,24 +5,6 @@ import { validators } from '../validators';
 
 const stripAnsi = load('strip-ansi');
 
-describe('required validator', () => {
-  it('should return a generic message if the required field is an empty string', () => {
-    const result = validators.required('');
-    expect(stripAnsi(result)).toEqual('Must not be empty.');
-  });
-
-  it('should return a name specific message if the required field is empty and a name is provided', () => {
-    const result = validators.required('', 'my_key');
-    expect(stripAnsi(result)).toEqual('my_key must not be empty.');
-  });
-
-  it('should return true if a non-empty value is provided', () => {
-    const result = validators.required('value!');
-    expect(typeof result).toEqual('boolean');
-    expect(result).toBeTruthy();
-  });
-});
-
 describe('email validator', () => {
   it('should return a generic message if the email is an empty string', () => {
     const result = validators.email('');

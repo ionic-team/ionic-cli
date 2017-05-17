@@ -3,7 +3,7 @@ import * as chalk from 'chalk';
 import {
   CommandLineInputs,
   CommandLineOptions,
-  CommandPreInputsPrompt,
+  CommandPreRun,
   CommandMetadata,
   normalizeOptionAliases,
 } from '@ionic/cli-utils';
@@ -16,11 +16,11 @@ import { CordovaCommand } from './base';
   name: 'plugin',
   type: 'project',
   description: 'Manage Cordova plugins',
-  exampleCommands: ['add cordova-plugin-inappbrowser@latest', 'list'],
+  exampleCommands: ['add cordova-plugin-inappbrowser@latest', 'ls'],
   inputs: [
     {
       name: 'action',
-      description: `${chalk.green('add')} or ${chalk.green('remove')} a plugin; ${chalk.green('list')} or ${chalk.green('save')} all project plugins`,
+      description: `${chalk.green('add')} or ${chalk.green('remove')} a plugin; ${chalk.green('ls')} or ${chalk.green('save')} all project plugins`,
     },
     {
       name: 'plugin',
@@ -36,20 +36,20 @@ import { CordovaCommand } from './base';
     }
   ]
 })
-export class PluginCommand extends CordovaCommand implements CommandPreInputsPrompt {
-  async preInputsPrompt(inputs: CommandLineInputs): Promise<void | number> {
-    inputs[0] = (typeof inputs[0] === 'undefined') ? 'list' : inputs[0];
+export class PluginCommand extends CordovaCommand implements CommandPreRun {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    await this.checkForAssetsFolder();
+
+    inputs[0] = (typeof inputs[0] === 'undefined') ? 'ls' : inputs[0];
     inputs[0] = (inputs[0] === 'rm') ? 'remove' : inputs[0];
-    inputs[0] = (inputs[0] === 'ls') ? 'list' : inputs[0];
+    inputs[0] = (inputs[0] === 'list') ? 'ls' : inputs[0];
 
     // If the action is list then lets just end here.
-    if (['list', 'save'].includes(inputs[0])) {
+    if (['ls', 'save'].includes(inputs[0])) {
       const response = await this.runCordova(['plugin', inputs[0]]);
       this.env.log.msg(response);
       return 0;
     }
-
-    await super.preInputsPrompt(inputs);
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

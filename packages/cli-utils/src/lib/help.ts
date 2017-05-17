@@ -128,9 +128,10 @@ export function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[
 
 function formatCommandUsage(inputs: CommandInput[] = [], commandName: string): string {
   const formatInput = (input: CommandInput) => {
-    if (input.validators && (input.validators.includes(validators.required) && !input.prompt)) {
-      return '<' + input.name + '>';
-    }
+    // TODO: handle required arguments (there are none currently)
+    // if (input.required) {
+    //   return '<' + input.name + '>';
+    // }
 
     return '[' + input.name + ']';
   };

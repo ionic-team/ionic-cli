@@ -158,9 +158,11 @@ function formatSynopsis(inputs, commandName) {
       `${commandName} ${
         (inputs || [])
           .map(input => {
-            if (input.validators && input.validators.includes(utilsPkg.validators.required)) {
-              return '<' + input.name + '>';
-            }
+            // TODO: handle required arguments (there are none currently)
+            // if (input.required) {
+            //   return '<' + input.name + '>';
+            // }
+
             return '[' + input.name + ']';
           })
           .join(' ')}`;
