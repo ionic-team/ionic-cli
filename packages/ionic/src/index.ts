@@ -23,6 +23,7 @@ import {
   formatSuperAgentError,
   fsReadDir,
   getCommandInfo,
+  handleCliFlags,
   isSuperAgentError,
   isValidationErrorArray,
   load as loadFromUtils,
@@ -94,7 +95,7 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
   registerHooks(hooks);
   cliUtilsRegisterHooks(hooks);
 
-  return {
+  const ienv = {
     app,
     argv,
     client,
@@ -124,6 +125,10 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
     },
 
   };
+
+  await handleCliFlags(ienv, argv);
+
+  return ienv;
 }
 
 export async function run(pargv: string[], env: { [k: string]: string }) {

@@ -49,7 +49,7 @@ export class Command implements ICommand {
       (async () => {
         // TODO: get telemetry for commands that aborted above
         const configData = await this.env.config.load();
-        if (configData.cliFlags.enableTelemetry !== false) {
+        if (configData.cliFlags.telemetry !== false) {
           let cmdInputs: CommandLineInputs = [];
 
           if (this.metadata.name === 'help') {

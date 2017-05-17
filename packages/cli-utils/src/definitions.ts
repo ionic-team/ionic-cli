@@ -294,11 +294,12 @@ export interface ConfigFile {
     appUser: { [app_id: string]: string };
   };
   cliFlags: {
-    promptedForSignup?: boolean;
-    enableTelemetry?: boolean;
+    telemetry?: boolean;
     yarn?: boolean;
   };
 }
+
+export type CliFlag = keyof ConfigFile['cliFlags'];
 
 export interface IConfig<T> {
   directory: string;

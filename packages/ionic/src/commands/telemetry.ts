@@ -24,19 +24,19 @@ export class TelemetryCommand extends Command {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const config = await this.env.config.load();
     const [ status ] = inputs;
-    const enableTelemetry = config.cliFlags.enableTelemetry;
+    const enableTelemetry = config.cliFlags.telemetry;
 
     if (typeof status === 'string') {
-      config.cliFlags.enableTelemetry = status.toLowerCase() === 'on';
+      config.cliFlags.telemetry = status.toLowerCase() === 'on';
     }
 
-    if (typeof status === 'string' || enableTelemetry !== config.cliFlags.enableTelemetry) {
-      this.env.log.ok(`Telemetry: ${chalk.bold(config.cliFlags.enableTelemetry ? 'ON' : 'OFF')}`);
+    if (typeof status === 'string' || enableTelemetry !== config.cliFlags.telemetry) {
+      this.env.log.ok(`Telemetry: ${chalk.bold(config.cliFlags.telemetry ? 'ON' : 'OFF')}`);
     } else {
-      this.env.log.msg(`Telemetry: ${chalk.bold(config.cliFlags.enableTelemetry ? 'ON' : 'OFF')}`);
+      this.env.log.msg(`Telemetry: ${chalk.bold(config.cliFlags.telemetry ? 'ON' : 'OFF')}`);
     }
 
-    if (config.cliFlags.enableTelemetry) {
+    if (config.cliFlags.telemetry) {
       this.env.log.msg('Thank you for making the CLI better! ❤️');
     }
   }

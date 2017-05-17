@@ -3,11 +3,13 @@ import * as os from 'os';
 
 import * as chalk from 'chalk';
 
-import { ConfigFile, IConfig } from '../definitions';
+import { ConfigFile, IConfig, CliFlag, IonicEnvironment } from '../definitions';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
 import { ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON, fsMkdirp, fsStat, fsReadJsonFile, fsWriteJsonFile } from './utils/fs';
 import { load } from './modules';
+
+export const CLI_FLAGS: CliFlag[] = ['interactive', 'telemetry', 'yarn'];
 
 export abstract class BaseConfig<T> implements IConfig<T> {
   public directory: string;
@@ -130,12 +132,18 @@ export class Config extends BaseConfig<ConfigFile> {
       results.cliFlags = {};
     }
 
-    if (typeof results.cliFlags.enableTelemetry === 'undefined') {
-      results.cliFlags.enableTelemetry = true;
+    if (typeof results.cliFlags.telemetry === 'undefined') {
+      if (typeof results.cliFlags.enableTelemetry !== 'undefined') {
+        results.cliFlags.telemetry = results.cliFlags.enableTelemetry;
+      } else {
+        results.cliFlags.telemetry = true;
+      }
     }
 
     delete results.lastUpdated;
     delete results.cliFlags.promptedForTelemetry;
+    delete results.cliFlags.promptedForSignup;
+    delete results.cliFlags.enableTelemetry;
 
     return results;
   }
@@ -149,5 +157,15 @@ export class Config extends BaseConfig<ConfigFile> {
       && typeof j.tokens === 'object'
       && typeof j.tokens.appUser === 'object'
       && typeof j.cliFlags === 'object';
+  }
+}
+
+export async function handleCliFlags(env: IonicEnvironment, argv: { [key: string]: any; }) {
+  const configData = await env.config.load();
+
+  for (let cliFlag of CLI_FLAGS) {
+    if (typeof argv[cliFlag] === 'boolean') {
+      configData.cliFlags[cliFlag] = argv[cliFlag];
+    }
   }
 }
