@@ -205,7 +205,7 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
   const ionicLatestVersion = await getLatestPluginVersion(env, env.plugins.ionic);
   const ionicDistTag = getReleaseChannelName(env.plugins.ionic.version);
 
-  if (semver.gt(ionicLatestVersion, env.plugins.ionic.version)) {
+  if (semver.gt(ionicLatestVersion, env.plugins.ionic.version) || (ionicDistTag === 'canary' && ionicLatestVersion !== env.plugins.ionic.version)) {
     env.log.warn(`The Ionic CLI has an update available! Please upgrade (you might need ${chalk.green('sudo')}):\n\n    ${chalk.green('npm install -g ionic@' + ionicDistTag)}\n\n`);
     warnonly = true;
     updates.push(env.plugins.ionic.name);
