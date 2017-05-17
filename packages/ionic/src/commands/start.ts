@@ -78,9 +78,8 @@ import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
     },
     {
       name: 'cordova',
-      description: 'Skip automatic Cordova integration',
+      description: 'Include Cordova integration',
       type: Boolean,
-      default: true,
     },
     {
       name: 'yarn',
@@ -177,13 +176,13 @@ export class StartCommand extends Command implements CommandPreRun {
 
     if (!options['skip-deps']) {
       // Check global dependencies
-      const globalDeps = starterType.globalDependencies.filter(dep => {
-        return dep !== 'cordova' || options['cordova'];
-      });
+      if (options['cordova']) {
+        starterType.globalDependencies.push('cordova');
+      }
 
-      this.env.log.debug(`globalDeps=${globalDeps}`);
+      this.env.log.debug(`globalDeps=${starterType.globalDependencies}`);
 
-      for (let dep of globalDeps) {
+      for (let dep of starterType.globalDependencies) {
         const cmdInstalled = await getCommandInfo(dep);
 
         if (typeof cmdInstalled === 'undefined') {
@@ -294,13 +293,13 @@ export class StartCommand extends Command implements CommandPreRun {
 
       await pkgInstall(this.env, undefined, o);
 
-      const localDeps = starterType.localDependencies.filter(dep => {
-        return dep !== '@ionic/cli-plugin-cordova' || options['cordova'];
-      });
+      if (options['cordova']) {
+        starterType.localDependencies.push('@ionic/cli-plugin-cordova');
+      }
 
-      this.env.log.debug(`localDeps=${localDeps}`);
+      this.env.log.debug(`localDeps=${starterType.localDependencies}`);
 
-      for (let dep of localDeps) {
+      for (let dep of starterType.localDependencies) {
         await pkgInstallPlugin(this.env, dep, o);
       }
     }
