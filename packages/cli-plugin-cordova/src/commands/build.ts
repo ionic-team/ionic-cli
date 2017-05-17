@@ -5,7 +5,6 @@ import {
   CommandLineOptions,
   CommandMetadata,
   CommandPreRun,
-  normalizeOptionAliases,
 } from '@ionic/cli-utils';
 
 import { generateBuildOptions, filterArgumentsForCordova, CORDOVA_INTENT } from '../lib/utils/cordova';
@@ -99,12 +98,11 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    options = normalizeOptionAliases(this.metadata, options);
-
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);
 
     await this.env.hooks.fire('command:build', {
+      cmd: this,
       env: this.env,
       inputs,
       options: generateBuildOptions(this.metadata, options)

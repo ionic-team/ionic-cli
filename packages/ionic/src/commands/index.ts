@@ -74,8 +74,8 @@ export class IonicNamespace extends Namespace {
     }
 
     const command = cmdOrNamespace;
-    const minimistOptions = metadataToMinimistOptions(command.metadata);
-    const options = minimist(env.pargv, minimistOptions);
+    command.metadata.minimistOpts = metadataToMinimistOptions(command.metadata);
+    const options = minimist(env.pargv, command.metadata.minimistOpts);
     env.argv = options;
     command.env = env;
 

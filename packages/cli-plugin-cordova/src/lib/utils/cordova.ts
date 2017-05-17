@@ -25,15 +25,6 @@ export function filterArgumentsForCordova(metadata: CommandData, inputs: Command
 }
 
 /**
- * Gather arguments from command line to be passed to Cordova
- */
-export function gatherArgumentsForCordova(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
-  const args = minimistOptionsToArray(options);
-
-  return [metadata.name].concat(inputs, args);
-}
-
-/**
  * Start the app scripts server for emulator or device
  */
 export function generateBuildOptions(metadata: CommandData, options: CommandLineOptions): CommandLineOptions {

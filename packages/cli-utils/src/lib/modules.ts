@@ -1,6 +1,7 @@
 import * as LeekType from 'leek';
 import * as archiverType from 'archiver';
 import * as crossSpawnType from 'cross-spawn';
+import * as dargsType from 'dargs';
 import * as inquirerType from 'inquirer';
 import * as lodashType from 'lodash';
 import * as ncpType from 'ncp';
@@ -13,6 +14,7 @@ import * as uuidType from 'uuid';
 
 export function load(modulePath: 'archiver'): typeof archiverType;
 export function load(modulePath: 'cross-spawn'): typeof crossSpawnType;
+export function load(modulePath: 'dargs'): typeof dargsType;
 export function load(modulePath: 'inquirer'): typeof inquirerType;
 export function load(modulePath: 'leek'): typeof LeekType;
 export function load(modulePath: 'lodash'): typeof lodashType;

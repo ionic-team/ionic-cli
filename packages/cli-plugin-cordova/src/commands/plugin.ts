@@ -5,10 +5,9 @@ import {
   CommandLineOptions,
   CommandPreRun,
   CommandMetadata,
-  normalizeOptionAliases,
 } from '@ionic/cli-utils';
 
-import { gatherArgumentsForCordova } from '../lib/utils/cordova';
+import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import { CordovaCommand } from './base';
 
@@ -25,7 +24,7 @@ import { CordovaCommand } from './base';
     {
       name: 'plugin',
       description: `The name of the plugin (corresponds to ${chalk.green('add')} and ${chalk.green('remove')})`,
-    }
+    },
   ],
   options: [
     {
@@ -33,7 +32,7 @@ import { CordovaCommand } from './base';
       description: `Forve overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
       type: Boolean,
       default: false,
-    }
+    },
   ]
 })
 export class PluginCommand extends CordovaCommand implements CommandPreRun {
@@ -68,8 +67,7 @@ export class PluginCommand extends CordovaCommand implements CommandPreRun {
     // ensure the content node was set back to its original
     await resetConfigXmlContentSrc(this.env.project.directory);
 
-    const normalizedOptions = normalizeOptionAliases(this.metadata, options);
-    const optionList = gatherArgumentsForCordova(this.metadata, inputs, normalizedOptions);
+    const optionList = filterArgumentsForCordova(this.metadata, inputs, options);
 
     if (!optionList.includes('--save')) {
       optionList.push('--save');

@@ -20,7 +20,7 @@ export class InfoCommand extends Command {
     const task = this.env.tasks.next('Gathering environment info');
 
     const initialValue: InfoHookItem[] = [];
-    const results = await this.env.hooks.fire('command:info', { env: this.env, inputs, options });
+    const results = await this.env.hooks.fire('command:info', { cmd: this, env: this.env, inputs, options });
     const flattenedResults = results.reduce((acc, currentValue) => acc.concat(currentValue), initialValue);
 
     const globalNpmDetails = flattenedResults.filter((item) => item.type === 'global-packages' || <string>item.type === 'global-npm'); // TODO: take out global-npm

@@ -7,7 +7,7 @@ import {
   CommandMetadata,
 } from '@ionic/cli-utils';
 
-import { gatherArgumentsForCordova } from '../lib/utils/cordova';
+import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { installPlatform } from '../lib/utils/setup';
 import { getPlatformEngine, resetConfigXmlContentSrc, parseConfigXmlToJson } from '../lib/utils/configXmlUtils';
 import { CordovaCommand } from './base';
@@ -53,6 +53,6 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);
 
-    await this.env.shell.run('cordova', gatherArgumentsForCordova(this.metadata, inputs, options), {});
+    await this.env.shell.run('cordova', filterArgumentsForCordova(this.metadata, inputs, options), {});
   }
 }

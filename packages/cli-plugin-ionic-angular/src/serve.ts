@@ -1,9 +1,8 @@
 import * as chalk from 'chalk';
 
-import { CommandHookArgs, FatalException, getAvailableIPAddress } from '@ionic/cli-utils';
+import { CommandHookArgs, FatalException, getAvailableIPAddress, minimistOptionsToArray } from '@ionic/cli-utils';
 
 import { load } from './lib/modules';
-import { minimistOptionsToArray } from './utils/arguments';
 
 export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any }> {
   let chosenIP = 'localhost';
@@ -36,7 +35,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
     }
   }
 
-  let appScriptsArgs = minimistOptionsToArray(args.options);
+  const appScriptsArgs = minimistOptionsToArray(args.options, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
   const AppScripts = load('@ionic/app-scripts');
@@ -47,7 +46,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   args.env.log.info(`Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))} - Ctrl+C to cancel\n`);
   const settings = await AppScripts.serve(context);
 
-  if (!settings) { // TODO: shouldn't be needed
+  if (!settings) { // TODO: shouldn've been fixed after app-scripts 1.3.7
     throw new FatalException(
       `app-scripts serve unexpectedly failed.` +
       `settings: ${settings}` +

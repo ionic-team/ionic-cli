@@ -1,7 +1,7 @@
 import * as chalk from 'chalk';
 
+import * as dargsType from 'dargs';
 import * as inquirerType from 'inquirer';
-import { Opts as MinimistOpts } from 'minimist';
 
 import {
   CommandData,
@@ -12,67 +12,29 @@ import {
   CommandOptionTypeDefaults,
   IonicEnvironment,
   NormalizedCommandOption,
+  NormalizedMinimistOpts,
   Validator,
   ValidationError
 } from '../../definitions';
 
 import { validators } from '../validators';
-
-export interface NormalizedMinimistOpts extends MinimistOpts {
-  string: string[];
-  boolean: string[];
-  alias: { [key: string]: string[] };
-  default: { [key: string]: CommandLineInput };
-}
+import { load } from '../modules';
 
 const typeDefaults: CommandOptionTypeDefaults = new Map<CommandOptionType, CommandLineInput>()
   .set(String, null)
   .set(Boolean, false);
 
-/**
- * Take all command line options and normalize all aliases to their proper option names
- */
-export function normalizeOptionAliases(metadata: CommandData, options: CommandLineOptions): CommandLineOptions {
-  if (!metadata) {
-    return options;
+export function minimistOptionsToArray(options: CommandLineOptions, dargsOptions: dargsType.Opts = {}): string[] {
+  const dargs = load('dargs');
+
+  if (typeof dargsOptions.ignoreFalse === 'undefined') {
+    dargsOptions.ignoreFalse = true;
   }
-  return Object.keys(options).reduce((results: any, optionName) => {
-      const metadataOptionFound = (metadata.options || []).find((mdOption) => (
-        mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
-      ));
 
-      if (metadataOptionFound) {
-        results[metadataOptionFound.name] = options[optionName];
-      } else {
-        results[optionName] = options[optionName];
-      }
-      return results;
-    }, {});
-}
+  const results = dargs(options, dargsOptions);
+  results.splice(results.length - options._.length); // take out arguments
 
-export function minimistOptionsToArray(options: CommandLineOptions): string[] {
-  return (Object.keys(options || {})).reduce((results, optionName): string[] => {
-    const daObject = options[optionName];
-
-    if (optionName === '_' || !daObject) {
-      return results;
-    }
-
-    if (daObject === true) {
-      return results.concat(`--${optionName}`);
-    }
-    if (typeof daObject === 'string') {
-      return results.concat(`--${optionName}=${daObject}`);
-    }
-    if (Array.isArray(daObject)) {
-      return results.concat(
-        daObject.map((value: string) => (
-          `--${optionName}=${value}`
-        ))
-      );
-    }
-    return results;
-  }, <string[]>[]);
+  return results;
 }
 
 /**
@@ -150,7 +112,7 @@ export function validateInputs(argv: string[], metadata: CommandData) {
 }
 
 export function filterOptionsByIntent(metadata: CommandData, options: CommandLineOptions, intentName?: string): CommandLineOptions {
-  return Object.keys(options).reduce((allOptions, optionName) => {
+  const r = Object.keys(options).reduce((allOptions, optionName) => {
     const metadataOptionFound = (metadata.options || []).find((mdOption) => (
       mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
     ));
@@ -163,4 +125,9 @@ export function filterOptionsByIntent(metadata: CommandData, options: CommandLin
     }
     return allOptions;
   }, <CommandLineOptions>{});
+
+  r._ = options._;
+  r['--'] = options['--'];
+
+  return r;
 }

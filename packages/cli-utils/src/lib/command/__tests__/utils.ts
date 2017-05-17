@@ -1,8 +1,42 @@
 import * as minimist from 'minimist';
 import { CommandData } from '../../../definitions';
-import { metadataToMinimistOptions, filterOptionsByIntent } from '../utils';
+import { minimistOptionsToArray, metadataToMinimistOptions, filterOptionsByIntent } from '../utils';
 
 describe('@ionic/cli-utils', () => {
+
+  describe('minimistOptionsToArray', () => {
+
+    it('should handle empty argv', () => {
+      const result = minimistOptionsToArray({ _: [] });
+      expect(result).toEqual([]);
+    });
+
+    it('should filter out arguments', () => {
+      const result = minimistOptionsToArray({ _: ['foo', 'bar'] });
+      expect(result).toEqual([]);
+    });
+
+    it('should parse out boolean option from minimist result', () => {
+      const result = minimistOptionsToArray({ _: ['foo', 'bar'], wow: true });
+      expect(result).toEqual(['--wow']);
+    });
+
+    it('should parse out string option from minimist result', () => {
+      const result = minimistOptionsToArray({ _: [], cat: 'meow' });
+      expect(result).toEqual(['--cat=meow']);
+    });
+
+    it('should parse out option list from minimist result', () => {
+      const result = minimistOptionsToArray({ _: [], cat: 'meow', dog: 'bark', flag1: true });
+      expect(result).toEqual(['--cat=meow', '--dog=bark', '--flag1']);
+    });
+
+    it('should parse out option list from minimist result without equal signs', () => {
+      const result = minimistOptionsToArray({ _: [], cat: 'meow', dog: 'bark', flag1: true }, { useEquals: false });
+      expect(result).toEqual(['--cat', 'meow', '--dog', 'bark', '--flag1']);
+    });
+
+  });
 
   describe('metadataToMinimistOptions', () => {
 

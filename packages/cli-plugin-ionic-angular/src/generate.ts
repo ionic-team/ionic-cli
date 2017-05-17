@@ -2,10 +2,9 @@ import * as chalk from 'chalk';
 import * as path from 'path';
 
 import * as AppScriptsType from '@ionic/app-scripts';
-import { CommandHookArgs, readPackageJsonFile, prettyPath } from '@ionic/cli-utils';
+import { CommandHookArgs, readPackageJsonFile, prettyPath, minimistOptionsToArray } from '@ionic/cli-utils';
 
 import { load } from './lib/modules';
-import { minimistOptionsToArray } from './utils/arguments';
 import { prompt, tabsPrompt } from './utils/generate';
 
 export async function generate(args: CommandHookArgs): Promise<string[]> {

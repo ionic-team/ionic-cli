@@ -187,7 +187,11 @@ export interface IProject extends IConfig<ProjectFile> {
 
 export type CommandLineInput = string | boolean | null | undefined | string[];
 export type CommandLineInputs = string[];
-export type CommandLineOptions = { [arg: string]: CommandLineInput };
+
+export interface CommandLineOptions extends minimistType.ParsedArgs {
+  [arg: string]: CommandLineInput;
+};
+
 export type CommandOptionType = StringConstructor | BooleanConstructor;
 export type CommandOptionTypeDefaults = Map<CommandOptionType, CommandLineInput>;
 
@@ -233,6 +237,13 @@ export interface CommandInput {
   private?: boolean;
 }
 
+export interface NormalizedMinimistOpts extends minimistType.Opts {
+  string: string[];
+  boolean: string[];
+  alias: { [key: string]: string[] };
+  default: { [key: string]: CommandLineInput };
+}
+
 export interface CommandData {
   name: string;
   type: 'global' | 'project';
@@ -243,6 +254,7 @@ export interface CommandData {
   options?: CommandOption[];
   fullName?: string;
   visible?: boolean;
+  minimistOpts?: NormalizedMinimistOpts;
 }
 
 export interface ISession {
@@ -345,6 +357,7 @@ export interface HookArgs {
 }
 
 export interface CommandHookArgs extends HookArgs {
+  cmd: ICommand;
   inputs: CommandLineInputs;
   options: CommandLineOptions;
 }

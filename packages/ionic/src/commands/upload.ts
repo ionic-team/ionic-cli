@@ -54,6 +54,7 @@ export class UploadCommand extends Command {
 
     if (!options['nobuild']) {
       await this.env.hooks.fire('command:build', {
+        cmd: this,
         env: this.env,
         inputs,
         options,

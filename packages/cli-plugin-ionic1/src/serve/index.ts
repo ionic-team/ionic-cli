@@ -3,7 +3,7 @@ import * as chalk from 'chalk';
 import { stringToInt } from '../utils/helpers';
 import { createHttpServer } from './http-server';
 import { createLiveReloadServer } from './live-reload';
-import { CommandHookArgs, IonicEnvironment, findClosestOpenPort, getAvailableIPAddress } from '@ionic/cli-utils';
+import { CommandHookArgs, IonicEnvironment, findClosestOpenPort, getAvailableIPAddress, minimistOptionsToArray } from '@ionic/cli-utils';
 import {
   DEFAULT_ADDRESS,
   DEFAULT_LIVERELOAD_PORT,
@@ -12,7 +12,6 @@ import {
   ServerOptions,
   WATCH_PATTERNS,
 } from './config';
-import { minimistOptionsToArray } from '../utils/arguments';
 import { load } from '../lib/modules';
 
 export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any }> {

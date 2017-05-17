@@ -5,7 +5,6 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  normalizeOptionAliases,
 } from '@ionic/cli-utils';
 
 import { load } from '../lib/modules';
@@ -98,9 +97,8 @@ import { load } from '../lib/modules';
 })
 export class ServeCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    options = normalizeOptionAliases(this.metadata, options);
-
     const [ response ] = await this.env.hooks.fire('command:serve', {
+      cmd: this,
       env: this.env,
       inputs,
       options: {

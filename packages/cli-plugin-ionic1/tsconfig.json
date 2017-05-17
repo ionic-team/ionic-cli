@@ -17,6 +17,7 @@
   },
   "include": [
     "../../types/archiver.d.ts",
+    "../../types/dargs.d.ts",
     "../../types/proxy-middleware.d.ts",
     "../../types/glob-watcher.d.ts",
     "../../types/tiny-lr.d.ts",

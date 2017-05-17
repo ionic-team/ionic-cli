@@ -141,6 +141,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     this.env.tasks.end();
 
     await this.env.hooks.fire('command:build', {
+      cmd: this,
       env: this.env,
       inputs,
       options: filterOptionsByIntent(this.metadata, options, 'app-scripts'),

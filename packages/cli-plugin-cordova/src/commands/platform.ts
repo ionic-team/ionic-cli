@@ -5,11 +5,10 @@ import {
   CommandLineOptions,
   CommandMetadata,
   CommandPreRun,
-  normalizeOptionAliases,
 } from '@ionic/cli-utils';
 
 import { KnownPlatform } from '../definitions';
-import { gatherArgumentsForCordova } from '../lib/utils/cordova';
+import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import { addDefaultImagesToProjectResources } from '../lib/resources';
 import { getProjectPlatforms } from '../lib/utils/setup';
@@ -78,8 +77,7 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
       return;
     }
 
-    const normalizedOptions = normalizeOptionAliases(this.metadata, options);
-    const optionList = gatherArgumentsForCordova(this.metadata, inputs, normalizedOptions);
+    const optionList = filterArgumentsForCordova(this.metadata, inputs, options);
 
     if ((action === 'add' || action === 'remove') && !optionList.includes('--save')) {
       optionList.push('--save');
