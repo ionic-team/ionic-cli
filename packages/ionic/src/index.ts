@@ -87,7 +87,7 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
   const session = new Session(config, project, client);
   const app = new App(session, project, client);
 
-  const argv = minimist(pargv);
+  const argv = minimist(pargv, { boolean: true });
   argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
 
   registerHooks(hooks);
@@ -134,7 +134,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   const ienv = await generateIonicEnvironment(pargv, env);
 
   try {
-    const argv = minimist(pargv);
+    const argv = minimist(pargv, { boolean: true });
 
     if (argv['log-level']) {
       ienv.log.level = argv['log-level'];
@@ -250,23 +250,15 @@ export async function getProjectRootDir(dir: string, projectFileName: string): P
 /**
  * Map legacy options to their new equivalent
  */
-function modifyArguments(pargv: string[]): string[] {
+export function modifyArguments(pargv: string[]): string[] {
   let modifiedArgArray: string[] = pargv.slice();
-  const minimistArgv = minimist(pargv);
+  const minimistArgv = minimist(pargv, { boolean: true });
 
   /**
    * Replace command to be executed
    */
   if (pargv.length === 0) {
     return ['help'];
-  }
-
-  if (minimistArgv['stats-opt-out']) {
-    return ['telemetry', 'no'];
-  }
-
-  if (minimistArgv['stats-opt-in']) {
-    return ['telemetry', 'yes'];
   }
 
   if (minimistArgv['help'] || minimistArgv['h']) {
