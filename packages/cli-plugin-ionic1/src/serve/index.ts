@@ -44,10 +44,12 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   const serverArgs = minimistOptionsToArray(args.options);
   args.env.log.info(`Starting server: ${chalk.bold(serverArgs.join(' '))} - Ctrl+C to cancel\n`);
 
+  const projectConfig = await args.env.project.load();
+
   // Setup Options and defaults
   const serverOptions: ServerOptions = {
     projectRoot: args.env.project.directory,
-    wwwDir: path.join(args.env.project.directory, 'www'),
+    wwwDir: path.join(args.env.project.directory, <string>args.options['documentRoot'] || projectConfig.documentRoot || 'www'),
     address: <string>args.options['address'] || DEFAULT_ADDRESS,
     port: stringToInt(<string>args.options['port'], DEFAULT_SERVER_PORT),
     httpPort: stringToInt(<string>args.options['port'], DEFAULT_SERVER_PORT),
@@ -99,7 +101,8 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
   await createHttpServer(env.project, options);
 
   const watch = load('glob-watcher');
-  const watcher = watch(WATCH_PATTERNS);
+  const projectConfig = await env.project.load();
+  const watcher = watch(projectConfig.watchPatterns || WATCH_PATTERNS);
   watcher.on('change', async function(filePath: string) {
 
     switch (path.extname(filePath)) {
