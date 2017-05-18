@@ -10,7 +10,7 @@ import {
   validators,
 } from '@ionic/cli-utils';
 
-import { filterArgumentsForCordova } from '../lib/utils/cordova';
+import { CORDOVA_INTENT, filterArgumentsForCordova } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import { CordovaCommand } from './base';
 
@@ -34,8 +34,13 @@ import { CordovaCommand } from './base';
       name: 'force',
       description: `Forve overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
       type: Boolean,
-      default: false,
+      intent: CORDOVA_INTENT,
     },
+    {
+      name: 'variable',
+      description: 'Specify plugin variables',
+      intent: CORDOVA_INTENT,
+    }
   ]
 })
 export class PluginCommand extends CordovaCommand implements CommandPreRun {
@@ -72,7 +77,7 @@ export class PluginCommand extends CordovaCommand implements CommandPreRun {
     // ensure the content node was set back to its original
     await resetConfigXmlContentSrc(this.env.project.directory);
 
-    const optionList = filterArgumentsForCordova(this.metadata, inputs, options);
+    const optionList = filterArgumentsForCordova(this.metadata, inputs.splice(0, 2), options);
 
     if (!optionList.includes('--save')) {
       optionList.push('--save');
