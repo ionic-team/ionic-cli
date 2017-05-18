@@ -6,6 +6,7 @@ export const version = '__VERSION__';
 export const preferGlobal = false;
 
 export const namespace = new CordovaNamespace();
+namespace.source = name;
 
 export function registerHooks(hooks: IHookEngine) {
   hooks.register(name, 'command:info', async () => {

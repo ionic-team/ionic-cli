@@ -249,6 +249,7 @@ export interface CommandData {
   options?: CommandOption[];
   fullName?: string;
   visible?: boolean;
+  source?: string;
   minimistOpts?: NormalizedMinimistOpts;
 }
 
@@ -440,6 +441,7 @@ export interface INamespace {
   name: string;
   namespaces: INamespaceMap;
   commands: ICommandMap;
+  source: string;
 
   locate(argv: string[]): [string[], ICommand | INamespace];
   getCommandMetadataList(): CommandData[];

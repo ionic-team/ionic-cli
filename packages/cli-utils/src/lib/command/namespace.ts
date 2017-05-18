@@ -40,6 +40,7 @@ export class Namespace implements INamespace {
   name = '';
   namespaces = new NamespaceMap();
   commands = new CommandMap();
+  source = '';
 
   /**
    * Recursively inspect inputs supplied to walk down all the tree of
@@ -55,6 +56,7 @@ export class Namespace implements INamespace {
 
         if (cmdgetter) {
           const cmd = cmdgetter();
+          cmd.metadata.source = ns.source;
           cmd.metadata.fullName = [...namespaceDepthList.slice(1), cmd.metadata.name].join(' ');
           return [inputs.slice(1), cmd];
         }
@@ -85,6 +87,7 @@ export class Namespace implements INamespace {
         }
 
         const cmd = cmdgetter();
+        cmd.metadata.source = namespace.source;
         cmd.metadata.fullName = [...namespaceDepthList.slice(1), cmd.metadata.name].join(' ');
         cmd.metadata.aliases = aliases.get(cmd.metadata.name) || [];
         commandList.push(cmd.metadata);

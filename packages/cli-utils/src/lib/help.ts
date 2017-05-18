@@ -52,7 +52,6 @@ async function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INam
 
 async function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, inputs: string[]) {
   const globalMetadata = ns.getCommandMetadataList();
-
   const formatList = (details: string[]) => details.map(hd => `    ${hd}\n`).join('');
 
   if (ns.root) {

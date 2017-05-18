@@ -7,6 +7,8 @@ import { PackageListCommand } from './list';
 
 export class PackageNamespace extends Namespace {
   name = 'package';
+  source = 'ionic';
+
   commands = new CommandMap([
     ['build', () => new PackageBuildCommand()],
     ['download', () => new PackageDownloadCommand()],

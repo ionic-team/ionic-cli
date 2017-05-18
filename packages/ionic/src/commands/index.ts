@@ -35,6 +35,7 @@ import { UploadCommand } from './upload';
 export class IonicNamespace extends Namespace {
   root = true;
   name = 'ionic';
+  source = 'ionic';
 
   namespaces = new NamespaceMap([
     ['package', () => new PackageNamespace()],
@@ -86,6 +87,14 @@ export class IonicNamespace extends Namespace {
       return;
     }
 
-    await command.execute(inputs, options);
+    try {
+      await command.execute(inputs, options);
+    } catch (e) {
+      if (!e.fatal && this.source !== command.metadata.source) {
+        env.log.warn(`Error occurred during command execution from a CLI plugin. ${chalk.bold('Your plugins may be out of date.')}`);
+      }
+
+      throw e;
+    }
   }
 }
