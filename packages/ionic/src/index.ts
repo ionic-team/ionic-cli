@@ -20,6 +20,7 @@ import {
   TaskChain,
   Telemetry,
   checkForUpdates,
+  createPromptModule,
   formatSuperAgentError,
   fsReadDir,
   getCommandInfo,
@@ -112,7 +113,7 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
         registerHooks,
       },
     },
-    prompt: inquirer.createPromptModule(),
+    prompt: await createPromptModule(log, config),
     project,
     session,
     shell,
@@ -150,7 +151,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       const nodeModulesExists = await pathExists(path.join(ienv.project.directory, 'node_modules'));
 
       if (!nodeModulesExists) {
-        const { confirm } = await ienv.prompt({
+        const confirm = await ienv.prompt({
           type: 'confirm',
           name: 'confirm',
           message: `Looks like a fresh checkout! No ${chalk.green('./node_modules')} directory found. Would you like to install project dependencies?`,
@@ -195,12 +196,17 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       await namespace.runCommand(ienv);
 
       configData.lastCommand = now.toISOString();
-      await Promise.all([ienv.config.save(), ienv.project.save()]);
     }
 
   } catch (e) {
     ienv.log.debug(chalk.red.bold('!!! ERROR ENCOUNTERED !!!'));
     err = e;
+  }
+
+  try {
+    await Promise.all([ienv.config.save(), ienv.project.save()]);
+  } catch (e) {
+    ienv.log.error(e);
   }
 
   if (err) {

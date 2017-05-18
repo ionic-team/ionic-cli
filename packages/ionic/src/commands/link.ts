@@ -35,7 +35,7 @@ export class LinkCommand extends Command {
     const project = await this.env.project.load();
 
     if (project.app_id) {
-      const { confirm } = await this.env.prompt({
+      const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
         message: `App ID ${chalk.green(project.app_id)} already exists in project config. Would you like to link a different app?`
@@ -47,11 +47,11 @@ export class LinkCommand extends Command {
     }
 
     if (appId) {
-      this.env.tasks.next(`Looking up app ${chalk.bold(appId)}`);
-
       if (appId === project.app_id) {
         return this.env.log.ok(`Already linked with app ${chalk.bold(appId)}.`);
       }
+
+      this.env.tasks.next(`Looking up app ${chalk.bold(appId)}`);
 
       const token = await this.env.session.getAppUserToken(appId);
       const req = this.env.client.make('GET', `/apps/${appId}`)
@@ -88,7 +88,7 @@ export class LinkCommand extends Command {
         id: CREATE_NEW_APP_CHOICE,
       };
 
-      const { linkedApp } = await this.env.prompt({
+      const linkedApp = await this.env.prompt({
         type: 'list',
         name: 'linkedApp',
         message: `Which app would you like to link`,

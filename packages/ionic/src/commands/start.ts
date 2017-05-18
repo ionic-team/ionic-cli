@@ -102,7 +102,7 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     if (this.env.project.directory) {
-      const { confirm } = await this.env.prompt({
+      const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
         message: 'You are already in an Ionic project directory. Do you really want to start another project here?',
@@ -110,6 +110,7 @@ export class StartCommand extends Command implements CommandPreRun {
       });
 
       if (!confirm) {
+        this.env.log.ok('Not starting project within existing project.');
         return 0;
       }
     }
@@ -125,7 +126,8 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     if (!inputs[0]) {
-      const { name } = await this.env.prompt({
+      const name = await this.env.prompt({
+        type: 'input',
         name: 'name',
         message: 'What would you like to name your project:',
       });
@@ -134,7 +136,7 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     if (!inputs[1]) {
-      const { template } = await this.env.prompt({
+      const template = await this.env.prompt({
         type: 'list',
         name: 'template',
         message: 'What starter would you like to use:',
@@ -207,11 +209,12 @@ export class StartCommand extends Command implements CommandPreRun {
       this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
       await fsMkdir(projectRoot, undefined);
     } else if (!(await isSafeToCreateProjectIn(projectRoot))) {
-      const { confirm } = await this.env.prompt({
+      const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
         message: `The directory ${chalk.green(projectName)} contains file(s) that could conflict. ` +
-            'Would you like to overwrite the directory with this new project?'
+            'Would you like to overwrite the directory with this new project?',
+        default: false,
       });
 
       if (confirm) {
@@ -223,7 +226,7 @@ export class StartCommand extends Command implements CommandPreRun {
           throw e;
         }
       } else {
-        this.env.log.msg('\nPlease provide a projectName that does not conflict with this directory.\n\n');
+        this.env.log.ok(`Not erasing existing project in ${chalk.green(prettyPath(projectRoot))}.`);
         return 0;
       }
     }
@@ -309,21 +312,24 @@ export class StartCommand extends Command implements CommandPreRun {
 
     // Ask the user if they would like to create a cloud account
     if (!options['skip-link']) {
-      const { linkedApp } = await this.env.prompt({
+      const confirm = await this.env.prompt({
         type: 'confirm',
-        name: 'linkedApp',
-        message: 'Link this app to your Ionic Dashboard to use tools like Ionic View?'
+        name: 'confirm',
+        message: 'Link this app to your Ionic Dashboard to use tools like Ionic View?',
+        noninteractiveValue: '',
       });
 
-      if (linkedApp && await this.env.session.isLoggedIn()) {
-        const opn = load('opn');
-        const token = await this.env.session.getUserToken();
-        opn(`${config.urls.dash}/?user_token=${token}`, { wait: false });
-        this.env.log.ok(`Run ${chalk.green(`ionic link`)} to link to the app.`);
-      } else if (linkedApp) {
-        this.env.log.msg(`\nYou will need to login in order to link this app. Please run the following commands to do so.\n` +
-          `  ${chalk.green(`ionic login`)} - login first\n` +
-          `  ${chalk.green(`ionic link`)} - then link your app`);
+      if (confirm) {
+        if (await this.env.session.isLoggedIn()) {
+          const opn = load('opn');
+          const token = await this.env.session.getUserToken();
+          opn(`${config.urls.dash}/?user_token=${token}`, { wait: false });
+          this.env.log.ok(`Run ${chalk.green(`ionic link`)} to link to the app.`);
+        } else {
+          this.env.log.msg(`\nYou will need to login in order to link this app. Please run the following commands to do so.\n` +
+            `  ${chalk.green(`ionic login`)} - login first\n` +
+            `  ${chalk.green(`ionic link`)} - then link your app`);
+        }
       }
     }
 

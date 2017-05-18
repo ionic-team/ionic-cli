@@ -7,6 +7,7 @@ import {
   CommandMetadata,
   contains,
   validate,
+  validators,
 } from '@ionic/cli-utils';
 
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
@@ -55,7 +56,7 @@ export class PluginCommand extends CordovaCommand implements CommandPreRun {
     }
 
     if (!inputs[1]) {
-      const { plugin } = await this.env.prompt({
+      const plugin = await this.env.prompt({
         message: `What plugin would you like to ${inputs[0]}:`,
         type: 'input',
         name: 'plugin',
@@ -63,6 +64,8 @@ export class PluginCommand extends CordovaCommand implements CommandPreRun {
 
       inputs[1] = plugin;
     }
+
+    validate(inputs[1], 'plugin', [validators.required]);
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

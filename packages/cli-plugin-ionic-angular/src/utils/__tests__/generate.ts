@@ -26,13 +26,10 @@ describe('tabsPrompt', () => {
 
   it('should return an array', async () => {
     const env = {
-      prompt: jest.fn().mockReturnValueOnce({
-        howMany: 2
-      }).mockReturnValueOnce({
-        tabName: 'CoolTabOne'
-      }).mockReturnValueOnce({
-        tabName: 'CoolTabTwo'
-      })
+      prompt: jest.fn()
+        .mockReturnValueOnce(2)
+        .mockReturnValueOnce('CoolTabOne')
+        .mockReturnValueOnce('CoolTabTwo')
     };
 
     const generate = require('../generate');

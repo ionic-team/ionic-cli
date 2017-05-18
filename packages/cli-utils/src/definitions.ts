@@ -214,6 +214,7 @@ export interface NormalizedCommandOption extends CommandOption {
 export type Validator = (input?: string, key?: string) => true | string;
 
 export interface Validators {
+  required: Validator;
   email: Validator;
   numeric: Validator;
 }
@@ -223,17 +224,11 @@ export interface ValidationError {
   inputName: string;
 }
 
-export interface CommandInputPrompt {
-  type?: string;
-  message?: string;
-  choices?: inquirerType.ChoiceType[] | ((answers: inquirerType.Answers) => inquirerType.ChoiceType[]);
-  filter?(input: string): string;
-}
-
 export interface CommandInput {
   name: string;
   description: string;
   validators?: Validator[];
+  required?: boolean;
   private?: boolean;
 }
 
@@ -294,6 +289,8 @@ export interface ConfigFile {
     appUser: { [app_id: string]: string };
   };
   cliFlags: {
+    confirm?: boolean;
+    interactive?: boolean;
     telemetry?: boolean;
     yarn?: boolean;
   };
@@ -396,6 +393,17 @@ export interface IHookEngine {
   getRegistered<T, U>(hook: string): IHook<T, U>[];
 }
 
+export interface PromptQuestion extends inquirerType.Question {
+  type: 'input' | 'password' | 'confirm' | 'list'; // strong-type type
+  message: string; // message is required
+  name: string; // name is required
+  noninteractiveValue?: string; // in non-interactive mode, what does this return?
+}
+
+export interface PromptModule {
+  (questions: PromptQuestion): Promise<string>;
+}
+
 export interface IonicEnvironment {
   argv: minimistType.ParsedArgs;
   pargv: string[];
@@ -404,7 +412,7 @@ export interface IonicEnvironment {
   client: IClient;
   config: IConfig<ConfigFile>;
   log: ILogger;
-  prompt: inquirerType.PromptModule;
+  prompt: PromptModule;
   project: IProject;
   plugins: {
     ionic: Plugin;
@@ -441,7 +449,7 @@ export interface ICommand {
   env: IonicEnvironment;
   metadata: CommandData;
 
-  validate(inputs: CommandLineInputs): ValidationError[];
+  validate(inputs: CommandLineInputs): Promise<void>;
   run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
   execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
 }

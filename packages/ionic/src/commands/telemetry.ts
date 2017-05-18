@@ -16,7 +16,8 @@ import {
     {
       name: 'status',
       description: `${chalk.green('on')} or ${chalk.green('off')}`,
-      validators: [contains([undefined, 'on', 'off'], { caseSensitive: false })],
+      validators: [contains(['on', 'off'], { caseSensitive: false })],
+      required: false,
     }
   ],
 })

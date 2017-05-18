@@ -3,27 +3,39 @@ import * as chalk from 'chalk';
 import { Validator, Validators, ValidationError } from '../definitions';
 import { isValidEmail } from './utils/string';
 
-export function validate(input: string, key: string, validators: Validator[]) {
-  const errors: ValidationError[] = [];
+export function validate(input: string, key: string, validators: Validator[], errors?: ValidationError[]) {
+  const throwErrors = typeof errors === 'undefined';
+
+  if (!errors) {
+    errors = [];
+  }
 
   for (let validator of validators) {
     const r = validator(input, key);
 
     if (r !== true) {
-      errors.push({
-        message: r,
-        inputName: key,
-      });
+      errors.push({ message: r, inputName: key });
     }
   }
 
-  if (errors.length > 0) {
+  if (throwErrors && errors.length > 0) {
     throw errors;
   }
 }
 
 // TODO: typescript isn't enforcing input?: string
 export const validators: Validators = {
+  required(input: string, key?: string): true | string {
+    if (!input) {
+      if (key) {
+        return `${chalk.bold(key)} must not be empty.`;
+      } else {
+        return 'Must not be empty.';
+      }
+    }
+
+    return true;
+  },
   email(input: string, key?: string): true | string {
     if (!isValidEmail(input)) {
       if (key) {

@@ -19,6 +19,7 @@ import {
     {
       name: 'id',
       description: 'The build ID to download. Defaults to the latest build',
+      required: false,
     },
   ],
   options: [

@@ -9,7 +9,12 @@ import { prettyPath } from './utils/format';
 import { ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON, fsMkdirp, fsStat, fsReadJsonFile, fsWriteJsonFile } from './utils/fs';
 import { load } from './modules';
 
-export const CLI_FLAGS: CliFlag[] = ['interactive', 'telemetry', 'yarn'];
+export const CLI_FLAGS: { flag: CliFlag, defaultValue: boolean }[] = [
+  { flag: 'confirm', defaultValue: false },
+  { flag: 'interactive', defaultValue: true },
+  { flag: 'telemetry', defaultValue: true },
+  { flag: 'yarn', defaultValue: false },
+];
 
 export abstract class BaseConfig<T> implements IConfig<T> {
   public directory: string;
@@ -132,11 +137,19 @@ export class Config extends BaseConfig<ConfigFile> {
       results.cliFlags = {};
     }
 
-    if (typeof results.cliFlags.telemetry === 'undefined') {
-      if (typeof results.cliFlags.enableTelemetry !== 'undefined') {
-        results.cliFlags.telemetry = results.cliFlags.enableTelemetry;
-      } else {
-        results.cliFlags.telemetry = true;
+    for (let cliFlag of CLI_FLAGS) {
+      const { flag, defaultValue } = cliFlag;
+
+      if (typeof results.cliFlags[flag] === 'undefined') {
+        if (flag === 'telemetry') {
+          if (typeof results.cliFlags.enableTelemetry !== 'undefined') {
+            results.cliFlags.telemetry = results.cliFlags.enableTelemetry;
+          } else {
+            results.cliFlags.telemetry = true;
+          }
+        } else {
+          results.cliFlags[flag] = defaultValue;
+        }
       }
     }
 
@@ -161,11 +174,27 @@ export class Config extends BaseConfig<ConfigFile> {
 }
 
 export async function handleCliFlags(env: IonicEnvironment, argv: { [key: string]: any; }) {
-  const configData = await env.config.load();
+  const config = await env.config.load();
+  const enableTelemetry = config.cliFlags.telemetry;
 
   for (let cliFlag of CLI_FLAGS) {
-    if (typeof argv[cliFlag] === 'boolean') {
-      configData.cliFlags[cliFlag] = argv[cliFlag];
+    const { flag, defaultValue } = cliFlag;
+    const currentValue = config.cliFlags[flag];
+    const newValue = argv[flag];
+
+    if (typeof newValue === 'boolean') {
+      config.cliFlags[flag] = newValue;
+
+      if (currentValue !== newValue) {
+        const prettyFlag = chalk.green('--' + (newValue ? '' : 'no-' ) + flag);
+        env.log.info(`CLI Flag ${prettyFlag} saved`);
+
+        if (flag === 'telemetry' && newValue) {
+          env.log.msg('Thank you for making the CLI better! ❤️');
+        } else if (flag === 'confirm' && newValue) {
+          env.log.warn(`Careful with ${prettyFlag}. Some auto-confirmed actions are destructive.`);
+        }
+      }
     }
   }
 }

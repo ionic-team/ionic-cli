@@ -30,15 +30,21 @@ import {
 })
 export class LoginCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const config = await this.env.config.load();
+
     if (await this.env.session.isLoggedIn()) {
-      this.env.log.warn(`You are already logged in! ${!inputs[0] || !inputs[1] ? 'Prompting for new credentials.' : 'Attempting login.'}`);
+      const extra = !inputs[0] || !inputs[1] ? 'Prompting for new credentials.' : 'Attempting login.';
+      this.env.log.warn(`You are already logged in! ${config.cliFlags.interactive ? extra : ''}`);
     } else {
       this.env.log.msg(`Log into your Ionic account\n` +
                        `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`);
     }
 
+    // TODO: combine with promptToLogin ?
+
     if (!inputs[0]) {
-      const { email } = await this.env.prompt({
+      const email = await this.env.prompt({
+        type: 'input',
         name: 'email',
         message: 'Email:',
         validate: v => validators.email(v),
@@ -48,7 +54,7 @@ export class LoginCommand extends Command implements CommandPreRun {
     }
 
     if (!inputs[1]) {
-      const { password } = await this.env.prompt({
+      const password = await this.env.prompt({
         type: 'password',
         name: 'password',
         message: 'Password:',
@@ -59,7 +65,7 @@ export class LoginCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [email, password] = inputs;
+    const [ email, password ] = inputs;
 
     await this.env.session.login(email, password);
     this.env.log.ok('You are logged in!');

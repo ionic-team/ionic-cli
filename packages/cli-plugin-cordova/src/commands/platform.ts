@@ -7,6 +7,7 @@ import {
   CommandPreRun,
   contains,
   validate,
+  validators,
 } from '@ionic/cli-utils';
 
 import { KnownPlatform } from '../definitions';
@@ -59,13 +60,16 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
     }
 
     if (!inputs[1]) {
-      const { platform } = await this.env.prompt({
+      const platform = await this.env.prompt({
+        type: 'input',
         name: 'platform',
         message: `What platform would you like to ${inputs[0]} ${chalk.green('ios')}, ${chalk.green('android')}:`,
       });
 
       inputs[1] = platform.trim();
     }
+
+    validate(inputs[1], 'platform', [validators.required]);
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

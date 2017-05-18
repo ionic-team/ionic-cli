@@ -18,6 +18,7 @@ import {
     {
       name: 'id',
       description: 'The build ID. Defaults to the latest build',
+      required: false,
     },
   ],
   exampleCommands: ['', '15'],

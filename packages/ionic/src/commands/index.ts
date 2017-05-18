@@ -79,7 +79,7 @@ export class IonicNamespace extends Namespace {
     env.argv = options;
     command.env = env;
 
-    command.validate(inputs);
+    await command.validate(inputs);
 
     if (!env.project.directory && command.metadata.type === 'project') {
       env.log.error(`Sorry! ${chalk.green('ionic ' + command.metadata.fullName)} can only be run in an Ionic project directory.`);

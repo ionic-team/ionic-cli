@@ -14,7 +14,8 @@ import {
   inputs: [
     {
       name: 'command',
-      description: 'The command you desire help with'
+      description: 'The command you desire help with',
+      required: false,
     }
   ],
   visible: false,

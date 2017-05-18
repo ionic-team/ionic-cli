@@ -1,3 +1,5 @@
+import * as chalk from 'chalk';
+
 import {
   CommandData,
   CommandLineInputs,
@@ -7,8 +9,9 @@ import {
   ValidationError,
 } from '../../definitions';
 
-import { isValidationErrorArray, isCommandPreRun } from '../../guards';
+import { isCommandPreRun } from '../../guards';
 import { FatalException } from '../errors';
+import { validate, validators } from '../validators';
 import { validateInputs, minimistOptionsToArray } from './utils';
 
 export class Command implements ICommand {
@@ -17,22 +20,13 @@ export class Command implements ICommand {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
 
-  validate(inputs: CommandLineInputs): ValidationError[] {
-    try {
-      validateInputs(inputs, this.metadata);
-    } catch (e) {
-      if (isValidationErrorArray(e)) {
-        return e;
-      } else {
-        throw e;
-      }
-    }
-
-    return [];
+  async validate(inputs: CommandLineInputs) {
+    validateInputs(inputs, this.metadata);
   }
 
   async execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let r: number | void;
+    const config = await this.env.config.load();
 
     if (isCommandPreRun(this)) {
       r = await this.preRun(inputs, options);
@@ -45,11 +39,33 @@ export class Command implements ICommand {
       }
     }
 
+    if (this.metadata.inputs) {
+      for (let input of this.metadata.inputs) {
+        if (!input.validators) {
+          input.validators = [];
+        }
+
+        if (input.required !== false) {
+          input.validators.unshift(validators.required);
+        }
+      }
+
+      try {
+        // Validate inputs again, this time with required validator (prompt input
+        // should've happened in preRun)
+        validateInputs(inputs, this.metadata);
+      } catch (e) {
+        if (!config.cliFlags.interactive) {
+          this.env.log.warn(`You are in non-interactive mode. Use ${chalk.green('--interactive')} to re-enable prompts.`);
+        }
+        throw e;
+      }
+    }
+
     const results = await Promise.all([
       (async () => {
         // TODO: get telemetry for commands that aborted above
-        const configData = await this.env.config.load();
-        if (configData.cliFlags.telemetry !== false) {
+        if (config.cliFlags.telemetry !== false) {
           let cmdInputs: CommandLineInputs = [];
 
           if (this.metadata.name === 'help') {

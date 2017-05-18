@@ -28,7 +28,7 @@ import {
 })
 export class GenerateCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-    const project = await this.env.project.load();
+    const [ config, project ] = await Promise.all([this.env.config.load(), this.env.project.load()]);
 
     if (project.type !== 'ionic-angular') {
       throw this.exit('Generators are only supported in Ionic Angular projects.');
@@ -52,7 +52,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
     }
 
     if (!inputs[0]) {
-      const { generatorType } = await this.env.prompt({
+      const generatorType = await this.env.prompt({
         type: 'list',
         name: 'generatorType',
         message: 'What would you like to generate:',
@@ -62,17 +62,19 @@ export class GenerateCommand extends Command implements CommandPreRun {
       inputs[0] = generatorType;
     }
 
-    if (!TYPE_CHOICES.includes(inputs[0])) {
-      throw this.exit(`${chalk.bold(inputs[0])} is not a valid generator type.`);
-    }
-
     if (!inputs[1]) {
-      const { generatorName } = await this.env.prompt({
+      const generatorName = await this.env.prompt({
+        type: 'input',
         name: 'generatorName',
         message: 'What should the name be?',
       });
 
       inputs[1] = generatorName;
+    }
+
+    if (!config.cliFlags.interactive && inputs[0] === 'tabs') {
+      this.env.log.error(`Cannot generate tabs in non-interactive mode. Use ${chalk.green('--interactive')} to re-enable prompts.`);
+      return 1;
     }
   }
 

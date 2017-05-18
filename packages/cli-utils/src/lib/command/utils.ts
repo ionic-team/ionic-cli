@@ -14,6 +14,7 @@ import {
   NormalizedCommandOption,
   NormalizedMinimistOpts,
   Validator,
+  ValidationError,
 } from '../../definitions';
 
 import { validate, validators } from '../validators';
@@ -87,12 +88,26 @@ export function validateInputs(argv: string[], metadata: CommandData) {
     return;
   }
 
+  const errors: ValidationError[] = [];
+
   for (let i in metadata.inputs) {
     const input = metadata.inputs[i];
 
-    if (argv[i] && input.validators) { // only run validators if input given
-      validate(argv[i], input.name, input.validators);
+    if (input.validators && input.validators.length > 0) {
+      const vnames = input.validators.map(v => v.name);
+
+      if (vnames.includes('required')) { // required validator is special
+        validate(argv[i], input.name, [validators.required], errors);
+      } else {
+        if (argv[i]) { // only run validators if input given
+          validate(argv[i], input.name, input.validators, errors);
+        }
+      }
     }
+  }
+
+  if (errors.length > 0) {
+    throw errors;
   }
 }
 

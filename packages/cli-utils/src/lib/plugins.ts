@@ -179,11 +179,11 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
     throw ERROR_PLUGIN_NOT_INSTALLED;
   }
   if (!m || reinstall) {
-    const { confirm } = await env.prompt([{
+    const confirm = await env.prompt({
       type: 'confirm',
       name: 'confirm',
       message,
-    }]);
+    });
 
     if (confirm) {
       await pkgInstallPlugin(env, pluginName);

@@ -89,7 +89,7 @@ export class Logger implements ILogger {
         this.stream.write(util.format.apply(util, [b('[') + status.magenta('DEBUG') + b(']'), ...args]));
       break;
       case 'info':
-        this.stream.write(util.format.apply(util, args));
+        this.stream.write(util.format.apply(util, [b('[') + status.gray('INFO') + b(']'), ...args]));
         break;
       case 'ok':
         this.stream.write(util.format.apply(util, [b('[') + status.green('OK') + b(']'), ...args]));

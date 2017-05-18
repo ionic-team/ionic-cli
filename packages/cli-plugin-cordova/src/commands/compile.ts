@@ -28,7 +28,8 @@ export class CompileCommand extends CordovaCommand implements CommandPreRun {
     await this.checkForAssetsFolder();
 
     if (!inputs[0]) {
-      const { platform } = await this.env.prompt({
+      const platform = await this.env.prompt({
+        type: 'input',
         name: 'platform',
         message: `What platform would you like to compile ${chalk.green('ios')}, ${chalk.green('android')}:`
       });

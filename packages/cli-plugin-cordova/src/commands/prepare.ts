@@ -20,6 +20,7 @@ import { CordovaCommand } from './base';
     {
       name: 'platform',
       description: `The platform you would like to prepare (e.g. ${chalk.green('ios')}, ${chalk.green('android')})`,
+      required: false,
     },
   ]
 })
@@ -36,7 +37,7 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
       const platformEngine = getPlatformEngine(configJson, platform);
 
       if (!platformEngine) {
-        const { confirm } = await this.env.prompt({
+        const confirm = await this.env.prompt({
           message: `Platform ${chalk.green(platform)} is not installed! Would you like to install it?`,
           type: 'confirm',
           name: 'confirm',

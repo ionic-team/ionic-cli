@@ -11,6 +11,7 @@ import {
 } from '../definitions';
 import { isCommand } from '../guards';
 import { validators } from './validators';
+import { CLI_FLAGS } from './config';
 import { generateFillSpaceStringList } from './utils/format';
 
 const HELP_DOTS_WIDTH = 20;
@@ -18,7 +19,7 @@ const HELP_DOTS_WIDTH = 20;
 export async function showHelp(env: IonicEnvironment, inputs: string[]) {
   // If there are no inputs then show global command details.
   if (inputs.length === 0) {
-    return env.log.msg(getFormattedHelpDetails(env, env.namespace, inputs));
+    return env.log.msg(await getFormattedHelpDetails(env, env.namespace, inputs));
   }
 
   let [ slicedInputs, cmdOrNamespace ] = env.namespace.locate(inputs);
@@ -35,10 +36,10 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]) {
     }
   }
 
-  env.log.msg(formatHelp(env, cmdOrNamespace, inputs));
+  env.log.msg(await formatHelp(env, cmdOrNamespace, inputs));
 }
 
-export function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INamespace, inputs: string[]) {
+async function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INamespace, inputs: string[]) {
   // If the command is located on the global namespace then show its help
   if (!isCommand(cmdOrNamespace)) {
     return getFormattedHelpDetails(env, cmdOrNamespace, inputs);
@@ -46,40 +47,42 @@ export function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INa
 
   const command = cmdOrNamespace;
 
-  return formatCommandHelp(command.metadata);
+  return formatCommandHelp(env, command.metadata);
 }
 
-export function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, inputs: string[]) {
+async function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, inputs: string[]) {
   const globalMetadata = ns.getCommandMetadataList();
 
   const formatList = (details: string[]) => details.map(hd => `    ${hd}\n`).join('');
 
   if (ns.root) {
-    const options = [
-      ['--verbose', 'Verbose output for debugging'],
-      ['--help', 'Show help for provided command'],
-    ];
-
     const globalCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'global']);
     const projectCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'project']);
-    const fillStrings = generateFillSpaceStringList(options.map(v => v[0]), HELP_DOTS_WIDTH, chalk.dim('.'));
-    const optionDetails = options.map((opt, i) => chalk.green(opt[0]) + ' ' + fillStrings[i] + ' ' + opt[1]);
 
     return `${formatHeader(env)}\n\n` +
       `  ${chalk.bold('Usage')}:\n\n` +
-      `    ${chalk.dim('$')} ${chalk.green('ionic <command> [arguments] [options]')}\n` +
-      `    ${chalk.dim('$')} ${chalk.green('ionic <command> --help')} (for command details)\n\n` +
+      `${await formatUsage(env)}\n` +
       `  ${chalk.bold('Global Commands')}:\n\n` +
       `${formatList(globalCommandDetails)}\n` +
       `  ${chalk.bold('Project Commands')}:\n\n` +
-      `${env.project.directory ? formatList(projectCommandDetails) : '    You are not in a project directory.\n'}\n` +
-      `  ${chalk.bold('Options')}:\n\n` +
-      `${formatList(optionDetails)}\n`;
+      `${env.project.directory ? formatList(projectCommandDetails) : '    You are not in a project directory.\n'}\n`;
   } else {
     const commandDetails = getHelpDetails(env, globalMetadata, []);
     return `\n  ${chalk.bold('Commands')}:\n\n` +
       `${formatList(commandDetails)}\n`;
   }
+}
+
+async function formatUsage(env: IonicEnvironment) {
+  const config = await env.config.load();
+  const cliFlags = CLI_FLAGS.filter(f => f.flag !== 'telemetry').map(f => `--${config.cliFlags[f.flag] === false ? '' : 'no-'}${f.flag}`);
+  const options = ['--help', '--verbose'];
+  const usageLines = [
+    `<command> ${options.map(opt => chalk.dim('[' + opt + ']')).join(' ')} ${chalk.dim('[<args>] [options]')}`,
+    `${cliFlags.map(f => chalk.dim('[' + f + ']')).join(' ')}`,
+  ];
+
+  return usageLines.map(u => `    ${chalk.dim('$')} ${chalk.green('ionic ' + u)}`).join('\n') + '\n';
 }
 
 function formatHeader(env: IonicEnvironment) {
@@ -101,7 +104,7 @@ function getHelpDetails(env: IonicEnvironment, commandMetadataList: CommandData[
   return getListOfCommandDetails(foundCommandList);
 }
 
-export function formatCommandHelp(cmdMetadata: CommandData): string {
+async function formatCommandHelp(env: IonicEnvironment, cmdMetadata: CommandData) {
   if (!cmdMetadata.fullName) {
     cmdMetadata.fullName = cmdMetadata.name;
   }
@@ -109,13 +112,13 @@ export function formatCommandHelp(cmdMetadata: CommandData): string {
   return `
   ${chalk.bold(cmdMetadata.description)}
   ` +
-  formatCommandUsage(cmdMetadata.inputs, cmdMetadata.fullName) +
+  (await formatCommandUsage(env, cmdMetadata.inputs, cmdMetadata.fullName)) +
   formatCommandInputs(cmdMetadata.inputs) +
   formatCommandOptions(cmdMetadata.options) +
   formatCommandExamples(cmdMetadata.exampleCommands, cmdMetadata.fullName);
 }
 
-export function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[] {
+function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[] {
   const fillStringArray = generateFillSpaceStringList(cmdMetadataList.map(cmdMd => cmdMd.fullName || cmdMd.name), HELP_DOTS_WIDTH, chalk.dim('.'));
 
   return cmdMetadataList.map((cmdMd, index) =>
@@ -126,12 +129,12 @@ export function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[
   );
 }
 
-function formatCommandUsage(inputs: CommandInput[] = [], commandName: string): string {
+async function formatCommandUsage(env: IonicEnvironment, inputs: CommandInput[] = [], commandName: string) {
+  const config = await env.config.load();
   const formatInput = (input: CommandInput) => {
-    // TODO: handle required arguments (there are none currently)
-    // if (input.required) {
-    //   return '<' + input.name + '>';
-    // }
+    if (!config.cliFlags.interactive && input.required !== false) {
+      return '<' + input.name + '>';
+    }
 
     return '[' + input.name + ']';
   };
@@ -165,6 +168,7 @@ function formatCommandInputs(inputs: CommandInput[] = []): string {
     `)}
   `;
 }
+
 function formatOptionDefault(opt: CommandOption) {
   if (typeof opt.default === 'string') {
     return chalk.dim(' (default: ') + chalk.green(opt.default) + chalk.dim(')');

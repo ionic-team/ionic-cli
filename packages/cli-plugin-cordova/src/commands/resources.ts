@@ -100,7 +100,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
     if (platform && !platformDirContents.includes(platform)) {
       this.env.tasks.end();
-      const { confirm } = await this.env.prompt({
+      const confirm = await this.env.prompt({
         message: `Platform ${chalk.green(platform)} is not installed! Would you like to install it?`,
         type: 'confirm',
         name: 'confirm',

@@ -19,6 +19,7 @@ export * from './lib/modules';
 export * from './lib/package';
 export * from './lib/plugins';
 export * from './lib/project';
+export * from './lib/prompts';
 export * from './lib/security';
 export * from './lib/session';
 export * from './lib/shell';
