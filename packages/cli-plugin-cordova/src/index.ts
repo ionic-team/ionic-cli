@@ -10,10 +10,24 @@ namespace.source = name;
 
 export function registerHooks(hooks: IHookEngine) {
   hooks.register(name, 'command:info', async () => {
+    let cordovaPlatforms: string | undefined;
     const cordovaVersion = await getCommandInfo('cordova', ['-v']);
+
+    if (cordovaVersion) {
+      cordovaPlatforms = await getCommandInfo('cordova', ['platform', 'ls']);
+
+      if (cordovaPlatforms) {
+        cordovaPlatforms = cordovaPlatforms.replace(/\s+/g, ' ');
+        cordovaPlatforms = cordovaPlatforms.replace('Installed platforms:', '');
+        cordovaPlatforms = cordovaPlatforms.replace(/Available platforms.+/, '');
+        cordovaPlatforms = cordovaPlatforms.trim();
+      }
+    }
+
     return [
       { type: 'global-packages', name: 'Cordova CLI', version: cordovaVersion || 'not installed' },
       { type: 'local-packages', name, version },
+      { type: 'local-packages', name: 'Cordova Platforms', version: cordovaPlatforms || 'none' },
     ];
   });
 }
