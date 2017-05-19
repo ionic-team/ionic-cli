@@ -70,7 +70,6 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   };
 
   // Clean up args based on environment state
-  serverOptions.address = (serverOptions.address === '0.0.0.0') ? 'localhost' : serverOptions.address;
   const portResults = await Promise.all([
     findClosestOpenPort(serverOptions.address, serverOptions.port),
     findClosestOpenPort(serverOptions.address, serverOptions.livereloadPort),
