@@ -29,7 +29,7 @@ import {
       aliases: ['d'],
     },
   ],
-  exampleCommands: ['', '15', '-d my_builds'],
+  exampleCommands: ['', '15', '--destination=my-builds'],
 })
 export class PackageDownloadCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

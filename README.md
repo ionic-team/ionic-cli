@@ -100,7 +100,7 @@ $ ionic help
 
 ```bash
 $ npm install -g ionic@latest
-$ ionic start myNewProject blank --type ionic1
+$ ionic start myNewProject blank --type=ionic1
 $ cd ./myNewProject
 $ ionic serve
 ```

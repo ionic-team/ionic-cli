@@ -39,8 +39,8 @@ import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
   exampleCommands: [
     '',
     'mynewapp blank',
-    'mynewapp tabs --type ionic-angular',
-    'mynewapp blank --type ionic1'
+    'mynewapp tabs --type=ionic-angular',
+    'mynewapp blank --type=ionic1'
   ],
   inputs: [
     {
@@ -121,7 +121,7 @@ export class StartCommand extends Command implements CommandPreRun {
       throw this.exit(
         `Sorry! The ${chalk.green('--v1')} and ${chalk.green('--v2')} flags have been removed.\n` +
         `Use the ${chalk.green('--type')} option. (${chalk.green('ionic start --help')})\n\n` +
-        `For ${chalk.bold(this.env.project.formatType(type))} projects, try ${chalk.green('ionic start ' + (inputs.length > 0 ? inputs.join(' ') + ' ' : '') + '--type ' + type)}`
+        `For ${chalk.bold(this.env.project.formatType(type))} projects, try ${chalk.green('ionic start ' + (inputs.length > 0 ? inputs.join(' ') + ' ' : '') + '--type=' + type)}`
       );
     }
 

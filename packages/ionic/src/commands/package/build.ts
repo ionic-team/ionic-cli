@@ -52,7 +52,7 @@ import { upload } from '../../lib/upload';
       description: 'Give the package snapshot a note',
     },
   ],
-  exampleCommands: ['android', 'ios --profile dev', 'android --profile prod --release --prod'],
+  exampleCommands: ['android', 'ios --profile=dev', 'android --profile=prod --release --prod'],
 })
 export class PackageBuildCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
