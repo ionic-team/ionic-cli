@@ -77,7 +77,7 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
   env['PROJECT_FILE'] = PROJECT_FILE;
   env['PROJECT_DIR'] = await getProjectRootDir(process.cwd(), PROJECT_FILE);
 
-  const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
+  const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
   const project = new Project(env['PROJECT_DIR'], PROJECT_FILE);
   const configData = await config.load();
 

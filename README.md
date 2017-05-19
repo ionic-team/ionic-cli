@@ -132,6 +132,35 @@ $ ionic cordova --help
 $ ionic cordova run ios
 ```
 
+## Environment Variables
+
+The CLI will look for the following environment variables:
+
+* `IONIC_CONFIG_DIRECTORY`: Where the CLI config files live. Defaults to
+  `~/.ionic`. You may prefer `~/.config/ionic`.
+* `IONIC_HTTP_PROXY`: Set a URL for proxying all CLI requests through. See
+  [Using a Proxy](#using-a-proxy).
+
+## CLI Flags
+
+CLI flags are global options that alter CLI behavior.
+
+* `--help`: Instead of running the command, view its help page.
+* `--verbose`: Show all log messages for debugging purposes.
+* `--quiet`: Only show `WARN` and `ERROR` log messages.
+
+### Persistent flags:
+
+The behavior that these flags set is remembered in the CLI config file.
+
+* `--interactive` / `--no-interactive`: Switch between interactive (default)
+  and non-interactive mode. In non-interactive mode, the spinner and all
+  prompts are disabled.
+* `--confirm` / `--no-confirm`: Switch between auto-confirmation and
+  non-confirmation (default) of confirmation prompts. *Careful*: the CLI
+  prompts before doing something potentially harmful. Auto-confirming may have
+  unintended results.
+
 ## Service Proxies
 
 The `serve` command can add some proxies to the http server. These proxies are
