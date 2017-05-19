@@ -44,7 +44,7 @@ describe('@ionic/cli-plugin-cordova filterArgumentsForCordova', () => {
     let options = { _: [], boolopt: true, cdvopt1: 'foo', cdvopt2: true };
 
     const result = filterArgumentsForCordova(metadata, inputs, options);
-    expect(result).toEqual(['build', 'ios', '--cdvopt1=foo', '--cdvopt2']);
+    expect(result).toEqual(['build', 'ios', '--cdvopt1', 'foo', '--cdvopt2']);
   });
 
   it('should include unparsed options', () => {
@@ -52,7 +52,7 @@ describe('@ionic/cli-plugin-cordova filterArgumentsForCordova', () => {
     let options = { _: [], boolopt: true, cdvopt1: 'foo', cdvopt2: true };
 
     const result = filterArgumentsForCordova(metadata, inputs, options);
-    expect(result).toEqual(['build', 'android', '--cdvopt1=foo', '--cdvopt2', '--', '--gradleArg=-PcdvBuildMultipleApks=true']);
+    expect(result).toEqual(['build', 'android', '--cdvopt1', 'foo', '--cdvopt2', '--', '--gradleArg=-PcdvBuildMultipleApks=true']);
   });
 
 });
