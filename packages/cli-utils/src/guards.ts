@@ -112,9 +112,9 @@ export function isAuthTokensResponse(r: APIResponse): r is Response<AuthToken[]>
   return true;
 }
 
-export function isLoginResponse(r: APIResponse): r is Response<{ token: string }> {
+export function isLoginResponse(r: APIResponse): r is Response<{ user_id: string; token: string; }> {
   const res = <Response<{ token: string }>>r;
-  return isAPIResponseSuccess(res) && typeof res.data.token === 'string';
+  return isAPIResponseSuccess(res) && typeof res.data.token === 'string' && typeof res.data.token === 'string';
 }
 
 export function isDeployResponse(r: APIResponse): r is Response<Deploy> {

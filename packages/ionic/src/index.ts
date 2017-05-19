@@ -95,7 +95,7 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
   registerHooks(hooks);
   cliUtilsRegisterHooks(hooks);
 
-  const ienv = {
+  return {
     app,
     argv,
     client,
@@ -125,10 +125,6 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
     },
 
   };
-
-  await handleCliFlags(ienv, argv);
-
-  return ienv;
 }
 
 export async function run(pargv: string[], env: { [k: string]: string }) {
@@ -136,14 +132,29 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   let exitCode = 0;
   let err: any;
 
-  pargv = modifyArguments(pargv.slice(2));
-  const ienv = await generateIonicEnvironment(pargv, env);
+  const ienv = await generateIonicEnvironment(modifyArguments(pargv.slice(2)), env);
 
   try {
-    const argv = minimist(pargv, { boolean: true });
+    const configData = await ienv.config.load();
+    await handleCliFlags(ienv);
 
-    if (argv['log-level']) {
-      ienv.log.level = argv['log-level'];
+    if (ienv.argv['log-level']) {
+      ienv.log.level = ienv.argv['log-level'];
+    }
+
+    if (env['IONIC_EMAIL'] && env['IONIC_PASSWORD']) {
+      ienv.log.debug(`${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables detected`);
+
+      if (configData.user.email !== env['IONIC_EMAIL']) {
+        ienv.log.debug(`${chalk.bold('IONIC_EMAIL')} mismatch with current session--attempting login`);
+
+        try {
+          await ienv.session.login(env['IONIC_EMAIL'], env['IONIC_PASSWORD']);
+        } catch (e) {
+          ienv.log.error(`Error occurred during automatic login via ${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables.`);
+          throw e;
+        }
+      }
     }
 
     if (ienv.project.directory) {
@@ -164,12 +175,11 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     }
 
     // If an legacy command is being executed inform the user that there is a new command available
-    const foundCommand = mapLegacyCommand(argv._[0]);
+    const foundCommand = mapLegacyCommand(ienv.argv._[0]);
     if (foundCommand) {
-      ienv.log.msg(`The ${chalk.green(argv._[0])} command has been renamed. To find out more, run:\n\n` +
+      ienv.log.msg(`The ${chalk.green(ienv.argv._[0])} command has been renamed. To find out more, run:\n\n` +
                    `  ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`);
     } else {
-      const configData = await ienv.config.load();
       let updates: undefined | string[];
 
       try {

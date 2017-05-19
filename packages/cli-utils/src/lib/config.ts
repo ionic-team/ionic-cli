@@ -125,6 +125,10 @@ export class Config extends BaseConfig<ConfigFile> {
       results.urls.dash = 'https://apps.ionic.io';
     }
 
+    if (!results.user) {
+      results.user = {};
+    }
+
     if (!results.tokens) {
       results.tokens = {};
     }
@@ -167,20 +171,21 @@ export class Config extends BaseConfig<ConfigFile> {
       && typeof j.urls === 'object'
       && typeof j.urls.api === 'string'
       && typeof j.urls.dash === 'string'
+      && typeof j.user === 'object'
       && typeof j.tokens === 'object'
       && typeof j.tokens.appUser === 'object'
       && typeof j.cliFlags === 'object';
   }
 }
 
-export async function handleCliFlags(env: IonicEnvironment, argv: { [key: string]: any; }) {
+export async function handleCliFlags(env: IonicEnvironment) {
   const config = await env.config.load();
   const enableTelemetry = config.cliFlags.telemetry;
 
   for (let cliFlag of CLI_FLAGS) {
     const { flag, defaultValue } = cliFlag;
     const currentValue = config.cliFlags[flag];
-    const newValue = argv[flag];
+    const newValue = env.argv[flag];
 
     if (typeof newValue === 'boolean') {
       config.cliFlags[flag] = newValue;

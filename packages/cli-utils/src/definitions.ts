@@ -286,6 +286,10 @@ export interface ConfigFile {
     api: string;
     dash: string;
   };
+  user: {
+    id?: string;
+    email?: string;
+  };
   tokens: {
     user?: string;
     telemetry?: string;

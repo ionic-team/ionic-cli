@@ -84,7 +84,7 @@ export class Logger implements ILogger {
 
       switch (level) {
       case 'debug':
-        this.stream.write(util.format.apply(util, [b('[') + status.magenta('DEBUG') + b(']'), ...args]));
+        this.stream.write(util.format.apply(util, [b('[') + status.dim.magenta('DEBUG') + b(']'), ...args]));
       break;
       case 'info':
         this.stream.write(util.format.apply(util, [b('[') + status.gray('INFO') + b(']'), ...args]));

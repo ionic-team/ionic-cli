@@ -8,7 +8,7 @@ import {
   ISession,
 } from '../definitions';
 
-import { isAuthTokensResponse, isLoginResponse } from '../guards';
+import { isAuthTokensResponse, isLoginResponse, isSuperAgentError } from '../guards';
 
 import { FatalException } from './errors';
 import { createFatalAPIFormat } from './http';
@@ -21,28 +21,38 @@ export class Session implements ISession {
   ) {}
 
   async login(email: string, password: string): Promise<void> {
-    let req = this.client.make('POST', '/login')
+    const req = this.client.make('POST', '/login')
       .send({ email, password });
 
-    let res = await this.client.do(req);
+    try {
+      const res = await this.client.do(req);
 
-    if (!isLoginResponse(res)) {
-      throw createFatalAPIFormat(req, res);
-    }
+      if (!isLoginResponse(res)) {
+        throw createFatalAPIFormat(req, res);
+      }
 
-    let c = await this.config.load();
+      const { token, user_id } = res.data;
+      const c = await this.config.load();
 
-    if (c.tokens.user !== res.data.token) {
-      c.tokens.user = res.data.token;
+      if (c.user.id !== user_id) { // User changed
+        c.tokens.appUser = {};
+      }
 
-      // User token changed, so the user may have changed. Wipe out other tokens!
-      c.tokens.appUser = {};
+      c.user.id = user_id;
+      c.user.email = email;
+      c.tokens.user = token;
+    } catch (e) {
+      if (isSuperAgentError(e) && e.response.status === 401) {
+        throw new FatalException(chalk.red('Incorrect email or password'));
+      }
+
+      throw e;
     }
   }
 
   async isLoggedIn(): Promise<boolean> {
     const c = await this.config.load();
-    return !!c.tokens.user;
+    return typeof c.tokens.user === 'string';
   }
 
   async getUserToken(): Promise<string> {

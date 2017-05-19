@@ -140,6 +140,8 @@ The CLI will look for the following environment variables:
   `~/.ionic`. You may prefer `~/.config/ionic`.
 * `IONIC_HTTP_PROXY`: Set a URL for proxying all CLI requests through. See
   [Using a Proxy](#using-a-proxy).
+* `IONIC_EMAIL` / `IONIC_PASSWORD`: For automatic login via environment
+  variables.
 
 ## CLI Flags
 
