@@ -150,8 +150,8 @@ export class PackageClient {
       platform: this.formatPlatform(build.platform),
       mode: build.mode,
       security_profile_tag: build.security_profile_tag || '',
-      created: new Date(build.created).toLocaleString(),
-      completed: build.completed ? new Date(build.completed).toLocaleString() : '',
+      created: new Date(build.created).toISOString(),
+      completed: build.completed ? new Date(build.completed).toISOString() : '',
     };
   }
 
