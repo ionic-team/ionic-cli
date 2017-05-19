@@ -6,11 +6,13 @@ import * as stringWidth from 'string-width';
 
 import { load } from '../modules';
 
+export const ICON_ELLIPSIS = '…';
 export const ICON_SUCCESS = '✔';
 export const ICON_FAILURE = '✖';
 
-export const ICON_SUCCESS_GREEN = chalk.green(ICON_SUCCESS);
-export const ICON_FAILURE_RED = chalk.red(ICON_FAILURE);
+export const SPINNER_FRAMES = process.platform === 'win32' ?
+  ['-', '\\', '|', '/'] :
+  ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 
 export function prettyPath(p: string): string {
   const cwd = process.cwd();

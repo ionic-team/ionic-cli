@@ -73,16 +73,15 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
   const bottomBarHack = <any>bottomBar;
   try { bottomBarHack.rl.output.mute(); } catch (e) {} // TODO
   const log = new Logger({ stream: bottomBar.log });
-  const tasks = new TaskChain({ log, bottomBar });
 
   env['PROJECT_FILE'] = PROJECT_FILE;
   env['PROJECT_DIR'] = await getProjectRootDir(process.cwd(), PROJECT_FILE);
 
   const config = new Config(env['IONIC_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
   const project = new Project(env['PROJECT_DIR'], PROJECT_FILE);
-
   const configData = await config.load();
 
+  const tasks = new TaskChain({ config: configData, log, bottomBar });
   const hooks = new HookEngine();
   const client = new Client(configData.urls.api);
   const telemetry = new Telemetry(config, version);

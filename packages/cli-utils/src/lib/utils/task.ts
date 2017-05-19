@@ -4,19 +4,15 @@ import * as chalk from 'chalk';
 import * as inquirerType from 'inquirer';
 import ui = inquirerType.ui;
 
-import { ILogger, ITask, ITaskChain } from '../../definitions';
+import { ConfigFile, ILogger, ITask, ITaskChain } from '../../definitions';
 
-import { ICON_SUCCESS_GREEN, ICON_FAILURE_RED } from './format';
+import { ICON_ELLIPSIS, ICON_SUCCESS, ICON_FAILURE, SPINNER_FRAMES } from './format';
 import { load } from '../modules';
-
-const FRAMES = process.platform === 'win32' ?
-  ['-', '\\', '|', '/'] :
-  ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 
 class Spinner {
   public i: number = 0;
 
-  constructor(public frames: string[] = FRAMES) {}
+  constructor(public frames: string[] = SPINNER_FRAMES) {}
 
   frame(): string {
     return this.frames[this.i = ++this.i % this.frames.length];
@@ -25,16 +21,19 @@ class Spinner {
 
 export class Task implements ITask {
   public msg: string;
+  public config: ConfigFile;
   public log: ILogger;
   public bottomBar: ui.BottomBar;
 
   public intervalId?: any;
   public running: boolean = false;
+  public tickedOff: boolean = false;
   private spinner: Spinner;
   public progressRatio = -1;
 
-  constructor({ msg, log, bottomBar }: { msg: string, log: ILogger, bottomBar: ui.BottomBar }) {
+  constructor({ msg, config, log, bottomBar }: { msg: string, config: ConfigFile, log: ILogger, bottomBar: ui.BottomBar }) {
     this.msg = msg;
+    this.config = config;
     this.log = log;
     this.bottomBar = bottomBar;
     this.spinner = new Spinner();
@@ -52,8 +51,12 @@ export class Task implements ITask {
 
   tick(): this {
     if (this.log.shouldLog('info')) {
-      this.bottomBar.updateBottomBar(this.format());
+      if (this.config.cliFlags.interactive || !this.tickedOff) {
+        this.bottomBar.updateBottomBar(this.format());
+      }
     }
+
+    this.tickedOff = true;
 
     return this;
   }
@@ -67,7 +70,8 @@ export class Task implements ITask {
 
   format(): string {
     const progress = this.progressRatio >= 0 ? (this.progressRatio * 100).toFixed(2) : '';
-    return `${chalk.bold(this.spinner.frame())} ${this.msg}${progress ? ' (' + chalk.bold(String(progress) + '%') + ')' : ''} `;
+    const frame = this.config.cliFlags.interactive ? this.spinner.frame() : ICON_ELLIPSIS;
+    return `${chalk.bold(frame)} ${this.msg}${progress ? ' (' + chalk.bold(String(progress) + '%') + ')' : ''} `;
   }
 
   clear(): this {
@@ -93,7 +97,7 @@ export class Task implements ITask {
       this.end();
 
       if (this.log.shouldLog('info')) {
-        this.bottomBar.log.write(`${chalk.green(ICON_SUCCESS_GREEN)} ${this.msg} - done!`);
+        this.log.msg(`${chalk.green(ICON_SUCCESS)} ${this.msg} - done!`);
       }
     }
 
@@ -105,7 +109,7 @@ export class Task implements ITask {
       this.end();
 
       if (this.log.shouldLog('info')) {
-        this.bottomBar.log.write(`${chalk.red(ICON_FAILURE_RED)} ${this.msg} - failed!`);
+        this.log.msg(`${chalk.red(ICON_FAILURE)} ${this.msg} - failed!`);
       }
     }
 
@@ -114,13 +118,15 @@ export class Task implements ITask {
 }
 
 export class TaskChain implements ITaskChain {
+  public config: ConfigFile;
   public log: ILogger;
   public bottomBar: ui.BottomBar;
 
   protected currentTask?: Task;
   public tasks: ITask[];
 
-  constructor({ log, bottomBar }: { log: ILogger, bottomBar: ui.BottomBar }) {
+  constructor({ config, log, bottomBar }: { config: ConfigFile, log: ILogger, bottomBar: ui.BottomBar }) {
+    this.config = config;
     this.log = log;
     this.bottomBar = bottomBar;
     this.tasks = [];
@@ -131,7 +137,7 @@ export class TaskChain implements ITaskChain {
       this.currentTask.succeed();
     }
 
-    const task = new Task({ msg, log: this.log, bottomBar: this.bottomBar });
+    const task = new Task({ msg, config: this.config, log: this.log, bottomBar: this.bottomBar });
     this.tasks.push(task);
     this.currentTask = task;
 
