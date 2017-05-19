@@ -43,7 +43,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
 
   // using app-scripts and livereload is requested
   // Also remove commandName from the rawArgs passed
-  args.env.log.info(`Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))} - Ctrl+C to cancel\n`);
+  args.env.log.info(`Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))} - Ctrl+C to cancel`);
   const settings = await AppScripts.serve(context);
 
   if (!settings) { // TODO: shouldn've been fixed after app-scripts 1.3.7
