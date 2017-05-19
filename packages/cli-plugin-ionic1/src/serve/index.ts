@@ -49,7 +49,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   // Setup Options and defaults
   const serverOptions: ServerOptions = {
     projectRoot: args.env.project.directory,
-    wwwDir: path.join(args.env.project.directory, <string>args.options['documentRoot'] || projectConfig.documentRoot || 'www'),
+    wwwDir: path.join(args.env.project.directory, projectConfig.documentRoot || 'www'),
     address: <string>args.options['address'] || DEFAULT_ADDRESS,
     port: stringToInt(<string>args.options['port'], DEFAULT_SERVER_PORT),
     httpPort: stringToInt(<string>args.options['port'], DEFAULT_SERVER_PORT),
