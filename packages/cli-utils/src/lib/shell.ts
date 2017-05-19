@@ -14,10 +14,6 @@ export class Shell implements IShell {
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
     const options: RunCmdOptions = {...crossSpawnOptions};
 
-    if (typeof showExecution === 'undefined') {
-      showExecution = this.log.shouldLog('debug');
-    }
-
     if (showExecution) {
       options.stdoutPipe = this.log.stream;
       options.stderrPipe = this.log.stream;
