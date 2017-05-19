@@ -42,7 +42,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   }
 
   const serverArgs = minimistOptionsToArray(args.options);
-  args.env.log.info(`Starting server: ${chalk.bold(serverArgs.join(' '))} - Ctrl+C to cancel\n`);
+  args.env.log.info(`Starting server: ${chalk.bold(serverArgs.join(' '))} - Ctrl+C to cancel`);
 
   const projectConfig = await args.env.project.load();
 
@@ -103,17 +103,16 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
   const watch = load('glob-watcher');
   const projectConfig = await env.project.load();
   const watcher = watch(projectConfig.watchPatterns || WATCH_PATTERNS);
-  watcher.on('change', async function(filePath: string) {
-
+  watcher.on('change', async (filePath: string) => {
     switch (path.extname(filePath)) {
-    case '.scss':
-      if (!options.nosass) {
-        await processSassFile(env, options);
-      }
-      return;
-    default:
-      env.log.info(`[${new Date().toTimeString().slice(0, 8)}] ${filePath} changed`);
-      liveReloadBrowser([filePath]);
+      case '.scss':
+        if (!options.nosass) {
+          await processSassFile(env, options);
+        }
+        return;
+      default:
+        env.log.info(`[${new Date().toTimeString().slice(0, 8)}] ${filePath} changed`); // TODO: not logging?
+        liveReloadBrowser([filePath]);
     }
   });
 

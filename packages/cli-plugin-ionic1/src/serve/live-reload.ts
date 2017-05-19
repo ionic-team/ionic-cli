@@ -2,12 +2,12 @@ import * as path from 'path';
 import { ServerOptions } from './config';
 import { load } from '../lib/modules';
 
-export function createLiveReloadServer(options: ServerOptions): Function {
+export function createLiveReloadServer(options: ServerOptions): (changedFile: string[]) => void {
   const tinylr = load('tiny-lr');
   const liveReloadServer = tinylr();
   liveReloadServer.listen(options.livereloadPort, options.address);
 
-  return function fileChange(changedFiles: string[]) {
+  return (changedFiles: string[]) => {
     liveReloadServer.changed({
       body: {
         files: changedFiles.map(changedFile => (
@@ -18,7 +18,7 @@ export function createLiveReloadServer(options: ServerOptions): Function {
   };
 }
 
-export function injectLiveReloadScript(content: any, host: string, port: Number): any {
+export function injectLiveReloadScript(content: any, host: string, port: number): any {
   let contentStr = content.toString();
   const liveReloadScript = getLiveReloadScript(host, port);
 
@@ -40,7 +40,7 @@ export function injectLiveReloadScript(content: any, host: string, port: Number)
   return contentStr;
 }
 
-function getLiveReloadScript(host: string, port: Number) {
+function getLiveReloadScript(host: string, port: number) {
   if (host === '0.0.0.0') {
     host = 'localhost';
   }

@@ -96,7 +96,7 @@ export interface ProjectFile {
   type: ProjectType;
   app_id: string;
   documentRoot?: string;
-  watchPatterns?: Array<string>;
+  watchPatterns?: string[];
   proxies?: ProjectFileProxy[];
 }
 
