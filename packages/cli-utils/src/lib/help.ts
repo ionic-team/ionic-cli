@@ -75,7 +75,7 @@ async function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, in
 async function formatUsage(env: IonicEnvironment) {
   const config = await env.config.load();
   const cliFlags = CLI_FLAGS.filter(f => f.flag !== 'telemetry').map(f => `--${config.cliFlags[f.flag] === false ? '' : 'no-'}${f.flag}`);
-  const options = ['--help', '--verbose'];
+  const options = ['--help', '--verbose', '--quiet'];
   const usageLines = [
     `<command> ${options.map(opt => chalk.dim('[' + opt + ']')).join(' ')} ${chalk.dim('[<args>] [options]')}`,
     `${cliFlags.map(f => chalk.dim('[' + f + ']')).join(' ')}`,

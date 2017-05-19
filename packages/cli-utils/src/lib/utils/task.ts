@@ -4,7 +4,7 @@ import * as chalk from 'chalk';
 import * as inquirerType from 'inquirer';
 import ui = inquirerType.ui;
 
-import { ITask, ITaskChain } from '../../definitions';
+import { ILogger, ITask, ITaskChain } from '../../definitions';
 
 import { ICON_SUCCESS_GREEN, ICON_FAILURE_RED } from './format';
 import { load } from '../modules';
@@ -24,12 +24,19 @@ class Spinner {
 }
 
 export class Task implements ITask {
+  public msg: string;
+  public log: ILogger;
+  public bottomBar: ui.BottomBar;
+
   public intervalId?: any;
   public running: boolean = false;
   private spinner: Spinner;
   public progressRatio = -1;
 
-  constructor(public msg: string, public bottomBar: ui.BottomBar) {
+  constructor({ msg, log, bottomBar }: { msg: string, log: ILogger, bottomBar: ui.BottomBar }) {
+    this.msg = msg;
+    this.log = log;
+    this.bottomBar = bottomBar;
     this.spinner = new Spinner();
   }
 
@@ -44,7 +51,10 @@ export class Task implements ITask {
   }
 
   tick(): this {
-    this.bottomBar.updateBottomBar(this.format());
+    if (this.log.shouldLog('info')) {
+      this.bottomBar.updateBottomBar(this.format());
+    }
+
     return this;
   }
 
@@ -63,7 +73,9 @@ export class Task implements ITask {
   clear(): this {
     clearInterval(this.intervalId);
 
-    this.bottomBar.updateBottomBar('');
+    if (this.log.shouldLog('info')) {
+      this.bottomBar.updateBottomBar('');
+    }
 
     return this;
   }
@@ -79,7 +91,10 @@ export class Task implements ITask {
   succeed(): this {
     if (this.running) {
       this.end();
-      this.bottomBar.log.write(`${chalk.green(ICON_SUCCESS_GREEN)} ${this.msg} - done!`);
+
+      if (this.log.shouldLog('info')) {
+        this.bottomBar.log.write(`${chalk.green(ICON_SUCCESS_GREEN)} ${this.msg} - done!`);
+      }
     }
 
     return this;
@@ -88,7 +103,10 @@ export class Task implements ITask {
   fail(): this {
     if (this.running) {
       this.end();
-      this.bottomBar.log.write(`${chalk.red(ICON_FAILURE_RED)} ${this.msg} - failed!`);
+
+      if (this.log.shouldLog('info')) {
+        this.bottomBar.log.write(`${chalk.red(ICON_FAILURE_RED)} ${this.msg} - failed!`);
+      }
     }
 
     return this;
@@ -96,10 +114,15 @@ export class Task implements ITask {
 }
 
 export class TaskChain implements ITaskChain {
+  public log: ILogger;
+  public bottomBar: ui.BottomBar;
+
   protected currentTask?: Task;
   public tasks: ITask[];
 
-  constructor(public bottomBar: ui.BottomBar) {
+  constructor({ log, bottomBar }: { log: ILogger, bottomBar: ui.BottomBar }) {
+    this.log = log;
+    this.bottomBar = bottomBar;
     this.tasks = [];
   }
 
@@ -108,7 +131,7 @@ export class TaskChain implements ITaskChain {
       this.currentTask.succeed();
     }
 
-    const task = new Task(msg, this.bottomBar);
+    const task = new Task({ msg, log: this.log, bottomBar: this.bottomBar });
     this.tasks.push(task);
     this.currentTask = task;
 

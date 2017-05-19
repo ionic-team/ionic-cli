@@ -86,7 +86,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   // Start up server
   const settings = await setupServer(args.env, serverOptions);
 
-  args.env.log.msg(`dev server running: http://${serverOptions.address}:${serverOptions.port}`);
+  args.env.log.info(`dev server running: http://${serverOptions.address}:${serverOptions.port}`);
   return  {
     publicIp: chosenIP,
     ...settings
@@ -109,7 +109,7 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
       }
       return;
     default:
-      env.log.msg(`[${new Date().toTimeString().slice(0, 8)}] ${filePath} changed`);
+      env.log.info(`[${new Date().toTimeString().slice(0, 8)}] ${filePath} changed`);
       liveReloadBrowser([filePath]);
     }
   });

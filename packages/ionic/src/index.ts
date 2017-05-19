@@ -73,7 +73,7 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
   const bottomBarHack = <any>bottomBar;
   try { bottomBarHack.rl.output.mute(); } catch (e) {} // TODO
   const log = new Logger({ stream: bottomBar.log });
-  const tasks = new TaskChain(bottomBar);
+  const tasks = new TaskChain({ log, bottomBar });
 
   env['PROJECT_FILE'] = PROJECT_FILE;
   env['PROJECT_DIR'] = await getProjectRootDir(process.cwd(), PROJECT_FILE);
@@ -272,9 +272,6 @@ export function modifyArguments(pargv: string[]): string[] {
   let modifiedArgArray: string[] = pargv.slice();
   const minimistArgv = minimist(pargv, { boolean: true });
 
-  /**
-   * Replace command to be executed
-   */
   if (pargv.length === 0) {
     return ['help'];
   }
@@ -291,19 +288,17 @@ export function modifyArguments(pargv: string[]): string[] {
     return ['version'];
   }
 
-  /**
-   * Change command executed
-   */
   if (minimistArgv._[0] === 'lab') {
     modifiedArgArray[0] = 'serve';
     modifiedArgArray.push('--lab');
   }
 
-  /**
-   * Change command options
-   */
   if (minimistArgv['verbose']) {
     modifiedArgArray[modifiedArgArray.indexOf('--verbose')] = '--log-level=debug';
+  }
+
+  if (minimistArgv['quiet']) {
+    modifiedArgArray[modifiedArgArray.indexOf('--quiet')] = '--log-level=warn';
   }
 
   return modifiedArgArray;

@@ -308,7 +308,9 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     // Print out hello text about how to get started
-    this.env.log.msg(getHelloText());
+    if (this.env.log.shouldLog('info')) {
+      this.env.log.msg(getHelloText());
+    }
 
     // Ask the user if they would like to create a cloud account
     if (!options['skip-link']) {

@@ -24,7 +24,9 @@ export class Shell implements IShell {
     }
 
     if (showCommand) {
-      this.log.msg(`> ${chalk.green(fullCmd)}`);
+      if (this.log.shouldLog('info')) {
+        this.log.msg(`> ${chalk.green(fullCmd)}`);
+      }
 
       if (!showExecution) {
         this.tasks.next('Running command');

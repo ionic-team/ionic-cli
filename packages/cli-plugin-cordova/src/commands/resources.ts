@@ -72,7 +72,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     const isLoggedIn = await this.env.session.isLoggedIn();
     if (!isLoggedIn) {
-      this.env.log.msg(`You need to be logged into your Ionic account in order to run ${chalk.green(`ionic cordova resources`)}.\n`);
+      this.env.log.warn(`You need to be logged into your Ionic account in order to run ${chalk.green(`ionic cordova resources`)}.\n`);
       await promptToLogin(this.env);
     }
   }
@@ -270,7 +270,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     this.env.tasks.end();
 
     // Print out all images that were not processed
-    this.env.log.msg(
+    this.env.log.info(
       imagesTooLargeForSource.map(imageResource => (
         `    ${chalk.bold(imageResource.name)}     ${imageResource.platform}/${imageResource.resType} needed ${imageResource.width}w x ${imageResource.height}h`
       ))
