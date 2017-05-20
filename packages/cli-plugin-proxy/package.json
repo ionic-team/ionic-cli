@@ -1,6 +1,7 @@
 {
   "name": "@ionic/cli-plugin-proxy",
   "version": "1.1.2",
+  "preferGlobal": true,
   "description": "Ionic CLI plugin for proxying all CLI HTTP requests",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
