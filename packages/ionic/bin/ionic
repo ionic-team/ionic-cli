@@ -5,6 +5,6 @@
 process.title = 'ionic';
 process.on('unhandledRejection', r => console.error(r));
 
-var cli = require('../');
-process.env.CLI_BIN_DIR = __dirname;
+const cli = require('../');
+process.env.IONIC_CLI_BIN = __filename;
 cli.run(process.argv, process.env);

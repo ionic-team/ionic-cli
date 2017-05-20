@@ -74,6 +74,7 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
   try { bottomBarHack.rl.output.mute(); } catch (e) {} // TODO
   const log = new Logger({ stream: bottomBar.log });
 
+  env['IONIC_CLI_LIB'] = __filename;
   env['PROJECT_FILE'] = PROJECT_FILE;
   env['PROJECT_DIR'] = await getProjectRootDir(process.cwd(), PROJECT_FILE);
 
