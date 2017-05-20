@@ -21,7 +21,7 @@ export interface FSWriteFileOptions {
   flag?: string;
 }
 
-export const fsAccess = promisify<void, string>(fs.access);
+export const fsAccess = promisify<void, string, number>(fs.access);
 export const fsMkdir = promisify<void, string, number | undefined>(fs.mkdir);
 export const fsStat = promisify<fs.Stats, string>(fs.stat);
 export const fsUnlink = promisify<void, string>(fs.unlink);
@@ -149,7 +149,7 @@ export function copyFile(fileName: string, target: string, mode: number = 0o777)
 
 export async function pathExists(filePath: string): Promise<boolean> {
   try {
-    await fsAccess(filePath);
+    await fsAccess(filePath, fs.constants.F_OK);
   } catch (e) {
     return false;
   }

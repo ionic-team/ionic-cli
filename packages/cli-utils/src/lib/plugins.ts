@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 
 import { IonicEnvironment, Plugin } from '../definitions';
+import { isPlugin } from '../guards';
 import { load } from './modules';
 import { readDir } from './utils/fs';
 import { getGlobalProxy } from './http';
@@ -152,46 +153,52 @@ export interface LoadPluginOptions {
 }
 
 export async function loadPlugin(env: IonicEnvironment, pluginName: string, { message, askToInstall = true, reinstall = false, global = false }: LoadPluginOptions): Promise<Plugin> {
+  let mPath: string | undefined;
   let m: Plugin | undefined;
 
   if (!message) {
     message = `The plugin ${chalk.green(pluginName)} is not installed. Would you like to install it and continue?`;
   }
 
+  env.log.debug(`Load ${global ? 'global' : 'local'} plugin ${chalk.bold(pluginName)}`);
+
   try {
-    if (global) {
-      env.log.debug(`Load global plugin ${chalk.bold(pluginName)}`);
-      m = require(pluginName);
-    } else {
-      const modulePath = path.join(env.project.directory, 'node_modules', ...pluginName.split('/'));
-      env.log.debug(`Load local plugin ${chalk.bold(pluginName)} from ${chalk.bold(modulePath)}`);
-      const resolvedModulePath = require.resolve(modulePath);
-      delete require.cache[resolvedModulePath];
-      m = require(resolvedModulePath);
-    }
+    mPath = require.resolve(global ? pluginName : path.join(env.project.directory, 'node_modules', ...pluginName.split('/')));
+    delete require.cache[mPath];
+    m = require(mPath);
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') {
       throw e;
     }
-  }
-  if (!m && !askToInstall) {
-    env.log.debug(`Throwing ${chalk.red(ERROR_PLUGIN_NOT_INSTALLED)} for ${chalk.bold(pluginName)}`);
-    throw ERROR_PLUGIN_NOT_INSTALLED;
-  }
-  if (!m || reinstall) {
-    const confirm = await env.prompt({
-      type: 'confirm',
-      name: 'confirm',
-      message,
-    });
 
-    if (confirm) {
-      await pkgInstallPlugin(env, pluginName);
-      return loadPlugin(env, pluginName, { askToInstall });
-    } else {
+    if (!askToInstall) {
+      env.log.debug(`Throwing ${chalk.red(ERROR_PLUGIN_NOT_INSTALLED)} for ${global ? 'global' : 'local'} ${chalk.bold(pluginName)}`);
       throw ERROR_PLUGIN_NOT_INSTALLED;
     }
+
+    if (reinstall) {
+      const confirm = await env.prompt({
+        type: 'confirm',
+        name: 'confirm',
+        message,
+      });
+
+      if (confirm) {
+        await pkgInstallPlugin(env, pluginName);
+        return loadPlugin(env, pluginName, { askToInstall: false });
+      } else {
+        throw ERROR_PLUGIN_NOT_INSTALLED;
+      }
+    }
   }
+
+  if (!isPlugin(m) || !mPath) {
+    throw ERROR_PLUGIN_INVALID;
+  }
+
+  m.meta = {
+    filePath: mPath,
+  };
 
   return m;
 }

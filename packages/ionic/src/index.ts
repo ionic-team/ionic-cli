@@ -111,6 +111,9 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
         version,
         namespace,
         registerHooks,
+        meta: {
+          filePath: __filename,
+        }
       },
     },
     prompt: await createPromptModule(log, config),

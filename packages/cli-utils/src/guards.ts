@@ -16,6 +16,7 @@ import {
   PackageJson,
   PackageBuild,
   PackageProjectRequest,
+  Plugin,
   Response,
   SecurityProfile,
   SuperAgentError,
@@ -52,6 +53,13 @@ export function isValidationErrorArray(e: Object[]): e is ValidationError[] {
   return err && err[0]
     && typeof err[0].message === 'string'
     && typeof err[0].inputName === 'string';
+}
+
+export function isPlugin(p: any): p is Plugin {
+  const plugin = <Plugin>p;
+  return p
+    && typeof p.name === 'string'
+    && typeof p.version === 'string';
 }
 
 export function isSuperAgentError(e: Error): e is SuperAgentError {

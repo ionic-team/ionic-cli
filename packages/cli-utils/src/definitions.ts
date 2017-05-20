@@ -417,10 +417,10 @@ export interface IonicEnvironment {
   app: IApp;
   hooks: IHookEngine;
   client: IClient;
-  config: IConfig<ConfigFile>;
+  config: IConfig<ConfigFile>; // CLI global config (~/.ionic/config.json)
   log: ILogger;
   prompt: PromptModule;
-  project: IProject;
+  project: IProject; // project config (ionic.config.json)
   plugins: {
     ionic: Plugin;
     [key: string]: Plugin;
@@ -440,6 +440,9 @@ export interface Plugin {
   preferGlobal?: boolean;
   namespace?: INamespace;
   registerHooks?(hooks: IHookEngine): void;
+  meta?: { // set when loading plugin
+    filePath: string;
+  };
 }
 
 export interface INamespace {
