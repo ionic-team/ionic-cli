@@ -445,6 +445,15 @@ export interface Plugin {
   };
 }
 
+export type DistTag = 'local' | 'canary' | 'beta' | 'latest';
+
+export interface PluginInfo {
+  distTag: DistTag;
+  currentVersion: string;
+  latestVersion: string;
+  updateAvailable: boolean;
+}
+
 export interface INamespace {
   root: boolean;
   name: string;
