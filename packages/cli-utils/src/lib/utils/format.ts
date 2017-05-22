@@ -15,14 +15,21 @@ export const SPINNER_FRAMES = process.platform === 'win32' ?
   ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 
 export function prettyPath(p: string): string {
+  p = path.resolve(p);
   const cwd = process.cwd();
   const d = path.dirname(p);
   const h = os.homedir();
+  const distanceFromCwd = Math.abs(d.split(path.sep).length - cwd.split(path.sep).length);
 
   if (cwd === d) {
     return '.' + path.sep + path.basename(p);
   } else if (d.startsWith(cwd)) {
     return '.' + path.sep + p.substring(cwd.length + 1);
+  } else if (distanceFromCwd <= 2) {
+    const rel = path.relative(cwd, p);
+    return rel ? rel : '.';
+  } else if (p === h) {
+    return '~';
   } else if (p.indexOf(h) === 0) {
     return '~' + path.sep + p.substring(h.length + 1);
   }
