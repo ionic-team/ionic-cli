@@ -15,7 +15,7 @@ import { CordovaCommand } from './base';
   name: 'build',
   type: 'project',
   description: 'Build (prepare + compile) an Ionic project for a given platform',
-  exampleCommands: ['ios'],
+  exampleCommands: ['ios', 'ios --prod --release', 'android', 'android --prod --release -- -- --minSdkVersion=21', 'android --prod --release -- -- --gradleArg=-PcdvBuildMultipleApks=true'],
   inputs: [
     {
       name: 'platform',
