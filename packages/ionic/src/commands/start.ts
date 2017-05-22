@@ -11,8 +11,8 @@ import {
   fsMkdir,
   getCommandInfo,
   pathExists,
-  pkgInstall,
-  pkgInstallPlugin,
+  pkgInstallArgs,
+  pkgInstallPluginArgs,
   prettyPath,
   rimrafp,
 } from '@ionic/cli-utils';
@@ -189,8 +189,9 @@ export class StartCommand extends Command implements CommandPreRun {
 
         if (typeof cmdInstalled === 'undefined') {
           if (dep === 'cordova') {
+            const cdvInstallArgs = await pkgInstallArgs(this.env, 'cordova', { global: true });
             throw this.exit(`Cordova CLI not found on your PATH. Please install Cordova globally (you may need ${chalk.green('sudo')}):\n\n` +
-                            `${chalk.green('npm install -g cordova')}\n\n` +
+                            `${chalk.green(cdvInstallArgs.join(' '))}\n\n` +
                             `If that doesn't work, see the installation docs: https://cordova.apache.org/docs/en/latest/guide/cli/#installing-the-cordova-cli`);
           } else {
             throw this.exit(`Sorry, ${chalk.green(dep)} is a global dependency, but it was not found on your PATH.`);
@@ -294,7 +295,8 @@ export class StartCommand extends Command implements CommandPreRun {
       this.env.log.info('Installing dependencies may take several minutes!');
       const o = { cwd: projectRoot };
 
-      await pkgInstall(this.env, undefined, o);
+      const [ installer, ...installerArgs ] = await pkgInstallArgs(this.env, undefined);
+      await this.env.shell.run(installer, installerArgs, o);
 
       if (options['cordova']) {
         starterType.localDependencies.push('@ionic/cli-plugin-cordova');
@@ -303,7 +305,8 @@ export class StartCommand extends Command implements CommandPreRun {
       this.env.log.debug(`localDeps=${starterType.localDependencies}`);
 
       for (let dep of starterType.localDependencies) {
-        await pkgInstallPlugin(this.env, dep, o);
+        const [ installer, ...installerArgs ] = await pkgInstallPluginArgs(this.env, dep);
+        await this.env.shell.run(installer, installerArgs, o);
       }
     }
 

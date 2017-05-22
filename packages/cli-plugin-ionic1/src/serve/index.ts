@@ -3,7 +3,7 @@ import * as chalk from 'chalk';
 import { stringToInt } from '../utils/helpers';
 import { createHttpServer } from './http-server';
 import { createLiveReloadServer } from './live-reload';
-import { CommandHookArgs, IonicEnvironment, findClosestOpenPort, getAvailableIPAddress, minimistOptionsToArray } from '@ionic/cli-utils';
+import { CommandHookArgs, IonicEnvironment, findClosestOpenPort, getAvailableIPAddress, minimistOptionsToArray, pkgInstallArgs } from '@ionic/cli-utils';
 import {
   DEFAULT_ADDRESS,
   DEFAULT_LIVERELOAD_PORT,
@@ -133,10 +133,13 @@ async function processSassFile(env: IonicEnvironment, options: ServerOptions): P
   }
 
   if (!options.gulpInstalled) {
-    env.log.error(`You are trying to build a sass file, but unfortunately Ionic1 projects require\n` +
-                  `gulp to build these files. In order to continue please execute the following\n` +
-                  `command to install gulp.\n\n` +
-                  `    ${chalk.green(`npm install -g gulp`)}`);
+    const gulpInstallArgs = await pkgInstallArgs(env, 'gulp', { global: true });
+    env.log.error(
+      `You are trying to build a sass file, but unfortunately Ionic1 projects require\n` +
+      `gulp to build these files. In order to continue please execute the following\n` +
+      `command to install gulp.\n\n` +
+      `    ${chalk.green(gulpInstallArgs.join(' '))}`
+    );
     return;
   }
 

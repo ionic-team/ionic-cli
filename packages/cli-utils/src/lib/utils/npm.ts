@@ -31,16 +31,17 @@ export async function readBowerJsonFile(path: string): Promise<BowerJson> {
 }
 
 export interface PkgInstallOptions extends IShellRunOptions {
+  global?: boolean;
   link?: boolean;
 }
 
-export async function pkgInstall(env: IonicEnvironment, pkg?: string, options: PkgInstallOptions = {}) {
+export async function pkgInstallArgs(env: IonicEnvironment, pkg?: string, options: PkgInstallOptions = {}): Promise<string[]> {
   const config = await env.config.load();
 
   if (config.cliFlags.yarn) {
     if (!installer) {
       try {
-        await runcmd('yarn', ['--version']);
+        await runcmd('yarn', ['--version']); // TODO cache
         installer = 'yarn';
       } catch (e) {
         if (e.code === 'ENOENT') {
@@ -61,9 +62,13 @@ export async function pkgInstall(env: IonicEnvironment, pkg?: string, options: P
   if (installer === 'npm') {
     if (pkg) {
       if (options.link) {
-        installerArgs = ['link', pkg];
+        installerArgs = ['link', pkg.replace(/(.+)@.+/, '$1')];
       } else {
-        installerArgs = ['install', '--save-dev', '--save-exact', pkg];
+        if (options.global) {
+          installerArgs = ['install', '-g', pkg];
+        } else {
+          installerArgs = ['install', '--save-dev', '--save-exact', pkg];
+        }
       }
     } else {
       installerArgs = ['install'];
@@ -73,12 +78,16 @@ export async function pkgInstall(env: IonicEnvironment, pkg?: string, options: P
       if (options.link) {
         installerArgs = ['link', pkg];
       } else {
-        installerArgs = ['add', '--non-interactive', '--dev', '--exact', pkg];
+        if (options.global) {
+          installerArgs = ['global', 'add', '--non-interactive', pkg];
+        } else {
+          installerArgs = ['add', '--non-interactive', '--dev', '--exact', pkg];
+        }
       }
     } else {
       installerArgs = ['install', '--non-interactive'];
     }
   }
 
-  return env.shell.run(installer, installerArgs, options);
+  return [installer, ...installerArgs];
 }
