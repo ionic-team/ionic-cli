@@ -6,23 +6,27 @@ import { ImageResource, SourceImage } from '../../definitions';
 
 const resourcesJson = require('./fixtures/resources.json');
 
-describe('resources', () => {
+describe('@ionic/cli-plugin-cordova', () => {
 
-  it('flattenResourceJsonStructure should do take the resources.json structure and flatten it', () => {
-    const result = resources.flattenResourceJsonStructure(resourcesJson);
+  describe('flattenResourceJsonStructure', () => {
 
-    expect(result).toEqual(jasmine.any(Array));
-    expect(result.length).toEqual(51);
-    expect(result.find(img => img.name === 'Default-568h@2x~iphone.png')).toEqual({
-      platform: 'ios',
-      resType: 'splash',
-      name: 'Default-568h@2x~iphone.png',
-      width: 640,
-      height: 1136,
-      density: undefined,
-      nodeName: 'splash',
-      nodeAttributes: ['src', 'width', 'height']
+    it('should do take the resources.json structure and flatten it', () => {
+      const result = resources.flattenResourceJsonStructure(resourcesJson);
+
+      expect(result).toEqual(jasmine.any(Array));
+      expect(result.length).toEqual(51);
+      expect(result.find(img => img.name === 'Default-568h@2x~iphone.png')).toEqual({
+        platform: 'ios',
+        resType: 'splash',
+        name: 'Default-568h@2x~iphone.png',
+        width: 640,
+        height: 1136,
+        density: undefined,
+        nodeName: 'splash',
+        nodeAttributes: ['src', 'width', 'height']
+      });
     });
+
   });
 
   describe('createImgDestinationDirectories', () => {
