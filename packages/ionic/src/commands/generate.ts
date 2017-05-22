@@ -8,6 +8,7 @@ import {
   CommandMetadata,
   installPlugin,
   promptToInstallProjectPlugin,
+  validators,
 } from '@ionic/cli-utils';
 
 @CommandMetadata({
@@ -67,6 +68,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
         type: 'input',
         name: 'generatorName',
         message: 'What should the name be?',
+        validate: v => validators.required(v, 'name')
       });
 
       inputs[1] = generatorName;
