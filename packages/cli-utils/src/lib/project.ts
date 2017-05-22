@@ -115,7 +115,7 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
       }
     }
 
-    throw new FatalException(`Could not determine project type.\n\n`
+    throw new FatalException(`Could not determine project type (project config: ${chalk.bold(prettyPath(this.filePath))}).\n\n`
                            + `For ${this.formatType('ionic-angular')} projects, make sure 'ionic-angular' exists in the ${chalk.bold('dependencies')} attribute of ${chalk.bold('package.json')}.\n`
                            + `For ${this.formatType('ionic1')} projects, make sure 'ionic' exists in the ${chalk.bold('devDependencies')} attribute of ${chalk.bold('bower.json')}.\n\n`
                            + `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold('ionic.config.json')} to one of: ${PROJECT_TYPES.map(v => '\'' + v + '\'').join(', ')}\n`);
