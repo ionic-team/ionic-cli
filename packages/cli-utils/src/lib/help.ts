@@ -98,7 +98,7 @@ function getHelpDetails(env: IonicEnvironment, commandMetadataList: CommandData[
     commandMetadataList = commandMetadataList.filter(f);
   }
 
-  const foundCommandList = commandMetadataList.filter((cmd) => typeof cmd.visible === 'undefined' ? true : cmd.visible);
+  const foundCommandList = commandMetadataList.filter((cmd) => cmd.visible !== false);
 
   return getListOfCommandDetails(foundCommandList);
 }
