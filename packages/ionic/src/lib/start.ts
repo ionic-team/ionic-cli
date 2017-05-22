@@ -20,7 +20,7 @@ import { StarterTemplate, StarterTemplateType } from '../definitions';
 export function tarXvfFromUrl(url: string, destination: string, { progress }: {  progress?: (loaded: number, total: number) => void }) {
   return new Promise<void>((resolve, reject) => {
     const archiveRequest = createRequest('get', url)
-      .timeout(180000) // 3 minutes
+      .timeout(900000) // 15 minutes
       .on('response', (res) => {
         if (res.statusCode !== 200) {
           reject(new Error(`Encountered bad status code (${res.statusCode}) for ${url}\n` +
