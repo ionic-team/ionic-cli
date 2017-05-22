@@ -9,11 +9,11 @@ import { prettyPath } from './utils/format';
 import { ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON, fsMkdirp, fsStat, fsReadJsonFile, fsWriteJsonFile } from './utils/fs';
 import { load } from './modules';
 
-export const CLI_FLAGS: { flag: CliFlag, defaultValue?: boolean }[] = [
-  { flag: 'confirm', defaultValue: false },
-  { flag: 'interactive', defaultValue: true },
+export const CLI_FLAGS: { flag: CliFlag, visible?: boolean; defaultValue?: boolean }[] = [
+  { flag: 'confirm', visible: true, defaultValue: false },
+  { flag: 'interactive', visible: true, defaultValue: true },
   { flag: 'telemetry', defaultValue: true },
-  { flag: 'yarn', defaultValue: false },
+  { flag: 'yarn', visible: true, defaultValue: false },
   { flag: 'dev-check-updates' },
   { flag: 'dev-always-updates' },
 ];
