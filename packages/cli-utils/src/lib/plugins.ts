@@ -229,7 +229,7 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
   const ionicPluginInfo = await getPluginInfo(env, env.plugins.ionic);
 
   if (ionicPluginInfo.updateAvailable) {
-    const ionicInstallArgs = await pkgInstallPluginArgs(env, `ionic@${ionicPluginInfo.distTag}`, { global: true });
+    const ionicInstallArgs = await pkgInstallPluginArgs(env, 'ionic', { global: true });
     env.log.warn(`The Ionic CLI has an update available! Please upgrade (you might need ${chalk.green('sudo')}):\n\n    ${chalk.green(ionicInstallArgs.join(' '))}\n\n`);
     warnonly = true;
     updates.push(env.plugins.ionic.name);
@@ -244,8 +244,7 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
     const pluginInfo = await getPluginInfo(env, plugin);
 
     if (plugin.preferGlobal) {
-      const pluginPkg = `${plugin.name}@${ionicPluginInfo.distTag}`;
-      const pluginInstallCmd = chalk.green((await pkgInstallPluginArgs(env, pluginPkg, { global: true })).join(' '));
+      const pluginInstallCmd = chalk.green((await pkgInstallPluginArgs(env, plugin.name, { global: true })).join(' '));
 
       if (ionicPluginInfo.distTag === pluginInfo.distTag) {
         if (pluginInfo.updateAvailable) {
@@ -256,9 +255,8 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
                      `Please install the matching plugin version:\n\n    ${pluginInstallCmd}\n\n`);
       }
     } else {
-      const pluginPkg = `${plugin.name}@${ionicPluginInfo.distTag}`;
       const installedPluginPkg = chalk.green(plugin.name + '@' + chalk.bold(plugin.version));
-      const pluginInstallCmd = chalk.green((await pkgInstallPluginArgs(env, pluginPkg)).join(' '));
+      const pluginInstallCmd = chalk.green((await pkgInstallPluginArgs(env, plugin.name)).join(' '));
 
       if (ionicPluginInfo.distTag === pluginInfo.distTag) {
         if (pluginInfo.updateAvailable) {
