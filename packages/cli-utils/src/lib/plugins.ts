@@ -290,7 +290,12 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
 }
 
 async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Promise<string> {
+  const config = await env.config.load();
   const distTag = determineDistTag(plugin.version);
+
+  if (config.cliFlags['dev-always-updates']) {
+    return '999.999.999';
+  }
 
   if (distTag === 'local') {
     return plugin.version;

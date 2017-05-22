@@ -13,7 +13,7 @@ import { load } from '../lib/modules';
   name: 'serve',
   type: 'project',
   description: 'Start a local development server for app dev/testing',
-  exampleCommands: ['--lab --consolelogs -s'],
+  exampleCommands: ['-lcs', '--lab -lcs'],
   options: [
     {
       name: 'consolelogs',

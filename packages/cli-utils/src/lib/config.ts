@@ -9,11 +9,13 @@ import { prettyPath } from './utils/format';
 import { ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON, fsMkdirp, fsStat, fsReadJsonFile, fsWriteJsonFile } from './utils/fs';
 import { load } from './modules';
 
-export const CLI_FLAGS: { flag: CliFlag, defaultValue: boolean }[] = [
+export const CLI_FLAGS: { flag: CliFlag, defaultValue?: boolean }[] = [
   { flag: 'confirm', defaultValue: false },
   { flag: 'interactive', defaultValue: true },
   { flag: 'telemetry', defaultValue: true },
   { flag: 'yarn', defaultValue: false },
+  { flag: 'dev-check-updates' },
+  { flag: 'dev-always-updates' },
 ];
 
 export abstract class BaseConfig<T> implements IConfig<T> {
@@ -151,7 +153,7 @@ export class Config extends BaseConfig<ConfigFile> {
           } else {
             results.cliFlags.telemetry = true;
           }
-        } else {
+        } else if (typeof defaultValue === 'boolean') {
           results.cliFlags[flag] = defaultValue;
         }
       }

@@ -296,6 +296,8 @@ export interface ConfigFile {
     appUser: { [app_id: string]: string };
   };
   cliFlags: {
+    'dev-check-updates'?: boolean;
+    'dev-always-updates'?: boolean;
     confirm?: boolean;
     interactive?: boolean;
     telemetry?: boolean;

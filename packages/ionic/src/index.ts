@@ -203,7 +203,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
         }
       }
 
-      if (typeof updates === 'undefined' && now.getTime() - new Date(configData.lastCommand).getTime() >= 3600000) {
+      if (configData.cliFlags['dev-check-updates'] || (typeof updates === 'undefined' && now.getTime() - new Date(configData.lastCommand).getTime() >= 3600000)) {
         await checkForUpdates(ienv);
       }
 
