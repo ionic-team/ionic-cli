@@ -15,6 +15,7 @@ import {
   pkgInstallPluginArgs,
   prettyPath,
   rimrafp,
+  validators,
 } from '@ionic/cli-utils';
 
 import {
@@ -130,6 +131,7 @@ export class StartCommand extends Command implements CommandPreRun {
         type: 'input',
         name: 'name',
         message: 'What would you like to name your project:',
+        validate: v => validators.required(v, 'name'),
       });
 
       inputs[0] = name;
