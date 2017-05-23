@@ -41,20 +41,34 @@ export abstract class BaseConfig<T> implements IConfig<T> {
 
   async load(): Promise<T> {
     if (!this.configFile) {
-      let o: { [key: string]: any };
+      let o: { [key: string]: any } | undefined;
 
       try {
-        o = await fsReadJsonFile(this.filePath);
-      } catch (e) {
-        if (e === ERROR_FILE_NOT_FOUND) {
+        const stats = await fsStat(this.filePath);
+
+        if (stats.size === 0) {
           o = {};
-        } else if (e === ERROR_FILE_INVALID_JSON) {
-          throw new FatalException(
-            `The config file (${chalk.bold(prettyPath(this.filePath))}) is not valid JSON format.\n\n` +
-            `Please fix any JSON errors in the file.`
-          );
-        } else {
+        }
+      } catch (e) {
+        if (e.code !== 'ENOENT') {
           throw e;
+        }
+
+        o = {};
+      }
+
+      if (typeof o === 'undefined') {
+        try {
+          o = await fsReadJsonFile(this.filePath);
+        } catch (e) {
+          if (e === ERROR_FILE_INVALID_JSON) {
+            throw new FatalException(
+              `The config file (${chalk.bold(prettyPath(this.filePath))}) is not valid JSON format.\n\n` +
+              `Please fix any JSON errors in the file.`
+            );
+          } else {
+            throw e;
+          }
         }
       }
 
@@ -87,15 +101,23 @@ export abstract class BaseConfig<T> implements IConfig<T> {
 
       if (!lodash.isEqual(configFile, this.originalConfigFile)) {
         const dirPath = path.dirname(this.filePath);
+
         try {
-          let stats = await fsStat(dirPath);
+          const stats = await fsStat(dirPath);
+
           if (!stats.isDirectory()) {
             throw `${dirPath} must be a directory it is currently a file`;
           }
         } catch (e) {
+          if (e.code !== 'ENOENT') {
+            throw e;
+          }
+
           await fsMkdirp(dirPath);
         }
+
         await fsWriteJsonFile(this.filePath, configFile, { encoding: 'utf8' });
+
         this.configFile = configFile;
         this.originalConfigFile = lodash.cloneDeep(configFile);
       }
