@@ -14,7 +14,6 @@ export const CLI_FLAGS: { flag: CliFlag, visible?: boolean; defaultValue?: boole
   { flag: 'interactive', visible: true, defaultValue: true },
   { flag: 'telemetry', defaultValue: true },
   { flag: 'yarn', visible: true, defaultValue: false },
-  { flag: 'dev-check-updates' },
   { flag: 'dev-always-plugin-updates' },
   { flag: 'dev-always-ionic-updates' },
 ];

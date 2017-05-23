@@ -296,7 +296,6 @@ export interface ConfigFile {
     appUser: { [app_id: string]: string };
   };
   cliFlags: {
-    'dev-check-updates'?: boolean;
     'dev-always-plugin-updates'?: boolean;
     'dev-always-ionic-updates'?: boolean;
     confirm?: boolean;

@@ -33,7 +33,7 @@ export async function promptToInstallProjectPlugin(env: IonicEnvironment, { mess
   return await promptToInstallPlugin(env, projectPlugin, { message });
 }
 
-export async function promptToInstallPlugin(env: IonicEnvironment, pluginName: string, { message, reinstall = false }: { message?: string, reinstall?: boolean }) {
+export async function promptToInstallPlugin(env: IonicEnvironment, pluginName: string, { message, global = false, reinstall = false }: { message?: string, global?: boolean; reinstall?: boolean }) {
   if (!env.project.directory) {
     return;
   }
@@ -41,6 +41,7 @@ export async function promptToInstallPlugin(env: IonicEnvironment, pluginName: s
   try {
     return await loadPlugin(env, pluginName, {
       askToInstall: true,
+      global,
       reinstall,
       message,
     });
@@ -281,11 +282,13 @@ async function facilitatePluginUpdate(env: IonicEnvironment, ionicPlugin: Hydrat
       p = await promptToInstallPlugin(env, plugin.name, {
         message: `${startMsg} has a different dist-tag (${chalk.green('@' + plugin.distTag)}) than the Ionic CLI (${chalk.green('@' + ionicPlugin.distTag)}). Would you like to install the appropriate plugin version?`,
         reinstall: true,
+        global: plugin.preferGlobal,
       });
     } else {
       p = await promptToInstallPlugin(env, plugin.name, {
         message: `${updateMsg} Would you like to install it?`,
         reinstall: true,
+        global: plugin.preferGlobal,
       });
     }
 
@@ -341,7 +344,7 @@ async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Pr
   const config = await env.config.load();
   const distTag = determineDistTag(plugin.version);
 
-  if (plugin.name === 'ionic' && config.cliFlags['dev-always-ionic-updates'] || plugin.name !== 'ionic' && config.cliFlags['dev-always-plugin-updates']) {
+  if ((plugin.name === 'ionic' && config.cliFlags['dev-always-ionic-updates']) || (plugin.name !== 'ionic' && config.cliFlags['dev-always-plugin-updates'])) {
     return '999.999.999';
   }
 
