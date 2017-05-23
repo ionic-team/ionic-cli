@@ -83,11 +83,6 @@ import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
       type: Boolean,
     },
     {
-      name: 'yarn',
-      description: 'Opt-in to using yarn (instead of npm)',
-      type: Boolean,
-    },
-    {
       name: 'skip-link',
       description: 'Do not link app to an Ionic Account',
       type: Boolean,
@@ -189,7 +184,7 @@ export class StartCommand extends Command implements CommandPreRun {
       for (let dep of starterType.globalDependencies) {
         const cmdInstalled = await getCommandInfo(dep);
 
-        if (typeof cmdInstalled === 'undefined') {
+        if (!cmdInstalled) {
           if (dep === 'cordova') {
             const cdvInstallArgs = await pkgInstallArgs(this.env, 'cordova', { global: true });
             throw this.exit(`Cordova CLI not found on your PATH. Please install Cordova globally (you may need ${chalk.green('sudo')}):\n\n` +
@@ -285,11 +280,6 @@ export class StartCommand extends Command implements CommandPreRun {
     this.env.tasks.end();
 
     const config = await this.env.config.load();
-
-    if (options['yarn']) {
-      this.env.log.debug('Opting into yarn!');
-      config.cliFlags.yarn = true;
-    }
 
     if (!options['skip-deps']) {
       // Install local dependencies
