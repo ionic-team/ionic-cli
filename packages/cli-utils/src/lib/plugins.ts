@@ -34,7 +34,7 @@ export async function promptToInstallProjectPlugin(env: IonicEnvironment, { mess
 }
 
 export async function promptToInstallPlugin(env: IonicEnvironment, pluginName: string, { message, global = false, reinstall = false }: { message?: string, global?: boolean; reinstall?: boolean }) {
-  if (!env.project.directory) {
+  if (!global && !env.project.directory) {
     return;
   }
 
