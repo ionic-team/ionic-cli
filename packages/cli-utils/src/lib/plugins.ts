@@ -191,7 +191,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
     if (confirm) {
       const [ installer, ...installerArgs ] = await pkgInstallPluginArgs(env, pluginName, { global });
       await env.shell.run(installer, installerArgs, {});
-      m = await loadPlugin(env, pluginName, { askToInstall: false });
+      m = await loadPlugin(env, pluginName, { askToInstall: false, global });
     } else {
       throw ERROR_PLUGIN_NOT_INSTALLED;
     }
