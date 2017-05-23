@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/driftyco/ionic-cli/compare/@ionic/cli-plugin-cordova@1.1.2...@ionic/cli-plugin-cordova@1.2.0) (2017-05-23)
+
+
+### Bug Fixes
+
+* **cordova:** allow --variable during plugin add ([892b5af](https://github.com/driftyco/ionic-cli/commit/892b5af))
+* **cordova:** do not hard-code plugins to install ([9a7eeb1](https://github.com/driftyco/ionic-cli/commit/9a7eeb1))
+
+
+### Features
+
+* **flags:** --no-interactive mode, with --confirm/--no-confirm ([1966a0c](https://github.com/driftyco/ionic-cli/commit/1966a0c))
+* **flags:** add --quiet flag ([6268f0c](https://github.com/driftyco/ionic-cli/commit/6268f0c))
+* **info:** show installed cordova platforms ([df0500d](https://github.com/driftyco/ionic-cli/commit/df0500d))
+
+
+
+
 <a name="1.1.2"></a>
 ## [1.1.2](https://github.com/driftyco/ionic-cli/compare/@ionic/cli-plugin-cordova@1.1.1...@ionic/cli-plugin-cordova@1.1.2) (2017-05-17)
 

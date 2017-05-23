@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.2.0"></a>
+# [3.2.0](https://github.com/driftyco/ionic-cli/compare/ionic@3.1.2...ionic@3.2.0) (2017-05-23)
+
+
+### Bug Fixes
+
+* **cordova:** interpret --save as boolean ([7d7ca56](https://github.com/driftyco/ionic-cli/commit/7d7ca56))
+* **start:** validate prompted name ([221702c](https://github.com/driftyco/ionic-cli/commit/221702c))
+
+
+### Features
+
+* **flags:** --no-interactive mode, with --confirm/--no-confirm ([1966a0c](https://github.com/driftyco/ionic-cli/commit/1966a0c))
+* **flags:** add --quiet flag ([6268f0c](https://github.com/driftyco/ionic-cli/commit/6268f0c))
+* **flags:** persistent "cli flags" ([72a9b45](https://github.com/driftyco/ionic-cli/commit/72a9b45))
+* **logging:** disable interval spinner for non-interactive mode ([9e4ed33](https://github.com/driftyco/ionic-cli/commit/9e4ed33))
+* **login:** automatic login via IONIC_EMAIL/IONIC_PASSWORD ([d8d26e4](https://github.com/driftyco/ionic-cli/commit/d8d26e4))
+* **start:** auto git setup, if available ([7f218f1](https://github.com/driftyco/ionic-cli/commit/7f218f1))
+
+
+
+
 <a name="3.1.2"></a>
 ## [3.1.2](https://github.com/driftyco/ionic-cli/compare/ionic@3.1.1...ionic@3.1.2) (2017-05-17)
 
