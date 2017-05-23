@@ -338,6 +338,7 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
 }
 
 async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Promise<string> {
+  let cmdResult, latestVersion: string | undefined;
   const config = await env.config.load();
   const distTag = determineDistTag(plugin.version);
 
@@ -351,14 +352,21 @@ async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Pr
 
   env.log.debug(`Checking for latest plugin version of ${chalk.green(plugin.name + '@' + distTag)}.`);
 
+  const shellOptions = { showCommand: false };
+
   // TODO: might belong in utils/npm.ts
-  const cmdResult = await env.shell.run('npm', ['view', plugin.name, `dist-tags.${distTag}`, '--json'], { showCommand: false });
+  if (config.cliFlags['yarn']) {
+    cmdResult = await env.shell.run('yarn', ['info', plugin.name, `dist-tags.${distTag}`, '--json'], shellOptions);
+    latestVersion = JSON.parse(cmdResult).data;
+  } else {
+    cmdResult = await env.shell.run('npm', ['view', plugin.name, `dist-tags.${distTag}`, '--json'], shellOptions);
 
-  if (!cmdResult) {
-    return plugin.version;
+    if (!cmdResult) {
+      return plugin.version;
+    }
+
+    latestVersion = JSON.parse(cmdResult);
   }
-
-  const latestVersion = JSON.parse(cmdResult);
 
   if (!latestVersion) {
     return plugin.version;
