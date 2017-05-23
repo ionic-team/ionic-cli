@@ -11,6 +11,7 @@ import {
   PLUGIN_PREFIX,
   installPlugin,
   isCommand,
+  isValidationErrorArray,
   metadataToMinimistOptions,
   promptToInstallPlugin,
   showHelp,
@@ -91,7 +92,7 @@ export class IonicNamespace extends Namespace {
       await command.execute(inputs, options);
     } catch (e) {
       const cmdsource = command.metadata.source;
-      if (!e.fatal && this.source !== cmdsource) {
+      if (this.source !== cmdsource && !e.fatal && !isValidationErrorArray(e)) {
         env.log.warn(`Error occurred during command execution from a CLI plugin${cmdsource ? ' (' + chalk.green(cmdsource) + ')' : ''}. ${chalk.bold('Your plugins may be out of date.')}`);
       }
 
