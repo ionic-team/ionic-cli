@@ -16,7 +16,7 @@ import {
 
 import { generateBuildOptions, filterArgumentsForCordova, CORDOVA_INTENT } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc, writeConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
-import { getProjectPlugins, getProjectPlatforms, installPlatform, installPlugins } from '../lib/utils/setup';
+import { getProjectPlugins, getProjectPlatforms, installPlatform } from '../lib/utils/setup';
 
 export const CORDOVA_RUN_COMMAND_OPTIONS = [
   {
@@ -157,17 +157,10 @@ export class CordovaCommand extends Command {
 
   async checkForPlatformInstallation(runPlatform: string) {
     if (runPlatform) {
-      const [ platforms, plugins ] = await Promise.all([
-        getProjectPlatforms(this.env.project.directory),
-        getProjectPlugins(this.env.project.directory),
-      ]);
+      const platforms = await getProjectPlatforms(this.env.project.directory);
 
       if (!platforms.includes(runPlatform)) {
         await installPlatform(this.env, runPlatform);
-      }
-
-      if (plugins.length === 0) {
-        await installPlugins(this.env);
       }
     }
   }

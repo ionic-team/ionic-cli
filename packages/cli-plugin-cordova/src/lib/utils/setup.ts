@@ -17,26 +17,6 @@ export async function getProjectPlugins(projectDir: string): Promise<string[]> {
 }
 
 /**
- * Install required Cordova plugins for Ionic
- */
-export async function installPlugins(env: IonicEnvironment): Promise<void> {
-  const plugins = [
-    'cordova-plugin-device',
-    'cordova-plugin-console',
-    'cordova-plugin-whitelist',
-    'cordova-plugin-splashscreen',
-    'cordova-plugin-statusbar',
-    'ionic-plugin-keyboard'
-  ];
-
-  for (let plugin of plugins) {
-    await env.shell.run('cordova', ['plugin', 'add', '--save', plugin], {
-      fatalOnNotFound: false,
-    });
-  }
-}
-
-/**
  * Install the platform specified using cordova
  *
  * @param {String} platform The platform to install (ios, android, etc.)
