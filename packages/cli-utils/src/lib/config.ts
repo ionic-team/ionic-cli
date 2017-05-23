@@ -46,7 +46,7 @@ export abstract class BaseConfig<T> implements IConfig<T> {
       try {
         const stats = await fsStat(this.filePath);
 
-        if (stats.size === 0) {
+        if (stats.size < 5) {
           o = {};
         }
       } catch (e) {
