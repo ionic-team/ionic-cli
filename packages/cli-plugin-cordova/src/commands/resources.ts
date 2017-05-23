@@ -51,6 +51,7 @@ const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
     {
       name: 'platform',
       description: `The platform for which you would like to generate resources (e.g. ${chalk.green('ios')}, ${chalk.green('android')})`,
+      required: false,
     }
   ],
   options: [
