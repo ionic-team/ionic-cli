@@ -157,7 +157,8 @@ export interface LoadPluginOptions {
 }
 
 export async function loadPlugin(env: IonicEnvironment, pluginName: string, { message, askToInstall = true, reinstall = false, global = false }: LoadPluginOptions): Promise<Plugin> {
-  let mPath: string | undefined;
+  const mPath = global ? pluginName : path.join(env.project.directory, 'node_modules', ...pluginName.split('/'));
+  let mResolvedPath: string | undefined;
   let m: Plugin | undefined;
 
   if (!message) {
@@ -167,9 +168,9 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
   env.log.debug(`Load ${global ? 'global' : 'local'} plugin ${chalk.green(pluginName)}`);
 
   try {
-    mPath = require.resolve(global ? pluginName : path.join(env.project.directory, 'node_modules', ...pluginName.split('/')));
-    delete require.cache[mPath];
-    m = require(mPath);
+    mResolvedPath = require.resolve(mPath);
+    delete require.cache[mResolvedPath];
+    m = require(mResolvedPath);
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') {
       throw e;
@@ -192,17 +193,19 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
       const [ installer, ...installerArgs ] = await pkgInstallPluginArgs(env, pluginName, { global });
       await env.shell.run(installer, installerArgs, {});
       m = await loadPlugin(env, pluginName, { askToInstall: false, global });
+      mResolvedPath = require.resolve(mPath);
     } else {
       throw ERROR_PLUGIN_NOT_INSTALLED;
     }
   }
 
-  if (!isPlugin(m) || !mPath) {
+  if (!isPlugin(m) || !mResolvedPath) {
+    env.log.debug(`Throwing ${chalk.red(ERROR_PLUGIN_INVALID)} for ${global ? 'global' : 'local'} ${chalk.green(pluginName)}`);
     throw ERROR_PLUGIN_INVALID;
   }
 
   m.meta = {
-    filePath: mPath,
+    filePath: mResolvedPath,
   };
 
   return m;
