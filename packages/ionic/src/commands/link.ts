@@ -43,6 +43,7 @@ export class LinkCommand extends Command {
       });
 
       if (!confirm) {
+        this.env.log.ok('Not linking.');
         return;
       }
     }
