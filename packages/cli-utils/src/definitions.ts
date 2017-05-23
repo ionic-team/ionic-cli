@@ -297,7 +297,8 @@ export interface ConfigFile {
   };
   cliFlags: {
     'dev-check-updates'?: boolean;
-    'dev-always-updates'?: boolean;
+    'dev-always-plugin-updates'?: boolean;
+    'dev-always-ionic-updates'?: boolean;
     confirm?: boolean;
     interactive?: boolean;
     telemetry?: boolean;
@@ -436,24 +437,27 @@ export interface IonicEnvironment {
   close(): void;
 }
 
+export interface PluginMeta {
+  filePath: string;
+}
+
 export interface Plugin {
   name: string;
   version: string;
   preferGlobal?: boolean;
   namespace?: INamespace;
   registerHooks?(hooks: IHookEngine): void;
-  meta?: { // set when loading plugin
-    filePath: string;
-  };
+  meta?: PluginMeta; // set when loading plugin
 }
 
 export type DistTag = 'local' | 'canary' | 'beta' | 'latest';
 
-export interface PluginInfo {
+export interface HydratedPlugin extends Plugin {
   distTag: DistTag;
   currentVersion: string;
   latestVersion: string;
   updateAvailable: boolean;
+  meta: PluginMeta;
 }
 
 export interface INamespace {

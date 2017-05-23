@@ -203,7 +203,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
         }
       }
 
-      if (configData.cliFlags['dev-check-updates'] || (typeof updates === 'undefined' && now.getTime() - new Date(configData.lastCommand).getTime() >= 3600000)) {
+      if (configData.cliFlags['dev-always-ionic-updates'] || configData.cliFlags['dev-always-plugin-updates'] || (typeof updates === 'undefined' && now.getTime() - new Date(configData.lastCommand).getTime() >= 3600000)) {
         await checkForUpdates(ienv);
       }
 
@@ -235,10 +235,14 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
     } else if (isSuperAgentError(err)) {
       ienv.log.msg(formatSuperAgentError(err));
     } else if (err.fatal) {
-      exitCode = err.exitCode || 1;
+      exitCode = typeof err.exitCode === 'number' ? err.exitCode : 1;
 
       if (err.message) {
-        ienv.log.error(err.message);
+        if (exitCode > 0) {
+          ienv.log.error(err.message);
+        } else {
+          ienv.log.msg(err.message);
+        }
       }
     } else {
       ienv.log.msg(chalk.red(String(err)));

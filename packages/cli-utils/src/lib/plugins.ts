@@ -1,10 +1,12 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import * as chalk from 'chalk';
 
-import { DistTag, IonicEnvironment, Plugin, PluginInfo } from '../definitions';
+import { DistTag, IonicEnvironment, Plugin, HydratedPlugin } from '../definitions';
 import { isPlugin } from '../guards';
+import { FatalException } from './errors';
 import { load } from './modules';
-import { readDir } from './utils/fs';
+import { readDir, pathAccessible } from './utils/fs';
 import { getGlobalProxy } from './http';
 import { PkgInstallOptions, pkgInstallArgs } from './utils/npm';
 
@@ -205,7 +207,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
   return m;
 }
 
-export async function getPluginInfo(env: IonicEnvironment, plugin: Plugin): Promise<PluginInfo> {
+export async function hydratePlugin(env: IonicEnvironment, plugin: Plugin): Promise<HydratedPlugin> {
   const semver = load('semver');
 
   env.log.debug(`Getting plugin info for ${chalk.green(plugin.name)}`);
@@ -213,8 +215,15 @@ export async function getPluginInfo(env: IonicEnvironment, plugin: Plugin): Prom
   const currentVersion = plugin.version;
   const latestVersion = await getLatestPluginVersion(env, plugin);
   const distTag = determineDistTag(currentVersion);
+  const meta = plugin.meta;
+
+  if (!meta) {
+    throw new FatalException(`${chalk.green(plugin.name)} missing meta information`);
+  }
 
   return {
+    ...plugin,
+    meta,
     distTag,
     currentVersion,
     latestVersion,
@@ -222,64 +231,105 @@ export async function getPluginInfo(env: IonicEnvironment, plugin: Plugin): Prom
   };
 }
 
-export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> {
-  const updates: string[] = [];
-  let warnonly = false;
+async function facilitateIonicUpdate(env: IonicEnvironment, ionicPlugin: HydratedPlugin) {
+  const ionicInstallArgs = await pkgInstallPluginArgs(env, 'ionic', { global: true });
+  const updateMsg = `The Ionic CLI has an update available (${chalk.green(ionicPlugin.currentVersion)} => ${chalk.green(ionicPlugin.latestVersion)})!`;
+  const canInstall = await pathAccessible(ionicPlugin.meta.filePath, fs.constants.W_OK);
 
-  const ionicPluginInfo = await getPluginInfo(env, env.plugins.ionic);
+  if (canInstall) {
+    const confirm = await env.prompt({
+      name: 'confirm',
+      type: 'confirm',
+      message: `${updateMsg} Would you like to install it?`,
+      noninteractiveValue: '',
+    });
 
-  if (ionicPluginInfo.updateAvailable) {
-    const ionicInstallArgs = await pkgInstallPluginArgs(env, 'ionic', { global: true });
-    env.log.warn(`The Ionic CLI has an update available! Please upgrade (you might need ${chalk.green('sudo')}):\n\n    ${chalk.green(ionicInstallArgs.join(' '))}\n\n`);
-    warnonly = true;
-    updates.push(env.plugins.ionic.name);
+    if (confirm) {
+      const [ installer, ...installerArgs ] = ionicInstallArgs;
+      await env.shell.run(installer, installerArgs, {});
+      const revertArgs = await pkgInstallArgs(env, `ionic@${ionicPlugin.currentVersion}`, { global: true });
+      env.log.nl();
+      env.log.ok(`Upgraded Ionic CLI to ${chalk.green(ionicPlugin.latestVersion)}! 🎉`);
+      env.log.nl();
+      env.log.msg(chalk.bold('Please re-run your command.'));
+      env.log.nl();
+      throw new FatalException(`${chalk.bold('Note')}: You can downgrade to your old version by running: ${chalk.green(revertArgs.join(' '))}`, 0);
+    } else {
+      env.log.ok(`Not automatically updating your CLI. You can update manually:\n\n${chalk.green(ionicInstallArgs.join(' '))}\n`);
+    }
+  } else {
+    env.log.info(updateMsg);
+    env.log.nl();
+    env.log.warn(
+      `No write permissions for global ${chalk.bold('node_modules')}--automatic CLI updates are disabled.\n` +
+      `To fix, see ${chalk.bold('https://docs.npmjs.com/getting-started/fixing-npm-permissions')}\n\n` +
+      `Or, install the CLI update manually (you will likely need ${chalk.green('sudo')}):\n\n${chalk.green(ionicInstallArgs.join(' '))}\n`
+    );
   }
+}
 
-  for (let pluginName in env.plugins) {
-    if (pluginName === 'ionic') {
-      continue;
+async function facilitatePluginUpdate(env: IonicEnvironment, ionicPlugin: HydratedPlugin, plugin: HydratedPlugin): Promise<boolean> {
+  const pluginInstallArgs = await pkgInstallPluginArgs(env, plugin.name, {});
+  const startMsg = `${plugin.preferGlobal ? 'Global' : 'Local'} plugin ${chalk.green(plugin.name)}`;
+  const updateMsg = `${startMsg} has an update available (${chalk.green(plugin.currentVersion)} => ${chalk.green(plugin.latestVersion)})!`;
+  const canInstall = plugin.preferGlobal ? await pathAccessible(plugin.meta.filePath, fs.constants.W_OK) : true;
+
+  if (canInstall) {
+    let p: Plugin | undefined;
+
+    if (ionicPlugin.distTag !== plugin.distTag) {
+      p = await promptToInstallPlugin(env, plugin.name, {
+        message: `${startMsg} has a different dist-tag (${chalk.green('@' + plugin.distTag)}) than the Ionic CLI (${chalk.green('@' + ionicPlugin.distTag)}). Would you like to install the appropriate plugin version?`,
+        reinstall: true,
+      });
+    } else {
+      p = await promptToInstallPlugin(env, plugin.name, {
+        message: `${updateMsg} Would you like to install it?`,
+        reinstall: true,
+      });
     }
 
-    const plugin = env.plugins[pluginName];
-    const pluginInfo = await getPluginInfo(env, plugin);
+    if (p) {
+      uninstallPlugin(env, plugin);
+      installPlugin(env, p);
+      env.log.ok(`Upgraded ${chalk.green(plugin.name)} to ${chalk.green(plugin.latestVersion)}! 🎉`);
+      return true;
+    }
 
-    if (plugin.preferGlobal) {
-      const pluginInstallCmd = chalk.green((await pkgInstallPluginArgs(env, plugin.name, { global: true })).join(' '));
+    env.log.ok(`Not automatically updating ${chalk.green(plugin.name)}. You can update manually:\n\n${chalk.green(pluginInstallArgs.join(' '))}\n`);
+  } else {
+    env.log.info(updateMsg);
+    env.log.nl();
+    env.log.warn(
+      `No write permissions for global ${chalk.bold('node_modules')}--automatic global plugin updates are disabled.\n` +
+      `To fix, see ${chalk.bold('https://docs.npmjs.com/getting-started/fixing-npm-permissions')}\n`
+    );
+  }
 
-      if (ionicPluginInfo.distTag === pluginInfo.distTag) {
-        if (pluginInfo.updateAvailable) {
-          env.log.warn(`Globally installed CLI Plugin ${chalk.green(plugin.name + '@' + chalk.bold(plugin.version))} has an update available (${chalk.green.bold(pluginInfo.latestVersion)})! Please upgrade:\n\n    ${pluginInstallCmd}\n\n`);
-        }
-      } else {
-        env.log.warn(`Globally installed CLI Plugin ${chalk.green(plugin.name + chalk.bold('@' + pluginInfo.distTag))} has a different dist-tag than the Ionic CLI (${chalk.green.bold('@' + ionicPluginInfo.distTag)}).\n` +
-                     `Please install the matching plugin version:\n\n    ${pluginInstallCmd}\n\n`);
-      }
-    } else {
-      const installedPluginPkg = chalk.green(plugin.name + '@' + chalk.bold(plugin.version));
-      const pluginInstallCmd = chalk.green((await pkgInstallPluginArgs(env, plugin.name)).join(' '));
+  return false;
+}
 
-      if (ionicPluginInfo.distTag === pluginInfo.distTag) {
-        if (pluginInfo.updateAvailable) {
-          updates.push(pluginName);
+export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> {
+  const allPlugins = await Promise.all(Object.keys(env.plugins).map(n => hydratePlugin(env, env.plugins[n])));
+  const ionicPlugin = allPlugins.find(p => p.name === 'ionic');
 
-          if (warnonly) {
-            env.log.warn(`Locally installed CLI Plugin ${installedPluginPkg} has an update available (${chalk.green.bold(pluginInfo.latestVersion)})! Please upgrade:\n\n    ${pluginInstallCmd}\n\n`);
-          } else {
-            const p = await promptToInstallPlugin(env, plugin.name, {
-              message: `Locally installed CLI Plugin ${installedPluginPkg} has an update available (${chalk.green.bold(pluginInfo.latestVersion)})! Would you like to install it and continue?`,
-              reinstall: true,
-            });
+  if (!ionicPlugin) {
+    throw new FatalException('Ionic plugin not initialized.');
+  }
 
-            if (p) {
-              uninstallPlugin(env, plugin);
-              installPlugin(env, p);
-            }
-          }
-        }
-      } else {
-        env.log.warn(`Locally installed CLI Plugin ${chalk.green(plugin.name + chalk.bold('@' + pluginInfo.distTag))} has a different dist-tag than the Ionic CLI (${chalk.green.bold('@' + ionicPluginInfo.distTag)}).\n` +
-          `Please install the matching plugin version:\n\n    ${pluginInstallCmd}\n\n`);
-        updates.push(pluginName);
+  if (ionicPlugin.updateAvailable) {
+    await facilitateIonicUpdate(env, ionicPlugin);
+  }
+
+  const plugins = allPlugins.filter(p => p.name !== 'ionic');
+  const updates: string[] = [];
+
+  for (let plugin of plugins) {
+    if (plugin.updateAvailable || ionicPlugin.distTag !== plugin.distTag) {
+      const installed = await facilitatePluginUpdate(env, ionicPlugin, plugin);
+
+      if (installed) {
+        updates.push(plugin.name);
       }
     }
   }
@@ -291,7 +341,7 @@ async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Pr
   const config = await env.config.load();
   const distTag = determineDistTag(plugin.version);
 
-  if (config.cliFlags['dev-always-updates']) {
+  if (plugin.name === 'ionic' && config.cliFlags['dev-always-ionic-updates'] || plugin.name !== 'ionic' && config.cliFlags['dev-always-plugin-updates']) {
     return '999.999.999';
   }
 

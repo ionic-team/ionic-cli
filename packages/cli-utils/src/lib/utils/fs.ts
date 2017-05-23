@@ -147,12 +147,16 @@ export function copyFile(fileName: string, target: string, mode: number = 0o777)
   });
 }
 
-export async function pathExists(filePath: string): Promise<boolean> {
+export async function pathAccessible(filePath: string, mode: number): Promise<boolean> {
   try {
-    await fsAccess(filePath, fs.constants.F_OK);
+    await fsAccess(filePath, mode);
   } catch (e) {
     return false;
   }
 
   return true;
+}
+
+export async function pathExists(filePath: string): Promise<boolean> {
+  return pathAccessible(filePath, fs.constants.F_OK);
 }
