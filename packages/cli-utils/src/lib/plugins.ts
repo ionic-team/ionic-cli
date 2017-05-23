@@ -346,11 +346,10 @@ async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Pr
     return plugin.version;
   }
 
-  env.log.debug(`Checking for latest plugin version of ${chalk.bold(plugin.name + '@' + distTag)}.`);
+  env.log.debug(`Checking for latest plugin version of ${chalk.green(plugin.name + '@' + distTag)}.`);
 
   // TODO: might belong in utils/npm.ts
   const cmdResult = await env.shell.run('npm', ['view', plugin.name, `dist-tags.${distTag}`, '--json'], { showCommand: false });
-  env.log.debug(`Latest version of ${chalk.bold(plugin.name + '@' + distTag)} is ${cmdResult}.`);
 
   if (!cmdResult) {
     return plugin.version;
@@ -361,6 +360,8 @@ async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Pr
   if (!latestVersion) {
     return plugin.version;
   }
+
+  env.log.debug(`Latest version of ${chalk.green(plugin.name + '@' + distTag)} is ${latestVersion.trim()}.`);
 
   return latestVersion.trim();
 }
