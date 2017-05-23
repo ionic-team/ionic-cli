@@ -189,7 +189,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
     });
 
     if (confirm) {
-      const [ installer, ...installerArgs ] = await pkgInstallPluginArgs(env, pluginName);
+      const [ installer, ...installerArgs ] = await pkgInstallPluginArgs(env, pluginName, { global });
       await env.shell.run(installer, installerArgs, {});
       m = await loadPlugin(env, pluginName, { askToInstall: false });
     } else {
@@ -270,7 +270,7 @@ async function facilitateIonicUpdate(env: IonicEnvironment, ionicPlugin: Hydrate
 }
 
 async function facilitatePluginUpdate(env: IonicEnvironment, ionicPlugin: HydratedPlugin, plugin: HydratedPlugin): Promise<boolean> {
-  const pluginInstallArgs = await pkgInstallPluginArgs(env, plugin.name, {});
+  const pluginInstallArgs = await pkgInstallPluginArgs(env, plugin.name, { global: plugin.preferGlobal });
   const startMsg = `${plugin.preferGlobal ? 'Global' : 'Local'} plugin ${chalk.green(plugin.name)}`;
   const updateMsg = `${startMsg} has an update available (${chalk.green(plugin.currentVersion)} => ${chalk.green(plugin.latestVersion)})!`;
   const canInstall = plugin.preferGlobal ? await pathAccessible(plugin.meta.filePath, fs.constants.W_OK) : true;
