@@ -39,9 +39,9 @@ import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
   description: 'Create a new project',
   exampleCommands: [
     '',
-    'mynewapp blank',
-    'mynewapp tabs --type=ionic-angular',
-    'mynewapp blank --type=ionic1'
+    'myApp blank',
+    'myApp tabs --type=ionic-angular',
+    'myApp blank --type=ionic1'
   ],
   inputs: [
     {
@@ -81,6 +81,12 @@ import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
       name: 'cordova',
       description: 'Include Cordova integration',
       type: Boolean,
+    },
+    {
+      name: 'git',
+      description: 'Do not initialize a git repo',
+      type: Boolean,
+      default: true,
     },
     {
       name: 'skip-link',
@@ -161,7 +167,7 @@ export class StartCommand extends Command implements CommandPreRun {
     let cloudAppId = <string>options['cloud-app-id'] || '';
     let starterBranchName = <string>options['starterBranchName'] || 'master';
     let wrapperBranchName = <string>options['wrapperBranchName'] || 'master';
-    let projectRoot: string;
+    let gitIntegration = false;
 
     if (!isProjectNameValid(projectName)) {
       throw `Please name your Ionic project something meaningful other than ${chalk.red(projectName)}`;
@@ -187,9 +193,11 @@ export class StartCommand extends Command implements CommandPreRun {
         if (!cmdInstalled) {
           if (dep === 'cordova') {
             const cdvInstallArgs = await pkgInstallArgs(this.env, 'cordova', { global: true });
-            throw this.exit(`Cordova CLI not found on your PATH. Please install Cordova globally (you may need ${chalk.green('sudo')}):\n\n` +
-                            `${chalk.green(cdvInstallArgs.join(' '))}\n\n` +
-                            `If that doesn't work, see the installation docs: https://cordova.apache.org/docs/en/latest/guide/cli/#installing-the-cordova-cli`);
+            throw this.exit(
+              `Cordova CLI not found on your PATH. Please install Cordova globally (you may need ${chalk.green('sudo')}):\n\n` +
+              `${chalk.green(cdvInstallArgs.join(' '))}\n\n` +
+              `If that doesn't work, see the installation docs: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/cli/#installing-the-cordova-cli')}`
+            );
           } else {
             throw this.exit(`Sorry, ${chalk.green(dep)} is a global dependency, but it was not found on your PATH.`);
           }
@@ -197,9 +205,24 @@ export class StartCommand extends Command implements CommandPreRun {
       }
     }
 
-    projectRoot = path.resolve(projectName);
+    if (options['git']) {
+      const cmdInstalled = await getCommandInfo('git', ['--version']);
+
+      if (cmdInstalled) {
+        gitIntegration = true;
+      } else {
+        this.env.log.warn(
+          'Git CLI not found on your PATH. You may wish to install it to version control your app.\n' +
+          `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}\n\n` +
+          `Use ${chalk.green('--no-git')} to disable this warning.\n`
+        );
+      }
+    }
+
+    const projectRoot = path.resolve(projectName);
     projectName = path.basename(projectRoot);
 
+    const shellOptions = { cwd: projectRoot };
     const projectExists = await pathExists(projectName);
 
     // Create the project directory
@@ -285,10 +308,9 @@ export class StartCommand extends Command implements CommandPreRun {
       // Install local dependencies
 
       this.env.log.info('Installing dependencies may take several minutes!');
-      const o = { cwd: projectRoot };
 
       const [ installer, ...installerArgs ] = await pkgInstallArgs(this.env, undefined);
-      await this.env.shell.run(installer, installerArgs, o);
+      await this.env.shell.run(installer, installerArgs, shellOptions);
 
       if (options['cordova']) {
         starterType.localDependencies.push('@ionic/cli-plugin-cordova');
@@ -298,8 +320,14 @@ export class StartCommand extends Command implements CommandPreRun {
 
       for (let dep of starterType.localDependencies) {
         const [ installer, ...installerArgs ] = await pkgInstallPluginArgs(this.env, dep);
-        await this.env.shell.run(installer, installerArgs, o);
+        await this.env.shell.run(installer, installerArgs, shellOptions);
       }
+    }
+
+    if (gitIntegration) {
+      await this.env.shell.run('git', ['init'], shellOptions);
+      await this.env.shell.run('git', ['add', '-A'], shellOptions);
+      await this.env.shell.run('git', ['commit', '-m', 'Initial commit'], shellOptions);
     }
 
     // Print out hello text about how to get started
