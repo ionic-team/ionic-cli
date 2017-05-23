@@ -276,21 +276,15 @@ async function facilitatePluginUpdate(env: IonicEnvironment, ionicPlugin: Hydrat
   const canInstall = plugin.preferGlobal ? await pathAccessible(plugin.meta.filePath, fs.constants.W_OK) : true;
 
   if (canInstall) {
-    let p: Plugin | undefined;
+    const message = ionicPlugin.distTag === plugin.distTag ?
+      `${updateMsg} Would you like to install it?` :
+      `${startMsg} has a different dist-tag (${chalk.green('@' + plugin.distTag)}) than the Ionic CLI (${chalk.green('@' + ionicPlugin.distTag)}). Would you like to install the appropriate plugin version?`;
 
-    if (ionicPlugin.distTag !== plugin.distTag) {
-      p = await promptToInstallPlugin(env, plugin.name, {
-        message: `${startMsg} has a different dist-tag (${chalk.green('@' + plugin.distTag)}) than the Ionic CLI (${chalk.green('@' + ionicPlugin.distTag)}). Would you like to install the appropriate plugin version?`,
-        reinstall: true,
-        global: plugin.preferGlobal,
-      });
-    } else {
-      p = await promptToInstallPlugin(env, plugin.name, {
-        message: `${updateMsg} Would you like to install it?`,
-        reinstall: true,
-        global: plugin.preferGlobal,
-      });
-    }
+    const p = await promptToInstallPlugin(env, plugin.name, {
+      message,
+      reinstall: true,
+      global: plugin.preferGlobal,
+    });
 
     if (p) {
       uninstallPlugin(env, plugin);
