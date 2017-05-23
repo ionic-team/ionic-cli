@@ -270,14 +270,14 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
     this.env.tasks.end();
 
-    // Print out all images that were not processed
-    this.env.log.info(
-      imagesTooLargeForSource.map(imageResource => (
-        `    ${chalk.bold(imageResource.name)}     ${imageResource.platform}/${imageResource.resType} needed ${imageResource.width}w x ${imageResource.height}h`
-      ))
-      .concat((imagesTooLargeForSource.length > 0) ? `\nThe following images were not created because their source image was too small:` : [])
-      .reverse()
-      .join('\n')
-    );
+    // All images that were not processed
+    if (imagesTooLargeForSource.length > 0) {
+      const imagesTooLargeForSourceMsg = imagesTooLargeForSource
+        .map(imageResource => `    ${chalk.bold(imageResource.name)}     ${imageResource.platform}/${imageResource.resType} needed ${imageResource.width}w x ${imageResource.height}h`)
+        .concat((imagesTooLargeForSource.length > 0) ? `\nThe following images were not created because their source image was too small:` : [])
+        .reverse();
+
+      this.env.log.info(imagesTooLargeForSourceMsg.join('\n'));
+    }
   }
 }
