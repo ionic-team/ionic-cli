@@ -23,7 +23,8 @@ const CREATE_NEW_APP_CHOICE = 'createNewApp';
   inputs: [
     {
       name: 'app_id',
-      description: `The ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`
+      description: `The ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
+      required: false,
     }
   ],
 })
