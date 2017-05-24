@@ -13,12 +13,16 @@ export const CORDOVA_INTENT = 'CORDOVA';
  */
 export function filterArgumentsForCordova(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
   const results = filterOptionsByIntent(metadata, options, CORDOVA_INTENT);
-  const args = minimistOptionsToArray(results, { useEquals: false });
+  const args = minimistOptionsToArray(results, { useEquals: false, allowCamelCase: true });
   let unparsedCdvArgs: string[] = [];
   const indexOfSep = inputs.indexOf('--');
 
   if (indexOfSep >= 0) {
     unparsedCdvArgs = inputs.splice(indexOfSep);
+  }
+
+  if (metadata.inputs) {
+    inputs = inputs.slice(0, metadata.inputs.length);
   }
 
   return [metadata.name].concat(inputs, args, unparsedCdvArgs);

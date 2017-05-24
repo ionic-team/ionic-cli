@@ -5,7 +5,7 @@ import { CommandHookArgs, minimistOptionsToArray } from '@ionic/cli-utils';
 import { load } from './lib/modules';
 
 export async function build(args: CommandHookArgs): Promise<void> {
-  const appScriptsArgs = minimistOptionsToArray(args.options);
+  const appScriptsArgs = minimistOptionsToArray(args.options, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
   const AppScripts = load('@ionic/app-scripts');

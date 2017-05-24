@@ -12,7 +12,7 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
     return [];
   }
 
-  const appScriptsArgs = minimistOptionsToArray(args.options);
+  const appScriptsArgs = minimistOptionsToArray(args.options, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
   const ionicAngularPackageJsonFilePath = path.resolve(args.env.project.directory, 'node_modules', 'ionic-angular', 'package.json'); // TODO
