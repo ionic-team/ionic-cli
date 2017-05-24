@@ -66,10 +66,9 @@ development on [Github](https://github.com/driftyco/ionic-cli).
 
 ## Installation
 
-Please make sure
-[Node](https://ionicframework.com/docs/resources/what-is/#node) 6+ and
-[NPM](https://ionicframework.com/docs/resources/what-is/#npm) 3+ are
-installed.
+Please make sure latest
+[Node](https://ionicframework.com/docs/resources/what-is/#node) 6 LTS and
+[NPM](https://ionicframework.com/docs/resources/what-is/#npm) 3+ are installed.
 
 Then, install the CLI globally (you may need sudo):
 

@@ -17,7 +17,7 @@ issues on GitHub should be reserved for bug reports and feature requests.
 
 ## Requirements
 
-* Node 6+
+* Node 6 LTS (latest)
 * npm 3+
 
 ## Install
