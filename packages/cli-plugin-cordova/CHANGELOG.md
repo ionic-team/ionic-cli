@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.1"></a>
+## [1.2.1](https://github.com/driftyco/ionic-cli/compare/@ionic/cli-plugin-cordova@1.2.0...@ionic/cli-plugin-cordova@1.2.1) (2017-05-24)
+
+
+### Bug Fixes
+
+* **cordova:** fix arg parser ([94db925](https://github.com/driftyco/ionic-cli/commit/94db925))
+* **cordova:** show cordova cli output for build/compile/prepare ([a960c5a](https://github.com/driftyco/ionic-cli/commit/a960c5a))
+
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/driftyco/ionic-cli/compare/@ionic/cli-plugin-cordova@1.1.2...@ionic/cli-plugin-cordova@1.2.0) (2017-05-23)
 
