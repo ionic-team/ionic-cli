@@ -302,6 +302,7 @@ export interface ConfigFile {
     interactive?: boolean;
     telemetry?: boolean;
     yarn?: boolean;
+    timeout?: boolean;
   };
 }
 
