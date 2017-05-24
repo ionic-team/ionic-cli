@@ -109,6 +109,7 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
       options: generateBuildOptions(this.metadata, options)
     });
 
-    await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options));
+    const response = await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options));
+    this.env.log.msg(response);
   }
 }

@@ -43,6 +43,7 @@ export class CompileCommand extends CordovaCommand implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     // ensure the content node was set back to its original
     await resetConfigXmlContentSrc(this.env.project.directory);
-    await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options));
+    const response = await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options));
+    this.env.log.msg(response);
   }
 }

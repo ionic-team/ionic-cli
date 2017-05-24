@@ -54,6 +54,7 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);
 
-    await this.env.shell.run('cordova', filterArgumentsForCordova(this.metadata, inputs, options), {});
+    const response = await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), {});
+    this.env.log.msg(response);
   }
 }
