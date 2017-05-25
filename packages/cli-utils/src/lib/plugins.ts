@@ -99,13 +99,36 @@ export async function loadPlugins(env: IonicEnvironment) {
 
   const proxyPluginPkg = formatFullPluginName('proxy');
   const [ , proxyVar ] = getGlobalProxy();
-  if (proxyVar && !(proxyPluginPkg in env.plugins)) {
-    const proxyInstallArgs = await pkgInstallArgs(env, proxyPluginPkg, { global: true });
-    env.log.warn(
-      `Detected ${chalk.green(proxyVar)} in environment, but to proxy CLI requests,\n` +
-      `you'll need ${chalk.green(proxyPluginPkg)} installed globally:\n\n` +
-      `    ${chalk.green(proxyInstallArgs.join(' '))}\n`
-    );
+
+  if (proxyVar) {
+    env.log.debug(`Detected ${chalk.green(proxyVar)} in environment`);
+
+    if (!(proxyPluginPkg in env.plugins)) {
+      const meta = env.plugins.ionic.meta;
+
+      if (!meta) {
+        throw new FatalException(`${chalk.green('ionic')} missing meta information`);
+      }
+
+      console.log(meta.filePath);
+      const canInstall = await pathAccessible(meta.filePath, fs.constants.W_OK);
+      const proxyInstallArgs = await pkgInstallArgs(env, proxyPluginPkg, { global: true });
+      const updateMsg = `Detected ${chalk.green(proxyVar)} in environment, but to proxy CLI requests, you'll need ${chalk.green(proxyPluginPkg)} installed globally.`;
+
+      if (canInstall) {
+        const p = await promptToInstallPlugin(env, proxyPluginPkg, {
+          message: `${updateMsg} Install now?`,
+          reinstall: true,
+          global: true,
+        });
+
+        if (p) {
+          installPlugin(env, p);
+        }
+      } else {
+        env.log.warn(`${updateMsg}\nYou can install it manually (you will likely need ${chalk.green('sudo')}):\n\n${chalk.green(proxyInstallArgs.join(' '))}\n`);
+      }
+    }
   }
 
   if (!env.project.directory) {
@@ -165,7 +188,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
     message = `The plugin ${chalk.green(pluginName)} is not installed. Would you like to install it and continue?`;
   }
 
-  env.log.debug(`Load ${global ? 'global' : 'local'} plugin ${chalk.green(pluginName)}`);
+  env.log.debug(`Loading ${global ? 'global' : 'local'} plugin ${chalk.green(pluginName)}`);
 
   try {
     mResolvedPath = require.resolve(mPath);
