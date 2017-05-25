@@ -9,7 +9,7 @@
     "ionic": "./bin/ionic"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=6.4.0"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
