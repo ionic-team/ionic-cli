@@ -169,6 +169,8 @@ export class StartCommand extends Command implements CommandPreRun {
     let wrapperBranchName = <string>options['wrapperBranchName'] || 'master';
     let gitIntegration = false;
 
+    const config = await this.env.config.load();
+
     if (!isProjectNameValid(projectName)) {
       throw `Please name your Ionic project something meaningful other than ${chalk.red(projectName)}`;
     }
@@ -271,14 +273,16 @@ export class StartCommand extends Command implements CommandPreRun {
     this.env.tasks.end();
     this.env.log.info(`Fetching app base (${chalk.dim(wrapperBranchPath)})`);
     const d1Task = this.env.tasks.next('Downloading');
-    await tarXvfFromUrl(wrapperBranchPath, projectRoot, { progress: (loaded, total) => {
+    const timeout = config.cliFlags.timeout ? 25000 : 0;
+
+    await tarXvfFromUrl(wrapperBranchPath, projectRoot, timeout, { progress: (loaded, total) => {
       d1Task.progress(loaded, total);
     }});
 
     this.env.tasks.end();
     this.env.log.info(`Fetching starter template ${chalk.bold(starterTemplateName.toString())} (${chalk.dim(starterBranchPath)})`);
     const d2Task = this.env.tasks.next('Downloading');
-    await tarXvfFromUrl(starterBranchPath, extractDir, { progress: (loaded, total) => {
+    await tarXvfFromUrl(starterBranchPath, extractDir, timeout, { progress: (loaded, total) => {
       d2Task.progress(loaded, total);
     }});
 
@@ -287,7 +291,7 @@ export class StartCommand extends Command implements CommandPreRun {
       this.env.tasks.end();
       this.env.log.info(`Fetching resources (${chalk.dim(resourcesPath)})`);
       const d3Task = this.env.tasks.next('Downloading');
-      await tarXvfFromUrl(resourcesPath, path.join(projectRoot, 'resources'), { progress: (loaded, total) => {
+      await tarXvfFromUrl(resourcesPath, path.join(projectRoot, 'resources'), timeout, { progress: (loaded, total) => {
         d3Task.progress(loaded, total);
       }});
     }
@@ -301,8 +305,6 @@ export class StartCommand extends Command implements CommandPreRun {
     await createProjectConfig(appName, starterType, projectRoot, cloudAppId);
 
     this.env.tasks.end();
-
-    const config = await this.env.config.load();
 
     if (!options['skip-deps']) {
       // Install local dependencies

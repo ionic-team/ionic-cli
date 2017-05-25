@@ -162,6 +162,8 @@ The behavior that these flags set is remembered in the CLI config file.
   non-confirmation (default) of confirmation prompts. *Careful*: the CLI
   prompts before doing something potentially harmful. Auto-confirming may have
   unintended results.
+* `--timeout` / `--no-timeout`: Switch between timeout (default)
+  and non-timeout mode. In non-timeout mode, all requests timeout are disabled.
 
 ## Service Proxies
 

@@ -92,6 +92,8 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     // check that config file config.xml exists
     const configJson = await parseConfigXmlToJson(this.env.project.directory);
 
+    const config = await this.env.config.load();
+
     const resourceJsonStructure = await getResourceConfigJson();
     this.env.log.debug(`resourceJsonStructure=${Object.keys(resourceJsonStructure).length}`);
 
@@ -188,7 +190,8 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
     // Upload images to service to prepare for resource transformations
     let imageUploadResponses: ImageUploadResponse[];
-    imageUploadResponses = await uploadSourceImages(srcImagesAvailable);
+    const timeout = config.cliFlags.timeout ? 25000 : 0;
+    imageUploadResponses = await uploadSourceImages(srcImagesAvailable, timeout);
     this.env.log.debug(`${chalk.green('uploadSourceImages')} completed - responses=${JSON.stringify(imageUploadResponses, null, 2)}`);
 
     srcImagesAvailable = srcImagesAvailable.map((img: SourceImage, index): SourceImage => {
@@ -222,7 +225,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     let count = 0;
 
     const promiseList = imgResources.map(async (img, index): Promise<void> => {
-      await transformResourceImage(img);
+      await transformResourceImage(img, timeout);
       count += 1;
       this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`);
     });
