@@ -157,7 +157,7 @@ The behavior that these flags set is remembered in the CLI config file.
 
 * `--interactive` / `--no-interactive`: Switch between interactive (default)
   and non-interactive mode. In non-interactive mode, the spinner and all
-  prompts are disabled.
+  prompts are disabled (useful for CI/CD servers).
 * `--confirm` / `--no-confirm`: Switch between auto-confirmation and
   non-confirmation (default) of confirmation prompts. *Careful*: the CLI
   prompts before doing something potentially harmful. Auto-confirming may have
