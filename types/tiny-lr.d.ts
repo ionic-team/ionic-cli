@@ -1,5 +1,5 @@
 declare module "tiny-lr" {
-  namespace tinyLr {}
+  namespace tinyLr { }
   interface server {
     on: Function;
     listen: Function;
