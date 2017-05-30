@@ -26,9 +26,6 @@ bug fixes are welcome any time.
 
 #### Local Setup
 
-:memo: *Note: The setup instructions may not work for Windows yet--please see
-[#2225](https://github.com/driftyco/ionic-cli/issues/2225).*
-
 ##### Structure
 
 Our CLI is organized into a single multi-package repository. Common tools, such
