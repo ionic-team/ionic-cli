@@ -36,10 +36,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/driftyco/ionic-cli.git"
+    "url": "https://github.com/ionic-team/ionic-cli.git"
   },
   "bugs": {
-    "url": "https://github.com/driftyco/ionic-cli/issues"
+    "url": "https://github.com/ionic-team/ionic-cli/issues"
   },
   "files": [
     "bin/",

@@ -5,7 +5,7 @@ http://ionicworldwide.herokuapp.com/
 
 **Note: for build related issues you can open up an issue on the ionic-app-scripts repo**
 
-https://github.com/driftyco/ionic-app-scripts
+https://github.com/ionic-team/ionic-app-scripts
 
 Please ensure that you are on the latest version of the CLI.
 `npm view ionic@latest version`

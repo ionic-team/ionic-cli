@@ -6,5 +6,5 @@ The Ionic command line interface (CLI) is your go-to tool for developing
 Use the `ionic help` command for more detailed task information.
 
 For details, please see the project
-[README.md](https://github.com/driftyco/ionic-cli/blob/master/README.md) on
+[README.md](https://github.com/ionic-team/ionic-cli/blob/master/README.md) on
 Github.

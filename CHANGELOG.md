@@ -7,27 +7,27 @@ in `@ionic/cli-plugin-cordova`, etc.
 
 **Global**:
 
-* [`ionic`](https://github.com/driftyco/ionic-cli/blob/master/packages/ionic)
-  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/ionic/CHANGELOG.md)):
+* [`ionic`](https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md)):
   The CLI executable.
-* [`@ionic/cli-utils`](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-utils)
-  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-utils/CHANGELOG.md)):
+* [`@ionic/cli-utils`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-utils)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-utils/CHANGELOG.md)):
   The CLI utilities library.
-* [`@ionic/cli-plugin-proxy`](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-proxy)
-  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-proxy/CHANGELOG.md)):
+* [`@ionic/cli-plugin-proxy`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-proxy)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-proxy/CHANGELOG.md)):
   The plugin for proxying CLI requests through a firewall.
 
 **Local** (per project):
 
-* [`@ionic/cli-plugin-cordova`](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-cordova)
-  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-cordova/CHANGELOG.md)):
+* [`@ionic/cli-plugin-cordova`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-cordova)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-cordova/CHANGELOG.md)):
   The plugin for Cordova integration. Essential for an Ionic/Cordova app.
-* [`@ionic/cli-plugin-ionic-angular`](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-ionic-angular)
-  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-ionic-angular/CHANGELOG.md)):
+* [`@ionic/cli-plugin-ionic-angular`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic-angular)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic-angular/CHANGELOG.md)):
   The project plugin for Ionic Angular projects. Provides useful build tools
   and generators.
-* [`@ionic/cli-plugin-ionic1`](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-ionic1)
-  ([CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/packages/cli-plugin-ionic1/CHANGELOG.md)):
+* [`@ionic/cli-plugin-ionic1`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic1)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic1/CHANGELOG.md)):
   The project plugin for Ionic 1 that has functionality ported from the legacy
   CLI.
 
@@ -40,10 +40,10 @@ in `@ionic/cli-plugin-cordova`, etc.
 #### Required Changes
 
 * If you're using Ionic Deploy, you'll need to update
-  [`ionic-plugin-deploy`](https://github.com/driftyco/ionic-plugin-deploy) to
+  [`ionic-plugin-deploy`](https://github.com/ionic-team/ionic-plugin-deploy) to
   the latest version. See
-  [#2237](https://github.com/driftyco/ionic-cli/issues/2237) and
-  [driftyco/ionic-plugin-deploy#122](https://github.com/driftyco/ionic-plugin-deploy/issues/122).
+  [#2237](https://github.com/ionic-team/ionic-cli/issues/2237) and
+  [ionic-team/ionic-plugin-deploy#122](https://github.com/ionic-team/ionic-plugin-deploy/issues/122).
 
 #### Removed Commands
 
@@ -61,7 +61,7 @@ in `@ionic/cli-plugin-cordova`, etc.
   [Dashboard](https://apps.ionic.io/).
 * `config`: Please manually edit the `ionic.config.json` file.
 * `service`: Please migrate your app to use the [Ionic Cloud
-  Client](https://github.com/driftyco/ionic-cloud).
+  Client](https://github.com/ionic-team/ionic-cloud).
 * `state`: The plugins and platforms can [be managed entirely by
   Cordova](https://cordova.apache.org/docs/en/latest/platform_plugin_versioning_ref/).
   Please remove the `cordovaPlatforms` and `cordovaPlugins` keys from your
@@ -86,11 +86,11 @@ in `@ionic/cli-plugin-cordova`, etc.
   command usage.
 * `generate` command has been overhauled to interactively generate components,
   pages, directives, etc. It uses the power of
-  [app-scripts](https://github.com/driftyco/ionic-app-scripts/) to hook up
+  [app-scripts](https://github.com/ionic-team/ionic-app-scripts/) to hook up
   generated entities to your app. In the future, generators will continue to be
   expanded upon.
 
 ## Older Changes
 
 Older changes (CLI 2 and before) can be viewed in the `2.x` branch's
-[CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/2.x/CHANGELOG.md).
+[CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/2.x/CHANGELOG.md).

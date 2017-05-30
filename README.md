@@ -13,7 +13,7 @@ Page](https://ionicframework.com/support) for general support questions. The
 issues on GitHub should be reserved for bug reports and feature requests.
 
 :heart: **Want to contribute?**: Please see
-[CONTRIBUTING.md](https://github.com/driftyco/ionic-cli/blob/master/CONTRIBUTING.md).
+[CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/master/CONTRIBUTING.md).
 
 ## Requirements
 
@@ -51,7 +51,7 @@ see below.
 
 Here is a brief summary of changes in CLI 3. For more details and reasoning,
 see
-[CHANGELOG.md](https://github.com/driftyco/ionic-cli/blob/master/CHANGELOG.md).
+[CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md).
 
 * Removed commands: `setup`, `share`, `lib`, `io`, `security`, `push`,
   `config`, `service`, `add`, `remove`, `list`, `hooks`, `state`.
@@ -65,12 +65,12 @@ see
 
 ## Starter Templates
 
-* [blank](https://github.com/driftyco/ionic2-starter-blank)
-* [tabs](https://github.com/driftyco/ionic2-starter-tabs)
-* [sidemenu](https://github.com/driftyco/ionic2-starter-sidemenu)
-* [conference](https://github.com/driftyco/ionic-conference-app)
-* [tutorial](https://github.com/driftyco/ionic2-starter-tutorial)
-* [super](https://github.com/driftyco/ionic-starter-super)
+* [blank](https://github.com/ionic-team/ionic2-starter-blank)
+* [tabs](https://github.com/ionic-team/ionic2-starter-tabs)
+* [sidemenu](https://github.com/ionic-team/ionic2-starter-sidemenu)
+* [conference](https://github.com/ionic-team/ionic-conference-app)
+* [tutorial](https://github.com/ionic-team/ionic2-starter-tutorial)
+* [super](https://github.com/ionic-team/ionic-starter-super)
 
 ```bash
 $ ionic start --list
@@ -237,7 +237,7 @@ The old version of the CLI can be installed with the `legacy` tag:
 npm install -g ionic@legacy
 ```
 
-[circle-badge]: https://circleci.com/gh/driftyco/ionic-cli.svg?style=shield
-[circle-badge-url]: https://circleci.com/gh/driftyco/ionic-cli
+[circle-badge]: https://circleci.com/gh/ionic-team/ionic-cli.svg?style=shield
+[circle-badge-url]: https://circleci.com/gh/ionic-team/ionic-cli
 [npm-badge]: https://img.shields.io/npm/v/ionic.svg
 [npm-badge-url]: https://www.npmjs.com/package/ionic
