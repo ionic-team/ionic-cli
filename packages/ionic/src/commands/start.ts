@@ -295,7 +295,7 @@ export class StartCommand extends Command implements CommandPreRun {
     }});
 
     if (options['type'] === 'ionic1') {
-      const resourcesPath = 'https://github.com/driftyco/ionic-default-resources/archive/master.tar.gz';
+      const resourcesPath = 'https://github.com/ionic-team/ionic-default-resources/archive/master.tar.gz';
       this.env.tasks.end();
       this.env.log.info(`Fetching resources (${chalk.dim(resourcesPath)})`);
       const d3Task = this.env.tasks.next('Downloading');
