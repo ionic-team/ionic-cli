@@ -14,6 +14,11 @@ import {
   name: 'list',
   type: 'project',
   description: 'List your cloud builds',
+  longDescription: `
+Ionic Package makes it easy to build a native binary of your app in the cloud.
+
+Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/services/package/')}
+  `,
   exampleCommands: [''],
 })
 export class PackageListCommand extends Command {

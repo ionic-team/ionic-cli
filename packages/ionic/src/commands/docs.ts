@@ -9,9 +9,6 @@ import {
 
 import { load } from '../lib/modules';
 
-/**
- * Metadata about the docs command
- */
 @CommandMetadata({
   name: 'docs',
   type: 'global',

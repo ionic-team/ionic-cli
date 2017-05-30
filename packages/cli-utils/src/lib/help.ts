@@ -1,5 +1,6 @@
 import * as chalk from 'chalk';
 import * as stringWidth from 'string-width';
+import * as wrapAnsi from 'wrap-ansi';
 
 import {
   CommandData,
@@ -12,9 +13,12 @@ import {
 import { isCommand } from '../guards';
 import { validators } from './validators';
 import { CLI_FLAGS } from './config';
-import { generateFillSpaceStringList } from './utils/format';
+import { indent, generateFillSpaceStringList } from './utils/format';
 
-const HELP_DOTS_WIDTH = 20;
+const MIN_TTY_WIDTH = 80;
+const MAX_TTY_WIDTH = 120;
+const TTY_WIDTH = Math.max(MIN_TTY_WIDTH, Math.min(process.stdout.columns || 0, MAX_TTY_WIDTH));
+const HELP_DOTS_WIDTH = 25;
 
 export async function showHelp(env: IonicEnvironment, inputs: string[]) {
   // If there are no inputs then show global command details.
@@ -55,8 +59,8 @@ async function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, in
   const formatList = (details: string[]) => details.map(hd => `    ${hd}\n`).join('');
 
   if (ns.root) {
-    const globalCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'global']);
-    const projectCommandDetails = getHelpDetails(env, globalMetadata, [(cmd: CommandData) => cmd.type === 'project']);
+    const globalCommandDetails = getHelpDetails(env, globalMetadata, [cmd => cmd.type === 'global']);
+    const projectCommandDetails = getHelpDetails(env, globalMetadata, [cmd => cmd.type === 'project']);
 
     return `${formatHeader(env)}\n\n` +
       `  ${chalk.bold('Usage')}:\n\n` +
@@ -78,7 +82,7 @@ async function formatUsage(env: IonicEnvironment) {
   const options = ['--help', '--verbose', '--quiet'];
   const usageLines = [
     `<command> ${options.map(opt => chalk.dim('[' + opt + ']')).join(' ')} ${chalk.dim('[<args>] [options]')}`,
-    `${cliFlags.map(f => chalk.dim('[' + f + ']')).join(' ')}`,
+    wordWrap(`${cliFlags.map(f => chalk.dim('[' + f + ']')).join(' ')}`, { indentation: 12 }),
   ];
 
   return usageLines.map(u => `    ${chalk.dim('$')} ${chalk.green('ionic ' + u)}`).join('\n') + '\n';
@@ -108,8 +112,11 @@ async function formatCommandHelp(env: IonicEnvironment, cmdMetadata: CommandData
     cmdMetadata.fullName = cmdMetadata.name;
   }
 
+  const displayCmd = 'ionic ' + cmdMetadata.fullName;
+  const wrappedDescription = wordWrap(cmdMetadata.description, { indentation: displayCmd.length + 5 });
+
   return `
-  ${chalk.bold(cmdMetadata.description)}
+  ${chalk.bold(chalk.green(displayCmd) + ' - ' + wrappedDescription)}${formatLongDescription(cmdMetadata.longDescription)}
   ` +
   (await formatCommandUsage(env, cmdMetadata.inputs, cmdMetadata.fullName)) +
   formatCommandInputs(cmdMetadata.inputs) +
@@ -120,12 +127,11 @@ async function formatCommandHelp(env: IonicEnvironment, cmdMetadata: CommandData
 function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[] {
   const fillStringArray = generateFillSpaceStringList(cmdMetadataList.map(cmdMd => cmdMd.fullName || cmdMd.name), HELP_DOTS_WIDTH, chalk.dim('.'));
 
-  return cmdMetadataList.map((cmdMd, index) =>
-    `${chalk.green(cmdMd.fullName || '')} ` +
-    `${fillStringArray[index]} ` +
-    `${cmdMd.description}` +
-    `${cmdMd.aliases && cmdMd.aliases.length > 0 ? ' (alias' + (cmdMd.aliases.length === 1 ? '' : 'es') + ': ' + cmdMd.aliases.map((a) => chalk.green(a)).join(', ') + ')' : ''}`
-  );
+  return cmdMetadataList.map((cmdMd, index) => {
+    const description = cmdMd.description + `${cmdMd.aliases && cmdMd.aliases.length > 0 ? chalk.dim(' (alias' + (cmdMd.aliases.length === 1 ? '' : 'es') + ': ') + cmdMd.aliases.map((a) => chalk.green(a)).join(', ') + chalk.dim(')') : ''}`;
+    const wrappedDescription = wordWrap(description, { indentation: HELP_DOTS_WIDTH + 6 });
+    return `${chalk.green(cmdMd.fullName || '')} ${fillStringArray[index]} ${wrappedDescription}`;
+  });
 }
 
 async function formatCommandUsage(env: IonicEnvironment, inputs: CommandInput[] = [], commandName: string) {
@@ -135,10 +141,10 @@ async function formatCommandUsage(env: IonicEnvironment, inputs: CommandInput[] 
       return '<' + input.name + '>';
     }
 
-    return '[' + input.name + ']';
+    return '[<' + input.name + '>]';
   };
 
-  const usageLine = `$ ${chalk.green('ionic ' + commandName + ' ' + inputs.map(formatInput).join(' '))}`;
+  const usageLine = `${chalk.dim('$')} ${chalk.green('ionic ' + commandName + ' ' + inputs.map(formatInput).join(' '))}`;
 
   return `
   ${chalk.bold('Usage')}:
@@ -147,17 +153,29 @@ async function formatCommandUsage(env: IonicEnvironment, inputs: CommandInput[] 
   `;
 }
 
+function formatLongDescription(longDescription?: string) {
+  if (!longDescription) {
+    return '';
+  }
+
+  longDescription = longDescription.trim();
+  longDescription = wordWrap(longDescription, { indentation: 4 });
+
+  return '\n\n    ' + longDescription;
+}
+
 function formatCommandInputs(inputs: CommandInput[] = []): string {
   if (inputs.length === 0) {
     return '';
   }
 
-  const fillStrings = generateFillSpaceStringList(inputs.map(input => input.name), 25, chalk.dim('.'));
+  const fillStrings = generateFillSpaceStringList(inputs.map(input => input.name), HELP_DOTS_WIDTH, chalk.dim('.'));
 
   function inputLineFn({ name, description}: CommandOption, index: number) {
     const optionList = chalk.green(`${name}`);
+    const wrappedDescription = wordWrap(description, { indentation: HELP_DOTS_WIDTH + 6 });
 
-    return `${optionList} ${fillStrings[index]} ${description}`;
+    return `${optionList} ${fillStrings[index]} ${wrappedDescription}`;
   }
 
   return `
@@ -176,6 +194,10 @@ function formatOptionDefault(opt: CommandOption) {
   }
 }
 
+function wordWrap(description: string, { indentation = 0, append = '' }: { indentation?: number, append?: string }) {
+  return wrapAnsi(description, TTY_WIDTH - indentation - append.length).split('\n').join(`${append}\n${indent(indentation)}`);
+}
+
 function formatOptionLine(opt: CommandOption) {
   const showInverse = opt.type === Boolean && opt.default === true && opt.name.length > 1;
   const optionList = (showInverse ? chalk.green(`--no-${opt.name}`) : chalk.green(`-${opt.name.length > 1 ? '-' : ''}${opt.name}`)) +
@@ -185,9 +207,10 @@ function formatOptionLine(opt: CommandOption) {
       .join(', ') : '');
 
   const optionListLength = stringWidth(optionList);
-  const fullLength = optionListLength > 25 ? optionListLength + 1 : 25;
+  const fullLength = optionListLength > HELP_DOTS_WIDTH ? optionListLength + 1 : HELP_DOTS_WIDTH;
+  const wrappedDescription = wordWrap(opt.description + formatOptionDefault(opt), { indentation: HELP_DOTS_WIDTH + 6 });
 
-  return `${optionList} ${Array(fullLength - optionListLength).fill(chalk.dim('.')).join('')} ${opt.description}${formatOptionDefault(opt)}`;
+  return `${optionList} ${Array(fullLength - optionListLength).fill(chalk.dim('.')).join('')} ${wrappedDescription}`;
 }
 
 function formatCommandOptions(options: CommandOption[] = []): string {
@@ -208,7 +231,19 @@ function formatCommandExamples(exampleCommands: string[] | undefined, commandNam
     return '';
   }
 
-  const exampleLines = exampleCommands.map(cmd => `$ ionic ${commandName} ${cmd} `);
+  const exampleLines = exampleCommands.map(cmd => {
+    const sepIndex = cmd.indexOf(' -- ');
+
+    if (sepIndex === -1) {
+      cmd = chalk.green(cmd);
+    } else {
+      cmd = chalk.green(cmd.substring(0, sepIndex)) + cmd.substring(sepIndex);
+    }
+
+    const wrappedCmd = wordWrap(cmd, { indentation: 12, append: ' \\' });
+
+    return `${chalk.dim('$')} ${chalk.green('ionic ' + commandName)} ${wrappedCmd}`;
+  });
 
   return `
   ${chalk.bold('Examples')}:

@@ -22,6 +22,12 @@ import { upload } from '../../lib/upload';
   name: 'build',
   type: 'project',
   description: 'Start a package build',
+  longDescription: `
+Ionic Package makes it easy to build a native binary of your app in the cloud.
+
+Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/services/package/')}
+  `,
+  exampleCommands: ['android', 'ios --profile=dev', 'android --profile=prod --release --prod'],
   inputs: [
     {
       name: 'platform',
@@ -52,7 +58,6 @@ import { upload } from '../../lib/upload';
       description: 'Give the package snapshot a note',
     },
   ],
-  exampleCommands: ['android', 'ios --profile=dev', 'android --profile=prod --release --prod'],
 })
 export class PackageBuildCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {

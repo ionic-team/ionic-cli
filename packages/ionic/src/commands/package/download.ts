@@ -15,6 +15,12 @@ import {
   name: 'download',
   type: 'project',
   description: 'Download your packaged app',
+  longDescription: `
+Ionic Package makes it easy to build a native binary of your app in the cloud.
+
+Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/services/package/')}
+  `,
+  exampleCommands: ['', '15', '--destination=my-builds'],
   inputs: [
     {
       name: 'id',
@@ -29,7 +35,6 @@ import {
       aliases: ['d'],
     },
   ],
-  exampleCommands: ['', '15', '--destination=my-builds'],
 })
 export class PackageDownloadCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

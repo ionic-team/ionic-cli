@@ -11,15 +11,22 @@ import {
   validators,
 } from '@ionic/cli-utils';
 
+const TYPE_CHOICES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
+
 @CommandMetadata({
   name: 'generate',
   type: 'project',
   description: `Generate pipes, components, pages, directives, providers, and tabs ${chalk.bold(`(ionic-angular >= 3.0.0)`)}`,
-  exampleCommands: ['', 'component', 'directive', 'page', 'pipe', 'provider', 'tabs', 'component foo', 'page Login', 'pipe MyFilterPipe'],
+  longDescription: `
+Automatically create components for your Ionic app.
+
+The given ${chalk.green('name')} is normalized into an appropriate naming convention. For example, ${chalk.green('ionic generate page neat')} creates a page by the name of ${chalk.green('NeatPage')} in ${chalk.green('src/pages/neat/')}.
+  `,
+  exampleCommands: ['', ...TYPE_CHOICES, 'component foo', 'page Login', 'pipe MyFilterPipe'],
   inputs: [
     {
       name: 'type',
-      description: `The type of generator (e.g. ${['page', 'component', 'tabs'].map(t => chalk.green(t)).join(', ')})`,
+      description: `The type of generator (e.g. ${TYPE_CHOICES.map(t => chalk.green(t)).join(', ')})`,
     },
     {
       name: 'name',
@@ -37,7 +44,6 @@ export class GenerateCommand extends Command implements CommandPreRun {
 
     // TODO: specific to Ionic Angular
 
-    const TYPE_CHOICES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
     const hooks = this.env.hooks.getRegistered('command:generate');
 
     if (hooks.length === 0) {

@@ -20,8 +20,11 @@ import { CordovaCommand } from './base';
 @CommandMetadata({
   name: 'platform',
   type: 'project',
-  description: 'Add or remove a platform target for building an Ionic app',
-  exampleCommands: ['add android'],
+  description: 'Manage Cordova platform targets',
+  longDescription: `
+Like running ${chalk.green('cordova platform')} directly, but adds default Ionic icons and splash screen resources (during ${chalk.green('add')}) and provides friendly checks.
+  `,
+  exampleCommands: ['', 'add ios', 'add android', 'rm ios'],
   inputs: [
     {
       name: 'action',

@@ -13,6 +13,13 @@ import {
   name: 'login',
   type: 'global',
   description: 'Login with your Ionic ID',
+  longDescription: `
+Authenticate with Ionic servers and retrieve a user token, which is stored in the CLI config.
+
+Alternatively, set the ${chalk.green('IONIC_EMAIL')} and ${chalk.green('IONIC_PASSWORD')} environment variables, and the CLI will automatically authenticate you.
+
+If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
+  `,
   exampleCommands: ['', 'john@example.com', 'hello@example.com secret'],
   inputs: [
     {

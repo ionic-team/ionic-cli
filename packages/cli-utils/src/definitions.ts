@@ -245,6 +245,7 @@ export interface CommandData {
   name: string;
   type: 'global' | 'project';
   description: string;
+  longDescription?: string;
   exampleCommands?: string[];
   aliases?: string[];
   inputs?: CommandInput[];

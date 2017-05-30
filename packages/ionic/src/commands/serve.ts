@@ -12,7 +12,12 @@ import { load } from '../lib/modules';
 @CommandMetadata({
   name: 'serve',
   type: 'project',
-  description: 'Start a local development server for app dev/testing',
+  description: 'Start a local dev server for app dev/testing',
+  longDescription: `
+Easily spin up a development server which launches in your browser. It watches for changes in your source files and automatically reloads with the updated build.
+
+Try the ${chalk.green('--lab')} option to see multiple platforms at once.
+  `,
   exampleCommands: ['-lcs', '--lab -lcs'],
   options: [
     {

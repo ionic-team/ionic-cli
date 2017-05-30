@@ -8,7 +8,10 @@ import { CORDOVA_RUN_COMMAND_OPTIONS, CordovaRunCommand } from './base';
   name: 'run',
   type: 'project',
   description: 'Run an Ionic project on a connected device',
-  exampleCommands: ['', 'ios', 'ios -lc', 'android --livereload -cs'],
+  longDescription: `
+Like running ${chalk.green('cordova run')} directly, but also watches for changes in web assets and provides live-reload functionality with the ${chalk.green('--livereload')} option.
+  `,
+  exampleCommands: ['', 'ios', 'ios -lcs', 'android --livereload -cs'],
   inputs: [
     {
       name: 'platform',

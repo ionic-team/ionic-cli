@@ -14,6 +14,12 @@ import {
   name: 'info',
   type: 'project',
   description: 'Get info about a build',
+  longDescription: `
+Ionic Package makes it easy to build a native binary of your app in the cloud.
+
+Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/services/package/')}
+  `,
+  exampleCommands: ['', '15'],
   inputs: [
     {
       name: 'id',
@@ -21,7 +27,6 @@ import {
       required: false,
     },
   ],
-  exampleCommands: ['', '15'],
 })
 export class PackageInfoCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

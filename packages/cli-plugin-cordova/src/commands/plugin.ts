@@ -18,7 +18,10 @@ import { CordovaCommand } from './base';
   name: 'plugin',
   type: 'project',
   description: 'Manage Cordova plugins',
-  exampleCommands: ['add cordova-plugin-inappbrowser@latest', 'ls'],
+  longDescription: `
+Like running ${chalk.green('cordova plugin')} directly, but provides friendly checks.
+  `,
+  exampleCommands: ['', 'add cordova-plugin-inappbrowser@latest', 'add phonegap-plugin-push --variable SENDER_ID=XXXXX', 'rm cordova-plugin-camera'],
   inputs: [
     {
       name: 'action',

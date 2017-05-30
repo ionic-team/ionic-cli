@@ -16,6 +16,10 @@ import { CordovaCommand } from './base';
   name: 'prepare',
   type: 'project',
   description: 'Transform metadata to platform manifests and copies assets to Cordova platforms',
+  longDescription: `
+Like running ${chalk.green('cordova prepare')} directly, but provides friendly checks.
+  `,
+  exampleCommands: ['', 'ios', 'android'],
   inputs: [
     {
       name: 'platform',

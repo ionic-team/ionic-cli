@@ -15,6 +15,9 @@ import { CordovaCommand } from './base';
   name: 'compile',
   type: 'project',
   description: 'Compile native platform code',
+  longDescription: `
+Like running ${chalk.green('cordova compile')} directly, but provides friendly checks.
+  `,
   exampleCommands: ['ios'],
   inputs: [
     {

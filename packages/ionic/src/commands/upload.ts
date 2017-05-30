@@ -1,3 +1,5 @@
+import * as chalk from 'chalk';
+
 import {
   Command,
   CommandLineInput,
@@ -12,6 +14,11 @@ import { upload } from '../lib/upload';
   name: 'upload',
   type: 'project',
   description: 'Upload a new snapshot of your app',
+  longDescription: `
+Zips up your local app files and uploads a snapshot to ${chalk.bold('https://apps.ionic.io')}.
+
+From there, you can use Ionic View (${chalk.bold('https://view.ionic.io')}) to easily share your app with your organization and testers around the world.
+  `,
   exampleCommands: [''],
   options: [
     {

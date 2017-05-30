@@ -6,6 +6,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  PROJECT_FILE,
   createFatalAPIFormat,
   isAppResponse,
   isAppsResponse,
@@ -19,6 +20,13 @@ const CREATE_NEW_APP_CHOICE = 'createNewApp';
   name: 'link',
   type: 'project',
   description: 'Connect your local app to Ionic',
+  longDescription: `
+If you have an app on ${chalk.bold('https://apps.ionic.io')}, you can link it to your local Ionic project with this command.
+
+Excluding the ${chalk.green('app_id')} argument looks up your apps on ${chalk.bold('https://apps.ionic.io')} and prompts you to select one.
+
+This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PROJECT_FILE)} for other commands to read.
+  `,
   exampleCommands: ['', 'a1b2c3d4'],
   inputs: [
     {

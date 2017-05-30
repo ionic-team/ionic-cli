@@ -174,7 +174,7 @@ export async function uploadSourceImages(srcImages: SourceImage[], timeout: numb
 
 /**
  * Using the transformation web service transform the provided image resource
- * into the appropiate w x h and then write this file to the provided destination directory.
+ * into the appropriate w x h and then write this file to the provided destination directory.
  */
 export function transformResourceImage(imageResource: ImageResource, timeout: number) {
   return new Promise<void>((resolve, reject) => {

@@ -37,10 +37,18 @@ import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
   name: 'start',
   type: 'global',
   description: 'Create a new project',
+  longDescription: `
+This command creates a working Ionic app. It installs dependencies for you and sets up your project.
+
+${chalk.green('ionic start')} will create an app from a template. You can list all templates with the ${chalk.green('--list')} option.
+
+If you want to create an Ionic/Cordova app, use the ${chalk.green('--cordova')} option.
+  `,
   exampleCommands: [
     '',
+    '--list',
     'myApp blank',
-    'myApp tabs --type=ionic-angular',
+    'myApp tabs --cordova',
     'myApp blank --type=ionic1'
   ],
   inputs: [

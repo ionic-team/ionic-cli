@@ -15,7 +15,16 @@ import { CordovaCommand } from './base';
   name: 'build',
   type: 'project',
   description: 'Build (prepare + compile) an Ionic project for a given platform',
-  exampleCommands: ['ios', 'ios --prod --release', 'android', 'android --prod --release -- -- --minSdkVersion=21', 'android --prod --release -- -- --gradleArg=-PcdvBuildMultipleApks=true'],
+  longDescription: `
+Like running ${chalk.green('cordova build')} directly, but also builds web assets and provides friendly checks.
+  `,
+  exampleCommands: [
+    'ios',
+    'ios --prod --release',
+    'android',
+    'android --prod --release -- -- --minSdkVersion=21',
+    'android --prod --release -- -- --gradleArg=-PcdvBuildMultipleApks=true',
+  ],
   inputs: [
     {
       name: 'platform',
