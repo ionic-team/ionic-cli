@@ -1,4 +1,4 @@
-// Type definitions for SuperAgent v2.0.0
+// Type definitions for SuperAgent v3.5.1
 // Project: https://github.com/visionmedia/superagent
 // Definitions by: Alex Varju <https://github.com/varju/>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
@@ -118,7 +118,7 @@ declare module "superagent" {
         send(): this;
         set(field: string, val: string): this;
         set(field: Object): this;
-        timeout(ms: number): this;
+        timeout(ms: number | Object | { response: number, read: number, deadline: number }): this;
         type(val: string): this;
         unset(field: string): this;
         use(fn: Function): this;
