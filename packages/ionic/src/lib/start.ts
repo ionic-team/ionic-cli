@@ -17,10 +17,10 @@ import {
 
 import { StarterTemplate, StarterTemplateType } from '../definitions';
 
-export function tarXvfFromUrl(url: string, destination: string, timeout: number, { progress }: {  progress?: (loaded: number, total: number) => void }) {
+export function tarXvfFromUrl(url: string, destination: string, timeout: boolean | undefined, { progress }: {  progress?: (loaded: number, total: number) => void }) {
   return new Promise<void>((resolve, reject) => {
     const archiveRequest = createRequest('get', url)
-      .timeout(timeout)
+      .timeout({ response: timeout ? 120000 : 0 })
       .on('response', (res) => {
         if (res.statusCode !== 200) {
           reject(new Error(`Encountered bad status code (${res.statusCode}) for ${url}\n` +

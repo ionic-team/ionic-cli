@@ -303,7 +303,7 @@ describe('@ionic/cli-plugin-cordova', () => {
         imageId: '60278b0fa1d5abf43d07c5ae0f8a0b41'
       }];
 
-      const response = await resources.uploadSourceImages(sourceImages, 0);
+      const response = await resources.uploadSourceImages(sourceImages, false);
       expect(response).toEqual([{
         Error: '',
         Width: 337,
@@ -340,7 +340,7 @@ describe('@ionic/cli-plugin-cordova', () => {
         dest: path.join(__dirname, 'fixtures', 'drawable-land-ldpi-screen.png')
       };
 
-      await resources.transformResourceImage(imgResource, 0);
+      await resources.transformResourceImage(imgResource, false);
 
       expect(cliUtils.writeStreamToFile).toHaveBeenCalledWith(
         createRequestMock, imgResource.dest

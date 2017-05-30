@@ -273,7 +273,7 @@ export class StartCommand extends Command implements CommandPreRun {
     this.env.tasks.end();
     this.env.log.info(`Fetching app base (${chalk.dim(wrapperBranchPath)})`);
     const d1Task = this.env.tasks.next('Downloading');
-    const timeout = config.cliFlags.timeout ? 25000 : 0;
+    const timeout = config.cliFlags.timeout;
 
     await tarXvfFromUrl(wrapperBranchPath, projectRoot, timeout, { progress: (loaded, total) => {
       d1Task.progress(loaded, total);

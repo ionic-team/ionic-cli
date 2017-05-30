@@ -190,7 +190,8 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
     // Upload images to service to prepare for resource transformations
     let imageUploadResponses: ImageUploadResponse[];
-    const timeout = config.cliFlags.timeout ? 25000 : 0;
+    const timeout = config.cliFlags.timeout;
+
     imageUploadResponses = await uploadSourceImages(srcImagesAvailable, timeout);
     this.env.log.debug(`${chalk.green('uploadSourceImages')} completed - responses=${JSON.stringify(imageUploadResponses, null, 2)}`);
 
