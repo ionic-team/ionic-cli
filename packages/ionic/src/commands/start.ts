@@ -337,7 +337,7 @@ export class StartCommand extends Command implements CommandPreRun {
     if (gitIntegration) {
       await this.env.shell.run('git', ['init'], shellOptions);
       await this.env.shell.run('git', ['add', '-A'], shellOptions);
-      await this.env.shell.run('git', ['commit', '-m', 'Initial commit'], shellOptions);
+      await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], shellOptions);
     }
 
     // Print out hello text about how to get started
