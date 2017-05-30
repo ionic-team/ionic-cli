@@ -58,8 +58,8 @@ see
 * Added commands: `signup`.
 * Cordova commands have been namespaced (e.g. `ionic cordova build`, not `ionic
   build`).
-* Many command arguments, options, and flags have changed. Please use `ionic
-  help <commands>` for command usage.
+* Many command arguments, options, and flags have changed. Please use the
+  `--help` option for command usage.
 * `generate` command has been overhauled to interactively generate components,
   pages, etc. Going forward, generators will continue to be improved.
 
@@ -91,7 +91,7 @@ $ ionic serve
 ```bash
 $ npm install -g ionic@latest
 $ npm install --save-dev --save-exact @ionic/cli-plugin-ionic-angular@latest @ionic/cli-plugin-cordova@latest
-$ ionic help
+$ ionic --help
 ```
 
 ## Ionic 1
@@ -110,7 +110,7 @@ $ ionic serve
 ```bash
 $ npm install -g ionic@latest
 $ npm install --save-dev --save-exact @ionic/cli-plugin-ionic1@latest @ionic/cli-plugin-cordova@latest
-$ ionic help
+$ ionic --help
 ```
 
 ## Using Cordova
