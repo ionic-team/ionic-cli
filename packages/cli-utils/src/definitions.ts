@@ -468,7 +468,7 @@ export interface INamespace {
   commands: ICommandMap;
   source: string;
 
-  locate(argv: string[]): [string[], ICommand | INamespace];
+  locate(argv: string[]): [number, string[], ICommand | INamespace];
   getCommandMetadataList(): CommandData[];
 }
 

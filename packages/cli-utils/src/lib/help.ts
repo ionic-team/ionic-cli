@@ -26,7 +26,7 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]) {
     return env.log.msg(await getFormattedHelpDetails(env, env.namespace, inputs));
   }
 
-  let [ slicedInputs, cmdOrNamespace ] = env.namespace.locate(inputs);
+  const [ , slicedInputs, cmdOrNamespace ] = env.namespace.locate(inputs);
 
   if (!isCommand(cmdOrNamespace)) {
     let extra = '';

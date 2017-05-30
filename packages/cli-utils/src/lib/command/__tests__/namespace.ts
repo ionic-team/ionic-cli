@@ -31,14 +31,16 @@ describe('@ionic/cli-utils Namespace', () => {
 
     it('should locate root namespace with no args', () => {
       const ns = new MyNamespace();
-      const [ args, cmdOrNamespace ]  = ns.locate([]);
+      const [ depth, args, cmdOrNamespace ]  = ns.locate([]);
+      expect(depth).toEqual(0);
       expect(args).toEqual([]);
       expect(ns).toBe(cmdOrNamespace);
     });
 
     it('should locate root namespace with args with no commands or namespaces', () => {
       const ns = new MyNamespace();
-      const [ args, cmdOrNamespace ]  = ns.locate(['foo', 'bar']);
+      const [ depth, args, cmdOrNamespace ]  = ns.locate(['foo', 'bar']);
+      expect(depth).toEqual(0);
       expect(args).toEqual(['foo', 'bar']);
       expect(ns).toBe(cmdOrNamespace);
     });
@@ -47,7 +49,8 @@ describe('@ionic/cli-utils Namespace', () => {
       const ns = new MyNamespace();
       const cmd = new FooCommand();
       ns.commands.set('foo', () => cmd);
-      const [ args, cmdOrNamespace ]  = ns.locate(['foo']);
+      const [ depth, args, cmdOrNamespace ]  = ns.locate(['foo']);
+      expect(depth).toEqual(1);
       expect(args).toEqual([]);
       expect(cmd).toBe(cmdOrNamespace);
       expect(cmd.metadata.fullName).toEqual('foo');
@@ -57,7 +60,8 @@ describe('@ionic/cli-utils Namespace', () => {
       const ns = new MyNamespace();
       const foons = new FooNamespace();
       ns.namespaces.set('foo', () => foons);
-      const [ args, cmdOrNamespace ]  = ns.locate(['foo', 'bar']);
+      const [ depth, args, cmdOrNamespace ]  = ns.locate(['foo', 'bar']);
+      expect(depth).toEqual(1);
       expect(args).toEqual(['bar']);
       expect(foons).toBe(cmdOrNamespace);
     });
@@ -68,7 +72,8 @@ describe('@ionic/cli-utils Namespace', () => {
       const cmd = new BarCommand();
       foons.commands.set('bar', () => cmd);
       ns.namespaces.set('foo', () => foons);
-      const [ args, cmdOrNamespace ]  = ns.locate(['foo', 'bar', 'baz']);
+      const [ depth, args, cmdOrNamespace ]  = ns.locate(['foo', 'bar', 'baz']);
+      expect(depth).toEqual(2);
       expect(args).toEqual(['baz']);
       expect(cmd).toBe(cmdOrNamespace);
       expect(cmd.metadata.fullName).toEqual('foo bar');
@@ -81,7 +86,8 @@ describe('@ionic/cli-utils Namespace', () => {
       foons.commands.set('bar', () => cmd);
       foons.commands.set('b', 'bar');
       ns.namespaces.set('foo', () => foons);
-      const [ args, cmdOrNamespace ]  = ns.locate(['foo', 'b', 'baz']);
+      const [ depth, args, cmdOrNamespace ]  = ns.locate(['foo', 'b', 'baz']);
+      expect(depth).toEqual(2);
       expect(args).toEqual(['baz']);
       expect(cmd).toBe(cmdOrNamespace);
       expect(cmd.metadata.fullName).toEqual('foo bar');

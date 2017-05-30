@@ -60,14 +60,14 @@ export class IonicNamespace extends Namespace {
   ]);
 
   async runCommand(env: IonicEnvironment): Promise<void> {
-    let [ inputs, cmdOrNamespace ] = this.locate(env.argv._);
+    let [ depth, inputs, cmdOrNamespace ] = this.locate(env.argv._);
 
     if (cmdOrNamespace === this && KNOWN_PLUGINS.indexOf(inputs[0]) !== -1) {
       const plugin = await promptToInstallPlugin(env, `${ORG_PREFIX}/${PLUGIN_PREFIX}${inputs[0]}`, {});
 
       if (plugin) {
         installPlugin(env, plugin);
-        [ inputs, cmdOrNamespace ] = env.namespace.locate(inputs);
+        [ depth, inputs, cmdOrNamespace ] = env.namespace.locate(inputs);
       }
     }
 
@@ -78,6 +78,7 @@ export class IonicNamespace extends Namespace {
     const command = cmdOrNamespace;
     command.metadata.minimistOpts = metadataToMinimistOptions(command.metadata);
     const options = minimist(env.pargv, command.metadata.minimistOpts);
+    inputs = options._.slice(depth);
     env.argv = options;
     command.env = env;
 

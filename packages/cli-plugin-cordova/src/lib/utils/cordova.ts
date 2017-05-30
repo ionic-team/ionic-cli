@@ -21,10 +21,6 @@ export function filterArgumentsForCordova(metadata: CommandData, inputs: Command
     unparsedCdvArgs = inputs.splice(indexOfSep);
   }
 
-  if (metadata.inputs) {
-    inputs = inputs.slice(0, metadata.inputs.length);
-  }
-
   return [metadata.name].concat(inputs, args, unparsedCdvArgs);
 }
 

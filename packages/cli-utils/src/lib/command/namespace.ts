@@ -47,8 +47,8 @@ export class Namespace implements INamespace {
    * namespaces available to find the command that we will execute or the
    * right-most namespace matched if the command is not found.
    */
-  locate(argv: string[]): [string[], ICommand | INamespace] {
-    function _locate(inputs: string[], ns: INamespace, namespaceDepthList: string[]): [string[], ICommand | INamespace] {
+  locate(argv: string[]): [number, string[], ICommand | INamespace] {
+    function _locate(depth: number, inputs: string[], ns: INamespace, namespaceDepthList: string[]): [number, string[], ICommand | INamespace] {
       const nsgetter = ns.namespaces.get(inputs[0]);
       if (!nsgetter) {
         const commands = ns.commands;
@@ -58,17 +58,17 @@ export class Namespace implements INamespace {
           const cmd = cmdgetter();
           cmd.metadata.source = ns.source;
           cmd.metadata.fullName = [...namespaceDepthList.slice(1), cmd.metadata.name].join(' ');
-          return [inputs.slice(1), cmd];
+          return [depth + 1, inputs.slice(1), cmd];
         }
 
-        return [inputs, ns];
+        return [depth, inputs, ns];
       }
 
       const newNamespace = nsgetter();
-      return _locate(inputs.slice(1), newNamespace, [...namespaceDepthList, newNamespace.name]);
+      return _locate(depth + 1, inputs.slice(1), newNamespace, [...namespaceDepthList, newNamespace.name]);
     }
 
-    return _locate(argv, this, [this.name]);
+    return _locate(0, argv, this, [this.name]);
   }
 
   /**
