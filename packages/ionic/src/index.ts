@@ -128,6 +128,8 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
       bottomBar.close();
     },
 
+    load: loadFromUtils,
+
   };
 }
 
@@ -202,6 +204,8 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
           ienv.log.error('No updates found after plugin error--please report this issue.');
         }
       }
+
+      await ienv.hooks.fire('plugins:init', { env: ienv });
 
       if (configData.cliFlags['dev-always-ionic-updates'] || configData.cliFlags['dev-always-plugin-updates'] || (typeof updates === 'undefined' && now.getTime() - new Date(configData.lastCommand).getTime() >= 3600000)) {
         await checkForUpdates(ienv);

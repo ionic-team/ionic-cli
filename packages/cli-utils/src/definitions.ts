@@ -385,12 +385,14 @@ export interface IHook<T, U> {
 }
 
 export interface IHookEngine {
+  fire(hook: 'plugins:init', args: HookArgs): Promise<void[]>;
   fire(hook: 'command:docs', args: CommandHookArgs): Promise<string[]>;
   fire(hook: 'command:generate', args: CommandHookArgs): Promise<void[]>;
   fire(hook: 'command:info', args: CommandHookArgs): Promise<InfoHookItem[][]>;
   fire(hook: 'command:build', args: CommandHookArgs): Promise<void[]>;
   fire(hook: 'command:serve', args: CommandHookArgs): Promise<{ [key: string]: any }[]>;
 
+  register(source: string, hook: 'plugins:init', listener: (args: HookArgs) => Promise<void>): void;
   register(source: string, hook: 'command:docs', listener: (args: CommandHookArgs) => Promise<string>): void;
   register(source: string, hook: 'command:generate', listener: (args: CommandHookArgs) => Promise<void>): void;
   register(source: string, hook: 'command:info', listener: (args: CommandHookArgs) => Promise<InfoHookItem[]>): void;
@@ -436,6 +438,7 @@ export interface IonicEnvironment {
   namespace: INamespace;
 
   close(): void;
+  load(modulePath: 'superagent'): typeof superagentType;
 }
 
 export interface PluginMeta {
