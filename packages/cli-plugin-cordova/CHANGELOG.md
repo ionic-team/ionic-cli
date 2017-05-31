@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-cordova@1.2.1...@ionic/cli-plugin-cordova@1.3.0) (2017-05-31)
+
+
+### Bug Fixes
+
+* **cordova:** more arg parsing fixes... ([4a75255](https://github.com/ionic-team/ionic-cli/commit/4a75255))
+
+
+
+
 <a name="1.2.1"></a>
 ## [1.2.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-cordova@1.2.0...@ionic/cli-plugin-cordova@1.2.1) (2017-05-24)
 

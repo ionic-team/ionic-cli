@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.3.0"></a>
+# [3.3.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.2.0...ionic@3.3.0) (2017-05-31)
+
+
+### Bug Fixes
+
+* **cordova:** more arg parsing fixes... ([4a75255](https://github.com/ionic-team/ionic-cli/commit/4a75255))
+* **git:** no gpg signing ([5f40324](https://github.com/ionic-team/ionic-cli/commit/5f40324))
+* **proxy:** use env load to ensure shared reference ([8552826](https://github.com/ionic-team/ionic-cli/commit/8552826))
+
+
+
+
 <a name="3.2.0"></a>
 # [3.2.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.1.2...ionic@3.2.0) (2017-05-23)
 
