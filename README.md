@@ -139,7 +139,8 @@ The CLI will look for the following environment variables:
 * `IONIC_CONFIG_DIRECTORY`: Where the CLI config files live. Defaults to
   `~/.ionic`. You may prefer `~/.config/ionic`.
 * `IONIC_HTTP_PROXY`: Set a URL for proxying all CLI requests through. See
-  [Using a Proxy](#using-a-proxy).
+  [Using a Proxy](#using-a-proxy). The CLI will also look for `HTTP_PROXY` and
+  `HTTPS_PROXY`, both of which npm use.
 * `IONIC_EMAIL` / `IONIC_PASSWORD`: For automatic login via environment
   variables.
 
@@ -210,19 +211,18 @@ To proxy CLI requests, you will need to install the global CLI proxy plugin:
 $ npm install -g @ionic/cli-plugin-proxy
 ```
 
-Then, set any of the following environment variables:
+Then, set the following environment variables:
 
 ```bash
-$ export http_proxy=http://internal.proxy.com
-$ export HTTP_PROXY=http://internal.proxy.com
-$ export PROXY=http://internal.proxy.com
+$ export HTTP_PROXY=http://internal.proxy.com # used by npm
+$ export HTTPS_PROXY=https://internal.proxy.com # used by npm
 $ export IONIC_HTTP_PROXY=http://internal.proxy.com
 ```
 
 For example:
 
 ```bash
-$ HTTP_PROXY=http://internal.proxy.com ionic start
+$ HTTPS_PROXY=https://internal.proxy.com ionic start
 ```
 
 ## Ionic Docs
