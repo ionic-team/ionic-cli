@@ -96,7 +96,7 @@ export interface ProjectFile {
   type: ProjectType;
   app_id: string;
   documentRoot?: string; // www folder location (TODO: use this everywhere)
-  watchPatterns?: string[]; // ionic 1 livereload watch config (TODO)
+  watchPatterns?: string[];
   proxies?: ProjectFileProxy[];
 }
 

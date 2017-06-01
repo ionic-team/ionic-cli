@@ -6,6 +6,7 @@ import {
   Command,
   CommandMetadata,
   CommandPreRun,
+  FatalException,
   promptToLogin,
 } from '@ionic/cli-utils';
 
@@ -189,16 +190,20 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     const missingSrcImages = imgResources.filter((imageResource: ImageResource) => imageResource.imageId === null);
     if (missingSrcImages.length > 0) {
       const missingImageText = missingSrcImages
-        .reduce((list: any[], img: ImageResource): any => {
-          let str = `${img.resType}/${img.platform}`;
-          if (list.includes(str)) {
+        .reduce((list: string[], img: ImageResource): string[] => {
+          const str = `${img.platform}/${img.resType}`;
+          if (!list.includes(str)) {
             list.push(str);
           }
           return list;
         }, [])
-        .join('\n');
+        .map(v => chalk.bold(v))
+        .join(', ');
 
-      throw new Error(`Source image files were not found for the following platforms/types: \n${missingImageText}`);
+      throw new FatalException(
+        `Source image files were not found for the following platforms/types: ${missingImageText}\n\n` +
+        `Please review ${chalk.green('--help')}`
+      );
     }
 
     this.env.tasks.next(`Uploading source images to prepare for transformations`);
