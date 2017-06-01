@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "allowUnreachableCode": false,
+    "baseUrl": "./",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "removeComments": true,
+    "strict": true,
+    "target": "es6",
+    "lib": [
+      "es2016"
+    ]
+  },
+  "include": [
+    "../../types/archiver.d.ts",
+    "../../types/dargs.d.ts",
+    "../../types/proxy-middleware.d.ts",
+    "../../types/glob-watcher.d.ts",
+    "../../types/tiny-lr.d.ts",
+    "../../types/cross-spawn.d.ts",
+    "../../types/slice-ansi.d.ts",
+    "../../types/strip-ansi.d.ts",
+    "../../types/string-width.d.ts",
+    "../../types/superagent.d.ts",
+    "../../types/leek.d.ts",
+    "../../types/os-name.d.ts",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/**/__tests__/*.ts"
+  ]
+}
