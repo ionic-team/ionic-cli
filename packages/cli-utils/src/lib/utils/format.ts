@@ -3,6 +3,7 @@ import * as path from 'path';
 
 import * as chalk from 'chalk';
 import * as stringWidth from 'string-width';
+import * as wrapAnsi from 'wrap-ansi';
 
 import { load } from '../modules';
 
@@ -13,6 +14,10 @@ export const ICON_FAILURE = '✖';
 export const SPINNER_FRAMES = process.platform === 'win32' ?
   ['-', '\\', '|', '/'] :
   ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+
+const MIN_TTY_WIDTH = 80;
+const MAX_TTY_WIDTH = 120;
+export const TTY_WIDTH = Math.max(MIN_TTY_WIDTH, Math.min(process.stdout.columns || 0, MAX_TTY_WIDTH));
 
 export function prettyPath(p: string): string {
   p = path.resolve(p);
@@ -39,6 +44,10 @@ export function prettyPath(p: string): string {
 
 export function indent(n: number = 4): string {
   return new Array(n).fill(' ').join('');
+}
+
+export function wordWrap(msg: string, { indentation = 0, append = '' }: { indentation?: number, append?: string }) {
+  return wrapAnsi(msg, TTY_WIDTH - indentation - append.length).split('\n').join(`${append}\n${indent(indentation)}`);
 }
 
 export function generateFillSpaceStringList(list: string[], optimalLength: number = 1, fillCharacter: string = ' '): string[] {

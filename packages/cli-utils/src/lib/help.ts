@@ -1,6 +1,5 @@
 import * as chalk from 'chalk';
 import * as stringWidth from 'string-width';
-import * as wrapAnsi from 'wrap-ansi';
 
 import {
   CommandData,
@@ -13,11 +12,8 @@ import {
 import { isCommand } from '../guards';
 import { validators } from './validators';
 import { CLI_FLAGS } from './config';
-import { indent, generateFillSpaceStringList } from './utils/format';
+import { indent, generateFillSpaceStringList, wordWrap } from './utils/format';
 
-const MIN_TTY_WIDTH = 80;
-const MAX_TTY_WIDTH = 120;
-const TTY_WIDTH = Math.max(MIN_TTY_WIDTH, Math.min(process.stdout.columns || 0, MAX_TTY_WIDTH));
 const HELP_DOTS_WIDTH = 25;
 
 export async function showHelp(env: IonicEnvironment, inputs: string[]) {
@@ -192,10 +188,6 @@ function formatOptionDefault(opt: CommandOption) {
   } else {
     return '';
   }
-}
-
-function wordWrap(description: string, { indentation = 0, append = '' }: { indentation?: number, append?: string }) {
-  return wrapAnsi(description, TTY_WIDTH - indentation - append.length).split('\n').join(`${append}\n${indent(indentation)}`);
 }
 
 function formatOptionLine(opt: CommandOption) {

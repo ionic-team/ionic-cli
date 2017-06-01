@@ -1,11 +1,20 @@
 import * as util from 'util';
 
 import * as chalk from 'chalk';
+import { ChalkStyle } from 'chalk';
 
 import { ILogger, LogLevel, LoggerOptions } from '../../definitions';
 import { isLogLevel, LOG_LEVELS } from '../../guards';
 import { FatalException } from '../errors';
-import { indent } from './format';
+import { indent, wordWrap } from './format';
+
+export const LOGGER_STATUS_COLORS = new Map<LogLevel, ChalkStyle>([
+  ['debug', chalk.magenta.dim],
+  ['info', chalk.gray],
+  ['ok', chalk.green],
+  ['warn', chalk.yellow],
+  ['error', chalk.red],
+]);
 
 export class Logger implements ILogger {
 
@@ -65,40 +74,31 @@ export class Logger implements ILogger {
     return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(this.level);
   }
 
-  private log(level: LogLevel, ...args: any[]): void {
+  private getStatusColor(level: LogLevel): ChalkStyle {
+    const color = LOGGER_STATUS_COLORS.get(level);
+
+    if (!color) {
+      return chalk;
+    }
+
+    return color;
+  }
+
+  private log(level: LogLevel, msg: string): void {
     if (this.shouldLog(level)) {
       let prefix = this.prefix;
 
       if (prefix) {
-        args[0] = util.format(prefix, args[0]);
+        msg = util.format(prefix, msg);
       }
 
-      for (let [i, arg] of args.entries()) {
-        if (typeof arg === 'string') {
-          args[i] = arg.split('\n').map((l, i) => i > 0 ? `${indent(level.length + 2)} ${l}` : l).join('\n');
-        }
-      }
+      msg = wordWrap(msg, { indentation: level.length + 3 }).split('\n').join('\n');
 
-      const status = chalk.bold.bgBlack;
+      const color = this.getStatusColor(level);
+      const status = color.bold.bgBlack;
       const b = chalk.dim;
 
-      switch (level) {
-      case 'debug':
-        this.stream.write(util.format.apply(util, [b('[') + status.dim.magenta('DEBUG') + b(']'), ...args]));
-      break;
-      case 'info':
-        this.stream.write(util.format.apply(util, [b('[') + status.gray('INFO') + b(']'), ...args]));
-        break;
-      case 'ok':
-        this.stream.write(util.format.apply(util, [b('[') + status.green('OK') + b(']'), ...args]));
-        break;
-      case 'warn':
-        this.stream.write(util.format.apply(util, [b('[') + status.yellow('WARN') + b(']'), ...args]));
-        break;
-      case 'error':
-        this.stream.write(util.format.apply(util, [b('[') + status.red('ERROR') + b(']'), ...args]));
-        break;
-      }
+      this.stream.write(util.format.apply(util, [b('[') + status(level.toUpperCase()) + b(']'), msg]));
     }
   }
 }
