@@ -63,15 +63,19 @@ export class Logger implements ILogger {
   }
 
   msg(msg: string): void {
-    this.stream.write(msg);
+    this.stream.write(this.enforceLF(msg));
   }
 
   nl(num: number = 1): void {
-    this.stream.write('\n'.repeat(num));
+    this.stream.write(this.enforceLF('\n'.repeat(num)));
   }
 
   shouldLog(level: LogLevel): boolean {
     return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(this.level);
+  }
+
+  private enforceLF(str: string): string {
+    return str.match(/[\r\n]$/) ? str : str + '\n';
   }
 
   private getStatusColor(level: LogLevel): ChalkStyle {
@@ -93,6 +97,7 @@ export class Logger implements ILogger {
       }
 
       msg = wordWrap(msg, { indentation: level.length + 3 }).split('\n').join('\n');
+      msg = this.enforceLF(msg);
 
       const color = this.getStatusColor(level);
       const status = color.bold.bgBlack;

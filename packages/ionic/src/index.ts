@@ -70,8 +70,14 @@ export function registerHooks(hooks: IHookEngine) {
 export async function generateIonicEnvironment(pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
   const inquirer = loadFromUtils('inquirer');
   const bottomBar = new inquirer.ui.BottomBar();
-  const bottomBarHack = <any>bottomBar;
-  try { bottomBarHack.rl.output.mute(); } catch (e) {} // TODO
+
+  try { // TODO
+    const bottomBarHack = <any>bottomBar;
+    bottomBarHack.rl.output.mute();
+  } catch (e) {
+    console.error('EXCEPTION DURING BOTTOMBAR MANIPULATION', e);
+  }
+
   const log = new Logger({ stream: bottomBar.log });
 
   env['IONIC_CLI_LIB'] = __filename;
@@ -126,6 +132,7 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
     close() {
       tasks.cleanup();
       bottomBar.close();
+      log.stream = process.stdout;
     },
 
     load: loadFromUtils,

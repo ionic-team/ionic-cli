@@ -99,20 +99,24 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
   const liveReloadBrowser = createLiveReloadServer(options);
   await createHttpServer(env.project, options);
 
-  const watch = load('glob-watcher');
+  const chokidar = load('chokidar');
   const projectConfig = await env.project.load();
-  const watcher = watch(projectConfig.watchPatterns || WATCH_PATTERNS);
-  watcher.on('change', async (filePath: string) => {
-    switch (path.extname(filePath)) {
-      case '.scss':
-        if (!options.nosass) {
-          await processSassFile(env, options);
-        }
-        return;
-      default:
-        env.log.info(`[${new Date().toTimeString().slice(0, 8)}] ${filePath} changed`); // TODO: not logging?
-        liveReloadBrowser([filePath]);
+  const watcher = chokidar.watch(projectConfig.watchPatterns || WATCH_PATTERNS, { cwd: env.project.directory });
+  watcher.on('change', (filePath: string) => {
+    env.log.info(`[${new Date().toTimeString().slice(0, 8)}] ${chalk.bold(filePath)} changed`); // TODO: not logging?
+    const ext = path.extname(filePath);
+
+    if (ext === '.scss') {
+      if (!options.nosass) {
+        processSassFile(env, options);
+      }
+    } else {
+      liveReloadBrowser([filePath]);
     }
+  });
+
+  watcher.on('error', (err: Error) => {
+    env.log.error(err.toString());
   });
 
   if (!options.nobrowser || options.lab) {
@@ -124,6 +128,7 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
     const opn = load('opn');
     opn(openOptions.join(''));
   }
+
   return options;
 }
 
@@ -143,6 +148,5 @@ async function processSassFile(env: IonicEnvironment, options: ServerOptions): P
     return;
   }
 
-  await env.shell.run('gulp', ['sass'], { 'cwd': env.project.directory });
+  await env.shell.run('gulp', ['sass'], { cwd: env.project.directory, stdio: 'inherit' });
 }
-
