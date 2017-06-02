@@ -19,74 +19,34 @@ class Spinner {
   }
 }
 
-export class Task implements ITask {
+class Task implements ITask {
   public msg: string;
-  public config: ConfigFile;
   public log: ILogger;
-  public bottomBar: ui.BottomBar;
-
-  public intervalId?: any;
-  public running: boolean = false;
-  public tickedOff: boolean = false;
-  private spinner: Spinner;
+  public running = false;
   public progressRatio = -1;
 
-  constructor({ msg, config, log, bottomBar }: { msg: string, config: ConfigFile, log: ILogger, bottomBar: ui.BottomBar }) {
+  constructor({ msg, log }: { msg: string, log: ILogger }) {
     this.msg = msg;
-    this.config = config;
     this.log = log;
-    this.bottomBar = bottomBar;
-    this.spinner = new Spinner();
   }
 
   start(): this {
-    if (!this.running) {
-      this.intervalId = setInterval(() => { this.tick(); }, 50);
-    }
-
     this.running = true;
-
-    return this;
-  }
-
-  tick(): this {
-    if (this.log.shouldLog('info')) {
-      if (this.config.cliFlags.interactive || !this.tickedOff) {
-        this.bottomBar.updateBottomBar(this.format());
-      }
-    }
-
-    this.tickedOff = true;
 
     return this;
   }
 
   progress(prog: number, total: number): this {
     this.progressRatio = prog / total;
-    this.tick();
-
     return this;
   }
 
-  format(): string {
-    const progress = this.progressRatio >= 0 ? (this.progressRatio * 100).toFixed(2) : '';
-    const frame = this.config.cliFlags.interactive ? this.spinner.frame() : ICON_ELLIPSIS;
-    return `${chalk.bold(frame)} ${this.msg}${progress ? ' (' + chalk.bold(String(progress) + '%') + ')' : ''} `;
-  }
-
   clear(): this {
-    clearInterval(this.intervalId);
-
-    if (this.log.shouldLog('info')) {
-      this.bottomBar.updateBottomBar('');
-    }
-
     return this;
   }
 
   end(): this {
     this.running = false;
-    this.tick();
     this.clear();
 
     return this;
@@ -118,26 +78,25 @@ export class Task implements ITask {
 }
 
 export class TaskChain implements ITaskChain {
-  public config: ConfigFile;
   public log: ILogger;
-  public bottomBar: ui.BottomBar;
 
-  protected currentTask?: Task;
-  public tasks: ITask[];
+  protected currentTask?: ITask;
+  protected tasks: ITask[];
 
-  constructor({ config, log, bottomBar }: { config: ConfigFile, log: ILogger, bottomBar: ui.BottomBar }) {
-    this.config = config;
+  constructor({ log }: { log: ILogger }) {
     this.log = log;
-    this.bottomBar = bottomBar;
     this.tasks = [];
   }
 
-  next(msg: string): Task {
+  next(msg: string): ITask {
+    return this._next(new Task({ msg, log: this.log }));
+  }
+
+  protected _next(task: ITask): ITask {
     if (this.currentTask) {
       this.currentTask.succeed();
     }
 
-    const task = new Task({ msg, config: this.config, log: this.log, bottomBar: this.bottomBar });
     this.tasks.push(task);
     this.currentTask = task;
 
@@ -181,4 +140,80 @@ export class TaskChain implements ITaskChain {
 
     return this;
   }
+}
+
+class InteractiveTask extends Task {
+  public bottomBar: ui.BottomBar;
+
+  public intervalId?: any;
+  private spinner: Spinner;
+
+  constructor({ msg, log, bottomBar }: { msg: string, log: ILogger, bottomBar: ui.BottomBar }) {
+    super({ msg, log });
+    this.bottomBar = bottomBar;
+    this.spinner = new Spinner();
+  }
+
+  start(): this {
+    if (!this.running) {
+      this.intervalId = setInterval(() => { this.tick(); }, 50);
+    }
+
+    super.start();
+
+    return this;
+  }
+
+  tick(): this {
+    if (this.log.shouldLog('info')) {
+      this.bottomBar.updateBottomBar(this.format());
+    }
+
+    return this;
+  }
+
+  progress(prog: number, total: number): this {
+    super.progress(prog, total);
+    this.tick();
+
+    return this;
+  }
+
+  format(): string {
+    const progress = this.progressRatio >= 0 ? (this.progressRatio * 100).toFixed(2) : '';
+    const frame = this.spinner.frame();
+    return `${chalk.bold(frame)} ${this.msg}${progress ? ' (' + chalk.bold(String(progress) + '%') + ')' : ''} `;
+  }
+
+  clear(): this {
+    clearInterval(this.intervalId);
+
+    if (this.log.shouldLog('info')) {
+      this.bottomBar.updateBottomBar('');
+    }
+
+    return this;
+  }
+
+  end(): this {
+    this.tick();
+    super.end();
+
+    return this;
+  }
+
+}
+
+export class InteractiveTaskChain extends TaskChain {
+  public bottomBar: ui.BottomBar;
+
+  constructor({ log, bottomBar }: { log: ILogger, bottomBar: ui.BottomBar }) {
+    super({ log });
+    this.bottomBar = bottomBar;
+  }
+
+  next(msg: string): ITask {
+    return this._next(new InteractiveTask({ msg, log: this.log, bottomBar: this.bottomBar }));
+  }
+
 }

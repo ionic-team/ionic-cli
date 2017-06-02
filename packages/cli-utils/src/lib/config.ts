@@ -203,28 +203,24 @@ export class Config extends BaseConfig<ConfigFile> {
   }
 }
 
-export async function handleCliFlags(env: IonicEnvironment) {
-  const config = await env.config.load();
-  const enableTelemetry = config.cliFlags.telemetry;
+export async function handleCliFlags(config: IConfig<ConfigFile>, argv: { [key: string]: any }): Promise<[CliFlag, boolean][]> {
+  const changedFlags: [CliFlag, boolean][] = [];
+  const configData = await config.load();
+  const enableTelemetry = configData.cliFlags.telemetry;
 
   for (let cliFlag of CLI_FLAGS) {
     const { flag, defaultValue } = cliFlag;
-    const currentValue = config.cliFlags[flag];
-    const newValue = env.argv[flag];
+    const currentValue = configData.cliFlags[flag];
+    const newValue = argv[flag];
 
     if (typeof newValue === 'boolean') {
-      config.cliFlags[flag] = newValue;
+      configData.cliFlags[flag] = newValue;
 
       if (currentValue !== newValue) {
-        const prettyFlag = chalk.green('--' + (newValue ? '' : 'no-' ) + flag);
-        env.log.info(`CLI Flag ${prettyFlag} saved`);
-
-        if (flag === 'telemetry' && newValue) {
-          env.log.msg('Thank you for making the CLI better! ❤️');
-        } else if (flag === 'confirm' && newValue) {
-          env.log.warn(`Careful with ${prettyFlag}. Some auto-confirmed actions are destructive.`);
-        }
+        changedFlags.push([flag, newValue]);
       }
     }
   }
+
+  return changedFlags;
 }

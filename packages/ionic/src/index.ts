@@ -3,6 +3,9 @@ import * as path from 'path';
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 
+import * as inquirerType from 'inquirer';
+import ui = inquirerType.ui;
+
 import {
   App,
   CONFIG_DIRECTORY,
@@ -11,6 +14,7 @@ import {
   Config,
   HookEngine,
   IHookEngine,
+  InteractiveTaskChain,
   IonicEnvironment,
   Logger,
   PROJECT_FILE,
@@ -68,36 +72,61 @@ export function registerHooks(hooks: IHookEngine) {
 }
 
 export async function generateIonicEnvironment(pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
-  const inquirer = loadFromUtils('inquirer');
-  const bottomBar = new inquirer.ui.BottomBar();
-
-  try { // TODO
-    const bottomBarHack = <any>bottomBar;
-    bottomBarHack.rl.output.mute();
-  } catch (e) {
-    console.error('EXCEPTION DURING BOTTOMBAR MANIPULATION', e);
-  }
-
-  const log = new Logger({ stream: bottomBar.log });
-
   env['IONIC_CLI_LIB'] = __filename;
   env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
   env['IONIC_PROJECT_DIR'] = await getProjectRootDir(process.cwd(), PROJECT_FILE);
 
+  const argv = minimist(pargv, { boolean: true });
+  argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
+
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
-  const project = new Project(env['IONIC_PROJECT_DIR'], PROJECT_FILE);
+  const changedFlags = await handleCliFlags(config, argv);
+
   const configData = await config.load();
 
-  const tasks = new TaskChain({ config: configData, log, bottomBar });
+  let stream: NodeJS.WritableStream;
+  let tasks: TaskChain;
+  let bottomBar: inquirerType.ui.BottomBar | undefined;
+  let log: Logger;
+
+  if (configData.cliFlags['interactive']) {
+    const inquirer = loadFromUtils('inquirer');
+    bottomBar = new inquirer.ui.BottomBar();
+
+    try { // TODO
+      const bottomBarHack = <any>bottomBar;
+      bottomBarHack.rl.output.mute();
+    } catch (e) {
+      console.error('EXCEPTION DURING BOTTOMBAR OUTPUT MUTE', e);
+    }
+
+    stream = bottomBar.log;
+    log = new Logger({ stream });
+    tasks = new InteractiveTaskChain({ log, bottomBar });
+  } else {
+    stream = process.stdout;
+    log = new Logger({ stream });
+    tasks = new TaskChain({ log });
+  }
+
+  for (let [flag, newValue] of changedFlags) {
+    const prettyFlag = chalk.green('--' + (newValue ? '' : 'no-' ) + flag);
+    log.info(`CLI Flag ${prettyFlag} saved`);
+
+    if (flag === 'telemetry' && newValue) {
+      log.msg('Thank you for making the CLI better! ❤️');
+    } else if (flag === 'confirm' && newValue) {
+      log.warn(`Careful with ${prettyFlag}. Some auto-confirmed actions are destructive.`);
+    }
+  }
+
+  const project = new Project(env['IONIC_PROJECT_DIR'], PROJECT_FILE);
   const hooks = new HookEngine();
   const client = new Client(configData.urls.api);
   const telemetry = new Telemetry(config, version);
   const shell = new Shell(tasks, log);
   const session = new Session(config, project, client);
   const app = new App(session, project, client);
-
-  const argv = minimist(pargv, { boolean: true });
-  argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
 
   registerHooks(hooks);
   cliUtilsRegisterHooks(hooks);
@@ -106,8 +135,21 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
     app,
     argv,
     client,
+    close() {
+      tasks.cleanup();
+
+      // instantiating inquirer.ui.BottomBar hangs, so when close() is called,
+      // we close BottomBar streams and replace the log stream with stdout.
+      // This means inquirer shouldn't be used after command execution finishes
+      // (which could happen during long-running processes like serve).
+      if (bottomBar) {
+        bottomBar.close();
+        log.stream = process.stdout;
+      }
+    },
     config,
     hooks,
+    load: loadFromUtils,
     log,
     namespace,
     pargv,
@@ -128,15 +170,6 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
     shell,
     tasks,
     telemetry,
-
-    close() {
-      tasks.cleanup();
-      bottomBar.close();
-      log.stream = process.stdout;
-    },
-
-    load: loadFromUtils,
-
   };
 }
 
@@ -149,7 +182,6 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 
   try {
     const configData = await ienv.config.load();
-    await handleCliFlags(ienv);
 
     if (ienv.argv['log-level']) {
       ienv.log.level = ienv.argv['log-level'];

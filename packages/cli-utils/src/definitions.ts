@@ -32,7 +32,9 @@ export interface ILogger {
 }
 
 export interface ITask {
+  msg: string;
   running: boolean;
+  progressRatio: number;
 
   start(): this;
   progress(prog: number, total: number): this;
