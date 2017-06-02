@@ -84,16 +84,6 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       aliases: ['l'],
     },
     {
-      name: 'nogulp',
-      description: 'Disable gulp',
-      type: Boolean,
-    },
-    {
-      name: 'nosass',
-      description: 'Disable sass',
-      type: Boolean,
-    },
-    {
       name: 'platform',
       description: 'Start serve with a specific platform (ios/android)',
       aliases: ['t'],
