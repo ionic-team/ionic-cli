@@ -95,13 +95,20 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
 }
 
 async function setupServer(env: IonicEnvironment, options: ServerOptions): Promise<{ [key: string]: any }> {
-
   const liveReloadBrowser = createLiveReloadServer(options);
   await createHttpServer(env.project, options);
 
   const chokidar = load('chokidar');
   const projectConfig = await env.project.load();
-  const watcher = chokidar.watch(projectConfig.watchPatterns || WATCH_PATTERNS, { cwd: env.project.directory });
+
+  if (!projectConfig.watchPatterns) {
+    projectConfig.watchPatterns = [];
+  }
+
+  const watchPatterns = [...new Set([...projectConfig.watchPatterns, ...WATCH_PATTERNS])];
+  env.log.debug(`Watch patterns: ${watchPatterns.map(v => chalk.bold(v)).join(', ')}`);
+  const watcher = chokidar.watch(watchPatterns, { cwd: env.project.directory });
+
   watcher.on('change', (filePath: string) => {
     env.log.info(`[${new Date().toTimeString().slice(0, 8)}] ${chalk.bold(filePath)} changed`); // TODO: not logging?
     const ext = path.extname(filePath);
