@@ -4,7 +4,7 @@ import * as minimist from 'minimist';
 import {
   CommandMap,
   IonicEnvironment,
-  KNOWN_PLUGINS,
+  KNOWN_COMMAND_PLUGINS,
   Namespace,
   NamespaceMap,
   ORG_PREFIX,
@@ -62,7 +62,7 @@ export class IonicNamespace extends Namespace {
   async runCommand(env: IonicEnvironment): Promise<void> {
     let [ depth, inputs, cmdOrNamespace ] = this.locate(env.argv._);
 
-    if (cmdOrNamespace === this && KNOWN_PLUGINS.indexOf(inputs[0]) !== -1) {
+    if (cmdOrNamespace === this && KNOWN_COMMAND_PLUGINS.indexOf(inputs[0]) !== -1) {
       const plugin = await promptToInstallPlugin(env, `${ORG_PREFIX}/${PLUGIN_PREFIX}${inputs[0]}`, {});
 
       if (plugin) {

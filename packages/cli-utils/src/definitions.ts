@@ -97,6 +97,7 @@ export interface ProjectFile {
   name: string;
   type: ProjectType;
   app_id: string;
+  gulpFile?: string; // gulpfile.js location, because some people use Gulpfile.js
   documentRoot?: string; // www folder location (TODO: use this everywhere)
   watchPatterns?: string[];
   proxies?: ProjectFileProxy[];

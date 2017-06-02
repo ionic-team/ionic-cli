@@ -6,11 +6,12 @@ import { DistTag, IonicEnvironment, Plugin, HydratedPlugin } from '../definition
 import { isPlugin } from '../guards';
 import { FatalException } from './errors';
 import { load } from './modules';
-import { readDir, pathAccessible } from './utils/fs';
+import { prettyPath } from './utils/format';
+import { readDir, pathAccessible, pathExists } from './utils/fs';
 import { getGlobalProxy } from './http';
 import { PkgInstallOptions, pkgInstallArgs } from './utils/npm';
 
-export const KNOWN_PLUGINS = ['cordova', 'ionic1', 'ionic-angular'];
+export const KNOWN_COMMAND_PLUGINS = ['cordova'];
 export const KNOWN_GLOBAL_PLUGINS = ['proxy'];
 export const KNOWN_PROJECT_PLUGINS = ['ionic1', 'ionic-angular'];
 export const ORG_PREFIX = '@ionic';
@@ -79,6 +80,7 @@ export function uninstallPlugin(env: IonicEnvironment, plugin: Plugin) {
 
 export async function loadPlugins(env: IonicEnvironment) {
   // GLOBAL PLUGINS
+
   const globalPluginPkgs = KNOWN_GLOBAL_PLUGINS.map(formatFullPluginName);
   const globalPluginPromises = globalPluginPkgs.map(async (pkgName) => {
     try {
@@ -98,10 +100,10 @@ export async function loadPlugins(env: IonicEnvironment) {
     }
   }
 
-  const proxyPluginPkg = formatFullPluginName('proxy');
   const [ , proxyVar ] = getGlobalProxy();
 
   if (proxyVar) {
+    const proxyPluginPkg = formatFullPluginName('proxy');
     env.log.debug(`Detected ${chalk.green(proxyVar)} in environment`);
 
     if (!(proxyPluginPkg in env.plugins)) {
@@ -111,14 +113,13 @@ export async function loadPlugins(env: IonicEnvironment) {
         throw new FatalException(`${chalk.green('ionic')} missing meta information`);
       }
 
-      console.log(meta.filePath);
       const canInstall = await pathAccessible(meta.filePath, fs.constants.W_OK);
       const proxyInstallArgs = await pkgInstallArgs(env, proxyPluginPkg, { global: true });
-      const updateMsg = `Detected ${chalk.green(proxyVar)} in environment, but to proxy CLI requests, you'll need ${chalk.green(proxyPluginPkg)} installed globally.`;
+      const installMsg = `Detected ${chalk.green(proxyVar)} in environment, but to proxy CLI requests, you'll need ${chalk.green(proxyPluginPkg)} installed globally.`;
 
       if (canInstall) {
         const p = await promptToInstallPlugin(env, proxyPluginPkg, {
-          message: `${updateMsg} Install now?`,
+          message: `${installMsg} Install now?`,
           reinstall: true,
           global: true,
         });
@@ -127,7 +128,7 @@ export async function loadPlugins(env: IonicEnvironment) {
           installPlugin(env, p);
         }
       } else {
-        env.log.warn(`${updateMsg}\nYou can install it manually (you will likely need ${chalk.green('sudo')}):\n\n${chalk.green(proxyInstallArgs.join(' '))}\n`);
+        env.log.warn(`${installMsg}\nYou can install it manually (you will likely need ${chalk.green('sudo')}):\n\n${chalk.green(proxyInstallArgs.join(' '))}\n`);
       }
     }
   }
@@ -136,16 +137,42 @@ export async function loadPlugins(env: IonicEnvironment) {
     return;
   }
 
+  const project = await env.project.load();
+
   // LOCAL PLUGINS
 
+  const gulpFilePath = path.join(env.project.directory, project.gulpFile || 'gulpfile.js');
   const mPath = path.join(env.project.directory, 'node_modules', '@ionic');
-  const ionicModules = await readDir(mPath);
 
+  const [ gulpFileExists, ionicModules ] = await Promise.all([
+    pathExists(gulpFilePath),
+    readDir(mPath),
+  ]);
+
+  const plugins: Plugin[] = [];
   const pluginPkgs = ionicModules
     .filter(pkgName => pkgName.indexOf(PLUGIN_PREFIX) === 0)
     .map(pkgName => `${ORG_PREFIX}/${pkgName}`);
 
-  const plugins: Plugin[] = [];
+  const gulpPluginPkg = formatFullPluginName('gulp');
+
+  if (gulpFileExists) {
+    env.log.debug(`Detected ${chalk.green(prettyPath(gulpFilePath))} in project directory`);
+
+    if (!pluginPkgs.includes(gulpPluginPkg)) {
+      const gulpPluginInstallArgs = await pkgInstallArgs(env, gulpPluginPkg, {});
+      const installMsg = `Detected ${chalk.green(prettyPath(gulpFilePath))} in project directory, but to integrate gulp with the CLI, you'll need to install ${chalk.green(gulpPluginPkg)}.`;
+      const p = await promptToInstallPlugin(env, gulpPluginPkg, {
+        message: `${installMsg} Install now?`,
+        reinstall: true,
+      });
+
+      if (p) {
+        plugins.push(p);
+      }
+    }
+  }
+
   const pluginPromises = pluginPkgs.map(pkgName => {
     return loadPlugin(env, pkgName, { askToInstall: false });
   });
@@ -157,7 +184,6 @@ export async function loadPlugins(env: IonicEnvironment) {
 
   // TODO: remember the responses of the requests below
 
-  const project = await env.project.load();
   const projectPlugin = formatFullPluginName(project.type);
 
   if (!pluginPkgs.includes(projectPlugin)) {
