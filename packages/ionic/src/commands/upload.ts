@@ -60,12 +60,14 @@ export class UploadCommand extends Command {
     const channelTag = this.resolveChannelTag(options['deploy']);
 
     if (!options['nobuild']) {
+      await this.env.hooks.fire('build:before', { env: this.env });
       await this.env.hooks.fire('command:build', {
         cmd: this,
         env: this.env,
         inputs,
         options,
       });
+      await this.env.hooks.fire('build:after', { env: this.env });
     }
 
     await upload(this.env, { note, channelTag });
