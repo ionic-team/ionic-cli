@@ -10,7 +10,7 @@ import {
   IShellRunOptions,
   fsMkdir,
   pathExists,
-  pkgInstallArgs,
+  pkgManagerArgs,
   prettyPath,
 } from '@ionic/cli-utils';
 
@@ -141,7 +141,7 @@ export class CordovaCommand extends Command {
       return await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, ...options });
     } catch (e) {
       if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
-        const cdvInstallArgs = await pkgInstallArgs(this.env, 'cordova', { global: true });
+        const cdvInstallArgs = await pkgManagerArgs(this.env, { pkg: 'cordova', global: true });
         throw this.exit(
           `The Cordova CLI was not found on your PATH. Please install Cordova globally:\n\n` +
           `${chalk.green(cdvInstallArgs.join(' '))}\n`

@@ -30,18 +30,64 @@ export async function readBowerJsonFile(path: string): Promise<BowerJson> {
   return bowerJson;
 }
 
-export interface PkgInstallOptions extends IShellRunOptions {
-  global?: boolean;
-  link?: boolean;
+interface PkgManagerVocabulary {
+  // commands
+  install: string;
+  bareInstall: string;
+  uninstall: string;
+
+  // flags
+  global: string;
+  save: string;
+  saveDev: string;
+  saveExact: string;
+  nonInteractive: string;
 }
 
-export async function pkgInstallArgs(env: IonicEnvironment, pkg?: string, options: PkgInstallOptions = {}): Promise<string[]> {
+export interface PkgManagerOptions extends IShellRunOptions {
+  command?: 'install' | 'uninstall';
+  pkg?: string;
+  global?: boolean;
+  link?: boolean;
+  save?: boolean;
+  saveDev?: boolean;
+  saveExact?: boolean;
+}
+
+export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerOptions = {}): Promise<string[]> {
+  let vocab: PkgManagerVocabulary;
   const config = await env.config.load();
+
+  if (!options.command) {
+    options.command = 'install';
+  }
+
+  let command: typeof options.command | 'link' | 'unlink' = options.command;
+
+  if (options.link) { // When installing/uninstalling with the link flag, change command
+    if (command === 'install') {
+      command = 'link';
+    } else if (command === 'uninstall') {
+      command = 'unlink';
+    }
+  }
+
+  if (options.global || options.link) { // Turn off all save flags for global context or when using link/unlink
+    options.save = false;
+    options.saveDev = false;
+    options.saveExact = false;
+  } else if (options.pkg && typeof options.save === 'undefined' && typeof options.saveDev === 'undefined') { // Prefer save flag
+    options.save = true;
+  }
+
+  if (options.pkg && typeof options.saveExact === 'undefined') { // For single package installs, prefer to save exact versions
+    options.saveExact = true;
+  }
 
   if (config.cliFlags.yarn) {
     if (!installer) {
       try {
-        await runcmd('yarn', ['--version']); // TODO cache
+        await runcmd('yarn', ['--version']);
         installer = 'yarn';
       } catch (e) {
         if (e.code === 'ENOENT') {
@@ -55,38 +101,58 @@ export async function pkgInstallArgs(env: IonicEnvironment, pkg?: string, option
     installer = 'npm';
   }
 
-  let installerArgs = [];
-
-  // TODO: handle --save, --save-peer, etc
+  const installerArgs: string[] = [];
 
   if (installer === 'npm') {
-    if (pkg) {
-      if (options.link) {
-        installerArgs = ['link', pkg.replace(/(.+)@.+/, '$1')];
-      } else {
-        if (options.global) {
-          installerArgs = ['install', '-g', pkg];
-        } else {
-          installerArgs = ['install', '--save-dev', '--save-exact', pkg];
-        }
-      }
-    } else {
-      installerArgs = ['install'];
+    vocab = { install: 'install', bareInstall: 'install', uninstall: 'uninstall', global: '-g', save: '--save', saveDev: '--save-dev', saveExact: '--save-exact', nonInteractive: '' };
+  } else if (installer === 'yarn') {
+    vocab = { install: 'add', bareInstall: 'install', uninstall: 'remove', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive' };
+
+    if (options.global) { // yarn installs packages globally under the 'global' prefix, instead of having a flag
+      installerArgs.push('global');
     }
   } else {
-    if (pkg) {
-      if (options.link) {
-        installerArgs = ['link', pkg];
-      } else {
-        if (options.global) {
-          installerArgs = ['global', 'add', '--non-interactive', pkg];
-        } else {
-          installerArgs = ['add', '--non-interactive', '--dev', '--exact', pkg];
-        }
-      }
+    throw new Error(`unknown installer: ${installer}`);
+  }
+
+  if (command === 'install') {
+    if (options.pkg) {
+      installerArgs.push(vocab.install);
     } else {
-      installerArgs = ['install', '--non-interactive'];
+      installerArgs.push(vocab.bareInstall);
     }
+  } else if (command === 'uninstall') {
+    installerArgs.push(vocab.uninstall);
+  } else {
+    installerArgs.push(command);
+  }
+
+  if (options.global && vocab.global) {
+    installerArgs.push(vocab.global);
+  }
+
+  if (options.save && vocab.save) {
+    installerArgs.push(vocab.save);
+  }
+
+  if (options.saveDev && vocab.saveDev) {
+    installerArgs.push(vocab.saveDev);
+  }
+
+  if (options.saveExact && vocab.saveExact) {
+    installerArgs.push(vocab.saveExact);
+  }
+
+  if (vocab.nonInteractive) { // Some CLIs offer a flag that disables all interactivity, which we want to opt-into
+    installerArgs.push(vocab.nonInteractive);
+  }
+
+  if (options.pkg) {
+    if (options.link) {
+      options.pkg = options.pkg.replace(/(.+)@.+/, '$1'); // Removes any dist tags in the pkg name, which link/unlink hate
+    }
+
+    installerArgs.push(options.pkg);
   }
 
   return [installer, ...installerArgs];

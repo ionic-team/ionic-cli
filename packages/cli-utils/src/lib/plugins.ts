@@ -9,7 +9,7 @@ import { load } from './modules';
 import { prettyPath } from './utils/format';
 import { readDir, pathAccessible, pathExists } from './utils/fs';
 import { getGlobalProxy } from './http';
-import { PkgInstallOptions, pkgInstallArgs } from './utils/npm';
+import { PkgManagerOptions, pkgManagerArgs } from './utils/npm';
 
 export const KNOWN_COMMAND_PLUGINS = ['cordova'];
 export const KNOWN_GLOBAL_PLUGINS = ['proxy'];
@@ -114,7 +114,7 @@ export async function loadPlugins(env: IonicEnvironment) {
       }
 
       const canInstall = await pathAccessible(meta.filePath, fs.constants.W_OK);
-      const proxyInstallArgs = await pkgInstallArgs(env, proxyPluginPkg, { global: true });
+      const proxyInstallArgs = await pkgManagerArgs(env, { pkg: proxyPluginPkg, global: true });
       const installMsg = `Detected ${chalk.green(proxyVar)} in environment, but to proxy CLI requests, you'll need ${chalk.green(proxyPluginPkg)} installed globally.`;
 
       if (canInstall) {
@@ -160,7 +160,7 @@ export async function loadPlugins(env: IonicEnvironment) {
     env.log.debug(`Detected ${chalk.green(prettyPath(gulpFilePath))} in project directory`);
 
     if (!pluginPkgs.includes(gulpPluginPkg)) {
-      const gulpPluginInstallArgs = await pkgInstallArgs(env, gulpPluginPkg, {});
+      const gulpPluginInstallArgs = await pkgManagerArgs(env, { pkg: gulpPluginPkg, saveDev: true });
       const installMsg = `Detected ${chalk.green(prettyPath(gulpFilePath))} in project directory, but to integrate gulp with the CLI, you'll need to install ${chalk.green(gulpPluginPkg)}.`;
       const p = await promptToInstallPlugin(env, gulpPluginPkg, {
         message: `${installMsg} Install now?`,
@@ -315,7 +315,7 @@ async function facilitateIonicUpdate(env: IonicEnvironment, ionicPlugin: Hydrate
     if (confirm) {
       const [ installer, ...installerArgs ] = ionicInstallArgs;
       await env.shell.run(installer, installerArgs, {});
-      const revertArgs = await pkgInstallArgs(env, `ionic@${ionicPlugin.currentVersion}`, { global: true });
+      const revertArgs = await pkgManagerArgs(env, { pkg: `ionic@${ionicPlugin.currentVersion}`, global: true });
       env.log.nl();
       env.log.ok(`Upgraded Ionic CLI to ${chalk.green(ionicPlugin.latestVersion)}! 🎉`);
       env.log.nl();
@@ -441,7 +441,7 @@ async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Pr
   return latestVersion.trim();
 }
 
-export async function pkgInstallPluginArgs(env: IonicEnvironment, name: string, options: PkgInstallOptions = {}): Promise<string[]> {
+export async function pkgInstallPluginArgs(env: IonicEnvironment, name: string, options: PkgManagerOptions = {}): Promise<string[]> {
   const releaseChannelName = determineDistTag(env.plugins.ionic.version);
   let pluginInstallVersion = `${name}@${releaseChannelName}`;
 
@@ -450,7 +450,10 @@ export async function pkgInstallPluginArgs(env: IonicEnvironment, name: string, 
     pluginInstallVersion = name;
   }
 
-  return pkgInstallArgs(env, pluginInstallVersion, options);
+  options.pkg = pluginInstallVersion;
+  options.saveDev = true;
+
+  return pkgManagerArgs(env, options);
 }
 
 export function determineDistTag(version: string): DistTag {

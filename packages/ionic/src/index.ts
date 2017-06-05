@@ -34,7 +34,7 @@ import {
   load as loadFromUtils,
   loadPlugins,
   pathExists,
-  pkgInstallArgs,
+  pkgManagerArgs,
   registerHooks as cliUtilsRegisterHooks,
 } from '@ionic/cli-utils';
 
@@ -214,7 +214,7 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
 
         if (confirm) {
           ienv.log.info('Installing dependencies may take several minutes!');
-          const [ installer, ...installerArgs ] = await pkgInstallArgs(ienv, undefined);
+          const [ installer, ...installerArgs ] = await pkgManagerArgs(ienv, { command: 'install' });
           await ienv.shell.run(installer, installerArgs, {});
         }
       }

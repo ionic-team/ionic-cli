@@ -1,7 +1,16 @@
 import * as path from 'path';
 
 import * as chalk from 'chalk';
-import { FatalException, IonicEnvironment, IHookEngine, PROJECT_FILE, getCommandInfo, prettyPath } from '@ionic/cli-utils';
+import {
+  FatalException,
+  IHookEngine,
+  IonicEnvironment,
+  PROJECT_FILE,
+  getCommandInfo,
+  pkgInstallPluginArgs,
+  pkgManagerArgs,
+  prettyPath,
+} from '@ionic/cli-utils';
 
 export const name = '__NAME__';
 export const version = '__VERSION__';
@@ -21,6 +30,24 @@ async function loadGulp(env: IonicEnvironment) {
 
   const gulpFilePath = path.join(env.project.directory, project.gulpFile);
   const gulpPath = path.join(env.project.directory, 'node_modules', 'gulp');
+  const gulpPluginUninstallArgs = await pkgInstallPluginArgs(env, '@ionic/cli-plugin-gulp', { command: 'uninstall' });
+
+  try {
+    _gulpInst = require(gulpPath);
+  } catch (e) {
+    if (e.code !== 'MODULE_NOT_FOUND') {
+      throw e;
+    }
+
+    const gulpInstallArgs = await pkgManagerArgs(env, { pkg: 'gulp', saveDev: true, saveExact: false });
+
+    throw new FatalException(
+      `Gulp is not installed! You can install it locally:\n\n` +
+      `    ${chalk.green(gulpInstallArgs.join(' '))}\n\n` +
+      `Or, if you no longer use gulp, you can remove the CLI Gulp Plugin:\n\n` +
+      `    ${chalk.green(gulpPluginUninstallArgs.join(' '))}`
+    );
+  }
 
   try {
     const gulpFile = require(gulpFilePath);
@@ -33,26 +60,11 @@ async function loadGulp(env: IonicEnvironment) {
       `Gulpfile not found: ${chalk.bold(prettyPath(gulpFilePath))}\n` +
       `You can set the ${chalk.bold('gulpFile')} attribute in ${chalk.bold(PROJECT_FILE)} for custom Gulpfile locations, otherwise the default Ionic Gulpfile can be downloaded from ${chalk.bold('https://github.com/ionic-team/ionic-app-base/blob/master/gulpfile.js')}\n\n` +
       `Or, if you no longer use gulp, you can remove the CLI Gulp Plugin:\n\n` +
-      `    ${chalk.green('npm uninstall @ionic/cli-plugin-gulp')}`
+      `    ${chalk.green(gulpPluginUninstallArgs.join(' '))}`
     );
   }
 
-  try {
-    const gulp = require(gulpPath);
-    _gulpInst = gulp;
-    return gulp;
-  } catch (e) {
-    if (e.code !== 'MODULE_NOT_FOUND') {
-      throw e;
-    }
-
-    throw new FatalException(
-      `Gulp is not installed! You can install it locally:\n\n` +
-      `    ${chalk.green('npm install gulp')}\n\n` +
-      `Or, if you no longer use gulp, you can remove the CLI Gulp Plugin:\n\n` +
-      `    ${chalk.green('npm uninstall @ionic/cli-plugin-gulp')}`
-    );
-  }
+  return _gulpInst;
 }
 
 export function registerHooks(hooks: IHookEngine) {

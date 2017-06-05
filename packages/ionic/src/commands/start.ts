@@ -11,8 +11,8 @@ import {
   fsMkdir,
   getCommandInfo,
   pathExists,
-  pkgInstallArgs,
   pkgInstallPluginArgs,
+  pkgManagerArgs,
   prettyPath,
   rimrafp,
   validators,
@@ -202,7 +202,7 @@ export class StartCommand extends Command implements CommandPreRun {
 
         if (!cmdInstalled) {
           if (dep === 'cordova') {
-            const cdvInstallArgs = await pkgInstallArgs(this.env, 'cordova', { global: true });
+            const cdvInstallArgs = await pkgManagerArgs(this.env, { pkg: 'cordova', global: true });
             throw this.exit(
               `Cordova CLI not found on your PATH. Please install Cordova globally (you may need ${chalk.green('sudo')}):\n\n` +
               `${chalk.green(cdvInstallArgs.join(' '))}\n\n` +
@@ -319,7 +319,7 @@ export class StartCommand extends Command implements CommandPreRun {
 
       this.env.log.info('Installing dependencies may take several minutes!');
 
-      const [ installer, ...installerArgs ] = await pkgInstallArgs(this.env, undefined);
+      const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
 
       if (options['cordova']) {
