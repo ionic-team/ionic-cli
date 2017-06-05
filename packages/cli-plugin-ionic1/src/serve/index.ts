@@ -1,9 +1,18 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
+
+import {
+  CommandHookArgs,
+  IonicEnvironment,
+  findClosestOpenPort,
+  getAvailableIPAddress,
+  minimistOptionsToArray,
+} from '@ionic/cli-utils';
+
 import { stringToInt } from '../utils/helpers';
 import { createHttpServer } from './http-server';
 import { createLiveReloadServer } from './live-reload';
-import { CommandHookArgs, IonicEnvironment, findClosestOpenPort, getAvailableIPAddress, minimistOptionsToArray } from '@ionic/cli-utils';
+
 import {
   DEFAULT_ADDRESS,
   DEFAULT_LIVERELOAD_PORT,
@@ -12,6 +21,7 @@ import {
   ServerOptions,
   WATCH_PATTERNS,
 } from './config';
+
 import { load } from '../lib/modules';
 
 export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any }> {
@@ -99,10 +109,12 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
   const watchPatterns = [...new Set([...projectConfig.watchPatterns, ...WATCH_PATTERNS])];
   env.log.debug(`Watch patterns: ${watchPatterns.map(v => chalk.bold(v)).join(', ')}`);
   const watcher = chokidar.watch(watchPatterns, { cwd: env.project.directory });
+  env.events.emit('watch:init');
 
   watcher.on('change', (filePath: string) => {
     env.log.info(`[${new Date().toTimeString().slice(0, 8)}] ${chalk.bold(filePath)} changed`);
     liveReloadBrowser([filePath]);
+    env.events.emit('watch:change', filePath);
   });
 
   watcher.on('error', (err: Error) => {

@@ -92,6 +92,8 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
 })
 export class ServeCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    await this.env.hooks.fire('watch:before', { env: this.env });
+
     const [ response ] = await this.env.hooks.fire('command:serve', {
       cmd: this,
       env: this.env,
@@ -128,6 +130,8 @@ export class ServeCommand extends Command {
 
       server.bind();
     }
+
+    await this.env.hooks.fire('watch:after', { env: this.env });
 
     this.env.tasks.end();
   }

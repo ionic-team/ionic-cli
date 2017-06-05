@@ -8,6 +8,7 @@ import ui = inquirerType.ui;
 
 import {
   App,
+  CLIEventEmitter,
   CONFIG_DIRECTORY,
   CONFIG_FILE,
   Client,
@@ -148,6 +149,7 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
       }
     },
     config,
+    events: new CLIEventEmitter,
     hooks,
     load: loadFromUtils,
     log,

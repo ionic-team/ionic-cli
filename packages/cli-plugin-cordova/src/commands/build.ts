@@ -112,12 +112,14 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
     // ensure the content node was set back to its original src
     await resetConfigXmlContentSrc(this.env.project.directory);
 
+    await this.env.hooks.fire('build:before', { env: this.env });
     await this.env.hooks.fire('command:build', {
       cmd: this,
       env: this.env,
       inputs,
       options: generateBuildOptions(this.metadata, options)
     });
+    await this.env.hooks.fire('build:after', { env: this.env });
 
     const response = await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options));
     this.env.log.msg(response);

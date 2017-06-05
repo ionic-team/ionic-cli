@@ -202,6 +202,7 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
 
     // If it is not livereload then just run build.
     if (!isLiveReload) {
+      await this.env.hooks.fire('build:before', { env: this.env });
 
       // ensure the content node was set back to its original
       await resetConfigXmlContentSrc(this.env.project.directory);
@@ -211,7 +212,11 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
         inputs,
         options: generateBuildOptions(this.metadata, options),
       });
+
+      await this.env.hooks.fire('build:after', { env: this.env });
     } else {
+      await this.env.hooks.fire('watch:before', { env: this.env });
+
       const serverSettings = (await this.env.hooks.fire('command:serve', {
         cmd: this,
         env: this.env,
@@ -220,6 +225,8 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
       }))[0];
 
       await writeConfigXmlContentSrc(this.env.project.directory, `http://${serverSettings.publicIp}:${serverSettings.httpPort}`);
+
+      await this.env.hooks.fire('watch:after', { env: this.env });
     }
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });

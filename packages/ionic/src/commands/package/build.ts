@@ -145,12 +145,14 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
 
     this.env.tasks.end();
 
+    await this.env.hooks.fire('build:before', { env: this.env });
     await this.env.hooks.fire('command:build', {
       cmd: this,
       env: this.env,
       inputs,
       options: filterOptionsByIntent(this.metadata, options, 'app-scripts'),
     });
+    await this.env.hooks.fire('build:after', { env: this.env });
 
     const snapshotRequest = await upload(this.env, { note });
 

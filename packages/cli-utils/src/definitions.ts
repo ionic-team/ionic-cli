@@ -3,6 +3,9 @@ import * as inquirerType from 'inquirer';
 import * as superagentType from 'superagent';
 import * as minimistType from 'minimist';
 
+import { EventEmitter } from 'events';
+import { FSWatcher } from 'fs';
+
 export interface SuperAgentError extends Error {
   response: superagentType.Response;
 }
@@ -394,6 +397,10 @@ export interface IHookEngine {
   fire(hook: 'command:info', args: CommandHookArgs): Promise<InfoHookItem[][]>;
   fire(hook: 'command:build', args: CommandHookArgs): Promise<void[]>;
   fire(hook: 'command:serve', args: CommandHookArgs): Promise<{ [key: string]: any }[]>;
+  fire(hook: 'build:before', args: HookArgs): Promise<void[]>;
+  fire(hook: 'build:after', args: HookArgs): Promise<void[]>;
+  fire(hook: 'watch:before', args: HookArgs): Promise<void[]>;
+  fire(hook: 'watch:after', args: HookArgs): Promise<void[]>;
 
   register(source: string, hook: 'plugins:init', listener: (args: HookArgs) => Promise<void>): void;
   register(source: string, hook: 'command:docs', listener: (args: CommandHookArgs) => Promise<string>): void;
@@ -401,12 +408,24 @@ export interface IHookEngine {
   register(source: string, hook: 'command:info', listener: (args: CommandHookArgs) => Promise<InfoHookItem[]>): void;
   register(source: string, hook: 'command:build', listener: (args: CommandHookArgs) => Promise<void>): void;
   register(source: string, hook: 'command:serve', listener: (args: CommandHookArgs) => Promise<{ [key: string]: any }>): void;
+  register(source: string, hook: 'build:before', listener: (args: HookArgs) => Promise<void>): void;
+  register(source: string, hook: 'build:after', listener: (args: HookArgs) => Promise<void>): void;
+  register(source: string, hook: 'watch:before', listener: (args: HookArgs) => Promise<void>): void;
+  register(source: string, hook: 'watch:after', listener: (args: HookArgs) => Promise<void>): void;
 
   getSources(hook: string): string[];
   hasSources(hook: string, sources: string[]): boolean;
   deleteSource(source: string): void;
 
   getRegistered<T, U>(hook: string): IHook<T, U>[];
+}
+
+export interface ICLIEventEmitter extends EventEmitter {
+  on(event: 'watch:init', listener: () => void): this;
+  on(event: 'watch:change', listener: (path: string) => void): this;
+
+  emit(event: 'watch:init'): boolean;
+  emit(event: 'watch:change', path: string): boolean;
 }
 
 export interface PromptQuestion extends inquirerType.Question {
@@ -427,6 +446,7 @@ export interface IonicEnvironment {
   hooks: IHookEngine;
   client: IClient;
   config: IConfig<ConfigFile>; // CLI global config (~/.ionic/config.json)
+  events: ICLIEventEmitter;
   log: ILogger;
   prompt: PromptModule;
   project: IProject; // project config (ionic.config.json)

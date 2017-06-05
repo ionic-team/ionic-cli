@@ -11,6 +11,7 @@ export * from './lib/command/utils';
 export * from './lib/config';
 export * from './lib/deploy';
 export * from './lib/errors';
+export * from './lib/events';
 export * from './lib/help';
 export * from './lib/hooks';
 export * from './lib/http';
