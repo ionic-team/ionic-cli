@@ -1,1 +1,1 @@
-@ionic/cli-plugin-ionic-angular
+# `@ionic/cli-plugin-ionic-angular`

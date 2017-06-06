@@ -1,1 +1,1 @@
-@ionic/cli-plugin-cordova
+# `@ionic/cli-plugin-cordova`

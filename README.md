@@ -63,7 +63,11 @@ see
 * `generate` command has been overhauled to interactively generate components,
   pages, etc. Going forward, generators will continue to be improved.
 
-## Starter Templates
+## Getting Started
+
+### Ionic Angular
+
+#### Starter Templates
 
 * [blank](https://github.com/ionic-team/ionic2-starter-blank)
 * [tabs](https://github.com/ionic-team/ionic2-starter-tabs)
@@ -73,44 +77,23 @@ see
 * [super](https://github.com/ionic-team/ionic-starter-super)
 
 ```bash
-$ ionic start --list
-```
-
-## Ionic Angular
-
-#### Start a new project
-```bash
 $ npm install -g ionic@latest
 $ ionic start myNewProject
 $ cd ./myNewProject
 $ ionic serve
 ```
 
-#### Existing project
+### Ionic 1
 
-```bash
-$ npm install -g ionic@latest
-$ npm install --save-dev --save-exact @ionic/cli-plugin-ionic-angular@latest @ionic/cli-plugin-cordova@latest
-$ ionic --help
-```
+#### Starter Templates
 
-## Ionic 1
-
-#### Start a new project
+* [blank](https://github.com/ionic-team/ionic-starter-blank)
 
 ```bash
 $ npm install -g ionic@latest
 $ ionic start myNewProject blank --type=ionic1
 $ cd ./myNewProject
 $ ionic serve
-```
-
-#### Existing project
-
-```bash
-$ npm install -g ionic@latest
-$ npm install --save-dev --save-exact @ionic/cli-plugin-ionic1@latest @ionic/cli-plugin-cordova@latest
-$ ionic --help
 ```
 
 ## Using Cordova
@@ -120,7 +103,7 @@ capabilities to your app.
 
 ### Requirements
 
-* For iOS development (macOS required), see the [iOS Platform
+* For iOS development, see the [iOS Platform
   Guide](https://cordova.apache.org/docs/en/latest/guide/platforms/ios/index.html).
 * For Android development, see the [Android Platform
   Guide](https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html).
@@ -128,7 +111,7 @@ capabilities to your app.
 ```bash
 $ npm install -g cordova
 $ npm install --save-dev --save-exact @ionic/cli-plugin-cordova@latest
-$ ionic cordova --help
+$ ionic --help
 $ ionic cordova run ios
 ```
 
@@ -168,7 +151,7 @@ The behavior that these flags set is remembered in the CLI config file.
 
 ## Service Proxies
 
-The `serve` command can add some proxies to the http server. These proxies are
+The `serve` command can add some proxies to the HTTP server. These proxies are
 useful if you are developing in the browser and you need to make calls to an
 external API. With this feature you can proxy request to the external api
 through the ionic http server preventing the `No 'Access-Control-Allow-Origin'
@@ -201,7 +184,7 @@ you want to add. The proxies are object with the following properties:
 
 Using the above configuration, you can now make requests to your local server
 at `http://localhost:8100/v1` to have it proxy out requests to
-`https://api.instagram.com/v1`
+`https://api.instagram.com/v1`.
 
 ## Using a Proxy
 
@@ -224,10 +207,6 @@ For example:
 ```bash
 $ HTTPS_PROXY=https://internal.proxy.com ionic start
 ```
-
-## Ionic Docs
-
-To open Ionic documentation from the Ionic CLI, use `ionic docs`.
 
 ## Legacy Version
 

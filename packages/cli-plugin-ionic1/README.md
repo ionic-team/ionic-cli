@@ -1,1 +1,1 @@
-@ionic/cli-plugin-ionic1
+# `@ionic/cli-plugin-ionic1`
