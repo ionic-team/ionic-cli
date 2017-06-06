@@ -306,8 +306,8 @@ export class StartCommand extends Command implements CommandPreRun {
 
     this.env.tasks.next(`Updating ${chalk.bold('package.json')} with app details`);
 
-    await patchPackageJsonForCli(appName, starterType, projectRoot);
-    await updatePackageJsonForCli(appName, starterType, projectRoot);
+    await patchPackageJsonForCli(projectName, starterType, projectRoot);
+    await updatePackageJsonForCli(projectName, starterType, projectRoot);
 
     this.env.tasks.next(`Creating configuration file ${chalk.bold('ionic.config.json')}`);
     await createProjectConfig(appName, starterType, projectRoot, cloudAppId);
