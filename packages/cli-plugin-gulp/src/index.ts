@@ -38,11 +38,7 @@ async function loadGulp(env: IonicEnvironment): Promise<typeof gulpType | undefi
 
   const project = await env.project.load();
 
-  if (!project.gulpFile) {
-    project.gulpFile = 'gulpfile.js';
-  }
-
-  const gulpFilePath = path.join(env.project.directory, project.gulpFile);
+  const gulpFilePath = path.join(env.project.directory, project.gulpFile || 'gulpfile.js');
   const gulpPath = path.join(env.project.directory, 'node_modules', 'gulp');
   const gulpPluginUninstallArgs = await pkgInstallPluginArgs(env, '@ionic/cli-plugin-gulp', { command: 'uninstall' });
 
