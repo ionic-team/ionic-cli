@@ -8,12 +8,31 @@ The Ionic command line interface (CLI) is your go-to tool for developing
 
 Use `ionic --help` for more detailed command information.
 
-:mega: **Support/Questions?**: Please see our [Support
+:mega: **Support/Questions?** Please see our [Support
 Page](https://ionicframework.com/support) for general support questions. The
 issues on GitHub should be reserved for bug reports and feature requests.
 
-:heart: **Want to contribute?**: Please see
+:heart: **Want to contribute?** Please see
 [CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/master/CONTRIBUTING.md).
+
+## Table of Contents ##
+
+  * [Requirements](#requirements)
+  * [Install](#install)
+  * [Changes from CLI 2](#changes-from-cli-2)
+  * [Getting Started](#getting-started)
+    + [Ionic Angular](#ionic-angular)
+      - [Starter Templates](#starter-templates)
+    + [Ionic 1](#ionic-1)
+      - [Starter Templates](#starter-templates-1)
+  * [Using Cordova](#using-cordova)
+    + [Requirements](#requirements-1)
+  * [Environment Variables](#environment-variables)
+  * [CLI Flags](#cli-flags)
+    + [Persistent flags](#persistent-flags)
+  * [Service Proxies](#service-proxies)
+  * [Using a Proxy](#using-a-proxy)
+  * [Legacy Version](#legacy-version)
 
 ## Requirements
 
@@ -135,7 +154,7 @@ CLI flags are global options that alter CLI behavior.
 * `--verbose`: Show all log messages for debugging purposes.
 * `--quiet`: Only show `WARN` and `ERROR` log messages.
 
-### Persistent flags:
+### Persistent flags
 
 The behavior that these flags set is remembered in the CLI config file.
 
