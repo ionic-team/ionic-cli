@@ -4,7 +4,7 @@ const path = require('path');
 const replace = require('replace');
 
 const pluginName = process.argv[2];
-const pluginPath = path.join(__dirname, `../packages/${pluginName}`);
+const pluginPath = path.join(__dirname, '..', pluginName);
 const plugin = require(pluginPath);
 const pkg = require(path.join(pluginPath, 'package.json'));
 const nameMatchStr = '__NAME__';

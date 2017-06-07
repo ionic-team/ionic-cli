@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
 const path = require('path');
-const ionicPkg = require('../packages/ionic');
-const utilsPkg = require('../packages/cli-utils');
+const ionicPkg = require(path.resolve(__dirname, '..', 'ionic'));
+const utilsPkg = require(path.resolve(__dirname, '..', 'cli-utils'));
 
 const stripAnsi = utilsPkg.load('strip-ansi');
 
 async function run() {
   const env = await ionicPkg.generateIonicEnvironment(process.argv.slice(2), process.env);
-  const mPath = path.resolve(__dirname, '..', 'packages');
+  const mPath = path.resolve(__dirname, '..');
   const ionicModules = (await utilsPkg.readDir(mPath))
     .filter(m => m.startsWith('cli-plugin-'))
     .map(m => require(path.resolve(mPath, m)));
@@ -17,7 +17,7 @@ async function run() {
     utilsPkg.installPlugin(env, mod);
   }
 
-  const nsPath = path.resolve(__dirname, '..', 'docs', 'index.md');
+  const nsPath = path.resolve(__dirname, '..', '..', 'docs', 'index.md');
   const nsDoc = formatIonicPage(env.namespace);
 
   await utilsPkg.fsMkdirp(path.dirname(nsPath));
@@ -30,7 +30,7 @@ async function run() {
       return;
     }
 
-    const cmdPath = path.resolve(__dirname, '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
+    const cmdPath = path.resolve(__dirname, '..', '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
     const cmdDoc = formatCommandDoc(cmd);
 
     await utilsPkg.fsMkdirp(path.dirname(cmdPath));
@@ -236,7 +236,7 @@ ${exampleLines.join('\n')}
 }
 
 async function copyToIonicSite(commands) {
-  const ionicSitePath = path.resolve(__dirname, '..', '..', 'ionic-site');
+  const ionicSitePath = path.resolve(__dirname, '..', '..', '..', 'ionic-site');
 
   let dirData = await utilsPkg.fsStat(ionicSitePath);
   if (!dirData.size) {
@@ -258,7 +258,7 @@ async function copyToIonicSite(commands) {
     ), { encoding: 'utf8' });
 
   return utilsPkg.copyDirectory(
-    path.resolve(__dirname, '..', 'docs'),
+    path.resolve(__dirname, '..', '..', 'docs'),
     path.resolve(ionicSitePath, 'content', 'docs', 'cli'));
 }
 
