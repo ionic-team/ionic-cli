@@ -2,8 +2,8 @@
 
 This is a curated CHANGELOG. We also use an automatic utility that maintains
 the CHANGELOG files within CLI packages. For specific commit-level changes, see
-[#Packages](#Packages). For big, high-level CLI changes, see
-[#Versions](#Versions).
+[#packages](#packages). For big, high-level CLI changes, see
+[#versions](#versions).
 
 ## Versions
 
