@@ -52,35 +52,8 @@ install without `sudo`.*
 
 ## Changes from CLI v2
 
-We have rewritten the CLI from the ground up.  Our main focus was to:
-
-1. Decrease the amount of time to the first **start** execution
-1. Improve the responsiveness of every CLI command
-1. Make the architecture flexible for future platform support (PWA, electron, etc.)
-1. Provide better **help**, more guidance, and more feedback when executing commands.
-
-In doing so we decided to take a new approach to the CLI's structure. The base
-CLI installation now ships with global commands that are common to all Ionic
-apps.
-
-Cordova commands have been namespaced and put into a CLI _plugin_, which is
-installed by default with new Ionic projects and can be installed in existing
-Ionic projects with `npm i --save @ionic/cli-plugin-cordova`. For full details,
-see below.
-
-Here is a brief summary of changes in CLI v3. For more details and reasoning,
-see
-[CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md).
-
-* Removed commands: `setup`, `share`, `lib`, `io`, `security`, `push`,
-  `config`, `service`, `add`, `remove`, `list`, `hooks`, `state`.
-* Added commands: `signup`.
-* Cordova commands have been namespaced (e.g. `ionic cordova build`, not `ionic
-  build`).
-* Many command arguments, options, and flags have changed. Please use the
-  `--help` option for command usage.
-* `generate` command has been overhauled to interactively generate components,
-  pages, etc. Going forward, generators will continue to be improved.
+You can review the CLI v2 -> v3 upgrade notes in
+[CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#upgrading-from-cli-v2).
 
 ## Getting Started
 
