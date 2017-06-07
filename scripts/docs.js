@@ -76,6 +76,10 @@ Then, install the CLI globally (you may need sudo):
 $ npm install -g ionic@latest
 \`\`\`
 
+For a global install of `-g ionic`, OSX/Linux users may need to prefix the command with `sudo` or 
+can setup [proper file permissions on OSX for npm](https://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx/) 
+to install without `sudo`.
+
 ## Getting Started
 
 Start a new Ionic project using \`ionic start\`:
