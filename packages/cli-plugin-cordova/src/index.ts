@@ -11,10 +11,10 @@ namespace.source = name;
 export function registerHooks(hooks: IHookEngine) {
   hooks.register(name, 'command:info', async () => {
     let cordovaPlatforms: string | undefined;
-    const cordovaVersion = await getCommandInfo('cordova', ['-v']);
+    const cordovaVersion = await getCommandInfo('cordova', ['-v', '--no-telemetry']);
 
     if (cordovaVersion) {
-      cordovaPlatforms = await getCommandInfo('cordova', ['platform', 'ls']);
+      cordovaPlatforms = await getCommandInfo('cordova', ['platform', 'ls', '--no-telemetry']);
 
       if (cordovaPlatforms) {
         cordovaPlatforms = cordovaPlatforms.replace(/\s+/g, ' ');
