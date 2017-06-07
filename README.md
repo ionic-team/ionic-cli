@@ -50,7 +50,7 @@ the command with `sudo` or can setup [proper file permissions on OSX for
 npm](https://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx/) to
 install without `sudo`.*
 
-## Changes from CLI 2
+## Changes from CLI v2
 
 We have rewritten the CLI from the ground up.  Our main focus was to:
 
@@ -68,7 +68,7 @@ installed by default with new Ionic projects and can be installed in existing
 Ionic projects with `npm i --save @ionic/cli-plugin-cordova`. For full details,
 see below.
 
-Here is a brief summary of changes in CLI 3. For more details and reasoning,
+Here is a brief summary of changes in CLI v3. For more details and reasoning,
 see
 [CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md).
 
@@ -102,7 +102,7 @@ $ cd ./myNewProject
 $ ionic serve
 ```
 
-### Ionic 1
+### Ionic v1
 
 #### Starter Templates
 
