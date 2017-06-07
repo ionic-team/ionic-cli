@@ -9,6 +9,7 @@ import {
   IonicEnvironment,
   PROJECT_FILE,
   getCommandInfo,
+  pathExists,
   pkgInstallPluginArgs,
   pkgManagerArgs,
   prettyPath,
@@ -82,6 +83,20 @@ async function loadGulp(env: IonicEnvironment): Promise<typeof gulpType | undefi
 
 export function registerHooks(hooks: IHookEngine) {
   hooks.register(name, 'plugins:init', async ({ env }) => {
+    if (!env.project.directory) {
+      return;
+    }
+
+    const project = await env.project.load();
+
+    if (!project.watchPatterns) {
+      project.watchPatterns = [];
+    }
+
+    if (!project.watchPatterns.includes('scss/**/*') && (await pathExists(path.join(env.project.directory, 'scss')))) {
+      project.watchPatterns.push('scss/**/*');
+    }
+
     env.events.on('watch:init', async () => {
       const gulp = await loadGulp(env);
 
