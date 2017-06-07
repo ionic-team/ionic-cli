@@ -17,7 +17,7 @@ export const STARTER_TYPES: StarterTemplateType[] = [
     name: 'v1',
     baseArchive: 'https://github.com/ionic-team/ionic-app-base/archive/<BRANCH_NAME>.tar.gz',
     globalDependencies: [],
-    localDependencies: ['@ionic/cli-plugin-ionic1'],
+    localDependencies: ['@ionic/cli-plugin-ionic1', '@ionic/cli-plugin-gulp'],
   },
 ];
 
