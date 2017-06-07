@@ -52,10 +52,12 @@ export function registerHooks(hooks: IHookEngine) {
     const node = process.version;
 
     const [
+      npm,
       xcode,
       iosDeploy,
       iosSim,
     ] = await Promise.all([
+      getCommandInfo('npm', ['-v']),
       getCommandInfo('/usr/bin/xcodebuild', ['-version']),
       getCommandInfo('ios-deploy', ['--version']),
       getCommandInfo('ios-sim', ['--version']),
@@ -64,6 +66,7 @@ export function registerHooks(hooks: IHookEngine) {
     return [
       { type: 'global-packages', name: 'Ionic CLI', version: version },
       { type: 'system', name: 'Node', version: node },
+      { type: 'system', name: 'npm', version: npm },
       { type: 'system', name: 'OS', version: os },
       { type: 'system', name: 'Xcode', version: xcode || 'not installed' },
       { type: 'system', name: 'ios-deploy', version: iosDeploy || 'not installed' },
