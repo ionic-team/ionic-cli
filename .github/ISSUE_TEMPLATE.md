@@ -1,31 +1,53 @@
-**Note: for support questions, please use one of these channels:**
+<!--
 
-https://forum.ionicframework.com/
-http://ionicworldwide.herokuapp.com/
+==> PLEASE READ <==
 
-**Note: for build related issues you can open up an issue on the ionic-app-scripts repo**
+For support questions, use one of these channels:
 
-https://github.com/ionic-team/ionic-app-scripts
+  https://forum.ionicframework.com/
+  http://ionicworldwide.herokuapp.com/
 
-Please ensure that you are on the latest version of the CLI.
-`npm view ionic@latest version`
+For build related issues, use the ionic-app-scripts repo:
 
-#### Short description of the problem:
+  https://github.com/ionic-team/ionic-app-scripts
+
+For feature requests, you can wipe out this issue template and just describe
+the feature.
+
+-->
+
+**Description:**
+<!-- Please describe the problem you're having. -->
 
 
-#### What behavior are you expecting?
 
+**Steps to Reproduce:**
+<!--
+If applicable, the best way to illustrate the the bug is with an example repo
+with a series of commands that results in the issue.
+-->
 
-**Steps to reproduce:**
+Example repo: <!-- repo url here, or "N/A" -->
+
 1.
 2.
 3.
 
-```
-insert any relevant code between the above and below backticks
-```
+**Output:**
+<!--
+If applicable, please post the full output of the command that errored.
+Remember to run commands with the --verbose flag for debug statements.
+-->
 
-**Post the output of `ionic info` below please**
+**My `ionic info`:**
+<!--
+Post the output of `ionic info` below. `ionic info` is a CLI command that
+prints out environment information.
+-->
 
 
-**Other information:** (e.g. stacktraces, related issues, suggestions how to fix, stackoverflow links, forum links, etc)
+**Other Information:**
+<!--
+e.g. stacktraces, related issues, suggestions how to fix, stackoverflow links,
+forum links, etc
+-->
