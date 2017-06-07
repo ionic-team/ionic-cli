@@ -1,43 +1,69 @@
 # Changelog
 
-The Ionic CLI is made up of several packages, all of which have individual
-CHANGELOG files. Changes made in one (especially `@ionic/cli-utils`) may affect
-the other, but in general you can expect changes relating to Cordova to be made
-in `@ionic/cli-plugin-cordova`, etc.
+This is a curated CHANGELOG. We also use an automatic utility that maintains
+the CHANGELOG files within CLI packages. For specific commit-level changes, see
+[#Packages](#Packages). For big, high-level CLI changes, see
+[#Versions](#Versions).
 
-**Global**:
+## Versions
 
-* [`ionic`](https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic)
-  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md)):
-  The CLI executable.
-* [`@ionic/cli-utils`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-utils)
-  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-utils/CHANGELOG.md)):
-  The CLI utilities library.
-* [`@ionic/cli-plugin-proxy`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-proxy)
-  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-proxy/CHANGELOG.md)):
-  The plugin for proxying CLI requests through a firewall.
+<a name="3.4.0"></a>
+### 3.4.0 (PENDING)
 
-**Local** (per project):
+* **Warning**: For Ionic 1 projects, the `sass` gulp task is no longer
+  automatically run during SCSS file changes during `ionic serve`. See the
+  bullet point below!
+* :tada: Added
+  [`@ionic/cli-plugin-gulp`](https://github.com/ionic-team/ionic-cli/tree/master/packages/cli-plugin-gulp)!
+  This plugin will hook into appropriately named gulp tasks during CLI events.
+  It will also automatically run the `sass` gulp task during SCSS file changes
+  during `ionic serve`. See the plugin's
+  [README.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-gulp/README.md)
+  for usage.
+* Improved `--help` descriptions of a few Cordova commands.
 
-* [`@ionic/cli-plugin-cordova`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-cordova)
-  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-cordova/CHANGELOG.md)):
-  The plugin for Cordova integration. Essential for an Ionic/Cordova app.
-* [`@ionic/cli-plugin-ionic-angular`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic-angular)
-  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic-angular/CHANGELOG.md)):
-  The project plugin for Ionic Angular projects. Provides useful build tools
-  and generators.
-* [`@ionic/cli-plugin-ionic1`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic1)
-  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic1/CHANGELOG.md)):
-  The project plugin for Ionic 1 that has functionality ported from the legacy
-  CLI.
+<a name="3.3.0"></a>
+### 3.3.0 (2017-05-31)
 
-## CLI v3
+* Added CLI flag for turning on/off timeouts: `--[no-]timeout`
+* Added fuller descriptions to the `--help` output of individual commands.
+* Improved Cordova argument parsing.
+* Fixed the proxy plugin so `ionic start` works behind a corporate firewall.
+* Improved CLI automatic update feature.
+
+<a name="3.2.0"></a>
+### 3.2.0 (2017-05-23)
+
+* Added persistent [CLI
+  flags](https://github.com/ionic-team/ionic-cli#cli-flags), which change CLI
+  behavior. There is now `--quiet`, `--[no-]interactive`
+  (interactive/non-interactive mode), `--[no-]confirm`.
+* Added non-interactive mode, which is useful for CI/CD servers. It disables
+  "flair" such as spinners and unnecessary output. It also disables prompts.
+* Added automatic login capability with `IONIC_EMAIL` and `IONIC_PASSWORD`
+  environment variables.
+* Added Cordova platforms to output of `ionic info`.
+* (Somewhat) support `documentRoot` and `watchPatterns` (which are attributes
+  of `ionic.config.json`) for Ionic 1 projects.
+* If git is installed, new Ionic projects are automatically setup as
+  repositories and an initial commit is made.
+
+<a name="3.1.0"></a>
+### 3.1.0 (2017-05-16)
+
+* Added `--aot`, `--minifyjs`, `--minifycss`, `--optimizejs` flags for build
+  commands of Ionic Angular projects.
+* Fixed some runtime errors.
+* Took out confirmation prompt for logging in again when already logged in.
+
+<a name="3.0.0"></a>
+### 3.0.0 (2017-05-09)
 
 [CLI v3 Blog Post](https://blog.ionic.io/announcing-ionic-cli-v3/) :tada:
 
-### Upgrading from CLI v2
+#### Upgrading from CLI v2
 
-#### Required Changes
+##### Required Changes
 
 * If you're using Ionic Deploy, you'll need to update
   [`ionic-plugin-deploy`](https://github.com/ionic-team/ionic-plugin-deploy) to
@@ -45,7 +71,7 @@ in `@ionic/cli-plugin-cordova`, etc.
   [#2237](https://github.com/ionic-team/ionic-cli/issues/2237) and
   [ionic-team/ionic-plugin-deploy#122](https://github.com/ionic-team/ionic-plugin-deploy/issues/122).
 
-#### Removed Commands
+##### Removed Commands
 
 * `setup`: This was only used to setup sass in Ionic 1 projects, which now is
   now handled in `start`.
@@ -70,7 +96,7 @@ in `@ionic/cli-plugin-cordova`, etc.
   about how Cordova uses `config.xml` and `package.json` to manage plugins and
   platforms.
 
-#### Additional Changes
+##### Additional Changes
 
 * Added commands: `signup`. Signup will change in the future, but as for now it
   simply opens up the signup page.
@@ -89,6 +115,33 @@ in `@ionic/cli-plugin-cordova`, etc.
   [app-scripts](https://github.com/ionic-team/ionic-app-scripts/) to hook up
   generated entities to your app. In the future, generators will continue to be
   expanded upon.
+
+## Packages
+
+You can drill down into commit-level changes in the CHANGELOG files of each
+package. Changes made in one (especially `@ionic/cli-utils`) may affect the
+other, but in general you can expect changes relating to Cordova to be made in
+`@ionic/cli-plugin-cordova`, etc.
+
+**Global**:
+
+* [`ionic`](https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md))
+* [`@ionic/cli-utils`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-utils)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-utils/CHANGELOG.md))
+* [`@ionic/cli-plugin-proxy`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-proxy)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-proxy/CHANGELOG.md))
+
+**Local** (per project):
+
+* [`@ionic/cli-plugin-cordova`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-cordova)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-cordova/CHANGELOG.md))
+* [`@ionic/cli-plugin-ionic-angular`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic-angular)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic-angular/CHANGELOG.md))
+* [`@ionic/cli-plugin-ionic1`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic1)
+  [CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic1/CHANGELOG.md)
+* [`@ionic/cli-plugin-gulp`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-gulp)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-gulp/CHANGELOG.md))
 
 ## Older Changes
 
