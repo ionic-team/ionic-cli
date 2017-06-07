@@ -49,6 +49,6 @@
   "devDependencies": {
     "@ionic/cli-scripts": "0.2.0",
     "@types/chalk": "^0.4.31",
-    "@types/gulp": "^4.0.3"
+    "@types/gulp": "4.0.3"
   }
 }
