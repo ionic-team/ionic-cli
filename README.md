@@ -8,12 +8,31 @@ The Ionic command line interface (CLI) is your go-to tool for developing
 
 Use `ionic --help` for more detailed command information.
 
-:mega: **Support/Questions?**: Please see our [Support
-Page](https://ionicframework.com/support) for general support questions. The
-issues on GitHub should be reserved for bug reports and feature requests.
+:mega: **Support/Questions?** Please see our [Support Page](https://ionicframework.com/support) for general support questions. The issues on GitHub should be reserved for bug reports and feature requests.
 
-:heart: **Want to contribute?**: Please see
-[CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/master/CONTRIBUTING.md).
+:heart: **Want to contribute?** Please see [CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/master/CONTRIBUTING.md).
+
+## Table of Contents 
+
+  * [Requirements](#requirements)
+  * [Install](#install)
+  * [Changes from CLI 2](#changes-from-cli-2)
+  * [Starter Templates](#starter-templates)
+  * [Ionic Angular](#ionic-angular)
+      - [Start a new project](#start-a-new-project)
+      - [Existing project](#existing-project)
+  * [Ionic v1](#ionic-v1)
+      - [Start a new project](#start-a-new-project-1)
+      - [Existing project](#existing-project-1)
+  * [Using Cordova](#using-cordova)
+    + [Requirements](#requirements-1)
+  * [Environment Variables](#environment-variables)
+  * [CLI Flags](#cli-flags)
+    + [Persistent flags](#persistent-flags)
+  * [Service Proxies](#service-proxies)
+  * [Using a Proxy](#using-a-proxy)
+  * [Ionic Docs](#ionic-docs)
+  * [Legacy Version](#legacy-version)
 
 ## Requirements
 
@@ -94,7 +113,7 @@ $ npm install --save-dev --save-exact @ionic/cli-plugin-ionic-angular@latest @io
 $ ionic --help
 ```
 
-## Ionic 1
+## Ionic v1
 
 #### Start a new project
 
@@ -152,7 +171,7 @@ CLI flags are global options that alter CLI behavior.
 * `--verbose`: Show all log messages for debugging purposes.
 * `--quiet`: Only show `WARN` and `ERROR` log messages.
 
-### Persistent flags:
+### Persistent flags
 
 The behavior that these flags set is remembered in the CLI config file.
 
