@@ -8,12 +8,31 @@ The Ionic command line interface (CLI) is your go-to tool for developing
 
 Use `ionic --help` for more detailed command information.
 
-:mega: **Support/Questions?**: Please see our [Support
+:mega: **Support/Questions?** Please see our [Support
 Page](https://ionicframework.com/support) for general support questions. The
 issues on GitHub should be reserved for bug reports and feature requests.
 
-:heart: **Want to contribute?**: Please see
+:heart: **Want to contribute?** Please see
 [CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/master/CONTRIBUTING.md).
+
+## Table of Contents ##
+
+  * [Requirements](#requirements)
+  * [Install](#install)
+  * [Changes from CLI 2](#changes-from-cli-2)
+  * [Getting Started](#getting-started)
+    + [Ionic Angular](#ionic-angular)
+      - [Starter Templates](#starter-templates)
+    + [Ionic 1](#ionic-1)
+      - [Starter Templates](#starter-templates-1)
+  * [Using Cordova](#using-cordova)
+    + [Requirements](#requirements-1)
+  * [Environment Variables](#environment-variables)
+  * [CLI Flags](#cli-flags)
+    + [Persistent flags](#persistent-flags)
+  * [Service Proxies](#service-proxies)
+  * [Using a Proxy](#using-a-proxy)
+  * [Legacy Version](#legacy-version)
 
 ## Requirements
 
@@ -31,7 +50,7 @@ the command with `sudo` or can setup [proper file permissions on OSX for
 npm](https://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx/) to
 install without `sudo`.*
 
-## Changes from CLI 2
+## Changes from CLI v2
 
 We have rewritten the CLI from the ground up.  Our main focus was to:
 
@@ -49,7 +68,7 @@ installed by default with new Ionic projects and can be installed in existing
 Ionic projects with `npm i --save @ionic/cli-plugin-cordova`. For full details,
 see below.
 
-Here is a brief summary of changes in CLI 3. For more details and reasoning,
+Here is a brief summary of changes in CLI v3. For more details and reasoning,
 see
 [CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md).
 
@@ -83,7 +102,7 @@ $ cd ./myNewProject
 $ ionic serve
 ```
 
-### Ionic 1
+### Ionic v1
 
 #### Starter Templates
 
@@ -135,7 +154,7 @@ CLI flags are global options that alter CLI behavior.
 * `--verbose`: Show all log messages for debugging purposes.
 * `--quiet`: Only show `WARN` and `ERROR` log messages.
 
-### Persistent flags:
+### Persistent flags
 
 The behavior that these flags set is remembered in the CLI config file.
 
