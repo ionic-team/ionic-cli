@@ -1,5 +1,4 @@
 {
-  "private": true,
   "name": "@ionic/cli-scripts",
   "version": "0.2.0",
   "bin": {
