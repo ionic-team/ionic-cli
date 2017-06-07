@@ -12,6 +12,7 @@ import { PkgInstallOptions, pkgInstallArgs } from './utils/npm';
 
 export const KNOWN_PLUGINS = ['cordova', 'ionic1', 'ionic-angular'];
 export const KNOWN_GLOBAL_PLUGINS = ['proxy'];
+export const KNOWN_PROJECT_PLUGINS = ['ionic1', 'ionic-angular'];
 export const ORG_PREFIX = '@ionic';
 export const PLUGIN_PREFIX = 'cli-plugin-';
 export const ERROR_PLUGIN_NOT_INSTALLED = 'PLUGIN_NOT_INSTALLED';
@@ -169,6 +170,20 @@ export async function loadPlugins(env: IonicEnvironment) {
 
   for (let plugin of plugins) {
     installPlugin(env, plugin);
+  }
+
+  validatePlugins(env);
+}
+
+export function validatePlugins(env: IonicEnvironment) {
+  const projectPlugins = new Set(KNOWN_PROJECT_PLUGINS.map(formatFullPluginName));
+  const installedPlugins = new Set(Object.keys(env.plugins));
+  const installedProjectPlugins = new Set([...projectPlugins].filter(p => installedPlugins.has(p)));
+
+  if (installedProjectPlugins.size === 0) {
+    env.log.warn('You have no CLI project plugins installed. CLI functionality may be limited.');
+  } else if (installedProjectPlugins.size > 1) {
+    env.log.warn(`You have multiple CLI project plugins installed (${[...installedProjectPlugins].map(p => chalk.green(p)).join(', ')}). ${chalk.bold('Please make sure you have only one installed.')}`);
   }
 }
 
