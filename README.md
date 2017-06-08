@@ -30,6 +30,8 @@ issues on GitHub should be reserved for bug reports and feature requests.
   * [Environment Variables](#environment-variables)
   * [CLI Flags](#cli-flags)
     + [Persistent flags](#persistent-flags)
+  * [CLI Hooks](#cli-hooks)
+    + [Example](#example)
   * [Service Proxies](#service-proxies)
   * [Using a Proxy](#using-a-proxy)
   * [Legacy Version](#legacy-version)
@@ -45,10 +47,9 @@ issues on GitHub should be reserved for bug reports and feature requests.
 $ npm install -g ionic
 ```
 
-:memo: *Note: For a global install of `-g ionic`, OSX/Linux users may need to prefix
-the command with `sudo` or can setup [proper file permissions on OSX for
-npm](https://www.johnpapa.net/how-to-use-npm-global-without-sudo-on-osx/) to
-install without `sudo`.*
+:memo: *Note: For a global install `-g ionic`, macOS/Linux users may need to
+prefix with `sudo` or can setup [proper file permissions for
+npm](https://docs.npmjs.com/getting-started/fixing-npm-permissions).*
 
 ## Changes from CLI v2
 
@@ -140,6 +141,29 @@ The behavior that these flags set is remembered in the CLI config file.
   unintended results.
 * `--timeout` / `--no-timeout`: Switch between timeout (default)
   and non-timeout mode. In non-timeout mode, all requests timeout are disabled.
+
+## CLI Hooks
+
+CLI hooks are how you can run scripts during CLI events, such as "watch" and
+"build". To hook into the CLI, use the following [npm
+scripts](https://docs.npmjs.com/misc/scripts) in your `package.json` file:
+
+| npm script           | description                                                       | commands                                                     |
+|----------------------|-------------------------------------------------------------------|--------------------------------------------------------------|
+| `ionic:watch:before` | Runs **before** the file watcher activates during a "watch" event | `ionic serve`, `ionic cordova run`, `ionic cordova emulate`  |
+| `ionic:build:before` | Runs **before** the Ionic "build" event starts.                   | `ionic upload`, `ionic package build`, `ionic cordova build` |
+| `ionic:build:after`  | Runs **after** the Ionic "build" event finishes.                  | `ionic upload`, `ionic package build`, `ionic cordova build` |
+
+### Example
+
+```json
+  "scripts": {
+    "ionic:build:before": "mv somefile www/somefile",
+  }
+```
+
+:memo: *Note: Use gulp? Check out
+[@ionic/cli-plugin-gulp](https://github.com/ionic-team/ionic-cli/tree/master/packages/cli-plugin-gulp).*
 
 ## Service Proxies
 
