@@ -225,8 +225,6 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
       }))[0];
 
       await writeConfigXmlContentSrc(this.env.project.directory, `http://${serverSettings.publicIp}:${serverSettings.httpPort}`);
-
-      await this.env.hooks.fire('watch:after', { env: this.env });
     }
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });

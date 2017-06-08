@@ -57,6 +57,7 @@ export interface ITaskChain {
 export interface PackageJson {
   name: string;
   version?: string;
+  scripts?: { [key: string]: string };
   dependencies?: { [key: string]: string };
   devDependencies?: { [key: string]: string };
   peerDependencies?: { [key: string]: string };
@@ -400,7 +401,6 @@ export interface IHookEngine {
   fire(hook: 'build:before', args: HookArgs): Promise<void[]>;
   fire(hook: 'build:after', args: HookArgs): Promise<void[]>;
   fire(hook: 'watch:before', args: HookArgs): Promise<void[]>;
-  fire(hook: 'watch:after', args: HookArgs): Promise<void[]>;
 
   register(source: string, hook: 'plugins:init', listener: (args: HookArgs) => Promise<void>): void;
   register(source: string, hook: 'command:docs', listener: (args: CommandHookArgs) => Promise<string>): void;
@@ -411,7 +411,6 @@ export interface IHookEngine {
   register(source: string, hook: 'build:before', listener: (args: HookArgs) => Promise<void>): void;
   register(source: string, hook: 'build:after', listener: (args: HookArgs) => Promise<void>): void;
   register(source: string, hook: 'watch:before', listener: (args: HookArgs) => Promise<void>): void;
-  register(source: string, hook: 'watch:after', listener: (args: HookArgs) => Promise<void>): void;
 
   getSources(hook: string): string[];
   hasSources(hook: string, sources: string[]): boolean;

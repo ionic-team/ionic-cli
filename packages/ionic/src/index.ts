@@ -45,7 +45,42 @@ export const name = '__NAME__';
 export const version = '__VERSION__';
 export const namespace = new IonicNamespace();
 
+const BUILD_BEFORE_HOOK = 'build:before';
+const BUILD_BEFORE_SCRIPT = `ionic:${BUILD_BEFORE_HOOK}`;
+const BUILD_AFTER_HOOK = 'build:after';
+const BUILD_AFTER_SCRIPT = `ionic:${BUILD_AFTER_HOOK}`;
+
+const WATCH_BEFORE_HOOK = 'watch:before';
+const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
+
 export function registerHooks(hooks: IHookEngine) {
+  hooks.register(name, BUILD_BEFORE_HOOK, async ({ env }) => {
+    const packageJson = await env.project.loadPackageJson();
+
+    if (packageJson.scripts && packageJson.scripts[BUILD_BEFORE_SCRIPT]) {
+      env.log.debug(`Invoking ${chalk.cyan(BUILD_BEFORE_SCRIPT)} npm script.`);
+      await env.shell.run('npm', ['run', BUILD_BEFORE_SCRIPT], {});
+    }
+  });
+
+  hooks.register(name, BUILD_AFTER_HOOK, async ({ env }) => {
+    const packageJson = await env.project.loadPackageJson();
+
+    if (packageJson.scripts && packageJson.scripts[BUILD_AFTER_SCRIPT]) {
+      env.log.debug(`Invoking ${chalk.cyan(BUILD_AFTER_SCRIPT)} npm script.`);
+      await env.shell.run('npm', ['run', BUILD_AFTER_SCRIPT], {});
+    }
+  });
+
+  hooks.register(name, WATCH_BEFORE_HOOK, async ({ env }) => {
+    const packageJson = await env.project.loadPackageJson();
+
+    if (packageJson.scripts && packageJson.scripts[WATCH_BEFORE_SCRIPT]) {
+      env.log.debug(`Invoking ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
+      await env.shell.run('npm', ['run', WATCH_BEFORE_SCRIPT], {});
+    }
+  });
+
   hooks.register(name, 'command:info', async () => {
     const osName = loadFromUtils('os-name');
     const os = osName();

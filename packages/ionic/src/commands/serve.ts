@@ -131,8 +131,6 @@ export class ServeCommand extends Command {
       server.bind();
     }
 
-    await this.env.hooks.fire('watch:after', { env: this.env });
-
     this.env.tasks.end();
   }
 }
