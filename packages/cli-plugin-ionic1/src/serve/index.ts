@@ -87,7 +87,24 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   // Start up server
   const settings = await setupServer(args.env, serverOptions);
 
-  args.env.log.info(`dev server running: ${chalk.bold('http://' + serverOptions.address + ':' + serverOptions.port)}`);
+  const localAddress = 'http://localhost:' + serverOptions.port;
+  const externalAddress = 'http://' + chosenIP + ':' + serverOptions.port;
+
+  args.env.log.info(
+    `Development server running\n` +
+    `Local: ${chalk.bold(localAddress)}\n` +
+    (localAddress !== externalAddress ? `External: ${chalk.bold(externalAddress)}\n` : '')
+  );
+
+  if (!serverOptions.nobrowser || serverOptions.lab) {
+    const openOptions: string[] = [localAddress]
+      .concat(serverOptions.lab ? [IONIC_LAB_URL] : [])
+      .concat(serverOptions.browseroption ? [serverOptions.browseroption] : [])
+      .concat(serverOptions.platform ? ['?ionicplatform=', serverOptions.platform] : []);
+
+    const opn = load('opn');
+    opn(openOptions.join(''));
+  }
 
   return  {
     publicIp: chosenIP,
@@ -120,16 +137,6 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
   watcher.on('error', (err: Error) => {
     env.log.error(err.toString());
   });
-
-  if (!options.nobrowser || options.lab) {
-    const openOptions: string[] = [`http://${options.address}:${options.port}`]
-      .concat(options.lab ? [IONIC_LAB_URL] : [])
-      .concat(options.browseroption ? [options.browseroption] : [])
-      .concat(options.platform ? ['?ionicplatform=', options.platform] : []);
-
-    const opn = load('opn');
-    opn(openOptions.join(''));
-  }
 
   return options;
 }

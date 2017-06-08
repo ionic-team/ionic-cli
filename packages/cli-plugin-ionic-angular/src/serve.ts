@@ -54,6 +54,15 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
     );
   }
 
+  const localAddress = 'http://localhost:' + settings.httpPort;
+  const externalAddress = 'http://' + chosenIP + ':' + settings.httpPort;
+
+  args.env.log.info(
+    `Development server running\n` +
+    `Local: ${chalk.bold(localAddress)}\n` +
+    (localAddress !== externalAddress ? `External: ${chalk.bold(externalAddress)}` : '')
+  );
+
   return  {
     publicIp: chosenIP,
     protocol: 'http',
