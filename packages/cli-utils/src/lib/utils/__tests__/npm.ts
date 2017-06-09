@@ -2,10 +2,13 @@ describe('@ionic/cli-utils', () => {
 
   describe('pkgManagerArgs', () => {
 
-    const envMockGen = (opts: { yarn?: boolean } = {}) => ({ config: { load: async () => ({ cliFlags: { yarn: opts.yarn } }) } });
+    const envMockGen = (opts: { yarn?: boolean } = {}) => ({
+      config: { load: async () => ({ cliFlags: { yarn: opts.yarn } }) },
+      log: { debug: () => {} },
+      shell: { run: () => {} },
+    });
 
     jest.resetModules();
-    jest.mock('../shell', () => ({ runcmd: async () => {} }));
     const { pkgManagerArgs } = require('../npm');
     const envMock = envMockGen();
 
@@ -47,7 +50,6 @@ describe('@ionic/cli-utils', () => {
     describe('yarn', () => {
 
       jest.resetModules();
-      jest.mock('../shell', () => ({ runcmd: async () => {} }));
       const { pkgManagerArgs } = require('../npm');
       const envMock = envMockGen({ yarn: true });
 
