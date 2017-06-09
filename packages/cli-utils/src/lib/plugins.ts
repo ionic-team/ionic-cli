@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 
 import { DistTag, IonicEnvironment, Plugin, HydratedPlugin } from '../definitions';
-import { isPlugin } from '../guards';
+import { isExitCodeException, isPlugin } from '../guards';
 import { FatalException } from './errors';
 import { load } from './modules';
 import { prettyPath } from './utils/format';
@@ -416,20 +416,26 @@ async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Pr
 
   env.log.debug(`Checking for latest plugin version of ${chalk.green(plugin.name + '@' + distTag)}.`);
 
-  const shellOptions = { showCommand: false };
+  const shellOptions = { fatalOnError: false, showCommand: false };
 
-  // TODO: might belong in utils/npm.ts
-  if (config.cliFlags['yarn']) {
-    cmdResult = await env.shell.run('yarn', ['info', plugin.name, `dist-tags.${distTag}`, '--json'], shellOptions);
-    latestVersion = JSON.parse(cmdResult).data;
-  } else {
-    cmdResult = await env.shell.run('npm', ['view', plugin.name, `dist-tags.${distTag}`, '--json'], shellOptions);
+  try {
+    // TODO: might belong in utils/npm.ts
+    if (config.cliFlags['yarn']) {
+      cmdResult = await env.shell.run('yarn', ['info', plugin.name, `dist-tags.${distTag}`, '--json'], shellOptions);
+      latestVersion = JSON.parse(cmdResult).data;
+    } else {
+      cmdResult = await env.shell.run('npm', ['view', plugin.name, `dist-tags.${distTag}`, '--json'], shellOptions);
 
-    if (!cmdResult) {
-      return plugin.version;
+      if (!cmdResult) {
+        return plugin.version;
+      }
+
+      latestVersion = JSON.parse(cmdResult);
     }
-
-    latestVersion = JSON.parse(cmdResult);
+  } catch (e) {
+    if (e.fatal || !isExitCodeException(e)) {
+      throw e;
+    }
   }
 
   if (!latestVersion) {

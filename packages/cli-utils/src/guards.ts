@@ -10,6 +10,7 @@ import {
   DeployChannel,
   DeploySnapshot,
   DeploySnapshotRequest,
+  ExitCodeException,
   ICommand,
   INamespace,
   LogLevel,
@@ -46,6 +47,11 @@ export function isPackageJson(o: Object): o is PackageJson {
 export function isBowerJson(o: Object): o is BowerJson {
   const obj = <BowerJson>o;
   return obj && typeof obj.name === 'string';
+}
+
+export function isExitCodeException(e: Error): e is ExitCodeException {
+  const err = <any>e;
+  return err && typeof err.exitCode === 'number' && err.exitCode >= 0 && err.exitCode <= 255;
 }
 
 export function isValidationErrorArray(e: Object[]): e is ValidationError[] {

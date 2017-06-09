@@ -22,3 +22,9 @@ export class FatalException extends Exception {
     super(message);
   }
 }
+
+export class ShellException extends Exception {
+  constructor(public message: string, public exitCode: number = 0) {
+    super(message);
+  }
+}

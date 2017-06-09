@@ -2,8 +2,8 @@ import * as chalk from 'chalk';
 
 import { BowerJson, IonicEnvironment, IShellRunOptions, PackageJson } from '../../definitions';
 import { isBowerJson, isPackageJson } from '../../guards';
+import { ERROR_SHELL_COMMAND_NOT_FOUND } from '../shell';
 import { fsReadJsonFile } from './fs';
-import { runcmd } from './shell';
 
 export const ERROR_INVALID_PACKAGE_JSON = 'INVALID_PACKAGE_JSON';
 export const ERROR_INVALID_BOWER_JSON = 'INVALID_BOWER_JSON';
@@ -87,11 +87,13 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
   if (config.cliFlags.yarn) {
     if (!installer) {
       try {
-        await runcmd('yarn', ['--version']);
+        await env.shell.run('yarn', ['--version'], { fatalOnNotFound: false, showCommand: false });
         installer = 'yarn';
       } catch (e) {
-        if (e.code === 'ENOENT') {
+        if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
           env.log.warn(`You have opted into yarn, but ${chalk.green('yarn')} was not found in PATH`);
+        } else {
+          env.log.debug(`Error running yarn: ${e}`);
         }
 
         installer = 'npm';

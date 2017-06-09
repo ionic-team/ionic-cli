@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as crossSpawnType from 'cross-spawn';
 
 import { load } from '../modules';
+import { ShellException } from '../errors';
 
 export interface RunCmdOptions extends crossSpawnType.SpawnOptions {
   stdoutPipe?: NodeJS.WritableStream;
@@ -72,7 +73,7 @@ export function runcmd(command: string, args?: string[], options: RunCmdOptions 
       if (code === 0) {
         resolve(Buffer.concat(stdoutBufs).toString());
       } else {
-        reject([code, Buffer.concat(dualBufs).toString()]);
+        reject(new ShellException(Buffer.concat(dualBufs).toString(), code));
       }
     });
   });

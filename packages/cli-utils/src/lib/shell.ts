@@ -1,6 +1,7 @@
 import * as chalk from 'chalk';
 
 import { ILogger, IShell, IShellRunOptions, ITaskChain } from '../definitions';
+import { isExitCodeException } from '../guards';
 import { FatalException } from './errors';
 import { RunCmdOptions, runcmd } from './utils/shell';
 
@@ -51,22 +52,30 @@ export class Shell implements IShell {
           }
         }
 
-        if (!Array.isArray(e)) {
+        if (!isExitCodeException(e)) {
           throw e;
         }
 
-        let [code, err] = e;
+        let err = e.message || '';
 
-        if (truncateErrorOutput && err && err.length > truncateErrorOutput) {
+        if (truncateErrorOutput && err.length > truncateErrorOutput) {
           err = `${chalk.bold('(truncated)')} ... ` + err.substring(err.length - truncateErrorOutput);
         }
 
+        const helpLine = showExecution ? '.\n' : (err ? `:\n\n${err}` : ' with no output.\n');
+
+        const publicErrorMsg = `An error occurred while running ${chalk.green(truncatedCmd)} (exit code ${e.exitCode})` + helpLine;
+        const privateErrorMsg = `Subprocess (${chalk.green(command)}) encountered an error (exit code ${e.exitCode}).`;
+
         if (fatalOnError) {
           if (showError) {
-            const helpLine = showExecution ? '.\n' : (err ? `:\n\n${err}` : ' with no output.\n');
-            throw new FatalException(`An error occurred while running ${chalk.green(truncatedCmd)} (exit code ${code})` + helpLine, code);
+            throw new FatalException(publicErrorMsg, e.exitCode);
           } else {
-            throw new FatalException(`Subprocess (${chalk.green(command)}) encountered an error (exit code ${code}).`, code);
+            throw new FatalException(privateErrorMsg, e.exitCode);
+          }
+        } else {
+          if (showError) {
+            this.log.error(publicErrorMsg);
           }
         }
 

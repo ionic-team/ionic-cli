@@ -220,6 +220,10 @@ export interface NormalizedCommandOption extends CommandOption {
   aliases: string[];
 }
 
+export interface ExitCodeException extends Error {
+  exitCode: number;
+}
+
 export type Validator = (input?: string, key?: string) => true | string;
 
 export interface Validators {
