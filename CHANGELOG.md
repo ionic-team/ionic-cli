@@ -13,6 +13,10 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 * **Warning**: For Ionic 1 projects, the `sass` gulp task is no longer
   automatically run during SCSS file changes during `ionic serve`. See the
   bullet point below!
+* Added CLI hooks that you can use to run code during CLI events using npm
+  scripts. See
+  [README.md](https://github.com/ionic-team/ionic-cli/blob/master/README.md#cli-hooks)
+  for usage.
 * :tada: Added
   [`@ionic/cli-plugin-gulp`](https://github.com/ionic-team/ionic-cli/tree/master/packages/cli-plugin-gulp)!
   This plugin will hook into appropriately named gulp tasks during CLI events.
@@ -20,6 +24,10 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   during `ionic serve`. See the plugin's
   [README.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-gulp/README.md)
   for usage.
+* Fixed an issue where `0.0.0.0` was the address being opened in the browser
+  for Ionic 1 apps for server. Now the dev server still *binds* on `0.0.0.0` by
+  default, but opens `localhost` in the browser.
+* Fixed npm errors bubbling up during CLI update checks while offline.
 * Improved `--help` descriptions of a few Cordova commands.
 
 <a name="3.3.0"></a>
