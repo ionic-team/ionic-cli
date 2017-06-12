@@ -7,11 +7,13 @@ import * as wrapAnsi from 'wrap-ansi';
 
 import { load } from '../modules';
 
-export const ICON_ELLIPSIS = '…';
-export const ICON_SUCCESS = '✔';
-export const ICON_FAILURE = '✖';
+const isWindows = process.platform === 'win32';
 
-export const SPINNER_FRAMES = process.platform === 'win32' ?
+export const ICON_ELLIPSIS = isWindows ? '...' : '…';
+export const ICON_SUCCESS = isWindows ? '√' : '✔';
+export const ICON_FAILURE = isWindows ? '×' : '✖';
+
+export const SPINNER_FRAMES = isWindows ?
   ['-', '\\', '|', '/'] :
   ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 
