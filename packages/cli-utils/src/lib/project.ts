@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 import { BowerJson, IProject, PackageJson, ProjectFile, ProjectType } from '../definitions';
 import { BaseConfig } from './config';
 import { FatalException } from './errors';
-import { ERROR_FILE_INVALID_JSON } from './utils/fs';
+import { ERROR_FILE_INVALID_JSON, fsReadDir } from './utils/fs';
 import { ERROR_INVALID_PACKAGE_JSON, ERROR_INVALID_BOWER_JSON, readBowerJsonFile, readPackageJsonFile } from './utils/npm';
 import { prettyPath } from './utils/format';
 import { load } from './modules';
@@ -134,4 +134,29 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
 
     return type;
   }
+}
+
+/**
+ * Find the base project directory based on the dir input
+ */
+export async function getProjectRootDir(dir: string, projectFileName: string): Promise<string> {
+  dir = path.normalize(dir);
+  const dirInfo = path.parse(dir);
+  const directoriesToCheck = dirInfo.dir
+    .slice(dirInfo.root.length)
+    .split(path.sep)
+    .concat(dirInfo.base)
+    .map((segment: string, index: number, array: string[]) => {
+      let pathSegments = array.slice(0, (array.length - index));
+      return dirInfo.root + path.join(...pathSegments);
+    });
+
+  for (let i = 0; i < directoriesToCheck.length; i++) {
+    const results = await fsReadDir(directoriesToCheck[i]);
+    if (results.includes(projectFileName)) {
+      return directoriesToCheck[i];
+    }
+  }
+
+  return '';
 }

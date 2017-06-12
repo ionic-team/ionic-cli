@@ -24,7 +24,6 @@
     "../../types/strip-ansi.d.ts",
     "../../types/superagent.d.ts",
     "../../types/leek.d.ts",
-    "../../types/os-name.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

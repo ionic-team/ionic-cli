@@ -1,50 +1,29 @@
 import * as path from 'path';
 
-import { isCI } from 'ci-info';
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 
-import * as inquirerType from 'inquirer';
-import ui = inquirerType.ui;
-
 import {
-  App,
-  CLIEventEmitter,
-  CONFIG_DIRECTORY,
-  CONFIG_FILE,
-  Client,
-  Config,
-  HookEngine,
   IHookEngine,
-  InteractiveTaskChain,
-  IonicEnvironment,
-  Logger,
-  PROJECT_FILE,
-  Project,
-  Session,
-  Shell,
-  TaskChain,
-  Telemetry,
   checkForUpdates,
-  createPromptModule,
   formatSuperAgentError,
-  fsReadDir,
+  generateIonicEnvironment,
   getCommandInfo,
-  handleCliFlags,
   isSuperAgentError,
   isValidationErrorArray,
-  load as loadFromUtils,
   loadPlugins,
   pathExists,
   pkgManagerArgs,
-  registerHooks as cliUtilsRegisterHooks,
 } from '@ionic/cli-utils';
 
 import { IonicNamespace } from './commands';
+import { modifyArguments, mapLegacyCommand } from './lib/init';
+import { load } from './lib/modules';
 
 export const name = '__NAME__';
 export const version = '__VERSION__';
 export const namespace = new IonicNamespace();
+export const meta = { filePath: __filename };
 
 const BUILD_BEFORE_HOOK = 'build:before';
 const BUILD_BEFORE_SCRIPT = `ionic:${BUILD_BEFORE_HOOK}`;
@@ -83,7 +62,7 @@ export function registerHooks(hooks: IHookEngine) {
   });
 
   hooks.register(name, 'command:info', async () => {
-    const osName = loadFromUtils('os-name');
+    const osName = load('os-name');
     const os = osName();
     const node = process.version;
 
@@ -111,125 +90,16 @@ export function registerHooks(hooks: IHookEngine) {
   });
 }
 
-export async function generateIonicEnvironment(pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
-  env['IONIC_CLI_LIB'] = __filename;
-  env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
-  env['IONIC_PROJECT_DIR'] = await getProjectRootDir(process.cwd(), PROJECT_FILE);
-
-  const argv = minimist(pargv, { boolean: true });
-  argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
-
-  const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
-  const changedFlags = await handleCliFlags(config, argv);
-
-  const configData = await config.load();
-
-  let stream: NodeJS.WritableStream;
-  let tasks: TaskChain;
-  let bottomBar: inquirerType.ui.BottomBar | undefined;
-  let log: Logger;
-
-  if (isCI && configData.cliFlags['interactive']) {
-    configData.cliFlags['interactive'] = false;
-    changedFlags.push(['interactive', false]);
-  }
-
-  if (configData.cliFlags['interactive']) {
-    const inquirer = loadFromUtils('inquirer');
-    bottomBar = new inquirer.ui.BottomBar();
-
-    try { // TODO
-      const bottomBarHack = <any>bottomBar;
-      bottomBarHack.rl.output.mute();
-    } catch (e) {
-      console.error('EXCEPTION DURING BOTTOMBAR OUTPUT MUTE', e);
-    }
-
-    stream = bottomBar.log;
-    log = new Logger({ stream });
-    tasks = new InteractiveTaskChain({ log, bottomBar });
-  } else {
-    stream = process.stdout;
-    log = new Logger({ stream });
-    tasks = new TaskChain({ log });
-  }
-
-  for (let [flag, newValue] of changedFlags) {
-    const prettyFlag = chalk.green('--' + (newValue ? '' : 'no-' ) + flag);
-
-    if (flag === 'interactive' && !newValue && isCI) {
-      log.info('CI detected--switching to non-interactive mode.');
-    }
-
-    log.info(`CLI Flag ${prettyFlag} saved`);
-
-    if (flag === 'telemetry' && newValue) {
-      log.msg('Thank you for making the CLI better! ❤️');
-    } else if (flag === 'confirm' && newValue) {
-      log.warn(`Careful with ${prettyFlag}. Some auto-confirmed actions are destructive.`);
-    }
-  }
-
-  const project = new Project(env['IONIC_PROJECT_DIR'], PROJECT_FILE);
-  const hooks = new HookEngine();
-  const client = new Client(configData.urls.api);
-  const telemetry = new Telemetry(config, version);
-  const shell = new Shell(tasks, log);
-  const session = new Session(config, project, client);
-  const app = new App(session, project, client);
-
-  registerHooks(hooks);
-  cliUtilsRegisterHooks(hooks);
-
-  return {
-    app,
-    argv,
-    client,
-    close() {
-      tasks.cleanup();
-
-      // instantiating inquirer.ui.BottomBar hangs, so when close() is called,
-      // we close BottomBar streams and replace the log stream with stdout.
-      // This means inquirer shouldn't be used after command execution finishes
-      // (which could happen during long-running processes like serve).
-      if (bottomBar) {
-        bottomBar.close();
-        log.stream = process.stdout;
-      }
-    },
-    config,
-    events: new CLIEventEmitter,
-    hooks,
-    load: loadFromUtils,
-    log,
-    namespace,
-    pargv,
-    plugins: {
-      ionic: {
-        name,
-        version,
-        namespace,
-        registerHooks,
-        meta: {
-          filePath: __filename,
-        }
-      },
-    },
-    prompt: await createPromptModule(log, config),
-    project,
-    session,
-    shell,
-    tasks,
-    telemetry,
-  };
-}
 
 export async function run(pargv: string[], env: { [k: string]: string }) {
   const now = new Date();
   let exitCode = 0;
   let err: any;
 
-  const ienv = await generateIonicEnvironment(modifyArguments(pargv.slice(2)), env);
+  env['IONIC_CLI_LIB'] = __filename;
+
+  const ienv = await generateIonicEnvironment(exports, modifyArguments(pargv.slice(2)), env);
+  registerHooks(ienv.hooks);
 
   try {
     const configData = await ienv.config.load();
@@ -350,94 +220,4 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
   }
 
   ienv.close();
-}
-
-/**
- * Find the base project directory based on the dir input
- */
-export async function getProjectRootDir(dir: string, projectFileName: string): Promise<string> {
-  dir = path.normalize(dir);
-  const dirInfo = path.parse(dir);
-  const directoriesToCheck = dirInfo.dir
-    .slice(dirInfo.root.length)
-    .split(path.sep)
-    .concat(dirInfo.base)
-    .map((segment: string, index: number, array: string[]) => {
-      let pathSegments = array.slice(0, (array.length - index));
-      return dirInfo.root + path.join(...pathSegments);
-    });
-
-  for (let i = 0; i < directoriesToCheck.length; i++) {
-    const results = await fsReadDir(directoriesToCheck[i]);
-    if (results.includes(projectFileName)) {
-      return directoriesToCheck[i];
-    }
-  }
-
-  return '';
-}
-
-/**
- * Map legacy options to their new equivalent
- */
-export function modifyArguments(pargv: string[]): string[] {
-  let modifiedArgArray: string[] = pargv.slice();
-  const minimistArgv = minimist(pargv, { boolean: true });
-
-  if (pargv.length === 0) {
-    return ['help'];
-  }
-
-  if (minimistArgv['help'] || minimistArgv['h']) {
-    if (minimistArgv._.length > 0) {
-      return ['help', ...minimistArgv._];
-    } else {
-      return ['help'];
-    }
-  }
-
-  if (minimistArgv._.length === 0 && (minimistArgv['version'] || minimistArgv['v'])) {
-    return ['version'];
-  }
-
-  if (minimistArgv._[0] === 'lab') {
-    modifiedArgArray[0] = 'serve';
-    modifiedArgArray.push('--lab');
-  }
-
-  if (minimistArgv['verbose']) {
-    modifiedArgArray[modifiedArgArray.indexOf('--verbose')] = '--log-level=debug';
-  }
-
-  if (minimistArgv['quiet']) {
-    modifiedArgArray[modifiedArgArray.indexOf('--quiet')] = '--log-level=warn';
-  }
-
-  return modifiedArgArray;
-}
-
-/**
- * Find the command that is the equivalent of a legacy command.
- */
-function mapLegacyCommand(command: string): string | undefined {
-  const commandMap: { [command: string]: string} = {
-    'build': 'cordova build',
-    'compile': 'cordova compile',
-    'emulate': 'cordova emulate',
-    'platform': 'cordova platform',
-    'plugin': 'cordova plugin',
-    'prepare': 'cordova prepare',
-    'resources': 'cordova resources',
-    'run': 'cordova run',
-    'cordova:build': 'cordova build',
-    'cordova:compile': 'cordova compile',
-    'cordova:emulate': 'cordova emulate',
-    'cordova:platform': 'cordova platform',
-    'cordova:plugin': 'cordova plugin',
-    'cordova:prepare': 'cordova prepare',
-    'cordova:resources': 'cordova resources',
-    'cordova:run': 'cordova run',
-  };
-
-  return commandMap[command];
 }

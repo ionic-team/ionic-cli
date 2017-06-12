@@ -1,4 +1,26 @@
-import { IHookEngine } from './definitions';
+import { isCI } from 'ci-info';
+import * as chalk from 'chalk';
+import * as minimist from 'minimist';
+
+import * as inquirerType from 'inquirer';
+import ui = inquirerType.ui;
+
+import { IonicEnvironment, IHookEngine, Plugin } from './definitions';
+import { load } from './lib/modules';
+
+import { App } from './lib/app';
+import { CONFIG_FILE, CONFIG_DIRECTORY, Config, handleCliFlags } from './lib/config';
+import { Client } from './lib/http';
+import { CLIEventEmitter } from './lib/events';
+import { FatalException } from './lib/errors';
+import { HookEngine } from './lib/hooks';
+import { PROJECT_FILE, Project, getProjectRootDir } from './lib/project';
+import { Logger } from './lib/utils/logger';
+import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
+import { Telemetry } from './lib/telemetry';
+import { Session } from './lib/session';
+import { Shell } from './lib/shell';
+import { createPromptModule } from './lib/prompts';
 
 export * from './definitions';
 export * from './guards';
@@ -48,4 +70,111 @@ export function registerHooks(hooks: IHookEngine) {
       { type: 'global-packages', name, version },
     ];
   });
+}
+
+export async function generateIonicEnvironment(plugin: Plugin, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
+  if (!plugin.namespace) {
+    throw new FatalException('No root ionic namespace.');
+  }
+
+  env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
+  env['IONIC_PROJECT_DIR'] = await getProjectRootDir(process.cwd(), PROJECT_FILE);
+
+  const argv = minimist(pargv, { boolean: true });
+  argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
+
+  const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
+  const changedFlags = await handleCliFlags(config, argv);
+
+  const configData = await config.load();
+
+  let stream: NodeJS.WritableStream;
+  let tasks: TaskChain;
+  let bottomBar: inquirerType.ui.BottomBar | undefined;
+  let log: Logger;
+
+  if (isCI && configData.cliFlags['interactive']) {
+    configData.cliFlags['interactive'] = false;
+    changedFlags.push(['interactive', false]);
+  }
+
+  if (configData.cliFlags['interactive']) {
+    const inquirer = load('inquirer');
+    bottomBar = new inquirer.ui.BottomBar();
+
+    try { // TODO
+      const bottomBarHack = <any>bottomBar;
+      bottomBarHack.rl.output.mute();
+    } catch (e) {
+      console.error('EXCEPTION DURING BOTTOMBAR OUTPUT MUTE', e);
+    }
+
+    stream = bottomBar.log;
+    log = new Logger({ stream });
+    tasks = new InteractiveTaskChain({ log, bottomBar });
+  } else {
+    stream = process.stdout;
+    log = new Logger({ stream });
+    tasks = new TaskChain({ log });
+  }
+
+  for (let [flag, newValue] of changedFlags) {
+    const prettyFlag = chalk.green('--' + (newValue ? '' : 'no-' ) + flag);
+
+    if (flag === 'interactive' && !newValue && isCI) {
+      log.info('CI detected--switching to non-interactive mode.');
+    }
+
+    log.info(`CLI Flag ${prettyFlag} saved`);
+
+    if (flag === 'telemetry' && newValue) {
+      log.msg('Thank you for making the CLI better! ❤️');
+    } else if (flag === 'confirm' && newValue) {
+      log.warn(`Careful with ${prettyFlag}. Some auto-confirmed actions are destructive.`);
+    }
+  }
+
+  const project = new Project(env['IONIC_PROJECT_DIR'], PROJECT_FILE);
+  const hooks = new HookEngine();
+  const client = new Client(configData.urls.api);
+  const telemetry = new Telemetry(config, plugin.version);
+  const shell = new Shell(tasks, log);
+  const session = new Session(config, project, client);
+  const app = new App(session, project, client);
+
+  registerHooks(hooks);
+
+  return {
+    app,
+    argv,
+    client,
+    close() {
+      tasks.cleanup();
+
+      // instantiating inquirer.ui.BottomBar hangs, so when close() is called,
+      // we close BottomBar streams and replace the log stream with stdout.
+      // This means inquirer shouldn't be used after command execution finishes
+      // (which could happen during long-running processes like serve).
+      if (bottomBar) {
+        bottomBar.close();
+        log.stream = process.stdout;
+      }
+    },
+    config,
+    events: new CLIEventEmitter,
+    hooks,
+    load,
+    log,
+    namespace: plugin.namespace,
+    pargv,
+    plugins: {
+      ionic: plugin,
+    },
+    prompt: await createPromptModule(log, config),
+    project,
+    session,
+    shell,
+    tasks,
+    telemetry,
+  };
 }

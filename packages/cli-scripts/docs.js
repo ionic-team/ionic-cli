@@ -7,7 +7,7 @@ const utilsPkg = require(path.resolve(__dirname, '..', 'cli-utils'));
 const stripAnsi = utilsPkg.load('strip-ansi');
 
 async function run() {
-  const env = await ionicPkg.generateIonicEnvironment(process.argv.slice(2), process.env);
+  const env = await utilsPkg.generateIonicEnvironment(ionicPkg, process.argv.slice(2), process.env);
   const mPath = path.resolve(__dirname, '..');
   const ionicModules = (await utilsPkg.readDir(mPath))
     .filter(m => m.startsWith('cli-plugin-'))
