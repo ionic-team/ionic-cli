@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.3.0...@ionic/cli-utils@1.4.0) (2017-06-12)
+
+
+### Bug Fixes
+
+* **cordova:** actually show platform/type of missing resources ([4e154ed](https://github.com/ionic-team/ionic-cli/commit/4e154ed))
+* **ionic1:** logger not logging changed files ([1b51529](https://github.com/ionic-team/ionic-cli/commit/1b51529))
+* **plugins:** catch npm errors during updates and continue ([316826d](https://github.com/ionic-team/ionic-cli/commit/316826d))
+* **serve:** running ionic serve in background ([883c21e](https://github.com/ionic-team/ionic-cli/commit/883c21e))
+
+
+### Features
+
+* **hooks:** call npm script hooks ([e34fc34](https://github.com/ionic-team/ionic-cli/commit/e34fc34))
+* **plugins:** warn about multiple installed project plugins ([88789d8](https://github.com/ionic-team/ionic-cli/commit/88789d8))
+
+
+
+
 <a name="1.3.0"></a>
 # [1.3.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.2.0...@ionic/cli-utils@1.3.0) (2017-05-31)
 

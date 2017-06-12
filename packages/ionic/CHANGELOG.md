@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.4.0"></a>
+# [3.4.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.3.0...ionic@3.4.0) (2017-06-12)
+
+
+### Bug Fixes
+
+* **ionic1:** logger not logging changed files ([1b51529](https://github.com/ionic-team/ionic-cli/commit/1b51529))
+* **serve:** running ionic serve in background ([883c21e](https://github.com/ionic-team/ionic-cli/commit/883c21e))
+* **start:** save project name in package.json, not human-readable ([02b6c45](https://github.com/ionic-team/ionic-cli/commit/02b6c45))
+
+
+### Features
+
+* **hooks:** call npm script hooks ([e34fc34](https://github.com/ionic-team/ionic-cli/commit/e34fc34))
+* **info:** show npm version ([044fcd7](https://github.com/ionic-team/ionic-cli/commit/044fcd7))
+* **start:** add gulp plugin to new Ionic 1 apps by default ([de32fbb](https://github.com/ionic-team/ionic-cli/commit/de32fbb))
+
+
+
+
 <a name="3.3.0"></a>
 # [3.3.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.2.0...ionic@3.3.0) (2017-05-31)
 

@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-cordova@1.3.0...@ionic/cli-plugin-cordova@1.4.0) (2017-06-12)
+
+
+### Bug Fixes
+
+* **cordova:** actually show platform/type of missing resources ([4e154ed](https://github.com/ionic-team/ionic-cli/commit/4e154ed))
+* **cordova:** skip Cordova telemetry gathering during ionic info ([7fcb7b3](https://github.com/ionic-team/ionic-cli/commit/7fcb7b3))
+* **serve:** 0.0.0.0, but open localhost in local browser ([e337813](https://github.com/ionic-team/ionic-cli/commit/e337813))
+
+
+### Features
+
+* **hooks:** call npm script hooks ([e34fc34](https://github.com/ionic-team/ionic-cli/commit/e34fc34))
+
+
+
+
 <a name="1.3.0"></a>
 # [1.3.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-cordova@1.2.1...@ionic/cli-plugin-cordova@1.3.0) (2017-05-31)
 
