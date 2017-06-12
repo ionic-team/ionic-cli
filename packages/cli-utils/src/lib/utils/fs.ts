@@ -133,17 +133,17 @@ export function copyDirectory(source: string, destination: string): Promise<any>
 
 export function copyFile(fileName: string, target: string, mode: number = 0o777) {
   return new Promise((resolve, reject) => {
-    const readStream = fs.createReadStream(fileName);
-    const writeStream = fs.createWriteStream(target, { mode: mode });
+    const rs = fs.createReadStream(fileName);
+    const ws = fs.createWriteStream(target, { mode: mode });
 
-    readStream.on('error', reject);
-    writeStream.on('error', reject);
+    rs.on('error', reject);
+    ws.on('error', reject);
 
-    writeStream.on('open', function() {
-      readStream.pipe(writeStream);
+    ws.on('open', function() {
+      rs.pipe(ws);
     });
 
-    writeStream.once('finish', resolve);
+    ws.once('finish', resolve);
   });
 }
 
