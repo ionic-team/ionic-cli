@@ -18,20 +18,22 @@ import {
   validators,
 } from '@ionic/cli-utils';
 
+import { StarterTemplate } from '../definitions';
+
 import {
-  isProjectNameValid,
-  tarXvfFromUrl,
-  isSafeToCreateProjectIn,
-  getStarterTemplateTextList,
-  getHelloText,
-  patchPackageJsonForCli,
-  updatePackageJsonForCli,
+  STARTER_TEMPLATES,
+  STARTER_TYPES,
   createProjectConfig,
+  getHelloText,
+  getStarterTemplateTextList,
+  isProjectNameValid,
+  isSafeToCreateProjectIn,
+  patchPackageJsonForCli,
+  tarXvfFromUrl,
+  updatePackageJsonForCli,
 } from '../lib/start';
 
 import { load } from '../lib/modules';
-import { StarterTemplate } from '../definitions';
-import { STARTER_TYPES, STARTER_TEMPLATES } from '../lib/starter-templates';
 
 @CommandMetadata({
   name: 'start',
