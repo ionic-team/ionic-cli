@@ -10,6 +10,7 @@ import {
   CommandPreRun,
   fsMkdir,
   getCommandInfo,
+  isValidPackageName,
   pathExists,
   pkgInstallPluginArgs,
   pkgManagerArgs,
@@ -233,6 +234,7 @@ export class StartCommand extends Command implements CommandPreRun {
 
     const projectRoot = path.resolve(projectName);
     projectName = path.basename(projectRoot);
+    let safeProjectName = projectName;
 
     const shellOptions = { cwd: projectRoot };
     const projectExists = await pathExists(projectName);
@@ -290,7 +292,7 @@ export class StartCommand extends Command implements CommandPreRun {
     }});
 
     this.env.tasks.end();
-    this.env.log.info(`Fetching starter template ${chalk.bold(starterTemplateName.toString())} (${chalk.dim(starterBranchPath)})`);
+    this.env.log.info(`Fetching starter template ${chalk.green(starterTemplateName.toString())} (${chalk.dim(starterBranchPath)})`);
     const d2Task = this.env.tasks.next('Downloading');
     await tarXvfFromUrl(starterBranchPath, extractDir, timeout, { progress: (loaded, total) => {
       d2Task.progress(loaded, total);
@@ -308,8 +310,13 @@ export class StartCommand extends Command implements CommandPreRun {
 
     this.env.tasks.next(`Updating ${chalk.bold('package.json')} with app details`);
 
-    await patchPackageJsonForCli(projectName, starterType, projectRoot);
-    await updatePackageJsonForCli(projectName, starterType, projectRoot);
+    if (!isValidPackageName(projectName)) {
+      safeProjectName = 'MyApp';
+      this.env.log.warn(`${chalk.green(projectName)} was not a valid name for ${chalk.bold('package.json')}. Using ${chalk.bold(safeProjectName)} for now.`);
+    }
+
+    await patchPackageJsonForCli(safeProjectName, starterType, projectRoot);
+    await updatePackageJsonForCli(safeProjectName, starterType, projectRoot);
 
     this.env.tasks.next(`Creating configuration file ${chalk.bold('ionic.config.json')}`);
     await createProjectConfig(appName, starterType, projectRoot, cloudAppId);
