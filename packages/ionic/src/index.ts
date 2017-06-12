@@ -1,5 +1,6 @@
 import * as path from 'path';
 
+import { isCI } from 'ci-info';
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
 
@@ -128,6 +129,11 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
   let bottomBar: inquirerType.ui.BottomBar | undefined;
   let log: Logger;
 
+  if (isCI && configData.cliFlags['interactive']) {
+    configData.cliFlags['interactive'] = false;
+    changedFlags.push(['interactive', false]);
+  }
+
   if (configData.cliFlags['interactive']) {
     const inquirer = loadFromUtils('inquirer');
     bottomBar = new inquirer.ui.BottomBar();
@@ -150,6 +156,11 @@ export async function generateIonicEnvironment(pargv: string[], env: { [key: str
 
   for (let [flag, newValue] of changedFlags) {
     const prettyFlag = chalk.green('--' + (newValue ? '' : 'no-' ) + flag);
+
+    if (flag === 'interactive' && !newValue && isCI) {
+      log.info('CI detected--switching to non-interactive mode.');
+    }
+
     log.info(`CLI Flag ${prettyFlag} saved`);
 
     if (flag === 'telemetry' && newValue) {
