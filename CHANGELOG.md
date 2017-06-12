@@ -8,7 +8,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 ## Versions
 
 <a name="3.4.0"></a>
-### 3.4.0 (PENDING)
+### 3.4.0 (2017-06-12)
 
 * **Warning**: For Ionic 1 projects, the `sass` gulp task is no longer
   automatically run during SCSS file changes during `ionic serve`. See the
