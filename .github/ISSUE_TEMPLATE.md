@@ -1,19 +1,14 @@
-<!--
-
-==> PLEASE READ <==
+<!-- *** PLEASE READ ***
 
 For support questions, use one of these channels:
-
-  https://forum.ionicframework.com/
-  http://ionicworldwide.herokuapp.com/
+    https://forum.ionicframework.com/
+    https://ionicworldwide.herokuapp.com/
 
 For build related issues, use the ionic-app-scripts repo:
-
-  https://github.com/ionic-team/ionic-app-scripts
+    https://github.com/ionic-team/ionic-app-scripts
 
 For feature requests, you can wipe out this issue template and just describe
 the feature.
-
 -->
 
 **Description:**
