@@ -19,7 +19,7 @@ issues on GitHub should be reserved for bug reports and feature requests.
 
   * [Requirements](#requirements)
   * [Install](#install)
-  * [Changes from CLI 2](#changes-from-cli-v2)
+  * [Changes from CLI v2](#changes-from-cli-v2)
   * [Getting Started](#getting-started)
     + [Ionic Angular](#ionic-angular)
       - [Starter Templates](#starter-templates)
