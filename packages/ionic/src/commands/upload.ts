@@ -26,6 +26,10 @@ From there, you can use Ionic View (${chalk.bold('https://view.ionic.io')}) to e
       description: 'Give this snapshot a nice description',
     },
     {
+      name: 'metadata',
+      description: 'set metadata properties for this snapshot',
+    },
+    {
       name: 'deploy',
       description: 'Deploys this snapshot to the given channel',
     },
@@ -45,6 +49,14 @@ export class UploadCommand extends Command {
     return input;
   }
 
+  resolveMetaData(input: CommandLineInput) {
+    if (typeof input !== 'string') {
+      input = undefined;
+    }
+
+    return input ? JSON.parse(input) : undefined;
+  }
+
   resolveChannelTag(input: CommandLineInput) {
     if (typeof input !== 'string') {
       input = undefined;
@@ -58,6 +70,7 @@ export class UploadCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const note = this.resolveNote(options['note']);
     const channelTag = this.resolveChannelTag(options['deploy']);
+    const user_metadata = this.resolveMetaData(options['metadata']);
 
     if (!options['nobuild']) {
       await this.env.hooks.fire('build:before', { env: this.env });
@@ -70,7 +83,7 @@ export class UploadCommand extends Command {
       await this.env.hooks.fire('build:after', { env: this.env });
     }
 
-    await upload(this.env, { note, channelTag });
+    await upload(this.env, { note, channelTag, user_metadata });
   }
 
 }
