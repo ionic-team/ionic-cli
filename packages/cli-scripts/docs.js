@@ -142,7 +142,7 @@ header_sub_title: Ionic CLI
 }
 
 function links2md(str) {
-  return str.replace(/((http|https):\/\/(\w+:{0,1}\w*@)?([^\s\*`]+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?)/, '[$1]($1)');
+  return str.replace(/((http|https):\/\/(\w+:{0,1}\w*@)?([^\s\*\)`]+)(\/|\/([\w#!:.?+=&%@!\-\/]))?)/g, '[$1]($1)');
 }
 
 function ansi2md(str) {
