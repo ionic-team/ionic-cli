@@ -19,23 +19,27 @@ Zips up your local app files and uploads a snapshot to ${chalk.bold('https://app
 
 From there, you can use Ionic View (${chalk.bold('https://view.ionic.io')}) to easily share your app with your organization and testers around the world.
   `,
-  exampleCommands: [''],
+  exampleCommands: [
+    '',
+    '--deploy=dev',
+    `--deploy=production --note="add menu entry" --metadata='{"custom_data":true}'`,
+  ],
   options: [
     {
       name: 'note',
       description: 'Give this snapshot a nice description',
     },
     {
-      name: 'metadata',
-      description: 'set metadata properties for this snapshot',
-    },
-    {
       name: 'deploy',
       description: 'Deploys this snapshot to the given channel',
     },
     {
+      name: 'metadata',
+      description: 'Set custom metadata JSON for the deploy',
+    },
+    {
       name: 'nobuild',
-      description: 'Do not invoke a build for this upload',
+      description: 'Do not invoke a build for this snapshot',
       type: Boolean,
     },
   ],
@@ -70,7 +74,7 @@ export class UploadCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const note = this.resolveNote(options['note']);
     const channelTag = this.resolveChannelTag(options['deploy']);
-    const user_metadata = this.resolveMetaData(options['metadata']);
+    const metadata = this.resolveMetaData(options['metadata']);
 
     if (!options['nobuild']) {
       await this.env.hooks.fire('build:before', { env: this.env });
@@ -83,7 +87,7 @@ export class UploadCommand extends Command {
       await this.env.hooks.fire('build:after', { env: this.env });
     }
 
-    await upload(this.env, { note, channelTag, user_metadata });
+    await upload(this.env, { note, channelTag, metadata });
   }
 
 }

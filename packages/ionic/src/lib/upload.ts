@@ -10,7 +10,7 @@ import {
   createArchive,
 } from '@ionic/cli-utils';
 
-export async function upload(env: IonicEnvironment, { note, channelTag, user_metadata }: { note?: string, channelTag?: string, user_metadata?: Object}): Promise<DeploySnapshotRequest> {
+export async function upload(env: IonicEnvironment, { note, channelTag, metadata }: { note?: string, channelTag?: string, metadata?: Object}): Promise<DeploySnapshotRequest> {
   let channel: DeployChannel | undefined;
 
   const token = await env.session.getAppUserToken();
@@ -27,7 +27,7 @@ export async function upload(env: IonicEnvironment, { note, channelTag, user_met
   zip.finalize();
 
   env.tasks.next('Requesting snapshot upload');
-  const snapshot = await deploy.requestSnapshotUpload({ note, user_metadata });
+  const snapshot = await deploy.requestSnapshotUpload({ note, user_metadata: metadata });
   const uploadTask = env.tasks.next('Uploading snapshot');
   await deploy.uploadSnapshot(snapshot, zip, (loaded, total) => {
     uploadTask.progress(loaded, total);
