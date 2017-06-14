@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 
 const path = require('path');
+
+const style = require('ansi-styles');
+const escapeStringRegexp = require('escape-string-regexp');
+
 const ionicPkg = require(path.resolve(__dirname, '..', 'ionic'));
 const utilsPkg = require(path.resolve(__dirname, '..', 'cli-utils'));
 
@@ -128,7 +132,7 @@ layout: fluid/docs_base
 category: cli
 id: cli-${cmd.fullName.split(' ').join('-')}
 command_name: ${cmd.fullName}
-title: ${cmd.fullName}
+title: Ionic CLI Documentation - ${cmd.fullName}
 header_sub_title: Ionic CLI
 ---
 
@@ -137,13 +141,32 @@ header_sub_title: Ionic CLI
 `;
 }
 
+function links2md(str) {
+  return str.replace(/((http|https):\/\/(\w+:{0,1}\w*@)?([^\s\*`]+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?)/, '[$1]($1)');
+}
+
+function ansi2md(str) {
+  str = convertAnsiToMd(str, style.green, { open: '`', close: '`' });
+  str = convertAnsiToMd(str, style.bold, { open: '**', close: '**' });
+  return str;
+}
+
+function convertAnsiToMd(str, style, md) {
+  return str.replace(new RegExp(escapeStringRegexp(style.open), 'g'), md.open).replace(new RegExp(escapeStringRegexp(style.close), 'g'), md.close);
+}
+
 function formatCommandDoc(cmdMetadata) {
   let description = stripAnsi(cmdMetadata.description).split('\n').join('\n  ');
+  let longDescription = cmdMetadata.longDescription;
+
+  if (longDescription) {
+    longDescription = stripAnsi(links2md(ansi2md(longDescription.trim())));
+  }
 
   return formatCommandHeader(cmdMetadata) +
     formatName(cmdMetadata.fullName || '', description) +
     formatSynopsis(cmdMetadata.inputs, cmdMetadata.fullName) +
-    formatDescription(cmdMetadata.inputs, cmdMetadata.options, description) +
+    formatDescription(cmdMetadata.inputs, cmdMetadata.options, longDescription) +
     formatExamples(cmdMetadata.exampleCommands, cmdMetadata.fullName);
 }
 
@@ -157,12 +180,7 @@ function formatSynopsis(inputs, commandName) {
       `${commandName} ${
         (inputs || [])
           .map(input => {
-            // TODO: handle required arguments (there are none currently)
-            // if (input.required) {
-            //   return '<' + input.name + '>';
-            // }
-
-            return '[' + input.name + ']';
+            return '[<' + input.name + '>]';
           })
           .join(' ')}`;
 
@@ -176,12 +194,12 @@ $ ionic ${usageLine}
 }
 
 
-function formatDescription(inputs = [], options = [], description = '') {
+function formatDescription(inputs = [], options = [], longDescription = '') {
   const headerLine = `## Details`;
 
   function inputLineFn(input, index) {
     const name = input.name;
-    const description = stripAnsi(input.description);
+    const description = stripAnsi(ansi2md(input.description));
     const optionList = `\`${name}\``;
 
     return `${optionList} | ${description}`;
@@ -190,7 +208,7 @@ function formatDescription(inputs = [], options = [], description = '') {
   function optionLineFn(option) {
     const name = option.name;
     const aliases = option.aliases;
-    const description = stripAnsi(option.description);
+    const description = stripAnsi(ansi2md(option.description));
 
     const optionList = `\`--${name}\`` +
       (aliases && aliases.length > 0 ? ', ' +
@@ -203,7 +221,7 @@ function formatDescription(inputs = [], options = [], description = '') {
 
   return `
 ${headerLine}
-
+${longDescription ? '\n' + longDescription + '\n' : ''}
 ${inputs.length > 0 ? `
 Input | Description
 ----- | ----------` : ``}

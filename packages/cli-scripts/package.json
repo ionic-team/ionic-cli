@@ -3,5 +3,9 @@
   "version": "0.2.0",
   "bin": {
     "cli-scripts-prepublish": "prepublish.js"
+  },
+  "dependencies": {
+    "ansi-styles": "^3.1.0",
+    "escape-string-regexp": "^1.0.5"
   }
 }
