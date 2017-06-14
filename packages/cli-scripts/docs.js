@@ -240,7 +240,8 @@ async function copyToIonicSite(commands) {
 
   let dirData = await utilsPkg.fsStat(ionicSitePath);
   if (!dirData.size) {
-    // ionic-site not present, fail silently
+    // ionic-site not present
+    console.error('ionic-site repo not found');
     return;
   }
 
