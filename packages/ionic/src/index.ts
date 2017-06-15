@@ -39,7 +39,7 @@ export function registerHooks(hooks: IHookEngine) {
 
     if (packageJson.scripts && packageJson.scripts[BUILD_BEFORE_SCRIPT]) {
       env.log.debug(`Invoking ${chalk.cyan(BUILD_BEFORE_SCRIPT)} npm script.`);
-      await env.shell.run('npm', ['run', BUILD_BEFORE_SCRIPT], {});
+      await env.shell.run('npm', ['run', BUILD_BEFORE_SCRIPT], { showExecution: true });
     }
   });
 
@@ -48,7 +48,7 @@ export function registerHooks(hooks: IHookEngine) {
 
     if (packageJson.scripts && packageJson.scripts[BUILD_AFTER_SCRIPT]) {
       env.log.debug(`Invoking ${chalk.cyan(BUILD_AFTER_SCRIPT)} npm script.`);
-      await env.shell.run('npm', ['run', BUILD_AFTER_SCRIPT], {});
+      await env.shell.run('npm', ['run', BUILD_AFTER_SCRIPT], { showExecution: true });
     }
   });
 
@@ -57,7 +57,7 @@ export function registerHooks(hooks: IHookEngine) {
 
     if (packageJson.scripts && packageJson.scripts[WATCH_BEFORE_SCRIPT]) {
       env.log.debug(`Invoking ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
-      await env.shell.run('npm', ['run', WATCH_BEFORE_SCRIPT], {});
+      await env.shell.run('npm', ['run', WATCH_BEFORE_SCRIPT], { showExecution: true });
     }
   });
 
