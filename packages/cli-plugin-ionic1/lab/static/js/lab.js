@@ -48,6 +48,13 @@ function showDevice(device, isShowing) {
     var template = $('#' + device + '-frame-template');
     var clone = document.importNode(template, true);
     $('preview').appendChild(clone.content);
+    //check for extra params in location.url to pass on to iframes
+    var params = document.location.href.split('?')
+    if (params) {
+      params = params[params.length - 1]
+      var oldsrc = $('preview .frame').getAttribute('src')
+      $('preview .frame').setAttribute('src', oldsrc + '&' + params)
+    }
   } else {
     rendered.style.display = isShowing ? '' : 'none';
   }
