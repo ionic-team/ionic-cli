@@ -51,9 +51,9 @@ function showDevice(device, isShowing) {
     //check for extra params in location.url to pass on to iframes
     var params = document.location.href.split('?')
     if (params) {
-      params = params[params.length - 1]
+      var extraparams = params[params.length - 1]
       var oldsrc = $('preview .frame').getAttribute('src')
-      $('preview .frame').setAttribute('src', oldsrc + '&' + params)
+      $('preview .frame').setAttribute('src', oldsrc + '&' + extraparams)
     }
   } else {
     rendered.style.display = isShowing ? '' : 'none';
