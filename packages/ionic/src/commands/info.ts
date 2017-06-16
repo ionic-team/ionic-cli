@@ -35,6 +35,8 @@ export class InfoCommand extends Command {
 
     task.end();
 
+    this.env.log.msg('\n[details=ionic info]\n');
+    
     if (!this.env.project.directory) {
       this.env.log.warn('You are not in an Ionic project directory. Project context may be missing.');
     }
@@ -53,7 +55,9 @@ export class InfoCommand extends Command {
       this.env.log.msg('\n' + chalk.bold('System:'));
       this.env.log.msg(`\n    ${format(prettify(systemDetails))}`);
     }
-
+    
+    this.env.log.msg('\n\n[/details]');
+    
     this.env.log.nl();
   }
 }
