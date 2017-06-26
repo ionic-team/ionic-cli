@@ -77,7 +77,7 @@
     "@types/wrap-ansi": "^2.0.14"
   },
   "peerDependencies": {
-    "strip-ansi": "^3.0.1"
+    "strip-ansi": "^4.0.0"
   },
   "jest": {
     "moduleFileExtensions": [
