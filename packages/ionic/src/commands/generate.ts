@@ -6,6 +6,7 @@ import {
   CommandLineOptions,
   CommandMetadata,
   CommandPreRun,
+  contains,
   installPlugin,
   promptToInstallProjectPlugin,
   validators,
@@ -27,6 +28,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
     {
       name: 'type',
       description: `The type of generator (e.g. ${TYPE_CHOICES.map(t => chalk.green(t)).join(', ')})`,
+      validators: [contains(TYPE_CHOICES, {})],
     },
     {
       name: 'name',
