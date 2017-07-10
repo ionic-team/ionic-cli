@@ -41,21 +41,27 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
   switch (type) {
     case 'page':
       await AppScripts.processPageRequest(context, name);
+      break;
     case 'component':
       const componentData = await promptQuestions(context);
       await AppScripts.processComponentRequest(context, name, componentData);
+      break;
     case 'directive':
       const directiveData = await promptQuestions(context);
       await AppScripts.processDirectiveRequest(context, name, directiveData);
+      break;
     case 'pipe':
       const pipeData = await promptQuestions(context);
       await AppScripts.processPipeRequest(context, name, pipeData);
+      break;
     case 'provider':
       const providerData = await promptQuestions(context);
       await AppScripts.processProviderRequest(context, name, providerData);
+      break;
     case 'tabs':
       const tabsData = await tabsPrompt(args.env);
       await AppScripts.processTabsRequest(context, name, tabsData);
+      break;
   }
 
   return [];
