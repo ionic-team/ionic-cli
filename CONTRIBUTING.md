@@ -43,6 +43,7 @@ published as `ionic`.
 
 ##### Toolset
 
+* npm 5 is required.
 * We recommend Node 7.6+.
 * Our codebase is written in [Typescript](https://www.typescriptlang.org/). If
   you're unfamiliar with Typescript, we recommend using [VS
@@ -88,7 +89,6 @@ published as `ionic`.
 
 **OR**
 
-1. Run `npm i -g in-publish` to solve npm prepublish issue.
 1. Run `npm link` from `packages/ionic`.
 1. You should now be able to run `ionic help` and see your locally
    installed version in place of default ionic installation.

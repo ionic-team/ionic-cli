@@ -23,7 +23,6 @@
     "cross-env": "^4.0.0",
     "eslint-config-ionic": "0.0.2",
     "husky": "^0.13.4",
-    "in-publish": "^2.0.0",
     "jest": "^20.0.4",
     "jest-cli": "^20.0.4",
     "lerna": "^2.0.0-rc.5",

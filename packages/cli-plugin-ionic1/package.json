@@ -17,7 +17,7 @@
     "watch-js-chokidar": "chokidar --silent \"dist/**/*.js\" -c \"npm run build-js\"",
     "script-prepublish": "cli-scripts-prepublish cli-plugin-ionic1",
     "test": "jest",
-    "prepublish": "in-publish && npm run build || not-in-publish"
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
