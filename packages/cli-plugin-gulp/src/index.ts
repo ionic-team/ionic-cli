@@ -67,10 +67,12 @@ async function loadGulp(env: IonicEnvironment): Promise<typeof gulpType | undefi
     }
 
     throw new FatalException(
-      `Gulpfile not found: ${chalk.bold(prettyPath(gulpFilePath))}\n` +
+      `Gulpfile (or dependent module) not found: ${chalk.bold(prettyPath(gulpFilePath))}\n` +
       `You can set the ${chalk.bold('gulpFile')} attribute in ${chalk.bold(PROJECT_FILE)} for custom Gulpfile locations, otherwise the default Ionic Gulpfile can be downloaded from ${chalk.bold('https://github.com/ionic-team/ionic-app-base/blob/master/gulpfile.js')}\n\n` +
       `Or, if you no longer use gulp, you can remove the CLI Gulp Plugin:\n\n` +
-      `    ${chalk.green(gulpPluginUninstallArgs.join(' '))}`
+      `    ${chalk.green(gulpPluginUninstallArgs.join(' '))}\n\n` +
+      `Full error:\n\n` +
+      chalk.red(e.stack ? e.stack : e)
     );
   }
 
