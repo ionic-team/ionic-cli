@@ -76,9 +76,6 @@
     "@types/uuid": "^2.0.29",
     "@types/wrap-ansi": "^2.0.14"
   },
-  "peerDependencies": {
-    "strip-ansi": "^3.0.1"
-  },
   "jest": {
     "moduleFileExtensions": [
       "ts",
