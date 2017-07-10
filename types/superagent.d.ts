@@ -109,7 +109,7 @@ declare module "superagent" {
         on(name: 'end', handler: () => void): this;
         on(name: 'response', handler: (err: http.IncomingMessage) => void): this;
         part(): this;
-        pipe(stream: NodeJS.WritableStream, options?: Object): stream.Writable;
+        pipe<T extends NodeJS.WritableStream>(destination: T, options?: { end?: boolean | undefined; }): T;
         query(val: Object): this;
         redirects(n: number): this;
         responseType(type: string): this;

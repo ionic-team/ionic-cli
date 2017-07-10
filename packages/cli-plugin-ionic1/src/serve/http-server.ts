@@ -91,7 +91,7 @@ function serveMockCordovaJS(req: expressType.Request, res: expressType.Response)
  */
 function servePlatformResource(req: expressType.Request, res: expressType.Response, next: expressType.NextFunction) {
   const options: ServerOptions = req.app.get('serveOptions');
-  const userAgent = req.header('user-agent');
+  const userAgent = req.header('user-agent') || '';
   let resourcePath = options.wwwDir;
 
   if (!options.iscordovaserve) {

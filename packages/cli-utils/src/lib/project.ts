@@ -121,7 +121,7 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
                            + `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold('ionic.config.json')} to one of: ${PROJECT_TYPES.map(v => '\'' + v + '\'').join(', ')}\n`);
   }
 
-  is<ProjectFile>(j: any): j is ProjectFile {
+  is(j: any): j is ProjectFile {
     return j && typeof j.name === 'string' && typeof j.app_id === 'string';
   }
 

@@ -36,9 +36,9 @@ export abstract class BaseConfig<T> implements IConfig<T> {
     this.filePath = path.resolve(this.directory, fileName);
   }
 
-  abstract provideDefaults(o: { [key: string]: any }): Promise<{ [key: string]: any }>;
+  abstract provideDefaults(o: { [key: string]: any }): Promise<T>;
 
-  abstract is<T>(o: { [key: string]: any }): o is T;
+  abstract is(o: any): o is T;
 
   async load(): Promise<T> {
     if (!this.configFile) {
@@ -78,7 +78,7 @@ export abstract class BaseConfig<T> implements IConfig<T> {
 
       o = await this.provideDefaults(o);
 
-      if (this.is<T>(o)) {
+      if (this.is(o)) {
         this.configFile = o;
       } else {
         throw new FatalException(
@@ -130,7 +130,7 @@ export const CONFIG_FILE = 'config.json';
 export const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
 
 export class Config extends BaseConfig<ConfigFile> {
-  async provideDefaults(o: any): Promise<any> {
+  async provideDefaults(o: any): Promise<ConfigFile> {
     const lodash = load('lodash');
     const results = lodash.cloneDeep(o);
 
@@ -190,7 +190,7 @@ export class Config extends BaseConfig<ConfigFile> {
     return results;
   }
 
-  is<ConfigFile>(j: any): j is ConfigFile {
+  is(j: any): j is ConfigFile {
     return j
       && typeof j.lastCommand === 'string'
       && typeof j.urls === 'object'

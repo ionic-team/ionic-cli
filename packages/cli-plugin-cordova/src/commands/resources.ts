@@ -181,7 +181,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
       const mostSpecificImageAvailable = findMostSpecificImage(imageResource, srcImagesAvailable);
       return {
         ...imageResource,
-        imageId: mostSpecificImageAvailable ? mostSpecificImageAvailable.imageId : null,
+        imageId: mostSpecificImageAvailable && mostSpecificImageAvailable.imageId ? mostSpecificImageAvailable.imageId : null,
       };
     });
 

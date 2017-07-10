@@ -34,22 +34,22 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
 
   switch (type) {
     case 'page':
-      return await AppScripts.processPageRequest(context, name);
+      await AppScripts.processPageRequest(context, name);
     case 'component':
       const componentData = await promptQuestions(context);
-      return await AppScripts.processComponentRequest(context, name, componentData);
+      await AppScripts.processComponentRequest(context, name, componentData);
     case 'directive':
       const directiveData = await promptQuestions(context);
-      return await AppScripts.processDirectiveRequest(context, name, directiveData);
+      await AppScripts.processDirectiveRequest(context, name, directiveData);
     case 'pipe':
       const pipeData = await promptQuestions(context);
-      return await AppScripts.processPipeRequest(context, name, pipeData);
+      await AppScripts.processPipeRequest(context, name, pipeData);
     case 'provider':
       const providerData = await promptQuestions(context);
-      return await AppScripts.processProviderRequest(context, name, providerData);
+      await AppScripts.processProviderRequest(context, name, providerData);
     case 'tabs':
       const tabsData = await tabsPrompt(args.env);
-      await AppScripts.processTabsRequest(context, name, tabsData); // TODO: match return type
+      await AppScripts.processTabsRequest(context, name, tabsData);
   }
 
   return [];

@@ -89,7 +89,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ type, name ] = inputs;
 
-    await this.env.hooks.fire('command:generate', { cmd: this, env: this.env, inputs, options });
+    await this.env.hooks.fire('command:generate', { cmd: this, env: this.env, inputs, options }); // TODO: print generated templates
 
     this.env.log.ok(`Generated a ${chalk.bold(type)}${type === 'tabs' ? ' page' : ''} named ${chalk.bold(name)}!`);
   }
