@@ -3,8 +3,8 @@ import * as chalk from 'chalk';
 import {
   CommandLineInputs,
   CommandLineOptions,
-  CommandPreRun,
   CommandMetadata,
+  CommandPreRun,
   contains,
   validate,
   validators,

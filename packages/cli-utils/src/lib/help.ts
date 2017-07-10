@@ -5,14 +5,15 @@ import {
   CommandData,
   CommandInput,
   CommandOption,
-  IonicEnvironment,
   ICommand,
   INamespace,
+  IonicEnvironment,
 } from '../definitions';
+
 import { isCommand } from '../guards';
 import { validators } from './validators';
 import { CLI_FLAGS } from './config';
-import { indent, generateFillSpaceStringList, wordWrap } from './utils/format';
+import { generateFillSpaceStringList, indent, wordWrap } from './utils/format';
 
 const HELP_DOTS_WIDTH = 25;
 

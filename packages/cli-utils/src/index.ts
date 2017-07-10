@@ -5,11 +5,11 @@ import * as minimist from 'minimist';
 import * as inquirerType from 'inquirer';
 import ui = inquirerType.ui;
 
-import { IonicEnvironment, IHookEngine, Plugin } from './definitions';
+import { IHookEngine, IonicEnvironment, Plugin } from './definitions';
 import { load } from './lib/modules';
 
 import { App } from './lib/app';
-import { CONFIG_FILE, CONFIG_DIRECTORY, Config, handleCliFlags } from './lib/config';
+import { CONFIG_DIRECTORY, CONFIG_FILE, Config, handleCliFlags } from './lib/config';
 import { Client } from './lib/http';
 import { CLIEventEmitter } from './lib/events';
 import { FatalException } from './lib/errors';

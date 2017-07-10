@@ -1,11 +1,11 @@
 import * as chalk from 'chalk';
 
 import {
+  Command,
   CommandLineInputs,
   CommandLineOptions,
-  Command,
-  CommandPreRun,
   CommandMetadata,
+  CommandPreRun,
   installPlugin,
   promptToInstallProjectPlugin,
   validators,

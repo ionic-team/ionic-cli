@@ -1,9 +1,9 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
 import {
+  Command,
   CommandLineInputs,
   CommandLineOptions,
-  Command,
   CommandMetadata,
   CommandPreRun,
   FatalException,
@@ -12,24 +12,26 @@ import {
 
 import {
   ImageResource,
-  SourceImage,
+  ImageUploadResponse,
+  KnownPlatform,
   ResourcesConfig,
   ResourcesImageConfig,
-  KnownPlatform,
-  ImageUploadResponse
+  SourceImage,
 } from '../definitions';
+
+import {
+  addResourcesToConfigXml,
+  createImgDestinationDirectories,
+  findMostSpecificImage,
+  flattenResourceJsonStructure,
+  getResourceConfigJson,
+  getSourceImages,
+  transformResourceImage,
+  uploadSourceImages,
+} from '../lib/resources';
+
 import { getProjectPlatforms, installPlatform } from '../lib/utils/setup';
 import { getOrientationFromConfigJson, parseConfigXmlToJson } from '../lib/utils/configXmlUtils';
-import {
-  flattenResourceJsonStructure,
-  createImgDestinationDirectories,
-  getSourceImages,
-  findMostSpecificImage,
-  uploadSourceImages,
-  transformResourceImage,
-  getResourceConfigJson,
-  addResourcesToConfigXml
-} from '../lib/resources';
 
 /*
 const RESOURCES_SUMMARY =

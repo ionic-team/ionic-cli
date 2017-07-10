@@ -14,9 +14,9 @@ import {
   prettyPath,
 } from '@ionic/cli-utils';
 
-import { generateBuildOptions, filterArgumentsForCordova, CORDOVA_INTENT } from '../lib/utils/cordova';
+import { CORDOVA_INTENT, filterArgumentsForCordova, generateBuildOptions } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc, writeConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
-import { getProjectPlugins, getProjectPlatforms, installPlatform } from '../lib/utils/setup';
+import { getProjectPlatforms, getProjectPlugins, installPlatform } from '../lib/utils/setup';
 
 export const CORDOVA_RUN_COMMAND_OPTIONS = [
   {

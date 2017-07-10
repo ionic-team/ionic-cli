@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 
-import { BowerJson, IonicEnvironment, IShellRunOptions, PackageJson } from '../../definitions';
+import { BowerJson, IShellRunOptions, IonicEnvironment, PackageJson } from '../../definitions';
 import { isBowerJson, isPackageJson } from '../../guards';
 import { ERROR_SHELL_COMMAND_NOT_FOUND } from '../shell';
 import { fsReadJsonFile } from './fs';

@@ -6,7 +6,7 @@ import ui = inquirerType.ui;
 
 import { ConfigFile, ILogger, ITask, ITaskChain } from '../../definitions';
 
-import { ICON_ELLIPSIS, ICON_SUCCESS, ICON_FAILURE, SPINNER_FRAMES } from './format';
+import { ICON_ELLIPSIS, ICON_FAILURE, ICON_SUCCESS, SPINNER_FRAMES } from './format';
 import { load } from '../modules';
 
 class Spinner {

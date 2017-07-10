@@ -12,7 +12,7 @@ import {
 import { isCommandPreRun } from '../../guards';
 import { FatalException } from '../errors';
 import { validate, validators } from '../validators';
-import { validateInputs, minimistOptionsToArray } from './utils';
+import { minimistOptionsToArray, validateInputs } from './utils';
 
 export class Command implements ICommand {
   public env: IonicEnvironment;

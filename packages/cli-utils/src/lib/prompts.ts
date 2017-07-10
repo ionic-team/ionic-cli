@@ -1,7 +1,7 @@
 import * as chalk from 'chalk';
 import * as inquirerType from 'inquirer';
 
-import { IConfig, ILogger, ConfigFile, PromptModule, PromptQuestion } from '../definitions';
+import { ConfigFile, IConfig, ILogger, PromptModule, PromptQuestion } from '../definitions';
 import { load } from './modules';
 
 export async function createPromptModule(log: ILogger, config: IConfig<ConfigFile>): Promise<PromptModule> {

@@ -17,7 +17,7 @@ import {
 } from '@ionic/cli-utils';
 
 import { IonicNamespace } from './commands';
-import { modifyArguments, mapLegacyCommand } from './lib/init';
+import { mapLegacyCommand, modifyArguments } from './lib/init';
 import { load } from './lib/modules';
 
 export const name = '__NAME__';

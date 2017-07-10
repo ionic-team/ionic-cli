@@ -1,14 +1,12 @@
 import * as opn from 'opn';
+
 import {
+  Command,
   CommandLineInputs,
   CommandLineOptions,
-  Command,
-  CommandMetadata
+  CommandMetadata,
 } from '@ionic/cli-utils';
 
-/**
- * Metadata about the docs command
- */
 @CommandMetadata({
   name: 'signup',
   type: 'global',

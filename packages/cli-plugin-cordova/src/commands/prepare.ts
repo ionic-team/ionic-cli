@@ -3,13 +3,13 @@ import * as chalk from 'chalk';
 import {
   CommandLineInputs,
   CommandLineOptions,
-  CommandPreRun,
   CommandMetadata,
+  CommandPreRun,
 } from '@ionic/cli-utils';
 
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { installPlatform } from '../lib/utils/setup';
-import { getPlatformEngine, resetConfigXmlContentSrc, parseConfigXmlToJson } from '../lib/utils/configXmlUtils';
+import { getPlatformEngine, parseConfigXmlToJson, resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import { CordovaCommand } from './base';
 
 @CommandMetadata({

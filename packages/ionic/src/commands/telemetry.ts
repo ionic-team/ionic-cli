@@ -1,9 +1,9 @@
 import * as chalk from 'chalk';
 
 import {
+  Command,
   CommandLineInputs,
   CommandLineOptions,
-  Command,
   CommandMetadata,
   contains,
 } from '@ionic/cli-utils';

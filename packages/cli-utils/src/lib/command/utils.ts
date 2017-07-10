@@ -5,16 +5,16 @@ import * as inquirerType from 'inquirer';
 
 import {
   CommandData,
-  CommandOption,
   CommandLineInput,
   CommandLineOptions,
+  CommandOption,
   CommandOptionType,
   CommandOptionTypeDefaults,
   IonicEnvironment,
   NormalizedCommandOption,
   NormalizedMinimistOpts,
-  Validator,
   ValidationError,
+  Validator,
 } from '../../definitions';
 
 import { validate, validators } from '../validators';

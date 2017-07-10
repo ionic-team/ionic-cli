@@ -2,12 +2,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as chalk from 'chalk';
 
-import { DistTag, IonicEnvironment, Plugin, HydratedPlugin } from '../definitions';
+import { DistTag, HydratedPlugin, IonicEnvironment, Plugin } from '../definitions';
 import { isExitCodeException, isPlugin } from '../guards';
 import { FatalException } from './errors';
 import { load } from './modules';
 import { prettyPath } from './utils/format';
-import { readDir, pathAccessible, pathExists } from './utils/fs';
+import { pathAccessible, pathExists, readDir } from './utils/fs';
 import { getGlobalProxy } from './http';
 import { PkgManagerOptions, pkgManagerArgs } from './utils/npm';
 

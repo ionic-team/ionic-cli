@@ -3,10 +3,10 @@ import * as os from 'os';
 
 import * as chalk from 'chalk';
 
-import { ConfigFile, IConfig, CliFlag, IonicEnvironment } from '../definitions';
+import { CliFlag, ConfigFile, IConfig, IonicEnvironment } from '../definitions';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
-import { ERROR_FILE_NOT_FOUND, ERROR_FILE_INVALID_JSON, fsMkdirp, fsStat, fsReadJsonFile, fsWriteJsonFile } from './utils/fs';
+import { ERROR_FILE_INVALID_JSON, ERROR_FILE_NOT_FOUND, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from './utils/fs';
 import { load } from './modules';
 
 export const CLI_FLAGS: { flag: CliFlag, visible?: boolean; defaultValue?: boolean }[] = [

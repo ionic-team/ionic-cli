@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 
-import { Validator, Validators, ValidationError } from '../definitions';
+import { ValidationError, Validator, Validators } from '../definitions';
 import { isValidEmail } from './utils/string';
 
 export function validate(input: string, key: string, validators: Validator[], errors?: ValidationError[]) {

@@ -1,8 +1,14 @@
 import * as chalk from 'chalk';
 import * as path from 'path';
 
+import {
+  CommandHookArgs,
+  minimistOptionsToArray,
+  prettyPath,
+  readPackageJsonFile,
+} from '@ionic/cli-utils';
+
 import * as AppScriptsType from '@ionic/app-scripts';
-import { CommandHookArgs, readPackageJsonFile, prettyPath, minimistOptionsToArray } from '@ionic/cli-utils';
 
 import { load } from './lib/modules';
 import { prompt, tabsPrompt } from './utils/generate';

@@ -1,17 +1,19 @@
-import * as path from 'path';
-import { injectLiveReloadScript } from './live-reload';
-import * as expressType from 'express';
 import * as fs from 'fs';
+import * as path from 'path';
 import * as url from 'url';
-import {
-  ServerOptions,
-  IONIC_LAB_URL,
-  IOS_PLATFORM_PATH,
-  ANDROID_PLATFORM_PATH
-} from './config';
+
+import * as expressType from 'express';
 import { IProject } from '@ionic/cli-utils';
 
-import { LabAppView, ApiCordovaProject } from './lab';
+import {
+  ANDROID_PLATFORM_PATH,
+  IONIC_LAB_URL,
+  IOS_PLATFORM_PATH,
+  ServerOptions,
+} from './config';
+
+import { injectLiveReloadScript } from './live-reload';
+import { ApiCordovaProject, LabAppView } from './lab';
 import { load } from '../lib/modules';
 
 /**

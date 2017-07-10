@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { buildCordovaConfig, CordovaProject } from '../utils/cordova-config';
+import { CordovaProject, buildCordovaConfig } from '../utils/cordova-config';
 
 /**
  * Main Lab app view

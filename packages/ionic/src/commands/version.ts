@@ -1,7 +1,7 @@
 import {
+  Command,
   CommandLineInputs,
   CommandLineOptions,
-  Command,
   CommandMetadata,
 } from '@ionic/cli-utils';
 

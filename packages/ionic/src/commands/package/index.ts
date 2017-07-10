@@ -1,4 +1,4 @@
-import { Namespace, CommandMap } from '@ionic/cli-utils';
+import { CommandMap, Namespace } from '@ionic/cli-utils';
 
 import { PackageBuildCommand } from './build';
 import { PackageDownloadCommand } from './download';

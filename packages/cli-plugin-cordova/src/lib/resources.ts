@@ -2,11 +2,12 @@ import * as path from 'path';
 
 import {
   ImageResource,
-  SourceImage,
   ImageUploadResponse,
+  KnownPlatform,
   ResourcesConfig,
-  KnownPlatform
+  SourceImage,
 } from '../definitions';
+
 import {
   ERROR_FILE_INVALID_JSON,
   ERROR_FILE_NOT_FOUND,
@@ -21,10 +22,10 @@ import {
 } from '@ionic/cli-utils';
 
 import {
-  writeConfigXml,
-  parseConfigXmlToJson,
   addPlatformImagesToConfigJson,
-  addSplashScreenPreferencesToConfigJson
+  addSplashScreenPreferencesToConfigJson,
+  parseConfigXmlToJson,
+  writeConfigXml,
 } from './utils/configXmlUtils';
 
 const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];

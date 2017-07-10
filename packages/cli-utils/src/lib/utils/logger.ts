@@ -4,7 +4,7 @@ import * as chalk from 'chalk';
 import { ChalkStyle } from 'chalk';
 
 import { ILogger, LogLevel, LoggerOptions } from '../../definitions';
-import { isLogLevel, LOG_LEVELS } from '../../guards';
+import { LOG_LEVELS, isLogLevel } from '../../guards';
 import { FatalException } from '../errors';
 import { indent, wordWrap } from './format';
 

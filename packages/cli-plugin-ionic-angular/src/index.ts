@@ -1,7 +1,12 @@
 import * as chalk from 'chalk';
 import * as path from 'path';
 
-import { IonicEnvironment, IHookEngine, readPackageJsonFile, prettyPath } from '@ionic/cli-utils';
+import {
+  IHookEngine,
+  IonicEnvironment,
+  prettyPath,
+  readPackageJsonFile,
+} from '@ionic/cli-utils';
 
 import { build } from './build';
 import { generate } from './generate';

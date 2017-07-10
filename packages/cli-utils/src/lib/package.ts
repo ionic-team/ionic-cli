@@ -2,7 +2,7 @@ import * as chalk from 'chalk';
 
 import { IClient, PackageBuild, PackageProjectRequest } from '../definitions';
 import { isPackageBuildResponse, isPackageBuildsResponse, isPackageProjectRequestResponse } from '../guards';
-import { createRequest, createFatalAPIFormat } from './http';
+import { createFatalAPIFormat, createRequest } from './http';
 import { s3SignedUpload } from './utils/aws';
 
 export class PackageClient {

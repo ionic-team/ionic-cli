@@ -7,9 +7,9 @@ import {
   APIResponse,
   APIResponseError,
   APIResponseSuccess,
+  HttpMethod,
   IClient,
   IPaginator,
-  HttpMethod,
   Response,
   SuperAgentError,
 } from '../definitions';

@@ -7,7 +7,7 @@ import {
   CommandPreRun,
 } from '@ionic/cli-utils';
 
-import { generateBuildOptions, filterArgumentsForCordova, CORDOVA_INTENT } from '../lib/utils/cordova';
+import { CORDOVA_INTENT, filterArgumentsForCordova, generateBuildOptions } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import { CordovaCommand } from './base';
 

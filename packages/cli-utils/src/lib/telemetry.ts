@@ -1,6 +1,6 @@
 import * as leek from 'leek';
 
-import { ITelemetry, IConfig, ConfigFile } from '../definitions';
+import { ConfigFile, IConfig, ITelemetry } from '../definitions';
 import { load } from './modules';
 
 const GA_CODE = 'UA-44023830-30';

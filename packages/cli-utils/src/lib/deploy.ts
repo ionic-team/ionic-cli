@@ -1,5 +1,5 @@
 import { Deploy, DeployChannel, DeploySnapshot, DeploySnapshotRequest, IClient } from '../definitions';
-import { isDeployResponse, isDeployChannelResponse, isDeploySnapshotResponse, isDeploySnapshotRequestResponse } from '../guards';
+import { isDeployChannelResponse, isDeployResponse, isDeploySnapshotRequestResponse, isDeploySnapshotResponse } from '../guards';
 import { createFatalAPIFormat } from './http';
 import { s3SignedUpload } from './utils/aws';
 
