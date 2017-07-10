@@ -5,7 +5,7 @@ import * as minimist from 'minimist';
  */
 export function modifyArguments(pargv: string[]): string[] {
   let modifiedArgArray: string[] = pargv.slice();
-  const minimistArgv = minimist(pargv, { boolean: true });
+  const minimistArgv = minimist(pargv, { boolean: true, string: '_' });
 
   if (pargv.length === 0) {
     return ['help'];

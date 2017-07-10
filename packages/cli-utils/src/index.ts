@@ -80,8 +80,7 @@ export async function generateIonicEnvironment(plugin: Plugin, pargv: string[], 
   env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
   env['IONIC_PROJECT_DIR'] = await getProjectRootDir(process.cwd(), PROJECT_FILE);
 
-  const argv = minimist(pargv, { boolean: true });
-  argv._ = argv._.map(i => String(i)); // TODO: minimist types are lying
+  const argv = minimist(pargv, { boolean: true, string: '_' });
 
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
   const changedFlags = await handleCliFlags(config, argv);

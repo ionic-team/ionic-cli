@@ -264,7 +264,7 @@ export interface CommandData {
   fullName?: string;
   visible?: boolean;
   source?: string;
-  minimistOpts?: NormalizedMinimistOpts;
+  minimistOpts?: minimistType.Opts;
 }
 
 export interface ISession {

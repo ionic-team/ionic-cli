@@ -2,6 +2,7 @@ import * as chalk from 'chalk';
 
 import * as dargsType from 'dargs';
 import * as inquirerType from 'inquirer';
+import * as minimistType from 'minimist';
 
 import {
   CommandData,
@@ -41,7 +42,6 @@ export function minimistOptionsToArray(options: CommandLineOptions, dargsOptions
  * Takes a Minimist command option and normalizes its values.
  */
 function normalizeOption(option: CommandOption): NormalizedCommandOption {
-
   if (!option.type) {
     option.type = String;
   }
@@ -57,7 +57,7 @@ function normalizeOption(option: CommandOption): NormalizedCommandOption {
   return option as NormalizedCommandOption;
 }
 
-export function metadataToMinimistOptions(metadata: CommandData): NormalizedMinimistOpts {
+export function metadataToMinimistOptions(metadata: CommandData): minimistType.Opts {
   let options: NormalizedMinimistOpts = {
     string: [],
     boolean: [],
@@ -66,7 +66,7 @@ export function metadataToMinimistOptions(metadata: CommandData): NormalizedMini
   };
 
   if (!metadata.options) {
-    return options;
+    return { boolean: true, string: '_' };
   }
 
   for (let option of metadata.options.map(o => normalizeOption(o))) {
