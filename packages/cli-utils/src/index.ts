@@ -14,8 +14,9 @@ import { Client } from './lib/http';
 import { CLIEventEmitter } from './lib/events';
 import { FatalException } from './lib/errors';
 import { HookEngine } from './lib/hooks';
-import { PROJECT_FILE, Project, getProjectRootDir } from './lib/project';
+import { PROJECT_FILE, PROJECT_FILE_LEGACY, Project } from './lib/project';
 import { Logger } from './lib/utils/logger';
+import { findBaseDirectory } from './lib/utils/fs';
 import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
 import { Telemetry } from './lib/telemetry';
 import { Session } from './lib/session';
@@ -77,9 +78,6 @@ export async function generateIonicEnvironment(plugin: Plugin, pargv: string[], 
     throw new FatalException('No root ionic namespace.');
   }
 
-  env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
-  env['IONIC_PROJECT_DIR'] = await getProjectRootDir(process.cwd(), PROJECT_FILE);
-
   const argv = minimist(pargv, { boolean: true, string: '_' });
 
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
@@ -133,7 +131,20 @@ export async function generateIonicEnvironment(plugin: Plugin, pargv: string[], 
     }
   }
 
-  const project = new Project(env['IONIC_PROJECT_DIR'], PROJECT_FILE);
+  const projectDir = await findBaseDirectory(process.cwd(), PROJECT_FILE);
+
+  if (!projectDir) {
+    const foundDir = await findBaseDirectory(process.cwd(), PROJECT_FILE_LEGACY);
+
+    if (foundDir) {
+      log.warn(`${chalk.bold(PROJECT_FILE_LEGACY)} file found in ${chalk.bold(foundDir)}--please rename it to ${chalk.bold(PROJECT_FILE)}, or your project directory will not be detected!`);
+    }
+  }
+
+  env['IONIC_PROJECT_DIR'] = projectDir || '';
+  env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
+
+  const project = new Project(projectDir || '', PROJECT_FILE);
   const hooks = new HookEngine();
   const client = new Client(configData.urls.api);
   const telemetry = new Telemetry(config, plugin.version);

@@ -160,3 +160,26 @@ export async function pathAccessible(filePath: string, mode: number): Promise<bo
 export async function pathExists(filePath: string): Promise<boolean> {
   return pathAccessible(filePath, fs.constants.F_OK);
 }
+
+/**
+ * Find the base directory based on the path given and a marker file to look for.
+ */
+export async function findBaseDirectory(dir: string, file: string): Promise<string | undefined> {
+  dir = path.normalize(dir);
+  const dirInfo = path.parse(dir);
+  const directoriesToCheck = dirInfo.dir
+    .slice(dirInfo.root.length)
+    .split(path.sep)
+    .concat(dirInfo.base)
+    .map((segment: string, index: number, array: string[]) => {
+      let pathSegments = array.slice(0, (array.length - index));
+      return dirInfo.root + path.join(...pathSegments);
+    });
+
+  for (let i = 0; i < directoriesToCheck.length; i++) {
+    const results = await fsReadDir(directoriesToCheck[i]);
+    if (results.includes(file)) {
+      return directoriesToCheck[i];
+    }
+  }
+}
