@@ -47,8 +47,9 @@ describe('@ionic/cli-utils', () => {
 
     describe('windows', () => {
 
+      const mock_path_win32 = path.win32;
       jest.resetModules();
-      jest.mock('path', () => path.win32);
+      jest.mock('path', () => mock_path_win32);
 
       const cliUtils = require('../lib/utils/fs');
       const { getProjectRootDir } = require('../');

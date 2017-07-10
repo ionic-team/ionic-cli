@@ -5,9 +5,11 @@ describe('@ionic/cli-utils', () => {
 
   describe('prettyPath', () => {
 
+    const mock_os = os;
+
     jest.resetModules();
-    const homedir = () => '/home/user';
-    jest.mock('os', () => ({ ...os, homedir }));
+    const mock_homedir = () => '/home/user';
+    jest.mock('os', () => ({ ...mock_os, homedir: mock_homedir }));
     const prettyPath = require('../format').prettyPath;
 
     beforeEach(() => {
@@ -92,9 +94,10 @@ describe('@ionic/cli-utils', () => {
     describe('windows', () => {
 
       jest.resetModules();
-      const homedir = () => 'C:\\home\\user';
-      jest.mock('os', () => ({ ...os, homedir }));
-      jest.mock('path', () => path.win32);
+      const mock_path_win32 = path.win32;
+      const mock_homedir = () => 'C:\\home\\user';
+      jest.mock('os', () => ({ ...mock_os, homedir: mock_homedir }));
+      jest.mock('path', () => mock_path_win32);
       const prettyPath = require('../format').prettyPath;
 
       beforeEach(() => {
