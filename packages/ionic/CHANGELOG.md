@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.5.0"></a>
+# [3.5.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.4.0...ionic@3.5.0) (2017-07-11)
+
+
+### Bug Fixes
+
+* **generate:** error on unknown generator ([fb20896](https://github.com/ionic-team/ionic-cli/commit/fb20896))
+* **hooks:** show execution of npm script hooks ([e838a5d](https://github.com/ionic-team/ionic-cli/commit/e838a5d))
+* **link:** disable interpretation of scientific notation ([3874ca6](https://github.com/ionic-team/ionic-cli/commit/3874ca6))
+* **start:** substitute invalid package.json name for MyApp ([ce6c129](https://github.com/ionic-team/ionic-cli/commit/ce6c129))
+* **version:** quickfix for control chars in version ([cb448db](https://github.com/ionic-team/ionic-cli/commit/cb448db))
+
+
+### Features
+
+* automatically detect CI and switch to non-interactive mode ([113b254](https://github.com/ionic-team/ionic-cli/commit/113b254))
+* **cloud:** add options for snapshot metadata ([75099e6](https://github.com/ionic-team/ionic-cli/commit/75099e6))
+
+
+
+
 <a name="3.4.0"></a>
 # [3.4.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.3.0...ionic@3.4.0) (2017-06-12)
 

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.5.0"></a>
+# [1.5.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.4.0...@ionic/cli-utils@1.5.0) (2017-07-11)
+
+
+### Bug Fixes
+
+* better icon support for windows ([47ea9ab](https://github.com/ionic-team/ionic-cli/commit/47ea9ab))
+* **link:** disable interpretation of scientific notation ([3874ca6](https://github.com/ionic-team/ionic-cli/commit/3874ca6))
+* **project:** warn users of ionic.project file ([965af07](https://github.com/ionic-team/ionic-cli/commit/965af07))
+* **start:** substitute invalid package.json name for MyApp ([ce6c129](https://github.com/ionic-team/ionic-cli/commit/ce6c129))
+
+
+### Features
+
+* **cloud:** add options for snapshot metadata ([75099e6](https://github.com/ionic-team/ionic-cli/commit/75099e6))
+
+
+
+
 <a name="1.4.0"></a>
 # [1.4.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.3.0...@ionic/cli-utils@1.4.0) (2017-06-12)
 
