@@ -23,6 +23,7 @@ Like running ${chalk.green('cordova build')} directly, but also builds web asset
     'ios --prod --release',
     'ios --device --prod --release -- --developmentTeam="ABCD" --codeSignIdentity="iPhone Developer" --provisioningProfile="UUID"',
     'android',
+    'android --prod --release -- -- --keystore=filename.keystore --alias=myalias',
     'android --prod --release -- -- --minSdkVersion=21',
     'android --prod --release -- -- --gradleArg=-PcdvBuildMultipleApks=true',
   ],
