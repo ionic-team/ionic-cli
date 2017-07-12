@@ -94,7 +94,7 @@ export class IonicNamespace extends Namespace {
     } catch (e) {
       const cmdsource = command.metadata.source;
       if (this.source !== cmdsource && !e.fatal && !isValidationErrorArray(e)) {
-        env.log.warn(`Error occurred during command execution from a CLI plugin${cmdsource ? ' (' + chalk.green(cmdsource) + ')' : ''}. ${chalk.bold('Your plugins may be out of date.')}`);
+        env.log.warn(`Error occurred during command execution from a CLI plugin${cmdsource ? ' (' + chalk.green(cmdsource) + ')' : ''}.`);
       }
 
       throw e;
