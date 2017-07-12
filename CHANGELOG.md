@@ -7,6 +7,20 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.5.0"></a>
+### 3.5.0 (2017-07-11)
+
+* Added deploy metadata option for `ionic upload`. Thanks,
+  [@harshabonthu](https://github.com/harshabonthu)!
+* Added CI detection to switch CLI into non-interactive mode.
+* Added logging for showing the execution of npm script hooks.
+* Added better error messaging for gulpfile errors.
+* Removed non-printing characters in the output of `ionic --version`.
+* Fixed lack of error message for unknown generator types.
+* Fixed incorrect interpretation of app IDs in scientific notation. (Only if
+  you have a really unfortunate app_id such as `12345e10` :joy:). See
+  [#2506](https://github.com/ionic-team/ionic-cli/issues/2506).
+
 <a name="3.4.0"></a>
 ### 3.4.0 (2017-06-12)
 
@@ -42,9 +56,8 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 <a name="3.2.0"></a>
 ### 3.2.0 (2017-05-23)
 
-* Added persistent [CLI
-  flags](https://github.com/ionic-team/ionic-cli#cli-flags), which change CLI
-  behavior. There is now `--quiet`, `--[no-]interactive`
+* Added [CLI flags](https://github.com/ionic-team/ionic-cli#cli-flags), which
+  change CLI behavior. There is now `--quiet`, `--[no-]interactive`
   (interactive/non-interactive mode), `--[no-]confirm`.
 * Added non-interactive mode, which is useful for CI/CD servers. It disables
   "flair" such as spinners and unnecessary output. It also disables prompts.
