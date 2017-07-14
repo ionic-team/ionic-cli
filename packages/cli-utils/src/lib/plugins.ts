@@ -295,7 +295,7 @@ export async function hydratePlugin(env: IonicEnvironment, plugin: Plugin): Prom
     distTag,
     currentVersion,
     latestVersion,
-    updateAvailable: semver.gt(latestVersion, currentVersion) || (distTag === 'canary' && latestVersion !== currentVersion),
+    updateAvailable: semver.gt(latestVersion, currentVersion) || (['canary', 'pro'].includes(distTag) && latestVersion !== currentVersion),
   };
 }
 
@@ -471,12 +471,12 @@ export function determineDistTag(version: string): DistTag {
     return 'canary';
   }
 
-  if (version.includes('-beta') || version.includes('-rc')) {
-    return 'beta';
-  }
-
   if (version.includes('-pro')) {
     return 'pro';
+  }
+
+  if (version.includes('-beta') || version.includes('-rc')) {
+    return 'beta';
   }
 
   return 'latest';
