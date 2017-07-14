@@ -11,6 +11,5 @@
       "feat": "New Feature"
     },
     "cacheDir": ".changelog"
-  },
-  "conventionalCommits": true
+  }
 }
