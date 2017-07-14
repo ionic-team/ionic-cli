@@ -475,5 +475,9 @@ export function determineDistTag(version: string): DistTag {
     return 'beta';
   }
 
+  if (version.includes('-pro')) {
+    return 'pro';
+  }
+
   return 'latest';
 }

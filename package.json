@@ -8,8 +8,9 @@
     "build": "lerna run build",
     "watch": "lerna run watch --parallel",
     "docs": "node ./packages/cli-scripts/docs.js",
-    "publish:canary": "lerna publish --canary --exact --npm-tag canary",
-    "publish:beta": "lerna publish --exact --npm-tag beta",
+    "publish:canary": "lerna publish --canary --exact --npm-tag=canary",
+    "publish:pro": "lerna publish --canary=pro --exact --npm-tag=pro --skip-git",
+    "publish:beta": "lerna publish --exact --npm-tag=beta",
     "publish:ci": "npm run publish:canary -- --yes",
     "publish": "lerna publish --exact --conventional-commits",
     "prepush": "npm run lint"

@@ -480,7 +480,7 @@ export interface Plugin {
   meta?: PluginMeta; // set when loading plugin
 }
 
-export type DistTag = 'local' | 'canary' | 'beta' | 'latest';
+export type DistTag = 'local' | 'canary' | 'beta' | 'pro' | 'latest';
 
 export interface HydratedPlugin extends Plugin {
   distTag: DistTag;
