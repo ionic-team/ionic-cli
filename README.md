@@ -213,9 +213,9 @@ $ npm install -g @ionic/cli-plugin-proxy
 Then, set the following environment variables:
 
 ```bash
-$ export HTTP_PROXY=http://internal.proxy.com # used by npm
-$ export HTTPS_PROXY=https://internal.proxy.com # used by npm
-$ export IONIC_HTTP_PROXY=http://internal.proxy.com
+$ export HTTP_PROXY=http://proxy.example.org:8888 # used by npm
+$ export HTTPS_PROXY=https://proxy.example.org:8888 # used by npm
+$ export IONIC_HTTP_PROXY=http://proxy.example.org:8888
 ```
 
 For example:
