@@ -432,14 +432,23 @@ export interface ICLIEventEmitter extends EventEmitter {
 }
 
 export interface PromptQuestion extends inquirerType.Question {
-  type: 'input' | 'password' | 'confirm' | 'list'; // strong-type type
+  type: string; // type is required
   message: string; // message is required
   name: string; // name is required
   noninteractiveValue?: string; // in non-interactive mode, what does this return?
 }
 
+export interface ConfirmPromptQuestion extends PromptQuestion {
+  type: 'confirm';
+}
+
+export interface NonConfirmPromptQuestion extends PromptQuestion {
+  type: 'input' | 'password' | 'list';
+}
+
 export interface PromptModule {
-  (questions: PromptQuestion): Promise<string>;
+  (question: ConfirmPromptQuestion): Promise<boolean>;
+  (question: NonConfirmPromptQuestion): Promise<string>;
 }
 
 export interface IonicEnvironment {
