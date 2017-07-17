@@ -112,7 +112,7 @@ export class ServeCommand extends Command {
       const message = JSON.stringify({
         app_name: appDetails.name,
         app_id: appDetails.app_id,
-        local_address: `${response.protocol}://${response.publicIp}:${response.httpPort}`
+        local_address: `${response.protocol}://${response.externalAddress || response.publicIp}:${response.httpPort}`
       });
       const dgram = load('dgram');
       const server = dgram.createSocket('udp4');

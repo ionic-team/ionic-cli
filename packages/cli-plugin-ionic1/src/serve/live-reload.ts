@@ -5,7 +5,7 @@ import { load } from '../lib/modules';
 export function createLiveReloadServer(options: ServerOptions): (changedFile: string[]) => void {
   const tinylr = load('tiny-lr');
   const liveReloadServer = tinylr();
-  liveReloadServer.listen(options.livereloadPort, options.address);
+  liveReloadServer.listen(options.livereloadPort, options.externalAddress);
 
   return (changedFiles: string[]) => {
     liveReloadServer.changed({

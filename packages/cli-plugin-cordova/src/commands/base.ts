@@ -224,7 +224,7 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
         options: generateBuildOptions(this.metadata, options),
       });
 
-      await writeConfigXmlContentSrc(this.env.project.directory, `http://${serverSettings.publicIp}:${serverSettings.httpPort}`);
+      await writeConfigXmlContentSrc(this.env.project.directory, `http://${serverSettings.externalAddress || serverSettings.publicIp}:${serverSettings.httpPort}`);
     }
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });

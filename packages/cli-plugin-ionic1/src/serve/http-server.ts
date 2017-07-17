@@ -72,7 +72,7 @@ function serveIndex(req: expressType.Request, res: expressType.Response)  {
   const indexFileName = path.join(options.wwwDir, 'index.html');
   fs.readFile(indexFileName, (err, indexHtml) => {
     if (!options.nolivereload) {
-      indexHtml = injectLiveReloadScript(indexHtml, options.address, options.livereloadPort);
+      indexHtml = injectLiveReloadScript(indexHtml, options.externalAddress, options.livereloadPort);
     }
 
     res.set('Content-Type', 'text/html');

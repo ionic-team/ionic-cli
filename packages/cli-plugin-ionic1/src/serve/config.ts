@@ -4,6 +4,7 @@ export interface ServerOptions {
   projectRoot: string;
   wwwDir: string;
   address: string;
+  externalAddress: string;
   port: number;
   httpPort: number;
   livereloadPort: number;

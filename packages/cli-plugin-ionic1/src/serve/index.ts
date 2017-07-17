@@ -61,6 +61,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
     projectRoot: args.env.project.directory,
     wwwDir: path.join(args.env.project.directory, projectConfig.documentRoot || 'www'),
     address: <string>args.options['address'] || DEFAULT_ADDRESS,
+    externalAddress: chosenIP,
     port: stringToInt(<string>args.options['port'], DEFAULT_SERVER_PORT),
     httpPort: stringToInt(<string>args.options['port'], DEFAULT_SERVER_PORT),
     livereloadPort: stringToInt(<string>args.options['livereload-port'], DEFAULT_LIVERELOAD_PORT),
@@ -88,7 +89,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   const settings = await setupServer(args.env, serverOptions);
 
   const localAddress = 'http://localhost:' + serverOptions.port;
-  const externalAddress = 'http://' + chosenIP + ':' + serverOptions.port;
+  const externalAddress = 'http://' + serverOptions.externalAddress + ':' + serverOptions.port;
 
   args.env.log.info(
     `Development server running\n` +
@@ -106,8 +107,8 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
     opn(openOptions.join(''));
   }
 
-  return  {
-    publicIp: chosenIP,
+  return {
+    publicIp: serverOptions.externalAddress,
     ...settings
   };
 }
