@@ -5,6 +5,7 @@ import * as chalk from 'chalk';
 
 import {
   IHookEngine,
+  InfoHookItem,
   checkForUpdates,
   formatSuperAgentError,
   generateIonicEnvironment,
@@ -66,27 +67,46 @@ export function registerHooks(hooks: IHookEngine) {
     const os = osName();
     const node = process.version;
 
+    const { getAndroidSdkToolsVersion } = await import('./lib/android');
+
     const [
       npm,
       xcode,
       iosDeploy,
       iosSim,
+      androidSdkToolsVersion,
     ] = await Promise.all([
       getCommandInfo('npm', ['-v']),
       getCommandInfo('/usr/bin/xcodebuild', ['-version']),
       getCommandInfo('ios-deploy', ['--version']),
       getCommandInfo('ios-sim', ['--version']),
+      getAndroidSdkToolsVersion(),
     ]);
 
-    return [
+    const info: InfoHookItem[] = [ // TODO: why must I be explicit?
       { type: 'global-packages', name: 'Ionic CLI', version: version },
       { type: 'system', name: 'Node', version: node },
       { type: 'system', name: 'npm', version: npm || 'not installed' },
       { type: 'system', name: 'OS', version: os },
-      { type: 'system', name: 'Xcode', version: xcode || 'not installed' },
-      { type: 'system', name: 'ios-deploy', version: iosDeploy || 'not installed' },
-      { type: 'system', name: 'ios-sim', version: iosSim || 'not installed' },
     ];
+
+    if (xcode) {
+      info.push({ type: 'system', name: 'Xcode', version: xcode });
+    }
+
+    if (iosDeploy) {
+      info.push({ type: 'system', name: 'ios-deploy', version: iosDeploy });
+    }
+
+    if (iosSim) {
+      info.push({ type: 'system', name: 'ios-sim', version: iosSim });
+    }
+
+    if (androidSdkToolsVersion) {
+      info.push({ type: 'system', name: 'Android SDK Tools', version: androidSdkToolsVersion });
+    }
+
+    return info;
   });
 }
 
