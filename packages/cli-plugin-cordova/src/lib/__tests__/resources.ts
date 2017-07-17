@@ -276,7 +276,6 @@ describe('@ionic/cli-plugin-cordova', () => {
     it('should upload an image and receive back metadata', async function() {
       const createRequestSpy = jest.spyOn(cliUtils, 'createRequest');
       const createRequestMock = {
-        timeout: jest.fn().mockReturnThis(),
         type: jest.fn().mockReturnThis(),
         attach: jest.fn().mockReturnThis(),
         field: jest.fn(() => Promise.resolve({
@@ -319,7 +318,6 @@ describe('@ionic/cli-plugin-cordova', () => {
       jest.spyOn(cliUtils, 'writeStreamToFile').mockImplementationOnce(() => Promise.resolve());
       const createRequestSpy = jest.spyOn(cliUtils, 'createRequest');
       const createRequestMock = {
-        timeout: jest.fn().mockReturnThis(),
         type: jest.fn().mockReturnThis(),
         send: jest.fn().mockReturnThis(),
         on: jest.fn().mockReturnThis(),

@@ -160,11 +160,10 @@ export function findMostSpecificImage(imageResource: ImageResource, srcImagesAva
  * Upload the provided source image through the resources web service. This will make it available
  * for transforms for the next 5 minutes.
  */
-export async function uploadSourceImages(srcImages: SourceImage[], timeout?: boolean): Promise<ImageUploadResponse[]> {
+export async function uploadSourceImages(srcImages: SourceImage[]): Promise<ImageUploadResponse[]> {
   return Promise.all(
     srcImages.map(async (srcImage) => {
       const res = await createRequest('POST', UPLOAD_URL)
-        .timeout({ response: timeout ? 120000 : 0 })
         .type('form')
         .attach('src', srcImage.path)
         .field('image_id', srcImage.imageId || '');
@@ -177,10 +176,9 @@ export async function uploadSourceImages(srcImages: SourceImage[], timeout?: boo
  * Using the transformation web service transform the provided image resource
  * into the appropriate w x h and then write this file to the provided destination directory.
  */
-export function transformResourceImage(imageResource: ImageResource, timeout?: boolean) {
+export function transformResourceImage(imageResource: ImageResource) {
   return new Promise<void>((resolve, reject) => {
     const req = createRequest('POST', TRANSFORM_URL)
-      .timeout({ response: timeout ? 120000 : 0 })
       .type('form')
       .send({
         'name': imageResource.name,
