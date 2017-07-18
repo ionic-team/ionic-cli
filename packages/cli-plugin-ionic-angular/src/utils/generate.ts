@@ -39,12 +39,7 @@ export async function tabsPrompt(env: IonicEnvironment) {
       name: 'tabName',
       message: `Name of tab ${i + 1}:`
     });
-    const shouldLazyLoad = await env.prompt({
-      type: 'confirm',
-      'name': 'shouldLazyLoad',
-      'message': `Lazy load ${tabName}?`
-    })
-    tabNames.push({'name': tabName, 'includeNgModule': shouldLazyLoad});
+    tabNames.push(tabName);
   }
   return tabNames;
 }
