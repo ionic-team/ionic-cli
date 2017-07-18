@@ -35,6 +35,14 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
       description: 'The name of the component being generated',
     }
   ],
+  options: [
+    {
+      name: 'module',
+      description: 'Do not inclue a NgModule',
+      type: Boolean,
+      default: true
+    }
+  ]
 })
 export class GenerateCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
@@ -82,16 +90,6 @@ export class GenerateCommand extends Command implements CommandPreRun {
       inputs[1] = generatorName;
     }
 
-    if (inputs[0] === 'page' || 'tabs') {
-      const generatorshouldlazyload = await this.env.prompt({
-        type: 'confirm',
-        name: 'generatorLazyLoaded',
-        message: `Lazy load ${inputs[1]}?`,
-        default: false
-      });
-      inputs[2] = generatorshouldlazyload;
-    }
-
     if (!config.cliFlags.interactive && inputs[0] === 'tabs') {
       this.env.log.error(`Cannot generate tabs in non-interactive mode. Use ${chalk.green('--interactive')} to re-enable prompts.`);
       return 1;
@@ -100,7 +98,6 @@ export class GenerateCommand extends Command implements CommandPreRun {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ type, name ] = inputs;
-
     await this.env.hooks.fire('command:generate', { cmd: this, env: this.env, inputs, options }); // TODO: print generated templates
 
     this.env.log.ok(`Generated a ${chalk.bold(type)}${type === 'tabs' ? ' page' : ''} named ${chalk.bold(name)}!`);
