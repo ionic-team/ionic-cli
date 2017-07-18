@@ -82,6 +82,16 @@ export class GenerateCommand extends Command implements CommandPreRun {
       inputs[1] = generatorName;
     }
 
+    if (inputs[0] === 'page' || 'tabs') {
+      const generatorshouldlazyload = await this.env.prompt({
+        type: 'confirm',
+        name: 'generatorLazyLoaded',
+        message: `Lazy load ${inputs[1]}?`,
+        default: false
+      });
+      inputs[2] = generatorshouldlazyload;
+    }
+
     if (!config.cliFlags.interactive && inputs[0] === 'tabs') {
       this.env.log.error(`Cannot generate tabs in non-interactive mode. Use ${chalk.green('--interactive')} to re-enable prompts.`);
       return 1;

@@ -36,11 +36,11 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
   const AppScripts = load('@ionic/app-scripts');
   const context = AppScripts.generateContext();
 
-  const [ type, name ] = args.inputs;
+  const [ type, name, includeNgModule] = args.inputs;
 
   switch (type) {
     case 'page':
-      await AppScripts.processPageRequest(context, name);
+      await AppScripts.processPageRequest(context, name, includeNgModule);
       break;
     case 'component':
       const componentData = await promptQuestions(context);
@@ -60,7 +60,7 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
       break;
     case 'tabs':
       const tabsData = await tabsPrompt(args.env);
-      await AppScripts.processTabsRequest(context, name, tabsData);
+      await AppScripts.processTabsRequest(context, name, includeNgModule, tabsData);
       break;
   }
 
