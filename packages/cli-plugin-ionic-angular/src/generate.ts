@@ -37,7 +37,7 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
   const context = AppScripts.generateContext();
 
   const [ type, name ] = args.inputs;
-  const includeNgModule = args.options.module
+  const includeNgModule = args.options.module;
 
   switch (type) {
     case 'page':
