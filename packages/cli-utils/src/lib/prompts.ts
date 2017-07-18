@@ -42,7 +42,7 @@ export async function createPromptModule(log: ILogger, config: IConfig<ConfigFil
 
     const result = (await inquirerPromptModule(question))[question.name];
 
-    if (typeof result !== 'string' || typeof result !== 'boolean') {
+    if (typeof result !== 'string' && typeof result !== 'boolean') {
       return String(result);
     }
 
