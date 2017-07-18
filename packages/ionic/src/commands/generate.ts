@@ -38,7 +38,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
   options: [
     {
       name: 'module',
-      description: 'Do not inclue a NgModule',
+      description: 'Do not include a NgModule',
       type: Boolean,
       default: true
     }
