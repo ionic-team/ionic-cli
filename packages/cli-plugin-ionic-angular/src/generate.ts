@@ -61,7 +61,7 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
       break;
     case 'tabs':
       const tabsData = await tabsPrompt(args.env);
-      await AppScripts.processTabsRequest(context, name, includeNgModule, tabsData);
+      await AppScripts.processTabsRequest(context, name, tabsData, includeNgModule);
       break;
   }
 
