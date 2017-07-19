@@ -7,6 +7,31 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.6.0"></a>
+### 3.6.0 (PENDING)
+
+* Added `ionic config` commands for getting and setting project
+  (`ionic.config.json`) and global CLI config (`~/.ionic/config.json`) files.
+  See
+  [README.md#cli-config](https://github.com/ionic-team/ionic-cli/blob/master/README.md#cli-config).
+* Removed `--no-timeouts`: All CLI timeouts have been removed, so the option is
+  useless.
+* Fixed odd behavior of `--no-interactive` and `--confirm`: the flags now work
+  per-command and do not persist the mode.
+* Added recommendation for local CLI installation. You can use the global
+  `ionic` binary from `npm i -g ionic` installation and it will use the local
+  CLI version if installed, similar to gulp or other CLIs. The CLI is installed
+  locally for new projects by default.
+* Moved update checking into an opt-in background process that checks npm for
+  new versions. The CLI now simply reads a file of latest versions instead of
+  doing network requests. (The CLI may need to do network requests initially
+  during commands to fill in version information.)
+* Added `ionic logout` command. Hidden for now.
+* Using `--no-interactive` will no longer check for CLI updates at all.
+* Fixed issue with Ionic 1 not live-reloading in devices.
+* Added `--no-build` option to `ionic cordova build` to skip Ionic builds.
+* Added check for Android SDK Tools version during `ionic info`.
+
 <a name="3.5.0"></a>
 ### 3.5.0 (2017-07-11)
 
@@ -29,7 +54,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   bullet point below!
 * Added CLI hooks that you can use to run code during CLI events using npm
   scripts. See
-  [README.md](https://github.com/ionic-team/ionic-cli/blob/master/README.md#cli-hooks)
+  [README.md#cli-hooks](https://github.com/ionic-team/ionic-cli/blob/master/README.md#cli-hooks)
   for usage.
 * :tada: Added
   [`@ionic/cli-plugin-gulp`](https://github.com/ionic-team/ionic-cli/tree/master/packages/cli-plugin-gulp)!

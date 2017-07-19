@@ -125,7 +125,7 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
   }
 
   const watchPatterns = [...new Set([...projectConfig.watchPatterns, ...WATCH_PATTERNS])];
-  env.log.debug(`Watch patterns: ${watchPatterns.map(v => chalk.bold(v)).join(', ')}`);
+  env.log.debug(() => `Watch patterns: ${watchPatterns.map(v => chalk.bold(v)).join(', ')}`);
   const watcher = chokidar.watch(watchPatterns, { cwd: env.project.directory });
   env.events.emit('watch:init');
 

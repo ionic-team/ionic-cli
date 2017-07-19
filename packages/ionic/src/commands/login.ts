@@ -1,6 +1,8 @@
 import * as chalk from 'chalk';
 
 import {
+  BACKEND_LEGACY,
+  BACKEND_PRO,
   Command,
   CommandLineInputs,
   CommandLineOptions,
@@ -12,6 +14,7 @@ import {
 @CommandMetadata({
   name: 'login',
   type: 'global',
+  backends: [BACKEND_LEGACY, BACKEND_PRO],
   description: 'Login with your Ionic ID',
   longDescription: `
 Authenticate with Ionic servers and retrieve a user token, which is stored in the CLI config.
@@ -41,7 +44,7 @@ export class LoginCommand extends Command implements CommandPreRun {
 
     if (await this.env.session.isLoggedIn()) {
       const extra = !inputs[0] || !inputs[1] ? 'Prompting for new credentials.' : 'Attempting login.';
-      this.env.log.warn(`You are already logged in${config.user.email ? ' as ' + chalk.bold(config.user.email) : ''}! ${config.cliFlags.interactive ? extra : ''}`);
+      this.env.log.warn(`You are already logged in${config.user.email ? ' as ' + chalk.bold(config.user.email) : ''}! ${this.env.flags.interactive ? extra : ''}`);
     } else {
       this.env.log.msg(`Log into your Ionic account\n` +
                        `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`);

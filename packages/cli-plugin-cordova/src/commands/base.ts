@@ -16,7 +16,7 @@ import {
 
 import { CORDOVA_INTENT, filterArgumentsForCordova, generateBuildOptions } from '../lib/utils/cordova';
 import { resetConfigXmlContentSrc, writeConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
-import { getProjectPlatforms, getProjectPlugins, installPlatform } from '../lib/utils/setup';
+import { getProjectPlatforms, installPlatform } from '../lib/utils/setup';
 
 export const CORDOVA_RUN_COMMAND_OPTIONS = [
   {

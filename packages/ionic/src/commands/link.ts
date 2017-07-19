@@ -2,43 +2,73 @@ import * as chalk from 'chalk';
 
 import {
   AppDetails,
+  BACKEND_LEGACY,
+  BACKEND_PRO,
   Command,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  CommandPreRun,
   PROJECT_FILE,
   createFatalAPIFormat,
   isAppResponse,
   isAppsResponse,
+  prettyPath,
+  promptToLogin,
 } from '@ionic/cli-utils';
 
 import { load } from '../lib/modules';
+
+import { findSSHConfigHostSection, getSSHConfigPath, loadSSHConfig } from '../lib/ssh-config';
 
 const CREATE_NEW_APP_CHOICE = 'createNewApp';
 
 @CommandMetadata({
   name: 'link',
   type: 'project',
+  backends: [BACKEND_LEGACY, BACKEND_PRO],
   description: 'Connect your local app to Ionic',
   longDescription: `
-If you have an app on ${chalk.bold('https://apps.ionic.io')}, you can link it to your local Ionic project with this command.
+If you have an app on Ionic, you can link it to this local Ionic project with this command.
 
-Excluding the ${chalk.green('app_id')} argument looks up your apps on ${chalk.bold('https://apps.ionic.io')} and prompts you to select one.
+Excluding the ${chalk.green('app_id')} argument looks up your apps on Ionic and prompts you to select one.
 
 This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PROJECT_FILE)} for other commands to read.
   `,
-  exampleCommands: ['', 'a1b2c3d4'],
+  exampleCommands: ['', 'a1b2c3d4', '--create --name "My New App"'],
   inputs: [
     {
       name: 'app_id',
       description: `The ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
       required: false,
-    }
+    },
+  ],
+  options: [
+    {
+      name: 'create',
+      description: 'Create a new app on Ionic and link it with this local Ionic project',
+      backends: [BACKEND_PRO],
+      type: Boolean,
+    },
+    {
+      name: 'name',
+      description: 'The app name to use during the linking of a new app',
+    },
   ],
 })
-export class LinkCommand extends Command {
+export class LinkCommand extends Command implements CommandPreRun {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    let [ appId ] = inputs;
+    const { create } = options;
+
+    if (appId && create) {
+      throw this.exit(`Sorry--cannot use both ${chalk.green('app_id')} and ${chalk.green('--create')}. You must either link an existing app or create a new one.`);
+    }
+  }
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let [ appId ] = inputs;
+    let { create, name } = options;
 
     const config = await this.env.config.load();
     const project = await this.env.project.load();
@@ -51,14 +81,29 @@ export class LinkCommand extends Command {
       });
 
       if (!confirm) {
-        this.env.log.ok('Not linking.');
+        this.env.log.info('Not linking.');
         return;
+      }
+    }
+
+    if (!(await this.env.session.isLoggedIn())) {
+      await promptToLogin(this.env);
+    }
+
+    if (config.backend === BACKEND_PRO) {
+      const sshConfigPath = getSSHConfigPath();
+      const conf = await loadSSHConfig(sshConfigPath);
+
+      if (!findSSHConfigHostSection(conf, config.git.host)) {
+        this.env.log.info(`SSH config settings for ${chalk.bold(config.git.host)} not found in ${chalk.bold(prettyPath(sshConfigPath))}.`);
+        this.env.log.info('Running automatic SSH setup.');
+        await this.runcmd(['ssh', 'setup']);
       }
     }
 
     if (appId) {
       if (appId === project.app_id) {
-        return this.env.log.ok(`Already linked with app ${chalk.bold(appId)}.`);
+        return this.env.log.info(`Already linked with app ${chalk.bold(appId)}.`);
       }
 
       this.env.tasks.next(`Looking up app ${chalk.bold(appId)}`);
@@ -76,7 +121,7 @@ export class LinkCommand extends Command {
 
       this.env.tasks.end();
 
-    } else {
+    } else if (!create) {
       this.env.tasks.next(`Looking up your apps`);
       let apps: AppDetails[] = [];
 
@@ -111,15 +156,43 @@ export class LinkCommand extends Command {
       appId = linkedApp;
     }
 
-    if (appId === CREATE_NEW_APP_CHOICE) {
+    if (create || appId === CREATE_NEW_APP_CHOICE) {
       const token = await this.env.session.getUserToken();
-      const opn = load('opn');
-      opn(`${config.urls.dash}/?user_token=${token}`, { wait: false });
-      this.env.log.ok(`Rerun ${chalk.green(`ionic link`)} to link to the new app.`);
 
+      if (config.backend === BACKEND_PRO) {
+        if (!name) {
+          name = await this.env.prompt({
+            type: 'input',
+            name: 'name',
+            message: 'Please enter a name for your new app:',
+          });
+        }
+
+        const req = this.env.client.make('POST', '/apps')
+          .set('Authorization', `Bearer ${token}`)
+          .send({ name });
+        const res = await this.env.client.do(req);
+
+        if (!isAppResponse(res)) {
+          throw createFatalAPIFormat(req, res);
+        }
+
+        appId = res.data.id;
+        await this.runcmd(['config', 'set', 'app_id', appId]);
+        await this.runcmd(['git', 'remote']);
+
+        this.env.log.ok(`Project linked with app ${chalk.bold(appId)}!`);
+      } else {
+        const opn = load('opn');
+        opn(`${config.urls.dash}/?user_token=${token}`, { wait: false });
+        this.env.log.info(`Rerun ${chalk.green(`ionic link`)} to link to the new app.`);
+      }
     } else {
-      project.app_id = appId;
-      await this.env.project.save(project);
+      await this.runcmd(['config', 'set', 'app_id', appId]);
+
+      if (config.backend === BACKEND_PRO) {
+        await this.runcmd(['git', 'remote']);
+      }
 
       this.env.log.ok(`Project linked with app ${chalk.bold(appId)}!`);
     }

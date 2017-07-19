@@ -1,7 +1,6 @@
 {
   "name": "ionic",
   "version": "3.5.0",
-  "preferGlobal": true,
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io) ",
@@ -15,7 +14,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf ./dist",
-    "lint": "tslint -c ../../tslint.json \"src/**/*.ts\"",
+    "lint": "tslint --config ../../tslint.json --project tsconfig.json --type-check",
     "build": "npm run clean && npm run build-ts && npm run build-js",
     "build-ts": "tsc",
     "build-js": "npm run script-prepublish",
@@ -53,17 +52,23 @@
   "dependencies": {
     "@ionic/cli-utils": "1.5.0",
     "chalk": "^2.0.0",
+    "diff": "^3.2.0",
     "minimist": "^1.2.0",
     "opn": "^4.0.2",
     "os-name": "^2.0.1",
+    "rimraf": "^2.6.1",
     "semver": "^5.3.0",
-    "tar": "^2.2.1"
+    "ssh-config": "^1.0.1",
+    "tar": "^2.2.1",
+    "tslib": "^1.7.1"
   },
   "devDependencies": {
     "@ionic/cli-scripts": "0.2.1",
     "@types/chalk": "^0.4.31",
+    "@types/diff": "^3.2.0",
     "@types/minimist": "^1.2.0",
     "@types/opn": "^3.0.28",
+    "@types/rimraf": "0.0.28",
     "@types/tar": "^1.0.29"
   },
   "jest": {

@@ -110,14 +110,12 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     // check that config file config.xml exists
     const configJson = await parseConfigXmlToJson(this.env.project.directory);
 
-    const config = await this.env.config.load();
-
     const resourceJsonStructure = await getResourceConfigJson();
-    this.env.log.debug(`resourceJsonStructure=${Object.keys(resourceJsonStructure).length}`);
+    this.env.log.debug(() => `resourceJsonStructure=${Object.keys(resourceJsonStructure).length}`);
 
     // check that at least one platform has been installed
     let platformDirContents = await getProjectPlatforms(this.env.project.directory);
-    this.env.log.debug(`platformDirContents=${platformDirContents}`);
+    this.env.log.debug(() => `platformDirContents=${platformDirContents}`);
 
     if (platform && !platformDirContents.includes(platform)) {
       this.env.tasks.end();
@@ -130,19 +128,19 @@ export class ResourcesCommand extends Command implements CommandPreRun {
       if (confirm) {
         await installPlatform(this.env, platform);
         platformDirContents = await getProjectPlatforms(this.env.project.directory);
-        this.env.log.debug(`platformDirContents=${platformDirContents}`);
+        this.env.log.debug(() => `platformDirContents=${platformDirContents}`);
       } else {
         throw this.exit(`Platform ${chalk.green(platform)} not installed.`);
       }
     }
 
     const buildPlatforms = Object.keys(resourceJsonStructure).filter(p => platformDirContents.includes(p));
-    this.env.log.debug(`buildPlatforms=${buildPlatforms}`);
+    this.env.log.debug(() => `buildPlatforms=${buildPlatforms}`);
     if (buildPlatforms.length === 0) {
       this.env.tasks.end();
       throw this.exit(`No platforms have been added. Please run: ${chalk.green('ionic cordova platform add')}`);
     }
-    this.env.log.debug(`${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);
+    this.env.log.debug(() => `${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);
 
     const orientation = getOrientationFromConfigJson(configJson) || 'default';
 
@@ -162,11 +160,11 @@ export class ResourcesCommand extends Command implements CommandPreRun {
       imgResources = imgResources.filter((img) => img.platform === platform);
     }
 
-    this.env.log.debug(`imgResources=${imgResources.length}`);
+    this.env.log.debug(() => `imgResources=${imgResources.length}`);
 
     // Create the resource directories that are needed for the images we will create
     const buildDirResponses = await createImgDestinationDirectories(imgResources);
-    this.env.log.debug(`${chalk.green('createImgDestinationDirectories')} completed - length=${buildDirResponses.length}`);
+    this.env.log.debug(() => `${chalk.green('createImgDestinationDirectories')} completed - length=${buildDirResponses.length}`);
 
     // Check /resources and /resources/<platform> directories for src files
     // Update imgResources to have their src attributes to equal the most
@@ -174,7 +172,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     let srcImagesAvailable: SourceImage[] = [];
     try {
       srcImagesAvailable = await getSourceImages(buildPlatforms, resourceTypes, resourceDir);
-      this.env.log.debug(`${chalk.green('getSourceImages')} completed - ${srcImagesAvailable.length}`);
+      this.env.log.debug(() => `${chalk.green('getSourceImages')} completed - ${srcImagesAvailable.length}`);
     } catch (e) {
 
     }
@@ -214,7 +212,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     let imageUploadResponses: ImageUploadResponse[];
 
     imageUploadResponses = await uploadSourceImages(srcImagesAvailable);
-    this.env.log.debug(`${chalk.green('uploadSourceImages')} completed - responses=${JSON.stringify(imageUploadResponses, null, 2)}`);
+    this.env.log.debug(() => `${chalk.green('uploadSourceImages')} completed - responses=${JSON.stringify(imageUploadResponses, null, 2)}`);
 
     srcImagesAvailable = srcImagesAvailable.map((img: SourceImage, index): SourceImage => {
       return {
@@ -254,7 +252,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
     const generateImageResponses = await Promise.all(promiseList);
     this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
-    this.env.log.debug(`${chalk.green('generateResourceImage')} completed - responses=${JSON.stringify(generateImageResponses, null, 2)}`);
+    this.env.log.debug(() => `${chalk.green('generateResourceImage')} completed - responses=${JSON.stringify(generateImageResponses, null, 2)}`);
 
     // TODO: UPDATE CONFIG.XML DATA
     this.env.tasks.next(`Modifying config.xml to add new image resources`);

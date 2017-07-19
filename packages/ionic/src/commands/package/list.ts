@@ -1,6 +1,7 @@
 import * as chalk from 'chalk';
 
 import {
+  BACKEND_LEGACY,
   Command,
   CommandLineInputs,
   CommandLineOptions,
@@ -13,6 +14,7 @@ import {
 @CommandMetadata({
   name: 'list',
   type: 'project',
+  backends: [BACKEND_LEGACY],
   description: 'List your cloud builds',
   longDescription: `
 Ionic Package makes it easy to build a native binary of your app in the cloud.

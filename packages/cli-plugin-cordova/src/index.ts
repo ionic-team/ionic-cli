@@ -1,9 +1,10 @@
+import * as path from 'path';
+
 import { IHookEngine, getCommandInfo } from '@ionic/cli-utils';
 import { CordovaNamespace } from './commands';
 
 export const name = '__NAME__';
 export const version = '__VERSION__';
-export const preferGlobal = false;
 
 export const namespace = new CordovaNamespace();
 namespace.source = name;
@@ -26,7 +27,7 @@ export function registerHooks(hooks: IHookEngine) {
 
     return [
       { type: 'global-packages', name: 'Cordova CLI', version: cordovaVersion || 'not installed' },
-      { type: 'local-packages', name, version },
+      { type: 'cli-packages', name, version, path: path.dirname(path.dirname(__filename)) },
       { type: 'local-packages', name: 'Cordova Platforms', version: cordovaPlatforms || 'none' },
     ];
   });

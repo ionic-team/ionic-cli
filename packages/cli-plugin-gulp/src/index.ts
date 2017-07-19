@@ -60,7 +60,7 @@ async function loadGulp(env: IonicEnvironment): Promise<typeof gulpType | undefi
   }
 
   try {
-    const gulpFile = require(gulpFilePath);
+    require(gulpFilePath); // requiring the gulp file sets up the gulp instance with local gulp task definitions
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') {
       throw e;
@@ -104,15 +104,15 @@ export function registerHooks(hooks: IHookEngine) {
         }
 
         if (!gulp.hasTask(BUILD_BEFORE_TASK)) {
-          env.log.debug(`No ${chalk.cyan(BUILD_BEFORE_TASK)} task found in Gulpfile.`);
+          env.log.debug(() => `No ${chalk.cyan(BUILD_BEFORE_TASK)} task found in Gulpfile.`);
         }
 
         if (!gulp.hasTask(BUILD_AFTER_TASK)) {
-          env.log.debug(`No ${chalk.cyan(BUILD_AFTER_TASK)} task found in Gulpfile.`);
+          env.log.debug(() => `No ${chalk.cyan(BUILD_AFTER_TASK)} task found in Gulpfile.`);
         }
 
         if (!gulp.hasTask(WATCH_BEFORE_TASK)) {
-          env.log.debug(`No ${chalk.cyan(WATCH_BEFORE_TASK)} task found in Gulpfile.`);
+          env.log.debug(() => `No ${chalk.cyan(WATCH_BEFORE_TASK)} task found in Gulpfile.`);
         }
       }
     });
@@ -125,7 +125,7 @@ export function registerHooks(hooks: IHookEngine) {
 
         if (gulp.hasTask(SASS_TASK)) {
           if (path.extname(filePath) === '.scss') {
-            env.log.debug(`Invoking ${chalk.cyan(SASS_TASK)} gulp task.`);
+            env.log.debug(() => `Invoking ${chalk.cyan(SASS_TASK)} gulp task.`);
             try {
               await gulpStart(SASS_TASK);
             } catch (e) {
@@ -144,7 +144,7 @@ export function registerHooks(hooks: IHookEngine) {
       const gulpStart = promisify<void, string>(gulp.start.bind(gulp));
 
       if (gulp.hasTask(BUILD_BEFORE_TASK)) {
-        env.log.debug(`Invoking ${chalk.cyan(BUILD_BEFORE_TASK)} gulp task.`);
+        env.log.debug(() => `Invoking ${chalk.cyan(BUILD_BEFORE_TASK)} gulp task.`);
         try {
           await gulpStart(BUILD_BEFORE_TASK);
         } catch (e) {
@@ -162,7 +162,7 @@ export function registerHooks(hooks: IHookEngine) {
       const gulpStart = promisify<void, string>(gulp.start.bind(gulp));
 
       if (gulp.hasTask(BUILD_AFTER_TASK)) {
-        env.log.debug(`Invoking ${chalk.cyan(BUILD_AFTER_TASK)} gulp task.`);
+        env.log.debug(() => `Invoking ${chalk.cyan(BUILD_AFTER_TASK)} gulp task.`);
 
         try {
           await gulpStart(BUILD_AFTER_TASK);
@@ -181,7 +181,7 @@ export function registerHooks(hooks: IHookEngine) {
       const gulpStart = promisify<void, string>(gulp.start.bind(gulp));
 
       if (gulp.hasTask(WATCH_BEFORE_TASK)) {
-        env.log.debug(`Invoking ${chalk.cyan(WATCH_BEFORE_TASK)} gulp task.`);
+        env.log.debug(() => `Invoking ${chalk.cyan(WATCH_BEFORE_TASK)} gulp task.`);
         try {
           await gulpStart(WATCH_BEFORE_TASK);
         } catch (e) {
@@ -202,7 +202,7 @@ export function registerHooks(hooks: IHookEngine) {
 
     return [
       { type: 'global-packages', name: 'Gulp CLI', version: gulpVersion || 'not installed globally' },
-      { type: 'local-packages', name, version },
+      { type: 'cli-packages', name, version, path: path.dirname(path.dirname(__filename)) },
     ];
   });
 }

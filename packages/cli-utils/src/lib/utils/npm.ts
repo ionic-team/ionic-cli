@@ -1,7 +1,7 @@
 import * as chalk from 'chalk';
 
-import { BowerJson, IShellRunOptions, IonicEnvironment, PackageJson } from '../../definitions';
-import { isBowerJson, isPackageJson } from '../../guards';
+import { BowerJson, DistTag, IShellRunOptions, IonicEnvironment, PackageJson } from '../../definitions';
+import { isBowerJson, isExitCodeException, isPackageJson } from '../../guards';
 import { ERROR_SHELL_COMMAND_NOT_FOUND } from '../shell';
 import { fsReadJsonFile } from './fs';
 
@@ -52,7 +52,7 @@ interface PkgManagerVocabulary {
 }
 
 export interface PkgManagerOptions extends IShellRunOptions {
-  command?: 'install' | 'uninstall';
+  command?: 'dedupe' | 'install' | 'uninstall';
   pkg?: string;
   global?: boolean;
   link?: boolean;
@@ -69,29 +69,40 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
     options.command = 'install';
   }
 
-  let command: typeof options.command | 'link' | 'unlink' = options.command;
+  let command: PkgManagerOptions['command'] | 'link' | 'unlink' = options.command;
 
-  if (options.link) { // When installing/uninstalling with the link flag, change command
-    if (command === 'install') {
-      command = 'link';
-    } else if (command === 'uninstall') {
-      command = 'unlink';
+  if (command === 'dedupe') {
+    delete options.pkg;
+    delete options.global;
+    delete options.link;
+    delete options.save;
+    delete options.saveDev;
+    delete options.saveExact;
+  } else if (command === 'install' || command === 'uninstall') {
+    if (options.link) { // When installing/uninstalling with the link flag, change command
+      options.global = false;
+
+      if (command === 'install') {
+        command = 'link';
+      } else if (command === 'uninstall') {
+        command = 'unlink';
+      }
+    }
+
+    if (options.global || options.link) { // Turn off all save flags for global context or when using link/unlink
+      options.save = false;
+      options.saveDev = false;
+      options.saveExact = false;
+    } else if (options.pkg && typeof options.save === 'undefined' && typeof options.saveDev === 'undefined') { // Prefer save flag
+      options.save = true;
+    }
+
+    if (options.pkg && typeof options.saveExact === 'undefined') { // For single package installs, prefer to save exact versions
+      options.saveExact = true;
     }
   }
 
-  if (options.global || options.link) { // Turn off all save flags for global context or when using link/unlink
-    options.save = false;
-    options.saveDev = false;
-    options.saveExact = false;
-  } else if (options.pkg && typeof options.save === 'undefined' && typeof options.saveDev === 'undefined') { // Prefer save flag
-    options.save = true;
-  }
-
-  if (options.pkg && typeof options.saveExact === 'undefined') { // For single package installs, prefer to save exact versions
-    options.saveExact = true;
-  }
-
-  if (config.cliFlags.yarn) {
+  if (config.yarn) {
     if (!installer) {
       try {
         await env.shell.run('yarn', ['--version'], { fatalOnNotFound: false, showCommand: false });
@@ -100,7 +111,7 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
         if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
           env.log.warn(`You have opted into yarn, but ${chalk.green('yarn')} was not found in PATH`);
         } else {
-          env.log.debug(`Error running yarn: ${e}`);
+          env.log.debug(() => `Error running yarn: ${e}`);
         }
 
         installer = 'npm';
@@ -165,4 +176,26 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
   }
 
   return [installer, ...installerArgs];
+}
+
+export async function pkgLatestVersion(env: IonicEnvironment, pkg: string, distTag: DistTag = 'latest'): Promise<string | undefined> {
+  const config = await env.config.load();
+  const shellOptions = { fatalOnError: false, showCommand: false };
+
+  try {
+    if (config.yarn) {
+      const cmdResult = await env.shell.run('yarn', ['info', pkg, `dist-tags.${distTag}`, '--json'], shellOptions);
+      return JSON.parse(cmdResult).data;
+    } else {
+      const cmdResult = await env.shell.run('npm', ['view', pkg, `dist-tags.${distTag}`, '--json'], shellOptions);
+
+      if (cmdResult) {
+        return JSON.parse(cmdResult);
+      }
+    }
+  } catch (e) {
+    if (e.fatal || !isExitCodeException(e)) {
+      throw e;
+    }
+  }
 }

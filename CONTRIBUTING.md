@@ -57,6 +57,7 @@ published as `ionic`.
 1. `npm install` to install the dev tools.
 1. `npm run bootstrap` (will install package dependencies and link packages
    together)
+1. Optionally `npm run link` to make `ionic` point to your dev CLI.
 1. `npm run watch` will spin up TS & JS watch scripts for all packages.
 1. Typescript source files are in `packages/*/src`.
 1. Good luck! :muscle: Please open an issue if you have questions or something
@@ -64,34 +65,8 @@ published as `ionic`.
 
 ##### Running Dev CLI
 
-###### macOS/Linux
-1. Put `alias ionic-local=/path/to/ionic-cli/packages/ionic/bin/ionic` (making
-   sure to change `/path/to` to your installation directory) in `~/.bashrc` (or
-   equivalent) and `source ~/.bashrc`.
-1. You should now be able to run `ionic-local help` and see your locally
-   installed version.
-   
-###### Windows
-1. Create a `ionic-local.cmd` file at `%AppData%\npm\` with the following content:
-
-    ```batch
-    @IF EXIST "%~dp0\node.exe" (
-      "%~dp0\node.exe"  "C:\path\to\ionic-cli\packages\ionic\bin\ionic" %*
-    ) ELSE (
-      @SETLOCAL
-      @SET PATHEXT=%PATHEXT:;.JS;=;%
-      node  "C:\path\to\ionic-cli\packages\ionic\bin\ionic" %*
-    )
-    ```
-
-1. You should now be able to run `ionic-local help` and see your locally
-   installed version without change the existing ionic installation.
-
-**OR**
-
-1. Run `npm link` from `packages/ionic`.
-1. You should now be able to run `ionic help` and see your locally
-   installed version in place of default ionic installation.
+You can switch between your dev CLI and stable with `npm run link` and `npm run
+unlink && npm i -g ionic`.
 
 ##### Code Structure
 

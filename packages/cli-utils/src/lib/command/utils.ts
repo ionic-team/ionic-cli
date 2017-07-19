@@ -1,7 +1,4 @@
-import * as chalk from 'chalk';
-
 import * as dargsType from 'dargs';
-import * as inquirerType from 'inquirer';
 import * as minimistType from 'minimist';
 
 import {
@@ -11,11 +8,9 @@ import {
   CommandOption,
   CommandOptionType,
   CommandOptionTypeDefaults,
-  IonicEnvironment,
   NormalizedCommandOption,
   NormalizedMinimistOpts,
   ValidationError,
-  Validator,
 } from '../../definitions';
 
 import { validate, validators } from '../validators';

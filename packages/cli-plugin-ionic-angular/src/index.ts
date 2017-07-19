@@ -14,7 +14,6 @@ import { serve } from './serve';
 
 export const name = '__NAME__';
 export const version = '__VERSION__';
-export const preferGlobal = false;
 
 async function getIonicAngularVersion(env: IonicEnvironment): Promise<string | undefined> {
   const ionicAngularPackageJsonFilePath = path.resolve(env.project.directory, 'node_modules', 'ionic-angular', 'package.json'); // TODO
@@ -65,7 +64,7 @@ export function registerHooks(hooks: IHookEngine) {
 
     return [
       { type: 'local-packages', name: 'Ionic Framework', version: ionicAngularVersion ? `ionic-angular ${ionicAngularVersion}` : 'not installed' },
-      { type: 'local-packages', name, version },
+      { type: 'cli-packages', name, version, path: path.dirname(path.dirname(__filename)) },
       { type: 'local-packages', name: '@ionic/app-scripts', version: appScriptsVersion ? appScriptsVersion : 'not installed' },
     ];
   });

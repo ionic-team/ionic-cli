@@ -3,11 +3,15 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 
 import {
+  BACKEND_LEGACY,
+  BACKEND_PRO,
   Command,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
   CommandPreRun,
+  PROJECT_FILE,
+  Project,
   fsMkdir,
   getCommandInfo,
   isValidPackageName,
@@ -15,7 +19,7 @@ import {
   pkgInstallPluginArgs,
   pkgManagerArgs,
   prettyPath,
-  rimrafp,
+  promisify,
   validators,
 } from '@ionic/cli-utils';
 
@@ -33,8 +37,6 @@ import {
   tarXvfFromUrl,
   updatePackageJsonForCli,
 } from '../lib/start';
-
-import { load } from '../lib/modules';
 
 @CommandMetadata({
   name: 'start',
@@ -84,27 +86,30 @@ If you want to create an Ionic/Cordova app, use the ${chalk.green('--cordova')} 
       aliases: ['l'],
     },
     {
-      name: 'skip-deps',
-      description: 'Skip npm/yarn package installation of dependencies',
-      type: Boolean,
-    },
-    {
       name: 'cordova',
       description: 'Include Cordova integration',
       type: Boolean,
     },
     {
-      name: 'git',
-      description: 'Do not initialize a git repo',
+      name: 'deps',
+      description: 'Do not install npm/yarn dependencies',
       type: Boolean,
       default: true,
     },
     {
-      name: 'skip-link',
-      description: 'Do not link app to an Ionic Account',
+      name: 'git',
+      description: 'Do not initialize a git repo',
+      backends: [BACKEND_LEGACY],
       type: Boolean,
+      default: true,
     },
-  ]
+    {
+      name: 'link',
+      description: 'Do not ask to connect the app with the Ionic Dashboard',
+      type: Boolean,
+      default: true,
+    },
+  ],
 })
 export class StartCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<number | void> {
@@ -112,6 +117,14 @@ export class StartCommand extends Command implements CommandPreRun {
     if (options['list']) {
       this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES).join('\n'));
       return 0;
+    }
+
+    if (options['skip-deps']) {
+      options['deps'] = false;
+    }
+
+    if (options['skip-link']) {
+      options['link'] = false;
     }
 
     if (this.env.project.directory) {
@@ -123,7 +136,7 @@ export class StartCommand extends Command implements CommandPreRun {
       });
 
       if (!confirm) {
-        this.env.log.ok('Not starting project within existing project.');
+        this.env.log.info('Not starting project within existing project.');
         return 0;
       }
     }
@@ -175,24 +188,24 @@ export class StartCommand extends Command implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<number | void> {
     let [ projectName, starterTemplateName ] = inputs;
     let appName = <string>options['app-name'] || projectName;
-    let cloudAppId = <string>options['cloud-app-id'] || '';
     let starterBranchName = <string>options['starterBranchName'] || 'master';
     let wrapperBranchName = <string>options['wrapperBranchName'] || 'master';
     let gitIntegration = false;
+    let linkConfirmed = false;
 
     const config = await this.env.config.load();
 
     if (!isProjectNameValid(projectName)) {
-      throw `Please name your Ionic project something meaningful other than ${chalk.red(projectName)}`;
+      throw this.exit(`Please name your Ionic project something meaningful other than ${chalk.green(projectName)}`);
     }
 
     let starterType = STARTER_TYPES.find(type => type['id'] === options['type']);
 
     if (!starterType) {
-      throw `Unable to find starter type for ${options['type']}`;
+      throw this.exit(`Unable to find starter type for ${chalk.green(String(options['type']))}.`);
     }
 
-    if (!options['skip-deps']) {
+    if (options['deps']) {
       // Check global dependencies
       if (options['cordova']) {
         starterType.globalDependencies.push('cordova');
@@ -218,17 +231,19 @@ export class StartCommand extends Command implements CommandPreRun {
       }
     }
 
-    if (options['git']) {
+    if (config.backend === BACKEND_PRO || options['git']) {
       const cmdInstalled = await getCommandInfo('git', ['--version']);
 
       if (cmdInstalled) {
         gitIntegration = true;
       } else {
-        this.env.log.warn(
-          'Git CLI not found on your PATH. You may wish to install it to version control your app.\n' +
-          `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}\n\n` +
-          `Use ${chalk.green('--no-git')} to disable this warning.\n`
-        );
+        if (config.backend === BACKEND_LEGACY) {
+          this.env.log.warn(
+            `Git CLI not found on your PATH. You may wish to install it to version control your app.\n` +
+            `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}\n\n` +
+            `Use ${chalk.green('--no-git')} to disable this warning.\n`
+          );
+        }
       }
     }
 
@@ -255,13 +270,15 @@ export class StartCommand extends Command implements CommandPreRun {
       if (confirm) {
         try {
           this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
+          const rimraf = await import('rimraf');
+          const rimrafp = promisify<void, string>(rimraf);
           await rimrafp(projectRoot);
           await fsMkdir(projectRoot, undefined);
         } catch (e) {
           throw e;
         }
       } else {
-        this.env.log.ok(`Not erasing existing project in ${chalk.green(prettyPath(projectRoot))}.`);
+        this.env.log.info(`Not erasing existing project in ${chalk.green(prettyPath(projectRoot))}.`);
         return 0;
       }
     }
@@ -314,15 +331,15 @@ export class StartCommand extends Command implements CommandPreRun {
       this.env.log.warn(`${chalk.green(projectName)} was not a valid name for ${chalk.bold('package.json')}. Using ${chalk.bold(safeProjectName)} for now.`);
     }
 
-    await patchPackageJsonForCli(safeProjectName, starterType, projectRoot);
-    await updatePackageJsonForCli(safeProjectName, starterType, projectRoot);
+    await patchPackageJsonForCli(this.env, safeProjectName, starterType, projectRoot);
+    await updatePackageJsonForCli(this.env, safeProjectName, starterType, projectRoot);
 
     this.env.tasks.next(`Creating configuration file ${chalk.bold('ionic.config.json')}`);
-    await createProjectConfig(appName, starterType, projectRoot, cloudAppId);
+    await createProjectConfig(appName, starterType, projectRoot);
 
     this.env.tasks.end();
 
-    if (!options['skip-deps']) {
+    if (options['deps']) {
       // Install local dependencies
 
       this.env.log.info('Installing dependencies may take several minutes!');
@@ -340,42 +357,60 @@ export class StartCommand extends Command implements CommandPreRun {
         const [ installer, ...installerArgs ] = await pkgInstallPluginArgs(this.env, dep);
         await this.env.shell.run(installer, installerArgs, shellOptions);
       }
+
+      const [ , ...dedupeArgs ] = await pkgManagerArgs(this.env, { command: 'dedupe' });
+      await this.env.shell.run(installer, dedupeArgs, {});
+    }
+
+    if (config.backend === BACKEND_PRO && !gitIntegration) {
+      throw this.exit(
+        `Git CLI not found on your PATH. It must be installed to connect this app to Ionic.\n` +
+        `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`
+      );
     }
 
     if (gitIntegration) {
       await this.env.shell.run('git', ['init'], shellOptions);
-      await this.env.shell.run('git', ['add', '-A'], shellOptions);
-      await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], shellOptions);
     }
 
-    // Print out hello text about how to get started
-    if (this.env.log.shouldLog('info')) {
-      this.env.log.msg(getHelloText());
-    }
+    if (config.backend === BACKEND_PRO) {
+      if (options['link']) {
+        const confirm = await this.env.prompt({
+          type: 'confirm',
+          name: 'confirm',
+          message: 'Connect this app to the Ionic Dashboard?',
+          noninteractiveValue: '',
+        });
 
-    // Ask the user if they would like to create a cloud account
-    if (!options['skip-link']) {
-      const confirm = await this.env.prompt({
-        type: 'confirm',
-        name: 'confirm',
-        message: 'Link this app to your Ionic Dashboard to use tools like Ionic View?',
-        noninteractiveValue: '',
-      });
+        if (confirm) {
+          linkConfirmed = true;
 
-      if (confirm) {
-        if (await this.env.session.isLoggedIn()) {
-          const opn = load('opn');
-          const token = await this.env.session.getUserToken();
-          opn(`${config.urls.dash}/?user_token=${token}`, { wait: false });
-          this.env.log.ok(`Run ${chalk.green(`ionic link`)} to link to the app.`);
-        } else {
-          this.env.log.msg(`\nYou will need to login in order to link this app. Please run the following commands to do so.\n` +
-            `  ${chalk.green(`ionic login`)} - login first\n` +
-            `  ${chalk.green(`ionic link`)} - then link your app`);
+          this.env.project = new Project(projectRoot, PROJECT_FILE);
+          await this.runcmd(['link', '--create', '--name', appName]);
         }
       }
     }
 
-    this.env.log.msg(`\nGo to your newly created project: ${chalk.green(`cd ${prettyPath(projectRoot)}`)}\n`);
+    if (gitIntegration) {
+      await this.env.shell.run('git', ['add', '-A'], shellOptions);
+      await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], shellOptions);
+    }
+
+    if (config.backend === BACKEND_LEGACY) {
+      // Print out hello text about how to get started
+      if (this.env.log.shouldLog('info')) {
+        this.env.log.msg(getHelloText());
+      }
+    }
+
+    this.env.log.nl();
+    this.env.log.msg(`${chalk.bold('Next Steps')}:\n`);
+    this.env.log.msg(`Go to your newly created project: ${chalk.green(`cd ${prettyPath(projectRoot)}`)}`);
+
+    if (config.backend === BACKEND_PRO && linkConfirmed) {
+      this.env.log.msg(`Then, push your code to the Ionic Dashboard: ${chalk.green('git push ionic master')}`);
+    }
+
+    this.env.log.nl();
   }
 }

@@ -3,7 +3,7 @@ describe('@ionic/cli-utils', () => {
   describe('pkgManagerArgs', () => {
 
     const envMockGen = (opts: { yarn?: boolean } = {}) => ({
-      config: { load: async () => ({ cliFlags: { yarn: opts.yarn } }) },
+      config: { load: async () => ({ yarn: opts.yarn }) },
       log: { debug: () => {} },
       shell: { run: () => {} },
     });

@@ -7,12 +7,12 @@ import * as chalk from 'chalk';
 import {
   ERROR_FILE_INVALID_JSON,
   ERROR_FILE_NOT_FOUND,
+  IonicEnvironment,
   createRequest,
   fsReadDir,
   fsReadJsonFile,
   fsUnlink,
   fsWriteJsonFile,
-  load as loadFromUtils,
 } from '@ionic/cli-utils';
 
 import { StarterTemplate, StarterTemplateType } from '../definitions';
@@ -118,9 +118,6 @@ export function getStarterTemplateTextList(templateList: StarterTemplate[]): str
   });
 }
 
-/**
- *
- */
 export function getHelloText(): string {
   return `
 ${chalk.bold('♬ ♫ ♬ ♫  Your Ionic app is ready to go! ♬ ♫ ♬ ♫')}
@@ -136,7 +133,7 @@ ${chalk.bold('Test and share your app on a device with the Ionic View app:')}
   `;
 }
 
-export async function patchPackageJsonForCli(appName: string, starterType: StarterTemplateType, pathToProject: string): Promise<void> {
+export async function patchPackageJsonForCli(env: IonicEnvironment, appName: string, starterType: StarterTemplateType, pathToProject: string): Promise<void> {
   const patchPackagePath = path.resolve(pathToProject, 'patch.package.json');
   const packagePath = path.resolve(pathToProject, 'package.json');
 
@@ -157,7 +154,7 @@ export async function patchPackageJsonForCli(appName: string, starterType: Start
   try {
     patch = await fsReadJsonFile(patchPackagePath);
 
-    const lodash = loadFromUtils('lodash');
+    const lodash = env.load('lodash');
     let finalPackage = lodash.merge(pkg, patch);
 
     await fsWriteJsonFile(packagePath, finalPackage, { encoding: 'utf8' });
@@ -174,7 +171,7 @@ export async function patchPackageJsonForCli(appName: string, starterType: Start
   }
 }
 
-export async function updatePackageJsonForCli(appName: string, starterType: StarterTemplateType, pathToProject: string): Promise<void> {
+export async function updatePackageJsonForCli(env: IonicEnvironment, appName: string, starterType: StarterTemplateType, pathToProject: string): Promise<void> {
   const filePath = path.resolve(pathToProject, 'package.json');
   try {
     let jsonStructure = await fsReadJsonFile(filePath);
@@ -195,11 +192,11 @@ export async function updatePackageJsonForCli(appName: string, starterType: Star
   }
 }
 
-export async function createProjectConfig(appName: string, starterType: StarterTemplateType, pathToProject: string, cloudAppId: string): Promise<void> {
+export async function createProjectConfig(appName: string, starterType: StarterTemplateType, pathToProject: string): Promise<void> {
   const filePath = path.resolve(pathToProject, 'ionic.config.json');
   const jsonStructure = {
     name: appName,
-    app_id: cloudAppId,
+    app_id: '',
     type: starterType.id
   };
 
@@ -212,14 +209,14 @@ export const STARTER_TYPES: StarterTemplateType[] = [
     name: 'v2',
     baseArchive: 'https://github.com/ionic-team/ionic2-app-base/archive/<BRANCH_NAME>.tar.gz',
     globalDependencies: [],
-    localDependencies: ['@ionic/cli-plugin-ionic-angular'],
+    localDependencies: ['ionic', '@ionic/cli-plugin-ionic-angular'],
   },
   {
     id: 'ionic1',
     name: 'v1',
     baseArchive: 'https://github.com/ionic-team/ionic-app-base/archive/<BRANCH_NAME>.tar.gz',
     globalDependencies: [],
-    localDependencies: ['@ionic/cli-plugin-ionic1', '@ionic/cli-plugin-gulp'],
+    localDependencies: ['ionic', '@ionic/cli-plugin-ionic1', '@ionic/cli-plugin-gulp'],
   },
 ];
 

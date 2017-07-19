@@ -1,5 +1,4 @@
 import * as chalk from 'chalk';
-import * as inquirerType from 'inquirer';
 
 import {
   ConfigFile,
@@ -12,7 +11,7 @@ import {
 
 import { load } from './modules';
 
-export async function createPromptModule(log: ILogger, config: IConfig<ConfigFile>): Promise<PromptModule> {
+export async function createPromptModule({ interactive, confirm, log, config }: { interactive: boolean, confirm: boolean, log: ILogger, config: IConfig<ConfigFile> }): Promise<PromptModule> {
   const inquirer = load('inquirer');
   const inquirerPromptModule = inquirer.createPromptModule();
 
@@ -20,15 +19,13 @@ export async function createPromptModule(log: ILogger, config: IConfig<ConfigFil
   async function createPrompter(question: NonConfirmPromptQuestion): Promise<string>;
   async function createPrompter(question: ConfirmPromptQuestion): Promise<boolean>;
   async function createPrompter(question: ConfirmPromptQuestion | NonConfirmPromptQuestion): Promise<boolean | string> {
-    const configData = await config.load();
-
-    if (configData.cliFlags.interactive === false) {
+    if (interactive === false) {
       if (typeof question.noninteractiveValue !== 'undefined') {
         return question.noninteractiveValue;
       }
 
       if (question.type === 'confirm') {
-        if (configData.cliFlags.confirm) {
+        if (confirm) {
           log.info(`${chalk.green('--confirm')}: ${chalk.dim(question.message)} ${chalk.cyan('Yes')}`);
           return true;
         } else {

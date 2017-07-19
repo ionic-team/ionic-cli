@@ -18,7 +18,7 @@ async function run() {
     .map(m => require(path.resolve(mPath, m)));
 
   for (let mod of ionicModules) {
-    utilsPkg.installPlugin(env, mod);
+    utilsPkg.registerPlugin(env, mod);
   }
 
   const nsPath = path.resolve(__dirname, '..', '..', 'docs', 'index.md');

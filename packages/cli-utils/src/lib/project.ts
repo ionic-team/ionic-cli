@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 import { BowerJson, IProject, PackageJson, ProjectFile, ProjectType } from '../definitions';
 import { BaseConfig } from './config';
 import { FatalException } from './errors';
-import { ERROR_FILE_INVALID_JSON, fsReadDir } from './utils/fs';
+import { ERROR_FILE_INVALID_JSON } from './utils/fs';
 import { ERROR_INVALID_BOWER_JSON, ERROR_INVALID_PACKAGE_JSON, readBowerJsonFile, readPackageJsonFile } from './utils/npm';
 import { prettyPath } from './utils/format';
 import { load } from './modules';

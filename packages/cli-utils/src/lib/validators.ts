@@ -28,7 +28,7 @@ export const validators: Validators = {
   required(input: string, key?: string): true | string {
     if (!input) {
       if (key) {
-        return `${chalk.bold(key)} must not be empty.`;
+        return `${chalk.green(key)} must not be empty.`;
       } else {
         return 'Must not be empty.';
       }
@@ -39,7 +39,7 @@ export const validators: Validators = {
   email(input: string, key?: string): true | string {
     if (!isValidEmail(input)) {
       if (key) {
-        return `${chalk.bold(key)} is an invalid email address.`;
+        return `${chalk.green(key)} is an invalid email address.`;
       } else {
         return 'Invalid email address.';
       }
@@ -50,7 +50,7 @@ export const validators: Validators = {
   numeric(input: string, key?: string): true | string {
     if (isNaN(Number(input))) {
       if (key) {
-        return `${chalk.bold(key)} must be numeric.`;
+        return `${chalk.green(key)} must be numeric.`;
       } else {
         return 'Must be numeric.';
       }
@@ -74,7 +74,7 @@ export function contains(values: (string | undefined)[], { caseSensitive = true 
       const strValues = <string[]>values.filter((v): v is string => typeof v === 'string'); // TODO: typescript bug?
       const mustBe = (strValues.length !== values.length ? 'unset or one of' : 'one of') + ': ' + strValues.map(v => chalk.green(v)).join(', ');
       if (key) {
-        return `${chalk.bold(key)} must be ${mustBe} (not ${typeof input === 'undefined' ? 'unset' : chalk.green(input)})`;
+        return `${chalk.green(key)} must be ${mustBe} (not ${typeof input === 'undefined' ? 'unset' : chalk.green(input)})`;
       } else {
         return `Must be ${mustBe} (not ${typeof input === 'undefined' ? 'unset' : chalk.green(input)})`;
       }

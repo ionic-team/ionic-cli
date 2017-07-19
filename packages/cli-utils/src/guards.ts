@@ -19,6 +19,7 @@ import {
   PackageProjectRequest,
   Plugin,
   Response,
+  SSHKey,
   SecurityProfile,
   SuperAgentError,
   ValidationError,
@@ -63,9 +64,9 @@ export function isValidationErrorArray(e: Object[]): e is ValidationError[] {
 
 export function isPlugin(p: any): p is Plugin {
   const plugin = <Plugin>p;
-  return p
-    && typeof p.name === 'string'
-    && typeof p.version === 'string';
+  return plugin
+    && typeof plugin.name === 'string'
+    && typeof plugin.version === 'string';
 }
 
 export function isSuperAgentError(e: Error): e is SuperAgentError {
@@ -126,9 +127,49 @@ export function isAuthTokensResponse(r: APIResponse): r is Response<AuthToken[]>
   return true;
 }
 
-export function isLoginResponse(r: APIResponse): r is Response<{ user_id: string; token: string; }> {
-  const res = <Response<{ token: string }>>r;
-  return isAPIResponseSuccess(res) && typeof res.data.token === 'string' && typeof res.data.token === 'string';
+export function isLegacyLoginResponse(r: APIResponse): r is Response<{ user_id: string; token: string; }> {
+  const res = <any>r;
+  return isAPIResponseSuccess(r) && typeof res.data.token === 'string';
+}
+
+export function isProLoginResponse(r: APIResponse): r is Response<{ user: { id: number, email: string }; token: string; }> {
+  const res = <any>r;
+  return isAPIResponseSuccess(r)
+    && typeof res.data.user === 'object'
+    && typeof res.data.user.id === 'number'
+    && typeof res.data.user.email === 'string'
+    && typeof res.data.token === 'string';
+}
+
+export function isSSHKeyListResponse(r: APIResponse): r is Response<SSHKey[]> {
+  const res = <any>r;
+  if (!isAPIResponseSuccess(r) || !Array.isArray(r.data)) {
+    return false;
+  }
+
+  if (typeof r.data[0] === 'object') {
+    return typeof res.data[0].id === 'string'
+      && typeof res.data[0].pubkey === 'string'
+      && typeof res.data[0].fingerprint === 'string'
+      && typeof res.data[0].annotation === 'string'
+      && typeof res.data[0].name === 'string'
+      && typeof res.data[0].created === 'string'
+      && typeof res.data[0].updated === 'string';
+  }
+
+  return true;
+}
+
+export function isSSHKeyResponse(r: APIResponse): r is Response<SSHKey> {
+  const res = <any>r;
+  return isAPIResponseSuccess(r)
+    && typeof res.data.id === 'string'
+    && typeof res.data.pubkey === 'string'
+    && typeof res.data.fingerprint === 'string'
+    && typeof res.data.annotation === 'string'
+    && typeof res.data.name === 'string'
+    && typeof res.data.created === 'string'
+    && typeof res.data.updated === 'string';
 }
 
 export function isDeployResponse(r: APIResponse): r is Response<Deploy> {

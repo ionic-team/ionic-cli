@@ -19,7 +19,7 @@ export const SPINNER_FRAMES = isWindows ?
 
 const MIN_TTY_WIDTH = 80;
 const MAX_TTY_WIDTH = 120;
-export const TTY_WIDTH = Math.max(MIN_TTY_WIDTH, Math.min(process.stdout.columns || 0, MAX_TTY_WIDTH));
+export const TTY_WIDTH = process.stdout.columns ? Math.max(MIN_TTY_WIDTH, Math.min(process.stdout.columns, MAX_TTY_WIDTH)) : Infinity;
 
 export function prettyPath(p: string): string {
   p = path.resolve(p);

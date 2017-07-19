@@ -1,6 +1,7 @@
 import * as chalk from 'chalk';
 
 import {
+  BACKEND_LEGACY,
   Command,
   CommandLineInputs,
   CommandLineOptions,
@@ -13,7 +14,6 @@ import {
   contains,
   createArchive,
   filterOptionsByIntent,
-  validators,
 } from '@ionic/cli-utils';
 
 import { upload } from '../../lib/upload';
@@ -21,6 +21,7 @@ import { upload } from '../../lib/upload';
 @CommandMetadata({
   name: 'build',
   type: 'project',
+  backends: [BACKEND_LEGACY],
   description: 'Start a package build',
   longDescription: `
 Ionic Package makes it easy to build a native binary of your app in the cloud.

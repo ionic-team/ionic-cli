@@ -6,12 +6,11 @@ import {
   CommandLineOptions,
   ICommand,
   IonicEnvironment,
-  ValidationError,
 } from '../../definitions';
 
 import { isCommandPreRun } from '../../guards';
 import { FatalException } from '../errors';
-import { validate, validators } from '../validators';
+import { validators } from '../validators';
 import { minimistOptionsToArray, validateInputs } from './utils';
 
 export class Command implements ICommand {
@@ -20,24 +19,33 @@ export class Command implements ICommand {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
 
+  async runwrap(fn: () => Promise<void | number>): Promise<void> {
+    const r = await fn();
+
+    if (typeof r === 'number') {
+      throw this.exit('', r);
+    }
+  }
+
+  async runcmd(pargv: string[]): Promise<void> {
+    await this.runwrap(async () => {
+      this.env.log.msg(`> ${chalk.green([this.env.namespace.name, ...pargv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
+      return this.env.namespace.runCommand(this.env, pargv);
+    });
+  }
+
   async validate(inputs: CommandLineInputs) {
     validateInputs(inputs, this.metadata);
   }
 
   async execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let r: number | void;
     const config = await this.env.config.load();
 
-    if (isCommandPreRun(this)) {
-      r = await this.preRun(inputs, options);
-      if (typeof r === 'number') {
-        if (r > 0) {
-          throw this.exit('', r);
-        }
-
-        return;
+    await this.runwrap(async () => {
+      if (isCommandPreRun(this)) {
+        return this.preRun(inputs, options);
       }
-    }
+    });
 
     if (this.metadata.inputs) {
       for (let input of this.metadata.inputs) {
@@ -55,17 +63,18 @@ export class Command implements ICommand {
         // should've happened in preRun)
         validateInputs(inputs, this.metadata);
       } catch (e) {
-        if (!config.cliFlags.interactive) {
-          this.env.log.warn(`You are in non-interactive mode. Use ${chalk.green('--interactive')} to re-enable prompts.`);
+        if (!this.env.flags.interactive) {
+          this.env.log.warn(`Command ran non-interactively due to ${chalk.green('--no-interactive')} (or CI detected).`);
         }
+
         throw e;
       }
     }
 
-    const results = await Promise.all([
+    await Promise.all([
       (async () => {
         // TODO: get telemetry for commands that aborted above
-        if (config.cliFlags.telemetry !== false) {
+        if (config.telemetry !== false) {
           let cmdInputs: CommandLineInputs = [];
 
           if (this.metadata.name === 'help') {
@@ -78,19 +87,9 @@ export class Command implements ICommand {
         }
       })(),
       (async () => {
-        await this.run(inputs, options);
+        await this.runwrap(() => this.run(inputs, options));
       })()
     ]);
-
-    r = results[1];
-
-    if (typeof r === 'number') {
-      if (r > 0) {
-        throw this.exit('', r);
-      }
-
-      return;
-    }
   }
 
   exit(msg: string, code: number = 1): FatalException {

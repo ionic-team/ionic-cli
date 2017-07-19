@@ -7,8 +7,8 @@ import {
   CommandMetadata,
   CommandPreRun,
   contains,
-  installPlugin,
   promptToInstallProjectPlugin,
+  registerPlugin,
   validators,
 } from '@ionic/cli-utils';
 
@@ -38,7 +38,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
 })
 export class GenerateCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-    const [ config, project ] = await Promise.all([this.env.config.load(), this.env.project.load()]);
+    const project = await this.env.project.load();
 
     if (project.type !== 'ionic-angular') {
       throw this.exit('Generators are only supported in Ionic Angular projects.');
@@ -54,7 +54,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
       });
 
       if (plugin) {
-        installPlugin(this.env, plugin);
+        registerPlugin(this.env, plugin);
       } else {
         return 1;
       }
@@ -82,8 +82,8 @@ export class GenerateCommand extends Command implements CommandPreRun {
       inputs[1] = generatorName;
     }
 
-    if (!config.cliFlags.interactive && inputs[0] === 'tabs') {
-      this.env.log.error(`Cannot generate tabs in non-interactive mode. Use ${chalk.green('--interactive')} to re-enable prompts.`);
+    if (!this.env.flags.interactive && inputs[0] === 'tabs') {
+      this.env.log.error(`Cannot generate tabs without prompts. Run without ${chalk.green('--no-interactive')}.`);
       return 1;
     }
   }

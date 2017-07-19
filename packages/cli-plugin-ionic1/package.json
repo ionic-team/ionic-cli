@@ -7,7 +7,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "clean": "rm -rf ./dist",
-    "lint": "tslint -c ../../tslint.json \"src/**/*.ts\"",
+    "lint": "tslint --config ../../tslint.json --project tsconfig.json --type-check",
     "build": "npm run clean && npm run build-ts && npm run build-js",
     "build-ts": "tsc",
     "build-js": "npm run script-prepublish",
@@ -50,6 +50,7 @@
     "opn": "^4.0.2",
     "proxy-middleware": "^0.15.0",
     "tiny-lr": "^1.0.3",
+    "tslib": "^1.7.1",
     "xml2js": "^0.4.17"
   },
   "devDependencies": {

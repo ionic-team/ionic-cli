@@ -3,13 +3,13 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 
 import { DistTag, HydratedPlugin, IonicEnvironment, Plugin } from '../definitions';
-import { isExitCodeException, isPlugin } from '../guards';
+import { isPlugin } from '../guards';
 import { FatalException } from './errors';
 import { load } from './modules';
 import { prettyPath } from './utils/format';
 import { pathAccessible, pathExists, readDir } from './utils/fs';
 import { getGlobalProxy } from './http';
-import { PkgManagerOptions, pkgManagerArgs } from './utils/npm';
+import { PkgManagerOptions, pkgLatestVersion, pkgManagerArgs } from './utils/npm';
 
 export const KNOWN_COMMAND_PLUGINS = ['cordova'];
 export const KNOWN_GLOBAL_PLUGINS = ['proxy'];
@@ -54,7 +54,7 @@ export async function promptToInstallPlugin(env: IonicEnvironment, pluginName: s
   }
 }
 
-export function installPlugin(env: IonicEnvironment, plugin: Plugin) {
+export function registerPlugin(env: IonicEnvironment, plugin: Plugin) {
   const ns = plugin.namespace;
 
   if (ns) {
@@ -68,7 +68,7 @@ export function installPlugin(env: IonicEnvironment, plugin: Plugin) {
   env.plugins[plugin.name] = plugin;
 }
 
-export function uninstallPlugin(env: IonicEnvironment, plugin: Plugin) {
+export function unregisterPlugin(env: IonicEnvironment, plugin: Plugin) {
   if (plugin.namespace) {
     env.namespace.namespaces.delete(plugin.namespace.name);
   }
@@ -81,10 +81,11 @@ export function uninstallPlugin(env: IonicEnvironment, plugin: Plugin) {
 export async function loadPlugins(env: IonicEnvironment) {
   // GLOBAL PLUGINS
 
+  const global = !env.meta || !env.meta.local;
   const globalPluginPkgs = KNOWN_GLOBAL_PLUGINS.map(formatFullPluginName);
   const globalPluginPromises = globalPluginPkgs.map(async (pkgName) => {
     try {
-      return await loadPlugin(env, pkgName, { askToInstall: false, global: true });
+      return await loadPlugin(env, pkgName, { askToInstall: false, global });
     } catch (e) {
       if (e !== ERROR_PLUGIN_NOT_INSTALLED) {
         throw e;
@@ -96,42 +97,11 @@ export async function loadPlugins(env: IonicEnvironment) {
     const plugin = await p;
 
     if (plugin) {
-      installPlugin(env, plugin);
+      registerPlugin(env, plugin);
     }
   }
 
   const [ , proxyVar ] = getGlobalProxy();
-
-  if (proxyVar) {
-    const proxyPluginPkg = formatFullPluginName('proxy');
-    env.log.debug(`Detected ${chalk.green(proxyVar)} in environment`);
-
-    if (!(proxyPluginPkg in env.plugins)) {
-      const meta = env.plugins.ionic.meta;
-
-      if (!meta) {
-        throw new FatalException(`${chalk.green('ionic')} missing meta information`);
-      }
-
-      const canInstall = await pathAccessible(meta.filePath, fs.constants.W_OK);
-      const proxyInstallArgs = await pkgManagerArgs(env, { pkg: proxyPluginPkg, global: true });
-      const installMsg = `Detected ${chalk.green(proxyVar)} in environment, but to proxy CLI requests, you'll need ${chalk.green(proxyPluginPkg)} installed globally.`;
-
-      if (canInstall) {
-        const p = await promptToInstallPlugin(env, proxyPluginPkg, {
-          message: `${installMsg} Install now?`,
-          reinstall: true,
-          global: true,
-        });
-
-        if (p) {
-          installPlugin(env, p);
-        }
-      } else {
-        env.log.warn(`${installMsg}\nYou can install it manually (you will likely need ${chalk.green('sudo')}):\n\n${chalk.green(proxyInstallArgs.join(' '))}\n`);
-      }
-    }
-  }
 
   if (!env.project.directory) {
     return;
@@ -141,26 +111,72 @@ export async function loadPlugins(env: IonicEnvironment) {
 
   // LOCAL PLUGINS
 
+  const ionicModulePath = path.join(env.project.directory, 'node_modules', 'ionic');
   const gulpFilePath = path.join(env.project.directory, project.gulpFile || 'gulpfile.js');
   const mPath = path.join(env.project.directory, 'node_modules', '@ionic');
 
-  const [ gulpFileExists, ionicModules ] = await Promise.all([
+  const [ ionicModuleExists, gulpFileExists, ionicModules ] = await Promise.all([
+    pathExists(ionicModulePath),
     pathExists(gulpFilePath),
     readDir(mPath),
   ]);
 
+  if (!ionicModuleExists) {
+    const installMsg = 'We are recommending users install the Ionic CLI locally in their projects.';
+    const p = await promptToInstallPlugin(env, 'ionic', {
+      message: `${installMsg} Install now?`,
+    });
+
+    if (p) {
+      env.log.ok('Installed Ionic CLI locally!');
+      env.log.nl();
+      throw new FatalException(`${chalk.bold('Please re-run your command.')}`, 0);
+    }
+  }
+
+  if (proxyVar) {
+    const proxyPluginPkg = formatFullPluginName('proxy');
+    env.log.debug(() => `Detected ${chalk.green(proxyVar)} in environment`);
+
+    if (!(proxyPluginPkg in env.plugins)) {
+      const meta = env.plugins.ionic.meta;
+
+      if (!meta) {
+        throw new FatalException(`${chalk.green('ionic')} missing meta information`);
+      }
+
+      const canInstall = await pathAccessible(meta.filePath, fs.constants.W_OK);
+      const proxyInstallArgs = await pkgManagerArgs(env, { pkg: proxyPluginPkg, global });
+      const installMsg = `Detected ${chalk.green(proxyVar)} in environment, but to proxy CLI requests, you'll need ${chalk.green(proxyPluginPkg)} installed.`;
+
+      if (canInstall) {
+        const p = await promptToInstallPlugin(env, proxyPluginPkg, {
+          message: `${installMsg} Install now?`,
+          reinstall: true,
+          global,
+        });
+
+        if (p) {
+          registerPlugin(env, p);
+        }
+      } else {
+        env.log.warn(`${installMsg}\nYou can install it manually:\n\n${chalk.green(proxyInstallArgs.join(' '))}\n`);
+      }
+    }
+  }
+
   const plugins: Plugin[] = [];
   const pluginPkgs = ionicModules
     .filter(pkgName => pkgName.indexOf(PLUGIN_PREFIX) === 0)
-    .map(pkgName => `${ORG_PREFIX}/${pkgName}`);
+    .map(pkgName => `${ORG_PREFIX}/${pkgName}`)
+    .filter(pkgName => !KNOWN_GLOBAL_PLUGINS.map(formatFullPluginName).includes(pkgName)); // already loaded these in global section above
 
   const gulpPluginPkg = formatFullPluginName('gulp');
 
   if (gulpFileExists) {
-    env.log.debug(`Detected ${chalk.green(prettyPath(gulpFilePath))} in project directory`);
+    env.log.debug(() => `Detected ${chalk.green(prettyPath(gulpFilePath))} in project directory`);
 
     if (!pluginPkgs.includes(gulpPluginPkg)) {
-      const gulpPluginInstallArgs = await pkgManagerArgs(env, { pkg: gulpPluginPkg, saveDev: true });
       const installMsg = `Detected ${chalk.green(prettyPath(gulpFilePath))} in project directory, but to integrate gulp with the CLI, you'll need to install ${chalk.green(gulpPluginPkg)}.`;
       const p = await promptToInstallPlugin(env, gulpPluginPkg, {
         message: `${installMsg} Install now?`,
@@ -195,7 +211,7 @@ export async function loadPlugins(env: IonicEnvironment) {
   }
 
   for (let plugin of plugins) {
-    installPlugin(env, plugin);
+    registerPlugin(env, plugin);
   }
 
   validatePlugins(env);
@@ -229,7 +245,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
     message = `The plugin ${chalk.green(pluginName)} is not installed. Would you like to install it and continue?`;
   }
 
-  env.log.debug(`Loading ${global ? 'global' : 'local'} plugin ${chalk.green(pluginName)}`);
+  env.log.debug(() => `Loading ${global ? 'global' : 'local'} plugin ${chalk.green(pluginName)}`);
 
   try {
     mResolvedPath = require.resolve(mPath);
@@ -241,7 +257,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
     }
 
     if (!askToInstall) {
-      env.log.debug(`Throwing ${chalk.red(ERROR_PLUGIN_NOT_INSTALLED)} for ${global ? 'global' : 'local'} ${chalk.green(pluginName)}`);
+      env.log.debug(() => `Throwing ${chalk.red(ERROR_PLUGIN_NOT_INSTALLED)} for ${global ? 'global' : 'local'} ${chalk.green(pluginName)}`);
       throw ERROR_PLUGIN_NOT_INSTALLED;
     }
   }
@@ -264,7 +280,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
   }
 
   if (!isPlugin(m) || !mResolvedPath) {
-    env.log.debug(`Throwing ${chalk.red(ERROR_PLUGIN_INVALID)} for ${global ? 'global' : 'local'} ${chalk.green(pluginName)}`);
+    env.log.debug(() => `Throwing ${chalk.red(ERROR_PLUGIN_INVALID)} for ${global ? 'global' : 'local'} ${chalk.green(pluginName)}`);
     throw ERROR_PLUGIN_INVALID;
   }
 
@@ -275,10 +291,10 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
   return m;
 }
 
-export async function hydratePlugin(env: IonicEnvironment, plugin: Plugin): Promise<HydratedPlugin> {
+async function hydratePlugin(env: IonicEnvironment, plugin: Plugin): Promise<HydratedPlugin> {
   const semver = load('semver');
 
-  env.log.debug(`Getting plugin info for ${chalk.green(plugin.name)}`);
+  env.log.debug(() => `Getting plugin info for ${chalk.green(plugin.name)}`);
 
   const currentVersion = plugin.version;
   const latestVersion = await getLatestPluginVersion(env, plugin);
@@ -295,14 +311,15 @@ export async function hydratePlugin(env: IonicEnvironment, plugin: Plugin): Prom
     distTag,
     currentVersion,
     latestVersion,
-    updateAvailable: semver.gt(latestVersion, currentVersion) || (['canary', 'pro'].includes(distTag) && latestVersion !== currentVersion),
+    updateAvailable: semver.gt(latestVersion, currentVersion) || ('canary' === distTag && latestVersion !== currentVersion),
   };
 }
 
 async function facilitateIonicUpdate(env: IonicEnvironment, ionicPlugin: HydratedPlugin) {
-  const ionicInstallArgs = await pkgInstallPluginArgs(env, 'ionic', { global: true });
-  const updateMsg = `The Ionic CLI has an update available (${chalk.green(ionicPlugin.currentVersion)} => ${chalk.green(ionicPlugin.latestVersion)})!`;
-  const canInstall = await pathAccessible(ionicPlugin.meta.filePath, fs.constants.W_OK);
+  const global = !env.meta || !env.meta.local;
+  const ionicInstallArgs = await pkgInstallPluginArgs(env, 'ionic', { global });
+  const updateMsg = `The Ionic CLI ${global ? '' : '(local version) '}has an update available (${chalk.green(ionicPlugin.currentVersion)} => ${chalk.green(ionicPlugin.latestVersion)})!`;
+  const canInstall = global ? await pathAccessible(ionicPlugin.meta.filePath, fs.constants.W_OK) : true;
 
   if (canInstall) {
     const confirm = await env.prompt({
@@ -315,57 +332,63 @@ async function facilitateIonicUpdate(env: IonicEnvironment, ionicPlugin: Hydrate
     if (confirm) {
       const [ installer, ...installerArgs ] = ionicInstallArgs;
       await env.shell.run(installer, installerArgs, {});
-      const revertArgs = await pkgManagerArgs(env, { pkg: `ionic@${ionicPlugin.currentVersion}`, global: true });
+      const revertArgs = await pkgManagerArgs(env, { pkg: `ionic@${ionicPlugin.currentVersion}`, global });
       env.log.nl();
-      env.log.ok(`Upgraded Ionic CLI to ${chalk.green(ionicPlugin.latestVersion)}! 🎉`);
+      env.log.ok(`Updated Ionic CLI to ${chalk.green(ionicPlugin.latestVersion)}! 🎉`);
       env.log.nl();
       env.log.msg(chalk.bold('Please re-run your command.'));
       env.log.nl();
       throw new FatalException(`${chalk.bold('Note')}: You can downgrade to your old version by running: ${chalk.green(revertArgs.join(' '))}`, 0);
     } else {
-      env.log.ok(`Not automatically updating your CLI. You can update manually:\n\n${chalk.green(ionicInstallArgs.join(' '))}\n`);
+      env.log.info(`Not automatically updating your CLI. You can update manually:\n\n${chalk.green(ionicInstallArgs.join(' '))}\n`);
     }
   } else {
     env.log.info(updateMsg);
     env.log.nl();
     env.log.warn(
-      `No write permissions for global ${chalk.bold('node_modules')}--automatic CLI updates are disabled.\n` +
+      `No write permissions for ${global ? 'global' : 'local'} ${chalk.bold('node_modules')}--automatic CLI updates are disabled.\n` +
       `To fix, see ${chalk.bold('https://docs.npmjs.com/getting-started/fixing-npm-permissions')}\n\n` +
-      `Or, install the CLI update manually (you will likely need ${chalk.green('sudo')}):\n\n${chalk.green(ionicInstallArgs.join(' '))}\n`
+      `Or, install the CLI update manually:\n\n${chalk.green(ionicInstallArgs.join(' '))}\n`
     );
   }
 }
 
 async function facilitatePluginUpdate(env: IonicEnvironment, ionicPlugin: HydratedPlugin, plugin: HydratedPlugin): Promise<boolean> {
-  const pluginInstallArgs = await pkgInstallPluginArgs(env, plugin.name, { global: plugin.preferGlobal });
-  const startMsg = `${plugin.preferGlobal ? 'Global' : 'Local'} plugin ${chalk.green(plugin.name)}`;
+  const ionicPluginInstallPath = path.dirname(path.dirname(path.dirname(ionicPlugin.meta.filePath)));
+  const global = (!env.meta || !env.meta.local) && !plugin.meta.filePath.startsWith(ionicPluginInstallPath);
+  const pluginInstallArgs = await pkgInstallPluginArgs(env, plugin.name, { global });
+  const startMsg = `${global ? 'Global' : 'Local'} plugin ${chalk.green(plugin.name)}`;
   const updateMsg = `${startMsg} has an update available (${chalk.green(plugin.currentVersion)} => ${chalk.green(plugin.latestVersion)})!`;
-  const canInstall = plugin.preferGlobal ? await pathAccessible(plugin.meta.filePath, fs.constants.W_OK) : true;
+  const canInstall = global ? await pathAccessible(plugin.meta.filePath, fs.constants.W_OK) : true;
 
   if (canInstall) {
     const message = ionicPlugin.distTag === plugin.distTag ?
       `${updateMsg} Would you like to install it?` :
       `${startMsg} has a different dist-tag (${chalk.green('@' + plugin.distTag)}) than the Ionic CLI (${chalk.green('@' + ionicPlugin.distTag)}). Would you like to install the appropriate plugin version?`;
 
+    const okmessage = ionicPlugin.distTag === plugin.distTag ?
+      `Updated ${chalk.green(plugin.name)} to ${chalk.green(plugin.latestVersion)}! 🎉` :
+      `Installed ${chalk.green(plugin.name + '@' + ionicPlugin.distTag)}`;
+
     const p = await promptToInstallPlugin(env, plugin.name, {
       message,
       reinstall: true,
-      global: plugin.preferGlobal,
+      global,
     });
 
     if (p) {
-      uninstallPlugin(env, plugin);
-      installPlugin(env, p);
-      env.log.ok(`Upgraded ${chalk.green(plugin.name)} to ${chalk.green(plugin.latestVersion)}! 🎉`);
+      unregisterPlugin(env, plugin);
+      registerPlugin(env, p);
+      env.log.ok(okmessage);
       return true;
     }
 
-    env.log.ok(`Not automatically updating ${chalk.green(plugin.name)}. You can update manually:\n\n${chalk.green(pluginInstallArgs.join(' '))}\n`);
+    env.log.info(`Not automatically updating ${chalk.green(plugin.name)}. You can update manually:\n\n${chalk.green(pluginInstallArgs.join(' '))}\n`);
   } else {
     env.log.info(updateMsg);
     env.log.nl();
     env.log.warn(
-      `No write permissions for global ${chalk.bold('node_modules')}--automatic global plugin updates are disabled.\n` +
+      `No write permissions for ${global ? 'global' : 'local'}${chalk.bold('node_modules')}--automatic plugin updates are disabled.\n` +
       `To fix, see ${chalk.bold('https://docs.npmjs.com/getting-started/fixing-npm-permissions')}\n`
     );
   }
@@ -374,7 +397,10 @@ async function facilitatePluginUpdate(env: IonicEnvironment, ionicPlugin: Hydrat
 }
 
 export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> {
+  await env.daemon.load();
   const allPlugins = await Promise.all(Object.keys(env.plugins).map(n => hydratePlugin(env, env.plugins[n])));
+  await env.daemon.save();
+
   const ionicPlugin = allPlugins.find(p => p.name === 'ionic');
 
   if (!ionicPlugin) {
@@ -398,53 +424,51 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
     }
   }
 
+  if (updates.length > 0) {
+    const [ installer, ...dedupeArgs ] = await pkgManagerArgs(env, { command: 'dedupe' });
+    await env.shell.run(installer, dedupeArgs, {});
+  }
+
   return updates;
 }
 
 async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Promise<string> {
-  let cmdResult, latestVersion: string | undefined;
   const config = await env.config.load();
   const distTag = determineDistTag(plugin.version);
-
-  if ((plugin.name === 'ionic' && config.cliFlags['dev-always-ionic-updates']) || (plugin.name !== 'ionic' && config.cliFlags['dev-always-plugin-updates'])) {
-    return '999.999.999';
-  }
 
   if (distTag === 'local') {
     return plugin.version;
   }
 
-  env.log.debug(`Checking for latest plugin version of ${chalk.green(plugin.name + '@' + distTag)}.`);
+  env.log.debug(() => `Checking for latest plugin version of ${chalk.green(plugin.name + '@' + distTag)}.`);
 
-  const shellOptions = { fatalOnError: false, showCommand: false };
+  const daemon = await env.daemon.load();
 
-  try {
-    // TODO: might belong in utils/npm.ts
-    if (config.cliFlags['yarn']) {
-      cmdResult = await env.shell.run('yarn', ['info', plugin.name, `dist-tags.${distTag}`, '--json'], shellOptions);
-      latestVersion = JSON.parse(cmdResult).data;
-    } else {
-      cmdResult = await env.shell.run('npm', ['view', plugin.name, `dist-tags.${distTag}`, '--json'], shellOptions);
-
-      if (!cmdResult) {
-        return plugin.version;
+  if (config.daemon.updates) {
+    if (typeof daemon.latestVersions[distTag] === 'object') {
+      if (daemon.latestVersions[distTag][plugin.name]) {
+        return daemon.latestVersions[distTag][plugin.name];
       }
-
-      latestVersion = JSON.parse(cmdResult);
-    }
-  } catch (e) {
-    if (e.fatal || !isExitCodeException(e)) {
-      throw e;
+    } else {
+      env.daemon.populateDistTag(distTag);
     }
   }
+
+  let latestVersion = await pkgLatestVersion(env, plugin.name, distTag);
 
   if (!latestVersion) {
-    return plugin.version;
+    latestVersion = plugin.version;
   }
 
-  env.log.debug(`Latest version of ${chalk.green(plugin.name + '@' + distTag)} is ${latestVersion.trim()}.`);
+  latestVersion = latestVersion.trim();
 
-  return latestVersion.trim();
+  env.log.debug(`Latest version of ${chalk.green(plugin.name + '@' + distTag)} is ${latestVersion}.`);
+
+  if (config.daemon.updates) {
+    daemon.latestVersions[distTag][plugin.name] = latestVersion;
+  }
+
+  return latestVersion;
 }
 
 export async function pkgInstallPluginArgs(env: IonicEnvironment, name: string, options: PkgManagerOptions = {}): Promise<string[]> {
@@ -469,10 +493,6 @@ export function determineDistTag(version: string): DistTag {
 
   if (version.includes('-alpha')) {
     return 'canary';
-  }
-
-  if (version.includes('-pro')) {
-    return 'pro';
   }
 
   if (version.includes('-beta') || version.includes('-rc')) {

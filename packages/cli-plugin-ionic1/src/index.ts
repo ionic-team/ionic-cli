@@ -7,7 +7,6 @@ import { serve } from './serve/index';
 
 export const name = '__NAME__';
 export const version = '__VERSION__';
-export const preferGlobal = false;
 
 export function registerHooks(hooks: IHookEngine) {
   hooks.register(name, 'command:docs', async () => {
@@ -34,7 +33,7 @@ export function registerHooks(hooks: IHookEngine) {
 
     return [
       { type: 'local-packages', name: 'Ionic Framework', version: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown' },
-      { type: 'local-packages', name, version },
+      { type: 'cli-packages', name, version, path: path.dirname(path.dirname(__filename)) },
     ];
   });
 

@@ -1,27 +1,28 @@
 import * as crossSpawnType from 'cross-spawn';
 import * as inquirerType from 'inquirer';
+import * as semverType from 'semver';
 import * as superagentType from 'superagent';
+import * as lodashType from 'lodash';
 import * as minimistType from 'minimist';
 
 import { EventEmitter } from 'events';
-import { FSWatcher } from 'fs';
 
 export interface SuperAgentError extends Error {
   response: superagentType.Response;
 }
 
-export type LogFn = (msg: string) => void;
+export type LogFn = (msg: string | (() => string)) => void;
 export type LogLevel = 'debug' | 'info' | 'ok' | 'warn' | 'error';
 
 export interface LoggerOptions {
   level?: LogLevel;
-  prefix?: string;
+  prefix?: string | (() => string);
   stream?: NodeJS.WritableStream;
 }
 
 export interface ILogger {
   level: string;
-  prefix: string;
+  prefix: string | (() => string);
   stream: NodeJS.WritableStream;
 
   debug: LogFn;
@@ -115,6 +116,7 @@ export interface AppDetails {
   id: string;
   name: string;
   slug: string;
+  repo_url?: string;
 }
 
 export interface AuthToken {
@@ -124,6 +126,16 @@ export interface AuthToken {
     type: 'app-user';
     user_id: string;
   };
+}
+
+export interface SSHKey {
+  id: string;
+  pubkey: string;
+  fingerprint: string;
+  annotation: string;
+  name: string;
+  created: string;
+  updated: string;
 }
 
 export interface DeploySnapshot {
@@ -194,6 +206,25 @@ export interface IProject extends IConfig<ProjectFile> {
   loadBowerJson(): Promise<BowerJson>;
 }
 
+export interface PackageVersions {
+  [key: string]: string;
+}
+
+export interface DaemonFile {
+  latestVersions: {
+    latest: PackageVersions;
+    [key: string]: PackageVersions;
+  };
+}
+
+export interface IDaemon extends IConfig<DaemonFile> {
+  pidFilePath: string;
+  logFilePath: string;
+  getPid(): Promise<number | undefined>;
+  setPid(pid: number): Promise<void>;
+  populateDistTag(distTag: DistTag): void;
+}
+
 export type CommandLineInput = string | boolean | null | undefined | string[];
 export type CommandLineInputs = string[];
 
@@ -207,6 +238,7 @@ export type CommandOptionTypeDefaults = Map<CommandOptionType, CommandLineInput>
 export interface CommandOption {
   name: string;
   description: string;
+  backends?: BackendFlag[];
   type?: CommandOptionType;
   default?: CommandLineInput;
   aliases?: string[];
@@ -252,9 +284,12 @@ export interface NormalizedMinimistOpts extends minimistType.Opts {
   default: { [key: string]: CommandLineInput };
 }
 
+export type BackendFlag = 'pro' | 'legacy';
+
 export interface CommandData {
   name: string;
   type: 'global' | 'project';
+  backends?: BackendFlag[];
   description: string;
   longDescription?: string;
   exampleCommands?: string[];
@@ -269,6 +304,7 @@ export interface CommandData {
 
 export interface ISession {
   login(email: string, password: string): Promise<void>;
+  logout(): Promise<void>;
   isLoggedIn(): Promise<boolean>;
   getUserToken(): Promise<string>;
   getAppUserToken(app_id?: string): Promise<string>;
@@ -294,9 +330,16 @@ export interface ITelemetry {
 
 export interface ConfigFile {
   lastCommand: string;
+  daemon: {
+    updates?: boolean;
+  };
   urls: {
     api: string;
     dash: string;
+  };
+  git: {
+    host: string;
+    port?: number;
   };
   user: {
     id?: string;
@@ -307,24 +350,17 @@ export interface ConfigFile {
     telemetry?: string;
     appUser: { [app_id: string]: string };
   };
-  cliFlags: {
-    'dev-always-plugin-updates'?: boolean;
-    'dev-always-ionic-updates'?: boolean;
-    confirm?: boolean;
-    interactive?: boolean;
-    telemetry?: boolean;
-    yarn?: boolean;
-  };
+  backend: BackendFlag;
+  telemetry: boolean;
+  yarn: boolean;
 }
 
-export type CliFlag = keyof ConfigFile['cliFlags'];
-
-export interface IConfig<T> {
+export interface IConfig<T extends { [key: string]: any }> {
   directory: string;
   fileName: string;
   filePath: string;
 
-  load(): Promise<T>;
+  load(options?: { disk?: boolean; }): Promise<T>;
   save(configFile?: T): Promise<void>;
 }
 
@@ -371,20 +407,21 @@ export interface IClient {
 
 export interface IPaginator<T extends Response<Object[]>> extends IterableIterator<Promise<T>> {}
 
-export interface HookArgs {
+export interface EnvironmentHookArgs {
   env: IonicEnvironment;
 }
 
-export interface CommandHookArgs extends HookArgs {
+export interface CommandHookArgs extends EnvironmentHookArgs {
   cmd: ICommand;
   inputs: CommandLineInputs;
   options: CommandLineOptions;
 }
 
 export interface InfoHookItem {
-  type: 'system' | 'global-packages' | 'local-packages';
+  type: 'system' | 'global-packages' | 'local-packages' | 'cli-packages';
   name: string;
   version: string;
+  path?: string;
 }
 
 export interface IHook<T, U> {
@@ -394,26 +431,32 @@ export interface IHook<T, U> {
   fire(args: T): Promise<U>;
 }
 
+export interface ConfigSetCommandHookArgs extends CommandHookArgs {
+  valueChanged: boolean;
+}
+
 export interface IHookEngine {
-  fire(hook: 'plugins:init', args: HookArgs): Promise<void[]>;
+  fire(hook: 'plugins:init', args: EnvironmentHookArgs): Promise<void[]>;
+  fire(hook: 'command:config:set', args: ConfigSetCommandHookArgs): Promise<void[]>;
   fire(hook: 'command:docs', args: CommandHookArgs): Promise<string[]>;
   fire(hook: 'command:generate', args: CommandHookArgs): Promise<void[]>;
   fire(hook: 'command:info', args: CommandHookArgs): Promise<InfoHookItem[][]>;
   fire(hook: 'command:build', args: CommandHookArgs): Promise<void[]>;
   fire(hook: 'command:serve', args: CommandHookArgs): Promise<{ [key: string]: any }[]>;
-  fire(hook: 'build:before', args: HookArgs): Promise<void[]>;
-  fire(hook: 'build:after', args: HookArgs): Promise<void[]>;
-  fire(hook: 'watch:before', args: HookArgs): Promise<void[]>;
+  fire(hook: 'build:before', args: EnvironmentHookArgs): Promise<void[]>;
+  fire(hook: 'build:after', args: EnvironmentHookArgs): Promise<void[]>;
+  fire(hook: 'watch:before', args: EnvironmentHookArgs): Promise<void[]>;
 
-  register(source: string, hook: 'plugins:init', listener: (args: HookArgs) => Promise<void>): void;
+  register(source: string, hook: 'plugins:init', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
+  register(source: string, hook: 'command:config:set', listener: (args: ConfigSetCommandHookArgs) => Promise<void>): void;
   register(source: string, hook: 'command:docs', listener: (args: CommandHookArgs) => Promise<string>): void;
   register(source: string, hook: 'command:generate', listener: (args: CommandHookArgs) => Promise<void>): void;
   register(source: string, hook: 'command:info', listener: (args: CommandHookArgs) => Promise<InfoHookItem[]>): void;
   register(source: string, hook: 'command:build', listener: (args: CommandHookArgs) => Promise<void>): void;
   register(source: string, hook: 'command:serve', listener: (args: CommandHookArgs) => Promise<{ [key: string]: any }>): void;
-  register(source: string, hook: 'build:before', listener: (args: HookArgs) => Promise<void>): void;
-  register(source: string, hook: 'build:after', listener: (args: HookArgs) => Promise<void>): void;
-  register(source: string, hook: 'watch:before', listener: (args: HookArgs) => Promise<void>): void;
+  register(source: string, hook: 'build:before', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
+  register(source: string, hook: 'build:after', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
+  register(source: string, hook: 'watch:before', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
 
   getSources(hook: string): string[];
   hasSources(hook: string, sources: string[]): boolean;
@@ -451,29 +494,41 @@ export interface PromptModule {
 }
 
 export interface IonicEnvironment {
-  argv: minimistType.ParsedArgs;
-  pargv: string[];
-  app: IApp;
-  hooks: IHookEngine;
-  client: IClient;
-  config: IConfig<ConfigFile>; // CLI global config (~/.ionic/config.json)
-  events: ICLIEventEmitter;
-  log: ILogger;
-  prompt: PromptModule;
+  readonly flags: {
+    interactive: boolean;
+    confirm: boolean;
+  };
+  readonly hooks: IHookEngine;
+  readonly client: IClient;
+  readonly config: IConfig<ConfigFile>; // CLI global config (~/.ionic/config.json)
+  readonly daemon: IDaemon;
+  readonly events: ICLIEventEmitter;
+  readonly log: ILogger;
+  readonly prompt: PromptModule;
+  meta?: {
+    local: boolean; // CLI running in local mode?
+    binPath: string;
+    libPath: string;
+  };
   project: IProject; // project config (ionic.config.json)
-  plugins: {
+  readonly plugins: {
     ionic: Plugin;
     [key: string]: Plugin;
   };
-  session: ISession;
-  shell: IShell;
-  tasks: ITaskChain;
-  telemetry: ITelemetry;
-  namespace: INamespace;
+  readonly session: ISession;
+  readonly shell: IShell;
+  readonly tasks: ITaskChain;
+  readonly telemetry: ITelemetry;
+  readonly namespace: IRootNamespace;
 
+  open(): void;
   close(): void;
+  load(modulePath: 'semver'): typeof semverType;
   load(modulePath: 'superagent'): typeof superagentType;
+  load(modulePath: 'lodash'): typeof lodashType;
 }
+
+export type DistTag = 'local' | 'canary' | 'beta' | 'latest';
 
 export interface PluginMeta {
   filePath: string;
@@ -482,13 +537,14 @@ export interface PluginMeta {
 export interface Plugin {
   name: string;
   version: string;
-  preferGlobal?: boolean;
   namespace?: INamespace;
   registerHooks?(hooks: IHookEngine): void;
   meta?: PluginMeta; // set when loading plugin
 }
 
-export type DistTag = 'local' | 'canary' | 'beta' | 'pro' | 'latest';
+export interface RootPlugin extends Plugin {
+  namespace: IRootNamespace;
+}
 
 export interface HydratedPlugin extends Plugin {
   distTag: DistTag;
@@ -507,6 +563,14 @@ export interface INamespace {
 
   locate(argv: string[]): [number, string[], ICommand | INamespace];
   getCommandMetadataList(): CommandData[];
+}
+
+export interface IRootNamespace extends INamespace {
+  root: true;
+  name: 'ionic';
+  source: 'ionic';
+
+  runCommand(env: IonicEnvironment, pargv: string[]): Promise<void | number>;
 }
 
 export interface ICommand {

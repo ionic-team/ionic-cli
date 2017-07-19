@@ -29,7 +29,7 @@ issues on GitHub should be reserved for bug reports and feature requests.
     + [Requirements](#requirements-1)
   * [Environment Variables](#environment-variables)
   * [CLI Flags](#cli-flags)
-    + [Persistent flags](#persistent-flags)
+  * [CLI Config](#cli-config)
   * [CLI Hooks](#cli-hooks)
     + [Example](#example)
   * [Service Proxies](#service-proxies)
@@ -122,23 +122,23 @@ The CLI will look for the following environment variables:
 
 ## CLI Flags
 
-CLI flags are global options that alter CLI behavior.
+CLI flags are global options that alter the behavior of a CLI command.
 
 * `--help`: Instead of running the command, view its help page.
 * `--verbose`: Show all log messages for debugging purposes.
 * `--quiet`: Only show `WARN` and `ERROR` log messages.
+* `--no-interactive`: Turn off interactive prompts and fancy outputs. If a CI
+  server is detected (we use [ci-info](https://www.npmjs.com/package/ci-info)),
+  the CLI is automatically non-interactive.
+* `--confirm`: Turn on auto-confirmation of confirmation prompts. *Careful*:
+  the CLI prompts before doing something potentially harmful. Auto-confirming
+  may have unintended results.
 
-### Persistent flags
+## CLI Config
 
-The behavior that these flags set is remembered in the CLI config file.
-
-* `--interactive` / `--no-interactive`: Switch between interactive (default)
-  and non-interactive mode. In non-interactive mode, the spinner and all
-  prompts are disabled (useful for CI/CD servers).
-* `--confirm` / `--no-confirm`: Switch between auto-confirmation and
-  non-confirmation (default) of confirmation prompts. *Careful*: the CLI
-  prompts before doing something potentially harmful. Auto-confirming may have
-  unintended results.
+The CLI provides commands for setting and printing config values from project
+config files and the global CLI file. See `ionic config set --help` and `ionic
+config get --help` for usage.
 
 ## CLI Hooks
 

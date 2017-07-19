@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as util from 'util';
 
 import * as minimist from 'minimist';
 import * as chalk from 'chalk';
@@ -6,6 +7,7 @@ import * as chalk from 'chalk';
 import {
   IHookEngine,
   InfoHookItem,
+  checkForDaemon,
   checkForUpdates,
   formatSuperAgentError,
   generateIonicEnvironment,
@@ -35,11 +37,37 @@ const WATCH_BEFORE_HOOK = 'watch:before';
 const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
 
 export function registerHooks(hooks: IHookEngine) {
+  hooks.register(name, 'command:config:set', async ({ env, inputs, options, valueChanged }) => {
+    let [ p, v ] = inputs;
+    const { global } = options;
+
+    if (global) {
+      const config = await env.config.load();
+
+      if (p === 'backend' && valueChanged) {
+        if (v === 'pro') {
+          config.urls.api = 'https://api.ionicjs.com';
+          config.urls.dash = 'https://dashboard.ionicjs.com';
+        } else if (v === 'legacy') {
+          config.urls.api = 'https://api.ionic.io';
+          config.urls.dash = 'https://apps.ionic.io';
+        }
+
+        const wasLoggedIn = await env.session.isLoggedIn();
+        await env.session.logout();
+
+        if (wasLoggedIn) {
+          env.log.info('You have been logged out.');
+        }
+      }
+    }
+  });
+
   hooks.register(name, BUILD_BEFORE_HOOK, async ({ env }) => {
     const packageJson = await env.project.loadPackageJson();
 
     if (packageJson.scripts && packageJson.scripts[BUILD_BEFORE_SCRIPT]) {
-      env.log.debug(`Invoking ${chalk.cyan(BUILD_BEFORE_SCRIPT)} npm script.`);
+      env.log.debug(() => `Invoking ${chalk.cyan(BUILD_BEFORE_SCRIPT)} npm script.`);
       await env.shell.run('npm', ['run', BUILD_BEFORE_SCRIPT], { showExecution: true });
     }
   });
@@ -48,7 +76,7 @@ export function registerHooks(hooks: IHookEngine) {
     const packageJson = await env.project.loadPackageJson();
 
     if (packageJson.scripts && packageJson.scripts[BUILD_AFTER_SCRIPT]) {
-      env.log.debug(`Invoking ${chalk.cyan(BUILD_AFTER_SCRIPT)} npm script.`);
+      env.log.debug(() => `Invoking ${chalk.cyan(BUILD_AFTER_SCRIPT)} npm script.`);
       await env.shell.run('npm', ['run', BUILD_AFTER_SCRIPT], { showExecution: true });
     }
   });
@@ -57,7 +85,7 @@ export function registerHooks(hooks: IHookEngine) {
     const packageJson = await env.project.loadPackageJson();
 
     if (packageJson.scripts && packageJson.scripts[WATCH_BEFORE_SCRIPT]) {
-      env.log.debug(`Invoking ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
+      env.log.debug(() => `Invoking ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
       await env.shell.run('npm', ['run', WATCH_BEFORE_SCRIPT], { showExecution: true });
     }
   });
@@ -84,7 +112,7 @@ export function registerHooks(hooks: IHookEngine) {
     ]);
 
     const info: InfoHookItem[] = [ // TODO: why must I be explicit?
-      { type: 'global-packages', name: 'Ionic CLI', version: version },
+      { type: 'cli-packages', name: `${name} ${chalk.dim('(Ionic CLI)')}`, version, path: path.dirname(path.dirname(__filename)) },
       { type: 'system', name: 'Node', version: node },
       { type: 'system', name: 'npm', version: npm || 'not installed' },
       { type: 'system', name: 'OS', version: os },
@@ -111,28 +139,34 @@ export function registerHooks(hooks: IHookEngine) {
 }
 
 
-export async function run(pargv: string[], env: { [k: string]: string }) {
+export async function run(pargv: string[], env: { [k: string]: string; }, opts: { local?: boolean; } = {}) {
   const now = new Date();
   let exitCode = 0;
   let err: any;
 
+  pargv = modifyArguments(pargv.slice(2));
   env['IONIC_CLI_LIB'] = __filename;
 
-  const ienv = await generateIonicEnvironment(exports, modifyArguments(pargv.slice(2)), env);
+  const ienv = await generateIonicEnvironment(exports, pargv, env);
+
+  ienv.meta = {
+    local: opts.local || false,
+    binPath: env['IONIC_CLI_BIN'],
+    libPath: env['IONIC_CLI_LIB'],
+  };
+
   registerHooks(ienv.hooks);
 
   try {
     const configData = await ienv.config.load();
 
-    if (ienv.argv['log-level']) {
-      ienv.log.level = ienv.argv['log-level'];
-    }
+    ienv.log.debug(() => util.inspect(ienv.meta, { breakLength: Infinity, colors: chalk.enabled }));
 
     if (env['IONIC_EMAIL'] && env['IONIC_PASSWORD']) {
-      ienv.log.debug(`${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables detected`);
+      ienv.log.debug(() => `${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables detected`);
 
       if (configData.user.email !== env['IONIC_EMAIL']) {
-        ienv.log.debug(`${chalk.bold('IONIC_EMAIL')} mismatch with current session--attempting login`);
+        ienv.log.debug(() => `${chalk.bold('IONIC_EMAIL')} mismatch with current session--attempting login`);
 
         try {
           await ienv.session.login(env['IONIC_EMAIL'], env['IONIC_PASSWORD']);
@@ -161,14 +195,14 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       }
     }
 
+    const argv = minimist(pargv, { boolean: true, string: '_' });
+
     // If an legacy command is being executed inform the user that there is a new command available
-    const foundCommand = mapLegacyCommand(ienv.argv._[0]);
+    const foundCommand = mapLegacyCommand(argv._[0]);
     if (foundCommand) {
-      ienv.log.msg(`The ${chalk.green(ienv.argv._[0])} command has been renamed. To find out more, run:\n\n` +
+      ienv.log.msg(`The ${chalk.green(argv._[0])} command has been renamed. To find out more, run:\n\n` +
                    `  ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`);
     } else {
-      let updates: undefined | string[];
-
       try {
         await loadPlugins(ienv);
       } catch (e) {
@@ -176,33 +210,49 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
           throw e;
         }
 
-        ienv.log.error(chalk.red.bold('Error occurred while loading plugins. CLI functionality may be limited.\nChecking for CLI updates now...'));
-        ienv.log.debug(chalk.red(chalk.bold('Plugin error: ') + (e.stack ? e.stack : e)));
-        updates = await checkForUpdates(ienv);
+        ienv.log.error(chalk.red.bold('Error occurred while loading plugins. CLI functionality may be limited.'));
+        ienv.log.debug(() => chalk.red(chalk.bold('Plugin error: ') + (e.stack ? e.stack : e)));
+      }
 
-        if (updates.length === 0) {
-          ienv.log.error('No updates found after plugin error--please report this issue.');
+      if (ienv.flags.interactive) {
+        if (typeof configData.daemon.updates === 'undefined') {
+          const confirm = await ienv.prompt({
+            type: 'confirm',
+            name: 'confirm',
+            message: `The Ionic CLI can automatically check for updates in the background. Would you like to enable this?`,
+          });
+
+          configData.daemon.updates = confirm;
+          await ienv.config.save();
+        }
+
+        if (configData.daemon.updates) {
+          await checkForDaemon(ienv);
+          await checkForUpdates(ienv);
         }
       }
 
       await ienv.hooks.fire('plugins:init', { env: ienv });
 
-      if (configData.cliFlags['dev-always-ionic-updates'] || configData.cliFlags['dev-always-plugin-updates'] || (typeof updates === 'undefined' && now.getTime() - new Date(configData.lastCommand).getTime() >= 3600000)) {
-        await checkForUpdates(ienv);
-      }
+      const r = await namespace.runCommand(ienv, pargv);
 
-      await namespace.runCommand(ienv);
+      if (typeof r === 'number') {
+        exitCode = r;
+      }
 
       configData.lastCommand = now.toISOString();
     }
 
   } catch (e) {
-    ienv.log.debug(chalk.red.bold('!!! ERROR ENCOUNTERED !!!'));
     err = e;
   }
 
   try {
-    await Promise.all([ienv.config.save(), ienv.project.save()]);
+    await Promise.all([
+      ienv.config.save(),
+      ienv.project.save(),
+      ienv.daemon.save(),
+    ]);
   } catch (e) {
     ienv.log.error(e);
   }
@@ -232,12 +282,14 @@ export async function run(pargv: string[], env: { [k: string]: string }) {
       ienv.log.msg(chalk.red(String(err)));
 
       if (err.stack) {
-        ienv.log.debug(chalk.red(err.stack));
+        ienv.log.debug(() => chalk.red(err.stack));
       }
     }
-
-    process.exit(exitCode);
   }
 
   ienv.close();
+
+  if (exitCode > 0) {
+    process.exit(exitCode);
+  }
 }

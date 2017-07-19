@@ -4,7 +4,6 @@ import {
   CommandLineOptions,
   CommandMetadata,
   CommandPreRun,
-  validators,
 } from '@ionic/cli-utils';
 
 import { filterArgumentsForCordova } from '../lib/utils/cordova';

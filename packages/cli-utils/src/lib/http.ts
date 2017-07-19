@@ -20,6 +20,7 @@ import { FatalException } from './errors';
 
 const FORMAT_ERROR_BODY_MAX_LENGTH = 1000;
 const CONTENT_TYPE_JSON = 'application/json';
+
 export const ERROR_UNKNOWN_CONTENT_TYPE = 'UNKNOWN_CONTENT_TYPE';
 export const ERROR_UNKNOWN_RESPONSE_FORMAT = 'UNKNOWN_RESPONSE_FORMAT';
 
@@ -123,11 +124,11 @@ export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
 }
 
 export function transformAPIResponse(r: superagentType.Response): APIResponse {
-  if (r.status === 204 && !r.body) {
+  if (r.status === 204) {
     r.body = { data: null, meta: { status: 204, version: '', request_id: '' } };
   }
 
-  if (r.type !== CONTENT_TYPE_JSON) {
+  if (r.status !== 204 && r.type !== CONTENT_TYPE_JSON) {
     throw ERROR_UNKNOWN_CONTENT_TYPE;
   }
 
@@ -179,11 +180,11 @@ export function formatAPIResponse(req: superagentType.SuperAgentRequest, r: APIR
 export function formatAPISuccess(req: superagentType.SuperAgentRequest, r: APIResponseSuccess): string {
   return `Request: ${req.method} ${req.url}\n`
     + `Response: ${r.meta.status}\n`
-    + `Body: \n${util.inspect(r.data)}`;
+    + `Body: \n${util.inspect(r.data, { colors: chalk.enabled })}`;
 }
 
 export function formatAPIError(req: superagentType.SuperAgentRequest, r: APIResponseError): string {
   return `Request: ${req.method} ${req.url}\n`
     + `Response: ${r.meta.status}\n`
-    + `Body: \n${util.inspect(r.error)}`;
+    + `Body: \n${util.inspect(r.error, { colors: chalk.enabled })}`;
 }

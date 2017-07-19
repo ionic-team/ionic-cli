@@ -1,7 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as crypto from 'crypto';
-import * as rimraf from 'rimraf';
 
 import { promisify } from './promise';
 import { load } from '../modules';
@@ -23,12 +21,12 @@ export interface FSWriteFileOptions {
 
 export const fsAccess = promisify<void, string, number>(fs.access);
 export const fsMkdir = promisify<void, string, number | undefined>(fs.mkdir);
+export const fsOpen = promisify<number, string, string>(fs.open);
 export const fsStat = promisify<fs.Stats, string>(fs.stat);
 export const fsUnlink = promisify<void, string>(fs.unlink);
 export const fsReadFile = promisify<string, string, FSReadFileOptions>(fs.readFile);
 export const fsWriteFile = promisify<void, string, any, FSWriteFileOptions>(fs.writeFile);
 export const fsReadDir = promisify<string[], string>(fs.readdir);
-export const rimrafp = promisify<void, string>(rimraf);
 
 export async function readDir(filePath: string): Promise<string[]> {
   try {
@@ -92,7 +90,7 @@ export async function fsMkdirp(p: string, mode?: number): Promise<void> {
 
 export function getFileChecksum(filePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
-
+    const crypto = require('crypto');
     const hash = crypto.createHash('md5');
     const input = fs.createReadStream(filePath);
 

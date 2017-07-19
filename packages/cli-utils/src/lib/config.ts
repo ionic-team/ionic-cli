@@ -2,21 +2,19 @@ import * as path from 'path';
 import * as os from 'os';
 
 import * as chalk from 'chalk';
+import * as minimistType from 'minimist';
 
-import { CliFlag, ConfigFile, IConfig, IonicEnvironment } from '../definitions';
+import {
+  ConfigFile,
+  IConfig,
+  IonicEnvironment,
+} from '../definitions';
+
+import { BACKEND_LEGACY } from './backends';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
-import { ERROR_FILE_INVALID_JSON, ERROR_FILE_NOT_FOUND, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from './utils/fs';
+import { ERROR_FILE_INVALID_JSON, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from './utils/fs';
 import { load } from './modules';
-
-export const CLI_FLAGS: { flag: CliFlag, visible?: boolean; defaultValue?: boolean }[] = [
-  { flag: 'confirm', visible: true, defaultValue: false },
-  { flag: 'interactive', visible: true, defaultValue: true },
-  { flag: 'telemetry', defaultValue: true },
-  { flag: 'yarn', visible: true, defaultValue: false },
-  { flag: 'dev-always-plugin-updates' },
-  { flag: 'dev-always-ionic-updates' },
-];
 
 export abstract class BaseConfig<T> implements IConfig<T> {
   public directory: string;
@@ -39,8 +37,8 @@ export abstract class BaseConfig<T> implements IConfig<T> {
 
   abstract is(o: any): o is T;
 
-  async load(): Promise<T> {
-    if (!this.configFile) {
+  async load(options: { disk?: boolean; } = {}): Promise<T> {
+    if (options.disk || !this.configFile) {
       let o: { [key: string]: any } | undefined;
 
       try {
@@ -137,8 +135,20 @@ export class Config extends BaseConfig<ConfigFile> {
       results.lastCommand = new Date().toISOString();
     }
 
+    if (!results.daemon) {
+      results.daemon = {};
+    }
+
     if (!results.urls) {
       results.urls = {};
+    }
+
+    if (!results.git) {
+      results.git = {};
+    }
+
+    if (!results.git.host) {
+      results.git.host = 'git.ionicjs.com';
     }
 
     if (!results.urls.api) {
@@ -161,30 +171,30 @@ export class Config extends BaseConfig<ConfigFile> {
       results.tokens.appUser = {};
     }
 
-    if (!results.cliFlags) {
-      results.cliFlags = {};
+    if (typeof results.backend === 'undefined') {
+      results.backend = BACKEND_LEGACY;
     }
 
-    for (let cliFlag of CLI_FLAGS) {
-      const { flag, defaultValue } = cliFlag;
+    if (typeof results.telemetry === 'undefined') {
+      if (results.cliFlags && typeof results.cliFlags.enableTelemetry !== 'undefined') {
+        results.telemetry = results.cliFlags.enableTelemetry;
+      } else if (results.cliFlags && typeof results.cliFlags.telemetry !== 'undefined') {
+        results.telemetry = results.cliFlags.telemetry;
+      } else {
+        results.telemetry = true;
+      }
+    }
 
-      if (typeof results.cliFlags[flag] === 'undefined') {
-        if (flag === 'telemetry') {
-          if (typeof results.cliFlags.enableTelemetry !== 'undefined') {
-            results.cliFlags.telemetry = results.cliFlags.enableTelemetry;
-          } else {
-            results.cliFlags.telemetry = true;
-          }
-        } else if (typeof defaultValue === 'boolean') {
-          results.cliFlags[flag] = defaultValue;
-        }
+    if (typeof results.yarn === 'undefined') {
+      if (results.cliFlags && typeof results.cliFlags.yarn !== 'undefined') {
+        results.yarn = results.cliFlags.yarn;
+      } else {
+        results.yarn = false;
       }
     }
 
     delete results.lastUpdated;
-    delete results.cliFlags.promptedForTelemetry;
-    delete results.cliFlags.promptedForSignup;
-    delete results.cliFlags.enableTelemetry;
+    results.cliFlags = {}; // TODO: this is temporary
 
     return results;
   }
@@ -192,34 +202,22 @@ export class Config extends BaseConfig<ConfigFile> {
   is(j: any): j is ConfigFile {
     return j
       && typeof j.lastCommand === 'string'
+      && typeof j.daemon === 'object'
       && typeof j.urls === 'object'
       && typeof j.urls.api === 'string'
       && typeof j.urls.dash === 'string'
       && typeof j.user === 'object'
       && typeof j.tokens === 'object'
       && typeof j.tokens.appUser === 'object'
-      && typeof j.cliFlags === 'object';
+      && typeof j.backend === 'string'
+      && typeof j.telemetry === 'boolean'
+      && typeof j.yarn === 'boolean';
   }
 }
 
-export async function handleCliFlags(config: IConfig<ConfigFile>, argv: { [key: string]: any }): Promise<[CliFlag, boolean][]> {
-  const changedFlags: [CliFlag, boolean][] = [];
-  const configData = await config.load();
-  const enableTelemetry = configData.cliFlags.telemetry;
-
-  for (let cliFlag of CLI_FLAGS) {
-    const { flag, defaultValue } = cliFlag;
-    const currentValue = configData.cliFlags[flag];
-    const newValue = argv[flag];
-
-    if (typeof newValue === 'boolean') {
-      configData.cliFlags[flag] = newValue;
-
-      if (currentValue !== newValue) {
-        changedFlags.push([flag, newValue]);
-      }
-    }
-  }
-
-  return changedFlags;
+export function gatherFlags(argv: minimistType.ParsedArgs): IonicEnvironment['flags'] {
+  return {
+    interactive: typeof argv['interactive'] === 'undefined' ? true : argv['interactive'],
+    confirm: typeof argv['confirm'] === 'undefined' ? false : argv['confirm'],
+  };
 }

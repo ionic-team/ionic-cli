@@ -1,6 +1,7 @@
 import * as opn from 'opn';
 
 import {
+  BACKEND_LEGACY,
   Command,
   CommandLineInputs,
   CommandLineOptions,
@@ -10,6 +11,7 @@ import {
 @CommandMetadata({
   name: 'signup',
   type: 'global',
+  backends: [BACKEND_LEGACY],
   description: 'Create an Ionic account',
 })
 export class SignupCommand extends Command {

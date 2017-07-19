@@ -6,7 +6,7 @@ import { ChalkStyle } from 'chalk';
 import { ILogger, LogLevel, LoggerOptions } from '../../definitions';
 import { LOG_LEVELS, isLogLevel } from '../../guards';
 import { FatalException } from '../errors';
-import { indent, wordWrap } from './format';
+import { wordWrap } from './format';
 
 export const LOGGER_STATUS_COLORS = new Map<LogLevel, ChalkStyle>([
   ['debug', chalk.magenta.dim],
@@ -19,7 +19,7 @@ export const LOGGER_STATUS_COLORS = new Map<LogLevel, ChalkStyle>([
 export class Logger implements ILogger {
 
   protected _level: LogLevel;
-  public prefix: string;
+  public prefix: string | (() => string);
   public stream: NodeJS.WritableStream;
 
   constructor({ level = 'info', prefix = '', stream = process.stdout }: LoggerOptions) {
@@ -42,27 +42,31 @@ export class Logger implements ILogger {
     this._level = s;
   }
 
-  debug(msg: string): void {
+  debug(msg: string | (() => string)): void {
     this.log('debug', msg);
   }
 
-  info(msg: string): void {
+  info(msg: string | (() => string)): void {
     this.log('info', msg);
   }
 
-  ok(msg: string): void {
+  ok(msg: string | (() => string)): void {
     this.log('ok', msg);
   }
 
-  warn(msg: string): void {
+  warn(msg: string | (() => string)): void {
     this.log('warn', msg);
   }
 
-  error(msg: string): void {
+  error(msg: string | (() => string)): void {
     this.log('error', msg);
   }
 
-  msg(msg: string): void {
+  msg(msg: string | (() => string)): void {
+    if (typeof msg === 'function') {
+      msg = msg();
+    }
+
     this.stream.write(this.enforceLF(msg));
   }
 
@@ -88,11 +92,19 @@ export class Logger implements ILogger {
     return color;
   }
 
-  private log(level: LogLevel, msg: string): void {
+  private log(level: LogLevel, msg: string | (() => string)): void {
     if (this.shouldLog(level)) {
       let prefix = this.prefix;
 
+      if (typeof msg === 'function') {
+        msg = msg();
+      }
+
       if (prefix) {
+        if (typeof prefix === 'function') {
+          prefix = prefix();
+        }
+
         msg = util.format(prefix, msg);
       }
 

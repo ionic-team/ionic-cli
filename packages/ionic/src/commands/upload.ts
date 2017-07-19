@@ -1,6 +1,7 @@
 import * as chalk from 'chalk';
 
 import {
+  BACKEND_LEGACY,
   Command,
   CommandLineInput,
   CommandLineInputs,
@@ -13,9 +14,10 @@ import { upload } from '../lib/upload';
 @CommandMetadata({
   name: 'upload',
   type: 'project',
+  backends: [BACKEND_LEGACY],
   description: 'Upload a new snapshot of your app',
   longDescription: `
-Zips up your local app files and uploads a snapshot to ${chalk.bold('https://apps.ionic.io')}.
+Zips up your local app files and uploads a snapshot to Ionic.
 
 From there, you can use Ionic View (${chalk.bold('https://view.ionic.io')}) to easily share your app with your organization and testers around the world.
   `,

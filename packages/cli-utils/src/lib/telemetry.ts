@@ -29,7 +29,7 @@ export class Telemetry implements ITelemetry {
       trackingCode: GA_CODE,
       globalName:   'ionic',
       version:      this.cliVersion,
-      silent:       configFile.cliFlags.telemetry !== true
+      silent:       configFile.telemetry !== true
     });
   }
 

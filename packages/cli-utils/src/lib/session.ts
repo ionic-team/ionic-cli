@@ -8,18 +8,46 @@ import {
   ISession,
 } from '../definitions';
 
-import { isAuthTokensResponse, isLoginResponse, isSuperAgentError } from '../guards';
+import { isAuthTokensResponse, isLegacyLoginResponse, isProLoginResponse, isSuperAgentError } from '../guards';
 
 import { FatalException } from './errors';
 import { createFatalAPIFormat } from './http';
 
-export class Session implements ISession {
+export class BaseSession {
   constructor(
     protected config: IConfig<ConfigFile>,
     protected project: IProject,
     protected client: IClient
   ) {}
 
+  async isLoggedIn(): Promise<boolean> {
+    const c = await this.config.load();
+    return typeof c.tokens.user === 'string';
+  }
+
+  async logout(): Promise<void> {
+    const c = await this.config.load();
+
+    c.user = {};
+    c.tokens.appUser = {};
+    delete c.tokens.user;
+  }
+
+  async getUserToken(): Promise<string> {
+    const c = await this.config.load();
+
+    if (!c.tokens.user) {
+      throw new FatalException(
+        `Oops, sorry! You'll need to log in:\n\n    ${chalk.green('ionic login')}\n\n` +
+        `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`
+      );
+    }
+
+    return c.tokens.user;
+  }
+}
+
+export class CloudSession extends BaseSession implements ISession {
   async login(email: string, password: string): Promise<void> {
     const req = this.client.make('POST', '/login')
       .send({ email, password });
@@ -27,7 +55,7 @@ export class Session implements ISession {
     try {
       const res = await this.client.do(req);
 
-      if (!isLoginResponse(res)) {
+      if (!isLegacyLoginResponse(res)) {
         throw createFatalAPIFormat(req, res);
       }
 
@@ -35,7 +63,7 @@ export class Session implements ISession {
       const c = await this.config.load();
 
       if (c.user.id !== user_id) { // User changed
-        c.tokens.appUser = {};
+        await this.logout();
       }
 
       c.user.id = user_id;
@@ -48,22 +76,6 @@ export class Session implements ISession {
 
       throw e;
     }
-  }
-
-  async isLoggedIn(): Promise<boolean> {
-    const c = await this.config.load();
-    return typeof c.tokens.user === 'string';
-  }
-
-  async getUserToken(): Promise<string> {
-    const c = await this.config.load();
-
-    if (!c.tokens.user) {
-      throw new FatalException(`Oops, sorry! You'll need to log in:\n\n    ${chalk.green('ionic login')}\n\n` +
-                               `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`);
-    }
-
-    return c.tokens.user;
   }
 
   async getAppUserToken(app_id?: string): Promise<string> {
@@ -97,5 +109,43 @@ export class Session implements ISession {
     }
 
     return c.tokens.appUser[app_id];
+  }
+}
+
+export class ProSession extends BaseSession implements ISession {
+  async login(email: string, password: string): Promise<void> {
+    const req = this.client.make('POST', '/login')
+      .send({ email, password, source: 'cli' });
+
+    try {
+      const res = await this.client.do(req);
+
+      if (!isProLoginResponse(res)) {
+        throw createFatalAPIFormat(req, res);
+      }
+
+      const { token, user } = res.data;
+      const c = await this.config.load();
+
+      const user_id = String(user.id);
+
+      if (c.user.id !== user_id) { // User changed
+        await this.logout();
+      }
+
+      c.user.id = user_id;
+      c.user.email = email;
+      c.tokens.user = token;
+    } catch (e) {
+      if (isSuperAgentError(e) && e.response.status === 401) {
+        throw new FatalException(chalk.red('Incorrect email or password'));
+      }
+
+      throw e;
+    }
+  }
+
+  async getAppUserToken(app_id?: string): Promise<string> {
+    return this.getUserToken();
   }
 }

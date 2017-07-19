@@ -1,25 +1,27 @@
+import * as util from 'util';
+import * as path from 'path';
+
 import { isCI } from 'ci-info';
 import * as chalk from 'chalk';
 import * as minimist from 'minimist';
 
 import * as inquirerType from 'inquirer';
-import ui = inquirerType.ui;
 
-import { IHookEngine, IonicEnvironment, Plugin } from './definitions';
+import { IHookEngine, IonicEnvironment, RootPlugin } from './definitions';
 import { load } from './lib/modules';
 
-import { App } from './lib/app';
-import { CONFIG_DIRECTORY, CONFIG_FILE, Config, handleCliFlags } from './lib/config';
+import { BACKEND_LEGACY } from './lib/backends';
+import { CONFIG_DIRECTORY, CONFIG_FILE, Config, gatherFlags } from './lib/config';
+import { DAEMON_JSON_FILE, Daemon } from './lib/daemon';
 import { Client } from './lib/http';
 import { CLIEventEmitter } from './lib/events';
-import { FatalException } from './lib/errors';
 import { HookEngine } from './lib/hooks';
 import { PROJECT_FILE, PROJECT_FILE_LEGACY, Project } from './lib/project';
 import { Logger } from './lib/utils/logger';
 import { findBaseDirectory } from './lib/utils/fs';
 import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
 import { Telemetry } from './lib/telemetry';
-import { Session } from './lib/session';
+import { CloudSession, ProSession } from './lib/session';
 import { Shell } from './lib/shell';
 import { createPromptModule } from './lib/prompts';
 
@@ -27,11 +29,13 @@ export * from './definitions';
 export * from './guards';
 
 export * from './lib/app';
+export * from './lib/backends';
 export * from './lib/command';
 export * from './lib/command/command';
 export * from './lib/command/namespace';
 export * from './lib/command/utils';
 export * from './lib/config';
+export * from './lib/daemon';
 export * from './lib/deploy';
 export * from './lib/errors';
 export * from './lib/events';
@@ -39,7 +43,6 @@ export * from './lib/help';
 export * from './lib/hooks';
 export * from './lib/http';
 export * from './lib/login';
-export * from './lib/modules';
 export * from './lib/package';
 export * from './lib/plugins';
 export * from './lib/project';
@@ -68,43 +71,30 @@ export const version = '__VERSION__';
 export function registerHooks(hooks: IHookEngine) {
   hooks.register(name, 'command:info', async () => {
     return [
-      { type: 'global-packages', name, version },
+      { type: 'cli-packages', name, version, path: path.dirname(__filename) },
     ];
   });
 }
 
-export async function generateIonicEnvironment(plugin: Plugin, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
-  if (!plugin.namespace) {
-    throw new FatalException('No root ionic namespace.');
-  }
-
+export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
   const argv = minimist(pargv, { boolean: true, string: '_' });
-
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
-  const changedFlags = await handleCliFlags(config, argv);
-
   const configData = await config.load();
+  const flags = gatherFlags(argv);
 
   let stream: NodeJS.WritableStream;
   let tasks: TaskChain;
   let bottomBar: inquirerType.ui.BottomBar | undefined;
   let log: Logger;
 
-  if (isCI && configData.cliFlags['interactive']) {
-    configData.cliFlags['interactive'] = false;
-    changedFlags.push(['interactive', false]);
+  if (isCI) {
+    flags.interactive = false;
   }
 
-  if (configData.cliFlags['interactive']) {
+  if (flags.interactive) {
     const inquirer = load('inquirer');
     bottomBar = new inquirer.ui.BottomBar();
-
-    try { // TODO
-      const bottomBarHack = <any>bottomBar;
-      bottomBarHack.rl.output.mute();
-    } catch (e) {
-      console.error('EXCEPTION DURING BOTTOMBAR OUTPUT MUTE', e);
-    }
+    open();
 
     stream = bottomBar.log;
     log = new Logger({ stream });
@@ -115,20 +105,19 @@ export async function generateIonicEnvironment(plugin: Plugin, pargv: string[], 
     tasks = new TaskChain({ log });
   }
 
-  for (let [flag, newValue] of changedFlags) {
-    const prettyFlag = chalk.green('--' + (newValue ? '' : 'no-' ) + flag);
+  if (argv['log-level']) {
+    log.level = argv['log-level'];
+  }
 
-    if (flag === 'interactive' && !newValue && isCI) {
-      log.info('CI detected--switching to non-interactive mode.');
-    }
+  if (argv['log-timestamps']) {
+    log.prefix = () => `${chalk.dim('[' + new Date().toISOString() + ']')}`;
+  }
 
-    log.info(`CLI Flag ${prettyFlag} saved`);
+  log.debug(`CLI flags: ${util.inspect(flags, { breakLength: Infinity, colors: chalk.enabled })}`);
 
-    if (flag === 'telemetry' && newValue) {
-      log.msg('Thank you for making the CLI better! ❤️');
-    } else if (flag === 'confirm' && newValue) {
-      log.warn(`Careful with ${prettyFlag}. Some auto-confirmed actions are destructive.`);
-    }
+  if (typeof argv['yarn'] === 'boolean') {
+    log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} switch is deprecated. Use ${chalk.green('ionic config set -g yarn ' + String(argv['yarn']))}.`);
+    configData.yarn = argv['yarn'];
   }
 
   const projectDir = await findBaseDirectory(process.cwd(), PROJECT_FILE);
@@ -141,46 +130,64 @@ export async function generateIonicEnvironment(plugin: Plugin, pargv: string[], 
     }
   }
 
+  function open() {
+    if (flags.interactive) {
+      if (!bottomBar) {
+        const inquirer = load('inquirer');
+        bottomBar = new inquirer.ui.BottomBar();
+      }
+
+      try { // TODO
+        const bottomBarHack = <any>bottomBar;
+        bottomBarHack.rl.output.mute();
+      } catch (e) {
+        console.error('EXCEPTION DURING BOTTOMBAR OUTPUT MUTE', e);
+      }
+    }
+  }
+
+  function close() {
+    tasks.cleanup();
+
+    // instantiating inquirer.ui.BottomBar hangs, so when close() is called,
+    // we close BottomBar streams and replace the log stream with stdout.
+    // This means inquirer shouldn't be used after command execution finishes
+    // (which could happen during long-running processes like serve).
+    if (bottomBar) {
+      bottomBar.close();
+      bottomBar = undefined;
+      log.stream = process.stdout;
+    }
+  }
+
   env['IONIC_PROJECT_DIR'] = projectDir || '';
   env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
 
-  const project = new Project(projectDir || '', PROJECT_FILE);
-  const hooks = new HookEngine();
+  const project = new Project(env['IONIC_PROJECT_DIR'], PROJECT_FILE);
   const client = new Client(configData.urls.api);
+  const session = configData.backend === BACKEND_LEGACY ? new CloudSession(config, project, client) : new ProSession(config, project, client);
+  const hooks = new HookEngine();
   const telemetry = new Telemetry(config, plugin.version);
   const shell = new Shell(tasks, log);
-  const session = new Session(config, project, client);
-  const app = new App(session, project, client);
 
   registerHooks(hooks);
 
   return {
-    app,
-    argv,
     client,
-    close() {
-      tasks.cleanup();
-
-      // instantiating inquirer.ui.BottomBar hangs, so when close() is called,
-      // we close BottomBar streams and replace the log stream with stdout.
-      // This means inquirer shouldn't be used after command execution finishes
-      // (which could happen during long-running processes like serve).
-      if (bottomBar) {
-        bottomBar.close();
-        log.stream = process.stdout;
-      }
-    },
+    close,
     config,
-    events: new CLIEventEmitter,
+    daemon: new Daemon(CONFIG_DIRECTORY, DAEMON_JSON_FILE),
+    events: new CLIEventEmitter(),
+    flags,
     hooks,
     load,
     log,
     namespace: plugin.namespace,
-    pargv,
+    open,
     plugins: {
       ionic: plugin,
     },
-    prompt: await createPromptModule(log, config),
+    prompt: await createPromptModule({ confirm: flags.confirm, interactive: flags.interactive, log, config }),
     project,
     session,
     shell,

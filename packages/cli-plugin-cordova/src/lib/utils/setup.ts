@@ -10,13 +10,6 @@ export async function getProjectPlatforms(projectDir: string): Promise<string[]>
 }
 
 /**
- * Get all plugins based on plugins directory
- */
-export async function getProjectPlugins(projectDir: string): Promise<string[]> {
-  return readDir(path.join(projectDir, 'plugins'));
-}
-
-/**
  * Install the platform specified using cordova
  *
  * @param {String} platform The platform to install (ios, android, etc.)

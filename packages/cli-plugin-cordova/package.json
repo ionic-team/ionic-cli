@@ -8,7 +8,7 @@
   "types": "./dist/main.d.ts",
   "scripts": {
     "clean": "rm -rf ./dist",
-    "lint": "tslint -c ../../tslint.json \"src/**/*.ts\"",
+    "lint": "tslint --config ../../tslint.json --project tsconfig.json --type-check",
     "build": "npm run clean && npm run build-ts && npm run build-js",
     "build-ts": "tsc",
     "build-js": "npm run script-prepublish && cp ./resources.json ./dist/resources.json",
@@ -61,6 +61,7 @@
   "dependencies": {
     "@ionic/cli-utils": "1.5.0",
     "chalk": "^2.0.0",
+    "tslib": "^1.7.1",
     "xml2js": "^0.4.17"
   },
   "devDependencies": {
