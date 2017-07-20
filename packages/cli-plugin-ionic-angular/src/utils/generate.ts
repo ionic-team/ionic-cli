@@ -37,9 +37,8 @@ export async function tabsPrompt(env: IonicEnvironment) {
     const tabName = await env.prompt({
       type: 'input',
       name: 'tabName',
-      message: 'Name of this tab:'
+      message: `Name of tab ${i + 1}:`
     });
-
     tabNames.push(tabName);
   }
   return tabNames;
