@@ -12,7 +12,6 @@
     "noUnusedLocals": true,
     "outDir": "./dist",
     "pretty": true,
-    "removeComments": true,
     "strict": true,
     "target": "es6",
     "lib": [

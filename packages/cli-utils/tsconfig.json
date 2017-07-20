@@ -13,7 +13,6 @@
     "noUnusedLocals": true,
     "outDir": "./",
     "pretty": true,
-    "removeComments": true,
     "strict": true,
     "target": "es6",
     "typeRoots": [

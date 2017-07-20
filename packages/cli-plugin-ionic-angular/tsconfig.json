@@ -13,7 +13,6 @@
     "noUnusedLocals": true,
     "outDir": "./dist",
     "pretty": true,
-    "removeComments": true,
     "strict": true,
     "strictNullChecks": false,
     "target": "es6",

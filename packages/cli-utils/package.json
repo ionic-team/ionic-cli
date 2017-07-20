@@ -8,7 +8,7 @@
   "types": "./index.d.ts",
   "scripts": {
     "clean": "rm -rf index.* bootstrap.* definitions.* guards.* ./lib ./dist",
-    "lint": "tslint --config ../../tslint.json --project tsconfig.json --type-check",
+    "lint": "tslint --config ../../tslint.js --project tsconfig.json --type-check",
     "build": "npm run clean && npm run build-ts && npm run build-js",
     "build-ts": "tsc",
     "build-js": "npm run script-prepublish",
