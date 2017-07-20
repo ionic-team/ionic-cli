@@ -4,8 +4,7 @@ import * as chalk from 'chalk';
 import { ChalkStyle } from 'chalk';
 
 import { ILogger, LogLevel, LoggerOptions } from '../../definitions';
-import { LOG_LEVELS, isLogLevel } from '../../guards';
-import { FatalException } from '../errors';
+import { LOG_LEVELS } from '../../guards';
 import { wordWrap } from './format';
 
 export const LOGGER_STATUS_COLORS = new Map<LogLevel, ChalkStyle>([
@@ -18,28 +17,14 @@ export const LOGGER_STATUS_COLORS = new Map<LogLevel, ChalkStyle>([
 
 export class Logger implements ILogger {
 
-  protected _level: LogLevel;
-  public prefix: string | (() => string);
+  public readonly level: LogLevel;
+  public readonly prefix: string | (() => string);
   public stream: NodeJS.WritableStream;
 
   constructor({ level = 'info', prefix = '', stream = process.stdout }: LoggerOptions) {
     this.level = level;
     this.prefix = prefix;
     this.stream = stream;
-  }
-
-  get level(): LogLevel {
-    return this._level;
-  }
-
-  set level(v: LogLevel) {
-    const s = v.toLowerCase();
-
-    if (!isLogLevel(s)) {
-      throw new FatalException(`Invalid log level '${chalk.bold(v)}' (choose from: ${LOG_LEVELS.map(l => chalk.bold(l)).join(', ')})`);
-    }
-
-    this._level = s;
   }
 
   debug(msg: string | (() => string)): void {

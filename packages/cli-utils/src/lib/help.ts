@@ -116,7 +116,7 @@ async function formatCommandHelp(env: IonicEnvironment, cmdMetadata: CommandData
   return `
   ${chalk.bold(chalk.green(displayCmd) + ' - ' + wrappedDescription)}${formatLongDescription(cmdMetadata.longDescription)}
   ` +
-  (await formatCommandUsage(env, cmdMetadata.inputs, cmdMetadata.fullName)) +
+  (await formatCommandUsage(env, cmdMetadata)) +
   (await formatCommandInputs(env, cmdMetadata.inputs)) +
   (await formatCommandOptions(env, cmdMetadata.options)) +
   (await formatCommandExamples(env, cmdMetadata.exampleCommands, cmdMetadata.fullName));
@@ -132,7 +132,7 @@ function getListOfCommandDetails(cmdMetadataList: CommandData[]): string[] {
   });
 }
 
-async function formatCommandUsage(env: IonicEnvironment, inputs: CommandInput[] = [], commandName: string) {
+async function formatCommandUsage(env: IonicEnvironment, cmdMetadata: CommandData) {
   const formatInput = (input: CommandInput) => {
     if (!env.flags.interactive && input.required !== false) {
       return '<' + input.name + '>';
@@ -141,7 +141,8 @@ async function formatCommandUsage(env: IonicEnvironment, inputs: CommandInput[] 
     return '[<' + input.name + '>]';
   };
 
-  const usageLine = `${chalk.dim('$')} ${chalk.green('ionic ' + commandName + ' ' + inputs.map(formatInput).join(' '))}`;
+  const options = await filterOptionsForHelp(env, cmdMetadata.options);
+  const usageLine = `${chalk.dim('$')} ${chalk.green('ionic ' + cmdMetadata.name + ' ' + (cmdMetadata.inputs && cmdMetadata.inputs.map(formatInput).join(' ')))} ${options.length > 0 ? chalk.green('[options]') : ''}`;
 
   return `
   ${chalk.bold('Usage')}:
@@ -206,9 +207,13 @@ function formatOptionLine(opt: CommandOption) {
   return `${optionList} ${Array(fullLength - optionListLength).fill(chalk.dim('.')).join('')} ${wrappedDescription}`;
 }
 
-async function formatCommandOptions(env: IonicEnvironment, options: CommandOption[] = []) {
+async function filterOptionsForHelp(env: IonicEnvironment, options: CommandOption[] = []) {
   const config = await env.config.load();
-  options = options.filter(opt => !opt.backends || opt.backends.includes(config.backend));
+  return options.filter(opt => opt.visible !== false && (!opt.backends || opt.backends.includes(config.backend)));
+}
+
+async function formatCommandOptions(env: IonicEnvironment, options: CommandOption[] = []) {
+  options = await filterOptionsForHelp(env, options);
 
   if (options.length === 0) {
     return '';

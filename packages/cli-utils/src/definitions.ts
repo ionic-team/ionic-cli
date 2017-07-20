@@ -225,6 +225,7 @@ export interface CommandOption {
   aliases?: string[];
   private?: boolean;
   intent?: string;
+  visible?: boolean;
 }
 
 export interface NormalizedCommandOption extends CommandOption {

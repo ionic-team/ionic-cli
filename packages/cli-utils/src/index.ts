@@ -7,7 +7,8 @@ import * as minimist from 'minimist';
 
 import * as inquirerType from 'inquirer';
 
-import { IHookEngine, IonicEnvironment, RootPlugin } from './definitions';
+import { IHookEngine, IonicEnvironment, LogLevel, RootPlugin } from './definitions';
+import { LOG_LEVELS, isLogLevel } from './guards';
 import { load } from './lib/modules';
 
 import { BACKEND_LEGACY } from './lib/backends';
@@ -86,9 +87,24 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   let tasks: TaskChain;
   let bottomBar: inquirerType.ui.BottomBar | undefined;
   let log: Logger;
+  let level: LogLevel = 'info';
+  let levelInvalid = false;
+  let prefix: string | (() => string) = '';
 
   if (isCI) {
     flags.interactive = false;
+  }
+
+  if (argv['log-level']) {
+    if (isLogLevel(argv['log-level'])) {
+      level = argv['log-level'];
+    } else {
+      levelInvalid = true;
+    }
+  }
+
+  if (argv['log-timestamps']) {
+    prefix = () => `${chalk.dim('[' + new Date().toISOString() + ']')}`;
   }
 
   if (flags.interactive) {
@@ -97,20 +113,19 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     open();
 
     stream = bottomBar.log;
-    log = new Logger({ stream });
+    log = new Logger({ level, prefix, stream });
     tasks = new InteractiveTaskChain({ log, bottomBar });
   } else {
     stream = process.stdout;
-    log = new Logger({ stream });
+    log = new Logger({ level, prefix, stream });
     tasks = new TaskChain({ log });
   }
 
-  if (argv['log-level']) {
-    log.level = argv['log-level'];
-  }
-
-  if (argv['log-timestamps']) {
-    log.prefix = () => `${chalk.dim('[' + new Date().toISOString() + ']')}`;
+  if (levelInvalid) {
+    log.warn(
+      `${chalk.green(argv['log-level'])} is an invalid log level--defaulting back to ${chalk.bold(level)}.\n` +
+      `You can choose from the following log levels: ${LOG_LEVELS.map(l => chalk.bold(l)).join(', ')}.`
+    );
   }
 
   log.debug(`CLI flags: ${util.inspect(flags, { breakLength: Infinity, colors: chalk.enabled })}`);
