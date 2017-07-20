@@ -1,10 +1,16 @@
 import * as chalk from 'chalk';
 
-import { CommandHookArgs, FatalException, getAvailableIPAddress, minimistOptionsToArray } from '@ionic/cli-utils';
+import {
+  CommandHookArgs,
+  FatalException,
+  ServeCommandHookResponse,
+  getAvailableIPAddress,
+  minimistOptionsToArray,
+} from '@ionic/cli-utils';
 
 import { load } from './lib/modules';
 
-export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any }> {
+export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResponse> {
   let chosenIP = 'localhost';
 
   if (args.options.externalIpRequired) {
@@ -66,6 +72,9 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
   return  {
     publicIp: chosenIP,
     protocol: 'http',
+    localAddress: 'localhost',
+    externalAddress: chosenIP,
+    port: settings.httpPort,
     ...settings
   };
 }

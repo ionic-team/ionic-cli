@@ -70,25 +70,6 @@ export interface BowerJson {
   devDependencies?: { [key: string]: string };
 }
 
-export interface EnvironmentInfo {
-  cordovaVersion: string;
-  appScripts: string;
-  xcode: string;
-  iosDeploy: string;
-  iosSim: string;
-  ionic: string;
-  cli: string;
-  os: string;
-  node: string;
-}
-
-export interface AppScriptsServeSettings {
-  url: string;
-  address: string;
-  port: number;
-  liveReloadPort: number;
-}
-
 export interface ProjectFileProxy {
   proxyUrl: string;
   proxyNoAgent: boolean;
@@ -431,6 +412,25 @@ export interface IHook<T, U> {
   fire(args: T): Promise<U>;
 }
 
+export interface ServeCommandHookResponse {
+  protocol: string;
+  localAddress: string;
+  externalAddress: string;
+  port: number;
+
+  /**
+   * @deprecated
+   */
+  httpPort?: number;
+
+  /**
+   * @deprecated
+   */
+  publicIp?: string;
+
+  [key: string]: any;
+}
+
 export interface ConfigSetCommandHookArgs extends CommandHookArgs {
   valueChanged: boolean;
 }
@@ -442,7 +442,7 @@ export interface IHookEngine {
   fire(hook: 'command:generate', args: CommandHookArgs): Promise<void[]>;
   fire(hook: 'command:info', args: CommandHookArgs): Promise<InfoHookItem[][]>;
   fire(hook: 'command:build', args: CommandHookArgs): Promise<void[]>;
-  fire(hook: 'command:serve', args: CommandHookArgs): Promise<{ [key: string]: any }[]>;
+  fire(hook: 'command:serve', args: CommandHookArgs): Promise<ServeCommandHookResponse[]>;
   fire(hook: 'build:before', args: EnvironmentHookArgs): Promise<void[]>;
   fire(hook: 'build:after', args: EnvironmentHookArgs): Promise<void[]>;
   fire(hook: 'watch:before', args: EnvironmentHookArgs): Promise<void[]>;
@@ -453,7 +453,7 @@ export interface IHookEngine {
   register(source: string, hook: 'command:generate', listener: (args: CommandHookArgs) => Promise<void>): void;
   register(source: string, hook: 'command:info', listener: (args: CommandHookArgs) => Promise<InfoHookItem[]>): void;
   register(source: string, hook: 'command:build', listener: (args: CommandHookArgs) => Promise<void>): void;
-  register(source: string, hook: 'command:serve', listener: (args: CommandHookArgs) => Promise<{ [key: string]: any }>): void;
+  register(source: string, hook: 'command:serve', listener: (args: CommandHookArgs) => Promise<ServeCommandHookResponse>): void;
   register(source: string, hook: 'build:before', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
   register(source: string, hook: 'build:after', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
   register(source: string, hook: 'watch:before', listener: (args: EnvironmentHookArgs) => Promise<void>): void;

@@ -4,6 +4,7 @@ import * as chalk from 'chalk';
 import {
   CommandHookArgs,
   IonicEnvironment,
+  ServeCommandHookResponse,
   findClosestOpenPort,
   getAvailableIPAddress,
   minimistOptionsToArray,
@@ -24,7 +25,7 @@ import {
 
 import { load } from '../lib/modules';
 
-export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any }> {
+export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResponse> {
   let chosenIP = 'localhost';
 
   if (args.options.externalIpRequired) {
@@ -61,6 +62,7 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
     projectRoot: args.env.project.directory,
     wwwDir: path.join(args.env.project.directory, projectConfig.documentRoot || 'www'),
     address: <string>args.options['address'] || DEFAULT_ADDRESS,
+    protocol: 'http',
     externalAddress: chosenIP,
     port: stringToInt(<string>args.options['port'], DEFAULT_SERVER_PORT),
     httpPort: stringToInt(<string>args.options['port'], DEFAULT_SERVER_PORT),
@@ -109,11 +111,12 @@ export async function serve(args: CommandHookArgs): Promise<{ [key: string]: any
 
   return {
     publicIp: serverOptions.externalAddress,
-    ...settings
+    localAddress: 'localhost',
+    ...settings,
   };
 }
 
-async function setupServer(env: IonicEnvironment, options: ServerOptions): Promise<{ [key: string]: any }> {
+async function setupServer(env: IonicEnvironment, options: ServerOptions): Promise<ServerOptions> {
   const liveReloadBrowser = createLiveReloadServer(options);
   await createHttpServer(env.project, options);
 

@@ -3,6 +3,7 @@ import * as path from 'path';
 export interface ServerOptions {
   projectRoot: string;
   wwwDir: string;
+  protocol: string;
   address: string;
   externalAddress: string;
   port: number;
