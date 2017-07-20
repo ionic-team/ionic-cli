@@ -36,10 +36,26 @@ If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
       description: 'Your password',
       private: true,
     }
-  ]
+  ],
+  options: [
+    {
+      name: 'email',
+      description: '',
+      private: true,
+      visible: false,
+    },
+    {
+      name: 'password',
+      description: '',
+      private: true,
+      visible: false,
+    },
+  ],
 })
 export class LoginCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const [ email, ] = inputs;
+
     const config = await this.env.config.load();
 
     if (await this.env.session.isLoggedIn()) {
@@ -50,6 +66,14 @@ export class LoginCommand extends Command implements CommandPreRun {
                        `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`);
     }
 
+    if (options['email'] || options['password']) {
+      const extra = this.env.flags.interactive ? 'You will be prompted to provide credentials. Alternatively, you can try this:' : 'Try this:';
+      this.env.log.warn(
+        `${chalk.green('email')} and ${chalk.green('password')} are command arguments, not options. ${extra}\n\n` +
+        `${chalk.green('ionic login ' + (options['email'] ? options['email'] : email) + ' *****')}\n`
+      );
+    }
+
     // TODO: combine with promptToLogin ?
 
     if (!inputs[0]) {
@@ -57,6 +81,7 @@ export class LoginCommand extends Command implements CommandPreRun {
         type: 'input',
         name: 'email',
         message: 'Email:',
+        default: options['email'],
         validate: v => validators.email(v),
       });
 
