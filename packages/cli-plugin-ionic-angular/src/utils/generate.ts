@@ -23,6 +23,17 @@ export async function prompt(context: AppScriptsType.BuildContext) {
   return context.appNgModulePath;
 }
 
+export async function getModules(context: AppScriptsType.BuildContext, kind: string) {
+  switch (kind) {
+    case 'component':
+      return context.componentsNgModulePath;
+    case 'pipe':
+      return context.pipesNgModulePath;
+    case 'directive':
+      return context.directivesNgModulePath;
+  }
+}
+
 export async function tabsPrompt(env: IonicEnvironment) {
   const tabNames = [];
 

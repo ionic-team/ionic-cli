@@ -11,7 +11,7 @@ import {
 import * as AppScriptsType from '@ionic/app-scripts';
 
 import { load } from './lib/modules';
-import { prompt, tabsPrompt } from './utils/generate';
+import { getModules, prompt, tabsPrompt } from './utils/generate';
 
 export async function generate(args: CommandHookArgs): Promise<string[]> {
   if (!args.env.project.directory) {
@@ -37,21 +37,21 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
   const context = AppScripts.generateContext();
 
   const [ type, name ] = args.inputs;
-
+  const includeNgModule = args.options.module;
   switch (type) {
     case 'page':
-      await AppScripts.processPageRequest(context, name);
+      await AppScripts.processPageRequest(context, name, includeNgModule);
       break;
     case 'component':
-      const componentData = await promptQuestions(context);
+      const componentData = await getModules(context, 'component');
       await AppScripts.processComponentRequest(context, name, componentData);
       break;
     case 'directive':
-      const directiveData = await promptQuestions(context);
+      const directiveData = await getModules(context, 'directive');
       await AppScripts.processDirectiveRequest(context, name, directiveData);
       break;
     case 'pipe':
-      const pipeData = await promptQuestions(context);
+      const pipeData = await getModules(context, 'pipe');
       await AppScripts.processPipeRequest(context, name, pipeData);
       break;
     case 'provider':
@@ -60,7 +60,7 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
       break;
     case 'tabs':
       const tabsData = await tabsPrompt(args.env);
-      await AppScripts.processTabsRequest(context, name, tabsData);
+      await AppScripts.processTabsRequest(context, name, tabsData, includeNgModule);
       break;
   }
 
