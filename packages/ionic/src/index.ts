@@ -219,7 +219,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }, opts: 
           const confirm = await ienv.prompt({
             type: 'confirm',
             name: 'confirm',
-            message: `The Ionic CLI can automatically check for updates in the background. Would you like to enable this?`,
+            message: `The Ionic CLI can automatically check for CLI updates in the background. Would you like to enable this?`,
           });
 
           configData.daemon.updates = confirm;
