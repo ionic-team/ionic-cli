@@ -1,4 +1,3 @@
-import * as os from 'os';
 import * as path from 'path';
 
 import * as chalk from 'chalk';
@@ -14,6 +13,7 @@ import {
   prettyPath,
 } from '@ionic/cli-utils';
 
+import { getPrivateKeyPath } from '../../lib/ssh';
 import { SSHBaseCommand } from './base';
 
 @CommandMetadata({
@@ -57,9 +57,9 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     let { bits, annotation } = options;
 
-    const keyPath = inputs[0] ? path.resolve(String(inputs[0])) : path.resolve(os.homedir(), '.ssh', 'ionic_rsa');
+    const keyPath = inputs[0] ? path.resolve(String(inputs[0])) : await getPrivateKeyPath(this.env);
     const keyPathDir = path.dirname(keyPath);
-    const pubkeyPath = keyPath + '.pub';
+    const pubkeyPath = `${keyPath}.pub`;
 
     if (!(await pathExists(keyPathDir))) {
       await fsMkdirp(keyPathDir, 0o700);

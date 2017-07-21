@@ -1,6 +1,3 @@
-import * as os from 'os';
-import * as path from 'path';
-
 import * as chalk from 'chalk';
 
 import {
@@ -12,6 +9,9 @@ import {
   prettyPath,
 } from '@ionic/cli-utils';
 
+import { getPrivateKeyPath } from '../../lib/ssh';
+import { getSSHConfigPath } from '../../lib/ssh-config';
+
 @CommandMetadata({
   name: 'setup',
   type: 'global',
@@ -20,10 +20,9 @@ import {
 })
 export class SSHSetupCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-    const sshconfigPath = path.resolve(os.homedir(), '.ssh', 'config');
-    const sshPath = path.resolve(os.homedir(), '.ssh');
-    const keyPath = path.resolve(sshPath, 'ionic_rsa');
-    const pubkeyPath = path.resolve(sshPath, 'ionic_rsa.pub');
+    const sshconfigPath = getSSHConfigPath();
+    const keyPath = await getPrivateKeyPath(this.env);
+    const pubkeyPath = `${keyPath}.pub`;
 
     this.env.log.info(
       'The automatic SSH setup will do the following:\n' +
