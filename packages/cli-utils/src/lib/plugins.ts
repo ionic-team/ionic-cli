@@ -122,15 +122,23 @@ export async function loadPlugins(env: IonicEnvironment) {
   ]);
 
   if (!ionicModuleExists) {
-    const installMsg = 'We are recommending users install the Ionic CLI locally in their projects.';
+    // TODO: remove "starting with 3.6"
+    env.log.warn(chalk.yellow(
+      chalk.bold('No local CLI detected.\n') +
+      'Starting with CLI 3.6, the CLI must be installed locally to use local CLI plugins.\n'
+    ));
+
     const p = await promptToInstallPlugin(env, 'ionic', {
-      message: `${installMsg} Install now?`,
+      message: 'Install now?',
     });
 
     if (p) {
       env.log.ok('Installed Ionic CLI locally!');
       env.log.nl();
       throw new FatalException(`${chalk.bold('Please re-run your command.')}`, 0);
+    } else {
+      env.log.warn('Not loading local CLI plugins in global mode. CLI functionality may be limited.');
+      return;
     }
   }
 
@@ -267,6 +275,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
       type: 'confirm',
       name: 'confirm',
       message,
+      noninteractiveValue: true,
     });
 
     if (confirm) {
@@ -326,7 +335,7 @@ async function facilitateIonicUpdate(env: IonicEnvironment, ionicPlugin: Hydrate
       name: 'confirm',
       type: 'confirm',
       message: `${updateMsg} Would you like to install it?`,
-      noninteractiveValue: '',
+      noninteractiveValue: false,
     });
 
     if (confirm) {
@@ -426,7 +435,11 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
 
   if (updates.length > 0) {
     const [ installer, ...dedupeArgs ] = await pkgManagerArgs(env, { command: 'dedupe' });
-    await env.shell.run(installer, dedupeArgs, {});
+    try {
+      await env.shell.run(installer, dedupeArgs, { fatalOnError: false });
+    } catch (e) {
+      env.log.warn('Error while deduping npm dependencies. Attempting to continue...');
+    }
   }
 
   return updates;

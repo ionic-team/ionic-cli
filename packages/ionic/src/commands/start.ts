@@ -379,7 +379,7 @@ export class StartCommand extends Command implements CommandPreRun {
           type: 'confirm',
           name: 'confirm',
           message: 'Connect this app to the Ionic Dashboard?',
-          noninteractiveValue: '',
+          noninteractiveValue: false,
         });
 
         if (confirm) {

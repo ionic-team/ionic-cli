@@ -478,15 +478,16 @@ export interface PromptQuestion extends inquirerType.Question {
   type: string; // type is required
   message: string; // message is required
   name: string; // name is required
-  noninteractiveValue?: string; // in non-interactive mode, what does this return?
 }
 
 export interface ConfirmPromptQuestion extends PromptQuestion {
   type: 'confirm';
+  noninteractiveValue?: boolean;
 }
 
 export interface NonConfirmPromptQuestion extends PromptQuestion {
   type: 'input' | 'password' | 'list';
+  noninteractiveValue?: string;
 }
 
 export interface PromptModule {
