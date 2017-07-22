@@ -522,8 +522,8 @@ export interface IonicEnvironment {
   readonly telemetry: ITelemetry;
   readonly namespace: IRootNamespace;
 
-  open(): void;
-  close(): void;
+  open(): Promise<void>;
+  close(): Promise<void>;
   load(modulePath: 'semver'): typeof semverType;
   load(modulePath: 'superagent'): typeof superagentType;
   load(modulePath: 'lodash'): typeof lodashType;

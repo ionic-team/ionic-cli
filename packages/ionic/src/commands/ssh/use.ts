@@ -10,14 +10,10 @@ import {
   fileToString,
   fsWriteFile,
   prettyPath,
-  validators
+  validators,
 } from '@ionic/cli-utils';
 
 import { SSHBaseCommand } from './base';
-import { load } from '../../lib/modules';
-import { ERROR_SSH_INVALID_PRIVKEY, ERROR_SSH_MISSING_PRIVKEY, validatePrivateKey } from '../../lib/ssh';
-import { ensureSSHConfigHostAndKeyPath, getSSHConfigPath } from '../../lib/ssh-config';
-import { diffPatch } from '../../lib/diff';
 
 @CommandMetadata({
   name: 'use',
@@ -34,6 +30,18 @@ import { diffPatch } from '../../lib/diff';
 })
 export class SSHUseCommand extends SSHBaseCommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const [
+      {
+        ERROR_SSH_INVALID_PRIVKEY,
+        ERROR_SSH_MISSING_PRIVKEY,
+        validatePrivateKey,
+      },
+      {
+        ensureSSHConfigHostAndKeyPath,
+        getSSHConfigPath,
+      },
+    ] = await Promise.all([import('../../lib/ssh'), import('../../lib/ssh-config')]);
+
     const keyPath = path.resolve(inputs[0]);
 
     try {
@@ -56,7 +64,7 @@ export class SSHUseCommand extends SSHBaseCommand {
       return 1;
     }
 
-    const SSHConfig = load('ssh-config');
+    const SSHConfig = await import('ssh-config');
     const sshConfigPath = getSSHConfigPath();
     const config = await this.env.config.load();
     const text1 = await fileToString(sshConfigPath);
@@ -68,6 +76,7 @@ export class SSHUseCommand extends SSHBaseCommand {
       this.env.log.info(`${chalk.bold(keyPath)} is already your active SSH key.`);
       return;
     } else {
+      const { diffPatch } = await import('../../lib/diff');
       const diff = diffPatch(sshConfigPath, text1, text2);
 
       this.env.log.msg(diff);

@@ -17,10 +17,6 @@ import {
   promptToLogin,
 } from '@ionic/cli-utils';
 
-import { load } from '../lib/modules';
-
-import { findSSHConfigHostSection, getSSHConfigPath, loadSSHConfig } from '../lib/ssh-config';
-
 const CREATE_NEW_APP_CHOICE = 'createNewApp';
 
 @CommandMetadata({
@@ -67,6 +63,8 @@ export class LinkCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { findSSHConfigHostSection, getSSHConfigPath, loadSSHConfig } = await import('../lib/ssh-config');
+
     let [ appId ] = inputs;
     let { create, name } = options;
 
@@ -183,7 +181,7 @@ export class LinkCommand extends Command implements CommandPreRun {
 
         this.env.log.ok(`Project linked with app ${chalk.bold(appId)}!`);
       } else {
-        const opn = load('opn');
+        const opn = await import('opn');
         opn(`${config.urls.dash}/?user_token=${token}`, { wait: false });
         this.env.log.info(`Rerun ${chalk.green(`ionic link`)} to link to the new app.`);
       }

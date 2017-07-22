@@ -108,7 +108,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   }
 
   if (flags.interactive) {
-    const inquirer = load('inquirer');
+    const inquirer = await import('inquirer');
     bottomBar = new inquirer.ui.BottomBar();
     open();
 
@@ -145,10 +145,10 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     }
   }
 
-  function open() {
+  async function open() {
     if (flags.interactive) {
       if (!bottomBar) {
-        const inquirer = load('inquirer');
+        const inquirer = await import('inquirer');
         bottomBar = new inquirer.ui.BottomBar();
       }
 
@@ -161,7 +161,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     }
   }
 
-  function close() {
+  async function close() {
     tasks.cleanup();
 
     // instantiating inquirer.ui.BottomBar hangs, so when close() is called,

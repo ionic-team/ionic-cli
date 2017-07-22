@@ -21,7 +21,6 @@ import {
 
 import { IonicNamespace } from './commands';
 import { mapLegacyCommand, modifyArguments } from './lib/init';
-import { load } from './lib/modules';
 
 export const name = '__NAME__';
 export const version = '__VERSION__';
@@ -91,7 +90,7 @@ export function registerHooks(hooks: IHookEngine) {
   });
 
   hooks.register(name, 'command:info', async () => {
-    const osName = load('os-name');
+    const osName = await import('os-name');
     const os = osName();
     const node = process.version;
 

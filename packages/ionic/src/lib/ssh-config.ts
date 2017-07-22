@@ -1,17 +1,19 @@
 import * as path from 'path';
 import * as os from 'os';
 
-import * as sshConfigType from 'ssh-config';
+import * as SSHConfig from 'ssh-config';
 
 import {
   fileToString,
   indent,
 } from '@ionic/cli-utils';
 
-import { load } from './modules';
+export async function loadSSHConfig(p: string): Promise<SSHConfig.SSHConfig> {
+  const s = await fileToString(p);
+  return SSHConfig.parse(s);
+}
 
-export function isSSHConfigDirective(entry: sshConfigType.Config): entry is sshConfigType.ConfigDirective {
-  const SSHConfig = load('ssh-config');
+export function isSSHConfigDirective(entry: SSHConfig.Config): entry is SSHConfig.ConfigDirective {
   return entry && entry.type === SSHConfig.DIRECTIVE;
 }
 
@@ -19,17 +21,11 @@ export function getSSHConfigPath() {
   return path.resolve(os.homedir(), '.ssh', 'config');
 }
 
-export async function loadSSHConfig(p: string): Promise<sshConfigType.SSHConfig> {
-  const SSHConfig = load('ssh-config');
-  const s = await fileToString(p);
-  return SSHConfig.parse(s);
-}
-
-export function findSSHConfigHostSection(conf: sshConfigType.SSHConfig, host: string): sshConfigType.ConfigDirective | null {
+export function findSSHConfigHostSection(conf: SSHConfig.SSHConfig, host: string): SSHConfig.ConfigDirective | null {
   return conf.find({ Host: host });
 }
 
-export function ensureSSHConfigHostAndKeyPath(conf: sshConfigType.SSHConfig, conn: { host: string, port?: number }, keyPath: string): void {
+export function ensureSSHConfigHostAndKeyPath(conf: SSHConfig.SSHConfig, conn: { host: string, port?: number }, keyPath: string): void {
   const section = ensureSSHConfigSection(conf, conn.host, conf ? true : false);
 
   ensureSSHConfigSectionLine(section, 'IdentityFile', keyPath);
@@ -39,8 +35,7 @@ export function ensureSSHConfigHostAndKeyPath(conf: sshConfigType.SSHConfig, con
   }
 }
 
-export function ensureSSHConfigSection(conf: sshConfigType.SSHConfig, host: string, newline: boolean): sshConfigType.ConfigDirective {
-  const SSHConfig = load('ssh-config');
+export function ensureSSHConfigSection(conf: SSHConfig.SSHConfig, host: string, newline: boolean): SSHConfig.ConfigDirective {
   const section = findSSHConfigHostSection(conf, host);
 
   if (!section) {
@@ -50,8 +45,7 @@ export function ensureSSHConfigSection(conf: sshConfigType.SSHConfig, host: stri
   return conf.find({ Host: host });
 }
 
-export function ensureSSHConfigSectionLine(section: sshConfigType.ConfigDirective, key: string, value: string): void {
-  const SSHConfig = load('ssh-config');
+export function ensureSSHConfigSectionLine(section: SSHConfig.ConfigDirective, key: string, value: string): void {
   const found = section.config.some((line) => {
     if (isSSHConfigDirective(line)) {
       if (line.param === key) {

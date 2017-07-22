@@ -9,9 +9,6 @@ import {
   prettyPath,
 } from '@ionic/cli-utils';
 
-import { getPrivateKeyPath } from '../../lib/ssh';
-import { getSSHConfigPath } from '../../lib/ssh-config';
-
 @CommandMetadata({
   name: 'setup',
   type: 'global',
@@ -20,6 +17,8 @@ import { getSSHConfigPath } from '../../lib/ssh-config';
 })
 export class SSHSetupCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const [{ getPrivateKeyPath }, { getSSHConfigPath }] = await Promise.all([import('../../lib/ssh'), import('../../lib/ssh-config')]);
+
     const sshconfigPath = getSSHConfigPath();
     const keyPath = await getPrivateKeyPath(this.env);
     const pubkeyPath = `${keyPath}.pub`;

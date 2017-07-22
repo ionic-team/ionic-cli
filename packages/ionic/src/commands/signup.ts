@@ -1,5 +1,3 @@
-import * as opn from 'opn';
-
 import {
   BACKEND_LEGACY,
   Command,
@@ -16,8 +14,11 @@ import {
 })
 export class SignupCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const opn = await import('opn');
     const config = await this.env.config.load();
+
     opn(`${config.urls.dash}/signup`, { wait: false });
+
     this.env.log.ok('Launched signup form in your browser!');
   }
 }

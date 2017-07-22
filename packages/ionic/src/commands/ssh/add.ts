@@ -18,13 +18,6 @@ import {
 
 import { SSHBaseCommand } from './base';
 
-import {
-  ERROR_SSH_ANNOTATION_INVALID_WHITESPACE,
-  ERROR_SSH_ANNOTATION_MISSING,
-  ERROR_SSH_INVALID_PUBKEY,
-  parsePublicKeyFile,
-} from '../../lib/ssh';
-
 @CommandMetadata({
   name: 'add',
   type: 'global',
@@ -40,6 +33,13 @@ import {
 })
 export class SSHAddCommand extends SSHBaseCommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const {
+      ERROR_SSH_ANNOTATION_INVALID_WHITESPACE,
+      ERROR_SSH_ANNOTATION_MISSING,
+      ERROR_SSH_INVALID_PUBKEY,
+      parsePublicKeyFile,
+    } = await import('../../lib/ssh');
+
     const pubkeyPath = path.resolve(inputs[0]);
     const pubkeyName = prettyPath(pubkeyPath);
 

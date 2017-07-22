@@ -1,5 +1,3 @@
-import * as fs from 'fs';
-
 import * as chalk from 'chalk';
 
 import {
@@ -93,6 +91,7 @@ export class DaemonCommand extends Command {
 
     const cleanup = () => {
       try {
+        const fs = require('fs');
         fs.unlinkSync(this.env.daemon.pidFilePath);
       } catch (e) {
         if (e.code !== 'ENOENT') {

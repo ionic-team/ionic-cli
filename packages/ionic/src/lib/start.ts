@@ -1,7 +1,5 @@
 import * as path from 'path';
-import * as zlib from 'zlib';
 
-import * as tar from 'tar';
 import * as chalk from 'chalk';
 
 import {
@@ -17,7 +15,7 @@ import {
 
 import { StarterTemplate, StarterTemplateType } from '../definitions';
 
-export function tarXvfFromUrl(url: string, destination: string, { progress }: {  progress?: (loaded: number, total: number) => void }) {
+export async function tarXvfFromUrl(url: string, destination: string, { progress }: { progress?: (loaded: number, total: number) => void }): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const archiveRequest = createRequest('get', url)
       .on('response', (res) => {
@@ -48,10 +46,9 @@ export function tarXvfFromUrl(url: string, destination: string, { progress }: { 
   });
 }
 
-/**
- *
- */
-export function tarXvf(readStream: NodeJS.ReadableStream, destination: string) {
+async function tarXvf(readStream: NodeJS.ReadableStream, destination: string) {
+  const [ zlib, tar ] = await Promise.all([import('zlib'), import('tar')]);
+
   return new Promise<void>((resolve, reject) => {
     const baseArchiveExtract = tar.Extract({
         path: destination,
@@ -70,9 +67,6 @@ export function tarXvf(readStream: NodeJS.ReadableStream, destination: string) {
   });
 }
 
-/**
- *
- */
 export function isProjectNameValid(name: string): boolean {
   return name !== '.';
 }
@@ -94,13 +88,9 @@ export async function isSafeToCreateProjectIn(root: string): Promise<boolean> {
   });
 }
 
-/**
- *
- */
 export function getStarterTemplateText(templateList: StarterTemplate[]): string {
   let headerLine = chalk.bold(`Ionic Starter templates`);
   let formattedTemplateList = getStarterTemplateTextList(templateList);
-
 
   return `
     ${headerLine}

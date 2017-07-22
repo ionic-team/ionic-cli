@@ -7,8 +7,6 @@ import {
   CommandMetadata,
 } from '@ionic/cli-utils';
 
-import { load } from '../lib/modules';
-
 @CommandMetadata({
   name: 'serve',
   type: 'project',
@@ -114,7 +112,7 @@ export class ServeCommand extends Command {
         app_id: appDetails.app_id,
         local_address: `${response.protocol || 'http'}://${response.externalAddress || response.publicIp}:${response.port || response.httpPort}`
       });
-      const dgram = load('dgram');
+      const dgram = await import('dgram');
       const server = dgram.createSocket('udp4');
 
       server.on('listening', () => {

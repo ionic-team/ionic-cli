@@ -7,8 +7,6 @@ import {
   isSuperAgentError,
 } from '@ionic/cli-utils';
 
-import { load } from '../lib/modules';
-
 @CommandMetadata({
   name: 'docs',
   type: 'global',
@@ -17,7 +15,7 @@ import { load } from '../lib/modules';
 export class DocsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let url = '';
-    const opn = load('opn');
+    const opn = await import('opn');
 
     const docsHomepage = 'https://ionicframework.com/docs';
     const results = await this.env.hooks.fire('command:docs', { cmd: this, env: this.env, inputs, options });

@@ -13,7 +13,6 @@ import {
   prettyPath,
 } from '@ionic/cli-utils';
 
-import { getPrivateKeyPath } from '../../lib/ssh';
 import { SSHBaseCommand } from './base';
 
 @CommandMetadata({
@@ -55,6 +54,8 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const { getPrivateKeyPath } = await import('../../lib/ssh');
+
     let { bits, annotation } = options;
 
     const keyPath = inputs[0] ? path.resolve(String(inputs[0])) : await getPrivateKeyPath(this.env);

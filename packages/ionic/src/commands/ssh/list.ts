@@ -12,7 +12,6 @@ import {
 } from '@ionic/cli-utils';
 
 import { SSHBaseCommand } from './base';
-import { findSSHConfigHostSection, getSSHConfigPath, isSSHConfigDirective, loadSSHConfig } from '../../lib/ssh-config';
 
 @CommandMetadata({
   name: 'list',
@@ -26,8 +25,16 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const {
+      findSSHConfigHostSection,
+      getSSHConfigPath,
+      isSSHConfigDirective,
+      loadSSHConfig,
+    } = await import('../../lib/ssh-config');
+
     const token = await this.env.session.getUserToken();
     const config = await this.env.config.load();
+
     let activeFingerprint: string | undefined;
     let foundActiveKey = false;
 
