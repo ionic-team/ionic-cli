@@ -13,7 +13,6 @@ import {
   createFatalAPIFormat,
   isAppResponse,
   isAppsResponse,
-  prettyPath,
   promptToLogin,
 } from '@ionic/cli-utils';
 
@@ -63,8 +62,6 @@ export class LinkCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { findSSHConfigHostSection, getSSHConfigPath, loadSSHConfig } = await import('../lib/ssh-config');
-
     let [ appId ] = inputs;
     let { create, name } = options;
 
@@ -89,12 +86,13 @@ export class LinkCommand extends Command implements CommandPreRun {
     }
 
     if (config.backend === BACKEND_PRO) {
-      const sshConfigPath = getSSHConfigPath();
-      const conf = await loadSSHConfig(sshConfigPath);
+      if (!config.git.setup) {
+        this.env.log.nl();
+        this.env.log.warn(
+          `Looks like you haven't configured your SSH settings yet.\n` +
+          `(You can run ${chalk.green('ionic config set -g git.setup true')} to disable this prompt.)\n`
+        );
 
-      if (!findSSHConfigHostSection(conf, config.git.host)) {
-        this.env.log.info(`SSH config settings for ${chalk.bold(config.git.host)} not found in ${chalk.bold(prettyPath(sshConfigPath))}.`);
-        this.env.log.info('Running automatic SSH setup.');
         await this.runcmd(['ssh', 'setup']);
       }
     }

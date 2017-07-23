@@ -19,10 +19,14 @@ export class Command implements ICommand {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
 
-  async runwrap(fn: () => Promise<void | number>): Promise<void> {
+  async runwrap(fn: () => Promise<void | number>, opts: { exit0?: boolean } = {}): Promise<void> {
+    if (typeof opts.exit0 === 'undefined') {
+      opts.exit0 = true;
+    }
+
     const r = await fn();
 
-    if (typeof r === 'number') {
+    if (typeof r === 'number' && (r > 0 || (r === 0 && opts.exit0))) {
       throw this.exit('', r);
     }
   }
@@ -31,7 +35,7 @@ export class Command implements ICommand {
     await this.runwrap(async () => {
       this.env.log.msg(`> ${chalk.green([this.env.namespace.name, ...pargv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
       return this.env.namespace.runCommand(this.env, pargv);
-    });
+    }, { exit0: false });
   }
 
   async validate(inputs: CommandLineInputs) {

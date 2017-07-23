@@ -104,5 +104,19 @@ export class LoginCommand extends Command implements CommandPreRun {
 
     await this.env.session.login(email, password);
     this.env.log.ok('You are logged in!');
+
+    const config = await this.env.config.load();
+
+    if (config.backend === BACKEND_PRO) {
+      if (!config.git.setup) {
+        this.env.log.nl();
+        this.env.log.warn(
+          `Looks like you haven't configured your SSH settings yet.\n` +
+          `(You can run ${chalk.green('ionic config set -g git.setup true')} to disable this prompt.)\n`
+        );
+
+        await this.runcmd(['ssh', 'setup']);
+      }
+    }
   }
 }

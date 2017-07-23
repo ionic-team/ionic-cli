@@ -31,6 +31,7 @@ export class BaseSession {
     c.user = {};
     c.tokens.appUser = {};
     delete c.tokens.user;
+    c.git.setup = false;
   }
 
   async getUserToken(): Promise<string> {

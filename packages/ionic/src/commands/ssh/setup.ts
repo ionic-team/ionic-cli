@@ -6,6 +6,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  pathExists,
   prettyPath,
 } from '@ionic/cli-utils';
 
@@ -17,33 +18,61 @@ import {
 })
 export class SSHSetupCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-    const [{ getPrivateKeyPath }, { getSSHConfigPath }] = await Promise.all([import('../../lib/ssh'), import('../../lib/ssh-config')]);
+    const [{ getGeneratedPrivateKeyPath }, { getSSHConfigPath }] = await Promise.all([import('../../lib/ssh'), import('../../lib/ssh-config')]);
+
+    const config = await this.env.config.load();
 
     const sshconfigPath = getSSHConfigPath();
-    const keyPath = await getPrivateKeyPath(this.env);
+    const keyPath = await getGeneratedPrivateKeyPath(this.env);
     const pubkeyPath = `${keyPath}.pub`;
-
-    this.env.log.info(
-      'The automatic SSH setup will do the following:\n' +
-      `1) Generate SSH key pair with OpenSSH.\n` +
-      `2) Upload the generated SSH public key to our server, registering it on your account.\n` +
-      `3) Modify your SSH config (${chalk.bold(prettyPath(sshconfigPath))}) to use the generated SSH private key for our server(s).`
-    );
 
     // TODO: link to docs about manual git setup
 
-    const confirm = await this.env.prompt({
-      type: 'confirm',
-      name: 'confirm',
-      message: 'May we proceed?',
-    });
+    const [ pubkeyExists, keyExists ] = await Promise.all([pathExists(keyPath), pathExists(pubkeyPath)]);
 
-    if (!confirm) {
-      return 1;
+    if (config.git.setup) {
+      const rerun = await this.env.prompt({
+        type: 'confirm',
+        name: 'confirm',
+        message: `SSH setup wizard has run before. Would you like to run it again?`,
+      });
+
+      if (!rerun) {
+        return 0;
+      }
+    } else if (!pubkeyExists && !keyExists) {
+      this.env.log.info(
+        'The automatic SSH setup will do the following:\n' +
+        `1) Generate SSH key pair with OpenSSH.\n` +
+        `2) Upload the generated SSH public key to our server, registering it on your account.\n` +
+        `3) Modify your SSH config (${chalk.bold(prettyPath(sshconfigPath))}) to use the generated SSH private key for our server(s).`
+      );
+
+      const confirm = await this.env.prompt({
+        type: 'confirm',
+        name: 'confirm',
+        message: 'May we proceed?',
+      });
+
+      if (!confirm) {
+        return 1;
+      }
     }
 
-    await this.runcmd(['ssh', 'generate', keyPath]);
+    if (pubkeyExists && keyExists) {
+      this.env.log.info(
+        `Using your previously generated key: ${chalk.bold(prettyPath(keyPath))}.\n` +
+        `You can generate a new one by deleting it.`
+      );
+    } else {
+      await this.runcmd(['ssh', 'generate', keyPath]);
+    }
+
     await this.runcmd(['ssh', 'add', pubkeyPath]);
     await this.runcmd(['ssh', 'use', keyPath]);
+
+    config.git.setup = true;
+
+    this.env.log.ok('SSH setup successful!');
   }
 }

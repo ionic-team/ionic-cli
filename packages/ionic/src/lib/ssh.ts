@@ -14,7 +14,7 @@ export const ERROR_SSH_INVALID_PRIVKEY = 'SSH_INVALID_PRIVKEY';
 export const ERROR_SSH_ANNOTATION_MISSING = 'SSH_ANNOTATION_MISSING';
 export const ERROR_SSH_ANNOTATION_INVALID_WHITESPACE = 'SSH_ANNOTATION_INVALID_WHITESPACE';
 
-export async function getPrivateKeyPath(env: IonicEnvironment): Promise<string> {
+export async function getGeneratedPrivateKeyPath(env: IonicEnvironment): Promise<string> {
   const config = await env.config.load();
   const id = config.user.id ? config.user.id : 'anonymous';
   return path.resolve(os.homedir(), '.ssh', 'ionic', `${id}_rsa`);

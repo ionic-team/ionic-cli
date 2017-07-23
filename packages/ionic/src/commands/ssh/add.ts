@@ -93,14 +93,11 @@ export class SSHAddCommand extends SSHBaseCommand {
 
       this.env.log.ok(`Your public key (${chalk.bold(res.data.id)}) has been ${words} Ionic!`);
     } catch (e) {
-      if (isSuperAgentError(e)) {
-        if (e.response.status === 409) {
-          this.env.log.info('Pubkey already added to Ionic.');
-          return 0;
-        }
+      if (isSuperAgentError(e) && e.response.status === 409) {
+        this.env.log.info('Pubkey already added to Ionic.');
+      } else {
+        throw e;
       }
-
-      throw e;
     }
   }
 }

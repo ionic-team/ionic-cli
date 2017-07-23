@@ -54,11 +54,11 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-    const { getPrivateKeyPath } = await import('../../lib/ssh');
+    const { getGeneratedPrivateKeyPath } = await import('../../lib/ssh');
 
-    let { bits, annotation } = options;
+    const { bits, annotation } = options;
 
-    const keyPath = inputs[0] ? path.resolve(String(inputs[0])) : await getPrivateKeyPath(this.env);
+    const keyPath = inputs[0] ? path.resolve(String(inputs[0])) : await getGeneratedPrivateKeyPath(this.env);
     const keyPathDir = path.dirname(keyPath);
     const pubkeyPath = `${keyPath}.pub`;
 

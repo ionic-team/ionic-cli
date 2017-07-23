@@ -322,6 +322,7 @@ export interface ConfigFile {
   git: {
     host: string;
     port?: number;
+    setup?: boolean;
   };
   user: {
     id?: string;
