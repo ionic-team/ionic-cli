@@ -165,14 +165,14 @@ scripts](https://docs.npmjs.com/misc/scripts) in your `package.json` file:
 
 ## Service Proxies
 
-The `serve` command can add some proxies to the HTTP server. These proxies are
+The CLI can add proxies to the HTTP server for "livereload" commands like `ionic serve`, `ionic cordova run android --livereload` or similar. These proxies are
 useful if you are developing in the browser and you need to make calls to an
 external API. With this feature you can proxy request to the external api
 through the ionic http server preventing the `No 'Access-Control-Allow-Origin'
 header is present on the requested resource` error.
 
 In the `ionic.config.json` file you can add a property with an array of proxies
-you want to add. The proxies are object with the following properties:
+you want to add. The proxies are an object with the following properties:
 
 * `path`: string that will be matched against the beginning of the incoming
   request URL.
@@ -198,11 +198,13 @@ you want to add. The proxies are object with the following properties:
 
 Using the above configuration, you can now make requests to your local server
 at `http://localhost:8100/v1` to have it proxy out requests to
-`https://api.instagram.com/v1`.
+`https://api.instagram.com/v1`. 
+
+Note that you of course have to change the URLs being requested in your app to this local URL (just using the path should be enough, no need to hardcode the hostname and port). You also have to restart the "livereload" command for the proxy configuration to take effect.
 
 ## Using a Proxy
 
-To proxy CLI requests, you will need to install the global CLI proxy plugin:
+To proxy HTTP requests performed by the CLI, you will need to install the global CLI proxy plugin:
 
 ```bash
 $ npm install -g @ionic/cli-plugin-proxy
