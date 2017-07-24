@@ -12,7 +12,7 @@ Use `ionic --help` for more detailed command information.
 Page](https://ionicframework.com/support) for general support questions. The
 issues on GitHub should be reserved for bug reports and feature requests.
 
-:heart: **Want to contribute?** Please see
+:sparkling_heart: **Want to contribute?** Please see
 [CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/master/CONTRIBUTING.md).
 
 ## Table of Contents ##
