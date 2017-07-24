@@ -184,8 +184,8 @@ you want to add. The proxies are object with the following properties:
 ```json
 {
   "name": "appname",
-  "email": "",
   "app_id": "",
+  "type": "ionic-angular",
   "proxies": [
     {
       "path": "/v1",
