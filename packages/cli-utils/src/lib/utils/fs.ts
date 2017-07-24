@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { promisify } from './promise';
-import { load } from '../modules';
 
 export const ERROR_FILE_NOT_FOUND = 'FILE_NOT_FOUND';
 export const ERROR_FILE_INVALID_JSON = 'FILE_INVALID_JSON';
@@ -88,9 +87,10 @@ export async function fsMkdirp(p: string, mode?: number): Promise<void> {
   }
 }
 
-export function getFileChecksum(filePath: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const crypto = require('crypto');
+export async function getFileChecksum(filePath: string): Promise<string> {
+  const crypto = await import('crypto');
+
+  return new Promise<string>((resolve, reject) => {
     const hash = crypto.createHash('md5');
     const input = fs.createReadStream(filePath);
 
@@ -99,8 +99,7 @@ export function getFileChecksum(filePath: string): Promise<string> {
     });
 
     hash.once('readable', () => {
-      // const fullChecksum = hash.digest().toString('hex');
-      const fullChecksum = (<Buffer>hash.read()).toString('hex'); // TODO: digest() already called?
+      const fullChecksum = (<Buffer>hash.read()).toString('hex');
       resolve(fullChecksum);
     });
 
@@ -117,9 +116,10 @@ export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: st
   });
 }
 
-export function copyDirectory(source: string, destination: string): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const ncp = load('ncp');
+export async function copyDirectory(source: string, destination: string): Promise<void> {
+  const ncp = await import('ncp');
+
+  return new Promise<void>((resolve, reject) => {
     ncp.ncp(source, destination, (err: Error) => {
       if (err) {
         reject(err);

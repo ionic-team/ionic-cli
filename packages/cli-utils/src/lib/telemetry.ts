@@ -1,35 +1,33 @@
-import * as leek from 'leek';
+import * as leekType from 'leek';
 
 import { ConfigFile, IConfig, ITelemetry } from '../definitions';
 import { load } from './modules';
+import { generateUUID } from './uuid';
 
 const GA_CODE = 'UA-44023830-30';
 
 export class Telemetry implements ITelemetry {
-  private tracker: leek;
+  tracker: leekType;
 
   constructor(
     protected config: IConfig<ConfigFile>,
     protected cliVersion: string
   ) {}
 
-  private generateUniqueToken() {
-    const uuid = load('uuid');
-    return uuid.v4().toString();
-  }
+  async setupTracker() {
+    const Leek = load('leek'); // TODO: typescript bug? can't await import
+    const config = await this.config.load();
 
-  private async setupTracker() {
-    const configFile = await this.config.load();
-    if (!configFile.tokens.telemetry) {
-      configFile.tokens.telemetry = this.generateUniqueToken();
+    if (!config.tokens.telemetry) {
+      config.tokens.telemetry = generateUUID();
     }
-    const Leek = load('leek');
+
     this.tracker = new Leek({
-      name:         configFile.tokens.telemetry,
+      name: config.tokens.telemetry,
       trackingCode: GA_CODE,
-      globalName:   'ionic',
-      version:      this.cliVersion,
-      silent:       configFile.telemetry !== true
+      globalName: 'ionic',
+      version: this.cliVersion,
+      silent: config.telemetry !== true,
     });
   }
 

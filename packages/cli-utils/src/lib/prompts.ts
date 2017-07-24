@@ -9,10 +9,8 @@ import {
   PromptModule,
 } from '../definitions';
 
-import { load } from './modules';
-
 export async function createPromptModule({ interactive, confirm, log, config }: { interactive: boolean, confirm: boolean, log: ILogger, config: IConfig<ConfigFile> }): Promise<PromptModule> {
-  const inquirer = load('inquirer');
+  const inquirer = await import('inquirer');
   const inquirerPromptModule = inquirer.createPromptModule();
 
   // TODO: typescript doesn't seem to know to check return types of the union implementation, be careful
