@@ -41,6 +41,12 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
       description: 'Skip generating a NgModule',
       type: Boolean,
       default: true
+    },
+    {
+      name: 'constants',
+      description: 'Generate a page constant files for lazy loaded pages',
+      type: Boolean,
+      default: false
     }
   ]
 })

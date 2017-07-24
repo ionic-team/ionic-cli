@@ -38,9 +38,13 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
 
   const [ type, name ] = args.inputs;
   const includeNgModule = args.options.module;
+  const includePageConstants = args.options.constants;
+
+  // args.env.log.msg(() => `${includePageConstants}`);
+
   switch (type) {
     case 'page':
-      await AppScripts.processPageRequest(context, name, includeNgModule);
+      await AppScripts.processPageRequest(context, name, includeNgModule, includePageConstants);
       break;
     case 'component':
       const componentData = await getModules(context, 'component');
@@ -60,7 +64,7 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
       break;
     case 'tabs':
       const tabsData = await tabsPrompt(args.env);
-      await AppScripts.processTabsRequest(context, name, tabsData, includeNgModule);
+      await AppScripts.processTabsRequest(context, name, tabsData, includeNgModule, includePageConstants);
       break;
   }
 
