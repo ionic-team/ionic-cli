@@ -104,6 +104,7 @@ export async function checkForDaemon(env: IonicEnvironment): Promise<number> {
   const crossSpawn = load('cross-spawn');
   const fd = await fsOpen(env.daemon.logFilePath, 'a');
   const p = crossSpawn.spawn(process.argv[0], [process.argv[1], 'daemon', '--verbose', '--no-interactive', '--log-timestamps'], {
+    cwd: env.config.directory,
     detached: true,
     stdio: ['ignore', fd, fd],
   });
