@@ -207,11 +207,14 @@ configuration to take effect.*
 
 ## Using a Proxy
 
-To proxy HTTP requests performed by the CLI, you will need to install the
-global CLI proxy plugin:
+To proxy HTTP requests performed by the CLI, you will need to install the CLI
+proxy plugin globally *and* locally (for when the CLI runs inside your project
+directories):
 
 ```bash
 $ npm install -g @ionic/cli-plugin-proxy
+$ cd myNewProject # cd into your project
+$ npm install @ionic/cli-plugin-proxy
 ```
 
 Then, set the following environment variables:
