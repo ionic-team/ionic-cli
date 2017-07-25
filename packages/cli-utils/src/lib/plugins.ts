@@ -406,7 +406,12 @@ async function facilitatePluginUpdate(env: IonicEnvironment, ionicPlugin: Hydrat
 }
 
 export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> {
-  await env.daemon.load();
+  const [ config, ] = await Promise.all([env.config.load(), env.daemon.load()]);
+
+  if (!config.daemon.updates) {
+    return [];
+  }
+
   const allPlugins = await Promise.all(Object.keys(env.plugins).map(n => hydratePlugin(env, env.plugins[n])));
   await env.daemon.save();
 
@@ -446,7 +451,6 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
 }
 
 async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Promise<string> {
-  const config = await env.config.load();
   const distTag = determineDistTag(plugin.version);
 
   if (distTag === 'local') {
@@ -457,14 +461,12 @@ async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Pr
 
   const daemon = await env.daemon.load();
 
-  if (config.daemon.updates) {
-    if (typeof daemon.latestVersions[distTag] === 'object') {
-      if (daemon.latestVersions[distTag][plugin.name]) {
-        return daemon.latestVersions[distTag][plugin.name];
-      }
-    } else {
-      env.daemon.populateDistTag(distTag);
+  if (typeof daemon.latestVersions[distTag] === 'object') {
+    if (daemon.latestVersions[distTag][plugin.name]) {
+      return daemon.latestVersions[distTag][plugin.name];
     }
+  } else {
+    env.daemon.populateDistTag(distTag);
   }
 
   let latestVersion = await pkgLatestVersion(env, plugin.name, distTag);
@@ -474,12 +476,8 @@ async function getLatestPluginVersion(env: IonicEnvironment, plugin: Plugin): Pr
   }
 
   latestVersion = latestVersion.trim();
-
   env.log.debug(`Latest version of ${chalk.green(plugin.name + '@' + distTag)} is ${latestVersion}.`);
-
-  if (config.daemon.updates) {
-    daemon.latestVersions[distTag][plugin.name] = latestVersion;
-  }
+  daemon.latestVersions[distTag][plugin.name] = latestVersion;
 
   return latestVersion;
 }

@@ -226,8 +226,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }, opts: 
         }
 
         if (configData.daemon.updates) {
-          await checkForDaemon(ienv);
-          await checkForUpdates(ienv);
+          await Promise.all([checkForDaemon(ienv), checkForUpdates(ienv)]);
         }
       }
 
