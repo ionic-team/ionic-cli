@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 
 import {
+  App,
   BACKEND_LEGACY,
   BACKEND_PRO,
   Command,
@@ -20,6 +21,7 @@ import {
   pkgManagerArgs,
   prettyPath,
   promisify,
+  promptToLogin,
   validators,
 } from '@ionic/cli-utils';
 
@@ -54,7 +56,7 @@ If you want to create an Ionic/Cordova app, use the ${chalk.green('--cordova')} 
     '--list',
     'myApp blank',
     'myApp tabs --cordova',
-    'myApp blank --type=ionic1'
+    'myApp blank --type=ionic1',
   ],
   inputs: [
     {
@@ -109,10 +111,19 @@ If you want to create an Ionic/Cordova app, use the ${chalk.green('--cordova')} 
       type: Boolean,
       default: true,
     },
+    {
+      name: 'pro-id',
+      description: 'Specify an app ID from the Ionic Dashboard to link',
+      backends: [BACKEND_PRO],
+    },
   ],
 })
 export class StartCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<number | void> {
+    let appId = <string>options['pro-id'] || '';
+
+    const config = await this.env.config.load();
+
     // If the action is list then lets just end here.
     if (options['list']) {
       this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES).join('\n'));
@@ -125,6 +136,10 @@ export class StartCommand extends Command implements CommandPreRun {
 
     if (options['skip-link']) {
       options['link'] = false;
+    }
+
+    if (options['pro-id']) {
+      options['link'] = true;
     }
 
     if (this.env.project.directory) {
@@ -152,14 +167,27 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     if (!inputs[0]) {
-      const name = await this.env.prompt({
-        type: 'input',
-        name: 'name',
-        message: 'What would you like to name your project:',
-        validate: v => validators.required(v, 'name'),
-      });
+      if (config.backend === BACKEND_PRO && appId) {
+        if (!(await this.env.session.isLoggedIn())) {
+          this.env.log.info(`You must be logged in to use ${chalk.green('--pro-id')}. Prompting for credentials.`);
+          await promptToLogin(this.env);
+        }
 
-      inputs[0] = name;
+        const token = await this.env.session.getUserToken();
+        const appLoader = new App(token, this.env.client);
+        const app = await appLoader.load(appId);
+        this.env.log.info(`Using ${chalk.bold(app.slug)} for ${chalk.green('name')}.`);
+        inputs[0] = app.slug;
+      } else {
+        const name = await this.env.prompt({
+          type: 'input',
+          name: 'name',
+          message: 'What would you like to name your project:',
+          validate: v => validators.required(v, 'name'),
+        });
+
+        inputs[0] = name;
+      }
     }
 
     if (!inputs[1]) {
@@ -191,7 +219,8 @@ export class StartCommand extends Command implements CommandPreRun {
     let starterBranchName = <string>options['starterBranchName'] || 'master';
     let wrapperBranchName = <string>options['wrapperBranchName'] || 'master';
     let gitIntegration = false;
-    let linkConfirmed = false;
+    let linkConfirmed = typeof options['pro-id'] === 'string';
+    let appId = <string>options['pro-id'] || '';
 
     const config = await this.env.config.load();
 
@@ -374,7 +403,7 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     if (config.backend === BACKEND_PRO) {
-      if (options['link']) {
+      if (options['link'] && !linkConfirmed) {
         const confirm = await this.env.prompt({
           type: 'confirm',
           name: 'confirm',
@@ -384,10 +413,18 @@ export class StartCommand extends Command implements CommandPreRun {
 
         if (confirm) {
           linkConfirmed = true;
-
-          this.env.project = new Project(projectRoot, PROJECT_FILE);
-          await this.runcmd(['link']);
         }
+      }
+
+      if (linkConfirmed) {
+        this.env.project = new Project(projectRoot, PROJECT_FILE);
+        const cmdArgs = ['link'];
+
+        if (appId) {
+          cmdArgs.push(appId);
+        }
+
+        await this.runcmd(cmdArgs);
       }
     }
 

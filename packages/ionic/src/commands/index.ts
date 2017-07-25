@@ -73,7 +73,7 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
   async runCommand(env: IonicEnvironment, pargv: string[]): Promise<void | number> {
     const config = await env.config.load();
 
-    const argv = minimist(pargv, { boolean: true });
+    const argv = minimist(pargv, { boolean: true, string: '_' });
     let [ depth, inputs, cmdOrNamespace ] = this.locate(argv._);
 
     if (cmdOrNamespace === this && KNOWN_COMMAND_PLUGINS.indexOf(inputs[0]) !== -1) {

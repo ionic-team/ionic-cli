@@ -66,7 +66,7 @@ function normalizeOption(option: CommandOption): NormalizedCommandOption {
 
 export function metadataToMinimistOptions(metadata: CommandData): minimistType.Opts {
   let options: NormalizedMinimistOpts = {
-    string: [],
+    string: ['_'],
     boolean: [],
     alias: {},
     default: {}

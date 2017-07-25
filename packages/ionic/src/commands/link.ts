@@ -31,7 +31,7 @@ Excluding the ${chalk.green('app_id')} argument looks up your apps on Ionic and 
 
 This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PROJECT_FILE)} for other commands to read.
   `,
-  exampleCommands: ['', 'a1b2c3d4', '--create --name "My New App"'],
+  exampleCommands: ['', 'a1b2c3d4'],
   inputs: [
     {
       name: 'app_id',
