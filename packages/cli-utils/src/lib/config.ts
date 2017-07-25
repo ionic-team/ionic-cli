@@ -171,7 +171,7 @@ export class Config extends BaseConfig<ConfigFile> {
       results.tokens.appUser = {};
     }
 
-    if (typeof results.backend === 'undefined') {
+    if (typeof results.backend !== 'string') {
       results.backend = BACKEND_LEGACY;
     }
 

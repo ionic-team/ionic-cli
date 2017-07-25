@@ -102,10 +102,16 @@ export class LoginCommand extends Command implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ email, password ] = inputs;
 
+    const config = await this.env.config.load();
+
+    if (await this.env.session.isLoggedIn()) {
+      this.env.log.info('Logging you out.');
+      await this.runcmd(['logout'], { showLogs: false });
+      await this.env.telemetry.resetToken();
+    }
+
     await this.env.session.login(email, password);
     this.env.log.ok('You are logged in!');
-
-    const config = await this.env.config.load();
 
     if (config.backend === BACKEND_PRO) {
       if (!config.git.setup) {

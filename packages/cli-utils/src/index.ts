@@ -182,7 +182,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   const client = new Client(configData.urls.api);
   const session = configData.backend === BACKEND_LEGACY ? new CloudSession(config, project, client) : new ProSession(config, project, client);
   const hooks = new HookEngine();
-  const telemetry = new Telemetry(config, plugin.version);
+  const telemetry = new Telemetry({ config, client, plugin, project, session });
   const shell = new Shell(tasks, log);
 
   registerHooks(hooks);

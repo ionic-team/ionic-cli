@@ -1,20 +1,42 @@
 import * as leekType from 'leek';
 
-import { ConfigFile, IConfig, ITelemetry } from '../definitions';
+import { ConfigFile, IClient, IConfig, IProject, ISession, ITelemetry, RootPlugin } from '../definitions';
+import { BACKEND_PRO } from './backends';
 import { load } from './modules';
 import { generateUUID } from './uuid';
 
 const GA_CODE = 'UA-44023830-30';
 
 export class Telemetry implements ITelemetry {
-  tracker: leekType;
+  protected config: IConfig<ConfigFile>;
+  protected plugin: RootPlugin;
+  protected client: IClient;
+  protected session: ISession;
+  protected project: IProject;
 
-  constructor(
-    protected config: IConfig<ConfigFile>,
-    protected cliVersion: string
-  ) {}
+  protected gaTracker: leekType;
 
-  async setupTracker() {
+  constructor({
+    config,
+    client,
+    session,
+    plugin,
+    project
+  }: {
+    config: IConfig<ConfigFile>;
+    client: IClient;
+    session: ISession;
+    plugin: RootPlugin;
+    project: IProject;
+  }) {
+    this.config = config;
+    this.plugin = plugin;
+    this.client = client;
+    this.session = session;
+    this.project = project;
+  }
+
+  protected async setupGATracker() {
     const Leek = load('leek'); // TODO: typescript bug? can't await import
     const config = await this.config.load();
 
@@ -22,33 +44,88 @@ export class Telemetry implements ITelemetry {
       config.tokens.telemetry = generateUUID();
     }
 
-    this.tracker = new Leek({
+    this.gaTracker = new Leek({
       name: config.tokens.telemetry,
       trackingCode: GA_CODE,
       globalName: 'ionic',
-      version: this.cliVersion,
+      version: this.plugin.version,
       silent: config.telemetry !== true,
     });
   }
 
-  async sendCommand(command: string, args: string[]): Promise<void> {
-    if (!this.tracker) {
-      await this.setupTracker();
-    }
-    let messageList: string[] = [];
-    const name = 'command execution';
-    const message = messageList.concat([command], args).join(' ');
+  async resetToken() {
+    const config = await this.config.load();
+    config.tokens.telemetry = generateUUID();
+  }
 
-    await this.tracker.track({
-      name,
-      message
-    });
+  async sendCommand(command: string, args: string[]): Promise<void> {
+    if (!this.gaTracker) {
+      await this.setupGATracker();
+    }
+
+    const messageList: string[] = [];
+    const name = 'command execution';
+    const prettyArgs = args.map(a => a.includes(' ') ? `"${a}"` : a);
+    const message = messageList.concat([command], prettyArgs).join(' ');
+
+    await Promise.all([
+      (async () => {
+        await this.gaTracker.track({ name, message });
+      })(),
+      (async () => {
+        const config = await this.config.load();
+
+        if (config.backend === BACKEND_PRO) {
+          let appId: string | undefined;
+
+          if (this.project.directory) {
+            const project = await this.project.load();
+            appId = project.app_id;
+          }
+
+          const now = new Date().toISOString();
+          const isLoggedIn = await this.session.isLoggedIn();
+
+          let req = this.client.make('POST', '/events/metrics');
+
+          if (isLoggedIn) {
+            const token = await this.session.getUserToken();
+            req = req.set('Authorization', `Bearer ${token}`);
+          }
+
+          req = req.send({
+            'metrics': [
+              {
+                'name': 'cli_command_metrics',
+                'timestamp': now,
+                'session_id': config.tokens.telemetry,
+                'source': 'cli',
+                'value': {
+                  'command': command,
+                  'arguments': prettyArgs.join(' '),
+                  'version': this.plugin.version,
+                  'node_version': process.version,
+                  'app_id': appId,
+                },
+              },
+            ],
+            'sent_at': now,
+          });
+
+          try {
+            await this.client.do(req);
+          } catch (e) {
+            // TODO
+          }
+        }
+      })(),
+    ]);
   }
 
   async sendError(error: any, type: string): Promise<void> {
-    await this.tracker.trackError({
+    await this.gaTracker.trackError({
       description: error.message + ' ' + error.stack,
-      isFatal: true
+      isFatal: true,
     });
   }
 }

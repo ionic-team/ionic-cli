@@ -37,6 +37,16 @@ describe('@ionic/cli-utils', () => {
       expect(result).toEqual(['--cat', 'meow', '--dog', 'bark', '--flag1']);
     });
 
+    it('should parse out string option from minimist result and not wrap strings with spaces in double quotes without flag', () => {
+      const result = minimistOptionsToArray({ _: [], cat: 'meow meow meow' });
+      expect(result).toEqual(['--cat=meow meow meow']);
+    });
+
+    it('should parse out string option from minimist result and wrap strings with spaces in double quotes with flag provided', () => {
+      const result = minimistOptionsToArray({ _: [], cat: 'meow meow meow' }, { useDoubleQuotes: true });
+      expect(result).toEqual(['--cat="meow meow meow"']);
+    });
+
   });
 
   describe('metadataToMinimistOptions', () => {

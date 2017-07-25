@@ -20,15 +20,27 @@ const typeDefaults: CommandOptionTypeDefaults = new Map<CommandOptionType, Comma
   .set(String, null)
   .set(Boolean, false);
 
-export function minimistOptionsToArray(options: CommandLineOptions, dargsOptions: dargsType.Opts = {}): string[] {
+export interface MinimistOptionsToArrayOptions extends dargsType.Opts {
+  useDoubleQuotes?: boolean;
+}
+
+export function minimistOptionsToArray(options: CommandLineOptions, fnOptions: MinimistOptionsToArrayOptions = {}): string[] {
   const dargs = load('dargs');
 
-  if (typeof dargsOptions.ignoreFalse === 'undefined') {
-    dargsOptions.ignoreFalse = true;
+  if (typeof fnOptions.ignoreFalse === 'undefined') {
+    fnOptions.ignoreFalse = true;
   }
 
-  const results = dargs(options, dargsOptions);
+  if (fnOptions.useDoubleQuotes) {
+    fnOptions.useEquals = true;
+  }
+
+  let results = dargs(options, fnOptions);
   results.splice(results.length - options._.length); // take out arguments
+
+  if (fnOptions.useDoubleQuotes) {
+    results = results.map(r => r.replace(/^(\-\-[A-Za-z0-9-]+)=(.+\s+.+)$/, '$1="$2"'));
+  }
 
   return results;
 }

@@ -12,6 +12,7 @@ import { isCommandPreRun } from '../../guards';
 import { FatalException } from '../errors';
 import { validators } from '../validators';
 import { minimistOptionsToArray, validateInputs } from './utils';
+import { Logger } from '../utils/logger';
 
 export class Command implements ICommand {
   public env: IonicEnvironment;
@@ -31,10 +32,21 @@ export class Command implements ICommand {
     }
   }
 
-  async runcmd(pargv: string[]): Promise<void> {
+  async runcmd(pargv: string[], opts: { showLogs?: boolean } = {}): Promise<void> {
+    const env = { ...this.env };
+
+    if (typeof opts.showLogs === 'undefined') {
+      opts.showLogs = true;
+    }
+
+    if (!opts.showLogs) {
+      const DevNull = require('dev-null'); // TODO
+      env.log = new Logger({ level: this.env.log.level, stream: new DevNull(), prefix: this.env.log.prefix });
+    }
+
     await this.runwrap(async () => {
-      this.env.log.msg(`> ${chalk.green([this.env.namespace.name, ...pargv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
-      return this.env.namespace.runCommand(this.env, pargv);
+      env.log.msg(`> ${chalk.green([env.namespace.name, ...pargv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
+      return this.env.namespace.runCommand(env, pargv);
     }, { exit0: false });
   }
 
@@ -75,56 +87,67 @@ export class Command implements ICommand {
       }
     }
 
-    await Promise.all([
-      (async () => {
-        // TODO: get telemetry for commands that aborted above
-        if (config.telemetry !== false) {
-          let cmdInputs: CommandLineInputs = [];
+    const runPromise = (async () => {
+      await this.runwrap(() => this.run(inputs, options));
+    })();
 
-          if (this.metadata.name === 'help') {
-            cmdInputs = inputs;
-          } else {
-            cmdInputs = this.getCleanInputsForTelemetry(inputs, options);
-          }
+    const telemetryPromise = (async () => {
+      if (config.telemetry !== false) {
+        let cmdInputs: CommandLineInputs = [];
 
-          await this.env.telemetry.sendCommand(`ionic ${this.metadata.fullName}`, cmdInputs);
+        if (this.metadata.name === 'login' || this.metadata.name === 'logout') {
+          await runPromise;
+        } else if (this.metadata.name === 'help') {
+          cmdInputs = inputs;
+        } else {
+          cmdInputs = await this.getCleanInputsForTelemetry(inputs, options);
         }
-      })(),
-      (async () => {
-        await this.runwrap(() => this.run(inputs, options));
-      })()
-    ]);
+
+        await this.env.telemetry.sendCommand(`ionic ${this.metadata.fullName}`, cmdInputs);
+      }
+    })();
+
+    await Promise.all([runPromise, telemetryPromise]);
   }
 
   exit(msg: string, code: number = 1): FatalException {
     return new FatalException(msg, code);
   }
 
-  getCleanInputsForTelemetry(inputs: CommandLineInputs, options: CommandLineOptions) {
-    if (this.metadata.inputs) {
-      const mdi = this.metadata.inputs;
-      inputs = inputs
-        .filter((input, i) => {
-          return mdi[i] && !mdi[i].private;
+  async getCleanInputsForTelemetry(inputs: CommandLineInputs, options: CommandLineOptions): Promise<string[]> {
+    const initialOptions: CommandLineOptions = { _: [] };
+
+    const filteredInputs = inputs.filter((input, i) => !this.metadata.inputs || (this.metadata.inputs[i] && !this.metadata.inputs[i].private));
+    const filteredOptions = Object.keys(options)
+      .filter(optionName => {
+        const metadataOption = this.metadata.options && this.metadata.options.find((o) => {
+          return o.name === optionName || (typeof o.aliases !== 'undefined' && o.aliases.includes(optionName));
         });
-    }
 
-    if (this.metadata.options) {
-      const mdo = this.metadata.options;
-      options = Object.keys(options)
-        .filter(optionName => {
-          const metadataOptionFound = mdo.find((mdOption) => (
-            mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
-          ));
-          return metadataOptionFound ? !metadataOptionFound.private : true;
-        })
-        .reduce((allOptions, optionName) => {
-          allOptions[optionName] = options[optionName];
-          return allOptions;
-        }, <CommandLineOptions>{});
-    }
+        if (metadataOption && metadataOption.aliases && metadataOption.aliases.includes(optionName)) {
+          return false; // exclude aliases
+        }
 
-    let optionInputs = minimistOptionsToArray(options);
-    return inputs.concat(optionInputs);
+        if (!metadataOption) {
+          return true; // include unknown options
+        }
+
+        if (metadataOption.private) {
+          return false; // exclude private options
+        }
+
+        if (typeof metadataOption.default !== 'undefined' && metadataOption.default === options[optionName]) {
+          return false; // exclude options that match their default value (means it wasn't supplied by user)
+        }
+
+        return true;
+      })
+      .reduce((allOptions, optionName) => {
+        allOptions[optionName] = options[optionName];
+        return allOptions;
+      }, initialOptions);
+
+    const optionInputs = minimistOptionsToArray(filteredOptions, { useDoubleQuotes: true });
+    return filteredInputs.concat(optionInputs);
   }
 }

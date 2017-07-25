@@ -21,7 +21,7 @@ export interface LoggerOptions {
 }
 
 export interface ILogger {
-  level: string;
+  level: LogLevel;
   prefix: string | (() => string);
   stream: NodeJS.WritableStream;
 
@@ -308,6 +308,7 @@ export interface IShell {
 export interface ITelemetry {
   sendCommand(command: string, args: string[]): Promise<void>;
   sendError(error: any, type: string): Promise<void>;
+  resetToken(): Promise<void>;
 }
 
 export interface ConfigFile {
