@@ -16,7 +16,8 @@ import {
   promptToLogin,
 } from '@ionic/cli-utils';
 
-const CREATE_NEW_APP_CHOICE = 'createNewApp';
+const CHOICE_CREATE_NEW_APP = 'createNewApp';
+const CHOICE_NEVERMIND = 'nevermind';
 
 @CommandMetadata({
   name: 'link',
@@ -136,15 +137,20 @@ export class LinkCommand extends Command implements CommandPreRun {
 
       const createAppChoice = {
         name: 'Create a new app',
-        id: CREATE_NEW_APP_CHOICE,
+        id: CHOICE_CREATE_NEW_APP,
+      };
+
+      const neverMindChoice = {
+        name: 'Nevermind',
+        id: CHOICE_NEVERMIND,
       };
 
       const linkedApp = await this.env.prompt({
         type: 'list',
         name: 'linkedApp',
         message: `Which app would you like to link`,
-        choices: [createAppChoice, ...apps].map((app) => ({
-          name: app.id !== CREATE_NEW_APP_CHOICE ? `${app.name} (${app.id})` : chalk.bold(app.name),
+        choices: [createAppChoice, ...apps, neverMindChoice].map((app) => ({
+          name: [CHOICE_CREATE_NEW_APP, CHOICE_NEVERMIND].includes(app.id) ? chalk.bold(app.name) : `${app.name} (${app.id})`,
           value: app.id
         }))
       });
@@ -152,7 +158,7 @@ export class LinkCommand extends Command implements CommandPreRun {
       appId = linkedApp;
     }
 
-    if (create || appId === CREATE_NEW_APP_CHOICE) {
+    if (create || appId === CHOICE_CREATE_NEW_APP) {
       const token = await this.env.session.getUserToken();
 
       if (config.backend === BACKEND_PRO) {
@@ -183,6 +189,8 @@ export class LinkCommand extends Command implements CommandPreRun {
         opn(`${config.urls.dash}/?user_token=${token}`, { wait: false });
         this.env.log.info(`Rerun ${chalk.green(`ionic link`)} to link to the new app.`);
       }
+    } else if (appId === CHOICE_NEVERMIND) {
+      this.env.log.info('Not linking app.');
     } else {
       await this.runcmd(['config', 'set', 'app_id', appId]);
 

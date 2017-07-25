@@ -386,7 +386,7 @@ export class StartCommand extends Command implements CommandPreRun {
           linkConfirmed = true;
 
           this.env.project = new Project(projectRoot, PROJECT_FILE);
-          await this.runcmd(['link', '--create', '--name', appName]);
+          await this.runcmd(['link']);
         }
       }
     }
