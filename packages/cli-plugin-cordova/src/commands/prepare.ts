@@ -15,9 +15,15 @@ import { CordovaCommand } from './base';
 @CommandMetadata({
   name: 'prepare',
   type: 'project',
-  description: 'Transform metadata to platform manifests and copies assets to Cordova platforms',
+  description: 'Copies assets to Cordova platforms, preparing them for native builds',
   longDescription: `
-Like running ${chalk.green('cordova prepare')} directly, but provides friendly checks.
+${chalk.green('ionic cordova prepare')} will do the following:
+- Copy the ${chalk.bold('www/')} directory into your Cordova platforms.
+- Transform ${chalk.bold('config.xml')} into platform-specific manifest files.
+- Copy icons and splash screens from ${chalk.bold('resources/')} to into your Cordova platforms.
+- Copy plugin files into specified platforms.
+
+You may wish to use ${chalk.green('ionic cordova prepare')} if you run your project with Android Studio or Xcode.
   `,
   exampleCommands: ['', 'ios', 'android'],
   inputs: [
