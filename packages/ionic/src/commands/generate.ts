@@ -23,7 +23,15 @@ Automatically create components for your Ionic app.
 
 The given ${chalk.green('name')} is normalized into an appropriate naming convention. For example, ${chalk.green('ionic generate page neat')} creates a page by the name of ${chalk.green('NeatPage')} in ${chalk.green('src/pages/neat/')}.
   `,
-  exampleCommands: ['', ...TYPE_CHOICES, 'component foo', 'page Login', 'pipe MyFilterPipe'],
+  exampleCommands: [
+    '',
+    ...TYPE_CHOICES,
+    'component foo',
+    'page Login',
+    'page Detail --no-module',
+    'page About --constants',
+    'pipe MyFilterPipe'
+  ],
   inputs: [
     {
       name: 'type',
@@ -35,6 +43,20 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
       description: 'The name of the component being generated',
     }
   ],
+  options: [
+    {
+      name: 'module',
+      description: 'Skip generating a NgModule',
+      type: Boolean,
+      default: true
+    },
+    {
+      name: 'constants',
+      description: 'Generate a page constant files for lazy loaded pages',
+      type: Boolean,
+      default: false
+    }
+  ]
 })
 export class GenerateCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
@@ -89,7 +111,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ type, name ] = inputs;
+    const [type, name] = inputs;
 
     await this.env.hooks.fire('command:generate', { cmd: this, env: this.env, inputs, options }); // TODO: print generated templates
 
