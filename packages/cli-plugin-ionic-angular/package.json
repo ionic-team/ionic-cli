@@ -50,7 +50,7 @@
     "@angular/compiler": "^4.2.4",
     "@angular/compiler-cli": "^4.2.4",
     "@angular/core": "^4.2.4",
-    "@ionic/app-scripts": "^2.0.0",
+    "@ionic/app-scripts": "^2.1.0",
     "@ionic/cli-scripts": "0.2.1",
     "@types/chalk": "^0.4.31",
     "@types/clean-css": "^3.4.30",
