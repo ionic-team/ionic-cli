@@ -84,6 +84,20 @@ export class Daemon extends BaseConfig<DaemonFile> {
   }
 }
 
+export function processRunning(pid: number): boolean {
+  try {
+    const r = process.kill(pid, 0);
+
+    if (typeof r === 'boolean') {
+      return r;
+    }
+
+    return true;
+  } catch (e) {
+    return e.code === 'EPERM';
+  }
+}
+
 export async function checkForDaemon(env: IonicEnvironment): Promise<number> {
   const config = await env.config.load();
 
@@ -93,9 +107,8 @@ export async function checkForDaemon(env: IonicEnvironment): Promise<number> {
 
   const f = await env.daemon.getPid();
 
-  env.log.debug(() => `Daemon pid file found (${chalk.bold(String(f))})`);
-
-  if (f) {
+  if (f && processRunning(f)) {
+    env.log.debug(() => `Daemon found (pid: ${chalk.bold(String(f))})`);
     return f;
   }
 

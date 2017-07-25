@@ -9,6 +9,7 @@ import {
   fsUnlink,
   pkgLatestVersion,
   prettyPath,
+  processRunning,
 } from '@ionic/cli-utils';
 
 @CommandMetadata({
@@ -51,6 +52,9 @@ export class DaemonCommand extends Command {
         this.env.log.info(`Killing existing daemon process ${chalk.bold(String(f))}.`);
         await fsUnlink(this.env.daemon.pidFilePath);
         process.kill(Number(f));
+      } else if (!processRunning(f)) {
+        this.env.log.info(`Process ${chalk.bold(String(f))} not found, deleting pid file.`);
+        await fsUnlink(this.env.daemon.pidFilePath);
       } else if (d.latestVersions.latest.ionic && semver.gt(this.env.plugins.ionic.version, d.latestVersions.latest.ionic)) {
         this.env.log.info(`Daemon out-of-date--killing ${chalk.bold(String(f))}.`);
         await fsUnlink(this.env.daemon.pidFilePath);
