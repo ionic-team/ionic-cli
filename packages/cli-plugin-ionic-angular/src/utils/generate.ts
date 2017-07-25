@@ -26,11 +26,11 @@ export async function prompt(context: AppScriptsType.BuildContext) {
 export async function getModules(context: AppScriptsType.BuildContext, kind: string) {
   switch (kind) {
     case 'component':
-      return context.componentsNgModulePath || context.appNgModulePath;
+      return context.componentsNgModulePath ? context.componentsNgModulePath : context.appNgModulePath;
     case 'pipe':
-      return context.pipesNgModulePath || context.appNgModulePath;
+      return context.pipesNgModulePath ? context.pipesNgModulePath : context.appNgModulePath;
     case 'directive':
-      return context.directivesNgModulePath || context.appNgModulePath;
+      return context.directivesNgModulePath ? context.directivesNgModulePath : context.appNgModulePath;
   }
 }
 
