@@ -84,7 +84,7 @@ describe('@ionic/cli-utils', () => {
     it('should transform metadata to minimist options', () => {
       const result = metadataToMinimistOptions(metadata);
       expect(result).toEqual({
-        string: ['foo', 'bar'],
+        string: ['_', 'foo', 'bar'],
         boolean: ['flag1'],
         alias: { foo: ['f'], bar: [], flag1: [] },
         default: { foo: null, bar: 'soup', flag1: false },
