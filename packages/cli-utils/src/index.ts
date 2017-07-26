@@ -197,6 +197,11 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     hooks,
     load,
     log,
+    meta: {
+      local: env['IONIC_CLI_LOCAL'] ? true : false,
+      binPath: env['IONIC_CLI_BIN'],
+      libPath: env['IONIC_CLI_LIB'],
+    },
     namespace: plugin.namespace,
     open,
     plugins: {

@@ -509,7 +509,7 @@ export interface IonicEnvironment {
   readonly events: ICLIEventEmitter;
   readonly log: ILogger;
   readonly prompt: PromptModule;
-  meta?: {
+  meta: {
     local: boolean; // CLI running in local mode?
     binPath: string;
     libPath: string;

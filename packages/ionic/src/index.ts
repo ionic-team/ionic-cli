@@ -138,7 +138,7 @@ export function registerHooks(hooks: IHookEngine) {
 }
 
 
-export async function run(pargv: string[], env: { [k: string]: string; }, opts: { local?: boolean; } = {}) {
+export async function run(pargv: string[], env: { [k: string]: string; }) {
   const now = new Date();
   let exitCode = 0;
   let err: any;
@@ -148,23 +148,17 @@ export async function run(pargv: string[], env: { [k: string]: string; }, opts: 
 
   const ienv = await generateIonicEnvironment(exports, pargv, env);
 
-  ienv.meta = {
-    local: opts.local || false,
-    binPath: env['IONIC_CLI_BIN'],
-    libPath: env['IONIC_CLI_LIB'],
-  };
-
-  registerHooks(ienv.hooks);
-
   try {
-    const configData = await ienv.config.load();
+    const config = await ienv.config.load();
+
+    registerHooks(ienv.hooks);
 
     ienv.log.debug(() => util.inspect(ienv.meta, { breakLength: Infinity, colors: chalk.enabled }));
 
     if (env['IONIC_EMAIL'] && env['IONIC_PASSWORD']) {
       ienv.log.debug(() => `${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables detected`);
 
-      if (configData.user.email !== env['IONIC_EMAIL']) {
+      if (config.user.email !== env['IONIC_EMAIL']) {
         ienv.log.debug(() => `${chalk.bold('IONIC_EMAIL')} mismatch with current session--attempting login`);
 
         try {
@@ -214,18 +208,18 @@ export async function run(pargv: string[], env: { [k: string]: string; }, opts: 
       }
 
       if (ienv.flags.interactive) {
-        if (typeof configData.daemon.updates === 'undefined') {
+        if (typeof config.daemon.updates === 'undefined') {
           const confirm = await ienv.prompt({
             type: 'confirm',
             name: 'confirm',
             message: `The Ionic CLI can automatically check for CLI updates in the background. Would you like to enable this?`,
           });
 
-          configData.daemon.updates = confirm;
+          config.daemon.updates = confirm;
           await ienv.config.save();
         }
 
-        if (configData.daemon.updates) {
+        if (config.daemon.updates) {
           await Promise.all([checkForDaemon(ienv), checkForUpdates(ienv)]);
         }
       }
@@ -238,7 +232,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }, opts: 
         exitCode = r;
       }
 
-      configData.lastCommand = now.toISOString();
+      config.lastCommand = now.toISOString();
     }
 
   } catch (e) {
