@@ -31,6 +31,13 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 * Fixed issue with Ionic 1 not live-reloading in devices.
 * Added `--no-build` option to `ionic cordova build` to skip Ionic builds.
 * Added check for Android SDK Tools version during `ionic info`.
+* Added `--no-module` option to Ionic Angular generators. By default, if
+  applicable, components are generated with corresponding `@NgModule` classes
+  which allow the component to be lazy-loaded. This new flag offers the ability
+  to disable this feature.
+* Added `--constants` option to Ionic Angular generators. If provided, a file
+  will be generated that stores string constants for identifiers for
+  lazy-loaded pages.
 
 <a name="3.5.0"></a>
 ### 3.5.0 (2017-07-11)
