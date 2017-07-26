@@ -112,7 +112,7 @@ If you want to create an Ionic/Cordova app, use the ${chalk.green('--cordova')} 
       default: true,
     },
     {
-      name: 'pro-id',
+      name: 'app-id',
       description: 'Specify an app ID from the Ionic Dashboard to link',
       backends: [BACKEND_PRO],
     },
@@ -120,7 +120,7 @@ If you want to create an Ionic/Cordova app, use the ${chalk.green('--cordova')} 
 })
 export class StartCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<number | void> {
-    let appId = <string>options['pro-id'] || '';
+    let appId = <string>options['app-id'] || '';
 
     const config = await this.env.config.load();
 
@@ -138,7 +138,7 @@ export class StartCommand extends Command implements CommandPreRun {
       options['link'] = false;
     }
 
-    if (options['pro-id']) {
+    if (options['app-id']) {
       options['link'] = true;
     }
 
@@ -169,7 +169,7 @@ export class StartCommand extends Command implements CommandPreRun {
     if (!inputs[0]) {
       if (config.backend === BACKEND_PRO && appId) {
         if (!(await this.env.session.isLoggedIn())) {
-          this.env.log.info(`You must be logged in to use ${chalk.green('--pro-id')}. Prompting for credentials.`);
+          this.env.log.info(`You must be logged in to use ${chalk.green('--app-id')}. Prompting for credentials.`);
           await promptToLogin(this.env);
         }
 
@@ -219,8 +219,8 @@ export class StartCommand extends Command implements CommandPreRun {
     let starterBranchName = <string>options['starterBranchName'] || 'master';
     let wrapperBranchName = <string>options['wrapperBranchName'] || 'master';
     let gitIntegration = false;
-    let linkConfirmed = typeof options['pro-id'] === 'string';
-    let appId = <string>options['pro-id'] || '';
+    let linkConfirmed = typeof options['app-id'] === 'string';
+    let appId = <string>options['app-id'] || '';
 
     const config = await this.env.config.load();
 
