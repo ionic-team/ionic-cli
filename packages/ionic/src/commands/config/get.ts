@@ -40,6 +40,21 @@ Without a ${chalk.green('property')} argument, this command prints out the entir
   exampleCommands: ['', 'app_id', '--global user.email', '-g yarn'],
 })
 export class ConfigGetCommand extends Command {
+  scrubTokens(obj: any) {
+    const lodash = this.env.load('lodash');
+    return lodash.mapValues(obj, () => '*****');
+  }
+
+  sanitize(key: string, obj: any) {
+    if (typeof obj === 'object' && 'tokens' in obj) {
+      obj['tokens'] = this.scrubTokens(obj['tokens']);
+    }
+
+    if (key === 'tokens') {
+      obj = this.scrubTokens(obj);
+    }
+  }
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let [ p ] = inputs;
     const { global } = options;
@@ -53,16 +68,8 @@ export class ConfigGetCommand extends Command {
     const config = await file.load();
     const lodash = this.env.load('lodash');
 
-    let v = lodash.cloneDeep<{ [key: string]: any }>(p ? lodash.get(config, p) : config);
-    const scrubbedTokens = { user: '*****', telemetry: '*****' };
-
-    if (typeof v === 'object' && 'tokens' in v) {
-      v['tokens'] = scrubbedTokens;
-    }
-
-    if (p === 'tokens') {
-      v = scrubbedTokens;
-    }
+    const v = lodash.cloneDeep(p ? lodash.get(config, p) : config);
+    this.sanitize(p, v);
 
     this.env.log.msg(util.inspect(v, { colors: chalk.enabled }));
   }
