@@ -16,7 +16,7 @@ var bootstrap = require('@ionic/cli-utils/bootstrap');
 
 bootstrap.detectLocalCLI().then(function(localPath) {
   var cli = require(localPath ? localPath : '../');
-  process.env.IONIC_CLI_LOCAL = localPath;
+  process.env.IONIC_CLI_LOCAL = localPath ? localPath : '';
   process.env.IONIC_CLI_BIN = __filename;
   cli.run(process.argv, process.env);
 });
