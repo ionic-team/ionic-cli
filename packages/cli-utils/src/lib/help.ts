@@ -11,6 +11,7 @@ import {
 } from '../definitions';
 
 import { isCommand } from '../guards';
+import { BACKEND_PRO } from './backends';
 import { generateFillSpaceStringList, wordWrap } from './utils/format';
 
 const HELP_DOTS_WIDTH = 25;
@@ -61,7 +62,7 @@ async function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, in
     const globalCommandDetails = await getHelpDetails(env, globalMetadata, [cmd => cmd.type === 'global']);
     const projectCommandDetails = await getHelpDetails(env, globalMetadata, [cmd => cmd.type === 'project']);
 
-    return `${formatHeader(env)}\n\n` +
+    return `${await formatHeader(env)}\n\n` +
       `  ${chalk.bold('Usage')}:\n\n` +
       `${await formatUsage(env)}\n` +
       `  ${chalk.bold('Global Commands')}:\n\n` +
@@ -84,13 +85,16 @@ async function formatUsage(env: IonicEnvironment) {
   return usageLines.map(u => `    ${chalk.dim('$')} ${chalk.green('ionic ' + u)}`).join('\n') + '\n';
 }
 
-function formatHeader(env: IonicEnvironment) {
+async function formatHeader(env: IonicEnvironment) {
+  const config = await env.config.load();
+  const isLoggedIn = await env.session.isLoggedIn();
+
   return `   _             _
   (_)           (_)
    _  ___  _ __  _  ___
   | |/ _ \\| '_ \\| |/ __|
   | | (_) | | | | | (__
-  |_|\\___/|_| |_|_|\\___|  CLI ${env.plugins.ionic.version}\n`;
+  |_|\\___/|_| |_|_|\\___|  CLI ${config.backend === BACKEND_PRO && isLoggedIn ? chalk.blue('PRO') + ' ': ''}${env.plugins.ionic.version}\n`;
 }
 
 async function getHelpDetails(env: IonicEnvironment, commandMetadataList: CommandData[], filters: ((cmd: CommandData) => boolean)[] = []): Promise<string[]> {
