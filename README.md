@@ -128,8 +128,8 @@ CLI flags are global options that alter the behavior of a CLI command.
 ## CLI Config
 
 The CLI provides commands for setting and printing config values from project
-config files and the global CLI file. See `ionic config set --help` and `ionic
-config get --help` for usage.
+config files and the global CLI config file. See `ionic config set --help` and
+`ionic config get --help` for usage.
 
 ## CLI Hooks
 
@@ -147,7 +147,7 @@ scripts](https://docs.npmjs.com/misc/scripts) in your `package.json` file:
 
 ```json
   "scripts": {
-    "ionic:build:before": "mv somefile www/somefile",
+    "ionic:build:before": "cp somefile www/somefile",
   }
 ```
 
