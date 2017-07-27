@@ -8,7 +8,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 ## Versions
 
 <a name="3.6.0"></a>
-### 3.6.0 (PENDING)
+### 3.6.0 (2017-07-27)
 
 * Added `ionic config` commands for getting and setting project
   (`ionic.config.json`) and global CLI config (`~/.ionic/config.json`) files.
