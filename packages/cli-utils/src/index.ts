@@ -7,11 +7,11 @@ import * as minimist from 'minimist';
 
 import * as inquirerType from 'inquirer';
 
-import { IHookEngine, IonicEnvironment, LogLevel, RootPlugin } from './definitions';
+import { ConfigFile, IClient, IConfig, IHookEngine, IProject, ISession, IonicEnvironment, LogLevel, RootPlugin } from './definitions';
 import { LOG_LEVELS, isLogLevel } from './guards';
 import { load } from './lib/modules';
 
-import { BACKEND_LEGACY } from './lib/backends';
+import { BACKEND_PRO, BACKEND_LEGACY } from './lib/backends';
 import { CONFIG_DIRECTORY, CONFIG_FILE, Config, gatherFlags } from './lib/config';
 import { DAEMON_JSON_FILE, Daemon } from './lib/daemon';
 import { Client } from './lib/http';
@@ -61,7 +61,6 @@ export * from './lib/utils/logger';
 export * from './lib/utils/network';
 export * from './lib/utils/npm';
 export * from './lib/utils/promise';
-export * from './lib/utils/shell';
 export * from './lib/utils/string';
 export * from './lib/utils/task';
 export * from './lib/validators';
@@ -75,6 +74,42 @@ export function registerHooks(hooks: IHookEngine) {
       { type: 'cli-packages', name, version, path: path.dirname(__filename) },
     ];
   });
+
+  hooks.register(name, 'command:config:set', async ({ env, inputs, options, valueChanged }) => {
+    let [ p ] = inputs;
+    const { global } = options;
+
+    if (global && p === 'backend' && valueChanged) {
+      await hooks.fire('backend:changed', { env });
+    }
+  });
+
+  hooks.register(name, 'backend:changed', async ({ env }) => {
+    const config = await env.config.load();
+
+    if (config.backend === BACKEND_PRO) {
+      config.urls.api = 'https://api.ionicjs.com';
+      config.urls.dash = 'https://dashboard.ionicjs.com';
+    } else if (config.backend === BACKEND_LEGACY) {
+      config.urls.api = 'https://api.ionic.io';
+      config.urls.dash = 'https://apps.ionic.io';
+    }
+
+    const wasLoggedIn = await env.session.isLoggedIn();
+    await env.session.logout();
+
+    env.client.host = config.urls.api;
+    env.session = await getSession(env.config, env.project, env.client);
+
+    if (wasLoggedIn) {
+      env.log.info('You have been logged out.');
+    }
+  });
+}
+
+async function getSession(config: IConfig<ConfigFile>, project: IProject, client: IClient): Promise<ISession> {
+  const configData = await config.load();
+  return configData.backend === BACKEND_LEGACY ? new CloudSession(config, project, client) : new ProSession(config, project, client);
 }
 
 export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
@@ -180,7 +215,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
 
   const project = new Project(env['IONIC_PROJECT_DIR'], PROJECT_FILE);
   const client = new Client(configData.urls.api);
-  const session = configData.backend === BACKEND_LEGACY ? new CloudSession(config, project, client) : new ProSession(config, project, client);
+  const session = await getSession(config, project, client);
   const hooks = new HookEngine();
   const telemetry = new Telemetry({ config, client, plugin, project, session });
   const shell = new Shell(tasks, log);

@@ -112,18 +112,14 @@ If you want to create an Ionic/Cordova app, use the ${chalk.green('--cordova')} 
       default: true,
     },
     {
-      name: 'app-id',
+      name: 'pro-id',
       description: 'Specify an app ID from the Ionic Dashboard to link',
-      backends: [BACKEND_PRO],
+      visible: false,
     },
   ],
 })
 export class StartCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<number | void> {
-    let appId = <string>options['app-id'] || '';
-
-    const config = await this.env.config.load();
-
     // If the action is list then lets just end here.
     if (options['list']) {
       this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES).join('\n'));
@@ -138,8 +134,21 @@ export class StartCommand extends Command implements CommandPreRun {
       options['link'] = false;
     }
 
-    if (options['app-id']) {
+    if (options['pro-id']) {
       options['link'] = true;
+    }
+
+    let proAppId = <string>options['pro-id'] || '';
+    const config = await this.env.config.load();
+
+    if (proAppId && config.backend !== BACKEND_PRO) {
+      await this.runcmd(['config', 'set', '-g', 'backend', 'pro'], { showExecution: false, showLogs: false });
+      this.env.log.nl();
+      this.env.log.info(
+        `${chalk.bold(chalk.blue.underline('You have opted in to Ionic Pro!') + ' The CLI is now set up to use Ionic Pro services.')}\n` +
+        `You can revert back to Ionic Cloud (legacy) services at any time:\n\n` +
+        `${chalk.green('ionic config set -g backend legacy')}\n`
+      );
     }
 
     if (this.env.project.directory) {
@@ -166,16 +175,17 @@ export class StartCommand extends Command implements CommandPreRun {
       );
     }
 
-    if (!inputs[0]) {
-      if (config.backend === BACKEND_PRO && appId) {
-        if (!(await this.env.session.isLoggedIn())) {
-          this.env.log.info(`You must be logged in to use ${chalk.green('--app-id')}. Prompting for credentials.`);
-          await promptToLogin(this.env);
-        }
+    if (proAppId) {
+      if (!(await this.env.session.isLoggedIn())) {
+        await promptToLogin(this.env);
+      }
+    }
 
+    if (!inputs[0]) {
+      if (proAppId) {
         const token = await this.env.session.getUserToken();
         const appLoader = new App(token, this.env.client);
-        const app = await appLoader.load(appId);
+        const app = await appLoader.load(proAppId);
         this.env.log.info(`Using ${chalk.bold(app.slug)} for ${chalk.green('name')}.`);
         inputs[0] = app.slug;
       } else {
@@ -219,8 +229,8 @@ export class StartCommand extends Command implements CommandPreRun {
     let starterBranchName = <string>options['starterBranchName'] || 'master';
     let wrapperBranchName = <string>options['wrapperBranchName'] || 'master';
     let gitIntegration = false;
-    let linkConfirmed = typeof options['app-id'] === 'string';
-    let appId = <string>options['app-id'] || '';
+    let linkConfirmed = typeof options['pro-id'] === 'string';
+    let proAppId = <string>options['pro-id'] || '';
 
     const config = await this.env.config.load();
 
@@ -420,8 +430,8 @@ export class StartCommand extends Command implements CommandPreRun {
         this.env.project = new Project(projectRoot, PROJECT_FILE);
         const cmdArgs = ['link'];
 
-        if (appId) {
-          cmdArgs.push(appId);
+        if (proAppId) {
+          cmdArgs.push(proAppId);
         }
 
         await this.runcmd(cmdArgs);

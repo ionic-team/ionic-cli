@@ -12,7 +12,6 @@ import { isCommandPreRun } from '../../guards';
 import { FatalException } from '../errors';
 import { validators } from '../validators';
 import { minimistOptionsToArray, validateInputs } from './utils';
-import { Logger } from '../utils/logger';
 
 export class Command implements ICommand {
   public env: IonicEnvironment;
@@ -32,8 +31,12 @@ export class Command implements ICommand {
     }
   }
 
-  async runcmd(pargv: string[], opts: { showLogs?: boolean } = {}): Promise<void> {
-    const env = { ...this.env };
+  async runcmd(pargv: string[], opts: { showExecution?: boolean; showLogs?: boolean; } = {}): Promise<void> {
+    const logstream = this.env.log.stream;
+
+    if (typeof opts.showExecution === 'undefined') {
+      opts.showExecution = true;
+    }
 
     if (typeof opts.showLogs === 'undefined') {
       opts.showLogs = true;
@@ -41,12 +44,16 @@ export class Command implements ICommand {
 
     if (!opts.showLogs) {
       const DevNull = require('dev-null'); // TODO
-      env.log = new Logger({ level: this.env.log.level, stream: new DevNull(), prefix: this.env.log.prefix });
+      this.env.log.stream = new DevNull();
     }
 
     await this.runwrap(async () => {
-      env.log.msg(`> ${chalk.green([env.namespace.name, ...pargv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
-      return this.env.namespace.runCommand(env, pargv);
+      if (opts.showExecution) {
+        this.env.log.msg(`> ${chalk.green([this.env.namespace.name, ...pargv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
+      }
+
+      await this.env.namespace.runCommand(this.env, pargv);
+      this.env.log.stream = logstream;
     }, { exit0: false });
   }
 

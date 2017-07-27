@@ -384,6 +384,8 @@ export interface APIResponseSuccess {
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' | 'HEAD' | 'OPTIONS';
 
 export interface IClient {
+  host: string;
+
   make(method: HttpMethod, path: string): superagentType.SuperAgentRequest;
   do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess>;
   paginate<T extends Response<Object[]>>(reqgen: () => superagentType.SuperAgentRequest, guard: (res: APIResponseSuccess) => res is T): IPaginator<T>;
@@ -449,6 +451,7 @@ export interface IHookEngine {
   fire(hook: 'build:before', args: EnvironmentHookArgs): Promise<void[]>;
   fire(hook: 'build:after', args: EnvironmentHookArgs): Promise<void[]>;
   fire(hook: 'watch:before', args: EnvironmentHookArgs): Promise<void[]>;
+  fire(hook: 'backend:changed', args: EnvironmentHookArgs): Promise<void[]>;
 
   register(source: string, hook: 'plugins:init', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
   register(source: string, hook: 'command:config:set', listener: (args: ConfigSetCommandHookArgs) => Promise<void>): void;
@@ -460,6 +463,7 @@ export interface IHookEngine {
   register(source: string, hook: 'build:before', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
   register(source: string, hook: 'build:after', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
   register(source: string, hook: 'watch:before', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
+  register(source: string, hook: 'backend:changed', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
 
   getSources(hook: string): string[];
   hasSources(hook: string, sources: string[]): boolean;
@@ -519,7 +523,7 @@ export interface IonicEnvironment {
     ionic: Plugin;
     [key: string]: Plugin;
   };
-  readonly session: ISession;
+  session: ISession;
   readonly shell: IShell;
   readonly tasks: ITaskChain;
   readonly telemetry: ITelemetry;

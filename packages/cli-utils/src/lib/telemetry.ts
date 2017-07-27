@@ -8,9 +8,10 @@ import { generateUUID } from './uuid';
 const GA_CODE = 'UA-44023830-30';
 
 export class Telemetry implements ITelemetry {
+  client: IClient;
+
   protected config: IConfig<ConfigFile>;
   protected plugin: RootPlugin;
-  protected client: IClient;
   protected session: ISession;
   protected project: IProject;
 

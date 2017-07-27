@@ -36,32 +36,6 @@ const WATCH_BEFORE_HOOK = 'watch:before';
 const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
 
 export function registerHooks(hooks: IHookEngine) {
-  hooks.register(name, 'command:config:set', async ({ env, inputs, options, valueChanged }) => {
-    let [ p, v ] = inputs;
-    const { global } = options;
-
-    if (global) {
-      const config = await env.config.load();
-
-      if (p === 'backend' && valueChanged) {
-        if (v === 'pro') {
-          config.urls.api = 'https://api.ionicjs.com';
-          config.urls.dash = 'https://dashboard.ionicjs.com';
-        } else if (v === 'legacy') {
-          config.urls.api = 'https://api.ionic.io';
-          config.urls.dash = 'https://apps.ionic.io';
-        }
-
-        const wasLoggedIn = await env.session.isLoggedIn();
-        await env.session.logout();
-
-        if (wasLoggedIn) {
-          env.log.info('You have been logged out.');
-        }
-      }
-    }
-  });
-
   hooks.register(name, BUILD_BEFORE_HOOK, async ({ env }) => {
     const packageJson = await env.project.loadPackageJson();
 

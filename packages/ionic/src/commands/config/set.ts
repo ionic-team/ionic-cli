@@ -84,11 +84,10 @@ export class ConfigSetCommand extends Command {
 
     const valueChanged = oldValue !== newValue;
 
+    lodash.set(config, p, newValue);
     await this.env.hooks.fire('command:config:set', { env: this.env, cmd: this, inputs, options, valueChanged });
 
     if (valueChanged) {
-      lodash.set(config, p, newValue);
-      await file.save();
       this.env.log.ok(`${chalk.green(p)} set to ${chalk.green(v)} in ${chalk.bold(prettyPath(file.filePath))}!`);
     } else {
       this.env.log.info(`${chalk.green(p)} is already set to ${chalk.green(v)}.`);
