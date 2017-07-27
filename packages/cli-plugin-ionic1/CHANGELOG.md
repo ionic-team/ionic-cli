@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-ionic1@2.0.1...@ionic/cli-plugin-ionic1@2.1.0) (2017-07-27)
+
+
+### Bug Fixes
+
+* **ionic1:** Fix refresh issue on devices ([3717032](https://github.com/ionic-team/ionic-cli/commit/3717032))
+
+
+### Features
+
+* ionic pro ([36dc2f7](https://github.com/ionic-team/ionic-cli/commit/36dc2f7))
+
+
+
+
 <a name="2.0.1"></a>
 ## [2.0.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-ionic1@2.0.0...@ionic/cli-plugin-ionic1@2.0.1) (2017-07-11)
 

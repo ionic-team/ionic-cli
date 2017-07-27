@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-plugin-proxy",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "Ionic CLI plugin for proxying all CLI HTTP requests",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
@@ -56,11 +56,11 @@
     "testRegex": "/__tests__/.*\\.(ts|js)$"
   },
   "dependencies": {
-    "@ionic/cli-utils": "1.5.0",
+    "@ionic/cli-utils": "1.6.0",
     "superagent-proxy": "^1.0.2",
     "tslib": "^1.7.1"
   },
   "devDependencies": {
-    "@ionic/cli-scripts": "0.2.1"
+    "@ionic/cli-scripts": "0.3.0"
   }
 }

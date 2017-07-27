@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-ionic-angular@1.3.2...@ionic/cli-plugin-ionic-angular@1.4.0) (2017-07-27)
+
+
+### Features
+
+* ionic pro ([36dc2f7](https://github.com/ionic-team/ionic-cli/commit/36dc2f7))
+* **generators:** add fall back for old app-scripts ([d41a4b5](https://github.com/ionic-team/ionic-cli/commit/d41a4b5))
+* **generators:** add fall back for old app-scripts ([33097e7](https://github.com/ionic-team/ionic-cli/commit/33097e7))
+* **generators:** add module options ([6c85a8e](https://github.com/ionic-team/ionic-cli/commit/6c85a8e))
+* **generators:** add option for creating a constants file ([db7b983](https://github.com/ionic-team/ionic-cli/commit/db7b983))
+* **generators:** pass all the options ([6401822](https://github.com/ionic-team/ionic-cli/commit/6401822))
+
+
+
+
 <a name="1.3.2"></a>
 ## [1.3.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-ionic-angular@1.3.1...@ionic/cli-plugin-ionic-angular@1.3.2) (2017-07-11)
 

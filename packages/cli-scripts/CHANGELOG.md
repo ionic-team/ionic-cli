@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-scripts@0.2.1...@ionic/cli-scripts@0.3.0) (2017-07-27)
+
+
+### Features
+
+* ionic pro ([36dc2f7](https://github.com/ionic-team/ionic-cli/commit/36dc2f7))
+
+
+
+
 <a name="0.2.1"></a>
 ## [0.2.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-scripts@0.2.0...@ionic/cli-scripts@0.2.1) (2017-07-11)
 

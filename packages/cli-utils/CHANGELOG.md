@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.6.0"></a>
+# [1.6.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.5.0...@ionic/cli-utils@1.6.0) (2017-07-27)
+
+
+### Bug Fixes
+
+* **timeouts:** rip out timeouts ([22dcd2f](https://github.com/ionic-team/ionic-cli/commit/22dcd2f))
+
+
+### Features
+
+* ionic pro ([36dc2f7](https://github.com/ionic-team/ionic-cli/commit/36dc2f7))
+
+
+
+
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.4.0...@ionic/cli-utils@1.5.0) (2017-07-11)
 
