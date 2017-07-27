@@ -124,6 +124,7 @@ async function getSession(config: IConfig<ConfigFile>, project: IProject, client
 }
 
 export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
+  const cwd = process.cwd();
   const argv = minimist(pargv, { boolean: true, string: '_' });
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
   const configData = await config.load();
@@ -181,10 +182,10 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     configData.yarn = argv['yarn'];
   }
 
-  const projectDir = await findBaseDirectory(process.cwd(), PROJECT_FILE);
+  const projectDir = await findBaseDirectory(cwd, PROJECT_FILE);
 
   if (!projectDir) {
-    const foundDir = await findBaseDirectory(process.cwd(), PROJECT_FILE_LEGACY);
+    const foundDir = await findBaseDirectory(cwd, PROJECT_FILE_LEGACY);
 
     if (foundDir) {
       log.warn(`${chalk.bold(PROJECT_FILE_LEGACY)} file found in ${chalk.bold(foundDir)}--please rename it to ${chalk.bold(PROJECT_FILE)}, or your project directory will not be detected!`);
@@ -244,6 +245,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     load,
     log,
     meta: {
+      cwd,
       local: env['IONIC_CLI_LOCAL'] ? true : false,
       binPath: env['IONIC_CLI_BIN'],
       libPath: env['IONIC_CLI_LIB'],

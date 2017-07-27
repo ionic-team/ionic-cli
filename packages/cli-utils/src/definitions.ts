@@ -514,6 +514,7 @@ export interface IonicEnvironment {
   readonly log: ILogger;
   readonly prompt: PromptModule;
   meta: {
+    cwd: string;
     local: boolean; // CLI running in local mode?
     binPath: string;
     libPath: string;
