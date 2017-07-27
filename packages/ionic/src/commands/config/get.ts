@@ -46,12 +46,14 @@ export class ConfigGetCommand extends Command {
   }
 
   sanitize(key: string, obj: any) {
+    const lodash = this.env.load('lodash');
+
     if (typeof obj === 'object' && 'tokens' in obj) {
       obj['tokens'] = this.scrubTokens(obj['tokens']);
     }
 
     if (key === 'tokens') {
-      obj = this.scrubTokens(obj);
+      lodash.assign(obj, this.scrubTokens(obj));
     }
   }
 
