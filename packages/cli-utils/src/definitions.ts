@@ -192,6 +192,7 @@ export interface PackageVersions {
 }
 
 export interface DaemonFile {
+  daemonVersion: string;
   latestVersions: {
     latest: PackageVersions;
     [key: string]: PackageVersions;

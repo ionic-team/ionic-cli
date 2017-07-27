@@ -46,6 +46,10 @@ export class Daemon extends BaseConfig<DaemonFile> {
     const lodash = load('lodash');
     const results = lodash.cloneDeep(o);
 
+    if (!results.daemonVersion) {
+      results.daemonVersion = '';
+    }
+
     if (!results.latestVersions) {
       results.latestVersions = {};
     }

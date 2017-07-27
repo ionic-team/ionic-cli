@@ -5,7 +5,6 @@ import * as chalk from 'chalk';
 import { DistTag, HydratedPlugin, IonicEnvironment, Plugin } from '../definitions';
 import { isPlugin } from '../guards';
 import { FatalException } from './errors';
-import { load } from './modules';
 import { prettyPath } from './utils/format';
 import { pathAccessible, pathExists, readDir } from './utils/fs';
 import { getGlobalProxy } from './http';
@@ -301,8 +300,6 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
 }
 
 async function hydratePlugin(env: IonicEnvironment, plugin: Plugin): Promise<HydratedPlugin> {
-  const semver = load('semver');
-
   env.log.debug(() => `Getting plugin info for ${chalk.green(plugin.name)}`);
 
   const currentVersion = plugin.version;
@@ -320,8 +317,15 @@ async function hydratePlugin(env: IonicEnvironment, plugin: Plugin): Promise<Hyd
     distTag,
     currentVersion,
     latestVersion,
-    updateAvailable: semver.gt(latestVersion, currentVersion) || ('canary' === distTag && latestVersion !== currentVersion),
+    updateAvailable: await pluginHasUpdate(currentVersion, latestVersion),
   };
+}
+
+export async function pluginHasUpdate(currentVersion: string, latestVersion: string): Promise<boolean> {
+  const semver = await import('semver');
+  const distTag = determineDistTag(currentVersion);
+
+  return semver.gt(latestVersion, currentVersion) || ('canary' === distTag && latestVersion !== currentVersion);
 }
 
 async function facilitateIonicUpdate(env: IonicEnvironment, ionicPlugin: HydratedPlugin) {
