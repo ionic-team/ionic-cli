@@ -17,24 +17,23 @@ issues on GitHub should be reserved for bug reports and feature requests.
 
 ## Table of Contents ##
 
-  * [Requirements](#requirements)
-  * [Install](#install)
-  * [Changes from CLI v2](#changes-from-cli-v2)
-  * [Getting Started](#getting-started)
-    + [Ionic Angular](#ionic-angular)
-      - [Starter Templates](#starter-templates)
-    + [Ionic 1](#ionic-1)
-      - [Starter Templates](#starter-templates-1)
-  * [Using Cordova](#using-cordova)
-    + [Requirements](#requirements-1)
-  * [Environment Variables](#environment-variables)
-  * [CLI Flags](#cli-flags)
-  * [CLI Config](#cli-config)
-  * [CLI Hooks](#cli-hooks)
-    + [Example](#example)
-  * [Service Proxies](#service-proxies)
-  * [Using a Proxy](#using-a-proxy)
-  * [Legacy Version](#legacy-version)
+* [Requirements](#requirements)
+* [Install](#install)
+* [Getting Started](#getting-started)
+   * [Ionic Angular](#ionic-angular)
+      * [Starter Templates](#starter-templates)
+   * [Ionic v1](#ionic-v1)
+      * [Starter Templates](#starter-templates-1)
+* [Using Cordova](#using-cordova)
+   * [Requirements](#requirements-1)
+* [Environment Variables](#environment-variables)
+* [CLI Flags](#cli-flags)
+* [CLI Config](#cli-config)
+* [CLI Hooks](#cli-hooks)
+   * [Example](#example)
+* [Service Proxies](#service-proxies)
+* [Using a Proxy](#using-a-proxy)
+* [Legacy Version](#legacy-version)
 
 ## Requirements
 
@@ -51,10 +50,8 @@ $ npm install -g ionic
 prefix with `sudo` or can setup [proper file permissions for
 npm](https://docs.npmjs.com/getting-started/fixing-npm-permissions).*
 
-## Changes from CLI v2
-
-You can review the CLI v2 -> v3 upgrade notes in
-[CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#upgrading-from-cli-v2).
+:memo: *Note: Running `ionic` will first look to see if you're in an Ionic
+project. If you are, it runs the locally installed CLI.*
 
 ## Getting Started
 
