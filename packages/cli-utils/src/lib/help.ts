@@ -94,7 +94,7 @@ async function formatHeader(env: IonicEnvironment) {
    _  ___  _ __  _  ___
   | |/ _ \\| '_ \\| |/ __|
   | | (_) | | | | | (__
-  |_|\\___/|_| |_|_|\\___|  CLI ${config.backend === BACKEND_PRO && isLoggedIn ? chalk.blue('PRO') + ' ': ''}${env.plugins.ionic.version}\n`;
+  |_|\\___/|_| |_|_|\\___|  CLI ${config.backend === BACKEND_PRO && isLoggedIn ? chalk.blue('PRO') + ' ' : ''}${env.plugins.ionic.version}\n`;
 }
 
 async function getHelpDetails(env: IonicEnvironment, commandMetadataList: CommandData[], filters: ((cmd: CommandData) => boolean)[] = []): Promise<string[]> {

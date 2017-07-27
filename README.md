@@ -4,13 +4,13 @@
 # Ionic CLI
 
 The Ionic command line interface (CLI) is your go-to tool for developing
-[Ionic](https://ionicframework.com/) apps.
+[Ionic][ionic-homepage] apps.
 
 Use `ionic --help` for more detailed command information.
 
-:mega: **Support/Questions?** Please see our [Support
-Page](https://ionicframework.com/support) for general support questions. The
-issues on GitHub should be reserved for bug reports and feature requests.
+:mega: **Support/Questions?** Please see our [Support Page][ionic-support] for
+general support questions. The issues on GitHub should be reserved for bug
+reports and feature requests.
 
 :sparkling_heart: **Want to contribute?** Please see
 [CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/master/CONTRIBUTING.md).
@@ -20,10 +20,6 @@ issues on GitHub should be reserved for bug reports and feature requests.
 * [Requirements](#requirements)
 * [Install](#install)
 * [Getting Started](#getting-started)
-   * [Ionic Angular](#ionic-angular)
-      * [Starter Templates](#starter-templates)
-   * [Ionic v1](#ionic-v1)
-      * [Starter Templates](#starter-templates-1)
 * [Using Cordova](#using-cordova)
    * [Requirements](#requirements-1)
 * [Environment Variables](#environment-variables)
@@ -53,37 +49,35 @@ npm](https://docs.npmjs.com/getting-started/fixing-npm-permissions).*
 :memo: *Note: Running `ionic` will first look to see if you're in an Ionic
 project. If you are, it runs the locally installed CLI.*
 
+<a name="ionic-1"></a>
+<a name="ionic-v1"></a>
+<a name="ionic-angular"></a>
+<a name="starter-templates"></a>
+<a name="starter-templates-1"></a>
+
 ## Getting Started
 
-### Ionic Angular
-
-#### Starter Templates
-
-* [blank](https://github.com/ionic-team/ionic2-starter-blank)
-* [tabs](https://github.com/ionic-team/ionic2-starter-tabs)
-* [sidemenu](https://github.com/ionic-team/ionic2-starter-sidemenu)
-* [conference](https://github.com/ionic-team/ionic-conference-app)
-* [tutorial](https://github.com/ionic-team/ionic2-starter-tutorial)
-* [super](https://github.com/ionic-team/ionic-starter-super)
+New projects are started with the `ionic start` command. For full details and
+examples, see:
 
 ```bash
-$ npm install -g ionic@latest
-$ ionic start myNewProject
-$ cd ./myNewProject
-$ ionic serve
+ionic start --help
 ```
 
-### Ionic v1
+Here is a table of project types and links to their respective starter
+templates:
 
-#### Starter Templates
+| Project Type                            | Start Command                     | Starter Templates                                                                                                                                                                                      |
+|-----------------------------------------|-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [**Ionic Angular**][ionic-angular-docs] | `ionic start myApp`               | [blank][ionic-angular-blank], [tabs][ionic-angular-tabs], [sidemenu][ionic-angular-sidemenu], [conference][ionic-angular-conference], [tutorial][ionic-angular-tutorial], [super][ionic-angular-super] |
+| [**Ionic 1**][ionic1-docs]              | `ionic start myApp --type=ionic1` | [blank][ionic1-blank], [tabs][ionic1-tabs], [sidemenu][ionic1-sidemenu], [maps][ionic1-maps]                                                                                                           |
 
-* [blank](https://github.com/ionic-team/ionic-starter-blank)
+After you start your project, you can `cd` into the directory and serve it in
+your browser:
 
 ```bash
-$ npm install -g ionic@latest
-$ ionic start myNewProject blank --type=ionic1
-$ cd ./myNewProject
-$ ionic serve
+cd ./myApp
+ionic serve
 ```
 
 ## Using Cordova
@@ -235,6 +229,24 @@ The old version of the CLI can be installed with the `legacy` tag:
 ```bash
 npm install -g ionic@legacy
 ```
+
+[ionic-homepage]: https://ionicframework.com
+[ionic-docs]: https://ionicframework.com/docs
+[ionic-support]: https://ionicframework.com/support
+
+[ionic-angular-docs]: https://ionicframework.com/docs
+[ionic-angular-blank]: https://github.com/ionic-team/ionic2-starter-blank
+[ionic-angular-tabs]: https://github.com/ionic-team/ionic2-starter-tabs
+[ionic-angular-sidemenu]: https://github.com/ionic-team/ionic2-starter-sidemenu
+[ionic-angular-conference]: https://github.com/ionic-team/ionic-conference-app
+[ionic-angular-tutorial]: https://github.com/ionic-team/ionic2-starter-tutorial
+[ionic-angular-super]: https://github.com/ionic-team/ionic-starter-super
+
+[ionic1-docs]: https://ionicframework.com/docs/v1
+[ionic1-blank]: https://github.com/ionic-team/ionic-starter-blank
+[ionic1-tabs]: https://github.com/ionic-team/ionic-starter-tabs
+[ionic1-sidemenu]: https://github.com/ionic-team/ionic-starter-sidemenu
+[ionic1-maps]: https://github.com/ionic-team/ionic-starter-maps
 
 [circle-badge]: https://circleci.com/gh/ionic-team/ionic-cli.svg?style=shield
 [circle-badge-url]: https://circleci.com/gh/ionic-team/ionic-cli
