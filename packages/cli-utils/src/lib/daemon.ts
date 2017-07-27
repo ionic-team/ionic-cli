@@ -116,20 +116,18 @@ export async function checkForDaemon(env: IonicEnvironment): Promise<number> {
     return f;
   }
 
-  env.tasks.next('Spinning up daemon');
-
   const crossSpawn = load('cross-spawn');
   const fd = await fsOpen(env.daemon.logFilePath, 'a');
   const p = crossSpawn.spawn(process.argv[0], [process.argv[1], 'daemon', '--verbose', '--no-interactive', '--log-timestamps'], {
     cwd: env.config.directory,
-    detached: true,
+    detached: process.platform !== 'win32',
+    shell: process.platform === 'win32',
     stdio: ['ignore', fd, fd],
   });
 
   p.unref();
 
-  env.log.info(`Daemon pid: ${chalk.bold(String(p.pid))}`);
-  env.tasks.end();
+  env.log.debug(`New daemon pid: ${chalk.bold(String(p.pid))}`);
 
   return p.pid;
 }
