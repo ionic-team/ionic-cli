@@ -41,24 +41,44 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
   ],
   options: [
     {
+      name: 'name',
+      description: 'The app name to use during the linking of a new app',
+    },
+    {
       name: 'create',
       description: 'Create a new app on Ionic and link it with this local Ionic project',
       backends: [BACKEND_PRO],
       type: Boolean,
+      visible: false,
     },
     {
-      name: 'name',
-      description: 'The app name to use during the linking of a new app',
+      name: 'pro-id',
+      description: 'Specify an app ID from the Ionic Dashboard to link',
+      visible: false,
     },
   ],
 })
 export class LinkCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let [ appId ] = inputs;
     const { create } = options;
 
-    if (appId && create) {
+    if (inputs[0] && create) {
       throw this.exit(`Sorry--cannot use both ${chalk.green('app_id')} and ${chalk.green('--create')}. You must either link an existing app or create a new one.`);
+    }
+
+    let proAppId = <string>options['pro-id'] || '';
+    const config = await this.env.config.load();
+
+    if (proAppId && config.backend !== BACKEND_PRO) {
+      await this.runcmd(['config', 'set', '-g', 'backend', 'pro'], { showExecution: false, showLogs: false });
+      this.env.log.nl();
+      this.env.log.info(
+        `${chalk.bold(chalk.blue.underline('You have opted in to Ionic Pro!') + ' The CLI is now set up to use Ionic Pro services.')}\n` +
+        `You can revert back to Ionic Cloud (legacy) services at any time:\n\n` +
+        `${chalk.green('ionic config set -g backend legacy')}\n`
+      );
+
+      inputs[0] = proAppId;
     }
   }
 

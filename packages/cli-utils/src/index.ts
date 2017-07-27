@@ -7,11 +7,22 @@ import * as minimist from 'minimist';
 
 import * as inquirerType from 'inquirer';
 
-import { ConfigFile, IClient, IConfig, IHookEngine, IProject, ISession, IonicEnvironment, LogLevel, RootPlugin } from './definitions';
+import {
+  ConfigFile,
+  IClient,
+  IConfig,
+  IHookEngine,
+  IProject,
+  ISession,
+  IonicEnvironment,
+  LogLevel,
+  RootPlugin,
+} from './definitions';
+
 import { LOG_LEVELS, isLogLevel } from './guards';
 import { load } from './lib/modules';
 
-import { BACKEND_PRO, BACKEND_LEGACY } from './lib/backends';
+import { BACKEND_LEGACY, BACKEND_PRO } from './lib/backends';
 import { CONFIG_DIRECTORY, CONFIG_FILE, Config, gatherFlags } from './lib/config';
 import { DAEMON_JSON_FILE, Daemon } from './lib/daemon';
 import { Client } from './lib/http';
