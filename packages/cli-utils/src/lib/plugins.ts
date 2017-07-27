@@ -367,8 +367,7 @@ async function facilitateIonicUpdate(env: IonicEnvironment, ionicPlugin: Hydrate
 }
 
 async function facilitatePluginUpdate(env: IonicEnvironment, ionicPlugin: HydratedPlugin, plugin: HydratedPlugin): Promise<boolean> {
-  const ionicPluginInstallPath = path.dirname(path.dirname(path.dirname(ionicPlugin.meta.filePath)));
-  const global = (!env.meta || !env.meta.local) && !plugin.meta.filePath.startsWith(ionicPluginInstallPath);
+  const global = !env.meta || !env.meta.local;
   const pluginInstallArgs = await pkgInstallPluginArgs(env, plugin.name, { global });
   const startMsg = `${global ? 'Global' : 'Local'} plugin ${chalk.green(plugin.name)}`;
   const updateMsg = `${startMsg} has an update available (${chalk.green(plugin.currentVersion)} => ${chalk.green(plugin.latestVersion)})!`;
