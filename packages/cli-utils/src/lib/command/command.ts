@@ -32,28 +32,8 @@ export class Command implements ICommand {
   }
 
   async runcmd(pargv: string[], opts: { showExecution?: boolean; showLogs?: boolean; } = {}): Promise<void> {
-    const logstream = this.env.log.stream;
-
-    if (typeof opts.showExecution === 'undefined') {
-      opts.showExecution = true;
-    }
-
-    if (typeof opts.showLogs === 'undefined') {
-      opts.showLogs = true;
-    }
-
-    if (!opts.showLogs) {
-      const DevNull = require('dev-null'); // TODO
-      this.env.log.stream = new DevNull();
-    }
-
     await this.runwrap(async () => {
-      if (opts.showExecution) {
-        this.env.log.msg(`> ${chalk.green([this.env.namespace.name, ...pargv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
-      }
-
-      await this.env.namespace.runCommand(this.env, pargv);
-      this.env.log.stream = logstream;
+      await this.env.runcmd(pargv, opts);
     }, { exit0: false });
   }
 

@@ -20,13 +20,13 @@ import {
 } from './definitions';
 
 import { LOG_LEVELS, isLogLevel } from './guards';
-import { load } from './lib/modules';
 
 import { BACKEND_LEGACY, BACKEND_PRO } from './lib/backends';
 import { CONFIG_DIRECTORY, CONFIG_FILE, Config, gatherFlags } from './lib/config';
 import { DAEMON_JSON_FILE, Daemon } from './lib/daemon';
 import { Client } from './lib/http';
 import { CLIEventEmitter } from './lib/events';
+import { Environment } from './lib/environment';
 import { HookEngine } from './lib/hooks';
 import { PROJECT_FILE, PROJECT_FILE_LEGACY, Project } from './lib/project';
 import { Logger } from './lib/utils/logger';
@@ -157,8 +157,6 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   if (flags.interactive) {
     const inquirer = await import('inquirer');
     bottomBar = new inquirer.ui.BottomBar();
-    open();
-
     stream = bottomBar.log;
     log = new Logger({ level, prefix, stream });
     tasks = new InteractiveTaskChain({ log, bottomBar });
@@ -167,6 +165,49 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     log = new Logger({ level, prefix, stream });
     tasks = new TaskChain({ log });
   }
+
+  const projectDir = await findBaseDirectory(cwd, PROJECT_FILE);
+
+  env['IONIC_PROJECT_DIR'] = projectDir || '';
+  env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
+
+  const project = new Project(env['IONIC_PROJECT_DIR'], PROJECT_FILE);
+  const client = new Client(configData.urls.api);
+  const session = await getSession(config, project, client);
+  const hooks = new HookEngine();
+  const telemetry = new Telemetry({ config, client, plugin, project, session });
+  const shell = new Shell(tasks, log);
+
+  registerHooks(hooks);
+
+  const ienv = new Environment({
+    bottomBar,
+    client,
+    config,
+    daemon: new Daemon(CONFIG_DIRECTORY, DAEMON_JSON_FILE),
+    events: new CLIEventEmitter(),
+    flags,
+    hooks,
+    log,
+    meta: {
+      cwd,
+      local: env['IONIC_CLI_LOCAL'] ? true : false,
+      binPath: env['IONIC_CLI_BIN'],
+      libPath: env['IONIC_CLI_LIB'],
+    },
+    namespace: plugin.namespace,
+    plugins: {
+      ionic: plugin,
+    },
+    prompt: await createPromptModule({ confirm: flags.confirm, interactive: flags.interactive, log, config }),
+    project,
+    session,
+    shell,
+    tasks,
+    telemetry,
+  });
+
+  ienv.open();
 
   if (levelInvalid) {
     log.warn(
@@ -182,8 +223,6 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     configData.yarn = argv['yarn'];
   }
 
-  const projectDir = await findBaseDirectory(cwd, PROJECT_FILE);
-
   if (!projectDir) {
     const foundDir = await findBaseDirectory(cwd, PROJECT_FILE_LEGACY);
 
@@ -192,74 +231,5 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     }
   }
 
-  async function open() {
-    if (flags.interactive) {
-      if (!bottomBar) {
-        const inquirer = await import('inquirer');
-        bottomBar = new inquirer.ui.BottomBar();
-      }
-
-      try { // TODO
-        const bottomBarHack = <any>bottomBar;
-        bottomBarHack.rl.output.mute();
-      } catch (e) {
-        console.error('EXCEPTION DURING BOTTOMBAR OUTPUT MUTE', e);
-      }
-    }
-  }
-
-  async function close() {
-    tasks.cleanup();
-
-    // instantiating inquirer.ui.BottomBar hangs, so when close() is called,
-    // we close BottomBar streams and replace the log stream with stdout.
-    // This means inquirer shouldn't be used after command execution finishes
-    // (which could happen during long-running processes like serve).
-    if (bottomBar) {
-      bottomBar.close();
-      bottomBar = undefined;
-      log.stream = process.stdout;
-    }
-  }
-
-  env['IONIC_PROJECT_DIR'] = projectDir || '';
-  env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
-
-  const project = new Project(env['IONIC_PROJECT_DIR'], PROJECT_FILE);
-  const client = new Client(configData.urls.api);
-  const session = await getSession(config, project, client);
-  const hooks = new HookEngine();
-  const telemetry = new Telemetry({ config, client, plugin, project, session });
-  const shell = new Shell(tasks, log);
-
-  registerHooks(hooks);
-
-  return {
-    client,
-    close,
-    config,
-    daemon: new Daemon(CONFIG_DIRECTORY, DAEMON_JSON_FILE),
-    events: new CLIEventEmitter(),
-    flags,
-    hooks,
-    load,
-    log,
-    meta: {
-      cwd,
-      local: env['IONIC_CLI_LOCAL'] ? true : false,
-      binPath: env['IONIC_CLI_BIN'],
-      libPath: env['IONIC_CLI_LIB'],
-    },
-    namespace: plugin.namespace,
-    open,
-    plugins: {
-      ionic: plugin,
-    },
-    prompt: await createPromptModule({ confirm: flags.confirm, interactive: flags.interactive, log, config }),
-    project,
-    session,
-    shell,
-    tasks,
-    telemetry,
-  };
+  return ienv;
 }

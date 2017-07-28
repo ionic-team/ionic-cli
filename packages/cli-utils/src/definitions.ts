@@ -53,6 +53,7 @@ export interface ITaskChain {
   updateMsg(msg: string): this;
   end(): this;
   fail(): this;
+  cleanup(): this;
 }
 
 export interface PackageJson {
@@ -503,10 +504,7 @@ export interface PromptModule {
 }
 
 export interface IonicEnvironment {
-  readonly flags: {
-    interactive: boolean;
-    confirm: boolean;
-  };
+  readonly flags: IonicEnvironmentFlags;
   readonly hooks: IHookEngine;
   readonly client: IClient;
   readonly config: IConfig<ConfigFile>; // CLI global config (~/.ionic/config.json)
@@ -514,17 +512,9 @@ export interface IonicEnvironment {
   readonly events: ICLIEventEmitter;
   readonly log: ILogger;
   readonly prompt: PromptModule;
-  meta: {
-    cwd: string;
-    local: boolean; // CLI running in local mode?
-    binPath: string;
-    libPath: string;
-  };
+  readonly meta: IonicEnvironmentMeta;
   project: IProject; // project config (ionic.config.json)
-  readonly plugins: {
-    ionic: Plugin;
-    [key: string]: Plugin;
-  };
+  readonly plugins: IonicEnvironmentPlugins;
   session: ISession;
   readonly shell: IShell;
   readonly tasks: ITaskChain;
@@ -533,9 +523,27 @@ export interface IonicEnvironment {
 
   open(): Promise<void>;
   close(): Promise<void>;
+  runcmd(pargv: string[], opts?: { showExecution?: boolean; showLogs?: boolean; }): Promise<void>;
   load(modulePath: 'semver'): typeof semverType;
   load(modulePath: 'superagent'): typeof superagentType;
   load(modulePath: 'lodash'): typeof lodashType;
+}
+
+export interface IonicEnvironmentFlags {
+  interactive: boolean;
+  confirm: boolean;
+}
+
+export interface IonicEnvironmentMeta {
+  cwd: string;
+  local: boolean; // CLI running in local mode?
+  binPath: string;
+  libPath: string;
+}
+
+export interface IonicEnvironmentPlugins {
+  ionic: Plugin;
+  [key: string]: Plugin;
 }
 
 export type DistTag = 'local' | 'canary' | 'beta' | 'latest';

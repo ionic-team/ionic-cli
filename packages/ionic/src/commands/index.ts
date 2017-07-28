@@ -23,6 +23,7 @@ import { GitNamespace } from './git/index';
 import { SSHNamespace } from './ssh/index';
 import { PackageNamespace } from './package/index';
 
+import { BuildCommand } from './build';
 import { InfoCommand } from './info';
 import { LoginCommand } from './login';
 import { LogoutCommand } from './logout';
@@ -54,6 +55,7 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
   commands = new CommandMap([
     ['start', () => new StartCommand()],
     ['serve', () => new ServeCommand()],
+    ['build', () => new BuildCommand()],
     ['help', () => new HelpCommand()],
     ['info', () => new InfoCommand()],
     ['login', () => new LoginCommand()],

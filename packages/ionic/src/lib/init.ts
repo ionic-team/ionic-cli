@@ -44,7 +44,6 @@ export function modifyArguments(pargv: string[]): string[] {
  */
 export function mapLegacyCommand(command: string): string | undefined {
   const commandMap: { [command: string]: string} = {
-    'build': 'cordova build',
     'compile': 'cordova compile',
     'emulate': 'cordova emulate',
     'platform': 'cordova platform',

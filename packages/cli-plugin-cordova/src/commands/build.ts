@@ -123,12 +123,14 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
 
     if (build) {
       await this.env.hooks.fire('build:before', { env: this.env });
+
       await this.env.hooks.fire('command:build', {
         cmd: this,
         env: this.env,
         inputs,
         options: generateBuildOptions(this.metadata, options)
       });
+
       await this.env.hooks.fire('build:after', { env: this.env });
     }
 

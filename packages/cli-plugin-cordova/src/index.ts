@@ -31,4 +31,8 @@ export function registerHooks(hooks: IHookEngine) {
       { type: 'local-packages', name: 'Cordova Platforms', version: cordovaPlatforms || 'none' },
     ];
   });
+
+  hooks.register(name, 'build:after', async ({ env }) => {
+    await env.runcmd(['cordova', 'prepare']);
+  });
 }
