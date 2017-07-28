@@ -24,7 +24,7 @@ From there, you can use Ionic View (${chalk.bold('https://view.ionic.io')}) to e
   exampleCommands: [
     '',
     '--deploy=dev',
-    `--deploy=production --note="add menu entry" --metadata="{\"custom_data\":true}"`,
+    `--deploy=production --note="add menu entry" --metadata="{\\"custom_data\\":true}"`,
   ],
   options: [
     {
