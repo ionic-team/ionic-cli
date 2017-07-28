@@ -146,7 +146,7 @@ async function formatCommandUsage(env: IonicEnvironment, cmdMetadata: CommandDat
   };
 
   const options = await filterOptionsForHelp(env, cmdMetadata.options);
-  const usageLine = `${chalk.dim('$')} ${chalk.green('ionic ' + cmdMetadata.name + ' ' + (cmdMetadata.inputs && cmdMetadata.inputs.map(formatInput).join(' ')))} ${options.length > 0 ? chalk.green('[options]') : ''}`;
+  const usageLine = `${chalk.dim('$')} ${chalk.green('ionic ' + cmdMetadata.name + (typeof cmdMetadata.inputs === 'undefined' ? '' : ' ' + cmdMetadata.inputs.map(formatInput).join(' ')))} ${options.length > 0 ? chalk.green('[options]') : ''}`;
 
   return `
   ${chalk.bold('Usage')}:
