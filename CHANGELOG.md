@@ -10,6 +10,14 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 <a name="3.6.0"></a>
 ### 3.6.0 (2017-07-27)
 
+* Added prompt for local CLI installation. It is now required that the local
+  CLI be installed to use local CLI plugins (which provide often necessary
+  functionality such as `ionic serve`). You can use the global `ionic` binary
+  from `npm i -g ionic` installation and it will use the local CLI version if
+  installed, similar to gulp or other CLIs. The CLI is installed locally for
+  new projects by default. See [this
+  comment](https://github.com/ionic-team/ionic-cli/issues/2570#issuecomment-318571127)
+  for detailed information.
 * Added `ionic config` commands for getting and setting project
   (`ionic.config.json`) and global CLI config (`~/.ionic/config.json`) files.
   See
@@ -18,10 +26,6 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   useless.
 * Fixed odd behavior of `--no-interactive` and `--confirm`: the flags now work
   per-command and do not persist the mode.
-* Added recommendation for local CLI installation. You can use the global
-  `ionic` binary from `npm i -g ionic` installation and it will use the local
-  CLI version if installed, similar to gulp or other CLIs. The CLI is installed
-  locally for new projects by default.
 * Moved update checking into an opt-in background process that checks npm for
   new versions. The CLI now simply reads a file of latest versions instead of
   doing network requests.
