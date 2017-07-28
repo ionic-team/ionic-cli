@@ -8,7 +8,9 @@ const escapeStringRegexp = require('escape-string-regexp');
 const ionicPkg = require(path.resolve(__dirname, '..', 'ionic'));
 const utilsPkg = require(path.resolve(__dirname, '..', 'cli-utils'));
 
-const stripAnsi = utilsPkg.load('strip-ansi');
+function getCmds(env) {
+  return env.namespace.getCommandMetadataList().filter(cmd => cmd.visible !== false && (!cmd.backends || cmd.backends.includes('legacy')));
+}
 
 async function run() {
   const env = await utilsPkg.generateIonicEnvironment(ionicPkg, process.argv.slice(2), process.env);
@@ -22,12 +24,12 @@ async function run() {
   }
 
   const nsPath = path.resolve(__dirname, '..', '..', 'docs', 'index.md');
-  const nsDoc = formatIonicPage(env.namespace);
+  const nsDoc = formatIonicPage(env);
 
   await utilsPkg.fsMkdirp(path.dirname(nsPath));
   await utilsPkg.fsWriteFile(nsPath, nsDoc, { encoding: 'utf8' });
 
-  const commands = env.namespace.getCommandMetadataList().filter(cmd => cmd.visible !== false);
+  const commands = getCmds(env);
   const commandPromises = commands.map(async (cmd) => {
     if (!cmd.fullName) {
       console.error(`${cmd.name} has no fullName`);
@@ -35,7 +37,7 @@ async function run() {
     }
 
     const cmdPath = path.resolve(__dirname, '..', '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
-    const cmdDoc = formatCommandDoc(cmd);
+    const cmdDoc = formatCommandDoc(env, cmd);
 
     await utilsPkg.fsMkdirp(path.dirname(cmdPath));
     await utilsPkg.fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
@@ -49,8 +51,9 @@ async function run() {
 
 run().then(() => console.log('done!')).catch((err) => console.error(err));
 
-function formatIonicPage(ns) {
-  let headerLine = formatNamespaceHeader(ns);
+function formatIonicPage(env) {
+  const stripAnsi = env.load('strip-ansi');
+  const headerLine = formatNamespaceHeader(env.namespace);
 
   function listCommandLink(cmdData) {
     if (!cmdData.fullName) {
@@ -61,7 +64,7 @@ function formatIonicPage(ns) {
     return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '))}) | ${stripAnsi(cmdData.description)}`;
   }
 
-  const commands = ns.getCommandMetadataList();
+  const commands = getCmds(env);
 
   return `${headerLine}
 
@@ -104,7 +107,7 @@ line with \`ionic --help\`.
 
 Command | Description
 ------- | -----------
-${commands.filter(cmd => cmd.visible !== false).map(listCommandLink).join(`
+${commands.map(listCommandLink).join(`
 `)}
 `;
 }
@@ -155,8 +158,9 @@ function convertAnsiToMd(str, style, md) {
   return str.replace(new RegExp(escapeStringRegexp(style.open), 'g'), md.open).replace(new RegExp(escapeStringRegexp(style.close), 'g'), md.close);
 }
 
-function formatCommandDoc(cmdMetadata) {
-  let description = stripAnsi(cmdMetadata.description).split('\n').join('\n  ');
+function formatCommandDoc(env, cmdMetadata) {
+  const stripAnsi = env.load('strip-ansi');
+  const description = stripAnsi(cmdMetadata.description).split('\n').join('\n  ');
   let longDescription = cmdMetadata.longDescription;
 
   if (longDescription) {
@@ -166,7 +170,7 @@ function formatCommandDoc(cmdMetadata) {
   return formatCommandHeader(cmdMetadata) +
     formatName(cmdMetadata.fullName || '', description) +
     formatSynopsis(cmdMetadata.inputs, cmdMetadata.fullName) +
-    formatDescription(cmdMetadata.inputs, cmdMetadata.options, longDescription) +
+    formatDescription(env, cmdMetadata.inputs, cmdMetadata.options, longDescription) +
     formatExamples(cmdMetadata.exampleCommands, cmdMetadata.fullName);
 }
 
@@ -194,7 +198,9 @@ $ ionic ${usageLine}
 }
 
 
-function formatDescription(inputs = [], options = [], longDescription = '') {
+function formatDescription(env, inputs = [], options = [], longDescription = '') {
+  options = options.filter(o => o.visible !== false && (!o.backends || o.backends.includes('legacy')));
+  const stripAnsi = env.load('strip-ansi');
   const headerLine = `## Details`;
 
   function inputLineFn(input, index) {
@@ -206,11 +212,12 @@ function formatDescription(inputs = [], options = [], longDescription = '') {
   }
 
   function optionLineFn(option) {
-    const name = option.name;
+    const showInverse = option.type === Boolean && option.default === true && option.name.length > 1;
+    const name = showInverse ? `--no-${option.name}` : `-${option.name.length > 1 ? '-' : ''}${option.name}`;
     const aliases = option.aliases;
     const description = stripAnsi(ansi2md(option.description));
 
-    const optionList = `\`--${name}\`` +
+    const optionList = `\`${name}\`` +
       (aliases && aliases.length > 0 ? ', ' +
        aliases
          .map((alias) => `\`-${alias}\``)
