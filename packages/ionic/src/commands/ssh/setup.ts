@@ -43,7 +43,7 @@ export class SSHSetupCommand extends Command {
     } else if (!pubkeyExists && !keyExists) {
       this.env.log.info(
         'The automatic SSH setup will do the following:\n' +
-        `1) Generate SSH key pair with OpenSSH.\n` +
+        `1) Generate a new SSH key pair with OpenSSH (will not overwrite any existing keys).\n` +
         `2) Upload the generated SSH public key to our server, registering it on your account.\n` +
         `3) Modify your SSH config (${chalk.bold(prettyPath(sshconfigPath))}) to use the generated SSH private key for our server(s).`
       );
