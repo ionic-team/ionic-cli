@@ -163,9 +163,9 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     const proj = await pkg.requestProjectUpload();
 
     const zip = createArchive('zip');
-    zip.file('package.json');
-    zip.file('config.xml');
-    zip.directory('resources');
+    zip.file('package.json', {});
+    zip.file('config.xml', {});
+    zip.directory('resources', {});
     zip.finalize();
 
     await pkg.uploadProject(proj, zip, { progress: (loaded, total) => {
