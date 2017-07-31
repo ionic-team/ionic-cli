@@ -111,13 +111,6 @@ export class Environment implements IonicEnvironment {
         const inquirer = require('inquirer');
         this.bottomBar = new inquirer.ui.BottomBar();
       }
-
-      try { // TODO
-        const bottomBarHack = <any>this.bottomBar;
-        bottomBarHack.rl.output.mute();
-      } catch (e) {
-        console.error('EXCEPTION DURING BOTTOMBAR OUTPUT MUTE', e);
-      }
     }
   }
 
