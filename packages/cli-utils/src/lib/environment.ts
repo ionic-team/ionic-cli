@@ -112,6 +112,8 @@ export class Environment implements IonicEnvironment {
         this.bottomBar = new inquirer.ui.BottomBar();
       }
     }
+
+    this.log.stream = typeof this.bottomBar === 'undefined' ? process.stdout : this.bottomBar.log;
   }
 
   async close() {
