@@ -108,13 +108,49 @@ export class LinkCommand extends Command implements CommandPreRun {
 
     if (config.backend === BACKEND_PRO) {
       if (!config.git.setup) {
-        this.env.log.nl();
-        this.env.log.warn(
-          `Looks like you haven't configured your SSH settings yet.\n` +
-          `(You can run ${chalk.green('ionic config set -g git.setup true')} to disable this prompt.)\n`
-        );
+        const CHOICE_AUTOMATIC = 'automatic';
+        const CHOICE_MANUAL = 'manual';
+        const CHOICE_SKIP = 'skip';
+        const CHOICE_IGNORE = 'ignore';
 
-        await this.runcmd(['ssh', 'setup']);
+        const sshSetup = await this.env.prompt({
+          type: 'list',
+          name: 'sshSetup',
+          message: `Looks like you haven't configured your SSH settings yet. How would you like to connect to Ionic Pro?`,
+          choices: [
+            {
+              name: 'Automatically setup new a SSH key pair for Ionic Pro',
+              value: CHOICE_AUTOMATIC,
+            },
+            {
+              name: 'Use an existing SSH key pair',
+              value: CHOICE_MANUAL,
+            },
+            {
+              name: 'Skip for now',
+              value: CHOICE_SKIP,
+            },
+            {
+              name: 'Ignore this prompt forever',
+              value: CHOICE_IGNORE,
+            },
+          ],
+        });
+
+        if (sshSetup === CHOICE_AUTOMATIC) {
+          await this.runcmd(['ssh', 'setup']);
+        } else if (sshSetup === CHOICE_MANUAL) {
+          await this.runcmd(['ssh', 'add']);
+        } else if (sshSetup === CHOICE_SKIP) {
+          this.env.log.warn(
+            `Your first ${chalk.green('git push ionic master')} may not work.\n` +
+            `You can automatically configure your SSH settings using ${chalk.green('ionic ssh setup')}.`
+          );
+        }
+
+        if (sshSetup !== CHOICE_SKIP) {
+          config.git.setup = true;
+        }
       }
     }
 

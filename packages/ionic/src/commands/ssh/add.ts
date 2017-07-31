@@ -1,3 +1,4 @@
+import * as os from 'os';
 import * as path from 'path';
 
 import * as chalk from 'chalk';
@@ -7,13 +8,15 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  CommandPreRun,
   ERROR_FILE_NOT_FOUND,
   FatalException,
   createFatalAPIFormat,
   isSSHKeyResponse,
   isSuperAgentError,
+  pathAccessible,
+  pathExists,
   prettyPath,
-  validators,
 } from '@ionic/cli-utils';
 
 import { SSHBaseCommand } from './base';
@@ -27,11 +30,34 @@ import { SSHBaseCommand } from './base';
     {
       name: 'pubkey-path',
       description: 'Location of public key file to add to Ionic',
-      validators: [validators.required],
-    }
+    },
+  ],
+  options: [
+    {
+      name: 'use',
+      description: 'Use the newly added key as your default SSH key for Ionic',
+      type: Boolean,
+    },
   ],
 })
-export class SSHAddCommand extends SSHBaseCommand {
+export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (!inputs[0]) {
+      const fs = await import('fs');
+      const defaultPubkeyPath = path.resolve(os.homedir(), '.ssh', 'id_rsa.pub');
+      const defaultPubkeyExists = await pathAccessible(defaultPubkeyPath, fs.constants.R_OK);
+
+      const pubkeyPath = await this.env.prompt({
+        type: 'input',
+        name: 'pubkeyPath',
+        message: 'Enter the location to your public key file to upload to Ionic:',
+        default: defaultPubkeyExists ? prettyPath(defaultPubkeyPath) : undefined,
+      });
+
+      inputs[0] = pubkeyPath;
+    }
+  }
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     const {
       ERROR_SSH_ANNOTATION_INVALID_WHITESPACE,
@@ -91,12 +117,38 @@ export class SSHAddCommand extends SSHBaseCommand {
 
       const words = res.meta.status === 201 ? 'added to' : 'updated on';
 
-      this.env.log.ok(`Your public key (${chalk.bold(res.data.id)}) has been ${words} Ionic!`);
+      this.env.log.ok(`Your public key (${chalk.bold(res.data.fingerprint)}) has been ${words} Ionic!`);
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 409) {
         this.env.log.info('Pubkey already added to Ionic.');
       } else {
         throw e;
+      }
+    }
+
+    if (pubkeyPath.endsWith('.pub')) {
+      let confirm = options['use'];
+
+      if (!confirm) {
+        confirm = await this.env.prompt({
+          type: 'confirm',
+          name: 'confirm',
+          message: 'Would you like to use this key as your default for Ionic?',
+        });
+      }
+
+      if (confirm) {
+        const keyPath = pubkeyPath.substring(0, pubkeyPath.length - 4); // corresponding private key, theoretically
+        const keyExists = await pathExists(keyPath);
+
+        if (keyExists) {
+          await this.runcmd(['ssh', 'use', keyPath]);
+        } else {
+          this.env.log.error(
+            `SSH key does not exist: ${chalk.bold(prettyPath(keyPath))}.\n` +
+            `Please use ${chalk.green('ionic ssh use')} manually to use the corresponding private key.`
+          );
+        }
       }
     }
   }

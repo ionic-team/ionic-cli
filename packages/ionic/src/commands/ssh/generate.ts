@@ -73,9 +73,8 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
       'private key, they can impersonate you!) Passphrases are recommended, but not required.'
     );
 
-    this.env.close();
-    await this.env.shell.run('ssh-keygen', ['-q', '-t', 'rsa', '-b', String(bits), '-C', String(annotation), '-f', keyPath], { stdio: 'inherit', showError: false });
-    this.env.open();
+    const shellOptions = { stdio: ['inherit', 'pipe', 'pipe'], showCommand: false, showExecution: false, showError: false };
+    await this.env.shell.run('ssh-keygen', ['-q', '-t', 'rsa', '-b', String(bits), '-C', String(annotation), '-f', keyPath], shellOptions);
 
     this.env.log.ok(
       'A new pair of SSH keys has been generated!\n' +

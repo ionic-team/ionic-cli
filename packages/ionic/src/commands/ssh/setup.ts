@@ -68,8 +68,7 @@ export class SSHSetupCommand extends Command {
       await this.runcmd(['ssh', 'generate', keyPath]);
     }
 
-    await this.runcmd(['ssh', 'add', pubkeyPath]);
-    await this.runcmd(['ssh', 'use', keyPath]);
+    await this.runcmd(['ssh', 'add', pubkeyPath, '--use']);
 
     config.git.setup = true;
 
