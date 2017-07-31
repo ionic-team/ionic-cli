@@ -244,6 +244,19 @@ export class StartCommand extends Command implements CommandPreRun {
       throw this.exit(`Unable to find starter type for ${chalk.green(String(options['type']))}.`);
     }
 
+    if (!options['cordova']) {
+      const confirm = await this.env.prompt({
+        type: 'confirm',
+        name: 'confirm',
+        message: 'Would you like to integrate your new app with Cordova to target native iOS and Android?',
+        default: false,
+      });
+
+      if (confirm) {
+        options['cordova'] = true;
+      }
+    }
+
     if (options['deps']) {
       // Check global dependencies
       if (options['cordova']) {
