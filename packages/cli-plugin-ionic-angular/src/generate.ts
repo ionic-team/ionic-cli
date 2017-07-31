@@ -37,7 +37,18 @@ export async function generate(args: CommandHookArgs): Promise<string[]> {
   const context = AppScripts.generateContext();
 
   const [ type, name ] = args.inputs;
-  const commandOptions = args.options;
+  const commandOptions = {
+    module: false,
+    constants: false,
+  };
+
+  if (args.options['module']) {
+    commandOptions.module = true;
+  }
+
+  if (args.options['constants']) {
+    commandOptions.constants = true;
+  }
 
   switch (type) {
     case 'page':
