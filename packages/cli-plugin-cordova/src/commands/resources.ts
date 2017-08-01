@@ -46,7 +46,7 @@ Splashscreens should be 2732x2732 px, with the image centered in the middle.
 const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
 
 @CommandMetadata({
-  name: 'resources',
+  name: 'cordova resources',
   type: 'project',
   description: 'Automatically create icon and splash screen resources',
   longDescription: `

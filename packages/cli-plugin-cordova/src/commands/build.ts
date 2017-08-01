@@ -12,7 +12,7 @@ import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import { CordovaCommand } from './base';
 
 @CommandMetadata({
-  name: 'build',
+  name: 'cordova build',
   type: 'project',
   description: 'Build (prepare + compile) an Ionic project for a given platform',
   longDescription: `

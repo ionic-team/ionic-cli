@@ -5,7 +5,7 @@ import { CommandMetadata } from '@ionic/cli-utils';
 import { CORDOVA_RUN_COMMAND_OPTIONS, CordovaRunCommand } from './base';
 
 @CommandMetadata({
-  name: 'run',
+  name: 'cordova run',
   type: 'project',
   description: 'Run an Ionic project on a connected device',
   longDescription: `

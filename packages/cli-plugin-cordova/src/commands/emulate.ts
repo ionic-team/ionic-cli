@@ -5,7 +5,7 @@ import { CommandMetadata } from '@ionic/cli-utils';
 import { CORDOVA_RUN_COMMAND_OPTIONS, CordovaRunCommand } from './base';
 
 @CommandMetadata({
-  name: 'emulate',
+  name: 'cordova emulate',
   type: 'project',
   description: 'Emulate an Ionic project on a simulator or emulator',
   longDescription: `

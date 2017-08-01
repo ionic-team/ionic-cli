@@ -15,7 +15,7 @@ import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
 import { CordovaCommand } from './base';
 
 @CommandMetadata({
-  name: 'plugin',
+  name: 'cordova plugin',
   type: 'project',
   description: 'Manage Cordova plugins',
   longDescription: `
