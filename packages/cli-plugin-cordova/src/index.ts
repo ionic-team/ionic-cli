@@ -1,7 +1,9 @@
 import * as path from 'path';
 
 import { IHookEngine, getCommandInfo } from '@ionic/cli-utils';
+
 import { CordovaNamespace } from './commands';
+import { ConfigXml } from './lib/utils/configXml';
 
 export const name = '__NAME__';
 export const version = '__VERSION__';
@@ -10,6 +12,11 @@ export const namespace = new CordovaNamespace();
 namespace.source = name;
 
 export function registerHooks(hooks: IHookEngine) {
+  hooks.register(name, 'cordova:project:info', async ({ env }) => {
+    const conf = await ConfigXml.load(env.project.directory);
+    return conf.getProjectInfo();
+  });
+
   hooks.register(name, 'command:info', async () => {
     let cordovaPlatforms: string | undefined;
     const cordovaVersion = await getCommandInfo('cordova', ['-v', '--no-telemetry']);

@@ -50,15 +50,13 @@
     "opn": "^5.1.0",
     "proxy-middleware": "^0.15.0",
     "tiny-lr": "^1.0.3",
-    "tslib": "^1.7.1",
-    "xml2js": "^0.4.17"
+    "tslib": "^1.7.1"
   },
   "devDependencies": {
     "@ionic/cli-scripts": "0.3.0",
     "@types/chalk": "^0.4.31",
     "@types/chokidar": "^1.7.1",
     "@types/express": "^4.0.35",
-    "@types/opn": "^3.0.28",
-    "@types/xml2js": "0.0.33"
+    "@types/opn": "^3.0.28"
   }
 }

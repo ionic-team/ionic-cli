@@ -23,8 +23,6 @@ import {
   WATCH_PATTERNS,
 } from './config';
 
-import { load } from '../lib/modules';
-
 export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResponse> {
   let chosenIP = 'localhost';
 
@@ -105,7 +103,7 @@ export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResp
       .concat(serverOptions.browseroption ? [serverOptions.browseroption] : [])
       .concat(serverOptions.platform ? ['?ionicplatform=', serverOptions.platform] : []);
 
-    const opn = load('opn');
+    const opn = await import('opn');
     opn(openOptions.join(''));
   }
 
@@ -117,10 +115,10 @@ export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResp
 }
 
 async function setupServer(env: IonicEnvironment, options: ServerOptions): Promise<ServerOptions> {
-  const liveReloadBrowser = createLiveReloadServer(options);
-  await createHttpServer(env.project, options);
+  const liveReloadBrowser = await createLiveReloadServer(options);
+  await createHttpServer(env, options);
 
-  const chokidar = load('chokidar');
+  const chokidar = await import('chokidar');
   const projectConfig = await env.project.load();
 
   if (!projectConfig.watchPatterns) {

@@ -12,7 +12,6 @@ import {
 
 import {
   ImageResource,
-  ImageUploadResponse,
   KnownPlatform,
   ResourcesConfig,
   ResourcesImageConfig,
@@ -20,18 +19,18 @@ import {
 } from '../definitions';
 
 import {
+  RESOURCES,
   addResourcesToConfigXml,
   createImgDestinationDirectories,
   findMostSpecificImage,
   flattenResourceJsonStructure,
-  getResourceConfigJson,
   getSourceImages,
   transformResourceImage,
   uploadSourceImages,
 } from '../lib/resources';
 
+import { ConfigXml } from '../lib/utils/configXml';
 import { getProjectPlatforms, installPlatform } from '../lib/utils/setup';
-import { getOrientationFromConfigJson, parseConfigXmlToJson } from '../lib/utils/configXmlUtils';
 
 /*
 const RESOURCES_SUMMARY =
@@ -101,6 +100,8 @@ export class ResourcesCommand extends Command implements CommandPreRun {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ platform ] = inputs;
 
+    const conf = await ConfigXml.load(this.env.project.directory);
+
     // if no resource filters are passed as arguments assume to use all.
     let resourceTypes = AVAILABLE_RESOURCE_TYPES.filter((type, index, array) => options[type]);
     resourceTypes = (resourceTypes.length) ? resourceTypes : AVAILABLE_RESOURCE_TYPES;
@@ -109,11 +110,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
     this.env.tasks.next(`Collecting resource configuration and source images`);
 
-    // check that config file config.xml exists
-    const configJson = await parseConfigXmlToJson(this.env.project.directory);
-
-    const resourceJsonStructure = await getResourceConfigJson();
-    this.env.log.debug(() => `resourceJsonStructure=${Object.keys(resourceJsonStructure).length}`);
+    this.env.log.debug(() => `resourceJsonStructure=${Object.keys(RESOURCES).length}`);
 
     // check that at least one platform has been installed
     let platformDirContents = await getProjectPlatforms(this.env.project.directory);
@@ -136,7 +133,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
       }
     }
 
-    const buildPlatforms = Object.keys(resourceJsonStructure).filter(p => platformDirContents.includes(p));
+    const buildPlatforms = Object.keys(RESOURCES).filter(p => platformDirContents.includes(p));
     this.env.log.debug(() => `buildPlatforms=${buildPlatforms}`);
     if (buildPlatforms.length === 0) {
       this.env.tasks.end();
@@ -144,12 +141,12 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     }
     this.env.log.debug(() => `${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);
 
-    const orientation = getOrientationFromConfigJson(configJson) || 'default';
+    const orientation = await conf.getPreference('Orientation') || 'default';
 
     // Convert the resource structure to a flat array then filter the array so
     // that it only has img resources that we need. Finally add src path to the
     // items that remain.
-    let imgResources: ImageResource[] = flattenResourceJsonStructure(resourceJsonStructure)
+    let imgResources: ImageResource[] = flattenResourceJsonStructure()
       .filter((img) => orientation === 'default' || typeof img.orientation === 'undefined' || img.orientation === orientation)
       .filter((img) => buildPlatforms.includes(img.platform))
       .filter((img) => resourceTypes.includes(img.resType))
@@ -211,9 +208,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     this.env.tasks.next(`Uploading source images to prepare for transformations`);
 
     // Upload images to service to prepare for resource transformations
-    let imageUploadResponses: ImageUploadResponse[];
-
-    imageUploadResponses = await uploadSourceImages(srcImagesAvailable);
+    const imageUploadResponses = await uploadSourceImages(srcImagesAvailable);
     this.env.log.debug(() => `${chalk.green('uploadSourceImages')} completed - responses=${JSON.stringify(imageUploadResponses, null, 2)}`);
 
     srcImagesAvailable = srcImagesAvailable.map((img: SourceImage, index): SourceImage => {
@@ -256,7 +251,6 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
     this.env.log.debug(() => `${chalk.green('generateResourceImage')} completed - responses=${JSON.stringify(generateImageResponses, null, 2)}`);
 
-    // TODO: UPDATE CONFIG.XML DATA
     this.env.tasks.next(`Modifying config.xml to add new image resources`);
     const imageResourcesForConfig = imgResources.reduce((rc, img) => {
       if (!rc[img.platform]) {
@@ -287,11 +281,8 @@ export class ResourcesCommand extends Command implements CommandPreRun {
       return rc;
     }, <ResourcesConfig>{});
 
-    const platformList: KnownPlatform[] = Object
-      .keys(imageResourcesForConfig)
-      .map(pn => <KnownPlatform>pn);
-
-    await addResourcesToConfigXml(this.env.project.directory, platformList, imageResourcesForConfig);
+    const platformList = <KnownPlatform[]>Object.keys(imageResourcesForConfig);
+    await addResourcesToConfigXml(conf, platformList, imageResourcesForConfig);
 
     this.env.tasks.end();
 
@@ -304,5 +295,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
       this.env.log.info(imagesTooLargeForSourceMsg.join('\n'));
     }
+
+    await conf.save();
   }
 }

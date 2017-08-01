@@ -12,8 +12,8 @@ import {
 
 import { KnownPlatform } from '../definitions';
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
-import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
-import { addDefaultImagesToProjectResources } from '../lib/resources';
+import { ConfigXml } from '../lib/utils/configXml';
+import { RESOURCES, addDefaultImagesToProjectResources } from '../lib/resources';
 import { getProjectPlatforms } from '../lib/utils/setup';
 import { CordovaCommand } from './base';
 
@@ -78,8 +78,9 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let [ action, platformName ] = inputs;
 
-    // ensure the content node was set back to its original src
-    await resetConfigXmlContentSrc(this.env.project.directory);
+    const conf = await ConfigXml.load(this.env.project.directory);
+    await conf.resetContentSrc();
+    await conf.save();
 
     const platforms = await getProjectPlatforms(this.env.project.directory);
 
@@ -100,6 +101,9 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
     if (action === 'add' && !(options['noresources']) && ['ios', 'android', 'wp8'].includes(platformName)) {
       this.env.tasks.next(`Copying default image resources into ${chalk.bold('./resources/' + platformName)}`);
       await addDefaultImagesToProjectResources(this.env.project.directory, <KnownPlatform>platformName);
+      const conf = await ConfigXml.load(this.env.project.directory);
+      await conf.ensurePlatformImages(platformName, RESOURCES[platformName]);
+      await conf.save();
     }
 
     this.env.tasks.end();

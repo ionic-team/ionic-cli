@@ -9,29 +9,20 @@ import {
 } from '../definitions';
 
 import {
-  ERROR_FILE_INVALID_JSON,
-  ERROR_FILE_NOT_FOUND,
   copyDirectory,
   createRequest,
   flattenArray,
   fsMkdirp,
-  fsReadJsonFile,
   getFileChecksum,
   readDir,
   writeStreamToFile,
 } from '@ionic/cli-utils';
 
-import {
-  addPlatformImagesToConfigJson,
-  addSplashScreenPreferencesToConfigJson,
-  parseConfigXmlToJson,
-  writeConfigXml,
-} from './utils/configXmlUtils';
+import { ConfigXml } from './utils/configXml';
 
 const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];
 const UPLOAD_URL = 'https://res.ionic.io/api/v1/upload';
 const TRANSFORM_URL = 'https://res.ionic.io/api/v1/transform';
-const RESOURCES_CONFIG_FILE = path.resolve(__dirname, '..', 'resources.json');
 const DEFAULT_RESOURCES_DIR = path.resolve(__dirname, '..', 'default-resources');
 
 /**
@@ -39,10 +30,10 @@ const DEFAULT_RESOURCES_DIR = path.resolve(__dirname, '..', 'default-resources')
  * that contains only images and turns all struture info into attributes of the image
  * items.
  */
-export function flattenResourceJsonStructure (jsonStructure: any): ImageResource[] {
-  return flattenArray(Object.keys(jsonStructure).map(platform => (
-    Object.keys(jsonStructure[platform]).map(resType => (
-      jsonStructure[platform][resType]['images'].map((imgInfo: any) => (
+export function flattenResourceJsonStructure(): ImageResource[] {
+  return flattenArray(Object.keys(RESOURCES).map(platform => (
+    Object.keys(RESOURCES[platform]).map(resType => (
+      RESOURCES[platform][resType]['images'].map((imgInfo: any) => (
         {
           platform,
           resType,
@@ -51,8 +42,8 @@ export function flattenResourceJsonStructure (jsonStructure: any): ImageResource
           height: imgInfo.height,
           density: imgInfo.density,
           orientation: imgInfo.orientation,
-          nodeName: jsonStructure[platform][resType]['nodeName'],
-          nodeAttributes: jsonStructure[platform][resType]['nodeAttributes']
+          nodeName: RESOURCES[platform][resType]['nodeName'],
+          nodeAttributes: RESOURCES[platform][resType]['nodeAttributes']
         }
       ))
     )))
@@ -62,32 +53,13 @@ export function flattenResourceJsonStructure (jsonStructure: any): ImageResource
 /**
  * Create the destination directories for the provided image resources.
  */
-export async function createImgDestinationDirectories (imgResources: ImageResource[]): Promise<void[]> {
+export async function createImgDestinationDirectories(imgResources: ImageResource[]): Promise<void[]> {
   const buildDirPromises: Promise<void>[] = imgResources
     .map(img => path.dirname(img.dest))
     .filter((dir, index, dirNames) => dirNames.indexOf(dir) === index)
     .map(dir => fsMkdirp(dir));
 
   return Promise.all(buildDirPromises);
-}
-
-/**
- * Read the resources config and return the Json.
- */
-export async function getResourceConfigJson(): Promise<ResourcesConfig> {
-  let resourceJsonStructure;
-  const filePath = RESOURCES_CONFIG_FILE;
-  try {
-    resourceJsonStructure = await fsReadJsonFile(filePath);
-  } catch (e) {
-    if (e === ERROR_FILE_NOT_FOUND) {
-      throw new Error(`${filePath} not found`);
-    } else if (e === ERROR_FILE_INVALID_JSON) {
-      throw new Error(`${filePath} is not valid JSON.`);
-    }
-    throw e;
-  }
-  return <ResourcesConfig>resourceJsonStructure;
 }
 
 /**
@@ -137,7 +109,7 @@ export async function getSourceImages(buildPlatforms: string[], resourceTypes: s
 
   return sourceImages.map((img: SourceImage, index) => ({
     ...img,
-    imageId: sourceImageChecksums[index]
+    imageId: sourceImageChecksums[index],
   }));
 }
 
@@ -221,36 +193,116 @@ export function transformResourceImage(imageResource: ImageResource) {
  * Also write this information to the project's config.xml file
  */
 export async function addDefaultImagesToProjectResources(projectDirectory: string, platform: KnownPlatform): Promise<void> {
-
   // Copy default resources into the platform directory
   const resourcesDir = path.resolve(projectDirectory, 'resources', platform);
   const platformResourceDir = path.resolve(DEFAULT_RESOURCES_DIR, platform);
   await fsMkdirp(platformResourceDir);
   await copyDirectory(platformResourceDir, resourcesDir);
-
-  const resourceJson = await getResourceConfigJson();
-
-  return addResourcesToConfigXml(projectDirectory, [platform], resourceJson);
 }
 
 /**
  * Add image resource references for the provided platforms to the project's config.xml file.
  */
-export async function addResourcesToConfigXml(projectDirectory: string, platformList: KnownPlatform[], resourceJson: ResourcesConfig): Promise<void> {
-  let configJson = await parseConfigXmlToJson(projectDirectory);
-
-  if (!configJson.widget.platform || configJson.widget.platform.length === 0) {
-    throw `Config.xml does not contain a platform entry. Please compare your config.xml file with one of our starter projects.`;
+export async function addResourcesToConfigXml(conf: ConfigXml, platformList: KnownPlatform[], resourceJson: ResourcesConfig): Promise<void> {
+  for (let platform of platformList) {
+    await conf.ensurePlatformImages(platform, resourceJson[platform]);
   }
 
-  platformList.forEach((platform) => {
-    if (!configJson.widget.platform.find((pl: any) => pl['$'].name === platform)) {
-      throw `Config.xml does not contain an entry for ${platform}`;
-    }
-    configJson = addPlatformImagesToConfigJson(configJson, platform, resourceJson);
-  });
-
-  configJson = addSplashScreenPreferencesToConfigJson(configJson);
-
-  return writeConfigXml(projectDirectory, configJson);
+  await conf.ensureSplashScreenPreferences();
 }
+
+export const RESOURCES: ResourcesConfig = {
+  android: {
+    icon: {
+      images: [
+        { name: 'drawable-ldpi-icon.png', width: 36, height: 36, density: 'ldpi' },
+        { name: 'drawable-mdpi-icon.png', width: 48, height: 48, density: 'mdpi' },
+        { name: 'drawable-hdpi-icon.png', width: 72, height: 72, density: 'hdpi' },
+        { name: 'drawable-xhdpi-icon.png', width: 96, height: 96, density: 'xhdpi' },
+        { name: 'drawable-xxhdpi-icon.png', width: 144, height: 144, density: 'xxhdpi' },
+        { name: 'drawable-xxxhdpi-icon.png', width: 192, height: 192, density: 'xxxhdpi' },
+      ],
+      nodeName: 'icon',
+      nodeAttributes: ['src', 'density'],
+    },
+    splash: {
+      images: [
+        { name: 'drawable-land-ldpi-screen.png', width: 320, height: 240, density: 'land-ldpi', orientation: 'landscape' },
+        { name: 'drawable-land-mdpi-screen.png', width: 480, height: 320, density: 'land-mdpi', orientation: 'landscape' },
+        { name: 'drawable-land-hdpi-screen.png', width: 800, height: 480, density: 'land-hdpi', orientation: 'landscape' },
+        { name: 'drawable-land-xhdpi-screen.png', width: 1280, height: 720, density: 'land-xhdpi', orientation: 'landscape' },
+        { name: 'drawable-land-xxhdpi-screen.png', width: 1600, height: 960, density: 'land-xxhdpi', orientation: 'landscape' },
+        { name: 'drawable-land-xxxhdpi-screen.png', width: 1920, height: 1280, density: 'land-xxxhdpi', orientation: 'landscape' },
+        { name: 'drawable-port-ldpi-screen.png', width: 240, height: 320, density: 'port-ldpi', orientation: 'portrait' },
+        { name: 'drawable-port-mdpi-screen.png', width: 320, height: 480, density: 'port-mdpi', orientation: 'portrait' },
+        { name: 'drawable-port-hdpi-screen.png', width: 480, height: 800, density: 'port-hdpi', orientation: 'portrait' },
+        { name: 'drawable-port-xhdpi-screen.png', width: 720, height: 1280, density: 'port-xhdpi', orientation: 'portrait' },
+        { name: 'drawable-port-xxhdpi-screen.png', width: 960, height: 1600, density: 'port-xxhdpi', orientation: 'portrait' },
+        { name: 'drawable-port-xxxhdpi-screen.png', width: 1280, height: 1920, density: 'port-xxxhdpi', orientation: 'portrait' },
+      ],
+      nodeName: 'splash',
+      nodeAttributes: ['src', 'density'],
+    }
+  },
+  ios: {
+    icon: {
+      images: [
+        { name: 'icon.png', width: 57, height: 57 },
+        { name: 'icon@2x.png', width: 114, height: 114 },
+        { name: 'icon-40.png', width: 40, height: 40 },
+        { name: 'icon-40@2x.png', width: 80, height: 80 },
+        { name: 'icon-40@3x.png', width: 120, height: 120 },
+        { name: 'icon-50.png', width: 50, height: 50 },
+        { name: 'icon-50@2x.png', width: 100, height: 100 },
+        { name: 'icon-60.png', width: 60, height: 60 },
+        { name: 'icon-60@2x.png', width: 120, height: 120 },
+        { name: 'icon-60@3x.png', width: 180, height: 180 },
+        { name: 'icon-72.png', width: 72, height: 72 },
+        { name: 'icon-72@2x.png', width: 144, height: 144 },
+        { name: 'icon-76.png', width: 76, height: 76 },
+        { name: 'icon-76@2x.png', width: 152, height: 152 },
+        { name: 'icon-83.5@2x.png', width: 167, height: 167 },
+        { name: 'icon-small.png', width: 29, height: 29 },
+        { name: 'icon-small@2x.png', width: 58, height: 58 },
+        { name: 'icon-small@3x.png', width: 87, height: 87 },
+      ],
+      nodeName: 'icon',
+      nodeAttributes: ['src', 'width', 'height'],
+    },
+    splash: {
+      images: [
+        { name: 'Default-568h@2x~iphone.png', width: 640, height: 1136, orientation: 'portrait' },
+        { name: 'Default-667h.png', width: 750, height: 1334, orientation: 'portrait' },
+        { name: 'Default-736h.png', width: 1242, height: 2208, orientation: 'portrait' },
+        { name: 'Default-Landscape-736h.png', width: 2208, height: 1242, orientation: 'landscape' },
+        { name: 'Default-Landscape@2x~ipad.png', width: 2048, height: 1536, orientation: 'landscape' },
+        { name: 'Default-Landscape@~ipadpro.png', width: 2732, height: 2048, orientation: 'landscape' },
+        { name: 'Default-Landscape~ipad.png', width: 1024, height: 768, orientation: 'landscape' },
+        { name: 'Default-Portrait@2x~ipad.png', width: 1536, height: 2048, orientation: 'portrait' },
+        { name: 'Default-Portrait@~ipadpro.png', width: 2048, height: 2732, orientation: 'portrait' },
+        { name: 'Default-Portrait~ipad.png', width: 768, height: 1024, orientation: 'portrait' },
+        { name: 'Default@2x~iphone.png', width: 640, height: 960, orientation: 'portrait' },
+        { name: 'Default~iphone.png', width: 320, height: 480, orientation: 'portrait' },
+      ],
+      nodeName: 'splash',
+      nodeAttributes: ['src', 'width', 'height'],
+    },
+  },
+  wp8: {
+    icon: {
+      images: [
+        { name: 'ApplicationIcon.png', width: 99, height: 99 },
+        { name: 'Background.png', width: 159, height: 159 },
+      ],
+      nodeName: 'icon',
+      nodeAttributes: ['src', 'width', 'height'],
+    },
+    splash: {
+      images: [
+        { name: 'SplashScreenImage.png', width: 768, height: 1280 },
+      ],
+      nodeName: 'splash',
+      nodeAttributes: ['src', 'width', 'height'],
+    },
+  },
+};

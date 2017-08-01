@@ -8,7 +8,7 @@ import {
 } from '@ionic/cli-utils';
 
 import { CORDOVA_INTENT, filterArgumentsForCordova, generateBuildOptions } from '../lib/utils/cordova';
-import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
+import { ConfigXml } from '../lib/utils/configXml';
 import { CordovaCommand } from './base';
 
 @CommandMetadata({
@@ -118,8 +118,9 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { build } = options;
 
-    // ensure the content node was set back to its original src
-    await resetConfigXmlContentSrc(this.env.project.directory);
+    const conf = await ConfigXml.load(this.env.project.directory);
+    await conf.resetContentSrc();
+    await conf.save();
 
     if (build) {
       await this.env.hooks.fire('build:before', { env: this.env });

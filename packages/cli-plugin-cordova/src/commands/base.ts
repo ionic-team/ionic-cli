@@ -15,7 +15,7 @@ import {
 } from '@ionic/cli-utils';
 
 import { CORDOVA_INTENT, filterArgumentsForCordova, generateBuildOptions } from '../lib/utils/cordova';
-import { resetConfigXmlContentSrc, writeConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
+import { ConfigXml } from '../lib/utils/configXml';
 import { getProjectPlatforms, installPlatform } from '../lib/utils/setup';
 
 export const CORDOVA_RUN_COMMAND_OPTIONS = [
@@ -200,21 +200,9 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const isLiveReload = options['livereload'];
 
-    // If it is not livereload then just run build.
-    if (!isLiveReload) {
-      await this.env.hooks.fire('build:before', { env: this.env });
+    const conf = await ConfigXml.load(this.env.project.directory);
 
-      // ensure the content node was set back to its original
-      await resetConfigXmlContentSrc(this.env.project.directory);
-      await this.env.hooks.fire('command:build', {
-        cmd: this,
-        env: this.env,
-        inputs,
-        options: generateBuildOptions(this.metadata, options),
-      });
-
-      await this.env.hooks.fire('build:after', { env: this.env });
-    } else {
+    if (isLiveReload) {
       await this.env.hooks.fire('watch:before', { env: this.env });
 
       const [ serverSettings ] = await this.env.hooks.fire('command:serve', {
@@ -224,7 +212,22 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
         options: generateBuildOptions(this.metadata, options),
       });
 
-      await writeConfigXmlContentSrc(this.env.project.directory, `${serverSettings.protocol || 'http'}://${serverSettings.externalAddress || serverSettings.publicIp}:${serverSettings.port || serverSettings.httpPort}`);
+      await conf.writeContentSrc(`${serverSettings.protocol || 'http'}://${serverSettings.externalAddress || serverSettings.publicIp}:${serverSettings.port || serverSettings.httpPort}`);
+      await conf.save();
+    } else {
+      await this.env.hooks.fire('build:before', { env: this.env });
+
+      await conf.resetContentSrc();
+      await conf.save();
+
+      await this.env.hooks.fire('command:build', {
+        cmd: this,
+        env: this.env,
+        inputs,
+        options: generateBuildOptions(this.metadata, options),
+      });
+
+      await this.env.hooks.fire('build:after', { env: this.env });
     }
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });

@@ -1,13 +1,12 @@
 import * as path from 'path';
 import { ServerOptions } from './config';
-import { load } from '../lib/modules';
 
-export function createLiveReloadServer(options: ServerOptions): (changedFile: string[]) => void {
-  const tinylr = load('tiny-lr');
+export async function createLiveReloadServer(options: ServerOptions): Promise<(changedFile: string[]) => void> {
+  const tinylr = await import('tiny-lr');
   const liveReloadServer = tinylr();
   liveReloadServer.listen(options.livereloadPort, options.externalAddress);
 
-  return (changedFiles: string[]) => {
+  return (changedFiles) => {
     liveReloadServer.changed({
       body: {
         files: changedFiles.map(changedFile => (

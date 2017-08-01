@@ -1,4 +1,5 @@
 import * as path from 'path';
+
 import { IonicEnvironment, readDir } from '@ionic/cli-utils';
 
 /**
@@ -11,9 +12,6 @@ export async function getProjectPlatforms(projectDir: string): Promise<string[]>
 
 /**
  * Install the platform specified using cordova
- *
- * @param {String} platform The platform to install (ios, android, etc.)
- * @return {Promise} Promise upon completion
  */
 export function installPlatform(env: IonicEnvironment, platform: string): Promise<string> {
   return env.shell.run('cordova', ['platform', 'add', '--save', platform], {});

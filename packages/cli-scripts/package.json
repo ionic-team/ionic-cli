@@ -5,7 +5,7 @@
     "cli-scripts-prepublish": "prepublish.js"
   },
   "dependencies": {
-    "ansi-styles": "^3.1.0",
+    "ansi-styles": "^3.2.0",
     "escape-string-regexp": "^1.0.5"
   }
 }

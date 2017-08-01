@@ -7,7 +7,7 @@ import {
 } from '@ionic/cli-utils';
 
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
-import { resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
+import { ConfigXml } from '../lib/utils/configXml';
 import { CordovaCommand } from './base';
 
 @CommandMetadata({
@@ -43,8 +43,10 @@ export class CompileCommand extends CordovaCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    // ensure the content node was set back to its original
-    await resetConfigXmlContentSrc(this.env.project.directory);
+    const conf = await ConfigXml.load(this.env.project.directory);
+    await conf.resetContentSrc();
+    await conf.save();
+
     const response = await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options));
     this.env.log.msg(response);
   }

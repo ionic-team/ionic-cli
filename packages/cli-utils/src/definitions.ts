@@ -412,11 +412,8 @@ export interface InfoHookItem {
   path?: string;
 }
 
-export interface IHook<T, U> {
-  source: string;
-  name: string;
-
-  fire(args: T): Promise<U>;
+export interface ConfigSetCommandHookArgs extends CommandHookArgs {
+  valueChanged: boolean;
 }
 
 export interface ServeCommandHookResponse {
@@ -438,11 +435,21 @@ export interface ServeCommandHookResponse {
   [key: string]: any;
 }
 
-export interface ConfigSetCommandHookArgs extends CommandHookArgs {
-  valueChanged: boolean;
+export interface CordovaProjectInfoHookResponse {
+  id: string;
+  name: string;
+  version: string;
+}
+
+export interface IHook<T, U> {
+  source: string;
+  name: string;
+
+  fire(args: T): Promise<U>;
 }
 
 export interface IHookEngine {
+  fire(hook: 'cordova:project:info', args: EnvironmentHookArgs): Promise<CordovaProjectInfoHookResponse[]>;
   fire(hook: 'plugins:init', args: EnvironmentHookArgs): Promise<void[]>;
   fire(hook: 'command:config:set', args: ConfigSetCommandHookArgs): Promise<void[]>;
   fire(hook: 'command:docs', args: CommandHookArgs): Promise<string[]>;
@@ -455,6 +462,7 @@ export interface IHookEngine {
   fire(hook: 'watch:before', args: EnvironmentHookArgs): Promise<void[]>;
   fire(hook: 'backend:changed', args: EnvironmentHookArgs): Promise<void[]>;
 
+  register(source: string, hook: 'cordova:project:info', listener: (args: EnvironmentHookArgs) => Promise<CordovaProjectInfoHookResponse>): void;
   register(source: string, hook: 'plugins:init', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
   register(source: string, hook: 'command:config:set', listener: (args: ConfigSetCommandHookArgs) => Promise<void>): void;
   register(source: string, hook: 'command:docs', listener: (args: CommandHookArgs) => Promise<string>): void;

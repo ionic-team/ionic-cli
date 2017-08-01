@@ -11,7 +11,7 @@
     "lint": "tslint --config ../../tslint.js --project tsconfig.json --type-check",
     "build": "npm run clean && npm run build-ts && npm run build-js",
     "build-ts": "tsc",
-    "build-js": "npm run script-prepublish && cp ./resources.json ./dist/resources.json",
+    "build-js": "npm run script-prepublish",
     "watch": "concurrently -p \"{name} \" -n \"TS,JS\" -c \"cyan.bold,yellow.dim\" \"npm run watch-ts\" \"npm run watch-js\"",
     "watch-ts": "tsc -w",
     "watch-js": "cross-env-shell IONIC_PREPUBLISH_PLUGIN_VERSION=${npm_package_version}-local \"npm run watch-js-chokidar\"",
@@ -44,8 +44,7 @@
   "files": [
     "bin/",
     "default-resources",
-    "dist/",
-    "resources.json"
+    "dist/"
   ],
   "license": "MIT",
   "jest": {
@@ -61,12 +60,11 @@
   "dependencies": {
     "@ionic/cli-utils": "1.6.0",
     "chalk": "^2.0.0",
-    "tslib": "^1.7.1",
-    "xml2js": "^0.4.17"
+    "elementtree": "^0.1.7",
+    "tslib": "^1.7.1"
   },
   "devDependencies": {
     "@ionic/cli-scripts": "0.3.0",
-    "@types/chalk": "^0.4.31",
-    "@types/xml2js": "0.0.33"
+    "@types/chalk": "^0.4.31"
   }
 }

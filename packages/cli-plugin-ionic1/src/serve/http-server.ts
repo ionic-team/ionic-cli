@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as url from 'url';
 
 import * as expressType from 'express';
-import { IProject } from '@ionic/cli-utils';
+import { IProject, IonicEnvironment } from '@ionic/cli-utils';
 
 import {
   ANDROID_PLATFORM_PATH,
@@ -13,14 +13,12 @@ import {
 } from './config';
 
 import { injectLiveReloadScript } from './live-reload';
-import { ApiCordovaProject, LabAppView } from './lab';
-import { load } from '../lib/modules';
 
 /**
  * Create HTTP server
  */
-export async function createHttpServer(project: IProject, options: ServerOptions): Promise<expressType.Application> {
-  const express = load('express');
+export async function createHttpServer(env: IonicEnvironment, options: ServerOptions): Promise<expressType.Application> {
+  const express = await import('express');
   const app = express();
   app.set('serveOptions', options);
   app.listen(options.port, options.address);
@@ -30,15 +28,23 @@ export async function createHttpServer(project: IProject, options: ServerOptions
 
   // Lab routes
   app.use(IONIC_LAB_URL + '/static', express.static(path.join(__dirname, '..', '..', 'lab', 'static')));
-  app.get(IONIC_LAB_URL, LabAppView);
-  app.get(IONIC_LAB_URL + '/api/v1/cordova', ApiCordovaProject );
+  app.get(IONIC_LAB_URL, (req, res) => res.sendFile('index.html', { root: path.join(__dirname, '..', '..', 'lab') }));
+  app.get(IONIC_LAB_URL + '/api/v1/cordova', async (req, res) => {
+    const [ info ] = await env.hooks.fire('cordova:project:info', { env });
+
+    if (info) {
+      res.json(info);
+    } else {
+      res.status(400).json({ status: 'error', message: 'Unable to load config.xml' });
+    }
+  });
 
   app.get('/cordova.js', servePlatformResource, serveMockCordovaJS);
   app.get('/cordova_plugins.js', servePlatformResource);
   app.get('/plugins/*', servePlatformResource);
 
   if (!options.noproxy) {
-    await setupProxies(project, app);
+    await setupProxies(env.project, app);
   }
 
   return app;
@@ -56,7 +62,7 @@ async function setupProxies(project: IProject, app: expressType.Application) {
 
     opts.rejectUnauthorized = !(proxy.rejectUnauthorized === false);
 
-    const proxyMiddleware = load('proxy-middleware');
+    const proxyMiddleware = await import('proxy-middleware');
     app.use(proxy.path, <expressType.RequestHandler>proxyMiddleware(opts));
     console.log('Proxy added:' + proxy.path + ' => ' + url.format(opts));
   }

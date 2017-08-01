@@ -1,15 +1,15 @@
 export interface ImageResource {
+  platform: string;
+  imageId: string | null;
+  dest: string;
+  resType: string;
+  nodeName: string;
+  nodeAttributes: string[];
   name: string;
   width: number;
   height: number;
-  density: string;
-  orientation: 'landscape' | 'portrait';
-  platform: string;
-  resType: string;
-  dest: string;
-  imageId: string | null;
-  nodeName: string;
-  nodeAttributes: string[];
+  density?: string;
+  orientation?: 'landscape' | 'portrait';
 }
 
 export interface ResourcesImageConfig {
@@ -39,14 +39,16 @@ export interface ImageUploadResponse {
   Vector: boolean;
 }
 
-export interface ResourcesConfig {
-  [propName: string]: {
-    [imgType: string]: {
-      images: ResourcesImageConfig[],
-      nodeName: string,
-      nodeAttributes: string[]
-    }
+export interface ResourcesPlatform {
+  [imgType: string]: {
+    images: ResourcesImageConfig[];
+    nodeName: string;
+    nodeAttributes: string[];
   };
+}
+
+export interface ResourcesConfig {
+  [propName: string]: ResourcesPlatform;
 }
 
 export type KnownPlatform = 'ios' | 'android' | 'wp8';

@@ -4,14 +4,12 @@ import * as cliUtils from '@ionic/cli-utils';
 
 import { ImageResource, SourceImage } from '../../definitions';
 
-const resourcesJson = require('./fixtures/resources.json');
-
 describe('@ionic/cli-plugin-cordova', () => {
 
   describe('flattenResourceJsonStructure', () => {
 
-    it('should do take the resources.json structure and flatten it', () => {
-      const result = resources.flattenResourceJsonStructure(resourcesJson);
+    it('should take the resources.json structure and flatten it', () => {
+      const result = resources.flattenResourceJsonStructure();
 
       expect(result).toEqual(jasmine.any(Array));
       expect(result.length).toEqual(51);
@@ -22,8 +20,9 @@ describe('@ionic/cli-plugin-cordova', () => {
         width: 640,
         height: 1136,
         density: undefined,
+        orientation: 'portrait',
         nodeName: 'splash',
-        nodeAttributes: ['src', 'width', 'height']
+        nodeAttributes: ['src', 'width', 'height'],
       });
     });
 
@@ -39,7 +38,7 @@ describe('@ionic/cli-plugin-cordova', () => {
       density: undefined,
       nodeName: 'splash',
       nodeAttributes: ['src', 'width', 'height'],
-      imageId: null
+      imageId: null,
     }, {
       platform: 'ios',
       resType: 'splash',
@@ -49,7 +48,7 @@ describe('@ionic/cli-plugin-cordova', () => {
       density: undefined,
       nodeName: 'splash',
       nodeAttributes: ['src', 'width', 'height'],
-      imageId: null
+      imageId: null,
     }, {
       platform: 'android',
       resType: 'splash',
@@ -59,7 +58,7 @@ describe('@ionic/cli-plugin-cordova', () => {
       density: 'land-ldpi',
       nodeName: 'splash' ,
       nodeAttributes: ['src', 'density'],
-      imageId: null
+      imageId: null,
     }]
       .map((img) => ({
         ...img,

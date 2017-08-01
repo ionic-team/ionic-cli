@@ -9,7 +9,7 @@ import {
 
 import { filterArgumentsForCordova } from '../lib/utils/cordova';
 import { installPlatform } from '../lib/utils/setup';
-import { getPlatformEngine, parseConfigXmlToJson, resetConfigXmlContentSrc } from '../lib/utils/configXmlUtils';
+import { ConfigXml } from '../lib/utils/configXml';
 import { CordovaCommand } from './base';
 
 @CommandMetadata({
@@ -43,8 +43,8 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
     const [ platform ] = inputs;
 
     if (platform) {
-      const configJson = await parseConfigXmlToJson(this.env.project.directory);
-      const platformEngine = getPlatformEngine(configJson, platform);
+      const conf = await ConfigXml.load(this.env.project.directory);
+      const platformEngine = conf.getPlatformEngine(platform);
 
       if (!platformEngine) {
         const confirm = await this.env.prompt({
@@ -61,8 +61,9 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
       }
     }
 
-    // ensure the content node was set back to its original src
-    await resetConfigXmlContentSrc(this.env.project.directory);
+    const conf = await ConfigXml.load(this.env.project.directory);
+    await conf.resetContentSrc();
+    await conf.save();
 
     const response = await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), {});
     this.env.log.msg(response);
