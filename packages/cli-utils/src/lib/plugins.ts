@@ -274,7 +274,6 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { me
       type: 'confirm',
       name: 'confirm',
       message,
-      noninteractiveValue: true,
     });
 
     if (confirm) {
@@ -339,7 +338,6 @@ async function facilitateIonicUpdate(env: IonicEnvironment, ionicPlugin: Hydrate
       name: 'confirm',
       type: 'confirm',
       message: `${updateMsg} Would you like to install it?`,
-      noninteractiveValue: false,
     });
 
     if (confirm) {
