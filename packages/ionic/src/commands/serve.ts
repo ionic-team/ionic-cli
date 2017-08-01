@@ -15,6 +15,8 @@ import {
 Easily spin up a development server which launches in your browser. It watches for changes in your source files and automatically reloads with the updated build.
 
 Try the ${chalk.green('--lab')} option to see multiple platforms at once.
+
+By default, ${chalk.green('ionic serve')} will only bind to your local address. You can share your app with an external IP by using the ${chalk.green('--address=0.0.0.0')} option.
   `,
   exampleCommands: ['-lcs', '--lab -lcs'],
   options: [
@@ -63,7 +65,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
     {
       name: 'address',
       description: 'Network address for server',
-      default: '0.0.0.0',
+      default: 'localhost',
     },
     {
       name: 'browser',

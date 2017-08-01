@@ -11,9 +11,11 @@ import {
 import { load } from './lib/modules';
 
 export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResponse> {
-  let chosenIP = 'localhost';
+  const address = <string>args.options['address'] || '0.0.0.0';
+  const locallyAccessible = ['0.0.0.0', 'localhost', '127.0.0.1'].includes(address);
+  let externalIP = address;
 
-  if (args.options.externalIpRequired) {
+  if (address === '0.0.0.0') {
     const availableIPs = getAvailableIPAddress();
     if (availableIPs.length === 0) {
       throw new Error(`It appears that you do not have any external network interfaces. ` +
@@ -21,11 +23,11 @@ export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResp
       );
     }
 
-    chosenIP = (availableIPs.length === 0) ? '0.0.0.0' : availableIPs[0].address;
+    externalIP = availableIPs[0].address;
 
     if (availableIPs.length > 1) {
       if (availableIPs.find(({ address }) => address === args.options.address)) {
-        chosenIP = <string>args.options.address;
+        externalIP = <string>args.options.address;
       } else {
         args.env.log.warn(`${chalk.bold('Multiple network interfaces detected!')}\n` +
                           'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
@@ -36,7 +38,7 @@ export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResp
           message: 'Please select which IP to use:',
           choices: availableIPs.map(ip => ip.address)
         });
-        chosenIP = promptedIp;
+        externalIP = promptedIp;
       }
     }
   }
@@ -61,20 +63,23 @@ export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResp
   }
 
   const localAddress = 'http://localhost:' + settings.httpPort;
-  const externalAddress = 'http://' + chosenIP + ':' + settings.httpPort;
+  const externalAddress = 'http://' + externalIP + ':' + settings.httpPort;
+  const externallyAccessible = localAddress !== externalAddress;
 
   args.env.log.info(
     `Development server running\n` +
-    `Local: ${chalk.bold(localAddress)}\n` +
-    (localAddress !== externalAddress ? `External: ${chalk.bold(externalAddress)}` : '')
+    (locallyAccessible ? `Local: ${chalk.bold(localAddress)}\n` : '') +
+    (externallyAccessible ? `External: ${chalk.bold(externalAddress)}` : '')
   );
 
   return  {
-    publicIp: chosenIP,
+    publicIp: externalIP,
     protocol: 'http',
     localAddress: 'localhost',
-    externalAddress: chosenIP,
+    externalAddress: externalIP,
     port: settings.httpPort,
+    locallyAccessible,
+    externallyAccessible,
     ...settings
   };
 }

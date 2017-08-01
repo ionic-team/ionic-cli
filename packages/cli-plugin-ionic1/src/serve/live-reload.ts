@@ -4,7 +4,7 @@ import { ServerOptions } from './config';
 export async function createLiveReloadServer(options: ServerOptions): Promise<(changedFile: string[]) => void> {
   const tinylr = await import('tiny-lr');
   const liveReloadServer = tinylr();
-  liveReloadServer.listen(options.livereloadPort, options.externalAddress);
+  liveReloadServer.listen(options.livereloadPort);
 
   return (changedFiles) => {
     liveReloadServer.changed({

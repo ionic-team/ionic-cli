@@ -3,6 +3,8 @@ import * as chalk from 'chalk';
 
 import {
   CommandHookArgs,
+  ERROR_NETWORK_ADDRESS_NOT_AVAIL,
+  FatalException,
   IonicEnvironment,
   ServeCommandHookResponse,
   findClosestOpenPort,
@@ -24,9 +26,11 @@ import {
 } from './config';
 
 export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResponse> {
-  let chosenIP = 'localhost';
+  const address = <string>args.options['address'] || DEFAULT_ADDRESS;
+  const locallyAccessible = ['0.0.0.0', 'localhost', '127.0.0.1'].includes(address);
+  let externalIP = address;
 
-  if (args.options.externalIpRequired) {
+  if (address === '0.0.0.0') {
     // Find appropriate IP to use for cordova to reference
     const availableIPs = getAvailableIPAddress();
     if (availableIPs.length === 0) {
@@ -35,7 +39,7 @@ export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResp
       );
     }
 
-    chosenIP = availableIPs[0].address;
+    externalIP = availableIPs[0].address;
     if (availableIPs.length > 1) {
       args.env.log.warn(`${chalk.bold('Multiple network interfaces detected!')}\n` +
                         'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
@@ -46,7 +50,7 @@ export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResp
         message: 'Please select which IP to use:',
         choices: availableIPs.map(ip => ip.address)
       });
-      chosenIP = promptedIp;
+      externalIP = promptedIp;
     }
   }
 
@@ -59,9 +63,9 @@ export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResp
   const serverOptions: ServerOptions = {
     projectRoot: args.env.project.directory,
     wwwDir: path.join(args.env.project.directory, projectConfig.documentRoot || 'www'),
-    address: <string>args.options['address'] || DEFAULT_ADDRESS,
+    address,
     protocol: 'http',
-    externalAddress: chosenIP,
+    externalAddress: externalIP,
     port: stringToInt(<string>args.options['port'], DEFAULT_SERVER_PORT),
     httpPort: stringToInt(<string>args.options['port'], DEFAULT_SERVER_PORT),
     livereloadPort: stringToInt(<string>args.options['livereload-port'], DEFAULT_LIVERELOAD_PORT),
@@ -78,26 +82,36 @@ export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResp
   };
 
   // Clean up args based on environment state
-  const portResults = await Promise.all([
-    findClosestOpenPort(serverOptions.address, serverOptions.port),
-    findClosestOpenPort(serverOptions.address, serverOptions.livereloadPort),
-  ]);
-  serverOptions.port = serverOptions.httpPort = portResults[0];
-  serverOptions.livereloadPort = portResults[1];
+  try {
+    const portResults = await Promise.all([
+      findClosestOpenPort(serverOptions.address, serverOptions.port),
+      findClosestOpenPort(serverOptions.address, serverOptions.livereloadPort),
+    ]);
+
+    serverOptions.port = serverOptions.httpPort = portResults[0];
+    serverOptions.livereloadPort = portResults[1];
+  } catch (e) {
+    if (e !== ERROR_NETWORK_ADDRESS_NOT_AVAIL) {
+      throw e;
+    }
+
+    throw new FatalException(`${chalk.green(serverOptions.address)} is not available--cannot bind.`);
+  }
 
   // Start up server
   const settings = await setupServer(args.env, serverOptions);
 
   const localAddress = 'http://localhost:' + serverOptions.port;
   const externalAddress = 'http://' + serverOptions.externalAddress + ':' + serverOptions.port;
+  const externallyAccessible = localAddress !== externalAddress;
 
   args.env.log.info(
     `Development server running\n` +
-    `Local: ${chalk.bold(localAddress)}\n` +
-    (localAddress !== externalAddress ? `External: ${chalk.bold(externalAddress)}\n` : '')
+    (locallyAccessible ? `Local: ${chalk.bold(localAddress)}\n` : '') +
+    (externallyAccessible ? `External: ${chalk.bold(externalAddress)}\n` : '')
   );
 
-  if (!serverOptions.nobrowser || serverOptions.lab) {
+  if (locallyAccessible && (!serverOptions.nobrowser || serverOptions.lab)) {
     const openOptions: string[] = [localAddress]
       .concat(serverOptions.lab ? [IONIC_LAB_URL] : [])
       .concat(serverOptions.browseroption ? [serverOptions.browseroption] : [])
@@ -110,6 +124,8 @@ export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResp
   return {
     publicIp: serverOptions.externalAddress,
     localAddress: 'localhost',
+    locallyAccessible,
+    externallyAccessible,
     ...settings,
   };
 }

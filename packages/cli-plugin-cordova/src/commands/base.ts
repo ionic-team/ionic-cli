@@ -201,6 +201,8 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
     const isLiveReload = options['livereload'];
 
     const conf = await ConfigXml.load(this.env.project.directory);
+    await conf.resetContentSrc();
+    await conf.save();
 
     if (isLiveReload) {
       await this.env.hooks.fire('watch:before', { env: this.env });
@@ -212,13 +214,17 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
         options: generateBuildOptions(this.metadata, options),
       });
 
+      if (serverSettings.externallyAccessible === false) {
+        this.env.log.warn(
+          `Your device or emulator may not be able to access ${chalk.bold(serverSettings.externalAddress)}.\n` +
+          `Ensure you have proper port forwarding setup from your device to your computer.`
+        );
+      }
+
       await conf.writeContentSrc(`${serverSettings.protocol || 'http'}://${serverSettings.externalAddress || serverSettings.publicIp}:${serverSettings.port || serverSettings.httpPort}`);
       await conf.save();
     } else {
       await this.env.hooks.fire('build:before', { env: this.env });
-
-      await conf.resetContentSrc();
-      await conf.save();
 
       await this.env.hooks.fire('command:build', {
         cmd: this,

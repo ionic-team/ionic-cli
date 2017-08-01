@@ -65,7 +65,7 @@ export class ConfigXml {
     let navElement = root.find(`allow-navigation[@href='${newSrc}']`);
 
     if (!navElement) {
-      navElement = et.SubElement(root, 'allow-navigation', { src: newSrc });
+      navElement = et.SubElement(root, 'allow-navigation', { href: newSrc });
     }
   }
 

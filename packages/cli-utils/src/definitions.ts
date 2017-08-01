@@ -423,6 +423,16 @@ export interface ServeCommandHookResponse {
   port: number;
 
   /**
+   * Whether or not the server is accessible locally.
+   */
+  locallyAccessible: boolean;
+
+  /**
+   * Whether or not the server is accessible externally.
+   */
+  externallyAccessible: boolean;
+
+  /**
    * @deprecated
    */
   httpPort?: number;
