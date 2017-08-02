@@ -111,7 +111,7 @@ export async function serve(args: CommandHookArgs): Promise<ServeCommandHookResp
     (externallyAccessible ? `External: ${chalk.bold(externalAddress)}\n` : '')
   );
 
-  if (locallyAccessible && (!serverOptions.nobrowser || serverOptions.lab)) {
+  if (locallyAccessible && !serverOptions.nobrowser) {
     const openOptions: string[] = [localAddress]
       .concat(serverOptions.lab ? [IONIC_LAB_URL] : [])
       .concat(serverOptions.browseroption ? [serverOptions.browseroption] : [])
