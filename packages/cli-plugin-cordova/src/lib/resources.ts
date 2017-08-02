@@ -13,6 +13,8 @@ import {
   createRequest,
   flattenArray,
   fsMkdirp,
+  fsReadFile,
+  fsWriteFile,
   getFileChecksum,
   readDir,
   writeStreamToFile,
@@ -67,10 +69,10 @@ export async function createImgDestinationDirectories(imgResources: ImageResourc
  */
 export async function getSourceImages(buildPlatforms: string[], resourceTypes: string[], resourceDir: string): Promise<SourceImage[]> {
   const srcDirList = buildPlatforms
-    .map((platform: string) => (
+    .map(platform => (
       {
         platform,
-        path: path.join(resourceDir, platform)
+        path: path.join(resourceDir, platform),
       }
     ))
     .concat({
@@ -79,13 +81,13 @@ export async function getSourceImages(buildPlatforms: string[], resourceTypes: s
     });
 
   const srcImageDirContentList = await Promise.all(
-    srcDirList.map((srcImgDir: any) => readDir(srcImgDir.path))
+    srcDirList.map(srcImgDir => readDir(srcImgDir.path))
   );
 
   const sourceImages = flattenArray(
     srcImageDirContentList.map((srcImageDirContents, index) => (
       srcImageDirContents
-        .map((imgName: string): SourceImage => {
+        .map((imgName): SourceImage => {
           const ext = path.extname(imgName);
 
           return {
@@ -95,16 +97,39 @@ export async function getSourceImages(buildPlatforms: string[], resourceTypes: s
             path: path.join(srcDirList[index].path, imgName),
             vector: false,
             height: 0,
-            width: 0
+            width: 0,
           };
         })
-        .filter((img: SourceImage) => SUPPORTED_SOURCE_EXTENSIONS.includes(img.ext))
-        .filter((img: SourceImage) => resourceTypes.includes(img.resType))
+        .filter(img => SUPPORTED_SOURCE_EXTENSIONS.includes(img.ext))
+        .filter(img => resourceTypes.includes(img.resType))
     ))
   );
 
   const sourceImageChecksums = await Promise.all(
-    sourceImages.map(img => getFileChecksum(img.path))
+    sourceImages.map(async (img) => {
+      const cachedMd5Path = `${img.path}.md5`;
+      const [ md5, cachedMd5 ] = await Promise.all([
+        getFileChecksum(img.path),
+        (async () => {
+          try {
+            const md5 = await fsReadFile(cachedMd5Path, { encoding: 'utf8' });
+            return md5.trim();
+          } catch (e) {
+            if (e.code !== 'ENOENT') {
+              throw e;
+            }
+          }
+        })(),
+      ]);
+
+      if (cachedMd5) {
+        img.cachedId = cachedMd5;
+      }
+
+      await fsWriteFile(cachedMd5Path, md5, { encoding: 'utf8' });
+
+      return md5;
+    })
   );
 
   return sourceImages.map((img: SourceImage, index) => ({

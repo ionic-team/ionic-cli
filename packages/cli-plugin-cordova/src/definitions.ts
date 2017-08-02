@@ -23,6 +23,7 @@ export interface ResourcesImageConfig {
 export interface SourceImage {
   ext: string;
   imageId?: string;
+  cachedId?: string;
   platform: string;
   resType: string;
   path: string;

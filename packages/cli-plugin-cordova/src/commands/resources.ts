@@ -7,11 +7,11 @@ import {
   CommandMetadata,
   CommandPreRun,
   FatalException,
+  pathExists,
   promptToLogin,
 } from '@ionic/cli-utils';
 
 import {
-  ImageResource,
   KnownPlatform,
   ResourcesConfig,
   ResourcesImageConfig,
@@ -55,6 +55,8 @@ The source image for icons should ideally be at least ${chalk.bold('1024×1024px
 
 You can also generate platform-specific icons and splash screens by placing them in the respective ${chalk.bold('resources/<platform>/')} directory. For example, to generate an icon for Android, place your image at ${chalk.bold('resources/android/icon.png')}.
 
+By default, this command will not regenerate resources whose source image has not changed. To disable this functionality and always overwrite generated images, use ${chalk.green('--force')}.
+
 For best results, the splash screen's artwork should roughly fit within a square (${chalk.bold('1200×1200px')}) at the center of the image. You can use ${chalk.bold('https://code.ionicframework.com/resources/splash.psd')} as a template for your splash screen.
 
 ${chalk.green('ionic cordova resources')} will automatically update your ${chalk.bold('config.xml')} to reflect the changes in the generated images, which Cordova then configures.
@@ -75,6 +77,12 @@ This command uses Ionic servers, so we require you to be logged into your free I
   ],
   options: [
     {
+      name: 'force',
+      description: 'Force regeneration of all resources',
+      type: Boolean,
+      aliases: ['f'],
+    },
+    {
       name: 'icon',
       description: 'Generate icon resources',
       type: Boolean,
@@ -85,7 +93,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       description: 'Generate splash screen resources',
       type: Boolean,
       aliases: ['s'],
-    }
+    },
   ]
 })
 export class ResourcesCommand extends Command implements CommandPreRun {
@@ -97,7 +105,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     }
   }
 
-  public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     const [ platform ] = inputs;
 
     const conf = await ConfigXml.load(this.env.project.directory);
@@ -146,17 +154,17 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     // Convert the resource structure to a flat array then filter the array so
     // that it only has img resources that we need. Finally add src path to the
     // items that remain.
-    let imgResources: ImageResource[] = flattenResourceJsonStructure()
-      .filter((img) => orientation === 'default' || typeof img.orientation === 'undefined' || img.orientation === orientation)
-      .filter((img) => buildPlatforms.includes(img.platform))
-      .filter((img) => resourceTypes.includes(img.resType))
-      .map((img) => ({
+    let imgResources = flattenResourceJsonStructure()
+      .filter(img => orientation === 'default' || typeof img.orientation === 'undefined' || img.orientation === orientation)
+      .filter(img => buildPlatforms.includes(img.platform))
+      .filter(img => resourceTypes.includes(img.resType))
+      .map(img => ({
         ...img,
         dest: path.join(resourceDir, img.platform, img.resType, img.name)
       }));
 
     if (platform) {
-      imgResources = imgResources.filter((img) => img.platform === platform);
+      imgResources = imgResources.filter(img => img.platform === platform);
     }
 
     this.env.log.debug(() => `imgResources=${imgResources.length}`);
@@ -169,33 +177,34 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     // Update imgResources to have their src attributes to equal the most
     // specific src img found
     let srcImagesAvailable: SourceImage[] = [];
+
     try {
       srcImagesAvailable = await getSourceImages(buildPlatforms, resourceTypes, resourceDir);
       this.env.log.debug(() => `${chalk.green('getSourceImages')} completed - ${srcImagesAvailable.length}`);
     } catch (e) {
-
+      this.env.log.error(`Error in ${chalk.green('getSourceImages')}: ${e.stack ? e.stack : e}`);
     }
 
-    imgResources = imgResources.map((imageResource: ImageResource): ImageResource => {
-      const mostSpecificImageAvailable = findMostSpecificImage(imageResource, srcImagesAvailable);
+    imgResources = imgResources.map(img => {
+      const mostSpecificImageAvailable = findMostSpecificImage(img, srcImagesAvailable);
       return {
-        ...imageResource,
+        ...img,
         imageId: mostSpecificImageAvailable && mostSpecificImageAvailable.imageId ? mostSpecificImageAvailable.imageId : null,
       };
     });
 
     // If there are any imgResources that have missing images then end
     // processing and inform the user
-    const missingSrcImages = imgResources.filter((imageResource: ImageResource) => imageResource.imageId === null);
+    const missingSrcImages = imgResources.filter(img => img.imageId === null);
     if (missingSrcImages.length > 0) {
       const missingImageText = missingSrcImages
-        .reduce((list: string[], img: ImageResource): string[] => {
+        .reduce((list, img) => {
           const str = `${img.platform}/${img.resType}`;
           if (!list.includes(str)) {
             list.push(str);
           }
           return list;
-        }, [])
+        }, <string[]>[])
         .map(v => chalk.bold(v))
         .join(', ');
 
@@ -205,13 +214,38 @@ export class ResourcesCommand extends Command implements CommandPreRun {
       );
     }
 
+    this.env.tasks.next(`Filtering out image resources that do not need regeneration`);
+
+    const cachedSourceIds = srcImagesAvailable
+      .filter(img => img.imageId && img.cachedId && img.imageId === img.cachedId)
+      .map(img => img.imageId);
+
+    console.log(cachedSourceIds);
+    console.log(imgResources);
+
+    const keepImgResources = await Promise.all(imgResources.map(async (img) => {
+      if (!await pathExists(img.dest)) {
+        return true;
+      }
+
+      return img.imageId && !cachedSourceIds.includes(img.imageId);
+    }));
+
+    imgResources = imgResources.filter((img, i) => keepImgResources[i]);
+
+    if (imgResources.length === 0) {
+      this.env.tasks.end();
+      this.env.log.ok('No need to regenerate images--source files unchanged.');
+      return 0;
+    }
+
     this.env.tasks.next(`Uploading source images to prepare for transformations`);
 
     // Upload images to service to prepare for resource transformations
     const imageUploadResponses = await uploadSourceImages(srcImagesAvailable);
     this.env.log.debug(() => `${chalk.green('uploadSourceImages')} completed - responses=${JSON.stringify(imageUploadResponses, null, 2)}`);
 
-    srcImagesAvailable = srcImagesAvailable.map((img: SourceImage, index): SourceImage => {
+    srcImagesAvailable = srcImagesAvailable.map((img, index) => {
       return {
         ...img,
         width: imageUploadResponses[index].Width,
@@ -222,32 +256,37 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
     // If any images are asking to be generated but are not of the correct size
     // inform the user and continue on.
-    const imagesTooLargeForSource = imgResources.filter((imageResource: ImageResource) => {
-      const resourceSourceImage = srcImagesAvailable.find(srcImage => srcImage.imageId === imageResource.imageId);
-      if (resourceSourceImage === undefined) {
+    const imagesTooLargeForSource = imgResources.filter(img => {
+      const resourceSourceImage = srcImagesAvailable.find(srcImage => srcImage.imageId === img.imageId);
+      if (!resourceSourceImage) {
         return true;
       }
 
-      return !resourceSourceImage.vector &&
-        (imageResource.width > resourceSourceImage.width || imageResource.height > resourceSourceImage.height);
+      return !resourceSourceImage.vector && (img.width > resourceSourceImage.width || img.height > resourceSourceImage.height);
     });
 
     // Remove all images too large for transformations
-    imgResources = imgResources.filter(imageResource => {
-      return !imagesTooLargeForSource.find(tooLargeForSourceImage => imageResource.name === tooLargeForSourceImage.name);
+    imgResources = imgResources.filter(img => {
+      return !imagesTooLargeForSource.find(tooLargeForSourceImage => img.name === tooLargeForSourceImage.name);
     });
+
+    if (imgResources.length === 0) {
+      this.env.tasks.end();
+      this.env.log.ok('No need to regenerate images--source files unchanged.');
+      return 0;
+    }
 
     // Call the transform service and output images to appropriate destination
     this.env.tasks.next(`Generating platform resources`);
     let count = 0;
 
-    const promiseList = imgResources.map(async (img, index): Promise<void> => {
+    const transforms = imgResources.map(async (img, index) => {
       await transformResourceImage(img);
       count += 1;
       this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`);
     });
 
-    const generateImageResponses = await Promise.all(promiseList);
+    const generateImageResponses = await Promise.all(transforms);
     this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
     this.env.log.debug(() => `${chalk.green('generateResourceImage')} completed - responses=${JSON.stringify(generateImageResponses, null, 2)}`);
 
@@ -289,7 +328,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     // All images that were not processed
     if (imagesTooLargeForSource.length > 0) {
       const imagesTooLargeForSourceMsg = imagesTooLargeForSource
-        .map(imageResource => `    ${chalk.bold(imageResource.name)}     ${imageResource.platform}/${imageResource.resType} needed ${imageResource.width}w x ${imageResource.height}h`)
+        .map(img => `    ${chalk.bold(img.name)}     ${img.platform}/${img.resType} needed ${img.width}×${img.height}px`)
         .concat((imagesTooLargeForSource.length > 0) ? `\nThe following images were not created because their source image was too small:` : [])
         .reverse();
 
