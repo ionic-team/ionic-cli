@@ -21,7 +21,6 @@ Ionic Package makes it easy to build a native binary of your app in the cloud.
 
 Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/services/package/')}
   `,
-  exampleCommands: ['', '15'],
   inputs: [
     {
       name: 'id',
@@ -29,60 +28,85 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
       required: false,
     },
   ],
+  options: [
+    {
+      name: 'json',
+      description: 'Output build info in JSON',
+      type: Boolean,
+    },
+  ],
+  exampleCommands: ['', '15'],
 })
 export class PackageInfoCommand extends Command {
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     const [ id ] = inputs;
+    const { json } = options;
+
     let buildId = isNaN(Number(id)) ? undefined : Number(id);
 
     const token = await this.env.session.getAppUserToken();
     const pkg = new PackageClient(token, this.env.client);
 
     if (buildId) {
-      this.env.tasks.next(`Retrieving information about build ${chalk.bold(String(buildId))}`);
+      if (!json) {
+        this.env.tasks.next(`Retrieving information about build ${chalk.bold(String(buildId))}`);
+      }
     } else {
-      this.env.tasks.next('Retrieving latest build information');
+      if (!json) {
+        this.env.tasks.next('Retrieving latest build information');
+      }
+
       const latestBuilds = await pkg.getBuilds({ pageSize: 1 });
 
       if (latestBuilds.length === 0) {
-        this.env.tasks.end();
-        return this.env.log.warn(`You don't have any builds yet! Run ${chalk.green('ionic package build --help')} to learn how.`);
+        if (json) {
+          process.stdout.write(JSON.stringify(undefined));
+          return 0;
+        } else {
+          this.env.tasks.end();
+          return this.env.log.warn(`You don't have any builds yet! Run ${chalk.green('ionic package build --help')} to learn how.`);
+        }
       }
 
       buildId = latestBuilds[0].id;
     }
 
     const build = await pkg.getBuild(buildId, { 'fields': ['output'] });
-    const formattedBuild = pkg.formatBuildValues(build);
-    this.env.tasks.end();
 
-    const attrs: (keyof PackageBuild)[] = ['id', 'status', 'platform', 'mode', 'security_profile_tag', 'created', 'completed'];
-    const formatAttr = (attr: keyof PackageBuild): string => {
-      let r: string = attr;
+    if (json) {
+      process.stdout.write(JSON.stringify(build));
+    } else {
+      const formattedBuild = pkg.formatBuildValues(build);
+      this.env.tasks.end();
 
-      if (attr === 'created') {
-        r = 'started';
-      } else if (attr === 'completed') {
-        r = 'finished';
-      } else if (attr === 'security_profile_tag') {
-        r = 'profile';
-      }
+      const attrs: (keyof PackageBuild)[] = ['id', 'status', 'platform', 'mode', 'security_profile_tag', 'created', 'completed'];
+      const formatAttr = (attr: keyof PackageBuild): string => {
+        let r: string = attr;
 
-      return chalk.bold(r);
-    };
+        if (attr === 'created') {
+          r = 'started';
+        } else if (attr === 'completed') {
+          r = 'finished';
+        } else if (attr === 'security_profile_tag') {
+          r = 'profile';
+        }
 
-    const table = columnar(attrs.map(attr => [formatAttr(attr), formattedBuild[attr] || '']), {});
+        return chalk.bold(r);
+      };
 
-    this.env.log.nl();
-    this.env.log.msg(table);
-    this.env.log.nl();
+      const table = columnar(attrs.map(attr => [formatAttr(attr), formattedBuild[attr] || '']), {});
 
-    if (build.status === 'FAILED') {
-      if (build.output) {
-        this.env.log.msg(`${chalk.bold('output')}:\n`);
-        this.env.log.msg(build.output);
-      } else {
-        this.env.log.msg('no output');
+      this.env.log.nl();
+      this.env.log.msg(table);
+      this.env.log.nl();
+
+      if (build.status === 'FAILED') {
+        if (build.output) {
+          this.env.log.msg(`${chalk.bold('output')}:\n`);
+          this.env.log.msg(build.output);
+        } else {
+          this.env.log.msg('no output');
+        }
       }
     }
   }

@@ -21,6 +21,10 @@ For ${chalk.green('--global')} config, the CLI prints properties in the global C
 For nested properties, separate nest levels with dots. For example, the property name ${chalk.green('user.email')} will look in the ${chalk.bold('user')} object (a root-level field in the global CLI config file) for the ${chalk.bold('email')} field.
 
 Without a ${chalk.green('property')} argument, this command prints out the entire file contents.
+
+If you are using this command programmatically, you can use the ${chalk.green('--json')} option.
+
+This command attempts to sanitize config output for known sensitive fields, such as fields within the ${chalk.bold('tokens')} object in the global CLI config file. This functionality is disabled when using ${chalk.green('--json')}.
   `,
   inputs: [
     {
@@ -35,6 +39,11 @@ Without a ${chalk.green('property')} argument, this command prints out the entir
       description: 'Use global CLI config',
       type: Boolean,
       aliases: ['g'],
+    },
+    {
+      name: 'json',
+      description: 'Output config values in JSON',
+      type: Boolean,
     },
   ],
   exampleCommands: ['', 'app_id', '--global user.email', '-g yarn'],
@@ -59,7 +68,7 @@ export class ConfigGetCommand extends Command {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     let [ p ] = inputs;
-    const { global } = options;
+    const { global, json } = options;
 
     if (!global && !this.env.project.directory) {
       throw this.exit(`Sorry--this won't work outside an Ionic project directory. Did you mean to print global config using ${chalk.green('--global')}?`);
@@ -71,8 +80,12 @@ export class ConfigGetCommand extends Command {
     const lodash = this.env.load('lodash');
 
     const v = lodash.cloneDeep(p ? lodash.get(config, p) : config);
-    this.sanitize(p, v);
 
-    this.env.log.msg(util.inspect(v, { colors: chalk.enabled }));
+    if (json) {
+      process.stdout.write(JSON.stringify(v));
+    } else {
+      this.sanitize(p, v);
+      this.env.log.msg(util.inspect(v, { colors: chalk.enabled }));
+    }
   }
 }
