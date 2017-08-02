@@ -111,6 +111,16 @@ export class Environment implements IonicEnvironment {
         const inquirer = require('inquirer');
         this.bottomBar = new inquirer.ui.BottomBar();
       }
+
+      try {
+        // the mute() call appears to be necessary, otherwise when answering
+        // inquirer prompts upon pressing enter, a copy of the prompt is
+        // printed to the screen and looks gross
+        const bottomBarHack = <any>this.bottomBar;
+        bottomBarHack.rl.output.mute();
+      } catch (e) {
+        console.error('EXCEPTION DURING BOTTOMBAR OUTPUT MUTE', e);
+      }
     }
 
     this.log.stream = typeof this.bottomBar === 'undefined' ? process.stdout : this.bottomBar.log;
