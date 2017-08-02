@@ -54,7 +54,13 @@ export class DaemonCommand extends Command {
       if (killExisting) {
         this.env.log.info(`Killing existing daemon process ${chalk.bold(String(f))}.`);
         await fsUnlink(this.env.daemon.pidFilePath);
-        process.kill(Number(f));
+        try {
+          process.kill(Number(f));
+        } catch (e) {
+          if (e.code !== 'ESRCH') {
+            throw e;
+          }
+        }
       } else if (!processRunning(f)) {
         this.env.log.info(`Process ${chalk.bold(String(f))} not found, deleting pid file.`);
         await fsUnlink(this.env.daemon.pidFilePath);
