@@ -50,12 +50,19 @@ export class BuildCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.env.hooks.fire('build:before', { env: this.env });
 
-    await this.env.hooks.fire('command:build', {
+    const [ response ] = await this.env.hooks.fire('command:build', {
       cmd: this,
       env: this.env,
       inputs,
       options,
     });
+
+    if (!response) {
+      this.env.log.warn(
+        `There was no CLI project plugin that responded to ${chalk.green('ionic build')}.\n` +
+        `Make sure you have the Ionic CLI and a suitable project plugin installed locally.`
+      );
+    }
 
     await this.env.hooks.fire('build:after', { env: this.env });
   }

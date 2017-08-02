@@ -104,6 +104,13 @@ export class ServeCommand extends Command {
       }
     });
 
+    if (!response) {
+      this.env.log.warn(
+        `There was no CLI project plugin that responded to ${chalk.green('ionic serve')}.\n` +
+        `Make sure you have the Ionic CLI and a suitable project plugin installed locally.`
+      );
+    }
+
     // If broadcast option then start udp server and broadcast info
     if (options.broadcast) {
       this.env.tasks.next(`Broadcasting server information`);
