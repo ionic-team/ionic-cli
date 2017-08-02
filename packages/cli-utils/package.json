@@ -46,7 +46,7 @@
     "archiver": "^2.0.0",
     "chalk": "^2.0.0",
     "ci-info": "^1.0.0",
-    "cross-spawn": "^4.0.2",
+    "cross-spawn": "^5.1.0",
     "dargs": "^5.1.0",
     "dev-null": "^0.1.1",
     "inquirer": "^3.2.1",

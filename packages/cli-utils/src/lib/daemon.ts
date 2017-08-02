@@ -118,12 +118,20 @@ export async function checkForDaemon(env: IonicEnvironment): Promise<number> {
 
   const crossSpawn = load('cross-spawn');
   const fd = await fsOpen(env.daemon.logFilePath, 'a');
-  const p = crossSpawn.spawn(process.argv[0], [process.argv[1], 'daemon', '--verbose', '--no-interactive', '--log-timestamps'], {
+
+  const crossSpawnOptions: { cwd: string; stdio: (string | number)[]; shell?: boolean; detached?: boolean; } = {
     cwd: env.config.directory,
-    detached: process.platform !== 'win32',
-    shell: process.platform === 'win32',
     stdio: ['ignore', fd, fd],
-  });
+  };
+
+  // TODO: should cross-spawn figure this stuff out? https://github.com/IndigoUnited/node-cross-spawn/issues/77
+  if (process.platform === 'win32') {
+    crossSpawnOptions.shell = true;
+    crossSpawnOptions.detached = false;
+  }
+
+  const crossSpawnArgs = [crossSpawnOptions.shell ? `"${env.meta.binPath}"` : env.meta.binPath, 'daemon', '--verbose', '--no-interactive', '--log-timestamps'];
+  const p = crossSpawn.spawn(crossSpawnOptions.shell ? `"${process.execPath}"` : process.execPath, crossSpawnArgs, crossSpawnOptions);
 
   p.unref();
 
