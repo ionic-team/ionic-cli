@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 import * as chalk from 'chalk';
 
 import {
@@ -23,14 +25,17 @@ export class InfoCommand extends Command {
     const results = await this.env.hooks.fire('command:info', { cmd: this, env: this.env, inputs, options });
     const flattenedResults = results.reduce((acc, currentValue) => acc.concat(currentValue), initialValue);
 
-    const cliDetails = flattenedResults.filter((item) => item.type === 'cli-packages');
-    const globalNpmDetails = flattenedResults.filter((item) => item.type === 'global-packages' || <string>item.type === 'global-npm'); // TODO: take out global-npm
-    const localNpmDetails = flattenedResults.filter((item) => item.type === 'local-packages' || <string>item.type === 'local-npm'); // TODO: take out local-npm
-    const systemDetails = flattenedResults.filter((item) => item.type === 'system');
+    const cliDetails = flattenedResults.filter(item => item.type === 'cli-packages');
+    const globalNpmDetails = flattenedResults.filter(item => item.type === 'global-packages' || <string>item.type === 'global-npm'); // TODO: take out global-npm
+    const localNpmDetails = flattenedResults.filter(item => item.type === 'local-packages' || <string>item.type === 'local-npm'); // TODO: take out local-npm
+    const systemDetails = flattenedResults.filter(item => item.type === 'system');
+
+    const ionicPkg = cliDetails.filter(item => item.name.startsWith('ionic'))[0];
+    const pkgPath = ionicPkg && ionicPkg.path ? path.dirname(ionicPkg.path) : undefined;
 
     const splitInfo = (ary: InfoHookItem[]) => ary
       .sort((a, b) => strcmp(a.name, b.name))
-      .map((item): [string, string] => [item.name, chalk.dim(item.version) + (item.path ? ` ${chalk.dim('(' + item.path + ')')}` : '')]);
+      .map((item): [string, string] => [item.name, chalk.dim(item.version) + (item.path && pkgPath && !item.path.startsWith(pkgPath) ? ` ${chalk.dim('(' + item.path + ')')}` : '')]);
 
     const format = (details: [string, string][]) => columnar(details, { vsep: ':' }).split('\n').join('\n    ');
 
@@ -41,7 +46,7 @@ export class InfoCommand extends Command {
     }
 
     if (cliDetails.length > 0) {
-      this.env.log.msg('\n' + chalk.bold('cli packages:'));
+      this.env.log.msg('\n' + chalk.bold('cli packages:') + (pkgPath ? ' ' + chalk.dim('(' + pkgPath + ')') : ''));
       this.env.log.msg(`\n    ${format(splitInfo(cliDetails))}`);
     }
 
