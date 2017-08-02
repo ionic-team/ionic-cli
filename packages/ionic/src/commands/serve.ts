@@ -94,6 +94,8 @@ export class ServeCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.env.hooks.fire('watch:before', { env: this.env });
 
+    const registeredHooks = this.env.hooks.getRegistered('command:serve');
+
     const [ response ] = await this.env.hooks.fire('command:serve', {
       cmd: this,
       env: this.env,
@@ -104,7 +106,7 @@ export class ServeCommand extends Command {
       }
     });
 
-    if (!response) {
+    if (registeredHooks.length === 0) {
       this.env.log.warn(
         `There was no CLI project plugin that responded to ${chalk.green('ionic serve')}.\n` +
         `Make sure you have the Ionic CLI and a suitable project plugin installed locally.`
