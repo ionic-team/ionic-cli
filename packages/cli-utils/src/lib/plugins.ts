@@ -441,10 +441,13 @@ export async function checkForUpdates(env: IonicEnvironment): Promise<string[]> 
 
   if (updates.length > 0) {
     const [ installer, ...dedupeArgs ] = await pkgManagerArgs(env, { command: 'dedupe' });
-    try {
-      await env.shell.run(installer, dedupeArgs, { fatalOnError: false });
-    } catch (e) {
-      env.log.warn('Error while deduping npm dependencies. Attempting to continue...');
+
+    if (dedupeArgs.length > 0) {
+      try {
+        await env.shell.run(installer, dedupeArgs, { fatalOnError: false });
+      } catch (e) {
+        env.log.warn('Error while deduping npm dependencies. Attempting to continue...');
+      }
     }
   }
 

@@ -411,7 +411,10 @@ export class StartCommand extends Command implements CommandPreRun {
       }
 
       const [ , ...dedupeArgs ] = await pkgManagerArgs(this.env, { command: 'dedupe' });
-      await this.env.shell.run(installer, dedupeArgs, {});
+
+      if (dedupeArgs.length > 0) {
+        await this.env.shell.run(installer, dedupeArgs, {});
+      }
     }
 
     if (config.backend === BACKEND_PRO && !gitIntegration) {

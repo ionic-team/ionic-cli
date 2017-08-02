@@ -42,6 +42,7 @@ interface PkgManagerVocabulary {
   install: string;
   bareInstall: string;
   uninstall: string;
+  dedupe: string;
 
   // flags
   global: string;
@@ -61,6 +62,11 @@ export interface PkgManagerOptions extends IShellRunOptions {
   saveExact?: boolean;
 }
 
+/**
+ * Resolves pkg manager intent with command args.
+ *
+ * @return Promise<args> If the args is an empty array, it means the pkg manager doesn't have that command.
+ */
 export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerOptions = {}): Promise<string[]> {
   let vocab: PkgManagerVocabulary;
   const config = await env.config.load();
@@ -124,9 +130,9 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
   const installerArgs: string[] = [];
 
   if (installer === 'npm') {
-    vocab = { install: 'install', bareInstall: 'install', uninstall: 'uninstall', global: '-g', save: '--save', saveDev: '--save-dev', saveExact: '--save-exact', nonInteractive: '' };
+    vocab = { install: 'install', bareInstall: 'install', uninstall: 'uninstall', dedupe: 'dedupe', global: '-g', save: '--save', saveDev: '--save-dev', saveExact: '--save-exact', nonInteractive: '' };
   } else if (installer === 'yarn') {
-    vocab = { install: 'add', bareInstall: 'install', uninstall: 'remove', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive' };
+    vocab = { install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive' };
 
     if (options.global) { // yarn installs packages globally under the 'global' prefix, instead of having a flag
       installerArgs.push('global');
@@ -143,6 +149,12 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
     }
   } else if (command === 'uninstall') {
     installerArgs.push(vocab.uninstall);
+  } else if (command === 'dedupe') {
+    if (vocab.dedupe) {
+      installerArgs.push(vocab.dedupe);
+    } else {
+      return [];
+    }
   } else {
     installerArgs.push(command);
   }
