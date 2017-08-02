@@ -89,7 +89,8 @@ describe('@ionic/cli-plugin-cordova', () => {
 
     it('should find all sourceImages available and prioritize based on specificity', async function() {
       spyOn(cliUtils, 'getFileChecksum').and.returnValue(Promise.resolve('FJDKLFJDKL'));
-      spyOn(cliUtils, 'readDir').and.callFake((dir) => {
+      spyOn(cliUtils, 'fsWriteFile').and.callFake(() => {});
+      spyOn(cliUtils, 'readDir').and.callFake(dir => {
         switch (dir) {
         case '/resourceDir/ios':
           return Promise.resolve([
