@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.7.0"></a>
+# [3.7.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.6.0...ionic@3.7.0) (2017-08-03)
+
+
+### Bug Fixes
+
+* **serve:** allow binding of localhost ([e8a74d0](https://github.com/ionic-team/ionic-cli/commit/e8a74d0))
+* wrap process.kill for windows ([fa30400](https://github.com/ionic-team/ionic-cli/commit/fa30400))
+* **start:** disable yarn dedupe during start ([dd5c35f](https://github.com/ionic-team/ionic-cli/commit/dd5c35f))
+
+
+### Features
+
+* **build:** `ionic build` command ([3ad304c](https://github.com/ionic-team/ionic-cli/commit/3ad304c))
+* **ssh:** provide manual flow for existing ssh keys ([2496ae3](https://github.com/ionic-team/ionic-cli/commit/2496ae3))
+* **start:** prompt user about cordova integration ([c194bbc](https://github.com/ionic-team/ionic-cli/commit/c194bbc))
+* --json for parseable commands ([f673af1](https://github.com/ionic-team/ionic-cli/commit/f673af1))
+
+
+
+
 <a name="3.6.0"></a>
 # [3.6.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.5.0...ionic@3.6.0) (2017-07-27)
 

@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-utils",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Ionic CLI Utils",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
@@ -64,7 +64,7 @@
     "wrap-ansi": "^3.0.1"
   },
   "devDependencies": {
-    "@ionic/cli-scripts": "0.3.0",
+    "@ionic/cli-scripts": "0.3.1",
     "@types/archiver": "^2.0.0",
     "@types/chalk": "^0.4.31",
     "@types/inquirer": "0.0.35",

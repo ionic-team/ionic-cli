@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-scripts",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "bin": {
     "cli-scripts-prepublish": "prepublish.js"
   },

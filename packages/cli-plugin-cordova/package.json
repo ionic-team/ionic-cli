@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-plugin-cordova",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Ionic Cordova Plugin for Ionic CLI",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
@@ -58,13 +58,13 @@
     "testRegex": "/__tests__/.*\\.(ts|js)$"
   },
   "dependencies": {
-    "@ionic/cli-utils": "1.6.0",
+    "@ionic/cli-utils": "1.7.0",
     "chalk": "^2.0.0",
     "elementtree": "^0.1.7",
     "tslib": "^1.7.1"
   },
   "devDependencies": {
-    "@ionic/cli-scripts": "0.3.0",
+    "@ionic/cli-scripts": "0.3.1",
     "@types/chalk": "^0.4.31"
   }
 }

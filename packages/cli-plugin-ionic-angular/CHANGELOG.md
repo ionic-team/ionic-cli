@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.4.1"></a>
+## [1.4.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-ionic-angular@1.4.0...@ionic/cli-plugin-ionic-angular@1.4.1) (2017-08-03)
+
+
+### Bug Fixes
+
+* **serve:** allow binding of localhost ([e8a74d0](https://github.com/ionic-team/ionic-cli/commit/e8a74d0))
+
+
+
+
 <a name="1.4.0"></a>
 # [1.4.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-ionic-angular@1.3.2...@ionic/cli-plugin-ionic-angular@1.4.0) (2017-07-27)
 

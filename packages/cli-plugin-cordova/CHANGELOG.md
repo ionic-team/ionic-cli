@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.6.0"></a>
+# [1.6.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-cordova@1.5.0...@ionic/cli-plugin-cordova@1.6.0) (2017-08-03)
+
+
+### Bug Fixes
+
+* **cordova:** ensurePlatformImages should respect Orientation ([651ae0a](https://github.com/ionic-team/ionic-cli/commit/651ae0a))
+* **serve:** allow binding of localhost ([e8a74d0](https://github.com/ionic-team/ionic-cli/commit/e8a74d0))
+
+
+### Features
+
+* **build:** `ionic build` command ([3ad304c](https://github.com/ionic-team/ionic-cli/commit/3ad304c))
+* **cordova:** skip resources whose sources are unchanged ([cefd88a](https://github.com/ionic-team/ionic-cli/commit/cefd88a))
+
+
+
+
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-cordova@1.4.1...@ionic/cli-plugin-cordova@1.5.0) (2017-07-27)
 

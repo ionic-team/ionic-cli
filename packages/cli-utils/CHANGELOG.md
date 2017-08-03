@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.7.0"></a>
+# [1.7.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.6.0...@ionic/cli-utils@1.7.0) (2017-08-03)
+
+
+### Bug Fixes
+
+* **daemon:** fix occasional ENOENT error on windows ([1beb455](https://github.com/ionic-team/ionic-cli/commit/1beb455))
+* **help:** "undefined" slipped in to some help output ([1f885fa](https://github.com/ionic-team/ionic-cli/commit/1f885fa))
+* **plugins:** small fix for differing dist tags of plugins ([3adfcb6](https://github.com/ionic-team/ionic-cli/commit/3adfcb6))
+* **serve:** allow binding of localhost ([e8a74d0](https://github.com/ionic-team/ionic-cli/commit/e8a74d0))
+* **start:** disable yarn dedupe during start ([dd5c35f](https://github.com/ionic-team/ionic-cli/commit/dd5c35f))
+
+
+### Features
+
+* **build:** `ionic build` command ([3ad304c](https://github.com/ionic-team/ionic-cli/commit/3ad304c))
+
+
+
+
 <a name="1.6.0"></a>
 # [1.6.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.5.0...@ionic/cli-utils@1.6.0) (2017-07-27)
 
