@@ -18,7 +18,7 @@ import { getProjectPlatforms } from '../lib/utils/setup';
 import { CordovaCommand } from './base';
 
 @CommandMetadata({
-  name: 'platform',
+  name: 'cordova platform',
   type: 'project',
   description: 'Manage Cordova platform targets',
   longDescription: `

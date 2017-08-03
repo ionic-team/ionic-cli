@@ -11,7 +11,7 @@ import { ConfigXml } from '../lib/utils/configXml';
 import { CordovaCommand } from './base';
 
 @CommandMetadata({
-  name: 'compile',
+  name: 'cordova compile',
   type: 'project',
   description: 'Compile native platform code',
   longDescription: `

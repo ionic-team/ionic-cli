@@ -13,7 +13,7 @@ import { ConfigXml } from '../lib/utils/configXml';
 import { CordovaCommand } from './base';
 
 @CommandMetadata({
-  name: 'prepare',
+  name: 'cordova prepare',
   type: 'project',
   description: 'Copies assets to Cordova platforms, preparing them for native builds',
   longDescription: `
