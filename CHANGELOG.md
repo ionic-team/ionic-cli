@@ -7,6 +7,37 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.7.0"></a>
+### 3.7.0 (2017-08-02)
+
+* :tada: Added `ionic build` (finally). Now you can invoke a build for web
+  assets and prepare them for platform targets. For Ionic/Cordova apps, this
+  means running `cordova prepare` after the build, allowing you to use Android
+  Studio or Xcode for native build/test/deploy. It is different from `ionic
+  cordova build` in that it does not run `cordova build`. The native build must
+  happen separately, if at all.
+* Made `ionic cordova` commands friendlier to your `config.xml`. The Ionic CLI
+  was formatting XML differently from Cordova, which resulted in an annoying
+  set of changes which each command. Now we use the same XML library as Cordova
+  with the same settings, so massive reformatting should be minimal.
+* Added source image change detection to `ionic cordova resources`, which saves
+  a checksum file (`.md5`) next to each source image. If the source image
+  changes, the checksums will no longer match and the resources will be
+  regenerated for that source image.
+* Added `--json` option to `ionic config get`, `ionic package list`, and `ionic
+  package info` for those using these commands programmatically.
+* Fixed Windows bug for spawning the daemon process that was occasional with a
+  wonky `node_modules`. Shoutout to [@imgx64](https://github.com/imgx64) for
+  being so helpful!
+* Allow `--address=localhost` with `ionic cordova` run/emulate commands. Some
+  things are only possible when port forwarding from computer to device and
+  using `localhost` as the "external" address that the device loads during
+  livereload.
+* `ionic cordova resources` and `ionic cordova platform` now respect the
+  `Orientation` preference (see
+  [Preferences](https://cordova.apache.org/docs/en/latest/config_ref/#preference)).
+* Fixed `ionic serve` ignoring `-b` option when `--lab` was used.
+
 <a name="3.6.0"></a>
 ### 3.6.0 (2017-07-27)
 
