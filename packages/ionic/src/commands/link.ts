@@ -256,5 +256,7 @@ export class LinkCommand extends Command implements CommandPreRun {
 
       this.env.log.ok(`Project linked with app ${chalk.bold(appId)}!`);
     }
+
+    await this.env.config.save();
   }
 }
