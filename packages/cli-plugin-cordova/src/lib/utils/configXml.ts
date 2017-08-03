@@ -151,6 +151,7 @@ export class ConfigXml {
 
   async ensurePlatformImages(platform: string, resourcesPlatform: ResourcesPlatform) {
     const root = this.doc.getroot();
+    const orientation = await this.getPreference('Orientation') || 'default';
 
     for (let imgName in resourcesPlatform) {
       const imgType = resourcesPlatform[imgName];
@@ -160,7 +161,9 @@ export class ConfigXml {
         platformElement = et.SubElement(root, 'platform', { name: platform });
       }
 
-      for (let image of imgType.images) {
+      const images = imgType.images.filter(img => orientation === 'default' || typeof img.orientation === 'undefined' || img.orientation === orientation);
+
+      for (let image of images) {
         const imgPath = path.join('resources', platform, imgType.nodeName, image.name); // TODO: hard-coded 'resources' dir
         let imgElement = platformElement.find(`${imgType.nodeName}[@src='${imgPath}']`);
 
