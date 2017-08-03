@@ -164,7 +164,7 @@ export class ConfigXml {
       const images = imgType.images.filter(img => orientation === 'default' || typeof img.orientation === 'undefined' || img.orientation === orientation);
 
       for (let image of images) {
-        const imgPath = path.join('resources', platform, imgType.nodeName, image.name); // TODO: hard-coded 'resources' dir
+        const imgPath = ['resources', platform, imgType.nodeName, image.name].join('/'); // TODO: hard-coded 'resources' dir
         let imgElement = platformElement.find(`${imgType.nodeName}[@src='${imgPath}']`);
 
         if (!imgElement) {
