@@ -15,7 +15,7 @@
     "watch": "concurrently -p \"{name} \" -n \"TS,JS\" -c \"cyan.bold,yellow.dim\" \"npm run watch-ts\" \"npm run watch-js\"",
     "watch-ts": "tsc -w",
     "watch-js": "cross-env-shell IONIC_PREPUBLISH_PLUGIN_VERSION=${npm_package_version}-local \"npm run watch-js-chokidar\"",
-    "watch-js-chokidar": "chokidar --silent \"dist/**/*.js\" -c \"npm run build-js\"",
+    "watch-js-chokidar": "chokidar --silent \"dist/index.js\" -c \"npm run build-js\"",
     "script-prepublish": "cli-scripts-prepublish cli-plugin-proxy",
     "test": "jest",
     "prepublish": "npm run build"
