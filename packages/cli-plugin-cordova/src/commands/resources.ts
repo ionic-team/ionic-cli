@@ -220,9 +220,6 @@ export class ResourcesCommand extends Command implements CommandPreRun {
       .filter(img => img.imageId && img.cachedId && img.imageId === img.cachedId)
       .map(img => img.imageId);
 
-    console.log(cachedSourceIds);
-    console.log(imgResources);
-
     const keepImgResources = await Promise.all(imgResources.map(async (img) => {
       if (!await pathExists(img.dest)) {
         return true;
