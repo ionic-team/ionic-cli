@@ -1,15 +1,8 @@
 import * as chalk from 'chalk';
 
-import {
-  BACKEND_PRO,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandPreRun,
-  columnar,
-  createFatalAPIFormat,
-  isSSHKeyListResponse,
-} from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { isSSHKeyListResponse } from '@ionic/cli-utils/guards';
+import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 import { SSHBaseCommand } from './base';
 
@@ -25,12 +18,15 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
+    const { columnar } = await import('@ionic/cli-utils/lib/utils/format');
+
     const {
-      findSSHConfigHostSection,
-      getSSHConfigPath,
-      isSSHConfigDirective,
-      loadSSHConfig,
-    } = await import('../../lib/ssh-config');
+      findHostSection,
+      getConfigPath,
+      isDirective,
+      loadFromPath,
+    } = await import('@ionic/cli-utils/lib/ssh-config');
 
     const token = await this.env.session.getUserToken();
     const config = await this.env.config.load();
@@ -38,16 +34,16 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
     let activeFingerprint: string | undefined;
     let foundActiveKey = false;
 
-    const sshConfigPath = getSSHConfigPath();
-    const conf = await loadSSHConfig(sshConfigPath);
-    const section = findSSHConfigHostSection(conf, config.git.host);
+    const sshConfigPath = getConfigPath();
+    const conf = await loadFromPath(sshConfigPath);
+    const section = findHostSection(conf, config.git.host);
 
     if (section) {
       const [ identityFile ] = section.config.filter((line) => { // TODO: can't use find() w/o Host or Match, ssh-config bug?
-        return isSSHConfigDirective(line) && line.param === 'IdentityFile';
+        return isDirective(line) && line.param === 'IdentityFile';
       });
 
-      if (isSSHConfigDirective(identityFile)) {
+      if (isDirective(identityFile)) {
         const output = await this.env.shell.run('ssh-keygen', ['-E', 'sha256', '-lf', identityFile.value], { showCommand: false, fatalOnError: false });
         activeFingerprint = output.trim().split(' ')[1];
       }

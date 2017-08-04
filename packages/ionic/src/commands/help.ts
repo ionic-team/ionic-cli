@@ -1,10 +1,5 @@
-import {
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  showHelp,
-} from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
   name: 'help',
@@ -22,6 +17,8 @@ import {
 })
 export class HelpCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { showHelp } = await import('@ionic/cli-utils/lib/help');
+
     showHelp(this.env, inputs);
   }
 }

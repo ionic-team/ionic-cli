@@ -1,13 +1,7 @@
 import * as chalk from 'chalk';
 
-import {
-  App,
-  BACKEND_PRO,
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-} from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
   name: 'remote',
@@ -17,6 +11,7 @@ import {
 })
 export class GitRemoteCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { App } = await import('@ionic/cli-utils/lib/app');
     const token = await this.env.session.getUserToken();
     const appId = await this.env.project.loadAppId();
     const appLoader = new App(token, this.env.client);

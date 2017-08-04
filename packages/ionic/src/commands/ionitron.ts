@@ -1,11 +1,5 @@
-import {
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-} from '@ionic/cli-utils';
-
-import { getIonitronString, ionitronStatements } from '../lib/ionitron';
+import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
   name: 'ionitron',
@@ -22,6 +16,8 @@ import { getIonitronString, ionitronStatements } from '../lib/ionitron';
 })
 export class IonitronCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { getIonitronString, ionitronStatements } = await import('@ionic/cli-utils/lib/ionitron');
+
     const locale = options['es'] ? 'es' : 'en';
     const localeStatements = ionitronStatements[locale];
     const statement = localeStatements[Math.floor(Math.random() * (localeStatements.length))];

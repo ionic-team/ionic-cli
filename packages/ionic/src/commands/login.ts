@@ -1,15 +1,8 @@
 import * as chalk from 'chalk';
 
-import {
-  BACKEND_LEGACY,
-  BACKEND_PRO,
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandPreRun,
-  validators,
-} from '@ionic/cli-utils';
+import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { validators } from '@ionic/cli-utils/lib/validators';
 
 @CommandMetadata({
   name: 'login',

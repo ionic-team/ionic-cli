@@ -1,20 +1,14 @@
-import * as util from 'util';
 import * as chalk from 'chalk';
 
-import {
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  PROJECT_FILE,
-} from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
   name: 'get',
   type: 'global',
   description: 'Print config values',
   longDescription: `
-By default, this command prints properties in your project's ${chalk.bold(PROJECT_FILE)} file.
+By default, this command prints properties in your project's ${chalk.bold('ionic.config.json')} file.
 
 For ${chalk.green('--global')} config, the CLI prints properties in the global CLI config file (${chalk.bold('~/.ionic/config.json')}).
 
@@ -49,43 +43,8 @@ This command attempts to sanitize config output for known sensitive fields, such
   exampleCommands: ['', 'app_id', '--global user.email', '-g yarn'],
 })
 export class ConfigGetCommand extends Command {
-  scrubTokens(obj: any) {
-    const lodash = this.env.load('lodash');
-    return lodash.mapValues(obj, () => '*****');
-  }
-
-  sanitize(key: string, obj: any) {
-    const lodash = this.env.load('lodash');
-
-    if (typeof obj === 'object' && 'tokens' in obj) {
-      obj['tokens'] = this.scrubTokens(obj['tokens']);
-    }
-
-    if (key === 'tokens') {
-      lodash.assign(obj, this.scrubTokens(obj));
-    }
-  }
-
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let [ p ] = inputs;
-    const { global, json } = options;
-
-    if (!global && !this.env.project.directory) {
-      throw this.exit(`Sorry--this won't work outside an Ionic project directory. Did you mean to print global config using ${chalk.green('--global')}?`);
-    }
-
-    const file = global ? this.env.config : this.env.project;
-
-    const config = await file.load();
-    const lodash = this.env.load('lodash');
-
-    const v = lodash.cloneDeep(p ? lodash.get(config, p) : config);
-
-    if (json) {
-      process.stdout.write(JSON.stringify(v));
-    } else {
-      this.sanitize(p, v);
-      this.env.log.msg(util.inspect(v, { colors: chalk.enabled }));
-    }
+    const { get } = await import('@ionic/cli-utils/commands/config/get');
+    await get(this.env, inputs, options);
   }
 }

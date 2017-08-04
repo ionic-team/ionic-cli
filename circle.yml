@@ -4,11 +4,8 @@ machine:
 
 dependencies:
   cache_directories:
-    - packages/cli-plugin-cordova/node_modules
-    - packages/cli-plugin-ionic-angular/node_modules
-    - packages/cli-plugin-ionic1/node_modules
-    - packages/cli-plugin-proxy/node_modules
-    - packages/cli-utils/node_modules
+    - packages/@ionic/cli-plugin-proxy/node_modules
+    - packages/@ionic/cli-utils/node_modules
     - packages/ionic/node_modules
   post:
     - npm run bootstrap
@@ -20,7 +17,10 @@ test:
 deployment:
   pre:
     - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-  npm:
+  npm-canary:
     branch: master
     commands:
-      - npm run publish:ci
+      - npm run publish:canary -- --yes
+  npm-testing:
+    branch: testing
+      - npm run publish:testing -- --yes

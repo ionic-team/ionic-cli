@@ -1,14 +1,11 @@
-import { CommandMap, Namespace } from '@ionic/cli-utils';
-
-import { ConfigGetCommand } from './get';
-import { ConfigSetCommand } from './set';
+import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class ConfigNamespace extends Namespace {
   name = 'config';
-  source = 'ionic';
+  description = 'Manage CLI and project config values';
 
   commands = new CommandMap([
-    ['get', () => new ConfigGetCommand()],
-    ['set', () => new ConfigSetCommand()],
+    ['get', async () => { const { ConfigGetCommand } = await import('./get'); return new ConfigGetCommand(); }],
+    ['set', async () => { const { ConfigSetCommand } = await import('./set'); return new ConfigSetCommand(); }],
   ]);
 }

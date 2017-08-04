@@ -94,8 +94,7 @@ capabilities to your app.
 
 ```bash
 $ npm install -g cordova
-$ npm install --save-dev --save-exact @ionic/cli-plugin-cordova@latest
-$ ionic --help
+$ ionic cordova --help
 $ ionic cordova run ios
 ```
 
@@ -151,8 +150,8 @@ scripts](https://docs.npmjs.com/misc/scripts) in your `package.json` file:
   }
 ```
 
-:memo: *Note: Use gulp? Check out
-[@ionic/cli-plugin-gulp](https://github.com/ionic-team/ionic-cli/tree/master/packages/cli-plugin-gulp).*
+:memo: *Note: If you use [gulp](https://gulpjs.com/), the CLI will run gulp
+tasks by the same name as the npm scripts above.*
 
 ## Service Proxies
 
@@ -199,13 +198,19 @@ configuration to take effect.*
 ## Using a Proxy
 
 To proxy HTTP requests performed by the CLI, you will need to install the CLI
-proxy plugin globally *and* locally (for when the CLI runs inside your project
-directories):
+proxy plugin in the same `node_modules` context as the Ionic CLI:
+
+For CLI installed globally:
 
 ```bash
 $ npm install -g @ionic/cli-plugin-proxy
-$ cd myNewProject # cd into your project
-$ npm install @ionic/cli-plugin-proxy
+```
+
+For CLI installed locally:
+
+```bash
+$ cd myProject # cd into your project
+$ npm install --save-exact --save-dev @ionic/cli-plugin-proxy
 ```
 
 Then, set the following environment variables:

@@ -1,18 +1,13 @@
-import { CommandMap, Namespace } from '@ionic/cli-utils';
-
-import { PackageBuildCommand } from './build';
-import { PackageDownloadCommand } from './download';
-import { PackageInfoCommand } from './info';
-import { PackageListCommand } from './list';
+import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class PackageNamespace extends Namespace {
   name = 'package';
-  source = 'ionic';
+  description = 'Commands for Ionic Package';
 
   commands = new CommandMap([
-    ['build', () => new PackageBuildCommand()],
-    ['download', () => new PackageDownloadCommand()],
-    ['info', () => new PackageInfoCommand()],
-    ['list', () => new PackageListCommand()],
+    ['build', async () => { const { PackageBuildCommand } = await import('./build'); return new PackageBuildCommand(); }],
+    ['download', async () => { const { PackageDownloadCommand } = await import('./download'); return new PackageDownloadCommand(); }],
+    ['info', async () => { const { PackageInfoCommand } = await import('./info'); return new PackageInfoCommand(); }],
+    ['list', async () => { const { PackageListCommand } = await import('./list'); return new PackageListCommand(); }],
   ]);
 }

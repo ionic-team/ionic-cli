@@ -1,98 +1,58 @@
 import * as chalk from 'chalk';
-import * as minimist from 'minimist';
 
-import {
-  CommandMap,
-  IRootNamespace,
-  IonicEnvironment,
-  KNOWN_COMMAND_PLUGINS,
-  Namespace,
-  NamespaceMap,
-  ORG_PREFIX,
-  PLUGIN_PREFIX,
-  isCommand,
-  isValidationErrorArray,
-  metadataToMinimistOptions,
-  promptToInstallPlugin,
-  registerPlugin,
-  showHelp,
-} from '@ionic/cli-utils';
-
-import { ConfigNamespace } from './config/index';
-import { GitNamespace } from './git/index';
-import { SSHNamespace } from './ssh/index';
-import { PackageNamespace } from './package/index';
-
-import { BuildCommand } from './build';
-import { InfoCommand } from './info';
-import { LoginCommand } from './login';
-import { LogoutCommand } from './logout';
-import { SignupCommand } from './signup';
-import { StartCommand } from './start';
-import { VersionCommand } from './version';
-import { HelpCommand } from './help';
-import { TelemetryCommand } from './telemetry';
-import { DocsCommand } from './docs';
-import { DaemonCommand } from './daemon';
-import { IonitronCommand } from './ionitron';
-import { ServeCommand } from './serve';
-import { GenerateCommand } from './generate';
-import { LinkCommand } from './link';
-import { UploadCommand } from './upload';
+import { IRootNamespace, IonicEnvironment } from '@ionic/cli-utils';
+import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';
 
 export class IonicNamespace extends Namespace implements IRootNamespace {
   readonly root = true;
   readonly name = 'ionic';
-  readonly source = 'ionic';
+  readonly description = '';
 
   namespaces = new NamespaceMap([
-    ['config', () => new ConfigNamespace()],
-    ['git', () => new GitNamespace()],
-    ['ssh', () => new SSHNamespace()],
-    ['package', () => new PackageNamespace()],
+    ['config', async () => { const { ConfigNamespace } = await import('./config'); return new ConfigNamespace(); }],
+    ['cordova', async () => { const { CordovaNamespace } = await import('./cordova'); return new CordovaNamespace(); }],
+    ['git', async () => { const { GitNamespace } = await import('./git'); return new GitNamespace(); }],
+    ['ssh', async () => { const { SSHNamespace } = await import('./ssh'); return new SSHNamespace(); }],
+    ['package', async () => { const { PackageNamespace } = await import('./package'); return new PackageNamespace(); }],
   ]);
 
   commands = new CommandMap([
-    ['start', () => new StartCommand()],
-    ['serve', () => new ServeCommand()],
-    ['build', () => new BuildCommand()],
-    ['help', () => new HelpCommand()],
-    ['info', () => new InfoCommand()],
-    ['login', () => new LoginCommand()],
-    ['logout', () => new LogoutCommand()],
-    ['signup', () => new SignupCommand()],
-    ['version', () => new VersionCommand()],
-    ['telemetry', () => new TelemetryCommand()],
-    ['docs', () => new DocsCommand()],
-    ['daemon', () => new DaemonCommand()],
-    ['ionitron', () => new IonitronCommand()],
-    ['generate', () => new GenerateCommand()],
+    ['start', async () => { const { StartCommand } = await import('./start'); return new StartCommand(); }],
+    ['serve', async () => { const { ServeCommand } = await import('./serve'); return new ServeCommand(); }],
+    ['build', async () => { const { BuildCommand } = await import('./build'); return new BuildCommand(); }],
+    ['help', async () => { const { HelpCommand } = await import('./help'); return new HelpCommand(); }],
+    ['info', async () => { const { InfoCommand } = await import('./info'); return new InfoCommand(); }],
+    ['login', async () => { const { LoginCommand } = await import('./login'); return new LoginCommand(); }],
+    ['logout', async () => { const { LogoutCommand } = await import('./logout'); return new LogoutCommand(); }],
+    ['signup', async () => { const { SignupCommand } = await import('./signup'); return new SignupCommand(); }],
+    ['version', async () => { const { VersionCommand } = await import('./version'); return new VersionCommand(); }],
+    ['telemetry', async () => { const { TelemetryCommand } = await import('./telemetry'); return new TelemetryCommand(); }],
+    ['docs', async () => { const { DocsCommand } = await import('./docs'); return new DocsCommand(); }],
+    ['daemon', async () => { const { DaemonCommand } = await import('./daemon'); return new DaemonCommand(); }],
+    ['ionitron', async () => { const { IonitronCommand } = await import('./ionitron'); return new IonitronCommand(); }],
+    ['generate', async () => { const { GenerateCommand } = await import('./generate'); return new GenerateCommand(); }],
     ['g', 'generate'],
-    ['link', () => new LinkCommand()],
-    ['upload', () => new UploadCommand()],
+    ['link', async () => { const { LinkCommand } = await import('./link'); return new LinkCommand(); }],
+    ['upload', async () => { const { UploadCommand } = await import('./upload'); return new UploadCommand(); }],
   ]);
 
   async runCommand(env: IonicEnvironment, pargv: string[]): Promise<void | number> {
+    const { metadataToMinimistOptions } = await import('@ionic/cli-utils/lib/utils/command');
+    const { parseArgs } = await import('@ionic/cli-utils/lib/init');
+    const { isCommand } = await import('@ionic/cli-utils/guards');
+
     const config = await env.config.load();
 
-    const argv = minimist(pargv, { boolean: true, string: '_' });
-    let [ depth, inputs, cmdOrNamespace ] = this.locate(argv._);
-
-    if (cmdOrNamespace === this && KNOWN_COMMAND_PLUGINS.indexOf(inputs[0]) !== -1) {
-      const plugin = await promptToInstallPlugin(env, `${ORG_PREFIX}/${PLUGIN_PREFIX}${inputs[0]}`, {});
-
-      if (plugin) {
-        registerPlugin(env, plugin);
-        [ depth, inputs, cmdOrNamespace ] = env.namespace.locate(inputs);
-      }
-    }
+    const argv = parseArgs(pargv, { boolean: true, string: '_' });
+    let [ depth, inputs, cmdOrNamespace ] = await this.locate(argv._);
 
     if (!isCommand(cmdOrNamespace)) {
+      const { showHelp } = await import('@ionic/cli-utils/lib/help');
       return showHelp(env, argv._);
     }
 
     const command = cmdOrNamespace;
-    command.metadata.minimistOpts = metadataToMinimistOptions(command.metadata);
+    const minimistOpts = metadataToMinimistOptions(command.metadata);
 
     if (command.metadata.backends && !command.metadata.backends.includes(config.backend)) {
       env.log.error(
@@ -102,7 +62,7 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
       return 1;
     }
 
-    const options = minimist(pargv, command.metadata.minimistOpts);
+    const options = parseArgs(pargv, minimistOpts);
     inputs = options._.slice(depth);
     command.env = env;
 
@@ -128,15 +88,6 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
       }
     }
 
-    try {
-      await command.execute(inputs, options);
-    } catch (e) {
-      const cmdsource = command.metadata.source;
-      if (this.source !== cmdsource && !e.fatal && !isValidationErrorArray(e)) {
-        env.log.warn(`Error occurred during command execution from a CLI plugin${cmdsource ? ' (' + chalk.green(cmdsource) + ')' : ''}.`);
-      }
-
-      throw e;
-    }
+    await command.execute(inputs, options);
   }
 }

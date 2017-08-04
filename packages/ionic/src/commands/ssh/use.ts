@@ -2,16 +2,10 @@ import * as path from 'path';
 
 import * as chalk from 'chalk';
 
-import {
-  BACKEND_PRO,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  fileToString,
-  fsWriteFile,
-  prettyPath,
-  validators,
-} from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { validators } from '@ionic/cli-utils/lib/validators';
+import { fileToString, fsWriteFile } from '@ionic/cli-utils/lib/utils/fs';
 
 import { SSHBaseCommand } from './base';
 
@@ -30,17 +24,9 @@ import { SSHBaseCommand } from './base';
 })
 export class SSHUseCommand extends SSHBaseCommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-    const [
-      {
-        ERROR_SSH_INVALID_PRIVKEY,
-        ERROR_SSH_MISSING_PRIVKEY,
-        validatePrivateKey,
-      },
-      {
-        ensureSSHConfigHostAndKeyPath,
-        getSSHConfigPath,
-      },
-    ] = await Promise.all([import('../../lib/ssh'), import('../../lib/ssh-config')]);
+    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
+    const { ERROR_SSH_INVALID_PRIVKEY, ERROR_SSH_MISSING_PRIVKEY, validatePrivateKey } = await import('@ionic/cli-utils/lib/ssh');
+    const { ensureHostAndKeyPath, getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
 
     const keyPath = path.resolve(inputs[0]);
 
@@ -64,20 +50,20 @@ export class SSHUseCommand extends SSHBaseCommand {
       return 1;
     }
 
-    const SSHConfig = await import('ssh-config');
-    const sshConfigPath = getSSHConfigPath();
+    const { SSHConfig } = await import('@ionic/cli-utils/lib/ssh-config');
+    const sshConfigPath = getConfigPath();
     const config = await this.env.config.load();
     const text1 = await fileToString(sshConfigPath);
     const conf = SSHConfig.parse(text1);
-    await ensureSSHConfigHostAndKeyPath(conf, config.git, keyPath);
+    await ensureHostAndKeyPath(conf, config.git, keyPath);
     const text2 = SSHConfig.stringify(conf);
 
     if (text1 === text2) {
       this.env.log.info(`${chalk.bold(keyPath)} is already your active SSH key.`);
       return;
     } else {
-      const { diffPatch } = await import('../../lib/diff');
-      const diff = diffPatch(sshConfigPath, text1, text2);
+      const { diffPatch } = await import('@ionic/cli-utils/lib/diff');
+      const diff = await diffPatch(sshConfigPath, text1, text2);
 
       this.env.log.msg(diff);
 

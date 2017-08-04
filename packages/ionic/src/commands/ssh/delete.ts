@@ -1,14 +1,8 @@
 import * as chalk from 'chalk';
 
-import {
-  BACKEND_PRO,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandPreRun,
-  createFatalAPIFormat,
-  isSSHKeyListResponse,
-} from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { isSSHKeyListResponse } from '@ionic/cli-utils/guards';
+import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 import { SSHBaseCommand } from './base';
 
@@ -26,6 +20,8 @@ import { SSHBaseCommand } from './base';
 })
 export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
+
     if (!inputs[0]) {
       const config = await this.env.config.load();
       const token = await this.env.session.getUserToken();

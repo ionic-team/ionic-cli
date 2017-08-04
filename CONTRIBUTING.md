@@ -30,16 +30,14 @@ bug fixes are welcome any time.
 
 Our CLI is organized into a single multi-package repository. Common tools, such
 as Typescript and jest, are installed in the base directory while package
-dependencies are each installed in their respective `packages/*/node_modules`
+dependencies are each installed in their respective `packages/**/node_modules`
 directories.
 
-Each `packages/*` folder represents a package on npm. Packages with `cli-`
-prefix are published under the `@ionic` namespace, while the `ionic` package is
-published as `ionic`.
+Each `packages/*` folder represents a package on npm.
 
-* `packages/ionic`: The globally installed CLI package.
-* `packages/cli-utils`: The globally installed CLI utilities package.
-* `packages/cli-plugin-*`: The locally installed CLI plugins.
+* `packages/ionic`: Executable package.
+* `packages/@ionic/cli-utils`: Utilities package.
+* `packages/@ionic/cli-plugin-*`: CLI plugins.
 
 ##### Toolset
 
@@ -76,6 +74,6 @@ TODO: Be helpful about where to look for commands, utilities, etc.
 
 Cancel any watch scripts before proceeding.
 
+* **testing releases**: `npm run publish:testing`
 * **canary releases**: `npm run publish:canary`
-* **beta releases**: `npm run publish:beta`
 * **stable releases**: `npm run publish`

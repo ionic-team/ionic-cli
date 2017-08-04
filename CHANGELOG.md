@@ -191,10 +191,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 * Added commands: `signup`. Signup will change in the future, but as for now it
   simply opens up the signup page.
 * Cordova commands have been namespaced to allow for future platform support
-  and to reduce clutter. Additionally, Cordova functionality has been moved
-  into a CLI _plugin_, which is installed by default with new Ionic projects
-  and can be installed in existing Ionic projects with `npm i --save
-  @ionic/cli-plugin-cordova`.
+  and to reduce clutter.
 * Many command arguments, options, and flags have changed. For example, the
   `--v1` and `--v2` flags in `ionic start` have been removed in favor of
   `--type` with respective values `ionic1` (for v1) and `ionic-angular` (for
@@ -209,27 +206,17 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 ## Packages
 
 You can drill down into commit-level changes in the CHANGELOG files of each
-package. Changes made in one (especially `@ionic/cli-utils`) may affect the
-other, but in general you can expect changes relating to Cordova to be made in
-`@ionic/cli-plugin-cordova`, etc.
+package.
 
 * [`ionic`](https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic)
   ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md))
-* [`@ionic/cli-utils`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-utils)
-  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-utils/CHANGELOG.md))
+* [`@ionic/cli-utils`](https://github.com/ionic-team/ionic-cli/blob/master/packages/@ionic/cli-utils)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/@ionic/cli-utils/CHANGELOG.md))
 
 **Plugins**:
 
-* [`@ionic/cli-plugin-ionic-angular`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic-angular)
-  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic-angular/CHANGELOG.md))
-* [`@ionic/cli-plugin-ionic1`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic1)
-  [CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-ionic1/CHANGELOG.md)
-* [`@ionic/cli-plugin-cordova`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-cordova)
-  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-cordova/CHANGELOG.md))
-* [`@ionic/cli-plugin-gulp`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-gulp)
-  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-gulp/CHANGELOG.md))
-* [`@ionic/cli-plugin-proxy`](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-proxy)
-  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-proxy/CHANGELOG.md))
+* [`@ionic/cli-plugin-proxy`](https://github.com/ionic-team/ionic-cli/blob/master/packages/@ionic/cli-plugin-proxy)
+  ([CHANGELOG.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/@ionic/cli-plugin-proxy/CHANGELOG.md))
 
 ## Older Changes
 

@@ -1,11 +1,7 @@
 import * as chalk from 'chalk';
 
-import {
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-} from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
   name: 'build',
@@ -48,24 +44,7 @@ ${chalk.green('ionic build')} will perform an Ionic build, which compiles web as
 })
 export class BuildCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    await this.env.hooks.fire('build:before', { env: this.env });
-
-    const registeredHooks = this.env.hooks.getRegistered('command:build');
-
-    await this.env.hooks.fire('command:build', {
-      cmd: this,
-      env: this.env,
-      inputs,
-      options,
-    });
-
-    if (registeredHooks.length === 0) {
-      this.env.log.warn(
-        `There was no CLI project plugin that responded to ${chalk.green('ionic build')}.\n` +
-        `Make sure you have the Ionic CLI and a suitable project plugin installed locally.`
-      );
-    }
-
-    await this.env.hooks.fire('build:after', { env: this.env });
+    const { build } = await import('@ionic/cli-utils/commands/build');
+    await build(this.env, inputs, options);
   }
 }

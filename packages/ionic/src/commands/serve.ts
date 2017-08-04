@@ -1,11 +1,7 @@
 import * as chalk from 'chalk';
 
-import {
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-} from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
   name: 'serve',
@@ -91,27 +87,10 @@ By default, ${chalk.green('ionic serve')} will only bind to your local address. 
   ],
 })
 export class ServeCommand extends Command {
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    await this.env.hooks.fire('watch:before', { env: this.env });
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const { serve } = await import('@ionic/cli-utils/commands/serve');
 
-    const registeredHooks = this.env.hooks.getRegistered('command:serve');
-
-    const [ response ] = await this.env.hooks.fire('command:serve', {
-      cmd: this,
-      env: this.env,
-      inputs,
-      options: {
-        ...options,
-        externalIpRequired: options.broadcast
-      }
-    });
-
-    if (registeredHooks.length === 0) {
-      this.env.log.warn(
-        `There was no CLI project plugin that responded to ${chalk.green('ionic serve')}.\n` +
-        `Make sure you have the Ionic CLI and a suitable project plugin installed locally.`
-      );
-    }
+    const serverDetails = await serve(this.env, inputs, options);
 
     // If broadcast option then start udp server and broadcast info
     if (options.broadcast) {
@@ -121,8 +100,9 @@ export class ServeCommand extends Command {
       const message = JSON.stringify({
         app_name: appDetails.name,
         app_id: appDetails.app_id,
-        local_address: `${response.protocol || 'http'}://${response.externalAddress || response.publicIp}:${response.port || response.httpPort}`
+        local_address: `${serverDetails.protocol || 'http'}://${serverDetails.externalAddress}:${serverDetails.port}`
       });
+
       const dgram = await import('dgram');
       const server = dgram.createSocket('udp4');
 

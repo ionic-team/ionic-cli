@@ -2,16 +2,9 @@ import * as path from 'path';
 
 import * as chalk from 'chalk';
 
-import {
-  BACKEND_PRO,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandPreRun,
-  fsMkdirp,
-  pathExists,
-  prettyPath,
-} from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { fsMkdirp, pathExists } from '@ionic/cli-utils/lib/utils/fs';
 
 import { SSHBaseCommand } from './base';
 
@@ -54,7 +47,8 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-    const { getGeneratedPrivateKeyPath } = await import('../../lib/ssh');
+    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
+    const { getGeneratedPrivateKeyPath } = await import('@ionic/cli-utils/lib/ssh');
 
     const { bits, annotation } = options;
 
@@ -73,8 +67,10 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
       'private key, they can impersonate you!) Passphrases are recommended, but not required.'
     );
 
-    const shellOptions = { stdio: ['inherit', 'pipe', 'pipe'], showCommand: false, showExecution: false, showError: false };
+    await this.env.close();
+    const shellOptions = { stdio: 'inherit', showCommand: false, showExecution: false, showError: false };
     await this.env.shell.run('ssh-keygen', ['-q', '-t', 'rsa', '-b', String(bits), '-C', String(annotation), '-f', keyPath], shellOptions);
+    await this.env.open();
 
     this.env.log.ok(
       'A new pair of SSH keys has been generated!\n' +

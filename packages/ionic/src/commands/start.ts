@@ -2,43 +2,9 @@ import * as path from 'path';
 
 import * as chalk from 'chalk';
 
-import {
-  App,
-  BACKEND_LEGACY,
-  BACKEND_PRO,
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandPreRun,
-  PROJECT_FILE,
-  Project,
-  fsMkdir,
-  getCommandInfo,
-  isValidPackageName,
-  pathExists,
-  pkgInstallPluginArgs,
-  pkgManagerArgs,
-  prettyPath,
-  promisify,
-  promptToLogin,
-  validators,
-} from '@ionic/cli-utils';
-
-import { StarterTemplate } from '../definitions';
-
-import {
-  STARTER_TEMPLATES,
-  STARTER_TYPES,
-  createProjectConfig,
-  getHelloText,
-  getStarterTemplateTextList,
-  isProjectNameValid,
-  isSafeToCreateProjectIn,
-  patchPackageJsonForCli,
-  tarXvfFromUrl,
-  updatePackageJsonForCli,
-} from '../lib/start';
+import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun, StarterTemplate } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { fsMkdir, pathExists } from '@ionic/cli-utils/lib/utils/fs';
 
 @CommandMetadata({
   name: 'start',
@@ -71,7 +37,7 @@ If you want to create an Ionic/Cordova app, use the ${chalk.green('--cordova')} 
   options: [
     {
       name: 'type',
-      description: `Type of project to start (e.g. ${STARTER_TYPES.map(st => chalk.green(st.id)).join(', ')})`,
+      description: `Type of project to start (e.g. ${chalk.green('ionic-angular')}, ${chalk.green('ionic1')})`,
       type: String,
       default: 'ionic-angular',
     },
@@ -120,6 +86,9 @@ If you want to create an Ionic/Cordova app, use the ${chalk.green('--cordova')} 
 })
 export class StartCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<number | void> {
+    const { STARTER_TEMPLATES, getStarterTemplateTextList } = await import('@ionic/cli-utils/lib/start');
+    const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
+
     // If the action is list then lets just end here.
     if (options['list']) {
       this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES).join('\n'));
@@ -183,12 +152,14 @@ export class StartCommand extends Command implements CommandPreRun {
 
     if (!inputs[0]) {
       if (proAppId) {
+        const { App } = await import('@ionic/cli-utils/lib/app');
         const token = await this.env.session.getUserToken();
         const appLoader = new App(token, this.env.client);
         const app = await appLoader.load(proAppId);
         this.env.log.info(`Using ${chalk.bold(app.slug)} for ${chalk.green('name')}.`);
         inputs[0] = app.slug;
       } else {
+        const { validators } = await import('@ionic/cli-utils/lib/validators');
         const name = await this.env.prompt({
           type: 'input',
           name: 'name',
@@ -224,6 +195,23 @@ export class StartCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<number | void> {
+    const {
+      STARTER_TEMPLATES,
+      STARTER_TYPES,
+      createProjectConfig,
+      isProjectNameValid,
+      isSafeToCreateProjectIn,
+      getHelloText,
+      patchPackageJsonForCli,
+      updatePackageJsonForCli,
+    } = await import('@ionic/cli-utils/lib/start');
+
+    const { pkgInstallPluginArgs } = await import('@ionic/cli-utils/lib/plugins');
+    const { getCommandInfo } = await import('@ionic/cli-utils/lib/utils/shell');
+    const { isValidPackageName, pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
+    const { tarXvfFromUrl } = await import('@ionic/cli-utils/lib/utils/archive');
+    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
+
     let [ projectName, starterTemplateName ] = inputs;
     let appName = <string>options['app-name'] || projectName;
     let starterBranchName = <string>options['starterBranchName'] || 'master';
@@ -323,6 +311,7 @@ export class StartCommand extends Command implements CommandPreRun {
         try {
           this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
           const rimraf = await import('rimraf');
+          const { promisify } = await import('@ionic/cli-utils/lib/utils/promise');
           const rimrafp = promisify<void, string>(rimraf);
           await rimrafp(projectRoot);
           await fsMkdir(projectRoot, undefined);
@@ -399,10 +388,6 @@ export class StartCommand extends Command implements CommandPreRun {
       const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
 
-      if (options['cordova']) {
-        starterType.localDependencies.push('@ionic/cli-plugin-cordova');
-      }
-
       this.env.log.debug(`localDeps=${starterType.localDependencies}`);
 
       for (let dep of starterType.localDependencies) {
@@ -443,6 +428,7 @@ export class StartCommand extends Command implements CommandPreRun {
       }
 
       if (linkConfirmed) {
+        const { Project, PROJECT_FILE } = await import('@ionic/cli-utils/lib/project');
         this.env.project = new Project(projectRoot, PROJECT_FILE);
         const cmdArgs = ['link'];
 

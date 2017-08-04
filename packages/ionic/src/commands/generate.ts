@@ -1,16 +1,8 @@
 import * as chalk from 'chalk';
 
-import {
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandPreRun,
-  contains,
-  promptToInstallProjectPlugin,
-  registerPlugin,
-  validators,
-} from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { contains, validators } from '@ionic/cli-utils/lib/validators';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 const TYPE_CHOICES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
 
@@ -66,22 +58,6 @@ export class GenerateCommand extends Command implements CommandPreRun {
       throw this.exit('Generators are only supported in Ionic Angular projects.');
     }
 
-    // TODO: specific to Ionic Angular
-
-    const hooks = this.env.hooks.getRegistered('command:generate');
-
-    if (hooks.length === 0) {
-      const plugin = await promptToInstallProjectPlugin(this.env, {
-        message: `To use generators, you need to install ${chalk.green('@ionic/cli-plugin-ionic-angular')}. Install and continue?`,
-      });
-
-      if (plugin) {
-        registerPlugin(this.env, plugin);
-      } else {
-        return 1;
-      }
-    }
-
     if (!inputs[0]) {
       const generatorType = await this.env.prompt({
         type: 'list',
@@ -111,9 +87,10 @@ export class GenerateCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [type, name] = inputs;
+    const [ type, name ] = inputs;
 
-    await this.env.hooks.fire('command:generate', { cmd: this, env: this.env, inputs, options }); // TODO: print generated templates
+    const { generate } = await import('@ionic/cli-utils/lib/ionic-angular/generate');
+    await generate({ env: this.env, inputs, options });
 
     this.env.log.ok(`Generated a ${chalk.bold(type)}${type === 'tabs' ? ' page' : ''} named ${chalk.bold(name)}!`);
   }

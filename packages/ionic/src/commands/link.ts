@@ -1,20 +1,7 @@
 import * as chalk from 'chalk';
 
-import {
-  AppDetails,
-  BACKEND_LEGACY,
-  BACKEND_PRO,
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandPreRun,
-  PROJECT_FILE,
-  createFatalAPIFormat,
-  isAppResponse,
-  isAppsResponse,
-  promptToLogin,
-} from '@ionic/cli-utils';
+import { AppDetails, BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 const CHOICE_CREATE_NEW_APP = 'createNewApp';
 const CHOICE_NEVERMIND = 'nevermind';
@@ -29,7 +16,7 @@ If you have an app on Ionic, you can link it to this local Ionic project with th
 
 Excluding the ${chalk.green('app_id')} argument looks up your apps on Ionic and prompts you to select one.
 
-This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PROJECT_FILE)} for other commands to read.
+This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold('ionic.config.json')} for other commands to read.
   `,
   exampleCommands: ['', 'a1b2c3d4'],
   inputs: [
@@ -83,6 +70,9 @@ export class LinkCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
+    const { App } = await import('@ionic/cli-utils/lib/app');
+
     let [ appId ] = inputs;
     let { create, name } = options;
 
@@ -162,15 +152,8 @@ export class LinkCommand extends Command implements CommandPreRun {
       this.env.tasks.next(`Looking up app ${chalk.bold(appId)}`);
 
       const token = await this.env.session.getAppUserToken(appId);
-      const req = this.env.client.make('GET', `/apps/${appId}`)
-        .set('Authorization', `Bearer ${token}`)
-        .send();
-
-      const res = await this.env.client.do(req);
-
-      if (!isAppResponse(res)) {
-        throw createFatalAPIFormat(req, res);
-      }
+      const appUtil = new App(token, this.env.client);
+      await appUtil.load(appId);
 
       this.env.tasks.end();
 
@@ -179,10 +162,8 @@ export class LinkCommand extends Command implements CommandPreRun {
       let apps: AppDetails[] = [];
 
       const token = await this.env.session.getUserToken();
-      const paginator = this.env.client.paginate(
-        () => this.env.client.make('GET', '/apps').set('Authorization', `Bearer ${token}`),
-        isAppsResponse
-      );
+      const appUtil = new App(token, this.env.client);
+      const paginator = appUtil.list();
 
       for (let r of paginator) {
         const res = await r;
@@ -226,16 +207,10 @@ export class LinkCommand extends Command implements CommandPreRun {
           });
         }
 
-        const req = this.env.client.make('POST', '/apps')
-          .set('Authorization', `Bearer ${token}`)
-          .send({ name });
-        const res = await this.env.client.do(req);
+        const appUtil = new App(token, this.env.client);
+        const app = await appUtil.create({ name: String(name) });
 
-        if (!isAppResponse(res)) {
-          throw createFatalAPIFormat(req, res);
-        }
-
-        appId = res.data.id;
+        appId = app.id;
         await this.runcmd(['config', 'set', 'app_id', appId]);
         await this.runcmd(['git', 'remote']);
 
