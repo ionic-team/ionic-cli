@@ -61,7 +61,7 @@ function formatIonicPage(env) {
       return;
     }
 
-    return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '))}) | ${stripAnsi(cmdData.description)}`;
+    return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '))}/) | ${stripAnsi(cmdData.description)}`;
   }
 
   const commands = getCmds(env);
