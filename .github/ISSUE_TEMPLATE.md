@@ -36,8 +36,8 @@ Remember to run commands with the --verbose flag for debug statements.
 
 **My `ionic info`:**
 <!--
-Post the output of `ionic info` below. `ionic info` is a CLI command that
-prints out environment information.
+Post the output of running `ionic info` (within your project, if applicable)
+below. `ionic info` is a CLI command that prints out environment information.
 -->
 
 
