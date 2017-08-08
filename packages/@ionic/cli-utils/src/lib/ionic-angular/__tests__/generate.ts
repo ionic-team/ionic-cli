@@ -2,30 +2,6 @@ describe('@ionic/cli-utils', () => {
 
   describe('ionic-angular', () => {
 
-    describe('prompt', () => {
-
-      it('should return a file path to the main app module', async () => {
-        jest.resetModules();
-        jest.mock('../../lib/modules', () => ({
-          load: jest.fn().mockReturnValue({
-            prompt: jest.fn().mockReturnValueOnce({
-              usage: true
-            })
-          })
-        }));
-
-        const generate = require('../generate');
-
-        const context = {
-          appNgModulePath: '/path/to/nowhere'
-        };
-
-        const result = await generate.prompt(context);
-        expect(result).toEqual(context.appNgModulePath);
-      });
-
-    });
-
     describe('tabsPrompt', () => {
 
       it('should return an array', async () => {

@@ -89,7 +89,7 @@ async function getModules(context: any, kind: string) {
   }
 }
 
-async function tabsPrompt(env: IonicEnvironment) {
+export async function tabsPrompt(env: IonicEnvironment) {
   const { validators } = await import('../validators');
 
   const tabNames = [];
