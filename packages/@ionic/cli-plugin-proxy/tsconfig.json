@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "allowUnreachableCode": false,
+    "baseUrl": "./",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "outDir": "./dist",
+    "pretty": true,
+    "strict": true,
+    "target": "es6",
+    "lib": [
+      "es2016"
+    ]
+  },
+  "include": [
+    "../../../types/cross-spawn.d.ts",
+    "../../../types/dargs.d.ts",
+    "../../../types/slice-ansi.d.ts",
+    "../../../types/strip-ansi.d.ts",
+    "../../../types/string-width.d.ts",
+    "../../../types/superagent.d.ts",
+    "../../../types/superagent-proxy.d.ts",
+    "../../../types/leek.d.ts",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/**/__tests__/*.ts"
+  ]
+}

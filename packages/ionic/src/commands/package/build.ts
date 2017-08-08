@@ -1,22 +1,8 @@
 import * as chalk from 'chalk';
 
-import {
-  BACKEND_LEGACY,
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandPreRun,
-  DeployClient,
-  PackageBuild,
-  PackageClient,
-  SecurityClient,
-  contains,
-  createArchive,
-  filterOptionsByIntent,
-} from '@ionic/cli-utils';
-
-import { upload } from '../../lib/upload';
+import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandPreRun, PackageBuild } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { contains } from '@ionic/cli-utils/lib/validators';
 
 @CommandMetadata({
   name: 'build',
@@ -62,6 +48,9 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
 })
 export class PackageBuildCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const { PackageClient } = await import('@ionic/cli-utils/lib/package');
+    const { SecurityClient } = await import('@ionic/cli-utils/lib/security');
+
     const token = await this.env.session.getAppUserToken();
     const pkg = new PackageClient(token, this.env.client);
     const sec = new SecurityClient(token, this.env.client);
@@ -110,6 +99,13 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const { upload } = await import('@ionic/cli-utils/lib/upload');
+    const { DeployClient } = await import('@ionic/cli-utils/lib/deploy');
+    const { PackageClient } = await import('@ionic/cli-utils/lib/package');
+    const { SecurityClient } = await import('@ionic/cli-utils/lib/security');
+    const { filterOptionsByIntent } = await import('@ionic/cli-utils/lib/utils/command');
+    const { createArchive } = await import('@ionic/cli-utils/lib/utils/archive');
+
     let [ platform ] = <[PackageBuild['platform']]>inputs;
     let { prod, release, profile, note } = options;
 
@@ -146,14 +142,8 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
 
     this.env.tasks.end();
 
-    await this.env.hooks.fire('build:before', { env: this.env });
-    await this.env.hooks.fire('command:build', {
-      cmd: this,
-      env: this.env,
-      inputs,
-      options: filterOptionsByIntent(this.metadata, options, 'app-scripts'),
-    });
-    await this.env.hooks.fire('build:after', { env: this.env });
+    const { build } = await import('@ionic/cli-utils/commands/build');
+    await build(this.env, inputs, filterOptionsByIntent(this.metadata, options, 'app-scripts'));
 
     const snapshotRequest = await upload(this.env, { note });
 
@@ -175,7 +165,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     this.env.tasks.next('Queuing build');
 
     const snapshot = await deploy.getSnapshot(snapshotRequest.uuid, {});
-    const build = await pkg.queueBuild({
+    const packageBuild = await pkg.queueBuild({
       platform,
       mode: release ? 'release' : 'debug',
       zipUrl: snapshot.url,
@@ -184,6 +174,6 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     });
 
     this.env.tasks.end();
-    this.env.log.ok(`Build ${build.id} has been submitted!`);
+    this.env.log.ok(`Build ${packageBuild.id} has been submitted!`);
   }
 }

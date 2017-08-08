@@ -2,15 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as chalk from 'chalk';
 
-import {
-  BACKEND_LEGACY,
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  PackageClient,
-  prettyPath,
-} from '@ionic/cli-utils';
+import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
   name: 'download',
@@ -40,6 +33,9 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
 })
 export class PackageDownloadCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { PackageClient } = await import('@ionic/cli-utils/lib/package');
+    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
+
     let [ id ] = inputs;
     let { destination } = options;
     const destDir = path.resolve(destination || this.env.project.directory);

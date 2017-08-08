@@ -1,14 +1,10 @@
 import * as chalk from 'chalk';
 
-import {
-  BACKEND_PRO,
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  pathExists,
-  prettyPath,
-} from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { pathExists } from '@ionic/cli-utils/lib/utils/fs';
+
+import { SSHBaseCommand } from './base';
 
 @CommandMetadata({
   name: 'setup',
@@ -16,13 +12,19 @@ import {
   backends: [BACKEND_PRO],
   description: 'Setup your Ionic SSH keys automatically',
 })
-export class SSHSetupCommand extends Command {
+export class SSHSetupCommand extends SSHBaseCommand {
+  async preRun() {
+    await this.checkForOpenSSH();
+  }
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-    const [{ getGeneratedPrivateKeyPath }, { getSSHConfigPath }] = await Promise.all([import('../../lib/ssh'), import('../../lib/ssh-config')]);
+    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
+    const { getGeneratedPrivateKeyPath } = await import('@ionic/cli-utils/lib/ssh');
+    const { getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
 
     const config = await this.env.config.load();
 
-    const sshconfigPath = getSSHConfigPath();
+    const sshconfigPath = getConfigPath();
     const keyPath = await getGeneratedPrivateKeyPath(this.env);
     const pubkeyPath = `${keyPath}.pub`;
 

@@ -1,10 +1,5 @@
-import {
-  BACKEND_LEGACY,
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-} from '@ionic/cli-utils';
+import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
   name: 'signup',

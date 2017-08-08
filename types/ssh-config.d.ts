@@ -9,14 +9,14 @@ declare module "ssh-config" {
     }
 
     interface ConfigComment {
-      type: number;
+      type: typeof COMMENT;
       content: string;
       before: string;
       after: string;
     }
 
     interface ConfigDirective {
-      type: number;
+      type: typeof DIRECTIVE;
       content: string;
       before: string;
       after: string;

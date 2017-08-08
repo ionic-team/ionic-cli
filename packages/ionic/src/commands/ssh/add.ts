@@ -3,21 +3,10 @@ import * as path from 'path';
 
 import * as chalk from 'chalk';
 
-import {
-  BACKEND_PRO,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandPreRun,
-  ERROR_FILE_NOT_FOUND,
-  FatalException,
-  createFatalAPIFormat,
-  isSSHKeyResponse,
-  isSuperAgentError,
-  pathAccessible,
-  pathExists,
-  prettyPath,
-} from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { isSSHKeyResponse, isSuperAgentError } from '@ionic/cli-utils/guards';
+import { CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { ERROR_FILE_NOT_FOUND, pathAccessible, pathExists } from '@ionic/cli-utils/lib/utils/fs';
 
 import { SSHBaseCommand } from './base';
 
@@ -42,6 +31,8 @@ import { SSHBaseCommand } from './base';
 })
 export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
+
     if (!inputs[0]) {
       const fs = await import('fs');
       const defaultPubkeyPath = path.resolve(os.homedir(), '.ssh', 'id_rsa.pub');
@@ -59,12 +50,15 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
+    const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
+
     const {
       ERROR_SSH_ANNOTATION_INVALID_WHITESPACE,
       ERROR_SSH_ANNOTATION_MISSING,
       ERROR_SSH_INVALID_PUBKEY,
       parsePublicKeyFile,
-    } = await import('../../lib/ssh');
+    } = await import('@ionic/cli-utils/lib/ssh');
 
     const pubkeyPath = path.resolve(inputs[0]);
     const pubkeyName = prettyPath(pubkeyPath);
@@ -75,27 +69,31 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
       [ pubkey, , , ] = await parsePublicKeyFile(pubkeyPath);
     } catch (e) {
       if (e === ERROR_FILE_NOT_FOUND) {
-        throw new FatalException(
+        this.env.log.error(
           `${chalk.bold(prettyPath(pubkeyPath))} does not appear to exist. Please specify a valid SSH public key.\n` +
           `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
         );
+        return 1;
       } else if (e === ERROR_SSH_INVALID_PUBKEY) {
-        throw new FatalException(
+        this.env.log.error(
           `${chalk.bold(pubkeyName)} does not appear to be a valid SSH public key. (Not in ${chalk.bold('authorized_keys')} file format.)\n` +
           `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
         );
+        return 1;
       } else if (e === ERROR_SSH_ANNOTATION_MISSING) {
-        throw new FatalException(
+        this.env.log.error(
           `${chalk.bold(pubkeyName)} is missing an annotation/comment after the public key.\n` +
           `If you are using ${chalk.green('ssh-keygen')}, try using the ${chalk.green('-C')} flag.\n` +
           `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
         );
+        return 1;
       } else if (e === ERROR_SSH_ANNOTATION_INVALID_WHITESPACE) {
-        throw new FatalException(
+        this.env.log.error(
           `${chalk.bold(pubkeyName)} has an annotation/comment that has whitespace.\n` +
           `Try changing the comment to something more like an identifier.\n` +
           `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
         );
+        return 1;
       }
 
       throw e;

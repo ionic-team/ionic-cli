@@ -3,6 +3,10 @@ machine:
     version: v6.1.0
 
 dependencies:
+  cache_directories:
+    - packages/@ionic/cli-plugin-proxy/node_modules
+    - packages/@ionic/cli-utils/node_modules
+    - packages/ionic/node_modules
   post:
     - npm run bootstrap
 
@@ -13,10 +17,7 @@ test:
 deployment:
   pre:
     - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-  npm-canary:
+  npm:
     branch: master
     commands:
       - npm run publish:canary -- --yes
-  npm-testing:
-    branch: testing
-      - npm run publish:testing -- --yes

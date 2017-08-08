@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "allowUnreachableCode": false,
+    "baseUrl": "./",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "outDir": "./",
+    "pretty": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "target": "es6",
+    "typeRoots": [
+      "../../../node_modules/@types"
+    ],
+    "lib": [
+      "es2016",
+      "dom"
+    ]
+  },
+  "include": [
+    "../../../types/ci-info.d.ts",
+    "../../../types/cross-spawn.d.ts",
+    "../../../types/dargs.d.ts",
+    "../../../types/elementtree.d.ts",
+    "../../../types/leek.d.ts",
+    "../../../types/proxy-middleware.d.ts",
+    "../../../types/slice-ansi.d.ts",
+    "../../../types/ssh-config.d.ts",
+    "../../../types/string-width.d.ts",
+    "../../../types/strip-ansi.d.ts",
+    "../../../types/strip-ansi.d.ts",
+    "../../../types/superagent.d.ts",
+    "../../../types/tiny-lr.d.ts",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/**/__tests__/*.ts"
+  ]
+}

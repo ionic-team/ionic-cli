@@ -1,22 +1,14 @@
-import * as util from 'util';
 import * as chalk from 'chalk';
 
-import {
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  IConfig,
-  PROJECT_FILE,
-  prettyPath,
-} from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
   name: 'set',
   type: 'global',
   description: 'Set config values',
   longDescription: `
-By default, this command sets properties in your project's ${chalk.bold(PROJECT_FILE)} file.
+By default, this command sets properties in your project's ${chalk.bold('ionic.config.json')} file.
 
 For ${chalk.green('--global')} config, the CLI sets properties in the global CLI config file (${chalk.bold('~/.ionic/config.json')}).
 
@@ -45,52 +37,8 @@ For nested properties, separate nest levels with dots. For example, the property
   exampleCommands: ['name newAppName', '-g yarn true'],
 })
 export class ConfigSetCommand extends Command {
-  resolveValue(v: string): string | boolean {
-    if (v === 'true') {
-      return true;
-    }
-
-    if (v === 'false') {
-      return false;
-    }
-
-    return v;
-  }
-
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    let [ p, v ] = inputs;
-    const { global } = options;
-
-    if (!global && !this.env.project.directory) {
-      throw this.exit(`Sorry--this won't work outside an Ionic project directory. Did you mean to set global config using ${chalk.green('--global')}?`);
-    }
-
-    const file: IConfig<Object> = global ? this.env.config : this.env.project;
-
-    const config = await file.load();
-    const lodash = this.env.load('lodash');
-
-    const oldValue = lodash.get(config, p);
-    const newValue = this.resolveValue(v);
-
-    if (oldValue && typeof oldValue === 'object') {
-      const prettyOldValue = util.inspect(oldValue, { breakLength: Infinity, colors: chalk.enabled });
-
-      throw this.exit(
-        `Sorry--will not override objects or arrays.\n` +
-        `Value of ${chalk.green(p)} is: ${prettyOldValue}`
-      );
-    }
-
-    const valueChanged = oldValue !== newValue;
-
-    lodash.set(config, p, newValue);
-    await this.env.hooks.fire('command:config:set', { env: this.env, cmd: this, inputs, options, valueChanged });
-
-    if (valueChanged) {
-      this.env.log.ok(`${chalk.green(p)} set to ${chalk.green(v)} in ${chalk.bold(prettyPath(file.filePath))}!`);
-    } else {
-      this.env.log.info(`${chalk.green(p)} is already set to ${chalk.green(v)}.`);
-    }
+    const { set } = await import('@ionic/cli-utils/commands/config/set');
+    await set(this.env, inputs, options);
   }
 }

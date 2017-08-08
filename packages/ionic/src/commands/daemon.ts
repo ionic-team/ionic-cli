@@ -1,18 +1,8 @@
 import * as chalk from 'chalk';
 
-import {
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  DistTag,
-  determineDistTag,
-  fsUnlink,
-  pkgLatestVersion,
-  pluginHasUpdate,
-  prettyPath,
-  processRunning,
-} from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, DistTag } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { fsUnlink } from '@ionic/cli-utils/lib/utils/fs';
 
 @CommandMetadata({
   name: 'daemon',
@@ -34,6 +24,10 @@ import {
 })
 export class DaemonCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
+    const { processRunning } = await import('@ionic/cli-utils/lib/daemon');
+    const { pluginHasUpdate } = await import('@ionic/cli-utils/lib/plugins');
+
     const updateInterval = Number(options.interval);
     const killExisting = options['kill-existing'];
     const config = await this.env.config.load();
@@ -74,6 +68,9 @@ export class DaemonCommand extends Command {
     await this.env.daemon.setPid(process.pid);
 
     const updateFn = async () => {
+      const { determineDistTag } = await import('@ionic/cli-utils/lib/plugins');
+      const { pkgLatestVersion } = await import('@ionic/cli-utils/lib/utils/npm');
+
       const config = await this.env.config.load({ disk: true });
       const f = await this.env.daemon.getPid();
       const d = await this.env.daemon.load({ disk: true });

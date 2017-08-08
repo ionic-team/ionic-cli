@@ -9,29 +9,27 @@
     "test": "lerna run test",
     "build": "lerna run build",
     "watch": "lerna run watch --parallel",
-    "docs": "node ./packages/cli-scripts/docs.js",
+    "docs": "node ./packages/@ionic/cli-scripts/docs.js",
     "publish:canary": "lerna publish --canary --exact --npm-tag=canary --skip-git",
-    "publish:beta": "lerna publish --exact --npm-tag=beta",
-    "publish:ci": "npm run publish:canary -- --yes",
+    "publish:testing": "lerna publish --canary=testing --exact --npm-tag=testing --skip-git",
     "publish": "lerna publish --exact --conventional-commits",
     "prepush": "npm run lint"
   },
   "devDependencies": {
     "@types/node": "^6.0.85",
-    "awesome-typescript-loader": "^3.1.3",
     "chokidar-cli": "^1.2.0",
     "concurrently": "^3.4.0",
     "coveralls": "^2.2.0",
-    "cross-env": "^5.0.1",
+    "cross-env": "^5.0.4",
     "eslint-config-ionic": "0.0.2",
     "husky": "^0.14.3",
     "jest": "^20.0.4",
     "jest-cli": "^20.0.4",
     "lerna": "^2.0.0",
     "replace": "^0.3.0",
-    "ts-jest": "^20.0.4",
-    "tslint": "^5.3.2",
+    "ts-jest": "^20.0.10",
+    "tslint": "^5.6.0",
     "tslint-ionic-rules": "^0.0.11",
-    "typescript": "^2.4.2"
+    "typescript": "^2.5.0-dev.20170807"
   }
 }

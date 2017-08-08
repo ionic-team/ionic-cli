@@ -1,11 +1,6 @@
-import {
-  BACKEND_PRO,
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  validators,
-} from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { validators } from '@ionic/cli-utils/lib/validators';
 
 // import { formatGitRepoUrl } from '../../lib/git';
 

@@ -1,15 +1,7 @@
 import * as chalk from 'chalk';
 
-import {
-  BACKEND_LEGACY,
-  Command,
-  CommandLineInput,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-} from '@ionic/cli-utils';
-
-import { upload } from '../lib/upload';
+import { BACKEND_LEGACY, CommandLineInput, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
   name: 'upload',
@@ -74,19 +66,15 @@ export class UploadCommand extends Command {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { upload } = await import('@ionic/cli-utils/lib/upload');
+
     const note = this.resolveNote(options['note']);
     const channelTag = this.resolveChannelTag(options['deploy']);
     const metadata = this.resolveMetaData(options['metadata']);
 
     if (!options['nobuild']) {
-      await this.env.hooks.fire('build:before', { env: this.env });
-      await this.env.hooks.fire('command:build', {
-        cmd: this,
-        env: this.env,
-        inputs,
-        options,
-      });
-      await this.env.hooks.fire('build:after', { env: this.env });
+      const { build } = await import('@ionic/cli-utils/commands/build');
+      await build(this.env, inputs, options);
     }
 
     await upload(this.env, { note, channelTag, metadata });

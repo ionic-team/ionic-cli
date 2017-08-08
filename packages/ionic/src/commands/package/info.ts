@@ -1,15 +1,7 @@
 import * as chalk from 'chalk';
 
-import {
-  BACKEND_LEGACY,
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  PackageBuild,
-  PackageClient,
-  columnar,
-} from '@ionic/cli-utils';
+import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, PackageBuild } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
   name: 'info',
@@ -39,6 +31,9 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
 })
 export class PackageInfoCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const { PackageClient } = await import('@ionic/cli-utils/lib/package');
+    const { columnar } = await import('@ionic/cli-utils/lib/utils/format');
+
     const [ id ] = inputs;
     const { json } = options;
 

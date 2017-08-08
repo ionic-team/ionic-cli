@@ -1,11 +1,5 @@
-import {
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  createRequest,
-  isSuperAgentError,
-} from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
   name: 'docs',
@@ -14,16 +8,22 @@ import {
 })
 export class DocsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { isSuperAgentError } = await import('@ionic/cli-utils/guards');
+    const { createRequest } = await import('@ionic/cli-utils/lib/utils/http');
+
     let url = '';
     const opn = await import('opn');
 
     const docsHomepage = 'https://ionicframework.com/docs';
-    const results = await this.env.hooks.fire('command:docs', { cmd: this, env: this.env, inputs, options });
 
-    if (results.length === 0) {
-      url = docsHomepage;
-    } else {
-      [ url ] = results;
+    const project = this.env.project.directory ? await this.env.project.load() : undefined;
+
+    if (project) {
+      if (project.type === 'ionic1') {
+        url = 'https://ionicframework.com/docs/v1/';
+      } else if (project.type === 'ionic-angular') {
+        url = 'https://ionicframework.com/docs/api'; // TODO: can know framework version, HEAD request, etc
+      }
     }
 
     try {

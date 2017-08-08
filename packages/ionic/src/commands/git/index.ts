@@ -1,14 +1,11 @@
-import { CommandMap, Namespace } from '@ionic/cli-utils';
-
-import { GitCloneCommand } from './clone';
-import { GitRemoteCommand } from './remote';
+import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class GitNamespace extends Namespace {
   name = 'git';
-  source = 'ionic';
+  description = 'Commands relating to git';
 
   commands = new CommandMap([
-    ['clone', () => new GitCloneCommand()],
-    ['remote', () => new GitRemoteCommand()],
+    ['clone', async () => { const { GitCloneCommand } = await import('./clone'); return new GitCloneCommand(); }],
+    ['remote', async () => { const { GitRemoteCommand } = await import('./remote'); return new GitRemoteCommand(); }],
   ]);
 }
