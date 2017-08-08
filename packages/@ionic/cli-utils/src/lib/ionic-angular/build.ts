@@ -10,7 +10,7 @@ export async function build(args: { env: IonicEnvironment; options: { _: string[
   const appScriptsArgs = minimistOptionsToArray(args.options, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
-  const AppScripts = await importAppScripts(args.env);;
+  const AppScripts = await importAppScripts(args.env);
   const context = AppScripts.generateContext();
 
   console.log(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}\n`);
