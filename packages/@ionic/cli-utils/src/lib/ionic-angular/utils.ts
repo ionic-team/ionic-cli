@@ -32,3 +32,8 @@ export async function getAppScriptsVersion(env: IonicEnvironment): Promise<strin
   }
 }
 
+export async function importAppScripts(env: IonicEnvironment): Promise<any> {
+  const appScriptsPath = path.resolve(env.project.directory, 'node_modules', '@ionic', 'app-scripts'); // TODO
+
+  return require(appScriptsPath);
+}

@@ -1,7 +1,9 @@
 import * as chalk from 'chalk';
 
 import { IonicEnvironment, ServeDetails } from '../../definitions';
+
 import { FatalException } from '../errors';
+import { importAppScripts } from './utils';
 
 export async function serve(args: { env: IonicEnvironment, options: { _: string[]; [key: string]: any; } }): Promise<ServeDetails> {
   const { getAvailableIPAddress } = await import('../utils/network');
@@ -42,7 +44,7 @@ export async function serve(args: { env: IonicEnvironment, options: { _: string[
   const appScriptsArgs = minimistOptionsToArray(args.options, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
-  const AppScripts = await import('@ionic/app-scripts');
+  const AppScripts = await importAppScripts(args.env);
   const context = AppScripts.generateContext();
 
   // using app-scripts and livereload is requested

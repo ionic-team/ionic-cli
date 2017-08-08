@@ -7,7 +7,7 @@ export async function build(env: IonicEnvironment, inputs: CommandLineInputs, op
 
   if (project.type === 'ionic-angular') {
     const { build } = await import('../lib/ionic-angular/build');
-    await build({ options });
+    await build({ env, options });
   }
 
   await env.hooks.fire('build:after', { env });

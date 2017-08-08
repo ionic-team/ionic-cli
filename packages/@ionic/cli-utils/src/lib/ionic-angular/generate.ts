@@ -1,5 +1,7 @@
 import { IonicEnvironment } from '../../definitions';
 
+import { importAppScripts } from './utils';
+
 export async function generate(args: { env: IonicEnvironment; inputs: string[], options: { _: string[]; [key: string]: any; }; }): Promise<string[]> {
   const { minimistOptionsToArray } = await import('../utils/command');
 
@@ -10,7 +12,7 @@ export async function generate(args: { env: IonicEnvironment; inputs: string[], 
   const appScriptsArgs = minimistOptionsToArray(args.options, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
-  const AppScripts = await import('@ionic/app-scripts');
+  const AppScripts = await importAppScripts(args.env);
   const context = AppScripts.generateContext();
 
   const [ type, name ] = args.inputs;
