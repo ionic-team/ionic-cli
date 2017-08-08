@@ -390,15 +390,17 @@ export class StartCommand extends Command implements CommandPreRun {
 
       this.env.log.debug(`localDeps=${starterType.localDependencies}`);
 
-      for (let dep of starterType.localDependencies) {
-        const [ installer, ...installerArgs ] = await pkgInstallPluginArgs(this.env, dep);
-        await this.env.shell.run(installer, installerArgs, shellOptions);
-      }
+      if (starterType.localDependencies.length > 0) {
+        for (let dep of starterType.localDependencies) {
+          const [ installer, ...installerArgs ] = await pkgInstallPluginArgs(this.env, dep);
+          await this.env.shell.run(installer, installerArgs, shellOptions);
+        }
 
-      const [ , ...dedupeArgs ] = await pkgManagerArgs(this.env, { command: 'dedupe' });
+        const [ , ...dedupeArgs ] = await pkgManagerArgs(this.env, { command: 'dedupe' });
 
-      if (dedupeArgs.length > 0) {
-        await this.env.shell.run(installer, dedupeArgs, {});
+        if (dedupeArgs.length > 0) {
+          await this.env.shell.run(installer, dedupeArgs, {});
+        }
       }
     }
 
