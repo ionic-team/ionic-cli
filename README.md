@@ -22,6 +22,7 @@ reports and feature requests.
 * [Getting Started](#getting-started)
 * [Using Cordova](#using-cordova)
    * [Requirements](#requirements-1)
+* [Integrations](#integrations)
 * [Environment Variables](#environment-variables)
 * [CLI Flags](#cli-flags)
 * [CLI Config](#cli-config)
@@ -47,7 +48,7 @@ prefix with `sudo` or can setup [proper file permissions for
 npm](https://docs.npmjs.com/getting-started/fixing-npm-permissions).*
 
 :memo: *Note: Running `ionic` will first look to see if you're in an Ionic
-project. If you are, it runs the locally installed CLI.*
+project. If you are, it runs the locally installed CLI, if installed.*
 
 <a name="ionic-1"></a>
 <a name="ionic-v1"></a>
@@ -97,6 +98,21 @@ $ npm install -g cordova
 $ ionic cordova --help
 $ ionic cordova run ios
 ```
+
+## Integrations
+
+As of CLI 3.8, the `@ionic/cli-plugin-cordova` and `@ionic/cli-plugin-gulp`
+have been deprecated in favor of *integrations*. Integrations are automatically
+detected and enabled, but can be easily disabled.
+
+Integrations hook into CLI events. For example, when the Cordova integration is
+enabled, `ionic cordova prepare` will run after `ionic build` runs. See [CLI
+Hooks](#cli-hooks).
+
+| integration | enabled when...                                           | disabled with...                                      |
+| ------------|-----------------------------------------------------------|-------------------------------------------------------|
+| Cordova     | `ionic cordova` commands are run                          | `ionic config set integrations.cordova.enabled false` |
+| Gulp        | `gulp` exists in `devDependencies` of your `package.json` | `ionic config set integrations.gulp.enabled false`    |
 
 ## Environment Variables
 

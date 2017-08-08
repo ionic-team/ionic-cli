@@ -16,7 +16,11 @@ export async function loadGulp(env: IonicEnvironment): Promise<typeof gulpType> 
 
   const project = await env.project.load();
 
-  const gulpFilePath = path.join(env.project.directory, project.integrations.gulp && project.integrations.gulp.file ? project.integrations.gulp.file : 'gulpfile.js');
+  if (typeof project.integrations.gulp === 'undefined' || project.integrations.gulp.enabled === false) {
+    throw new FatalException('Not attempting to load gulp from a project with gulp integration disabled.');
+  }
+
+  const gulpFilePath = path.join(env.project.directory, project.integrations.gulp.file ? project.integrations.gulp.file : 'gulpfile.js');
   const gulpPath = path.join(env.project.directory, 'node_modules', 'gulp');
 
   try {
@@ -67,14 +71,19 @@ export async function getGulpVersion(): Promise<string | undefined> {
   return gulpVersion;
 }
 
+export async function checkGulp(env: IonicEnvironment) {
+  const project = await env.project.load();
+
+  if (!project.integrations.gulp) {
+    env.log.info('Enabling Gulp integration.');
+    await env.runcmd(['config', 'set', 'integrations.gulp', '{}', '--json', '--force']);
+  }
+}
+
 export async function runTask(env: IonicEnvironment, name: string): Promise<void> {
   const project = await env.project.load();
 
-  if (typeof project.integrations.gulp === 'undefined') {
-    project.integrations.gulp = {};
-  }
-
-  if (project.integrations.gulp) {
+  if (project.integrations.gulp && project.integrations.gulp.enabled !== false) {
     const gulp = await loadGulp(env);
     const gulpStart = promisify<void, string>(gulp.start.bind(gulp));
 
@@ -93,11 +102,7 @@ export async function runTask(env: IonicEnvironment, name: string): Promise<void
 export async function registerWatchEvents(env: IonicEnvironment) {
   const project = await env.project.load();
 
-  if (typeof project.integrations.gulp === 'undefined') {
-    project.integrations.gulp = {};
-  }
-
-  if (project.integrations.gulp) {
+  if (project.integrations.gulp && project.integrations.gulp.enabled !== false) {
     if (!project.watchPatterns) {
       project.watchPatterns = [];
     }

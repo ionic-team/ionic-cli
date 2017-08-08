@@ -37,7 +37,8 @@ export function registerHooks(hooks: IHookEngine) {
     }
 
     if (packageJson.devDependencies && packageJson.devDependencies['gulp']) {
-      const { runTask } = await import('@ionic/cli-utils/lib/gulp');
+      const { checkGulp, runTask } = await import('@ionic/cli-utils/lib/gulp');
+      await checkGulp(env);
       await runTask(env, BUILD_BEFORE_SCRIPT);
     }
   });
@@ -51,11 +52,12 @@ export function registerHooks(hooks: IHookEngine) {
     }
 
     if (packageJson.devDependencies && packageJson.devDependencies['gulp']) {
-      const { runTask } = await import('@ionic/cli-utils/lib/gulp');
+      const { checkGulp, runTask } = await import('@ionic/cli-utils/lib/gulp');
+      await checkGulp(env);
       await runTask(env, BUILD_AFTER_SCRIPT);
     }
 
-    if (project.integrations.cordova) {
+    if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
       await env.runcmd(['cordova', 'prepare']);
     }
   });
@@ -69,7 +71,8 @@ export function registerHooks(hooks: IHookEngine) {
     }
 
     if (packageJson.devDependencies && packageJson.devDependencies['gulp']) {
-      const { registerWatchEvents, runTask } = await import('@ionic/cli-utils/lib/gulp');
+      const { checkGulp, registerWatchEvents, runTask } = await import('@ionic/cli-utils/lib/gulp');
+      await checkGulp(env);
       await registerWatchEvents(env);
       await runTask(env, WATCH_BEFORE_SCRIPT);
     }
@@ -105,7 +108,7 @@ export function registerHooks(hooks: IHookEngine) {
         info.push({ type: 'local-packages', name: '@ionic/app-scripts', version: appScriptsVersion ? appScriptsVersion : 'not installed' });
       }
 
-      if (project.integrations.cordova) {
+      if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
         const { getAndroidSdkToolsVersion } = await import('@ionic/cli-utils/lib/android');
         const { getCordovaCLIVersion, getCordovaPlatformVersions } = await import('@ionic/cli-utils/lib/cordova/utils');
 
@@ -145,7 +148,7 @@ export function registerHooks(hooks: IHookEngine) {
         }
       }
 
-      if (project.integrations.gulp) {
+      if (project.integrations.gulp && project.integrations.gulp.enabled !== false) {
         const { getGulpVersion } = await import('@ionic/cli-utils/lib/gulp');
         const gulpVersion = await getGulpVersion();
         info.push({ type: 'global-packages', name: 'Gulp CLI', version: gulpVersion || 'not installed globally' });

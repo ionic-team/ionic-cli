@@ -116,7 +116,8 @@ export class CordovaCommand extends Command {
     const project = await this.env.project.load();
 
     if (!project.integrations.cordova) {
-      project.integrations.cordova = {};
+      this.env.log.info('Enabling Cordova integration.');
+      await this.runcmd(['config', 'set', 'integrations.cordova', '{}', '--json', '--force']);
     }
 
     // Check for www folder

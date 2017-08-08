@@ -7,6 +7,24 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.8.0"></a>
+### 3.8.0 (PENDING)
+
+* :trumpet: All functionality provided by the
+  `@ionic/cli-plugin-ionic-angular`, `@ionic/cli-plugin-ionic1`,
+  `@ionic/cli-plugin-cordova`, and `@ionic/cli-plugin-gulp` plugins has been
+  moved into the core `ionic` package. The listed CLI plugins have been marked
+  as deprecated. For the former two, project type is now detected and handled
+  appropriately during `ionic build`, `ionic serve`, etc. For the latter two,
+  integrations such as Cordova and Gulp are now detected and enabled
+  automatically. See
+  [README.md#integrations](https://github.com/ionic-team/ionic-cli/blob/master/README.md#integrations).
+  The `@ionic/cli-plugin-proxy` plugin is unchanged. You are encouraged to
+  uninstall the deprecated CLI plugins upon updating, as they are no longer
+  needed and will not be loaded.
+* Fixed `ionic cordova prepare` such that it no longer errors when platforms
+  are not detected, it just does nothing, as there is nothing to do.
+
 <a name="3.7.0"></a>
 ### 3.7.0 (2017-08-02)
 
