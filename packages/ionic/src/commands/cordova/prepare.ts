@@ -32,16 +32,17 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
     await this.preRunChecks();
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
     const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
 
     const [ platform ] = inputs;
 
+    const conf = await ConfigXml.load(this.env.project.directory);
+
     if (platform) {
-      const conf = await ConfigXml.load(this.env.project.directory);
-      const platformEngine = conf.getPlatformEngine(platform);
+      const platformEngine = await conf.getPlatformEngine(platform);
 
       if (!platformEngine) {
         const confirm = await this.env.prompt({
@@ -56,9 +57,15 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
           throw this.exit(`Can't prepare for ${chalk.green(platform)} unless the platform is installed. Did you mean just ${chalk.green('ionic cordova prepare')}?`);
         }
       }
+    } else {
+      const platformEngines = await conf.getPlatformEngines();
+
+      if (platformEngines.length === 0) {
+        this.env.log.warn(`No Cordova platforms listed in ${chalk.bold('config.xml')}. Nothing to prepare.`);
+        return 0;
+      }
     }
 
-    const conf = await ConfigXml.load(this.env.project.directory);
     await conf.resetContentSrc();
     await conf.save();
 

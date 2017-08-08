@@ -5,6 +5,12 @@ import * as et from 'elementtree';
 import { ResourcesPlatform } from '../../definitions';
 import { fsReadFile, fsWriteFile } from '../utils/fs';
 
+export interface PlatformEngine {
+  name: string;
+  spec: string;
+  [key: string]: string;
+}
+
 export class ConfigXml {
   protected _filePath?: string;
   protected _doc?: et.ElementTree;
@@ -135,7 +141,14 @@ export class ConfigXml {
     return { id, name, version };
   }
 
-  async getPlatformEngine(platform: string): Promise<{ name: string; spec: string; [key: string]: string } | undefined> {
+  async getPlatformEngines(): Promise<PlatformEngine[]> {
+    const root = this.doc.getroot();
+    const engines = root.findall('engine');
+
+    return engines.map(engine => this.engineElementToPlatformEngine(engine));
+  }
+
+  async getPlatformEngine(platform: string): Promise<PlatformEngine | undefined> {
     const root = this.doc.getroot();
     const engine = root.find(`engine[@name='${platform}']`);
 
@@ -143,9 +156,7 @@ export class ConfigXml {
       return undefined;
     }
 
-    const spec = engine.get('spec');
-
-    return { name: platform, spec: spec ? spec : '', ...engine.attrib };
+    return this.engineElementToPlatformEngine(engine);
   }
 
   async ensurePlatformImages(platform: string, resourcesPlatform: ResourcesPlatform) {
@@ -205,5 +216,12 @@ export class ConfigXml {
     if (!splashScreenDelayPrefElement) {
       splashScreenDelayPrefElement = et.SubElement(root, 'preference', { name: 'SplashScreenDelay', value: '3000' });
     }
+  }
+
+  protected engineElementToPlatformEngine(engine: et.IElement): PlatformEngine {
+    const name = engine.get('name');
+    const spec = engine.get('spec');
+
+    return { name: name ? name : '', spec: spec ? spec : '', ...engine.attrib };
   }
 }
