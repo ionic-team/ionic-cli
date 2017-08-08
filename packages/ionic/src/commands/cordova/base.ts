@@ -115,8 +115,8 @@ export class CordovaCommand extends Command {
 
     const project = await this.env.project.load();
 
-    if (!project.platforms.cordova) {
-      project.platforms.cordova = { enabled: true };
+    if (!project.integrations.cordova) {
+      project.integrations.cordova = {};
     }
 
     // Check for www folder

@@ -78,20 +78,15 @@ export interface ProjectFileProxy {
 
 export type ProjectType = 'ionic-angular' | 'ionic1';
 
-export interface ProjectPlatform {
-  enabled: boolean;
-}
-
 export interface ProjectFile {
   name: string;
   type: ProjectType;
   app_id: string;
-  platforms: {
-    cordova?: ProjectPlatform;
-  };
-  gulp?: {
-    enabled: boolean;
-    file?: string;  // gulpfile.js location, because some people use Gulpfile.js
+  integrations: {
+    cordova?: Object;
+    gulp?: {
+      file?: string;  // gulpfile.js location, because some people use Gulpfile.js
+    };
   };
   documentRoot?: string; // www folder location (TODO: use this everywhere)
   watchPatterns?: string[];

@@ -79,8 +79,8 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
       results.app_id = '';
     }
 
-    if (!results.platforms) {
-      results.platforms = {};
+    if (!results.integrations) {
+      results.integrations = {};
     }
 
     if (!results.type) {
@@ -88,7 +88,7 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
     }
 
     if (results.gulpFile) {
-      results.gulp = { enabled: true, file: results.gulpFile };
+      results.integrations.gulp = { file: results.gulpFile };
     }
 
     if (results.gulp && typeof results.gulp.enabled === 'undefined') {

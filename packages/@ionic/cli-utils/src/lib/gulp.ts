@@ -16,7 +16,7 @@ export async function loadGulp(env: IonicEnvironment): Promise<typeof gulpType> 
 
   const project = await env.project.load();
 
-  const gulpFilePath = path.join(env.project.directory, project.gulp && project.gulp.file ? project.gulp.file : 'gulpfile.js');
+  const gulpFilePath = path.join(env.project.directory, project.integrations.gulp && project.integrations.gulp.file ? project.integrations.gulp.file : 'gulpfile.js');
   const gulpPath = path.join(env.project.directory, 'node_modules', 'gulp');
 
   try {
@@ -70,11 +70,11 @@ export async function getGulpVersion(): Promise<string | undefined> {
 export async function runTask(env: IonicEnvironment, name: string): Promise<void> {
   const project = await env.project.load();
 
-  if (typeof project.gulp === 'undefined') {
-    project.gulp = { enabled: true };
+  if (typeof project.integrations.gulp === 'undefined') {
+    project.integrations.gulp = {};
   }
 
-  if (project.gulp.enabled) {
+  if (project.integrations.gulp) {
     const gulp = await loadGulp(env);
     const gulpStart = promisify<void, string>(gulp.start.bind(gulp));
 
@@ -93,11 +93,11 @@ export async function runTask(env: IonicEnvironment, name: string): Promise<void
 export async function registerWatchEvents(env: IonicEnvironment) {
   const project = await env.project.load();
 
-  if (typeof project.gulp === 'undefined') {
-    project.gulp = { enabled: true };
+  if (typeof project.integrations.gulp === 'undefined') {
+    project.integrations.gulp = {};
   }
 
-  if (project.gulp.enabled) {
+  if (project.integrations.gulp) {
     if (!project.watchPatterns) {
       project.watchPatterns = [];
     }

@@ -55,7 +55,7 @@ export function registerHooks(hooks: IHookEngine) {
       await runTask(env, BUILD_AFTER_SCRIPT);
     }
 
-    if (project.platforms.cordova && project.platforms.cordova.enabled) {
+    if (project.integrations.cordova) {
       await env.runcmd(['cordova', 'prepare']);
     }
   });
@@ -105,7 +105,7 @@ export function registerHooks(hooks: IHookEngine) {
         info.push({ type: 'local-packages', name: '@ionic/app-scripts', version: appScriptsVersion ? appScriptsVersion : 'not installed' });
       }
 
-      if (project.platforms.cordova && project.platforms.cordova.enabled) {
+      if (project.integrations.cordova) {
         const { getAndroidSdkToolsVersion } = await import('@ionic/cli-utils/lib/android');
         const { getCordovaCLIVersion, getCordovaPlatformVersions } = await import('@ionic/cli-utils/lib/cordova/utils');
 
@@ -145,7 +145,7 @@ export function registerHooks(hooks: IHookEngine) {
         }
       }
 
-      if (project.gulp && project.gulp.enabled) {
+      if (project.integrations.gulp) {
         const { getGulpVersion } = await import('@ionic/cli-utils/lib/gulp');
         const gulpVersion = await getGulpVersion();
         info.push({ type: 'global-packages', name: 'Gulp CLI', version: gulpVersion || 'not installed globally' });
