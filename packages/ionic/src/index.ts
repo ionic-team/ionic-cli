@@ -81,21 +81,8 @@ export function registerHooks(hooks: IHookEngine) {
     const node = process.version;
 
     const { getCommandInfo } = await import('@ionic/cli-utils/lib/utils/shell');
-    const { getAndroidSdkToolsVersion } = await import('@ionic/cli-utils/lib/android');
 
-    const [
-      npm,
-      xcode,
-      iosDeploy,
-      iosSim,
-      androidSdkToolsVersion,
-    ] = await Promise.all([
-      getCommandInfo('npm', ['-v']),
-      getCommandInfo('/usr/bin/xcodebuild', ['-version']),
-      getCommandInfo('ios-deploy', ['--version']),
-      getCommandInfo('ios-sim', ['--version']),
-      getAndroidSdkToolsVersion(),
-    ]);
+    const npm = await getCommandInfo('npm', ['-v']);
 
     const info: InfoHookItem[] = [ // TODO: why must I be explicit?
       { type: 'cli-packages', name: `${name} ${chalk.dim('(Ionic CLI)')}`, version, path: path.dirname(path.dirname(__filename)) },
@@ -104,27 +91,9 @@ export function registerHooks(hooks: IHookEngine) {
       { type: 'system', name: 'OS', version: os },
     ];
 
-    if (xcode) {
-      info.push({ type: 'system', name: 'Xcode', version: xcode });
-    }
-
-    if (iosDeploy) {
-      info.push({ type: 'system', name: 'ios-deploy', version: iosDeploy });
-    }
-
-    if (iosSim) {
-      info.push({ type: 'system', name: 'ios-sim', version: iosSim });
-    }
-
-    if (androidSdkToolsVersion) {
-      info.push({ type: 'system', name: 'Android SDK Tools', version: androidSdkToolsVersion });
-    }
-
     const project = env.project.directory ? await env.project.load() : undefined;
 
     if (project) {
-      const packageJson = await env.project.loadPackageJson();
-
       if (project.type === 'ionic1') {
         const { getIonic1Version } = await import('@ionic/cli-utils/lib/ionic1/utils');
         const ionic1Version = await getIonic1Version(env);
@@ -137,13 +106,46 @@ export function registerHooks(hooks: IHookEngine) {
       }
 
       if (project.platforms.cordova && project.platforms.cordova.enabled) {
+        const { getAndroidSdkToolsVersion } = await import('@ionic/cli-utils/lib/android');
         const { getCordovaCLIVersion, getCordovaPlatformVersions } = await import('@ionic/cli-utils/lib/cordova/utils');
-        const [ cordovaVersion, cordovaPlatforms ] = await Promise.all([getCordovaCLIVersion(), getCordovaPlatformVersions()]);
+
+        const [
+          cordovaVersion,
+          cordovaPlatforms,
+          xcode,
+          iosDeploy,
+          iosSim,
+          androidSdkToolsVersion,
+        ] = await Promise.all([
+          getCordovaCLIVersion(),
+          getCordovaPlatformVersions(),
+          getCommandInfo('/usr/bin/xcodebuild', ['-version']),
+          getCommandInfo('ios-deploy', ['--version']),
+          getCommandInfo('ios-sim', ['--version']),
+          getAndroidSdkToolsVersion(),
+        ]);
+
         info.push({ type: 'global-packages', name: 'Cordova CLI', version: cordovaVersion || 'not installed' });
         info.push({ type: 'local-packages', name: 'Cordova Platforms', version: cordovaPlatforms || 'none' });
+
+        if (xcode) {
+          info.push({ type: 'system', name: 'Xcode', version: xcode });
+        }
+
+        if (iosDeploy) {
+          info.push({ type: 'system', name: 'ios-deploy', version: iosDeploy });
+        }
+
+        if (iosSim) {
+          info.push({ type: 'system', name: 'ios-sim', version: iosSim });
+        }
+
+        if (androidSdkToolsVersion) {
+          info.push({ type: 'system', name: 'Android SDK Tools', version: androidSdkToolsVersion });
+        }
       }
 
-      if (packageJson.devDependencies && packageJson.devDependencies['gulp']) {
+      if (project.gulp && project.gulp.enabled) {
         const { getGulpVersion } = await import('@ionic/cli-utils/lib/gulp');
         const gulpVersion = await getGulpVersion();
         info.push({ type: 'global-packages', name: 'Gulp CLI', version: gulpVersion || 'not installed globally' });
