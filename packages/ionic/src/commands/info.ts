@@ -30,7 +30,7 @@ export class InfoCommand extends Command {
     const pkgPath = ionicPkg && ionicPkg.path ? path.dirname(ionicPkg.path) : undefined;
 
     const splitInfo = (ary: InfoHookItem[]) => ary
-      .sort((a, b) => strcmp(a.name, b.name))
+      .sort((a, b) => strcmp(a.name.toLowerCase(), b.name.toLowerCase()))
       .map((item): [string, string] => [item.name, chalk.dim(item.version) + (item.path && pkgPath && !item.path.startsWith(pkgPath) ? ` ${chalk.dim('(' + item.path + ')')}` : '')]);
 
     const format = (details: [string, string][]) => columnar(details, { vsep: ':' }).split('\n').join('\n    ');
