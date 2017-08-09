@@ -1,9 +1,11 @@
+import * as path from 'path';
+
 import * as chalk from 'chalk';
 
 import { BowerJson, DistTag, IShellRunOptions, IonicEnvironment, PackageJson } from '../../definitions';
 import { isBowerJson, isExitCodeException, isPackageJson } from '../../guards';
 import { ERROR_SHELL_COMMAND_NOT_FOUND } from '../shell';
-import { fsReadJsonFile } from './fs';
+import { ERROR_FILE_NOT_FOUND, fsReadJsonFile } from './fs';
 
 export const ERROR_INVALID_PACKAGE_JSON = 'INVALID_PACKAGE_JSON';
 export const ERROR_INVALID_BOWER_JSON = 'INVALID_BOWER_JSON';
@@ -15,6 +17,24 @@ let installer: undefined | 'npm' | 'yarn';
  */
 export function isValidPackageName(name: string): boolean {
   return encodeURIComponent(name) === name;
+}
+
+/**
+ * To be used with a module path resolved from require.resolve().
+ */
+export async function readPackageJsonFileOfResolvedModule(resolvedModule: string): Promise<PackageJson> {
+  const p = path.dirname(path.dirname(resolvedModule)); // "main": <folder>/index.js
+
+  try {
+    return await readPackageJsonFile(path.resolve(p, 'package.json'));
+  } catch (e) {
+    if (e !== ERROR_FILE_NOT_FOUND) {
+      throw e;
+    }
+
+    const p = path.dirname(resolvedModule); // "main": index.js
+    return await readPackageJsonFile(path.resolve(p, 'package.json'));
+  }
 }
 
 export async function readPackageJsonFile(path: string): Promise<PackageJson> {

@@ -8,7 +8,6 @@ import * as minimist from 'minimist';
 import * as inquirerType from 'inquirer';
 
 import {
-  ConfigFile,
   IClient,
   IConfig,
   IHookEngine,
@@ -32,6 +31,7 @@ import { PROJECT_FILE, PROJECT_FILE_LEGACY, Project } from './lib/project';
 import { Logger } from './lib/utils/logger';
 import { findBaseDirectory } from './lib/utils/fs';
 import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
+import { readPackageJsonFileOfResolvedModule } from './lib/utils/npm';
 import { Telemetry } from './lib/telemetry';
 import { CloudSession, ProSession } from './lib/session';
 import { Shell } from './lib/shell';
@@ -41,11 +41,13 @@ export * from './definitions';
 
 export { BACKEND_LEGACY, BACKEND_PRO } from './lib/backends';
 
-export const name = '__NAME__';
-export const version = '__VERSION__';
+const name = '@ionic/cli-utils';
 
 export function registerHooks(hooks: IHookEngine) {
   hooks.register(name, 'info', async () => {
+    const packageJson = await readPackageJsonFileOfResolvedModule(__filename);
+    const version = packageJson.version || '';
+
     return [
       { type: 'cli-packages', name, version, path: path.dirname(__filename) },
     ];
@@ -74,7 +76,7 @@ export function registerHooks(hooks: IHookEngine) {
   });
 }
 
-async function getSession(config: IConfig<ConfigFile>, project: IProject, client: IClient): Promise<ISession> {
+async function getSession(config: IConfig, project: IProject, client: IClient): Promise<ISession> {
   const configData = await config.load();
   return configData.backend === BACKEND_LEGACY ? new CloudSession(config, project, client) : new ProSession(config, project, client);
 }
@@ -163,7 +165,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     telemetry,
   });
 
-  ienv.open();
+  await ienv.open();
 
   if (levelInvalid) {
     log.warn(
@@ -172,7 +174,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     );
   }
 
-  log.debug(`CLI flags: ${util.inspect(flags, { breakLength: Infinity, colors: chalk.enabled })}`);
+  log.debug(() => `CLI flags: ${util.inspect(flags, { breakLength: Infinity, colors: chalk.enabled })}`);
 
   if (typeof argv['yarn'] === 'boolean') {
     log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} switch is deprecated. Use ${chalk.green('ionic config set -g yarn ' + String(argv['yarn']))}.`);

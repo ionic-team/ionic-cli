@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, IConfig, IonicEnvironment } from '../../definitions';
+import { CommandLineInputs, CommandLineOptions, IBaseConfig, IonicEnvironment } from '../../definitions';
 import { FatalException } from '../../lib/errors';
 
 export async function set(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions) {
@@ -13,7 +13,7 @@ export async function set(env: IonicEnvironment, inputs: CommandLineInputs, opti
     throw new FatalException(`Sorry--this won't work outside an Ionic project directory. Did you mean to set global config using ${chalk.green('--global')}?`);
   }
 
-  const file: IConfig<Object> = global ? env.config : env.project;
+  const file: IBaseConfig<Object> = global ? env.config : env.project;
 
   const config = await file.load();
   const [ get, set ] = await Promise.all([import('lodash/get'), import('lodash/set')]);

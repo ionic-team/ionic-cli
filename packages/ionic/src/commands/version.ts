@@ -10,6 +10,6 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 export class VersionCommand extends Command {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     // can't use logger--see https://github.com/ionic-team/ionic-cli/issues/2507
-    process.stdout.write(this.env.plugins.ionic.version + '\n');
+    process.stdout.write(this.env.plugins.ionic.meta.version + '\n');
   }
 }

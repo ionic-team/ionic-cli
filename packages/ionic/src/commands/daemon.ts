@@ -26,7 +26,8 @@ export class DaemonCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { processRunning } = await import('@ionic/cli-utils/lib/daemon');
-    const { pluginHasUpdate } = await import('@ionic/cli-utils/lib/plugins');
+    const { pkgLatestVersion } = await import('@ionic/cli-utils/lib/utils/npm');
+    const { determineDistTag, versionNeedsUpdating } = await import('@ionic/cli-utils/lib/plugins');
 
     const updateInterval = Number(options.interval);
     const killExisting = options['kill-existing'];
@@ -40,7 +41,24 @@ export class DaemonCommand extends Command {
     const f = await this.env.daemon.getPid();
     const d = await this.env.daemon.load();
 
-    d.daemonVersion = this.env.plugins.ionic.version;
+    d.daemonVersion = this.env.plugins.ionic.meta.version;
+    const daemonDistTag = determineDistTag(this.env.plugins.ionic.meta.version);
+
+    let latestIonicVersion = this.env.plugins.ionic.meta.latestVersion;
+
+    if (!latestIonicVersion) {
+      latestIonicVersion = await pkgLatestVersion(this.env, 'ionic', daemonDistTag);
+
+      if (!latestIonicVersion) {
+        this.env.log.error('Could not get latest version of ionic.');
+        return 1;
+      }
+
+      this.env.daemon.populateDistTag(daemonDistTag);
+      d.latestVersions[daemonDistTag]['ionic'] = latestIonicVersion;
+    }
+
+    await this.env.daemon.save();
 
     if (f) {
       this.env.log.info(`Daemon pid file found: ${chalk.bold(prettyPath(this.env.daemon.pidFilePath))}`);
@@ -68,15 +86,9 @@ export class DaemonCommand extends Command {
     await this.env.daemon.setPid(process.pid);
 
     const updateFn = async () => {
-      const { determineDistTag } = await import('@ionic/cli-utils/lib/plugins');
-      const { pkgLatestVersion } = await import('@ionic/cli-utils/lib/utils/npm');
-
       const config = await this.env.config.load({ disk: true });
       const f = await this.env.daemon.getPid();
       const d = await this.env.daemon.load({ disk: true });
-
-      const ionicDistTag = determineDistTag(d.daemonVersion);
-      const latestDistTagVersion = typeof d.latestVersions[ionicDistTag] === 'undefined' ? d.daemonVersion : d.latestVersions[ionicDistTag].ionic;
 
       if (!f) {
         this.env.log.info(`Daemon shutting down--pid file missing.`);
@@ -87,8 +99,11 @@ export class DaemonCommand extends Command {
       } else if (!config.daemon.updates) {
         this.env.log.info(`Daemon shutting down--daemon was disabled.`);
         return process.exit();
-      } else if (await pluginHasUpdate(d.daemonVersion, latestDistTagVersion)) {
-        this.env.log.info(`Daemon shutting down--out-of-date. (${chalk.bold(d.daemonVersion)} vs ${chalk.bold(latestDistTagVersion)})`);
+      } else if (daemonDistTag !== determineDistTag(config.version)) {
+        this.env.log.info(`Daemon shutting down--dist-tag mismatch. (${chalk.bold(d.daemonVersion)} vs ${chalk.bold(config.version)})`);
+        return process.exit();
+      } else if (await versionNeedsUpdating(d.daemonVersion, config.version)) {
+        this.env.log.info(`Daemon shutting down--out-of-date. (${chalk.bold(d.daemonVersion)} vs ${chalk.bold(config.version)})`);
         return process.exit();
       }
 

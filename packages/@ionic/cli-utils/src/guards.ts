@@ -64,9 +64,7 @@ export function isValidationErrorArray(e: Object[]): e is ValidationError[] {
 
 export function isPlugin(p: any): p is Plugin {
   const plugin = <Plugin>p;
-  return plugin
-    && typeof plugin.name === 'string'
-    && typeof plugin.version === 'string';
+  return plugin && typeof plugin.registerHooks === 'function';
 }
 
 export function isSuperAgentError(e: Error): e is SuperAgentError {

@@ -1,7 +1,6 @@
 import * as chalk from 'chalk';
 
 import {
-  ConfigFile,
   ConfirmPromptQuestion,
   IConfig,
   ILogger,
@@ -9,7 +8,7 @@ import {
   PromptModule,
 } from '../definitions';
 
-export async function createPromptModule({ interactive, confirm, log, config }: { interactive: boolean, confirm: boolean, log: ILogger, config: IConfig<ConfigFile> }): Promise<PromptModule> {
+export async function createPromptModule({ interactive, confirm, log, config }: { interactive: boolean, confirm: boolean, log: ILogger, config: IConfig }): Promise<PromptModule> {
   const inquirer = await import('inquirer');
   const inquirerPromptModule = inquirer.createPromptModule();
 

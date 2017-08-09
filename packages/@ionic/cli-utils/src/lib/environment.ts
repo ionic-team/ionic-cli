@@ -3,7 +3,6 @@ import * as chalk from 'chalk';
 import * as inquirerType from 'inquirer';
 
 import {
-  ConfigFile,
   ICLIEventEmitter,
   IClient,
   IConfig,
@@ -27,7 +26,7 @@ export class Environment implements IonicEnvironment {
   readonly flags: IonicEnvironmentFlags;
   readonly hooks: IHookEngine;
   readonly client: IClient;
-  readonly config: IConfig<ConfigFile>; // CLI global config (~/.ionic/config.json)
+  readonly config: IConfig; // CLI global config (~/.ionic/config.json)
   readonly daemon: IDaemon;
   readonly events: ICLIEventEmitter;
   readonly log: ILogger;
@@ -64,7 +63,7 @@ export class Environment implements IonicEnvironment {
   }: {
     bottomBar?: inquirerType.ui.BottomBar;
     client: IClient;
-    config: IConfig<ConfigFile>; // CLI global config (~/.ionic/config.json)
+    config: IConfig; // CLI global config (~/.ionic/config.json)
     daemon: IDaemon;
     events: ICLIEventEmitter;
     flags: IonicEnvironmentFlags;

@@ -1,7 +1,6 @@
 import * as chalk from 'chalk';
 
 import {
-  ConfigFile,
   IClient,
   IConfig,
   IProject,
@@ -16,7 +15,7 @@ import { createFatalAPIFormat } from './http';
 
 export class BaseSession {
   constructor(
-    protected config: IConfig<ConfigFile>,
+    protected config: IConfig,
     protected project: IProject,
     protected client: IClient
   ) {}

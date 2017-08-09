@@ -57,6 +57,14 @@ export class Daemon extends BaseConfig<DaemonFile> {
       results.latestVersions.latest = {};
     }
 
+    for (let distTag in results.latestVersions) {
+      for (let pkg in results.latestVersions[distTag]) {
+        if (!KNOWN_PACKAGES.includes(pkg)) {
+          delete results.latestVersions[distTag][pkg];
+        }
+      }
+    }
+
     for (let pkg of KNOWN_PACKAGES) {
       if (typeof results.latestVersions.latest[pkg] === 'undefined') {
         results.latestVersions.latest[pkg] = '';

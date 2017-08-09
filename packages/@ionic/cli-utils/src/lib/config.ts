@@ -6,6 +6,7 @@ import * as minimistType from 'minimist';
 
 import {
   ConfigFile,
+  IBaseConfig,
   IConfig,
   IonicEnvironment,
 } from '../definitions';
@@ -15,7 +16,7 @@ import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
 import { ERROR_FILE_INVALID_JSON, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from './utils/fs';
 
-export abstract class BaseConfig<T> implements IConfig<T> {
+export abstract class BaseConfig<T> implements IBaseConfig<T> {
   public directory: string;
   public filePath: string;
   protected configFile?: T;
@@ -125,13 +126,21 @@ export abstract class BaseConfig<T> implements IConfig<T> {
 export const CONFIG_FILE = 'config.json';
 export const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
 
-export class Config extends BaseConfig<ConfigFile> {
+export class Config extends BaseConfig<ConfigFile> implements IConfig {
   async provideDefaults(o: any): Promise<ConfigFile> {
     const cloneDeep = await import('lodash/cloneDeep');
     const results = cloneDeep(o);
 
-    if (!results.lastCommand) {
-      results.lastCommand = new Date().toISOString();
+    if (!results.state) {
+      results.state = {};
+    }
+
+    if (!results.state.lastCommand) {
+      if (results.lastCommand) {
+        results.state.lastCommand = results.lastCommand;
+      } else {
+        results.state.lastCommand = new Date().toISOString();
+      }
     }
 
     if (!results.daemon) {
@@ -192,6 +201,7 @@ export class Config extends BaseConfig<ConfigFile> {
       }
     }
 
+    delete results.lastCommand;
     delete results.lastUpdated;
     delete results.cliFlags;
 
@@ -200,7 +210,8 @@ export class Config extends BaseConfig<ConfigFile> {
 
   is(j: any): j is ConfigFile {
     return j
-      && typeof j.lastCommand === 'string'
+      && typeof j.state === 'object'
+      && typeof j.state.lastCommand === 'string'
       && typeof j.daemon === 'object'
       && typeof j.urls === 'object'
       && typeof j.urls.api === 'string'
@@ -211,6 +222,16 @@ export class Config extends BaseConfig<ConfigFile> {
       && typeof j.backend === 'string'
       && typeof j.telemetry === 'boolean'
       && typeof j.yarn === 'boolean';
+  }
+
+  async isUpdatingEnabled(): Promise<boolean> {
+    const config = await this.load();
+
+    if (!config.daemon.updates) {
+      return false;
+    }
+
+    return !config.state.lastNoResponseToUpdate || (new Date().getTime() - new Date(config.state.lastNoResponseToUpdate).getTime() > 86400000);
   }
 }
 

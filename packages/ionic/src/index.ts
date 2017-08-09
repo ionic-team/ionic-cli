@@ -14,10 +14,8 @@ import { pathExists } from '@ionic/cli-utils/lib/utils/fs';
 
 import { IonicNamespace } from './commands';
 
-export const name = '__NAME__';
-export const version = '__VERSION__';
+const name = 'ionic';
 export const namespace = new IonicNamespace();
-export const meta = { filePath: __filename };
 
 const BUILD_BEFORE_HOOK = 'build:before';
 const BUILD_BEFORE_SCRIPT = `ionic:${BUILD_BEFORE_HOOK}`;
@@ -88,7 +86,7 @@ export function registerHooks(hooks: IHookEngine) {
     const npm = await getCommandInfo('npm', ['-v']);
 
     const info: InfoHookItem[] = [ // TODO: why must I be explicit?
-      { type: 'cli-packages', name: `${name} ${chalk.dim('(Ionic CLI)')}`, version, path: path.dirname(path.dirname(__filename)) },
+      { type: 'cli-packages', name: `${name} ${chalk.dim('(Ionic CLI)')}`, version: env.plugins.ionic.meta.version, path: path.dirname(path.dirname(env.plugins.ionic.meta.filePath)) },
       { type: 'system', name: 'Node', version: node },
       { type: 'system', name: 'npm', version: npm || 'not installed' },
       { type: 'system', name: 'OS', version: os },
@@ -175,11 +173,19 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
   env['IONIC_CLI_LIB'] = __filename;
 
   const { isSuperAgentError, isValidationErrorArray } = await import('@ionic/cli-utils/guards');
+  const { getPluginMeta } = await import('@ionic/cli-utils/lib/plugins');
 
-  const ienv = await generateIonicEnvironment(exports, pargv, env);
+  const plugin = {
+    namespace,
+    registerHooks,
+    meta: await getPluginMeta(__filename),
+  };
+
+  const ienv = await generateIonicEnvironment(plugin, pargv, env);
 
   try {
     const config = await ienv.config.load();
+    config.version = plugin.meta.version;
 
     registerHooks(ienv.hooks);
 
@@ -252,11 +258,19 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
           await ienv.config.save();
         }
 
-        if (config.daemon.updates) {
+        if (await ienv.config.isUpdatingEnabled()) {
           const { checkForDaemon } = await import('@ionic/cli-utils/lib/daemon');
-          const { checkForUpdates } = await import('@ionic/cli-utils/lib/plugins');
+          await checkForDaemon(ienv);
 
-          await Promise.all([checkForDaemon(ienv), checkForUpdates(ienv)]);
+          const { checkForUpdates, getLatestPluginVersion, versionNeedsUpdating } = await import('@ionic/cli-utils/lib/plugins');
+          const latestVersion = await getLatestPluginVersion(ienv, plugin.meta.name, plugin.meta.version);
+
+          if (latestVersion) {
+            plugin.meta.latestVersion = latestVersion;
+            plugin.meta.updateAvailable = await versionNeedsUpdating(plugin.meta.version, latestVersion);
+
+            await checkForUpdates(ienv);
+          }
         }
       }
 
@@ -268,7 +282,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
         exitCode = r;
       }
 
-      config.lastCommand = now.toISOString();
+      config.state.lastCommand = now.toISOString();
     }
 
   } catch (e) {

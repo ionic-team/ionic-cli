@@ -60,7 +60,6 @@ export interface PackageJson {
   scripts?: { [key: string]: string };
   dependencies?: { [key: string]: string };
   devDependencies?: { [key: string]: string };
-  peerDependencies?: { [key: string]: string };
 }
 
 export interface BowerJson {
@@ -190,9 +189,11 @@ export interface IApp {
   create(app: { name: string; }): Promise<AppDetails>;
 }
 
-export interface IProject extends IConfig<ProjectFile> {
-  directory: string;
+export interface IConfig extends IBaseConfig<ConfigFile> {
+  isUpdatingEnabled(): Promise<boolean>;
+}
 
+export interface IProject extends IBaseConfig<ProjectFile> {
   formatType(input: ProjectType): string;
   loadAppId(): Promise<string>;
   loadPackageJson(): Promise<PackageJson>;
@@ -211,7 +212,7 @@ export interface DaemonFile {
   };
 }
 
-export interface IDaemon extends IConfig<DaemonFile> {
+export interface IDaemon extends IBaseConfig<DaemonFile> {
   pidFilePath: string;
   logFilePath: string;
   getPid(): Promise<number | undefined>;
@@ -329,7 +330,11 @@ export interface ITelemetry {
 }
 
 export interface ConfigFile {
-  lastCommand: string;
+  version: string;
+  state: {
+    lastCommand: string;
+    lastNoResponseToUpdate?: string;
+  };
   daemon: {
     updates?: boolean;
   };
@@ -356,7 +361,7 @@ export interface ConfigFile {
   yarn: boolean;
 }
 
-export interface IConfig<T extends { [key: string]: any }> {
+export interface IBaseConfig<T extends { [key: string]: any }> {
   directory: string;
   fileName: string;
   filePath: string;
@@ -510,7 +515,7 @@ export interface IonicEnvironment {
   readonly flags: IonicEnvironmentFlags;
   readonly hooks: IHookEngine;
   readonly client: IClient;
-  readonly config: IConfig<ConfigFile>; // CLI global config (~/.ionic/config.json)
+  readonly config: IConfig; // CLI global config (~/.ionic/config.json)
   readonly daemon: IDaemon;
   readonly events: ICLIEventEmitter;
   readonly log: ILogger;
@@ -547,29 +552,29 @@ export interface IonicEnvironmentPlugins {
   [key: string]: Plugin;
 }
 
-export type DistTag = 'local' | 'testing' | 'canary' | 'latest';
+export type DistTag = 'testing' | 'canary' | 'latest';
 
 export interface PluginMeta {
   filePath: string;
+  name: string;
+  version: string;
+  distTag: DistTag;
+  latestVersion?: string;
+  updateAvailable?: boolean;
 }
 
 export interface Plugin {
-  name: string;
-  version: string;
-  registerHooks?(hooks: IHookEngine): void;
-  meta?: PluginMeta; // set when loading plugin
+  registerHooks(hooks: IHookEngine): void;
+  meta: PluginMeta; // set when loading plugin
+
+  /**
+   * @deprecated
+   */
+  version?: string;
 }
 
 export interface RootPlugin extends Plugin {
   namespace: IRootNamespace;
-}
-
-export interface HydratedPlugin extends Plugin {
-  distTag: DistTag;
-  currentVersion: string;
-  latestVersion: string;
-  updateAvailable: boolean;
-  meta: PluginMeta;
 }
 
 export interface INamespace {

@@ -1,6 +1,6 @@
 import * as leekType from 'leek';
 
-import { ConfigFile, IClient, IConfig, IProject, ISession, ITelemetry, RootPlugin } from '../definitions';
+import { IClient, IConfig, IProject, ISession, ITelemetry, RootPlugin } from '../definitions';
 import { BACKEND_PRO } from './backends';
 import { generateUUID } from './utils/uuid';
 
@@ -9,7 +9,7 @@ const GA_CODE = 'UA-44023830-30';
 export class Telemetry implements ITelemetry {
   client: IClient;
 
-  protected config: IConfig<ConfigFile>;
+  protected config: IConfig;
   protected plugin: RootPlugin;
   protected session: ISession;
   protected project: IProject;
@@ -23,7 +23,7 @@ export class Telemetry implements ITelemetry {
     plugin,
     project
   }: {
-    config: IConfig<ConfigFile>;
+    config: IConfig;
     client: IClient;
     session: ISession;
     plugin: RootPlugin;
@@ -48,7 +48,7 @@ export class Telemetry implements ITelemetry {
       name: config.tokens.telemetry,
       trackingCode: GA_CODE,
       globalName: 'ionic',
-      version: this.plugin.version,
+      version: this.plugin.meta.version,
       silent: config.telemetry !== true,
     });
   }
@@ -103,7 +103,7 @@ export class Telemetry implements ITelemetry {
                 'value': {
                   'command': command,
                   'arguments': prettyArgs.join(' '),
-                  'version': this.plugin.version,
+                  'version': this.plugin.meta.version,
                   'node_version': process.version,
                   'app_id': appId,
                 },
