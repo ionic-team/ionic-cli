@@ -14,14 +14,12 @@ import { fsMkdir, pathExists } from '@ionic/cli-utils/lib/utils/fs';
 This command creates a working Ionic app. It installs dependencies for you and sets up your project.
 
 ${chalk.green('ionic start')} will create an app from a template. You can list all templates with the ${chalk.green('--list')} option.
-
-If you want to create an Ionic/Cordova app, use the ${chalk.green('--cordova')} option.
   `,
   exampleCommands: [
     '',
     '--list',
     'myApp blank',
-    'myApp tabs --cordova',
+    // 'myApp tabs --cordova',
     'myApp blank --type=ionic1',
   ],
   inputs: [
@@ -53,11 +51,11 @@ If you want to create an Ionic/Cordova app, use the ${chalk.green('--cordova')} 
       type: Boolean,
       aliases: ['l'],
     },
-    {
-      name: 'cordova',
-      description: 'Include Cordova integration',
-      type: Boolean,
-    },
+    // {
+    //   name: 'cordova',
+    //   description: 'Include Cordova integration',
+    //   type: Boolean,
+    // },
     {
       name: 'deps',
       description: 'Do not install npm/yarn dependencies',
@@ -232,44 +230,44 @@ export class StartCommand extends Command implements CommandPreRun {
       throw this.exit(`Unable to find starter type for ${chalk.green(String(options['type']))}.`);
     }
 
-    if (!options['cordova']) {
-      const confirm = await this.env.prompt({
-        type: 'confirm',
-        name: 'confirm',
-        message: 'Would you like to integrate your new app with Cordova to target native iOS and Android?',
-        default: false,
-      });
+    // if (!options['cordova']) {
+    //   const confirm = await this.env.prompt({
+    //     type: 'confirm',
+    //     name: 'confirm',
+    //     message: 'Would you like to integrate your new app with Cordova to target native iOS and Android?',
+    //     default: false,
+    //   });
 
-      if (confirm) {
-        options['cordova'] = true;
-      }
-    }
+    //   if (confirm) {
+    //     options['cordova'] = true;
+    //   }
+    // }
 
-    if (options['deps']) {
-      // Check global dependencies
-      if (options['cordova']) {
-        starterType.globalDependencies.push('cordova');
-      }
+    // if (options['deps']) {
+    //   // Check global dependencies
+    //   if (options['cordova']) {
+    //     starterType.globalDependencies.push('cordova');
+    //   }
 
-      this.env.log.debug(`globalDeps=${starterType.globalDependencies}`);
+    //   this.env.log.debug(`globalDeps=${starterType.globalDependencies}`);
 
-      for (let dep of starterType.globalDependencies) {
-        const cmdInstalled = await getCommandInfo(dep);
+    //   for (let dep of starterType.globalDependencies) {
+    //     const cmdInstalled = await getCommandInfo(dep);
 
-        if (!cmdInstalled) {
-          if (dep === 'cordova') {
-            const cdvInstallArgs = await pkgManagerArgs(this.env, { pkg: 'cordova', global: true });
-            throw this.exit(
-              `Cordova CLI not found on your PATH. Please install Cordova globally (you may need ${chalk.green('sudo')}):\n\n` +
-              `${chalk.green(cdvInstallArgs.join(' '))}\n\n` +
-              `If that doesn't work, see the installation docs: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/cli/#installing-the-cordova-cli')}`
-            );
-          } else {
-            throw this.exit(`Sorry, ${chalk.green(dep)} is a global dependency, but it was not found on your PATH.`);
-          }
-        }
-      }
-    }
+    //     if (!cmdInstalled) {
+    //       if (dep === 'cordova') {
+    //         const cdvInstallArgs = await pkgManagerArgs(this.env, { pkg: 'cordova', global: true });
+    //         throw this.exit(
+    //           `Cordova CLI not found on your PATH. Please install Cordova globally (you may need ${chalk.green('sudo')}):\n\n` +
+    //           `${chalk.green(cdvInstallArgs.join(' '))}\n\n` +
+    //           `If that doesn't work, see the installation docs: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/cli/#installing-the-cordova-cli')}`
+    //         );
+    //       } else {
+    //         throw this.exit(`Sorry, ${chalk.green(dep)} is a global dependency, but it was not found on your PATH.`);
+    //       }
+    //     }
+    //   }
+    // }
 
     if (config.backend === BACKEND_PRO || options['git']) {
       const cmdInstalled = await getCommandInfo('git', ['--version']);
