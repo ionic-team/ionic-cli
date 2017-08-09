@@ -11,6 +11,8 @@ import { CordovaCommand } from './base';
   description: 'Build (prepare + compile) an Ionic project for a given platform',
   longDescription: `
 Like running ${chalk.green('cordova build')} directly, but also builds web assets and provides friendly checks.
+
+To pass additional options to the Cordova CLI, use the ${chalk.green('--')} separator after the Ionic CLI arguments. For example, for verbose log output from Cordova during an iOS build, one would use ${chalk.green('ionic cordova build ios -- -d')}. See additional examples below.
   `,
   exampleCommands: [
     'ios',
