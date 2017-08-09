@@ -1,19 +1,20 @@
-import * as path from 'path';
+import * as chalk from 'chalk';
 
 import { IonicEnvironment } from '../../definitions';
-import { readDir } from '../utils/fs';
 
-/**
- * Get all platforms based on platforms directory
- * TODO: should we get this from the config.xml or just the directories like app-lib
- */
-export async function getProjectPlatforms(projectDir: string): Promise<string[]> {
-  return readDir(path.join(projectDir, 'platforms'));
-}
+import { FatalException } from '../errors';
 
-/**
- * Install the platform specified using cordova
- */
-export function installPlatform(env: IonicEnvironment, platform: string): Promise<string> {
-  return env.shell.run('cordova', ['platform', 'add', '--save', platform], {});
+export async function installPlatform(env: IonicEnvironment, platform: string): Promise<void> {
+  try {
+    await env.shell.run('cordova', ['platform', 'add', platform, '--save'], { fatalOnError: false, showError: false });
+  } catch (e) {
+    const s = String(e);
+
+    if (s.match(/Platform [A-Za-z0-9-]+ already added/)) {
+      env.log.warn(`Platform already added. Saving platforms to ${chalk.bold('config.xml')}.`);
+      await env.shell.run('cordova', ['platform', 'save'], {});
+    } else {
+      throw new FatalException(s, typeof e.exitCode === 'undefined' ? 1 : e.exitCode);
+    }
+  }
 }

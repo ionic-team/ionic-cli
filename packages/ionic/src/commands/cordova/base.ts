@@ -148,20 +148,23 @@ export class CordovaCommand extends Command {
         );
       }
 
-      this.env.log.nl();
-      this.env.log.error('Cordova encountered an error.\nYou may get more insight by running the Cordova command above directly.\n');
+      if (options.fatalOnError) {
+        this.env.log.nl();
+        this.env.log.error('Cordova encountered an error.\nYou may get more insight by running the Cordova command above directly.\n');
+      }
 
       throw e;
     }
   }
 
   async checkForPlatformInstallation(runPlatform: string) {
-    const { getProjectPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
-
     if (runPlatform) {
-      const platforms = await getProjectPlatforms(this.env.project.directory);
+      const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
+      const conf = await ConfigXml.load(this.env.project.directory);
+      const platforms = await conf.getPlatformEngines();
 
-      if (!platforms.includes(runPlatform)) {
+      if (!platforms.map(p => p.name).includes(runPlatform)) {
+        const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
         await installPlatform(this.env, runPlatform);
       }
     }

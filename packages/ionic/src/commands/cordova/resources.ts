@@ -84,7 +84,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
-    const { getProjectPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
+    const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
 
     const {
       RESOURCES,
@@ -111,31 +111,31 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     this.env.log.debug(() => `resourceJsonStructure=${Object.keys(RESOURCES).length}`);
 
     // check that at least one platform has been installed
-    let platformDirContents = await getProjectPlatforms(this.env.project.directory);
-    this.env.log.debug(() => `platformDirContents=${platformDirContents}`);
+    let platformEngines = await conf.getPlatformEngines();
+    this.env.log.debug(() => `platformEngines=${platformEngines}`);
 
-    if (platform && !platformDirContents.includes(platform)) {
+    if (platform && !platformEngines.map(p => p.name).includes(platform)) {
       this.env.tasks.end();
       const confirm = await this.env.prompt({
-        message: `Platform ${chalk.green(platform)} is not installed! Would you like to install it?`,
+        message: `Platform ${chalk.green(platform)} not detected. Would you like to install it?`,
         type: 'confirm',
         name: 'confirm',
       });
 
       if (confirm) {
         await installPlatform(this.env, platform);
-        platformDirContents = await getProjectPlatforms(this.env.project.directory);
-        this.env.log.debug(() => `platformDirContents=${platformDirContents}`);
+        platformEngines = await conf.getPlatformEngines();
+        this.env.log.debug(() => `platformEngines=${platformEngines}`);
       } else {
         throw this.exit(`Platform ${chalk.green(platform)} not installed.`);
       }
     }
 
-    const buildPlatforms = Object.keys(RESOURCES).filter(p => platformDirContents.includes(p));
+    const buildPlatforms = Object.keys(RESOURCES).filter(p => platformEngines.map(p => p.name).includes(p));
     this.env.log.debug(() => `buildPlatforms=${buildPlatforms}`);
     if (buildPlatforms.length === 0) {
       this.env.tasks.end();
-      throw this.exit(`No platforms have been added. Please run: ${chalk.green('ionic cordova platform add')}`);
+      throw this.exit(`No platforms detected. Please run: ${chalk.green('ionic cordova platform add')}`);
     }
     this.env.log.debug(() => `${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);
 

@@ -22,6 +22,15 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   The `@ionic/cli-plugin-proxy` plugin is unchanged. You are encouraged to
   uninstall the deprecated CLI plugins upon updating, as they are no longer
   needed and will not be loaded.
+* Added `--json` to `ionic config set` for stricter inputs, as well as
+  `--force` to allow for overwriting arrays and objects, which normally would
+  not be.
+* During `ionic cordova platform add`, if an error from Cordova occurs because
+  of the platform already having been added, `cordova platform save` is now run
+  to persist platform engine specification to `config.xml`.
+* Most `ionic cordova` commands now read the list of platforms from
+  `config.xml`, so if the platform engine isn't listed, it attempts to install,
+  at which point if an error occurs, it runs `cordova platform save`.
 * Fixed `ionic cordova prepare` such that it no longer errors when platforms
   are not detected, it just does nothing, as there is nothing to do.
 
