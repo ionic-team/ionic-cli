@@ -139,8 +139,6 @@ export class Environment implements IonicEnvironment {
   }
 
   async runcmd(pargv: string[], opts: { showExecution?: boolean; showLogs?: boolean; } = {}): Promise<void> {
-    const logstream = this.log.stream;
-
     if (typeof opts.showExecution === 'undefined') {
       opts.showExecution = true;
     }
@@ -159,6 +157,5 @@ export class Environment implements IonicEnvironment {
     }
 
     await this.namespace.runCommand(this, pargv);
-    this.log.stream = logstream;
   }
 }

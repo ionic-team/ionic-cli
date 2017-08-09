@@ -68,7 +68,7 @@ export async function runcmd(command: string, args?: string[], options: RunCmdOp
       reject(err);
     });
 
-    p.on('close', (code: number) => {
+    p.on('close', (code) => {
       if (code === 0) {
         resolve(Buffer.concat(stdoutBufs).toString());
       } else {
