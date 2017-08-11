@@ -96,52 +96,8 @@ export class LinkCommand extends Command implements CommandPreRun {
       await promptToLogin(this.env);
     }
 
-    if (config.backend === BACKEND_PRO) {
-      if (!config.git.setup) {
-        const CHOICE_AUTOMATIC = 'automatic';
-        const CHOICE_MANUAL = 'manual';
-        const CHOICE_SKIP = 'skip';
-        const CHOICE_IGNORE = 'ignore';
-
-        const sshSetup = await this.env.prompt({
-          type: 'list',
-          name: 'sshSetup',
-          message: `Looks like you haven't configured your SSH settings yet. How would you like to connect to Ionic Pro?`,
-          choices: [
-            {
-              name: 'Automatically setup new a SSH key pair for Ionic Pro',
-              value: CHOICE_AUTOMATIC,
-            },
-            {
-              name: 'Use an existing SSH key pair',
-              value: CHOICE_MANUAL,
-            },
-            {
-              name: 'Skip for now',
-              value: CHOICE_SKIP,
-            },
-            {
-              name: 'Ignore this prompt forever',
-              value: CHOICE_IGNORE,
-            },
-          ],
-        });
-
-        if (sshSetup === CHOICE_AUTOMATIC) {
-          await this.runcmd(['ssh', 'setup']);
-        } else if (sshSetup === CHOICE_MANUAL) {
-          await this.runcmd(['ssh', 'add']);
-        } else if (sshSetup === CHOICE_SKIP) {
-          this.env.log.warn(
-            `Your first ${chalk.green('git push ionic master')} may not work.\n` +
-            `You can automatically configure your SSH settings using ${chalk.green('ionic ssh setup')}.`
-          );
-        }
-
-        if (sshSetup !== CHOICE_SKIP) {
-          config.git.setup = true;
-        }
-      }
+    if (config.backend === BACKEND_PRO && !config.git.setup) {
+      await this.runcmd(['ssh', 'setup']);
     }
 
     if (appId) {
