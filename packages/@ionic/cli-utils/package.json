@@ -85,7 +85,6 @@
     "@types/semver": "^5.3.33",
     "@types/tar": "^1.0.29",
     "@types/uuid": "^3.4.0",
-    "@types/wrap-ansi": "^2.0.14",
     "rxjs": "^5.4.2"
   },
   "jest": {

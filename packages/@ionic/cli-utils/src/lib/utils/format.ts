@@ -48,7 +48,7 @@ export function indent(n: number = 4): string {
 }
 
 export function wordWrap(msg: string, { indentation = 0, append = '' }: { indentation?: number, append?: string }) {
-  return wrapAnsi(msg, TTY_WIDTH - indentation - append.length).split('\n').join(`${append}\n${indent(indentation)}`);
+  return wrapAnsi(msg, TTY_WIDTH - indentation - append.length, { trim: false }).split('\n').join(`${append}\n${indent(indentation)}`);
 }
 
 export function generateFillSpaceStringList(list: string[], optimalLength: number = 1, fillCharacter: string = ' '): string[] {
