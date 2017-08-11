@@ -35,6 +35,7 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
     ['link', async () => { const { LinkCommand } = await import('./link'); return new LinkCommand(); }],
     ['upload', async () => { const { UploadCommand } = await import('./upload'); return new UploadCommand(); }],
     ['state', async () => { const { StateCommand } = await import('./state'); return new StateCommand(); }],
+    ['share', async () => { const { ShareCommand } = await import('./share'); return new ShareCommand(); }],
   ]);
 
   async runCommand(env: IonicEnvironment, pargv: string[]): Promise<void | number> {
