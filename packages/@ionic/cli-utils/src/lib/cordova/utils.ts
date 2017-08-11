@@ -1,4 +1,4 @@
-import { CommandData, CommandLineInputs, CommandLineOptions } from '../../definitions';
+import { CommandData, CommandLineInputs, CommandLineOptions, IonicEnvironment } from '../../definitions';
 import { filterOptionsByIntent, minimistOptionsToArray } from '../utils/command';
 
 export const CORDOVA_INTENT = 'CORDOVA';
@@ -52,4 +52,13 @@ export async function getCordovaPlatformVersions(): Promise<string | undefined> 
   }
 
   return cordovaPlatforms;
+}
+
+export async function checkCordova(env: IonicEnvironment) {
+  const project = await env.project.load();
+
+  if (!project.integrations.cordova) {
+    env.log.info('Enabling Cordova integration.');
+    await env.runcmd(['config', 'set', 'integrations.cordova', '{}', '--json', '--force']);
+  }
 }

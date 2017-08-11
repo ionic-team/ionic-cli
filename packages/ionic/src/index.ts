@@ -34,10 +34,21 @@ export function registerHooks(hooks: IHookEngine) {
       await env.shell.run('npm', ['run', BUILD_BEFORE_SCRIPT], { showExecution: true });
     }
 
-    if (packageJson.devDependencies && packageJson.devDependencies['gulp']) {
-      const { checkGulp, runTask } = await import('@ionic/cli-utils/lib/gulp');
-      await checkGulp(env);
-      await runTask(env, BUILD_BEFORE_SCRIPT);
+    if (packageJson.devDependencies) {
+      if (packageJson.devDependencies['gulp']) {
+        const { checkGulp, runTask } = await import('@ionic/cli-utils/lib/gulp');
+        await checkGulp(env);
+        await runTask(env, BUILD_BEFORE_SCRIPT);
+      }
+
+      if (packageJson.devDependencies['@ionic/cli-plugin-cordova']) {
+        const { checkCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
+        env.log.warn(
+          chalk.yellow(`Detected ${chalk.bold('@ionic/cli-plugin-cordova')} in your ${chalk.bold('package.json')}.\n`) +
+          `As of CLI 3.8, it is no longer needed. You can uninstall it.`
+        );
+        await checkCordova(env);
+      }
     }
   });
 
@@ -49,10 +60,12 @@ export function registerHooks(hooks: IHookEngine) {
       await env.shell.run('npm', ['run', BUILD_AFTER_SCRIPT], { showExecution: true });
     }
 
-    if (packageJson.devDependencies && packageJson.devDependencies['gulp']) {
-      const { checkGulp, runTask } = await import('@ionic/cli-utils/lib/gulp');
-      await checkGulp(env);
-      await runTask(env, BUILD_AFTER_SCRIPT);
+    if (packageJson.devDependencies) {
+      if (packageJson.devDependencies['gulp']) {
+        const { checkGulp, runTask } = await import('@ionic/cli-utils/lib/gulp');
+        await checkGulp(env);
+        await runTask(env, BUILD_AFTER_SCRIPT);
+      }
     }
 
     if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
@@ -68,11 +81,22 @@ export function registerHooks(hooks: IHookEngine) {
       await env.shell.run('npm', ['run', WATCH_BEFORE_SCRIPT], { showExecution: true });
     }
 
-    if (packageJson.devDependencies && packageJson.devDependencies['gulp']) {
-      const { checkGulp, registerWatchEvents, runTask } = await import('@ionic/cli-utils/lib/gulp');
-      await checkGulp(env);
-      await registerWatchEvents(env);
-      await runTask(env, WATCH_BEFORE_SCRIPT);
+    if (packageJson.devDependencies) {
+      if (packageJson.devDependencies['gulp']) {
+        const { checkGulp, registerWatchEvents, runTask } = await import('@ionic/cli-utils/lib/gulp');
+        await checkGulp(env);
+        await registerWatchEvents(env);
+        await runTask(env, WATCH_BEFORE_SCRIPT);
+      }
+
+      if (packageJson.devDependencies['@ionic/cli-plugin-cordova']) {
+        const { checkCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
+        env.log.warn(
+          chalk.yellow(`Detected ${chalk.bold('@ionic/cli-plugin-cordova')} in your ${chalk.bold('package.json')}.\n`) +
+          `As of CLI 3.8, it is no longer needed. You can uninstall it.`
+        );
+        await checkCordova(env);
+      }
     }
   });
 

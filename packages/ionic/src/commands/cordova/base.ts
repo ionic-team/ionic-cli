@@ -113,12 +113,8 @@ export class CordovaCommand extends Command {
   async preRunChecks() {
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
 
-    const project = await this.env.project.load();
-
-    if (!project.integrations.cordova) {
-      this.env.log.info('Enabling Cordova integration.');
-      await this.runcmd(['config', 'set', 'integrations.cordova', '{}', '--json', '--force']);
-    }
+    const { checkCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
+    await checkCordova(this.env);
 
     // Check for www folder
     if (this.env.project.directory) {
