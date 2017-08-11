@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
@@ -42,7 +42,16 @@ ${chalk.green('ionic build')} will perform an Ionic build, which compiles web as
     },
   ],
 })
-export class BuildCommand extends Command {
+export class BuildCommand extends Command implements CommandPreRun {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (inputs.length > 0 && ['android', 'ios', 'wp8', 'windows', 'browser'].includes(inputs[0])) {
+      this.env.log.warn(
+        `${chalk.green('ionic build')} is for building web assets and takes no arguments. See ${chalk.green('ionic build --help')}.\n` +
+        `Ignoring argument ${chalk.green(inputs[0])}. Perhaps you meant ${chalk.green('ionic cordova build ' + inputs[0])}?\n`
+      );
+    }
+  }
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { build } = await import('@ionic/cli-utils/commands/build');
     await build(this.env, inputs, options);
