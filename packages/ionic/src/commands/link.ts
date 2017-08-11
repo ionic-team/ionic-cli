@@ -56,14 +56,16 @@ export class LinkCommand extends Command implements CommandPreRun {
     let proAppId = <string>options['pro-id'] || '';
     const config = await this.env.config.load();
 
-    if (proAppId && config.backend !== BACKEND_PRO) {
-      await this.runcmd(['config', 'set', '-g', 'backend', 'pro'], { showExecution: false });
-      this.env.log.nl();
-      this.env.log.info(
-        `${chalk.bold(chalk.blue.underline('You have opted in to Ionic Pro!') + ' The CLI is now set up to use Ionic Pro services.')}\n` +
-        `You can revert back to Ionic Cloud (legacy) services at any time:\n\n` +
-        `${chalk.green('ionic config set -g backend legacy')}\n`
-      );
+    if (proAppId) {
+      if (config.backend !== BACKEND_PRO) {
+        await this.runcmd(['config', 'set', '-g', 'backend', 'pro'], { showExecution: false });
+        this.env.log.nl();
+        this.env.log.info(
+          `${chalk.bold(chalk.blue.underline('You have opted in to Ionic Pro!') + ' The CLI is now set up to use Ionic Pro services.')}\n` +
+          `You can revert back to Ionic Cloud (legacy) services at any time:\n\n` +
+          `${chalk.green('ionic config set -g backend legacy')}\n`
+        );
+      }
 
       inputs[0] = proAppId;
     }

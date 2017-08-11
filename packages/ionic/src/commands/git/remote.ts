@@ -1,7 +1,10 @@
+import * as path from 'path';
+
 import * as chalk from 'chalk';
 
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { pathExists } from '@ionic/cli-utils/lib/utils/fs';
 
 @CommandMetadata({
   name: 'remote',
@@ -12,6 +15,7 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 export class GitRemoteCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { App } = await import('@ionic/cli-utils/lib/app');
+
     const token = await this.env.session.getUserToken();
     const appId = await this.env.project.loadAppId();
     const appLoader = new App(token, this.env.client);
@@ -19,6 +23,15 @@ export class GitRemoteCommand extends Command {
 
     if (!app.repo_url) {
       throw this.exit(`Missing ${chalk.bold('repo_url')} property in app.`);
+    }
+
+    if (!(await pathExists(path.join(this.env.project.directory, '.git')))) {
+      this.env.log.warn(
+        `${chalk.yellow('Initializing a git repository for your project.')}\n` +
+        `Before your first ${chalk.green('git push ionic master')}, you'll want to commit all the files in your project:\n\n` +
+        `${chalk.green('git commit -a -m "Initial commit"')}\n`
+      );
+      await this.env.shell.run('git', ['init'], { cwd: this.env.project.directory });
     }
 
     const remote = app.repo_url;
