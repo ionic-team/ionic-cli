@@ -531,7 +531,7 @@ export interface IonicEnvironment {
 
   open(): Promise<void>;
   close(): Promise<void>;
-  runcmd(pargv: string[], opts?: { showExecution?: boolean; showLogs?: boolean; }): Promise<void>;
+  runcmd(pargv: string[], opts?: { showExecution?: boolean; }): Promise<void>;
   load(modulePath: 'superagent'): typeof superagentType;
 }
 

@@ -8,8 +8,6 @@ import { ERROR_FILE_NOT_FOUND, fsReadFile, fsStat } from './utils/fs';
 export const ERROR_SSH_MISSING_PRIVKEY = 'SSH_MISSING_PRIVKEY';
 export const ERROR_SSH_INVALID_PUBKEY = 'SSH_INVALID_PUBKEY';
 export const ERROR_SSH_INVALID_PRIVKEY = 'SSH_INVALID_PRIVKEY';
-export const ERROR_SSH_ANNOTATION_MISSING = 'SSH_ANNOTATION_MISSING';
-export const ERROR_SSH_ANNOTATION_INVALID_WHITESPACE = 'SSH_ANNOTATION_INVALID_WHITESPACE';
 
 export async function getGeneratedPrivateKeyPath(env: IonicEnvironment): Promise<string> {
   const config = await env.config.load();
@@ -35,23 +33,19 @@ export async function parsePublicKeyFile(pubkeyPath: string): Promise<[string, s
  * @return Promise<[full pubkey, algorithm, public numbers, annotation]>
  */
 export async function parsePublicKey(pubkey: string): Promise<[string, string, string, string]> {
-  const r = /^(ssh-[r|d]sa)\s([A-z0-9+\/]+)\s?(.+)?$/.exec(pubkey);
+  const r = /^(ssh-[r|d]sa)\s([A-z0-9+\/=]+)\s?(.+)?$/.exec(pubkey);
 
   if (!r) {
     throw ERROR_SSH_INVALID_PUBKEY;
   }
 
   if (!r[3]) {
-    throw ERROR_SSH_ANNOTATION_MISSING;
+    r[3] = '';
   }
 
   r[1] = r[1].trim();
   r[2] = r[2].trim();
   r[3] = r[3].trim();
-
-  if (r[3].match(/\s/)) {
-    throw ERROR_SSH_ANNOTATION_INVALID_WHITESPACE;
-  }
 
   return [pubkey, r[1], r[2], r[3]];
 }

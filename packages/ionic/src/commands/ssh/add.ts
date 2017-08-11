@@ -53,12 +53,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
 
-    const {
-      ERROR_SSH_ANNOTATION_INVALID_WHITESPACE,
-      ERROR_SSH_ANNOTATION_MISSING,
-      ERROR_SSH_INVALID_PUBKEY,
-      parsePublicKeyFile,
-    } = await import('@ionic/cli-utils/lib/ssh');
+    const { ERROR_SSH_INVALID_PUBKEY, parsePublicKeyFile } = await import('@ionic/cli-utils/lib/ssh');
 
     const pubkeyPath = path.resolve(inputs[0]);
     const pubkeyName = prettyPath(pubkeyPath);
@@ -77,20 +72,6 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
       } else if (e === ERROR_SSH_INVALID_PUBKEY) {
         this.env.log.error(
           `${chalk.bold(pubkeyName)} does not appear to be a valid SSH public key. (Not in ${chalk.bold('authorized_keys')} file format.)\n` +
-          `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
-        );
-        return 1;
-      } else if (e === ERROR_SSH_ANNOTATION_MISSING) {
-        this.env.log.error(
-          `${chalk.bold(pubkeyName)} is missing an annotation/comment after the public key.\n` +
-          `If you are using ${chalk.green('ssh-keygen')}, try using the ${chalk.green('-C')} flag.\n` +
-          `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
-        );
-        return 1;
-      } else if (e === ERROR_SSH_ANNOTATION_INVALID_WHITESPACE) {
-        this.env.log.error(
-          `${chalk.bold(pubkeyName)} has an annotation/comment that has whitespace.\n` +
-          `Try changing the comment to something more like an identifier.\n` +
           `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
         );
         return 1;

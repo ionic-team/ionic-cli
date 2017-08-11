@@ -57,7 +57,7 @@ export class LinkCommand extends Command implements CommandPreRun {
     const config = await this.env.config.load();
 
     if (proAppId && config.backend !== BACKEND_PRO) {
-      await this.runcmd(['config', 'set', '-g', 'backend', 'pro'], { showExecution: false, showLogs: false });
+      await this.runcmd(['config', 'set', '-g', 'backend', 'pro'], { showExecution: false });
       this.env.log.nl();
       this.env.log.info(
         `${chalk.bold(chalk.blue.underline('You have opted in to Ionic Pro!') + ' The CLI is now set up to use Ionic Pro services.')}\n` +

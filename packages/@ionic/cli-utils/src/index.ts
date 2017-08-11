@@ -73,6 +73,8 @@ export function registerHooks(hooks: IHookEngine) {
     if (wasLoggedIn) {
       env.log.info('You have been logged out.');
     }
+
+    await env.config.save();
   });
 }
 

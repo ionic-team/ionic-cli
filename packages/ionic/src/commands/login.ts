@@ -99,7 +99,7 @@ export class LoginCommand extends Command implements CommandPreRun {
 
     if (await this.env.session.isLoggedIn()) {
       this.env.log.info('Logging you out.');
-      await this.runcmd(['logout'], { showLogs: false });
+      await this.runcmd(['logout']);
       await this.env.telemetry.resetToken();
     }
 

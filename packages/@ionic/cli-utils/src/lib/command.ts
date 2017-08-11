@@ -37,7 +37,7 @@ export class Command implements ICommand {
     }
   }
 
-  async runcmd(pargv: string[], opts: { showExecution?: boolean; showLogs?: boolean; } = {}): Promise<void> {
+  async runcmd(pargv: string[], opts: { showExecution?: boolean; } = {}): Promise<void> {
     await this.runwrap(async () => {
       await this.env.runcmd(pargv, opts);
     }, { exit0: false });

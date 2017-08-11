@@ -137,18 +137,9 @@ export class Environment implements IonicEnvironment {
     }
   }
 
-  async runcmd(pargv: string[], opts: { showExecution?: boolean; showLogs?: boolean; } = {}): Promise<void> {
+  async runcmd(pargv: string[], opts: { showExecution?: boolean; } = {}): Promise<void> {
     if (typeof opts.showExecution === 'undefined') {
       opts.showExecution = true;
-    }
-
-    if (typeof opts.showLogs === 'undefined') {
-      opts.showLogs = true;
-    }
-
-    if (!opts.showLogs) {
-      const DevNull = require('dev-null'); // TODO
-      this.log.stream = new DevNull();
     }
 
     if (opts.showExecution) {

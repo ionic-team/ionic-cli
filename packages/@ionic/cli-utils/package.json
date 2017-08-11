@@ -44,7 +44,6 @@
     "ci-info": "^1.0.0",
     "cross-spawn": "^5.1.0",
     "dargs": "^5.1.0",
-    "dev-null": "^0.1.1",
     "diff": "^3.3.0",
     "elementtree": "^0.1.7",
     "express": "^4.15.4",
