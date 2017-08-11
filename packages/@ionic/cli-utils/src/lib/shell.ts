@@ -21,12 +21,12 @@ export class Shell implements IShell {
     }
 
     if (showCommand) {
-      if (this.log.shouldLog('info')) {
-        this.log.msg(`> ${chalk.green(fullCmd)}`);
-      }
-
-      if (!showExecution) {
-        this.tasks.next('Running command');
+      if (showExecution) {
+        if (this.log.shouldLog('info')) {
+          this.log.msg(`> ${chalk.green(fullCmd)}`);
+        }
+      } else {
+        this.tasks.next(chalk.green(fullCmd));
       }
     }
 
