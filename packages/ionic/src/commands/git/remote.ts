@@ -27,7 +27,7 @@ export class GitRemoteCommand extends Command {
 
     if (!(await pathExists(path.join(this.env.project.directory, '.git')))) {
       this.env.log.warn(
-        `${chalk.yellow('Initializing a git repository for your project.')}\n` +
+        `Initializing a git repository for your project.\n` +
         `Before your first ${chalk.green('git push ionic master')}, you'll want to commit all the files in your project:\n\n` +
         `${chalk.green('git commit -a -m "Initial commit"')}\n`
       );

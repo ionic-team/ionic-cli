@@ -135,7 +135,7 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
         installer = 'yarn';
       } catch (e) {
         if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
-          env.log.warn(`You have opted into yarn, but ${chalk.green('yarn')} was not found in PATH`);
+          env.log.warn(`You have opted into yarn, but ${chalk.green('yarn')} was not found in your PATH.`);
         } else {
           env.log.debug(() => `Error running yarn: ${e}`);
         }

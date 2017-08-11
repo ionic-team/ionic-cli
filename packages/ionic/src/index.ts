@@ -44,8 +44,8 @@ export function registerHooks(hooks: IHookEngine) {
       if (packageJson.devDependencies['@ionic/cli-plugin-cordova']) {
         const { checkCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
         env.log.warn(
-          chalk.yellow(`Detected ${chalk.bold('@ionic/cli-plugin-cordova')} in your ${chalk.bold('package.json')}.\n`) +
-          `As of CLI 3.8, it is no longer needed. You can uninstall it.`
+          `Detected ${chalk.bold('@ionic/cli-plugin-cordova')} in your ${chalk.bold('package.json')}.\n` +
+          `As of CLI 3.8, it is no longer needed. You can uninstall it.\n`
         );
         await checkCordova(env);
       }
@@ -92,8 +92,8 @@ export function registerHooks(hooks: IHookEngine) {
       if (packageJson.devDependencies['@ionic/cli-plugin-cordova']) {
         const { checkCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
         env.log.warn(
-          chalk.yellow(`Detected ${chalk.bold('@ionic/cli-plugin-cordova')} in your ${chalk.bold('package.json')}.\n`) +
-          `As of CLI 3.8, it is no longer needed. You can uninstall it.`
+          `Detected ${chalk.bold('@ionic/cli-plugin-cordova')} in your ${chalk.bold('package.json')}.\n` +
+          `As of CLI 3.8, it is no longer needed. You can uninstall it.\n`
         );
         await checkCordova(env);
       }

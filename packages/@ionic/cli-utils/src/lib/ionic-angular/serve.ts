@@ -27,7 +27,7 @@ export async function serve(args: { env: IonicEnvironment, options: { _: string[
       if (availableIPs.find(({ address }) => address === args.options.address)) {
         externalIP = <string>args.options.address;
       } else {
-        args.env.log.warn(`${chalk.bold('Multiple network interfaces detected!')}\n` +
+        args.env.log.warn(`Multiple network interfaces detected!\n` +
                           'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
                           `You may also use the ${chalk.green('--address')} option to skip this prompt.\n`);
         const promptedIp = await args.env.prompt({

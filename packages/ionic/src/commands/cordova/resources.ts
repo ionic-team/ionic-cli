@@ -199,7 +199,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
         .join(', ');
 
       this.env.log.error(
-        `Source image files were not found for the following platforms/types: ${missingImageText}\n\n` +
+        `Source image files were not found for the following platforms/types: ${missingImageText}\n` +
         `Please review ${chalk.green('--help')}`
       );
       return 1;

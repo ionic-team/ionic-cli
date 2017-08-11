@@ -62,7 +62,7 @@ export class LoginCommand extends Command implements CommandPreRun {
     if (options['email'] || options['password']) {
       const extra = this.env.flags.interactive ? 'You will be prompted to provide credentials. Alternatively, you can try this:' : 'Try this:';
       this.env.log.warn(
-        `${chalk.green('email')} and ${chalk.green('password')} are command arguments, not options. ${extra}\n\n` +
+        `${chalk.green('email')} and ${chalk.green('password')} are command arguments, not options. ${extra}\n` +
         `${chalk.green('ionic login ' + (options['email'] ? options['email'] : email) + ' *****')}\n`
       );
     }

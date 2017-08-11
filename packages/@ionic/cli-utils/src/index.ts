@@ -172,7 +172,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   if (levelInvalid) {
     log.warn(
       `${chalk.green(argv['log-level'])} is an invalid log level--defaulting back to ${chalk.bold(level)}.\n` +
-      `You can choose from the following log levels: ${LOG_LEVELS.map(l => chalk.bold(l)).join(', ')}.`
+      `You can choose from the following log levels: ${LOG_LEVELS.map(l => chalk.green(l)).join(', ')}.\n`
     );
   }
 
