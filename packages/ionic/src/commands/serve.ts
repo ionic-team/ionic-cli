@@ -2,6 +2,7 @@ import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { DEFAULT_ADDRESS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
 
 @CommandMetadata({
   name: 'serve',
@@ -11,8 +12,6 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 Easily spin up a development server which launches in your browser. It watches for changes in your source files and automatically reloads with the updated build.
 
 Try the ${chalk.green('--lab')} option to see multiple platforms at once.
-
-By default, ${chalk.green('ionic serve')} will only bind to your local address. You can share your app with an external IP by using the ${chalk.green('--address=0.0.0.0')} option.
   `,
   exampleCommands: ['-lcs', '--lab -lcs'],
   options: [
@@ -31,13 +30,13 @@ By default, ${chalk.green('ionic serve')} will only bind to your local address. 
     {
       name: 'port',
       description: 'Dev server HTTP port',
-      default: '8100',
+      default: String(DEFAULT_SERVER_PORT),
       aliases: ['p'],
     },
     {
       name: 'livereload-port',
       description: 'Live Reload port',
-      default: '35729',
+      default: String(DEFAULT_LIVERELOAD_PORT),
       aliases: ['r'],
     },
     {
@@ -61,7 +60,7 @@ By default, ${chalk.green('ionic serve')} will only bind to your local address. 
     {
       name: 'address',
       description: 'Network address for server',
-      default: 'localhost',
+      default: DEFAULT_ADDRESS,
     },
     {
       name: 'browser',

@@ -19,19 +19,19 @@ export function getAvailableIPAddress() {
   .filter(item => !item.internal && item.family === 'IPv4');
 }
 
-export async function findClosestOpenPort(host: string, port: number): Promise<number> {
+export async function findClosestOpenPort(port: number, host?: string): Promise<number> {
   async function t(portToCheck: number): Promise<number> {
-    const isTaken = await isPortTaken(host, portToCheck);
-    if (!isTaken) {
+    if (await isPortAvailable(portToCheck, host)) {
       return portToCheck;
     }
+
     return t(portToCheck + 1);
   }
 
   return t(port);
 }
 
-export async function isPortTaken(host: string, port: number): Promise<boolean> {
+export async function isPortAvailable(port: number, host?: string): Promise<boolean> {
   const net = await import('net');
 
   return new Promise<boolean>((resolve, reject) => {
@@ -39,15 +39,15 @@ export async function isPortTaken(host: string, port: number): Promise<boolean> 
       .once('error', (err: any) => {
         if (err.code === 'EADDRNOTAVAIL') {
           reject(ERROR_NETWORK_ADDRESS_NOT_AVAIL);
+        } else if (err.code === 'EADDRINUSE') {
+          resolve(false); // host/port in use
+        } else {
+          reject(err);
         }
-        if (err.code !== 'EADDRINUSE') {
-          return resolve(true);
-        }
-        resolve(true);
       })
       .once('listening', () => {
         tester.once('close', () => {
-          resolve(false);
+          resolve(true); // found available host/port
         })
         .close();
       })

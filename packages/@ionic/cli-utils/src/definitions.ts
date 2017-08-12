@@ -426,23 +426,33 @@ export interface InfoHookItem {
   path?: string;
 }
 
+export interface ServeOptions {
+  address: string;
+  port: number;
+  livereloadPort: number;
+  consolelogs: boolean;
+  serverlogs: boolean;
+  nobrowser: boolean;
+  nolivereload: boolean;
+  noproxy: boolean;
+  lab: boolean;
+  browser?: string;
+  browseroption?: string;
+  platform?: string;
+
+  /**
+   * @deprecated
+   */
+  shimCordova?: boolean;
+}
+
 export interface ServeDetails {
   protocol: string;
   localAddress: string;
   externalAddress: string;
   port: number;
-
-  /**
-   * Whether or not the server is accessible locally.
-   */
   locallyAccessible: boolean;
-
-  /**
-   * Whether or not the server is accessible externally.
-   */
   externallyAccessible: boolean;
-
-  [key: string]: any;
 }
 
 export interface CordovaProjectInfoHookResponse {

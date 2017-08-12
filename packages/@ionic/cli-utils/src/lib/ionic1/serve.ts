@@ -5,56 +5,31 @@ import * as chalk from 'chalk';
 
 import * as expressType from 'express';
 
-import { IProject, IonicEnvironment, ServeDetails } from '../../definitions';
+import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions';
+
+import { DEFAULT_ADDRESS, IONIC_LAB_URL } from '../serve';
 import { FatalException } from '../errors';
 
-export interface ServerOptions {
-  projectRoot: string;
-  wwwDir: string;
-  protocol: string;
-  address: string;
-  externalAddress: string;
-  port: number;
-  httpPort: number;
-  livereloadPort: number;
-  browser: string | undefined;
-  browseroption: string | undefined;
-  platform: string | undefined;
-  consolelogs: boolean;
-  serverlogs: boolean;
-  nobrowser: boolean;
-  nolivereload: boolean;
-  noproxy: boolean;
-  lab: boolean;
-  iscordovaserve: boolean;
-}
-
-export const WATCH_PATTERNS = [
+const WATCH_PATTERNS = [
   'www/**/*',
   '!www/lib/**/*',
   '!www/**/*.map'
 ];
 
-export const LOGGER_DIR = '__ion-dev-server';
-export const IONIC_LAB_URL = '/ionic-lab';
+interface ServeMetaOptions extends ServeOptions {
+  wwwDir: string;
+  externalIP: string;
+}
 
-export const DEFAULT_ADDRESS = '0.0.0.0';
-export const DEFAULT_LIVERELOAD_PORT = 35729;
-export const DEFAULT_SERVER_PORT = 8100;
+const IOS_PLATFORM_PATH = path.join('platforms', 'ios', 'www');
+const ANDROID_PLATFORM_PATH = path.join('platforms', 'android', 'assets', 'www');
 
-export const IOS_PLATFORM_PATH = path.join('platforms', 'ios', 'www');
-export const ANDROID_PLATFORM_PATH = path.join('platforms', 'android', 'assets', 'www');
-
-export async function serve(args: { env: IonicEnvironment; options: { _: string[]; [key: string]: any; }; }): Promise<ServeDetails> {
-  const { str2num } = await import('../utils/string');
-  const { minimistOptionsToArray } = await import('../utils/command');
+export async function serve({ env, options }: { env: IonicEnvironment; options: ServeOptions; }): Promise<ServeDetails> {
   const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort, getAvailableIPAddress } = await import('../utils/network');
 
-  const address = <string>args.options['address'] || DEFAULT_ADDRESS;
-  const locallyAccessible = ['0.0.0.0', 'localhost', '127.0.0.1'].includes(address);
-  let externalIP = address;
+  let externalIP = options.address;
 
-  if (address === '0.0.0.0') {
+  if (options.address === DEFAULT_ADDRESS) {
     // Find appropriate IP to use for cordova to reference
     const availableIPs = getAvailableIPAddress();
     if (availableIPs.length === 0) {
@@ -65,107 +40,69 @@ export async function serve(args: { env: IonicEnvironment; options: { _: string[
 
     externalIP = availableIPs[0].address;
     if (availableIPs.length > 1) {
-      args.env.log.warn(`${chalk.bold('Multiple network interfaces detected!')}\n` +
-                        'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
-                        `You may also use the ${chalk.green('--address')} option to skip this prompt.\n`);
-      const promptedIp = await args.env.prompt({
+      env.log.warn(
+        `${chalk.bold('Multiple network interfaces detected!')}\n` +
+        'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
+        `You may also use the ${chalk.green('--address')} option to skip this prompt.\n`
+      );
+
+      const promptedIp = await env.prompt({
         type: 'list',
         name: 'promptedIp',
         message: 'Please select which IP to use:',
         choices: availableIPs.map(ip => ip.address)
       });
+
       externalIP = promptedIp;
     }
   }
 
-  const serverArgs = minimistOptionsToArray(args.options);
-  args.env.log.info(`Starting server: ${chalk.bold(serverArgs.join(' '))} - Ctrl+C to cancel`);
+  env.log.info(`Starting server - Ctrl+C to cancel`);
 
-  const projectConfig = await args.env.project.load();
+  const project = await env.project.load();
+  const wwwDir = path.join(env.project.directory, project.documentRoot || 'www');
 
-  // Setup Options and defaults
-  const serverOptions: ServerOptions = {
-    projectRoot: args.env.project.directory,
-    wwwDir: path.join(args.env.project.directory, projectConfig.documentRoot || 'www'),
-    address,
-    protocol: 'http',
-    externalAddress: externalIP,
-    port: str2num(<string>args.options['port'], DEFAULT_SERVER_PORT),
-    httpPort: str2num(<string>args.options['port'], DEFAULT_SERVER_PORT),
-    livereloadPort: str2num(<string>args.options['livereload-port'], DEFAULT_LIVERELOAD_PORT),
-    browser: <string>args.options['browser'],
-    browseroption: <string>args.options['browseroption'],
-    platform: <string>args.options['platform'],
-    consolelogs: <boolean>args.options['consolelogs'] || false,
-    serverlogs: <boolean>args.options['serverlogs'] || false,
-    nobrowser: <boolean>args.options['nobrowser'] || false,
-    nolivereload: <boolean>args.options['nolivereload'] || false,
-    noproxy: <boolean>args.options['noproxy'] || false,
-    lab: <boolean>args.options['lab'] || false,
-    iscordovaserve: <boolean>args.options['iscordovaserve'] || false,
-  };
-
-  // Clean up args based on environment state
   try {
-    const portResults = await Promise.all([
-      findClosestOpenPort(serverOptions.address, serverOptions.port),
-      findClosestOpenPort(serverOptions.address, serverOptions.livereloadPort),
+    const [ httpPort, liveReloadPort ] = await Promise.all([
+      findClosestOpenPort(options.port, '0.0.0.0'),
+      findClosestOpenPort(options.livereloadPort, '0.0.0.0'),
     ]);
 
-    serverOptions.port = serverOptions.httpPort = portResults[0];
-    serverOptions.livereloadPort = portResults[1];
+    options.port = httpPort;
+    options.livereloadPort = liveReloadPort;
   } catch (e) {
     if (e !== ERROR_NETWORK_ADDRESS_NOT_AVAIL) {
       throw e;
     }
 
-    throw new FatalException(`${chalk.green(serverOptions.address)} is not available--cannot bind.`);
+    throw new FatalException(`${chalk.green(options.address)} is not available--cannot bind.`);
   }
 
   // Start up server
-  const settings = await setupServer(args.env, serverOptions);
-
-  const localAddress = 'http://localhost:' + serverOptions.port;
-  const externalAddress = 'http://' + serverOptions.externalAddress + ':' + serverOptions.port;
-  const externallyAccessible = localAddress !== externalAddress;
-
-  args.env.log.info(
-    `Development server running\n` +
-    (locallyAccessible ? `Local: ${chalk.bold(localAddress)}\n` : '') +
-    (externallyAccessible ? `External: ${chalk.bold(externalAddress)}\n` : '')
-  );
-
-  if (locallyAccessible && !serverOptions.nobrowser) {
-    const openOptions: string[] = [localAddress]
-      .concat(serverOptions.lab ? [IONIC_LAB_URL] : [])
-      .concat(serverOptions.browseroption ? [serverOptions.browseroption] : [])
-      .concat(serverOptions.platform ? ['?ionicplatform=', serverOptions.platform] : []);
-
-    const opn = await import('opn');
-    opn(openOptions.join(''));
-  }
+  const settings = await setupServer(env, { externalIP, wwwDir, ...options });
 
   return {
-    publicIp: serverOptions.externalAddress,
+    protocol: 'http',
     localAddress: 'localhost',
-    locallyAccessible,
-    externallyAccessible,
-    ...settings,
+    externalAddress: externalIP,
+    port: settings.port,
+    locallyAccessible: [DEFAULT_ADDRESS, 'localhost', '127.0.0.1'].includes(options.address),
+    externallyAccessible: externalIP !== options.address,
   };
 }
 
-async function setupServer(env: IonicEnvironment, options: ServerOptions): Promise<ServerOptions> {
-  const liveReloadBrowser = await createLiveReloadServer(options);
+async function setupServer(env: IonicEnvironment, options: ServeMetaOptions): Promise<ServeMetaOptions> {
+  const liveReloadBrowser = await createLiveReloadServer(env, options);
   await createHttpServer(env, options);
 
   const chokidar = await import('chokidar');
-  const projectConfig = await env.project.load();
+  const project = await env.project.load();
 
-  if (!projectConfig.watchPatterns) {
-    projectConfig.watchPatterns = [];
+  if (!project.watchPatterns) {
+    project.watchPatterns = [];
   }
 
-  const watchPatterns = [...new Set([...projectConfig.watchPatterns, ...WATCH_PATTERNS])];
+  const watchPatterns = [...new Set([...project.watchPatterns, ...WATCH_PATTERNS])];
   env.log.debug(() => `Watch patterns: ${watchPatterns.map(v => chalk.bold(v)).join(', ')}`);
   const watcher = chokidar.watch(watchPatterns, { cwd: env.project.directory });
   env.events.emit('watch:init');
@@ -183,7 +120,7 @@ async function setupServer(env: IonicEnvironment, options: ServerOptions): Promi
   return options;
 }
 
-export async function createLiveReloadServer(options: ServerOptions): Promise<(changedFile: string[]) => void> {
+async function createLiveReloadServer(env: IonicEnvironment, options: ServeMetaOptions): Promise<(changedFile: string[]) => void> {
   const tinylr = await import('tiny-lr');
   const liveReloadServer = tinylr();
   liveReloadServer.listen(options.livereloadPort);
@@ -222,7 +159,7 @@ export function injectLiveReloadScript(content: any, host: string, port: number)
 }
 
 function getLiveReloadScript(host: string, port: number) {
-  if (host === '0.0.0.0') {
+  if (host === DEFAULT_ADDRESS) {
     host = 'localhost';
   }
   const src = `//${host}:${port}/livereload.js?snipver=1`;
@@ -234,11 +171,51 @@ function getLiveReloadScript(host: string, port: number) {
 /**
  * Create HTTP server
  */
-export async function createHttpServer(env: IonicEnvironment, options: ServerOptions): Promise<expressType.Application> {
+async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions): Promise<expressType.Application> {
   const express = await import('express');
   const app = express();
-  app.set('serveOptions', options);
   app.listen(options.port, options.address);
+
+  /**
+   * http responder for /index.html base entrypoint
+   */
+  const serveIndex = (req: expressType.Request, res: expressType.Response) => {
+    // respond with the index.html file
+    const indexFileName = path.join(options.wwwDir, 'index.html');
+    fs.readFile(indexFileName, (err, indexHtml) => {
+      if (!options.nolivereload) {
+        indexHtml = injectLiveReloadScript(indexHtml, options.externalIP, options.livereloadPort);
+      }
+
+      res.set('Content-Type', 'text/html');
+      res.send(indexHtml);
+    });
+  };
+
+  /**
+   * Middleware to serve platform resources
+   */
+  const servePlatformResource = (req: expressType.Request, res: expressType.Response, next: expressType.NextFunction) => {
+    const userAgent = req.header('user-agent') || '';
+    let resourcePath = options.wwwDir;
+
+    if (!options.shimCordova) {
+      return next();
+    }
+
+    if (isUserAgentIOS(userAgent)) {
+      resourcePath = path.join(env.project.directory, IOS_PLATFORM_PATH);
+    } else if (isUserAgentAndroid(userAgent)) {
+      resourcePath = path.join(env.project.directory, ANDROID_PLATFORM_PATH);
+    }
+
+    fs.stat(path.join(resourcePath, req.url), (err, stats) => {
+      if (err) {
+        return next();
+      }
+      res.sendFile(req.url, { root: resourcePath });
+    });
+  };
 
   app.get('/', serveIndex);
   app.use('/', express.static(options.wwwDir));
@@ -261,17 +238,17 @@ export async function createHttpServer(env: IonicEnvironment, options: ServerOpt
   app.get('/plugins/*', servePlatformResource);
 
   if (!options.noproxy) {
-    await setupProxies(env.project, app);
+    await setupProxies(env, app);
   }
 
   return app;
 }
 
-async function setupProxies(project: IProject, app: expressType.Application) {
+async function setupProxies(env: IonicEnvironment, app: expressType.Application) {
   const url = await import('url');
-  const projectConfig = await project.load();
+  const project = await env.project.load();
 
-  for (const proxy of projectConfig.proxies || []) {
+  for (const proxy of project.proxies || []) {
     let opts: any = url.parse(proxy.proxyUrl);
     if (proxy.proxyNoAgent) {
       opts.agent = false;
@@ -286,55 +263,11 @@ async function setupProxies(project: IProject, app: expressType.Application) {
 }
 
 /**
- * http responder for /index.html base entrypoint
- */
-function serveIndex(req: expressType.Request, res: expressType.Response)  {
-  const options: ServerOptions = req.app.get('serveOptions');
-
-  // respond with the index.html file
-  const indexFileName = path.join(options.wwwDir, 'index.html');
-  fs.readFile(indexFileName, (err, indexHtml) => {
-    if (!options.nolivereload) {
-      indexHtml = injectLiveReloadScript(indexHtml, options.externalAddress, options.livereloadPort);
-    }
-
-    res.set('Content-Type', 'text/html');
-    res.send(indexHtml);
-  });
-}
-
-/**
  * http responder for cordova.js file
  */
 function serveMockCordovaJS(req: expressType.Request, res: expressType.Response) {
   res.set('Content-Type', 'application/javascript');
   res.send('// mock cordova file during development');
-}
-
-/**
- * Middleware to serve platform resources
- */
-function servePlatformResource(req: expressType.Request, res: expressType.Response, next: expressType.NextFunction) {
-  const options: ServerOptions = req.app.get('serveOptions');
-  const userAgent = req.header('user-agent') || '';
-  let resourcePath = options.wwwDir;
-
-  if (!options.iscordovaserve) {
-    return next();
-  }
-
-  if (isUserAgentIOS(userAgent)) {
-    resourcePath = path.join(options.projectRoot, IOS_PLATFORM_PATH);
-  } else if (isUserAgentAndroid(userAgent)) {
-    resourcePath = path.join(options.projectRoot, ANDROID_PLATFORM_PATH);
-  }
-
-  fs.stat(path.join(resourcePath, req.url), (err, stats) => {
-    if (err) {
-      return next();
-    }
-    res.sendFile(req.url, { root: resourcePath });
-  });
 }
 
 function isUserAgentIOS(ua: string) {

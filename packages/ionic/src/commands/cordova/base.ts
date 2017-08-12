@@ -4,6 +4,7 @@ import * as chalk from 'chalk';
 import { CommandLineInputs, CommandLineOptions, CommandPreRun, IShellRunOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { fsMkdir, pathExists } from '@ionic/cli-utils/lib/utils/fs';
+import { DEFAULT_ADDRESS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
 
 export const CORDOVA_RUN_COMMAND_OPTIONS = [
   {
@@ -33,18 +34,18 @@ export const CORDOVA_RUN_COMMAND_OPTIONS = [
   {
     name: 'address',
     description: 'Use specific address for dev/live-reload server',
-    default: '0.0.0.0',
+    default: DEFAULT_ADDRESS,
   },
   {
     name: 'port',
     description: 'Use specific port for the dev server',
-    default: '8100',
+    default: String(DEFAULT_SERVER_PORT),
     aliases: ['p'],
   },
   {
     name: 'livereload-port',
     description: 'Use specific port for live-reload server',
-    default: '35729',
+    default: String(DEFAULT_LIVERELOAD_PORT),
     aliases: ['r'],
   },
   {
@@ -212,16 +213,16 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
 
     if (isLiveReload) {
       const { serve } = await import('@ionic/cli-utils/commands/serve');
-      const serverSettings = await serve(this.env, inputs, generateBuildOptions(this.metadata, options));
+      const serverDetails = await serve(this.env, inputs, generateBuildOptions(this.metadata, options));
 
-      if (serverSettings.externallyAccessible === false) {
+      if (serverDetails.externallyAccessible === false) {
         this.env.log.warn(
-          `Your device or emulator may not be able to access ${chalk.bold(serverSettings.externalAddress)}.\n` +
+          `Your device or emulator may not be able to access ${chalk.bold(serverDetails.externalAddress)}.\n` +
           `Ensure you have proper port forwarding setup from your device to your computer.`
         );
       }
 
-      await conf.writeContentSrc(`${serverSettings.protocol || 'http'}://${serverSettings.externalAddress}:${serverSettings.port}`);
+      await conf.writeContentSrc(`${serverDetails.protocol || 'http'}://${serverDetails.externalAddress}:${serverDetails.port}`);
       await conf.save();
     } else {
       const { build } = await import('@ionic/cli-utils/commands/build');
@@ -229,5 +230,12 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
     }
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });
+
+    if (!isLiveReload) {
+      this.env.log.ok(
+        `Your app has been deployed.\n` +
+        `Did you know you can live-reload changes from your app with ${chalk.green('--livereload')}?`
+      );
+    }
   }
 }

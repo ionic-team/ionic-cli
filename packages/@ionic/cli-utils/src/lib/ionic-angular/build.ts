@@ -4,15 +4,28 @@ import { IonicEnvironment } from '../../definitions';
 
 import { importAppScripts } from './utils';
 
-export async function build(args: { env: IonicEnvironment; options: { _: string[]; [key: string]: any; }; }): Promise<void> {
-  const { minimistOptionsToArray } = await import('../utils/command');
-
-  const appScriptsArgs = minimistOptionsToArray(args.options, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
+export async function build({ env, options }: { env: IonicEnvironment; options: { _: string[]; [key: string]: any; }; }): Promise<void> {
+  const appScriptsArgs = await buildOptionsToAppScriptsArgs(options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
-  const AppScripts = await importAppScripts(args.env);
+  const AppScripts = await importAppScripts(env);
   const context = AppScripts.generateContext();
 
   console.log(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}\n`);
   return await AppScripts.build(context);
+}
+
+export async function buildOptionsToAppScriptsArgs(options: { _: string[]; [key: string]: any; }) {
+  const { minimistOptionsToArray } = await import('../utils/command');
+
+  const minimistArgs = {
+    _: [],
+    prod: options.prod ? true : false,
+    aot: options.aot ? true : false,
+    minifyjs: options.minifyjs ? true : false,
+    minifycss: options.minifycss ? true : false,
+    optimizejs: options.optimizejs ? true : false,
+  };
+
+  return minimistOptionsToArray(minimistArgs, { useEquals: false });
 }
