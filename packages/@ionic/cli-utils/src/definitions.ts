@@ -427,6 +427,7 @@ export interface InfoHookItem {
 }
 
 export interface ServeOptions {
+  // Command Options
   address: string;
   port: number;
   livereloadPort: number;
@@ -439,6 +440,9 @@ export interface ServeOptions {
   browser?: string;
   browseroption?: string;
   platform?: string;
+
+  // Additional Options
+  externalAddressRequired?: boolean;
 
   /**
    * @deprecated

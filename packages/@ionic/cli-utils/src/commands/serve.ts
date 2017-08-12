@@ -25,6 +25,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     browser: options['browser'] ? String(options['browser']) : undefined,
     browseroption: options['browseroption'] ? String(options['browseroption']) : undefined,
     platform: options['platform'] ? String(options['platform']) : undefined,
+    externalAddressRequired: false,
   };
 
   let serverDetails: ServeDetails;

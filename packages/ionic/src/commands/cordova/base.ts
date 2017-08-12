@@ -213,7 +213,7 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
 
     if (isLiveReload) {
       const { serve } = await import('@ionic/cli-utils/commands/serve');
-      const serverDetails = await serve(this.env, inputs, generateBuildOptions(this.metadata, options));
+      const serverDetails = await serve(this.env, inputs, { externalAddressRequired: true, ...generateBuildOptions(this.metadata, options) });
 
       if (serverDetails.externallyAccessible === false) {
         this.env.log.warn(

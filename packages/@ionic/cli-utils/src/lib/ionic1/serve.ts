@@ -29,7 +29,7 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
 
   let externalIP = options.address;
 
-  if (options.address === DEFAULT_ADDRESS) {
+  if (options.externalAddressRequired && options.address === DEFAULT_ADDRESS) {
     // Find appropriate IP to use for cordova to reference
     const availableIPs = getAvailableIPAddress();
     if (availableIPs.length === 0) {
