@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.8.0"></a>
+# [3.8.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.7.0...ionic@3.8.0) (2017-08-14)
+
+
+### Bug Fixes
+
+* **cordova:** do not error on prepare with no platforms ([422c95f](https://github.com/ionic-team/ionic-cli/commit/422c95f))
+* show helpful message for invocation of `ionic build` with argument ([02f2574](https://github.com/ionic-team/ionic-cli/commit/02f2574))
+* show helpful message for invocation of `ionic share` ([fb0d15d](https://github.com/ionic-team/ionic-cli/commit/fb0d15d))
+* show helpful message for invocations of `ionic state` ([d04eb80](https://github.com/ionic-team/ionic-cli/commit/d04eb80))
+* **serve:** multitude of serve fixes ([d7fe31d](https://github.com/ionic-team/ionic-cli/commit/d7fe31d))
+* **serve:** only show ip prompt if external ip is needed ([89853ca](https://github.com/ionic-team/ionic-cli/commit/89853ca))
+* **ssh:** if key exists during generate, ask to overwrite ([59bc4fd](https://github.com/ionic-team/ionic-cli/commit/59bc4fd))
+
+
+### Features
+
+* **config:** --json and --force options for `config set` ([024ef43](https://github.com/ionic-team/ionic-cli/commit/024ef43))
+
+
+
+
 <a name="3.7.0"></a>
 # [3.7.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.6.0...ionic@3.7.0) (2017-08-03)
 

@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.8.0"></a>
+# [1.8.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.7.0...@ionic/cli-utils@1.8.0) (2017-08-14)
+
+
+### Bug Fixes
+
+* **cordova:** do not error on prepare with no platforms ([422c95f](https://github.com/ionic-team/ionic-cli/commit/422c95f))
+* preserve whitespace in wrapped words ([6dc4cd2](https://github.com/ionic-team/ionic-cli/commit/6dc4cd2))
+* **info:** add additional attempt to get ionic 1 version from bower.json ([d89ac09](https://github.com/ionic-team/ionic-cli/commit/d89ac09))
+* **serve:** multitude of serve fixes ([d7fe31d](https://github.com/ionic-team/ionic-cli/commit/d7fe31d))
+* **serve:** only show ip prompt if external ip is needed ([89853ca](https://github.com/ionic-team/ionic-cli/commit/89853ca))
+* **ssh:** if key exists during generate, ask to overwrite ([59bc4fd](https://github.com/ionic-team/ionic-cli/commit/59bc4fd))
+
+
+### Features
+
+* **config:** --json and --force options for `config set` ([024ef43](https://github.com/ionic-team/ionic-cli/commit/024ef43))
+
+
+
+
 <a name="1.7.0"></a>
 # [1.7.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.6.0...@ionic/cli-utils@1.7.0) (2017-08-03)
 
