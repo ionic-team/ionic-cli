@@ -10,7 +10,7 @@ export interface SuperAgentError extends Error {
 }
 
 export type LogFn = (msg: string | (() => string)) => void;
-export type LogLevel = 'debug' | 'info' | 'ok' | 'warn' | 'error';
+export type LogLevel = 'debug' | 'info' | 'ok' | 'warn' | 'error' | 'announce';
 
 export interface LoggerOptions {
   level?: LogLevel;
@@ -28,6 +28,7 @@ export interface ILogger {
   ok: LogFn;
   warn: LogFn;
   error: LogFn;
+  announce: LogFn;
   msg: LogFn;
   nl(num?: number): void;
   shouldLog(level: LogLevel): boolean;

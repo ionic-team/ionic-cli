@@ -13,11 +13,12 @@ export const LOGGER_STATUS_COLORS = new Map<LogLevel, ChalkChain>([
   ['ok', chalk.green],
   ['warn', chalk.yellow],
   ['error', chalk.red],
+  ['announce', chalk.cyan],
 ]);
 
 export class Logger implements ILogger {
 
-  public firstLineColored: LogLevel[] = ['warn', 'error'];
+  public firstLineColored: LogLevel[] = ['warn', 'error', 'announce'];
 
   public readonly level: LogLevel;
   public readonly prefix: string | (() => string);
@@ -47,6 +48,10 @@ export class Logger implements ILogger {
 
   error(msg: string | (() => string)): void {
     this.log('error', msg);
+  }
+
+  announce(msg: string | (() => string)): void {
+    this.log('announce', msg);
   }
 
   msg(msg: string | (() => string)): void {

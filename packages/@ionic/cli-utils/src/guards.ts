@@ -25,7 +25,7 @@ import {
   ValidationError,
 } from './definitions';
 
-export const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'ok', 'warn', 'error'];
+export const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'ok', 'warn', 'error', 'announce'];
 
 export function isCommand(cmd: ICommand | INamespace): cmd is ICommand {
   return typeof (<ICommand>cmd).run === 'function';
