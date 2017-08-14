@@ -51,14 +51,16 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     (serverDetails.externallyAccessible ? `External: ${chalk.bold(externalAddress)}\n` : '')
   );
 
-  if (serverDetails.locallyAccessible && !serveOptions.nobrowser) {
-    const openOptions: string[] = [localAddress]
-      .concat(serveOptions.lab ? [IONIC_LAB_URL] : [])
-      .concat(serveOptions.browseroption ? [serveOptions.browseroption] : [])
-      .concat(serveOptions.platform ? ['?ionicplatform=', serveOptions.platform] : []);
+  if (project.type !== 'ionic-angular') { // TODO: app-scripts calls opn internally
+    if (serverDetails.locallyAccessible && !serveOptions.nobrowser) {
+      const openOptions: string[] = [localAddress]
+        .concat(serveOptions.lab ? [IONIC_LAB_URL] : [])
+        .concat(serveOptions.browseroption ? [serveOptions.browseroption] : [])
+        .concat(serveOptions.platform ? ['?ionicplatform=', serveOptions.platform] : []);
 
-    const opn = await import('opn');
-    opn(openOptions.join(''));
+      const opn = await import('opn');
+      opn(openOptions.join(''));
+    }
   }
 
   return serverDetails;
