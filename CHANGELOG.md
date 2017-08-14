@@ -8,7 +8,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 ## Versions
 
 <a name="3.8.0"></a>
-### 3.8.0 (PENDING)
+### 3.8.0 (2017-08-14)
 
 * :trumpet: All functionality provided by the
   `@ionic/cli-plugin-ionic-angular`, `@ionic/cli-plugin-ionic1`,
@@ -22,6 +22,12 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   The `@ionic/cli-plugin-proxy` plugin is unchanged. You are encouraged to
   uninstall the deprecated CLI plugins upon updating, as they are no longer
   needed and will not be loaded.
+* With significantly fewer plugins, the update prompts are now inherently less
+  annoying. Additionally, if you answer "no" to an update prompt, it will ask
+  again in a day, instead of upon the next command.
+* Fixed issue with multiple serve instances running at once on a computer.
+* Added helpful messages for errant invocations of `ionic build`, `ionic
+  state`, and `ionic share`.
 * Added `--json` to `ionic config set` for stricter inputs, as well as
   `--force` to allow for overwriting arrays and objects, which normally would
   not be.
