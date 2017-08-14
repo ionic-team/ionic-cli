@@ -2,17 +2,17 @@ import * as chalk from 'chalk';
 
 import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions';
 
-import { DEFAULT_ADDRESS } from '../serve';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES } from '../serve';
 import { FatalException } from '../errors';
 import { importAppScripts } from './utils';
 
 export async function serve({ env, options }: { env: IonicEnvironment, options: ServeOptions }): Promise<ServeDetails> {
-  const { getAvailableIPAddress } = await import('../utils/network');
+  const { getAvailableIPAddresses } = await import('../utils/network');
 
   let externalIP = options.address;
 
-  if (options.externalAddressRequired && options.address === DEFAULT_ADDRESS) {
-    const availableIPs = getAvailableIPAddress();
+  if (options.address === BIND_ALL_ADDRESS) {
+    const availableIPs = getAvailableIPAddresses();
     if (availableIPs.length === 0) {
       throw new Error(`It appears that you do not have any external network interfaces. ` +
         `In order to use livereload with emulate you will need one.`
@@ -21,12 +21,12 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
 
     externalIP = availableIPs[0].address;
 
-    if (availableIPs.length > 1) {
+    if (options.externalAddressRequired && availableIPs.length > 1) {
       if (availableIPs.find(({ address }) => address === options.address)) {
         externalIP = options.address;
       } else {
         env.log.warn(
-          `Multiple network interfaces detected!\n` +
+          'Multiple network interfaces detected!\n' +
           'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
           `You may also use the ${chalk.green('--address')} option to skip this prompt.\n`
         );
@@ -67,8 +67,7 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
     localAddress: 'localhost',
     externalAddress: externalIP,
     port: settings.httpPort,
-    locallyAccessible: [DEFAULT_ADDRESS, 'localhost', '127.0.0.1'].includes(options.address),
-    externallyAccessible: externalIP !== options.address,
+    externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
   };
 }
 

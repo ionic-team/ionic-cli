@@ -2,7 +2,7 @@ import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { DEFAULT_ADDRESS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
+import { BIND_ALL_ADDRESS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
 
 @CommandMetadata({
   name: 'serve',
@@ -60,7 +60,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
     {
       name: 'address',
       description: 'Network address for server',
-      default: DEFAULT_ADDRESS,
+      default: BIND_ALL_ADDRESS,
     },
     {
       name: 'browser',

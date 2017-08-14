@@ -4,7 +4,7 @@ import * as chalk from 'chalk';
 import { CommandLineInputs, CommandLineOptions, CommandPreRun, IShellRunOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { fsMkdir, pathExists } from '@ionic/cli-utils/lib/utils/fs';
-import { DEFAULT_ADDRESS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
+import { BIND_ALL_ADDRESS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
 
 export const CORDOVA_RUN_COMMAND_OPTIONS = [
   {
@@ -34,7 +34,7 @@ export const CORDOVA_RUN_COMMAND_OPTIONS = [
   {
     name: 'address',
     description: 'Use specific address for dev/live-reload server',
-    default: DEFAULT_ADDRESS,
+    default: BIND_ALL_ADDRESS,
   },
   {
     name: 'port',
@@ -216,10 +216,8 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
       const serverDetails = await serve(this.env, inputs, { externalAddressRequired: true, ...generateBuildOptions(this.metadata, options) });
 
       if (serverDetails.externallyAccessible === false) {
-        this.env.log.warn(
-          `Your device or emulator may not be able to access ${chalk.bold(serverDetails.externalAddress)}.\n` +
-          `Ensure you have proper port forwarding setup from your device to your computer.`
-        );
+        const extra = LOCAL_ADDRESSES.includes(serverDetails.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
+        this.env.log.warn(`Your device or emulator may not be able to access ${chalk.bold(serverDetails.externalAddress)}.${extra}\n\n`);
       }
 
       await conf.writeContentSrc(`${serverDetails.protocol || 'http'}://${serverDetails.externalAddress}:${serverDetails.port}`);

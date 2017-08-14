@@ -1,14 +1,14 @@
 import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, IonicEnvironment, ServeDetails } from '../definitions';
-import { DEFAULT_ADDRESS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, IONIC_LAB_URL } from '../lib/serve';
+import { BIND_ALL_ADDRESS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, IONIC_LAB_URL } from '../lib/serve';
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
   const { str2num } = await import('../lib/utils/string');
 
   await env.hooks.fire('watch:before', { env });
 
-  const address = options['address'] ? String(options['address']) : DEFAULT_ADDRESS;
+  const address = options['address'] ? String(options['address']) : BIND_ALL_ADDRESS;
   const port = str2num(options['port'], DEFAULT_SERVER_PORT);
   const livereloadPort = str2num(options['livereload-port'], DEFAULT_LIVERELOAD_PORT);
 
@@ -25,7 +25,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     browser: options['browser'] ? String(options['browser']) : undefined,
     browseroption: options['browseroption'] ? String(options['browseroption']) : undefined,
     platform: options['platform'] ? String(options['platform']) : undefined,
-    externalAddressRequired: false,
+    externalAddressRequired: options['externalAddressRequired'] ? true : false,
   };
 
   let serverDetails: ServeDetails;
@@ -47,12 +47,12 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
 
   env.log.info(
     `Development server running\n` +
-    (serverDetails.locallyAccessible ? `Local: ${chalk.bold(localAddress)}\n` : '') +
+    `Local: ${chalk.bold(localAddress)}\n` +
     (serverDetails.externallyAccessible ? `External: ${chalk.bold(externalAddress)}\n` : '')
   );
 
   if (project.type !== 'ionic-angular') { // TODO: app-scripts calls opn internally
-    if (serverDetails.locallyAccessible && !serveOptions.nobrowser) {
+    if (!serveOptions.nobrowser) {
       const openOptions: string[] = [localAddress]
         .concat(serveOptions.lab ? [IONIC_LAB_URL] : [])
         .concat(serveOptions.browseroption ? [serveOptions.browseroption] : [])

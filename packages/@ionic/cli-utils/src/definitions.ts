@@ -455,7 +455,6 @@ export interface ServeDetails {
   localAddress: string;
   externalAddress: string;
   port: number;
-  locallyAccessible: boolean;
   externallyAccessible: boolean;
 }
 

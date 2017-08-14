@@ -7,7 +7,7 @@ import * as expressType from 'express';
 
 import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions';
 
-import { DEFAULT_ADDRESS, IONIC_LAB_URL } from '../serve';
+import { BIND_ALL_ADDRESS, IONIC_LAB_URL, LOCAL_ADDRESSES } from '../serve';
 import { FatalException } from '../errors';
 
 const WATCH_PATTERNS = [
@@ -25,13 +25,13 @@ const IOS_PLATFORM_PATH = path.join('platforms', 'ios', 'www');
 const ANDROID_PLATFORM_PATH = path.join('platforms', 'android', 'assets', 'www');
 
 export async function serve({ env, options }: { env: IonicEnvironment; options: ServeOptions; }): Promise<ServeDetails> {
-  const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort, getAvailableIPAddress } = await import('../utils/network');
+  const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort, getAvailableIPAddresses } = await import('../utils/network');
 
   let externalIP = options.address;
 
-  if (options.externalAddressRequired && options.address === DEFAULT_ADDRESS) {
+  if (options.address === BIND_ALL_ADDRESS) {
     // Find appropriate IP to use for cordova to reference
-    const availableIPs = getAvailableIPAddress();
+    const availableIPs = getAvailableIPAddresses();
     if (availableIPs.length === 0) {
       throw new Error(`It appears that you do not have any external network interfaces. ` +
         `In order to use livereload with emulate you will need one.`
@@ -39,9 +39,10 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
     }
 
     externalIP = availableIPs[0].address;
-    if (availableIPs.length > 1) {
+
+    if (options.externalAddressRequired && availableIPs.length > 1) {
       env.log.warn(
-        `${chalk.bold('Multiple network interfaces detected!')}\n` +
+        'Multiple network interfaces detected!\n' +
         'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
         `You may also use the ${chalk.green('--address')} option to skip this prompt.\n`
       );
@@ -57,19 +58,24 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
     }
   }
 
-  env.log.info(`Starting server - Ctrl+C to cancel`);
-
   const project = await env.project.load();
   const wwwDir = path.join(env.project.directory, project.documentRoot || 'www');
 
   try {
-    const [ httpPort, liveReloadPort ] = await Promise.all([
+    const [ port, livereloadPort ] = await Promise.all([
       findClosestOpenPort(options.port, '0.0.0.0'),
       findClosestOpenPort(options.livereloadPort, '0.0.0.0'),
     ]);
 
-    options.port = httpPort;
-    options.livereloadPort = liveReloadPort;
+    if (options.port !== port) {
+      env.log.debug(`Port ${chalk.bold(String(options.port))} taken, using ${chalk.bold(String(port))}.`);
+      options.port = port;
+    }
+
+    if (options.livereloadPort !== livereloadPort) {
+      env.log.debug(`Port ${chalk.bold(String(options.livereloadPort))} taken, using ${chalk.bold(String(livereloadPort))}.`);
+      options.livereloadPort = livereloadPort;
+    }
   } catch (e) {
     if (e !== ERROR_NETWORK_ADDRESS_NOT_AVAIL) {
       throw e;
@@ -77,6 +83,8 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
 
     throw new FatalException(`${chalk.green(options.address)} is not available--cannot bind.`);
   }
+
+  env.log.info(`Starting server (address: ${chalk.bold(options.address)}, port: ${chalk.bold(String(options.port))}, livereload port: ${chalk.bold(String(options.livereloadPort))}) - Ctrl+C to cancel`);
 
   // Start up server
   const settings = await setupServer(env, { externalIP, wwwDir, ...options });
@@ -86,8 +94,7 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
     localAddress: 'localhost',
     externalAddress: externalIP,
     port: settings.port,
-    locallyAccessible: [DEFAULT_ADDRESS, 'localhost', '127.0.0.1'].includes(options.address),
-    externallyAccessible: externalIP !== options.address,
+    externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
   };
 }
 
@@ -159,7 +166,7 @@ export function injectLiveReloadScript(content: any, host: string, port: number)
 }
 
 function getLiveReloadScript(host: string, port: number) {
-  if (host === DEFAULT_ADDRESS) {
+  if (host === BIND_ALL_ADDRESS) {
     host = 'localhost';
   }
   const src = `//${host}:${port}/livereload.js?snipver=1`;
