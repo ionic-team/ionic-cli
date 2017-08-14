@@ -57,6 +57,6 @@ export function ensureSectionLine(section: SSHConfigModule.ConfigDirective, key:
   });
 
   if (!found) {
-    section.config = section.config.concat(SSHConfigModule.parse(`${key} ${value}\n`));
+    section.config = section.config.concat(SSHConfig.parse(`${key} ${value}\n`));
   }
 }
