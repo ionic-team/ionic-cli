@@ -7,27 +7,26 @@ const escapeStringRegexp = require('escape-string-regexp');
 
 const ionicPkg = require(path.resolve(__dirname, '..', '..', 'ionic'));
 const utilsPkg = require(path.resolve(__dirname, '..', 'cli-utils'));
+const utilsFsPkg = require(path.resolve(__dirname, '..', 'cli-utils', 'lib', 'utils', 'fs'));
 
-function getCmds(env) {
-  return env.namespace.getCommandMetadataList().filter(cmd => cmd.visible !== false && (!cmd.backends || cmd.backends.includes('legacy')));
-}
+run().then(() => console.log('done!')).catch((err) => console.error(err));
 
 async function run() {
   const env = await utilsPkg.generateIonicEnvironment(ionicPkg, process.argv.slice(2), process.env);
 
   const nsPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'index.md');
-  const nsDoc = formatIonicPage(env);
+  const nsDoc = await formatIonicPage(env);
 
-  await utilsPkg.fsMkdirp(path.dirname(nsPath));
-  await utilsPkg.fsWriteFile(nsPath, nsDoc, { encoding: 'utf8' });
+  await utilsFsPkg.fsMkdirp(path.dirname(nsPath));
+  await utilsFsPkg.fsWriteFile(nsPath, nsDoc, { encoding: 'utf8' });
 
-  const commands = getCmds(env);
+  const commands = await getCmds(env);
   const commandPromises = commands.map(async (cmd) => {
     const cmdPath = path.resolve(__dirname, '..', '..', '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
     const cmdDoc = formatCommandDoc(env, cmd);
 
-    await utilsPkg.fsMkdirp(path.dirname(cmdPath));
-    await utilsPkg.fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
+    await utilsFsPkg.fsMkdirp(path.dirname(cmdPath));
+    await utilsFsPkg.fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
   });
 
   await Promise.all(commandPromises);
@@ -36,9 +35,12 @@ async function run() {
   env.close();
 }
 
-run().then(() => console.log('done!')).catch((err) => console.error(err));
+async function getCmds(env) {
+  const cmds = await env.namespace.getCommandMetadataList();
+  return cmds.filter(cmd => cmd.visible !== false && (!cmd.backends || cmd.backends.includes('legacy')));
+}
 
-function formatIonicPage(env) {
+async function formatIonicPage(env) {
   const stripAnsi = env.load('strip-ansi');
   const headerLine = formatNamespaceHeader(env.namespace);
 
@@ -46,7 +48,7 @@ function formatIonicPage(env) {
     return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '))}/) | ${stripAnsi(cmdData.description)}`;
   }
 
-  const commands = getCmds(env);
+  const commands = await getCmds(env);
 
   return `${headerLine}
 
@@ -240,7 +242,7 @@ ${exampleLines.join('\n')}
 async function copyToIonicSite(commands) {
   const ionicSitePath = path.resolve(__dirname, '..', '..', '..', '..', 'ionic-site');
 
-  let dirData = await utilsPkg.fsStat(ionicSitePath);
+  let dirData = await utilsFsPkg.fsStat(ionicSitePath);
   if (!dirData.size) {
     // ionic-site not present
     console.error('ionic-site repo not found');
@@ -248,7 +250,7 @@ async function copyToIonicSite(commands) {
   }
 
   // get a list of commands for the nav
-  await utilsPkg.fsWriteFile(
+  await utilsFsPkg.fsWriteFile(
     path.resolve(ionicSitePath, 'content', '_data', 'cliData.json'),
     JSON.stringify(
       commands.map((command) => {
@@ -260,7 +262,7 @@ async function copyToIonicSite(commands) {
       }).sort((a, b) => a.name.localeCompare(b.name))
     ), { encoding: 'utf8' });
 
-  return utilsPkg.copyDirectory(
+  return utilsFsPkg.copyDirectory(
     path.resolve(__dirname, '..', '..', '..', 'docs'),
     path.resolve(ionicSitePath, 'content', 'docs', 'cli'));
 }
