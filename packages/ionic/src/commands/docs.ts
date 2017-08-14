@@ -11,10 +11,10 @@ export class DocsCommand extends Command {
     const { isSuperAgentError } = await import('@ionic/cli-utils/guards');
     const { createRequest } = await import('@ionic/cli-utils/lib/utils/http');
 
-    let url = '';
     const opn = await import('opn');
 
     const docsHomepage = 'https://ionicframework.com/docs';
+    let url = docsHomepage;
 
     const project = this.env.project.directory ? await this.env.project.load() : undefined;
 
