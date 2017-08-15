@@ -88,6 +88,7 @@ export async function serveOptionsToAppScriptsArgs(options: ServeOptions) {
     browser: options.browser,
     browseroption: options.browseroption,
     platform: options.platform,
+    iscordovaserve: options.iscordovaserve,
   };
 
   return minimistOptionsToArray(minimistArgs, { useEquals: false });

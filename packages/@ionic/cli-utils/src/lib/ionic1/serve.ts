@@ -206,7 +206,7 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
     const userAgent = req.header('user-agent') || '';
     let resourcePath = options.wwwDir;
 
-    if (!options.shimCordova) {
+    if (!options.iscordovaserve) {
       return next();
     }
 

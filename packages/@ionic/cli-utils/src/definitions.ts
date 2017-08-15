@@ -448,7 +448,7 @@ export interface ServeOptions {
   /**
    * @deprecated
    */
-  shimCordova?: boolean;
+  iscordovaserve?: boolean;
 }
 
 export interface ServeDetails {

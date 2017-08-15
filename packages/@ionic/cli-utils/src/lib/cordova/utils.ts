@@ -28,7 +28,8 @@ export function generateBuildOptions(metadata: CommandData, options: CommandLine
   // Serve specific options not related to the actual run or emulate code
   return {
     ...results,
-    shimCordova: true,
+    externalAddressRequired: true,
+    iscordovaserve: true,
     nobrowser: true
   };
 }

@@ -26,6 +26,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     browseroption: options['browseroption'] ? String(options['browseroption']) : undefined,
     platform: options['platform'] ? String(options['platform']) : undefined,
     externalAddressRequired: options['externalAddressRequired'] ? true : false,
+    iscordovaserve: typeof options['iscordovaserve'] === 'boolean' ? Boolean(options['iscordovaserve']) : false,
   };
 
   let serverDetails: ServeDetails;
