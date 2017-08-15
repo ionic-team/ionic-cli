@@ -2,7 +2,7 @@ import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { BIND_ALL_ADDRESS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
+import { BIND_ALL_ADDRESS, BROWSERS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
 
 @CommandMetadata({
   name: 'serve',
@@ -64,7 +64,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
     },
     {
       name: 'browser',
-      description: `Specifies the browser to use (${['safari', 'firefox', 'chrome'].map(b => chalk.green(b)).join(', ')})`,
+      description: `Specifies the browser to use (${BROWSERS.map(b => chalk.green(b)).join(', ')})`,
       aliases: ['w'],
     },
     {
