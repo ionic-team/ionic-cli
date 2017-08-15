@@ -209,6 +209,16 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
 
   try {
     const config = await ienv.config.load();
+
+    if (!config.version) {
+      ienv.log.announce(
+        `${chalk.bold('Hi! Welcome to CLI 3.8.')}\n` +
+        `We decided to merge core plugins back into the main ${chalk.bold('ionic')} CLI package. The ${chalk.bold('@ionic/cli-plugin-ionic-angular')}, ${chalk.bold('@ionic/cli-plugin-ionic1')}, ${chalk.bold('@ionic/cli-plugin-cordova')}, and ${chalk.bold('@ionic/cli-plugin-gulp')} plugins have all been deprecated and won't be loaded by the CLI anymore. We listened to devs and determined they added unnecessary complexity. You can uninstall them from your project(s).\n\n` +
+        `No functionality was removed and all commands will continue working normally. You may wish to review the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#changelog')}\n\n` +
+        `Thanks,\nThe Ionic Team\n\n`
+      );
+    }
+
     config.version = plugin.meta.version;
 
     registerHooks(ienv.hooks);
