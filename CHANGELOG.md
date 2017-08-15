@@ -7,6 +7,12 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.8.1"></a>
+### 3.8.1 (2017-08-14)
+
+* Fixed an issue with Cordova serve improperly mocking `cordova.js` for Ionic
+  Angular apps.
+
 <a name="3.8.0"></a>
 ### 3.8.0 (2017-08-14)
 
