@@ -13,7 +13,7 @@ Easily spin up a development server which launches in your browser. It watches f
 
 Try the ${chalk.green('--lab')} option to see multiple platforms at once.
   `,
-  exampleCommands: ['-lcs', '--lab -lcs'],
+  exampleCommands: ['-cs', '--lab -cs'],
   options: [
     {
       name: 'consolelogs',
