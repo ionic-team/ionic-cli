@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "3.8.0",
+  "version": "3.8.1",
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "http://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io) ",
@@ -44,7 +44,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ionic/cli-utils": "1.8.0",
+    "@ionic/cli-utils": "1.8.1",
     "chalk": "^2.0.0",
     "opn": "^5.1.0",
     "os-name": "^2.0.1",
@@ -53,7 +53,7 @@
     "tslib": "^1.7.1"
   },
   "devDependencies": {
-    "@ionic/cli-scripts": "0.3.2",
+    "@ionic/cli-scripts": "0.3.3",
     "@types/chalk": "^0.4.31",
     "@types/opn": "^3.0.28",
     "@types/rimraf": "0.0.28"

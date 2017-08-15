@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.8.1"></a>
+## [3.8.1](https://github.com/ionic-team/ionic-cli/compare/ionic@3.8.0...ionic@3.8.1) (2017-08-15)
+
+
+### Bug Fixes
+
+* **cordova:** fix cordova serve issue with cordova.js mock ([f08f22b](https://github.com/ionic-team/ionic-cli/commit/f08f22b))
+
+
+
+
 <a name="3.8.0"></a>
 # [3.8.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.7.0...ionic@3.8.0) (2017-08-14)
 

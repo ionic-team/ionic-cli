@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.3"></a>
+## [0.3.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-scripts@0.3.2...@ionic/cli-scripts@0.3.3) (2017-08-15)
+
+
+
+
 <a name="0.3.2"></a>
 ## [0.3.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-scripts@0.3.1...@ionic/cli-scripts@0.3.2) (2017-08-14)
 
