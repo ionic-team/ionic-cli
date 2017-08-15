@@ -60,7 +60,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
         .concat(serveOptions.platform ? ['?ionicplatform=', serveOptions.platform] : []);
 
       const opn = await import('opn');
-      opn(openOptions.join(''));
+      opn(openOptions.join(''), { app: serveOptions.browser, wait: false });
     }
   }
 
