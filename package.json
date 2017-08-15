@@ -3,8 +3,6 @@
   "scripts": {
     "bootstrap": "lerna bootstrap && npm run build",
     "clean": "lerna run clean",
-    "link": "lerna exec -- npm link",
-    "unlink": "lerna exec -- npm unlink",
     "lint": "lerna run lint",
     "test": "lerna run test",
     "build": "lerna run build",

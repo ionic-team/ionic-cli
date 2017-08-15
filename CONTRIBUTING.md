@@ -42,7 +42,7 @@ Each `packages/*` folder represents a package on npm.
 ##### Toolset
 
 * npm 5 is required.
-* We recommend Node 7.6+.
+* Node 8.1+ is required.
 * Our codebase is written in [Typescript](https://www.typescriptlang.org/). If
   you're unfamiliar with Typescript, we recommend using [VS
   Code](https://code.visualstudio.com/) and finding a tutorial to familiarize
@@ -55,16 +55,30 @@ Each `packages/*` folder represents a package on npm.
 1. `npm install` to install the dev tools.
 1. `npm run bootstrap` (will install package dependencies and link packages
    together)
-1. Optionally `npm run link` to make `ionic` point to your dev CLI.
-1. `npm run watch` will spin up TS & JS watch scripts for all packages.
-1. Typescript source files are in `packages/*/src`.
+1. Optionally `npm link` inside `packages/ionic/` to make `ionic` point to your
+   dev CLI.
+1. `npm run watch` will spin up Typescript watch scripts for all packages.
+1. Typescript source files are in `packages/**/src`.
 1. Good luck! :muscle: Please open an issue if you have questions or something
    is unclear.
 
 ##### Running Dev CLI
 
-You can switch between your dev CLI and stable with `npm run link` and `npm run
-unlink && npm i -g ionic`.
+Switch to dev CLI:
+
+```bash
+$ npm uninstall -g ionic
+$ cd packages/ionic/
+$ npm link
+```
+
+Switch back to stable CLI:
+
+```bash
+$ cd packages/ionic/
+$ npm unlink
+$ npm i -g ionic
+```
 
 ##### Code Structure
 
