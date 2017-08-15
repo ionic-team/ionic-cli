@@ -14,41 +14,46 @@ run().then(() => console.log('done!')).catch((err) => console.error(err));
 async function run() {
   const env = await utilsPkg.generateIonicEnvironment(ionicPkg, process.argv.slice(2), process.env);
 
-  const nsPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'index.md');
-  const nsDoc = await formatIonicPage(env);
+  await runForBackend(env, 'legacy');
+  await runForBackend(env, 'pro');
+
+  env.close();
+}
+
+async function runForBackend(env, backend) {
+  const nsPath = path.resolve(__dirname, '..', '..', '..', 'docs', backend, 'index.md');
+  const nsDoc = await formatIonicPage(env, backend);
 
   await utilsFsPkg.fsMkdirp(path.dirname(nsPath));
   await utilsFsPkg.fsWriteFile(nsPath, nsDoc, { encoding: 'utf8' });
 
-  const commands = await getCmds(env);
+  const commands = await getCmds(env, backend);
   const commandPromises = commands.map(async (cmd) => {
-    const cmdPath = path.resolve(__dirname, '..', '..', '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
-    const cmdDoc = formatCommandDoc(env, cmd);
+    const cmdPath = path.resolve(__dirname, '..', '..', '..', 'docs', backend, ...cmd.fullName.split(' '), 'index.md');
+    const cmdDoc = formatCommandDoc(env, cmd, backend);
 
     await utilsFsPkg.fsMkdirp(path.dirname(cmdPath));
     await utilsFsPkg.fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
   });
 
   await Promise.all(commandPromises);
-  await copyToIonicSite(commands);
-
-  env.close();
+  await copyToIonicSite(commands, backend);
 }
 
-async function getCmds(env) {
+async function getCmds(env, backend) {
   const cmds = await env.namespace.getCommandMetadataList();
-  return cmds.filter(cmd => cmd.visible !== false && (!cmd.backends || cmd.backends.includes('legacy')));
+  return cmds.filter(cmd => cmd.visible !== false && (!cmd.backends || cmd.backends.includes(backend)));
 }
 
-async function formatIonicPage(env) {
+async function formatIonicPage(env, backend) {
   const stripAnsi = env.load('strip-ansi');
-  const headerLine = formatNamespaceHeader(env.namespace);
+  const headerLine = formatNamespaceHeader(env.namespace, backend);
 
   function listCommandLink(cmdData) {
     return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '))}/) | ${stripAnsi(cmdData.description)}`;
   }
 
-  const commands = await getCmds(env);
+  const commands = await getCmds(env, backend);
 
   return `${headerLine}
 
@@ -96,8 +101,9 @@ ${commands.map(listCommandLink).join(`
 `;
 }
 
-function formatNamespaceHeader(ns) {
-  return `---
+function formatNamespaceHeader(ns, backend) {
+  if (backend === 'legacy') {
+    return `---
 layout: fluid/docs_base
 category: cli
 id: cli-intro
@@ -106,10 +112,25 @@ title: Ionic CLI Documentation
 
 # ${ns.name}
 `;
+  } else if (backend === 'pro') {
+    return `---
+layout: fluid/pro_docs_base
+category: pro
+id: cli-intro
+title: Ionic CLI Documentation
+body_class: 'pro-docs'
+hide_header_search: true
+dark_header: true
+---
+
+# ${ns.name}
+`;
+  }
 }
 
-function formatCommandHeader(cmd) {
-  return `---
+function formatCommandHeader(cmd, backend) {
+  if (backend === 'legacy') {
+    return `---
 layout: fluid/docs_base
 category: cli
 id: cli-${cmd.fullName.split(' ').join('-')}
@@ -121,6 +142,21 @@ header_sub_title: Ionic CLI
 # \`$ ionic ${cmd.fullName}\`
 
 `;
+  } else if (backend === 'pro') {
+    return `---
+layout: fluid/pro_docs_base
+category: pro
+id: cli-${cmd.fullName.split(' ').join('-')}
+command_name: ${cmd.fullName}
+title: Ionic CLI Documentation - ${cmd.fullName}
+body_class: 'pro-docs'
+hide_header_search: true
+dark_header: true
+---
+
+# \`$ ionic ${cmd.fullName}\`
+`;
+  }
 }
 
 function links2md(str) {
@@ -137,7 +173,7 @@ function convertAnsiToMd(str, style, md) {
   return str.replace(new RegExp(escapeStringRegexp(style.open), 'g'), md.open).replace(new RegExp(escapeStringRegexp(style.close), 'g'), md.close);
 }
 
-function formatCommandDoc(env, cmdMetadata) {
+function formatCommandDoc(env, cmdMetadata, backend) {
   const stripAnsi = env.load('strip-ansi');
   const description = stripAnsi(cmdMetadata.description).split('\n').join('\n  ');
   let longDescription = cmdMetadata.longDescription;
@@ -146,10 +182,10 @@ function formatCommandDoc(env, cmdMetadata) {
     longDescription = stripAnsi(links2md(ansi2md(longDescription.trim())));
   }
 
-  return formatCommandHeader(cmdMetadata) +
+  return formatCommandHeader(cmdMetadata, backend) +
     formatName(cmdMetadata.fullName, description) +
     formatSynopsis(cmdMetadata.inputs, cmdMetadata.fullName) +
-    formatDescription(env, cmdMetadata.inputs, cmdMetadata.options, longDescription) +
+    formatDescription(env, backend, cmdMetadata.inputs, cmdMetadata.options, longDescription) +
     formatExamples(cmdMetadata.exampleCommands, cmdMetadata.fullName);
 }
 
@@ -177,8 +213,8 @@ $ ionic ${usageLine}
 }
 
 
-function formatDescription(env, inputs = [], options = [], longDescription = '') {
-  options = options.filter(o => o.visible !== false && (!o.backends || o.backends.includes('legacy')));
+function formatDescription(env, backend, inputs = [], options = [], longDescription = '') {
+  options = options.filter(o => o.visible !== false && (!o.backends || o.backends.includes(backend)));
   const stripAnsi = env.load('strip-ansi');
   const headerLine = `## Details`;
 
@@ -239,7 +275,7 @@ ${exampleLines.join('\n')}
 `;
 }
 
-async function copyToIonicSite(commands) {
+async function copyToIonicSite(commands, backend) {
   const ionicSitePath = path.resolve(__dirname, '..', '..', '..', '..', 'ionic-site');
 
   let dirData = await utilsFsPkg.fsStat(ionicSitePath);
@@ -249,21 +285,27 @@ async function copyToIonicSite(commands) {
     return;
   }
 
-  // get a list of commands for the nav
-  await utilsFsPkg.fsWriteFile(
-    path.resolve(ionicSitePath, 'content', '_data', 'cliData.json'),
-    JSON.stringify(
-      commands.map((command) => {
-        return {
-          id: `cli-${command.fullName.split(' ').join('-')}`,
-          name: command.fullName,
-          url: command.fullName.split(' ').join('/')
-        };
-      }).sort((a, b) => a.name.localeCompare(b.name))
-    ), { encoding: 'utf8' });
+  if (backend === 'legacy') {
+    // get a list of commands for the nav
+    await utilsFsPkg.fsWriteFile(
+      path.resolve(ionicSitePath, 'content', '_data', 'cliData.json'),
+      JSON.stringify(
+        commands.map((command) => {
+          return {
+            id: `cli-${command.fullName.split(' ').join('-')}`,
+            name: command.fullName,
+            url: command.fullName.split(' ').join('/')
+          };
+        }).sort((a, b) => a.name.localeCompare(b.name))
+      ), { encoding: 'utf8' });
 
-  return utilsFsPkg.copyDirectory(
-    path.resolve(__dirname, '..', '..', '..', 'docs'),
-    path.resolve(ionicSitePath, 'content', 'docs', 'cli'));
+    return utilsFsPkg.copyDirectory(
+      path.resolve(__dirname, '..', '..', '..', 'docs', backend),
+      path.resolve(ionicSitePath, 'content', 'docs', 'cli'));
+  } else if (backend === 'pro') {
+    return utilsFsPkg.copyDirectory(
+      path.resolve(__dirname, '..', '..', '..', 'docs', backend),
+      path.resolve(ionicSitePath, 'content', 'docs', 'pro', 'cli'));
+  }
 }
 
