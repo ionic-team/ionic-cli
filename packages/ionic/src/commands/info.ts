@@ -22,8 +22,8 @@ export class InfoCommand extends Command {
     const flattenedResults = results.reduce((acc, currentValue) => acc.concat(currentValue), initialValue);
 
     const cliDetails = flattenedResults.filter(item => item.type === 'cli-packages');
-    const globalNpmDetails = flattenedResults.filter(item => item.type === 'global-packages' || <string>item.type === 'global-npm'); // TODO: take out global-npm
-    const localNpmDetails = flattenedResults.filter(item => item.type === 'local-packages' || <string>item.type === 'local-npm'); // TODO: take out local-npm
+    const globalNpmDetails = flattenedResults.filter(item => item.type === 'global-packages');
+    const localNpmDetails = flattenedResults.filter(item => item.type === 'local-packages');
     const systemDetails = flattenedResults.filter(item => item.type === 'system');
 
     const ionicPkg = cliDetails.filter(item => item.name.startsWith('ionic'))[0];

@@ -23,9 +23,8 @@ export function validate(input: string, key: string, validators: Validator[], er
   }
 }
 
-// TODO: typescript isn't enforcing input?: string
 export const validators: Validators = {
-  required(input: string, key?: string): true | string {
+  required(input?: string, key?: string): true | string {
     if (!input) {
       if (key) {
         return `${chalk.green(key)} must not be empty.`;
@@ -36,7 +35,7 @@ export const validators: Validators = {
 
     return true;
   },
-  email(input: string, key?: string): true | string {
+  email(input?: string, key?: string): true | string {
     if (!isValidEmail(input)) {
       if (key) {
         return `${chalk.green(key)} is an invalid email address.`;
@@ -47,7 +46,7 @@ export const validators: Validators = {
 
     return true;
   },
-  numeric(input: string, key?: string): true | string {
+  numeric(input?: string, key?: string): true | string {
     if (isNaN(Number(input))) {
       if (key) {
         return `${chalk.green(key)} must be numeric.`;
