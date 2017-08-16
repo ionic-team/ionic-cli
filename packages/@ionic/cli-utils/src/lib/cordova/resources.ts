@@ -221,7 +221,7 @@ export async function provideDefaultResources(env: IonicEnvironment, platform?: 
   const destinationDir = path.resolve(env.project.directory, 'resources', platform || '');
 
   if (await pathExists(destinationDir)) {
-    env.log.info(`${chalk.bold(prettyPath(destinationDir))} exists, not overwriting directory with default Ionic resources.`);
+    env.log.debug(`${chalk.bold(prettyPath(destinationDir))} exists, not overwriting directory with default Ionic resources.`);
   } else {
     const tmpResourcesDir = await ensureDefaultResources(env);
     const sourceDir = path.join(tmpResourcesDir, platform || '');
