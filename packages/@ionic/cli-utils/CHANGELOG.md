@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.9.0"></a>
+# [1.9.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.8.1...@ionic/cli-utils@1.9.0) (2017-08-16)
+
+
+### Bug Fixes
+
+* **ionic1:** fix --browser option for v1 projects ([80ac51c](https://github.com/ionic-team/ionic-cli/commit/80ac51c))
+
+
+### Features
+
+* **docs:** add --browser/-w option to `ionic docs` ([ca74bdc](https://github.com/ionic-team/ionic-cli/commit/ca74bdc))
+
+
+
+
 <a name="1.8.1"></a>
 ## [1.8.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.8.0...@ionic/cli-utils@1.8.1) (2017-08-15)
 

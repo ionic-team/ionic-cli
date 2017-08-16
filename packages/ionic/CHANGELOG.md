@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.9.0"></a>
+# [3.9.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.8.1...ionic@3.9.0) (2017-08-16)
+
+
+### Bug Fixes
+
+* **cordova:** infer --livereload from -c or -s ([0a5ce80](https://github.com/ionic-team/ionic-cli/commit/0a5ce80))
+
+
+### Features
+
+* **docs:** add --browser/-w option to `ionic docs` ([ca74bdc](https://github.com/ionic-team/ionic-cli/commit/ca74bdc))
+* **sourcemaps:** sync sourcemaps with Pro ([f7a37c3](https://github.com/ionic-team/ionic-cli/commit/f7a37c3))
+
+
+
+
 <a name="3.8.1"></a>
 ## [3.8.1](https://github.com/ionic-team/ionic-cli/compare/ionic@3.8.0...ionic@3.8.1) (2017-08-15)
 

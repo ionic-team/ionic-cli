@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.4.4"></a>
+## [1.4.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-proxy@1.4.3...@ionic/cli-plugin-proxy@1.4.4) (2017-08-16)
+
+
+
+
 <a name="1.4.3"></a>
 ## [1.4.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-proxy@1.4.2...@ionic/cli-plugin-proxy@1.4.3) (2017-08-15)
 
