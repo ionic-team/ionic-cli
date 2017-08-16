@@ -205,6 +205,11 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const { filterArgumentsForCordova, generateBuildOptions } = await import('@ionic/cli-utils/lib/cordova/utils');
 
+    if (!options['livereload'] && (options['consolelogs'] || options['serverlogs'])) {
+      this.env.log.info(`${chalk.green('--consolelogs')} or ${chalk.green('--serverlogs')} detected, using ${chalk.green('--livereload')}`);
+      options['livereload'] = true;
+    }
+
     const isLiveReload = options['livereload'];
 
     const conf = await ConfigXml.load(this.env.project.directory);
