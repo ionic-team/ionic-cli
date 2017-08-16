@@ -6,6 +6,7 @@ import * as chalk from 'chalk';
 import {
   IHookEngine,
   InfoHookItem,
+  IonicEnvironment,
   generateIonicEnvironment,
 } from '@ionic/cli-utils';
 
@@ -26,6 +27,20 @@ const WATCH_BEFORE_HOOK = 'watch:before';
 const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
 
 export function registerHooks(hooks: IHookEngine) {
+  const detectAndWarnAboutDeprecatedPlugin = async (env: IonicEnvironment, plugin: string) => {
+    const packageJson = await env.project.loadPackageJson();
+
+    if (packageJson.devDependencies && packageJson.devDependencies[plugin]) {
+      const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
+      const args = await pkgManagerArgs(env, { pkg: plugin, command: 'uninstall', saveDev: true });
+
+      env.log.warn(
+        `Detected ${chalk.bold(plugin)} in your ${chalk.bold('package.json')}.\n` +
+        `As of CLI 3.8, it is no longer needed. You can uninstall it:\n\n${chalk.green(args.join(' '))}\n`
+      );
+    }
+  };
+
   hooks.register(name, BUILD_BEFORE_HOOK, async ({ env }) => {
     const packageJson = await env.project.loadPackageJson();
 
@@ -41,12 +56,13 @@ export function registerHooks(hooks: IHookEngine) {
         await runTask(env, BUILD_BEFORE_SCRIPT);
       }
 
+      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-cordova');
+      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic-angular');
+      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic1');
+      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-gulp');
+
       if (packageJson.devDependencies['@ionic/cli-plugin-cordova']) {
         const { checkCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
-        env.log.warn(
-          `Detected ${chalk.bold('@ionic/cli-plugin-cordova')} in your ${chalk.bold('package.json')}.\n` +
-          `As of CLI 3.8, it is no longer needed. You can uninstall it.\n`
-        );
         await checkCordova(env);
       }
     }
@@ -89,12 +105,13 @@ export function registerHooks(hooks: IHookEngine) {
         await runTask(env, WATCH_BEFORE_SCRIPT);
       }
 
+      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-cordova');
+      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic-angular');
+      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic1');
+      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-gulp');
+
       if (packageJson.devDependencies['@ionic/cli-plugin-cordova']) {
         const { checkCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
-        env.log.warn(
-          `Detected ${chalk.bold('@ionic/cli-plugin-cordova')} in your ${chalk.bold('package.json')}.\n` +
-          `As of CLI 3.8, it is no longer needed. You can uninstall it.\n`
-        );
         await checkCordova(env);
       }
     }
@@ -212,7 +229,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
 
     if (!config.version) {
       ienv.log.announce(
-        `${chalk.bold('Hi! Welcome to CLI 3.8.')}\n` +
+        `${chalk.bold('Hi! Welcome to CLI 3.9.')}\n` +
         `We decided to merge core plugins back into the main ${chalk.bold('ionic')} CLI package. The ${chalk.bold('@ionic/cli-plugin-ionic-angular')}, ${chalk.bold('@ionic/cli-plugin-ionic1')}, ${chalk.bold('@ionic/cli-plugin-cordova')}, and ${chalk.bold('@ionic/cli-plugin-gulp')} plugins have all been deprecated and won't be loaded by the CLI anymore. We listened to devs and determined they added unnecessary complexity. You can uninstall them from your project(s).\n\n` +
         `No functionality was removed and all commands will continue working normally. You may wish to review the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#changelog')}\n\n` +
         `Thanks,\nThe Ionic Team\n\n`
