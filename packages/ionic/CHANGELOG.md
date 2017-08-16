@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.9.1"></a>
+## [3.9.1](https://github.com/ionic-team/ionic-cli/compare/ionic@3.9.0...ionic@3.9.1) (2017-08-16)
+
+
+### Bug Fixes
+
+* **plugins:** detect all deprecated plugins ([e32f9c1](https://github.com/ionic-team/ionic-cli/commit/e32f9c1))
+* **resources:** detect resources/<platform> dirs upon platform add ([ea07da9](https://github.com/ionic-team/ionic-cli/commit/ea07da9))
+
+
+
+
 <a name="3.9.0"></a>
 # [3.9.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.8.1...ionic@3.9.0) (2017-08-16)
 

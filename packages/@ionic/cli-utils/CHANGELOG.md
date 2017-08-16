@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.9.1"></a>
+## [1.9.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.9.0...@ionic/cli-utils@1.9.1) (2017-08-16)
+
+
+### Bug Fixes
+
+* **proxy:** fix continual prompting to install proxy plugin ([14c3613](https://github.com/ionic-team/ionic-cli/commit/14c3613))
+* **resources:** detect resources/<platform> dirs upon platform add ([ea07da9](https://github.com/ionic-team/ionic-cli/commit/ea07da9))
+
+
+
+
 <a name="1.9.0"></a>
 # [1.9.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.8.1...@ionic/cli-utils@1.9.0) (2017-08-16)
 
