@@ -56,15 +56,23 @@ export function unregisterPlugin(env: IonicEnvironment, plugin: Plugin) {
 
 export async function loadPlugins(env: IonicEnvironment) {
   const global = !env.meta.local;
-  const [ , proxyVar ] = getGlobalProxy();
 
   const modulesDir = path.resolve(global ? path.dirname(path.dirname(path.dirname(env.meta.libPath))) : path.join(env.project.directory, 'node_modules'));
+  const pluginPkgs = await Promise.all(KNOWN_PLUGINS
+    .map(formatFullPluginName)
+    .map(async (pkgName): Promise<[string, boolean]> => {
+      const pluginPath = path.resolve(modulesDir, path.normalize(pkgName));
+      const exists = await pathExists(pluginPath);
+      return [pkgName, exists];
+    }));
+
+  const [ , proxyVar ] = getGlobalProxy();
 
   if (proxyVar) {
     const proxyPluginPkg = formatFullPluginName('proxy');
     env.log.debug(() => `Detected ${chalk.green(proxyVar)} in environment`);
 
-    if (!(proxyPluginPkg in env.plugins)) {
+    if (!pluginPkgs.find(v => v[0] === proxyPluginPkg && v[1])) {
       const canInstall = await pathAccessible(env.plugins.ionic.meta.filePath, fs.constants.W_OK);
       const proxyInstallArgs = await pkgManagerArgs(env, { pkg: proxyPluginPkg, global });
       const installMsg = `Detected ${chalk.green(proxyVar)} in environment, but to proxy CLI requests, you'll need ${chalk.cyan(proxyPluginPkg)} installed.`;
@@ -81,13 +89,6 @@ export async function loadPlugins(env: IonicEnvironment) {
     }
   }
 
-  const pluginPkgs = await Promise.all(KNOWN_PLUGINS
-    .map(formatFullPluginName)
-    .map(async (pkgName): Promise<[string, boolean]> => {
-      const pluginPath = path.resolve(modulesDir, path.normalize(pkgName));
-      const exists = await pathExists(pluginPath);
-      return [pkgName, exists];
-    }));
 
   const pluginPromises = pluginPkgs.map(async (pkg) => {
     const [ pkgName, exists ] = pkg;
