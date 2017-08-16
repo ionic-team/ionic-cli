@@ -19,8 +19,6 @@ import { isSuperAgentError } from '@ionic/cli-utils/guards';
 })
 export class MonitoringSyncSourcemapsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>  {
-    console.log('Syncing sourcemaps', inputs, options);
-
     const token = await this.env.session.getUserToken();
     const appId = await this.env.project.loadAppId();
 
