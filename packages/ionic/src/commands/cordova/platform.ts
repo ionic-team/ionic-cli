@@ -68,7 +68,7 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
-    const { RESOURCES, addDefaultImagesToProjectResources } = await import('@ionic/cli-utils/lib/cordova/resources');
+    const { RESOURCES, provideDefaultResources } = await import('@ionic/cli-utils/lib/cordova/resources');
 
     let [ action, platformName ] = inputs;
 
@@ -98,8 +98,7 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
     }
 
     if (action === 'add' && !(options['noresources']) && ['ios', 'android', 'wp8'].includes(platformName)) {
-      this.env.tasks.next(`Copying default image resources into ${chalk.bold('./resources/' + platformName)}`);
-      await addDefaultImagesToProjectResources(this.env.project.directory, <KnownPlatform>platformName);
+      await provideDefaultResources(this.env, <KnownPlatform>platformName);
       const conf = await ConfigXml.load(this.env.project.directory);
       await conf.ensurePlatformImages(platformName, RESOURCES[platformName]);
       await conf.save();

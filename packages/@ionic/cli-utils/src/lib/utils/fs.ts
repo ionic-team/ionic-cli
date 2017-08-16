@@ -1,6 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import * as ncpType from 'ncp';
+
 import { promisify } from './promise';
 
 export const ERROR_FILE_NOT_FOUND = 'FILE_NOT_FOUND';
@@ -116,14 +118,15 @@ export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: st
   });
 }
 
-export async function copyDirectory(source: string, destination: string): Promise<void> {
+export async function copyDirectory(source: string, destination: string, options: ncpType.Options = {}): Promise<void> {
   const ncp = await import('ncp');
 
   return new Promise<void>((resolve, reject) => {
-    ncp.ncp(source, destination, (err: Error) => {
+    ncp.ncp(source, destination, options, (err: Error) => {
       if (err) {
         reject(err);
       }
+
       resolve();
     });
   });

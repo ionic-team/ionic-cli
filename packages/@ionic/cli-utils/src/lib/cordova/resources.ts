@@ -1,22 +1,26 @@
+import * as fs from 'fs';
 import * as path from 'path';
+
+import * as chalk from 'chalk';
 
 import {
   ImageResource,
   ImageUploadResponse,
+  IonicEnvironment,
   KnownPlatform,
   ResourcesConfig,
   SourceImage,
 } from '../../definitions';
 
 import { flattenArray } from '../utils/array';
-import { copyDirectory, fsMkdirp, fsReadFile, fsWriteFile, getFileChecksum, readDir, writeStreamToFile } from '../utils/fs';
+import { copyDirectory, fsMkdirp, fsReadFile, fsStat, fsWriteFile, getFileChecksum, pathAccessible, pathExists, readDir, writeStreamToFile } from '../utils/fs';
 import { createRequest } from '../utils/http';
 import { ConfigXml } from './config';
 
 const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];
 const UPLOAD_URL = 'https://res.ionic.io/api/v1/upload';
 const TRANSFORM_URL = 'https://res.ionic.io/api/v1/transform';
-const DEFAULT_RESOURCES_DIR = path.resolve(__dirname, '..', '..', 'assets', 'cordova', 'default-resources');
+const DEFAULT_RESOURCES_URL = 'https://github.com/ionic-team/ionic-default-resources/archive/master.tar.gz';
 
 /**
  * Take the JSON structure for resources.json and turn it into a flat array
@@ -205,15 +209,86 @@ export async function transformResourceImage(imageResource: ImageResource) {
 }
 
 /**
- * Add images within the Default resources directory to the resources directory for the provided platform.
- * Also write this information to the project's config.xml file
+ * Add images within the default resources directory to the project's resources
+ * directory.
+ *
+ * @param env
+ * @param platform If provided, only the platform's resources will be copied.
  */
-export async function addDefaultImagesToProjectResources(projectDirectory: string, platform: KnownPlatform): Promise<void> {
-  // Copy default resources into the platform directory
-  const resourcesDir = path.resolve(projectDirectory, 'resources', platform);
-  const platformResourceDir = path.resolve(DEFAULT_RESOURCES_DIR, platform);
-  await fsMkdirp(platformResourceDir);
-  await copyDirectory(platformResourceDir, resourcesDir);
+export async function provideDefaultResources(env: IonicEnvironment, platform?: KnownPlatform) {
+  const { prettyPath } = await import('../utils/format');
+
+  const destinationDir = path.resolve(env.project.directory, 'resources', platform || '');
+
+  if (await pathExists(destinationDir)) {
+    env.log.info(`${chalk.bold(prettyPath(destinationDir))} exists, not overwriting directory with default Ionic resources.`);
+  } else {
+    const tmpResourcesDir = await ensureDefaultResources(env);
+    const sourceDir = path.join(tmpResourcesDir, platform || '');
+
+    if (!(await pathAccessible(sourceDir, fs.constants.R_OK))) {
+      throw new Error(`Error while reading directory: ${chalk.bold(sourceDir)} (doesn't exist or isn't accessible)`);
+    }
+
+    env.tasks.next('Copying default resources to project');
+    await copyDirectory(sourceDir, destinationDir);
+    env.tasks.end();
+  }
+}
+
+async function ensureDefaultResources(env: IonicEnvironment): Promise<string> {
+  const os = await import('os');
+  const { tarXvfFromUrl } = await import('../utils/archive');
+
+  let recreateTmpDir = false;
+  const tmpResourcesDir = path.resolve(os.tmpdir(), 'ionic-default-resources');
+
+  try {
+    const stat = await fsStat(tmpResourcesDir);
+
+    if (new Date().getTime() - stat.ctime.getTime() > 604800000) { // older than a week
+      recreateTmpDir = true;
+    }
+  } catch (e) {
+    if (e.code !== 'ENOENT') {
+      throw e;
+    }
+
+    recreateTmpDir = true;
+  }
+
+  if (recreateTmpDir) {
+    const task = env.tasks.next(`Downloading default resources`);
+
+    await tarXvfFromUrl(DEFAULT_RESOURCES_URL, tmpResourcesDir, { progress: (loaded, total) => {
+      task.progress(loaded, total);
+    }});
+
+    const resourcesDirFiles = await Promise.all((await readDir(tmpResourcesDir)).map(async (f): Promise<string | undefined> => {
+      const p = path.resolve(tmpResourcesDir, f);
+
+      try {
+        const stat = await fsStat(p);
+
+        if (stat.isFile()) {
+          return p;
+        }
+      } catch (e) {
+        env.log.warn(`Error while stat-ing ${chalk.bold(p)}: ${e.stack ? e.stack : e}`);
+      }
+    }));
+
+    const pngImages = <string[]>resourcesDirFiles.filter(p => typeof p === 'string' && path.extname(p) === '.png'); // TODO: typescript brokd
+
+    for (let img of pngImages) {
+      const md5 = await getFileChecksum(img);
+      await fsWriteFile(`${img}.md5`, md5, { encoding: 'utf8' });
+    }
+
+    env.tasks.end();
+  }
+
+  return tmpResourcesDir;
 }
 
 /**
