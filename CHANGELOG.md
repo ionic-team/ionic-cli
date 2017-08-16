@@ -7,6 +7,24 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.9.1"></a>
+### 3.9.1 (2017-08-16)
+
+* Fixed missing detection of all deprecated plugins. The CLI now warns for all
+  plugins, not just `@ionic/cli-plugin-cordova`.
+* Default Ionic Cordova resources are no longer bundled with CLI installation,
+  they are instead downloaded and copied into project directories when needed.
+* Fixed recurring prompting of proxy plugin installation.
+
+<a name="3.9.0"></a>
+### 3.9.0 (2017-08-16)
+
+* The CLI will now use `--livereload` if `--consolelogs` or `--serverlogs` is
+  used. There are various consolelog fixes in new release of
+  `@ionic/app-scripts`: 2.1.4.
+* Added `--browser` flag to `ionic docs` to open the docs in a browser of your
+  choice.
+
 <a name="3.8.1"></a>
 ### 3.8.1 (2017-08-14)
 
