@@ -1,14 +1,14 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
 import * as chalk from 'chalk';
 
 import * as expressType from 'express';
 
-import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions';
+import { IonicEnvironment, LiveReloadFunction, ServeDetails, ServeOptions } from '../../definitions';
 
 import { BIND_ALL_ADDRESS, IONIC_LAB_URL, LOCAL_ADDRESSES } from '../serve';
 import { FatalException } from '../errors';
+import { fsReadFile, pathExists } from '../utils/fs';
 
 const WATCH_PATTERNS = [
   'www/**/*',
@@ -99,7 +99,13 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
 }
 
 async function setupServer(env: IonicEnvironment, options: ServeMetaOptions): Promise<ServeMetaOptions> {
-  const liveReloadBrowser = await createLiveReloadServer(env, options);
+  let reloadfn: LiveReloadFunction | undefined;
+
+  if (options.livereload) {
+    const { createLiveReloadServer } = await import('../livereload');
+    reloadfn = await createLiveReloadServer(env, { port: options.livereloadPort, wwwDir: options.wwwDir });
+  }
+
   await createHttpServer(env, options);
 
   const chokidar = await import('chokidar');
@@ -116,7 +122,11 @@ async function setupServer(env: IonicEnvironment, options: ServeMetaOptions): Pr
 
   watcher.on('change', (filePath: string) => {
     env.log.info(`[${new Date().toTimeString().slice(0, 8)}] ${chalk.bold(filePath)} changed`);
-    liveReloadBrowser([filePath]);
+
+    if (reloadfn) {
+      reloadfn([filePath]);
+    }
+
     env.events.emit('watch:change', filePath);
   });
 
@@ -125,54 +135,6 @@ async function setupServer(env: IonicEnvironment, options: ServeMetaOptions): Pr
   });
 
   return options;
-}
-
-async function createLiveReloadServer(env: IonicEnvironment, options: ServeMetaOptions): Promise<(changedFile: string[]) => void> {
-  const tinylr = await import('tiny-lr');
-  const liveReloadServer = tinylr();
-  liveReloadServer.listen(options.livereloadPort);
-
-  return (changedFiles) => {
-    liveReloadServer.changed({
-      body: {
-        files: changedFiles.map(changedFile => (
-          '/' + path.relative(options.wwwDir, changedFile)
-        ))
-      }
-    });
-  };
-}
-
-export function injectLiveReloadScript(content: any, host: string, port: number): any {
-  let contentStr = content.toString();
-  const liveReloadScript = getLiveReloadScript(host, port);
-
-  if (contentStr.indexOf('/livereload.js') > -1) {
-    // already added script
-    return content;
-  }
-
-  let match = contentStr.match(/<\/body>(?![\s\S]*<\/body>)/i);
-  if (!match) {
-    match = contentStr.match(/<\/html>(?![\s\S]*<\/html>)/i);
-  }
-  if (match) {
-    contentStr = contentStr.replace(match[0], `${liveReloadScript}\n${match[0]}`);
-  } else {
-    contentStr += liveReloadScript;
-  }
-
-  return contentStr;
-}
-
-function getLiveReloadScript(host: string, port: number) {
-  if (host === BIND_ALL_ADDRESS) {
-    host = 'localhost';
-  }
-  const src = `//${host}:${port}/livereload.js?snipver=1`;
-
-  return `  <!-- Ionic Dev Server: Injected LiveReload Script -->\n` +
-    `  <script src="${src}" async="" defer=""></script>`;
 }
 
 /**
@@ -186,23 +148,24 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
   /**
    * http responder for /index.html base entrypoint
    */
-  const serveIndex = (req: expressType.Request, res: expressType.Response) => {
+  const serveIndex = async (req: expressType.Request, res: expressType.Response) => {
     // respond with the index.html file
     const indexFileName = path.join(options.wwwDir, 'index.html');
-    fs.readFile(indexFileName, (err, indexHtml) => {
-      if (!options.nolivereload) {
-        indexHtml = injectLiveReloadScript(indexHtml, options.externalIP, options.livereloadPort);
-      }
+    let indexHtml = await fsReadFile(indexFileName, { encoding: 'utf8' });
 
-      res.set('Content-Type', 'text/html');
-      res.send(indexHtml);
-    });
+    if (options.livereload) {
+      const { injectLiveReloadScript } = await import('../livereload');
+      indexHtml = injectLiveReloadScript(indexHtml, options.externalIP, options.livereloadPort);
+    }
+
+    res.set('Content-Type', 'text/html');
+    res.send(indexHtml);
   };
 
   /**
    * Middleware to serve platform resources
    */
-  const servePlatformResource = (req: expressType.Request, res: expressType.Response, next: expressType.NextFunction) => {
+  const servePlatformResource = async (req: expressType.Request, res: expressType.Response, next: expressType.NextFunction) => {
     const userAgent = req.header('user-agent') || '';
     let resourcePath = options.wwwDir;
 
@@ -216,12 +179,11 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
       resourcePath = path.join(env.project.directory, ANDROID_PLATFORM_PATH);
     }
 
-    fs.stat(path.join(resourcePath, req.url), (err, stats) => {
-      if (err) {
-        return next();
-      }
+    if (await pathExists(path.join(resourcePath, req.url))) {
       res.sendFile(req.url, { root: resourcePath });
-    });
+    } else {
+      next();
+    }
   };
 
   app.get('/', serveIndex);
@@ -244,7 +206,7 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
   app.get('/cordova_plugins.js', servePlatformResource);
   app.get('/plugins/*', servePlatformResource);
 
-  if (!options.noproxy) {
+  if (options.proxy) {
     await setupProxies(env, app);
   }
 

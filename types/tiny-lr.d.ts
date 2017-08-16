@@ -1,12 +1,15 @@
 declare module "tiny-lr" {
-  namespace tinyLr {}
-  interface server {
-    on: Function;
-    listen: Function;
-    close: Function;
-    changed: Function;
-  }
-  function tinyLr(): server;
+  import * as http from 'http';
 
-  export = tinyLr;
+  namespace TinyLR {}
+
+  interface TinyLRServer {
+    listen(port: number, cb?: () => {});
+    close();
+    changed(p: any);
+  }
+
+  function TinyLR(): TinyLRServer;
+
+  export = TinyLR;
 }

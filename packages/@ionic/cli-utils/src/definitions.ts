@@ -434,12 +434,12 @@ export interface ServeOptions {
   livereloadPort: number;
   consolelogs: boolean;
   serverlogs: boolean;
-  nobrowser: boolean;
-  nolivereload: boolean;
-  noproxy: boolean;
+  livereload: boolean;
+  proxy: boolean;
   lab: boolean;
-  browser?: string;
-  browseroption?: string;
+  browser: boolean;
+  browserName?: string;
+  browserOption?: string;
   platform?: string;
 
   // Additional Options
@@ -704,3 +704,5 @@ export interface StarterTemplateType {
   globalDependencies: string[];
   localDependencies: string[];
 }
+
+export type LiveReloadFunction = (changedFiles: string[]) => void;

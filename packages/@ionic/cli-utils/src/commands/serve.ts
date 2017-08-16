@@ -18,12 +18,12 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     livereloadPort,
     consolelogs: options['consolelogs'] ? true : false,
     serverlogs: options['serverlogs'] ? true : false,
-    nobrowser: options['nobrowser'] ? true : false,
-    nolivereload: options['nolivereload'] ? true : false,
-    noproxy: options['noproxy'] ? true : false,
+    livereload: options['nolivereload'] ? false : true,
+    proxy: options['noproxy'] ? false : true,
     lab: options['lab'] ? true : false,
-    browser: options['browser'] ? String(options['browser']) : undefined,
-    browseroption: options['browseroption'] ? String(options['browseroption']) : undefined,
+    browser: options['nobrowser'] ? false : true,
+    browserName: options['browser'] ? String(options['browser']) : undefined,
+    browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
     platform: options['platform'] ? String(options['platform']) : undefined,
     externalAddressRequired: options['externalAddressRequired'] ? true : false,
     iscordovaserve: typeof options['iscordovaserve'] === 'boolean' ? Boolean(options['iscordovaserve']) : false,
@@ -53,14 +53,14 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
   );
 
   if (project.type !== 'ionic-angular') { // TODO: app-scripts calls opn internally
-    if (!serveOptions.nobrowser) {
+    if (serveOptions.browser) {
       const openOptions: string[] = [localAddress]
         .concat(serveOptions.lab ? [IONIC_LAB_URL] : [])
-        .concat(serveOptions.browseroption ? [serveOptions.browseroption] : [])
+        .concat(serveOptions.browserOption ? [serveOptions.browserOption] : [])
         .concat(serveOptions.platform ? ['?ionicplatform=', serveOptions.platform] : []);
 
       const opn = await import('opn');
-      opn(openOptions.join(''), { app: serveOptions.browser, wait: false });
+      opn(openOptions.join(''), { app: serveOptions.browserName, wait: false });
     }
   }
 
