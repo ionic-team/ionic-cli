@@ -14,6 +14,7 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
     ['git', async () => { const { GitNamespace } = await import('./git'); return new GitNamespace(); }],
     ['ssh', async () => { const { SSHNamespace } = await import('./ssh'); return new SSHNamespace(); }],
     ['package', async () => { const { PackageNamespace } = await import('./package'); return new PackageNamespace(); }],
+    ['monitoring', async () => { const { MonitoringNamespace } = await import('./monitoring'); return new MonitoringNamespace(); }],
   ]);
 
   commands = new CommandMap([
