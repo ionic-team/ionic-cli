@@ -2,7 +2,7 @@ import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { BIND_ALL_ADDRESS, BROWSERS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
+import { BIND_ALL_ADDRESS, BROWSERS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
 
 @CommandMetadata({
   name: 'serve',
@@ -38,6 +38,11 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       description: 'Live Reload port',
       default: String(DEFAULT_LIVERELOAD_PORT),
       aliases: ['r'],
+    },
+    {
+      name: 'dev-logger-port',
+      description: 'Development Logger port',
+      default: String(DEFAULT_DEV_LOGGER_PORT)
     },
     {
       name: 'nobrowser',

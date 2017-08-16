@@ -79,6 +79,7 @@ export async function serveOptionsToAppScriptsArgs(options: ServeOptions) {
     address: options.address,
     port: String(options.port),
     livereloadPort: String(options.livereloadPort),
+    devLoggerPort: String(options.notificationPort),
     consolelogs: options.consolelogs,
     serverlogs: options.serverlogs,
     nobrowser: options.nobrowser,

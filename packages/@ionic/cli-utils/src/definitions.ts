@@ -432,6 +432,7 @@ export interface ServeOptions {
   address: string;
   port: number;
   livereloadPort: number;
+  notificationPort: number;
   consolelogs: boolean;
   serverlogs: boolean;
   nobrowser: boolean;

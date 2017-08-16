@@ -1,7 +1,7 @@
 import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, IonicEnvironment, ServeDetails } from '../definitions';
-import { BIND_ALL_ADDRESS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, IONIC_LAB_URL } from '../lib/serve';
+import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, IONIC_LAB_URL } from '../lib/serve';
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
   const { str2num } = await import('../lib/utils/string');
@@ -11,11 +11,13 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
   const address = options['address'] ? String(options['address']) : BIND_ALL_ADDRESS;
   const port = str2num(options['port'], DEFAULT_SERVER_PORT);
   const livereloadPort = str2num(options['livereload-port'], DEFAULT_LIVERELOAD_PORT);
+  const notificationPort = str2num(options['dev-logger-port'], DEFAULT_DEV_LOGGER_PORT);
 
   const serveOptions = {
     address,
     port,
     livereloadPort,
+    notificationPort,
     consolelogs: options['consolelogs'] ? true : false,
     serverlogs: options['serverlogs'] ? true : false,
     nobrowser: options['nobrowser'] ? true : false,
