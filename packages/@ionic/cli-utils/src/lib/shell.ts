@@ -21,12 +21,16 @@ export class Shell implements IShell {
     }
 
     if (showCommand) {
-      if (showExecution) {
-        if (this.log.shouldLog('info')) {
-          this.log.msg(`> ${chalk.green(fullCmd)}`);
-        }
-      } else {
-        this.tasks.next(chalk.green(fullCmd));
+      if (this.log.shouldLog('info')) {
+        this.log.msg(`> ${chalk.green(fullCmd)}`);
+      }
+
+      if (!showExecution) {
+        // We use tasks on a short sentence such as this instead of the command
+        // string above because the commands can get quite long, and then
+        // inquirer dies. See
+        // https://github.com/ionic-team/ionic-cli/issues/2649.
+        this.tasks.next('Running command');
       }
     }
 
