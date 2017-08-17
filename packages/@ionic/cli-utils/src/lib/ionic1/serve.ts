@@ -155,7 +155,7 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
 
     if (options.livereload) {
       const { injectLiveReloadScript } = await import('../livereload');
-      indexHtml = injectLiveReloadScript(indexHtml, options.externalIP, options.livereloadPort);
+      indexHtml = injectLiveReloadScript(indexHtml, options.externalAddressRequired ? options.externalIP : 'localhost', options.livereloadPort);
     }
 
     res.set('Content-Type', 'text/html');
