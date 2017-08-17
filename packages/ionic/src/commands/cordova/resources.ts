@@ -100,7 +100,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     const [ platform ] = inputs;
     const { force } = options;
 
-    const conf = await ConfigXml.load(this.env.project.directory);
+    let conf = await ConfigXml.load(this.env.project.directory);
 
     // if no resource filters are passed as arguments assume to use all.
     let resourceTypes = AVAILABLE_RESOURCE_TYPES.filter((type, index, array) => options[type]);
@@ -125,6 +125,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
       if (confirm) {
         await installPlatform(this.env, platform);
+        conf = await ConfigXml.load(this.env.project.directory);
         platformEngines = await conf.getPlatformEngines();
         this.env.log.debug(() => `platformEngines=${platformEngines}`);
       } else {
