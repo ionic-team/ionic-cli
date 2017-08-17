@@ -413,7 +413,7 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     if (gitIntegration) {
-      await this.env.shell.run('git', ['init'], shellOptions);
+      await this.env.shell.run('git', ['init'], { showSpinner: false, ...shellOptions });
     }
 
     if (config.backend === BACKEND_PRO) {
@@ -442,8 +442,8 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     if (gitIntegration) {
-      await this.env.shell.run('git', ['add', '-A'], shellOptions);
-      await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], shellOptions);
+      await this.env.shell.run('git', ['add', '-A'], { showSpinner: false, ...shellOptions });
+      await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], { showSpinner: false, ...shellOptions });
     }
 
     if (config.backend === BACKEND_LEGACY) {

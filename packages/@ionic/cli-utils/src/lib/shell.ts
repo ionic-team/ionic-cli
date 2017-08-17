@@ -10,7 +10,7 @@ export const ERROR_SHELL_COMMAND_NOT_FOUND = 'SHELL_COMMAND_NOT_FOUND';
 export class Shell implements IShell {
   constructor(protected tasks: ITaskChain, protected log: ILogger) {}
 
-  async run(command: string, args: string[], { showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, showExecution, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<string> {
+  async run(command: string, args: string[], { showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, showExecution, showSpinner = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<string> {
     const fullCmd = command + ' ' + (args.length > 0 ? args.map(a => a.includes(' ') ? `"${a}"` : a).join(' ') : '');
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
     const options: RunCmdOptions = { ...crossSpawnOptions };
@@ -25,7 +25,7 @@ export class Shell implements IShell {
         this.log.msg(`> ${chalk.green(fullCmd)}`);
       }
 
-      if (!showExecution) {
+      if (!showExecution && showSpinner) {
         // We use tasks on a short sentence such as this instead of the command
         // string above because the commands can get quite long, and then
         // inquirer dies. See
@@ -42,7 +42,7 @@ export class Shell implements IShell {
           this.log.nl();
         }
 
-        if (showCommand && !showExecution) {
+        if (showCommand && !showExecution && showSpinner) {
           this.tasks.end();
         }
 
@@ -86,7 +86,7 @@ export class Shell implements IShell {
         throw e;
       }
     } catch (e) {
-      if (showCommand && !showExecution) {
+      if (showCommand && !showExecution && showSpinner) {
         this.tasks.fail();
       }
       throw e;

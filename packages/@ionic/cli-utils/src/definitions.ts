@@ -315,6 +315,7 @@ export interface IShellRunOptions extends crossSpawnType.SpawnOptions {
   showCommand?: boolean;
   showExecution?: boolean;
   showError?: boolean;
+  showSpinner?: boolean;
   fatalOnNotFound?: boolean;
   fatalOnError?: boolean;
   truncateErrorOutput?: number;

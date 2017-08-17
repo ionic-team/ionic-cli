@@ -31,7 +31,7 @@ export class GitRemoteCommand extends Command {
         `Before your first ${chalk.green('git push ionic master')}, you'll want to commit all the files in your project:\n\n` +
         `${chalk.green('git commit -a -m "Initial commit"')}\n`
       );
-      await this.env.shell.run('git', ['init'], { cwd: this.env.project.directory });
+      await this.env.shell.run('git', ['init'], { showSpinner: false, cwd: this.env.project.directory });
     }
 
     const remote = app.repo_url;
@@ -60,11 +60,11 @@ export class GitRemoteCommand extends Command {
       if (matches) {
         this.env.log.info(`Existing remote ${chalk.bold('ionic')} found.`);
       } else {
-        await this.env.shell.run('git', ['remote', 'set-url', 'ionic', remote], { cwd: this.env.project.directory });
+        await this.env.shell.run('git', ['remote', 'set-url', 'ionic', remote], { showSpinner: false, cwd: this.env.project.directory });
         this.env.log.ok(`Updated remote ${chalk.bold('ionic')}.`);
       }
     } else {
-      await this.env.shell.run('git', ['remote', 'add', 'ionic', remote], { cwd: this.env.project.directory });
+      await this.env.shell.run('git', ['remote', 'add', 'ionic', remote], { showSpinner: false, cwd: this.env.project.directory });
       this.env.log.ok(`Added remote ${chalk.bold('ionic')}.`);
     }
   }
