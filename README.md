@@ -152,11 +152,11 @@ CLI hooks are how you can run scripts during CLI events, such as "watch" and
 "build". To hook into the CLI, use the following [npm
 scripts](https://docs.npmjs.com/misc/scripts) in your `package.json` file:
 
-| npm script           | description                                                       | commands                                                                    |
-|----------------------|-------------------------------------------------------------------|-----------------------------------------------------------------------------|
-| `ionic:watch:before` | Runs **before** the file watcher activates during a "watch" event | `ionic serve`, `ionic cordova run`, `ionic cordova emulate`                 |
-| `ionic:build:before` | Runs **before** the Ionic "build" event starts.                   | `ionic build`, `ionic upload`, `ionic package build`, `ionic cordova build` |
-| `ionic:build:after`  | Runs **after** the Ionic "build" event finishes.                  | `ionic build`, `ionic upload`, `ionic package build`, `ionic cordova build` |
+| npm script           | description                                                       | commands                                                                                                                  |
+|----------------------|-------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `ionic:watch:before` | Runs **before** the file watcher activates during a "watch" event | `ionic serve`, `ionic cordova run -l`, `ionic cordova emulate -l`                                                         |
+| `ionic:build:before` | Runs **before** the Ionic "build" event starts.                   | `ionic build`, `ionic upload`, `ionic package build`, `ionic cordova build`, `ionic cordova run`, `ionic cordova emulate` |
+| `ionic:build:after`  | Runs **after** the Ionic "build" event finishes.                  | `ionic build`, `ionic upload`, `ionic package build`, `ionic cordova build`, `ionic cordova run`, `ionic cordova emulate` |
 
 ### Example
 
