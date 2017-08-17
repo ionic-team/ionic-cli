@@ -6,7 +6,13 @@ import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES } from '../serve';
 import { FatalException } from '../errors';
 import { importAppScripts } from './utils';
 
-export async function serve({ env, options }: { env: IonicEnvironment, options: ServeOptions }): Promise<ServeDetails> {
+export interface AppScriptsServeOptions extends ServeOptions {
+  platform: string;
+  target?: string;
+  iscordovaserve: boolean;
+}
+
+export async function serve({ env, options }: { env: IonicEnvironment, options: AppScriptsServeOptions }): Promise<ServeDetails> {
   const { getAvailableIPAddresses } = await import('../utils/network');
 
   let externalIP = options.address;
@@ -71,7 +77,7 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
   };
 }
 
-export async function serveOptionsToAppScriptsArgs(options: ServeOptions) {
+export async function serveOptionsToAppScriptsArgs(options: AppScriptsServeOptions) {
   const { minimistOptionsToArray } = await import('../utils/command');
 
   const minimistArgs = {
@@ -87,8 +93,9 @@ export async function serveOptionsToAppScriptsArgs(options: ServeOptions) {
     lab: options.lab,
     browser: options.browserName,
     browseroption: options.browserOption,
-    platform: options.platform,
     iscordovaserve: options.iscordovaserve,
+    platform: options.platform,
+    target: options.target,
   };
 
   return minimistOptionsToArray(minimistArgs, { useEquals: false });

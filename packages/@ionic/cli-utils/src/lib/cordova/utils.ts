@@ -30,7 +30,8 @@ export function generateBuildOptions(metadata: CommandData, options: CommandLine
     ...results,
     externalAddressRequired: true,
     iscordovaserve: true,
-    nobrowser: true
+    nobrowser: true,
+    target: 'cordova',
   };
 }
 

@@ -440,7 +440,6 @@ export interface ServeOptions {
   browser: boolean;
   browserName?: string;
   browserOption?: string;
-  platform?: string;
 
   // Additional Options
   externalAddressRequired?: boolean;

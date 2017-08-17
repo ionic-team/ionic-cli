@@ -11,7 +11,7 @@ export async function build({ env, options }: { env: IonicEnvironment; options: 
   const AppScripts = await importAppScripts(env);
   const context = AppScripts.generateContext();
 
-  console.log(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}\n`);
+  env.log.info(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}\n`);
   return await AppScripts.build(context);
 }
 
@@ -25,6 +25,8 @@ export async function buildOptionsToAppScriptsArgs(options: { _: string[]; [key:
     minifyjs: options.minifyjs ? true : false,
     minifycss: options.minifycss ? true : false,
     optimizejs: options.optimizejs ? true : false,
+    platform: options.platform,
+    target: options.target,
   };
 
   return minimistOptionsToArray(minimistArgs, { useEquals: false });

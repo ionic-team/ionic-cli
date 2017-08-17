@@ -115,6 +115,19 @@ export function validateInputs(argv: string[], metadata: CommandData) {
   }
 }
 
+/**
+ * Filter command line options that match a given "indent", which is specified
+ * in the command's metadata.
+ *
+ * To filter options that have no intent specified in the command's metadata,
+ * exclude the intentName parameter.
+ *
+ * @param metadata
+ * @param options The options to filter.
+ * @param indentName
+ *
+ * @return The filtered options.
+ */
 export function filterOptionsByIntent(metadata: CommandData, options: CommandLineOptions, intentName?: string): CommandLineOptions {
   const r = Object.keys(options).reduce((allOptions, optionName) => {
     const metadataOptionFound = (metadata.options || []).find((mdOption) => (
