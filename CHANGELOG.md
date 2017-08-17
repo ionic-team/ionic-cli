@@ -7,6 +7,15 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.9.2"></a>
+### 3.9.2 (2017-08-17)
+
+* Pass `--platform` and `--target` to app-scripts for build optimizations
+  during `ionic cordova build`.
+* Fixed an issue with log  commands conntinually printing lines while the
+  spinner ran.
+* Fixed a few minor issues with `ionic cordova resources`.
+
 <a name="3.9.1"></a>
 ### 3.9.1 (2017-08-16)
 
