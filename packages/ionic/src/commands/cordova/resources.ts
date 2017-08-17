@@ -52,7 +52,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
   options: [
     {
       name: 'force',
-      description: 'Force regeneration of all resources',
+      description: 'Force regeneration of resources',
       type: Boolean,
       aliases: ['f'],
     },
@@ -98,6 +98,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     } = await import('@ionic/cli-utils/lib/cordova/resources');
 
     const [ platform ] = inputs;
+    const { force } = options;
 
     const conf = await ConfigXml.load(this.env.project.directory);
 
@@ -112,7 +113,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
     // check that at least one platform has been installed
     let platformEngines = await conf.getPlatformEngines();
-    this.env.log.debug(() => `platformEngines=${platformEngines}`);
+    this.env.log.debug(() => `platformEngines=${platformEngines.map(e => e.name).join(', ')}`);
 
     if (platform && !platformEngines.map(p => p.name).includes(platform)) {
       this.env.tasks.end();
@@ -132,7 +133,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     }
 
     const buildPlatforms = Object.keys(RESOURCES).filter(p => platformEngines.map(p => p.name).includes(p));
-    this.env.log.debug(() => `buildPlatforms=${buildPlatforms}`);
+    this.env.log.debug(() => `buildPlatforms=${buildPlatforms.join(', ')}`);
     if (buildPlatforms.length === 0) {
       this.env.tasks.end();
       throw this.exit(`No platforms detected. Please run: ${chalk.green('ionic cordova platform add')}`);
@@ -211,20 +212,22 @@ export class ResourcesCommand extends Command implements CommandPreRun {
       .filter(img => img.imageId && img.cachedId && img.imageId === img.cachedId)
       .map(img => img.imageId);
 
-    const keepImgResources = await Promise.all(imgResources.map(async (img) => {
-      if (!await pathExists(img.dest)) {
-        return true;
+    if (!force) {
+      const keepImgResources = await Promise.all(imgResources.map(async (img) => {
+        if (!await pathExists(img.dest)) {
+          return true;
+        }
+
+        return img.imageId && !cachedSourceIds.includes(img.imageId);
+      }));
+
+      imgResources = imgResources.filter((img, i) => keepImgResources[i]);
+
+      if (imgResources.length === 0) {
+        this.env.tasks.end();
+        this.env.log.ok('No need to regenerate images--source files unchanged.');
+        return 0;
       }
-
-      return img.imageId && !cachedSourceIds.includes(img.imageId);
-    }));
-
-    imgResources = imgResources.filter((img, i) => keepImgResources[i]);
-
-    if (imgResources.length === 0) {
-      this.env.tasks.end();
-      this.env.log.ok('No need to regenerate images--source files unchanged.');
-      return 0;
     }
 
     this.env.tasks.next(`Uploading source images to prepare for transformations`);
@@ -260,7 +263,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
 
     if (imgResources.length === 0) {
       this.env.tasks.end();
-      this.env.log.ok('No need to regenerate images--source files unchanged.');
+      this.env.log.ok('No need to regenerate images--images too large for transformation.'); // TODO: improve messaging
       return 0;
     }
 
