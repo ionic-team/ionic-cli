@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.9.2"></a>
+## [1.9.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.9.1...@ionic/cli-utils@1.9.2) (2017-08-17)
+
+
+### Bug Fixes
+
+* **cordova:** pass `--platform` and `--target` options to app-scripts ([5377f7e](https://github.com/ionic-team/ionic-cli/commit/5377f7e))
+* **logs:** fix commands spamming lines of output ([af67074](https://github.com/ionic-team/ionic-cli/commit/af67074))
+* **serve:** use localhost when external IP not required ([b36f5c2](https://github.com/ionic-team/ionic-cli/commit/b36f5c2))
+
+
+
+
 <a name="1.9.1"></a>
 ## [1.9.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.9.0...@ionic/cli-utils@1.9.1) (2017-08-16)
 

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.9.2"></a>
+## [3.9.2](https://github.com/ionic-team/ionic-cli/compare/ionic@3.9.1...ionic@3.9.2) (2017-08-17)
+
+
+### Bug Fixes
+
+* **resources:** make `--force` flag actually regenerate images ([30d2e5a](https://github.com/ionic-team/ionic-cli/commit/30d2e5a))
+* **resources:** reload config.xml after save ([cb85488](https://github.com/ionic-team/ionic-cli/commit/cb85488))
+
+
+
+
 <a name="3.9.1"></a>
 ## [3.9.1](https://github.com/ionic-team/ionic-cli/compare/ionic@3.9.0...ionic@3.9.1) (2017-08-16)
 
