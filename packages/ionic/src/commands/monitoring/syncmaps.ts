@@ -48,7 +48,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
       doNewBuild && await this.doProdBuild();
     }
 
-    this.env.log.info(`Syncing SourceMaps for app version ${chalk.green(appVersion)} of ${chalk.green(cordovaInfo.id)}`);
+    this.env.log.info(`Syncing SourceMaps for app version ${chalk.green(appVersion)} of ${chalk.green(cordovaInfo.id)} - App ID ${appId}`);
     readDir(sourcemapsDir).then(files => {
       const maps = files.filter(f => f.indexOf('.js.map') >= 0);
       Promise.all(maps.map(f => this.syncSourcemap(path.join(sourcemapsDir, f), appVersion, commitHash, appId, token)));
