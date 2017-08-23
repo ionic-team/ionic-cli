@@ -68,7 +68,7 @@ export function registerHooks(hooks: IHookEngine) {
     }
   });
 
-  hooks.register(name, BUILD_AFTER_HOOK, async ({ env }) => {
+  hooks.register(name, BUILD_AFTER_HOOK, async ({ env, platform }) => {
     const [ project, packageJson ] = await Promise.all([env.project.load(), env.project.loadPackageJson()]);
 
     if (packageJson.scripts && packageJson.scripts[BUILD_AFTER_SCRIPT]) {
@@ -85,7 +85,7 @@ export function registerHooks(hooks: IHookEngine) {
     }
 
     if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
-      await env.runcmd(['cordova', 'prepare']);
+      await env.runcmd(['cordova', 'prepare', platform]);
     }
   });
 

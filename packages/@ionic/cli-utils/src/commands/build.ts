@@ -12,5 +12,5 @@ export async function build(env: IonicEnvironment, inputs: CommandLineInputs, op
     await build({ env, options: { platform, ...options } });
   }
 
-  await env.hooks.fire('build:after', { env });
+  await env.hooks.fire('build:after', { env, platform });
 }
