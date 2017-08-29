@@ -73,7 +73,6 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
     await conf.resetContentSrc();
     await conf.save();
 
-    const response = await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), {});
-    this.env.log.msg(response);
+    await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });
   }
 }
