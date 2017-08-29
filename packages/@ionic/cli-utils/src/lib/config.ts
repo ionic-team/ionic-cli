@@ -11,7 +11,7 @@ import {
   IonicEnvironment,
 } from '../definitions';
 
-import { BACKEND_LEGACY } from './backends';
+import { BACKEND_PRO } from './backends';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
 import { ERROR_FILE_INVALID_JSON, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from './utils/fs';
@@ -160,11 +160,11 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
     }
 
     if (!results.urls.api) {
-      results.urls.api = 'https://api.ionic.io';
+      results.urls.api = 'https://api.ionicjs.com';
     }
 
     if (!results.urls.dash) {
-      results.urls.dash = 'https://apps.ionic.io';
+      results.urls.dash = 'https://dashboard.ionicjs.com';
     }
 
     if (!results.user) {
@@ -180,7 +180,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
     }
 
     if (typeof results.backend !== 'string') {
-      results.backend = BACKEND_LEGACY;
+      results.backend = BACKEND_PRO;
     }
 
     if (typeof results.telemetry === 'undefined') {
