@@ -20,15 +20,17 @@ export async function set(env: IonicEnvironment, inputs: CommandLineInputs, opti
 
   const oldValue = get(config, p);
 
-  try {
-    v = JSON.parse(v);
-  } catch (e) {
-    if (!(e instanceof SyntaxError)) {
-      throw e;
-    }
+  if (!v.match(/^\d+e\d+$/)) {
+    try {
+      v = JSON.parse(v);
+    } catch (e) {
+      if (!(e instanceof SyntaxError)) {
+        throw e;
+      }
 
-    if (json) {
-      throw new FatalException(`${chalk.green('--json')}: ${chalk.green(v)} is invalid JSON: ${chalk.red(String(e))}`);
+      if (json) {
+        throw new FatalException(`${chalk.green('--json')}: ${chalk.green(v)} is invalid JSON: ${chalk.red(String(e))}`);
+      }
     }
   }
 

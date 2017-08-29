@@ -169,7 +169,7 @@ export class LinkCommand extends Command implements CommandPreRun {
         const app = await appUtil.create({ name: String(name) });
 
         appId = app.id;
-        await this.runcmd(['config', 'set', 'app_id', appId]);
+        await this.runcmd(['config', 'set', 'app_id', `"${appId}"`, '--json']);
         await this.runcmd(['git', 'remote']);
 
         this.env.log.ok(`Project linked with app ${chalk.bold(appId)}!`);
@@ -181,7 +181,7 @@ export class LinkCommand extends Command implements CommandPreRun {
     } else if (appId === CHOICE_NEVERMIND) {
       this.env.log.info('Not linking app.');
     } else {
-      await this.runcmd(['config', 'set', 'app_id', appId]);
+      await this.runcmd(['config', 'set', 'app_id', `"${appId}"`, '--json']);
 
       if (config.backend === BACKEND_PRO) {
         await this.runcmd(['git', 'remote']);
