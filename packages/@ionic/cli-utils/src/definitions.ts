@@ -76,7 +76,7 @@ export interface ProjectFileProxy {
   path: string;
 }
 
-export type ProjectType = 'ionic-angular' | 'ionic1';
+export type ProjectType = 'ionic-angular' | 'ionic1' | 'custom';
 
 export interface ProjectIntegration {
   enabled?: boolean;

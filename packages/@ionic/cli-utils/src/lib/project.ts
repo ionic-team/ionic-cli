@@ -11,7 +11,7 @@ import { prettyPath } from './utils/format';
 
 export const PROJECT_FILE = 'ionic.config.json';
 export const PROJECT_FILE_LEGACY = 'ionic.project';
-export const PROJECT_TYPES: ProjectType[] = ['ionic-angular', 'ionic1'];
+export const PROJECT_TYPES: ProjectType[] = ['ionic-angular', 'ionic1', 'custom'];
 
 export class Project extends BaseConfig<ProjectFile> implements IProject {
   public directory: string;
@@ -128,10 +128,13 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
       }
     }
 
-    throw new FatalException(`Could not determine project type (project config: ${chalk.bold(prettyPath(this.filePath))}).\n\n`
-                           + `For ${this.formatType('ionic-angular')} projects, make sure 'ionic-angular' exists in the ${chalk.bold('dependencies')} attribute of ${chalk.bold('package.json')}.\n`
-                           + `For ${this.formatType('ionic1')} projects, make sure 'ionic' exists in the ${chalk.bold('devDependencies')} attribute of ${chalk.bold('bower.json')}.\n\n`
-                           + `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold('ionic.config.json')} to one of: ${PROJECT_TYPES.map(v => '\'' + v + '\'').join(', ')}\n`);
+    throw new FatalException(
+      `Could not determine project type (project config: ${chalk.bold(prettyPath(this.filePath))}).\n` +
+      `For ${this.formatType('ionic-angular')} projects, make sure ${chalk.green('ionic-angular')} is listed as a dependency in ${chalk.bold('package.json')}.\n` +
+      `For ${this.formatType('ionic1')} projects, make sure ${chalk.green('ionic')} is listed as a dependency in ${chalk.bold('bower.json')}.\n\n` +
+      `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold('ionic.config.json')} to one of: ${PROJECT_TYPES.map(v => chalk.green(v)).join(', ')}.\n\n` +
+      `If the Ionic CLI does not know what type of project this is, ${chalk.green('ionic build')}, ${chalk.green('ionic serve')}, and other commands may not work. You can use the ${chalk.green('custom')} project type if that's okay.\n`
+    );
   }
 
   is(j: any): j is ProjectFile {

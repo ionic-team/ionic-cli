@@ -1,6 +1,7 @@
 import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, IonicEnvironment, ServeDetails } from '../definitions';
+import { FatalException } from '../lib/errors';
 import { BIND_ALL_ADDRESS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, IONIC_LAB_URL } from '../lib/serve';
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
@@ -45,7 +46,11 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
       ...serveOptions,
     }});
   } else {
-    throw new Error('Unknown project.'); // TODO
+    throw new FatalException(
+      `Cannot perform Ionic serve/watch for project type: ${chalk.bold(project.type)}.\n` +
+      (project.type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to serve custom projects.\n\n` : '') +
+      `If you'd like the CLI to try to detect your project type, you can unset the ${chalk.bold('type')} attribute in ${chalk.bold('ionic.config.json')}.\n`
+    );
   }
 
   const localAddress = 'http://localhost:' + serverDetails.port;
