@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 
-import { IRootNamespace, IonicEnvironment } from '@ionic/cli-utils';
+import { IRootNamespace, IonicEnvironment, KNOWN_BACKENDS } from '@ionic/cli-utils';
 import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';
 
 export class IonicNamespace extends Namespace implements IRootNamespace {
@@ -60,7 +60,7 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
     if (command.metadata.backends && !command.metadata.backends.includes(config.backend)) {
       env.log.error(
         `Sorry! The configured backend (${chalk.bold(config.backend)}) does not know about ${chalk.green('ionic ' + command.metadata.fullName)}.\n` +
-        `You can switch backends with ${chalk.green('ionic config set -g backend')}.`
+        `You can switch backends with ${chalk.green('ionic config set -g backend')} (choose from ${KNOWN_BACKENDS.map(v => chalk.green(v)).join(', ')}).\n`
       );
       return 1;
     }

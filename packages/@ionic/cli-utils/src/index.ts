@@ -39,7 +39,7 @@ import { createPromptModule } from './lib/prompts';
 
 export * from './definitions';
 
-export { BACKEND_LEGACY, BACKEND_PRO } from './lib/backends';
+export { BACKEND_LEGACY, BACKEND_PRO, KNOWN_BACKENDS } from './lib/backends';
 
 const name = '@ionic/cli-utils';
 
