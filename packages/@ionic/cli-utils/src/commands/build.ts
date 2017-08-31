@@ -16,5 +16,5 @@ export async function build(env: IonicEnvironment, inputs: CommandLineInputs, op
     env.log.warn(`Not performing Ionic build for project type: ${chalk.bold(project.type)}.`);
   }
 
-  await env.hooks.fire('build:after', { env });
+  await env.hooks.fire('build:after', { env, platform });
 }
