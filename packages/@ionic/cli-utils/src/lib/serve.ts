@@ -1,3 +1,4 @@
+export const DEFAULT_DEV_LOGGER_PORT = 53703;
 export const DEFAULT_LIVERELOAD_PORT = 35729;
 export const DEFAULT_SERVER_PORT = 8100;
 
