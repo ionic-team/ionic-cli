@@ -4,7 +4,7 @@ import * as chalk from 'chalk';
 import { CommandLineInputs, CommandLineOptions, CommandPreRun, IShellRunOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { fsMkdir, pathExists } from '@ionic/cli-utils/lib/utils/fs';
-import { BIND_ALL_ADDRESS, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
+import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
 
 export const CORDOVA_RUN_COMMAND_OPTIONS = [
   {
@@ -47,6 +47,11 @@ export const CORDOVA_RUN_COMMAND_OPTIONS = [
     description: 'Use specific port for live-reload server',
     default: String(DEFAULT_LIVERELOAD_PORT),
     aliases: ['r'],
+  },
+  {
+    name: 'dev-logger-port',
+    description: 'Development Logger port',
+    default: String(DEFAULT_DEV_LOGGER_PORT)
   },
   {
     name: 'prod',
