@@ -1,7 +1,7 @@
 import * as leekType from 'leek';
 
 import { IClient, IConfig, IProject, ISession, ITelemetry, RootPlugin } from '../definitions';
-import { BACKEND_PRO } from './backends';
+import { BACKEND_LEGACY, BACKEND_PRO } from './backends';
 import { generateUUID } from './utils/uuid';
 
 const GA_CODE = 'UA-44023830-30';
@@ -59,6 +59,8 @@ export class Telemetry implements ITelemetry {
   }
 
   async sendCommand(command: string, args: string[]): Promise<void> {
+    const { Client } = await import('./http');
+
     if (!this.gaTracker) {
       await this.setupGATracker();
     }
@@ -74,49 +76,54 @@ export class Telemetry implements ITelemetry {
       })(),
       (async () => {
         const config = await this.config.load();
+        const client = new Client(this.client.host);
 
-        if (config.backend === BACKEND_PRO) {
-          let appId: string | undefined;
+        if (client.host === 'https://api.ionic.io') { // TODO: this is temporary
+          client.host = 'https://api.ionicjs.com';
+        }
 
-          if (this.project.directory) {
-            const project = await this.project.load();
-            appId = project.app_id;
-          }
+        let appId: string | undefined;
 
-          const now = new Date().toISOString();
-          const isLoggedIn = await this.session.isLoggedIn();
+        if (this.project.directory) {
+          const project = await this.project.load();
+          appId = project.app_id;
+        }
 
-          let req = this.client.make('POST', '/events/metrics');
+        const now = new Date().toISOString();
+        const isLoggedIn = await this.session.isLoggedIn();
 
-          if (isLoggedIn) {
-            const token = await this.session.getUserToken();
-            req = req.set('Authorization', `Bearer ${token}`);
-          }
+        let req = client.make('POST', '/events/metrics');
 
-          req = req.send({
-            'metrics': [
-              {
-                'name': 'cli_command_metrics',
-                'timestamp': now,
-                'session_id': config.tokens.telemetry,
-                'source': 'cli',
-                'value': {
-                  'command': command,
-                  'arguments': prettyArgs.join(' '),
-                  'version': this.plugin.meta.version,
-                  'node_version': process.version,
-                  'app_id': appId,
-                },
+        if (isLoggedIn && config.backend === BACKEND_PRO) {
+          const token = await this.session.getUserToken();
+          req = req.set('Authorization', `Bearer ${token}`);
+        }
+
+        req = req.send({
+          'metrics': [
+            {
+              'name': 'cli_command_metrics',
+              'timestamp': now,
+              'session_id': config.tokens.telemetry,
+              'source': 'cli',
+              'value': {
+                'command': command,
+                'arguments': prettyArgs.join(' '),
+                'version': this.plugin.meta.version,
+                'node_version': process.version,
+                'app_id': appId,
+                'user_id': config.backend === BACKEND_LEGACY ? config.user.id : undefined,
+                'backend': config.backend,
               },
-            ],
-            'sent_at': now,
-          });
+            },
+          ],
+          'sent_at': now,
+        });
 
-          try {
-            await this.client.do(req);
-          } catch (e) {
-            // TODO
-          }
+        try {
+          await client.do(req);
+        } catch (e) {
+          // TODO
         }
       })(),
     ]);
