@@ -421,6 +421,10 @@ export interface EnvironmentHookArgs {
   env: IonicEnvironment;
 }
 
+export interface BuildAfterHookArgs extends EnvironmentHookArgs {
+  platform?: string;
+}
+
 export interface InfoHookItem {
   type: 'system' | 'global-packages' | 'local-packages' | 'cli-packages';
   name: string;
@@ -477,7 +481,7 @@ export interface IHookEngine {
   fire(hook: 'cordova:project:info', args: EnvironmentHookArgs): Promise<CordovaProjectInfoHookResponse[]>;
   fire(hook: 'plugins:init', args: EnvironmentHookArgs): Promise<void[]>;
   fire(hook: 'build:before', args: EnvironmentHookArgs): Promise<void[]>;
-  fire(hook: 'build:after', args: EnvironmentHookArgs): Promise<void[]>;
+  fire(hook: 'build:after', args: BuildAfterHookArgs): Promise<void[]>;
   fire(hook: 'watch:before', args: EnvironmentHookArgs): Promise<void[]>;
   fire(hook: 'backend:changed', args: EnvironmentHookArgs): Promise<void[]>;
 
@@ -485,7 +489,7 @@ export interface IHookEngine {
   register(source: string, hook: 'cordova:project:info', listener: (args: EnvironmentHookArgs) => Promise<CordovaProjectInfoHookResponse>): void;
   register(source: string, hook: 'plugins:init', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
   register(source: string, hook: 'build:before', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
-  register(source: string, hook: 'build:after', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
+  register(source: string, hook: 'build:after', listener: (args: BuildAfterHookArgs) => Promise<void>): void;
   register(source: string, hook: 'watch:before', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
   register(source: string, hook: 'backend:changed', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
 

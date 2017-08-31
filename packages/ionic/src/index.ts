@@ -85,7 +85,13 @@ export function registerHooks(hooks: IHookEngine) {
     }
 
     if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
-      await env.runcmd(['cordova', 'prepare', platform]);
+      const cordovaPrepareArgs = ['cordova', 'prepare'];
+
+      if (platform) {
+        cordovaPrepareArgs.push(platform);
+      }
+
+      await env.runcmd(cordovaPrepareArgs);
     }
   });
 
