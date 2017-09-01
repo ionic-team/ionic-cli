@@ -343,14 +343,14 @@ export class StartCommand extends Command implements CommandPreRun {
     this.env.log.info(`Fetching app base (${chalk.dim(wrapperBranchPath)})`);
     const d1Task = this.env.tasks.next('Downloading');
 
-    await tarXvfFromUrl(wrapperBranchPath, projectRoot, { progress: (loaded, total) => {
+    await tarXvfFromUrl(this.env, wrapperBranchPath, projectRoot, { progress: (loaded, total) => {
       d1Task.progress(loaded, total);
     }});
 
     this.env.tasks.end();
     this.env.log.info(`Fetching starter template ${chalk.green(starterTemplateName.toString())} (${chalk.dim(starterBranchPath)})`);
     const d2Task = this.env.tasks.next('Downloading');
-    await tarXvfFromUrl(starterBranchPath, extractDir, { progress: (loaded, total) => {
+    await tarXvfFromUrl(this.env, starterBranchPath, extractDir, { progress: (loaded, total) => {
       d2Task.progress(loaded, total);
     }});
 

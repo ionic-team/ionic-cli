@@ -3,8 +3,7 @@ import * as chalk from 'chalk';
 import { IClient, PackageBuild, PackageProjectRequest } from '../definitions';
 import { isPackageBuildResponse, isPackageBuildsResponse, isPackageProjectRequestResponse } from '../guards';
 import { s3SignedUpload } from './utils/aws';
-import { createRequest } from './utils/http';
-import { createFatalAPIFormat } from './http';
+import { createFatalAPIFormat, createRequest } from './http';
 
 export class PackageClient {
   constructor(protected appUserToken: string, protected client: IClient) {}
@@ -14,7 +13,8 @@ export class PackageClient {
       fields.push('url');
     }
 
-    const req = this.client.make('GET', `/package/builds/${id}`)
+    let { req } = await this.client.make('GET', `/package/builds/${id}`);
+    req = req
       .set('Authorization', `Bearer ${this.appUserToken}`)
       .query({ fields })
       .send();
@@ -29,7 +29,8 @@ export class PackageClient {
   }
 
   async getBuilds({ page = 1, pageSize = 25 }: { page?: number, pageSize?: number }): Promise<PackageBuild[]> {
-    const req = this.client.make('GET', '/package/builds')
+    let { req } = await this.client.make('GET', '/package/builds');
+    req = req
       .set('Authorization', `Bearer ${this.appUserToken}`)
       .query({ page, 'page_size': pageSize, })
       .send();
@@ -44,7 +45,8 @@ export class PackageClient {
   }
 
   async queueBuild({ platform, mode, zipUrl, projectId, profileTag }: { platform: PackageBuild['platform'], mode: PackageBuild['mode'], zipUrl: string, projectId: number, profileTag?: string }): Promise<PackageBuild> {
-    const req = this.client.make('POST', '/package/builds')
+    let { req } = await this.client.make('POST', '/package/builds');
+    req = req
       .set('Authorization', `Bearer ${this.appUserToken}`)
       .send({
         platform,
@@ -64,7 +66,8 @@ export class PackageClient {
   }
 
   async requestProjectUpload(): Promise<PackageProjectRequest> {
-    const req = this.client.make('POST', '/package/projects')
+    let { req } = await this.client.make('POST', '/package/projects');
+    req = req
       .set('Authorization', `Bearer ${this.appUserToken}`)
       .send({});
 
@@ -78,19 +81,21 @@ export class PackageClient {
   }
 
   async uploadProject(project: PackageProjectRequest, zip: NodeJS.ReadableStream, { progress }: { progress?: (loaded: number, total: number) => void }): Promise<void> {
-    return s3SignedUpload(project.presigned_post, zip, { progress });
+    return s3SignedUpload(this.client.config, project.presigned_post, zip, { progress });
   }
 
-  downloadBuild(build: PackageBuild, dest: NodeJS.WritableStream, { progress }: { progress?: (loaded: number, total: number) => void }): Promise<void> {
+  async downloadBuild(build: PackageBuild, dest: NodeJS.WritableStream, { progress }: { progress?: (loaded: number, total: number) => void }): Promise<void> {
+    if (build.status !== 'SUCCESS') {
+      throw new Error(`Build must be 'SUCCESS', not '${build.status}'.`);
+    }
+
+    if (!build.url) {
+      throw new Error('Build must have URL.');
+    }
+
+    const { req } = await createRequest(this.client.config, 'get', build.url);
+
     return new Promise<void>((resolve, reject) => {
-      if (build.status !== 'SUCCESS') {
-        return reject(new Error(`Build must be 'SUCCESS', not '${build.status}'.`));
-      }
-
-      if (!build.url) {
-        return reject(new Error('Build must have URL.'));
-      }
-
       dest.on('error', (err: any) => {
         reject(err);
       });
@@ -99,7 +104,7 @@ export class PackageClient {
         resolve();
       });
 
-      createRequest('get', build.url)
+      req
         .on('response', (res) => {
           if (progress) {
             let loaded = 0;

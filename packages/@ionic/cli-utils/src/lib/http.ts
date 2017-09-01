@@ -9,13 +9,15 @@ import {
   APIResponseSuccess,
   HttpMethod,
   IClient,
+  IConfig,
   IPaginator,
   Response,
   SuperAgentError,
 } from '../definitions';
 
 import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
-import { createRequest } from './utils/http';
+import { getGlobalProxy } from './utils/http';
+import { fsReadFile } from './utils/fs';
 import { FatalException } from './errors';
 
 const FORMAT_ERROR_BODY_MAX_LENGTH = 1000;
@@ -24,13 +26,74 @@ const CONTENT_TYPE_JSON = 'application/json';
 export const ERROR_UNKNOWN_CONTENT_TYPE = 'UNKNOWN_CONTENT_TYPE';
 export const ERROR_UNKNOWN_RESPONSE_FORMAT = 'UNKNOWN_RESPONSE_FORMAT';
 
-export class Client implements IClient {
-  constructor(public host: string) {}
+let CAS: string[] | undefined;
+let CERTS: string[] | undefined;
+let KEYS: string[] | undefined;
 
-  make(method: HttpMethod, path: string): superagentType.SuperAgentRequest {
-    return createRequest(method, `${this.host}${path}`)
+export async function createRequest(config: IConfig, method: string, url: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
+  const superagent = await import('superagent');
+  const c = await config.load();
+  const [ proxy, ] = getGlobalProxy();
+
+  let req = superagent(method, url);
+
+  if (proxy && req.proxy) {
+    req = req.proxy(proxy);
+  }
+
+  if (c.ssl) {
+    const conform = (p?: string | string[]): string[] => {
+      if (!p) {
+        return [];
+      }
+
+      if (typeof p === 'string') {
+        return [p];
+      }
+
+      return p;
+    };
+
+    if (!CAS) {
+      CAS = await Promise.all(conform(c.ssl.cafile).map(p => fsReadFile(p, { encoding: 'utf8' })));
+    }
+
+    if (!CERTS) {
+      CERTS = await Promise.all(conform(c.ssl.certfile).map(p => fsReadFile(p, { encoding: 'utf8' })));
+    }
+
+    if (!KEYS) {
+      KEYS = await Promise.all(conform(c.ssl.keyfile).map(p => fsReadFile(p, { encoding: 'utf8' })));
+    }
+
+    if (CAS.length > 0) {
+      req = req.ca(CAS);
+    }
+
+    if (CERTS.length > 0) {
+      req = req.cert(CERTS);
+    }
+
+    if (KEYS.length > 0) {
+      req = req.key(KEYS);
+    }
+  }
+
+  return { req };
+}
+
+export class Client implements IClient {
+  constructor(public config: IConfig) {}
+
+  async make(method: HttpMethod, path: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
+    const config = await this.config.load();
+    const url = path.startsWith('http://') || path.startsWith('https://') ? path : `${config.urls.api}${path}`;
+    let { req } = await createRequest(this.config, method, url);
+    req = req
       .set('Content-Type', CONTENT_TYPE_JSON)
       .set('Accept', CONTENT_TYPE_JSON);
+
+    return { req };
   }
 
   async do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess> {
@@ -45,7 +108,7 @@ export class Client implements IClient {
     return r;
   }
 
-  paginate<T extends Response<Object[]>>(reqgen: () => superagentType.SuperAgentRequest, guard: (res: APIResponseSuccess) => res is T): Paginator<T> {
+  async paginate<T extends Response<Object[]>>(reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>, guard: (res: APIResponseSuccess) => res is T): Promise<Paginator<T>> {
     return new Paginator<T>(this, reqgen, guard);
   }
 }
@@ -56,7 +119,7 @@ export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
 
   constructor(
     protected client: IClient,
-    protected reqgen: () => superagentType.SuperAgentRequest,
+    protected reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>,
     protected guard: (res: APIResponseSuccess) => res is T,
   ) {}
 
@@ -68,7 +131,7 @@ export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
     return {
       done: false,
       value: (async () => {
-        const req = this.reqgen();
+        const { req } = await this.reqgen();
 
         if (!this.previousReq) {
           this.previousReq = req;

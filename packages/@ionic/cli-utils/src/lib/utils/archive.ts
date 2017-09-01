@@ -1,14 +1,18 @@
 import * as archiver from 'archiver';
 
-import { createRequest } from './http';
+import { IonicEnvironment } from '../../definitions';
+
+import { createRequest } from '../http';
 
 export function createArchive(format: 'zip' | 'tar'): archiver.Archiver {
   return archiver(format);
 }
 
-export async function tarXvfFromUrl(url: string, destination: string, { progress }: { progress?: (loaded: number, total: number) => void }): Promise<void> {
+export async function tarXvfFromUrl(env: IonicEnvironment, url: string, destination: string, { progress }: { progress?: (loaded: number, total: number) => void }): Promise<void> {
+  const { req } = await createRequest(env.config, 'get', url);
+
   return new Promise<void>((resolve, reject) => {
-    const archiveRequest = createRequest('get', url)
+    req
       .on('response', (res) => {
         if (res.statusCode !== 200) {
           reject(new Error(`Encountered bad status code (${res.statusCode}) for ${url}\n` +
@@ -33,7 +37,7 @@ export async function tarXvfFromUrl(url: string, destination: string, { progress
         }
       });
 
-    tarXvf(archiveRequest, destination).then(resolve, reject);
+    tarXvf(req, destination).then(resolve, reject);
   });
 }
 

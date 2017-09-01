@@ -121,7 +121,7 @@ export class LinkCommand extends Command implements CommandPreRun {
 
       const token = await this.env.session.getUserToken();
       const appUtil = new App(token, this.env.client);
-      const paginator = appUtil.list();
+      const paginator = await appUtil.paginate();
 
       for (let r of paginator) {
         const res = await r;

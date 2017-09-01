@@ -50,7 +50,8 @@ export class BaseSession {
 
 export class CloudSession extends BaseSession implements ISession {
   async login(email: string, password: string): Promise<void> {
-    const req = this.client.make('POST', '/login')
+    let { req } = await this.client.make('POST', '/login');
+    req = req
       .send({ email, password });
 
     try {
@@ -88,8 +89,12 @@ export class CloudSession extends BaseSession implements ISession {
 
     if (!c.tokens.appUser[app_id]) {
       const token = await this.getUserToken();
-      const paginator = this.client.paginate(
-        () => this.client.make('GET', '/auth/tokens').set('Authorization', `Bearer ${token}`).query({ 'page_size': 100, type: 'app-user' }),
+      const paginator = await this.client.paginate(
+        async () => {
+          let { req } = await this.client.make('GET', '/auth/tokens');
+          req = req.set('Authorization', `Bearer ${token}`).query({ 'page_size': 100, type: 'app-user' });
+          return { req };
+        },
         isAuthTokensResponse
       );
 
@@ -115,7 +120,8 @@ export class CloudSession extends BaseSession implements ISession {
 
 export class ProSession extends BaseSession implements ISession {
   async login(email: string, password: string): Promise<void> {
-    const req = this.client.make('POST', '/login')
+    let { req } = await this.client.make('POST', '/login');
+    req = req
       .send({ email, password, source: 'cli' });
 
     try {

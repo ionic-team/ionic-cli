@@ -7,7 +7,8 @@ export class DeployClient {
   constructor(protected appUserToken: string, protected client: IClient) {}
 
   async getChannel(uuidOrTag: string): Promise<DeployChannel> {
-    const req = this.client.make('GET', `/deploy/channels/${uuidOrTag}`)
+    let { req } = await this.client.make('GET', `/deploy/channels/${uuidOrTag}`);
+    req = req
       .set('Authorization', `Bearer ${this.appUserToken}`)
       .send();
 
@@ -21,7 +22,8 @@ export class DeployClient {
   }
 
   async deploy(snapshot: string, channel: string): Promise<Deploy> {
-    const req = this.client.make('POST', '/deploy/deploys')
+    let { req } = await this.client.make('POST', '/deploy/deploys');
+    req = req
       .set('Authorization', `Bearer ${this.appUserToken}`)
       .send({ snapshot, channel });
 
@@ -39,7 +41,8 @@ export class DeployClient {
       fields.push('url');
     }
 
-    const req = this.client.make('GET', `/deploy/snapshots/${uuid}`)
+    let { req } = await this.client.make('GET', `/deploy/snapshots/${uuid}`);
+    req = req
       .set('Authorization', `Bearer ${this.appUserToken}`)
       .query({ fields })
       .send();
@@ -56,7 +59,8 @@ export class DeployClient {
   async requestSnapshotUpload(options: { legacy_duplication?: string; note?: string; user_metadata?: Object } = {}): Promise<DeploySnapshotRequest> {
     options.legacy_duplication = '1';
 
-    const req = this.client.make('POST', '/deploy/snapshots')
+    let { req } = await this.client.make('POST', '/deploy/snapshots');
+    req = req
       .set('Authorization', `Bearer ${this.appUserToken}`)
       .send(options);
 
@@ -68,19 +72,20 @@ export class DeployClient {
 
     // TODO: Remove updateMetaDataReq when POST -> deploy/snapshots accepts user_metadata
     if (options.user_metadata) {
-      const updateMetaDataReq = this.client.make('PATCH', `/deploy/snapshots/${res.data.uuid}`)
+      let { req } = await this.client.make('PATCH', `/deploy/snapshots/${res.data.uuid}`);
+      req = req
         .set('Authorization', `Bearer ${this.appUserToken}`)
         .send({
           'user_metadata': options.user_metadata
         });
 
-      await this.client.do(updateMetaDataReq);
+      await this.client.do(req);
     }
 
     return res.data;
   }
 
   uploadSnapshot(snapshot: DeploySnapshotRequest, zip: NodeJS.ReadableStream, progress?: (loaded: number, total: number) => void): Promise<void> {
-    return s3SignedUpload(snapshot.presigned_post, zip, { progress });
+    return s3SignedUpload(this.client.config, snapshot.presigned_post, zip, { progress });
   }
 }

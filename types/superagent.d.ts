@@ -119,6 +119,9 @@ declare module "superagent" {
         set(field: string, val: string): this;
         set(field: Object): this;
         timeout(ms: number | { response?: number, read?: number, deadline?: number }): this;
+        ca(v: string | string[]): this;
+        key(v: string | string[]): this;
+        cert(v: string | string[]): this;
         type(val: string): this;
         unset(field: string): this;
         use(fn: Function): this;

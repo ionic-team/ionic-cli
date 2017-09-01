@@ -186,7 +186,7 @@ export interface SecurityProfile {
 
 export interface IApp {
   load(app_id?: string): Promise<AppDetails>;
-  list(): IPaginator<Response<AppDetails[]>>;
+  paginate(): Promise<IPaginator<Response<AppDetails[]>>>;
   create(app: { name: string; }): Promise<AppDetails>;
 }
 
@@ -344,6 +344,11 @@ export interface ConfigFile {
     api: string;
     dash: string;
   };
+  ssl?: {
+    cafile?: string | string[];
+    certfile?: string | string[];
+    keyfile?: string | string[];
+  };
   git: {
     host: string;
     port?: number;
@@ -408,11 +413,11 @@ export interface APIResponseSuccess {
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' | 'HEAD' | 'OPTIONS';
 
 export interface IClient {
-  host: string;
+  config: IConfig;
 
-  make(method: HttpMethod, path: string): superagentType.SuperAgentRequest;
+  make(method: HttpMethod, path: string): Promise<{ req: superagentType.SuperAgentRequest; }>;
   do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess>;
-  paginate<T extends Response<Object[]>>(reqgen: () => superagentType.SuperAgentRequest, guard: (res: APIResponseSuccess) => res is T): IPaginator<T>;
+  paginate<T extends Response<Object[]>>(reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>, guard: (res: APIResponseSuccess) => res is T): Promise<IPaginator<T>>;
 }
 
 export interface IPaginator<T extends Response<Object[]>> extends IterableIterator<Promise<T>> {}

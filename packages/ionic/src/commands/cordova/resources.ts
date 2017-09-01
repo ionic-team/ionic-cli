@@ -234,7 +234,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     this.env.tasks.next(`Uploading source images to prepare for transformations`);
 
     // Upload images to service to prepare for resource transformations
-    const imageUploadResponses = await uploadSourceImages(srcImagesAvailable);
+    const imageUploadResponses = await uploadSourceImages(this.env, srcImagesAvailable);
     this.env.log.debug(() => `${chalk.green('uploadSourceImages')} completed - responses=${JSON.stringify(imageUploadResponses, null, 2)}`);
 
     srcImagesAvailable = srcImagesAvailable.map((img, index) => {
@@ -273,7 +273,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     let count = 0;
 
     const transforms = imgResources.map(async (img, index) => {
-      await transformResourceImage(img);
+      await transformResourceImage(this.env, img);
       count += 1;
       this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`);
     });

@@ -13,7 +13,8 @@ export class App implements IApp {
   constructor(public token: string, protected client: IClient) {}
 
   async load(app_id: string): Promise<AppDetails> {
-    const req = this.client.make('GET', `/apps/${app_id}`)
+    let { req } = await this.client.make('GET', `/apps/${app_id}`);
+    req = req
       .set('Authorization', `Bearer ${this.token}`)
       .send({});
     const res = await this.client.do(req);
@@ -25,15 +26,20 @@ export class App implements IApp {
     return res.data;
   }
 
-  list(): IPaginator<Response<AppDetails[]>> {
+  async paginate(): Promise<IPaginator<Response<AppDetails[]>>> {
     return this.client.paginate(
-      () => this.client.make('GET', '/apps').set('Authorization', `Bearer ${this.token}`),
+      async () => {
+        let { req } = await this.client.make('GET', '/apps');
+        req = req.set('Authorization', `Bearer ${this.token}`);
+        return { req };
+      },
       isAppsResponse,
     );
   }
 
   async create({ name }: { name: string; }) {
-    const req = this.client.make('POST', '/apps')
+    let { req } = await this.client.make('POST', '/apps');
+    req = req
       .set('Authorization', `Bearer ${this.token}`)
       .send({ name });
     const res = await this.client.do(req);

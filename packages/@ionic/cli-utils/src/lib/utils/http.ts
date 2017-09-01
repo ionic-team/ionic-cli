@@ -1,5 +1,3 @@
-import * as superagentType from 'superagent';
-
 export function getGlobalProxy(): [string, string] | [undefined, undefined] {
   const envvars = ['IONIC_HTTP_PROXY', 'HTTPS_PROXY', 'HTTP_PROXY', 'PROXY', 'https_proxy', 'http_proxy', 'proxy'];
 
@@ -10,16 +8,4 @@ export function getGlobalProxy(): [string, string] | [undefined, undefined] {
   }
 
   return [undefined, undefined];
-}
-
-export function createRequest(method: string, url: string): superagentType.SuperAgentRequest {
-  const [ proxy, ] = getGlobalProxy();
-  const superagent = require('superagent') as superagentType.SuperAgentStatic;
-  let req = superagent(method, url);
-
-  if (proxy && req.proxy) {
-    req = req.proxy(proxy);
-  }
-
-  return req;
 }

@@ -19,7 +19,7 @@ import { BROWSERS } from '@ionic/cli-utils/lib/serve';
 export class DocsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { isSuperAgentError } = await import('@ionic/cli-utils/guards');
-    const { createRequest } = await import('@ionic/cli-utils/lib/utils/http');
+    const { createRequest } = await import('@ionic/cli-utils/lib/http');
     const browser = options['browser'] ? String(options['browser']) : undefined;
 
     const opn = await import('opn');
@@ -38,7 +38,8 @@ export class DocsCommand extends Command {
     }
 
     try {
-      await createRequest('head', url);
+      const { req } = await createRequest(this.env.config, 'head', url);
+      await req;
     } catch (e) {
       if (isSuperAgentError(e)) {
         if (e.response.status === 404) {

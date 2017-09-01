@@ -76,11 +76,7 @@ export class Telemetry implements ITelemetry {
       })(),
       (async () => {
         const config = await this.config.load();
-        const client = new Client(this.client.host);
-
-        if (client.host === 'https://api.ionic.io') { // TODO: this is temporary
-          client.host = 'https://api.ionicjs.com';
-        }
+        const client = new Client(this.config);
 
         let appId: string | undefined;
 
@@ -92,7 +88,7 @@ export class Telemetry implements ITelemetry {
         const now = new Date().toISOString();
         const isLoggedIn = await this.session.isLoggedIn();
 
-        let req = client.make('POST', '/events/metrics');
+        let { req } = await client.make('POST', `${config.urls.api !== 'https://api.ionic.io' ? 'https://api.ionicjs.com' : ''}/events/metrics`); // TODO: full URL is temporary
 
         if (isLoggedIn && config.backend === BACKEND_PRO) {
           const token = await this.session.getUserToken();

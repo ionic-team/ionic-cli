@@ -14,7 +14,7 @@ import {
 
 import { flattenArray } from '../utils/array';
 import { copyDirectory, fsMkdirp, fsReadFile, fsStat, fsWriteFile, getFileChecksum, pathAccessible, pathExists, readDir, writeStreamToFile } from '../utils/fs';
-import { createRequest } from '../utils/http';
+import { createRequest } from '../http';
 import { ConfigXml } from './config';
 
 const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];
@@ -152,13 +152,15 @@ export function findMostSpecificImage(imageResource: ImageResource, srcImagesAva
  * Upload the provided source image through the resources web service. This will make it available
  * for transforms for the next 5 minutes.
  */
-export async function uploadSourceImages(srcImages: SourceImage[]): Promise<ImageUploadResponse[]> {
+export async function uploadSourceImages(env: IonicEnvironment, srcImages: SourceImage[]): Promise<ImageUploadResponse[]> {
   return Promise.all(
     srcImages.map(async (srcImage) => {
-      const res = await createRequest('POST', UPLOAD_URL)
+      let { req } = await createRequest(env.config, 'POST', UPLOAD_URL);
+      req = req
         .type('form')
         .attach('src', srcImage.path)
         .field('image_id', srcImage.imageId || '');
+      const res = await req;
       return res.body;
     })
   );
@@ -168,9 +170,11 @@ export async function uploadSourceImages(srcImages: SourceImage[]): Promise<Imag
  * Using the transformation web service transform the provided image resource
  * into the appropriate w x h and then write this file to the provided destination directory.
  */
-export async function transformResourceImage(imageResource: ImageResource) {
+export async function transformResourceImage(env: IonicEnvironment, imageResource: ImageResource) {
+  let { req } = await createRequest(env.config, 'POST', TRANSFORM_URL);
+
   return new Promise<void>((resolve, reject) => {
-    const req = createRequest('POST', TRANSFORM_URL)
+    req = req
       .type('form')
       .send({
         'name': imageResource.name,
@@ -260,7 +264,7 @@ async function ensureDefaultResources(env: IonicEnvironment): Promise<string> {
   if (recreateTmpDir) {
     const task = env.tasks.next(`Downloading default resources`);
 
-    await tarXvfFromUrl(DEFAULT_RESOURCES_URL, tmpResourcesDir, { progress: (loaded, total) => {
+    await tarXvfFromUrl(env, DEFAULT_RESOURCES_URL, tmpResourcesDir, { progress: (loaded, total) => {
       task.progress(loaded, total);
     }});
 

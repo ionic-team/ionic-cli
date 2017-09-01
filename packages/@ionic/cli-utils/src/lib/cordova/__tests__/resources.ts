@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fsSpy from '../../utils/fs';
-import * as httpSpy from '../../utils/http';
+import * as httpSpy from '../../http';
 import * as resources from '../resources';
 
 import { ImageResource, SourceImage } from '../../../definitions';
@@ -276,7 +276,7 @@ describe('@ionic/cli-utils', () => {
   describe('uploadSourceImages', () => {
     it('should upload an image and receive back metadata', async () => {
       const createRequestSpy = jest.spyOn(httpSpy, 'createRequest');
-      const createRequestMock = {
+      const createRequestMock = Promise.resolve({ req: {
         type: jest.fn().mockReturnThis(),
         attach: jest.fn().mockReturnThis(),
         field: jest.fn(() => Promise.resolve({
@@ -288,7 +288,7 @@ describe('@ionic/cli-utils', () => {
             Vector: false
           }
         }))
-      };
+      }});
 
       createRequestSpy.mockImplementationOnce(() => createRequestMock);
 
@@ -303,7 +303,7 @@ describe('@ionic/cli-utils', () => {
         imageId: '60278b0fa1d5abf43d07c5ae0f8a0b41'
       }];
 
-      const response = await resources.uploadSourceImages(sourceImages, false);
+      const response = await resources.uploadSourceImages({ config: undefined }, sourceImages);
       expect(response).toEqual([{
         Error: '',
         Width: 337,
@@ -318,11 +318,15 @@ describe('@ionic/cli-utils', () => {
     it('should upload an image and write a stream to the destination', async () => {
       jest.spyOn(fsSpy, 'writeStreamToFile').mockImplementationOnce(() => Promise.resolve());
       const createRequestSpy = jest.spyOn(httpSpy, 'createRequest');
-      const createRequestMock = {
-        type: jest.fn().mockReturnThis(),
-        send: jest.fn().mockReturnThis(),
-        on: jest.fn().mockReturnThis(),
+      const requestMock = {
+        req: {
+          type: jest.fn().mockReturnThis(),
+          send: jest.fn().mockReturnThis(),
+          on: jest.fn().mockReturnThis(),
+        }
       };
+
+      const createRequestMock = Promise.resolve(requestMock);
 
       createRequestSpy.mockImplementationOnce(() => createRequestMock);
 
@@ -339,10 +343,10 @@ describe('@ionic/cli-utils', () => {
         dest: path.join(__dirname, 'fixtures', 'drawable-land-ldpi-screen.png')
       };
 
-      await resources.transformResourceImage(imgResource, false);
+      await resources.transformResourceImage({ config: undefined }, imgResource);
 
       expect(fsSpy.writeStreamToFile).toHaveBeenCalledWith(
-        createRequestMock, imgResource.dest
+        requestMock.req, imgResource.dest
       );
     });
   });

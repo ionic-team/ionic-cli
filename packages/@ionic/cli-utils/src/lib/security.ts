@@ -6,7 +6,8 @@ export class SecurityClient {
   constructor(protected appUserToken: string, protected client: IClient) {}
 
   async getProfile(tag: string): Promise<SecurityProfile> {
-    const req = this.client.make('GET', `/security/profiles/${tag}`)
+    let { req } = await this.client.make('GET', `/security/profiles/${tag}`);
+    req = req
       .set('Authorization', `Bearer ${this.appUserToken}`)
       .query({})
       .send();
@@ -21,7 +22,8 @@ export class SecurityClient {
   }
 
   async getProfiles({ page = 1, pageSize = 25 }: { page?: number, pageSize?: number }): Promise<SecurityProfile[]> {
-    const req = this.client.make('GET', '/security/profiles')
+    let { req } = await this.client.make('GET', '/security/profiles');
+    req = req
       .set('Authorization', `Bearer ${this.appUserToken}`)
       .query({ page, 'page_size': pageSize, })
       .send();

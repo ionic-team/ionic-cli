@@ -83,7 +83,8 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
     const config = await this.env.config.load();
     const token = await this.env.session.getUserToken();
 
-    const req = this.env.client.make('POST', `/users/${config.user.id}/sshkeys`)
+    let { req } = await this.env.client.make('POST', `/users/${config.user.id}/sshkeys`);
+    req = req
       .set('Authorization', `Bearer ${token}`)
       .send({ pubkey });
 

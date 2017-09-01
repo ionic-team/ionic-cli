@@ -26,8 +26,10 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
       const config = await this.env.config.load();
       const token = await this.env.session.getUserToken();
 
-      const req = this.env.client.make('GET', `/users/${config.user.id}/sshkeys`)
+      let { req } = await this.env.client.make('GET', `/users/${config.user.id}/sshkeys`);
+      req = req
         .set('Authorization', `Bearer ${token}`);
+
       const res = await this.env.client.do(req);
 
       if (!isSSHKeyListResponse(res)) {
@@ -56,8 +58,10 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
     const config = await this.env.config.load();
     const token = await this.env.session.getUserToken();
 
-    const req = this.env.client.make('DELETE', `/users/${config.user.id}/sshkeys/${id}`)
+    let { req } = await this.env.client.make('DELETE', `/users/${config.user.id}/sshkeys/${id}`);
+    req = req
       .set('Authorization', `Bearer ${token}`);
+
     await this.env.client.do(req);
 
     this.env.log.ok(`Your public key (${chalk.bold(id)}) has been deleted from Ionic.`);

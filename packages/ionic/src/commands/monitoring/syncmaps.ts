@@ -5,11 +5,9 @@ import * as chalk from 'chalk';
 import { APIResponseSuccess } from '@ionic/cli-utils/definitions';
 
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { createFatalAPIFormat } from '@ionic/cli-utils/lib/http';
-import { createRequest } from '@ionic/cli-utils/lib/utils/http';
-import { fsReadFile, pathExists, readDir } from '@ionic/cli-utils/lib/utils/fs';
 import { isSuperAgentError } from '@ionic/cli-utils/guards';
+import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { fsReadFile, pathExists, readDir } from '@ionic/cli-utils/lib/utils/fs';
 
 @CommandMetadata({
   name: 'syncmaps',
@@ -58,8 +56,10 @@ export class MonitoringSyncSourcemapsCommand extends Command {
   }
 
   async syncSourcemap(file: string, appVersion: string, commitHash: string, appId: string, token: string): Promise<void> {
+    const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
 
-    const req = this.env.client.make('POST', `/monitoring/${appId}/sourcemaps`)
+    let { req } = await this.env.client.make('POST', `/monitoring/${appId}/sourcemaps`);
+    req = req
       .set('Authorization', `Bearer ${token}`)
       .send({
         name: path.basename(file),
@@ -87,12 +87,15 @@ export class MonitoringSyncSourcemapsCommand extends Command {
   }
 
   async uploadSourcemap(res: APIResponseSuccess, file: string) {
+    const { createRequest } = await import('@ionic/cli-utils/lib/http');
+
     const r = <any>res;
 
     const fileData = await fsReadFile(file, { encoding: 'utf8' });
     const sourcemapPost = r.data.sourcemap_post;
 
-    createRequest('post', sourcemapPost.url)
+    let { req } = await createRequest(this.env.config, 'post', sourcemapPost.url);
+    req = req
       .buffer()
       .field(sourcemapPost.fields)
       .field('file', fileData)

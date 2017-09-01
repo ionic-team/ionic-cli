@@ -67,7 +67,6 @@ export function registerHooks(hooks: IHookEngine) {
     const wasLoggedIn = await env.session.isLoggedIn();
     await env.session.logout();
 
-    env.client.host = config.urls.api;
     env.session = await getSession(env.config, env.project, env.client);
 
     if (wasLoggedIn) {
@@ -132,7 +131,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
 
   const project = new Project(env['IONIC_PROJECT_DIR'], PROJECT_FILE);
-  const client = new Client(configData.urls.api);
+  const client = new Client(config);
   const session = await getSession(config, project, client);
   const hooks = new HookEngine();
   const telemetry = new Telemetry({ config, client, plugin, project, session });
