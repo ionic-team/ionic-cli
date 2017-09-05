@@ -30,6 +30,7 @@ reports and feature requests.
    * [Example](#example)
 * [Service Proxies](#service-proxies)
 * [Using a Proxy](#using-a-proxy)
+   * [SSL Configuration](#ssl-configuration)
 * [Legacy Version](#legacy-version)
 
 ## Requirements
@@ -229,7 +230,7 @@ $ cd myProject # cd into your project
 $ npm install --save-exact --save-dev @ionic/cli-plugin-proxy
 ```
 
-Then, set the following environment variables:
+Then, use one of the following environment variables:
 
 ```bash
 $ export HTTP_PROXY=http://proxy.example.org:8888 # used by npm
@@ -237,11 +238,18 @@ $ export HTTPS_PROXY=https://proxy.example.org:8888 # used by npm
 $ export IONIC_HTTP_PROXY=http://proxy.example.org:8888
 ```
 
-For example:
+### SSL Configuration
+
+You can configure the Ionic CLI's SSL (similar to configuring npm CLI):
 
 ```bash
-$ HTTPS_PROXY=https://internal.proxy.com ionic start
+$ ionic config set -g ssl.cafile /path/to/cafile # file path to your CA root certificate
+$ ionic config set -g ssl.certfile /path/to/certfile # file path to a client certificate
+$ ionic config set -g ssl.keyfile /path/to/keyfile # file path to a client key file
 ```
+
+:memo: The `cafile`, `certfile`, and `keyfile` entries can be manually edited
+as arrays of strings in `~/.ionic/config.json` to include multiple files.
 
 ## Legacy Version
 
