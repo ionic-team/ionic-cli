@@ -32,8 +32,33 @@ From there, you can use Ionic View (${chalk.bold('https://view.ionic.io')}) to e
       description: 'Set custom metadata JSON for the deploy',
     },
     {
+      name: 'prod',
+      description: 'Build the application for production',
+      type: Boolean,
+    },
+    {
+      name: 'aot',
+      description: `Perform ahead-of-time compilation for the upload's build`,
+      type: Boolean,
+    },
+    {
+      name: 'minifyjs',
+      description: `Minify JS for the upload's build`,
+      type: Boolean,
+    },
+    {
+      name: 'minifycss',
+      description: `Minify CSS for the upload's build`,
+      type: Boolean,
+    },
+    {
+      name: 'optimizejs',
+      description: `Perform JS optimizations for the upload's build`,
+      type: Boolean,
+    },
+    {
       name: 'nobuild',
-      description: 'Do not invoke a build for this snapshot',
+      description: `Do not invoke a build for the upload's snapshot`,
       type: Boolean,
     },
   ],
