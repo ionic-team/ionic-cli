@@ -29,7 +29,7 @@ declare module "ssh-config" {
     type Config = ConfigComment | ConfigDirective;
 
     interface SSHConfig extends Array<Config> {
-      find(options?: SSHConfigFindOptions): ConfigDirective;
+      find(arg: any): any; // https://github.com/dotnil/ssh-config/blob/40b55c0e31790dd78a0d4364b0e8a0a358293385/index.js#L61
     }
 
     // function find(config: SSHConfig, options?: SSHConfigFindOptions): ;
