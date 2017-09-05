@@ -369,7 +369,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
         }
       }
     } else {
-      ienv.log.msg(chalk.red(String(err)));
+      ienv.log.msg(chalk.red(String(err.stack ? err.stack : err)));
 
       if (err.stack) {
         ienv.log.debug(() => chalk.red(err.stack));
