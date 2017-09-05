@@ -109,6 +109,42 @@ export async function getFileChecksum(filePath: string): Promise<string> {
   });
 }
 
+/**
+ * Return true and cached checksums for a file by its path.
+ *
+ * Cached checksums are stored as `.md5` files next to the original file. If
+ * the cache file is missing, the cached checksum is undefined.
+ *
+ * @param p The file path
+ * @return Promise<[true checksum, cached checksum or undefined if cache file missing]>
+ */
+export async function getFileChecksums(p: string): Promise<[string, string | undefined]> {
+  return Promise.all([
+    getFileChecksum(p),
+    (async () => {
+      try {
+        const md5 = await fsReadFile(`${p}.md5`, { encoding: 'utf8' });
+        return md5.trim();
+      } catch (e) {
+        if (e.code !== 'ENOENT') {
+          throw e;
+        }
+      }
+    })(),
+  ]);
+}
+
+/**
+ * Store a cache file containing the source file's md5 checksum hash.
+ *
+ * @param p The file path
+ * @param checksum The checksum. If excluded, the checksum is computed
+ */
+export async function cacheFileChecksum(p: string, checksum?: string): Promise<void> {
+  const md5 = await getFileChecksum(p);
+  await fsWriteFile(`${p}.md5`, md5, { encoding: 'utf8' });
+}
+
 export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const dest = fs.createWriteStream(destination);

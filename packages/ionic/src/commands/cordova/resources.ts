@@ -4,7 +4,7 @@ import * as chalk from 'chalk';
 import { CommandLineInputs, CommandLineOptions, CommandPreRun, KnownPlatform, ResourcesConfig, ResourcesImageConfig, SourceImage } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
-import { pathExists } from '@ionic/cli-utils/lib/utils/fs';
+import { cacheFileChecksum, pathExists } from '@ionic/cli-utils/lib/utils/fs';
 
 /*
 const RESOURCES_SUMMARY =
@@ -281,6 +281,10 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     const generateImageResponses = await Promise.all(transforms);
     this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
     this.env.log.debug(() => `${chalk.green('generateResourceImage')} completed - responses=${JSON.stringify(generateImageResponses, null, 2)}`);
+
+    await Promise.all(srcImagesAvailable.map(async (img) => {
+      await cacheFileChecksum(img.path, img.imageId);
+    }));
 
     this.env.tasks.next(`Modifying config.xml to add new image resources`);
     const imageResourcesForConfig = imgResources.reduce((rc, img) => {

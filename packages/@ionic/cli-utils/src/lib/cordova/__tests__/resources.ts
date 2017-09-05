@@ -89,8 +89,8 @@ describe('@ionic/cli-utils', () => {
     });
 
     it('should find all sourceImages available and prioritize based on specificity', async () => {
-      spyOn(fsSpy, 'getFileChecksum').and.returnValue(Promise.resolve('FJDKLFJDKL'));
-      spyOn(fsSpy, 'fsWriteFile').and.callFake(() => {});
+      spyOn(fsSpy, 'getFileChecksums').and.returnValue(Promise.resolve(['FJDKLFJDKL', undefined]));
+      spyOn(fsSpy, 'cacheFileChecksum').and.callFake(() => {});
       spyOn(fsSpy, 'readDir').and.callFake(dir => {
         switch (dir) {
         case '/resourceDir/ios':

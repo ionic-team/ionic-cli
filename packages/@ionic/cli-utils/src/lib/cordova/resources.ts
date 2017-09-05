@@ -13,7 +13,7 @@ import {
 } from '../../definitions';
 
 import { flattenArray } from '../utils/array';
-import { copyDirectory, fsMkdirp, fsReadFile, fsStat, fsWriteFile, getFileChecksum, pathAccessible, pathExists, readDir, writeStreamToFile } from '../utils/fs';
+import { cacheFileChecksum, copyDirectory, fsMkdirp, fsStat, getFileChecksums, pathAccessible, pathExists, readDir, writeStreamToFile } from '../utils/fs';
 import { createRequest } from '../http';
 import { ConfigXml } from './config';
 
@@ -53,7 +53,7 @@ export function flattenResourceJsonStructure(): ImageResource[] {
 export async function createImgDestinationDirectories(imgResources: ImageResource[]): Promise<void[]> {
   const buildDirPromises: Promise<void>[] = imgResources
     .map(img => path.dirname(img.dest))
-    .filter((dir, index, dirNames) => dirNames.indexOf(dir) === index)
+    .filter((dir, i, dirNames) => dirNames.indexOf(dir) === i)
     .map(dir => fsMkdirp(dir));
 
   return Promise.all(buildDirPromises);
@@ -80,16 +80,16 @@ export async function getSourceImages(buildPlatforms: string[], resourceTypes: s
   );
 
   const sourceImages = flattenArray(
-    srcImageDirContentList.map((srcImageDirContents, index) => (
+    srcImageDirContentList.map((srcImageDirContents, i) => (
       srcImageDirContents
         .map((imgName): SourceImage => {
           const ext = path.extname(imgName);
 
           return {
             ext,
-            platform: srcDirList[index].platform,
+            platform: srcDirList[i].platform,
             resType: path.basename(imgName, ext),
-            path: path.join(srcDirList[index].path, imgName),
+            path: path.join(srcDirList[i].path, imgName),
             vector: false,
             height: 0,
             width: 0,
@@ -102,34 +102,19 @@ export async function getSourceImages(buildPlatforms: string[], resourceTypes: s
 
   const sourceImageChecksums = await Promise.all(
     sourceImages.map(async (img) => {
-      const cachedMd5Path = `${img.path}.md5`;
-      const [ md5, cachedMd5 ] = await Promise.all([
-        getFileChecksum(img.path),
-        (async () => {
-          try {
-            const md5 = await fsReadFile(cachedMd5Path, { encoding: 'utf8' });
-            return md5.trim();
-          } catch (e) {
-            if (e.code !== 'ENOENT') {
-              throw e;
-            }
-          }
-        })(),
-      ]);
+      const [ md5, cachedMd5 ] = await getFileChecksums(img.path);
 
       if (cachedMd5) {
         img.cachedId = cachedMd5;
       }
 
-      await fsWriteFile(cachedMd5Path, md5, { encoding: 'utf8' });
-
       return md5;
     })
   );
 
-  return sourceImages.map((img: SourceImage, index) => ({
+  return sourceImages.map((img, i) => ({
     ...img,
-    imageId: sourceImageChecksums[index],
+    imageId: sourceImageChecksums[i],
   }));
 }
 
@@ -285,8 +270,7 @@ async function ensureDefaultResources(env: IonicEnvironment): Promise<string> {
     const pngImages = <string[]>resourcesDirFiles.filter(p => typeof p === 'string' && path.extname(p) === '.png'); // TODO: typescript brokd
 
     for (let img of pngImages) {
-      const md5 = await getFileChecksum(img);
-      await fsWriteFile(`${img}.md5`, md5, { encoding: 'utf8' });
+      await cacheFileChecksum(img);
     }
 
     env.tasks.end();
