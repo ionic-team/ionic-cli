@@ -66,11 +66,16 @@ export class UploadCommand extends Command {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
     const { upload } = await import('@ionic/cli-utils/lib/upload');
 
     const note = this.resolveNote(options['note']);
     const channelTag = this.resolveChannelTag(options['deploy']);
     const metadata = this.resolveMetaData(options['metadata']);
+
+    if (!(await this.env.session.isLoggedIn())) {
+      await promptToLogin(this.env);
+    }
 
     if (!options['nobuild']) {
       const { build } = await import('@ionic/cli-utils/commands/build');
