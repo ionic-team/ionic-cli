@@ -17,7 +17,7 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
 
   let externalIP = options.address;
 
-  if (options.address === BIND_ALL_ADDRESS) {
+  if (options.externalAddressRequired && options.address === BIND_ALL_ADDRESS) {
     const availableIPs = getAvailableIPAddresses();
     if (availableIPs.length === 0) {
       throw new Error(`It appears that you do not have any external network interfaces. ` +
@@ -27,7 +27,7 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
 
     externalIP = availableIPs[0].address;
 
-    if (options.externalAddressRequired && availableIPs.length > 1) {
+    if (availableIPs.length > 1) {
       if (availableIPs.find(({ address }) => address === options.address)) {
         externalIP = options.address;
       } else {

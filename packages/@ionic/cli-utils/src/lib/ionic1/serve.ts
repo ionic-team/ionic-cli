@@ -29,7 +29,7 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
 
   let externalIP = options.address;
 
-  if (options.address === BIND_ALL_ADDRESS) {
+  if (options.externalAddressRequired && options.address === BIND_ALL_ADDRESS) {
     // Find appropriate IP to use for cordova to reference
     const availableIPs = getAvailableIPAddresses();
     if (availableIPs.length === 0) {
@@ -40,7 +40,7 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
 
     externalIP = availableIPs[0].address;
 
-    if (options.externalAddressRequired && availableIPs.length > 1) {
+    if (availableIPs.length > 1) {
       env.log.warn(
         'Multiple network interfaces detected!\n' +
         'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
