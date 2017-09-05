@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandPreRun, KnownPlatform } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 import { CordovaCommand } from './base';
@@ -25,11 +25,10 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
   ],
   options: [
     {
-      name: 'noresources',
-      description: `Do not add default Ionic icons and splash screen resources (corresponds to ${chalk.green('add')})`,
+      name: 'resources',
+      description: `Do not pregenerate icons and splash screen resources (corresponds to ${chalk.green('add')})`,
       type: Boolean,
-      default: false,
-      aliases: ['r'],
+      default: true,
     },
   ]
 })
@@ -38,6 +37,10 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
     const { contains, validate, validators } = await import('@ionic/cli-utils/lib/validators');
 
     await this.preRunChecks();
+
+    if (options['r'] || options['noresources']) {
+      options['resources'] = false;
+    }
 
     inputs[0] = (typeof inputs[0] === 'undefined') ? 'ls' : inputs[0];
     inputs[0] = (inputs[0] === 'rm') ? 'remove' : inputs[0];
@@ -68,7 +71,6 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
-    const { RESOURCES, provideDefaultResources } = await import('@ionic/cli-utils/lib/cordova/resources');
 
     let [ action, platformName ] = inputs;
 
@@ -97,11 +99,8 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
       this.env.log.msg(response);
     }
 
-    if (action === 'add' && !(options['noresources']) && ['ios', 'android', 'wp8'].includes(platformName)) {
-      await provideDefaultResources(this.env, <KnownPlatform>platformName);
-      const conf = await ConfigXml.load(this.env.project.directory);
-      await conf.ensurePlatformImages(platformName, RESOURCES[platformName]);
-      await conf.save();
+    if (action === 'add' && options['resources'] && ['ios', 'android'].includes(platformName)) {
+      await this.runcmd(['cordova', 'resources', platformName, '--force']);
     }
 
     this.env.tasks.end();
