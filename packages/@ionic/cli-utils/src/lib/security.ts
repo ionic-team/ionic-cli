@@ -6,12 +6,8 @@ export class SecurityClient {
   constructor(protected appUserToken: string, protected client: IClient) {}
 
   async getProfile(tag: string): Promise<SecurityProfile> {
-    let { req } = await this.client.make('GET', `/security/profiles/${tag}`);
-    req = req
-      .set('Authorization', `Bearer ${this.appUserToken}`)
-      .query({})
-      .send();
-
+    const { req } = await this.client.make('GET', `/security/profiles/${tag}`);
+    req.set('Authorization', `Bearer ${this.appUserToken}`).query({}).send();
     const res = await this.client.do(req);
 
     if (!isSecurityProfileResponse(res)) {
@@ -22,12 +18,8 @@ export class SecurityClient {
   }
 
   async getProfiles({ page = 1, pageSize = 25 }: { page?: number, pageSize?: number }): Promise<SecurityProfile[]> {
-    let { req } = await this.client.make('GET', '/security/profiles');
-    req = req
-      .set('Authorization', `Bearer ${this.appUserToken}`)
-      .query({ page, 'page_size': pageSize, })
-      .send();
-
+    const { req } = await this.client.make('GET', '/security/profiles');
+    req.set('Authorization', `Bearer ${this.appUserToken}`).query({ page, 'page_size': pageSize, }).send();
     const res = await this.client.do(req);
 
     if (!isSecurityProfilesResponse(res)) {

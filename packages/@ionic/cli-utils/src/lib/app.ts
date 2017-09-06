@@ -13,10 +13,8 @@ export class App implements IApp {
   constructor(public token: string, protected client: IClient) {}
 
   async load(app_id: string): Promise<AppDetails> {
-    let { req } = await this.client.make('GET', `/apps/${app_id}`);
-    req = req
-      .set('Authorization', `Bearer ${this.token}`)
-      .send({});
+    const { req } = await this.client.make('GET', `/apps/${app_id}`);
+    req.set('Authorization', `Bearer ${this.token}`).send({});
     const res = await this.client.do(req);
 
     if (!isAppResponse(res)) {
@@ -29,8 +27,8 @@ export class App implements IApp {
   async paginate(): Promise<IPaginator<Response<AppDetails[]>>> {
     return this.client.paginate(
       async () => {
-        let { req } = await this.client.make('GET', '/apps');
-        req = req.set('Authorization', `Bearer ${this.token}`);
+        const { req } = await this.client.make('GET', '/apps');
+        req.set('Authorization', `Bearer ${this.token}`);
         return { req };
       },
       isAppsResponse,
@@ -38,10 +36,8 @@ export class App implements IApp {
   }
 
   async create({ name }: { name: string; }) {
-    let { req } = await this.client.make('POST', '/apps');
-    req = req
-      .set('Authorization', `Bearer ${this.token}`)
-      .send({ name });
+    const { req } = await this.client.make('POST', '/apps');
+    req.set('Authorization', `Bearer ${this.token}`).send({ name });
     const res = await this.client.do(req);
 
     if (!isAppResponse(res)) {

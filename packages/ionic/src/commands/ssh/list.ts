@@ -49,10 +49,8 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
       }
     }
 
-    let { req } = await this.env.client.make('GET', `/users/${config.user.id}/sshkeys`);
-    req = req
-      .set('Authorization', `Bearer ${token}`);
-
+    const { req } = await this.env.client.make('GET', `/users/${config.user.id}/sshkeys`);
+    req.set('Authorization', `Bearer ${token}`);
     const res = await this.env.client.do(req);
 
     if (!isSSHKeyListResponse(res)) {

@@ -7,11 +7,8 @@ export class DeployClient {
   constructor(protected appUserToken: string, protected client: IClient) {}
 
   async getChannel(uuidOrTag: string): Promise<DeployChannel> {
-    let { req } = await this.client.make('GET', `/deploy/channels/${uuidOrTag}`);
-    req = req
-      .set('Authorization', `Bearer ${this.appUserToken}`)
-      .send();
-
+    const { req } = await this.client.make('GET', `/deploy/channels/${uuidOrTag}`);
+    req.set('Authorization', `Bearer ${this.appUserToken}`).send();
     const res = await this.client.do(req);
 
     if (!isDeployChannelResponse(res)) {
@@ -22,11 +19,8 @@ export class DeployClient {
   }
 
   async deploy(snapshot: string, channel: string): Promise<Deploy> {
-    let { req } = await this.client.make('POST', '/deploy/deploys');
-    req = req
-      .set('Authorization', `Bearer ${this.appUserToken}`)
-      .send({ snapshot, channel });
-
+    const { req } = await this.client.make('POST', '/deploy/deploys');
+    req.set('Authorization', `Bearer ${this.appUserToken}`).send({ snapshot, channel });
     const res = await this.client.do(req);
 
     if (!isDeployResponse(res)) {
@@ -41,12 +35,8 @@ export class DeployClient {
       fields.push('url');
     }
 
-    let { req } = await this.client.make('GET', `/deploy/snapshots/${uuid}`);
-    req = req
-      .set('Authorization', `Bearer ${this.appUserToken}`)
-      .query({ fields })
-      .send();
-
+    const { req } = await this.client.make('GET', `/deploy/snapshots/${uuid}`);
+    req.set('Authorization', `Bearer ${this.appUserToken}`).query({ fields }).send();
     const res = await this.client.do(req);
 
     if (!isDeploySnapshotResponse(res)) {
@@ -59,11 +49,8 @@ export class DeployClient {
   async requestSnapshotUpload(options: { legacy_duplication?: string; note?: string; user_metadata?: Object } = {}): Promise<DeploySnapshotRequest> {
     options.legacy_duplication = '1';
 
-    let { req } = await this.client.make('POST', '/deploy/snapshots');
-    req = req
-      .set('Authorization', `Bearer ${this.appUserToken}`)
-      .send(options);
-
+    const { req } = await this.client.make('POST', '/deploy/snapshots');
+    req.set('Authorization', `Bearer ${this.appUserToken}`).send(options);
     const res = await this.client.do(req);
 
     if (!isDeploySnapshotRequestResponse(res)) {
@@ -72,13 +59,8 @@ export class DeployClient {
 
     // TODO: Remove updateMetaDataReq when POST -> deploy/snapshots accepts user_metadata
     if (options.user_metadata) {
-      let { req } = await this.client.make('PATCH', `/deploy/snapshots/${res.data.uuid}`);
-      req = req
-        .set('Authorization', `Bearer ${this.appUserToken}`)
-        .send({
-          'user_metadata': options.user_metadata
-        });
-
+      const { req } = await this.client.make('PATCH', `/deploy/snapshots/${res.data.uuid}`);
+      req.set('Authorization', `Bearer ${this.appUserToken}`).send({ 'user_metadata': options.user_metadata });
       await this.client.do(req);
     }
 

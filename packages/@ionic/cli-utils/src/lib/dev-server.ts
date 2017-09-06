@@ -6,7 +6,7 @@ import { BIND_ALL_ADDRESS } from './serve';
 
 export const DEV_SERVER_PREFIX = '__ionic';
 
-export function injectDevServerScript(content: any): any {
+export function injectDevServerScript(content: any): string {
   let contentStr = content.toString();
   const devServerScript = getDevServerScript();
 

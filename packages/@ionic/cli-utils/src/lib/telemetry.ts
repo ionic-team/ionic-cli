@@ -88,14 +88,14 @@ export class Telemetry implements ITelemetry {
         const now = new Date().toISOString();
         const isLoggedIn = await this.session.isLoggedIn();
 
-        let { req } = await client.make('POST', `${config.urls.api !== 'https://api.ionic.io' ? 'https://api.ionicjs.com' : ''}/events/metrics`); // TODO: full URL is temporary
+        const { req } = await client.make('POST', `${config.urls.api !== 'https://api.ionic.io' ? 'https://api.ionicjs.com' : ''}/events/metrics`); // TODO: full URL is temporary
 
         if (isLoggedIn && config.backend === BACKEND_PRO) {
           const token = await this.session.getUserToken();
-          req = req.set('Authorization', `Bearer ${token}`);
+          req.set('Authorization', `Bearer ${token}`);
         }
 
-        req = req.send({
+        req.send({
           'metrics': [
             {
               'name': 'cli_command_metrics',

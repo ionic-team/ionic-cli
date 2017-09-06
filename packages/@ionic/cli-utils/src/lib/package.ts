@@ -13,12 +13,8 @@ export class PackageClient {
       fields.push('url');
     }
 
-    let { req } = await this.client.make('GET', `/package/builds/${id}`);
-    req = req
-      .set('Authorization', `Bearer ${this.appUserToken}`)
-      .query({ fields })
-      .send();
-
+    const { req } = await this.client.make('GET', `/package/builds/${id}`);
+    req.set('Authorization', `Bearer ${this.appUserToken}`).query({ fields }).send();
     const res = await this.client.do(req);
 
     if (!isPackageBuildResponse(res)) {
@@ -29,12 +25,8 @@ export class PackageClient {
   }
 
   async getBuilds({ page = 1, pageSize = 25 }: { page?: number, pageSize?: number }): Promise<PackageBuild[]> {
-    let { req } = await this.client.make('GET', '/package/builds');
-    req = req
-      .set('Authorization', `Bearer ${this.appUserToken}`)
-      .query({ page, 'page_size': pageSize, })
-      .send();
-
+    const { req } = await this.client.make('GET', '/package/builds');
+    req.set('Authorization', `Bearer ${this.appUserToken}`).query({ page, 'page_size': pageSize, }).send();
     const res = await this.client.do(req);
 
     if (!isPackageBuildsResponse(res)) {
@@ -45,8 +37,8 @@ export class PackageClient {
   }
 
   async queueBuild({ platform, mode, zipUrl, projectId, profileTag }: { platform: PackageBuild['platform'], mode: PackageBuild['mode'], zipUrl: string, projectId: number, profileTag?: string }): Promise<PackageBuild> {
-    let { req } = await this.client.make('POST', '/package/builds');
-    req = req
+    const { req } = await this.client.make('POST', '/package/builds');
+    req
       .set('Authorization', `Bearer ${this.appUserToken}`)
       .send({
         platform,
@@ -66,11 +58,8 @@ export class PackageClient {
   }
 
   async requestProjectUpload(): Promise<PackageProjectRequest> {
-    let { req } = await this.client.make('POST', '/package/projects');
-    req = req
-      .set('Authorization', `Bearer ${this.appUserToken}`)
-      .send({});
-
+    const { req } = await this.client.make('POST', '/package/projects');
+    req.set('Authorization', `Bearer ${this.appUserToken}`).send({});
     const res = await this.client.do(req);
 
     if (!isPackageProjectRequestResponse(res)) {

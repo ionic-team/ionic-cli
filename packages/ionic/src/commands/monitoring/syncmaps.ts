@@ -58,8 +58,9 @@ export class MonitoringSyncSourcemapsCommand extends Command {
   async syncSourcemap(file: string, appVersion: string, commitHash: string, appId: string, token: string): Promise<void> {
     const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
 
-    let { req } = await this.env.client.make('POST', `/monitoring/${appId}/sourcemaps`);
-    req = req
+    const { req } = await this.env.client.make('POST', `/monitoring/${appId}/sourcemaps`);
+
+    req
       .set('Authorization', `Bearer ${token}`)
       .send({
         name: path.basename(file),

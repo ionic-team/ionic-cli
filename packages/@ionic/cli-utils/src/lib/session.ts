@@ -50,9 +50,8 @@ export class BaseSession {
 
 export class CloudSession extends BaseSession implements ISession {
   async login(email: string, password: string): Promise<void> {
-    let { req } = await this.client.make('POST', '/login');
-    req = req
-      .send({ email, password });
+    const { req } = await this.client.make('POST', '/login');
+    req.send({ email, password });
 
     try {
       const res = await this.client.do(req);
@@ -91,8 +90,8 @@ export class CloudSession extends BaseSession implements ISession {
       const token = await this.getUserToken();
       const paginator = await this.client.paginate(
         async () => {
-          let { req } = await this.client.make('GET', '/auth/tokens');
-          req = req.set('Authorization', `Bearer ${token}`).query({ 'page_size': 100, type: 'app-user' });
+          const { req } = await this.client.make('GET', '/auth/tokens');
+          req.set('Authorization', `Bearer ${token}`).query({ 'page_size': 100, type: 'app-user' });
           return { req };
         },
         isAuthTokensResponse
@@ -120,9 +119,8 @@ export class CloudSession extends BaseSession implements ISession {
 
 export class ProSession extends BaseSession implements ISession {
   async login(email: string, password: string): Promise<void> {
-    let { req } = await this.client.make('POST', '/login');
-    req = req
-      .send({ email, password, source: 'cli' });
+    const { req } = await this.client.make('POST', '/login');
+    req.send({ email, password, source: 'cli' });
 
     try {
       const res = await this.client.do(req);
