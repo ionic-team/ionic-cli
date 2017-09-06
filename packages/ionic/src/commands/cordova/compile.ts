@@ -12,12 +12,42 @@ import { CordovaCommand } from './base';
   longDescription: `
 Like running ${chalk.green('cordova compile')} directly, but provides friendly checks.
   `,
-  exampleCommands: ['ios'],
+  exampleCommands: [
+    'ios',
+    'ios --device',
+    'android',
+  ],
   inputs: [
     {
       name: 'platform',
       description: `The platform to compile: ${chalk.green('ios')}, ${chalk.green('android')}`,
-    }
+    },
+  ],
+  options: [
+    {
+      name: 'debug',
+      description: 'Create a Cordova debug build',
+      type: Boolean,
+      intent: 'CORDOVA',
+    },
+    {
+      name: 'release',
+      description: 'Create a Cordova release build',
+      type: Boolean,
+      intent: 'CORDOVA',
+    },
+    {
+      name: 'device',
+      description: 'Compile Cordova build to a device',
+      type: Boolean,
+      intent: 'CORDOVA',
+    },
+    {
+      name: 'emulator',
+      description: 'Compile Cordova build to an emulator',
+      type: Boolean,
+      intent: 'CORDOVA',
+    },
   ],
 })
 export class CompileCommand extends CordovaCommand implements CommandPreRun {
