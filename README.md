@@ -109,7 +109,8 @@ $ ionic cordova run ios
 and services designed for the entire app lifecycle, all in one integrated
 experience. Ionic Pro is fully supported in the Ionic CLI. Just use `--pro-id`
 with `ionic start` or `ionic link` as documented in the [Pro
-Dashboard](https://dashboard.ionicjs.com) to switch to the new experience.
+Docs](https://ionicframework.com/docs/pro/getting-started.html) to switch to
+the new experience.
 
 You can switch between Ionic Cloud (legacy) and Ionic Pro with `ionic config
 set -g backend legacy` and `ionic config set -g backend pro`.
