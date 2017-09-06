@@ -39,6 +39,7 @@
   "dependencies": {
     "@types/gulp": "^3.8.33",
     "archiver": "^2.0.0",
+    "basic-auth": "^1.1.0",
     "chalk": "^2.0.0",
     "chokidar": "^1.7.0",
     "ci-info": "^1.0.0",
@@ -73,6 +74,7 @@
     "@angular/core": "^4.3.3",
     "@ionic/cli-scripts": "0.3.3",
     "@types/archiver": "^2.0.0",
+    "@types/basic-auth": "^1.1.2",
     "@types/chalk": "^0.4.31",
     "@types/chokidar": "^1.7.1",
     "@types/clean-css": "^3.4.30",

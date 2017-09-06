@@ -90,6 +90,11 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       description: 'Start serve with a specific platform (ios/android)',
       aliases: ['t'],
     },
+    // {
+    //   name: 'auth',
+    //   description: 'HTTP Basic Auth password to secure the server on your local network',
+    //   type: String,
+    // },
   ],
 })
 export class ServeCommand extends Command {

@@ -29,6 +29,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     browser: options['nobrowser'] ? false : true,
     browserName: options['browser'] ? String(options['browser']) : undefined,
     browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
+    basicAuth: options['auth'] ? <[string, string]>['ionic', String(options['auth'])] : undefined, // TODO: typescript can't infer tuple
     externalAddressRequired: options['externalAddressRequired'] ? true : false,
     iscordovaserve: typeof options['iscordovaserve'] === 'boolean' ? Boolean(options['iscordovaserve']) : false,
   };
@@ -55,13 +56,14 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     );
   }
 
-  const localAddress = 'http://localhost:' + serverDetails.port;
-  const fmtExternalAddress = (address: string) => 'http://' + address + ':' + serverDetails.port;
+  const localAddress = `http://localhost:${serverDetails.port}`;
+  const fmtExternalAddress = (address: string) => `http://${address}:${serverDetails.port}`;
 
   env.log.info(
     `Development server running!\n` +
     `Local: ${chalk.bold(localAddress)}\n` +
-    (serverDetails.externalAddresses.length > 0 ? `External: ${serverDetails.externalAddresses.map(v => chalk.bold(fmtExternalAddress(v))).join(', ')}\n` : '')
+    (serverDetails.externalAddresses.length > 0 ? `External: ${serverDetails.externalAddresses.map(v => chalk.bold(fmtExternalAddress(v))).join(', ')}\n` : '') +
+    (serveOptions.basicAuth ? `Basic Auth: ${chalk.bold(serveOptions.basicAuth[0])} / ${chalk.bold(serveOptions.basicAuth[1])}` : '')
   );
 
   if (project.type !== 'ionic-angular') { // TODO: app-scripts calls opn internally

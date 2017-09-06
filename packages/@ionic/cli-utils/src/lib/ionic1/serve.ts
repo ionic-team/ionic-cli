@@ -39,7 +39,7 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
       if (options.externalAddressRequired) {
         throw new FatalException(
           `No external network interfaces detected. In order to use livereload with run/emulate you will need one.\n` +
-          `Are you connected to a local network?`
+          `Are you connected to a local network?\n`
         );
       }
     } else if (availableIPs.length === 1) {
@@ -206,6 +206,26 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
       next();
     }
   };
+
+  if (options.basicAuth) {
+    const basicAuth = await import('basic-auth');
+    const [ name, pass ] = options.basicAuth;
+
+    app.use((req, res, next) => {
+      const user = basicAuth(req);
+
+      const unauthorized = (res: expressType.Response) => {
+        res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
+        return res.sendStatus(401);
+      };
+
+      if (!user || !user.name || !user.pass || user.name !== name || user.pass !== pass) {
+        return unauthorized(res);
+      }
+
+      return next();
+    });
+  }
 
   app.get('/', serveIndex);
   app.use('/', express.static(options.wwwDir));

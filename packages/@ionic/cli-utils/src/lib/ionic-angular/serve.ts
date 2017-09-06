@@ -25,7 +25,7 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
       if (options.externalAddressRequired) {
         throw new FatalException(
           `No external network interfaces detected. In order to use livereload with run/emulate you will need one.\n` +
-          `Are you connected to a local network?`
+          `Are you connected to a local network?\n`
         );
       }
     } else if (availableIPs.length === 1) {
