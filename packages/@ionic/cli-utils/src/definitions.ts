@@ -716,3 +716,9 @@ export interface StarterTemplateType {
 }
 
 export type LiveReloadFunction = (changedFiles: string[]) => void;
+
+export interface DevServerMessage {
+  category: 'console';
+  type: string;
+  data: any[];
+}

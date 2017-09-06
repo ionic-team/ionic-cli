@@ -10,6 +10,7 @@ import {
   DeployChannel,
   DeploySnapshot,
   DeploySnapshotRequest,
+  DevServerMessage,
   ExitCodeException,
   ICommand,
   INamespace,
@@ -268,4 +269,11 @@ export function isDeploySnapshotRequestResponse(r: APIResponse): r is Response<D
     && typeof res.data.presigned_post === 'object'
     && typeof res.data.presigned_post.url === 'string'
     && res.data.presigned_post.fields && typeof res.data.presigned_post.fields === 'object';
+}
+
+export function isDevServerMessage(m: any): m is DevServerMessage {
+  return m
+    && typeof m.category === 'string'
+    && typeof m.type === 'string'
+    && m.data && typeof m.data.length === 'number';
 }

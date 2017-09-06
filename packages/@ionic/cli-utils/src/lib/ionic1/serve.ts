@@ -1,10 +1,12 @@
 import * as path from 'path';
+import * as util from 'util';
 
 import * as chalk from 'chalk';
 
 import * as expressType from 'express';
 
-import { IonicEnvironment, LiveReloadFunction, ServeDetails, ServeOptions } from '../../definitions';
+import { IonicEnvironment, LiveReloadFunction, LogLevel, ServeDetails, ServeOptions } from '../../definitions';
+import { isDevServerMessage } from '../../guards';
 
 import { BIND_ALL_ADDRESS, IONIC_LAB_URL, LOCAL_ADDRESSES } from '../serve';
 import { FatalException } from '../errors';
@@ -84,7 +86,17 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
     throw new FatalException(`${chalk.green(options.address)} is not available--cannot bind.`);
   }
 
-  env.log.info(`Starting server (address: ${chalk.bold(options.address)}, port: ${chalk.bold(String(options.port))}, livereload port: ${chalk.bold(String(options.livereloadPort))}) - Ctrl+C to cancel`);
+  const details = [
+    `address: ${chalk.bold(options.address)}`,
+    `port: ${chalk.bold(String(options.port))}`,
+    `dev server port: ${chalk.bold(String(options.notificationPort))}`,
+  ];
+
+  if (options.livereload) {
+    details.push(`livereload port: ${chalk.bold(String(options.livereloadPort))}`);
+  }
+
+  env.log.info(`Starting server (${details.join(', ')}) - Ctrl+C to cancel`);
 
   // Start up server
   const settings = await setupServer(env, { externalIP, wwwDir, ...options });
@@ -102,7 +114,7 @@ async function setupServer(env: IonicEnvironment, options: ServeMetaOptions): Pr
   let reloadfn: LiveReloadFunction | undefined;
 
   if (options.livereload) {
-    const { createLiveReloadServer } = await import('../livereload');
+    const { createLiveReloadServer } = await import('../dev-server');
     reloadfn = await createLiveReloadServer(env, { port: options.livereloadPort, wwwDir: options.wwwDir });
   }
 
@@ -141,7 +153,10 @@ async function setupServer(env: IonicEnvironment, options: ServeMetaOptions): Pr
  * Create HTTP server
  */
 async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions): Promise<expressType.Application> {
-  const express = await import('express');
+  const { DEV_SERVER_PREFIX, injectDevServerScript, injectLiveReloadScript } = await import('../dev-server');
+  const [ WebSocket, express ] = await Promise.all([import('ws'), import('express')]);
+  const { LOGGER_STATUS_COLORS } = await import('../../lib/utils/logger');
+
   const app = express();
   app.listen(options.port, options.address);
 
@@ -153,8 +168,9 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
     const indexFileName = path.join(options.wwwDir, 'index.html');
     let indexHtml = await fsReadFile(indexFileName, { encoding: 'utf8' });
 
+    indexHtml = injectDevServerScript(indexHtml);
+
     if (options.livereload) {
-      const { injectLiveReloadScript } = await import('../livereload');
       indexHtml = injectLiveReloadScript(indexHtml, options.externalAddressRequired ? options.externalIP : 'localhost', options.livereloadPort);
     }
 
@@ -209,6 +225,56 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
   if (options.proxy) {
     await setupProxies(env, app);
   }
+
+  app.get(`/${DEV_SERVER_PREFIX}/dev-server.js`, async (req, res) => {
+    res.set('Content-Type', 'application/javascript');
+
+    const devServerConfig = {
+      consolelogs: options.consolelogs,
+      wsPort: options.notificationPort,
+    };
+
+    const devServerJs = await fsReadFile(path.join(__dirname, '..', '..', 'assets', 'dev-server', 'dev-server.js'), { encoding: 'utf8' });
+
+    res.send(
+      `window.Ionic = window.Ionic || {}; window.Ionic.DevServerConfig = ${JSON.stringify(devServerConfig)};\n\n` +
+      `${devServerJs}`.trim()
+    );
+  });
+
+  const wss = new WebSocket.Server({ port: options.notificationPort });
+
+  wss.on('connection', (ws) => {
+    ws.on('message', (data) => {
+      let msg;
+
+      try {
+        data = data.toString();
+        msg = JSON.parse(data);
+      } catch (e) {
+        env.log.error(`Error parsing JSON message from dev server: "${data}" ${chalk.red(e.stack ? e.stack : e)}`);
+        return;
+      }
+
+      if (!isDevServerMessage(msg)) {
+        const m = util.inspect(msg, { colors: chalk.enabled });
+        env.log.error(`Bad format in dev server message: ${m}`);
+        return;
+      }
+
+      if (msg.category === 'console') {
+        const status = LOGGER_STATUS_COLORS.get(<LogLevel>msg.type);
+
+        if (status) {
+          env.log.msg(`[${status('console.' + msg.type)}]: ${msg.data.join(' ')}`);
+        } else if (msg.type === 'log') {
+          env.log.msg(`[${chalk.gray('console.log')}]: ${msg.data.join(' ')}`);
+        } else {
+          env.log.msg(`[console]: ${msg.data.join(' ')}`);
+        }
+      }
+    });
+  });
 
   return app;
 }
