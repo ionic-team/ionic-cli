@@ -22,6 +22,7 @@ reports and feature requests.
 * [Getting Started](#getting-started)
 * [Using Cordova](#using-cordova)
    * [Requirements](#requirements-1)
+* [Ionic Pro](#ionic-pro)
 * [Integrations](#integrations)
 * [Environment Variables](#environment-variables)
 * [CLI Flags](#cli-flags)
@@ -101,6 +102,17 @@ $ npm install -g cordova
 $ ionic cordova --help
 $ ionic cordova run ios
 ```
+
+## Ionic Pro
+
+[Ionic Pro](https://ionicframework.com/products/) is a powerful suite of tools
+and services designed for the entire app lifecycle, all in one integrated
+experience. Ionic Pro is fully supported in the Ionic CLI. Just use `--pro-id`
+with `ionic start` or `ionic link` as documented in the [Pro
+Dashboard](https://dashboard.ionicjs.com) to switch to the new experience.
+
+You can switch between Ionic Cloud (legacy) and Ionic Pro with `ionic config
+set -g backend legacy` and `ionic config set -g backend pro`.
 
 ## Integrations
 

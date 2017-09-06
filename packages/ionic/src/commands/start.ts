@@ -79,7 +79,6 @@ ${chalk.green('ionic start')} will create an app from a template. You can list a
     {
       name: 'pro-id',
       description: 'Specify an app ID from the Ionic Dashboard to link',
-      visible: false,
     },
   ],
 })
