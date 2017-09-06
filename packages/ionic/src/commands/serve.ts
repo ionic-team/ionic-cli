@@ -11,6 +11,8 @@ import { BIND_ALL_ADDRESS, BROWSERS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD
   longDescription: `
 Easily spin up a development server which launches in your browser. It watches for changes in your source files and automatically reloads with the updated build.
 
+By default, ${chalk.green('ionic serve')} boots up a development server on all network interfaces and prints the external address(es) on which your app is being served. To disable this, use ${chalk.green('--address=localhost')}.
+
 Try the ${chalk.green('--lab')} option to see multiple platforms at once.
   `,
   exampleCommands: ['-cs', '--lab -cs'],

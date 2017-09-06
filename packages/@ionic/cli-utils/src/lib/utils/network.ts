@@ -4,8 +4,8 @@ import { flattenArray } from './array';
 
 export const ERROR_NETWORK_ADDRESS_NOT_AVAIL = 'NETWORK_ADDRESS_NOT_AVAIL';
 
-export function getAvailableIPAddresses() {
-  let interfaces = os.networkInterfaces();
+export function getAvailableIPAddresses(): { address: string; deviceName: string; family: string; internal: boolean; }[] { // TODO: type safety
+  const interfaces = os.networkInterfaces();
   return flattenArray(
     Object.keys(interfaces).map(deviceName => (
       interfaces[deviceName].map(item => ({

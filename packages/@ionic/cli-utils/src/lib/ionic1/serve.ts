@@ -29,34 +29,38 @@ const ANDROID_PLATFORM_PATH = path.join('platforms', 'android', 'assets', 'www')
 export async function serve({ env, options }: { env: IonicEnvironment; options: ServeOptions; }): Promise<ServeDetails> {
   const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort, getAvailableIPAddresses } = await import('../utils/network');
 
+  let availableIPs: string[] = [];
   let externalIP = options.address;
 
-  if (options.externalAddressRequired && options.address === BIND_ALL_ADDRESS) {
-    // Find appropriate IP to use for cordova to reference
-    const availableIPs = getAvailableIPAddresses();
+  if (options.address === BIND_ALL_ADDRESS) {
+    availableIPs = getAvailableIPAddresses().map(ip => ip.address);
+
     if (availableIPs.length === 0) {
-      throw new Error(`It appears that you do not have any external network interfaces. ` +
-        `In order to use livereload with emulate you will need one.`
-      );
-    }
+      if (options.externalAddressRequired) {
+        throw new FatalException(
+          `No external network interfaces detected. In order to use livereload with run/emulate you will need one.\n` +
+          `Are you connected to a local network?`
+        );
+      }
+    } else if (availableIPs.length === 1) {
+      externalIP = availableIPs[0];
+    } else if (availableIPs.length > 1) {
+      if (options.externalAddressRequired) {
+        env.log.warn(
+          'Multiple network interfaces detected!\n' +
+          'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
+          `You may also use the ${chalk.green('--address')} option to skip this prompt.\n`
+        );
 
-    externalIP = availableIPs[0].address;
+        const promptedIp = await env.prompt({
+          type: 'list',
+          name: 'promptedIp',
+          message: 'Please select which IP to use:',
+          choices: availableIPs,
+        });
 
-    if (availableIPs.length > 1) {
-      env.log.warn(
-        'Multiple network interfaces detected!\n' +
-        'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
-        `You may also use the ${chalk.green('--address')} option to skip this prompt.\n`
-      );
-
-      const promptedIp = await env.prompt({
-        type: 'list',
-        name: 'promptedIp',
-        message: 'Please select which IP to use:',
-        choices: availableIPs.map(ip => ip.address)
-      });
-
-      externalIP = promptedIp;
+        externalIP = promptedIp;
+      }
     }
   }
 
@@ -105,6 +109,7 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
     protocol: 'http',
     localAddress: 'localhost',
     externalAddress: externalIP,
+    externalAddresses: availableIPs,
     port: settings.port,
     externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
   };

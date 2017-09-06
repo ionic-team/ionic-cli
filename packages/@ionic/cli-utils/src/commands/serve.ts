@@ -56,12 +56,12 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
   }
 
   const localAddress = 'http://localhost:' + serverDetails.port;
-  const externalAddress = 'http://' + serverDetails.externalAddress + ':' + serverDetails.port;
+  const fmtExternalAddress = (address: string) => 'http://' + address + ':' + serverDetails.port;
 
   env.log.info(
-    `Development server running\n` +
+    `Development server running!\n` +
     `Local: ${chalk.bold(localAddress)}\n` +
-    (serverDetails.externallyAccessible ? `External: ${chalk.bold(externalAddress)}\n` : '')
+    (serverDetails.externalAddresses.length > 0 ? `External: ${serverDetails.externalAddresses.map(v => chalk.bold(fmtExternalAddress(v))).join(', ')}\n` : '')
   );
 
   if (project.type !== 'ionic-angular') { // TODO: app-scripts calls opn internally

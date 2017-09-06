@@ -15,22 +15,23 @@ export interface AppScriptsServeOptions extends ServeOptions {
 export async function serve({ env, options }: { env: IonicEnvironment, options: AppScriptsServeOptions }): Promise<ServeDetails> {
   const { getAvailableIPAddresses } = await import('../utils/network');
 
+  let availableIPs: string[] = [];
   let externalIP = options.address;
 
-  if (options.externalAddressRequired && options.address === BIND_ALL_ADDRESS) {
-    const availableIPs = getAvailableIPAddresses();
+  if (options.address === BIND_ALL_ADDRESS) {
+    availableIPs = getAvailableIPAddresses().map(ip => ip.address);
+
     if (availableIPs.length === 0) {
-      throw new Error(`It appears that you do not have any external network interfaces. ` +
-        `In order to use livereload with emulate you will need one.`
-      );
-    }
-
-    externalIP = availableIPs[0].address;
-
-    if (availableIPs.length > 1) {
-      if (availableIPs.find(({ address }) => address === options.address)) {
-        externalIP = options.address;
-      } else {
+      if (options.externalAddressRequired) {
+        throw new FatalException(
+          `No external network interfaces detected. In order to use livereload with run/emulate you will need one.\n` +
+          `Are you connected to a local network?`
+        );
+      }
+    } else if (availableIPs.length === 1) {
+      externalIP = availableIPs[0];
+    } else if (availableIPs.length > 1) {
+      if (options.externalAddressRequired) {
         env.log.warn(
           'Multiple network interfaces detected!\n' +
           'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
@@ -41,7 +42,7 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
           type: 'list',
           name: 'promptedIp',
           message: 'Please select which IP to use:',
-          choices: availableIPs.map(ip => ip.address)
+          choices: availableIPs,
         });
 
         externalIP = promptedIp;
@@ -72,6 +73,7 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
     protocol: 'http',
     localAddress: 'localhost',
     externalAddress: externalIP,
+    externalAddresses: availableIPs,
     port: settings.httpPort,
     externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
   };

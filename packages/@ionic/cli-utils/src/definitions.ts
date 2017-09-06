@@ -464,7 +464,8 @@ export interface ServeOptions {
 export interface ServeDetails {
   protocol: string;
   localAddress: string;
-  externalAddress: string;
+  externalAddress: string; // chosen/preferred external address
+  externalAddresses: string[];
   port: number;
   externallyAccessible: boolean;
 }
