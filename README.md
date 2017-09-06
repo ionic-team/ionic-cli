@@ -31,12 +31,14 @@ reports and feature requests.
 * [Service Proxies](#service-proxies)
 * [Using a Proxy](#using-a-proxy)
    * [SSL Configuration](#ssl-configuration)
-* [Legacy Version](#legacy-version)
 
 ## Requirements
 
 * Node 6 LTS (latest)
 * npm 3+
+
+:memo: We try our best to make sure the Ionic CLI works on the latest versions
+of Node and npm, as well.
 
 ## Install
 
@@ -250,14 +252,6 @@ $ ionic config set -g ssl.keyfile /path/to/keyfile # file path to a client key f
 
 :memo: The `cafile`, `certfile`, and `keyfile` entries can be manually edited
 as arrays of strings in `~/.ionic/config.json` to include multiple files.
-
-## Legacy Version
-
-The old version of the CLI can be installed with the `legacy` tag:
-
-```bash
-npm install -g ionic@legacy
-```
 
 [ionic-homepage]: https://ionicframework.com
 [ionic-docs]: https://ionicframework.com/docs
