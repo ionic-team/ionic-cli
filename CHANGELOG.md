@@ -7,6 +7,28 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.10.0"></a>
+### 3.10.0 (PENDING)
+
+* New CLI installs will default to use Ionic Pro. Use `--pro-id` with `ionic
+  start` or `ionic link` to switch your CLI to Ionic Pro. You can switch
+  between backends with `ionic config set -g backend pro` (Ionic Pro) and
+  `ionic config set -g backend legacy` (Ionic Cloud).
+* Added app-scripts arguments (such as `--prod`) to `ionic upload`.
+* Added SSL configuration options for CLI HTTP requests. See
+  [README.md#ssl-configuration](https://github.com/ionic-team/ionic-cli/blob/master/README.md#ssl-configuration).
+* Fixed issue with `ionic serve` requiring an external network.
+* Fixed `--consolelogs` not working for Ionic 1.
+* Fixed issue with `ionic cordova platform add` not using custom icon and
+  splash screens for the generated resources.
+* Fixed Cordova resources issue where if the resource generation failed, the
+  cache files were still saved.
+* Fixed Ionic builds not passing necessary context to `build:after` hooks. When
+  an Ionic Cordova build occurs, the target platform is now passed to `cordova
+  prepare`. Thanks, [@rtwall](https://github.com/rtwall)!
+* Fixed Ionic Pro issue with incorrect interpretation of app IDs in scientific
+  notation... again.
+
 <a name="3.9.2"></a>
 ### 3.9.2 (2017-08-17)
 
