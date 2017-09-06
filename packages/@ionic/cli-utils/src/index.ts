@@ -21,7 +21,7 @@ import {
 import { LOG_LEVELS, isLogLevel } from './guards';
 
 import { BACKEND_LEGACY, BACKEND_PRO } from './lib/backends';
-import { CONFIG_DIRECTORY, CONFIG_FILE, Config, gatherFlags } from './lib/config';
+import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
 import { DAEMON_JSON_FILE, Daemon } from './lib/daemon';
 import { Client } from './lib/http';
 import { CLIEventEmitter } from './lib/events';
@@ -85,7 +85,7 @@ async function getSession(config: IConfig, project: IProject, client: IClient): 
 export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
   const cwd = process.cwd();
   const argv = minimist(pargv, { boolean: true, string: '_' });
-  const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || CONFIG_DIRECTORY, CONFIG_FILE);
+  const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
   const configData = await config.load();
   const flags = gatherFlags(argv);
 
@@ -143,7 +143,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     bottomBar,
     client,
     config,
-    daemon: new Daemon(CONFIG_DIRECTORY, DAEMON_JSON_FILE),
+    daemon: new Daemon(env['IONIC_DAEMON_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, DAEMON_JSON_FILE),
     events: new CLIEventEmitter(),
     flags,
     hooks,

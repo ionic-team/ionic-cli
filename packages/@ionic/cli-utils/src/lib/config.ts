@@ -124,7 +124,7 @@ export abstract class BaseConfig<T> implements IBaseConfig<T> {
 }
 
 export const CONFIG_FILE = 'config.json';
-export const CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
+export const DEFAULT_CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
 
 export class Config extends BaseConfig<ConfigFile> implements IConfig {
   async provideDefaults(o: any): Promise<ConfigFile> {
