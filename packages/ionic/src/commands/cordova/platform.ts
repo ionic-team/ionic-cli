@@ -20,7 +20,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
     },
     {
       name: 'platform',
-      description: `The platform that you would like to add (e.g. ${chalk.green('ios')}, ${chalk.green('android')})`,
+      description: `The platform that you would like to add (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
     }
   ],
   options: [
@@ -59,7 +59,7 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
       const platform = await this.env.prompt({
         type: 'input',
         name: 'platform',
-        message: `What platform would you like to ${inputs[0]} ${chalk.green('ios')}, ${chalk.green('android')}:`,
+        message: `What platform would you like to ${inputs[0]} (${['android', 'ios'].map(v => chalk.green(v)).join(', ')}):`,
       });
 
       inputs[1] = platform.trim();

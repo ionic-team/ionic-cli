@@ -26,7 +26,7 @@ To pass additional options to the Cordova CLI, use the ${chalk.green('--')} sepa
   inputs: [
     {
       name: 'platform',
-      description: `The platform to build: ${chalk.green('ios')}, ${chalk.green('android')}`,
+      description: `The platform to build (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
     }
   ],
   options: [
@@ -112,7 +112,7 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
       const platform = await this.env.prompt({
         type: 'input',
         name: 'platform',
-        message: `What platform would you like to build: ${chalk.green('ios')}, ${chalk.green('android')}:`
+        message: `What platform would you like to build (${['android', 'ios'].map(v => chalk.green(v)).join(', ')}):`
       });
 
       inputs[0] = platform.trim();

@@ -20,7 +20,7 @@ Like running ${chalk.green('cordova compile')} directly, but provides friendly c
   inputs: [
     {
       name: 'platform',
-      description: `The platform to compile: ${chalk.green('ios')}, ${chalk.green('android')}`,
+      description: `The platform to compile (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
     },
   ],
   options: [
@@ -58,7 +58,7 @@ export class CompileCommand extends CordovaCommand implements CommandPreRun {
       const platform = await this.env.prompt({
         type: 'input',
         name: 'platform',
-        message: `What platform would you like to compile ${chalk.green('ios')}, ${chalk.green('android')}:`
+        message: `What platform would you like to compile (${['android', 'ios'].map(v => chalk.green(v)).join(', ')}):`
       });
 
       inputs[0] = platform.trim();
