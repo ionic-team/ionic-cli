@@ -98,6 +98,13 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       type: String,
       visible: false,
     },
+    {
+      name: 'devapp',
+      description: 'Do not publish devapp service',
+      type: Boolean,
+      default: true,
+      advanced: true,
+    },
   ],
 })
 export class ServeCommand extends Command {
@@ -105,35 +112,20 @@ export class ServeCommand extends Command {
     const { serve } = await import('@ionic/cli-utils/commands/serve');
 
     const serverDetails = await serve(this.env, inputs, options);
-
-    // If broadcast option then start udp server and broadcast info
-    if (options.broadcast) {
-      this.env.tasks.next(`Broadcasting server information`);
-      const appDetails = await this.env.project.load();
-
-      const message = JSON.stringify({
-        app_name: appDetails.name,
-        app_id: appDetails.app_id,
-        local_address: `${serverDetails.protocol || 'http'}://${serverDetails.externalAddress}:${serverDetails.port}`
-      });
-
-      const dgram = await import('dgram');
-      const server = dgram.createSocket('udp4');
-
-      server.on('listening', () => {
-        server.setBroadcast(true);
-        setInterval(() => {
-          try {
-            server.send(message, 41234, '255.255.255.255');
-          } catch (e) {
-            throw e;
-          }
-        }, 3000);
-      });
-
-      server.bind();
+    if (options['devapp']) {
+      const project = await this.env.project.load();
+      this.startDevApp(project.name, serverDetails.port);
     }
-
     this.env.tasks.end();
   }
+
+  async startDevApp(name: string, port: number) {
+    const { Publisher } = await import('@ionic/discover');
+    name = `${name}@${port}`;
+    this.env.log.info(`publishing devapp service (${name})`);
+    const service = new Publisher('devapp', name, port);
+    service.path = '/?devapp=true';
+    service.start();
+  }
 }
+
