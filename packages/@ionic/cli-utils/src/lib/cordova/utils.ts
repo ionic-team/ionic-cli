@@ -1,13 +1,11 @@
 import { CommandData, CommandLineInputs, CommandLineOptions, IonicEnvironment } from '../../definitions';
 import { filterOptionsByIntent, minimistOptionsToArray } from '../utils/command';
 
-export const CORDOVA_INTENT = 'CORDOVA';
-
 /**
  * Filter and gather arguments from command line to be passed to Cordova
  */
 export function filterArgumentsForCordova(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
-  const results = filterOptionsByIntent(metadata, options, CORDOVA_INTENT);
+  const results = filterOptionsByIntent(metadata, options, 'cordova');
   const args = minimistOptionsToArray(results, { useEquals: false, allowCamelCase: true });
   let unparsedCdvArgs: string[] = [];
   const indexOfSep = inputs.indexOf('--');

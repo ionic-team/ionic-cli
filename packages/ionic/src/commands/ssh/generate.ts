@@ -26,11 +26,13 @@ import { SSHBaseCommand } from './base';
       description: 'Number of bits in the key',
       aliases: ['b'],
       default: '2048',
+      advanced: true,
     },
     {
       name: 'annotation',
       description: 'Annotation (comment) in public key. Your Ionic email address will be used',
       aliases: ['C'],
+      advanced: true,
     }
   ],
 })

@@ -35,6 +35,12 @@ ${chalk.green('ionic start')} will create an app from a template. You can list a
   ],
   options: [
     {
+      name: 'list',
+      description: 'List starter templates available',
+      type: Boolean,
+      aliases: ['l'],
+    },
+    {
       name: 'type',
       description: `Type of project to start (e.g. ${chalk.green('ionic-angular')}, ${chalk.green('ionic1')})`,
       type: String,
@@ -46,12 +52,6 @@ ${chalk.green('ionic start')} will create an app from a template. You can list a
       type: String,
       aliases: ['n'],
     },
-    {
-      name: 'list',
-      description: 'List starter templates available',
-      type: Boolean,
-      aliases: ['l'],
-    },
     // {
     //   name: 'cordova',
     //   description: 'Include Cordova integration',
@@ -62,6 +62,7 @@ ${chalk.green('ionic start')} will create an app from a template. You can list a
       description: 'Do not install npm/yarn dependencies',
       type: Boolean,
       default: true,
+      advanced: true,
     },
     {
       name: 'git',
@@ -69,12 +70,14 @@ ${chalk.green('ionic start')} will create an app from a template. You can list a
       backends: [BACKEND_LEGACY],
       type: Boolean,
       default: true,
+      advanced: true,
     },
     {
       name: 'link',
       description: 'Do not ask to connect the app with the Ionic Dashboard',
       type: Boolean,
       default: true,
+      advanced: true,
     },
     {
       name: 'pro-id',

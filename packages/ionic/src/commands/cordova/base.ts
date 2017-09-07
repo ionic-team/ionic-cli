@@ -1,17 +1,17 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandPreRun, IShellRunOptions } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandOption, CommandPreRun, IShellRunOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { fsMkdir, pathExists } from '@ionic/cli-utils/lib/utils/fs';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
 
-export const CORDOVA_RUN_COMMAND_OPTIONS = [
+export const CORDOVA_RUN_COMMAND_OPTIONS: CommandOption[] = [
   {
     name: 'list',
     description: 'List all available Cordova targets',
     type: Boolean,
-    intent: 'CORDOVA',
+    intent: 'cordova',
   },
   {
     name: 'livereload',
@@ -30,88 +30,103 @@ export const CORDOVA_RUN_COMMAND_OPTIONS = [
     description: 'Print out dev server logs to terminal',
     type: Boolean,
     aliases: ['s'],
+    visible: false,
   },
   {
     name: 'address',
-    description: 'Use specific address for dev/live-reload server',
+    description: 'Use specific address for the dev server',
     default: BIND_ALL_ADDRESS,
+    advanced: true,
   },
   {
     name: 'port',
-    description: 'Use specific port for the dev server',
+    description: 'Use specific port for HTTP',
     default: String(DEFAULT_SERVER_PORT),
     aliases: ['p'],
+    advanced: true,
   },
   {
     name: 'livereload-port',
-    description: 'Use specific port for live-reload server',
+    description: 'Use specific port for live-reload',
     default: String(DEFAULT_LIVERELOAD_PORT),
     aliases: ['r'],
+    advanced: true,
   },
   {
     name: 'dev-logger-port',
-    description: 'Development Logger port',
-    default: String(DEFAULT_DEV_LOGGER_PORT)
+    description: 'Use specific port for dev server communication',
+    default: String(DEFAULT_DEV_LOGGER_PORT),
+    advanced: true,
   },
   {
     name: 'prod',
     description: 'Mark as a production build',
     type: Boolean,
+    intent: 'app-scripts',
   },
   {
     name: 'aot',
     description: 'Perform ahead-of-time compilation for this build',
     type: Boolean,
+    intent: 'app-scripts',
+    advanced: true,
   },
   {
     name: 'minifyjs',
     description: 'Minify JS for this build',
     type: Boolean,
+    intent: 'app-scripts',
+    advanced: true,
   },
   {
     name: 'minifycss',
     description: 'Minify CSS for this build',
     type: Boolean,
+    intent: 'app-scripts',
+    advanced: true,
   },
   {
     name: 'optimizejs',
     description: 'Perform JS optimizations for this build',
     type: Boolean,
+    intent: 'app-scripts',
+    advanced: true,
   },
   {
     name: 'debug',
     description: 'Mark as a debug build',
     type: Boolean,
-    intent: 'CORDOVA',
+    intent: 'cordova',
   },
   {
     name: 'release',
     description: 'Mark as a release build',
     type: Boolean,
-    intent: 'CORDOVA',
+    intent: 'cordova',
   },
   {
     name: 'device',
     description: 'Deploy Cordova build to a device',
     type: Boolean,
-    intent: 'CORDOVA',
+    intent: 'cordova',
   },
   {
     name: 'emulator',
     description: 'Deploy Cordova build to an emulator',
     type: Boolean,
-    intent: 'CORDOVA',
+    intent: 'cordova',
   },
   {
     name: 'target',
     description: `Deploy Cordova build to a device (use ${chalk.green('--list')} to see all)`,
     type: String,
-    intent: 'CORDOVA',
+    intent: 'cordova',
   },
   {
     name: 'buildConfig',
     description: 'Use the specified Cordova build configuration',
-    intent: 'CORDOVA',
+    intent: 'cordova',
+    advanced: true,
   },
 ];
 

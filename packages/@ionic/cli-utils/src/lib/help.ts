@@ -186,7 +186,7 @@ async function formatCommandUsage(env: IonicEnvironment, cmdMetadata: CommandDat
   };
 
   const options = await filterOptionsForHelp(env, cmdMetadata.options);
-  const usageLine = `${chalk.dim('$')} ${chalk.green('ionic ' + cmdMetadata.name + (typeof cmdMetadata.inputs === 'undefined' ? '' : ' ' + cmdMetadata.inputs.map(formatInput).join(' ')))} ${options.length > 0 ? chalk.green('[options]') : ''}`;
+  const usageLine = `${chalk.dim('$')} ${chalk.green('ionic ' + cmdMetadata.fullName + (typeof cmdMetadata.inputs === 'undefined' ? '' : ' ' + cmdMetadata.inputs.map(formatInput).join(' ')))} ${options.length > 0 ? chalk.green('[options]') : ''}`;
 
   return `
   ${chalk.bold('Usage')}:
@@ -267,12 +267,24 @@ async function formatCommandOptions(env: IonicEnvironment, options: CommandOptio
     return '';
   }
 
-  return `
+  const basicOptions = options.filter(o => !o.advanced);
+  const advancedOptions = options.filter(o => o.advanced);
+
+  const basicOptionsOutput = basicOptions.length > 0 ? `
   ${chalk.bold('Options')}:
 
-    ${options.map(formatOptionLine).join(`
+    ${basicOptions.map(formatOptionLine).join(`
     `)}
-  `;
+  ` : '';
+
+  const advancedOptionsOutput = advancedOptions.length > 0 ? `
+  ${chalk.bold('Advanced Options')}:
+
+    ${advancedOptions.map(formatOptionLine).join(`
+    `)}
+  ` : '';
+
+  return basicOptionsOutput + advancedOptionsOutput;
 }
 
 async function formatCommandExamples(env: IonicEnvironment, exampleCommands: string[] | undefined, commandName: string) {

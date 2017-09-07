@@ -1,4 +1,4 @@
-import { CORDOVA_INTENT, filterArgumentsForCordova } from '../utils';
+import { filterArgumentsForCordova } from '../utils';
 
 describe('@ionic/cli-utils', () => {
 
@@ -22,13 +22,13 @@ describe('@ionic/cli-utils', () => {
         {
           name: 'cdvopt1',
           description: '',
-          intent: CORDOVA_INTENT,
+          intent: 'cordova',
         },
         {
           name: 'cdvopt2',
           description: '',
           type: Boolean,
-          intent: CORDOVA_INTENT,
+          intent: 'cordova',
         },
       ]
     };

@@ -13,6 +13,7 @@ import { BROWSERS } from '@ionic/cli-utils/lib/serve';
       name: 'browser',
       description: `Specifies the browser to use (${BROWSERS.map(b => chalk.green(b)).join(', ')})`,
       aliases: ['w'],
+      advanced: true,
     },
   ],
 })

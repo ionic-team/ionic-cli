@@ -28,12 +28,13 @@ Like running ${chalk.green('cordova plugin')} directly, but provides friendly ch
       name: 'force',
       description: `Forve overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
       type: Boolean,
-      intent: 'CORDOVA',
+      intent: 'cordova',
+      advanced: true,
     },
     {
       name: 'variable',
       description: 'Specify plugin variables',
-      intent: 'CORDOVA',
+      intent: 'cordova',
     }
   ]
 })

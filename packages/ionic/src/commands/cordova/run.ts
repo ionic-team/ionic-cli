@@ -15,7 +15,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
 Just like with ${chalk.green('ionic cordova build')}, you can pass additional options to the Cordova CLI using the ${chalk.bold('--')} separator.
   `,
-  exampleCommands: ['', 'ios', 'ios -lcs', 'android -lcs --address localhost', 'android -lcs -- -d'],
+  exampleCommands: ['', 'ios', 'ios -lc', 'android -lc --address=localhost', 'android -lc -- -d'],
   inputs: [
     {
       name: 'platform',

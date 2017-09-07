@@ -46,6 +46,7 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
       name: 'force',
       description: 'Always overwrite existing values',
       type: Boolean,
+      advanced: true,
     },
   ],
   exampleCommands: ['name newAppName', 'name "\\"newAppName\\"" --json', 'watchPatterns "[]" --force', '-g yarn true'],

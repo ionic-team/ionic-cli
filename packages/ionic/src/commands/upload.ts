@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 
-import { BACKEND_LEGACY, CommandLineInput, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, CommandLineInput, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
@@ -30,40 +30,51 @@ From there, you can use Ionic View (${chalk.bold('https://view.ionic.io')}) to e
     {
       name: 'metadata',
       description: 'Set custom metadata JSON for the deploy',
+      advanced: true,
     },
     {
       name: 'prod',
       description: 'Build the application for production',
       type: Boolean,
+      intent: 'app-scripts',
     },
     {
       name: 'aot',
       description: `Perform ahead-of-time compilation for the upload's build`,
       type: Boolean,
+      intent: 'app-scripts',
+      advanced: true,
     },
     {
       name: 'minifyjs',
       description: `Minify JS for the upload's build`,
       type: Boolean,
+      intent: 'app-scripts',
+      advanced: true,
     },
     {
       name: 'minifycss',
       description: `Minify CSS for the upload's build`,
       type: Boolean,
+      intent: 'app-scripts',
+      advanced: true,
     },
     {
       name: 'optimizejs',
       description: `Perform JS optimizations for the upload's build`,
       type: Boolean,
+      intent: 'app-scripts',
+      advanced: true,
     },
     {
-      name: 'nobuild',
-      description: `Do not invoke a build for the upload's snapshot`,
+      name: 'build',
+      description: 'Do not invoke an Ionic build',
       type: Boolean,
+      default: true,
     },
   ],
 })
-export class UploadCommand extends Command {
+export class UploadCommand extends Command implements CommandPreRun {
   resolveNote(input: CommandLineInput) {
     if (typeof input !== 'string') {
       input = undefined;
@@ -90,6 +101,12 @@ export class UploadCommand extends Command {
     return input;
   }
 
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (options['nobuild']) {
+      options['build'] = false;
+    }
+  }
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
     const { upload } = await import('@ionic/cli-utils/lib/upload');
@@ -102,7 +119,7 @@ export class UploadCommand extends Command {
       await promptToLogin(this.env);
     }
 
-    if (!options['nobuild']) {
+    if (options['build']) {
       const { build } = await import('@ionic/cli-utils/commands/build');
       await build(this.env, inputs, options);
     }

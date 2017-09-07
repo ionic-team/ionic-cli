@@ -241,6 +241,7 @@ export interface CommandOption {
   private?: boolean;
   intent?: string;
   visible?: boolean;
+  advanced?: boolean;
 }
 
 export interface NormalizedCommandOption extends CommandOption {

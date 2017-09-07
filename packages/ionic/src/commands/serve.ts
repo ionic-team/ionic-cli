@@ -15,7 +15,7 @@ By default, ${chalk.green('ionic serve')} boots up a development server on all n
 
 Try the ${chalk.green('--lab')} option to see multiple platforms at once.
   `,
-  exampleCommands: ['-cs', '--lab -cs'],
+  exampleCommands: ['-c', '--lab -c'],
   options: [
     {
       name: 'consolelogs',
@@ -28,23 +28,33 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       description: 'Print dev server logs to Ionic CLI',
       type: Boolean,
       aliases: ['s'],
+      visible: false,
+    },
+    {
+      name: 'address',
+      description: 'Use specific address for the dev server',
+      default: BIND_ALL_ADDRESS,
+      advanced: true,
     },
     {
       name: 'port',
-      description: 'Dev server HTTP port',
+      description: 'Use specific port for HTTP',
       default: String(DEFAULT_SERVER_PORT),
       aliases: ['p'],
+      advanced: true,
     },
     {
       name: 'livereload-port',
-      description: 'Live Reload port',
+      description: 'Use specific port for live-reload',
       default: String(DEFAULT_LIVERELOAD_PORT),
       aliases: ['r'],
+      advanced: true,
     },
     {
       name: 'dev-logger-port',
-      description: 'Development Logger port',
-      default: String(DEFAULT_DEV_LOGGER_PORT)
+      description: 'Use specific port for dev server communication',
+      default: String(DEFAULT_DEV_LOGGER_PORT),
+      advanced: true,
     },
     {
       name: 'nobrowser',
@@ -53,31 +63,23 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       aliases: ['b'],
     },
     {
-      name: 'nolivereload',
-      description: 'Do not start live reload',
-      type: Boolean,
-      aliases: ['d'],
-    },
-    {
       name: 'noproxy',
       description: 'Do not add proxies',
       type: Boolean,
       aliases: ['x'],
-    },
-    {
-      name: 'address',
-      description: 'Network address for server',
-      default: BIND_ALL_ADDRESS,
+      advanced: true,
     },
     {
       name: 'browser',
       description: `Specifies the browser to use (${BROWSERS.map(b => chalk.green(b)).join(', ')})`,
       aliases: ['w'],
+      advanced: true,
     },
     {
       name: 'browseroption',
-      description: 'Specifies a path to open to (/#/tab/dash)',
+      description: `Specifies a path to open to (${chalk.green('/#/tab/dash')})`,
       aliases: ['o'],
+      advanced: true,
     },
     {
       name: 'lab',
@@ -87,7 +89,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
     },
     {
       name: 'platform',
-      description: 'Start serve with a specific platform (ios/android)',
+      description: `Start serve with a specific platform (${['android', 'ios'].map(t => chalk.green(t)).join(', ')})`,
       aliases: ['t'],
     },
     // {
