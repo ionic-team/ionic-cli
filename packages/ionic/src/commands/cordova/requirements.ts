@@ -9,7 +9,7 @@ import { CordovaCommand } from './base';
 @CommandMetadata({
   name: 'requirements',
   type: 'project',
-  description: '',
+  description: 'Checks and print out all the requirements for platforms',
   longDescription: `
 Like running ${chalk.green('cordova requirements')} directly, but provides friendly checks.
   `,
