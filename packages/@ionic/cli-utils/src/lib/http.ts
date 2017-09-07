@@ -21,7 +21,7 @@ import { fsReadFile } from './utils/fs';
 import { FatalException } from './errors';
 
 const FORMAT_ERROR_BODY_MAX_LENGTH = 1000;
-const CONTENT_TYPE_JSON = 'application/json';
+export const CONTENT_TYPE_JSON = 'application/json';
 
 export const ERROR_UNKNOWN_CONTENT_TYPE = 'UNKNOWN_CONTENT_TYPE';
 export const ERROR_UNKNOWN_RESPONSE_FORMAT = 'UNKNOWN_RESPONSE_FORMAT';
@@ -30,15 +30,21 @@ let CAS: string[] | undefined;
 let CERTS: string[] | undefined;
 let KEYS: string[] | undefined;
 
-export async function createRequest(config: IConfig, method: string, url: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
+export async function createRawRequest(method: string, url: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
   const superagent = await import('superagent');
+  const req = superagent(method, url);
+
+  return { req };
+}
+
+export async function createRequest(config: IConfig, method: string, url: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
   const c = await config.load();
   const [ proxy, ] = getGlobalProxy();
 
-  let req = superagent(method, url);
+  const { req } = await createRawRequest(method, url);
 
   if (proxy && req.proxy) {
-    req = req.proxy(proxy);
+    req.proxy(proxy);
   }
 
   if (c.ssl) {
@@ -67,15 +73,15 @@ export async function createRequest(config: IConfig, method: string, url: string
     }
 
     if (CAS.length > 0) {
-      req = req.ca(CAS);
+      req.ca(CAS);
     }
 
     if (CERTS.length > 0) {
-      req = req.cert(CERTS);
+      req.cert(CERTS);
     }
 
     if (KEYS.length > 0) {
-      req = req.key(KEYS);
+      req.key(KEYS);
     }
   }
 

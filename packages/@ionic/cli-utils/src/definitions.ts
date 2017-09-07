@@ -215,9 +215,12 @@ export interface DaemonFile {
 
 export interface IDaemon extends IBaseConfig<DaemonFile> {
   pidFilePath: string;
+  portFilePath: string;
   logFilePath: string;
   getPid(): Promise<number | undefined>;
   setPid(pid: number): Promise<void>;
+  getPort(): Promise<number | undefined>;
+  setPort(port: number): Promise<void>;
   populateDistTag(distTag: DistTag): void;
 }
 
@@ -328,7 +331,6 @@ export interface IShell {
 
 export interface ITelemetry {
   sendCommand(command: string, args: string[]): Promise<void>;
-  sendError(error: any, type: string): Promise<void>;
   resetToken(): Promise<void>;
 }
 

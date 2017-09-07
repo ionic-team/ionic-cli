@@ -2,6 +2,8 @@ import * as path from 'path';
 
 import * as chalk from 'chalk';
 
+import * as expressType from 'express';
+
 import { DaemonFile, DistTag, IonicEnvironment } from '../definitions';
 import { BaseConfig } from './config';
 import { fsOpen, fsReadFile, fsWriteFile } from './utils/fs';
@@ -14,12 +16,17 @@ const KNOWN_PACKAGES = [
 ];
 
 export const DAEMON_PID_FILE = 'daemon.pid';
+export const DAEMON_PORT_FILE = 'daemon.port';
 export const DAEMON_JSON_FILE = 'daemon.json';
 export const DAEMON_LOG_FILE = 'daemon.log';
 
 export class Daemon extends BaseConfig<DaemonFile> {
   get pidFilePath(): string {
     return path.join(this.directory, DAEMON_PID_FILE);
+  }
+
+  get portFilePath(): string {
+    return path.join(this.directory, DAEMON_PORT_FILE);
   }
 
   get logFilePath(): string {
@@ -39,6 +46,21 @@ export class Daemon extends BaseConfig<DaemonFile> {
 
   async setPid(pid: number): Promise<void> {
     await fsWriteFile(this.pidFilePath, String(pid), { encoding: 'utf8' });
+  }
+
+  async getPort(): Promise<number | undefined> {
+    try {
+      const f = await fsReadFile(this.portFilePath, { encoding: 'utf8' });
+      return Number(f);
+    } catch (e) {
+      if (e.code !== 'ENOENT') {
+        throw e;
+      }
+    }
+  }
+
+  async setPort(port: number): Promise<void> {
+    await fsWriteFile(this.portFilePath, String(port), { encoding: 'utf8' });
   }
 
   async provideDefaults(o: any): Promise<DaemonFile> {
@@ -145,4 +167,30 @@ export async function checkForDaemon(env: IonicEnvironment): Promise<number> {
   env.log.debug(`New daemon pid: ${chalk.bold(String(p.pid))}`);
 
   return p.pid;
+}
+
+export async function createCommServer(env: IonicEnvironment): Promise<expressType.Application> {
+  const [ express, bodyParser ] = await Promise.all([import('express'), import('body-parser')]);
+
+  const app = express();
+
+  app.use(bodyParser.json());
+
+  app.post('/events/command', async (req, res) => {
+    const { sendCommand } = await import('./telemetry');
+    const { command, args } = req.body;
+
+    if (typeof command !== 'string' || !args || typeof args.length !== 'number') {
+      return res.sendStatus(400);
+    }
+
+    res.sendStatus(204);
+
+    env.log.debug(() => `Received command event: ${chalk.bold(command)}`);
+
+    await env.config.load({ disk: true });
+    await sendCommand(env, { version: env.plugins.ionic.meta.version }, command, args);
+  });
+
+  return app;
 }

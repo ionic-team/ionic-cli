@@ -1,56 +1,43 @@
 import * as leekType from 'leek';
 
-import { IClient, IConfig, IProject, ISession, ITelemetry, RootPlugin } from '../definitions';
+import { IClient, IConfig, IDaemon, IProject, ISession, ITelemetry, IonicEnvironment, RootPlugin } from '../definitions';
 import { BACKEND_LEGACY, BACKEND_PRO } from './backends';
 import { generateUUID } from './utils/uuid';
 
 const GA_CODE = 'UA-44023830-30';
 
+let _gaTracker: leekType | undefined;
+
 export class Telemetry implements ITelemetry {
   client: IClient;
 
   protected config: IConfig;
+  protected daemon: IDaemon;
   protected plugin: RootPlugin;
   protected session: ISession;
   protected project: IProject;
 
-  protected gaTracker: leekType;
-
   constructor({
     config,
     client,
+    daemon,
     session,
     plugin,
     project
   }: {
     config: IConfig;
     client: IClient;
+    daemon: IDaemon;
     session: ISession;
     plugin: RootPlugin;
     project: IProject;
   }) {
-    this.config = config;
-    this.plugin = plugin;
     this.client = client;
-    this.session = session;
+    this.config = config;
+    this.daemon = daemon;
+    this.plugin = plugin;
     this.project = project;
-  }
-
-  protected async setupGATracker() {
-    const Leek = await import('leek');
-    const config = await this.config.load();
-
-    if (!config.tokens.telemetry) {
-      config.tokens.telemetry = generateUUID();
-    }
-
-    this.gaTracker = new Leek({
-      name: config.tokens.telemetry,
-      trackingCode: GA_CODE,
-      globalName: 'ionic',
-      version: this.plugin.meta.version,
-      silent: config.telemetry !== true,
-    });
+    this.session = session;
   }
 
   async resetToken() {
@@ -59,76 +46,114 @@ export class Telemetry implements ITelemetry {
   }
 
   async sendCommand(command: string, args: string[]): Promise<void> {
-    const { Client } = await import('./http');
+    const { CONTENT_TYPE_JSON, createRawRequest } = await import('./http');
 
-    if (!this.gaTracker) {
-      await this.setupGATracker();
+    const port = await this.daemon.getPort();
+
+    if (port) {
+      const { req } = await createRawRequest('POST', `http://localhost:${port}/events/command`);
+      req
+        .set('Content-Type', CONTENT_TYPE_JSON)
+        .set('Accept', CONTENT_TYPE_JSON)
+        .send({ command, args });
+
+      try {
+        await req;
+      } catch (e) {
+        // TODO
+      }
+    } else {
+      await sendCommand({ config: this.config, project: this.project, session: this.session }, { version: this.plugin.meta.version }, command, args);
+    }
+  }
+}
+
+async function getLeek(env: Pick<IonicEnvironment, 'config'>, meta: { version: string }): Promise<leekType> {
+  if (!_gaTracker) {
+    const Leek = await import('leek');
+    const config = await env.config.load();
+
+    if (!config.tokens.telemetry) {
+      config.tokens.telemetry = generateUUID();
     }
 
-    const messageList: string[] = [];
-    const name = 'command execution';
-    const prettyArgs = args.map(a => a.includes(' ') ? `"${a}"` : a);
-    const message = messageList.concat([command], prettyArgs).join(' ');
-
-    await Promise.all([
-      (async () => {
-        await this.gaTracker.track({ name, message });
-      })(),
-      (async () => {
-        const config = await this.config.load();
-        const client = new Client(this.config);
-
-        let appId: string | undefined;
-
-        if (this.project.directory) {
-          const project = await this.project.load();
-          appId = project.app_id;
-        }
-
-        const now = new Date().toISOString();
-        const isLoggedIn = await this.session.isLoggedIn();
-
-        const { req } = await client.make('POST', `${config.urls.api !== 'https://api.ionic.io' ? 'https://api.ionicjs.com' : ''}/events/metrics`); // TODO: full URL is temporary
-
-        if (isLoggedIn && config.backend === BACKEND_PRO) {
-          const token = await this.session.getUserToken();
-          req.set('Authorization', `Bearer ${token}`);
-        }
-
-        req.send({
-          'metrics': [
-            {
-              'name': 'cli_command_metrics',
-              'timestamp': now,
-              'session_id': config.tokens.telemetry,
-              'source': 'cli',
-              'value': {
-                'command': command,
-                'arguments': prettyArgs.join(' '),
-                'version': this.plugin.meta.version,
-                'node_version': process.version,
-                'app_id': appId,
-                'user_id': config.backend === BACKEND_LEGACY ? config.user.id : undefined,
-                'backend': config.backend,
-              },
-            },
-          ],
-          'sent_at': now,
-        });
-
-        try {
-          await client.do(req);
-        } catch (e) {
-          // TODO
-        }
-      })(),
-    ]);
-  }
-
-  async sendError(error: any, type: string): Promise<void> {
-    await this.gaTracker.trackError({
-      description: error.message + ' ' + error.stack,
-      isFatal: true,
+    _gaTracker = new Leek({
+      name: config.tokens.telemetry,
+      trackingCode: GA_CODE,
+      globalName: 'ionic',
+      version: meta.version,
+      silent: config.telemetry !== true,
     });
   }
+
+  return _gaTracker;
+}
+
+export async function sendCommand(env: Pick<IonicEnvironment, 'config' | 'project' | 'session'>, meta: { version: string; }, command: string, args: string[]) {
+  const messageList: string[] = [];
+  const name = 'command execution';
+  const prettyArgs = args.map(a => a.includes(' ') ? `"${a}"` : a);
+  const message = messageList.concat([command], prettyArgs).join(' ');
+
+  await Promise.all([
+    (async () => {
+      const leek = await getLeek(env, meta);
+      try {
+        await leek.track({ name, message });
+      } catch (e) {
+        // TODO
+      }
+    })(),
+    (async () => {
+      const { Client } = await import('./http');
+
+      const config = await env.config.load();
+      const client = new Client(env.config);
+
+      let appId: string | undefined;
+
+      if (env.project.directory) {
+        const project = await env.project.load();
+        appId = project.app_id;
+      }
+
+      const now = new Date().toISOString();
+      const isLoggedIn = await env.session.isLoggedIn();
+
+      // const { req } = await client.make('POST', `${config.urls.api !== 'https://api.ionic.io' ? 'https://api.ionicjs.com' : ''}/events/metrics`); // TODO: full URL is temporary
+      const { req } = await client.make('POST', `http://localhost:7000/events/metrics`); // TODO: full URL is temporary
+
+      if (isLoggedIn && config.backend === BACKEND_PRO) {
+        const token = await env.session.getUserToken();
+        req.set('Authorization', `Bearer ${token}`);
+      }
+
+      req.send({
+        'metrics': [
+          {
+            'name': 'cli_command_metrics',
+            'timestamp': now,
+            'session_id': config.tokens.telemetry,
+            'source': 'cli',
+            'value': {
+              'command': command,
+              'arguments': prettyArgs.join(' '),
+              'version': meta.version,
+              'node_version': process.version,
+              'app_id': appId,
+              'user_id': config.backend === BACKEND_LEGACY ? config.user.id : undefined,
+              'backend': config.backend,
+            },
+          },
+        ],
+        'sent_at': now,
+      });
+
+      try {
+        await client.do(req);
+      } catch (e) {
+        // TODO
+      }
+    })(),
+  ]);
 }

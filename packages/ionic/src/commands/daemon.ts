@@ -25,8 +25,9 @@ import { fsUnlink } from '@ionic/cli-utils/lib/utils/fs';
 export class DaemonCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
-    const { processRunning } = await import('@ionic/cli-utils/lib/daemon');
+    const { createCommServer, processRunning } = await import('@ionic/cli-utils/lib/daemon');
     const { pkgLatestVersion } = await import('@ionic/cli-utils/lib/utils/npm');
+    const { findClosestOpenPort } = await import('@ionic/cli-utils/lib/utils/network');
     const { determineDistTag, versionNeedsUpdating } = await import('@ionic/cli-utils/lib/plugins');
 
     const updateInterval = Number(options.interval);
@@ -85,6 +86,16 @@ export class DaemonCommand extends Command {
     this.env.log.info(`Writing ${chalk.bold(String(process.pid))} to daemon pid file (${chalk.bold(prettyPath(this.env.daemon.pidFilePath))}).`);
     await this.env.daemon.setPid(process.pid);
 
+    const commServerHost = 'localhost';
+    const commServerPort = await findClosestOpenPort(53818, commServerHost);
+    this.env.log.info(`Spinning up communication server on port ${chalk.bold(String(commServerPort))}.`);
+    const commServer = await createCommServer(this.env);
+
+    commServer.listen(commServerPort, commServerHost);
+
+    this.env.log.info(`Writing ${chalk.bold(String(commServerPort))} to daemon port file (${chalk.bold(prettyPath(this.env.daemon.portFilePath))}).`);
+    await this.env.daemon.setPort(commServerPort);
+
     const updateFn = async () => {
       const config = await this.env.config.load({ disk: true });
       const f = await this.env.daemon.getPid();
@@ -121,9 +132,18 @@ export class DaemonCommand extends Command {
     };
 
     const cleanup = () => {
+      const fs = require('fs');
+
       try {
-        const fs = require('fs');
         fs.unlinkSync(this.env.daemon.pidFilePath);
+      } catch (e) {
+        if (e.code !== 'ENOENT') {
+          throw e;
+        }
+      }
+
+      try {
+        fs.unlinkSync(this.env.daemon.portFilePath);
       } catch (e) {
         if (e.code !== 'ENOENT') {
           throw e;
