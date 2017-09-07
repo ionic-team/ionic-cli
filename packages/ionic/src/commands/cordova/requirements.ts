@@ -2,32 +2,26 @@ import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { isExitCodeException } from '@ionic/cli-utils/guards';
 
 import { CordovaCommand } from './base';
 
 @CommandMetadata({
-  name: 'prepare',
+  name: 'requirements',
   type: 'project',
-  description: 'Copies assets to Cordova platforms, preparing them for native builds',
+  description: '',
   longDescription: `
-${chalk.green('ionic cordova prepare')} will do the following:
-- Copy the ${chalk.bold('www/')} directory into your Cordova platforms.
-- Transform ${chalk.bold('config.xml')} into platform-specific manifest files.
-- Copy icons and splash screens from ${chalk.bold('resources/')} to into your Cordova platforms.
-- Copy plugin files into specified platforms.
-
-You may wish to use ${chalk.green('ionic cordova prepare')} if you run your project with Android Studio or Xcode.
+Like running ${chalk.green('cordova requirements')} directly, but provides friendly checks.
   `,
-  exampleCommands: ['', 'ios', 'android'],
   inputs: [
     {
       name: 'platform',
-      description: `The platform you would like to prepare (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+      description: `The platform for which you would like to gather requirements (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
       required: false,
     },
   ]
 })
-export class PrepareCommand extends CordovaCommand implements CommandPreRun {
+export class RequirementsCommand extends CordovaCommand implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.preRunChecks();
   }
@@ -55,21 +49,10 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
           await installPlatform(this.env, platform);
         } else {
           throw this.exit(
-            `Can't prepare for ${chalk.green(platform)} unless the platform is installed.\n` +
-            `Did you mean just ${chalk.green('ionic cordova prepare')}?\n`
+            `Can't gather requirements for ${chalk.green(platform)} unless the platform is installed.\n` +
+            `Did you mean just ${chalk.green('ionic cordova requirements')}?\n`
           );
         }
-      }
-    } else {
-      const platformEngines = await conf.getPlatformEngines();
-
-      if (platformEngines.length === 0) {
-        this.env.log.warn(
-          `No Cordova platforms listed in ${chalk.bold('config.xml')}. Nothing to prepare.\n` +
-          `You can save your installed platforms to ${chalk.bold('config.xml')} with the ${chalk.green('ionic cordova platform save')} command.`
-        );
-
-        return 0;
       }
     }
 
@@ -77,6 +60,14 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
     await conf.resetContentSrc();
     await conf.save();
 
-    await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });
+    try {
+      await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true, showError: false, fatalOnError: false });
+    } catch (e) {
+      if (e.fatal || !isExitCodeException(e)) {
+        throw e;
+      }
+
+      return 1;
+    }
   }
 }

@@ -18,6 +18,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 * Added SSL configuration options for CLI HTTP requests. See
   [README.md#ssl-configuration](https://github.com/ionic-team/ionic-cli/blob/master/README.md#ssl-configuration).
 * Added Cordova arguments to `ionic cordova compile`.
+* Added `ionic cordova requirements` command.
 * Fixed issue with `ionic serve` requiring an external network.
 * Fixed `--consolelogs` not working for Ionic 1.
 * Fixed issue with `ionic cordova platform add` not using custom icon and

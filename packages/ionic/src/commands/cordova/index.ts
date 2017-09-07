@@ -13,5 +13,6 @@ export class CordovaNamespace extends Namespace {
     ['prepare', async () => { const { PrepareCommand } = await import('./prepare'); return new PrepareCommand(); }],
     ['resources', async () => { const { ResourcesCommand } = await import('./resources'); return new ResourcesCommand(); }],
     ['run', async () => { const { RunCommand } = await import('./run'); return new RunCommand(); }],
+    ['requirements', async () => { const { RequirementsCommand } = await import('./requirements'); return new RequirementsCommand(); }],
   ]);
 }
