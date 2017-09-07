@@ -8,8 +8,8 @@ import {
   IonicEnvironment,
 } from '../definitions';
 
-import { isCommandPreRun } from '../guards';
 import { FatalException } from './errors';
+import { isCommandPreRun } from '../guards';
 import { validators } from './validators';
 import { minimistOptionsToArray, validateInputs } from './utils/command';
 
@@ -33,7 +33,7 @@ export class Command implements ICommand {
     const r = await fn();
 
     if (typeof r === 'number' && (r > 0 || (r === 0 && opts.exit0))) {
-      throw this.exit('', r);
+      throw new FatalException('', r);
     }
   }
 
@@ -101,10 +101,6 @@ export class Command implements ICommand {
     })();
 
     await Promise.all([runPromise, telemetryPromise]);
-  }
-
-  exit(msg: string, code: number = 1): FatalException {
-    return new FatalException(msg, code);
   }
 
   async getCleanInputsForTelemetry(inputs: CommandLineInputs, options: CommandLineOptions): Promise<string[]> {

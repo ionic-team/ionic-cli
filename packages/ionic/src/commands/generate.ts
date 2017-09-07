@@ -3,6 +3,7 @@ import * as chalk from 'chalk';
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { contains, validators } from '@ionic/cli-utils/lib/validators';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 const TYPE_CHOICES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
 
@@ -55,7 +56,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
     const project = await this.env.project.load();
 
     if (project.type !== 'ionic-angular') {
-      throw this.exit('Generators are only supported in Ionic Angular projects.');
+      throw new FatalException('Generators are only supported in Ionic Angular projects.');
     }
 
     if (!inputs[0]) {

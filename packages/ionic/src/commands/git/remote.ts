@@ -4,6 +4,7 @@ import * as chalk from 'chalk';
 
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { pathExists } from '@ionic/cli-utils/lib/utils/fs';
 
 @CommandMetadata({
@@ -22,7 +23,7 @@ export class GitRemoteCommand extends Command {
     const app = await appLoader.load(appId);
 
     if (!app.repo_url) {
-      throw this.exit(`Missing ${chalk.bold('repo_url')} property in app.`);
+      throw new FatalException(`Missing ${chalk.bold('repo_url')} property in app.`);
     }
 
     if (!(await pathExists(path.join(this.env.project.directory, '.git')))) {

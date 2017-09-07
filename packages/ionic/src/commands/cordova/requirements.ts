@@ -2,6 +2,7 @@ import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { isExitCodeException } from '@ionic/cli-utils/guards';
 
 import { CordovaCommand } from './base';
@@ -48,7 +49,7 @@ export class RequirementsCommand extends CordovaCommand implements CommandPreRun
         if (confirm) {
           await installPlatform(this.env, platform);
         } else {
-          throw this.exit(
+          throw new FatalException(
             `Can't gather requirements for ${chalk.green(platform)} unless the platform is installed.\n` +
             `Did you mean just ${chalk.green('ionic cordova requirements')}?\n`
           );

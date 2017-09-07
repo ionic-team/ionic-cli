@@ -3,6 +3,7 @@ import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandOption, CommandPreRun, IShellRunOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { fsMkdir, pathExists } from '@ionic/cli-utils/lib/utils/fs';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
 
@@ -159,7 +160,7 @@ export class CordovaCommand extends Command {
     } catch (e) {
       if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
         const cdvInstallArgs = await pkgManagerArgs(this.env, { pkg: 'cordova', global: true });
-        throw this.exit(
+        throw new FatalException(
           `The Cordova CLI was not found on your PATH. Please install Cordova globally:\n\n` +
           `${chalk.green(cdvInstallArgs.join(' '))}\n`
         );

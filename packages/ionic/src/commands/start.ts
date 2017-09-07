@@ -4,6 +4,7 @@ import * as chalk from 'chalk';
 
 import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun, StarterTemplate } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { fsMkdir, pathExists } from '@ionic/cli-utils/lib/utils/fs';
 import { PROJECT_FILE, Project } from '@ionic/cli-utils/lib/project';
 
@@ -138,7 +139,7 @@ export class StartCommand extends Command implements CommandPreRun {
     if (options['v1'] || options['v2']) {
       const type = options['v1'] ? 'ionic1' : 'ionic-angular';
 
-      throw this.exit(
+      throw new FatalException(
         `Sorry! The ${chalk.green('--v1')} and ${chalk.green('--v2')} flags have been removed.\n` +
         `Use the ${chalk.green('--type')} option. (${chalk.green('ionic start --help')})\n\n` +
         `For ${chalk.bold(this.env.project.formatType(type))} projects, try ${chalk.green('ionic start ' + (inputs.length > 0 ? inputs.join(' ') + ' ' : '') + '--type=' + type)}`
@@ -224,13 +225,13 @@ export class StartCommand extends Command implements CommandPreRun {
     const config = await this.env.config.load();
 
     if (!isProjectNameValid(projectName)) {
-      throw this.exit(`Please name your Ionic project something meaningful other than ${chalk.green(projectName)}`);
+      throw new FatalException(`Please name your Ionic project something meaningful other than ${chalk.green(projectName)}`);
     }
 
     let starterType = STARTER_TYPES.find(type => type['id'] === options['type']);
 
     if (!starterType) {
-      throw this.exit(`Unable to find starter type for ${chalk.green(String(options['type']))}.`);
+      throw new FatalException(`Unable to find starter type for ${chalk.green(String(options['type']))}.`);
     }
 
     // if (!options['cordova']) {
@@ -260,13 +261,13 @@ export class StartCommand extends Command implements CommandPreRun {
     //     if (!cmdInstalled) {
     //       if (dep === 'cordova') {
     //         const cdvInstallArgs = await pkgManagerArgs(this.env, { pkg: 'cordova', global: true });
-    //         throw this.exit(
+    //         throw new FatalException(
     //           `Cordova CLI not found on your PATH. Please install Cordova globally (you may need ${chalk.green('sudo')}):\n\n` +
     //           `${chalk.green(cdvInstallArgs.join(' '))}\n\n` +
     //           `If that doesn't work, see the installation docs: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/cli/#installing-the-cordova-cli')}`
     //         );
     //       } else {
-    //         throw this.exit(`Sorry, ${chalk.green(dep)} is a global dependency, but it was not found on your PATH.`);
+    //         throw new FatalException(`Sorry, ${chalk.green(dep)} is a global dependency, but it was not found on your PATH.`);
     //       }
     //     }
     //   }
@@ -333,7 +334,7 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     if (!starterTemplate) {
-      throw `Unable to find starter template for ${starterTemplateName}`;
+      throw new FatalException(`Unable to find starter template for ${starterTemplateName}`);
     }
 
     const wrapperBranchPath = starterType.baseArchive.replace('<BRANCH_NAME>', wrapperBranchName);
@@ -408,7 +409,7 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     if (config.backend === BACKEND_PRO && !gitIntegration) {
-      throw this.exit(
+      throw new FatalException(
         `Git CLI not found on your PATH. It must be installed to connect this app to Ionic.\n` +
         `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`
       );

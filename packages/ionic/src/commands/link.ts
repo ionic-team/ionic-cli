@@ -2,6 +2,7 @@ import * as chalk from 'chalk';
 
 import { AppDetails, BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 const CHOICE_CREATE_NEW_APP = 'createNewApp';
 const CHOICE_NEVERMIND = 'nevermind';
@@ -50,7 +51,7 @@ export class LinkCommand extends Command implements CommandPreRun {
     const { create } = options;
 
     if (inputs[0] && create) {
-      throw this.exit(`Sorry--cannot use both ${chalk.green('app_id')} and ${chalk.green('--create')}. You must either link an existing app or create a new one.`);
+      throw new FatalException(`Sorry--cannot use both ${chalk.green('app_id')} and ${chalk.green('--create')}. You must either link an existing app or create a new one.`);
     }
 
     let proAppId = <string>options['pro-id'] || '';

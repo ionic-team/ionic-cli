@@ -3,7 +3,7 @@ import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandPreRun, KnownPlatform, ResourcesConfig, ResourcesImageConfig, SourceImage } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
-
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { cacheFileChecksum, pathExists } from '@ionic/cli-utils/lib/utils/fs';
 
 /*
@@ -129,7 +129,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
         platformEngines = await conf.getPlatformEngines();
         this.env.log.debug(() => `platformEngines=${platformEngines}`);
       } else {
-        throw this.exit(`Platform ${chalk.green(platform)} not installed.`);
+        throw new FatalException(`Platform ${chalk.green(platform)} not installed.`);
       }
     }
 
@@ -137,7 +137,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     this.env.log.debug(() => `buildPlatforms=${buildPlatforms.join(', ')}`);
     if (buildPlatforms.length === 0) {
       this.env.tasks.end();
-      throw this.exit(`No platforms detected. Please run: ${chalk.green('ionic cordova platform add')}`);
+      throw new FatalException(`No platforms detected. Please run: ${chalk.green('ionic cordova platform add')}`);
     }
     this.env.log.debug(() => `${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);
 
