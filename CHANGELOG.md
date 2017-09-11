@@ -243,6 +243,14 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 #### Upgrading from CLI v2
 
+As a reminder, Ionic Cloud users must migrate their apps to
+[Ionic Pro](https://dashboard.ionicjs.com/apps) to continue using our services.
+The changes below often reference Ionic Cloud, which is deprecated. See the
+[Cloud Migration guide](https://ionicframework.com/docs/pro/migration/) for
+details and
+[README.md#ionic-pro](https://github.com/ionic-team/ionic-cli#ionic-pro) to see
+how the CLI integrates with Ionic Pro.
+
 ##### Required Changes
 
 * If you're using Ionic Deploy, you'll need to update
@@ -265,7 +273,9 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   [Dashboard](https://apps.ionic.io/).
 * `push`: Please manage push credentials (through security profiles) in the
   [Dashboard](https://apps.ionic.io/).
-* `config`: Please manually edit the `ionic.config.json` file.
+* ~~`config`: Please manually edit the `ionic.config.json` file.~~ `ionic
+  config` is back! Please refer to `ionic config get --help` and `ionic config
+  set --help`.
 * `service`: Please migrate your app to use the [Ionic Cloud
   Client](https://github.com/ionic-team/ionic-cloud).
 * `state`: The plugins and platforms can [be managed entirely by
