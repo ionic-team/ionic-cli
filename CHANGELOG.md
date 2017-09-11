@@ -10,11 +10,13 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 <a name="3.10.0"></a>
 ### 3.10.0 (2017-09-11)
 
-* New CLI installs will default to use Ionic Pro. Use `--pro-id` with `ionic
-  start` or `ionic link` to switch your CLI to Ionic Pro. You can switch
-  between backends with `ionic config set -g backend pro` (Ionic Pro) and
-  `ionic config set -g backend legacy` (Ionic Cloud).
-* Added app-scripts arguments (such as `--prod`) to `ionic upload`.
+* New CLI installs will default to use Ionic Pro. For existing CLI
+  installations, use `--pro-id` with `ionic start` or `ionic link` to switch
+  your CLI to Ionic Pro. You can switch between backends with `ionic config set
+  -g backend pro` (Ionic Pro) and `ionic config set -g backend legacy` (Ionic
+  Cloud).
+* Added app-scripts arguments (such as `--prod`) to `ionic upload`. (:memo:
+  Note: `ionic upload` is for Ionic Cloud, aka the "legacy" backend.)
 * Added SSL configuration options for CLI HTTP requests. See
   [README.md#ssl-configuration](https://github.com/ionic-team/ionic-cli/blob/master/README.md#ssl-configuration).
 * Added Cordova arguments to `ionic cordova compile`.
