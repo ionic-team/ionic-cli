@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import * as chalk from 'chalk';
 
-import { IonicEnvironment, IProject } from '../../definitions';
+import { IProject, IonicEnvironment } from '../../definitions';
 
 export async function getIonicAngularVersion(env: IonicEnvironment, project: IProject): Promise<string | undefined> {
   const { readPackageJsonFile } = await import('../utils/npm');

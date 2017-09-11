@@ -1,6 +1,6 @@
 import * as leekType from 'leek';
 
-import { IProject, ITelemetry, IonicEnvironment, InfoHookItem } from '../definitions';
+import { IProject, ITelemetry, InfoHookItem, IonicEnvironment } from '../definitions';
 import { BACKEND_LEGACY, BACKEND_PRO } from './backends';
 import { generateUUID } from './utils/uuid';
 
