@@ -104,6 +104,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       type: Boolean,
       default: true,
       advanced: true,
+      visible: false,
     },
   ],
 })
@@ -119,7 +120,7 @@ export class ServeCommand extends Command {
       const port = serverDetails.port;
       const name = `${project.name}@${port}`;
       await this.startDevApp(name, port);
-      this.env.log.info(`Published DevApp service (${chalk.bold(name)})`);
+      // this.env.log.info(`Published DevApp service (${chalk.bold(name)})`);
     }
 
     this.env.tasks.end();
@@ -130,15 +131,14 @@ export class ServeCommand extends Command {
     const service = new Publisher('devapp', name, port);
     service.path = '/?devapp=true';
 
-    service.on('error', err => {
-      this.env.log.error(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
-    });
+    // service.on('error', err => {
+    //   this.env.log.error(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
+    // });
 
     try {
       await service.start();
     } catch (e) {
-      this.env.log.error(`Could not publish DevApp service: ${String(e.stack ? e.stack : e)}`);
+      // this.env.log.error(`Could not publish DevApp service: ${String(e.stack ? e.stack : e)}`);
     }
   }
 }
-
