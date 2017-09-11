@@ -51,6 +51,7 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
 
     if (!isCommand(cmdOrNamespace)) {
       const { showHelp } = await import('@ionic/cli-utils/lib/help');
+      await env.telemetry.sendCommand('ionic help', argv._);
       return showHelp(env, argv._);
     }
 

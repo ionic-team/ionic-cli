@@ -171,6 +171,7 @@ export async function checkForDaemon(env: IonicEnvironment): Promise<number> {
 
 export async function createCommServer(env: IonicEnvironment): Promise<expressType.Application> {
   const [ express, bodyParser ] = await Promise.all([import('express'), import('body-parser')]);
+  const { PROJECT_FILE, Project } = await import('../lib/project');
 
   const app = express();
 
@@ -189,7 +190,7 @@ export async function createCommServer(env: IonicEnvironment): Promise<expressTy
     env.log.debug(() => `Received command event: ${chalk.bold(command)}`);
 
     await env.config.load({ disk: true });
-    await sendCommand(env, { version: env.plugins.ionic.meta.version }, command, args);
+    await sendCommand(env, new Project(req.body.projectDir, PROJECT_FILE), command, args);
   });
 
   return app;

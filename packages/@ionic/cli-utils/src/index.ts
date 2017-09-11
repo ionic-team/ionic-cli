@@ -135,7 +135,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   const session = await getSession(config, project, client);
   const hooks = new HookEngine();
   const daemon = new Daemon(env['IONIC_DAEMON_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, DAEMON_JSON_FILE);
-  const telemetry = new Telemetry({ config, client, daemon, plugin, project, session });
+  const telemetry = new Telemetry();
   const shell = new Shell(tasks, log);
 
   registerHooks(hooks);
@@ -166,6 +166,8 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     tasks,
     telemetry,
   });
+
+  telemetry.env = ienv; // TODO: proper DI
 
   await ienv.open();
 

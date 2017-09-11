@@ -123,7 +123,7 @@ export function registerHooks(hooks: IHookEngine) {
     }
   });
 
-  hooks.register(name, 'info', async ({ env }) => {
+  hooks.register(name, 'info', async ({ env, project }) => {
     const osName = await import('os-name');
     const os = osName();
     const node = process.version;
@@ -139,21 +139,21 @@ export function registerHooks(hooks: IHookEngine) {
       { type: 'system', name: 'OS', version: os },
     ];
 
-    const project = env.project.directory ? await env.project.load() : undefined;
+    const projectFile = project.directory ? await project.load() : undefined;
 
-    if (project) {
-      if (project.type === 'ionic1') {
+    if (projectFile) {
+      if (projectFile.type === 'ionic1') {
         const { getIonic1Version } = await import('@ionic/cli-utils/lib/ionic1/utils');
         const ionic1Version = await getIonic1Version(env);
         info.push({ type: 'local-packages', name: 'Ionic Framework', version: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown' });
-      } else if (project.type === 'ionic-angular') {
+      } else if (projectFile.type === 'ionic-angular') {
         const { getIonicAngularVersion, getAppScriptsVersion } = await import('@ionic/cli-utils/lib/ionic-angular/utils');
-        const [ ionicAngularVersion, appScriptsVersion ] = await Promise.all([getIonicAngularVersion(env), getAppScriptsVersion(env)]);
+        const [ ionicAngularVersion, appScriptsVersion ] = await Promise.all([getIonicAngularVersion(env, project), getAppScriptsVersion(env, project)]);
         info.push({ type: 'local-packages', name: 'Ionic Framework', version: ionicAngularVersion ? `ionic-angular ${ionicAngularVersion}` : 'not installed' });
         info.push({ type: 'local-packages', name: '@ionic/app-scripts', version: appScriptsVersion ? appScriptsVersion : 'not installed' });
       }
 
-      if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
+      if (projectFile.integrations.cordova && projectFile.integrations.cordova.enabled !== false) {
         const { getAndroidSdkToolsVersion } = await import('@ionic/cli-utils/lib/android');
         const { getCordovaCLIVersion, getCordovaPlatformVersions } = await import('@ionic/cli-utils/lib/cordova/utils');
 
@@ -193,7 +193,7 @@ export function registerHooks(hooks: IHookEngine) {
         }
       }
 
-      if (project.integrations.gulp && project.integrations.gulp.enabled !== false) {
+      if (projectFile.integrations.gulp && projectFile.integrations.gulp.enabled !== false) {
         const { getGulpVersion } = await import('@ionic/cli-utils/lib/gulp');
         const gulpVersion = await getGulpVersion();
         info.push({ type: 'global-packages', name: 'Gulp CLI', version: gulpVersion || 'not installed globally' });
