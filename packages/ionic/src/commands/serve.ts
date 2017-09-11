@@ -92,6 +92,13 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       description: `Start serve with a specific platform (${['android', 'ios'].map(t => chalk.green(t)).join(', ')})`,
       aliases: ['t'],
     },
+    {
+      name: 'devapp',
+      description: 'Do not publish devapp service',
+      type: Boolean,
+      default: true,
+      advanced: true,
+    }
     // {
     //   name: 'auth',
     //   description: 'HTTP Basic Auth password to secure the server on your local network',
@@ -103,36 +110,34 @@ export class ServeCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     const { serve } = await import('@ionic/cli-utils/commands/serve');
 
+    const project = await this.env.project.load();
+
     const serverDetails = await serve(this.env, inputs, options);
 
-    // If broadcast option then start udp server and broadcast info
-    if (options.broadcast) {
-      this.env.tasks.next(`Broadcasting server information`);
-      const appDetails = await this.env.project.load();
-
-      const message = JSON.stringify({
-        app_name: appDetails.name,
-        app_id: appDetails.app_id,
-        local_address: `${serverDetails.protocol || 'http'}://${serverDetails.externalAddress}:${serverDetails.port}`
-      });
-
-      const dgram = await import('dgram');
-      const server = dgram.createSocket('udp4');
-
-      server.on('listening', () => {
-        server.setBroadcast(true);
-        setInterval(() => {
-          try {
-            server.send(message, 41234, '255.255.255.255');
-          } catch (e) {
-            throw e;
-          }
-        }, 3000);
-      });
-
-      server.bind();
+    if (options['devapp']) {
+      const port = serverDetails.port;
+      const name = `${project.name}@${port}`;
+      await this.startDevApp(name, port);
+      this.env.log.info(`Published DevApp service (${chalk.bold(name)})`);
     }
 
     this.env.tasks.end();
   }
+
+  async startDevApp(name: string, port: number) {
+    const { Publisher } = await import('@ionic/discover');
+    const service = new Publisher('devapp', name, port);
+    service.path = '/?devapp=true';
+
+    service.on('error', err => {
+      this.env.log.error(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
+    });
+
+    try {
+      await service.start();
+    } catch (e) {
+      this.env.log.error(`Could not publish DevApp service: ${String(e.stack ? e.stack : e)}`);
+    }
+  }
 }
+
