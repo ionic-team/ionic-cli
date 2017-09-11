@@ -120,8 +120,7 @@ export async function sendCommand(env: Pick<IonicEnvironment, 'config' | 'projec
       const now = new Date().toISOString();
       const isLoggedIn = await env.session.isLoggedIn();
 
-      // const { req } = await client.make('POST', `${config.urls.api !== 'https://api.ionic.io' ? 'https://api.ionicjs.com' : ''}/events/metrics`); // TODO: full URL is temporary
-      const { req } = await client.make('POST', `http://localhost:7000/events/metrics`); // TODO: full URL is temporary
+      const { req } = await client.make('POST', `${config.urls.api !== 'https://api.ionic.io' ? 'https://api.ionicjs.com' : ''}/events/metrics`); // TODO: full URL is temporary
 
       if (isLoggedIn && config.backend === BACKEND_PRO) {
         const token = await env.session.getUserToken();
