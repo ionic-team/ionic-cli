@@ -8,7 +8,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 ## Versions
 
 <a name="3.10.0"></a>
-### 3.10.0 (2017-09-11)
+### 3.10.0 (2017-09-12)
 
 * New CLI installs will default to use Ionic Pro. For existing CLI
   installations, use `--pro-id` with `ionic start` or `ionic link` to switch
