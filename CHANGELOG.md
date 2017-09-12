@@ -7,6 +7,11 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.10.1"></a>
+#### 3.10.1 (2017-09-12)
+
+* Hot fix for `--prod` not being passed to app-scripts for Cordova builds.
+
 <a name="3.10.0"></a>
 ### 3.10.0 (2017-09-12)
 
@@ -34,7 +39,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   notation... again.
 
 <a name="3.9.2"></a>
-### 3.9.2 (2017-08-17)
+#### 3.9.2 (2017-08-17)
 
 * Pass `--platform` and `--target` to app-scripts for build optimizations
   during `ionic cordova build`.
@@ -43,7 +48,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 * Fixed a few minor issues with `ionic cordova resources`.
 
 <a name="3.9.1"></a>
-### 3.9.1 (2017-08-16)
+#### 3.9.1 (2017-08-16)
 
 * Fixed missing detection of all deprecated plugins. The CLI now warns for all
   plugins, not just `@ionic/cli-plugin-cordova`.
@@ -61,7 +66,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   choice.
 
 <a name="3.8.1"></a>
-### 3.8.1 (2017-08-14)
+#### 3.8.1 (2017-08-14)
 
 * Fixed an issue with Cordova serve improperly mocking `cordova.js` for Ionic
   Angular apps.
