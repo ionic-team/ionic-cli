@@ -81,6 +81,10 @@ export async function sendCommand(env: IonicEnvironment, project: IProject, comm
       const config = await env.config.load();
       const client = new Client(env.config);
 
+      if (config.backend === BACKEND_LEGACY) {
+        return;
+      }
+
       let appId: string | undefined;
 
       const projectFile = env.project.directory ? await project.load() : undefined;
