@@ -1,7 +1,34 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
-See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+<a name="3.10.0"></a>
+# [3.10.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.9.2...ionic@3.10.0) (2017-09-12)
+
+
+### Bug Fixes
+
+* **backends:** explicitly list known backends ([84fa7d7](https://github.com/ionic-team/ionic-cli/commit/84fa7d7))
+* **cordova:** generate resources upon platform add ([c8b4d11](https://github.com/ionic-team/ionic-cli/commit/c8b4d11))
+* **cordova:** show all output for prepare ([ca6e0ef](https://github.com/ionic-team/ionic-cli/commit/ca6e0ef))
+* **cordova:** write hash files only after successful resources generation ([47286cb](https://github.com/ionic-team/ionic-cli/commit/47286cb))
+* **pro:** fix "infinity" bug ([3cb47f0](https://github.com/ionic-team/ionic-cli/commit/3cb47f0))
+* **upload:** accept app-script args for builds during upload ([dd5a3a8](https://github.com/ionic-team/ionic-cli/commit/dd5a3a8))
+
+
+### Features
+
+* **cordova:** add --dev-logger-port to run/emulate ([706680d](https://github.com/ionic-team/ionic-cli/commit/706680d))
+* **cordova:** compile accepts cordova build args ([3df280b](https://github.com/ionic-team/ionic-cli/commit/3df280b))
+* **cordova:** ionic cordova requirements ([c0696f3](https://github.com/ionic-team/ionic-cli/commit/c0696f3))
+* **pro:** default new apps to Ionic Pro ([6966135](https://github.com/ionic-team/ionic-cli/commit/6966135))
+* **serve:** --auth feature for basic auth ([0b92c51](https://github.com/ionic-team/ionic-cli/commit/0b92c51))
+* **serve:** adds devapp support ([10f34cf](https://github.com/ionic-team/ionic-cli/commit/10f34cf))
+* **ssl:** cafile, certfile, keyfile options ([b9cee01](https://github.com/ionic-team/ionic-cli/commit/b9cee01))
+
+
+
 
 <a name="3.9.2"></a>
 ## [3.9.2](https://github.com/ionic-team/ionic-cli/compare/ionic@3.9.1...ionic@3.9.2) (2017-08-17)

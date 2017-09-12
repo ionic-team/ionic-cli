@@ -1,7 +1,32 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
-See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+<a name="1.10.0"></a>
+# [1.10.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.9.2...@ionic/cli-utils@1.10.0) (2017-09-12)
+
+
+### Bug Fixes
+
+* better guidance for custom projects ([91c1be1](https://github.com/ionic-team/ionic-cli/commit/91c1be1))
+* **backends:** explicitly list known backends ([84fa7d7](https://github.com/ionic-team/ionic-cli/commit/84fa7d7))
+* **cordova:** write hash files only after successful resources generation ([47286cb](https://github.com/ionic-team/ionic-cli/commit/47286cb))
+* **ionic1:** fix --consolelogs ([5763a38](https://github.com/ionic-team/ionic-cli/commit/5763a38))
+* **pro:** fix "infinity" bug ([3cb47f0](https://github.com/ionic-team/ionic-cli/commit/3cb47f0))
+* **serve:** ionic serve w/o external network should work ([eee3cb7](https://github.com/ionic-team/ionic-cli/commit/eee3cb7))
+
+
+### Features
+
+* **cordova:** add --dev-logger-port to run/emulate ([706680d](https://github.com/ionic-team/ionic-cli/commit/706680d))
+* **pro:** default new apps to Ionic Pro ([6966135](https://github.com/ionic-team/ionic-cli/commit/6966135))
+* IONIC_DAEMON_DIRECTORY environment variable ([ae1f7f1](https://github.com/ionic-team/ionic-cli/commit/ae1f7f1))
+* **serve:** --auth feature for basic auth ([0b92c51](https://github.com/ionic-team/ionic-cli/commit/0b92c51))
+* **ssl:** cafile, certfile, keyfile options ([b9cee01](https://github.com/ionic-team/ionic-cli/commit/b9cee01))
+
+
+
 
 <a name="1.9.2"></a>
 ## [1.9.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.9.1...@ionic/cli-utils@1.9.2) (2017-08-17)
