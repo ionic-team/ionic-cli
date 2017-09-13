@@ -7,6 +7,11 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.10.3"></a>
+#### 3.10.3 (2017-09-13)
+
+* Hide `ionic serve` errors for DevApp multicasting.
+
 <a name="3.10.2"></a>
 #### 3.10.2 (2017-09-13)
 
