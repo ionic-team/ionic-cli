@@ -7,6 +7,12 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.10.2"></a>
+#### 3.10.2 (2017-09-13)
+
+* Hot fix for `--consolelogs` not being passed to app-scripts for Cordova
+  builds.
+
 <a name="3.10.1"></a>
 #### 3.10.1 (2017-09-12)
 
