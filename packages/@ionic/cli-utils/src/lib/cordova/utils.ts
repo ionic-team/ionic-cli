@@ -21,7 +21,7 @@ export function filterArgumentsForCordova(metadata: CommandData, inputs: Command
  * Start the app scripts server for emulator or device
  */
 export function generateBuildOptions(metadata: CommandData, options: CommandLineOptions): CommandLineOptions {
-  const results = filterOptionsByIntent(metadata, options, 'app-scripts');
+  const results = { ...filterOptionsByIntent(metadata, options), ...filterOptionsByIntent(metadata, options, 'app-scripts') };
 
   // Serve specific options not related to the actual run or emulate code
   return {

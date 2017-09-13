@@ -82,12 +82,12 @@ describe('@ionic/cli-utils', () => {
       expect(result).toEqual({ '--': undefined, '_': [], externalAddressRequired: true, iscordovaserve: true, nobrowser: true, target: "cordova" });
     });
 
-    it('should only include the options with app-scripts intent', () => {
+    it('should include the options with app-scripts intent and with no intent', () => {
       let inputs = ['ios'];
       let options = { _: [], boolopt: false, cdvopt1: null, cdvopt2: false, prod: true, optimizejs: true };
 
       const result = generateBuildOptions(metadata, options);
-      expect(result).toEqual({ '--': undefined, '_': [], externalAddressRequired: true, iscordovaserve: true, nobrowser: true, target: "cordova", prod: true, optimizejs: true });
+      expect(result).toEqual({ '--': undefined, '_': [], boolopt: false, externalAddressRequired: true, iscordovaserve: true, nobrowser: true, target: "cordova", prod: true, optimizejs: true });
     });
 
   });
