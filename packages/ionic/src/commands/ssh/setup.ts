@@ -116,8 +116,9 @@ export class SSHSetupCommand extends SSHBaseCommand {
         this.env.log.ok(`We won't pester you about SSH settings anymore!`);
       } else {
         this.env.log.ok('SSH setup successful!');
-        config.git.setup = true;
       }
+
+      config.git.setup = true;
     }
   }
 }
