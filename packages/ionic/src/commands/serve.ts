@@ -131,9 +131,9 @@ export class ServeCommand extends Command {
     const service = new Publisher('devapp', name, port);
     service.path = '/?devapp=true';
 
-    // service.on('error', err => {
-    //   this.env.log.error(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
-    // });
+    service.on('error', err => {
+      // this.env.log.error(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
+    });
 
     try {
       await service.start();
