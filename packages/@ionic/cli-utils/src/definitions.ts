@@ -439,8 +439,9 @@ export interface BuildAfterHookArgs extends EnvironmentHookArgs {
 
 export interface InfoHookItem {
   type: 'system' | 'global-packages' | 'local-packages' | 'cli-packages';
-  name: string;
-  version: string;
+  key: string;
+  value: string;
+  flair?: string;
   path?: string;
 }
 

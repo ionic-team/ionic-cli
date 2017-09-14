@@ -49,7 +49,7 @@ export function registerHooks(hooks: IHookEngine) {
     const version = packageJson.version || '';
 
     return [
-      { type: 'cli-packages', name, version, path: path.dirname(__filename) },
+      { type: 'cli-packages', key: name, value: version, path: path.dirname(__filename) },
     ];
   });
 

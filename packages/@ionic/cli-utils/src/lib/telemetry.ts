@@ -125,45 +125,45 @@ export async function sendCommand(env: IonicEnvironment, project: IProject, comm
           req.set('Authorization', `Bearer ${token}`);
         }
 
-        const frameworkInfo = flattenedInfo.find(item => item.name === 'Ionic Framework');
-        const npmInfo = flattenedInfo.find(item => item.name === 'npm');
-        const osInfo = flattenedInfo.find(item => item.name === 'OS');
-        const xcodeInfo = flattenedInfo.find(item => item.name === 'Xcode');
-        const androidSdkInfo = flattenedInfo.find(item => item.name === 'Android SDK Tools');
-        const cordovaInfo = flattenedInfo.find(item => item.name === 'Cordova CLI');
-        const cordovaPlatformsInfo = flattenedInfo.find(item => item.name === 'Cordova Platforms');
-        const appScriptsInfo = flattenedInfo.find(item => item.name === '@ionic/app-scripts');
+        const frameworkInfo = flattenedInfo.find(item => item.key === 'Ionic Framework');
+        const npmInfo = flattenedInfo.find(item => item.key === 'npm');
+        const osInfo = flattenedInfo.find(item => item.key === 'OS');
+        const xcodeInfo = flattenedInfo.find(item => item.key === 'Xcode');
+        const androidSdkInfo = flattenedInfo.find(item => item.key === 'Android SDK Tools');
+        const cordovaInfo = flattenedInfo.find(item => item.key === 'Cordova CLI');
+        const cordovaPlatformsInfo = flattenedInfo.find(item => item.key === 'Cordova Platforms');
+        const appScriptsInfo = flattenedInfo.find(item => item.key === '@ionic/app-scripts');
 
         if (frameworkInfo) {
-          metric['value']['framework'] = frameworkInfo.version;
+          metric['value']['framework'] = frameworkInfo.value;
         }
 
         if (npmInfo) {
-          metric['value']['npm_version'] = npmInfo.version;
+          metric['value']['npm_version'] = npmInfo.value;
         }
 
         if (osInfo) {
-          metric['value']['os'] = osInfo.version;
+          metric['value']['os'] = osInfo.value;
         }
 
         if (xcodeInfo) {
-          metric['value']['xcode_version'] = xcodeInfo.version;
+          metric['value']['xcode_version'] = xcodeInfo.value;
         }
 
         if (androidSdkInfo) {
-          metric['value']['android_sdk_version'] = androidSdkInfo.version;
+          metric['value']['android_sdk_version'] = androidSdkInfo.value;
         }
 
         if (cordovaInfo) {
-          metric['value']['cordova_version'] = cordovaInfo.version;
+          metric['value']['cordova_version'] = cordovaInfo.value;
         }
 
         if (cordovaPlatformsInfo) {
-          metric['value']['cordova_platforms'] = cordovaPlatformsInfo.version;
+          metric['value']['cordova_platforms'] = cordovaPlatformsInfo.value;
         }
 
         if (appScriptsInfo) {
-          metric['value']['app_scripts_version'] = appScriptsInfo.version;
+          metric['value']['app_scripts_version'] = appScriptsInfo.value;
         }
       }
 

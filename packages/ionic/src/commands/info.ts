@@ -26,12 +26,12 @@ export class InfoCommand extends Command {
     const localNpmDetails = flattenedResults.filter(item => item.type === 'local-packages');
     const systemDetails = flattenedResults.filter(item => item.type === 'system');
 
-    const ionicPkg = cliDetails.filter(item => item.name.startsWith('ionic'))[0];
+    const ionicPkg = cliDetails.find(item => item.key === 'ionic');
     const pkgPath = ionicPkg && ionicPkg.path ? path.dirname(ionicPkg.path) : undefined;
 
     const splitInfo = (ary: InfoHookItem[]) => ary
-      .sort((a, b) => strcmp(a.name.toLowerCase(), b.name.toLowerCase()))
-      .map((item): [string, string] => [item.name, chalk.dim(item.version) + (item.path && pkgPath && !item.path.startsWith(pkgPath) ? ` ${chalk.dim('(' + item.path + ')')}` : '')]);
+      .sort((a, b) => strcmp(a.key.toLowerCase(), b.key.toLowerCase()))
+      .map((item): [string, string] => [`${item.key}${item.flair ? ' ' + chalk.dim('(' + item.flair + ')') : ''}`, chalk.dim(item.value) + (item.path && pkgPath && !item.path.startsWith(pkgPath) ? ` ${chalk.dim('(' + item.path + ')')}` : '')]);
 
     const format = (details: [string, string][]) => columnar(details, { vsep: ':' }).split('\n').join('\n    ');
 
