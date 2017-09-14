@@ -87,7 +87,7 @@ export async function sendCommand(env: IonicEnvironment, project: IProject, comm
 
       let appId: string | undefined;
 
-      const projectFile = env.project.directory ? await project.load() : undefined;
+      const projectFile = project.directory ? await project.load() : undefined;
 
       if (projectFile) {
         appId = projectFile.app_id;
