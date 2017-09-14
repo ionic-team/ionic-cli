@@ -25,6 +25,7 @@ export class InfoCommand extends Command {
     const globalNpmDetails = flattenedResults.filter(item => item.type === 'global-packages');
     const localNpmDetails = flattenedResults.filter(item => item.type === 'local-packages');
     const systemDetails = flattenedResults.filter(item => item.type === 'system');
+    const miscDetails = flattenedResults.filter(item => item.type === 'misc');
 
     const ionicPkg = cliDetails.find(item => item.key === 'ionic');
     const pkgPath = ionicPkg && ionicPkg.path ? path.dirname(ionicPkg.path) : undefined;
@@ -59,6 +60,11 @@ export class InfoCommand extends Command {
     if (systemDetails.length > 0) {
       this.env.log.msg('\n' + chalk.bold('System:'));
       this.env.log.msg(`\n    ${format(splitInfo(systemDetails))}`);
+    }
+
+    if (miscDetails.length > 0) {
+      this.env.log.msg('\n' + chalk.bold('Misc:'));
+      this.env.log.msg(`\n    ${format(splitInfo(miscDetails))}`);
     }
 
     this.env.log.nl();

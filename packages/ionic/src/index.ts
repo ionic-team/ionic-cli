@@ -131,12 +131,14 @@ export function registerHooks(hooks: IHookEngine) {
     const { getCommandInfo } = await import('@ionic/cli-utils/lib/utils/shell');
 
     const npm = await getCommandInfo('npm', ['-v']);
+    const config = await env.config.load();
 
     const info: InfoHookItem[] = [ // TODO: why must I be explicit?
       { type: 'cli-packages', key: name, flair: 'Ionic CLI', value: env.plugins.ionic.meta.version, path: path.dirname(path.dirname(env.plugins.ionic.meta.filePath)) },
       { type: 'system', key: 'Node', value: node },
       { type: 'system', key: 'npm', value: npm || 'not installed' },
       { type: 'system', key: 'OS', value: os },
+      { type: 'misc', key: 'backend', value: config.backend },
     ];
 
     const projectFile = project.directory ? await project.load() : undefined;
