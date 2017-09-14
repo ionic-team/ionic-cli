@@ -21,6 +21,7 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
+      - run: npm run bootstrap
       - save_cache:
           key: dependency-cache-{{ checksum "packages/ionic/package.json" }}
           paths:
@@ -37,7 +38,6 @@ jobs:
           key: dependency-cache-{{ checksum "packages/@ionic/cli-scripts/package.json" }}
           paths:
             - packages/@ionic/cli-scripts/node_modules
-      - run: npm run bootstrap
       - run: npm run lint
       - run: npm run test
 
