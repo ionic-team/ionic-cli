@@ -8,23 +8,23 @@ describe('@ionic/cli-utils', () => {
         jest.resetModules();
       });
 
-      it('should parse sdk tools version from source.properties file', async () => {
-        jest.mock('../utils/fs', () => ({
-          fsReadFile: () => Promise.resolve(`
-Pkg.UserSrc=false
+      // it('should parse sdk tools version from source.properties file', async () => {
+      //   jest.mock('../utils/fs', () => ({
+      //     fsReadFile: () => Promise.resolve(`
+// Pkg.UserSrc=false
 
-Pkg.Revision=26.0.2
-Platform.MinPlatformToolsRev=20
-Pkg.Dependencies=emulator
-Pkg.Path=tools
-Pkg.Desc=Android SDK Tools
-`),
-        }));
+// Pkg.Revision=26.0.2
+// Platform.MinPlatformToolsRev=20
+// Pkg.Dependencies=emulator
+// Pkg.Path=tools
+// Pkg.Desc=Android SDK Tools
+// `),
+      //   }));
 
-        const android = require('../android');
-        const result = await android.getAndroidSdkToolsVersion();
-        expect(result).toEqual('26.0.2');
-      });
+      //   const android = require('../android');
+      //   const result = await android.getAndroidSdkToolsVersion();
+      //   expect(result).toEqual('26.0.2');
+      // });
 
       it('should return undefined for a missing source.properties file', async () => {
         jest.mock('../utils/fs', () => ({

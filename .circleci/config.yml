@@ -8,11 +8,35 @@ jobs:
       - checkout
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "packages/ionic/package.json" }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/cli-utils/package.json" }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/cli-plugin-proxy/package.json" }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/cli-scripts/package.json" }}
       - run: npm install
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "packages/ionic/package.json" }}
+          paths:
+            - packages/ionic/node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/cli-utils/package.json" }}
+          paths:
+            - packages/@ionic/cli-utils/node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/cli-plugin-proxy/package.json" }}
+          paths:
+            - packages/@ionic/cli-plugin-proxy/node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/cli-scripts/package.json" }}
+          paths:
+            - packages/@ionic/cli-scripts/node_modules
       - run: npm run bootstrap
       - run: npm run lint
       - run: npm run test
