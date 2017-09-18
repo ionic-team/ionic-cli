@@ -12,7 +12,7 @@ export class SignupCommand extends Command {
     const opn = await import('opn');
     const config = await this.env.config.load();
 
-    opn(`${config.urls.dash}/signup`, { wait: false });
+    opn(`${config.urls.dash}/signup?source=cli`, { wait: false });
 
     this.env.log.ok('Launched signup form in your browser!');
   }
