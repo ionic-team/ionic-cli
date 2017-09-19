@@ -9,6 +9,7 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
   name: 'download',
   type: 'project',
   backends: [BACKEND_LEGACY],
+  deprecated: true,
   description: 'Download your packaged app',
   longDescription: `
 Ionic Package makes it easy to build a native binary of your app in the cloud.

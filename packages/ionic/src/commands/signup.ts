@@ -1,10 +1,9 @@
-import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 @CommandMetadata({
   name: 'signup',
   type: 'global',
-  backends: [BACKEND_LEGACY],
   description: 'Create an Ionic account',
 })
 export class SignupCommand extends Command {

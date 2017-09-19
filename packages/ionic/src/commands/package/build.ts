@@ -8,6 +8,7 @@ import { contains } from '@ionic/cli-utils/lib/validators';
   name: 'build',
   type: 'project',
   backends: [BACKEND_LEGACY],
+  deprecated: true,
   description: 'Start a package build',
   longDescription: `
 Ionic Package makes it easy to build a native binary of your app in the cloud.

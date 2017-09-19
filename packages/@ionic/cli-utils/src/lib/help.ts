@@ -56,6 +56,11 @@ async function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INam
   return formatCommandHelp(env, command.metadata);
 }
 
+function namespaceIsDeprecated(cmdMetadataList: HydratedCommandData[]) {
+  const deprecatedCommands = cmdMetadataList.filter(cmd => cmd.deprecated);
+  return deprecatedCommands.length === cmdMetadataList.length;
+}
+
 async function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, inputs: string[]) {
   const cmdMetadataList = await ns.getCommandMetadataList();
   const formatList = (details: string[]) => details.map(hd => `    ${hd}\n`).join('');
@@ -67,6 +72,8 @@ async function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, in
 
   if (ns.root) {
     output += `${await formatHeader(env)}\n`;
+  } else {
+    output += `\n  ${chalk.bold.green('ionic ' + ns.name)} ${chalk.bold('-')} ${namespaceIsDeprecated(cmdMetadataList) ? chalk.yellow.bold('(deprecated)') + ' ': ''}${chalk.bold(ns.description)}\n`;
   }
 
   output += '\n' +
@@ -140,7 +147,7 @@ async function getListOfCommandDetails(env: IonicEnvironment, commands: Hydrated
   const fillStringArray = generateFillSpaceStringList(commands.map(cmd => cmd.fullName), HELP_DOTS_WIDTH, chalk.dim('.'));
 
   return commands.map((cmd, index) => {
-    const description = cmd.description + `${cmd.aliases.length > 0 ? chalk.dim(' (alias' + (cmd.aliases.length === 1 ? '' : 'es') + ': ') + cmd.aliases.map((a) => chalk.green(a)).join(', ') + chalk.dim(')') : ''}`;
+    const description = (cmd.deprecated ? chalk.yellow.bold('(deprecated)') + ' ' : '') + cmd.description + `${cmd.aliases.length > 0 ? chalk.dim(' (alias' + (cmd.aliases.length === 1 ? '' : 'es') + ': ') + cmd.aliases.map((a) => chalk.green(a)).join(', ') + chalk.dim(')') : ''}`;
     const wrappedDescription = wordWrap(description, { indentation: HELP_DOTS_WIDTH + 6 });
     return `${chalk.green(cmd.fullName || '')} ${fillStringArray[index]} ${wrappedDescription}`;
   });
@@ -160,18 +167,18 @@ async function getListOfNamespaceDetails(env: IonicEnvironment, commands: Hydrat
         nsMap.set(cmd.namespace.name, l);
       }
 
-      l.push(cmd.name);
+      l.push(cmd);
     }
 
     return nsMap;
-  }, new Map<string, string[]>());
+  }, new Map<string, HydratedCommandData[]>());
 
   const entries = [...grouped.entries()];
   const fillStringArray = generateFillSpaceStringList(entries.map(v => v[0] + ' <subcommand>'), HELP_DOTS_WIDTH, chalk.dim('.'));
 
   return entries.map((v, i) => {
-    const subcommands = v[1].map(c => chalk.green(c)).join(', ');
-    const wrappedDescription = wordWrap(`${nsDescMap.get(v[0])} ${chalk.dim('(subcommands:')} ${subcommands}${chalk.dim(')')}`, { indentation: HELP_DOTS_WIDTH + 6 });
+    const subcommands = v[1].map(c => chalk.green(c.name)).join(', ');
+    const wrappedDescription = wordWrap(`${namespaceIsDeprecated(v[1]) ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${nsDescMap.get(v[0])} ${chalk.dim('(subcommands:')} ${subcommands}${chalk.dim(')')}`, { indentation: HELP_DOTS_WIDTH + 6 });
     return `${chalk.green(v[0] + ' <subcommand>')} ${fillStringArray[i]} ${wrappedDescription}`;
   });
 }

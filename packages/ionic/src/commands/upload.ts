@@ -7,6 +7,7 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
   name: 'upload',
   type: 'project',
   backends: [BACKEND_LEGACY],
+  deprecated: true,
   description: 'Upload a new snapshot of your app',
   longDescription: `
 Zips up your local app files and uploads a snapshot to Ionic.

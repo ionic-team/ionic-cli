@@ -291,6 +291,7 @@ export interface CommandData {
   name: string;
   type: 'global' | 'project';
   backends?: BackendFlag[];
+  deprecated?: boolean;
   description: string;
   longDescription?: string;
   exampleCommands?: string[];
