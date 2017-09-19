@@ -209,7 +209,6 @@ export class StartCommand extends Command implements CommandPreRun {
     } = await import('@ionic/cli-utils/lib/start');
 
     const { pkgInstallPluginArgs } = await import('@ionic/cli-utils/lib/plugins');
-    const { getCommandInfo } = await import('@ionic/cli-utils/lib/utils/shell');
     const { isValidPackageName, pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
     const { tarXvfFromUrl } = await import('@ionic/cli-utils/lib/utils/archive');
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
@@ -256,7 +255,7 @@ export class StartCommand extends Command implements CommandPreRun {
     //   this.env.log.debug(`globalDeps=${starterType.globalDependencies}`);
 
     //   for (let dep of starterType.globalDependencies) {
-    //     const cmdInstalled = await getCommandInfo(dep);
+    //     const cmdInstalled = await this.env.shell.cmdinfo(dep);
 
     //     if (!cmdInstalled) {
     //       if (dep === 'cordova') {
@@ -274,7 +273,7 @@ export class StartCommand extends Command implements CommandPreRun {
     // }
 
     if (config.backend === BACKEND_PRO || options['git']) {
-      const cmdInstalled = await getCommandInfo('git', ['--version']);
+      const cmdInstalled = await this.env.shell.cmdinfo('git', ['--version']);
 
       if (cmdInstalled) {
         gitIntegration = true;

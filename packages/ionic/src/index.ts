@@ -128,9 +128,7 @@ export function registerHooks(hooks: IHookEngine) {
     const os = osName();
     const node = process.version;
 
-    const { getCommandInfo } = await import('@ionic/cli-utils/lib/utils/shell');
-
-    const npm = await getCommandInfo('npm', ['-v']);
+    const npm = await env.shell.cmdinfo('npm', ['-v']);
     const config = await env.config.load();
 
     const info: InfoHookItem[] = [ // TODO: why must I be explicit?
@@ -167,11 +165,11 @@ export function registerHooks(hooks: IHookEngine) {
           iosSim,
           androidSdkToolsVersion,
         ] = await Promise.all([
-          getCordovaCLIVersion(),
-          getCordovaPlatformVersions(),
-          getCommandInfo('/usr/bin/xcodebuild', ['-version']),
-          getCommandInfo('ios-deploy', ['--version']),
-          getCommandInfo('ios-sim', ['--version']),
+          getCordovaCLIVersion(env),
+          getCordovaPlatformVersions(env),
+          env.shell.cmdinfo('xcodebuild', ['-version']),
+          env.shell.cmdinfo('ios-deploy', ['--version']),
+          env.shell.cmdinfo('ios-sim', ['--version']),
           getAndroidSdkToolsVersion(),
         ]);
 
@@ -197,7 +195,7 @@ export function registerHooks(hooks: IHookEngine) {
 
       if (projectFile.integrations.gulp && projectFile.integrations.gulp.enabled !== false) {
         const { getGulpVersion } = await import('@ionic/cli-utils/lib/gulp');
-        const gulpVersion = await getGulpVersion();
+        const gulpVersion = await getGulpVersion(env);
         info.push({ type: 'global-packages', key: 'Gulp CLI', value: gulpVersion || 'not installed globally' });
       }
     }

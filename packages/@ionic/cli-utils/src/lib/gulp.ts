@@ -58,10 +58,8 @@ export async function loadGulp(env: IonicEnvironment): Promise<typeof gulpType> 
   return _gulpInst;
 }
 
-export async function getGulpVersion(): Promise<string | undefined> {
-  const { getCommandInfo } = await import('./utils/shell');
-
-  let gulpVersion = await getCommandInfo('gulp', ['--version']);
+export async function getGulpVersion(env: IonicEnvironment): Promise<string | undefined> {
+  let gulpVersion = await env.shell.cmdinfo('gulp', ['--version']);
 
   if (gulpVersion) {
     gulpVersion = gulpVersion.replace(/\[[\d\:]+\]\s/g, '');

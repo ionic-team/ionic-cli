@@ -136,7 +136,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   const hooks = new HookEngine();
   const daemon = new Daemon(env['IONIC_DAEMON_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, DAEMON_JSON_FILE);
   const telemetry = new Telemetry();
-  const shell = new Shell(tasks, log);
+  const shell = new Shell({ tasks, log, project });
 
   registerHooks(hooks);
 

@@ -1,6 +1,8 @@
+import * as path from 'path';
+
 import * as chalk from 'chalk';
 
-import { ILogger, IShell, IShellRunOptions, ITaskChain } from '../definitions';
+import { ILogger, IProject, IShell, IShellRunOptions, ITaskChain } from '../definitions';
 import { isExitCodeException } from '../guards';
 import { FatalException } from './errors';
 import { RunCmdOptions, runcmd } from './utils/shell';
@@ -8,7 +10,15 @@ import { RunCmdOptions, runcmd } from './utils/shell';
 export const ERROR_SHELL_COMMAND_NOT_FOUND = 'SHELL_COMMAND_NOT_FOUND';
 
 export class Shell implements IShell {
-  constructor(protected tasks: ITaskChain, protected log: ILogger) {}
+  protected tasks: ITaskChain;
+  protected log: ILogger;
+  protected project: IProject;
+
+  constructor({ tasks, log, project }: { tasks: ITaskChain; log: ILogger; project: IProject }) {
+    this.tasks = tasks;
+    this.log = log;
+    this.project = project;
+  }
 
   async run(command: string, args: string[], { showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, showExecution, showSpinner = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<string> {
     const fullCmd = command + ' ' + (args.length > 0 ? args.map(a => a.includes(' ') ? `"${a}"` : a).join(' ') : '');
@@ -19,6 +29,12 @@ export class Shell implements IShell {
       options.stdoutPipe = this.log.stream;
       options.stderrPipe = this.log.stream;
     }
+
+    if (!options.env) {
+      options.env = {};
+    }
+
+    options.env.PATH = this.supplementPATH(process.env.PATH);
 
     if (showCommand) {
       if (this.log.shouldLog('info')) {
@@ -91,5 +107,16 @@ export class Shell implements IShell {
       }
       throw e;
     }
+  }
+
+  async cmdinfo(cmd: string, args: string[] = []): Promise<string | undefined> {
+    try {
+      const out = await runcmd(cmd, args, { env: { PATH: this.supplementPATH(process.env.PATH) } });
+      return out.split('\n').join(' ');
+    } catch (e) {}
+  }
+
+  protected supplementPATH(p: string) {
+    return this.project.directory ? `${path.resolve(this.project.directory, 'node_modules', '.bin')}${path.delimiter}${p}` : p;
   }
 }

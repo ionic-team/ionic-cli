@@ -327,6 +327,7 @@ export interface IShellRunOptions extends crossSpawnType.SpawnOptions {
 
 export interface IShell {
   run(command: string, args: string[], options: IShellRunOptions): Promise<string>;
+  cmdinfo(cmd: string, args?: string[]): Promise<string | undefined>;
 }
 
 export interface ITelemetry {

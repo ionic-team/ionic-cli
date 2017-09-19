@@ -33,16 +33,12 @@ export function generateBuildOptions(metadata: CommandData, options: CommandLine
   };
 }
 
-export async function getCordovaCLIVersion(): Promise<string | undefined> {
-  const { getCommandInfo } = await import('../utils/shell');
-
-  return getCommandInfo('cordova', ['-v', '--no-telemetry']);
+export async function getCordovaCLIVersion(env: IonicEnvironment): Promise<string | undefined> {
+  return env.shell.cmdinfo('cordova', ['-v', '--no-telemetry']);
 }
 
-export async function getCordovaPlatformVersions(): Promise<string | undefined> {
-  const { getCommandInfo } = await import('../utils/shell');
-
-  let cordovaPlatforms = await getCommandInfo('cordova', ['platform', 'ls', '--no-telemetry']);
+export async function getCordovaPlatformVersions(env: IonicEnvironment): Promise<string | undefined> {
+  let cordovaPlatforms = await env.shell.cmdinfo('cordova', ['platform', 'ls', '--no-telemetry']);
 
   if (cordovaPlatforms) {
     cordovaPlatforms = cordovaPlatforms.replace(/\s+/g, ' ');
