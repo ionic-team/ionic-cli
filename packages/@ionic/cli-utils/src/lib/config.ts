@@ -143,6 +143,10 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       }
     }
 
+    if (!results.created) {
+      results.created = new Date().toISOString();
+    }
+
     if (!results.daemon) {
       results.daemon = {};
     }

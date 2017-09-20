@@ -338,6 +338,7 @@ export interface ITelemetry {
 
 export interface ConfigFile {
   version: string;
+  created: string;
   state: {
     lastCommand: string;
     lastNoResponseToUpdate?: string;
