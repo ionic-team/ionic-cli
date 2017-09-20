@@ -20,6 +20,7 @@ reports and feature requests.
 * [Requirements](#requirements)
 * [Install](#install)
 * [Getting Started](#getting-started)
+* [Commands](#commands)
 * [Using Cordova](#using-cordova)
    * [Requirements](#requirements-1)
 * [Ionic Pro](#ionic-pro)
@@ -84,6 +85,10 @@ your browser:
 cd ./myApp
 ionic serve
 ```
+
+## Commands
+
+A full list of available CLI commands, including all parameters and options, can be found in the offical Ionic CLI documentation: https://ionicframework.com/docs/cli/
 
 ## Using Cordova
 
