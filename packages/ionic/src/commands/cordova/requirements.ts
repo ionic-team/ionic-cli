@@ -34,10 +34,10 @@ export class RequirementsCommand extends CordovaCommand implements CommandPreRun
 
     const [ platform ] = inputs;
 
-    let conf = await ConfigXml.load(this.env.project.directory);
+    const conf = await ConfigXml.load(this.env.project.directory);
 
     if (platform) {
-      const platformEngine = await conf.getPlatformEngine(platform);
+      const platformEngine = conf.getPlatformEngine(platform);
 
       if (!platformEngine) {
         const confirm = await this.env.prompt({
@@ -56,10 +56,6 @@ export class RequirementsCommand extends CordovaCommand implements CommandPreRun
         }
       }
     }
-
-    conf = await ConfigXml.load(this.env.project.directory);
-    await conf.resetContentSrc();
-    await conf.save();
 
     try {
       await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true, showError: false, fatalOnError: false });

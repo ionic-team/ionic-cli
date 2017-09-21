@@ -22,7 +22,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
 
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const conf = await ConfigXml.load(this.env.project.directory);
-    const cordovaInfo = await conf.getProjectInfo();
+    const cordovaInfo = conf.getProjectInfo();
 
     const appVersion = cordovaInfo.version;
     const commitHash = await this.env.shell.run('git', ['rev-parse', 'HEAD'], { cwd: this.env.project.directory });

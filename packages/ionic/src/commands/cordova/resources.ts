@@ -2,9 +2,11 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandPreRun, KnownPlatform, ResourcesConfig, ResourcesImageConfig, SourceImage } from '@ionic/cli-utils';
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { cacheFileChecksum, pathExists } from '@ionic/cli-utils/lib/utils/fs';
+
+import { CordovaCommand } from './base';
 
 const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
 
@@ -60,8 +62,10 @@ This command uses Ionic servers, so we require you to be logged into your free I
     },
   ]
 })
-export class ResourcesCommand extends Command implements CommandPreRun {
+export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    await this.preRunChecks();
+
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
 
     const isLoggedIn = await this.env.session.isLoggedIn();
@@ -102,7 +106,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     this.env.log.debug(() => `resourceJsonStructure=${Object.keys(RESOURCES).length}`);
 
     // check that at least one platform has been installed
-    let platformEngines = await conf.getPlatformEngines();
+    let platformEngines = conf.getPlatformEngines();
     this.env.log.debug(() => `platformEngines=${platformEngines.map(e => e.name).join(', ')}`);
 
     if (platform && !platformEngines.map(p => p.name).includes(platform)) {
@@ -116,7 +120,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
       if (confirm) {
         await installPlatform(this.env, platform);
         conf = await ConfigXml.load(this.env.project.directory);
-        platformEngines = await conf.getPlatformEngines();
+        platformEngines = conf.getPlatformEngines();
         this.env.log.debug(() => `platformEngines=${platformEngines}`);
       } else {
         throw new FatalException(`Platform ${chalk.green(platform)} not installed.`);
@@ -131,7 +135,7 @@ export class ResourcesCommand extends Command implements CommandPreRun {
     }
     this.env.log.debug(() => `${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);
 
-    const orientation = await conf.getPreference('Orientation') || 'default';
+    const orientation = conf.getPreference('Orientation') || 'default';
 
     // Convert the resource structure to a flat array then filter the array so
     // that it only has img resources that we need. Finally add src path to the

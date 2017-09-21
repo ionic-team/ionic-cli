@@ -40,10 +40,10 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
 
     const [ platform ] = inputs;
 
-    let conf = await ConfigXml.load(this.env.project.directory);
+    const conf = await ConfigXml.load(this.env.project.directory);
 
     if (platform) {
-      const platformEngine = await conf.getPlatformEngine(platform);
+      const platformEngine = conf.getPlatformEngine(platform);
 
       if (!platformEngine) {
         const confirm = await this.env.prompt({
@@ -62,7 +62,7 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
         }
       }
     } else {
-      const platformEngines = await conf.getPlatformEngines();
+      const platformEngines = conf.getPlatformEngines();
 
       if (platformEngines.length === 0) {
         this.env.log.warn(
@@ -73,10 +73,6 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
         return 0;
       }
     }
-
-    conf = await ConfigXml.load(this.env.project.directory);
-    await conf.resetContentSrc();
-    await conf.save();
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });
   }

@@ -122,12 +122,7 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const { filterArgumentsForCordova, generateBuildOptions } = await import('@ionic/cli-utils/lib/cordova/utils');
-
-    const conf = await ConfigXml.load(this.env.project.directory);
-    await conf.resetContentSrc();
-    await conf.save();
 
     if (options.build) {
       const { build } = await import('@ionic/cli-utils/commands/build');

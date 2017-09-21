@@ -71,12 +71,7 @@ export class PluginCommand extends CordovaCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
-
-    const conf = await ConfigXml.load(this.env.project.directory);
-    await conf.resetContentSrc();
-    await conf.save();
 
     const optionList = filterArgumentsForCordova(this.metadata, inputs.splice(0, 2), options);
 

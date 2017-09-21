@@ -56,7 +56,7 @@ export class ConfigXml {
    * Update config.xml content src to be a dev server url. As part of this
    * backup the original content src for a reset to occur at a later time.
    */
-  async writeContentSrc(newSrc: string) {
+  writeContentSrc(newSrc: string) {
     const root = this.doc.getroot();
     let contentElement = root.find('content');
 
@@ -77,7 +77,7 @@ export class ConfigXml {
   /**
    * Set config.xml src url back to its original url
    */
-  async resetContentSrc() {
+  resetContentSrc() {
     const root = this.doc.getroot();
     let contentElement = root.find('content');
 
@@ -93,7 +93,7 @@ export class ConfigXml {
     }
   }
 
-  async getPreference(prefName: string): Promise<string | undefined> {
+  getPreference(prefName: string): string | undefined {
     const root = this.doc.getroot();
 
     const preferenceElement = root.find(`preference[@name='${prefName}']`);
@@ -111,7 +111,7 @@ export class ConfigXml {
     return value;
   }
 
-  async getProjectInfo(): Promise<{ id: string; name: string; version: string; }> {
+  getProjectInfo(): { id: string; name: string; version: string; } {
     const root = this.doc.getroot();
 
     let id = root.get('id');
@@ -141,14 +141,14 @@ export class ConfigXml {
     return { id, name, version };
   }
 
-  async getPlatformEngines(): Promise<PlatformEngine[]> {
+  getPlatformEngines(): PlatformEngine[] {
     const root = this.doc.getroot();
     const engines = root.findall('engine');
 
     return engines.map(engine => this.engineElementToPlatformEngine(engine));
   }
 
-  async getPlatformEngine(platform: string): Promise<PlatformEngine | undefined> {
+  getPlatformEngine(platform: string): PlatformEngine | undefined {
     const root = this.doc.getroot();
     const engine = root.find(`engine[@name='${platform}']`);
 
@@ -161,7 +161,7 @@ export class ConfigXml {
 
   async ensurePlatformImages(platform: string, resourcesPlatform: ResourcesPlatform) {
     const root = this.doc.getroot();
-    const orientation = await this.getPreference('Orientation') || 'default';
+    const orientation = this.getPreference('Orientation') || 'default';
 
     for (let imgName in resourcesPlatform) {
       const imgType = resourcesPlatform[imgName];

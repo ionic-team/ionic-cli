@@ -133,9 +133,10 @@ export const CORDOVA_RUN_COMMAND_OPTIONS: CommandOption[] = [
 
 export class CordovaCommand extends Command {
   async preRunChecks() {
+    const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
+    const { checkCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
 
-    const { checkCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
     await checkCordova(this.env);
 
     // Check for www folder
@@ -149,6 +150,10 @@ export class CordovaCommand extends Command {
         this.env.tasks.end();
       }
     }
+
+    const conf = await ConfigXml.load(this.env.project.directory);
+    conf.resetContentSrc();
+    await conf.save();
   }
 
   async runCordova(argList: string[], { fatalOnNotFound = false, truncateErrorOutput = 5000, ...options }: IShellRunOptions = {}): Promise<string> {
@@ -161,7 +166,7 @@ export class CordovaCommand extends Command {
       if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
         const cdvInstallArgs = await pkgManagerArgs(this.env, { pkg: 'cordova', global: true });
         throw new FatalException(
-          `The Cordova CLI was not found on your PATH. Please install Cordova globally:\n\n` +
+          `The Cordova CLI was not found on your PATH. Please install Cordova globally:\n` +
           `${chalk.green(cdvInstallArgs.join(' '))}\n`
         );
       }
@@ -179,7 +184,7 @@ export class CordovaCommand extends Command {
     if (runPlatform) {
       const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
       const conf = await ConfigXml.load(this.env.project.directory);
-      const platforms = await conf.getPlatformEngines();
+      const platforms = conf.getPlatformEngines();
 
       if (!platforms.map(p => p.name).includes(runPlatform)) {
         const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
@@ -234,8 +239,6 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
     const isLiveReload = options['livereload'];
 
     const conf = await ConfigXml.load(this.env.project.directory);
-    await conf.resetContentSrc();
-    await conf.save();
 
     if (isLiveReload) {
       const { serve } = await import('@ionic/cli-utils/commands/serve');
@@ -246,7 +249,7 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
         this.env.log.warn(`Your device or emulator may not be able to access ${chalk.bold(serverDetails.externalAddress)}.${extra}\n\n`);
       }
 
-      await conf.writeContentSrc(`${serverDetails.protocol || 'http'}://${serverDetails.externalAddress}:${serverDetails.port}`);
+      conf.writeContentSrc(`${serverDetails.protocol || 'http'}://${serverDetails.externalAddress}:${serverDetails.port}`);
       await conf.save();
     } else {
       const { build } = await import('@ionic/cli-utils/commands/build');
