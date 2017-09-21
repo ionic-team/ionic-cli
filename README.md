@@ -6,9 +6,8 @@
 The Ionic command line interface (CLI) is your go-to tool for developing
 [Ionic][ionic-homepage] apps.
 
-**Documentation**: [https://ionicframework.com/docs/cli/][ionic-cli-docs]
-
-Use `ionic --help` for detailed command information.
+:book: **Documentation**:
+[https://ionicframework.com/docs/cli/][ionic-cli-docs]
 
 :mega: **Support/Questions?** Please see our [Support Page][ionic-support] for
 general support questions. The issues on GitHub should be reserved for bug
