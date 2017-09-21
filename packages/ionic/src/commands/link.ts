@@ -176,7 +176,8 @@ export class LinkCommand extends Command implements CommandPreRun {
         this.env.log.ok(`Project linked with app ${chalk.bold(appId)}!`);
       } else {
         const opn = await import('opn');
-        opn(`${config.urls.dash}/?user_token=${token}`, { wait: false });
+        const dashUrl = await this.env.config.getDashUrl();
+        opn(`${dashUrl}/?user_token=${token}`, { wait: false });
         this.env.log.info(`Rerun ${chalk.green(`ionic link`)} to link to the new app.`);
       }
     } else if (appId === CHOICE_NEVERMIND) {

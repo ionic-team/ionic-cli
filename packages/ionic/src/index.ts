@@ -232,7 +232,6 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
 
   try {
     const config = await ienv.config.load();
-    config.version = plugin.meta.version;
 
     registerHooks(ienv.hooks);
 

@@ -9,9 +9,9 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 export class SignupCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const opn = await import('opn');
-    const config = await this.env.config.load();
+    const dashUrl = await this.env.config.getDashUrl();
 
-    opn(`${config.urls.dash}/signup?source=cli`, { wait: false });
+    opn(`${dashUrl}/signup?source=cli`, { wait: false });
 
     this.env.log.ok('Launched signup form in your browser!');
   }

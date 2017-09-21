@@ -163,18 +163,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.git = {};
     }
 
-    if (!results.git.host) {
-      results.git.host = 'git.ionicjs.com';
-    }
-
-    if (!results.urls.api) {
-      results.urls.api = 'https://api.ionicjs.com';
-    }
-
-    if (!results.urls.dash) {
-      results.urls.dash = 'https://dashboard.ionicjs.com';
-    }
-
     if (!results.user) {
       results.user = {};
     }
@@ -222,8 +210,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       && typeof j.state.lastCommand === 'string'
       && typeof j.daemon === 'object'
       && typeof j.urls === 'object'
-      && typeof j.urls.api === 'string'
-      && typeof j.urls.dash === 'string'
       && typeof j.user === 'object'
       && typeof j.tokens === 'object'
       && typeof j.tokens.appUser === 'object'
@@ -240,6 +226,54 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
     }
 
     return !config.state.lastNoResponseToUpdate || (new Date().getTime() - new Date(config.state.lastNoResponseToUpdate).getTime() > 86400000);
+  }
+
+  async getAPIUrl(): Promise<string> {
+    const config = await this.load();
+
+    if (config.urls.api) {
+      return config.urls.api;
+    }
+
+    if (config.backend === 'legacy') {
+      return 'https://api.ionic.io';
+    }
+
+    return 'https://api.ionicjs.com';
+  }
+
+  async getDashUrl(): Promise<string> {
+    const config = await this.load();
+
+    if (config.urls.dash) {
+      return config.urls.dash;
+    }
+
+    if (config.backend === 'legacy') {
+      return 'https://apps.ionic.io';
+    }
+
+    return 'https://dashboard.ionicjs.com';
+  }
+
+  async getGitHost(): Promise<string> {
+    const config = await this.load();
+
+    if (config.git.host) {
+      return config.git.host;
+    }
+
+    return 'git.ionicjs.com';
+  }
+
+  async getGitPort(): Promise<number> {
+    const config = await this.load();
+
+    if (config.git.port) {
+      return config.git.port;
+    }
+
+    return 22;
   }
 }
 

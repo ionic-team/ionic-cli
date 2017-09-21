@@ -92,10 +92,10 @@ export class Client implements IClient {
   constructor(public config: IConfig) {}
 
   async make(method: HttpMethod, path: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
-    const config = await this.config.load();
-    const url = path.startsWith('http://') || path.startsWith('https://') ? path : `${config.urls.api}${path}`;
-    let { req } = await createRequest(this.config, method, url);
-    req = req
+    const url = path.startsWith('http://') || path.startsWith('https://') ? path : `${await this.config.getAPIUrl()}${path}`;
+    const { req } = await createRequest(this.config, method, url);
+
+    req
       .set('Content-Type', CONTENT_TYPE_JSON)
       .set('Accept', CONTENT_TYPE_JSON);
 

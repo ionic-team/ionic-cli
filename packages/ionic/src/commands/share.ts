@@ -10,11 +10,11 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 })
 export class ShareCommand extends Command {
   async run(): Promise<number> {
-    const config = await this.env.config.load();
+    const dashUrl = await this.env.config.getDashUrl();
 
     this.env.log.error(
       `${chalk.green('ionic share')} has been removed as of CLI 3.0.\n` +
-      `The functionality now exists in the Ionic Dashboard: ${chalk.bold(config.urls.dash)}`
+      `The functionality now exists in the Ionic Dashboard: ${chalk.bold(dashUrl)}`
     );
 
     return 1;

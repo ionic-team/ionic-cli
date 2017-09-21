@@ -52,10 +52,9 @@ export class SSHUseCommand extends SSHBaseCommand {
 
     const { SSHConfig } = await import('@ionic/cli-utils/lib/ssh-config');
     const sshConfigPath = getConfigPath();
-    const config = await this.env.config.load();
     const text1 = await fileToString(sshConfigPath);
     const conf = SSHConfig.parse(text1);
-    await ensureHostAndKeyPath(conf, config.git, keyPath);
+    await ensureHostAndKeyPath(conf, { host: await this.env.config.getGitHost(), port: await this.env.config.getGitPort() }, keyPath);
     const text2 = SSHConfig.stringify(conf);
 
     if (text1 === text2) {

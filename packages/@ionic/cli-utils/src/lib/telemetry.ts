@@ -96,7 +96,7 @@ export async function sendCommand(env: IonicEnvironment, project: IProject, comm
       const now = new Date().toISOString();
       const isLoggedIn = await env.session.isLoggedIn();
 
-      const { req } = await client.make('POST', `${config.urls.api !== 'https://api.ionic.io' ? 'https://api.ionicjs.com' : ''}/events/metrics`); // TODO: full URL is temporary
+      const { req } = await client.make('POST', 'https://api.ionicjs.com/events/metrics'); // TODO: full URL is temporary
 
       const metric: { [key: string]: any; } = {
         'name': 'cli_command_metrics',

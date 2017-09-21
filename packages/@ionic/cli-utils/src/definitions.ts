@@ -192,6 +192,10 @@ export interface IApp {
 
 export interface IConfig extends IBaseConfig<ConfigFile> {
   isUpdatingEnabled(): Promise<boolean>;
+  getAPIUrl(): Promise<string>;
+  getDashUrl(): Promise<string>;
+  getGitHost(): Promise<string>;
+  getGitPort(): Promise<number>;
 }
 
 export interface IProject extends IBaseConfig<ProjectFile> {
@@ -347,8 +351,8 @@ export interface ConfigFile {
     updates: boolean;
   };
   urls: {
-    api: string;
-    dash: string;
+    api?: string;
+    dash?: string;
   };
   ssl?: {
     cafile?: string | string[];
@@ -356,7 +360,7 @@ export interface ConfigFile {
     keyfile?: string | string[];
   };
   git: {
-    host: string;
+    host?: string;
     port?: number;
     setup?: boolean;
   };

@@ -20,7 +20,7 @@ import {
 
 import { LOG_LEVELS, isLogLevel } from './guards';
 
-import { BACKEND_LEGACY, BACKEND_PRO } from './lib/backends';
+import { BACKEND_LEGACY } from './lib/backends';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
 import { DAEMON_JSON_FILE, Daemon } from './lib/daemon';
 import { Client } from './lib/http';
@@ -54,16 +54,6 @@ export function registerHooks(hooks: IHookEngine) {
   });
 
   hooks.register(name, 'backend:changed', async ({ env }) => {
-    const config = await env.config.load();
-
-    if (config.backend === BACKEND_PRO) {
-      config.urls.api = 'https://api.ionicjs.com';
-      config.urls.dash = 'https://dashboard.ionicjs.com';
-    } else if (config.backend === BACKEND_LEGACY) {
-      config.urls.api = 'https://api.ionic.io';
-      config.urls.dash = 'https://apps.ionic.io';
-    }
-
     const wasLoggedIn = await env.session.isLoggedIn();
     await env.session.logout();
 
@@ -72,8 +62,6 @@ export function registerHooks(hooks: IHookEngine) {
     if (wasLoggedIn) {
       env.log.info('You have been logged out.');
     }
-
-    await env.config.save();
   });
 }
 
@@ -83,6 +71,8 @@ async function getSession(config: IConfig, project: IProject, client: IClient): 
 }
 
 export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
+  const semver = await import('semver');
+
   const cwd = process.cwd();
   const argv = minimist(pargv, { boolean: true, string: '_' });
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
@@ -129,6 +119,15 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
 
   env['IONIC_PROJECT_DIR'] = projectDir || '';
   env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
+
+  if (semver.lte(plugin.meta.version, '3.10.3')) { // TODO: should happen once, but take this out eventually
+    delete configData.urls.api;
+    delete configData.urls.dash;
+    delete configData.git.host;
+    delete configData.git.port;
+  }
+
+  configData.version = plugin.meta.version;
 
   const project = new Project(env['IONIC_PROJECT_DIR'], PROJECT_FILE);
   const client = new Client(config);

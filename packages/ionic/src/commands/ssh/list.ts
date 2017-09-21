@@ -36,7 +36,7 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
 
     const sshConfigPath = getConfigPath();
     const conf = await loadFromPath(sshConfigPath);
-    const section = findHostSection(conf, config.git.host);
+    const section = findHostSection(conf, await this.env.config.getGitHost());
 
     if (section) {
       const [ identityFile ] = section.config.filter((line) => { // TODO: can't use find() w/o Host or Match, ssh-config bug?
