@@ -13,6 +13,7 @@ import { FatalException } from '../errors';
 import { fsReadFile, pathExists } from '../utils/fs';
 
 const WATCH_PATTERNS = [
+  'scss/**/*',
   'www/**/*',
   '!www/lib/**/*',
   '!www/**/*.map'
@@ -128,13 +129,12 @@ async function setupServer(env: IonicEnvironment, options: ServeMetaOptions): Pr
   const chokidar = await import('chokidar');
   const project = await env.project.load();
 
-  if (!project.watchPatterns) {
-    project.watchPatterns = [];
+  if (!project.watchPatterns || project.watchPatterns.length === 1 && project.watchPatterns[0] === 'scss/**/*') {
+    project.watchPatterns = WATCH_PATTERNS;
   }
 
-  const watchPatterns = [...new Set([...project.watchPatterns, ...WATCH_PATTERNS])];
-  env.log.debug(() => `Watch patterns: ${watchPatterns.map(v => chalk.bold(v)).join(', ')}`);
-  const watcher = chokidar.watch(watchPatterns, { cwd: env.project.directory });
+  env.log.debug(`Watch patterns: ${project.watchPatterns.map(v => chalk.bold(v)).join(', ')}`);
+  const watcher = chokidar.watch(project.watchPatterns, { cwd: env.project.directory });
   env.events.emit('watch:init');
 
   watcher.on('change', (filePath: string) => {

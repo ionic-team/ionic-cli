@@ -5,7 +5,6 @@ import * as gulpType from 'gulp';
 
 import { IonicEnvironment } from '../definitions';
 import { FatalException } from './errors';
-import { pathExists } from './utils/fs';
 import { promisify } from './utils/promise';
 
 let _gulpInst: typeof gulpType;
@@ -101,14 +100,6 @@ export async function registerWatchEvents(env: IonicEnvironment) {
   const project = await env.project.load();
 
   if (project.integrations.gulp && project.integrations.gulp.enabled !== false) {
-    if (!project.watchPatterns) {
-      project.watchPatterns = [];
-    }
-
-    if (!project.watchPatterns.includes('scss/**/*') && (await pathExists(path.join(env.project.directory, 'scss')))) {
-      project.watchPatterns.push('scss/**/*');
-    }
-
     const gulp = await loadGulp(env);
 
     env.events.on('watch:init', async () => {
