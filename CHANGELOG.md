@@ -7,6 +7,22 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.11.0"></a>
+#### 3.11.0 (2017-09-21)
+
+* Added support for generating iPhone X splash screen images:
+  `Default@2x~universal~anyany.png`. Just run `ionic cordova resources`.
+* The CLI will now run the local `cordova` binary if found in project. In
+  general, it will now prefer locally installed binaries over global binaries,
+  just like npm scripts.
+* Fixed Cordova run/emulate not cleaning up after itself in `config.xml`
+  (`original-src` -> `src`).
+* Fixed watch patterns bug for serve in Ionic 1. The CLI will now always use
+  `watchPatterns` in your `ionic.config.json`. If `watchPatterns` doesn't
+  exist, the CLI fills it in with default values.
+* Fixed bug with the CLI where the backend was occasionally misconfigured and
+  it was using the legacy URLs for Ionic Pro service requests.
+
 <a name="3.10.3"></a>
 #### 3.10.3 (2017-09-13)
 
