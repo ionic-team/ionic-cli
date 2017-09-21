@@ -33,8 +33,8 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   Cloud).
 * Added app-scripts arguments (such as `--prod`) to `ionic upload`. (:memo:
   Note: `ionic upload` is for Ionic Cloud, aka the "legacy" backend.)
-* Added SSL configuration options for CLI HTTP requests. See
-  [README.md#ssl-configuration](https://github.com/ionic-team/ionic-cli/blob/master/README.md#ssl-configuration).
+* Added SSL configuration options for CLI HTTP requests. See [SSH
+  Configuration](https://ionicframework.com/docs/cli/configuring.html#ssl-configuration).
 * Added Cordova arguments to `ionic cordova compile`.
 * Added `ionic cordova requirements` command.
 * Fixed issue with `ionic serve` requiring an external network.
@@ -93,7 +93,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   appropriately during `ionic build`, `ionic serve`, etc. For the latter two,
   integrations such as Cordova and Gulp are now detected and enabled
   automatically. See
-  [README.md#integrations](https://github.com/ionic-team/ionic-cli/blob/master/README.md#integrations).
+  [Integrations](https://ionicframework.com/docs/cli/configuring.html#integrations).
   The `@ionic/cli-plugin-proxy` plugin is unchanged. You are encouraged to
   uninstall the deprecated CLI plugins upon updating, as they are no longer
   needed and will not be loaded.
@@ -159,8 +159,8 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   for detailed information.
 * Added `ionic config` commands for getting and setting project
   (`ionic.config.json`) and global CLI config (`~/.ionic/config.json`) files.
-  See
-  [README.md#cli-config](https://github.com/ionic-team/ionic-cli/blob/master/README.md#cli-config).
+  See [Config
+  Files](https://ionicframework.com/docs/cli/configuring.html#config-files).
 * Removed `--no-timeouts`: All CLI timeouts have been removed, so the option is
   useless.
 * Fixed odd behavior of `--no-interactive` and `--confirm`: the flags now work
@@ -169,8 +169,8 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   new versions. The CLI now simply reads a file of latest versions instead of
   doing network requests.
 * Fixed CLI HTTP requests not being proxied for project commands. For this to
-  work, the CLI and the proxy plugin must be installed locally. See
-  [README.md#using-a-proxy](https://github.com/ionic-team/ionic-cli#using-a-proxy).
+  work, the CLI and the proxy plugin must be installed locally. See [Using a
+  Proxy](https://ionicframework.com/docs/cli/configuring.html#using-a-proxy).
 * Added `ionic logout` command. (Hidden for now.)
 * Using `--no-interactive` will no longer prompt for CLI updates at all.
 * Fixed issue with Ionic 1 not live-reloading in devices.
@@ -206,15 +206,11 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   bullet point below!
 * Added CLI hooks that you can use to run code during CLI events using npm
   scripts. See
-  [README.md#cli-hooks](https://github.com/ionic-team/ionic-cli/blob/master/README.md#cli-hooks)
-  for usage.
-* :tada: Added
-  [`@ionic/cli-plugin-gulp`](https://github.com/ionic-team/ionic-cli/tree/master/packages/cli-plugin-gulp)!
-  This plugin will hook into appropriately named gulp tasks during CLI events.
-  It will also automatically run the `sass` gulp task during SCSS file changes
-  during `ionic serve`. See the plugin's
-  [README.md](https://github.com/ionic-team/ionic-cli/blob/master/packages/cli-plugin-gulp/README.md)
-  for usage.
+  [Hooks](https://ionicframework.com/docs/cli/configuring.html#hooks) for
+  usage.
+* :tada: Added `@ionic/cli-plugin-gulp`! This plugin will hook into
+  appropriately named gulp tasks during CLI events. It will also automatically
+  run the `sass` gulp task during SCSS file changes during `ionic serve`.
 * Fixed an issue where `0.0.0.0` was the address being opened in the browser
   for Ionic 1 apps for server. Now the dev server still *binds* on `0.0.0.0` by
   default, but opens `localhost` in the browser.
@@ -261,12 +257,11 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 #### Upgrading from CLI v2
 
-As a reminder, Ionic Cloud users must migrate their apps to
-[Ionic Pro](https://dashboard.ionicjs.com/apps) to continue using our services.
-The changes below often reference Ionic Cloud, which is deprecated. See the
-[Cloud Migration guide](https://ionicframework.com/docs/pro/migration/) for
-details and
-[README.md#ionic-pro](https://github.com/ionic-team/ionic-cli#ionic-pro) to see
+As a reminder, Ionic Cloud users must migrate their apps to [Ionic
+Pro](https://dashboard.ionicjs.com/apps) to continue using our services. The
+changes below often reference Ionic Cloud, which is deprecated. See the [Cloud
+Migration guide](https://ionicframework.com/docs/pro/migration/) for details
+and [the CLI website](https://ionicframework.com/docs/cli/#ionic-pro) to see
 how the CLI integrates with Ionic Pro.
 
 ##### Required Changes
