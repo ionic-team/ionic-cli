@@ -13,7 +13,7 @@ describe('@ionic/cli-utils', () => {
       const result = resources.flattenResourceJsonStructure();
 
       expect(result).toEqual(jasmine.any(Array));
-      expect(result.length).toEqual(52);
+      expect(result.length).toEqual(53);
       expect(result.find(img => img.name === 'Default-568h@2x~iphone.png')).toEqual({
         platform: 'ios',
         resType: 'splash',
