@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.12.0"></a>
+# [3.12.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.9.2...ionic@3.12.0) (2017-09-21)
+
+
+### Bug Fixes
+
+* **backends:** explicitly list known backends ([84fa7d7](https://github.com/ionic-team/ionic-cli/commit/84fa7d7))
+* **config:** compute urls for backend ([19687b1](https://github.com/ionic-team/ionic-cli/commit/19687b1))
+* **cordova:** generate resources upon platform add ([c8b4d11](https://github.com/ionic-team/ionic-cli/commit/c8b4d11))
+* **cordova:** remove original-src from config.xml after serve ([4835cd9](https://github.com/ionic-team/ionic-cli/commit/4835cd9))
+* **cordova:** show all output for prepare ([ca6e0ef](https://github.com/ionic-team/ionic-cli/commit/ca6e0ef))
+* prefer locally installed executables ([fe07215](https://github.com/ionic-team/ionic-cli/commit/fe07215))
+* **cordova:** write hash files only after successful resources generation ([47286cb](https://github.com/ionic-team/ionic-cli/commit/47286cb))
+* **devapp:** "handle" error event ([45e565a](https://github.com/ionic-team/ionic-cli/commit/45e565a))
+* **pro:** fix "infinity" bug ([3cb47f0](https://github.com/ionic-team/ionic-cli/commit/3cb47f0))
+* **ssh:** prompt for login before setup begins ([4d2f3b6](https://github.com/ionic-team/ionic-cli/commit/4d2f3b6))
+* **upload:** accept app-script args for builds during upload ([dd5a3a8](https://github.com/ionic-team/ionic-cli/commit/dd5a3a8))
+
+
+### Features
+
+* **config:** add interactive config value ([a783d54](https://github.com/ionic-team/ionic-cli/commit/a783d54))
+* **cordova:** add --dev-logger-port to run/emulate ([706680d](https://github.com/ionic-team/ionic-cli/commit/706680d))
+* **cordova:** compile accepts cordova build args ([3df280b](https://github.com/ionic-team/ionic-cli/commit/3df280b))
+* **cordova:** ionic cordova requirements ([c0696f3](https://github.com/ionic-team/ionic-cli/commit/c0696f3))
+* **info:** show backend ([e1b7fda](https://github.com/ionic-team/ionic-cli/commit/e1b7fda))
+* **pro:** default new apps to Ionic Pro ([6966135](https://github.com/ionic-team/ionic-cli/commit/6966135))
+* **serve:** --auth feature for basic auth ([0b92c51](https://github.com/ionic-team/ionic-cli/commit/0b92c51))
+* **serve:** adds devapp support ([10f34cf](https://github.com/ionic-team/ionic-cli/commit/10f34cf))
+* **ssh:** allow generation of non-rsa keys ([4f9c648](https://github.com/ionic-team/ionic-cli/commit/4f9c648))
+* **ssl:** cafile, certfile, keyfile options ([b9cee01](https://github.com/ionic-team/ionic-cli/commit/b9cee01))
+
+
+
+
 <a name="3.11.0"></a>
 # [3.11.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.9.2...ionic@3.11.0) (2017-09-21)
 
