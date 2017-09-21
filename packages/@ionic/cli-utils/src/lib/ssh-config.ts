@@ -36,7 +36,7 @@ export function ensureHostAndKeyPath(conf: SSHConfigModule.SSHConfig, conn: { ho
   // massage the section for proper whitespace
 
   section.before = '';
-  section.after = '\n'
+  section.after = '\n';
 
   for (let entry of section.config) {
     entry.before = '    ';

@@ -84,7 +84,7 @@ async function formatNamespaceHeader(env: IonicEnvironment, ns: INamespace, cmdM
   }
 
   return `
-  ${chalk.bold.green('ionic ' + ns.name)} ${chalk.bold('-')} ${namespaceIsDeprecated(cmdMetadataList) ? chalk.yellow.bold('(deprecated)') + ' ': ''}${chalk.bold(ns.description)}${formatLongDescription(ns.longDescription)}`;
+  ${chalk.bold.green('ionic ' + ns.name)} ${chalk.bold('-')} ${namespaceIsDeprecated(cmdMetadataList) ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${chalk.bold(ns.description)}${formatLongDescription(ns.longDescription)}`;
 }
 
 async function formatHeader(env: IonicEnvironment) {
