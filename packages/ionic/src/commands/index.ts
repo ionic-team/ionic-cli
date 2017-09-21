@@ -7,6 +7,7 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
   readonly root = true;
   readonly name = 'ionic';
   readonly description = '';
+  readonly longDescription = '';
 
   namespaces = new NamespaceMap([
     ['config', async () => { const { ConfigNamespace } = await import('./config'); return new ConfigNamespace(); }],

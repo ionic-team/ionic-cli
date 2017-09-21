@@ -39,6 +39,7 @@ export class Namespace implements INamespace {
   root = false;
   name = '';
   description = '';
+  longDescription = '';
 
   namespaces = new NamespaceMap();
   commands = new CommandMap();

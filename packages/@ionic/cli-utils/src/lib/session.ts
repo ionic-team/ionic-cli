@@ -39,7 +39,7 @@ export class BaseSession {
 
     if (!c.tokens.user) {
       throw new FatalException(
-        `Oops, sorry! You'll need to log in:\n\n    ${chalk.green('ionic login')}\n\n` +
+        `Oops, sorry! You'll need to log in:\n    ${chalk.green('ionic login')}\n\n` +
         `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`
       );
     }

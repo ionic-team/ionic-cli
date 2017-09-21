@@ -1,8 +1,17 @@
+import * as chalk from 'chalk';
+
 import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class CordovaNamespace extends Namespace {
   name = 'cordova';
   description = 'Cordova functionality';
+  longDescription = `
+These commands integrate with Apache Cordova, which brings native functionality to your app. Aside from ${chalk.green('ionic cordova resources')}, these commands all wrap the Cordova CLI.
+
+Cordova Reference documentation:
+- Overview: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/overview/index.html')}
+- CLI documentation: ${chalk.bold('https://cordova.apache.org/docs/en/latest/reference/cordova-cli/')}
+`;
 
   commands = new CommandMap([
     ['build', async () => { const { BuildCommand } = await import('./build'); return new BuildCommand(); }],

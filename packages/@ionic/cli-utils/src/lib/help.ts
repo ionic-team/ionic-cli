@@ -68,21 +68,35 @@ async function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, in
   const globalCmds = await getCommandDetails(env, ns, cmdMetadataList.filter(cmd => cmd.type === 'global'));
   const projectCmds = await getCommandDetails(env, ns, cmdMetadataList.filter(cmd => cmd.type === 'project'));
 
-  let output = '';
+  return `${await formatNamespaceHeader(env, ns, cmdMetadataList)}
 
+  ${chalk.bold('Usage')}:
+
+${await formatUsage(env, ns)}
+
+` + (globalCmds.length > 0 ? `  ${chalk.bold('Global Commands')}:\n\n${formatList(globalCmds)}\n` : '')
+  + (projectCmds.length > 0 ? `  ${chalk.bold('Project Commands')}:\n\n${env.project.directory ? formatList(projectCmds) : '    You are not in a project directory.\n'}\n` : '');
+}
+
+async function formatNamespaceHeader(env: IonicEnvironment, ns: INamespace, cmdMetadataList: HydratedCommandData[]) {
   if (ns.root) {
-    output += `${await formatHeader(env)}\n`;
-  } else {
-    output += `\n  ${chalk.bold.green('ionic ' + ns.name)} ${chalk.bold('-')} ${namespaceIsDeprecated(cmdMetadataList) ? chalk.yellow.bold('(deprecated)') + ' ': ''}${chalk.bold(ns.description)}\n`;
+    return formatHeader(env);
   }
 
-  output += '\n' +
-    `  ${chalk.bold('Usage')}:\n\n` +
-    `${await formatUsage(env, ns)}\n` +
-    (globalCmds.length > 0 ? `  ${chalk.bold('Global Commands')}:\n\n${formatList(globalCmds)}\n` : '') +
-    (projectCmds.length > 0 ? `  ${chalk.bold('Project Commands')}:\n\n${env.project.directory ? formatList(projectCmds) : '    You are not in a project directory.\n'}\n` : '');
+  return `
+  ${chalk.bold.green('ionic ' + ns.name)} ${chalk.bold('-')} ${namespaceIsDeprecated(cmdMetadataList) ? chalk.yellow.bold('(deprecated)') + ' ': ''}${chalk.bold(ns.description)}${formatLongDescription(ns.longDescription)}`;
+}
 
-  return output;
+async function formatHeader(env: IonicEnvironment) {
+  const config = await env.config.load();
+  const isLoggedIn = await env.session.isLoggedIn();
+
+  return `   _             _
+  (_)           (_)
+   _  ___  _ __  _  ___
+  | |/ _ \\| '_ \\| |/ __|
+  | | (_) | | | | | (__
+  |_|\\___/|_| |_|_|\\___|  CLI ${config.backend === BACKEND_PRO && isLoggedIn ? chalk.blue('PRO') + ' ' : ''}${env.plugins.ionic.meta.version}\n`;
 }
 
 async function formatUsage(env: IonicEnvironment, ns: INamespace) {
@@ -98,18 +112,6 @@ async function formatUsage(env: IonicEnvironment, ns: INamespace) {
   ];
 
   return usageLines.map(u => `    ${chalk.dim('$')} ${chalk.green(name + ' ' + u)}`).join('\n') + '\n';
-}
-
-async function formatHeader(env: IonicEnvironment) {
-  const config = await env.config.load();
-  const isLoggedIn = await env.session.isLoggedIn();
-
-  return `   _             _
-  (_)           (_)
-   _  ___  _ __  _  ___
-  | |/ _ \\| '_ \\| |/ __|
-  | | (_) | | | | | (__
-  |_|\\___/|_| |_|_|\\___|  CLI ${config.backend === BACKEND_PRO && isLoggedIn ? chalk.blue('PRO') + ' ' : ''}${env.plugins.ionic.meta.version}\n`;
 }
 
 async function getCommandDetails(env: IonicEnvironment, ns: INamespace, commands: HydratedCommandData[]): Promise<string[]> {

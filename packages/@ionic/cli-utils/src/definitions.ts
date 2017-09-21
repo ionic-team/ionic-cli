@@ -618,6 +618,7 @@ export interface INamespace {
   root: boolean;
   name: string;
   description: string;
+  longDescription: string;
   namespaces: INamespaceMap;
   commands: ICommandMap;
 
