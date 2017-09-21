@@ -105,16 +105,21 @@ export class Logger implements ILogger {
       const b = chalk.dim;
 
       const msgLines = wordWrap(msg, { indentation: level.length + 3 }).split('\n');
-      msg = msgLines.map((l, i) => {
-        // We want these log messages to stand out a bit, so automatically
-        // color the first line and separate the first line from the other
-        // lines if the message is multi-lined.
-        if (i === 0 && this.firstLineColored.includes(level)) {
-          return color(l) + (msgLines.length > 1 ? '\n' : '');
-        }
 
-        return l;
-      }).join('\n');
+      if (msg.trim().includes('\n')) {
+        msg = msgLines.map((l, i) => {
+          // We want these log messages to stand out a bit, so automatically
+          // color the first line and separate the first line from the other
+          // lines if the message is multi-lined.
+          if (i === 0 && this.firstLineColored.includes(level)) {
+            return color(l) + (msgLines.length > 1 ? '\n' : '');
+          }
+
+          return l;
+        }).join('\n');
+      } else {
+        msg = msgLines.join('\n');
+      }
 
       msg = this.enforceLF(msg);
 

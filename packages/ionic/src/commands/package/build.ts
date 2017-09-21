@@ -4,6 +4,8 @@ import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandPreRun, P
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { contains } from '@ionic/cli-utils/lib/validators';
 
+import { DEPRECATION_NOTICE } from './common';
+
 @CommandMetadata({
   name: 'build',
   type: 'project',
@@ -11,6 +13,8 @@ import { contains } from '@ionic/cli-utils/lib/validators';
   deprecated: true,
   description: 'Start a package build',
   longDescription: `
+${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}
+
 Ionic Package makes it easy to build a native binary of your app in the cloud.
 
 Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/services/package/')}

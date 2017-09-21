@@ -5,6 +5,8 @@ import * as chalk from 'chalk';
 import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
+import { DEPRECATION_NOTICE } from './common';
+
 @CommandMetadata({
   name: 'download',
   type: 'project',
@@ -12,6 +14,8 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
   deprecated: true,
   description: 'Download your packaged app',
   longDescription: `
+${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}
+
 Ionic Package makes it easy to build a native binary of your app in the cloud.
 
 Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/services/package/')}

@@ -3,6 +3,8 @@ import * as chalk from 'chalk';
 import { BACKEND_LEGACY, CommandLineInput, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
+const DEPRECATION_NOTICE = `Ionic Cloud is deprecated and will reach end-of-life on January 31st, 2018. This command will not be supported afterwards. Ionic Pro takes a different approach to uploading. See the Getting Started documentation for details: ${chalk.bold('https://ionicframework.com/docs/pro/basics/getting-started/')}`;
+
 @CommandMetadata({
   name: 'upload',
   type: 'project',
@@ -10,6 +12,8 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
   deprecated: true,
   description: 'Upload a new snapshot of your app',
   longDescription: `
+${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}
+
 Zips up your local app files and uploads a snapshot to Ionic.
 
 From there, you can use Ionic View (${chalk.bold('https://view.ionic.io')}) to easily share your app with your organization and testers around the world.
@@ -111,6 +115,8 @@ export class UploadCommand extends Command implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
     const { upload } = await import('@ionic/cli-utils/lib/upload');
+
+    this.env.log.warn(DEPRECATION_NOTICE);
 
     const note = this.resolveNote(options['note']);
     const channelTag = this.resolveChannelTag(options['deploy']);

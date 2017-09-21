@@ -2,13 +2,13 @@ import * as chalk from 'chalk';
 
 import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
+import { DEPRECATION_NOTICE } from './common';
+
 export class PackageNamespace extends Namespace {
   name = 'package';
   description = 'Commands for Ionic Package';
   deprecated = true;
-  longDescription = `
-${chalk.yellow('WARNING')}: Ionic Cloud is deprecated and will reach end-of-life on January 31st, 2018. These commands will not be supported afterwards. Ionic Pro takes a different approach to the Ionic Package service. See the Package documentation for details: ${chalk.bold('https://ionicframework.com/docs/pro/package/')}
-`;
+  longDescription = `${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}`;
 
   commands = new CommandMap([
     ['build', async () => { const { PackageBuildCommand } = await import('./build'); return new PackageBuildCommand(); }],
