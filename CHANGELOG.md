@@ -7,6 +7,13 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.12.0"></a>
+#### 3.12.0 (2017-09-21)
+
+* Added support for generating iPhone Marketing Icons: `icon-1024.png`. Just
+  run `ionic cordova resources`.
+* Added ability to generate/support non-RSA SSH keys for Ionic Pro.
+
 <a name="3.11.0"></a>
 #### 3.11.0 (2017-09-21)
 

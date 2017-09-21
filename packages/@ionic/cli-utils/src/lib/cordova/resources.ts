@@ -344,6 +344,7 @@ export const RESOURCES: ResourcesConfig = {
         { name: 'icon-small.png', width: 29, height: 29 },
         { name: 'icon-small@2x.png', width: 58, height: 58 },
         { name: 'icon-small@3x.png', width: 87, height: 87 },
+        { name: 'icon-1024.png', width: 1024, height: 1024 },
       ],
       nodeName: 'icon',
       nodeAttributes: ['src', 'width', 'height'],
