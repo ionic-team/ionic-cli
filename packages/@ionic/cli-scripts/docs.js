@@ -14,11 +14,20 @@ run().then(() => console.log('done!')).catch((err) => console.error(err));
 async function run() {
   const env = await utilsPkg.generateIonicEnvironment(ionicPkg, process.argv.slice(2), process.env);
 
-  const nsPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'index.md');
-  const nsDoc = await formatIonicPage(env);
+  const indexPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'index.md');
+  const indexDoc = await formatIonicPage(env);
 
-  await utilsFsPkg.fsMkdirp(path.dirname(nsPath));
-  await utilsFsPkg.fsWriteFile(nsPath, nsDoc, { encoding: 'utf8' });
+  const commandsPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'commands.md');
+  const commandsDoc = await formatCommandsPage(env);
+
+  const configuringPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'configuring.md');
+  const configuringDoc = await formatConfiguringPage(env);
+
+  await utilsFsPkg.fsMkdirp(path.dirname(indexPath));
+
+  await utilsFsPkg.fsWriteFile(indexPath, indexDoc, { encoding: 'utf8' });
+  await utilsFsPkg.fsWriteFile(commandsPath, commandsDoc, { encoding: 'utf8' });
+  await utilsFsPkg.fsWriteFile(configuringPath, configuringDoc, { encoding: 'utf8' });
 
   const commands = await getCmds(env);
   const commandPromises = commands.map(async (cmd) => {
@@ -41,23 +50,16 @@ async function getCmds(env) {
 }
 
 async function formatIonicPage(env) {
-  const stripAnsi = env.load('strip-ansi');
-
-  function listCommandLink(cmdData) {
-    return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '))}/) | ${cmdData.deprecated ? '(deprecated) ' : ''}${stripAnsi(cmdData.description)}`;
-  }
-
-  const commands = await getCmds(env);
-
   return `---
 layout: fluid/cli_docs_base
 category: cli
-id: cli-intro
+id: cli-index
 title: Ionic CLI Documentation
-body_class: 'pro-docs'
 hide_header_search: true
 dark_header: true
 ---
+
+${sillyNotice()}
 
 # Ionic CLI
 
@@ -77,7 +79,7 @@ $ npm install -g ionic@latest
 
 You can verify your installation with the \`ionic --version\` command.
 
-## Getting started
+## Getting Started
 
 Start a new Ionic project using \`ionic start\`:
 
@@ -119,11 +121,56 @@ The \`ionic cordova\` commands (aside from \`ionic cordova resources\`) wrap the
 
 Ionic Cloud (legacy) will be supported until its end-of-life on January 31st, 2018. Until then, you can switch between Ionic Cloud and Ionic Pro with \`ionic config set -g backend legacy\` and \`ionic config set -g backend pro\`. Unfortunately, you'll need to re-authenticate with \`ionic login\` each time the backend mode is switched.
 
+## Troubleshooting
+
+If you're having trouble with the CLI, you can try the following:
+
+* Make sure you're on the latest version of the CLI. Update with \`npm update -g ionic\`.
+* Try running commands with the \`--verbose\` flag, which will print \`DEBUG\` messages.
+`;
+}
+
+async function formatCommandsPage(env) {
+  const stripAnsi = env.load('strip-ansi');
+
+  const commands = await getCmds(env);
+
+  function listCommandLink(cmdData) {
+    return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '))}/) | ${cmdData.deprecated ? '(deprecated) ' : ''}${stripAnsi(cmdData.description)}`;
+  }
+
+  return `${formatPageHeader('Commands', 'cli-command-list')}
+
+This is a comprehensive list of CLI commands. The \`ionic --help\` command will show a more organized and accurate list of commands.
+
+Command | Description
+------- | -----------
+${commands.map(listCommandLink).join(`
+`)}
+`;
+}
+
+function formatConfiguringPage() {
+  return `${formatPageHeader('Configuring', 'cli-configuration')}
+
+
+
+{% include fluid/toc.html %}
+
+## Config Files
+
+Configuration values are stored in JSON files.
+
+* Global config file (\`~/.ionic/config.json\`): for global CLI config and auth
+* Project config files (\`ionic.config.json\`): for Ionic project config
+
+The CLI provides commands for setting and printing config values from project config files and the global CLI config file. See \`ionic config set --help\` and \`ionic config get --help\` for usage.
+
 ## Integrations
 
 Integrations such as Cordova are automatically activated when detected, but can be easily disabled.
 
-Integrations hook into CLI events. For example, when the Cordova integration is enabled, \`ionic cordova prepare\` will run after \`ionic build\` runs. See [CLI Hooks](#cli-hooks).
+Integrations hook into CLI events. For example, when the Cordova integration is enabled, \`ionic cordova prepare\` will run after \`ionic build\` runs. See [Hooks](#hooks).
 
 | integration | enabled when...                                             | disabled with...                                         |
 | ------------|-------------------------------------------------------------|----------------------------------------------------------|
@@ -134,7 +181,7 @@ Integrations hook into CLI events. For example, when the Cordova integration is 
 
 The CLI will look for the following environment variables:
 
-* \`IONIC_CONFIG_DIRECTORY\`: Where the CLI config files live. Defaults to \`~/.ionic\`.
+* \`IONIC_CONFIG_DIRECTORY\`: The directory of the global CLI config. Defaults to \`~/.ionic\`.
 * \`IONIC_HTTP_PROXY\`: Set a URL for proxying all CLI requests through. See [Using a Proxy](#using-a-proxy). The CLI will also look for \`HTTP_PROXY\` and \`HTTPS_PROXY\`, both of which npm use.
 * \`IONIC_EMAIL\` / \`IONIC_PASSWORD\`: For automatic login via environment variables.
 
@@ -148,19 +195,15 @@ CLI flags are global options that alter the behavior of a CLI command.
 * \`--no-interactive\`: Turn off interactive prompts and fancy outputs. If a CI server is detected (we use [ci-info](https://www.npmjs.com/package/ci-info)), the CLI is automatically non-interactive.
 * \`--confirm\`: Turn on auto-confirmation of confirmation prompts. *Careful*: the CLI prompts before doing something potentially harmful. Auto-confirming may have unintended results.
 
-## Configuration
-
-The CLI provides commands for setting and printing config values from project config files and the global CLI config file. See \`ionic config set --help\` and \`ionic config get --help\` for usage.
-
 ## Hooks
 
 CLI hooks are how you can run scripts during CLI events, such as "watch" and "build". To hook into the CLI, use the following [npm scripts](https://docs.npmjs.com/misc/scripts) in your \`package.json\` file:
 
-| npm script             | description                                                       | commands                                                                                                                              |
-|------------------------|-------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| \`ionic:watch:before\` | Runs **before** the file watcher activates during a "watch" event | \`ionic serve\`, \`ionic cordova run -l\`, \`ionic cordova emulate -l\`                                                               |
-| \`ionic:build:before\` | Runs **before** the Ionic "build" event starts.                   | \`ionic build\`, \`ionic upload\`, \`ionic package build\`, \`ionic cordova build\`, \`ionic cordova run\`, \`ionic cordova emulate\` |
-| \`ionic:build:after\`  | Runs **after** the Ionic "build" event finishes.                  | \`ionic build\`, \`ionic upload\`, \`ionic package build\`, \`ionic cordova build\`, \`ionic cordova run\`, \`ionic cordova emulate\` |
+| npm script             | commands                                                                                                                              |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| \`ionic:watch:before\` | \`ionic serve\`, \`ionic cordova run -l\`, \`ionic cordova emulate -l\`                                                               |
+| \`ionic:build:before\` | \`ionic build\`, \`ionic upload\`, \`ionic package build\`, \`ionic cordova build\`, \`ionic cordova run\`, \`ionic cordova emulate\` |
+| \`ionic:build:after\`  | \`ionic build\`, \`ionic upload\`, \`ionic package build\`, \`ionic cordova build\`, \`ionic cordova run\`, \`ionic cordova emulate\` |
 
 ### Example
 
@@ -236,22 +279,23 @@ $ ionic config set -g ssl.keyfile /path/to/keyfile # file path to a client key f
 \`\`\`
 
 The \`cafile\`, \`certfile\`, and \`keyfile\` entries can be manually edited as arrays of strings in \`~/.ionic/config.json\` to include multiple files.
+`;
+}
 
-## Command List
+function formatPageHeader(name, id) {
+  return `---
+layout: fluid/cli_docs_base
+category: cli
+id: ${id}
+page_name: ${name}
+title: Ionic CLI Documentation - ${name}
+hide_header_search: true
+dark_header: true
+---
 
-Here is a full list of Ionic commands. You can also see the list on the command line with \`ionic --help\`.
+${sillyNotice()}
 
-Command | Description
-------- | -----------
-${commands.map(listCommandLink).join(`
-`)}
-
-## Troubleshooting
-
-If you're having trouble with the CLI, you can try the following:
-
-* Make sure you're on the latest version of the CLI. Update with \`npm update -g ionic\`.
-* Try running commands with the \`--verbose\` flag, which will print \`DEBUG\` messages.
+# ${name}
 `;
 }
 
@@ -260,15 +304,26 @@ function formatCommandHeader(cmd) {
 layout: fluid/cli_docs_base
 category: cli
 id: cli-${cmd.fullName.split(' ').join('-')}
-command_name: ${cmd.fullName}
-title: Ionic CLI Documentation - ${cmd.fullName}
+page_name: ionic ${cmd.fullName}
+command_name: ionic ${cmd.fullName}
+title: Ionic CLI Documentation - ionic ${cmd.fullName}
 header_sub_title: Ionic CLI
 ---
 
+${sillyNotice()}
+
 # \`$ ionic ${cmd.fullName}\`
 
-{% include fluid/toc.html %}
+`;
+}
 
+function sillyNotice() {
+  return `
+{% comment %}
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+DO NOT MODIFY THIS FILE DIRECTLY -- IT IS GENERATED FROM THE CLI REPO
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+{% endcomment %}
 `;
 }
 
