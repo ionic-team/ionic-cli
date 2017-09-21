@@ -230,6 +230,7 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const { filterArgumentsForCordova, generateBuildOptions } = await import('@ionic/cli-utils/lib/cordova/utils');
+    const { registerShutdownFunction } = await import('@ionic/cli-utils/lib/process');
 
     if (!options['livereload'] && (options['consolelogs'] || options['serverlogs'])) {
       this.env.log.info(`${chalk.green('--consolelogs')} or ${chalk.green('--serverlogs')} detected, using ${chalk.green('--livereload')}`);
@@ -255,6 +256,11 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
       const { build } = await import('@ionic/cli-utils/commands/build');
       await build(this.env, inputs, generateBuildOptions(this.metadata, options));
     }
+
+    registerShutdownFunction(() => {
+      conf.resetContentSrc();
+      conf.saveSync();
+    });
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });
 

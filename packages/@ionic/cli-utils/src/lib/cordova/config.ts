@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 
 import * as et from 'elementtree';
@@ -46,10 +47,11 @@ export class ConfigXml {
   }
 
   async save(): Promise<void> {
-    // Cordova hard codes an indentation of 4 spaces, so we'll follow.
-    const contents = this.doc.write({ indent: 4 });
+    await fsWriteFile(this.filePath, this.write(), { encoding: 'utf8' });
+  }
 
-    await fsWriteFile(this.filePath, contents, { encoding: 'utf8' });
+  saveSync(): void {
+    fs.writeFileSync(this.filePath, this.write(), { encoding: 'utf8' });
   }
 
   /**
@@ -216,6 +218,13 @@ export class ConfigXml {
     if (!splashScreenDelayPrefElement) {
       splashScreenDelayPrefElement = et.SubElement(root, 'preference', { name: 'SplashScreenDelay', value: '3000' });
     }
+  }
+
+  protected write(): string {
+    // Cordova hard codes an indentation of 4 spaces, so we'll follow.
+    const contents = this.doc.write({ indent: 4 });
+
+    return contents;
   }
 
   protected engineElementToPlatformEngine(engine: et.IElement): PlatformEngine {

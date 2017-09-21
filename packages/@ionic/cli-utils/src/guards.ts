@@ -32,8 +32,8 @@ export function isCommand(cmd: ICommand | INamespace): cmd is ICommand {
   return typeof (<ICommand>cmd).run === 'function';
 }
 
-export function isCommandPreRun(cmd: ICommand): cmd is CommandPreRun {
-  return typeof (<CommandPreRun>cmd).preRun === 'function';
+export function isCommandPreRun(cmd: any): cmd is CommandPreRun {
+  return cmd && typeof cmd.preRun === 'function';
 }
 
 export function isLogLevel(l: string): l is LogLevel {

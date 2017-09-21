@@ -1,7 +1,16 @@
 import * as path from 'path';
 import * as chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandPreRun, KnownPlatform, ResourcesConfig, ResourcesImageConfig, SourceImage } from '@ionic/cli-utils';
+import {
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandPreRun,
+  KnownPlatform,
+  ResourcesConfig,
+  ResourcesImageConfig,
+  SourceImage,
+} from '@ionic/cli-utils';
+
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { cacheFileChecksum, pathExists } from '@ionic/cli-utils/lib/utils/fs';
