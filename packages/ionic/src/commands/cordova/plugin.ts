@@ -26,7 +26,7 @@ Like running ${chalk.green('cordova plugin')} directly, but provides friendly ch
   options: [
     {
       name: 'force',
-      description: `Forve overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
+      description: `Force overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
       type: Boolean,
       intent: 'cordova',
       advanced: true,
