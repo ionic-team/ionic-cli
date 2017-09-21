@@ -21,8 +21,13 @@ export class SSHSetupCommand extends SSHBaseCommand {
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { getGeneratedPrivateKeyPath } = await import('@ionic/cli-utils/lib/ssh');
     const { getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
+    const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
 
     const config = await this.env.config.load();
+
+    if (!(await this.env.session.isLoggedIn())) {
+      await promptToLogin(this.env);
+    }
 
     const CHOICE_AUTOMATIC = 'automatic';
     const CHOICE_MANUAL = 'manual';
