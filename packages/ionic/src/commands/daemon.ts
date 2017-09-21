@@ -29,6 +29,7 @@ export class DaemonCommand extends Command {
     const { pkgLatestVersion } = await import('@ionic/cli-utils/lib/utils/npm');
     const { findClosestOpenPort } = await import('@ionic/cli-utils/lib/utils/network');
     const { determineDistTag, versionNeedsUpdating } = await import('@ionic/cli-utils/lib/plugins');
+    const { registerShutdownFunction } = await import('@ionic/cli-utils/lib/process');
 
     const updateInterval = Number(options.interval);
     const killExisting = options['kill-existing'];
@@ -131,7 +132,7 @@ export class DaemonCommand extends Command {
       await this.env.daemon.save();
     };
 
-    const cleanup = () => {
+    registerShutdownFunction(() => {
       const fs = require('fs');
 
       try {
@@ -149,15 +150,7 @@ export class DaemonCommand extends Command {
           throw e;
         }
       }
-
-      process.exit();
-    };
-
-    process.on('exit', cleanup);
-    process.on('SIGINT', cleanup);
-    process.on('SIGTERM', cleanup);
-    process.on('SIGHUP', cleanup);
-    process.on('SIGBREAK', cleanup);
+    });
 
     const delayMs = 5 * 1000; // wait 5 seconds before doing first check
     const updateIntervalMs = updateInterval * 1000; // check every interval
