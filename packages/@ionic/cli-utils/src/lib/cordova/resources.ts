@@ -362,6 +362,7 @@ export const RESOURCES: ResourcesConfig = {
         { name: 'Default-Portrait~ipad.png', width: 768, height: 1024, orientation: 'portrait' },
         { name: 'Default@2x~iphone.png', width: 640, height: 960, orientation: 'portrait' },
         { name: 'Default~iphone.png', width: 320, height: 480, orientation: 'portrait' },
+        { name: 'Default@2x~universal~anyany.png', width: 2732, height: 2732 },
       ],
       nodeName: 'splash',
       nodeAttributes: ['src', 'width', 'height'],
