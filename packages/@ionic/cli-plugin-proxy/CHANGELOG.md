@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.4.10"></a>
+## [1.4.10](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-proxy@1.4.9...@ionic/cli-plugin-proxy@1.4.10) (2017-09-21)
+
+
+
+
+**Note:** Version bump only for package @ionic/cli-plugin-proxy
+
 <a name="1.4.9"></a>
 ## [1.4.9](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-proxy@1.4.8...@ionic/cli-plugin-proxy@1.4.9) (2017-09-13)
 
