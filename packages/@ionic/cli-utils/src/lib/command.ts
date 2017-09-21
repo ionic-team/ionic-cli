@@ -73,7 +73,7 @@ export class Command implements ICommand {
         validateInputs(inputs, this.metadata);
       } catch (e) {
         if (!this.env.flags.interactive) {
-          this.env.log.warn(`Command ran non-interactively due to ${chalk.green('--no-interactive')} (or CI detected).`);
+          this.env.log.warn(`Command ran non-interactively due to ${chalk.green('--no-interactive')} flag, CI being detected, or a config setting.`);
         }
 
         throw e;

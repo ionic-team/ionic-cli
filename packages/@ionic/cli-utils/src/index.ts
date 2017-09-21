@@ -87,7 +87,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   let levelInvalid = false;
   let prefix: string | (() => string) = '';
 
-  if (isCI) {
+  if (isCI || configData.interactive === false) {
     flags.interactive = false;
   }
 

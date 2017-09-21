@@ -55,8 +55,10 @@ export class LoginCommand extends Command implements CommandPreRun {
       const extra = !inputs[0] || !inputs[1] ? 'Prompting for new credentials.' : 'Attempting login.';
       this.env.log.warn(`You are already logged in${config.user.email ? ' as ' + chalk.bold(config.user.email) : ''}! ${this.env.flags.interactive ? extra : ''}`);
     } else {
-      this.env.log.msg(`Log into your Ionic account\n` +
-                       `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`);
+      this.env.log.msg(
+        `Log into your Ionic account\n` +
+        `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`
+      );
     }
 
     if (options['email'] || options['password']) {

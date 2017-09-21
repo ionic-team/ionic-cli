@@ -375,6 +375,7 @@ export interface ConfigFile {
   };
   backend: BackendFlag;
   telemetry: boolean;
+  interactive?: boolean;
   yarn: boolean;
 }
 
