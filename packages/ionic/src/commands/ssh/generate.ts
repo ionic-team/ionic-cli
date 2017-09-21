@@ -8,6 +8,8 @@ import { fsMkdirp, fsUnlink, pathExists } from '@ionic/cli-utils/lib/utils/fs';
 
 import { SSHBaseCommand } from './base';
 
+const SSH_KEY_TYPES = ['dsa', 'ecdsa', 'ed25519', 'rsa'];
+
 @CommandMetadata({
   name: 'generate',
   type: 'global',
@@ -21,6 +23,13 @@ import { SSHBaseCommand } from './base';
     },
   ],
   options: [
+    {
+      name: 'type',
+      description: `The type of key to generate: ${SSH_KEY_TYPES.map(v => chalk.green(v)).join(', ')}`,
+      default: 'rsa',
+      aliases: ['t'],
+      advanced: true,
+    },
     {
       name: 'bits',
       description: 'Number of bits in the key',
@@ -38,6 +47,8 @@ import { SSHBaseCommand } from './base';
 })
 export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+    const { contains, validate } = await import('@ionic/cli-utils/lib/validators');
+
     await this.checkForOpenSSH();
 
     const config = await this.env.config.load();
@@ -46,6 +57,8 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
     if (!options['annotation']) {
       options['annotation'] = config.user.email;
     }
+
+    validate(options['type'], 'type', [contains(SSH_KEY_TYPES, { caseSensitive: false })]);
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
@@ -86,7 +99,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
 
     await this.env.close();
     const shellOptions = { stdio: 'inherit', showCommand: false, showExecution: false, showError: false };
-    await this.env.shell.run('ssh-keygen', ['-q', '-t', 'rsa', '-b', String(bits), '-C', String(annotation), '-f', keyPath], shellOptions);
+    await this.env.shell.run('ssh-keygen', ['-q', '-t', options['type'], '-b', String(bits), '-C', String(annotation), '-f', keyPath], shellOptions);
     await this.env.open();
 
     this.env.log.ok(

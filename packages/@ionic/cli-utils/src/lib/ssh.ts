@@ -12,7 +12,7 @@ export const ERROR_SSH_INVALID_PRIVKEY = 'SSH_INVALID_PRIVKEY';
 export async function getGeneratedPrivateKeyPath(env: IonicEnvironment): Promise<string> {
   const config = await env.config.load();
   const id = config.user.id ? config.user.id : 'anonymous';
-  return path.resolve(os.homedir(), '.ssh', 'ionic', `${id}_rsa`);
+  return path.resolve(os.homedir(), '.ssh', 'ionic', id);
 }
 
 export async function parsePublicKeyFile(pubkeyPath: string): Promise<[string, string, string, string]> {
@@ -33,7 +33,7 @@ export async function parsePublicKeyFile(pubkeyPath: string): Promise<[string, s
  * @return Promise<[full pubkey, algorithm, public numbers, annotation]>
  */
 export async function parsePublicKey(pubkey: string): Promise<[string, string, string, string]> {
-  const r = /^(ssh-[r|d]sa)\s([A-z0-9+\/=]+)\s?(.+)?$/.exec(pubkey);
+  const r = /^(ssh-[A-z0-9]+)\s([A-z0-9+\/=]+)\s?(.+)?$/.exec(pubkey);
 
   if (!r) {
     throw ERROR_SSH_INVALID_PUBKEY;
