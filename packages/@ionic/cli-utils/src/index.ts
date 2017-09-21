@@ -71,8 +71,6 @@ async function getSession(config: IConfig, project: IProject, client: IClient): 
 }
 
 export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
-  const semver = await import('semver');
-
   const cwd = process.cwd();
   const argv = minimist(pargv, { boolean: true, string: '_' });
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
@@ -119,13 +117,6 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
 
   env['IONIC_PROJECT_DIR'] = projectDir || '';
   env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
-
-  if (semver.lte(plugin.meta.version, '3.10.3')) { // TODO: should happen once, but take this out eventually
-    delete configData.urls.api;
-    delete configData.urls.dash;
-    delete configData.git.host;
-    delete configData.git.port;
-  }
 
   configData.version = plugin.meta.version;
 

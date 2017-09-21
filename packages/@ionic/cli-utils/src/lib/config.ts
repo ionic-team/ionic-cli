@@ -201,6 +201,12 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
     delete results.lastUpdated;
     delete results.cliFlags;
 
+    // TODO: temporary
+    delete results.urls.api;
+    delete results.urls.dash;
+    delete results.git.host;
+    delete results.git.port;
+
     return results;
   }
 
