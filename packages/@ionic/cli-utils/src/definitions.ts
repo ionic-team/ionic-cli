@@ -344,7 +344,7 @@ export interface ConfigFile {
     lastNoResponseToUpdate?: string;
   };
   daemon: {
-    updates?: boolean;
+    updates: boolean;
   };
   urls: {
     api: string;

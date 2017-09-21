@@ -294,17 +294,6 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
       }
 
       if (ienv.flags.interactive) {
-        if (typeof config.daemon.updates === 'undefined') {
-          const confirm = await ienv.prompt({
-            type: 'confirm',
-            name: 'confirm',
-            message: `The Ionic CLI can automatically check for CLI updates in the background. Would you like to enable this?`,
-          });
-
-          config.daemon.updates = confirm;
-          await ienv.config.save();
-        }
-
         if (await ienv.config.isUpdatingEnabled()) {
           const { checkForDaemon } = await import('@ionic/cli-utils/lib/daemon');
           await checkForDaemon(ienv);

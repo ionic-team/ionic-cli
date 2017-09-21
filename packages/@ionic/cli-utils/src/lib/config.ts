@@ -151,6 +151,10 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.daemon = {};
     }
 
+    if (typeof results.daemon.updates === 'undefined') {
+      results.daemon.updates = true;
+    }
+
     if (!results.urls) {
       results.urls = {};
     }
