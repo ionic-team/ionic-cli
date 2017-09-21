@@ -32,6 +32,19 @@ export function ensureHostAndKeyPath(conf: SSHConfigModule.SSHConfig, conn: { ho
   if (typeof conn.port === 'number') {
     ensureSectionLine(section, 'Port', String(conn.port));
   }
+
+  // massage the section for proper whitespace
+
+  section.before = '';
+  section.after = '\n'
+
+  for (let entry of section.config) {
+    entry.before = '    ';
+    entry.after = '\n';
+  }
+
+  const lastEntry = section.config[section.config.length - 1];
+  lastEntry.after = '\n\n';
 }
 
 export function ensureSection(conf: SSHConfigModule.SSHConfig, host: string, newline: boolean): SSHConfigModule.ConfigDirective {
@@ -44,8 +57,8 @@ export function ensureSection(conf: SSHConfigModule.SSHConfig, host: string, new
   return conf.find({ Host: host });
 }
 
-export function ensureSectionLine(section: SSHConfigModule.ConfigDirective, key: string, value: string): void {
-  const found = section.config.some((line) => {
+function ensureSectionLine(section: SSHConfigModule.ConfigDirective, key: string, value: string): void {
+  const found = section.config.some(line => {
     if (isDirective(line)) {
       if (line.param === key) {
         line.value = value;
