@@ -93,7 +93,7 @@ Start a new Ionic project using \`ionic start\`:
 $ ionic start myNewProject
 \`\`\`
 
-\`ionic start\` will prompt you to select a "starter". We recommend using the \`tutorial\` starter for your first app.
+\`ionic start\` will prompt you to select a "starter". We recommend using the \`tutorial\` starter for your first app. See [Starter Templates](/docs/cli/starters.html) for a full list.
 
 After selecting a starter, the CLI will create a new app named \`myNewProject\`. Once you \`cd\` into your project's directory, a few new commands become available to you, such as \`ionic serve\`:
 
@@ -394,12 +394,14 @@ function links2md(str) {
 function ansi2md(str) {
   str = str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
   str = convertAnsiToMd(str, style.green, { open: '`', close: '`' });
+  str = convertAnsiToMd(str, style.yellow, { open: '', close: '' });
   str = convertAnsiToMd(str, style.bold, { open: '**', close: '**' });
   return str;
 }
 
 function convertAnsiToMd(str, style, md) {
-  return str.replace(new RegExp(escapeStringRegexp(style.open), 'g'), md.open).replace(new RegExp(escapeStringRegexp(style.close), 'g'), md.close);
+  str = str.replace(new RegExp(escapeStringRegexp(style.open) + '(.*?)' + escapeStringRegexp(style.close), 'g'), md.open + '$1' + md.close);
+  return str;
 }
 
 function formatCommandDoc(env, cmdMetadata) {
