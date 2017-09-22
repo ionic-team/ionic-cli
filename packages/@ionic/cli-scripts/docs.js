@@ -8,11 +8,13 @@ const escapeStringRegexp = require('escape-string-regexp');
 const ionicPkg = require(path.resolve(__dirname, '..', '..', 'ionic'));
 const utilsPkg = require(path.resolve(__dirname, '..', 'cli-utils'));
 const utilsFsPkg = require(path.resolve(__dirname, '..', 'cli-utils', 'lib', 'utils', 'fs'));
+const startLib = require(path.resolve(__dirname, '..', 'cli-utils', 'lib', 'start'));
 
 run().then(() => console.log('done!')).catch((err) => console.error(err));
 
 async function run() {
-  const env = await utilsPkg.generateIonicEnvironment(ionicPkg, process.argv.slice(2), process.env);
+  const plugin = await ionicPkg.generateRootPlugin();
+  const env = await utilsPkg.generateIonicEnvironment(plugin, process.argv.slice(2), process.env);
 
   const indexPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'index.md');
   const indexDoc = await formatIonicPage(env);
@@ -23,13 +25,17 @@ async function run() {
   const configuringPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'configuring.md');
   const configuringDoc = await formatConfiguringPage(env);
 
+  const startersPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'starters.md');
+  const startersDoc = await formatStartersPage(env);
+
   await utilsFsPkg.fsMkdirp(path.dirname(indexPath));
 
   await utilsFsPkg.fsWriteFile(indexPath, indexDoc, { encoding: 'utf8' });
   await utilsFsPkg.fsWriteFile(commandsPath, commandsDoc, { encoding: 'utf8' });
   await utilsFsPkg.fsWriteFile(configuringPath, configuringDoc, { encoding: 'utf8' });
+  await utilsFsPkg.fsWriteFile(startersPath, startersDoc, { encoding: 'utf8' });
 
-  const commands = await getCmds(env);
+  const commands = await getCommandList(env);
   const commandPromises = commands.map(async (cmd) => {
     const cmdPath = path.resolve(__dirname, '..', '..', '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
     const cmdDoc = formatCommandDoc(env, cmd);
@@ -44,7 +50,7 @@ async function run() {
   env.close();
 }
 
-async function getCmds(env) {
+async function getCommandList(env) {
   const cmds = await env.namespace.getCommandMetadataList();
   return cmds.filter(cmd => cmd.visible !== false);
 }
@@ -133,7 +139,7 @@ If you're having trouble with the CLI, you can try the following:
 async function formatCommandsPage(env) {
   const stripAnsi = env.load('strip-ansi');
 
-  const commands = await getCmds(env);
+  const commands = await getCommandList(env);
 
   function listCommandLink(cmdData) {
     return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '))}/) | ${cmdData.deprecated ? '(deprecated) ' : ''}${stripAnsi(cmdData.description)}`;
@@ -152,8 +158,6 @@ ${commands.map(listCommandLink).join(`
 
 function formatConfiguringPage() {
   return `${formatPageHeader('Configuring', 'cli-configuration')}
-
-
 
 {% include fluid/toc.html %}
 
@@ -282,13 +286,69 @@ The \`cafile\`, \`certfile\`, and \`keyfile\` entries can be manually edited as 
 `;
 }
 
+function formatStartersPage() {
+  const formatStarter = (t) => {
+    return `[${t.name}](${t.url}) | ${t.description}\n`;
+  };
+
+  const formatStartersTable = (starterType) => {
+    return `
+### ${starterType.name}
+
+Starter | Description
+--------|------------
+${starterType.starters.map(formatStarter).join('')}
+`;
+  };
+
+  const formatBaseTable = (base) => {
+    return `\`${base.id}\` | [${base.url}](${base.url})\n`;
+  };
+
+  const starters = [
+    {
+      type: 'ionic-angular',
+      name: 'Ionic Angular',
+      base: startLib.STARTER_TYPES.find(s => s.id === 'ionic-angular'),
+      starters: startLib.STARTER_TEMPLATES.filter(s => s.type === 'ionic-angular'),
+    },
+    {
+      type: 'ionic1',
+      name: 'Ionic 1',
+      base: startLib.STARTER_TYPES.find(s => s.id === 'ionic1'),
+      starters: startLib.STARTER_TEMPLATES.filter(s => s.type === 'ionic1'),
+    },
+  ];
+
+  return `${formatPageHeader('Starter Templates', 'cli-starter-list')}
+
+{% include fluid/toc.html %}
+
+This is comprehensive list of Ionic starter templates, which are ready-to-go starter packs for your next Ionic app. See the [\`ionic start\`](/docs/cli/start/) docs for usage.
+
+## Starter Types
+
+${starters.map(formatStartersTable).join('')}
+
+## How it Works
+
+The Ionic CLI will combine each starter template with its [base template](#base-templates) to provide a new project the files it needs to start development. See the [\`ionic start\`](/docs/cli/start/) docs for more information.
+
+## Base Templates
+
+Project Type |
+-------------|
+${starters.map((s) => formatBaseTable(s.base)).join('')}
+`;
+}
+
 function formatPageHeader(name, id) {
   return `---
 layout: fluid/cli_docs_base
 category: cli
 id: ${id}
 page_name: ${name}
-title: Ionic CLI Documentation - ${name}
+title: ${name} - Ionic CLI Documentation
 hide_header_search: true
 dark_header: true
 ---
@@ -306,7 +366,7 @@ category: cli
 id: cli-${cmd.fullName.split(' ').join('-')}
 page_name: ionic ${cmd.fullName}
 command_name: ionic ${cmd.fullName}
-title: Ionic CLI Documentation - ionic ${cmd.fullName}
+title: ionic ${cmd.fullName} - Ionic CLI Documentation
 header_sub_title: Ionic CLI
 ---
 

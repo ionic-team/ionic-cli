@@ -7,6 +7,7 @@ import {
   IHookEngine,
   InfoHookItem,
   IonicEnvironment,
+  RootPlugin,
   generateIonicEnvironment,
 } from '@ionic/cli-utils';
 
@@ -210,6 +211,15 @@ export function registerHooks(hooks: IHookEngine) {
   });
 }
 
+export async function generateRootPlugin(): Promise<RootPlugin> {
+  const { getPluginMeta } = await import('@ionic/cli-utils/lib/plugins');
+
+  return {
+    namespace,
+    registerHooks,
+    meta: await getPluginMeta(__filename),
+  };
+}
 
 export async function run(pargv: string[], env: { [k: string]: string; }) {
   const now = new Date();
@@ -220,14 +230,8 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
   env['IONIC_CLI_LIB'] = __filename;
 
   const { isSuperAgentError, isValidationErrorArray } = await import('@ionic/cli-utils/guards');
-  const { getPluginMeta } = await import('@ionic/cli-utils/lib/plugins');
 
-  const plugin = {
-    namespace,
-    registerHooks,
-    meta: await getPluginMeta(__filename),
-  };
-
+  const plugin = await generateRootPlugin();
   const ienv = await generateIonicEnvironment(plugin, pargv, env);
 
   try {

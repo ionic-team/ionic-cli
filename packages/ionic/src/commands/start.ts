@@ -16,7 +16,9 @@ import { PROJECT_FILE, Project } from '@ionic/cli-utils/lib/project';
 This command creates a working Ionic app. It installs dependencies for you and sets up your project.
 
 ${chalk.green('ionic start')} will create an app from a template. You can list all templates with the ${chalk.green('--list')} option.
-  `,
+
+See the CLI documentation on starters: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}
+`,
   exampleCommands: [
     '',
     '--list',
