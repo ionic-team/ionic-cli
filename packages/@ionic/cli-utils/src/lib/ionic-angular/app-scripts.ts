@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { IonicEnvironment, CommandOption } from '../../definitions';
+import { CommandOption, IonicEnvironment } from '../../definitions';
 
 export const APP_SCRIPTS_INTENT = 'app-scripts';
 
@@ -45,4 +45,10 @@ export const APP_SCRIPTS_OPTIONS: CommandOption[] = [
     intents: [APP_SCRIPTS_INTENT],
     advanced: true,
   },
+  {
+    name: 'env',
+    description: '',
+    intents: [APP_SCRIPTS_INTENT],
+    visible: false,
+  }
 ];

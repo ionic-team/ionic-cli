@@ -30,6 +30,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     browserName: options['browser'] ? String(options['browser']) : undefined,
     browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
     basicAuth: options['auth'] ? <[string, string]>['ionic', String(options['auth'])] : undefined, // TODO: typescript can't infer tuple
+    env: options['env'] ? String(options['env']) : undefined,
     externalAddressRequired: options['externalAddressRequired'] ? true : false,
     iscordovaserve: typeof options['iscordovaserve'] === 'boolean' ? Boolean(options['iscordovaserve']) : false,
   };

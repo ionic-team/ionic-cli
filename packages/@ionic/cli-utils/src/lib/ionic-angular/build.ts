@@ -27,6 +27,7 @@ export async function buildOptionsToAppScriptsArgs(options: { _: string[]; [key:
     optimizejs: options.optimizejs ? true : false,
     platform: options.platform,
     target: options.target,
+    env: options.env,
   };
 
   return minimistOptionsToArray(minimistArgs, { useEquals: false });

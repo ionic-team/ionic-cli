@@ -99,6 +99,7 @@ export async function serveOptionsToAppScriptsArgs(options: AppScriptsServeOptio
     iscordovaserve: options.iscordovaserve,
     platform: options.platform,
     target: options.target,
+    env: options.env,
   };
 
   return minimistOptionsToArray(minimistArgs, { useEquals: false });

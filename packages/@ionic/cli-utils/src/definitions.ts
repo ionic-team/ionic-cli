@@ -468,6 +468,7 @@ export interface ServeOptions {
   browserName?: string;
   browserOption?: string;
   basicAuth?: [string, string];
+  env?: string;
 
   // Additional Options
   externalAddressRequired?: boolean;

@@ -144,7 +144,10 @@ export function filterOptionsByIntent(metadata: CommandData, options: CommandLin
   }, <CommandLineOptions>{});
 
   r._ = options._;
-  r['--'] = options['--'];
+
+  if (options['--']) {
+    r['--'] = options['--'];
+  }
 
   return r;
 }
