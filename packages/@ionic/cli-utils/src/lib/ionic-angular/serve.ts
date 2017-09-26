@@ -4,7 +4,7 @@ import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions'
 
 import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES } from '../serve';
 import { FatalException } from '../errors';
-import { importAppScripts } from './utils';
+import { importAppScripts } from './app-scripts';
 
 export interface AppScriptsServeOptions extends ServeOptions {
   platform: string;

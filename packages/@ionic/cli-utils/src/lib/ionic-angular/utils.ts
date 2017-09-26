@@ -31,9 +31,3 @@ export async function getAppScriptsVersion(env: IonicEnvironment, project: IProj
     env.log.error(`Error with ${chalk.bold(prettyPath(appScriptsPackageJsonFilePath))} file: ${e}`);
   }
 }
-
-export async function importAppScripts(env: IonicEnvironment): Promise<any> {
-  const appScriptsPath = path.resolve(env.project.directory, 'node_modules', '@ionic', 'app-scripts'); // TODO
-
-  return require(appScriptsPath);
-}

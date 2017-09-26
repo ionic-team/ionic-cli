@@ -6,6 +6,7 @@ import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { fsMkdir, pathExists } from '@ionic/cli-utils/lib/utils/fs';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
+import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 
 export const CORDOVA_RUN_COMMAND_OPTIONS: CommandOption[] = [
   {
@@ -59,40 +60,7 @@ export const CORDOVA_RUN_COMMAND_OPTIONS: CommandOption[] = [
     default: String(DEFAULT_DEV_LOGGER_PORT),
     advanced: true,
   },
-  {
-    name: 'prod',
-    description: 'Mark as a production build',
-    type: Boolean,
-    intent: 'app-scripts',
-  },
-  {
-    name: 'aot',
-    description: 'Perform ahead-of-time compilation for this build',
-    type: Boolean,
-    intent: 'app-scripts',
-    advanced: true,
-  },
-  {
-    name: 'minifyjs',
-    description: 'Minify JS for this build',
-    type: Boolean,
-    intent: 'app-scripts',
-    advanced: true,
-  },
-  {
-    name: 'minifycss',
-    description: 'Minify CSS for this build',
-    type: Boolean,
-    intent: 'app-scripts',
-    advanced: true,
-  },
-  {
-    name: 'optimizejs',
-    description: 'Perform JS optimizations for this build',
-    type: Boolean,
-    intent: 'app-scripts',
-    advanced: true,
-  },
+  ...APP_SCRIPTS_OPTIONS,
   {
     name: 'debug',
     description: 'Mark as a debug build',

@@ -2,7 +2,7 @@ import * as chalk from 'chalk';
 
 import { IonicEnvironment } from '../../definitions';
 
-import { importAppScripts } from './utils';
+import { importAppScripts } from './app-scripts';
 
 export async function build({ env, options }: { env: IonicEnvironment; options: { _: string[]; [key: string]: any; }; }): Promise<void> {
   const appScriptsArgs = await buildOptionsToAppScriptsArgs(options);

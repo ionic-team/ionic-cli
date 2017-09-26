@@ -2,6 +2,7 @@ import * as chalk from 'chalk';
 
 import { BACKEND_LEGACY, CommandLineInput, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 
 const DEPRECATION_NOTICE = `Ionic Cloud is deprecated and will reach end-of-life on January 31st, 2018. This command will not be supported afterwards. Ionic Pro takes a different approach to uploading. See the Getting Started documentation for details: ${chalk.bold('https://ionicframework.com/docs/pro/basics/getting-started/')}`;
 
@@ -38,45 +39,12 @@ From there, you can use Ionic View (${chalk.bold('https://view.ionic.io')}) to e
       advanced: true,
     },
     {
-      name: 'prod',
-      description: 'Build the application for production',
-      type: Boolean,
-      intent: 'app-scripts',
-    },
-    {
-      name: 'aot',
-      description: `Perform ahead-of-time compilation for the upload's build`,
-      type: Boolean,
-      intent: 'app-scripts',
-      advanced: true,
-    },
-    {
-      name: 'minifyjs',
-      description: `Minify JS for the upload's build`,
-      type: Boolean,
-      intent: 'app-scripts',
-      advanced: true,
-    },
-    {
-      name: 'minifycss',
-      description: `Minify CSS for the upload's build`,
-      type: Boolean,
-      intent: 'app-scripts',
-      advanced: true,
-    },
-    {
-      name: 'optimizejs',
-      description: `Perform JS optimizations for the upload's build`,
-      type: Boolean,
-      intent: 'app-scripts',
-      advanced: true,
-    },
-    {
       name: 'build',
       description: 'Do not invoke an Ionic build',
       type: Boolean,
       default: true,
     },
+    ...APP_SCRIPTS_OPTIONS,
   ],
 })
 export class UploadCommand extends Command implements CommandPreRun {

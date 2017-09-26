@@ -3,6 +3,7 @@ import * as chalk from 'chalk';
 import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandPreRun, PackageBuild } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { contains } from '@ionic/cli-utils/lib/validators';
+import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 
 import { DEPRECATION_NOTICE } from './common';
 
@@ -28,12 +29,7 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
     },
   ],
   options: [
-    {
-      name: 'prod',
-      description: 'Mark as a production build',
-      type: Boolean,
-      intent: 'app-scripts',
-    },
+    ...APP_SCRIPTS_OPTIONS,
     {
       name: 'release',
       description: 'Mark as a release build',

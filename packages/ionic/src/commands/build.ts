@@ -2,6 +2,7 @@ import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 
 @CommandMetadata({
   name: 'build',
@@ -15,40 +16,7 @@ ${chalk.green('ionic build')} will perform an Ionic build, which compiles web as
     '--prod',
   ],
   options: [
-    {
-      name: 'prod',
-      description: 'Build the application for production',
-      type: Boolean,
-      intent: 'app-scripts',
-    },
-    {
-      name: 'aot',
-      description: 'Perform ahead-of-time compilation for this build',
-      type: Boolean,
-      intent: 'app-scripts',
-      advanced: true,
-    },
-    {
-      name: 'minifyjs',
-      description: 'Minify JS for this build',
-      type: Boolean,
-      intent: 'app-scripts',
-      advanced: true,
-    },
-    {
-      name: 'minifycss',
-      description: 'Minify CSS for this build',
-      type: Boolean,
-      intent: 'app-scripts',
-      advanced: true,
-    },
-    {
-      name: 'optimizejs',
-      description: 'Perform JS optimizations for this build',
-      type: Boolean,
-      intent: 'app-scripts',
-      advanced: true,
-    },
+    ...APP_SCRIPTS_OPTIONS,
   ],
 })
 export class BuildCommand extends Command implements CommandPreRun {
