@@ -2,6 +2,7 @@ import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { CORDOVA_INTENT, filterArgumentsForCordova } from '@ionic/cli-utils/lib/cordova/utils';
 
 import { CordovaCommand } from './base';
 
@@ -28,25 +29,25 @@ Like running ${chalk.green('cordova compile')} directly, but provides friendly c
       name: 'debug',
       description: 'Create a Cordova debug build',
       type: Boolean,
-      intent: 'cordova',
+      intents: [CORDOVA_INTENT],
     },
     {
       name: 'release',
       description: 'Create a Cordova release build',
       type: Boolean,
-      intent: 'cordova',
+      intents: [CORDOVA_INTENT],
     },
     {
       name: 'device',
       description: 'Compile Cordova build to a device',
       type: Boolean,
-      intent: 'cordova',
+      intents: [CORDOVA_INTENT],
     },
     {
       name: 'emulator',
       description: 'Compile Cordova build to an emulator',
       type: Boolean,
-      intent: 'cordova',
+      intents: [CORDOVA_INTENT],
     },
   ],
 })
@@ -68,8 +69,6 @@ export class CompileCommand extends CordovaCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
-
     const response = await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options));
     this.env.log.msg(response);
   }

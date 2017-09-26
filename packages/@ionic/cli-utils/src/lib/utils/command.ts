@@ -116,7 +116,7 @@ export function validateInputs(argv: string[], metadata: CommandData) {
 }
 
 /**
- * Filter command line options that match a given "indent", which is specified
+ * Filter command line options that match a given "intent", which are specified
  * in the command's metadata.
  *
  * To filter options that have no intent specified in the command's metadata,
@@ -134,9 +134,9 @@ export function filterOptionsByIntent(metadata: CommandData, options: CommandLin
       mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
     ));
     if (metadataOptionFound) {
-      if (intentName && metadataOptionFound.intent === intentName) {
+      if (intentName && metadataOptionFound.intents && metadataOptionFound.intents.includes(intentName)) {
         allOptions[optionName] = options[optionName];
-      } else if (!intentName && !metadataOptionFound.intent) {
+      } else if (!intentName && !metadataOptionFound.intents) {
         allOptions[optionName] = options[optionName];
       }
     }

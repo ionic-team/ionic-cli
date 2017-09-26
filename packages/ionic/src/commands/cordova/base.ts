@@ -7,13 +7,14 @@ import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { fsMkdir, pathExists } from '@ionic/cli-utils/lib/utils/fs';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
+import { CORDOVA_INTENT, checkCordova, filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/cordova/utils';
 
 export const CORDOVA_RUN_COMMAND_OPTIONS: CommandOption[] = [
   {
     name: 'list',
     description: 'List all available Cordova targets',
     type: Boolean,
-    intent: 'cordova',
+    intents: [CORDOVA_INTENT],
   },
   {
     name: 'livereload',
@@ -65,36 +66,36 @@ export const CORDOVA_RUN_COMMAND_OPTIONS: CommandOption[] = [
     name: 'debug',
     description: 'Mark as a debug build',
     type: Boolean,
-    intent: 'cordova',
+    intents: [CORDOVA_INTENT],
   },
   {
     name: 'release',
     description: 'Mark as a release build',
     type: Boolean,
-    intent: 'cordova',
+    intents: [CORDOVA_INTENT],
   },
   {
     name: 'device',
     description: 'Deploy Cordova build to a device',
     type: Boolean,
-    intent: 'cordova',
+    intents: [CORDOVA_INTENT],
   },
   {
     name: 'emulator',
     description: 'Deploy Cordova build to an emulator',
     type: Boolean,
-    intent: 'cordova',
+    intents: [CORDOVA_INTENT],
   },
   {
     name: 'target',
     description: `Deploy Cordova build to a device (use ${chalk.green('--list')} to see all)`,
     type: String,
-    intent: 'cordova',
+    intents: [CORDOVA_INTENT],
   },
   {
     name: 'buildConfig',
     description: 'Use the specified Cordova build configuration',
-    intent: 'cordova',
+    intents: [CORDOVA_INTENT],
     advanced: true,
   },
 ];
@@ -102,7 +103,6 @@ export const CORDOVA_RUN_COMMAND_OPTIONS: CommandOption[] = [
 export class CordovaCommand extends Command {
   async preRunChecks() {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
-    const { checkCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
 
     await checkCordova(this.env);
@@ -164,8 +164,6 @@ export class CordovaCommand extends Command {
 
 export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
-    const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
-
     await this.preRunChecks();
 
     if (options['list']) {
@@ -197,7 +195,6 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
-    const { filterArgumentsForCordova, generateBuildOptions } = await import('@ionic/cli-utils/lib/cordova/utils');
     const { registerShutdownFunction } = await import('@ionic/cli-utils/lib/process');
 
     if (!options['livereload'] && (options['consolelogs'] || options['serverlogs'])) {

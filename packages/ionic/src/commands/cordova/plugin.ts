@@ -2,6 +2,7 @@ import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { CORDOVA_INTENT, filterArgumentsForCordova } from '@ionic/cli-utils/lib/cordova/utils';
 
 import { CordovaCommand } from './base';
 
@@ -28,13 +29,13 @@ Like running ${chalk.green('cordova plugin')} directly, but provides friendly ch
       name: 'force',
       description: `Force overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
       type: Boolean,
-      intent: 'cordova',
+      intents: [CORDOVA_INTENT],
       advanced: true,
     },
     {
       name: 'variable',
       description: 'Specify plugin variables',
-      intent: 'cordova',
+      intents: [CORDOVA_INTENT],
     }
   ]
 })
@@ -71,8 +72,6 @@ export class PluginCommand extends CordovaCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
-
     const optionList = filterArgumentsForCordova(this.metadata, inputs.splice(0, 2), options);
 
     if (!optionList.includes('--save')) {

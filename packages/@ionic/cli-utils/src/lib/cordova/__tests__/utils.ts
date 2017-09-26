@@ -21,25 +21,25 @@ describe('@ionic/cli-utils', () => {
       {
         name: 'cdvopt1',
         description: '',
-        intent: 'cordova',
+        intents: ['cordova'],
       },
       {
         name: 'cdvopt2',
         description: '',
         type: Boolean,
-        intent: 'cordova',
+        intents: ['cordova'],
       },
       {
         name: 'prod',
         description: '',
         type: Boolean,
-        intent: 'app-scripts',
+        intents: ['app-scripts'],
       },
       {
         name: 'optimizejs',
         description: '',
         type: Boolean,
-        intent: 'app-scripts',
+        intents: ['app-scripts'],
       },
     ]
   };

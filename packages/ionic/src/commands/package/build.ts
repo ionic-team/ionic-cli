@@ -3,7 +3,7 @@ import * as chalk from 'chalk';
 import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandPreRun, PackageBuild } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { contains } from '@ionic/cli-utils/lib/validators';
-import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
+import { APP_SCRIPTS_INTENT, APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 
 import { DEPRECATION_NOTICE } from './common';
 
@@ -144,7 +144,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     this.env.tasks.end();
 
     const { build } = await import('@ionic/cli-utils/commands/build');
-    await build(this.env, inputs, filterOptionsByIntent(this.metadata, options, 'app-scripts'));
+    await build(this.env, inputs, filterOptionsByIntent(this.metadata, options, APP_SCRIPTS_INTENT));
 
     const snapshotRequest = await upload(this.env, { note });
 

@@ -2,6 +2,7 @@ import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { CORDOVA_INTENT, filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/cordova/utils';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 
 import { CordovaCommand } from './base';
@@ -44,30 +45,30 @@ To pass additional options to the Cordova CLI, use the ${chalk.green('--')} sepa
       name: 'debug',
       description: 'Create a Cordova debug build',
       type: Boolean,
-      intent: 'cordova',
+      intents: [CORDOVA_INTENT],
     },
     {
       name: 'release',
       description: 'Create a Cordova release build',
       type: Boolean,
-      intent: 'cordova',
+      intents: [CORDOVA_INTENT],
     },
     {
       name: 'device',
       description: 'Deploy Cordova build to a device',
       type: Boolean,
-      intent: 'cordova',
+      intents: [CORDOVA_INTENT],
     },
     {
       name: 'emulator',
       description: 'Deploy Cordova build to an emulator',
       type: Boolean,
-      intent: 'cordova',
+      intents: [CORDOVA_INTENT],
     },
     {
       name: 'buildConfig',
       description: 'Use the specified Cordova build configuration',
-      intent: 'cordova',
+      intents: [CORDOVA_INTENT],
       advanced: true,
     },
   ]
@@ -90,8 +91,6 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { filterArgumentsForCordova, generateBuildOptions } = await import('@ionic/cli-utils/lib/cordova/utils');
-
     if (options.build) {
       const { build } = await import('@ionic/cli-utils/commands/build');
       await build(this.env, inputs, generateBuildOptions(this.metadata, options));

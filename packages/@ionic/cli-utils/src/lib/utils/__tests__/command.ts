@@ -123,17 +123,17 @@ describe('@ionic/cli-utils', () => {
         {
           name: 'foo',
           description: '',
-          intent: 'foobar',
+          intents: ['foobar'],
         },
         {
           name: 'bar',
           description: '',
-          intent: 'foobar',
+          intents: ['foobar'],
         },
         {
           name: 'baz',
           description: '',
-          intent: 'baz',
+          intents: ['baz'],
         },
         {
           name: 'intentless',

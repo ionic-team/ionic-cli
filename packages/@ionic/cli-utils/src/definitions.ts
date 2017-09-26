@@ -246,7 +246,7 @@ export interface CommandOption {
   default?: CommandLineInput;
   aliases?: string[];
   private?: boolean;
-  intent?: string;
+  intents?: string[];
   visible?: boolean;
   advanced?: boolean;
 }
