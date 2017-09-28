@@ -206,6 +206,11 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
 
     const conf = await ConfigXml.load(this.env.project.directory);
 
+    registerShutdownFunction(this.env, () => {
+      conf.resetContentSrc();
+      conf.saveSync();
+    });
+
     if (isLiveReload) {
       const { serve } = await import('@ionic/cli-utils/commands/serve');
       const serverDetails = await serve(this.env, inputs, generateBuildOptions(this.metadata, options));
@@ -221,11 +226,6 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
       const { build } = await import('@ionic/cli-utils/commands/build');
       await build(this.env, inputs, generateBuildOptions(this.metadata, options));
     }
-
-    registerShutdownFunction(() => {
-      conf.resetContentSrc();
-      conf.saveSync();
-    });
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });
 

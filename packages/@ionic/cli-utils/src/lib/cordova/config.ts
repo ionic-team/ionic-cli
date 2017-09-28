@@ -15,6 +15,7 @@ export interface PlatformEngine {
 export class ConfigXml {
   protected _filePath?: string;
   protected _doc?: et.ElementTree;
+  protected saving = false;
 
   get doc() {
     if (!this._doc) {
@@ -41,17 +42,29 @@ export class ConfigXml {
     conf._filePath = path.join(projectDir, 'config.xml');
     const configFileContents = await fsReadFile(conf.filePath, { encoding: 'utf8' });
 
+    if (!configFileContents) {
+      throw new Error(`Cannot load empty config.xml file.`);
+    }
+
     conf._doc = et.parse(configFileContents);
 
     return conf;
   }
 
   async save(): Promise<void> {
-    await fsWriteFile(this.filePath, this.write(), { encoding: 'utf8' });
+    if (!this.saving) {
+      this.saving = true;
+      await fsWriteFile(this.filePath, this.write(), { encoding: 'utf8' });
+      this.saving = false;
+    }
   }
 
   saveSync(): void {
-    fs.writeFileSync(this.filePath, this.write(), { encoding: 'utf8' });
+    if (!this.saving) {
+      this.saving = true;
+      fs.writeFileSync(this.filePath, this.write(), { encoding: 'utf8' });
+      this.saving = false;
+    }
   }
 
   /**

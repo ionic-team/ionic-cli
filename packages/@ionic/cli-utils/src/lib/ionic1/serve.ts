@@ -169,7 +169,6 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
   const { LOGGER_STATUS_COLORS } = await import('../../lib/utils/logger');
 
   const app = express();
-  app.listen(options.port, options.address);
 
   /**
    * http responder for /index.html base entrypoint
@@ -275,7 +274,7 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
 
   const wss = new WebSocket.Server({ port: options.notificationPort });
 
-  wss.on('connection', (ws) => {
+  wss.on('connection', ws => {
     ws.on('message', (data) => {
       let msg;
 
@@ -307,7 +306,21 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
     });
   });
 
-  return app;
+  return new Promise<expressType.Application>((resolve, reject) => {
+    const httpserv = app.listen(options.port, options.address);
+
+    wss.on('error', err => {
+      reject(err);
+    });
+
+    httpserv.on('error', err => {
+      reject(err);
+    });
+
+    httpserv.on('listening', () => {
+      resolve(app);
+    });
+  });
 }
 
 async function setupProxies(env: IonicEnvironment, app: expressType.Application) {
