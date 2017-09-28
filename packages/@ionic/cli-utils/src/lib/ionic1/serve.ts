@@ -69,9 +69,10 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
   const wwwDir = path.join(env.project.directory, project.documentRoot || 'www');
 
   try {
-    const [ port, livereloadPort ] = await Promise.all([
+    const [ port, livereloadPort, notificationPort ] = await Promise.all([
       findClosestOpenPort(options.port, '0.0.0.0'),
       findClosestOpenPort(options.livereloadPort, '0.0.0.0'),
+      findClosestOpenPort(options.notificationPort, '0.0.0.0'),
     ]);
 
     if (options.port !== port) {
@@ -82,6 +83,11 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
     if (options.livereloadPort !== livereloadPort) {
       env.log.debug(`Port ${chalk.bold(String(options.livereloadPort))} taken, using ${chalk.bold(String(livereloadPort))}.`);
       options.livereloadPort = livereloadPort;
+    }
+
+    if (options.notificationPort !== notificationPort) {
+      env.log.debug(`Port ${chalk.bold(String(options.notificationPort))} taken, using ${chalk.bold(String(notificationPort))}.`);
+      options.notificationPort = notificationPort;
     }
   } catch (e) {
     if (e !== ERROR_NETWORK_ADDRESS_NOT_AVAIL) {
