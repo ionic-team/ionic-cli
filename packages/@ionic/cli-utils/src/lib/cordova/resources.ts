@@ -140,12 +140,15 @@ export function findMostSpecificImage(imageResource: ImageResource, srcImagesAva
 export async function uploadSourceImages(env: IonicEnvironment, srcImages: SourceImage[]): Promise<ImageUploadResponse[]> {
   return Promise.all(
     srcImages.map(async (srcImage) => {
-      let { req } = await createRequest(env.config, 'POST', UPLOAD_URL);
-      req = req
+      const { req } = await createRequest(env.config, 'POST', UPLOAD_URL);
+
+      req
         .type('form')
         .attach('src', srcImage.path)
         .field('image_id', srcImage.imageId || '');
+
       const res = await req;
+
       return res.body;
     })
   );

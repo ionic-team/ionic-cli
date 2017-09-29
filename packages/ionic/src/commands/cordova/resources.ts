@@ -88,6 +88,7 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
+    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
 
     const {
       RESOURCES,
@@ -116,7 +117,7 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
 
     // check that at least one platform has been installed
     let platformEngines = conf.getPlatformEngines();
-    this.env.log.debug(() => `platformEngines=${platformEngines.map(e => e.name).join(', ')}`);
+    this.env.log.debug(() => `platformEngines=${platformEngines.map(e => chalk.bold(e.name)).join(', ')}`);
 
     if (platform && !platformEngines.map(p => p.name).includes(platform)) {
       this.env.tasks.end();
@@ -130,19 +131,19 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
         await installPlatform(this.env, platform);
         conf = await ConfigXml.load(this.env.project.directory);
         platformEngines = conf.getPlatformEngines();
-        this.env.log.debug(() => `platformEngines=${platformEngines}`);
+        this.env.log.debug(() => `platformEngines=${platformEngines.map(e => chalk.bold(e.name)).join(', ')}`);
       } else {
         throw new FatalException(`Platform ${chalk.green(platform)} not installed.`);
       }
     }
 
     const buildPlatforms = Object.keys(RESOURCES).filter(p => platformEngines.map(p => p.name).includes(p));
-    this.env.log.debug(() => `buildPlatforms=${buildPlatforms.join(', ')}`);
+    this.env.log.debug(() => `buildPlatforms=${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
     if (buildPlatforms.length === 0) {
       this.env.tasks.end();
       throw new FatalException(`No platforms detected. Please run: ${chalk.green('ionic cordova platform add')}`);
     }
-    this.env.log.debug(() => `${chalk.green('getProjectPlatforms')} completed - length=${buildPlatforms.length}`);
+    this.env.log.debug(() => `${chalk.green('getProjectPlatforms')} completed: ${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
 
     const orientation = conf.getPreference('Orientation') || 'default';
 
@@ -166,7 +167,7 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
 
     // Create the resource directories that are needed for the images we will create
     const buildDirResponses = await createImgDestinationDirectories(imgResources);
-    this.env.log.debug(() => `${chalk.green('createImgDestinationDirectories')} completed - length=${buildDirResponses.length}`);
+    this.env.log.debug(() => `${chalk.green('createImgDestinationDirectories')} completed: ${buildDirResponses.length}`);
 
     // Check /resources and /resources/<platform> directories for src files
     // Update imgResources to have their src attributes to equal the most
@@ -175,7 +176,7 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
 
     try {
       srcImagesAvailable = await getSourceImages(buildPlatforms, resourceTypes, resourceDir);
-      this.env.log.debug(() => `${chalk.green('getSourceImages')} completed - ${srcImagesAvailable.length}`);
+      this.env.log.debug(() => `${chalk.green('getSourceImages')} completed: (${srcImagesAvailable.map(v => chalk.bold(prettyPath(v.path))).join(', ')})`);
     } catch (e) {
       this.env.log.error(`Error in ${chalk.green('getSourceImages')}: ${e.stack ? e.stack : e}`);
     }
@@ -238,7 +239,7 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
 
     // Upload images to service to prepare for resource transformations
     const imageUploadResponses = await uploadSourceImages(this.env, srcImagesAvailable);
-    this.env.log.debug(() => `${chalk.green('uploadSourceImages')} completed - responses=${JSON.stringify(imageUploadResponses, null, 2)}`);
+    this.env.log.debug(() => `${chalk.green('uploadSourceImages')} completed: responses=${JSON.stringify(imageUploadResponses, null, 2)}`);
 
     srcImagesAvailable = srcImagesAvailable.map((img, index) => {
       return {
@@ -248,6 +249,8 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
         vector: imageUploadResponses[index].Vector
       };
     });
+
+    this.env.log.debug(() => `srcImagesAvailable=${JSON.stringify(srcImagesAvailable, null, 2)}`);
 
     // If any images are asking to be generated but are not of the correct size
     // inform the user and continue on.
@@ -283,7 +286,7 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
 
     const generateImageResponses = await Promise.all(transforms);
     this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
-    this.env.log.debug(() => `${chalk.green('generateResourceImage')} completed - responses=${JSON.stringify(generateImageResponses, null, 2)}`);
+    this.env.log.debug(() => `${chalk.green('generateResourceImage')} completed: responses=${JSON.stringify(generateImageResponses, null, 2)}`);
 
     await Promise.all(srcImagesAvailable.map(async (img) => {
       await cacheFileChecksum(img.path, img.imageId);
