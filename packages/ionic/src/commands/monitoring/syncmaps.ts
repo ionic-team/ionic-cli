@@ -90,7 +90,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
     } catch (e) {
       if (isSuperAgentError(e)) {
         this.env.log.error(`Unable to sync map ${file}: ` + e.message);
-        if (e.response.status == 401) {
+        if (e.response.status === 401) {
           this.env.log.error('Try logging out and back in again.');
         }
         this.env.tasks.fail();
