@@ -92,7 +92,11 @@ export function registerHooks(hooks: IHookEngine) {
         cordovaPrepareArgs.push(platform);
       }
 
-      await env.runcmd(cordovaPrepareArgs);
+      try {
+        await env.runcmd(cordovaPrepareArgs);
+      } catch (e) {
+        env.log.error('Unable to prepare platform');
+      }
     }
   });
 

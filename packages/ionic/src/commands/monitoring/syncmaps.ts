@@ -13,12 +13,21 @@ import { fsReadFile, pathExists, readDir } from '@ionic/cli-utils/lib/utils/fs';
   name: 'syncmaps',
   type: 'project',
   backends: [BACKEND_PRO],
-  description: 'Sync Source Maps to Ionic Pro Error Monitoring service'
+  description: 'Sync Source Maps to Ionic Pro Error Monitoring service',
+  inputs: [
+    {
+      name: 'snapshot_id',
+      description: `An Ionic Pro snapshot id to associate these sourcemaps with.`,
+      required: false
+    }
+  ],
 })
 export class MonitoringSyncSourcemapsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>  {
     const token = await this.env.session.getUserToken();
     const appId = await this.env.project.loadAppId();
+
+    const [ snapshotId ] = inputs;
 
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const conf = await ConfigXml.load(this.env.project.directory);
@@ -48,14 +57,14 @@ export class MonitoringSyncSourcemapsCommand extends Command {
       doNewBuild && await this.doProdBuild();
     }
 
-    this.env.log.info(`Syncing SourceMaps for app version ${chalk.green(appVersion)} of ${chalk.green(cordovaInfo.id)} - App ID ${appId}`);
+    this.env.log.info(`Syncing SourceMaps for app version ${chalk.green(appVersion)} of ${chalk.green(cordovaInfo.id)} (snapshot: ${snapshotId})- App ID ${appId}`);
     readDir(sourcemapsDir).then(files => {
       const maps = files.filter(f => f.indexOf('.js.map') >= 0);
-      Promise.all(maps.map(f => this.syncSourcemap(path.join(sourcemapsDir, f), appVersion, commitHash, appId, token)));
+      Promise.all(maps.map(f => this.syncSourcemap(path.join(sourcemapsDir, f), snapshotId, appVersion, commitHash, appId, token)));
     });
   }
 
-  async syncSourcemap(file: string, appVersion: string, commitHash: string, appId: string, token: string): Promise<void> {
+  async syncSourcemap(file: string, snapshotId: string, appVersion: string, commitHash: string, appId: string, token: string): Promise<void> {
     const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
 
     const { req } = await this.env.client.make('POST', `/monitoring/${appId}/sourcemaps`);
@@ -65,7 +74,8 @@ export class MonitoringSyncSourcemapsCommand extends Command {
       .send({
         name: path.basename(file),
         version: appVersion,
-        commit: commitHash
+        commit: commitHash,
+        snapshot_id: snapshotId
       });
 
     try {
@@ -113,7 +123,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
         }
 
         this.env.log.ok('Uploaded sourcemap');
-        this.env.log.info('See the Error Monitoring docs for usage information and next steps: http://ionicframework.com/docs/pro/error-monitoring.html');
+        this.env.log.info('See the Error Monitoring docs for usage information and next steps: http://ionicframework.com/docs/pro/monitoring/');
 
         Promise.resolve();
       });
@@ -127,6 +137,6 @@ export class MonitoringSyncSourcemapsCommand extends Command {
     });
 
     const { build } = await import('@ionic/cli-utils/commands/build');
-    return build(this.env, [], { _: [], prod: isProd });
+    return await build(this.env, [], { _: [], prod: isProd });
   }
 }
