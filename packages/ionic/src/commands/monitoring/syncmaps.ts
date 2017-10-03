@@ -88,8 +88,11 @@ export class MonitoringSyncSourcemapsCommand extends Command {
 
       return this.uploadSourcemap(res, file);
     } catch (e) {
-      if (isSuperAgentError(e) && e.response.status === 409) {
-        this.env.log.error('Unable to sync map ${file}.');
+      if (isSuperAgentError(e)) {
+        this.env.log.error(`Unable to sync map ${file}: ` + e.message);
+        if(e.response.status == 401) {
+          this.env.log.error('Try logging out and back in again.')
+        }
         this.env.tasks.fail();
       } else {
         throw e;
@@ -104,6 +107,9 @@ export class MonitoringSyncSourcemapsCommand extends Command {
 
     const fileData = await fsReadFile(file, { encoding: 'utf8' });
     const sourcemapPost = r.data.sourcemap_post;
+
+    this.env.log.info('Doing this thing');
+    this.env.log.info(await this.env.config.getAPIUrl());
 
     let { req } = await createRequest(this.env.config, 'post', sourcemapPost.url);
     req = req
