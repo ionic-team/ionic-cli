@@ -46,7 +46,7 @@ const SSH_KEY_TYPES = ['ecdsa', 'ed25519', 'rsa'];
   ],
 })
 export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun {
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { contains, validate } = await import('@ionic/cli-utils/lib/validators');
 
     await this.checkForOpenSSH();
@@ -61,7 +61,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
     validate(String(options['type']), 'type', [contains(SSH_KEY_TYPES, { caseSensitive: false })]);
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { getGeneratedPrivateKeyPath } = await import('@ionic/cli-utils/lib/ssh');
 
@@ -87,7 +87,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
         await fsUnlink(keyPath);
       } else {
         this.env.log.info(`Not overwriting ${chalk.bold(prettyPath(keyPath))}.`);
-        return 0;
+        return;
       }
     }
 

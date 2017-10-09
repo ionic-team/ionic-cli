@@ -187,8 +187,6 @@ export async function createCommServer(env: IonicEnvironment): Promise<expressTy
 
     res.sendStatus(204);
 
-    env.log.debug(() => `Received command event: ${chalk.bold(command)}`);
-
     await env.config.load({ disk: true });
     await sendCommand(env, new Project(req.body.projectDir, PROJECT_FILE), command, args);
   });

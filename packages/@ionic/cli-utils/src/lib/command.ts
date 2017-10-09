@@ -23,24 +23,14 @@ export class Command implements ICommand {
   public env: IonicEnvironment;
   public metadata: CommandData;
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {}
-
-  async runwrap(fn: () => Promise<void | number>, opts: { exit0?: boolean } = {}): Promise<void> {
-    if (typeof opts.exit0 === 'undefined') {
-      opts.exit0 = true;
-    }
-
-    const r = await fn();
-
-    if (typeof r === 'number' && (r > 0 || (r === 0 && opts.exit0))) {
-      throw new FatalException('', r);
-    }
+  end(exitCode = 0) {
+    throw new FatalException('', exitCode);
   }
 
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {}
+
   async runcmd(pargv: string[], opts: { showExecution?: boolean; } = {}): Promise<void> {
-    await this.runwrap(async () => {
-      await this.env.runcmd(pargv, opts);
-    }, { exit0: false });
+    await this.env.runcmd(pargv, opts);
   }
 
   async validate(inputs: CommandLineInputs) {
@@ -50,11 +40,9 @@ export class Command implements ICommand {
   async execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const config = await this.env.config.load();
 
-    await this.runwrap(async () => {
-      if (isCommandPreRun(this)) {
-        return this.preRun(inputs, options);
-      }
-    });
+    if (isCommandPreRun(this)) {
+      await this.preRun(inputs, options);
+    }
 
     if (this.metadata.inputs) {
       for (let input of this.metadata.inputs) {
@@ -80,9 +68,7 @@ export class Command implements ICommand {
       }
     }
 
-    const runPromise = (async () => {
-      await this.runwrap(() => this.run(inputs, options));
-    })();
+    const runPromise = this.run(inputs, options);
 
     const telemetryPromise = (async () => {
       if (config.telemetry !== false) {

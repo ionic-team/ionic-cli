@@ -52,7 +52,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
   ]
 })
 export class GenerateCommand extends Command implements CommandPreRun {
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const project = await this.env.project.load();
 
     if (project.type !== 'ionic-angular') {
@@ -82,8 +82,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
     }
 
     if (!this.env.flags.interactive && inputs[0] === 'tabs') {
-      this.env.log.error(`Cannot generate tabs without prompts. Run without ${chalk.green('--no-interactive')}.`);
-      return 1;
+      throw new FatalException(`Cannot generate tabs without prompts. Run without ${chalk.green('--no-interactive')}.`);
     }
   }
 

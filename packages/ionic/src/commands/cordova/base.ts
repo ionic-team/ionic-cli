@@ -163,7 +163,7 @@ export class CordovaCommand extends Command {
 }
 
 export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.preRunChecks();
 
     if (options['list']) {
@@ -177,7 +177,7 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
       }
       args[0] = 'run';
       await this.runCordova(args, { showExecution: true });
-      return 0;
+      return this.end();
     }
 
     if (!inputs[0]) {

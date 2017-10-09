@@ -636,7 +636,7 @@ export interface IRootNamespace extends INamespace {
   root: true;
   name: 'ionic';
 
-  runCommand(env: IonicEnvironment, pargv: string[]): Promise<void | number>;
+  runCommand(env: IonicEnvironment, pargv: string[]): Promise<void>;
 }
 
 export interface ICommand {
@@ -644,12 +644,13 @@ export interface ICommand {
   metadata: CommandData;
 
   validate(inputs: CommandLineInputs): Promise<void>;
-  run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
+  run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
   execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
+  end(exitCode?: number): void;
 }
 
 export interface CommandPreRun extends ICommand {
-  preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number>;
+  preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
 }
 
 export type NamespaceMapGetter = () => Promise<INamespace>;

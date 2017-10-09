@@ -1,6 +1,7 @@
 import * as chalk from 'chalk';
 
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 @CommandMetadata({
   name: 'share',
@@ -9,14 +10,12 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
   visible: false,
 })
 export class ShareCommand extends Command {
-  async run(): Promise<number> {
+  async run(): Promise<void> {
     const dashUrl = await this.env.config.getDashUrl();
 
-    this.env.log.error(
+    throw new FatalException(
       `${chalk.green('ionic share')} has been removed as of CLI 3.0.\n` +
       `The functionality now exists in the Ionic Dashboard: ${chalk.bold(dashUrl)}`
     );
-
-    return 1;
   }
 }

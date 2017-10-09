@@ -2,6 +2,7 @@ import * as chalk from 'chalk';
 
 import { IRootNamespace, IonicEnvironment, KNOWN_BACKENDS } from '@ionic/cli-utils';
 import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 export class IonicNamespace extends Namespace implements IRootNamespace {
   readonly root = true;
@@ -40,7 +41,7 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
     ['share', async () => { const { ShareCommand } = await import('./share'); return new ShareCommand(); }],
   ]);
 
-  async runCommand(env: IonicEnvironment, pargv: string[]): Promise<void | number> {
+  async runCommand(env: IonicEnvironment, pargv: string[]): Promise<void> {
     const { metadataToMinimistOptions } = await import('@ionic/cli-utils/lib/utils/command');
     const { parseArgs } = await import('@ionic/cli-utils/lib/init');
     const { isCommand } = await import('@ionic/cli-utils/guards');
@@ -60,11 +61,10 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
     const minimistOpts = metadataToMinimistOptions(command.metadata);
 
     if (command.metadata.backends && !command.metadata.backends.includes(config.backend)) {
-      env.log.error(
+      throw new FatalException(
         `Sorry! The configured backend (${chalk.bold(config.backend)}) does not know about ${chalk.green('ionic ' + command.metadata.fullName)}.\n` +
         `You can switch backends with ${chalk.green('ionic config set -g backend')} (choose from ${KNOWN_BACKENDS.map(v => chalk.green(v)).join(', ')}).\n`
       );
-      return 1;
     }
 
     const options = parseArgs(pargv, minimistOpts);
@@ -74,8 +74,7 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
     await command.validate(inputs);
 
     if (!env.project.directory && command.metadata.type === 'project') {
-      env.log.error(`Sorry! ${chalk.green('ionic ' + command.metadata.fullName)} can only be run in an Ionic project directory.`);
-      return 1;
+      throw new FatalException(`Sorry! ${chalk.green('ionic ' + command.metadata.fullName)} can only be run in an Ionic project directory.`);
     }
 
     if (command.metadata.options) {

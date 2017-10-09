@@ -46,7 +46,7 @@ If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
   ],
 })
 export class LoginCommand extends Command implements CommandPreRun {
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ email, ] = inputs;
 
     const config = await this.env.config.load();

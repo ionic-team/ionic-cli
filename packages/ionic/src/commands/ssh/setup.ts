@@ -17,7 +17,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
     await this.checkForOpenSSH();
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { getGeneratedPrivateKeyPath } = await import('@ionic/cli-utils/lib/ssh');
     const { getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
@@ -42,7 +42,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
       });
 
       if (!rerun) {
-        return 0;
+        return;
       }
     } else {
       this.env.log.info(`Looks like you haven't configured your SSH settings yet.`);
@@ -96,7 +96,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
         });
 
         if (!confirm) {
-          return 1;
+          return this.end(1);
         }
       }
 

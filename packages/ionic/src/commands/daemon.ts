@@ -3,6 +3,7 @@ import * as chalk from 'chalk';
 import { CommandLineInputs, CommandLineOptions, DistTag } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { fsUnlink } from '@ionic/cli-utils/lib/utils/fs';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 @CommandMetadata({
   name: 'daemon',
@@ -23,7 +24,7 @@ import { fsUnlink } from '@ionic/cli-utils/lib/utils/fs';
   visible: false,
 })
 export class DaemonCommand extends Command {
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { createCommServer, processRunning } = await import('@ionic/cli-utils/lib/daemon');
     const { pkgLatestVersion } = await import('@ionic/cli-utils/lib/utils/npm');
@@ -36,8 +37,7 @@ export class DaemonCommand extends Command {
     const config = await this.env.config.load();
 
     if (!config.daemon.updates) {
-      this.env.log.info('Daemon is disabled.');
-      return 1;
+      throw new FatalException('Daemon is disabled in config.');
     }
 
     const f = await this.env.daemon.getPid();
@@ -52,8 +52,7 @@ export class DaemonCommand extends Command {
       latestIonicVersion = await pkgLatestVersion(this.env, 'ionic', daemonDistTag);
 
       if (!latestIonicVersion) {
-        this.env.log.error('Could not get latest version of ionic.');
-        return 1;
+        throw new FatalException('Could not get latest version of ionic.');
       }
 
       this.env.daemon.populateDistTag(daemonDistTag);
@@ -80,7 +79,7 @@ export class DaemonCommand extends Command {
         await fsUnlink(this.env.daemon.pidFilePath);
       } else {
         this.env.log.info('Daemon already running and up-to-date.');
-        return 0;
+        return;
       }
     }
 

@@ -15,12 +15,11 @@ import {
 import { isCommand } from '../guards';
 import { BACKEND_PRO } from './backends';
 import { generateFillSpaceStringList, wordWrap } from './utils/format';
+import { FatalException } from './errors';
 
 const HELP_DOTS_WIDTH = 25;
 
-export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise<void | number> {
-  let code = 0;
-
+export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise<void> {
   // If there are no inputs then show global command details.
   if (inputs.length === 0) {
     return env.log.msg(await getFormattedHelpDetails(env, env.namespace, inputs));
@@ -36,13 +35,11 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise
     }
 
     if (slicedInputs.length > 0) {
-      env.log.error(`Unable to find command: ${chalk.green(inputs.join(' '))}${extra}\n`);
-      code = 1;
+      throw new FatalException(`Unable to find command: ${chalk.green(inputs.join(' '))}${extra}\n`);
     }
   }
 
   env.log.msg(await formatHelp(env, cmdOrNamespace, inputs));
-  return code;
 }
 
 async function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INamespace, inputs: string[]) {

@@ -27,7 +27,7 @@ export class RequirementsCommand extends CordovaCommand implements CommandPreRun
     await this.preRunChecks();
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
     const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
@@ -64,7 +64,7 @@ export class RequirementsCommand extends CordovaCommand implements CommandPreRun
         throw e;
       }
 
-      return 1;
+      return this.end(1);
     }
   }
 }

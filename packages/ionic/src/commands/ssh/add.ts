@@ -7,6 +7,7 @@ import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } fro
 import { isSSHKeyResponse, isSuperAgentError } from '@ionic/cli-utils/guards';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { ERROR_FILE_NOT_FOUND, pathAccessible, pathExists } from '@ionic/cli-utils/lib/utils/fs';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { SSHBaseCommand } from './base';
 
@@ -49,7 +50,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
     }
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
 
@@ -64,17 +65,15 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
       [ pubkey, , , ] = await parsePublicKeyFile(pubkeyPath);
     } catch (e) {
       if (e === ERROR_FILE_NOT_FOUND) {
-        this.env.log.error(
+        throw new FatalException(
           `${chalk.bold(prettyPath(pubkeyPath))} does not appear to exist. Please specify a valid SSH public key.\n` +
           `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
         );
-        return 1;
       } else if (e === ERROR_SSH_INVALID_PUBKEY) {
-        this.env.log.error(
+        throw new FatalException(
           `${chalk.bold(pubkeyName)} does not appear to be a valid SSH public key. (Not in ${chalk.bold('authorized_keys')} file format.)\n` +
           `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
         );
-        return 1;
       }
 
       throw e;

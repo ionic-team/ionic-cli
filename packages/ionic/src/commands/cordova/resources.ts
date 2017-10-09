@@ -72,7 +72,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
   ]
 })
 export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.preRunChecks();
 
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
@@ -85,7 +85,7 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
     }
   }
 
-  public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
@@ -204,11 +204,10 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
         .map(v => chalk.bold(v))
         .join(', ');
 
-      this.env.log.error(
+      throw new FatalException(
         `Source image files were not found for the following platforms/types: ${missingImageText}\n` +
         `Please review ${chalk.green('--help')}`
       );
-      return 1;
     }
 
     this.env.tasks.next(`Filtering out image resources that do not need regeneration`);
@@ -231,7 +230,7 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
       if (imgResources.length === 0) {
         this.env.tasks.end();
         this.env.log.ok('No need to regenerate images--source files unchanged.');
-        return 0;
+        return;
       }
     }
 
@@ -271,7 +270,7 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
     if (imgResources.length === 0) {
       this.env.tasks.end();
       this.env.log.ok('No need to regenerate images--images too large for transformation.'); // TODO: improve messaging
-      return 0;
+      return;
     }
 
     // Call the transform service and output images to appropriate destination

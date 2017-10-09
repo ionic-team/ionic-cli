@@ -4,6 +4,7 @@ import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandPreRun, P
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { contains } from '@ionic/cli-utils/lib/validators';
 import { APP_SCRIPTS_INTENT, APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { DEPRECATION_NOTICE } from './common';
 
@@ -48,7 +49,7 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
   ],
 })
 export class PackageBuildCommand extends Command implements CommandPreRun {
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { PackageClient } = await import('@ionic/cli-utils/lib/package');
     const { SecurityClient } = await import('@ionic/cli-utils/lib/security');
 
@@ -75,8 +76,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
       const profiles = allProfiles.filter(p => p.type === desiredProfileType);
 
       if (profiles.length === 0) {
-        this.env.log.error(`Sorry--a valid ${chalk.bold(desiredProfileType)} security profile is required for ${pkg.formatPlatform(inputs[0])} ${options['release'] ? 'release' : 'debug'} builds.`);
-        return 1;
+        throw new FatalException(`Sorry--a valid ${chalk.bold(desiredProfileType)} security profile is required for ${pkg.formatPlatform(inputs[0])} ${options['release'] ? 'release' : 'debug'} builds.`);
       }
 
       if (profiles.length === 1) {
@@ -99,7 +99,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     }
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { upload } = await import('@ionic/cli-utils/lib/upload');
     const { DeployClient } = await import('@ionic/cli-utils/lib/deploy');
     const { PackageClient } = await import('@ionic/cli-utils/lib/package');
@@ -126,14 +126,14 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
       this.env.tasks.end();
 
       if (!p.credentials[platform]) {
-        this.env.log.error(`Profile ${chalk.bold(p.tag)} (${chalk.bold(p.name)}) was found, but didn't have credentials for ${pkg.formatPlatform(platform)}.`); // TODO: link to docs
-        return 1;
+        throw new FatalException(`Profile ${chalk.bold(p.tag)} (${chalk.bold(p.name)}) was found, but didn't have credentials for ${pkg.formatPlatform(platform)}.`); // TODO: link to docs
       }
 
       if (release && p.type !== 'production') {
-        this.env.log.error(`Profile ${chalk.bold(p.tag)} (${chalk.bold(p.name)}) is a ${chalk.bold(p.type)} profile, which won't work for release builds.\n` +
-                           `Please use a production security profile.`); // TODO: link to docs
-        return 1;
+        throw new FatalException(
+          `Profile ${chalk.bold(p.tag)} (${chalk.bold(p.name)}) is a ${chalk.bold(p.type)} profile, which won't work for release builds.\n` +
+          `Please use a production security profile.`
+        ); // TODO: link to docs
       }
     }
 

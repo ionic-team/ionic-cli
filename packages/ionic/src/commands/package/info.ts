@@ -35,7 +35,7 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
   exampleCommands: ['', '15'],
 })
 export class PackageInfoCommand extends Command {
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { PackageClient } = await import('@ionic/cli-utils/lib/package');
     const { columnar } = await import('@ionic/cli-utils/lib/utils/format');
 
@@ -61,7 +61,7 @@ export class PackageInfoCommand extends Command {
       if (latestBuilds.length === 0) {
         if (json) {
           process.stdout.write(JSON.stringify(undefined));
-          return 0;
+          return;
         } else {
           this.env.tasks.end();
           return this.env.log.warn(`You don't have any builds yet! Run ${chalk.green('ionic package build --help')} to learn how.`);

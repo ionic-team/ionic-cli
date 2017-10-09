@@ -89,14 +89,14 @@ See the CLI documentation on starters: ${chalk.bold('https://ionicframework.com/
   ],
 })
 export class StartCommand extends Command implements CommandPreRun {
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<number | void> {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { STARTER_TEMPLATES, getStarterTemplateTextList } = await import('@ionic/cli-utils/lib/start');
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
 
     // If the action is list then lets just end here.
     if (options['list']) {
       this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES).join('\n'));
-      return 0;
+      return this.end();
     }
 
     if (options['skip-deps']) {
@@ -134,7 +134,7 @@ export class StartCommand extends Command implements CommandPreRun {
 
       if (!confirm) {
         this.env.log.info('Not starting project within existing project.');
-        return 0;
+        return this.end();
       }
     }
 
@@ -198,7 +198,7 @@ export class StartCommand extends Command implements CommandPreRun {
     }
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<number | void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const {
       STARTER_TEMPLATES,
       STARTER_TYPES,
@@ -323,7 +323,7 @@ export class StartCommand extends Command implements CommandPreRun {
         }
       } else {
         this.env.log.info(`Not erasing existing project in ${chalk.green(prettyPath(projectRoot))}.`);
-        return 0;
+        return;
       }
     }
 

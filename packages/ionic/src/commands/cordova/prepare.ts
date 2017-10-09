@@ -33,7 +33,7 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
     await this.preRunChecks();
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
     const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
@@ -70,7 +70,7 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
           `You can save your installed platforms to ${chalk.bold('config.xml')} with the ${chalk.green('ionic cordova platform save')} command.`
         );
 
-        return 0;
+        return;
       }
     }
 

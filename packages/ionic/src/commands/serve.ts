@@ -109,7 +109,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
   ],
 })
 export class ServeCommand extends Command {
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { serve } = await import('@ionic/cli-utils/commands/serve');
 
     const project = await this.env.project.load();

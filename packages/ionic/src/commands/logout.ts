@@ -9,10 +9,10 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
   visible: false,
 })
 export class LogoutCommand extends Command {
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void | number> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!(await this.env.session.isLoggedIn())) {
       this.env.log.info('You are already logged out.');
-      return 0;
+      return;
     }
 
     await this.env.session.logout();
