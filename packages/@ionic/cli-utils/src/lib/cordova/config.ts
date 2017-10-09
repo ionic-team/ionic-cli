@@ -189,8 +189,14 @@ export class ConfigXml {
       const images = imgType.images.filter(img => orientation === 'default' || typeof img.orientation === 'undefined' || img.orientation === orientation);
 
       for (let image of images) {
+        // We use forward slashes, (not path.join) here to provide
+        // cross-platform compatibility for paths.
         const imgPath = ['resources', platform, imgType.nodeName, image.name].join('/'); // TODO: hard-coded 'resources' dir
         let imgElement = platformElement.find(`${imgType.nodeName}[@src='${imgPath}']`);
+
+        if (!imgElement) {
+          imgElement = platformElement.find(`${imgType.nodeName}[@src='${imgPath.split('/').join('\\')}']`);
+        }
 
         if (!imgElement) {
           const attrs: { [key: string]: string } = {};
@@ -207,6 +213,8 @@ export class ConfigXml {
 
           imgElement = et.SubElement(platformElement, imgType.nodeName, attrs);
         }
+
+        imgElement.set('src', imgPath);
       }
     }
   }
