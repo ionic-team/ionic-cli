@@ -130,6 +130,8 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
 
   registerHooks(hooks);
 
+  await Promise.all([config.prepare(), daemon.prepare()]);
+
   const ienv = new Environment({
     bottomBar,
     client,

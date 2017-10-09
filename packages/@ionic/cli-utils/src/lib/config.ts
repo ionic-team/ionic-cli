@@ -37,6 +37,22 @@ export abstract class BaseConfig<T> implements IBaseConfig<T> {
 
   abstract is(o: any): o is T;
 
+  async prepare() {
+    try {
+      const stats = await fsStat(this.directory);
+
+      if (!stats.isDirectory()) {
+        throw new FatalException(`${chalk.bold(this.directory)} appears to be a file, but it must be a directory.`);
+      }
+    } catch (e) {
+      if (e.code !== 'ENOENT') {
+        throw e;
+      }
+
+      await fsMkdirp(this.directory);
+    }
+  }
+
   async load(options: { disk?: boolean; } = {}): Promise<T> {
     if (options.disk || !this.configFile) {
       let o: { [key: string]: any } | undefined;
@@ -98,22 +114,6 @@ export abstract class BaseConfig<T> implements IBaseConfig<T> {
       const [ isEqual, cloneDeep ] = await Promise.all([import('lodash/isEqual'), import('lodash/cloneDeep')]);
 
       if (!isEqual(configFile, this.originalConfigFile)) {
-        const dirPath = path.dirname(this.filePath);
-
-        try {
-          const stats = await fsStat(dirPath);
-
-          if (!stats.isDirectory()) {
-            throw `${dirPath} must be a directory it is currently a file`;
-          }
-        } catch (e) {
-          if (e.code !== 'ENOENT') {
-            throw e;
-          }
-
-          await fsMkdirp(dirPath);
-        }
-
         await fsWriteJsonFile(this.filePath, configFile, { encoding: 'utf8' });
 
         this.configFile = configFile;
