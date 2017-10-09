@@ -47,7 +47,7 @@ async function run() {
   await Promise.all(commandPromises);
   await copyToIonicSite(commands);
 
-  env.close();
+  await env.close();
 }
 
 async function getCommandList(env) {

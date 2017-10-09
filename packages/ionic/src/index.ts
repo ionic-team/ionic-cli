@@ -136,7 +136,7 @@ export function registerHooks(hooks: IHookEngine) {
     const npm = await env.shell.cmdinfo('npm', ['-v']);
     const config = await env.config.load();
 
-    const info: InfoHookItem[] = [ // TODO: why must I be explicit?
+    const info: InfoHookItem[] = [
       { type: 'cli-packages', key: name, flair: 'Ionic CLI', value: env.plugins.ionic.meta.version, path: path.dirname(path.dirname(env.plugins.ionic.meta.filePath)) },
       { type: 'system', key: 'Node', value: node },
       { type: 'system', key: 'npm', value: npm || 'not installed' },
@@ -373,9 +373,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     }
   }
 
-  ienv.close();
+  await ienv.close();
 
-  if (exitCode > 0) {
-    process.exit(exitCode);
-  }
+  process.exitCode = exitCode;
 }
