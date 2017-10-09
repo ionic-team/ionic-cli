@@ -15,7 +15,6 @@ export class SSHBaseCommand extends Command {
 
       this.env.log.error(`Command not found: ${chalk.bold('ssh')}`);
       this.env.log.warn('OpenSSH not found on your computer.'); // TODO: more helpful message
-      return 1;
     }
   }
 }
