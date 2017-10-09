@@ -260,16 +260,33 @@ $ npm install -g @ionic/cli-plugin-proxy
 For CLI installed locally:
 
 \`\`\`bash
-$ cd myProject # cd into your project
+$ cd myProject # cd into your project's directory
 $ npm install --save-exact --save-dev @ionic/cli-plugin-proxy
 \`\`\`
 
 Then, use one of the following environment variables:
 
 \`\`\`bash
-$ export HTTP_PROXY="http://proxy.example.org:8888" # used by npm
-$ export HTTPS_PROXY="https://proxy.example.org:8888" # used by npm
-$ export IONIC_HTTP_PROXY="http://proxy.example.org:8888"
+$ export HTTP_PROXY="http://proxy.example.com:8888" # also used by npm
+$ export HTTPS_PROXY="https://proxy.example.com:8888" # also used by npm
+$ export IONIC_HTTP_PROXY="http://proxy.example.com:8888"
+\`\`\`
+
+### Other CLIs
+
+Each CLI that you use must be configured separately to proxy network requests.
+
+#### npm
+
+\`\`\`bash
+$ npm config set proxy http://proxy.company.com:8888
+$ npm config set https-proxy https://proxy.company.com:8888
+\`\`\`
+
+#### git
+
+\`\`\`bash
+$ git config --global http.proxy http://proxy.example.com:8888
 \`\`\`
 
 ### SSL Configuration
