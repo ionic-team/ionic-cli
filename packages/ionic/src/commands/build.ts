@@ -26,6 +26,8 @@ export class BuildCommand extends Command implements CommandPreRun {
         `${chalk.green('ionic build')} is for building web assets and takes no arguments. See ${chalk.green('ionic build --help')}.\n` +
         `Ignoring argument ${chalk.green(inputs[0])}. Perhaps you meant ${chalk.green('ionic cordova build ' + inputs[0])}?\n`
       );
+
+      inputs.splice(0);
     }
   }
 
