@@ -7,6 +7,21 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.13.0"></a>
+#### 3.13.0 (2017-10-10)
+
+* Added automatic backslash replacement on Windows for paths in `config.xml`.
+  Forward slashes are cross-platform, backslashes only work on Windows
+  machines.
+* Fixed slightly buggy Cordova platforms detection. The CLI now uses
+  `platforms/platforms.json` to detect Cordova platforms, not `config.xml`.
+* Fixed rare race condition with loading/writing `config.xml`.
+* Fixed issue with a first run of `ionic cordova prepare` inside Docker
+  container.
+* Fixed issue with `after_prepare` Cordova hook being executed twice during
+  Cordova builds.
+* Fixed issue with dev logger not finding next available port for Ionic 1.
+
 <a name="3.12.0"></a>
 #### 3.12.0 (2017-09-21)
 
