@@ -70,13 +70,12 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
+    const { getPlatforms } = await import('@ionic/cli-utils/lib/cordova/project');
     const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
 
     let [ action, platformName ] = inputs;
 
-    const conf = await ConfigXml.load(this.env.project.directory);
-    const platforms = conf.getPlatformEngines();
+    const platforms = await getPlatforms(this.env.project.directory);
 
     if (action === 'add' && platforms.map(p => p.name).includes(platformName)) {
       this.env.log.info(`Platform ${platformName} already exists.`);
@@ -97,7 +96,9 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
       this.env.log.msg(response);
     }
 
-    if (action === 'add' && options['resources'] && ['ios', 'android'].includes(platformName)) {
+    const isLoggedIn = await this.env.session.isLoggedIn();
+
+    if (isLoggedIn && action === 'add' && options['resources'] && ['ios', 'android'].includes(platformName)) {
       await this.env.runCommand(['cordova', 'resources', platformName, '--force']);
     }
 

@@ -28,18 +28,15 @@ export class RequirementsCommand extends CordovaCommand implements CommandPreRun
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
-    const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
+    const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
     const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
 
     const [ platform ] = inputs;
 
-    const conf = await ConfigXml.load(this.env.project.directory);
+    const platforms = await getPlatforms(this.env.project.directory);
 
     if (platform) {
-      const platformEngine = conf.getPlatformEngine(platform);
-
-      if (!platformEngine) {
+      if (!platforms.map(p => p.name).includes(platform)) {
         const confirm = await this.env.prompt({
           message: `Platform ${chalk.green(platform)} is not installed! Would you like to install it?`,
           type: 'confirm',

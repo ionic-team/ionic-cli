@@ -34,18 +34,15 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
-    const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
+    const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
     const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
 
     const [ platform ] = inputs;
 
-    const conf = await ConfigXml.load(this.env.project.directory);
+    const platforms = await getPlatforms(this.env.project.directory);
 
     if (platform) {
-      const platformEngine = conf.getPlatformEngine(platform);
-
-      if (!platformEngine) {
+      if (!platforms.map(p => p.name).includes(platform)) {
         const confirm = await this.env.prompt({
           message: `Platform ${chalk.green(platform)} is not installed! Would you like to install it?`,
           type: 'confirm',
@@ -62,9 +59,7 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
         }
       }
     } else {
-      const platformEngines = conf.getPlatformEngines();
-
-      if (platformEngines.length === 0) {
+      if (platforms.length === 0) {
         this.env.log.warn(
           `No Cordova platforms listed in ${chalk.bold('config.xml')}. Nothing to prepare.\n` +
           `You can save your installed platforms to ${chalk.bold('config.xml')} with the ${chalk.green('ionic cordova platform save')} command.`

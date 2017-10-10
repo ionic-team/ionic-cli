@@ -743,3 +743,8 @@ export interface DevServerMessage {
   type: string;
   data: any[];
 }
+
+export interface CordovaPlatform {
+  name: string;
+  version: string;
+}

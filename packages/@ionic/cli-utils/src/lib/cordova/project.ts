@@ -1,8 +1,16 @@
+import * as path from 'path';
+
 import * as chalk from 'chalk';
 
-import { IonicEnvironment } from '../../definitions';
+import { CordovaPlatform, IonicEnvironment } from '../../definitions';
 
 import { FatalException } from '../errors';
+import { CordovaPlatforms } from './config';
+
+export async function getPlatforms(projectDir: string): Promise<CordovaPlatform[]> {
+  const cdvPlatforms = new CordovaPlatforms(path.join(projectDir, 'platforms'), 'platforms.json');
+  return cdvPlatforms.getPlatforms();
+}
 
 export async function installPlatform(env: IonicEnvironment, platform: string): Promise<void> {
   try {

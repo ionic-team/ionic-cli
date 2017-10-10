@@ -150,12 +150,10 @@ export class CordovaCommand extends Command {
 
   async checkForPlatformInstallation(runPlatform: string) {
     if (runPlatform) {
-      const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
-      const conf = await ConfigXml.load(this.env.project.directory);
-      const platforms = conf.getPlatformEngines();
+      const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
+      const platforms = await getPlatforms(this.env.project.directory);
 
       if (!platforms.map(p => p.name).includes(runPlatform)) {
-        const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
         await installPlatform(this.env, runPlatform);
       }
     }
