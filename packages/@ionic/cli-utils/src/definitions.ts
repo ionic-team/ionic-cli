@@ -347,12 +347,14 @@ export interface ConfigFile {
     lastCommand: string;
     lastNoResponseToUpdate?: string;
   };
+  addresses: {
+    dashUrl?: string;
+    apiUrl?: string;
+    gitHost?: string;
+    gitPort?: number;
+  };
   daemon: {
     updates: boolean;
-  };
-  urls: {
-    api?: string;
-    dash?: string;
   };
   ssl?: {
     cafile?: string | string[];
@@ -360,8 +362,6 @@ export interface ConfigFile {
     keyfile?: string | string[];
   };
   git: {
-    host?: string;
-    port?: number;
     setup?: boolean;
   };
   user: {

@@ -155,8 +155,8 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.daemon.updates = true;
     }
 
-    if (!results.urls) {
-      results.urls = {};
+    if (!results.addresses) {
+      results.addresses = {};
     }
 
     if (!results.git) {
@@ -201,9 +201,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
     delete results.lastUpdated;
     delete results.cliFlags;
 
-    // TODO: temporary
-    delete results.urls.api;
-    delete results.urls.dash;
+    delete results.urls;
     delete results.git.host;
     delete results.git.port;
 
@@ -212,10 +210,10 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
 
   is(j: any): j is ConfigFile {
     return j
+      && typeof j.addresses === 'object'
       && typeof j.state === 'object'
       && typeof j.state.lastCommand === 'string'
       && typeof j.daemon === 'object'
-      && typeof j.urls === 'object'
       && typeof j.user === 'object'
       && typeof j.tokens === 'object'
       && typeof j.tokens.appUser === 'object'
@@ -237,8 +235,8 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
   async getAPIUrl(): Promise<string> {
     const config = await this.load();
 
-    if (config.urls.api) {
-      return config.urls.api;
+    if (config.addresses.apiUrl) {
+      return config.addresses.apiUrl;
     }
 
     if (config.backend === 'legacy') {
@@ -251,8 +249,8 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
   async getDashUrl(): Promise<string> {
     const config = await this.load();
 
-    if (config.urls.dash) {
-      return config.urls.dash;
+    if (config.addresses.dashUrl) {
+      return config.addresses.dashUrl;
     }
 
     if (config.backend === 'legacy') {
@@ -265,8 +263,8 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
   async getGitHost(): Promise<string> {
     const config = await this.load();
 
-    if (config.git.host) {
-      return config.git.host;
+    if (config.addresses.gitHost) {
+      return config.addresses.gitHost;
     }
 
     return 'git.ionicjs.com';
@@ -275,8 +273,8 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
   async getGitPort(): Promise<number> {
     const config = await this.load();
 
-    if (config.git.port) {
-      return config.git.port;
+    if (config.addresses.gitPort) {
+      return config.addresses.gitPort;
     }
 
     return 22;
