@@ -13,6 +13,7 @@ import {
 
 import { mapLegacyCommand, modifyArguments, parseArgs } from '@ionic/cli-utils/lib/init';
 import { pathExists } from '@ionic/cli-utils/lib/utils/fs';
+import { isExitCodeException } from '@ionic/cli-utils/guards';
 
 import { IonicNamespace } from './commands';
 
@@ -223,7 +224,6 @@ export async function generateRootPlugin(): Promise<RootPlugin> {
 
 export async function run(pargv: string[], env: { [k: string]: string; }) {
   const now = new Date();
-  let exitCode = 0;
   let err: any;
 
   pargv = modifyArguments(pargv.slice(2));
@@ -314,13 +314,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
       }
 
       await ienv.hooks.fire('plugins:init', { env: ienv });
-
-      const r = await namespace.runCommand(ienv, pargv);
-
-      if (typeof r === 'number') {
-        exitCode = r;
-      }
-
+      await namespace.runCommand(ienv, pargv);
       config.state.lastCommand = now.toISOString();
     }
 
@@ -340,7 +334,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
 
   if (err) {
     ienv.tasks.fail();
-    exitCode = 1;
+    process.exitCode = 1;
 
     if (isValidationErrorArray(err)) {
       for (let e of err) {
@@ -350,11 +344,11 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     } else if (isSuperAgentError(err)) {
       const { formatSuperAgentError } = await import('@ionic/cli-utils/lib/http');
       ienv.log.msg(formatSuperAgentError(err));
-    } else if (err.fatal) {
-      exitCode = typeof err.exitCode === 'number' ? err.exitCode : 1;
+    } else if (isExitCodeException(err)) {
+      process.exitCode = err.exitCode;
 
       if (err.message) {
-        if (exitCode > 0) {
+        if (err.exitCode > 0) {
           ienv.log.error(err.message);
         } else {
           ienv.log.msg(err.message);
@@ -370,6 +364,4 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
   }
 
   await ienv.close();
-
-  process.exitCode = exitCode;
 }

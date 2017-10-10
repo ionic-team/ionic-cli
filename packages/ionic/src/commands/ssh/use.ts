@@ -73,7 +73,7 @@ export class SSHUseCommand extends SSHBaseCommand {
 
       if (!confirm) {
         // TODO: link to docs about manual git setup
-        return this.end(1);
+        throw new FatalException();
       }
     }
 

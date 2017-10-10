@@ -64,7 +64,7 @@ export class RequirementsCommand extends CordovaCommand implements CommandPreRun
         throw e;
       }
 
-      return this.end(1);
+      throw new FatalException();
     }
   }
 }

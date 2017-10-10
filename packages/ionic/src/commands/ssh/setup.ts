@@ -3,6 +3,7 @@ import * as chalk from 'chalk';
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { pathExists } from '@ionic/cli-utils/lib/utils/fs';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { SSHBaseCommand } from './base';
 
@@ -96,7 +97,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
         });
 
         if (!confirm) {
-          return this.end(1);
+          throw new FatalException();
         }
       }
 

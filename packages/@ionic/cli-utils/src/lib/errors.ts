@@ -18,7 +18,7 @@ export class Exception extends Error {
 export class FatalException extends Exception {
   public fatal = true;
 
-  constructor(public message: string, public exitCode: number = 1) {
+  constructor(public message: string = '', public exitCode: number = 1) {
     super(message);
   }
 }

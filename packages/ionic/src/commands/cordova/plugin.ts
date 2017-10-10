@@ -3,6 +3,7 @@ import * as chalk from 'chalk';
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { CORDOVA_INTENT, filterArgumentsForCordova } from '@ionic/cli-utils/lib/cordova/utils';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { CordovaCommand } from './base';
 
@@ -55,7 +56,7 @@ export class PluginCommand extends CordovaCommand implements CommandPreRun {
     if (['ls', 'save'].includes(inputs[0])) {
       const response = await this.runCordova(['plugin', inputs[0]]);
       this.env.log.msg(response);
-      return this.end();
+      throw new FatalException('', 0);
     }
 
     if (!inputs[1]) {

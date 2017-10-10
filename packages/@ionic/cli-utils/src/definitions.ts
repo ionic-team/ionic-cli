@@ -646,7 +646,6 @@ export interface ICommand {
   validate(inputs: CommandLineInputs): Promise<void>;
   run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
   execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
-  end(exitCode?: number): void;
 }
 
 export interface CommandPreRun extends ICommand {

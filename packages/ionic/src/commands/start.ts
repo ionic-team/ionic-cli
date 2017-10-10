@@ -96,7 +96,7 @@ export class StartCommand extends Command implements CommandPreRun {
     // If the action is list then lets just end here.
     if (options['list']) {
       this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES).join('\n'));
-      return this.end();
+      throw new FatalException('', 0);
     }
 
     if (options['skip-deps']) {
@@ -134,7 +134,7 @@ export class StartCommand extends Command implements CommandPreRun {
 
       if (!confirm) {
         this.env.log.info('Not starting project within existing project.');
-        return this.end();
+        throw new FatalException();
       }
     }
 

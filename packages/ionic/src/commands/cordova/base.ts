@@ -177,7 +177,7 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
       }
       args[0] = 'run';
       await this.runCordova(args, { showExecution: true });
-      return this.end();
+      throw new FatalException('', 0);
     }
 
     if (!inputs[0]) {

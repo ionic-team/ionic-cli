@@ -8,7 +8,6 @@ import {
   IonicEnvironment,
 } from '../definitions';
 
-import { FatalException } from './errors';
 import { isCommandPreRun } from '../guards';
 import { validators } from './validators';
 import { minimistOptionsToArray, validateInputs } from './utils/command';
@@ -22,10 +21,6 @@ export function CommandMetadata(metadata: CommandData) {
 export class Command implements ICommand {
   public env: IonicEnvironment;
   public metadata: CommandData;
-
-  end(exitCode = 0) {
-    throw new FatalException('', exitCode);
-  }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {}
 
