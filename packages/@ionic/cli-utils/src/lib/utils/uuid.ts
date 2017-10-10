@@ -1,5 +1,5 @@
-import * as uuid from 'uuid';
+import * as uuidv4 from 'uuid/v4';
 
 export function generateUUID(): string {
-  return uuid.v4().toString();
+  return uuidv4.toString();
 }
