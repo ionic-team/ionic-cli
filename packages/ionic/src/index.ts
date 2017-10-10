@@ -87,13 +87,16 @@ export function registerHooks(hooks: IHookEngine) {
     }
 
     if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
+      const { BuildCommand } = await import('./commands/build');
       const cordovaPrepareArgs = ['cordova', 'prepare'];
 
       if (platform) {
         cordovaPrepareArgs.push(platform);
       }
 
-      await env.runcmd(cordovaPrepareArgs);
+      if (env.command instanceof BuildCommand) {
+        await env.runCommand(cordovaPrepareArgs);
+      }
     }
   });
 
@@ -314,7 +317,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
       }
 
       await ienv.hooks.fire('plugins:init', { env: ienv });
-      await namespace.runCommand(ienv, pargv);
+      await namespace.runCommand(ienv, pargv, { root: true });
       config.state.lastCommand = now.toISOString();
     }
 

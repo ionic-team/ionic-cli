@@ -119,7 +119,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
         const keyExists = await pathExists(keyPath);
 
         if (keyExists) {
-          await this.runcmd(['ssh', 'use', keyPath]);
+          await this.env.runCommand(['ssh', 'use', keyPath]);
         } else {
           this.env.log.error(
             `SSH key does not exist: ${chalk.bold(prettyPath(keyPath))}.\n` +

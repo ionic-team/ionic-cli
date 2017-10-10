@@ -107,12 +107,12 @@ export class SSHSetupCommand extends SSHBaseCommand {
           `You can generate a new one by deleting it.`
         );
       } else {
-        await this.runcmd(['ssh', 'generate', keyPath]);
+        await this.env.runCommand(['ssh', 'generate', keyPath]);
       }
 
-      await this.runcmd(['ssh', 'add', pubkeyPath, '--use']);
+      await this.env.runCommand(['ssh', 'add', pubkeyPath, '--use']);
     } else if (setupChoice === CHOICE_MANUAL) {
-      await this.runcmd(['ssh', 'add']);
+      await this.env.runCommand(['ssh', 'add']);
     }
 
     if (setupChoice === CHOICE_SKIP) {

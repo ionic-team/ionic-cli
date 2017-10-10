@@ -41,7 +41,7 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
     ['share', async () => { const { ShareCommand } = await import('./share'); return new ShareCommand(); }],
   ]);
 
-  async runCommand(env: IonicEnvironment, pargv: string[]): Promise<void> {
+  async runCommand(env: IonicEnvironment, pargv: string[], opts: { root?: boolean; } = {}): Promise<void> {
     const { metadataToMinimistOptions } = await import('@ionic/cli-utils/lib/utils/command');
     const { parseArgs } = await import('@ionic/cli-utils/lib/init');
     const { isCommand } = await import('@ionic/cli-utils/guards');
@@ -90,6 +90,10 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
       if (found) {
         env.log.info(`You can switch backends with ${chalk.green('ionic config set -g backend')}.`);
       }
+    }
+
+    if (opts.root) {
+      env.command = command;
     }
 
     await command.execute(inputs, options);

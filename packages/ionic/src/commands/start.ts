@@ -115,7 +115,7 @@ export class StartCommand extends Command implements CommandPreRun {
     const config = await this.env.config.load();
 
     if (proAppId && config.backend !== BACKEND_PRO) {
-      await this.runcmd(['config', 'set', '-g', 'backend', 'pro'], {});
+      await this.env.runCommand(['config', 'set', '-g', 'backend', 'pro'], {});
       this.env.log.nl();
       this.env.log.info(
         `${chalk.bold(chalk.blue.underline('Welcome to Ionic Pro!') + ' The CLI is now set up to use Ionic Pro services.')}\n` +
@@ -441,7 +441,7 @@ export class StartCommand extends Command implements CommandPreRun {
           cmdArgs.push(proAppId);
         }
 
-        await this.runcmd(cmdArgs);
+        await this.env.runCommand(cmdArgs);
       }
     }
 

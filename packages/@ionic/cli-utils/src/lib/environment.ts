@@ -5,6 +5,7 @@ import * as inquirerType from 'inquirer';
 import {
   ICLIEventEmitter,
   IClient,
+  ICommand,
   IConfig,
   IDaemon,
   IHookEngine,
@@ -23,6 +24,7 @@ import {
 } from '../definitions';
 
 export class Environment implements IonicEnvironment {
+  command?: ICommand;
   readonly flags: IonicEnvironmentFlags;
   readonly hooks: IHookEngine;
   readonly client: IClient;
@@ -137,7 +139,7 @@ export class Environment implements IonicEnvironment {
     }
   }
 
-  async runcmd(pargv: string[], opts: { showExecution?: boolean; } = {}): Promise<void> {
+  async runCommand(pargv: string[], opts: { showExecution?: boolean; } = {}): Promise<void> {
     if (typeof opts.showExecution === 'undefined') {
       opts.showExecution = true;
     }

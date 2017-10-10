@@ -98,7 +98,7 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
     }
 
     if (action === 'add' && options['resources'] && ['ios', 'android'].includes(platformName)) {
-      await this.runcmd(['cordova', 'resources', platformName, '--force']);
+      await this.env.runCommand(['cordova', 'resources', platformName, '--force']);
     }
 
     this.env.tasks.end();

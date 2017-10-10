@@ -101,7 +101,7 @@ export class LoginCommand extends Command implements CommandPreRun {
 
     if (await this.env.session.isLoggedIn()) {
       this.env.log.info('Logging you out.');
-      await this.runcmd(['logout']);
+      await this.env.runCommand(['logout']);
       await this.env.telemetry.resetToken();
     }
 
@@ -109,7 +109,7 @@ export class LoginCommand extends Command implements CommandPreRun {
     this.env.log.ok('You are logged in!');
 
     if (config.backend === BACKEND_PRO && !config.git.setup) {
-      await this.runcmd(['ssh', 'setup']);
+      await this.env.runCommand(['ssh', 'setup']);
     }
   }
 }

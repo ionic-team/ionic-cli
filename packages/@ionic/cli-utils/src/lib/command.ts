@@ -24,10 +24,6 @@ export class Command implements ICommand {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {}
 
-  async runcmd(pargv: string[], opts: { showExecution?: boolean; } = {}): Promise<void> {
-    await this.env.runcmd(pargv, opts);
-  }
-
   async validate(inputs: CommandLineInputs) {
     validateInputs(inputs, this.metadata);
   }

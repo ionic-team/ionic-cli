@@ -59,7 +59,7 @@ export class LinkCommand extends Command implements CommandPreRun {
 
     if (proAppId) {
       if (config.backend !== BACKEND_PRO) {
-        await this.runcmd(['config', 'set', '-g', 'backend', 'pro'], { showExecution: false });
+        await this.env.runCommand(['config', 'set', '-g', 'backend', 'pro'], { showExecution: false });
         this.env.log.nl();
         this.env.log.info(
           `${chalk.bold(chalk.blue.underline('Welcome to Ionic Pro!') + ' The CLI is now set up to use Ionic Pro services.')}\n` +
@@ -100,7 +100,7 @@ export class LinkCommand extends Command implements CommandPreRun {
     }
 
     if (config.backend === BACKEND_PRO && !config.git.setup) {
-      await this.runcmd(['ssh', 'setup']);
+      await this.env.runCommand(['ssh', 'setup']);
     }
 
     if (appId) {
@@ -170,8 +170,8 @@ export class LinkCommand extends Command implements CommandPreRun {
         const app = await appUtil.create({ name: String(name) });
 
         appId = app.id;
-        await this.runcmd(['config', 'set', 'app_id', `"${appId}"`, '--json']);
-        await this.runcmd(['git', 'remote']);
+        await this.env.runCommand(['config', 'set', 'app_id', `"${appId}"`, '--json']);
+        await this.env.runCommand(['git', 'remote']);
 
         this.env.log.ok(`Project linked with app ${chalk.bold(appId)}!`);
       } else {
@@ -183,10 +183,10 @@ export class LinkCommand extends Command implements CommandPreRun {
     } else if (appId === CHOICE_NEVERMIND) {
       this.env.log.info('Not linking app.');
     } else {
-      await this.runcmd(['config', 'set', 'app_id', `"${appId}"`, '--json']);
+      await this.env.runCommand(['config', 'set', 'app_id', `"${appId}"`, '--json']);
 
       if (config.backend === BACKEND_PRO) {
-        await this.runcmd(['git', 'remote']);
+        await this.env.runCommand(['git', 'remote']);
       }
 
       this.env.log.ok(`Project linked with app ${chalk.bold(appId)}!`);
