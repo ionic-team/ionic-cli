@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-utils",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "description": "Ionic CLI Utils",
   "homepage": "https://ionic.io/",
   "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
@@ -72,7 +72,7 @@
     "@angular/compiler": "^4.3.6",
     "@angular/compiler-cli": "^4.3.6",
     "@angular/core": "^4.3.6",
-    "@ionic/cli-scripts": "0.3.4",
+    "@ionic/cli-scripts": "0.3.5",
     "@types/archiver": "^2.0.0",
     "@types/basic-auth": "^1.1.2",
     "@types/body-parser": "^1.16.5",

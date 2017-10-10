@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.13.0"></a>
+# [1.13.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.9.2...@ionic/cli-utils@1.13.0) (2017-10-10)
+
+
+### Bug Fixes
+
+* **backends:** explicitly list known backends ([84fa7d7](https://github.com/ionic-team/ionic-cli/commit/84fa7d7))
+* **config:** compute urls for backend ([19687b1](https://github.com/ionic-team/ionic-cli/commit/19687b1))
+* **config:** no config option for this yet ([85e9f81](https://github.com/ionic-team/ionic-cli/commit/85e9f81))
+* **config:** prepare configs during env generation ([d0a3072](https://github.com/ionic-team/ionic-cli/commit/d0a3072))
+* **cordova:** fix after_prepare being executed twice ([31225b9](https://github.com/ionic-team/ionic-cli/commit/31225b9))
+* **cordova:** fix various platform weirdness (use platforms.json) ([2c2478f](https://github.com/ionic-team/ionic-cli/commit/2c2478f))
+* **cordova:** look for paths with backslashes, and replace ([9dfc78c](https://github.com/ionic-team/ionic-cli/commit/9dfc78c))
+* **cordova:** more robust error handling for serve, shutdown functions ([a2ba645](https://github.com/ionic-team/ionic-cli/commit/a2ba645))
+* **cordova:** pass --prod to app-scripts for cordova builds ([3453ed9](https://github.com/ionic-team/ionic-cli/commit/3453ed9))
+* **cordova:** remove original-src from config.xml after serve ([4835cd9](https://github.com/ionic-team/ionic-cli/commit/4835cd9))
+* **cordova:** send options w/o intent to app-scripts ([0065658](https://github.com/ionic-team/ionic-cli/commit/0065658))
+* **cordova:** write hash files only after successful resources generation ([47286cb](https://github.com/ionic-team/ionic-cli/commit/47286cb))
+* **ionic1:** fix --consolelogs ([5763a38](https://github.com/ionic-team/ionic-cli/commit/5763a38))
+* **pro:** fix "infinity" bug ([3cb47f0](https://github.com/ionic-team/ionic-cli/commit/3cb47f0))
+* better guidance for custom projects ([91c1be1](https://github.com/ionic-team/ionic-cli/commit/91c1be1))
+* prefer locally installed executables ([fe07215](https://github.com/ionic-team/ionic-cli/commit/fe07215))
+* **serve:** do not merge watch patterns ([8664927](https://github.com/ionic-team/ionic-cli/commit/8664927))
+* **serve:** find nearest port for dev logger ([9ecc62f](https://github.com/ionic-team/ionic-cli/commit/9ecc62f))
+* **serve:** ionic serve w/o external network should work ([eee3cb7](https://github.com/ionic-team/ionic-cli/commit/eee3cb7))
+* **ssh:** ensure proper whitespace ([e232787](https://github.com/ionic-team/ionic-cli/commit/e232787))
+
+
+### Features
+
+* IONIC_DAEMON_DIRECTORY environment variable ([ae1f7f1](https://github.com/ionic-team/ionic-cli/commit/ae1f7f1))
+* **config:** add interactive config value ([a783d54](https://github.com/ionic-team/ionic-cli/commit/a783d54))
+* **cordova:** add --dev-logger-port to run/emulate ([706680d](https://github.com/ionic-team/ionic-cli/commit/706680d))
+* **info:** show backend ([e1b7fda](https://github.com/ionic-team/ionic-cli/commit/e1b7fda))
+* **pro:** default new apps to Ionic Pro ([6966135](https://github.com/ionic-team/ionic-cli/commit/6966135))
+* **resources:** generate iPhone X splash ([e38c1f0](https://github.com/ionic-team/ionic-cli/commit/e38c1f0))
+* **resources:** generate new iOS 1024 marketing icon ([6c99b86](https://github.com/ionic-team/ionic-cli/commit/6c99b86))
+* **serve:** --auth feature for basic auth ([0b92c51](https://github.com/ionic-team/ionic-cli/commit/0b92c51))
+* **ssh:** allow generation of non-rsa keys ([4f9c648](https://github.com/ionic-team/ionic-cli/commit/4f9c648))
+* **ssl:** cafile, certfile, keyfile options ([b9cee01](https://github.com/ionic-team/ionic-cli/commit/b9cee01))
+
+
+
+
 <a name="1.12.0"></a>
 # [1.12.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.9.2...@ionic/cli-utils@1.12.0) (2017-09-21)
 
