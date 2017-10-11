@@ -23,6 +23,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
     'page Login',
     'page Detail --no-module',
     'page About --constants',
+    'component special-button --minimal',
     'pipe MyFilterPipe'
   ],
   inputs: [
@@ -51,7 +52,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
     },
     {
       name: 'minimal',
-      description: 'Only generate what is necessary. No comments, no lifecycle hooks, no spec.',
+      description: 'Only generate what is necessary. No comments, no lifecycle hooks, no testing spec.',
       type: Boolean,
       default: false
     }
