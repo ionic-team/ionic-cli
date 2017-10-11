@@ -52,7 +52,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
     },
     {
       name: 'minimal',
-      description: 'Only generate what is necessary. No comments or lifecycle hooks',
+      description: 'Only generate what is necessary. No comments, no lifecycle hooks, no module, no spec, inline template.',
       type: Boolean,
       default: false
     }
