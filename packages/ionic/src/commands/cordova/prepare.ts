@@ -60,11 +60,7 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
       }
     } else {
       if (platforms.length === 0) {
-        this.env.log.warn(
-          `No Cordova platforms listed in ${chalk.bold('config.xml')}. Nothing to prepare.\n` +
-          `You can save your installed platforms to ${chalk.bold('config.xml')} with the ${chalk.green('ionic cordova platform save')} command.`
-        );
-
+        this.env.log.warn(`No Cordova platforms found. Nothing to prepare.`);
         return;
       }
     }
