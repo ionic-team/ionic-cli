@@ -19,6 +19,7 @@ export async function generate(args: { env: IonicEnvironment; inputs: string[], 
   const commandOptions = {
     module: false,
     constants: false,
+    minimal: false,
   };
 
   if (args.options['module']) {
@@ -27,6 +28,10 @@ export async function generate(args: { env: IonicEnvironment; inputs: string[], 
 
   if (args.options['constants']) {
     commandOptions.constants = true;
+  }
+  
+  if (args.options['minimal']) {
+    commandOptions.minimal = true;
   }
 
   switch (type) {
