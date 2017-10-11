@@ -48,6 +48,12 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
       description: 'Generate a page constant file for lazy-loaded pages',
       type: Boolean,
       default: false
+    },
+    {
+      name: 'minimal',
+      description: 'Only generate what is necessary. No comments, no lifecycle hooks, no spec.',
+      type: Boolean,
+      default: false
     }
   ]
 })
