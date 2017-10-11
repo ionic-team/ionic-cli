@@ -60,6 +60,11 @@
     "@types/rimraf": "^2.0.2"
   },
   "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
+    },
     "moduleFileExtensions": [
       "ts",
       "js"

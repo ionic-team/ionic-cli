@@ -94,6 +94,11 @@
     "rxjs": "^5.4.2"
   },
   "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
+    },
     "moduleFileExtensions": [
       "ts",
       "js"

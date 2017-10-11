@@ -40,6 +40,11 @@
   ],
   "license": "MIT",
   "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
+    },
     "moduleFileExtensions": [
       "ts",
       "js"
