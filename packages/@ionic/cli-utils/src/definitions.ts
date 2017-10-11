@@ -63,6 +63,15 @@ export interface PackageJson {
   devDependencies?: { [key: string]: string };
 }
 
+export interface CordovaPackageJson extends PackageJson {
+  cordova: {
+    platforms: string[];
+    plugins: {
+      [key: string]: {};
+    };
+  };
+}
+
 export interface BowerJson {
   name: string;
   dependencies?: { [key: string]: string };
@@ -346,6 +355,9 @@ export interface ConfigFile {
   state: {
     lastCommand: string;
     lastNoResponseToUpdate?: string;
+    doctor: {
+      ignored: string[];
+    };
   };
   addresses: {
     dashUrl?: string;

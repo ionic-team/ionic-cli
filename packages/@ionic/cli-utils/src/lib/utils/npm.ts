@@ -150,7 +150,7 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
   const installerArgs: string[] = [];
 
   if (installer === 'npm') {
-    vocab = { install: 'install', bareInstall: 'install', uninstall: 'uninstall', dedupe: 'dedupe', global: '-g', save: '--save', saveDev: '--save-dev', saveExact: '--save-exact', nonInteractive: '' };
+    vocab = { install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '' };
   } else if (installer === 'yarn') {
     vocab = { install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive' };
 

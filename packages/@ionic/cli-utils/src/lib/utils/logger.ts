@@ -116,7 +116,7 @@ export class Logger implements ILogger {
           }
 
           return l;
-        }).join('\n');
+        }).join('\n') + '\n\n';
       } else {
         msg = msgLines.join('\n');
       }

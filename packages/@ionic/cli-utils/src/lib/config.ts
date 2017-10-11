@@ -135,6 +135,14 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.state = {};
     }
 
+    if (!results.state.doctor) {
+      results.state.doctor = {};
+    }
+
+    if (typeof results.state.doctor.ignored === 'undefined') {
+      results.state.doctor.ignored = [];
+    }
+
     if (!results.state.lastCommand) {
       if (results.lastCommand) {
         results.state.lastCommand = results.lastCommand;
@@ -213,6 +221,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       && typeof j.addresses === 'object'
       && typeof j.state === 'object'
       && typeof j.state.lastCommand === 'string'
+      && typeof j.state.doctor === 'object'
       && typeof j.daemon === 'object'
       && typeof j.user === 'object'
       && typeof j.tokens === 'object'

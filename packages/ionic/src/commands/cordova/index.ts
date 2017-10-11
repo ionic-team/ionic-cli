@@ -23,5 +23,7 @@ Cordova Reference documentation:
     ['resources', async () => { const { ResourcesCommand } = await import('./resources'); return new ResourcesCommand(); }],
     ['run', async () => { const { RunCommand } = await import('./run'); return new RunCommand(); }],
     ['requirements', async () => { const { RequirementsCommand } = await import('./requirements'); return new RequirementsCommand(); }],
+    ['platforms', 'platform'],
+    ['plugins', 'plugin'],
   ]);
 }

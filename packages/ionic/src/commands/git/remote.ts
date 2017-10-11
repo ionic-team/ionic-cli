@@ -1,11 +1,8 @@
-import * as path from 'path';
-
 import * as chalk from 'chalk';
 
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { pathExists } from '@ionic/cli-utils/lib/utils/fs';
 
 @CommandMetadata({
   name: 'remote',
@@ -16,6 +13,7 @@ import { pathExists } from '@ionic/cli-utils/lib/utils/fs';
 export class GitRemoteCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { App } = await import('@ionic/cli-utils/lib/app');
+    const { addIonicRemote, getIonicRemote, initializeRepo, isRepoInitialized, setIonicRemote } = await import('@ionic/cli-utils/lib/git');
 
     const token = await this.env.session.getUserToken();
     const appId = await this.env.project.loadAppId();
@@ -26,46 +24,28 @@ export class GitRemoteCommand extends Command {
       throw new FatalException(`Missing ${chalk.bold('repo_url')} property in app.`);
     }
 
-    if (!(await pathExists(path.join(this.env.project.directory, '.git')))) {
+    if (!(await isRepoInitialized(this.env))) {
+      await initializeRepo(this.env);
+
       this.env.log.warn(
         `Initializing a git repository for your project.\n` +
         `Before your first ${chalk.green('git push ionic master')}, you'll want to commit all the files in your project:\n\n` +
         `${chalk.green('git commit -a -m "Initial commit"')}\n`
       );
-      await this.env.shell.run('git', ['init'], { showSpinner: false, cwd: this.env.project.directory });
     }
 
     const remote = app.repo_url;
-    const regex = /ionic\t(.+) \(\w+\)/;
-
-    // would like to use get-url, but not available in git 2.0.0
-    const remotes = await this.env.shell.run('git', ['remote', '-v'], { showCommand: false, cwd: this.env.project.directory });
-
-    let found = false;
-    let matches = true;
-
-    for (let line of remotes.split('\n')) {
-      const match = regex.exec(line.trim());
-
-      if (match) {
-        found = true;
-
-        if (match[1] !== remote) {
-          matches = false;
-          break;
-        }
-      }
-    }
+    const found = await getIonicRemote(this.env);
 
     if (found) {
-      if (matches) {
+      if (remote === found) {
         this.env.log.info(`Existing remote ${chalk.bold('ionic')} found.`);
       } else {
-        await this.env.shell.run('git', ['remote', 'set-url', 'ionic', remote], { showSpinner: false, cwd: this.env.project.directory });
+        await setIonicRemote(this.env, remote);
         this.env.log.ok(`Updated remote ${chalk.bold('ionic')}.`);
       }
     } else {
-      await this.env.shell.run('git', ['remote', 'add', 'ionic', remote], { showSpinner: false, cwd: this.env.project.directory });
+      await addIonicRemote(this.env, remote);
       this.env.log.ok(`Added remote ${chalk.bold('ionic')}.`);
     }
   }

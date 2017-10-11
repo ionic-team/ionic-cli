@@ -11,12 +11,13 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
   readonly longDescription = '';
 
   namespaces = new NamespaceMap([
-    ['config', async () => { const { ConfigNamespace } = await import('./config'); return new ConfigNamespace(); }],
-    ['cordova', async () => { const { CordovaNamespace } = await import('./cordova'); return new CordovaNamespace(); }],
-    ['git', async () => { const { GitNamespace } = await import('./git'); return new GitNamespace(); }],
-    ['ssh', async () => { const { SSHNamespace } = await import('./ssh'); return new SSHNamespace(); }],
-    ['package', async () => { const { PackageNamespace } = await import('./package'); return new PackageNamespace(); }],
-    ['monitoring', async () => { const { MonitoringNamespace } = await import('./monitoring'); return new MonitoringNamespace(); }],
+    ['config', async () => { const { ConfigNamespace } = await import('./config/index'); return new ConfigNamespace(); }],
+    ['cordova', async () => { const { CordovaNamespace } = await import('./cordova/index'); return new CordovaNamespace(); }],
+    ['git', async () => { const { GitNamespace } = await import('./git/index'); return new GitNamespace(); }],
+    ['ssh', async () => { const { SSHNamespace } = await import('./ssh/index'); return new SSHNamespace(); }],
+    ['package', async () => { const { PackageNamespace } = await import('./package/index'); return new PackageNamespace(); }],
+    ['monitoring', async () => { const { MonitoringNamespace } = await import('./monitoring/index'); return new MonitoringNamespace(); }],
+    ['doctor', async () => { const { DoctorNamespace } = await import('./doctor/index'); return new DoctorNamespace(); }],
   ]);
 
   commands = new CommandMap([

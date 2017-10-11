@@ -14,17 +14,17 @@ describe('@ionic/cli-utils', () => {
 
     it('should be pkg install with default args', async () => {
       const result = await pkgManagerArgs(envMock, {});
-      expect(result).toEqual(['npm', 'install']);
+      expect(result).toEqual(['npm', 'i']);
     });
 
     it('should be pkg install args for local package', async () => {
       const result = await pkgManagerArgs(envMock, { pkg: 'foo' });
-      expect(result).toEqual(['npm', 'install', '--save', '--save-exact', 'foo']);
+      expect(result).toEqual(['npm', 'i', '--save', '-E', 'foo']);
     });
 
     it('should be pkg install args for local package install and save dev', async () => {
       const result = await pkgManagerArgs(envMock, { pkg: 'foo', saveDev: true });
-      expect(result).toEqual(['npm', 'install', '--save-dev', '--save-exact', 'foo']);
+      expect(result).toEqual(['npm', 'i', '-D', '-E', 'foo']);
     });
 
     it('should be pkg link args w/o dist tag', async () => {
@@ -34,17 +34,17 @@ describe('@ionic/cli-utils', () => {
 
     it('should be pkg install args for local package uninstall', async () => {
       const result = await pkgManagerArgs(envMock, { pkg: 'foo', command: 'uninstall', saveDev: true });
-      expect(result).toEqual(['npm', 'uninstall', '--save-dev', '--save-exact', 'foo']);
+      expect(result).toEqual(['npm', 'uninstall', '-D', '-E', 'foo']);
     });
 
     it('should be pkg install args for global package install', async () => {
       const result = await pkgManagerArgs(envMock, { pkg: 'foo', global: true });
-      expect(result).toEqual(['npm', 'install', '-g', 'foo']);
+      expect(result).toEqual(['npm', 'i', '-g', 'foo']);
     });
 
     it('should be pkg install args for global package install with bad options', async () => {
       const result = await pkgManagerArgs(envMock, { pkg: 'foo', global: true, saveDev: true });
-      expect(result).toEqual(['npm', 'install', '-g', 'foo']);
+      expect(result).toEqual(['npm', 'i', '-g', 'foo']);
     });
 
     describe('yarn', () => {
