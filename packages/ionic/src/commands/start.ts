@@ -389,7 +389,19 @@ export class StartCommand extends Command implements CommandPreRun {
     if (options['deps']) {
       // Install local dependencies
 
-      this.env.log.info('Installing dependencies may take several minutes!');
+      this.env.log.info('Installing dependencies may take several minutes.');
+
+      console.log(`
+   ___           _             
+  |   \\ _____ __/_\\  _ __ _ __ 
+  | |) / -_) V / _ \\| '_ \\ '_ \\
+  |___/\\___|\\_/_/ \\_\\ .__/ .__/
+                    |_|  |_|   
+`);
+
+      this.env.log.msg('While you\'re waiting, download ' + chalk.bold('Ionic DevApp') +
+      ', our free on-device testing mobile app:\n\n' + chalk.bold('http://devapp.ionicjs.com/cli'));
+      this.env.log.msg('\nP.S. it\'s got LiveReload and native plugin support built right in.\n\n');
 
       const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
@@ -423,12 +435,29 @@ export class StartCommand extends Command implements CommandPreRun {
 
     if (config.backend === BACKEND_PRO) {
       if (options['link'] && !linkConfirmed) {
+        console.log('\n\nYour Ionic App is being created.')
+        console.log('\n\n-----------------------------------\n');
+        /*
+        console.log(chalk.bold(`
+ _             _          ______           
+| |           (_)        (_____ \\          
+| | ___  ____  _  ____    _____) )___ ___  
+| |/ _ \\|  _ \\| |/ ___)  |  ____/ ___) _ \\
+| | |_| | | | | ( (___   | |   | |  | |_| |
+|_|\\___/|_| |_|_|\\____)  |_|   |_|   \\___/ 
+`));
+                                                                      
+        console.log('Ionic Pro is a powerful toolkit that helps you get more out of Ionic.');
+        console.log('There are plans for teams, individuals, and a free tier for development.');
+        console.log('\nLearn more about Ionic Pro here: http://ionicframework.com/docs/pro');
+        */
         const confirm = await this.env.prompt({
           type: 'confirm',
           name: 'confirm',
-          message: 'Connect this app to the Ionic Dashboard?',
+          message: 'Would you like to install the free Ionic Pro SDK?',
           noninteractiveValue: false,
         });
+        console.log('\n-----------------------------------\n');
 
         if (confirm) {
           linkConfirmed = true;
