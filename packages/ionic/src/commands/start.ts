@@ -401,7 +401,7 @@ export class StartCommand extends Command implements CommandPreRun {
 
       this.env.log.msg('While you\'re waiting, download ' + chalk.bold('Ionic DevApp') +
       ', our free on-device testing mobile app:\n\n' + chalk.bold('http://devapp.ionicjs.com/cli'));
-      this.env.log.msg('\nP.S. it\'s got LiveReload and native plugin support built right in.\n\n');
+      this.env.log.msg('\nP.S. It\'s got LiveReload and native plugin support built right in.\n\n');
 
       const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
