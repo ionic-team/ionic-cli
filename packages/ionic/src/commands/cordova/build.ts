@@ -19,7 +19,7 @@ To pass additional options to the Cordova CLI, use the ${chalk.green('--')} sepa
   exampleCommands: [
     'ios',
     'ios --prod --release',
-    'ios --device --prod --release -- --developmentTeam="ABCD" --codeSignIdentity="iPhone Developer" --provisioningProfile="UUID"',
+    'ios --device --prod --release -- --developmentTeam="ABCD" --codeSignIdentity="iPhone Developer" --provisioningProfile="UUID" --packageType="app-store"',
     'android',
     'android --prod --release -- -- --keystore=filename.keystore --alias=myalias',
     'android --prod --release -- -- --minSdkVersion=21',
