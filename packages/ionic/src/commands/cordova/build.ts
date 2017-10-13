@@ -23,6 +23,7 @@ To pass additional options to the Cordova CLI, use the ${chalk.green('--')} sepa
     'android',
     'android --prod --release -- -- --keystore=filename.keystore --alias=myalias',
     'android --prod --release -- -- --minSdkVersion=21',
+    'android --prod --release -- -- --versionCode=55',
     'android --prod --release -- -- --gradleArg=-PcdvBuildMultipleApks=true',
   ],
   inputs: [

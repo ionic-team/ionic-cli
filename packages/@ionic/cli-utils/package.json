@@ -37,7 +37,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "archiver": "^2.0.3",
+    "archiver": "^2.1.0",
     "basic-auth": "^1.1.0",
     "body-parser": "^1.18.1",
     "chalk": "^2.0.0",
@@ -63,7 +63,7 @@
     "superagent": "^3.6.3",
     "tar": "^2.2.1",
     "tiny-lr": "^1.0.5",
-    "tslib": "^1.7.1",
+    "tslib": "^1.8.0",
     "uuid": "^3.0.1",
     "wrap-ansi": "^3.0.1",
     "ws": "^3.2.0"
@@ -73,7 +73,7 @@
     "@angular/compiler-cli": "^4.4.4",
     "@angular/core": "^4.4.4",
     "@ionic/cli-scripts": "0.3.5",
-    "@types/archiver": "^2.0.0",
+    "@types/archiver": "^2.0.1",
     "@types/basic-auth": "^1.1.2",
     "@types/body-parser": "^1.16.5",
     "@types/chalk": "^0.4.31",
