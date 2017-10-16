@@ -58,11 +58,6 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
           );
         }
       }
-    } else {
-      if (platforms.length === 0) {
-        this.env.log.warn(`No Cordova platforms found. Nothing to prepare.`);
-        return;
-      }
     }
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });
