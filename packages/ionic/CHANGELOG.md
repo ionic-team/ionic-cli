@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.13.1"></a>
+## [3.13.1](https://github.com/ionic-team/ionic-cli/compare/ionic@3.13.0...ionic@3.13.1) (2017-10-16)
+
+
+### Bug Fixes
+
+* **cordova:** pass-thru for vanilla "prepare" invocation ([ac16ef4](https://github.com/ionic-team/ionic-cli/commit/ac16ef4))
+
+
+
+
 <a name="3.13.0"></a>
 # [3.13.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.9.2...ionic@3.13.0) (2017-10-10)
 
