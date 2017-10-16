@@ -7,6 +7,12 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.13.1"></a>
+#### 3.13.1 (2017-10-16)
+
+* Fixed incorrect behavior in `ionic cordova prepare` with no installed
+  platforms after 3.13.0 release.
+
 <a name="3.13.0"></a>
 #### 3.13.0 (2017-10-10)
 
