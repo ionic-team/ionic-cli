@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.13.2"></a>
+## [3.13.2](https://github.com/ionic-team/ionic-cli/compare/ionic@3.13.1...ionic@3.13.2) (2017-10-18)
+
+
+### Bug Fixes
+
+* **package:** resources being excluded with archiverjs ([9387094](https://github.com/ionic-team/ionic-cli/commit/9387094))
+
+
+
+
 <a name="3.13.1"></a>
 ## [3.13.1](https://github.com/ionic-team/ionic-cli/compare/ionic@3.13.0...ionic@3.13.1) (2017-10-16)
 
