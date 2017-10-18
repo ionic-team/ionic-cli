@@ -14,9 +14,27 @@ describe('@ionic/cli-utils', () => {
           pathAccessible: () => Promise.resolve(true),
         }));
 
+        jest.mock('../lib/utils/npm', () => ({
+          readPackageJsonFile: () => Promise.resolve({ version: '3.999.0' }),
+        }));
+
         const bootstrap = require('../bootstrap');
         const result = await bootstrap.detectLocalCLI();
         expect(result).toEqual('/path/to/project/node_modules/ionic');
+      });
+
+      it('should not detect local cli if installed and too old', async () => {
+        jest.mock('../lib/utils/fs', () => ({
+          findBaseDirectory: () => Promise.resolve('/path/to/project'),
+          pathAccessible: () => Promise.resolve(true),
+        }));
+
+        jest.mock('../lib/utils/npm', () => ({
+          readPackageJsonFile: () => Promise.resolve({ version: '3.9.2' }),
+        }));
+
+        const bootstrap = require('../bootstrap');
+        expect(bootstrap.detectLocalCLI()).rejects.toEqual('VERSION_TOO_OLD');
       });
 
       it('should not detect local cli when marker file not found', async () => {
@@ -25,8 +43,7 @@ describe('@ionic/cli-utils', () => {
         }));
 
         const bootstrap = require('../bootstrap');
-        const result = await bootstrap.detectLocalCLI();
-        expect(result).toEqual(undefined);
+        expect(bootstrap.detectLocalCLI()).rejects.toEqual('BASE_DIRECTORY_NOT_FOUND');
       });
 
       it('should not detect local cli if not installed in project', async () => {
@@ -36,8 +53,7 @@ describe('@ionic/cli-utils', () => {
         }));
 
         const bootstrap = require('../bootstrap');
-        const result = await bootstrap.detectLocalCLI();
-        expect(result).toEqual(undefined);
+        expect(bootstrap.detectLocalCLI()).rejects.toEqual('LOCAL_CLI_NOT_FOUND');
       });
 
     });

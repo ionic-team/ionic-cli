@@ -20,6 +20,7 @@ import {
 
 import { LOG_LEVELS, isLogLevel } from './guards';
 
+import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { BACKEND_LEGACY } from './lib/backends';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
 import { DAEMON_JSON_FILE, Daemon } from './lib/daemon';
@@ -162,6 +163,14 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   telemetry.env = ienv; // TODO: proper DI
 
   await ienv.open();
+
+  if (env['IONIC_CLI_LOCAL_ERROR']) {
+    log.debug(() => `Reason for not using local CLI: ${chalk.bold(env['IONIC_CLI_LOCAL_ERROR'])}`);
+
+    if (env['IONIC_CLI_LOCAL_ERROR'] === ERROR_VERSION_TOO_OLD) {
+      log.warn(`Detected locally installed Ionic CLI, but it's too old--using global CLI.`);
+    }
+  }
 
   if (levelInvalid) {
     log.warn(
