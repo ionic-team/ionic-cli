@@ -7,6 +7,18 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.14.0"></a>
+#### 3.14.0 (PENDING)
+
+* Now showing all Cordova command output in real-time.
+* Now using contents of `platforms/` directory to know which Cordova platforms
+  are installed, not `platforms/platforms.json`.
+
+<a name="3.13.2"></a>
+#### 3.13.2 (2017-10-16)
+
+* Fixed `resources/` directory being excluded in Ionic Package builds.
+
 <a name="3.13.1"></a>
 #### 3.13.1 (2017-10-16)
 
