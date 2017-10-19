@@ -15,7 +15,6 @@ import { FatalException } from '@ionic/cli-utils/lib/errors';
       required: false,
     }
   ],
-  visible: false,
 })
 export class DoctorCheckCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

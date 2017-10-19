@@ -7,7 +7,6 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
   name: 'ignore',
   type: 'project',
   description: 'Ignore a particular issue',
-  visible: false,
   exampleCommands: [
     '',
     'git-not-used',

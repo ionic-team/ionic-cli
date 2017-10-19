@@ -7,7 +7,6 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
   name: 'list',
   type: 'project',
   description: 'List all issue identifiers',
-  visible: false,
 })
 export class DoctorListCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
