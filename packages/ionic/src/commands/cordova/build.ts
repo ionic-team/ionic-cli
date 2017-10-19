@@ -56,13 +56,13 @@ To pass additional options to the Cordova CLI, use the ${chalk.green('--')} sepa
     },
     {
       name: 'device',
-      description: 'Deploy Cordova build to a device',
+      description: 'Create a Cordova build for a device',
       type: Boolean,
       intents: [CORDOVA_INTENT],
     },
     {
       name: 'emulator',
-      description: 'Deploy Cordova build to an emulator',
+      description: 'Create a Cordova build for an emulator',
       type: Boolean,
       intents: [CORDOVA_INTENT],
     },
