@@ -8,7 +8,7 @@ import { IonicEnvironment } from '../../definitions';
 import { App } from '../app';
 import { BACKEND_PRO } from '../backends';
 import { getIonicRemote, isRepoInitialized } from '../git';
-import { fsReadDir, pathExists } from '../utils/fs';
+import { fsReadDir, fsReadFile, pathExists } from '../utils/fs';
 import { readPackageJsonFile, pkgLatestVersion, pkgManagerArgs } from '../utils/npm';
 import { getAppScriptsVersion, getIonicAngularVersion } from '../ionic-angular/utils';
 import { getPlatforms } from '../cordova/project';
@@ -251,12 +251,12 @@ export namespace Ailments {
 
     async detected(env: IonicEnvironment) {
       const project = await env.project.load();
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
 
       if (project.type !== 'ionic-angular') {
         return false;
       }
 
+      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
       const diff = semver.diff(currentVersion, latestVersion);
 
       return diff === 'minor' || diff === 'patch';
@@ -303,12 +303,12 @@ export namespace Ailments {
 
     async detected(env: IonicEnvironment) {
       const project = await env.project.load();
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
 
       if (project.type !== 'ionic-angular') {
         return false;
       }
 
+      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
       const diff = semver.diff(currentVersion, latestVersion);
 
       return diff === 'major';
@@ -350,12 +350,12 @@ export namespace Ailments {
 
     async detected(env: IonicEnvironment) {
       const project = await env.project.load();
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
 
       if (project.type !== 'ionic-angular') {
         return false;
       }
 
+      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
       const diff = semver.diff(currentVersion, latestVersion);
 
       return diff === 'minor' || diff === 'patch';
@@ -405,12 +405,12 @@ export namespace Ailments {
 
     async detected(env: IonicEnvironment) {
       const project = await env.project.load();
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
 
       if (project.type !== 'ionic-angular') {
         return false;
       }
 
+      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
       const diff = semver.diff(currentVersion, latestVersion);
 
       return diff === 'major';
@@ -457,12 +457,12 @@ export namespace Ailments {
 
     async detected(env: IonicEnvironment) {
       const project = await env.project.load();
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
 
       if (project.type !== 'ionic-angular') {
         return false;
       }
 
+      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
       const diff = semver.diff(currentVersion, latestVersion);
 
       return diff === 'minor' || diff === 'patch';
@@ -520,12 +520,12 @@ export namespace Ailments {
 
     async detected(env: IonicEnvironment) {
       const project = await env.project.load();
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
 
       if (project.type !== 'ionic-angular') {
         return false;
       }
 
+      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
       const diff = semver.diff(currentVersion, latestVersion);
 
       return diff === 'major';
@@ -616,6 +616,29 @@ export namespace Ailments {
     }
   }
 
+  export class ViewportFitNotSet extends Ailment {
+    id = 'viewport-fit-not-set';
+
+    async getMessage() {
+      return (
+        `${chalk.bold('viewport-fit=cover')} not set in ${chalk.bold('index.html')}\n` +
+        `iOS 11 introduces new "safe regions" for webviews, which can throw off component sizing, squish the header into the status bar, letterbox the app on iPhone X, etc. Fixing this issue will ensure the webview takes up the full size of the screen. See ${chalk.bold('https://blog.ionic.io/ios-11-checklist')} for more information.`
+      ).trim();
+    }
+
+    async detected(env: IonicEnvironment) {
+      const indexHtml = await fsReadFile(path.resolve(await env.project.getSourceDir(), 'index.html'), { encoding: 'utf8' });
+      const m = indexHtml.match(/\<meta.*viewport-fit=cover/);
+      return !Boolean(m);
+    }
+
+    async getTreatmentSteps(env: IonicEnvironment) {
+      return [
+        { name: `Add ${chalk.bold('viewport-fit=cover')} to the ${chalk.bold('<meta name="viewport">')} tag in your ${chalk.bold('index.html')} file` },
+      ];
+    }
+  }
+
   export class CordovaPlatformsCommitted extends Ailment {
     id = 'cordova-platforms-committed';
 
@@ -667,5 +690,6 @@ export namespace Ailments {
     IonicNativeMajorUpdateAvailable,
     UnsavedCordovaPlatforms,
     CordovaPlatformsCommitted,
+    ViewportFitNotSet,
   ];
 }

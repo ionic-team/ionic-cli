@@ -103,7 +103,35 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
     return results;
   }
 
-  async determineType(): Promise<ProjectType> {
+  async getSourceDir(): Promise<string> {
+    const project = await this.load();
+
+    if (project.documentRoot) {
+      return path.resolve(this.directory, project.documentRoot);
+    }
+
+    if (project.type === 'ionic1') {
+      return path.resolve(this.directory, 'www');
+    }
+
+    return path.resolve(this.directory, 'src');
+  }
+
+  is(j: any): j is ProjectFile {
+    return j && typeof j.name === 'string' && typeof j.app_id === 'string';
+  }
+
+  formatType(type: ProjectType) {
+    if (type === 'ionic-angular') {
+      return 'Ionic Angular';
+    } else if (type === 'ionic1') {
+      return 'Ionic 1';
+    }
+
+    return type;
+  }
+
+  protected async determineType(): Promise<ProjectType> {
     try {
       const packageJson = await this.loadPackageJson();
 
@@ -135,19 +163,5 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
       `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold('ionic.config.json')} to one of: ${PROJECT_TYPES.map(v => chalk.green(v)).join(', ')}.\n\n` +
       `If the Ionic CLI does not know what type of project this is, ${chalk.green('ionic build')}, ${chalk.green('ionic serve')}, and other commands may not work. You can use the ${chalk.green('custom')} project type if that's okay.\n`
     );
-  }
-
-  is(j: any): j is ProjectFile {
-    return j && typeof j.name === 'string' && typeof j.app_id === 'string';
-  }
-
-  formatType(type: ProjectType) {
-    if (type === 'ionic-angular') {
-      return 'Ionic Angular';
-    } else if (type === 'ionic1') {
-      return 'Ionic 1';
-    }
-
-    return type;
   }
 }

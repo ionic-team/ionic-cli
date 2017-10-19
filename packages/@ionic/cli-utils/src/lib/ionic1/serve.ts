@@ -65,8 +65,7 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
     }
   }
 
-  const project = await env.project.load();
-  const wwwDir = path.join(env.project.directory, project.documentRoot || 'www');
+  const wwwDir = await env.project.getSourceDir();
 
   try {
     const [ port, livereloadPort, notificationPort ] = await Promise.all([

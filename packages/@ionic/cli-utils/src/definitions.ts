@@ -209,6 +209,7 @@ export interface IConfig extends IBaseConfig<ConfigFile> {
 
 export interface IProject extends IBaseConfig<ProjectFile> {
   formatType(input: ProjectType): string;
+  getSourceDir(): Promise<string>;
   loadAppId(): Promise<string>;
   loadPackageJson(): Promise<PackageJson>;
   loadBowerJson(): Promise<BowerJson>;
