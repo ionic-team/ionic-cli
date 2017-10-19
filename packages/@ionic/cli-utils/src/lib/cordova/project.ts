@@ -2,14 +2,24 @@ import * as path from 'path';
 
 import * as chalk from 'chalk';
 
-import { CordovaPlatform, IonicEnvironment } from '../../definitions';
+import { IonicEnvironment } from '../../definitions';
 
 import { FatalException } from '../errors';
-import { CordovaPlatforms } from './config';
+import { fsReadDir } from '../utils/fs';
 
-export async function getPlatforms(projectDir: string): Promise<CordovaPlatform[]> {
-  const cdvPlatforms = new CordovaPlatforms(path.join(projectDir, 'platforms'), 'platforms.json');
-  return cdvPlatforms.getPlatforms();
+export async function getPlatforms(projectDir: string): Promise<string[]> {
+  const platformsDir = path.resolve(projectDir, 'platforms');
+
+  try {
+    const dirContents = await fsReadDir(platformsDir);
+    return dirContents.filter(f => f && f !== 'platforms.json');
+  } catch (e) {
+    if (e.code !== 'ENOENT') {
+      throw e;
+    }
+
+    return [];
+  }
 }
 
 export async function installPlatform(env: IonicEnvironment, platform: string): Promise<void> {

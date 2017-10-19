@@ -461,8 +461,8 @@ export namespace Ailments {
       const engineNames = new Set([...engines.map(e => e.name)]);
       const packageJsonPlatforms = new Set([...packageJson.cordova.platforms]);
 
-      const configXmlDiff = platforms.map(p => p.name).filter(p => !engineNames.has(p));
-      const packageJsonDiff = platforms.map(p => p.name).filter(p => !packageJsonPlatforms.has(p));
+      const configXmlDiff = platforms.filter(p => !engineNames.has(p));
+      const packageJsonDiff = platforms.filter(p => !packageJsonPlatforms.has(p));
 
       return configXmlDiff.length > 0 || packageJsonDiff.length > 0;
     }

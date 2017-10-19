@@ -117,9 +117,9 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
 
     // check that at least one platform has been installed
     let platforms = await getPlatforms(this.env.project.directory);
-    this.env.log.debug(() => `platforms=${platforms.map(e => chalk.bold(e.name)).join(', ')}`);
+    this.env.log.debug(() => `platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
 
-    if (platform && !platforms.map(p => p.name).includes(platform)) {
+    if (platform && !platforms.includes(platform)) {
       this.env.tasks.end();
       const confirm = await this.env.prompt({
         message: `Platform ${chalk.green(platform)} not detected. Would you like to install it?`,
@@ -131,13 +131,13 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
         await installPlatform(this.env, platform);
         conf = await ConfigXml.load(this.env.project.directory);
         platforms = await getPlatforms(this.env.project.directory);
-        this.env.log.debug(() => `platforms=${platforms.map(e => chalk.bold(e.name)).join(', ')}`);
+        this.env.log.debug(() => `platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
       } else {
         throw new FatalException(`Platform ${chalk.green(platform)} not installed.`);
       }
     }
 
-    const buildPlatforms = Object.keys(RESOURCES).filter(p => platforms.map(p => p.name).includes(p));
+    const buildPlatforms = Object.keys(RESOURCES).filter(p => platforms.includes(p));
     this.env.log.debug(() => `buildPlatforms=${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
     if (buildPlatforms.length === 0) {
       this.env.tasks.end();

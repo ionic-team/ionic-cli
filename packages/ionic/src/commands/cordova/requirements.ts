@@ -36,7 +36,7 @@ export class RequirementsCommand extends CordovaCommand implements CommandPreRun
     const platforms = await getPlatforms(this.env.project.directory);
 
     if (platform) {
-      if (!platforms.map(p => p.name).includes(platform)) {
+      if (!platforms.includes(platform)) {
         const confirm = await this.env.prompt({
           message: `Platform ${chalk.green(platform)} is not installed! Would you like to install it?`,
           type: 'confirm',

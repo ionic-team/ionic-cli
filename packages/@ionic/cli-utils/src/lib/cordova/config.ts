@@ -3,36 +3,13 @@ import * as path from 'path';
 
 import * as et from 'elementtree';
 
-import { CordovaPlatform, ResourcesPlatform } from '../../definitions';
-import { BaseConfig } from '../config';
+import { ResourcesPlatform } from '../../definitions';
 import { fsReadFile, fsWriteFile } from '../utils/fs';
 
 export interface PlatformEngine {
   name: string;
   spec: string;
   [key: string]: string;
-}
-
-export interface CordovaPlatformsFile {
-  ios?: string;
-  android?: string;
-  [key: string]: string | undefined;
-}
-
-export class CordovaPlatforms extends BaseConfig<CordovaPlatformsFile> {
-  provideDefaults(o: any): Promise<any> {
-    return o;
-  }
-
-  is(j: any): j is CordovaPlatformsFile {
-    return typeof j === 'object';
-  }
-
-  async getPlatforms(): Promise<CordovaPlatform[]> {
-    const config = await this.load();
-
-    return Object.keys(config).map(k => ({ name: k, version: config[k] || '' }));
-  }
 }
 
 export class ConfigXml {

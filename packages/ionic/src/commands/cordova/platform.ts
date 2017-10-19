@@ -77,7 +77,7 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
 
     const platforms = await getPlatforms(this.env.project.directory);
 
-    if (action === 'add' && platforms.map(p => p.name).includes(platformName)) {
+    if (action === 'add' && platforms.includes(platformName)) {
       this.env.log.info(`Platform ${platformName} already exists.`);
       return;
     }
