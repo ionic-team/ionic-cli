@@ -1,4 +1,4 @@
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 import { IRootNamespace, IonicEnvironment, KNOWN_BACKENDS } from '@ionic/cli-utils';
 import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';

@@ -1,4 +1,4 @@
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 import { ValidationError, Validator, Validators } from '../definitions';
 import { isValidEmail } from './utils/string';

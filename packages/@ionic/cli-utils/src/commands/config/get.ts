@@ -1,5 +1,5 @@
 import * as util from 'util';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, IonicEnvironment } from '../../definitions';
 import { FatalException } from '../../lib/errors';

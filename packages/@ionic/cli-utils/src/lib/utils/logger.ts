@@ -1,13 +1,13 @@
 import * as util from 'util';
 
-import * as chalk from 'chalk';
-import { ChalkChain } from 'chalk';
+import chalk from 'chalk';
+import { Chalk } from 'chalk';
 
 import { ILogger, LogLevel, LoggerOptions } from '../../definitions';
 import { LOG_LEVELS } from '../../guards';
 import { wordWrap } from './format';
 
-export const LOGGER_STATUS_COLORS = new Map<LogLevel, ChalkChain>([
+export const LOGGER_STATUS_COLORS = new Map<LogLevel, Chalk>([
   ['debug', chalk.magenta.dim],
   ['info', chalk.gray],
   ['ok', chalk.green],
@@ -74,7 +74,7 @@ export class Logger implements ILogger {
     return str.match(/[\r\n]$/) ? str : str + '\n';
   }
 
-  private getStatusColor(level: LogLevel): ChalkChain {
+  private getStatusColor(level: LogLevel): Chalk {
     const color = LOGGER_STATUS_COLORS.get(level);
 
     if (!color) {

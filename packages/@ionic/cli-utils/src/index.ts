@@ -2,7 +2,7 @@ import * as util from 'util';
 import * as path from 'path';
 
 import { isCI } from 'ci-info';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as minimist from 'minimist';
 
 import * as inquirerType from 'inquirer';

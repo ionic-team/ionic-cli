@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as semver from 'semver';
 
 import { IonicEnvironment } from '../../definitions';

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as os from 'os';
 
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as minimistType from 'minimist';
 
 import {

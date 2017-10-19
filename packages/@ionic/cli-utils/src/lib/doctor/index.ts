@@ -1,4 +1,4 @@
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 import { IonicEnvironment } from '../../definitions';
 import { isExitCodeException } from '../../guards';

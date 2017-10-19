@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 import { ILogger, IProject, IShell, IShellRunOptions, ITaskChain } from '../definitions';
 import { isExitCodeException } from '../guards';

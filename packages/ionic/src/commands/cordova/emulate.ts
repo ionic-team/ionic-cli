@@ -1,4 +1,4 @@
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 

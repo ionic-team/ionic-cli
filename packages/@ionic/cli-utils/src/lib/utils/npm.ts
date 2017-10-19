@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 import { BowerJson, DistTag, IShellRunOptions, IonicEnvironment, PackageJson } from '../../definitions';
 import { isBowerJson, isExitCodeException, isPackageJson } from '../../guards';

@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as gulpType from 'gulp';
 
 import { IonicEnvironment } from '../definitions';

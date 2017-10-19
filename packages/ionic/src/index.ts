@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as util from 'util';
 
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 import {
   IHookEngine,
@@ -361,7 +361,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
       ienv.log.msg(chalk.red(String(err.stack ? err.stack : err)));
 
       if (err.stack) {
-        ienv.log.debug(() => chalk.red(err.stack));
+        ienv.log.debug(() => chalk.red(String(err.stack)));
       }
     }
   }

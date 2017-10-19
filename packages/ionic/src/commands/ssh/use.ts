@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
