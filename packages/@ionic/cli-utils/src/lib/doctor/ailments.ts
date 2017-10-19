@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import * as semver from 'semver';
 
 import { IonicEnvironment } from '../../definitions';
-import { isCordovaPackageJson } from '../../guards';
+// import { isCordovaPackageJson } from '../../guards';
 import { App } from '../app';
 import { BACKEND_PRO } from '../backends';
 import { getIonicRemote, isRepoInitialized } from '../git';
@@ -451,26 +451,27 @@ export namespace Ailments {
 
     async detected(env: IonicEnvironment) {
       const project = await env.project.load();
-      const packageJson = await env.project.loadPackageJson();
+      // const packageJson = await env.project.loadPackageJson();
 
       if (!project.integrations.cordova) {
         return false;
       }
 
-      if (!isCordovaPackageJson(packageJson)) {
-        return false;
-      }
+      // if (!isCordovaPackageJson(packageJson)) {
+      //   return false;
+      // }
 
       const platforms = await getPlatforms(env.project.directory);
       const conf = await ConfigXml.load(env.project.directory);
       const engines = conf.getPlatformEngines();
       const engineNames = new Set([...engines.map(e => e.name)]);
-      const packageJsonPlatforms = new Set([...packageJson.cordova.platforms]);
+      // const packageJsonPlatforms = new Set([...packageJson.cordova.platforms]);
 
       const configXmlDiff = platforms.filter(p => !engineNames.has(p));
-      const packageJsonDiff = platforms.filter(p => !packageJsonPlatforms.has(p));
+      // const packageJsonDiff = platforms.filter(p => !packageJsonPlatforms.has(p));
 
-      return configXmlDiff.length > 0 || packageJsonDiff.length > 0;
+      // return configXmlDiff.length > 0 || packageJsonDiff.length > 0;
+      return configXmlDiff.length > 0;
     }
 
     async getTreatmentSteps(env: IonicEnvironment) {
