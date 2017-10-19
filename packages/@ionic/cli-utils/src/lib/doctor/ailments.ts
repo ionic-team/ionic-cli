@@ -140,9 +140,15 @@ export namespace Ailments {
         return true;
       }
 
-      const commitCount = Number(await env.shell.run('git', ['rev-list', '--count', 'HEAD'], { showCommand: false }));
+      const [ revListCount, status ] = await Promise.all([
+        env.shell.run('git', ['rev-list', '--count', 'HEAD'], { showCommand: false }),
+        env.shell.run('git', ['status', '--porcelain'], { showCommand: false }),
+      ]);
 
-      return commitCount <= 1;
+      const commitCount = Number(revListCount);
+      const changes = Boolean(status);
+
+      return commitCount === 1 && changes;
     }
 
     async getTreatmentSteps(env: IonicEnvironment) {
@@ -151,7 +157,7 @@ export namespace Ailments {
           name: `Download git if you don't have it installed: ${chalk.bold('https://git-scm.com/downloads')}`,
         },
         {
-          name: `Learn the basics: ${chalk.bold('https://try.github.io')}`,
+          name: `Learn the basics if you're unfamiliar with git: ${chalk.bold('https://try.github.io')}`,
         },
         {
           name: `Make your first commit and start tracking code changes! 😍`,

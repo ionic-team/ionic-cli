@@ -77,6 +77,7 @@ export async function treatAilments(env: IonicEnvironment) {
         }
       }
     } else {
+      manuallyTreatableAilmentCount++;
       const treatmentSteps = await ailment.getTreatmentSteps(env);
       const stepOutput = treatmentSteps.length > 0 ? `To fix, take the following step(s):\n\n${treatmentSteps.map((step, i) => `    ${i + 1}) ${step.name}`).join('\n')}` : '';
       env.log.warn(
@@ -87,11 +88,12 @@ export async function treatAilments(env: IonicEnvironment) {
   }
 
   if (treatedAilmentCount > 0) {
-    env.log.ok(`Fixed ${treatedAilmentCount} issue(s)!`);
+    const fn = manuallyTreatableAilmentCount > 0 ? env.log.info.bind(env.log) : env.log.ok.bind(env.log);
+    fn(`Fixed ${treatedAilmentCount} issue${treatedAilmentCount === 1 ? '' : 's'}!`);
   }
 
   if (manuallyTreatableAilmentCount > 0) {
-    env.log.info(`${manuallyTreatableAilmentCount} issues need to be manually fixed.`);
+    env.log.info(`${manuallyTreatableAilmentCount} ${manuallyTreatableAilmentCount === 1 ? 'issue needs' : 'issues need'} to be fixed manually.`);
   }
 }
 
