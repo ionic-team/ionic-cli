@@ -51,8 +51,7 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
 
     // If the action is list, check, or save, then just end here.
     if (['ls', 'check', 'save'].includes(inputs[0])) {
-      const response = await this.runCordova(['platform', inputs[0]]);
-      this.env.log.msg(response);
+      await this.runCordova(['platform', inputs[0]], { showExecution: true });
       throw new FatalException('', 0);
     }
 
@@ -92,7 +91,7 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
       const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
       await installPlatform(this.env, platformName);
     } else {
-      const response = await this.runCordova(optionList);
+      const response = await this.runCordova(optionList, { showExecution: true });
       this.env.log.msg(response);
     }
 

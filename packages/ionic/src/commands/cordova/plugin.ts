@@ -54,8 +54,7 @@ export class PluginCommand extends CordovaCommand implements CommandPreRun {
 
     // If the action is list then lets just end here.
     if (['ls', 'save'].includes(inputs[0])) {
-      const response = await this.runCordova(['plugin', inputs[0]]);
-      this.env.log.msg(response);
+      await this.runCordova(['plugin', inputs[0]], { showExecution: true });
       throw new FatalException('', 0);
     }
 
@@ -79,8 +78,6 @@ export class PluginCommand extends CordovaCommand implements CommandPreRun {
       optionList.push('--save');
     }
 
-    // TODO: showExecution and filter out double newlines from cordova
-    const response = await this.runCordova(optionList);
-    this.env.log.msg(response);
+    await this.runCordova(optionList, { showExecution: true });
   }
 }

@@ -69,7 +69,6 @@ export class CompileCommand extends CordovaCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const response = await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options));
-    this.env.log.msg(response);
+    await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });
   }
 }

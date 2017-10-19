@@ -24,7 +24,7 @@ export async function getPlatforms(projectDir: string): Promise<string[]> {
 
 export async function installPlatform(env: IonicEnvironment, platform: string): Promise<void> {
   try {
-    await env.shell.run('cordova', ['platform', 'add', platform, '--save'], { fatalOnError: false, showError: false });
+    await env.shell.run('cordova', ['platform', 'add', platform, '--save'], { fatalOnError: false, showError: false, showExecution: true });
   } catch (e) {
     const s = String(e);
 
