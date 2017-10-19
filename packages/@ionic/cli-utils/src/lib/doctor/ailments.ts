@@ -9,7 +9,7 @@ import { App } from '../app';
 import { BACKEND_PRO } from '../backends';
 import { getIonicRemote, isRepoInitialized } from '../git';
 import { fsReadDir, fsReadFile, pathExists } from '../utils/fs';
-import { readPackageJsonFile, pkgLatestVersion, pkgManagerArgs } from '../utils/npm';
+import { pkgLatestVersion, pkgManagerArgs, readPackageJsonFile } from '../utils/npm';
 import { getAppScriptsVersion, getIonicAngularVersion } from '../ionic-angular/utils';
 import { getPlatforms } from '../cordova/project';
 import { ConfigXml } from '../cordova/config';
