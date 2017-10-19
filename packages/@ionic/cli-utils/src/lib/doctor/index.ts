@@ -128,12 +128,12 @@ async function automaticallyTreatAilment(env: IonicEnvironment, ailment: Automat
   });
 
   if (choice === CHOICE_YES) {
-    env.tasks.next(`Steps`);
+    // env.tasks.next(`Steps`);
 
     for (let i in treatmentSteps) {
       const step = treatmentSteps[i];
       env.log.debug(typeof i);
-      env.tasks.updateMsg(`Steps: ${chalk.bold(`${Number(i) + 1} / ${treatmentSteps.length}`)}`);
+      // env.tasks.updateMsg(`Steps: ${chalk.bold(`${Number(i) + 1} / ${treatmentSteps.length}`)}`);
       try {
         await step.treat();
       } catch (e) {
@@ -143,8 +143,8 @@ async function automaticallyTreatAilment(env: IonicEnvironment, ailment: Automat
       }
     }
 
-    env.tasks.updateMsg(`Steps: ${chalk.bold(`${treatmentSteps.length} / ${treatmentSteps.length}`)}`);
-    env.tasks.end();
+    // env.tasks.updateMsg(`Steps: ${chalk.bold(`${treatmentSteps.length} / ${treatmentSteps.length}`)}`);
+    // env.tasks.end();
   } else if (choice === CHOICE_NO) {
     throw ERROR_AILMENT_SKIPPED;
   } else if (choice === CHOICE_IGNORE) {

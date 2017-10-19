@@ -104,7 +104,13 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
     delete options.save;
     delete options.saveDev;
     delete options.saveExact;
-  } else if (command === 'install' || command === 'uninstall') {
+  }
+
+  if (command === 'uninstall') {
+    delete options.saveExact;
+  }
+
+  if (command === 'install' || command === 'uninstall') {
     if (options.link) { // When installing/uninstalling with the link flag, change command
       options.global = false;
 
@@ -123,7 +129,7 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
       options.save = true;
     }
 
-    if (options.pkg && typeof options.saveExact === 'undefined') { // For single package installs, prefer to save exact versions
+    if (command === 'install' && options.pkg && typeof options.saveExact === 'undefined') { // For single package installs, prefer to save exact versions
       options.saveExact = true;
     }
   }

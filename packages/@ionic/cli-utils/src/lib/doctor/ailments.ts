@@ -8,8 +8,8 @@ import { IonicEnvironment } from '../../definitions';
 import { App } from '../app';
 import { BACKEND_PRO } from '../backends';
 import { getIonicRemote, isRepoInitialized } from '../git';
-import { pathExists } from '../utils/fs';
-import { pkgLatestVersion, pkgManagerArgs } from '../utils/npm';
+import { fsReadDir, pathExists } from '../utils/fs';
+import { readPackageJsonFile, pkgLatestVersion, pkgManagerArgs } from '../utils/npm';
 import { getAppScriptsVersion, getIonicAngularVersion } from '../ionic-angular/utils';
 import { getPlatforms } from '../cordova/project';
 import { ConfigXml } from '../cordova/config';
@@ -153,15 +153,9 @@ export namespace Ailments {
 
     async getTreatmentSteps(env: IonicEnvironment) {
       return [
-        {
-          name: `Download git if you don't have it installed: ${chalk.bold('https://git-scm.com/downloads')}`,
-        },
-        {
-          name: `Learn the basics if you're unfamiliar with git: ${chalk.bold('https://try.github.io')}`,
-        },
-        {
-          name: `Make your first commit and start tracking code changes! 😍`,
-        },
+        { name: `Download git if you don't have it installed: ${chalk.bold('https://git-scm.com/downloads')}` },
+        { name: `Learn the basics if you're unfamiliar with git: ${chalk.bold('https://try.github.io')}` },
+        { name: `Make your first commit and start tracking code changes! 😍` },
       ];
     }
   }
@@ -273,15 +267,9 @@ export namespace Ailments {
       const args = await pkgManagerArgs(env, { pkg: `ionic-angular@${latestVersion ? latestVersion : 'latest'}` });
 
       return [
-        {
-          name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for each upgrade's instructions`,
-        },
-        {
-          name: `If no instructions, run: ${chalk.green(args.join(' '))}`,
-        },
-        {
-          name: `Watch for npm warnings about peer dependencies--they may need manual updating`,
-        },
+        { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for each upgrade's instructions` },
+        { name: `If no instructions, run: ${chalk.green(args.join(' '))}` },
+        { name: `Watch for npm warnings about peer dependencies--they may need manual updating` },
       ];
     }
   }
@@ -328,9 +316,7 @@ export namespace Ailments {
 
     async getTreatmentSteps(env: IonicEnvironment) {
       return [
-        {
-          name: `Visit ${chalk.bold('http://blog.ionic.io')} and ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for upgrade instructions`,
-        },
+        { name: `Visit ${chalk.bold('http://blog.ionic.io')} and ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for upgrade instructions` },
       ];
     }
   }
@@ -432,9 +418,151 @@ export namespace Ailments {
 
     async getTreatmentSteps(env: IonicEnvironment) {
       return [
-        {
-          name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-app-scripts/releases')} for upgrade instructions`,
-        },
+        { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-app-scripts/releases')} for upgrade instructions` },
+      ];
+    }
+  }
+
+  export class IonicNativeUpdateAvailable extends AutomaticallyTreatableAilment {
+    id = 'ionic-native-update-available';
+    currentVersion?: string;
+    latestVersion?: string;
+
+    async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
+      if (!this.currentVersion || !this.latestVersion) {
+        try {
+          this.currentVersion = (await readPackageJsonFile(path.resolve(env.project.directory, 'node_modules', '@ionic-native', 'core', 'package.json'))).version;
+        } catch (e) {
+          // Not installed
+        }
+
+        this.latestVersion = await pkgLatestVersion(env, '@ionic-native/core');
+      }
+
+      if (!this.currentVersion || !this.latestVersion) {
+        return ['0.0.0', '0.0.0'];
+      }
+
+      return [ this.currentVersion, this.latestVersion ];
+    }
+
+    async getMessage(env: IonicEnvironment) {
+      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+
+      return (
+        `Update available for Ionic Native.\n` +
+        `An update is available for Ionic Native (${chalk.cyan(currentVersion)} => ${chalk.cyan(latestVersion)}).\n`
+      ).trim();
+    }
+
+    async detected(env: IonicEnvironment) {
+      const project = await env.project.load();
+      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+
+      if (project.type !== 'ionic-angular') {
+        return false;
+      }
+
+      const diff = semver.diff(currentVersion, latestVersion);
+
+      return diff === 'minor' || diff === 'patch';
+    }
+
+    async getTreatmentSteps(env: IonicEnvironment) {
+      const [ , latestVersion ] = await this.getVersionPair(env);
+
+      const modules = await fsReadDir(path.resolve(env.project.directory, 'node_modules', '@ionic-native'));
+
+      return await Promise.all(modules.filter(m => m).map(async (m) => {
+        const [ manager, ...managerArgs ] = await pkgManagerArgs(env, { pkg: `@ionic-native/${m}@${latestVersion ? latestVersion : 'latest'}` });
+
+        return {
+          name: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
+          treat: async () => {
+            await env.shell.run(manager, managerArgs, {});
+          },
+        };
+      }));
+    }
+  }
+
+  export class IonicNativeMajorUpdateAvailable extends Ailment {
+    id = 'ionic-native-major-update-available';
+    currentVersion?: string;
+    latestVersion?: string;
+
+    async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
+      if (!this.currentVersion || !this.latestVersion) {
+        try {
+          this.currentVersion = (await readPackageJsonFile(path.resolve(env.project.directory, 'node_modules', '@ionic-native', 'core', 'package.json'))).version;
+        } catch (e) {
+          // Not installed
+        }
+
+        this.latestVersion = await pkgLatestVersion(env, '@ionic-native/core');
+      }
+
+      if (!this.currentVersion || !this.latestVersion) {
+        return ['0.0.0', '0.0.0'];
+      }
+
+      return [ this.currentVersion, this.latestVersion ];
+    }
+
+    async getMessage(env: IonicEnvironment) {
+      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+
+      return (
+        `Major update available for Ionic Native.\n` +
+        `A major update is available for Ionic Native (${chalk.cyan(currentVersion)} => ${chalk.cyan(latestVersion)}).\n`
+      ).trim();
+    }
+
+    async detected(env: IonicEnvironment) {
+      const project = await env.project.load();
+      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+
+      if (project.type !== 'ionic-angular') {
+        return false;
+      }
+
+      const diff = semver.diff(currentVersion, latestVersion);
+
+      return diff === 'major';
+    }
+
+    async getTreatmentSteps(env: IonicEnvironment) {
+      const [ , latestVersion ] = await this.getVersionPair(env);
+      const args = await pkgManagerArgs(env, { pkg: `@ionic-native/core@${latestVersion ? latestVersion : 'latest'}` });
+
+      return [
+        { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-native/releases')}, looking for breaking changes` },
+        { name: `Update each ${chalk.bold('@ionic-native/')} package. For example, ${chalk.green(args.join(' '))}` },
+        { name: `Update your app according to the breaking changes, if any` },
+      ];
+    }
+  }
+
+  export class IonicNativeOldVersionInstalled extends Ailment {
+    id = 'ionic-native-old-version-installed';
+
+    async getMessage(env: IonicEnvironment) {
+      return (
+        `Old version of Ionic Native installed.\n` +
+        `Ionic Native ${chalk.bold('ionic-native')} has been restructured into individual packages under the ${chalk.bold('@ionic-native/')} namespace to allow for better bundling and faster apps.\n`
+      ).trim();
+    }
+
+    async detected(env: IonicEnvironment) {
+      return pathExists(path.join(env.project.directory, 'node_modules', 'ionic-native'));
+    }
+
+    async getTreatmentSteps(env: IonicEnvironment) {
+      const args = await pkgManagerArgs(env, { pkg: 'ionic-native', command: 'uninstall' });
+
+      return [
+        { name: `Run ${chalk.green(args.join(' '))}` },
+        { name: `Refer to ${chalk.bold('https://ionicframework.com/docs/native')} for installation & usage instructions` },
       ];
     }
   }
@@ -534,6 +662,9 @@ export namespace Ailments {
     IonicAngularMajorUpdateAvailable,
     AppScriptsUpdateAvailable,
     AppScriptsMajorUpdateAvailable,
+    IonicNativeOldVersionInstalled,
+    IonicNativeUpdateAvailable,
+    IonicNativeMajorUpdateAvailable,
     UnsavedCordovaPlatforms,
     CordovaPlatformsCommitted,
   ];

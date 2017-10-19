@@ -34,7 +34,7 @@ describe('@ionic/cli-utils', () => {
 
     it('should be pkg install args for local package uninstall', async () => {
       const result = await pkgManagerArgs(envMock, { pkg: 'foo', command: 'uninstall', saveDev: true });
-      expect(result).toEqual(['npm', 'uninstall', '-D', '-E', 'foo']);
+      expect(result).toEqual(['npm', 'uninstall', '-D', 'foo']);
     });
 
     it('should be pkg install args for global package install', async () => {
@@ -75,7 +75,7 @@ describe('@ionic/cli-utils', () => {
 
       it('should be pkg install args for local package uninstall', async () => {
         const result = await pkgManagerArgs(envMock, { pkg: 'foo', command: 'uninstall', saveDev: true });
-        expect(result).toEqual(['yarn', 'remove', '--dev', '--exact', '--non-interactive', 'foo']);
+        expect(result).toEqual(['yarn', 'remove', '--dev', '--non-interactive', 'foo']);
       });
 
       it('should be pkg install args for global package install', async () => {
