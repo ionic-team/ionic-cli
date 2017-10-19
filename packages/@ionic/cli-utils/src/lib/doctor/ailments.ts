@@ -616,6 +616,28 @@ export namespace Ailments {
     }
   }
 
+  export class DefaultCordovaBundleIdUsed extends Ailment {
+    id = 'default-cordova-bundle-id-used';
+
+    async getMessage() {
+      return (
+        `Bundle ID unchanged in ${chalk.bold('config.xml')}.\n` +
+        `The "bundle identifier" is a unique ID (usually written in reverse DNS notation, such as ${chalk.bold('com.mycompany.MyApp')}) that Cordova uses when compiling the native build of your app. When your app is submitted to the App Store or Play Store, the bundle ID can't be changed. This issue was detected because this app's bundle ID is ${chalk.green('"io.ionic.starter"')}, which is the default bundle ID provided after running ${chalk.green('ionic start')}.`
+      ).trim();
+    }
+
+    async detected(env: IonicEnvironment) {
+      const conf = await ConfigXml.load(env.project.directory);
+      return conf.getBundleId() === 'io.ionic.starter';
+    }
+
+    async getTreatmentSteps() {
+      return [
+        { name: `Change the ${chalk.bold('id')} attribute of ${chalk.bold('<widget>')} (root element) to something other than ${chalk.green('"io.ionic.starter"')}` },
+      ];
+    }
+  }
+
   export class ViewportFitNotSet extends Ailment {
     id = 'viewport-fit-not-set';
 
@@ -690,6 +712,7 @@ export namespace Ailments {
     IonicNativeMajorUpdateAvailable,
     UnsavedCordovaPlatforms,
     CordovaPlatformsCommitted,
+    DefaultCordovaBundleIdUsed,
     ViewportFitNotSet,
   ];
 }

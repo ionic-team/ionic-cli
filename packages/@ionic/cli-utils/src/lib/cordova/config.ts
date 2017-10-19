@@ -67,6 +67,11 @@ export class ConfigXml {
     }
   }
 
+  getBundleId() {
+    const root = this.doc.getroot();
+    return root.get('id');
+  }
+
   /**
    * Update config.xml content src to be a dev server url. As part of this
    * backup the original content src for a reset to occur at a later time.
