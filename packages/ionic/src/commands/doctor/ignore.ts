@@ -2,7 +2,6 @@ import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 @CommandMetadata({
   name: 'ignore',
@@ -11,20 +10,12 @@ import { FatalException } from '@ionic/cli-utils/lib/errors';
   visible: false,
   exampleCommands: [
     '',
-    '--list',
+    'git-not-used',
   ],
   inputs: [
     {
       name: 'id',
       description: 'The issue identifier',
-    },
-  ],
-  options: [
-    {
-      name: 'list',
-      description: 'List issue identifiers',
-      type: Boolean,
-      aliases: ['l'],
     },
   ],
 })
@@ -34,11 +25,6 @@ export class DoctorIgnoreCommand extends Command implements CommandPreRun {
     const { contains, validate } = await import('@ionic/cli-utils/lib/validators');
 
     const ailmentIds = Ailments.ALL.map(Ailment => new Ailment().id);
-
-    if (options['list']) {
-      this.env.log.msg(ailmentIds.map(id => chalk.green(id)).join('\n'));
-      throw new FatalException('', 0);
-    }
 
     if (!inputs[0]) {
       inputs[0] = await this.env.prompt({

@@ -17,6 +17,10 @@ export class AilmentRegistry {
   get ailments(): Ailment[] {
     return this._ailments;
   }
+
+  get(id: string) {
+    return this._ailments.find(a => a.id === id);
+  }
 }
 
 export const registry = new AilmentRegistry();
@@ -60,40 +64,61 @@ export async function treatAilments(env: IonicEnvironment) {
   let manuallyTreatableAilmentCount = 0;
 
   env.tasks.end();
-  env.log.info(`Detected ${chalk.bold(String(detectedAilments.length))} issue${detectedAilments.length === 1 ? '' : 's'}.${detectedAilments.length === 0 ? ' Aww yeah! 💪' : ''}`);
+  const fn = detectedAilments.length > 0 ? env.log.info.bind(env.log) : env.log.ok.bind(env.log);
+  fn(`Detected ${chalk.bold(String(detectedAilments.length))} issue${detectedAilments.length === 1 ? '' : 's'}.${detectedAilments.length === 0 ? ' Aww yeah! 💪' : ''}`);
 
-  for (let ailment of detectedAilments) {
-    if (ailment instanceof AutomaticallyTreatableAilment) {
-      try {
-        await automaticallyTreatAilment(env, ailment);
+  if (detectedAilments.length > 0) {
+    for (let ailment of detectedAilments) {
+      await treatAilment(env, ailment);
+
+      if (ailment instanceof AutomaticallyTreatableAilment) {
         treatedAilmentCount++;
-      } catch (e) {
-        if (e !== ERROR_AILMENT_SKIPPED && e !== ERROR_AILMENT_IGNORED) {
-          if (isExitCodeException(e)) {
-            env.log.error(`Error occurred during automatic fix: ${e.message}`);
-          } else {
-            env.log.error(`Error occurred during automatic fix: ${e.stack ? e.stack : e}`);
-          }
-        }
+      } else {
+        manuallyTreatableAilmentCount++;
       }
-    } else {
-      manuallyTreatableAilmentCount++;
-      const treatmentSteps = await ailment.getTreatmentSteps(env);
-      const stepOutput = treatmentSteps.length > 0 ? `To fix, take the following step(s):\n\n${treatmentSteps.map((step, i) => `    ${i + 1}) ${step.name}`).join('\n')}` : '';
-      env.log.warn(
-        `${await ailment.getMessage(env)} ${stepOutput}\n\n` +
-        `Ignore this issue with: ${chalk.green(`ionic doctor ignore ${ailment.id}`)}`
-      );
+    }
+
+    if (treatedAilmentCount > 0) {
+      const fn = manuallyTreatableAilmentCount > 0 ? env.log.info.bind(env.log) : env.log.ok.bind(env.log);
+      fn(`Fixed ${treatedAilmentCount} issue${treatedAilmentCount === 1 ? '' : 's'}!`);
+    }
+
+    if (manuallyTreatableAilmentCount > 0) {
+      env.log.info(`${manuallyTreatableAilmentCount} ${manuallyTreatableAilmentCount === 1 ? 'issue needs' : 'issues need'} to be fixed manually.`);
     }
   }
+}
 
-  if (treatedAilmentCount > 0) {
-    const fn = manuallyTreatableAilmentCount > 0 ? env.log.info.bind(env.log) : env.log.ok.bind(env.log);
-    fn(`Fixed ${treatedAilmentCount} issue${treatedAilmentCount === 1 ? '' : 's'}!`);
+export async function detectAndTreatAilment(env: IonicEnvironment, ailment: Ailment) {
+  const detected = await ailment.detected(env);
+
+  if (detected) {
+    await treatAilment(env, ailment);
+  } else {
+    env.log.ok(`All good! ${chalk.green(ailment.id)} not detected.`);
   }
+}
 
-  if (manuallyTreatableAilmentCount > 0) {
-    env.log.info(`${manuallyTreatableAilmentCount} ${manuallyTreatableAilmentCount === 1 ? 'issue needs' : 'issues need'} to be fixed manually.`);
+async function treatAilment(env: IonicEnvironment, ailment: Ailment) {
+  if (ailment instanceof AutomaticallyTreatableAilment) {
+    try {
+      await automaticallyTreatAilment(env, ailment);
+    } catch (e) {
+      if (e !== ERROR_AILMENT_SKIPPED && e !== ERROR_AILMENT_IGNORED) {
+        if (isExitCodeException(e)) {
+          env.log.error(`Error occurred during automatic fix: ${e.message}`);
+        } else {
+          env.log.error(`Error occurred during automatic fix: ${e.stack ? e.stack : e}`);
+        }
+      }
+    }
+  } else {
+    const treatmentSteps = await ailment.getTreatmentSteps(env);
+    const stepOutput = treatmentSteps.length > 0 ? `To fix, take the following step(s):\n\n${treatmentSteps.map((step, i) => `    ${i + 1}) ${step.name}`).join('\n')}` : '';
+    env.log.warn(
+      `${await ailment.getMessage(env)} ${stepOutput}\n\n` +
+      `Ignore this issue with: ${chalk.green(`ionic doctor ignore ${ailment.id}`)}`
+    );
   }
 }
 
