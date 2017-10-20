@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { validators } from '@ionic/cli-utils/lib/validators';
+import { validators } from '@ionic/cli-framework/lib';
 
 @CommandMetadata({
   name: 'login',

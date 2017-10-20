@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import { IonicEnvironment } from '../definitions';
 
-import { ERROR_FILE_NOT_FOUND, fsReadFile, fsStat } from './utils/fs';
+import { ERROR_FILE_NOT_FOUND, fsReadFile, fsStat } from '@ionic/cli-framework/utils/fs';
 
 export const ERROR_SSH_MISSING_PRIVKEY = 'SSH_MISSING_PRIVKEY';
 export const ERROR_SSH_INVALID_PUBKEY = 'SSH_INVALID_PUBKEY';

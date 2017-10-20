@@ -2,8 +2,11 @@ import * as crossSpawnType from 'cross-spawn';
 import * as inquirerType from 'inquirer';
 import * as superagentType from 'superagent';
 import * as minimistType from 'minimist';
+import * as framework from '@ionic/cli-framework';
 
 import { EventEmitter } from 'events';
+
+export { CommandInput, CommandLineInput, CommandLineInputs, CommandLineOptions, CommandOptionType } from '@ionic/cli-framework';
 
 export interface SuperAgentError extends Error {
   response: superagentType.Response;
@@ -238,32 +241,15 @@ export interface IDaemon extends IBaseConfig<DaemonFile> {
   populateDistTag(distTag: DistTag): void;
 }
 
-export type CommandLineInput = string | boolean | null | undefined | string[];
-export type CommandLineInputs = string[];
+export type CommandOptionTypeDefaults = Map<framework.CommandOptionType, framework.CommandLineInput>;
 
-export interface CommandLineOptions extends minimistType.ParsedArgs {
-  [arg: string]: CommandLineInput;
-}
-
-export type CommandOptionType = StringConstructor | BooleanConstructor;
-export type CommandOptionTypeDefaults = Map<CommandOptionType, CommandLineInput>;
-
-export interface CommandOption {
-  name: string;
-  description: string;
+export interface CommandOption extends framework.CommandOption {
   backends?: BackendFlag[];
-  type?: CommandOptionType;
-  default?: CommandLineInput;
-  aliases?: string[];
-  private?: boolean;
-  intents?: string[];
-  visible?: boolean;
-  advanced?: boolean;
 }
 
 export interface NormalizedCommandOption extends CommandOption {
-  type: CommandOptionType;
-  default: CommandLineInput;
+  type: framework.CommandOptionType;
+  default: framework.CommandLineInput;
   aliases: string[];
 }
 
@@ -271,49 +257,19 @@ export interface ExitCodeException extends Error {
   exitCode: number;
 }
 
-export type Validator = (input?: string, key?: string) => true | string;
-
-export interface Validators {
-  required: Validator;
-  email: Validator;
-  numeric: Validator;
-}
-
-export interface ValidationError {
-  message: string;
-  inputName: string;
-}
-
-export interface CommandInput {
-  name: string;
-  description: string;
-  validators?: Validator[];
-  required?: boolean;
-  private?: boolean;
-}
-
 export interface NormalizedMinimistOpts extends minimistType.Opts {
   string: string[];
   boolean: string[];
   alias: { [key: string]: string[] };
-  default: { [key: string]: CommandLineInput };
+  default: { [key: string]: framework.CommandLineInput };
 }
 
 export type BackendFlag = 'pro' | 'legacy';
 
-export interface CommandData {
-  name: string;
+export interface CommandData extends framework.CommandData<framework.CommandInput, CommandOption> {
   type: 'global' | 'project';
   backends?: BackendFlag[];
-  deprecated?: boolean;
-  description: string;
-  longDescription?: string;
-  exampleCommands?: string[];
-  aliases?: string[];
-  inputs?: CommandInput[];
-  options?: CommandOption[];
   fullName?: string;
-  visible?: boolean;
 }
 
 export interface HydratedCommandData extends CommandData {
@@ -657,13 +613,13 @@ export interface ICommand {
   env: IonicEnvironment;
   metadata: CommandData;
 
-  validate(inputs: CommandLineInputs): Promise<void>;
-  run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
-  execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
+  validate(inputs: framework.CommandLineInputs): Promise<void>;
+  run(inputs: framework.CommandLineInputs, options: framework.CommandLineOptions): Promise<void>;
+  execute(inputs: framework.CommandLineInputs, options: framework.CommandLineOptions): Promise<void>;
 }
 
 export interface CommandPreRun extends ICommand {
-  preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
+  preRun(inputs: framework.CommandLineInputs, options: framework.CommandLineOptions): Promise<void>;
 }
 
 export type NamespaceMapGetter = () => Promise<INamespace>;

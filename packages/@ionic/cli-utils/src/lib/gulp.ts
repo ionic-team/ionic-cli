@@ -5,7 +5,7 @@ import * as gulpType from 'gulp';
 
 import { IonicEnvironment } from '../definitions';
 import { FatalException } from './errors';
-import { promisify } from './utils/promise';
+import { promisify } from '@ionic/cli-framework/utils/promise';
 
 let _gulpInst: typeof gulpType;
 

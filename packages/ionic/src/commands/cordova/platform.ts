@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 
+import { contains, validate, validators } from '@ionic/cli-framework/lib';
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
@@ -35,8 +36,6 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
 })
 export class PlatformCommand extends CordovaCommand implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { contains, validate, validators } = await import('@ionic/cli-utils/lib/validators');
-
     await this.preRunChecks();
 
     if (options['r'] || options['noresources']) {

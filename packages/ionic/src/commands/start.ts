@@ -2,10 +2,11 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
+import { validators } from '@ionic/cli-framework/lib';
 import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun, StarterTemplate } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { fsMkdir, pathExists } from '@ionic/cli-utils/lib/utils/fs';
+import { fsMkdir, pathExists } from '@ionic/cli-framework/utils/fs';
 import { PROJECT_FILE, Project } from '@ionic/cli-utils/lib/project';
 
 @CommandMetadata({
@@ -163,7 +164,6 @@ export class StartCommand extends Command implements CommandPreRun {
         this.env.log.info(`Using ${chalk.bold(app.slug)} for ${chalk.green('name')}.`);
         inputs[0] = app.slug;
       } else {
-        const { validators } = await import('@ionic/cli-utils/lib/validators');
         const name = await this.env.prompt({
           type: 'input',
           name: 'name',
@@ -210,8 +210,9 @@ export class StartCommand extends Command implements CommandPreRun {
       updatePackageJsonForCli,
     } = await import('@ionic/cli-utils/lib/start');
 
+    const { isValidPackageName } = await import('@ionic/cli-framework/utils/npm');
     const { pkgInstallPluginArgs } = await import('@ionic/cli-utils/lib/plugins');
-    const { isValidPackageName, pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
+    const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
     const { tarXvfFromUrl } = await import('@ionic/cli-utils/lib/utils/archive');
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
 
@@ -314,7 +315,7 @@ export class StartCommand extends Command implements CommandPreRun {
         try {
           this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
           const rimraf = await import('rimraf');
-          const { promisify } = await import('@ionic/cli-utils/lib/utils/promise');
+          const { promisify } = await import('@ionic/cli-framework/utils/promise');
           const rimrafp = promisify<void, string>(rimraf);
           await rimrafp(projectRoot);
           await fsMkdir(projectRoot, undefined);

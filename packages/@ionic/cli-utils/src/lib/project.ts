@@ -5,8 +5,8 @@ import chalk from 'chalk';
 import { BowerJson, IProject, PackageJson, ProjectFile, ProjectType } from '../definitions';
 import { BaseConfig } from './config';
 import { FatalException } from './errors';
-import { ERROR_FILE_INVALID_JSON } from './utils/fs';
-import { ERROR_INVALID_BOWER_JSON, ERROR_INVALID_PACKAGE_JSON, readBowerJsonFile, readPackageJsonFile } from './utils/npm';
+import { ERROR_FILE_INVALID_JSON } from '@ionic/cli-framework/utils/fs';
+import { ERROR_INVALID_BOWER_JSON, ERROR_INVALID_PACKAGE_JSON, readBowerJsonFile, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 import { prettyPath } from './utils/format';
 
 export const PROJECT_FILE = 'ionic.config.json';

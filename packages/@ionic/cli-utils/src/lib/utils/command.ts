@@ -10,10 +10,7 @@ import {
   CommandOptionTypeDefaults,
   NormalizedCommandOption,
   NormalizedMinimistOpts,
-  ValidationError,
 } from '../../definitions';
-
-import { validate, validators } from '../validators';
 
 const typeDefaults: CommandOptionTypeDefaults = new Map<CommandOptionType, CommandLineInput>()
   .set(String, null)
@@ -85,34 +82,6 @@ export function metadataToMinimistOptions(metadata: CommandData): minimistType.O
   }
 
   return options;
-}
-
-export function validateInputs(argv: string[], metadata: CommandData) {
-  if (!metadata.inputs) {
-    return;
-  }
-
-  const errors: ValidationError[] = [];
-
-  for (let i in metadata.inputs) {
-    const input = metadata.inputs[i];
-
-    if (input.validators && input.validators.length > 0) {
-      const vnames = input.validators.map(v => v.name);
-
-      if (vnames.includes('required')) { // required validator is special
-        validate(argv[i], input.name, [validators.required], errors);
-      } else {
-        if (argv[i]) { // only run validators if input given
-          validate(argv[i], input.name, input.validators, errors);
-        }
-      }
-    }
-  }
-
-  if (errors.length > 0) {
-    throw errors;
-  }
 }
 
 /**

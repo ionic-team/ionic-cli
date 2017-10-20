@@ -2,22 +2,13 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
-import { BowerJson, DistTag, IShellRunOptions, IonicEnvironment, PackageJson } from '../../definitions';
-import { isBowerJson, isExitCodeException, isPackageJson } from '../../guards';
+import { DistTag, IShellRunOptions, IonicEnvironment } from '../../definitions';
+import { isExitCodeException } from '../../guards';
 import { ERROR_SHELL_COMMAND_NOT_FOUND } from '../shell';
-import { ERROR_FILE_NOT_FOUND, fsReadJsonFile } from './fs';
 
-export const ERROR_INVALID_PACKAGE_JSON = 'INVALID_PACKAGE_JSON';
-export const ERROR_INVALID_BOWER_JSON = 'INVALID_BOWER_JSON';
-
-let installer: undefined | 'npm' | 'yarn';
-
-/**
- * Lightweight version of https://github.com/npm/validate-npm-package-name
- */
-export function isValidPackageName(name: string): boolean {
-  return encodeURIComponent(name) === name;
-}
+import { PackageJson } from '@ionic/cli-framework';
+import { ERROR_FILE_NOT_FOUND } from '@ionic/cli-framework/utils/fs';
+import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
 /**
  * To be used with a module path resolved from require.resolve().
@@ -37,25 +28,7 @@ export async function readPackageJsonFileOfResolvedModule(resolvedModule: string
   }
 }
 
-export async function readPackageJsonFile(path: string): Promise<PackageJson> {
-  const packageJson = await fsReadJsonFile(path);
-
-  if (!isPackageJson(packageJson)) {
-    throw ERROR_INVALID_PACKAGE_JSON;
-  }
-
-  return packageJson;
-}
-
-export async function readBowerJsonFile(path: string): Promise<BowerJson> {
-  const bowerJson = await fsReadJsonFile(path);
-
-  if (!isBowerJson(bowerJson)) {
-    throw ERROR_INVALID_BOWER_JSON;
-  }
-
-  return bowerJson;
-}
+let installer: undefined | 'npm' | 'yarn';
 
 interface PkgManagerVocabulary {
   // commands

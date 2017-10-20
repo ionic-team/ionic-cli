@@ -92,7 +92,7 @@ async function getModules(context: any, kind: string) {
 }
 
 export async function tabsPrompt(env: IonicEnvironment) {
-  const { validators } = await import('../validators');
+  const { validators } = await import('@ionic/cli-framework/lib');
 
   const tabNames = [];
 

@@ -27,7 +27,7 @@ describe('@ionic/cli-utils', () => {
       // });
 
       it('should return undefined for a missing source.properties file', async () => {
-        jest.mock('../utils/fs', () => ({
+        jest.mock('@ionic/cli-framework/utils/fs', () => ({
           fsReadFile: () => {
             const err = new Error();
             err.code = 'ENOENT';
@@ -41,7 +41,7 @@ describe('@ionic/cli-utils', () => {
       });
 
       it('should return undefined for a missing Pkg.Revision entry in source.properties file', async () => {
-        jest.mock('../utils/fs', () => ({
+        jest.mock('@ionic/cli-framework/utils/fs', () => ({
           fsReadFile: () => Promise.resolve(`
 some file in some garbage format
 `),

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as fsSpy from '../../utils/fs';
+import * as fsSpy from '@ionic/cli-framework/utils/fs';
 import * as httpSpy from '../../http';
 import * as resources from '../resources';
 

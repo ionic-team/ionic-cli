@@ -4,7 +4,7 @@ import chalk from 'chalk';
 
 import { IonicEnvironment } from '../../definitions';
 
-import { fsReadJsonFile } from '../utils/fs';
+import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
 export async function getIonic1Version(env: IonicEnvironment): Promise<string | undefined> {
   const { prettyPath } = await import('../utils/format');

@@ -9,12 +9,12 @@ describe('@ionic/cli-utils', () => {
       });
 
       it('should detect local cli if installed in project', async () => {
-        jest.mock('../lib/utils/fs', () => ({
+        jest.mock('@ionic/cli-framework/utils/fs', () => ({
           findBaseDirectory: () => Promise.resolve('/path/to/project'),
           pathAccessible: () => Promise.resolve(true),
         }));
 
-        jest.mock('../lib/utils/npm', () => ({
+        jest.mock('@ionic/cli-framework/utils/npm', () => ({
           readPackageJsonFile: () => Promise.resolve({ version: '3.999.0' }),
         }));
 
@@ -24,12 +24,12 @@ describe('@ionic/cli-utils', () => {
       });
 
       it('should not detect local cli if installed and too old', async () => {
-        jest.mock('../lib/utils/fs', () => ({
+        jest.mock('@ionic/cli-framework/utils/fs', () => ({
           findBaseDirectory: () => Promise.resolve('/path/to/project'),
           pathAccessible: () => Promise.resolve(true),
         }));
 
-        jest.mock('../lib/utils/npm', () => ({
+        jest.mock('@ionic/cli-framework/utils/npm', () => ({
           readPackageJsonFile: () => Promise.resolve({ version: '3.9.2' }),
         }));
 
@@ -38,7 +38,7 @@ describe('@ionic/cli-utils', () => {
       });
 
       it('should not detect local cli when marker file not found', async () => {
-        jest.mock('../lib/utils/fs', () => ({
+        jest.mock('@ionic/cli-framework/utils/fs', () => ({
           findBaseDirectory: () => Promise.resolve(undefined),
         }));
 
@@ -47,7 +47,7 @@ describe('@ionic/cli-utils', () => {
       });
 
       it('should not detect local cli if not installed in project', async () => {
-        jest.mock('../lib/utils/fs', () => ({
+        jest.mock('@ionic/cli-framework/utils/fs', () => ({
           findBaseDirectory: () => Promise.resolve('/path/to/project'),
           pathAccessible: () => Promise.resolve(false),
         }));

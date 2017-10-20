@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "allowUnreachableCode": false,
+    "baseUrl": "./",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "outDir": "./",
+    "pretty": true,
+    "strict": true,
+    "target": "es6",
+    "typeRoots": [
+      "../../../node_modules/@types"
+    ],
+    "lib": [
+      "es2016"
+    ]
+  },
+  "include": [
+    "../../types/cross-spawn.d.ts",
+    "../../types/dargs.d.ts",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/**/__tests__/*.ts"
+  ]
+}

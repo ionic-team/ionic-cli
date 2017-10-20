@@ -4,7 +4,7 @@ import { validators } from '../validators';
 
 import * as stripAnsi from 'strip-ansi';
 
-describe('@ionic/cli-utils', () => {
+describe('@ionic/cli-framework', () => {
 
   describe('validators.email', () => {
     it('should return a generic message if the email is an empty string', () => {

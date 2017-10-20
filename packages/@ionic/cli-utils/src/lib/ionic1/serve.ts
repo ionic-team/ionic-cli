@@ -10,7 +10,7 @@ import { isDevServerMessage } from '../../guards';
 
 import { BIND_ALL_ADDRESS, IONIC_LAB_URL, LOCAL_ADDRESSES } from '../serve';
 import { FatalException } from '../errors';
-import { fsReadFile, pathExists } from '../utils/fs';
+import { fsReadFile, pathExists } from '@ionic/cli-framework/utils/fs';
 
 const WATCH_PATTERNS = [
   'scss/**/*',

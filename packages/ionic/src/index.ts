@@ -12,7 +12,7 @@ import {
 } from '@ionic/cli-utils';
 
 import { mapLegacyCommand, modifyArguments, parseArgs } from '@ionic/cli-utils/lib/init';
-import { pathExists } from '@ionic/cli-utils/lib/utils/fs';
+import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { isExitCodeException } from '@ionic/cli-utils/guards';
 
 import { IonicNamespace } from './commands';
@@ -232,7 +232,8 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
   pargv = modifyArguments(pargv.slice(2));
   env['IONIC_CLI_LIB'] = __filename;
 
-  const { isSuperAgentError, isValidationErrorArray } = await import('@ionic/cli-utils/guards');
+  const { isSuperAgentError } = await import('@ionic/cli-utils/guards');
+  const { isValidationErrorArray } = await import('@ionic/cli-framework/guards');
 
   const plugin = await generateRootPlugin();
   const ienv = await generateIonicEnvironment(plugin, pargv, env);

@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import { DistTag, IonicEnvironment, Plugin, PluginMeta } from '../definitions';
 import { isPlugin } from '../guards';
 import { FatalException } from './errors';
-import { pathAccessible, pathExists } from './utils/fs';
+import { pathAccessible, pathExists } from '@ionic/cli-framework/utils/fs';
 import { getGlobalProxy } from './utils/http';
 import { PkgManagerOptions, pkgManagerArgs, readPackageJsonFileOfResolvedModule } from './utils/npm';
 

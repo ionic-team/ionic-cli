@@ -13,7 +13,7 @@ import {
 
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { cacheFileChecksum, pathExists } from '@ionic/cli-utils/lib/utils/fs';
+import { cacheFileChecksum, pathExists } from '@ionic/cli-framework/utils/fs';
 
 import { CordovaCommand } from './base';
 

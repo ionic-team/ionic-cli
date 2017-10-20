@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
-import { contains, validators } from '@ionic/cli-utils/lib/validators';
+import { contains, validators } from '@ionic/cli-framework/lib';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 

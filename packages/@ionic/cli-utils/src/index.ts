@@ -30,7 +30,7 @@ import { Environment } from './lib/environment';
 import { HookEngine } from './lib/hooks';
 import { PROJECT_FILE, PROJECT_FILE_LEGACY, Project } from './lib/project';
 import { Logger } from './lib/utils/logger';
-import { findBaseDirectory } from './lib/utils/fs';
+import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
 import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
 import { readPackageJsonFileOfResolvedModule } from './lib/utils/npm';
 import { Telemetry } from './lib/telemetry';

@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import { IonicEnvironment } from '../../definitions';
 
 import { FatalException } from '../errors';
-import { fsReadDir } from '../utils/fs';
+import { fsReadDir } from '@ionic/cli-framework/utils/fs';
 
 export async function getPlatforms(projectDir: string): Promise<string[]> {
   const platformsDir = path.resolve(projectDir, 'platforms');

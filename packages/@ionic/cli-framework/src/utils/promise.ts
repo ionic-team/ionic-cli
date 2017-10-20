@@ -7,9 +7,6 @@ export interface Promisify {
   <T, A1, A2, A3, A4, A5>(func: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, callback: (err: any, result?: T) => void) => void): (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => Promise<T>;
 }
 
-/**
- * @example: const rReadFile = promisify<Buffer, string>(fs.readFile);
- */
 export const promisify: Promisify = function(func: any) {
   return (...args: any[]) => {
     return new Promise((resolve, reject) => {

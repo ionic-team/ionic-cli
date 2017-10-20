@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { ValidationError, Validator, Validators } from '../definitions';
-import { isValidEmail } from './utils/string';
+import { isValidEmail } from '../utils/string';
 
 export function validate(input: string, key: string, validators: Validator[], errors?: ValidationError[]) {
   const throwErrors = typeof errors === 'undefined';

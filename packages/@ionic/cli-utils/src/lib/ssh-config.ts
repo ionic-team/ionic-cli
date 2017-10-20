@@ -4,7 +4,7 @@ import * as os from 'os';
 import * as SSHConfigModule from 'ssh-config';
 export const SSHConfig = SSHConfigModule;
 
-import { fileToString } from './utils/fs';
+import { fileToString } from '@ionic/cli-framework/utils/fs';
 
 export async function loadFromPath(p: string): Promise<SSHConfigModule.SSHConfig> {
   const s = await fileToString(p);

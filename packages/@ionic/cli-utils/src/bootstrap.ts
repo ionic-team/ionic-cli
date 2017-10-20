@@ -3,8 +3,8 @@ import * as path from 'path';
 
 import * as semver from 'semver';
 
-import { findBaseDirectory, pathAccessible } from './lib/utils/fs';
-import { readPackageJsonFile } from './lib/utils/npm';
+import { findBaseDirectory, pathAccessible } from '@ionic/cli-framework/utils/fs';
+import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
 export const ERROR_BASE_DIRECTORY_NOT_FOUND = 'BASE_DIRECTORY_NOT_FOUND';
 export const ERROR_LOCAL_CLI_NOT_FOUND = 'LOCAL_CLI_NOT_FOUND';

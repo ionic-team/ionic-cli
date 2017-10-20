@@ -14,7 +14,7 @@ import {
 import { BACKEND_PRO } from './backends';
 import { FatalException } from './errors';
 import { prettyPath } from './utils/format';
-import { ERROR_FILE_INVALID_JSON, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from './utils/fs';
+import { ERROR_FILE_INVALID_JSON, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 
 export abstract class BaseConfig<T> implements IBaseConfig<T> {
   public directory: string;

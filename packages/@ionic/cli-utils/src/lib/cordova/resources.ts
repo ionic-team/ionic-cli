@@ -13,7 +13,7 @@ import {
 } from '../../definitions';
 
 import { flattenArray } from '../utils/array';
-import { cacheFileChecksum, copyDirectory, fsMkdirp, fsStat, getFileChecksums, pathAccessible, pathExists, readDir, writeStreamToFile } from '../utils/fs';
+import { cacheFileChecksum, copyDirectory, fsMkdirp, fsStat, getFileChecksums, pathAccessible, pathExists, readDir, writeStreamToFile } from '@ionic/cli-framework/utils/fs';
 import { createRequest } from '../http';
 import { ConfigXml } from './config';
 

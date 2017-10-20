@@ -44,6 +44,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@ionic/cli-framework": "0.0.1",
     "@ionic/cli-utils": "1.13.1",
     "@ionic/discover": "^0.3.3",
     "chalk": "2.2.0",

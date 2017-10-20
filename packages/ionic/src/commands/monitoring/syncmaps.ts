@@ -7,7 +7,7 @@ import { APIResponseSuccess } from '@ionic/cli-utils/definitions';
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { isSuperAgentError } from '@ionic/cli-utils/guards';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { fsReadFile, pathExists, readDir } from '@ionic/cli-utils/lib/utils/fs';
+import { fsReadFile, pathExists, readDir } from '@ionic/cli-framework/utils/fs';
 
 @CommandMetadata({
   name: 'syncmaps',

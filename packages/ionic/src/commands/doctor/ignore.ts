@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 
+import { contains, validate } from '@ionic/cli-framework/lib';
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
@@ -21,7 +22,6 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 export class DoctorIgnoreCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { Ailments } = await import('@ionic/cli-utils/lib/doctor/ailments');
-    const { contains, validate } = await import('@ionic/cli-utils/lib/validators');
 
     const ailmentIds = Ailments.ALL.map(Ailment => new Ailment().id);
 

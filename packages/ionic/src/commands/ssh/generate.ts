@@ -2,9 +2,10 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
+import { contains, validate } from '@ionic/cli-framework/lib';
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { fsMkdirp, fsUnlink, pathExists } from '@ionic/cli-utils/lib/utils/fs';
+import { fsMkdirp, fsUnlink, pathExists } from '@ionic/cli-framework/utils/fs';
 
 import { SSHBaseCommand } from './base';
 
@@ -47,8 +48,6 @@ const SSH_KEY_TYPES = ['ecdsa', 'ed25519', 'rsa'];
 })
 export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { contains, validate } = await import('@ionic/cli-utils/lib/validators');
-
     await this.checkForOpenSSH();
 
     const config = await this.env.config.load();

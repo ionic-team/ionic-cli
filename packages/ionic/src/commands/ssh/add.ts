@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { isSSHKeyResponse, isSuperAgentError } from '@ionic/cli-utils/guards';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { ERROR_FILE_NOT_FOUND, pathAccessible, pathExists } from '@ionic/cli-utils/lib/utils/fs';
+import { ERROR_FILE_NOT_FOUND, pathAccessible, pathExists } from '@ionic/cli-framework/utils/fs';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { SSHBaseCommand } from './base';

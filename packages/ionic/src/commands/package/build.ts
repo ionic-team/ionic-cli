@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
+import { contains } from '@ionic/cli-framework/lib';
 import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandPreRun, PackageBuild } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { contains } from '@ionic/cli-utils/lib/validators';
 import { APP_SCRIPTS_INTENT, APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 

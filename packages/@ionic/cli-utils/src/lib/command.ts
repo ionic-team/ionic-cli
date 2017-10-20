@@ -9,24 +9,18 @@ import {
 } from '../definitions';
 
 import { isCommandPreRun } from '../guards';
-import { validators } from './validators';
-import { minimistOptionsToArray, validateInputs } from './utils/command';
+import { validators } from '@ionic/cli-framework/lib';
+import { minimistOptionsToArray } from './utils/command';
+import { Command as BaseCommand, validateInputs } from '@ionic/cli-framework/lib';
 
 export function CommandMetadata(metadata: CommandData) {
-  return function (target: Function) {
+  return function(target: Function) {
     target.prototype.metadata = metadata;
   };
 }
 
-export class Command implements ICommand {
+export abstract class Command extends BaseCommand<CommandData> implements ICommand {
   public env: IonicEnvironment;
-  public metadata: CommandData;
-
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {}
-
-  async validate(inputs: CommandLineInputs) {
-    validateInputs(inputs, this.metadata);
-  }
 
   async execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const config = await this.env.config.load();

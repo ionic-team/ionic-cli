@@ -6,7 +6,7 @@ import * as expressType from 'express';
 
 import { DaemonFile, DistTag, IonicEnvironment } from '../definitions';
 import { BaseConfig } from './config';
-import { fsOpen, fsReadFile, fsWriteFile } from './utils/fs';
+import { fsOpen, fsReadFile, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 import { KNOWN_PLUGINS, formatFullPluginName } from './plugins';
 
 const KNOWN_PACKAGES = [

@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import { IonicEnvironment } from '../definitions';
-import { pathExists } from './utils/fs';
+import { pathExists } from '@ionic/cli-framework/utils/fs';
 
 export async function isRepoInitialized(env: IonicEnvironment): Promise<boolean> {
   return await pathExists(path.join(env.project.directory, '.git'));

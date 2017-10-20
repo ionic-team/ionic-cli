@@ -4,7 +4,7 @@ import chalk from 'chalk';
 
 import { IonicEnvironment, StarterTemplate, StarterTemplateType } from '../definitions';
 
-import { ERROR_FILE_INVALID_JSON, ERROR_FILE_NOT_FOUND, fsReadDir, fsReadJsonFile, fsUnlink, fsWriteJsonFile } from './utils/fs';
+import { ERROR_FILE_INVALID_JSON, ERROR_FILE_NOT_FOUND, fsReadDir, fsReadJsonFile, fsUnlink, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 
 export function isProjectNameValid(name: string): boolean {
   return name !== '.';

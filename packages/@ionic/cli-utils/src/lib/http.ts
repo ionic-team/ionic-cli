@@ -17,7 +17,7 @@ import {
 
 import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
 import { getGlobalProxy } from './utils/http';
-import { fsReadFile } from './utils/fs';
+import { fsReadFile } from '@ionic/cli-framework/utils/fs';
 import { FatalException } from './errors';
 
 const FORMAT_ERROR_BODY_MAX_LENGTH = 1000;

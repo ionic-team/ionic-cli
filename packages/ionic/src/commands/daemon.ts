@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, DistTag } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { fsUnlink } from '@ionic/cli-utils/lib/utils/fs';
+import { fsUnlink } from '@ionic/cli-framework/utils/fs';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 @CommandMetadata({

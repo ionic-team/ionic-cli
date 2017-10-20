@@ -1,12 +1,11 @@
 import chalk from 'chalk';
 
+import { str2num } from '@ionic/cli-framework/utils/string';
 import { CommandLineInputs, CommandLineOptions, IonicEnvironment, ServeDetails } from '../definitions';
 import { FatalException } from '../lib/errors';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, IONIC_LAB_URL } from '../lib/serve';
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
-  const { str2num } = await import('../lib/utils/string');
-
   await env.hooks.fire('watch:before', { env });
 
   let [ platform ] = inputs;

@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 
+import { contains, validate, validators } from '@ionic/cli-framework/lib';
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { CORDOVA_INTENT, filterArgumentsForCordova } from '@ionic/cli-utils/lib/cordova/utils';
@@ -42,8 +43,6 @@ Like running ${chalk.green('cordova plugin')} directly, but provides friendly ch
 })
 export class PluginCommand extends CordovaCommand implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { contains, validate, validators } = await import('@ionic/cli-utils/lib/validators');
-
     await this.preRunChecks();
 
     inputs[0] = (typeof inputs[0] === 'undefined') ? 'ls' : inputs[0];

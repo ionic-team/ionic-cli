@@ -6,7 +6,7 @@ import {
   NamespaceMapGetter,
 } from '../definitions';
 
-import { strcmp } from './utils/string';
+import { strcmp } from '@ionic/cli-framework/utils/string';
 
 export class CommandMap extends Map<string, string | CommandMapGetter> {
   getAliases(): Map<string, string[]> {
