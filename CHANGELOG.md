@@ -8,13 +8,16 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 ## Versions
 
 <a name="3.14.0"></a>
-#### 3.14.0 (PENDING)
+#### 3.14.0 (2017-10-23)
 
 * :tada: New `ionic doctor` commands. Run `ionic doctor check` in your project
   to detect the "health" of your Ionic project.
 * Now showing all Cordova command output in real-time.
 * Now using contents of `platforms/` directory to know which Cordova platforms
   are installed, not `platforms/platforms.json`.
+* Fixed pagination issue with getting a long list of apps.
+* No longer loading local CLI if "too old". See
+  [#2810](https://github.com/ionic-team/ionic-cli/issues/2810) for details.
 
 <a name="3.13.2"></a>
 #### 3.13.2 (2017-10-16)
