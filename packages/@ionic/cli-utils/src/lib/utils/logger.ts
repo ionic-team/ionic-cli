@@ -104,7 +104,7 @@ export class Logger implements ILogger {
       const status = color.bold.bgBlack;
       const b = chalk.dim;
 
-      const msgLines = wordWrap(msg, { indentation: level.length + 3 }).split('\n');
+      const msgLines = wordWrap(msg, { indentation: level === 'info' ? 0 : level.length + 3 }).split('\n');
 
       if (msg.trim().includes('\n')) {
         msg = msgLines.map((l, i) => {
@@ -123,7 +123,13 @@ export class Logger implements ILogger {
 
       msg = this.enforceLF(msg);
 
-      this.stream.write(util.format.apply(util, [b('[') + status(level.toUpperCase()) + b(']'), msg]));
+      const fmtLevel = () => b('[') + status(level.toUpperCase()) + b(']');
+
+      if (level !== 'info') {
+        msg = `${fmtLevel()} ${msg}`;
+      }
+
+      this.stream.write(util.format(msg));
     }
   }
 }
