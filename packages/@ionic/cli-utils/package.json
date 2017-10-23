@@ -81,7 +81,7 @@
     "@types/express": "^4.0.37",
     "@types/gulp": "^3.8.33",
     "@types/inquirer": "0.0.35",
-    "@types/lodash": "^4.14.77",
+    "@types/lodash": "^4.14.78",
     "@types/minimist": "^1.2.0",
     "@types/opn": "^3.0.28",
     "@types/semver": "^5.4.0",
