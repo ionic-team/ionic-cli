@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.14.0"></a>
+# [3.14.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.13.2...ionic@3.14.0) (2017-10-23)
+
+
+### Bug Fixes
+
+* don't use local installation for old cli versions ([fc5db21](https://github.com/ionic-team/ionic-cli/commit/fc5db21))
+* **cordova:** platforms.json also unreliable, using platforms/ ([04238f4](https://github.com/ionic-team/ionic-cli/commit/04238f4))
+* **cordova:** show output in real time for all cordova commands ([0f91220](https://github.com/ionic-team/ionic-cli/commit/0f91220))
+
+
+### Features
+
+* **doctor:** list command ([a38be99](https://github.com/ionic-team/ionic-cli/commit/a38be99))
+* **doctor:** reveal doctor commands ([fbd52a8](https://github.com/ionic-team/ionic-cli/commit/fbd52a8))
+
+
+
+
 <a name="3.13.2"></a>
 ## [3.13.2](https://github.com/ionic-team/ionic-cli/compare/ionic@3.13.1...ionic@3.13.2) (2017-10-18)
 

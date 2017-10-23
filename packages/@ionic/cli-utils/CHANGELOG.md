@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.14.0"></a>
+# [1.14.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.13.1...@ionic/cli-utils@1.14.0) (2017-10-23)
+
+
+### Bug Fixes
+
+* don't use local installation for old cli versions ([fc5db21](https://github.com/ionic-team/ionic-cli/commit/fc5db21))
+* **cordova:** platforms.json also unreliable, using platforms/ ([04238f4](https://github.com/ionic-team/ionic-cli/commit/04238f4))
+* **cordova:** show output in real time for all cordova commands ([0f91220](https://github.com/ionic-team/ionic-cli/commit/0f91220))
+* **doctor:** cordova platform save doesn't save to package.json ([56d64e6](https://github.com/ionic-team/ionic-cli/commit/56d64e6))
+* **doctor:** look for uncommitted changes, too ([53750b7](https://github.com/ionic-team/ionic-cli/commit/53750b7))
+* **pagination:** fix state issue with query params ([5d73098](https://github.com/ionic-team/ionic-cli/commit/5d73098))
+
+
+### Features
+
+* **doctor:** detect absence of viewport-fit=cover ([7f983c0](https://github.com/ionic-team/ionic-cli/commit/7f983c0))
+* **doctor:** detect default bundle ID ([2761fb9](https://github.com/ionic-team/ionic-cli/commit/2761fb9))
+* **doctor:** ionic native ailments ([3581537](https://github.com/ionic-team/ionic-cli/commit/3581537))
+* **doctor:** list command ([a38be99](https://github.com/ionic-team/ionic-cli/commit/a38be99))
+
+
+
+
 <a name="1.13.1"></a>
 ## [1.13.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.13.0...@ionic/cli-utils@1.13.1) (2017-10-16)
 
