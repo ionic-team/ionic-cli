@@ -120,7 +120,7 @@ export class Client implements IClient {
 }
 
 export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
-  protected previousReq?: superagentType.SuperAgentRequest;
+  protected state?: { page: number; pageSize: number; };
   protected done = false;
 
   constructor(
@@ -139,25 +139,23 @@ export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
       value: (async () => {
         const { req } = await this.reqgen();
 
-        if (!this.previousReq) {
-          this.previousReq = req;
+        if (!this.state) {
+          this.state = { page: 1, pageSize: 100 };
         }
 
-        const page = this.previousReq.qs.page && !isNaN(Number(this.previousReq.qs.page)) ? this.previousReq.qs.page + 1 : 1;
-        const pageSize = this.previousReq.qs.page_size && !isNaN(Number(this.previousReq.qs.page_size)) ? this.previousReq.qs.page_size : 25;
-
-        req.query({ page, 'page_size': pageSize });
+        req.query({ 'page': this.state.page, 'page_size': this.state.pageSize });
 
         const res = await this.client.do(req);
         if (!this.guard(res)) {
           throw createFatalAPIFormat(req, res);
         }
 
-        if (res.data.length === 0 || res.data.length < pageSize) {
+        if (res.data.length === 0 || res.data.length < this.state.pageSize) {
           this.done = true;
         }
 
-        this.previousReq = req;
+        this.state.page++;
+
         return res;
       })(),
     };
