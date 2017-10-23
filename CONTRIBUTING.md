@@ -35,14 +35,15 @@ directories.
 
 Each `packages/*` folder represents a package on npm.
 
-* `packages/ionic`: Executable package.
-* `packages/@ionic/cli-utils`: Utilities package.
-* `packages/@ionic/cli-plugin-*`: CLI plugins.
+* `packages/ionic`: Ionic CLI executable.
+* `packages/@ionic/cli-utils`: Ionic CLI utilities.
+* `packages/@ionic/cli-plugin-*`: Ionic CLI plugins.
+* `packages/@ionic/cli-framework`: Framework for command-line programs.
 
 ##### Toolset
 
 * npm 5 is required.
-* Node 8.1+ is required.
+* Node 8 LTS is required.
 * Our codebase is written in [Typescript](https://www.typescriptlang.org/). If
   you're unfamiliar with Typescript, we recommend using [VS
   Code](https://code.visualstudio.com/) and finding a tutorial to familiarize
