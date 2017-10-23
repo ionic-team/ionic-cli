@@ -88,12 +88,16 @@ async function formatHeader(env: IonicEnvironment) {
   const config = await env.config.load();
   const isLoggedIn = await env.session.isLoggedIn();
 
+  const now = new Date();
+  const prefix = config.backend === BACKEND_PRO && isLoggedIn ? chalk.blue('PRO') + ' ' : '';
+  const version = env.plugins.ionic.meta.version;
+  const suffix =  now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
+
   return `   _             _
-  (_)           (_)
-   _  ___  _ __  _  ___
+  (_) ___  _ __ (_) ___
   | |/ _ \\| '_ \\| |/ __|
   | | (_) | | | | | (__
-  |_|\\___/|_| |_|_|\\___|  CLI ${config.backend === BACKEND_PRO && isLoggedIn ? chalk.blue('PRO') + ' ' : ''}${env.plugins.ionic.meta.version}\n`;
+  |_|\\___/|_| |_|_|\\___|  CLI ${prefix}${version}${suffix}\n`;
 }
 
 async function formatUsage(env: IonicEnvironment, ns: INamespace) {
