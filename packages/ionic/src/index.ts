@@ -196,6 +196,8 @@ export function registerHooks(hooks: IHookEngine) {
         if (androidSdkToolsVersion) {
           info.push({ type: 'system', key: 'Android SDK Tools', value: androidSdkToolsVersion });
         }
+
+        info.push({ type: 'environment', key: 'ANDROID_HOME', value: process.env.ANDROID_HOME || 'not set' });
       }
 
       if (projectFile.integrations.gulp && projectFile.integrations.gulp.enabled !== false) {
