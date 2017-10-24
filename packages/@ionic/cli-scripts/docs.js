@@ -6,8 +6,8 @@ const style = require('ansi-styles');
 const escapeStringRegexp = require('escape-string-regexp');
 
 const ionicPkg = require(path.resolve(__dirname, '..', '..', 'ionic'));
+const fsPkg = require(path.resolve(__dirname, '..', 'cli-framework', 'utils', 'fs'));
 const utilsPkg = require(path.resolve(__dirname, '..', 'cli-utils'));
-const utilsFsPkg = require(path.resolve(__dirname, '..', 'cli-utils', 'lib', 'utils', 'fs'));
 const startLib = require(path.resolve(__dirname, '..', 'cli-utils', 'lib', 'start'));
 
 run().then(() => console.log('done!')).catch((err) => console.error(err));
@@ -28,20 +28,20 @@ async function run() {
   const startersPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'starters.md');
   const startersDoc = await formatStartersPage(env);
 
-  await utilsFsPkg.fsMkdirp(path.dirname(indexPath));
+  await fsPkg.fsMkdirp(path.dirname(indexPath));
 
-  await utilsFsPkg.fsWriteFile(indexPath, indexDoc, { encoding: 'utf8' });
-  await utilsFsPkg.fsWriteFile(commandsPath, commandsDoc, { encoding: 'utf8' });
-  await utilsFsPkg.fsWriteFile(configuringPath, configuringDoc, { encoding: 'utf8' });
-  await utilsFsPkg.fsWriteFile(startersPath, startersDoc, { encoding: 'utf8' });
+  await fsPkg.fsWriteFile(indexPath, indexDoc, { encoding: 'utf8' });
+  await fsPkg.fsWriteFile(commandsPath, commandsDoc, { encoding: 'utf8' });
+  await fsPkg.fsWriteFile(configuringPath, configuringDoc, { encoding: 'utf8' });
+  await fsPkg.fsWriteFile(startersPath, startersDoc, { encoding: 'utf8' });
 
   const commands = await getCommandList(env);
   const commandPromises = commands.map(async (cmd) => {
     const cmdPath = path.resolve(__dirname, '..', '..', '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
     const cmdDoc = formatCommandDoc(env, cmd);
 
-    await utilsFsPkg.fsMkdirp(path.dirname(cmdPath));
-    await utilsFsPkg.fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
+    await fsPkg.fsMkdirp(path.dirname(cmdPath));
+    await fsPkg.fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
   });
 
   await Promise.all(commandPromises);
@@ -129,7 +129,7 @@ Ionic Cloud (legacy) will be supported until its end-of-life on January 31st, 20
 
 ## Troubleshooting
 
-If you're having trouble with the CLI, you can try the following:
+If you're having trouble with the Ionic CLI, you can try the following:
 
 * Make sure you're on the latest version of the CLI. Update with \`npm update -g ionic\`.
 * Try running commands with the \`--verbose\` flag, which will print \`DEBUG\` messages.
@@ -300,6 +300,10 @@ $ ionic config set -g ssl.keyfile /path/to/keyfile # file path to a client key f
 \`\`\`
 
 The \`cafile\`, \`certfile\`, and \`keyfile\` entries can be manually edited as arrays of strings in \`~/.ionic/config.json\` to include multiple files.
+
+## Telemetry
+
+By default, the Ionic CLI sends usage data to Ionic, which we use to better your experience. To disable this functionality, you can run \`ionic config set -g telemetry false\`.
 `;
 }
 
@@ -532,14 +536,14 @@ ${exampleLines.join('\n')}
 async function copyToIonicSite(commands) {
   const ionicSitePath = path.resolve(__dirname, '..', '..', '..', '..', 'ionic-site');
 
-  let dirData = await utilsFsPkg.fsStat(ionicSitePath);
+  let dirData = await fsPkg.fsStat(ionicSitePath);
   if (!dirData.size) {
     // ionic-site not present
     console.error('ionic-site repo not found');
     return;
   }
 
-  return utilsFsPkg.copyDirectory(
+  return fsPkg.copyDirectory(
     path.resolve(__dirname, '..', '..', '..', 'docs'),
     path.resolve(ionicSitePath, 'content', 'docs', 'cli')
   );
