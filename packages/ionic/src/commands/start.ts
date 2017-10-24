@@ -435,10 +435,13 @@ export class StartCommand extends Command implements CommandPreRun {
 
     if (config.backend === BACKEND_PRO) {
       if (options['link'] && !linkConfirmed) {
+        this.env.log.msg('Ionic Pro is a new service for Ionic developers that super charges your Ionic development.\n');
+        this.env.log.msg('Learn more about Ionic Pro: http://ionicframework.com/products\n');
+
         const confirm = await this.env.prompt({
           type: 'confirm',
           name: 'confirm',
-          message: 'Install the Ionic Pro SDK?',
+          message: 'Install the Ionic Pro SDK and connect your app?',
           noninteractiveValue: false,
         });
         console.log('\n-----------------------------------\n');
