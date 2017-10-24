@@ -9,6 +9,14 @@ import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { fsMkdir, pathExists } from '@ionic/cli-framework/utils/fs';
 import { PROJECT_FILE, Project } from '@ionic/cli-utils/lib/project';
 
+// Emoji falback
+const e = (x: string, fallback: string) => {
+  if(process.platform == 'win32') {
+    return fallback;
+  }
+  return x;
+};
+
 @CommandMetadata({
   name: 'start',
   type: 'global',
@@ -392,12 +400,12 @@ export class StartCommand extends Command implements CommandPreRun {
       this.env.log.info('Installing dependencies may take several minutes.');
 
       this.env.log.msg('\n');
-      this.env.log.msg(chalk.bold('  ✨   IONIC  DEVAPP  ✨'));
+      this.env.log.msg(chalk.bold(`  ${e('✨', '*')}   IONIC  DEVAPP  ${e('✨', '*')}`));
 
       this.env.log.msg('\n Speed up development with the ' + chalk.bold('Ionic DevApp') +
       ', our fast, on-device testing mobile app\n\n');
-      this.env.log.msg('  -  🔑  Test on iOS and Android without Native SDKs');
-      this.env.log.msg('  -  🚀  LiveReload for instant style and JS updates');
+      this.env.log.msg(`  -  ${e('🔑', '')}   Test on iOS and Android without Native SDKs`);
+      this.env.log.msg(`  -  ${e('🚀', '')}   LiveReload for instant style and JS updates`);
 
       this.env.log.msg('\n ️-->    Install DevApp: ' + chalk.bold('http://bit.ly/ionic-dev-app') + '    <---\n\n');
 
@@ -433,8 +441,11 @@ export class StartCommand extends Command implements CommandPreRun {
 
     if (config.backend === BACKEND_PRO) {
       if (options['link'] && !linkConfirmed) {
-        this.env.log.msg('\n\nSuper charge your Ionic development with Ionic Pro.\n');
-        this.env.log.msg('Learn more about Ionic Pro: http://ionicframework.com/products\n');
+        this.env.log.msg('\n' + chalk.bold(`  ${e('🔥', '*')}   IONIC  PRO  ${e('🔥', '*')}`));
+        this.env.log.msg('\n Supercharge your Ionic development with the ' + chalk.bold('Ionic Pro') + ' SDK\n\n');
+        this.env.log.msg(`  -  ${e('⚠️', '')}   Track runtime errors in real-time, back to your original TypeScript`);
+        this.env.log.msg(`  -  ${e('📲', '')}   Push remote updates and skip the app store queue`);
+        this.env.log.msg('\n(And that\'s not all, learn more about Ionic Pro: http://ionicframework.com/products)\n');
 
         const confirm = await this.env.prompt({
           type: 'confirm',
@@ -459,6 +470,9 @@ export class StartCommand extends Command implements CommandPreRun {
         }
 
         await this.env.runCommand(cmdArgs);
+
+        this.env.log.msg('You\'re almost ready. Follow the Monitoring docs to finish setup of runtime error tracking:\n\n')
+        this.env.log.msg('http://ionicframework.com/docs/pro/monitoring/#getting-started');
       }
     }
 
