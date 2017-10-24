@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 
 import chalk from 'chalk';
@@ -12,7 +13,6 @@ import {
   SourceImage,
 } from '../../definitions';
 
-import { flattenArray } from '../utils/array';
 import { cacheFileChecksum, copyDirectory, fsMkdirp, fsStat, getFileChecksums, pathAccessible, pathExists, readDir, writeStreamToFile } from '@ionic/cli-framework/utils/fs';
 import { createRequest } from '../http';
 import { ConfigXml } from './config';
@@ -22,29 +22,33 @@ const UPLOAD_URL = 'https://res.ionic.io/api/v1/upload';
 const TRANSFORM_URL = 'https://res.ionic.io/api/v1/transform';
 const DEFAULT_RESOURCES_URL = 'https://github.com/ionic-team/ionic-default-resources/archive/master.tar.gz';
 
-/**
- * Take the JSON structure for resources.json and turn it into a flat array
- * that contains only images and turns all struture info into attributes of the image
- * items.
- */
-export function flattenResourceJsonStructure(): ImageResource[] {
-  return flattenArray(Object.keys(RESOURCES).map(platform => (
-    Object.keys(RESOURCES[platform]).map(resType => (
-      RESOURCES[platform][resType]['images'].map((imgInfo: any) => (
-        {
+export async function getImageResources(env: IonicEnvironment): Promise<ImageResource[]> {
+  const images: ImageResource[] = [];
+
+  for (let platform in RESOURCES) {
+    const platformConfig = RESOURCES[platform];
+
+    for (let imageType in platformConfig) {
+      const imageTypeConfig = platformConfig[imageType];
+
+      for (let image of imageTypeConfig.images) {
+        images.push({
           platform,
-          resType,
-          name: imgInfo.name,
-          width: imgInfo.width,
-          height: imgInfo.height,
-          density: imgInfo.density,
-          orientation: imgInfo.orientation,
-          nodeName: RESOURCES[platform][resType]['nodeName'],
-          nodeAttributes: RESOURCES[platform][resType]['nodeAttributes']
-        }
-      ))
-    )))
-  ));
+          resType: imageType,
+          dest: path.resolve(env.project.directory, 'resources', platform, imageType, image.name), // TODO: hard-coded
+          name: image.name,
+          width: image.width,
+          height: image.height,
+          density: image.density,
+          orientation: image.orientation,
+          nodeName: imageTypeConfig.nodeName,
+          nodeAttributes: imageTypeConfig.nodeAttributes,
+        });
+      }
+    }
+  }
+
+  return images;
 }
 
 /**
@@ -62,43 +66,35 @@ export async function createImgDestinationDirectories(imgResources: ImageResourc
 /**
  * Find all source images within the resources directory
  */
-export async function getSourceImages(buildPlatforms: string[], resourceTypes: string[], resourceDir: string): Promise<SourceImage[]> {
+export async function getSourceImages(env: IonicEnvironment, buildPlatforms: string[], resourceTypes: string[]): Promise<SourceImage[]> {
+  const resourceDir = path.resolve(env.project.directory, 'resources'); // TODO: hard-coded
+
   const srcDirList = buildPlatforms
-    .map(platform => (
-      {
-        platform,
-        path: path.join(resourceDir, platform),
+    .map(platform => ({ platform, path: path.resolve(resourceDir, platform) }))
+    .concat({ platform: 'global', path: resourceDir });
+
+  const sourceImages: SourceImage[] = [];
+
+  for (let srcImgDir of srcDirList) {
+    const srcImageDirContents = await readDir(srcImgDir.path);
+
+    for (let srcImage of srcImageDirContents) {
+      const ext = path.extname(srcImage);
+      const resType = path.basename(srcImage, ext);
+
+      if (SUPPORTED_SOURCE_EXTENSIONS.includes(ext) && resourceTypes.includes(resType)) {
+        sourceImages.push({
+          ext,
+          resType,
+          platform: srcImgDir.platform,
+          path: path.join(srcImgDir.path, srcImage),
+          vector: false,
+          height: 0,
+          width: 0,
+        });
       }
-    ))
-    .concat({
-      platform: 'global',
-      path: resourceDir
-    });
-
-  const srcImageDirContentList = await Promise.all(
-    srcDirList.map(srcImgDir => readDir(srcImgDir.path))
-  );
-
-  const sourceImages = flattenArray(
-    srcImageDirContentList.map((srcImageDirContents, i) => (
-      srcImageDirContents
-        .map((imgName): SourceImage => {
-          const ext = path.extname(imgName);
-
-          return {
-            ext,
-            platform: srcDirList[i].platform,
-            resType: path.basename(imgName, ext),
-            path: path.join(srcDirList[i].path, imgName),
-            vector: false,
-            height: 0,
-            width: 0,
-          };
-        })
-        .filter(img => SUPPORTED_SOURCE_EXTENSIONS.includes(img.ext))
-        .filter(img => resourceTypes.includes(img.resType))
-    ))
-  );
+    }
+  }
 
   const sourceImageChecksums = await Promise.all(
     sourceImages.map(async (img) => {
@@ -228,7 +224,6 @@ export async function provideDefaultResources(env: IonicEnvironment, platform?: 
 }
 
 async function ensureDefaultResources(env: IonicEnvironment): Promise<string> {
-  const os = await import('os');
   const { tarXvfFromUrl } = await import('../utils/archive');
 
   let recreateTmpDir = false;

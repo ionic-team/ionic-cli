@@ -634,7 +634,7 @@ export interface ICommandMap extends Map<string, string | CommandMapGetter> {
 
 export interface ImageResource {
   platform: string;
-  imageId: string | null;
+  imageId?: string;
   dest: string;
   resType: string;
   nodeName: string;

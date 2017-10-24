@@ -1,4 +1,3 @@
-import * as path from 'path';
 import chalk from 'chalk';
 
 import {
@@ -95,7 +94,7 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
       addResourcesToConfigXml,
       createImgDestinationDirectories,
       findMostSpecificImage,
-      flattenResourceJsonStructure,
+      getImageResources,
       getSourceImages,
       transformResourceImage,
       uploadSourceImages,
@@ -108,9 +107,7 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
 
     // if no resource filters are passed as arguments assume to use all.
     let resourceTypes = AVAILABLE_RESOURCE_TYPES.filter((type, index, array) => options[type]);
-    resourceTypes = (resourceTypes.length) ? resourceTypes : AVAILABLE_RESOURCE_TYPES;
-
-    const resourceDir = path.join(this.env.project.directory, 'resources'); // TODO: hard-coded
+    resourceTypes = resourceTypes.length ? resourceTypes : AVAILABLE_RESOURCE_TYPES;
 
     this.env.tasks.next(`Collecting resource configuration and source images`);
     this.env.log.debug(() => `resourceJsonStructure=${Object.keys(RESOURCES).length}`);
@@ -150,14 +147,10 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
     // Convert the resource structure to a flat array then filter the array so
     // that it only has img resources that we need. Finally add src path to the
     // items that remain.
-    let imgResources = flattenResourceJsonStructure()
+    let imgResources = (await getImageResources(this.env))
       .filter(img => orientation === 'default' || typeof img.orientation === 'undefined' || img.orientation === orientation)
       .filter(img => buildPlatforms.includes(img.platform))
-      .filter(img => resourceTypes.includes(img.resType))
-      .map(img => ({
-        ...img,
-        dest: path.join(resourceDir, img.platform, img.resType, img.name)
-      }));
+      .filter(img => resourceTypes.includes(img.resType));
 
     if (platform) {
       imgResources = imgResources.filter(img => img.platform === platform);
@@ -175,7 +168,7 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
     let srcImagesAvailable: SourceImage[] = [];
 
     try {
-      srcImagesAvailable = await getSourceImages(buildPlatforms, resourceTypes, resourceDir);
+      srcImagesAvailable = await getSourceImages(this.env, buildPlatforms, resourceTypes);
       this.env.log.debug(() => `${chalk.green('getSourceImages')} completed: (${srcImagesAvailable.map(v => chalk.bold(prettyPath(v.path))).join(', ')})`);
     } catch (e) {
       this.env.log.error(`Error in ${chalk.green('getSourceImages')}: ${e.stack ? e.stack : e}`);
@@ -185,7 +178,7 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
       const mostSpecificImageAvailable = findMostSpecificImage(img, srcImagesAvailable);
       return {
         ...img,
-        imageId: mostSpecificImageAvailable && mostSpecificImageAvailable.imageId ? mostSpecificImageAvailable.imageId : null,
+        imageId: mostSpecificImageAvailable && mostSpecificImageAvailable.imageId ? mostSpecificImageAvailable.imageId : undefined,
       };
     });
 

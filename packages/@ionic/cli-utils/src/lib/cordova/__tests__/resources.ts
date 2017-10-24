@@ -9,10 +9,10 @@ describe('@ionic/cli-utils', () => {
 
   describe('lib/cordova/resources', () => {
 
-    describe('flattenResourceJsonStructure', () => {
+    describe('getImageResources', () => {
 
-      it('should take the resources.json structure and flatten it', () => {
-        const result = resources.flattenResourceJsonStructure();
+      it('should take the resources.json structure and flatten it', async () => {
+        const result = await resources.getImageResources({ project: { directory: '/path/to/proj' } });
 
         expect(result).toEqual(jasmine.any(Array));
         expect(result.length).toEqual(53);
@@ -20,6 +20,7 @@ describe('@ionic/cli-utils', () => {
           platform: 'ios',
           resType: 'splash',
           name: 'Default-568h@2x~iphone.png',
+          dest: '/path/to/proj/resources/ios/splash/Default-568h@2x~iphone.png',
           width: 640,
           height: 1136,
           density: undefined,
@@ -41,7 +42,7 @@ describe('@ionic/cli-utils', () => {
         density: undefined,
         nodeName: 'splash',
         nodeAttributes: ['src', 'width', 'height'],
-        imageId: null,
+        imageId: undefined,
       }, {
         platform: 'ios',
         resType: 'splash',
@@ -51,7 +52,7 @@ describe('@ionic/cli-utils', () => {
         density: undefined,
         nodeName: 'splash',
         nodeAttributes: ['src', 'width', 'height'],
-        imageId: null,
+        imageId: undefined,
       }, {
         platform: 'android',
         resType: 'splash',
@@ -61,7 +62,7 @@ describe('@ionic/cli-utils', () => {
         density: 'land-ldpi',
         nodeName: 'splash' ,
         nodeAttributes: ['src', 'density'],
-        imageId: null,
+        imageId: undefined,
       }]
         .map((img) => ({
           ...img,
@@ -82,12 +83,12 @@ describe('@ionic/cli-utils', () => {
       it('should look in resources directory and platform directories to find images', async () => {
         spyOn(fsSpy, 'readDir').and.returnValue(Promise.resolve([]));
 
-        await resources.getSourceImages(['ios', 'android'], ['splash', 'icon'], '/resourceDir');
+        await resources.getSourceImages({ project: { directory: '/path/to/proj' } }, ['ios', 'android'], ['splash', 'icon']);
 
         expect(fsSpy.readDir.calls.count()).toEqual(3);
-        expect(fsSpy.readDir.calls.argsFor(0)).toEqual(['/resourceDir/ios']);
-        expect(fsSpy.readDir.calls.argsFor(1)).toEqual(['/resourceDir/android']);
-        expect(fsSpy.readDir.calls.argsFor(2)).toEqual(['/resourceDir']);
+        expect(fsSpy.readDir.calls.argsFor(0)).toEqual(['/path/to/proj/resources/ios']);
+        expect(fsSpy.readDir.calls.argsFor(1)).toEqual(['/path/to/proj/resources/android']);
+        expect(fsSpy.readDir.calls.argsFor(2)).toEqual(['/path/to/proj/resources']);
       });
 
       it('should find all sourceImages available and prioritize based on specificity', async () => {
@@ -95,27 +96,27 @@ describe('@ionic/cli-utils', () => {
         spyOn(fsSpy, 'cacheFileChecksum').and.callFake(() => {});
         spyOn(fsSpy, 'readDir').and.callFake(dir => {
           switch (dir) {
-          case '/resourceDir/ios':
-            return Promise.resolve([
-              'icon.png',
-              'splash.jpg',
-              'things.ai'
-            ]);
-          case '/resourceDir/android':
-            return Promise.resolve([
-              'icon.ai',
-              'splash.png'
-            ]);
-          case '/resourceDir':
-            return Promise.resolve([
-              'icon.png',
-              'splash.psd'
-            ]);
-          default: [];
+            case '/path/to/proj/resources/ios':
+              return Promise.resolve([
+                'icon.png',
+                'splash.jpg',
+                'things.ai'
+              ]);
+            case '/path/to/proj/resources/android':
+              return Promise.resolve([
+                'icon.ai',
+                'splash.png'
+              ]);
+            case '/path/to/proj/resources':
+              return Promise.resolve([
+                'icon.png',
+                'splash.psd'
+              ]);
+            default: [];
           }
         });
 
-        const sourceImages = await resources.getSourceImages(['ios', 'android'], ['splash', 'icon'], '/resourceDir');
+        const sourceImages = await resources.getSourceImages({ project: { directory: '/path/to/proj' } }, ['ios', 'android'], ['splash', 'icon']);
         expect(sourceImages).toEqual([
           {
             ext: '.png',
@@ -123,7 +124,7 @@ describe('@ionic/cli-utils', () => {
             imageId: 'FJDKLFJDKL',
             platform: 'ios',
             resType: 'icon',
-            path: '/resourceDir/ios/icon.png',
+            path: '/path/to/proj/resources/ios/icon.png',
             vector: false,
             width: 0
           },
@@ -133,7 +134,7 @@ describe('@ionic/cli-utils', () => {
             imageId: 'FJDKLFJDKL',
             platform: 'android',
             resType: 'icon',
-            path: '/resourceDir/android/icon.ai',
+            path: '/path/to/proj/resources/android/icon.ai',
             vector: false,
             width: 0
           },
@@ -143,7 +144,7 @@ describe('@ionic/cli-utils', () => {
             imageId: 'FJDKLFJDKL',
             platform: 'android',
             resType: 'splash',
-            path: '/resourceDir/android/splash.png',
+            path: '/path/to/proj/resources/android/splash.png',
             vector: false,
             width: 0
           },
@@ -153,7 +154,7 @@ describe('@ionic/cli-utils', () => {
             imageId: 'FJDKLFJDKL',
             platform: 'global',
             resType: 'icon',
-            path: '/resourceDir/icon.png',
+            path: '/path/to/proj/resources/icon.png',
             vector: false,
             width: 0
           },
@@ -163,7 +164,7 @@ describe('@ionic/cli-utils', () => {
             imageId: 'FJDKLFJDKL',
             platform: 'global',
             resType: 'splash',
-            path: '/resourceDir/splash.psd',
+            path: '/path/to/proj/resources/splash.psd',
             vector: false,
             width: 0
           }
@@ -180,7 +181,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.png',
           platform: 'ios',
           resType: 'icon',
-          path: '/resourceDir/ios/icon.png'
+          path: '/path/to/proj/resources/ios/icon.png'
         },
         {
           width: 640,
@@ -189,7 +190,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.ai',
           platform: 'android',
           resType: 'icon',
-          path: '/resourceDir/android/icon.ai'
+          path: '/path/to/proj/resources/android/icon.ai'
         },
         {
           width: 640,
@@ -198,7 +199,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.png',
           platform: 'android',
           resType: 'splash',
-          path: '/resourceDir/android/splash.png'
+          path: '/path/to/proj/resources/android/splash.png'
         },
         {
           width: 640,
@@ -207,7 +208,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.png',
           platform: 'global',
           resType: 'icon',
-          path: '/resourceDir/icon.png'
+          path: '/path/to/proj/resources/icon.png'
         },
         {
           width: 640,
@@ -216,7 +217,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.psd',
           platform: 'global',
           resType: 'splash',
-          path: '/resourceDir/splash.psd'
+          path: '/path/to/proj/resources/splash.psd'
         }
       ];
 
@@ -230,7 +231,7 @@ describe('@ionic/cli-utils', () => {
           density: undefined,
           nodeName: 'splash',
           nodeAttributes: ['src', 'width', 'height'],
-          imageId: null,
+          imageId: undefined,
           dest: '/resourcesDir/ios/splash/Default-568h@2x~iphone.png'
         };
 
@@ -243,7 +244,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.psd',
           platform: 'global',
           resType: 'splash',
-          path: '/resourceDir/splash.psd'
+          path: '/path/to/proj/resources/splash.psd'
         });
       });
 
@@ -257,7 +258,7 @@ describe('@ionic/cli-utils', () => {
           density: undefined,
           nodeName: 'icon',
           nodeAttributes: ['src', 'width', 'height'],
-          imageId: null,
+          imageId: undefined,
           dest: '/resourcesDir/ios/splash/Default-568h@2x~iphone.png'
         };
 
@@ -267,7 +268,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.png',
           platform: 'ios',
           resType: 'icon',
-          path: '/resourceDir/ios/icon.png',
+          path: '/path/to/proj/resources/ios/icon.png',
           width: 640,
           height: 1136,
           vector: false

@@ -1,22 +1,34 @@
 import * as os from 'os';
 
-import { flattenArray } from './array';
-
 export const ERROR_NETWORK_ADDRESS_NOT_AVAIL = 'NETWORK_ADDRESS_NOT_AVAIL';
 
-export function getAvailableIPAddresses(): { address: string; deviceName: string; family: string; internal: boolean; }[] { // TODO: type safety
-  const interfaces = os.networkInterfaces();
-  return flattenArray(
-    Object.keys(interfaces).map(deviceName => (
-      interfaces[deviceName].map(item => ({
-        address: item.address,
-        deviceName,
-        family: item.family,
-        internal: item.internal
-      }))
-    ))
-  )
-  .filter(item => !item.internal && item.family === 'IPv4');
+export interface NetworkInterface {
+  address: string;
+  deviceName: string;
+  family: string;
+  internal: boolean;
+}
+
+export function getAvailableIPAddresses(): NetworkInterface[] {
+  const networkInterfaces = os.networkInterfaces();
+  const devices: NetworkInterface[] = [];
+
+  for (let deviceName of Object.keys(networkInterfaces)) {
+    const networkInterface = networkInterfaces[deviceName];
+
+    for (let networkAddress of networkInterface) {
+      if (!networkAddress.internal && networkAddress.family === 'IPv4') {
+        devices.push({
+          address: networkAddress.address,
+          deviceName,
+          family: networkAddress.family,
+          internal: networkAddress.internal,
+        });
+      }
+    }
+  }
+
+  return devices;
 }
 
 export async function findClosestOpenPort(port: number, host?: string): Promise<number> {

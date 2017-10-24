@@ -5,21 +5,12 @@ import chalk from 'chalk';
 import { IonicEnvironment } from '../../definitions';
 
 import { FatalException } from '../errors';
-import { fsReadDir } from '@ionic/cli-framework/utils/fs';
+import { readDir } from '@ionic/cli-framework/utils/fs';
 
 export async function getPlatforms(projectDir: string): Promise<string[]> {
   const platformsDir = path.resolve(projectDir, 'platforms');
-
-  try {
-    const dirContents = await fsReadDir(platformsDir);
-    return dirContents.filter(f => f && f !== 'platforms.json');
-  } catch (e) {
-    if (e.code !== 'ENOENT') {
-      throw e;
-    }
-
-    return [];
-  }
+  const dirContents = await readDir(platformsDir);
+  return dirContents.filter(f => f && f !== 'platforms.json');
 }
 
 export async function installPlatform(env: IonicEnvironment, platform: string): Promise<void> {
