@@ -407,7 +407,7 @@ export class StartCommand extends Command implements CommandPreRun {
       this.env.log.msg(`  -  ${e('🔑', '')}   Test on iOS and Android without Native SDKs`);
       this.env.log.msg(`  -  ${e('🚀', '')}   LiveReload for instant style and JS updates`);
 
-      this.env.log.msg('\n ️-->    Install DevApp: ' + chalk.bold('http://bit.ly/ionic-dev-app') + '    <---\n\n');
+      this.env.log.msg('\n ️-->    Install DevApp: ' + chalk.bold('https://bit.ly/ionic-dev-app') + '    <---\n\n');
 
       const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
@@ -445,7 +445,7 @@ export class StartCommand extends Command implements CommandPreRun {
         this.env.log.msg('\n Supercharge your Ionic development with the ' + chalk.bold('Ionic Pro') + ' SDK\n\n');
         this.env.log.msg(`  -  ${e('⚠️', '')}   Track runtime errors in real-time, back to your original TypeScript`);
         this.env.log.msg(`  -  ${e('📲', '')}   Push remote updates and skip the app store queue`);
-        this.env.log.msg('\n(And that\'s not all, learn more about Ionic Pro: http://ionicframework.com/products)\n');
+        this.env.log.msg('\nAnd that\'s not all, learn more about Ionic Pro: https://ionicframework.com/products\n');
 
         const confirm = await this.env.prompt({
           type: 'confirm',
@@ -472,7 +472,7 @@ export class StartCommand extends Command implements CommandPreRun {
         await this.env.runCommand(cmdArgs);
 
         this.env.log.msg('You\'re almost ready. Follow the Monitoring docs to finish setup of runtime error tracking:\n\n')
-        this.env.log.msg('http://ionicframework.com/docs/pro/monitoring/#getting-started');
+        this.env.log.msg('https://ionicframework.com/docs/pro/monitoring/#getting-started');
       }
     }
 
