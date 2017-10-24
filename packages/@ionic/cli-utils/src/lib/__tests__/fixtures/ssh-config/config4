@@ -1,0 +1,6 @@
+Host foo
+    HostName 10.0.0.1
+    User dan
+
+Host bar
+    IdentityFile /id_rsa_bad

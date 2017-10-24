@@ -25,17 +25,32 @@ export function findHostSection(conf: SSHConfigModule.SSHConfig, host: string): 
 }
 
 export function ensureHostAndKeyPath(conf: SSHConfigModule.SSHConfig, conn: { host: string, port?: number }, keyPath: string): void {
-  const section = ensureSection(conf, conn.host, conf ? true : false);
+  const section = ensureSection(conf, conn.host);
+  const index = conf.indexOf(section);
 
   ensureSectionLine(section, 'IdentityFile', keyPath);
 
-  if (typeof conn.port === 'number') {
+  if (typeof conn.port === 'number' && conn.port !== 22) {
     ensureSectionLine(section, 'Port', String(conn.port));
   }
 
   // massage the section for proper whitespace
 
-  section.before = '';
+  if (index === 0) {
+    section.before = '';
+  } else {
+    const previousSection = conf[index - 1];
+
+    if (isDirective(previousSection)) {
+      const previousSectionLastEntry = previousSection.config[previousSection.config.length - 1];
+      previousSectionLastEntry.after = '\n';
+    } else {
+      previousSection.after = '\n';
+    }
+
+    section.before = '\n';
+  }
+
   section.after = '\n';
 
   for (let entry of section.config) {
@@ -43,18 +58,25 @@ export function ensureHostAndKeyPath(conf: SSHConfigModule.SSHConfig, conn: { ho
     entry.after = '\n';
   }
 
-  const lastEntry = section.config[section.config.length - 1];
-  lastEntry.after = '\n\n';
+  if (index !== conf.length - 1) {
+    const lastEntry = section.config[section.config.length - 1];
+    lastEntry.after = '\n\n';
+  }
 }
 
-export function ensureSection(conf: SSHConfigModule.SSHConfig, host: string, newline: boolean): SSHConfigModule.ConfigDirective {
-  const section = findHostSection(conf, host);
+function ensureSection(conf: SSHConfigModule.SSHConfig, host: string): SSHConfigModule.ConfigDirective {
+  let section = findHostSection(conf, host);
 
   if (!section) {
-    conf.push(SSHConfig.parse(`${newline ? '\n' : ''}Host ${host}\n`)[0]);
+    conf.push(SSHConfig.parse(`\nHost ${host}\n`)[0]);
+    section = findHostSection(conf, host);
   }
 
-  return conf.find({ Host: host });
+  if (!section) {
+    throw new Error(`Could not find/insert section for host: ${host}`);
+  }
+
+  return section;
 }
 
 function ensureSectionLine(section: SSHConfigModule.ConfigDirective, key: string, value: string): void {
