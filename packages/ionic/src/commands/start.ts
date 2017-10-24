@@ -391,17 +391,28 @@ export class StartCommand extends Command implements CommandPreRun {
 
       this.env.log.info('Installing dependencies may take several minutes.');
 
-      console.log(`
+      this.env.log.msg(chalk.bold(`
    ___           _             
   |   \\ _____ __/_\\  _ __ _ __ 
   | |) / -_) V / _ \\| '_ \\ '_ \\
   |___/\\___|\\_/_/ \\_\\ .__/ .__/
                     |_|  |_|   
-`);
+`));
+      /*
+      this.env.log.msg('\n\n\n');
+      this.env.log.msg(chalk.yellow('    *********************************'));
+      this.env.log.msg(chalk.yellow('    |                               |'));
+      this.env.log.msg(chalk.yellow('    |    I O N I C   D E V A P P    |'));
+      this.env.log.msg(chalk.yellow('    |                               |'));
+      this.env.log.msg(chalk.yellow('    *********************************'));
+      */
 
-      this.env.log.msg('While you\'re waiting, download ' + chalk.bold('Ionic DevApp') +
-      ', our free on-device testing mobile app:\n\n' + chalk.bold('http://devapp.ionicjs.com/cli'));
-      this.env.log.msg('\nP.S. It\'s got LiveReload and native plugin support built right in. \n\n');
+      this.env.log.msg('\nSpeed up development with the ' + chalk.bold('Ionic DevApp') +
+      ', our fast, on-device testing mobile app\n\n');
+      this.env.log.msg('  -  🔑  Test on iOS and Android before installing Native SDKs or Cordova');
+      this.env.log.msg('  -  🚀  LiveReload for instant style and JS updates without rebuilding, and more!');
+
+      this.env.log.msg('\n--> Install the free Ionic DevApp: ' + chalk.bold('http://bit.ly/ionic-dev-app') + ' <--\n\n');
 
       const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
