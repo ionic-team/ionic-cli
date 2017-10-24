@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as superagentProxy from 'superagent-proxy';
 
-import { IHookEngine } from '@ionic/cli-utils';
+import { IHookEngine, InfoHookItem } from '@ionic/cli-utils';
 
 const name = '@ionic/cli-plugin-proxy';
 
@@ -16,8 +16,11 @@ export function registerHooks(hooks: IHookEngine) {
     const packageJson = await readPackageJsonFileOfResolvedModule(__filename);
     const version = packageJson.version || '';
 
-    return [
-      { type: 'cli-packages', key: name, value: version, path: path.dirname(path.dirname(__filename)) },
-    ];
+    const envvars = ['IONIC_HTTP_PROXY', 'HTTPS_PROXY', 'HTTP_PROXY', 'PROXY', 'https_proxy', 'http_proxy', 'proxy'];
+    const infos = envvars.map((v): InfoHookItem => ({ type: 'environment', key: v, value: process.env[v] || 'not set' }));
+
+    infos.push({ type: 'cli-packages', key: name, value: version, path: path.dirname(path.dirname(__filename)) });
+
+    return infos;
   });
 }
