@@ -1,165 +1,200 @@
 import * as minimist from 'minimist';
 
 import { CommandData } from '../../../definitions';
-import { filterOptionsByIntent, metadataToMinimistOptions, minimistOptionsToArray } from '../command';
+import { filterOptionsByIntent, metadataToEnvCmdOptsSchema, metadataToMinimistOptions, minimistOptionsToArray } from '../command';
 
 describe('@ionic/cli-utils', () => {
 
-  describe('minimistOptionsToArray', () => {
+  describe('lib/utils/command', () => {
 
-    it('should handle empty argv', () => {
-      const result = minimistOptionsToArray({ _: [] });
-      expect(result).toEqual([]);
-    });
+    describe('minimistOptionsToArray', () => {
 
-    it('should filter out arguments', () => {
-      const result = minimistOptionsToArray({ _: ['foo', 'bar'] });
-      expect(result).toEqual([]);
-    });
-
-    it('should parse out boolean option from minimist result', () => {
-      const result = minimistOptionsToArray({ _: ['foo', 'bar'], wow: true });
-      expect(result).toEqual(['--wow']);
-    });
-
-    it('should parse out string option from minimist result', () => {
-      const result = minimistOptionsToArray({ _: [], cat: 'meow' });
-      expect(result).toEqual(['--cat=meow']);
-    });
-
-    it('should parse out option list from minimist result', () => {
-      const result = minimistOptionsToArray({ _: [], cat: 'meow', dog: 'bark', flag1: true });
-      expect(result).toEqual(['--cat=meow', '--dog=bark', '--flag1']);
-    });
-
-    it('should parse out option list from minimist result without equal signs', () => {
-      const result = minimistOptionsToArray({ _: [], cat: 'meow', dog: 'bark', flag1: true }, { useEquals: false });
-      expect(result).toEqual(['--cat', 'meow', '--dog', 'bark', '--flag1']);
-    });
-
-    it('should parse out string option from minimist result and not wrap strings with spaces in double quotes without flag', () => {
-      const result = minimistOptionsToArray({ _: [], cat: 'meow meow meow' });
-      expect(result).toEqual(['--cat=meow meow meow']);
-    });
-
-    it('should parse out string option from minimist result and wrap strings with spaces in double quotes with flag provided', () => {
-      const result = minimistOptionsToArray({ _: [], cat: 'meow meow meow' }, { useDoubleQuotes: true });
-      expect(result).toEqual(['--cat="meow meow meow"']);
-    });
-
-  });
-
-  describe('metadataToMinimistOptions', () => {
-
-    const metadata: CommandData = {
-      inputs: [
-        {
-          name: 'input1',
-          description: '',
-        },
-        {
-          name: 'input2',
-          description: '',
-        },
-      ],
-      options: [
-        {
-          name: 'foo',
-          description: '',
-          aliases: ['f'],
-        },
-        {
-          name: 'bar',
-          description: '',
-          default: 'soup',
-        },
-        {
-          name: 'flag1',
-          description: '',
-          type: Boolean,
-        },
-      ],
-    };
-
-    it('should transform metadata to minimist options', () => {
-      const result = metadataToMinimistOptions(metadata);
-      expect(result).toEqual({
-        string: ['_', 'foo', 'bar'],
-        boolean: ['flag1'],
-        alias: { foo: ['f'], bar: [], flag1: [] },
-        default: { foo: null, bar: 'soup', flag1: false },
-      });
-    });
-
-    describe('minimist arg parse', () => {
-
-      it('should parse with empty argv', () => {
-        const opts = metadataToMinimistOptions(metadata);
-        const result = minimist([], opts);
-        expect(result).toEqual({ _: [], foo: null, f: null, bar: 'soup', flag1: false, });
+      it('should handle empty argv', () => {
+        const result = minimistOptionsToArray({ _: [] });
+        expect(result).toEqual([]);
       });
 
-      it('should parse with comprehensive argv', () => {
-        const opts = metadataToMinimistOptions(metadata);
-        const result = minimist(['cat', '--foo', 'rabbit', 'dog', '--bar=salad', '--unknown', 'wow', '--flag1', 'extra', '--and-again'], opts);
-        expect(result).toEqual({ _: ['cat', 'dog', 'extra'], foo: 'rabbit', f: 'rabbit', bar: 'salad', flag1: true, unknown: 'wow', 'and-again': true });
+      it('should filter out arguments', () => {
+        const result = minimistOptionsToArray({ _: ['foo', 'bar'] });
+        expect(result).toEqual([]);
+      });
+
+      it('should parse out boolean option from minimist result', () => {
+        const result = minimistOptionsToArray({ _: ['foo', 'bar'], wow: true });
+        expect(result).toEqual(['--wow']);
+      });
+
+      it('should parse out string option from minimist result', () => {
+        const result = minimistOptionsToArray({ _: [], cat: 'meow' });
+        expect(result).toEqual(['--cat=meow']);
+      });
+
+      it('should parse out option list from minimist result', () => {
+        const result = minimistOptionsToArray({ _: [], cat: 'meow', dog: 'bark', flag1: true });
+        expect(result).toEqual(['--cat=meow', '--dog=bark', '--flag1']);
+      });
+
+      it('should parse out option list from minimist result without equal signs', () => {
+        const result = minimistOptionsToArray({ _: [], cat: 'meow', dog: 'bark', flag1: true }, { useEquals: false });
+        expect(result).toEqual(['--cat', 'meow', '--dog', 'bark', '--flag1']);
+      });
+
+      it('should parse out string option from minimist result and not wrap strings with spaces in double quotes without flag', () => {
+        const result = minimistOptionsToArray({ _: [], cat: 'meow meow meow' });
+        expect(result).toEqual(['--cat=meow meow meow']);
+      });
+
+      it('should parse out string option from minimist result and wrap strings with spaces in double quotes with flag provided', () => {
+        const result = minimistOptionsToArray({ _: [], cat: 'meow meow meow' }, { useDoubleQuotes: true });
+        expect(result).toEqual(['--cat="meow meow meow"']);
       });
 
     });
 
-  });
+    describe('metadataToMinimistOptions', () => {
 
-  describe('filterOptionsByIntent', () => {
+      const metadata: CommandData = {
+        fullName: 'foo bar',
+        name: 'bar',
+        inputs: [
+          {
+            name: 'input1',
+            description: '',
+          },
+          {
+            name: 'input2',
+            description: '',
+          },
+        ],
+        options: [
+          {
+            name: 'foo',
+            description: '',
+            aliases: ['f'],
+          },
+          {
+            name: 'bar',
+            description: '',
+            default: 'soup',
+          },
+          {
+            name: 'flag1',
+            description: '',
+            type: Boolean,
+          },
+        ],
+      };
 
-    const metadata: CommandData = {
-      description: '',
-      inputs: [
-        {
-          name: 'input1',
-          description: '',
-        },
-      ],
-      options: [
-        {
-          name: 'foo',
-          description: '',
-          intents: ['foobar'],
-        },
-        {
-          name: 'bar',
-          description: '',
-          intents: ['foobar'],
-        },
-        {
-          name: 'baz',
-          description: '',
-          intents: ['baz'],
-        },
-        {
-          name: 'intentless',
-          description: '',
-        },
-      ],
-    };
+      it('should transform metadata to minimist options', () => {
+        const result = metadataToMinimistOptions(metadata);
+        expect(result).toEqual({
+          string: ['_', 'foo', 'bar'],
+          boolean: ['flag1'],
+          alias: { foo: ['f'], bar: [], flag1: [] },
+          default: { foo: null, bar: 'soup', flag1: false },
+        });
+      });
 
-    const givenOptions = { foo: 'a', bar: 'b', baz: 'c', intentless: 'nope' };
+      describe('minimist arg parse', () => {
 
-    it('should only return options with no intent with no intent supplied', () => {
-      const results = filterOptionsByIntent(metadata, givenOptions);
-      const { foo, bar, baz, ...expected } = givenOptions;
-      expect(results).toEqual(expected);
+        it('should parse with empty argv', () => {
+          const opts = metadataToMinimistOptions(metadata);
+          const result = minimist([], opts);
+          expect(result).toEqual({ _: [], foo: null, f: null, bar: 'soup', flag1: false, });
+        });
+
+        it('should parse with comprehensive argv', () => {
+          const opts = metadataToMinimistOptions(metadata);
+          const result = minimist(['cat', '--foo', 'rabbit', 'dog', '--bar=salad', '--unknown', 'wow', '--flag1', 'extra', '--and-again'], opts);
+          expect(result).toEqual({ _: ['cat', 'dog', 'extra'], foo: 'rabbit', f: 'rabbit', bar: 'salad', flag1: true, unknown: 'wow', 'and-again': true });
+        });
+
+      });
+
     });
 
-    it('should only return options that match the intent supplied', () => {
-      const results = filterOptionsByIntent(metadata, givenOptions, 'foobar');
-      const { baz, intentless, ...expected } = givenOptions;
-      expect(results).toEqual(expected);
+    describe('metadataToEnvCmdOptsSchema', () => {
+
+      const metadata: CommandData = {
+        fullName: 'foo bar',
+        options: [
+          {
+            name: 'baz',
+            description: '',
+          },
+          {
+            name: 'opt-with-dashes',
+            description: '',
+          },
+        ],
+      };
+
+      it('should return empty array for command with no options', () => {
+        const result = metadataToEnvCmdOptsSchema({ fullName: 'cmd', options: [] });
+        expect(result).toEqual([]);
+      });
+
+      it('should return schema for options', () => {
+        const result = metadataToEnvCmdOptsSchema(metadata);
+        const envvars = result.map(r => r.envvar);
+        expect(envvars).toEqual(['IONIC_CMDOPTS_FOO_BAR_BAZ', 'IONIC_CMDOPTS_FOO_BAR_OPT_WITH_DASHES']);
+      });
+
     });
 
-    it('should return no options with a bogus intent supplied', () => {
-      const results = filterOptionsByIntent(metadata, givenOptions, 'literally bogus');
-      const expected = {};
-      expect(results).toEqual(expected);
+    describe('filterOptionsByIntent', () => {
+
+      const metadata: CommandData = {
+        description: '',
+        inputs: [
+          {
+            name: 'input1',
+            description: '',
+          },
+        ],
+        options: [
+          {
+            name: 'foo',
+            description: '',
+            intents: ['foobar'],
+          },
+          {
+            name: 'bar',
+            description: '',
+            intents: ['foobar'],
+          },
+          {
+            name: 'baz',
+            description: '',
+            intents: ['baz'],
+          },
+          {
+            name: 'intentless',
+            description: '',
+          },
+        ],
+      };
+
+      const givenOptions = { foo: 'a', bar: 'b', baz: 'c', intentless: 'nope' };
+
+      it('should only return options with no intent with no intent supplied', () => {
+        const results = filterOptionsByIntent(metadata, givenOptions);
+        const { foo, bar, baz, ...expected } = givenOptions;
+        expect(results).toEqual(expected);
+      });
+
+      it('should only return options that match the intent supplied', () => {
+        const results = filterOptionsByIntent(metadata, givenOptions, 'foobar');
+        const { baz, intentless, ...expected } = givenOptions;
+        expect(results).toEqual(expected);
+      });
+
+      it('should return no options with a bogus intent supplied', () => {
+        const results = filterOptionsByIntent(metadata, givenOptions, 'literally bogus');
+        const expected = {};
+        expect(results).toEqual(expected);
+      });
+
     });
 
   });

@@ -59,7 +59,7 @@ function normalizeOption(option: CommandOption): NormalizedCommandOption {
 }
 
 export function metadataToMinimistOptions(metadata: CommandData): minimistType.Opts {
-  let options: NormalizedMinimistOpts = {
+  const options: NormalizedMinimistOpts = {
     string: ['_'],
     boolean: [],
     alias: {},
@@ -70,18 +70,55 @@ export function metadataToMinimistOptions(metadata: CommandData): minimistType.O
     return { boolean: true, string: '_' };
   }
 
-  for (let option of metadata.options.map(o => normalizeOption(o))) {
-    if (option.type === String) {
-      options.string.push(option.name);
-    } else if (option.type === Boolean) {
-      options.boolean.push(option.name);
+  const schema = metadataToEnvCmdOptsSchema(metadata);
+
+  for (let opt of schema) {
+    const envvar = process.env[opt.envvar];
+
+    if (typeof envvar !== 'undefined') {
+      if (opt.option.type === Boolean) {
+        opt.option.default = envvar && envvar !== '0' ? true : false;
+      } else {
+        opt.option.default = envvar;
+      }
+    }
+  }
+
+  for (let option of metadata.options) {
+    const normalizedOption = normalizeOption(option);
+
+    if (normalizedOption.type === String) {
+      options.string.push(normalizedOption.name);
+    } else if (normalizedOption.type === Boolean) {
+      options.boolean.push(normalizedOption.name);
     }
 
-    options.default[option.name] = option.default;
-    options.alias[option.name] = option.aliases;
+    options.default[normalizedOption.name] = normalizedOption.default;
+    options.alias[normalizedOption.name] = normalizedOption.aliases;
   }
 
   return options;
+}
+
+export interface CmdOptsSchema {
+  envvar: string;
+  option: CommandOption;
+};
+
+export function metadataToEnvCmdOptsSchema(metadata: CommandData): CmdOptsSchema[] {
+  if (!metadata.options) {
+    return [];
+  }
+
+  const schema: CmdOptsSchema[] = [];
+  const fullName = metadata.fullName ? metadata.fullName : metadata.name;
+  const prefix = `IONIC_CMDOPTS_${fullName.toUpperCase().split(' ').join('_')}`;
+
+  for (let option of metadata.options) {
+    schema.push({ envvar: `${prefix}_${option.name.toUpperCase().split('-').join('_')}`, option });
+  }
+
+  return schema;
 }
 
 /**
