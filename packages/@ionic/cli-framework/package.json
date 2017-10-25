@@ -34,10 +34,10 @@
     "testRegex": "/__tests__/.*\\.(ts|js)$"
   },
   "dependencies": {
-    "chalk": "^2.2.0",
+    "chalk": "^2.3.0",
     "ncp": "^2.0.0",
     "strip-ansi": "^4.0.0",
-    "superagent": "^3.7.0",
+    "superagent": "^3.8.0",
     "tslib": "^1.8.0"
   },
   "devDependencies": {
