@@ -445,7 +445,7 @@ export class StartCommand extends Command implements CommandPreRun {
         this.env.log.msg('\n Supercharge your Ionic development with the ' + chalk.bold('Ionic Pro') + ' SDK\n\n');
         this.env.log.msg(`  -  ${e('⚠️', '')}   Track runtime errors in real-time, back to your original TypeScript`);
         this.env.log.msg(`  -  ${e('📲', '')}   Push remote updates and skip the app store queue`);
-        this.env.log.msg('\nAnd that\'s not all, learn more about Ionic Pro: https://ionicframework.com/products\n');
+        this.env.log.msg('\nLearn more about Ionic Pro: https://ionicframework.com/products\n');
 
         const confirm = await this.env.prompt({
           type: 'confirm',
@@ -470,9 +470,6 @@ export class StartCommand extends Command implements CommandPreRun {
         }
 
         await this.env.runCommand(cmdArgs);
-
-        this.env.log.msg('You\'re almost ready. Follow the Monitoring docs to finish setup of runtime error tracking:\n\n')
-        this.env.log.msg('https://ionicframework.com/docs/pro/monitoring/#getting-started');
       }
     }
 
@@ -490,10 +487,14 @@ export class StartCommand extends Command implements CommandPreRun {
 
     this.env.log.nl();
     this.env.log.msg(`${chalk.bold('Next Steps')}:\n`);
-    this.env.log.msg(`Go to your newly created project: ${chalk.green(`cd ${prettyPath(projectRoot)}`)}`);
+    this.env.log.msg(`* Go to your newly created project: ${chalk.green(`cd ${prettyPath(projectRoot)}`)}`);
+    this.env.log.msg(`* Get Ionic DevApp for easy device testing: https://bit.ly/ionic-dev-app`)
 
     if (config.backend === BACKEND_PRO && linkConfirmed) {
-      this.env.log.msg(`Then, push your code to the Ionic Dashboard: ${chalk.green('git push ionic master')}`);
+
+      this.env.log.msg('* Finish setting up Ionic Pro Error Monitoring:')
+      this.env.log.msg('https://ionicframework.com/docs/pro/monitoring/#getting-started\n');
+      this.env.log.msg(`\n* Finally, push your code to Ionic Pro to perform real-time updates, and more: ${chalk.green('git push ionic master')}`);
     }
 
     this.env.log.nl();
