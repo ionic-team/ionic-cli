@@ -25,7 +25,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     livereload: options['nolivereload'] ? false : true,
     proxy: options['noproxy'] ? false : true,
     lab: options['lab'] ? true : false,
-    browser: options['nobrowser'] ? false : true,
+    open: options['open'] ? true : false,
     browserName: options['browser'] ? String(options['browser']) : undefined,
     browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
     basicAuth: options['auth'] ? <[string, string]>['ionic', String(options['auth'])] : undefined, // TODO: typescript can't infer tuple
@@ -67,7 +67,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
   );
 
   if (project.type !== 'ionic-angular') { // TODO: app-scripts calls opn internally
-    if (serveOptions.browser) {
+    if (serveOptions.open) {
       const openOptions: string[] = [localAddress]
         .concat(serveOptions.lab ? [IONIC_LAB_URL] : [])
         .concat(serveOptions.browserOption ? [serveOptions.browserOption] : [])

@@ -90,7 +90,7 @@ export async function serveOptionsToAppScriptsArgs(options: AppScriptsServeOptio
     devLoggerPort: String(options.notificationPort),
     consolelogs: options.consolelogs,
     serverlogs: options.serverlogs,
-    nobrowser: !options.browser,
+    nobrowser: !options.open,
     nolivereload: !options.livereload,
     noproxy: !options.proxy,
     lab: options.lab,

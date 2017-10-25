@@ -433,7 +433,7 @@ export interface ServeOptions {
   livereload: boolean;
   proxy: boolean;
   lab: boolean;
-  browser: boolean;
+  open: boolean;
   browserName?: string;
   browserOption?: string;
   basicAuth?: [string, string];

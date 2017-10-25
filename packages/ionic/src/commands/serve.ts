@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { BIND_ALL_ADDRESS, BROWSERS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
 
@@ -57,10 +57,11 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       advanced: true,
     },
     {
-      name: 'nobrowser',
-      description: 'Disable launching a browser',
+      name: 'open',
+      description: 'Do not open a browser window',
       type: Boolean,
-      aliases: ['b'],
+      default: true,
+      // TODO: Adding 'b' to aliases here has some weird behavior with minimist.
     },
     {
       name: 'noproxy',
@@ -108,7 +109,18 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
     },
   ],
 })
-export class ServeCommand extends Command {
+export class ServeCommand extends Command implements CommandPreRun {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (options['nobrowser']) {
+      this.env.log.warn(`The ${chalk.green('--nobrowser')} option has been deprecated. Please use ${chalk.green('--no-open')}.`);
+      options['open'] = false;
+    }
+
+    if (options['b']) {
+      options['open'] = false;
+    }
+  }
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { serve } = await import('@ionic/cli-utils/commands/serve');
 

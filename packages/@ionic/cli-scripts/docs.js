@@ -191,7 +191,7 @@ The CLI will look for the following environment variables:
 
 ### Command Options
 
-You can express command options (normally set with \`--opt=value\` syntax) with environment variables. The naming of these environment variables follows a pattern: start with \`IONIC_CMDOPTS_\`, add the command name (replacing any spaces with underscores), add the option name (replacing any hyphens with underscores), and then uppercase everything. Boolean flags (command-line options that don't take a value) can be set to \`1\` or \`0\`.
+You can express command options (normally set with \`--opt=value\` syntax) with environment variables. The naming of these environment variables follows a pattern: start with \`IONIC_CMDOPTS_\`, add the command name (replacing any spaces with underscores), add the option name (replacing any hyphens with underscores), and then uppercase everything. Boolean flags (command-line options that don't take a value) can be set to \`1\` or \`0\`. Strip the \`--no-\` prefix in boolean flags, if it exists (\`--no-open\` in \`ionic serve\` can be expressed with \`IONIC_CMDOPTS_SERVE_OPEN=0\`, for example).
 
 For example, the command options in \`ionic cordova run ios -lc --livereload-port=1234 --address=localhost\` can also be expressed with this series of environment variables:
 
