@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-scripts",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "dependencies": {
     "ansi-styles": "^3.2.0",
     "escape-string-regexp": "^1.0.5"

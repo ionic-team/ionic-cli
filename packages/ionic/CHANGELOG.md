@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.15.0"></a>
+# [3.15.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.14.0...ionic@3.15.0) (2017-10-25)
+
+
+### Features
+
+* **info:** show ANDROID_HOME environment variable ([7975cd8](https://github.com/ionic-team/ionic-cli/commit/7975cd8))
+* **info:** show proxy environment variables ([9103d09](https://github.com/ionic-team/ionic-cli/commit/9103d09))
+
+
+
+
 <a name="3.14.0"></a>
 # [3.14.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.13.2...ionic@3.14.0) (2017-10-23)
 

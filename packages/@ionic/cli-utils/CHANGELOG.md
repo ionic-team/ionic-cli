@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.15.0"></a>
+# [1.15.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.14.0...@ionic/cli-utils@1.15.0) (2017-10-25)
+
+
+### Bug Fixes
+
+* **cordova:** only return known platforms ([d2e2b26](https://github.com/ionic-team/ionic-cli/commit/d2e2b26))
+* **doctor:** ignore bundle ID ailment if no cordova integration ([182205d](https://github.com/ionic-team/ionic-cli/commit/182205d))
+* **ssh:** fix whitespace issues with ssh config ([bb4ee5d](https://github.com/ionic-team/ionic-cli/commit/bb4ee5d))
+
+
+### Features
+
+* **info:** show proxy environment variables ([9103d09](https://github.com/ionic-team/ionic-cli/commit/9103d09))
+* **options:** environment variables for command-line opts ([7d39dee](https://github.com/ionic-team/ionic-cli/commit/7d39dee))
+
+
+
+
 <a name="1.14.0"></a>
 # [1.14.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.13.1...@ionic/cli-utils@1.14.0) (2017-10-23)
 

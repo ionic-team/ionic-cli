@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.5.0"></a>
+# [1.5.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-proxy@1.4.14...@ionic/cli-plugin-proxy@1.5.0) (2017-10-25)
+
+
+### Features
+
+* **info:** show proxy environment variables ([9103d09](https://github.com/ionic-team/ionic-cli/commit/9103d09))
+
+
+
+
 <a name="1.4.14"></a>
 ## [1.4.14](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-plugin-proxy@1.4.13...@ionic/cli-plugin-proxy@1.4.14) (2017-10-23)
 
