@@ -7,6 +7,14 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.15.1"></a>
+#### 3.15.1 (2017-10-25)
+
+* Fixed issue with not recognizing some Cordova platforms during `ionic cordova
+  run`.
+* Fixed issue with proxy settings during `ionic cordova run`.
+* Fixed incorrect count with `ionic doctor check`.
+
 <a name="3.15.0"></a>
 #### 3.15.0 (2017-10-24)
 
