@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.15.1"></a>
+## [3.15.1](https://github.com/ionic-team/ionic-cli/compare/ionic@3.15.0...ionic@3.15.1) (2017-10-25)
+
+
+
+
+**Note:** Version bump only for package ionic
+
 <a name="3.15.0"></a>
 # [3.15.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.14.0...ionic@3.15.0) (2017-10-25)
 

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.15.1"></a>
+## [1.15.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.15.0...@ionic/cli-utils@1.15.1) (2017-10-25)
+
+
+### Bug Fixes
+
+* **cordova:** proxy settings on by default ([19a3390](https://github.com/ionic-team/ionic-cli/commit/19a3390))
+* **cordova:** recognize more browsers ([dcaaf97](https://github.com/ionic-team/ionic-cli/commit/dcaaf97))
+* **doctor:** fix incorrect count ([b85fd11](https://github.com/ionic-team/ionic-cli/commit/b85fd11))
+
+
+
+
 <a name="1.15.0"></a>
 # [1.15.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.14.0...@ionic/cli-utils@1.15.0) (2017-10-25)
 
