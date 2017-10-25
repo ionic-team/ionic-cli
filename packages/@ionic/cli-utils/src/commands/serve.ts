@@ -23,10 +23,10 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     consolelogs: options['consolelogs'] ? true : false,
     serverlogs: options['serverlogs'] ? true : false,
     livereload: options['nolivereload'] ? false : true,
-    proxy: options['noproxy'] ? false : true,
+    proxy: options['proxy'] ? true : false,
     lab: options['lab'] ? true : false,
     open: options['open'] ? true : false,
-    browserName: options['browser'] ? String(options['browser']) : undefined,
+    browser: options['browser'] ? String(options['browser']) : undefined,
     browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
     basicAuth: options['auth'] ? <[string, string]>['ionic', String(options['auth'])] : undefined, // TODO: typescript can't infer tuple
     env: options['env'] ? String(options['env']) : undefined,
@@ -74,7 +74,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
         .concat(platform ? ['?ionicplatform=', platform] : []);
 
       const opn = await import('opn');
-      opn(openOptions.join(''), { app: serveOptions.browserName, wait: false });
+      opn(openOptions.join(''), { app: serveOptions.browser, wait: false });
     }
   }
 

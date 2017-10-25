@@ -27,7 +27,7 @@ describe('@ionic/cli-utils', () => {
         });
 
         it('should transform extra options', async () => {
-          const result = await serveOptionsToAppScriptsArgs({ browserName: 'firefox', browserOption: '/#/tab/dash', platform: 'android', ...options, consolelogs: false, serverlogs: false, open: false, livereload: false, proxy: false, lab: true });
+          const result = await serveOptionsToAppScriptsArgs({ browser: 'firefox', browserOption: '/#/tab/dash', platform: 'android', ...options, consolelogs: false, serverlogs: false, open: false, livereload: false, proxy: false, lab: true });
           expect(result).toEqual(['--address', '0.0.0.0', '--port', '8100', '--livereload-port', '27000', '--dev-logger-port', '50000', '--nobrowser', '--nolivereload', '--noproxy', '--lab', '--browser', 'firefox', '--browseroption', '/#/tab/dash', '--platform', 'android']);
         });
 

@@ -434,7 +434,7 @@ export interface ServeOptions {
   proxy: boolean;
   lab: boolean;
   open: boolean;
-  browserName?: string;
+  browser?: string;
   browserOption?: string;
   basicAuth?: [string, string];
   env?: string;

@@ -94,7 +94,7 @@ export async function serveOptionsToAppScriptsArgs(options: AppScriptsServeOptio
     nolivereload: !options.livereload,
     noproxy: !options.proxy,
     lab: options.lab,
-    browser: options.browserName,
+    browser: options.browser,
     browseroption: options.browserOption,
     iscordovaserve: options.iscordovaserve,
     platform: options.platform,

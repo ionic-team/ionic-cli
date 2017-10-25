@@ -64,11 +64,12 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       // TODO: Adding 'b' to aliases here has some weird behavior with minimist.
     },
     {
-      name: 'noproxy',
+      name: 'proxy',
       description: 'Do not add proxies',
       type: Boolean,
-      aliases: ['x'],
+      default: true,
       advanced: true,
+      // TODO: Adding 'x' to aliases here has some weird behavior with minimist.
     },
     {
       name: 'browser',
@@ -118,6 +119,15 @@ export class ServeCommand extends Command implements CommandPreRun {
 
     if (options['b']) {
       options['open'] = false;
+    }
+
+    if (options['noproxy']) {
+      this.env.log.warn(`The ${chalk.green('--noproxy')} option has been deprecated. Please use ${chalk.green('--no-proxy')}.`);
+      options['proxy'] = false;
+    }
+
+    if (options['x']) {
+      options['proxy'] = false;
     }
   }
 
