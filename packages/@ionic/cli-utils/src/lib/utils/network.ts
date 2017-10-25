@@ -2,14 +2,9 @@ import * as os from 'os';
 
 export const ERROR_NETWORK_ADDRESS_NOT_AVAIL = 'NETWORK_ADDRESS_NOT_AVAIL';
 
-export interface NetworkInterface {
-  address: string;
-  deviceName: string;
-  family: string;
-  internal: boolean;
-}
+export type NetworkInterface = { deviceName: string; } & os.NetworkInterfaceInfo;
 
-export function getAvailableIPAddresses(): NetworkInterface[] {
+export function getSuitableNetworkInterfaces(): NetworkInterface[] {
   const networkInterfaces = os.networkInterfaces();
   const devices: NetworkInterface[] = [];
 
@@ -18,12 +13,7 @@ export function getAvailableIPAddresses(): NetworkInterface[] {
 
     for (let networkAddress of networkInterface) {
       if (!networkAddress.internal && networkAddress.family === 'IPv4') {
-        devices.push({
-          address: networkAddress.address,
-          deviceName,
-          family: networkAddress.family,
-          internal: networkAddress.internal,
-        });
+        devices.push({ deviceName, ...networkAddress });
       }
     }
   }

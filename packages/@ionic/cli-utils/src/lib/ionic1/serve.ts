@@ -28,13 +28,13 @@ const IOS_PLATFORM_PATH = path.join('platforms', 'ios', 'www');
 const ANDROID_PLATFORM_PATH = path.join('platforms', 'android', 'assets', 'www');
 
 export async function serve({ env, options }: { env: IonicEnvironment; options: ServeOptions; }): Promise<ServeDetails> {
-  const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort, getAvailableIPAddresses } = await import('../utils/network');
+  const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort, getSuitableNetworkInterfaces } = await import('../utils/network');
 
   let availableIPs: string[] = [];
   let externalIP = options.address;
 
   if (options.address === BIND_ALL_ADDRESS) {
-    availableIPs = getAvailableIPAddresses().map(ip => ip.address);
+    availableIPs = getSuitableNetworkInterfaces().map(ip => ip.address);
 
     if (availableIPs.length === 0) {
       if (options.externalAddressRequired) {

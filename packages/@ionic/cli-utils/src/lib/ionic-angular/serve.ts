@@ -13,13 +13,13 @@ export interface AppScriptsServeOptions extends ServeOptions {
 }
 
 export async function serve({ env, options }: { env: IonicEnvironment, options: AppScriptsServeOptions }): Promise<ServeDetails> {
-  const { getAvailableIPAddresses } = await import('../utils/network');
+  const { getSuitableNetworkInterfaces } = await import('../utils/network');
 
   let availableIPs: string[] = [];
   let externalIP = options.address;
 
   if (options.address === BIND_ALL_ADDRESS) {
-    availableIPs = getAvailableIPAddresses().map(ip => ip.address);
+    availableIPs = getSuitableNetworkInterfaces().map(ip => ip.address);
 
     if (availableIPs.length === 0) {
       if (options.externalAddressRequired) {
