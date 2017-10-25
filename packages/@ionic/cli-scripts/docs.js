@@ -189,6 +189,21 @@ The CLI will look for the following environment variables:
 * \`IONIC_HTTP_PROXY\`: Set a URL for proxying all CLI requests through. See [Using a Proxy](#using-a-proxy). The CLI will also look for \`HTTP_PROXY\` and \`HTTPS_PROXY\`, both of which npm use.
 * \`IONIC_EMAIL\` / \`IONIC_PASSWORD\`: For automatic login via environment variables.
 
+### Command Options
+
+You can express command options (normally set with \`--opt=value\` syntax) with environment variables. The naming of these environment variables follows a pattern: start with \`IONIC_CMDOPTS_\`, add the command name (replacing any spaces with underscores), add the option name (replacing any hyphens with underscores), and then uppercase everything. Boolean flags (command-line options that don't take a value) can be set to \`1\` or \`0\`.
+
+For example, the command options in \`ionic cordova run ios -lc --livereload-port=1234 --address=localhost\` can also be expressed with this series of environment variables:
+
+\`\`\`bash
+export IONIC_CMDOPTS_CORDOVA_RUN_LIVERELOAD=1
+export IONIC_CMDOPTS_CORDOVA_RUN_CONSOLELOGS=1
+export IONIC_CMDOPTS_CORDOVA_RUN_LIVERELOAD_PORT=1234
+export IONIC_CMDOPTS_CORDOVA_RUN_ADDRESS=localhost
+\`\`\`
+
+If these variables are set in your environment, \`ionic cordova build ios\` will use new defaults for its options.
+
 ## Flags
 
 CLI flags are global options that alter the behavior of a CLI command.
