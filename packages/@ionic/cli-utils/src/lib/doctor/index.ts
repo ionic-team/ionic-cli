@@ -69,10 +69,12 @@ export async function treatAilments(env: IonicEnvironment) {
 
   if (detectedAilments.length > 0) {
     for (let ailment of detectedAilments) {
-      await treatAilment(env, ailment);
+      const treated = await treatAilment(env, ailment);
 
       if (ailment instanceof AutomaticallyTreatableAilment) {
-        treatedAilmentCount++;
+        if (treated) {
+          treatedAilmentCount++;
+        }
       } else {
         manuallyTreatableAilmentCount++;
       }
@@ -99,10 +101,11 @@ export async function detectAndTreatAilment(env: IonicEnvironment, ailment: Ailm
   }
 }
 
-async function treatAilment(env: IonicEnvironment, ailment: Ailment) {
+async function treatAilment(env: IonicEnvironment, ailment: Ailment): Promise<boolean> {
   if (ailment instanceof AutomaticallyTreatableAilment) {
     try {
-      await automaticallyTreatAilment(env, ailment);
+      const treated = await automaticallyTreatAilment(env, ailment);
+      return treated;
     } catch (e) {
       if (e !== ERROR_AILMENT_SKIPPED && e !== ERROR_AILMENT_IGNORED) {
         if (isExitCodeException(e)) {
@@ -120,9 +123,11 @@ async function treatAilment(env: IonicEnvironment, ailment: Ailment) {
       `Ignore this issue with: ${chalk.green(`ionic doctor ignore ${ailment.id}`)}`
     );
   }
+
+  return false;
 }
 
-async function automaticallyTreatAilment(env: IonicEnvironment, ailment: AutomaticallyTreatableAilment) {
+async function automaticallyTreatAilment(env: IonicEnvironment, ailment: AutomaticallyTreatableAilment): Promise<boolean> {
   const config = await env.config.load();
   const treatmentSteps = await ailment.getTreatmentSteps(env);
   const stepOutput = treatmentSteps.map((step, i) => `    ${i + 1}) ${step.name}`).join('\n');
@@ -170,10 +175,14 @@ async function automaticallyTreatAilment(env: IonicEnvironment, ailment: Automat
 
     // env.tasks.updateMsg(`Steps: ${chalk.bold(`${treatmentSteps.length} / ${treatmentSteps.length}`)}`);
     // env.tasks.end();
+
+    return true;
   } else if (choice === CHOICE_NO) {
     throw ERROR_AILMENT_SKIPPED;
   } else if (choice === CHOICE_IGNORE) {
     config.state.doctor.ignored.push(ailment.id);
     throw ERROR_AILMENT_IGNORED;
   }
+
+  return false;
 }
