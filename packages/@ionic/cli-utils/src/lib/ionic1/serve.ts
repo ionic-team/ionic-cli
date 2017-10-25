@@ -8,7 +8,7 @@ import * as expressType from 'express';
 import { IonicEnvironment, LiveReloadFunction, LogLevel, ServeDetails, ServeOptions } from '../../definitions';
 import { isDevServerMessage } from '../../guards';
 
-import { BIND_ALL_ADDRESS, IONIC_LAB_URL, LOCAL_ADDRESSES } from '../serve';
+import { BIND_ALL_ADDRESS, IONIC_LAB_URL, LOCAL_ADDRESSES, selectExternalIP } from '../serve';
 import { FatalException } from '../errors';
 import { fsReadFile, pathExists } from '@ionic/cli-framework/utils/fs';
 
@@ -28,43 +28,9 @@ const IOS_PLATFORM_PATH = path.join('platforms', 'ios', 'www');
 const ANDROID_PLATFORM_PATH = path.join('platforms', 'android', 'assets', 'www');
 
 export async function serve({ env, options }: { env: IonicEnvironment; options: ServeOptions; }): Promise<ServeDetails> {
-  const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort, getSuitableNetworkInterfaces } = await import('../utils/network');
+  const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort } = await import('../utils/network');
 
-  let availableIPs: string[] = [];
-  let externalIP = options.address;
-
-  if (options.address === BIND_ALL_ADDRESS) {
-    availableIPs = getSuitableNetworkInterfaces().map(ip => ip.address);
-
-    if (availableIPs.length === 0) {
-      if (options.externalAddressRequired) {
-        throw new FatalException(
-          `No external network interfaces detected. In order to use livereload with run/emulate you will need one.\n` +
-          `Are you connected to a local network?\n`
-        );
-      }
-    } else if (availableIPs.length === 1) {
-      externalIP = availableIPs[0];
-    } else if (availableIPs.length > 1) {
-      if (options.externalAddressRequired) {
-        env.log.warn(
-          'Multiple network interfaces detected!\n' +
-          'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
-          `You may also use the ${chalk.green('--address')} option to skip this prompt.\n`
-        );
-
-        const promptedIp = await env.prompt({
-          type: 'list',
-          name: 'promptedIp',
-          message: 'Please select which IP to use:',
-          choices: availableIPs,
-        });
-
-        externalIP = promptedIp;
-      }
-    }
-  }
-
+  const [ externalIP, availableIPs ] = await selectExternalIP(env, options);
   const wwwDir = await env.project.getSourceDir();
 
   try {

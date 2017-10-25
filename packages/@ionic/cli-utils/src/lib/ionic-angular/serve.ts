@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions';
 
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES } from '../serve';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, selectExternalIP } from '../serve';
 import { FatalException } from '../errors';
 import { importAppScripts } from './app-scripts';
 
@@ -13,42 +13,7 @@ export interface AppScriptsServeOptions extends ServeOptions {
 }
 
 export async function serve({ env, options }: { env: IonicEnvironment, options: AppScriptsServeOptions }): Promise<ServeDetails> {
-  const { getSuitableNetworkInterfaces } = await import('../utils/network');
-
-  let availableIPs: string[] = [];
-  let externalIP = options.address;
-
-  if (options.address === BIND_ALL_ADDRESS) {
-    availableIPs = getSuitableNetworkInterfaces().map(ip => ip.address);
-
-    if (availableIPs.length === 0) {
-      if (options.externalAddressRequired) {
-        throw new FatalException(
-          `No external network interfaces detected. In order to use livereload with run/emulate you will need one.\n` +
-          `Are you connected to a local network?\n`
-        );
-      }
-    } else if (availableIPs.length === 1) {
-      externalIP = availableIPs[0];
-    } else if (availableIPs.length > 1) {
-      if (options.externalAddressRequired) {
-        env.log.warn(
-          'Multiple network interfaces detected!\n' +
-          'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n' +
-          `You may also use the ${chalk.green('--address')} option to skip this prompt.\n`
-        );
-
-        const promptedIp = await env.prompt({
-          type: 'list',
-          name: 'promptedIp',
-          message: 'Please select which IP to use:',
-          choices: availableIPs,
-        });
-
-        externalIP = promptedIp;
-      }
-    }
-  }
+  const [ externalIP, availableIPs ] = await selectExternalIP(env, options);
 
   const appScriptsArgs = await serveOptionsToAppScriptsArgs(options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
