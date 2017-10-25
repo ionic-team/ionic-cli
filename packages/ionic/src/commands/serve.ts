@@ -134,33 +134,6 @@ export class ServeCommand extends Command implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { serve } = await import('@ionic/cli-utils/commands/serve');
 
-    const project = await this.env.project.load();
-
-    const serverDetails = await serve(this.env, inputs, options);
-
-    if (options['devapp']) {
-      const port = serverDetails.port;
-      const name = `${project.name}@${port}`;
-      await this.startDevApp(name, port);
-      // this.env.log.info(`Published DevApp service (${chalk.bold(name)})`);
-    }
-
-    this.env.tasks.end();
-  }
-
-  async startDevApp(name: string, port: number) {
-    const { Publisher } = await import('@ionic/discover');
-    const service = new Publisher('devapp', name, port);
-    service.path = '/?devapp=true';
-
-    service.on('error', err => {
-      // this.env.log.error(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
-    });
-
-    try {
-      await service.start();
-    } catch (e) {
-      // this.env.log.error(`Could not publish DevApp service: ${String(e.stack ? e.stack : e)}`);
-    }
+    await serve(this.env, inputs, options);
   }
 }

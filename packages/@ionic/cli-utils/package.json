@@ -37,6 +37,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@ionic/discover": "^0.3.3",
     "archiver": "^2.1.0",
     "basic-auth": "^1.1.0",
     "body-parser": "^1.18.1",

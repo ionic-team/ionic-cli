@@ -30,6 +30,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
     basicAuth: options['auth'] ? <[string, string]>['ionic', String(options['auth'])] : undefined, // TODO: typescript can't infer tuple
     env: options['env'] ? String(options['env']) : undefined,
+    devapp: typeof options['devapp'] === 'undefined' || options['devapp'] ? true : false,
     externalAddressRequired: options['externalAddressRequired'] ? true : false,
     iscordovaserve: typeof options['iscordovaserve'] === 'boolean' ? Boolean(options['iscordovaserve']) : false,
   };
@@ -56,14 +57,34 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     );
   }
 
+  const devAppActive = !serveOptions.iscordovaserve && serveOptions.devapp;
+  const devAppServiceName = `${project.name}@${port}`;
+
+  if (devAppActive) {
+    const { Publisher } = await import('@ionic/discover');
+    const service = new Publisher('devapp', devAppServiceName, serveOptions.port);
+    service.path = '/?devapp=true';
+
+    service.on('error', (err: Error) => {
+      // env.log.error(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
+    });
+
+    try {
+      await service.start();
+    } catch (e) {
+      // env.log.error(`Could not publish DevApp service: ${String(e.stack ? e.stack : e)}`);
+    }
+  }
+
   const localAddress = `http://localhost:${serverDetails.port}`;
   const fmtExternalAddress = (address: string) => `http://${address}:${serverDetails.port}`;
 
-  env.log.info(
+  env.log.ok(
     `Development server running!\n` +
     `Local: ${chalk.bold(localAddress)}\n` +
     (serverDetails.externalAddresses.length > 0 ? `External: ${serverDetails.externalAddresses.map(v => chalk.bold(fmtExternalAddress(v))).join(', ')}\n` : '') +
     (serveOptions.basicAuth ? `Basic Auth: ${chalk.bold(serveOptions.basicAuth[0])} / ${chalk.bold(serveOptions.basicAuth[1])}` : '')
+    // (devAppActive ? `DevApp Channel: ${chalk.bold(devAppServiceName)}` : '')
   );
 
   if (project.type !== 'ionic-angular') { // TODO: app-scripts calls opn internally
