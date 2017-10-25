@@ -494,7 +494,7 @@ export class StartCommand extends Command implements CommandPreRun {
 
       this.env.log.msg('* Finish setting up Ionic Pro Error Monitoring:')
       this.env.log.msg('https://ionicframework.com/docs/pro/monitoring/#getting-started\n');
-      this.env.log.msg(`\n* Finally, push your code to Ionic Pro to perform real-time updates, and more: ${chalk.green('git push ionic master')}`);
+      this.env.log.msg(`* Finally, push your code to Ionic Pro to perform real-time updates, and more: ${chalk.green('git push ionic master')}`);
     }
 
     this.env.log.nl();
