@@ -8,7 +8,7 @@ describe('@ionic/cli-utils', () => {
     describe('getPlatforms', () => {
 
       it('should filter out platforms.json and empty string', async () => {
-        spyOn(fsSpy, 'readDir').and.callFake(async () => ['android', 'ios', 'platforms.json', '']);
+        spyOn(fsSpy, 'readDir').and.callFake(async () => ['.DS_Store', 'android', 'ios', 'platforms.json', '']);
         const platforms = await project.getPlatforms('/path/to/proj');
         expect(platforms).toEqual(['android', 'ios']);
       });

@@ -686,7 +686,7 @@ export interface ResourcesConfig {
   [propName: string]: ResourcesPlatform;
 }
 
-export type KnownPlatform = 'ios' | 'android' | 'wp8';
+export type KnownPlatform = 'ios' | 'android' | 'wp8' | 'windows' | 'browser';
 export type KnownResourceType = 'icon' | 'splash';
 
 export interface StarterTemplate {
