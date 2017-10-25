@@ -7,6 +7,15 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.15.0"></a>
+#### 3.15.0 (2017-10-24)
+
+* Allow all command options to be specified as environment variables. See [the
+  docs](https://ionicframework.com/docs/cli/configuring.html#command-options)
+  for usage.
+* Fixed issue with writing incorrect whitespace to SSH config if the config file
+  was missing eol.
+
 <a name="3.14.0"></a>
 #### 3.14.0 (2017-10-23)
 

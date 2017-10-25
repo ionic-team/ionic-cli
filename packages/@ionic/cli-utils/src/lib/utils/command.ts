@@ -103,7 +103,7 @@ export function metadataToMinimistOptions(metadata: CommandData): minimistType.O
 export interface CmdOptsSchema {
   envvar: string;
   option: CommandOption;
-};
+}
 
 export function metadataToEnvCmdOptsSchema(metadata: CommandData): CmdOptsSchema[] {
   if (!metadata.options) {
