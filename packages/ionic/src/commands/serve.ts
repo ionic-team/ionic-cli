@@ -44,6 +44,13 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       advanced: true,
     },
     {
+      name: 'livereload',
+      description: 'Spin up server to live-reload www files',
+      type: Boolean,
+      default: true,
+      visible: false,
+    },
+    {
       name: 'livereload-port',
       description: 'Use specific port for live-reload',
       default: String(DEFAULT_LIVERELOAD_PORT),
@@ -112,6 +119,11 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
 })
 export class ServeCommand extends Command implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (options['nolivereload']) {
+      this.env.log.warn(`The ${chalk.green('--nolivereload')} option has been deprecated. Please use ${chalk.green('--no-livereload')}.`);
+      options['livereload'] = false;
+    }
+
     if (options['nobrowser']) {
       this.env.log.warn(`The ${chalk.green('--nobrowser')} option has been deprecated. Please use ${chalk.green('--no-open')}.`);
       options['open'] = false;
