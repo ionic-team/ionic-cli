@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.15.2"></a>
+## [3.15.2](https://github.com/ionic-team/ionic-cli/compare/ionic@3.15.1...ionic@3.15.2) (2017-10-26)
+
+
+### Bug Fixes
+
+* **serve:** livereload defaults ([16f7d69](https://github.com/ionic-team/ionic-cli/commit/16f7d69))
+
+
+
+
 <a name="3.15.1"></a>
 ## [3.15.1](https://github.com/ionic-team/ionic-cli/compare/ionic@3.15.0...ionic@3.15.1) (2017-10-25)
 
