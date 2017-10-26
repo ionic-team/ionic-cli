@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-
 import { str2num } from '@ionic/cli-framework/utils/string';
+
 import { CommandLineInputs, CommandLineOptions, IonicEnvironment, ServeDetails } from '../definitions';
 import { FatalException } from '../lib/errors';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, IONIC_LAB_URL } from '../lib/serve';
@@ -8,34 +8,10 @@ import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEF
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
   await env.hooks.fire('watch:before', { env });
 
-  let [ platform ] = inputs;
-
-  const address = options['address'] ? String(options['address']) : BIND_ALL_ADDRESS;
-  const port = str2num(options['port'], DEFAULT_SERVER_PORT);
-  const livereloadPort = str2num(options['livereload-port'], DEFAULT_LIVERELOAD_PORT);
-  const notificationPort = str2num(options['dev-logger-port'], DEFAULT_DEV_LOGGER_PORT);
-
-  const serveOptions = {
-    address,
-    port,
-    livereloadPort,
-    notificationPort,
-    consolelogs: options['consolelogs'] ? true : false,
-    serverlogs: options['serverlogs'] ? true : false,
-    livereload: typeof options['livereload'] === 'boolean' ? Boolean(options['livereload']) : true,
-    proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
-    lab: options['lab'] ? true : false,
-    open: options['open'] ? true : false,
-    browser: options['browser'] ? String(options['browser']) : undefined,
-    browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
-    basicAuth: options['auth'] ? <[string, string]>['ionic', String(options['auth'])] : undefined, // TODO: typescript can't infer tuple
-    env: options['env'] ? String(options['env']) : undefined,
-    devapp: typeof options['devapp'] === 'undefined' || options['devapp'] ? true : false,
-    externalAddressRequired: options['externalAddressRequired'] ? true : false,
-    iscordovaserve: typeof options['iscordovaserve'] === 'boolean' ? Boolean(options['iscordovaserve']) : false,
-  };
+  const [ platform ] = inputs;
 
   let serverDetails: ServeDetails;
+  const serveOptions = cliOptionsToServeOptions(options);
 
   const project = await env.project.load();
 
@@ -58,7 +34,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
   }
 
   const devAppActive = !serveOptions.iscordovaserve && serveOptions.devapp;
-  const devAppServiceName = `${project.name}@${port}`;
+  const devAppServiceName = `${project.name}@${serveOptions.port}`;
 
   if (devAppActive) {
     const { Publisher } = await import('@ionic/discover');
@@ -100,4 +76,31 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
   }
 
   return serverDetails;
+}
+
+export function cliOptionsToServeOptions(options: CommandLineOptions) {
+  const address = options['address'] ? String(options['address']) : BIND_ALL_ADDRESS;
+  const port = str2num(options['port'], DEFAULT_SERVER_PORT);
+  const livereloadPort = str2num(options['livereload-port'], DEFAULT_LIVERELOAD_PORT);
+  const notificationPort = str2num(options['dev-logger-port'], DEFAULT_DEV_LOGGER_PORT);
+
+  return {
+    address,
+    port,
+    livereloadPort,
+    notificationPort,
+    consolelogs: options['consolelogs'] ? true : false,
+    serverlogs: options['serverlogs'] ? true : false,
+    livereload: typeof options['livereload'] === 'boolean' ? Boolean(options['livereload']) : true,
+    proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
+    lab: options['lab'] ? true : false,
+    open: options['open'] ? true : false,
+    browser: options['browser'] ? String(options['browser']) : undefined,
+    browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
+    basicAuth: options['auth'] ? <[string, string]>['ionic', String(options['auth'])] : undefined, // TODO: typescript can't infer tuple
+    env: options['env'] ? String(options['env']) : undefined,
+    devapp: typeof options['devapp'] === 'undefined' || options['devapp'] ? true : false,
+    externalAddressRequired: options['externalAddressRequired'] ? true : false,
+    iscordovaserve: typeof options['iscordovaserve'] === 'boolean' ? Boolean(options['iscordovaserve']) : false,
+  };
 }
