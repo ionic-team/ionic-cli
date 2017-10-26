@@ -7,6 +7,11 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.15.2"></a>
+#### 3.15.2 (2017-10-26)
+
+* Fixed issue with default livereload setting in serve.
+
 <a name="3.15.1"></a>
 #### 3.15.1 (2017-10-25)
 
