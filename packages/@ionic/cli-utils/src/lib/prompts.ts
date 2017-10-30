@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
 import {
+  CheckboxPromptQuestion,
   ConfirmPromptQuestion,
   IConfig,
   ILogger,
@@ -13,9 +14,10 @@ export async function createPromptModule({ interactive, confirm, log, config }: 
   const inquirerPromptModule = inquirer.createPromptModule();
 
   // TODO: typescript doesn't seem to know to check return types of the union implementation, be careful
+  async function createPrompter(question: CheckboxPromptQuestion): Promise<string[]>;
   async function createPrompter(question: NonConfirmPromptQuestion): Promise<string>;
   async function createPrompter(question: ConfirmPromptQuestion): Promise<boolean>;
-  async function createPrompter(question: ConfirmPromptQuestion | NonConfirmPromptQuestion): Promise<boolean | string> {
+  async function createPrompter(question: ConfirmPromptQuestion | NonConfirmPromptQuestion | CheckboxPromptQuestion): Promise<boolean | string | string[]> {
     log.nl();
 
     if (interactive === false) {
@@ -38,7 +40,7 @@ export async function createPromptModule({ interactive, confirm, log, config }: 
 
     const result = (await inquirerPromptModule(question))[question.name];
 
-    if (typeof result !== 'string' && typeof result !== 'boolean') {
+    if (typeof result !== 'string' && typeof result !== 'boolean' && !Array.isArray(result)) {
       return String(result);
     }
 

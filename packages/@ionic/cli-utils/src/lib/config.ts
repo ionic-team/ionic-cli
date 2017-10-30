@@ -163,6 +163,14 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.daemon.updates = true;
     }
 
+    if (!results.devapp) {
+      results.devapp = {};
+    }
+
+    if (!results.devapp.knownInterfaces) {
+      results.devapp.knownInterfaces = [];
+    }
+
     if (!results.addresses) {
       results.addresses = {};
     }
@@ -223,6 +231,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       && typeof j.state.lastCommand === 'string'
       && typeof j.state.doctor === 'object'
       && typeof j.daemon === 'object'
+      && typeof j.devapp === 'object'
       && typeof j.user === 'object'
       && typeof j.tokens === 'object'
       && typeof j.tokens.appUser === 'object'

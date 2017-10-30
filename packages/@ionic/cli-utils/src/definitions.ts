@@ -327,6 +327,12 @@ export interface ConfigFile {
   daemon: {
     updates: boolean;
   };
+  devapp: {
+    knownInterfaces: {
+      mac: string;
+      trusted: boolean;
+    }[];
+  };
   ssl?: {
     cafile?: string | string[];
     certfile?: string | string[];
@@ -521,9 +527,15 @@ export interface NonConfirmPromptQuestion extends PromptQuestion {
   noninteractiveValue?: string;
 }
 
+export interface CheckboxPromptQuestion extends PromptQuestion {
+  type: 'checkbox';
+  noninteractiveValue?: string;
+}
+
 export interface PromptModule {
   (question: ConfirmPromptQuestion): Promise<boolean>;
   (question: NonConfirmPromptQuestion): Promise<string>;
+  (question: CheckboxPromptQuestion): Promise<string[]>;
 }
 
 export interface IonicEnvironment {

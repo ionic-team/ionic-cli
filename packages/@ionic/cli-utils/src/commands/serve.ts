@@ -3,24 +3,26 @@ import { str2num } from '@ionic/cli-framework/utils/string';
 
 import { CommandLineInputs, CommandLineOptions, IonicEnvironment, ServeDetails } from '../definitions';
 import { FatalException } from '../lib/errors';
-import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, IONIC_LAB_URL } from '../lib/serve';
+import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, IONIC_LAB_URL, gatherDevAppDetails, publishDevApp } from '../lib/serve';
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
   await env.hooks.fire('watch:before', { env });
 
   const [ platform ] = inputs;
 
-  let serverDetails: ServeDetails;
+  let details: ServeDetails;
   const serveOptions = cliOptionsToServeOptions(options);
 
   const project = await env.project.load();
 
+  const devAppDetails = await gatherDevAppDetails(env, serveOptions);
+
   if (project.type === 'ionic1') {
     const { serve } = await import('../lib/ionic1/serve');
-    serverDetails = await serve({ env, options: serveOptions });
+    details = await serve({ env, options: serveOptions });
   } else if (project.type === 'ionic-angular') {
     const { serve } = await import('../lib/ionic-angular/serve');
-    serverDetails = await serve({ env, options: {
+    details = await serve({ env, options: {
       platform,
       target: serveOptions.iscordovaserve ? 'cordova' : undefined,
       ...serveOptions,
@@ -33,49 +35,33 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     );
   }
 
-  const devAppActive = !serveOptions.iscordovaserve && serveOptions.devapp;
-  const devAppServiceName = `${project.name}@${serveOptions.port}`;
-
-  if (devAppActive) {
-    const { Publisher } = await import('@ionic/discover');
-    const service = new Publisher('devapp', devAppServiceName, serveOptions.port);
-    service.path = '/?devapp=true';
-
-    service.on('error', (err: Error) => {
-      // env.log.error(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
-    });
-
-    try {
-      await service.start();
-    } catch (e) {
-      // env.log.error(`Could not publish DevApp service: ${String(e.stack ? e.stack : e)}`);
-    }
+  if (devAppDetails) {
+    const devAppChannel = await publishDevApp(env, serveOptions, { port: details.port, ...devAppDetails });
+    devAppDetails.channel = devAppChannel;
   }
 
-  const localAddress = `http://localhost:${serverDetails.port}`;
-  const fmtExternalAddress = (address: string) => `http://${address}:${serverDetails.port}`;
+  const localAddress = `http://localhost:${details.port}`;
+  const fmtExternalAddress = (address: string) => `http://${address}:${details.port}`;
 
   env.log.ok(
     `Development server running!\n` +
     `Local: ${chalk.bold(localAddress)}\n` +
-    (serverDetails.externalNetworkInterfaces.length > 0 ? `External: ${serverDetails.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}\n` : '') +
-    (serveOptions.basicAuth ? `Basic Auth: ${chalk.bold(serveOptions.basicAuth[0])} / ${chalk.bold(serveOptions.basicAuth[1])}` : '')
-    // (devAppActive ? `DevApp Channel: ${chalk.bold(devAppServiceName)}` : '')
+    (details.externalNetworkInterfaces.length > 0 ? `External: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}\n` : '') +
+    (serveOptions.basicAuth ? `Basic Auth: ${chalk.bold(serveOptions.basicAuth[0])} / ${chalk.bold(serveOptions.basicAuth[1])}` : '') +
+    (devAppDetails && devAppDetails.channel ? `DevApp Channel: ${chalk.bold(devAppDetails.channel)}` : '')
   );
 
-  if (project.type !== 'ionic-angular') { // TODO: app-scripts calls opn internally
-    if (serveOptions.open) {
-      const openOptions: string[] = [localAddress]
-        .concat(serveOptions.lab ? [IONIC_LAB_URL] : [])
-        .concat(serveOptions.browserOption ? [serveOptions.browserOption] : [])
-        .concat(platform ? ['?ionicplatform=', platform] : []);
+  if (serveOptions.open) {
+    const openOptions: string[] = [localAddress]
+      .concat(serveOptions.lab ? [IONIC_LAB_URL] : [])
+      .concat(serveOptions.browserOption ? [serveOptions.browserOption] : [])
+      .concat(platform ? ['?ionicplatform=', platform] : []);
 
-      const opn = await import('opn');
-      opn(openOptions.join(''), { app: serveOptions.browser, wait: false });
-    }
+    const opn = await import('opn');
+    opn(openOptions.join(''), { app: serveOptions.browser, wait: false });
   }
 
-  return serverDetails;
+  return details;
 }
 
 export function cliOptionsToServeOptions(options: CommandLineOptions) {

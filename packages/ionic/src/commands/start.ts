@@ -400,7 +400,7 @@ export class StartCommand extends Command implements CommandPreRun {
       this.env.log.msg(`  -  ${emoji('🔑', '')}   Test on iOS and Android without Native SDKs`);
       this.env.log.msg(`  -  ${emoji('🚀', '')}   LiveReload for instant style and JS updates`);
 
-      this.env.log.msg('\n ️-->    Install DevApp: ' + chalk.bold('https://bit.ly/ionic-dev-app') + '    <---\n\n');
+      this.env.log.msg('\n ️-->    Install DevApp: ' + chalk.bold('https://bit.ly/ionic-dev-app') + '    <--\n\n');
 
       const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
