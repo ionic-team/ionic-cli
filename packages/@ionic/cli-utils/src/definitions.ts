@@ -1,3 +1,5 @@
+import * as os from 'os';
+
 import * as crossSpawnType from 'cross-spawn';
 import * as inquirerType from 'inquirer';
 import * as superagentType from 'superagent';
@@ -452,9 +454,9 @@ export interface ServeOptions {
 export interface ServeDetails {
   protocol: string;
   localAddress: string;
-  externalAddress: string; // chosen/preferred external address
-  externalAddresses: string[];
+  externalAddress: string;
   port: number;
+  externalNetworkInterfaces: NetworkInterface[];
   externallyAccessible: boolean;
 }
 
@@ -713,3 +715,5 @@ export interface DevServerMessage {
   type: string;
   data: any[];
 }
+
+export type NetworkInterface = { deviceName: string; } & os.NetworkInterfaceInfo;

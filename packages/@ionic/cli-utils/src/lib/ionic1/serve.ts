@@ -30,7 +30,7 @@ const ANDROID_PLATFORM_PATH = path.join('platforms', 'android', 'assets', 'www')
 export async function serve({ env, options }: { env: IonicEnvironment; options: ServeOptions; }): Promise<ServeDetails> {
   const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort } = await import('../utils/network');
 
-  const [ externalIP, availableIPs ] = await selectExternalIP(env, options);
+  const [ externalIP, availableInterfaces ] = await selectExternalIP(env, options);
   const wwwDir = await env.project.getSourceDir();
 
   try {
@@ -81,7 +81,7 @@ export async function serve({ env, options }: { env: IonicEnvironment; options: 
     protocol: 'http',
     localAddress: 'localhost',
     externalAddress: externalIP,
-    externalAddresses: availableIPs,
+    externalNetworkInterfaces: availableInterfaces,
     port: settings.port,
     externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
   };

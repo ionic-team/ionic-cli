@@ -58,7 +58,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
   env.log.ok(
     `Development server running!\n` +
     `Local: ${chalk.bold(localAddress)}\n` +
-    (serverDetails.externalAddresses.length > 0 ? `External: ${serverDetails.externalAddresses.map(v => chalk.bold(fmtExternalAddress(v))).join(', ')}\n` : '') +
+    (serverDetails.externalNetworkInterfaces.length > 0 ? `External: ${serverDetails.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}\n` : '') +
     (serveOptions.basicAuth ? `Basic Auth: ${chalk.bold(serveOptions.basicAuth[0])} / ${chalk.bold(serveOptions.basicAuth[1])}` : '')
     // (devAppActive ? `DevApp Channel: ${chalk.bold(devAppServiceName)}` : '')
   );

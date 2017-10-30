@@ -1,8 +1,8 @@
 import * as os from 'os';
 
-export const ERROR_NETWORK_ADDRESS_NOT_AVAIL = 'NETWORK_ADDRESS_NOT_AVAIL';
+import { NetworkInterface } from '../../definitions';
 
-export type NetworkInterface = { deviceName: string; } & os.NetworkInterfaceInfo;
+export const ERROR_NETWORK_ADDRESS_NOT_AVAIL = 'NETWORK_ADDRESS_NOT_AVAIL';
 
 export function getSuitableNetworkInterfaces(): NetworkInterface[] {
   const networkInterfaces = os.networkInterfaces();

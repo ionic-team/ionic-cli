@@ -13,7 +13,7 @@ export interface AppScriptsServeOptions extends ServeOptions {
 }
 
 export async function serve({ env, options }: { env: IonicEnvironment, options: AppScriptsServeOptions }): Promise<ServeDetails> {
-  const [ externalIP, availableIPs ] = await selectExternalIP(env, options);
+  const [ externalIP, availableInterfaces ] = await selectExternalIP(env, options);
 
   const appScriptsArgs = await serveOptionsToAppScriptsArgs(options);
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
@@ -38,7 +38,7 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
     protocol: 'http',
     localAddress: 'localhost',
     externalAddress: externalIP,
-    externalAddresses: availableIPs,
+    externalNetworkInterfaces: availableInterfaces,
     port: settings.httpPort,
     externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
   };
