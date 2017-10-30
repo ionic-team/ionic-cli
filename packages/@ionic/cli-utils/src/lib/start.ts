@@ -54,6 +54,9 @@ ${chalk.bold('♬ ♫ ♬ ♫  Your Ionic app is ready to go! ♬ ♫ ♬ ♫')}
 ${chalk.bold('Run your app in the browser (great for initial development):')}
   ${chalk.green('ionic serve')}
 
+${chalk.bold('Install the DevApp to easily test on iOS and Android')}
+  ${chalk.green('https://bit.ly/ionic-dev-app')}
+
 ${chalk.bold('Run on a device or simulator:')}
   ${chalk.green('ionic cordova run ios')}
 
