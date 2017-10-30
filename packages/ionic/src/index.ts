@@ -350,6 +350,12 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     } else if (isSuperAgentError(err)) {
       const { formatSuperAgentError } = await import('@ionic/cli-utils/lib/http');
       ienv.log.msg(formatSuperAgentError(err));
+    } else if (err.code && err.code === 'ENOTFOUND' || err.code === 'ECONNREFUSED') {
+      ienv.log.error(
+        `Network connectivity error occurred, are you offline?\n` +
+        `If you are behind a firewall and need to configure proxy settings, see: ${chalk.bold('https://ionicframework.com/docs/cli/configuring.html#using-a-proxy')}\n\n` +
+        chalk.red(String(err.stack ? err.stack : err))
+      );
     } else if (isExitCodeException(err)) {
       process.exitCode = err.exitCode;
 
