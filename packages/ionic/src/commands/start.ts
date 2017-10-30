@@ -438,7 +438,7 @@ export class StartCommand extends Command implements CommandPreRun {
         this.env.log.msg('\n Supercharge your Ionic development with the ' + chalk.bold('Ionic Pro') + ' SDK\n\n');
         this.env.log.msg(`  -  ${emoji('⚠️', '')}   Track runtime errors in real-time, back to your original TypeScript`);
         this.env.log.msg(`  -  ${emoji('📲', '')}   Push remote updates and skip the app store queue`);
-        this.env.log.msg('\nLearn more about Ionic Pro: https://ionicframework.com/products\n');
+        this.env.log.msg(`\nLearn more about Ionic Pro: ${chalk.bold('https://ionicframework.com/products')}\n`);
 
         const confirm = await this.env.prompt({
           type: 'confirm',
@@ -454,7 +454,8 @@ export class StartCommand extends Command implements CommandPreRun {
       }
 
       if (linkConfirmed) {
-        await this.env.shell.run('npm', ['install', '--save', '@ionic/pro'], { ...shellOptions});
+        const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { pkg: '@ionic/pro' });
+        await this.env.shell.run(installer, installerArgs, shellOptions);
 
         const cmdArgs = ['link'];
 
@@ -481,10 +482,10 @@ export class StartCommand extends Command implements CommandPreRun {
     this.env.log.nl();
     this.env.log.msg(`${chalk.bold('Next Steps')}:\n`);
     this.env.log.msg(`* Go to your newly created project: ${chalk.green(`cd ${prettyPath(projectRoot)}`)}`);
-    this.env.log.msg(`* Get Ionic DevApp for easy device testing: https://bit.ly/ionic-dev-app`);
+    this.env.log.msg(`* Get Ionic DevApp for easy device testing: ${chalk.bold('https://bit.ly/ionic-dev-app')}`);
 
     if (config.backend === BACKEND_PRO && linkConfirmed) {
-      this.env.log.msg('* Finish setting up Ionic Pro Error Monitoring: https://ionicframework.com/docs/pro/monitoring/#getting-started\n');
+      this.env.log.msg(`* Finish setting up Ionic Pro Error Monitoring: ${chalk.bold('https://ionicframework.com/docs/pro/monitoring/#getting-started')}\n`);
       this.env.log.msg(`* Finally, push your code to Ionic Pro to perform real-time updates, and more: ${chalk.green('git push ionic master')}`);
     }
 
