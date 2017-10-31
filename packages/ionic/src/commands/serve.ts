@@ -11,7 +11,7 @@ import { BIND_ALL_ADDRESS, BROWSERS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD
   longDescription: `
 Easily spin up a development server which launches in your browser. It watches for changes in your source files and automatically reloads with the updated build.
 
-By default, ${chalk.green('ionic serve')} boots up a development server on all network interfaces and prints the external address(es) on which your app is being served. To disable this, use ${chalk.green('--address=localhost')}.
+By default, ${chalk.green('ionic serve')} boots up a development server on all network interfaces and prints the external address(es) on which your app is being served. It also broadcasts your app to the Ionic DevApp on your network. To disable the DevApp and bind to ${chalk.green('localhost')}, use ${chalk.green('--local')}.
 
 Try the ${chalk.green('--lab')} option to see multiple platforms at once.
   `,
@@ -64,11 +64,23 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       advanced: true,
     },
     {
+      name: 'devapp',
+      description: 'Do not publish DevApp service',
+      type: Boolean,
+      default: true,
+      advanced: true,
+    },
+    {
       name: 'open',
       description: 'Do not open a browser window',
       type: Boolean,
       default: true,
       // TODO: Adding 'b' to aliases here has some weird behavior with minimist.
+    },
+    {
+      name: 'local',
+      description: 'Disable external network usage',
+      type: Boolean,
     },
     {
       name: 'proxy',
@@ -105,14 +117,6 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       name: 'auth',
       description: 'HTTP Basic Auth password to secure the server on your local network',
       type: String,
-      visible: false,
-    },
-    {
-      name: 'devapp',
-      description: 'Do not publish devapp service',
-      type: Boolean,
-      default: true,
-      advanced: true,
       visible: false,
     },
   ],

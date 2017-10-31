@@ -2,7 +2,6 @@ import chalk from 'chalk';
 
 import { IonicEnvironment, NetworkInterface, ServeOptions } from '../definitions';
 import { FatalException } from './errors';
-import { emoji } from './utils/emoji';
 
 export const DEFAULT_DEV_LOGGER_PORT = 53703;
 export const DEFAULT_LIVERELOAD_PORT = 35729;
@@ -75,48 +74,53 @@ export async function gatherDevAppDetails(env: IonicEnvironment, options: ServeO
     const { getSuitableNetworkInterfaces } = await import('./utils/network');
     const { computeBroadcastAddress } = await import('./devapp');
 
-    const config = await env.config.load();
-
     const availableInterfaces = getSuitableNetworkInterfaces();
 
-    const knownInterfaces = new Set(config.devapp.knownInterfaces.map(i => i.mac));
-    const diff = [...new Set(availableInterfaces.filter(i => !knownInterfaces.has(i.mac)))];
+    // TODO: Unfortunately, we can't do this yet--there is no
+    // accurate/reliable/realistic way to identify a WiFi network uniquely in
+    // NodeJS. The best thing we can do is tell the dev what is happening.
 
-    if (diff.length > 0) {
-      env.log.warn(
-        `New network interface(s) detected!\n` +
-        `You will be prompted to select which network interfaces are trusted for your app to show up in Ionic DevApp. If you're on public WiFi, you may not want to broadcast your app. To trust all networks, just press ${chalk.cyan.bold('<enter>')}.\n\n` +
-        `Need to install the DevApp? ${emoji('👉 ', '-->')} ${chalk.bold('https://bit.ly/ionic-dev-app')}`
-      );
+    // const config = await env.config.load();
 
-      const trustedInterfaceMacs = await env.prompt({
-        type: 'checkbox',
-        name: 'checkbox',
-        message: 'Please select trusted interfaces:',
-        choices: diff.map(i => ({
-          name: `${chalk.bold(i.address)} ${chalk.dim(`(mac: ${i.mac}, label: ${i.deviceName})`)}`,
-          value: i.mac,
-          checked: true,
-        })),
-      });
+    // const knownInterfaces = new Set(config.devapp.knownInterfaces.map(i => i.mac));
+    // const diff = [...new Set(availableInterfaces.filter(i => !knownInterfaces.has(i.mac)))];
 
-      const untrustedInterfaceMacs = diff
-        .filter(i => !trustedInterfaceMacs.includes(i.mac))
-        .map(i => i.mac);
+    // if (diff.length > 0) {
+    //   env.log.warn(
+    //     `New network interface(s) detected!\n` +
+    //     `You will be prompted to select which network interfaces are trusted for your app to show up in Ionic DevApp. If you're on public WiFi, you may not want to broadcast your app. To trust all networks, just press ${chalk.cyan.bold('<enter>')}.\n\n` +
+    //     `Need to install the DevApp? ${emoji('👉 ', '-->')} ${chalk.bold('https://bit.ly/ionic-dev-app')}`
+    //   );
 
-      const trustedInterfaces = trustedInterfaceMacs.map(mac => ({ trusted: true, mac }));
-      const untrustedInterfaces = untrustedInterfaceMacs.map(mac => ({ trusted: false, mac }));
+    //   const trustedInterfaceMacs = await env.prompt({
+    //     type: 'checkbox',
+    //     name: 'checkbox',
+    //     message: 'Please select trusted interfaces:',
+    //     choices: diff.map(i => ({
+    //       name: `${chalk.bold(i.address)} ${chalk.dim(`(mac: ${i.mac}, label: ${i.deviceName})`)}`,
+    //       value: i.mac,
+    //       checked: true,
+    //     })),
+    //   });
 
-      config.devapp.knownInterfaces = config.devapp.knownInterfaces.concat(trustedInterfaces);
-      config.devapp.knownInterfaces = config.devapp.knownInterfaces.concat(untrustedInterfaces);
-    }
+    //   const untrustedInterfaceMacs = diff
+    //     .filter(i => !trustedInterfaceMacs.includes(i.mac))
+    //     .map(i => i.mac);
 
-    const trustedInterfaceMacs = config.devapp.knownInterfaces
-      .filter(i => i.trusted)
-      .map(i => i.mac);
+    //   const trustedInterfaces = trustedInterfaceMacs.map(mac => ({ trusted: true, mac }));
+    //   const untrustedInterfaces = untrustedInterfaceMacs.map(mac => ({ trusted: false, mac }));
+
+    //   config.devapp.knownInterfaces = config.devapp.knownInterfaces.concat(trustedInterfaces);
+    //   config.devapp.knownInterfaces = config.devapp.knownInterfaces.concat(untrustedInterfaces);
+    // }
+
+    // const trustedInterfaceMacs = config.devapp.knownInterfaces
+    //   .filter(i => i.trusted)
+    //   .map(i => i.mac);
+
+    // const availableTrustedInterfaces = availableInterfaces.filter(i => trustedInterfaceMacs.includes(i.mac));
 
     const interfaces = availableInterfaces
-      .filter(i => trustedInterfaceMacs.includes(i.mac))
       .map(i => ({
         ...i,
         broadcast: computeBroadcastAddress(i.address, i.netmask),

@@ -1,3 +1,5 @@
+import * as os from 'os';
+
 import chalk from 'chalk';
 import { str2num } from '@ionic/cli-framework/utils/string';
 
@@ -36,8 +38,8 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
   }
 
   if (devAppDetails) {
-    const devAppChannel = await publishDevApp(env, serveOptions, { port: details.port, ...devAppDetails });
-    devAppDetails.channel = devAppChannel;
+    const devAppName = await publishDevApp(env, serveOptions, { port: details.port, ...devAppDetails });
+    devAppDetails.channel = devAppName;
   }
 
   const localAddress = `http://localhost:${details.port}`;
@@ -48,7 +50,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     `Local: ${chalk.bold(localAddress)}\n` +
     (details.externalNetworkInterfaces.length > 0 ? `External: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}\n` : '') +
     (serveOptions.basicAuth ? `Basic Auth: ${chalk.bold(serveOptions.basicAuth[0])} / ${chalk.bold(serveOptions.basicAuth[1])}` : '') +
-    (devAppDetails && devAppDetails.channel ? `DevApp Channel: ${chalk.bold(devAppDetails.channel)}` : '')
+    (devAppDetails && devAppDetails.channel ? `DevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '')
   );
 
   if (serveOptions.open) {
@@ -65,6 +67,11 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
 }
 
 export function cliOptionsToServeOptions(options: CommandLineOptions) {
+  if (options['local']) {
+    options['address'] = 'localhost';
+    options['devapp'] = false;
+  }
+
   const address = options['address'] ? String(options['address']) : BIND_ALL_ADDRESS;
   const port = str2num(options['port'], DEFAULT_SERVER_PORT);
   const livereloadPort = str2num(options['livereload-port'], DEFAULT_LIVERELOAD_PORT);

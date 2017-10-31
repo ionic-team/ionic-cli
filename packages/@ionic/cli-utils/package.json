@@ -37,6 +37,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@ionic/cli-framework": "0.0.2",
     "@ionic/discover": "0.4.0",
     "archiver": "^2.1.0",
     "basic-auth": "^1.1.0",
@@ -71,7 +72,6 @@
     "@angular/compiler": "^4.4.4",
     "@angular/compiler-cli": "^4.4.4",
     "@angular/core": "^4.4.4",
-    "@ionic/cli-framework": "0.0.2",
     "@ionic/cli-scripts": "0.3.6",
     "@types/archiver": "^2.0.1",
     "@types/basic-auth": "^1.1.2",

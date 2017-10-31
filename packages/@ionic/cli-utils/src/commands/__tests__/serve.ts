@@ -42,6 +42,11 @@ describe('@ionic/cli-utils', () => {
         expect(result).toEqual({ ...defaults, address: 'localhost', port: 1111, livereloadPort: 2222, notificationPort: 3333 });
       });
 
+      it('should respect --local flag', () => {
+        const result = cliOptionsToServeOptions({ local: true });
+        expect(result).toEqual({ ...defaults, address: 'localhost', devapp: false });
+      });
+
     });
 
   });
