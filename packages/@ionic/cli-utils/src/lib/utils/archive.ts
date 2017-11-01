@@ -15,9 +15,10 @@ export async function tarXvfFromUrl(env: IonicEnvironment, url: string, destinat
     req
       .on('response', (res) => {
         if (res.statusCode !== 200) {
-          reject(new Error(`Encountered bad status code (${res.statusCode}) for ${url}\n` +
-                           `This could mean the server is experiencing difficulties right now--please try again later.\n\n` +
-                           `If you're behind a firewall, you can proxy requests by using the HTTP_PROXY or IONIC_HTTP_PROXY environment variables.`));
+          reject(new Error(
+            `Encountered bad status code (${res.statusCode}) for ${url}\n` +
+            `This could mean the server is experiencing difficulties right now--please try again later.`
+          ));
         }
 
         if (progress) {

@@ -313,16 +313,12 @@ export class StartCommand extends Command implements CommandPreRun {
       });
 
       if (confirm) {
-        try {
-          this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
-          const rimraf = await import('rimraf');
-          const { promisify } = await import('@ionic/cli-framework/utils/promise');
-          const rimrafp = promisify<void, string>(rimraf);
-          await rimrafp(projectRoot);
-          await fsMkdir(projectRoot, undefined);
-        } catch (e) {
-          throw e;
-        }
+        this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
+        const rimraf = await import('rimraf');
+        const { promisify } = await import('@ionic/cli-framework/utils/promise');
+        const rimrafp = promisify<void, string>(rimraf);
+        await rimrafp(projectRoot);
+        await fsMkdir(projectRoot, undefined);
       } else {
         this.env.log.info(`Not erasing existing project in ${chalk.green(prettyPath(projectRoot))}.`);
         return;
