@@ -83,7 +83,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 * Added ability to generate/support non-RSA SSH keys for Ionic Pro.
 
 <a name="3.11.0"></a>
-#### 3.11.0 (2017-09-21)
+### 3.11.0 (2017-09-21)
 
 * Added support for generating iPhone X splash screen images:
   `Default@2x~universal~anyany.png`. Just run `ionic cordova resources`.
