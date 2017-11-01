@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.16.0"></a>
+# [1.16.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.15.2...@ionic/cli-utils@1.16.0) (2017-11-01)
+
+
+### Features
+
+* **devapp:** broadcast app to trusted interfaces ([fb4e38e](https://github.com/ionic-team/ionic-cli/commit/fb4e38e))
+* **serve:** add --local flag ([6b68088](https://github.com/ionic-team/ionic-cli/commit/6b68088))
+
+
+
+
 <a name="1.15.2"></a>
 ## [1.15.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.15.1...@ionic/cli-utils@1.15.2) (2017-10-26)
 
