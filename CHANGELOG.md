@@ -7,6 +7,14 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.16.0"></a>
+### 3.16.0 (2017-11-01)
+
+* Support for the :sparkles: [Ionic
+  DevApp](https://blog.ionic.io/announcing-ionic-devapp/) :sparkles:
+* Added `--local` flag to `ionic serve`, which is an easy way to disable
+  external network usage when serving your app.
+
 <a name="3.15.2"></a>
 #### 3.15.2 (2017-10-26)
 
@@ -21,7 +29,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 * Fixed incorrect count with `ionic doctor check`.
 
 <a name="3.15.0"></a>
-#### 3.15.0 (2017-10-24)
+### 3.15.0 (2017-10-24)
 
 * Allow all command options to be specified as environment variables. See [the
   docs](https://ionicframework.com/docs/cli/configuring.html#command-options)
@@ -30,7 +38,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   was missing eol.
 
 <a name="3.14.0"></a>
-#### 3.14.0 (2017-10-23)
+### 3.14.0 (2017-10-23)
 
 * :tada: New `ionic doctor` commands. Run `ionic doctor check` in your project
   to detect the "health" of your Ionic project.
@@ -53,7 +61,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   platforms after 3.13.0 release.
 
 <a name="3.13.0"></a>
-#### 3.13.0 (2017-10-10)
+### 3.13.0 (2017-10-10)
 
 * Added automatic backslash replacement on Windows for paths in `config.xml`.
   Forward slashes are cross-platform, backslashes only work on Windows
@@ -68,7 +76,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 * Fixed issue with dev logger not finding next available port for Ionic 1.
 
 <a name="3.12.0"></a>
-#### 3.12.0 (2017-09-21)
+### 3.12.0 (2017-09-21)
 
 * Added support for generating iPhone Marketing Icons: `icon-1024.png`. Just
   run `ionic cordova resources`.
