@@ -139,7 +139,7 @@ export async function publishDevApp(env: IonicEnvironment, options: ServeOptions
     publisher.interfaces = details.interfaces;
 
     publisher.on('error', (err: Error) => {
-      env.log.error(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
+      env.log.debug(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
     });
 
     try {
