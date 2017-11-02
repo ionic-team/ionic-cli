@@ -102,10 +102,12 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     if (options['skip-deps']) {
+      this.env.log.warn(`The ${chalk.green('--skip-deps')} option has been deprecated. Please use ${chalk.green('--no-deps')}.`);
       options['deps'] = false;
     }
 
     if (options['skip-link']) {
+      this.env.log.warn(`The ${chalk.green('--skip-link')} option has been deprecated. Please use ${chalk.green('--no-link')}.`);
       options['link'] = false;
     }
 
