@@ -112,6 +112,7 @@ export interface ProjectFile {
   integrations: {
     cordova?: ProjectIntegration;
     gulp?: ProjectIntegrationGulp;
+    [key: string]: ProjectIntegration | undefined;
   };
   documentRoot?: string; // www folder location (TODO: use this everywhere)
   watchPatterns?: string[];
@@ -715,6 +716,11 @@ export interface StarterTemplate {
   description: string;
   archive: string;
   strip?: boolean;
+}
+
+export interface IntegrationTemplate {
+  name: string;
+  archive?: string;
 }
 
 export type LiveReloadFunction = (changedFiles: string[]) => void;

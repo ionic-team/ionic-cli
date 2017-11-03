@@ -57,7 +57,6 @@ export async function checkCordova(env: IonicEnvironment) {
   const project = await env.project.load();
 
   if (!project.integrations.cordova) {
-    env.log.info('Enabling Cordova integration.');
-    await env.runCommand(['config', 'set', 'integrations.cordova', '{}', '--json', '--force']);
+    await env.runCommand(['integrations', 'enable', 'cordova']);
   }
 }

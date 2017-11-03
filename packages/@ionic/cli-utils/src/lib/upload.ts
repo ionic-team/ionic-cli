@@ -23,7 +23,7 @@ export async function upload(env: IonicEnvironment, { note, channelTag, metadata
   }
 
   const wwwPath = path.join(env.project.directory, 'www'); // TODO don't hardcode
-  const zip = createArchive('zip');
+  const zip = await createArchive('zip');
   zip.directory(wwwPath, '/');
   zip.finalize();
 

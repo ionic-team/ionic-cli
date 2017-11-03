@@ -158,7 +158,7 @@ export async function copyDirectory(source: string, destination: string, options
   const ncp = await import('ncp');
 
   return new Promise<void>((resolve, reject) => {
-    ncp.ncp(source, destination, options, (err: Error) => {
+    ncp.ncp(source, destination, options, err => {
       if (err) {
         reject(err);
       }
@@ -166,6 +166,12 @@ export async function copyDirectory(source: string, destination: string, options
       resolve();
     });
   });
+}
+
+export async function removeDirectory(dir: string): Promise<void> {
+  const rimraf = await import('rimraf');
+  const rimrafp = promisify<void, string>(rimraf);
+  await rimrafp(dir);
 }
 
 export function copyFile(fileName: string, target: string, mode: number = 0o777) {

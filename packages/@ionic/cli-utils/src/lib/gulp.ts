@@ -72,8 +72,7 @@ export async function checkGulp(env: IonicEnvironment) {
   const project = await env.project.load();
 
   if (!project.integrations.gulp) {
-    env.log.info('Enabling Gulp integration.');
-    await env.runCommand(['config', 'set', 'integrations.gulp', '{}', '--json', '--force']);
+    await env.runCommand(['integrations', 'enable', 'gulp']);
   }
 }
 

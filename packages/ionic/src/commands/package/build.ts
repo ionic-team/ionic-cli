@@ -153,7 +153,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     const uploadTask = this.env.tasks.next('Uploading project');
     const proj = await pkg.requestProjectUpload();
 
-    const zip = createArchive('zip');
+    const zip = await createArchive('zip');
     zip.file('package.json', {});
     zip.file('config.xml', {});
     zip.directory('resources', <any>{}); // TODO: false doesn't work

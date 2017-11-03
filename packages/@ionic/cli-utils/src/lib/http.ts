@@ -88,6 +88,43 @@ export async function createRequest(config: IConfig, method: string, url: string
   return { req };
 }
 
+export async function download(config: IConfig, url: string, ws: NodeJS.WritableStream, opts?: { progress?: (loaded: number, total: number) => void; }) {
+  const { req } = await createRequest(config, 'get', url);
+
+  const progressFn = opts ? opts.progress : undefined;
+
+  return new Promise<void>((resolve, reject) => {
+    req
+      .on('response', res => {
+        if (res.statusCode !== 200) {
+          reject(new Error(
+            `Encountered bad status code (${res.statusCode}) for ${url}\n` +
+            `This could mean the server is experiencing difficulties right now--please try again later.`
+          ));
+        }
+
+        if (progressFn) {
+          let loaded = 0;
+          const total = Number(res.headers['content-length']);
+          res.on('data', chunk => {
+            loaded += chunk.length;
+            progressFn(loaded, total);
+          });
+        }
+      })
+      .on('error', err => {
+        if (err.code === 'ECONNABORTED') {
+          reject(new Error(`Timeout of ${err.timeout}ms reached for ${url}`));
+        } else {
+          reject(err);
+        }
+      })
+      .on('end', resolve);
+
+    req.pipe(ws);
+  });
+}
+
 export class Client implements IClient {
   constructor(public config: IConfig) {}
 
