@@ -8,7 +8,14 @@ import * as framework from '@ionic/cli-framework';
 
 import { EventEmitter } from 'events';
 
-export { CommandInput, CommandLineInput, CommandLineInputs, CommandLineOptions, CommandOptionType } from '@ionic/cli-framework';
+export {
+  CommandInput,
+  CommandLineInput,
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandOptionType,
+  PackageJson,
+} from '@ionic/cli-framework';
 
 export interface SuperAgentError extends Error {
   response: superagentType.Response;
@@ -60,15 +67,13 @@ export interface ITaskChain {
   cleanup(): this;
 }
 
-export interface PackageJson {
+export interface StarterManifest {
   name: string;
-  version?: string;
-  scripts?: { [key: string]: string };
-  dependencies?: { [key: string]: string };
-  devDependencies?: { [key: string]: string };
+  baseref: string;
+  welcome?: string;
 }
 
-export interface CordovaPackageJson extends PackageJson {
+export interface CordovaPackageJson extends framework.PackageJson {
   cordova: {
     platforms: string[];
     plugins: {
@@ -216,7 +221,7 @@ export interface IProject extends IBaseConfig<ProjectFile> {
   formatType(input: ProjectType): string;
   getSourceDir(): Promise<string>;
   loadAppId(): Promise<string>;
-  loadPackageJson(): Promise<PackageJson>;
+  loadPackageJson(): Promise<framework.PackageJson>;
   loadBowerJson(): Promise<BowerJson>;
 }
 

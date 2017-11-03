@@ -2,7 +2,8 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
-import { IonicEnvironment, StarterTemplate } from '../definitions';
+import { StarterManifest, StarterTemplate } from '../definitions';
+import { isStarterManifest } from '../guards';
 
 import { ERROR_FILE_INVALID_JSON, ERROR_FILE_NOT_FOUND, fsReadDir, fsReadJsonFile, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 
@@ -65,10 +66,31 @@ ${chalk.bold('Test and share your app on a device with the Ionic View app:')}
   `;
 }
 
-export async function updatePackageJsonForCli(env: IonicEnvironment, appName: string, pathToProject: string): Promise<void> {
-  const filePath = path.resolve(pathToProject, 'package.json');
+export async function readStarterManifest(p: string): Promise<StarterManifest> {
   try {
-    let jsonStructure = await fsReadJsonFile(filePath);
+    const manifest = await fsReadJsonFile(p);
+
+    if (!isStarterManifest(manifest)) {
+      throw new Error(`${p} is not a valid starter manifest.`);
+    }
+
+    return manifest;
+  } catch (e) {
+    if (e === ERROR_FILE_NOT_FOUND) {
+      throw new Error(`${p} not found`);
+    } else if (e === ERROR_FILE_INVALID_JSON) {
+      throw new Error(`${p} is not valid JSON.`);
+    }
+
+    throw e;
+  }
+}
+
+export async function updatePackageJsonForCli(projectRoot: string, appName: string): Promise<void> {
+  const filePath = path.resolve(projectRoot, 'package.json');
+
+  try {
+    const jsonStructure = await fsReadJsonFile(filePath);
 
     jsonStructure['name'] = appName;
     jsonStructure['version'] = '0.0.1';

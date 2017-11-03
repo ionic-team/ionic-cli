@@ -6,7 +6,7 @@ import { validators } from '@ionic/cli-framework/lib';
 import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun, StarterTemplate } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { fsMkdir, pathExists } from '@ionic/cli-framework/utils/fs';
+import { fsMkdir, fsUnlink, pathExists } from '@ionic/cli-framework/utils/fs';
 import { PROJECT_FILE, Project } from '@ionic/cli-utils/lib/project';
 import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
 
@@ -204,9 +204,10 @@ export class StartCommand extends Command implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const {
       STARTER_TEMPLATES,
+      getHelloText,
       isProjectNameValid,
       isSafeToCreateProjectIn,
-      getHelloText,
+      readStarterManifest,
       updatePackageJsonForCli,
     } = await import('@ionic/cli-utils/lib/start');
 
@@ -312,7 +313,7 @@ export class StartCommand extends Command implements CommandPreRun {
 
     this.env.tasks.next(`Updating ${chalk.bold('package.json')} with app details`);
 
-    await updatePackageJsonForCli(this.env, appName, projectRoot);
+    await updatePackageJsonForCli(projectRoot, appName);
 
     this.env.tasks.end();
 
@@ -379,6 +380,10 @@ export class StartCommand extends Command implements CommandPreRun {
       }
     }
 
+    const manifestPath = path.resolve(projectRoot, 'ionic.starter.json');
+    const manifest = await readStarterManifest(manifestPath);
+    await fsUnlink(manifestPath);
+
     if (gitIntegration) {
       await this.env.shell.run('git', ['add', '-A'], { showSpinner: false, ...shellOptions });
       await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], { showSpinner: false, ...shellOptions });
@@ -392,6 +397,12 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     this.env.log.nl();
+
+    if (manifest.welcome) {
+      this.env.log.msg(`${chalk.bold('Starter Welcome')}:\n`);
+      this.env.log.info(manifest.welcome);
+    }
+
     this.env.log.msg(`${chalk.bold('Next Steps')}:\n`);
     this.env.log.msg(`* Go to your newly created project: ${chalk.green(`cd ${prettyPath(projectRoot)}`)}`);
     this.env.log.msg(`* Get Ionic DevApp for easy device testing: ${chalk.bold('https://bit.ly/ionic-dev-app')}`);

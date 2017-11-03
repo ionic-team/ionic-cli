@@ -21,6 +21,7 @@ import {
   Response,
   SSHKey,
   SecurityProfile,
+  StarterManifest,
   SuperAgentError,
 } from './definitions';
 
@@ -37,6 +38,13 @@ export function isCommandPreRun(cmd: any): cmd is CommandPreRun {
 export function isLogLevel(l: string): l is LogLevel {
   const loglevel = <LogLevel>l;
   return LOG_LEVELS.includes(loglevel);
+}
+
+export function isStarterManifest(o: Object): o is StarterManifest {
+  const obj = <StarterManifest>o;
+  return obj &&
+    typeof obj.name === 'string' &&
+    typeof obj.baseref === 'string';
 }
 
 export function isCordovaPackageJson(o: Object): o is CordovaPackageJson {
