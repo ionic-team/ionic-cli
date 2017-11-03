@@ -708,16 +708,8 @@ export interface StarterTemplate {
   name: string;
   type: ProjectType;
   description: string;
-  url: string;
   archive: string;
-}
-
-export interface StarterTemplateType {
-  id: string;
-  url: string;
-  baseArchive: string;
-  globalDependencies: string[];
-  localDependencies: string[];
+  strip?: boolean;
 }
 
 export type LiveReloadFunction = (changedFiles: string[]) => void;

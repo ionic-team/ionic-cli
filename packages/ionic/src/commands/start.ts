@@ -204,25 +204,19 @@ export class StartCommand extends Command implements CommandPreRun {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const {
       STARTER_TEMPLATES,
-      STARTER_TYPES,
-      createProjectConfig,
       isProjectNameValid,
       isSafeToCreateProjectIn,
       getHelloText,
-      patchPackageJsonForCli,
       updatePackageJsonForCli,
     } = await import('@ionic/cli-utils/lib/start');
 
     const { isValidPackageName } = await import('@ionic/cli-framework/utils/npm');
-    const { pkgInstallPluginArgs } = await import('@ionic/cli-utils/lib/plugins');
     const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
     const { tarXvfFromUrl } = await import('@ionic/cli-utils/lib/utils/archive');
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
 
     let [ projectName, starterTemplateName ] = inputs;
     let appName = <string>options['app-name'] || projectName;
-    let starterBranchName = <string>options['starterBranchName'] || 'master';
-    let wrapperBranchName = <string>options['wrapperBranchName'] || 'master';
     let gitIntegration = false;
     let linkConfirmed = typeof options['pro-id'] === 'string';
     let proAppId = <string>options['pro-id'] || '';
@@ -232,51 +226,6 @@ export class StartCommand extends Command implements CommandPreRun {
     if (!isProjectNameValid(projectName)) {
       throw new FatalException(`Please name your Ionic project something meaningful other than ${chalk.green(projectName)}`);
     }
-
-    let starterType = STARTER_TYPES.find(type => type['id'] === options['type']);
-
-    if (!starterType) {
-      throw new FatalException(`Unable to find starter type for ${chalk.green(String(options['type']))}.`);
-    }
-
-    // if (!options['cordova']) {
-    //   const confirm = await this.env.prompt({
-    //     type: 'confirm',
-    //     name: 'confirm',
-    //     message: 'Would you like to integrate your new app with Cordova to target native iOS and Android?',
-    //     default: false,
-    //   });
-
-    //   if (confirm) {
-    //     options['cordova'] = true;
-    //   }
-    // }
-
-    // if (options['deps']) {
-    //   // Check global dependencies
-    //   if (options['cordova']) {
-    //     starterType.globalDependencies.push('cordova');
-    //   }
-
-    //   this.env.log.debug(`globalDeps=${starterType.globalDependencies}`);
-
-    //   for (let dep of starterType.globalDependencies) {
-    //     const cmdInstalled = await this.env.shell.cmdinfo(dep);
-
-    //     if (!cmdInstalled) {
-    //       if (dep === 'cordova') {
-    //         const cdvInstallArgs = await pkgManagerArgs(this.env, { pkg: 'cordova', global: true });
-    //         throw new FatalException(
-    //           `Cordova CLI not found on your PATH. Please install Cordova globally (you may need ${chalk.green('sudo')}):\n\n` +
-    //           `${chalk.green(cdvInstallArgs.join(' '))}\n\n` +
-    //           `If that doesn't work, see the installation docs: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/cli/#installing-the-cordova-cli')}`
-    //         );
-    //       } else {
-    //         throw new FatalException(`Sorry, ${chalk.green(dep)} is a global dependency, but it was not found on your PATH.`);
-    //       }
-    //     }
-    //   }
-    // }
 
     if (config.backend === BACKEND_PRO || options['git']) {
       const cmdInstalled = await this.env.shell.cmdinfo('git', ['--version']);
@@ -296,7 +245,11 @@ export class StartCommand extends Command implements CommandPreRun {
 
     const projectRoot = path.resolve(projectName);
     projectName = path.basename(projectRoot);
-    let safeProjectName = projectName;
+
+    if (!isValidPackageName(projectName)) {
+      appName = 'MyApp';
+      this.env.log.warn(`${chalk.green(projectName)} was not a valid name for ${chalk.bold('package.json')}. Using ${chalk.bold(appName)} for now.`);
+    }
 
     const shellOptions = { cwd: projectRoot };
     const projectExists = await pathExists(projectName);
@@ -338,25 +291,12 @@ export class StartCommand extends Command implements CommandPreRun {
       throw new FatalException(`Unable to find starter template for ${starterTemplateName}`);
     }
 
-    const wrapperBranchPath = starterType.baseArchive.replace('<BRANCH_NAME>', wrapperBranchName);
-    const starterBranchPath = starterTemplate.archive.replace('<BRANCH_NAME>', starterBranchName);
-
-    const extractDir = options['type'] === 'ionic1' ? path.join(projectRoot, 'www') : projectRoot;
-
     this.env.tasks.end();
-    this.env.log.info(`Fetching app base (${chalk.dim(wrapperBranchPath)})`);
-    const d1Task = this.env.tasks.next('Downloading');
-
-    await tarXvfFromUrl(this.env, wrapperBranchPath, projectRoot, { progress: (loaded, total) => {
-      d1Task.progress(loaded, total);
-    }});
-
-    this.env.tasks.end();
-    this.env.log.info(`Fetching starter template ${chalk.green(starterTemplateName.toString())} (${chalk.dim(starterBranchPath)})`);
-    const d2Task = this.env.tasks.next('Downloading');
-    await tarXvfFromUrl(this.env, starterBranchPath, extractDir, { progress: (loaded, total) => {
-      d2Task.progress(loaded, total);
-    }});
+    const task = this.env.tasks.next(`Fetching starter template ${chalk.green(starterTemplateName.toString())}`);
+    await tarXvfFromUrl(this.env, starterTemplate.archive, projectRoot, {
+      strip: starterTemplate.strip ? 1 : 0,
+      progress: (loaded, total) => task.progress(loaded, total),
+    });
 
     // start is weird, once the project directory is created, it becomes a
     // "project" command and so we replace the `Project` instance that was
@@ -372,22 +312,11 @@ export class StartCommand extends Command implements CommandPreRun {
 
     this.env.tasks.next(`Updating ${chalk.bold('package.json')} with app details`);
 
-    if (!isValidPackageName(projectName)) {
-      safeProjectName = 'MyApp';
-      this.env.log.warn(`${chalk.green(projectName)} was not a valid name for ${chalk.bold('package.json')}. Using ${chalk.bold(safeProjectName)} for now.`);
-    }
-
-    await patchPackageJsonForCli(this.env, safeProjectName, starterType, projectRoot);
-    await updatePackageJsonForCli(this.env, safeProjectName, starterType, projectRoot);
-
-    this.env.tasks.next(`Creating configuration file ${chalk.bold('ionic.config.json')}`);
-    await createProjectConfig(appName, starterType, projectRoot);
+    await updatePackageJsonForCli(this.env, appName, projectRoot);
 
     this.env.tasks.end();
 
     if (options['deps']) {
-      // Install local dependencies
-
       this.env.log.info('Installing dependencies may take several minutes.');
 
       this.env.log.msg('\n');
@@ -402,21 +331,6 @@ export class StartCommand extends Command implements CommandPreRun {
 
       const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
-
-      this.env.log.debug(`localDeps=${starterType.localDependencies}`);
-
-      if (starterType.localDependencies.length > 0) {
-        for (let dep of starterType.localDependencies) {
-          const [ installer, ...installerArgs ] = await pkgInstallPluginArgs(this.env, dep);
-          await this.env.shell.run(installer, installerArgs, shellOptions);
-        }
-
-        const [ , ...dedupeArgs ] = await pkgManagerArgs(this.env, { command: 'dedupe' });
-
-        if (dedupeArgs.length > 0) {
-          await this.env.shell.run(installer, dedupeArgs, {});
-        }
-      }
     }
 
     if (config.backend === BACKEND_PRO && !gitIntegration) {

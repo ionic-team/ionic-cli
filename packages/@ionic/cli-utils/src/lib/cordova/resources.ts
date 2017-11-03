@@ -246,7 +246,9 @@ async function ensureDefaultResources(env: IonicEnvironment): Promise<string> {
   if (recreateTmpDir) {
     const task = env.tasks.next(`Downloading default resources`);
 
-    await tarXvfFromUrl(env, DEFAULT_RESOURCES_URL, tmpResourcesDir, { progress: (loaded, total) => {
+    await fsMkdirp(tmpResourcesDir);
+
+    await tarXvfFromUrl(env, DEFAULT_RESOURCES_URL, tmpResourcesDir, { strip: 1, progress: (loaded, total) => {
       task.progress(loaded, total);
     }});
 

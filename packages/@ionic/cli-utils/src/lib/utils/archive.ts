@@ -1,15 +1,22 @@
 import * as archiver from 'archiver';
+import * as tarType from 'tar';
 
 import { IonicEnvironment } from '../../definitions';
 
 import { createRequest } from '../http';
 
+export type TarExtractOptions = tarType.ExtractOptions & tarType.FileOptions;
+export type TarDownloadOptions = { progress?: (loaded: number, total: number) => void; };
+export type TarExtractDownloadOptions = TarExtractOptions & TarDownloadOptions;
+
 export function createArchive(format: 'zip' | 'tar'): archiver.Archiver {
   return archiver(format);
 }
 
-export async function tarXvfFromUrl(env: IonicEnvironment, url: string, destination: string, { progress }: { progress?: (loaded: number, total: number) => void }): Promise<void> {
+export async function tarXvfFromUrl(env: IonicEnvironment, url: string, destination: string, opts?: TarExtractDownloadOptions): Promise<void> {
   const { req } = await createRequest(env.config, 'get', url);
+
+  const progressFn = opts ? opts.progress : undefined;
 
   return new Promise<void>((resolve, reject) => {
     req
@@ -21,12 +28,12 @@ export async function tarXvfFromUrl(env: IonicEnvironment, url: string, destinat
           ));
         }
 
-        if (progress) {
+        if (progressFn) {
           let loaded = 0;
           const total = Number(res.headers['content-length']);
           res.on('data', (chunk) => {
             loaded += chunk.length;
-            progress(loaded, total);
+            progressFn(loaded, total);
           });
         }
       })
@@ -38,27 +45,22 @@ export async function tarXvfFromUrl(env: IonicEnvironment, url: string, destinat
         }
       });
 
-    tarXvf(req, destination).then(resolve, reject);
+    tarXvf(req, destination, opts).then(resolve, reject);
   });
 }
 
-async function tarXvf(readStream: NodeJS.ReadableStream, destination: string) {
-  const [ zlib, tar ] = await Promise.all([import('zlib'), import('tar')]);
+async function tarXvf(readStream: NodeJS.ReadableStream, destination: string, opts?: TarExtractOptions) {
+  const tar = await import('tar');
+
+  const tarOpts = { cwd: destination, ...opts };
 
   return new Promise<void>((resolve, reject) => {
-    const baseArchiveExtract = tar.Extract({
-        path: destination,
-        strip: 1
-      })
+    const ws = tar.extract(tarOpts)
       .on('error', reject)
       .on('end', resolve);
-    try {
-      readStream
-        .on('error', reject)
-        .pipe(zlib.createUnzip())
-        .pipe(baseArchiveExtract);
-    } catch (e) {
-      reject(e);
-    }
+
+    readStream
+      .on('error', reject)
+      .pipe(ws);
   });
 }
