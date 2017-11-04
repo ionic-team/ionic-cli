@@ -250,7 +250,7 @@ export class StartCommand extends Command implements CommandPreRun {
     let starterTemplate = STARTER_TEMPLATES.find(t => t.type === options['type'] && t.name === starterTemplateName);
 
     if (!starterTemplate) {
-      this.env.tasks.next('Looking up starter...');
+      this.env.tasks.next('Looking up starter');
       const starterList = await getStarterList(this.env.config);
 
       const starter = starterList.starters.find(t => t.type === options['type'] && t.name === starterTemplateName);
@@ -258,7 +258,10 @@ export class StartCommand extends Command implements CommandPreRun {
       if (starter) {
         starterTemplate = { strip: false, name: starter.name, type: starter.type, description: '', archive: `${STARTER_BASE}/${starter.id}.tar.gz` };
       } else {
-        throw new FatalException(`Unable to find starter template for ${chalk.green(starterTemplateName)}`);
+        throw new FatalException(
+          `Unable to find starter template for ${chalk.green(starterTemplateName)}\n` +
+          `If this is not a typo, please make sure it is a valid starter template within the starters repo: ${chalk.bold('https://github.com/ionic-team/starters')}`
+        );
       }
     }
 
