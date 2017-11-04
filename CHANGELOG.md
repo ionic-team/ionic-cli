@@ -7,6 +7,18 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.17.0"></a>
+### 3.17.0 (PENDING)
+
+* `ionic start` is now using the starters generated from the new [Ionic
+  Starters](https://github.com/ionic-team/starters) repo, which supports
+  approved community starters.
+* Cordova integration is no longer included for new apps (new apps won't have
+  `config.xml` or `resources/`). The CLI will download these files and integrate
+  the app with Cordova when requested, which can be with the new `ionic
+  integrations` commands, or whenever `ionic cordova` commands are first used.
+* Fixed spammy connection errors related to DevApp broadcasting.
+
 <a name="3.16.0"></a>
 ### 3.16.0 (2017-11-01)
 
