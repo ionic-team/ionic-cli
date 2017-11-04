@@ -247,6 +247,21 @@ export class StartCommand extends Command implements CommandPreRun {
       }
     }
 
+    let starterTemplate = STARTER_TEMPLATES.find(t => t.type === options['type'] && t.name === starterTemplateName);
+
+    if (!starterTemplate) {
+      this.env.tasks.next('Looking up starter...');
+      const starterList = await getStarterList(this.env.config);
+
+      const starter = starterList.starters.find(t => t.type === options['type'] && t.name === starterTemplateName);
+
+      if (starter) {
+        starterTemplate = { strip: false, name: starter.name, type: starter.type, description: '', archive: `${STARTER_BASE}/${starter.id}.tar.gz` };
+      } else {
+        throw new FatalException(`Unable to find starter template for ${chalk.green(starterTemplateName)}`);
+      }
+    }
+
     const projectRoot = path.resolve(projectName);
     projectName = path.basename(projectRoot);
 
@@ -280,21 +295,6 @@ export class StartCommand extends Command implements CommandPreRun {
       } else {
         this.env.log.info(`Not erasing existing project in ${chalk.green(prettyPath(projectRoot))}.`);
         return;
-      }
-    }
-
-    let starterTemplate = STARTER_TEMPLATES.find(t => t.type === options['type'] && t.name === starterTemplateName);
-
-    if (!starterTemplate) {
-      this.env.tasks.next('Looking up starter...');
-      const starterList = await getStarterList(this.env.config);
-
-      const starter = starterList.starters.find(t => t.type === options['type'] && t.name === starterTemplateName);
-
-      if (starter) {
-        starterTemplate = { strip: false, name: starter.name, type: starter.type, description: '', archive: `${STARTER_BASE}/${starter.id}.tar.gz` };
-      } else {
-        throw new FatalException(`Unable to find starter template for ${chalk.green(starterTemplateName)}`);
       }
     }
 
