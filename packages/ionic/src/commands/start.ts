@@ -115,7 +115,7 @@ export class StartCommand extends Command implements CommandPreRun {
       options['link'] = true;
     }
 
-    const proAppId = <string>options['pro-id'] || '';
+    const proAppId = options['pro-id'] ? String(options['pro-id']) : undefined;
     const config = await this.env.config.load();
 
     if (proAppId && config.backend !== BACKEND_PRO) {
@@ -187,11 +187,11 @@ export class StartCommand extends Command implements CommandPreRun {
           const starterTemplates = STARTER_TEMPLATES.filter(st => st.type === options['type']);
 
           return getStarterTemplateTextList(starterTemplates)
-            .map((text: string, index: number) => {
+            .map((text, i) => {
               return {
                 name: text,
-                short: starterTemplates[index].name,
-                value: starterTemplates[index].name
+                short: starterTemplates[i].name,
+                value: starterTemplates[i].name
               };
             });
         }
@@ -335,7 +335,7 @@ export class StartCommand extends Command implements CommandPreRun {
       await this.env.shell.run(installer, installerArgs, shellOptions);
     }
 
-    if (config.backend === BACKEND_PRO && !gitIntegration) {
+    if (proAppId && config.backend === BACKEND_PRO && !gitIntegration) {
       throw new FatalException(
         `Git CLI not found on your PATH. It must be installed to connect this app to Ionic.\n` +
         `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`
