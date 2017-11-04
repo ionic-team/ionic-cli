@@ -3,7 +3,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework/lib';
-import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun, StarterTemplate } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
@@ -115,7 +115,7 @@ export class StartCommand extends Command implements CommandPreRun {
       options['link'] = true;
     }
 
-    let proAppId = <string>options['pro-id'] || '';
+    const proAppId = <string>options['pro-id'] || '';
     const config = await this.env.config.load();
 
     if (proAppId && config.backend !== BACKEND_PRO) {
@@ -203,8 +203,10 @@ export class StartCommand extends Command implements CommandPreRun {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const {
+      STARTER_BASE,
       STARTER_TEMPLATES,
       getHelloText,
+      getStarterList,
       isProjectNameValid,
       isSafeToCreateProjectIn,
       readStarterManifest,
@@ -218,10 +220,10 @@ export class StartCommand extends Command implements CommandPreRun {
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
 
     let [ projectName, starterTemplateName ] = inputs;
-    let appName = <string>options['app-name'] || projectName;
+    let appName = options['app-name'] ? String(options['app-name']) : projectName;
     let gitIntegration = false;
-    let linkConfirmed = typeof options['pro-id'] === 'string';
-    let proAppId = <string>options['pro-id'] || '';
+    const proAppId = options['pro-id'] ? String(options['pro-id']) : undefined;
+    let linkConfirmed = typeof proAppId === 'string';
 
     const config = await this.env.config.load();
 
@@ -264,8 +266,10 @@ export class StartCommand extends Command implements CommandPreRun {
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `The directory ${chalk.green(projectName)} contains file(s) that could conflict. ` +
-            'Would you like to overwrite the directory with this new project?',
+        message: (
+          `The directory ${chalk.green(projectName)} contains file(s) that could conflict. ` +
+          'Would you like to overwrite the directory with this new project?'
+        ),
         default: false,
       });
 
@@ -279,18 +283,21 @@ export class StartCommand extends Command implements CommandPreRun {
       }
     }
 
-    let starterTemplateMatches: StarterTemplate[] = STARTER_TEMPLATES.filter(t => t.type === options['type'] && t.name === starterTemplateName);
-    let starterTemplate: StarterTemplate | undefined = starterTemplateMatches[0];
-
-    if (starterTemplateMatches.length > 1) {
-      starterTemplate = starterTemplateMatches.find(t => t.type === options['type']);
-    }
+    let starterTemplate = STARTER_TEMPLATES.find(t => t.type === options['type'] && t.name === starterTemplateName);
 
     if (!starterTemplate) {
-      throw new FatalException(`Unable to find starter template for ${starterTemplateName}`);
+      this.env.tasks.next('Looking up starter...');
+      const starterList = await getStarterList(this.env.config);
+
+      const starter = starterList.starters.find(t => t.type === options['type'] && t.name === starterTemplateName);
+
+      if (starter) {
+        starterTemplate = { strip: false, name: starter.name, type: starter.type, description: '', archive: `${STARTER_BASE}/${starter.id}.tar.gz` };
+      } else {
+        throw new FatalException(`Unable to find starter template for ${chalk.green(starterTemplateName)}`);
+      }
     }
 
-    this.env.tasks.end();
     const task = this.env.tasks.next(`Downloading & extracting starter template ${chalk.green(starterTemplateName.toString())}`);
     const ws = await createTarExtraction({ cwd: projectRoot, strip: starterTemplate.strip ? 1 : 0 });
     await download(this.env.config, starterTemplate.archive, ws, {

@@ -2,10 +2,19 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
-import { StarterManifest, StarterTemplate } from '../definitions';
+import { IConfig, StarterList, StarterManifest, StarterTemplate } from '../definitions';
 import { isStarterManifest } from '../guards';
+import { createRequest } from './http';
 
-import { ERROR_FILE_INVALID_JSON, ERROR_FILE_NOT_FOUND, fsReadDir, fsReadJsonFile, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
+import {
+  ERROR_FILE_INVALID_JSON,
+  ERROR_FILE_NOT_FOUND,
+  fsReadDir,
+  fsReadJsonFile,
+  fsWriteJsonFile,
+} from '@ionic/cli-framework/utils/fs';
+
+export const STARTER_BASE = 'https://d2ql0qc7j8u4b2.cloudfront.net';
 
 export function isProjectNameValid(name: string): boolean {
   return name !== '.';
@@ -23,7 +32,7 @@ export async function isSafeToCreateProjectIn(root: string): Promise<boolean> {
 
   const entries = await fsReadDir(root);
 
-  return entries.every((file) => {
+  return entries.every(file => {
     return validFiles.indexOf(file) >= 0;
   });
 }
@@ -108,72 +117,82 @@ export async function updatePackageJsonForCli(projectRoot: string, appName: stri
   }
 }
 
+export async function getStarterList(config: IConfig): Promise<StarterList> {
+  const { req } = await createRequest(config, 'get', `${STARTER_BASE}/starters.json`);
+
+  const res = await req;
+
+  // TODO: typecheck
+
+  return res.body;
+}
+
 export const STARTER_TEMPLATES: StarterTemplate[] = [
   {
     name: 'tabs',
     type: 'ionic-angular',
     description: 'A starting project with a simple tabbed interface',
-    archive: 'https://d2ql0qc7j8u4b2.cloudfront.net/ionic-angular-official-tabs.tar.gz',
+    archive: `${STARTER_BASE}/ionic-angular-official-tabs.tar.gz`,
   },
   {
     name: 'blank',
     type: 'ionic-angular',
     description: 'A blank starter project',
-    archive: 'https://d2ql0qc7j8u4b2.cloudfront.net/ionic-angular-official-blank.tar.gz',
+    archive: `${STARTER_BASE}/ionic-angular-official-blank.tar.gz`,
   },
   {
     name: 'sidemenu',
     type: 'ionic-angular',
     description: 'A starting project with a side menu with navigation in the content area',
-    archive: 'https://d2ql0qc7j8u4b2.cloudfront.net/ionic-angular-official-sidemenu.tar.gz',
+    archive: `${STARTER_BASE}/ionic-angular-official-sidemenu.tar.gz`,
   },
   {
     name: 'super',
     type: 'ionic-angular',
     description: 'A starting project complete with pre-built pages, providers and best practices for Ionic development.',
-    archive: 'https://d2ql0qc7j8u4b2.cloudfront.net/ionic-angular-official-super.tar.gz',
+    archive: `${STARTER_BASE}/ionic-angular-official-super.tar.gz`,
   },
   {
     name: 'conference',
     type: 'ionic-angular',
     description: 'A project that demonstrates a realworld application',
-    archive: 'https://github.com/ionic-team/ionic-conference-app/archive/master.tar.gz',
+    archive: `https://github.com/ionic-team/ionic-conference-app/archive/master.tar.gz`,
     strip: true,
   },
   {
     name: 'tutorial',
     type: 'ionic-angular',
     description: 'A tutorial based project that goes along with the Ionic documentation',
-    archive: 'https://d2ql0qc7j8u4b2.cloudfront.net/ionic-angular-official-tutorial.tar.gz',
+    archive: `${STARTER_BASE}/ionic-angular-official-tutorial.tar.gz`,
   },
   {
     name: 'aws',
     type: 'ionic-angular',
     description: 'AWS Mobile Hub Starter',
-    archive: 'https://d2ql0qc7j8u4b2.cloudfront.net/ionic-angular-official-aws.tar.gz',
+    archive: `${STARTER_BASE}/ionic-angular-official-aws.tar.gz`,
   },
   {
     name: 'tabs',
     type: 'ionic1',
     description: 'A starting project for Ionic using a simple tabbed interface',
-    archive: 'https://d2ql0qc7j8u4b2.cloudfront.net/ionic1-official-tabs.tar.gz',
+    archive: `${STARTER_BASE}/ionic1-official-tabs.tar.gz`,
   },
   {
     name: 'blank',
     type: 'ionic1',
     description: 'A blank starter project for Ionic',
-    archive: 'https://d2ql0qc7j8u4b2.cloudfront.net/ionic1-official-blank.tar.gz',
+    archive: `${STARTER_BASE}/ionic1-official-blank.tar.gz`,
   },
   {
     name: 'sidemenu',
     type: 'ionic1',
     description: 'A starting project for Ionic using a side menu with navigation in the content area',
-    archive: 'https://d2ql0qc7j8u4b2.cloudfront.net/ionic1-official-sidemenu.tar.gz',
+    archive: `${STARTER_BASE}/ionic1-official-sidemenu.tar.gz`,
   },
   {
     name: 'maps',
     type: 'ionic1',
     description: 'An Ionic starter project using Google Maps and a side menu',
-    archive: 'https://d2ql0qc7j8u4b2.cloudfront.net/ionic1-official-maps.tar.gz',
+    archive: `${STARTER_BASE}/ionic1-official-maps.tar.gz`,
   },
 ];

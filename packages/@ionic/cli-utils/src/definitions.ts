@@ -710,6 +710,18 @@ export interface ResourcesConfig {
 export type KnownPlatform = 'ios' | 'android' | 'wp8' | 'windows' | 'browser';
 export type KnownResourceType = 'icon' | 'splash';
 
+export interface StarterList {
+  starters: {
+    name: string;
+    id: string;
+    type: ProjectType;
+  }[];
+  integrations: {
+    name: string;
+    id: string;
+  }[];
+}
+
 export interface StarterTemplate {
   name: string;
   type: ProjectType;
