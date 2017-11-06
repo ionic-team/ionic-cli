@@ -28,3 +28,5 @@ export class ShellException extends Exception {
     super(message);
   }
 }
+
+export class SessionException extends Exception {}

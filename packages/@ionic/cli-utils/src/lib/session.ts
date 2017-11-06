@@ -10,7 +10,7 @@ import {
 
 import { isAuthTokensResponse, isLegacyLoginResponse, isProLoginResponse, isSuperAgentError } from '../guards';
 
-import { FatalException } from './errors';
+import { SessionException } from './errors';
 import { createFatalAPIFormat } from './http';
 
 export class BaseSession {
@@ -38,7 +38,7 @@ export class BaseSession {
     const c = await this.config.load();
 
     if (!c.tokens.user) {
-      throw new FatalException(
+      throw new SessionException(
         `Oops, sorry! You'll need to log in:\n    ${chalk.green('ionic login')}\n\n` +
         `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`
       );
@@ -72,7 +72,7 @@ export class CloudSession extends BaseSession implements ISession {
       c.tokens.user = token;
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 401) {
-        throw new FatalException(chalk.red('Incorrect email or password'));
+        throw new SessionException('Incorrect email or password.');
       }
 
       throw e;
@@ -110,7 +110,7 @@ export class CloudSession extends BaseSession implements ISession {
     // TODO: if tokens are invalidated, what do (hint: app tokens)
 
     if (!c.tokens.appUser[app_id]) {
-      throw new FatalException(`A token does not exist for your account on app ${chalk.bold(app_id)}.`);
+      throw new SessionException(`A token does not exist for your account on app ${chalk.bold(app_id)}.`);
     }
 
     return c.tokens.appUser[app_id];
@@ -143,7 +143,7 @@ export class ProSession extends BaseSession implements ISession {
       c.tokens.user = token;
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 401) {
-        throw new FatalException(chalk.red('Incorrect email or password'));
+        throw new SessionException('Incorrect email or password.');
       }
 
       throw e;

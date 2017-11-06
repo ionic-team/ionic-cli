@@ -11,6 +11,7 @@ import {
   generateIonicEnvironment,
 } from '@ionic/cli-utils';
 
+import { Exception } from '@ionic/cli-utils/lib/errors';
 import { mapLegacyCommand, modifyArguments, parseArgs } from '@ionic/cli-utils/lib/init';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { isExitCodeException } from '@ionic/cli-utils/guards';
@@ -366,6 +367,8 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
           ienv.log.msg(err.message);
         }
       }
+    } else if (err instanceof Exception) {
+      ienv.log.error(err.message);
     } else {
       ienv.log.msg(chalk.red(String(err.stack ? err.stack : err)));
 

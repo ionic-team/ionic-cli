@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { SessionException } from '@ionic/cli-utils/lib/errors';
 import { validators } from '@ionic/cli-framework/lib';
 
 @CommandMetadata({
@@ -105,7 +106,20 @@ export class LoginCommand extends Command implements CommandPreRun {
       await this.env.telemetry.resetToken();
     }
 
-    await this.env.session.login(email, password);
+    try {
+      await this.env.session.login(email, password);
+    } catch (e) {
+      if (e instanceof SessionException && config.backend === BACKEND_LEGACY) {
+        this.env.log.warn(
+          `Logging into Ionic Pro?\n` +
+          `We noticed your CLI is still configured for Ionic Cloud. Fix this with the following command:\n` +
+          `    ${chalk.green('ionic config set -g backend pro')}`
+        );
+      }
+
+      throw e;
+    }
+
     this.env.log.ok('You are logged in!');
 
     if (config.backend === BACKEND_PRO && !config.git.setup) {
