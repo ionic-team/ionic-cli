@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.17.0"></a>
+# [1.17.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.16.0...@ionic/cli-utils@1.17.0) (2017-11-07)
+
+
+### Bug Fixes
+
+* **login:** show message about failed login for pro ([ee4e14d](https://github.com/ionic-team/ionic-cli/commit/ee4e14d))
+* **serve:** devapp errors are now debug messages ([7afe944](https://github.com/ionic-team/ionic-cli/commit/7afe944))
+
+
+### Features
+
+* **integrations:** cordova and gulp integration ([3137c76](https://github.com/ionic-team/ionic-cli/commit/3137c76))
+* **npm:** support npm rebuild cmd ([2350a57](https://github.com/ionic-team/ionic-cli/commit/2350a57))
+* **start:** custom starters ([1c5a527](https://github.com/ionic-team/ionic-cli/commit/1c5a527))
+* **start:** starter manifest integration ([6557396](https://github.com/ionic-team/ionic-cli/commit/6557396))
+* **start:** use new starters ([9032f3d](https://github.com/ionic-team/ionic-cli/commit/9032f3d))
+
+
+
+
 <a name="1.16.0"></a>
 # [1.16.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.15.2...@ionic/cli-utils@1.16.0) (2017-11-01)
 

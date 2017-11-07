@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.17.0"></a>
+# [3.17.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.16.0...ionic@3.17.0) (2017-11-07)
+
+
+### Bug Fixes
+
+* **login:** show message about failed login for pro ([ee4e14d](https://github.com/ionic-team/ionic-cli/commit/ee4e14d))
+* **start:** only error re: git if --pro-id is used ([6f9c6db](https://github.com/ionic-team/ionic-cli/commit/6f9c6db))
+* **start:** support not having a manifest ([2ae44d2](https://github.com/ionic-team/ionic-cli/commit/2ae44d2))
+
+
+### Features
+
+* **integrations:** cordova and gulp integration ([3137c76](https://github.com/ionic-team/ionic-cli/commit/3137c76))
+* **start:** custom starters ([1c5a527](https://github.com/ionic-team/ionic-cli/commit/1c5a527))
+* **start:** starter manifest integration ([6557396](https://github.com/ionic-team/ionic-cli/commit/6557396))
+* **start:** use new starters ([9032f3d](https://github.com/ionic-team/ionic-cli/commit/9032f3d))
+
+
+
+
 <a name="3.16.0"></a>
 # [3.16.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.15.2...ionic@3.16.0) (2017-11-01)
 
