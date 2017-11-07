@@ -3,7 +3,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework/lib';
-import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun, StarterManifest } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
@@ -382,8 +382,14 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     const manifestPath = path.resolve(projectRoot, 'ionic.starter.json');
-    const manifest = await readStarterManifest(manifestPath);
-    await fsUnlink(manifestPath);
+    let manifest: StarterManifest | undefined;
+
+    try {
+      manifest = await readStarterManifest(manifestPath);
+      await fsUnlink(manifestPath);
+    } catch (e) {
+      this.env.log.debug(`Error with manifest file ${chalk.bold(prettyPath(manifestPath))}: ${e}`);
+    }
 
     if (gitIntegration) {
       await this.env.shell.run('git', ['add', '-A'], { showSpinner: false, ...shellOptions });
@@ -399,9 +405,11 @@ export class StartCommand extends Command implements CommandPreRun {
 
     this.env.log.nl();
 
-    if (manifest.welcome) {
-      this.env.log.msg(`${chalk.bold('Starter Welcome')}:\n`);
-      this.env.log.info(manifest.welcome);
+    if (manifest) {
+      if (manifest.welcome) {
+        this.env.log.msg(`${chalk.bold('Starter Welcome')}:\n`);
+        this.env.log.info(manifest.welcome);
+      }
     }
 
     this.env.log.msg(`${chalk.bold('Next Steps')}:\n`);
