@@ -203,7 +203,7 @@ export class StartCommand extends Command implements CommandPreRun {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const {
-      STARTER_BASE,
+      STARTER_BASE_URL,
       STARTER_TEMPLATES,
       getHelloText,
       getStarterList,
@@ -256,7 +256,13 @@ export class StartCommand extends Command implements CommandPreRun {
       const starter = starterList.starters.find(t => t.type === options['type'] && t.name === starterTemplateName);
 
       if (starter) {
-        starterTemplate = { strip: false, name: starter.name, type: starter.type, description: '', archive: `${STARTER_BASE}/${starter.id}.tar.gz` };
+        starterTemplate = {
+          strip: false,
+          name: starter.name,
+          type: starter.type,
+          description: '',
+          archive: `${STARTER_BASE_URL}/${starter.id}.tar.gz`,
+        };
       } else {
         throw new FatalException(
           `Unable to find starter template for ${chalk.green(starterTemplateName)}\n` +
