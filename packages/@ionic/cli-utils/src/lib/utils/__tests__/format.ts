@@ -1,6 +1,8 @@
 import * as os from 'os';
 import * as path from 'path';
 
+import * as stripAnsi from 'strip-ansi';
+
 describe('@ionic/cli-utils', () => {
 
   describe('prettyPath', () => {
@@ -10,7 +12,7 @@ describe('@ionic/cli-utils', () => {
     jest.resetModules();
     const mock_homedir = () => '/home/user';
     jest.mock('os', () => ({ ...mock_os, homedir: mock_homedir }));
-    const prettyPath = require('../format').prettyPath;
+    const { prettyPath } = require('../format');
 
     beforeEach(() => {
       this.originalCwd = process.cwd;
@@ -98,7 +100,7 @@ describe('@ionic/cli-utils', () => {
       const mock_homedir = () => 'C:\\home\\user';
       jest.mock('os', () => ({ ...mock_os, homedir: mock_homedir }));
       jest.mock('path', () => mock_path_win32);
-      const prettyPath = require('../format').prettyPath;
+      const { prettyPath } = require('../format');
 
       beforeEach(() => {
         this.originalCwd = process.cwd;
@@ -179,6 +181,91 @@ describe('@ionic/cli-utils', () => {
         expect(result).toEqual('~');
       });
 
+    });
+
+  });
+
+  describe('generateFillSpaceStringList', () => {
+
+    const { generateFillSpaceStringList } = require('../format');
+
+    it('should return empty array for no list', () => {
+      const result = generateFillSpaceStringList([]);
+      expect(result).toEqual([]);
+    });
+
+    it('should return spaces array for single character strings', () => {
+      const result = generateFillSpaceStringList(['a', 'b']);
+      expect(result).toEqual([' ', ' ']);
+    });
+
+    it('should return spaces array for equal length strings', () => {
+      const result = generateFillSpaceStringList(['foo', 'bar']);
+      expect(result).toEqual([' ', ' ']);
+    });
+
+    it('should return spaces array for varying string lengths', () => {
+      const result = generateFillSpaceStringList(['foo', 'bar', 'foobar', 'foobarbaz']);
+      expect(result).toEqual(['       ', '       ', '    ', ' ']);
+    });
+
+    it('should return  ', () => {
+      const result = generateFillSpaceStringList(['foo', 'bar'], 5);
+      expect(result).toEqual(['  ', '  ']);
+    });
+
+  });
+
+  describe('columnar', () => {
+
+    const { columnar } = require('../format');
+
+    it('should generate empty string from empty matrix', async () => {
+      const result = columnar([]);
+      expect(result).toEqual('');
+    });
+
+    it('should work without column headers', async () => {
+      const result = columnar([['a', 'b', 'c']]);
+      expect(stripAnsi(result)).toEqual('a | b | c');
+    });
+
+    it('should work for multiple rows', async () => {
+      const result = columnar([['cat', 'dog'], ['spongebob', 'squarepants'], ['hey', 'arnold']], { columnHeaders: ['col1', 'col2'] });
+      expect(stripAnsi(result)).toEqual(`
+col1      | col2
+-----------------------
+cat       | dog
+spongebob | squarepants
+hey       | arnold
+      `.trim());
+    });
+
+    it('should size rows correctly when cells are longer', async () => {
+      const result = columnar([['foo', 'bar', 'baz']], { columnHeaders: ['a', 'b', 'c'] });
+      expect(stripAnsi(result)).toEqual(`
+a   | b   | c
+---------------
+foo | bar | baz
+      `.trim());
+    });
+
+    it('should size rows correctly when headers are longer', async () => {
+      const result = columnar([['a', 'b', 'c']], { columnHeaders: ['foo', 'bar', 'baz'] });
+      expect(stripAnsi(result)).toEqual(`
+foo | bar | baz
+---------------
+a   | b   | c
+      `.trim());
+    });
+
+    it('should work with custom separators', async () => {
+      const result = columnar([['foo', 'bar', 'baz']], { hsep: '=', vsep: '/\\', columnHeaders: ['a', 'b', 'c'] });
+      expect(stripAnsi(result)).toEqual(`
+a   /\\ b   /\\ c
+=================
+foo /\\ bar /\\ baz
+      `.trim());
     });
 
   });

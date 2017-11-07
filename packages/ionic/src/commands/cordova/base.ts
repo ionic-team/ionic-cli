@@ -114,7 +114,7 @@ export abstract class CordovaCommand extends Command {
 
       if (!wwwExists) {
         this.env.tasks.next(`Creating ${chalk.bold(prettyPath(wwwPath))} directory for you`);
-        await fsMkdir(wwwPath, undefined);
+        await fsMkdir(wwwPath, 0o777);
         this.env.tasks.end();
       }
     }

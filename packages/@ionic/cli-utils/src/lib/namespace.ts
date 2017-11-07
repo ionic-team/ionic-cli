@@ -10,16 +10,16 @@ import { strcmp } from '@ionic/cli-framework/utils/string';
 
 export class CommandMap extends Map<string, string | CommandMapGetter> {
   getAliases(): Map<string, string[]> {
-    const cmdAliases = new Map<string, string[]>();
-    const cmdMapContents: ReadonlyArray<[string, string | CommandMapGetter]> = Array.from(this.entries());
-    const aliasToCmd = <ReadonlyArray<[string, string]>>cmdMapContents.filter((value): value is [string, string] => typeof value[1] === 'string'); // TODO: typescript bug?
-    aliasToCmd.forEach(([alias, cmd]) => {
-      const aliases = cmdAliases.get(cmd) || [];
-      aliases.push(alias);
-      cmdAliases.set(cmd, aliases);
+    const aliasmap = new Map<string, string[]>();
+    const contents = Array.from(this.entries());
+    const aliases = <[string, string][]>contents.filter(([, v]) => typeof v === 'string'); // TODO: typescript bug?
+    aliases.forEach(([alias, cmd]) => {
+      const cmdaliases = aliasmap.get(cmd) || [];
+      cmdaliases.push(alias);
+      aliasmap.set(cmd, cmdaliases);
     });
 
-    return cmdAliases;
+    return aliasmap;
   }
 
   resolveAliases(cmdName: string): undefined | CommandMapGetter {

@@ -52,27 +52,36 @@ export function wordWrap(msg: string, { indentation = 0, append = '' }: { indent
 }
 
 export function generateFillSpaceStringList(list: string[], optimalLength: number = 1, fillCharacter: string = ' '): string[] {
-  const longestItem = Math.max(
-    ...list.map((item) => stringWidth(item))
-  );
+  if (optimalLength < 2) {
+    optimalLength = 2;
+  }
 
+  const longestItem = Math.max(...list.map((item) => stringWidth(item)));
   const fullLength = longestItem > optimalLength ? longestItem + 1 : optimalLength;
   const fullLengthString = Array(fullLength).fill(fillCharacter).join('');
 
   return list.map(item => sliceAnsi(fullLengthString, 0, fullLength - stringWidth(item)));
 }
 
-export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk.dim('|'), columnHeaders }: { hsep?: string, vsep?: string, columnHeaders?: string[] } = {}) {
-  const includeHeaders = columnHeaders ? true : false;
+export function columnar(rows: string[][], options: { hsep?: string, vsep?: string, columnHeaders?: string[] } = {}) {
+  if (!options.hsep) {
+    options.hsep = chalk.dim('-');
+  }
+
+  if (!options.vsep) {
+    options.vsep = chalk.dim('|');
+  }
+
+  const includeHeaders = options.columnHeaders ? true : false;
 
   if (!rows[0]) {
     return '';
   }
 
-  const columnCount = columnHeaders ? columnHeaders.length : rows[0].length;
-  const columns = columnHeaders ?
-    columnHeaders.map(header => [chalk.bold(header)]) :
-    new Array<string[]>(columnCount).fill(<string[]>[]).map(() => []);
+  const columnCount = options.columnHeaders ? options.columnHeaders.length : rows[0].length;
+  const columns = options.columnHeaders ?
+    options.columnHeaders.map(header => [chalk.bold(header)]) :
+    new Array(columnCount).fill([]).map(() => []);
 
   for (let row of rows) {
     for (let i in row) {
@@ -85,7 +94,7 @@ export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk
   const paddedColumns = columns.map((col, i) => {
     if (i < columnCount - 1) {
       const spaceCol = generateFillSpaceStringList(col);
-      return col.map((cell, i) => `${cell}${spaceCol[i]}${vsep} `);
+      return col.map((cell, i) => `${cell}${spaceCol[i]}${options.vsep} `);
     } else {
       return col;
     }
@@ -101,7 +110,7 @@ export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk
   });
 
   if (includeHeaders) {
-    singleColumn.splice(1, 0, hsep.repeat(longestRowLength));
+    singleColumn.splice(1, 0, options.hsep.repeat(longestRowLength));
   }
 
   return singleColumn.join('\n');

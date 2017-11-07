@@ -22,9 +22,9 @@
     "jest-cli": "^21.2.1",
     "lerna": "^2.5.1",
     "replace": "^0.3.0",
-    "ts-jest": "^21.1.3",
+    "ts-jest": "^21.1.4",
     "tslint": "^5.8.0",
     "tslint-ionic-rules": "^0.0.11",
-    "typescript": "^2.5.3"
+    "typescript": "^2.6.1"
   }
 }

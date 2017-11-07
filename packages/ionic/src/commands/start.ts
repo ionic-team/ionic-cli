@@ -285,7 +285,7 @@ export class StartCommand extends Command implements CommandPreRun {
     // Create the project directory
     if (!projectExists) {
       this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
-      await fsMkdir(projectRoot, undefined);
+      await fsMkdir(projectRoot, 0o777);
     } else if (!(await isSafeToCreateProjectIn(projectRoot))) {
       const confirm = await this.env.prompt({
         type: 'confirm',
@@ -300,7 +300,7 @@ export class StartCommand extends Command implements CommandPreRun {
       if (confirm) {
         this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
         await removeDirectory(projectRoot);
-        await fsMkdir(projectRoot, undefined);
+        await fsMkdir(projectRoot, 0o777);
       } else {
         this.env.log.info(`Not erasing existing project in ${chalk.green(prettyPath(projectRoot))}.`);
         return;

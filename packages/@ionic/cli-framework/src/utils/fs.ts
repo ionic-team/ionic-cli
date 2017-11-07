@@ -21,7 +21,7 @@ export interface FSWriteFileOptions {
 }
 
 export const fsAccess = promisify<void, string, number>(fs.access);
-export const fsMkdir = promisify<void, string, number | undefined>(fs.mkdir);
+export const fsMkdir = promisify<void, string, number>(fs.mkdir);
 export const fsOpen = promisify<number, string, string>(fs.open);
 export const fsStat = promisify<fs.Stats, string>(fs.stat);
 export const fsUnlink = promisify<void, string>(fs.unlink);
@@ -72,7 +72,7 @@ export async function fileToString(filepath: string): Promise<string> {
   }
 }
 
-export async function fsMkdirp(p: string, mode?: number): Promise<void> {
+export async function fsMkdirp(p: string, mode = 0o777): Promise<void> {
   const absPath = path.resolve(p);
   const pathObj = path.parse(absPath);
   const dirnames = absPath.split(path.sep).splice(1);

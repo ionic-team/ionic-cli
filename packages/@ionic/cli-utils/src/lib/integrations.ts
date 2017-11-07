@@ -82,7 +82,7 @@ async function addIntegration(env: IonicEnvironment, integration: IntegrationTem
     await removeDirectory(tmpdir);
   }
 
-  await fsMkdirp(tmpdir);
+  await fsMkdirp(tmpdir, 0o777);
 
   const ws = await createTarExtraction({ cwd: tmpdir });
   await download(env.config, integration.archive, ws, {
