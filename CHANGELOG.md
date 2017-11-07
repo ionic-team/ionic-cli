@@ -8,7 +8,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 ## Versions
 
 <a name="3.17.0"></a>
-### 3.17.0 (PENDING)
+### 3.17.0 (2017-11-07)
 
 * `ionic start` is now using the starters generated from the new [Ionic
   Starters](https://github.com/ionic-team/starters) repo, which supports
