@@ -36,6 +36,7 @@ interface PkgManagerVocabulary {
   bareInstall: string;
   uninstall: string;
   dedupe: string;
+  rebuild: string;
 
   // flags
   global: string;
@@ -46,7 +47,7 @@ interface PkgManagerVocabulary {
 }
 
 export interface PkgManagerOptions extends IShellRunOptions {
-  command?: 'dedupe' | 'install' | 'uninstall';
+  command?: 'dedupe' | 'rebuild' | 'install' | 'uninstall';
   pkg?: string;
   global?: boolean;
   link?: boolean;
@@ -72,14 +73,16 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
 
   if (command === 'dedupe') {
     delete options.pkg;
+  }
+
+  if (command === 'dedupe' || command === 'rebuild') {
     delete options.global;
     delete options.link;
     delete options.save;
     delete options.saveDev;
-    delete options.saveExact;
   }
 
-  if (command === 'uninstall') {
+  if (command === 'dedupe' || command === 'rebuild' || command === 'uninstall') {
     delete options.saveExact;
   }
 
@@ -129,9 +132,9 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
   const installerArgs: string[] = [];
 
   if (installer === 'npm') {
-    vocab = { install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '' };
+    vocab = { install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', rebuild: 'rebuild', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '' };
   } else if (installer === 'yarn') {
-    vocab = { install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive' };
+    vocab = { install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'install', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive' };
 
     if (options.global) { // yarn installs packages globally under the 'global' prefix, instead of having a flag
       installerArgs.push('global');
@@ -154,6 +157,8 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
     } else {
       return [];
     }
+  } else if (command === 'rebuild') {
+    installerArgs.push(vocab.rebuild);
   } else {
     installerArgs.push(command);
   }
@@ -184,6 +189,12 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
     }
 
     installerArgs.push(options.pkg);
+  }
+
+  if (installer === 'yarn') {
+    if (options.command === 'rebuild') {
+      installerArgs.push('--force');
+    }
   }
 
   return [installer, ...installerArgs];

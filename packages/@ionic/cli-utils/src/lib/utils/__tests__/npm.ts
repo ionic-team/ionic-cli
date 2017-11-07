@@ -47,6 +47,16 @@ describe('@ionic/cli-utils', () => {
       expect(result).toEqual(['npm', 'i', '-g', 'foo']);
     });
 
+    it('should be dedupe args', async () => {
+      const result = await pkgManagerArgs(envMock, { command: 'dedupe' });
+      expect(result).toEqual(['npm', 'dedupe']);
+    });
+
+    it('should be rebuild args', async () => {
+      const result = await pkgManagerArgs(envMock, { command: 'rebuild' });
+      expect(result).toEqual(['npm', 'rebuild']);
+    });
+
     describe('yarn', () => {
 
       jest.resetModules();
@@ -86,6 +96,16 @@ describe('@ionic/cli-utils', () => {
       it('should be pkg install args for global package install with bad options', async () => {
         const result = await pkgManagerArgs(envMock, { pkg: 'foo', global: true, saveDev: true });
         expect(result).toEqual(['yarn', 'global', 'add', '--non-interactive', 'foo']);
+      });
+
+      it('should be dedupe args', async () => {
+        const result = await pkgManagerArgs(envMock, { command: 'dedupe' });
+        expect(result).toEqual([]); // yarn doesn't support dedupe
+      });
+
+      it('should be rebuild args', async () => {
+        const result = await pkgManagerArgs(envMock, { command: 'rebuild' });
+        expect(result).toEqual(['yarn', 'install', '--non-interactive', '--force']);
       });
 
     });
