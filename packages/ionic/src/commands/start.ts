@@ -307,7 +307,7 @@ export class StartCommand extends Command implements CommandPreRun {
       }
     }
 
-    const task = this.env.tasks.next(`Downloading & extracting starter template ${chalk.green(starterTemplateName.toString())}`);
+    const task = this.env.tasks.next(`Downloading and extracting ${chalk.green(starterTemplateName.toString())} starter`);
     const ws = await createTarExtraction({ cwd: projectRoot, strip: starterTemplate.strip ? 1 : 0 });
     await download(this.env.config, starterTemplate.archive, ws, {
       progress: (loaded, total) => task.progress(loaded, total),
