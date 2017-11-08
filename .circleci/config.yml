@@ -11,6 +11,8 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "packages/ionic/package.json" }}
       - restore_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/cli-framework/package.json" }}
+      - restore_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/cli-utils/package.json" }}
       - restore_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/cli-plugin-proxy/package.json" }}
@@ -26,6 +28,10 @@ jobs:
           key: dependency-cache-{{ checksum "packages/ionic/package.json" }}
           paths:
             - packages/ionic/node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/cli-framework/package.json" }}
+          paths:
+            - packages/@ionic/cli-framework/node_modules
       - save_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/cli-utils/package.json" }}
           paths:
