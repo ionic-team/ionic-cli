@@ -25,7 +25,7 @@ See the CLI documentation on starters: ${chalk.bold('https://ionicframework.com/
     '',
     '--list',
     'myApp blank',
-    // 'myApp tabs --cordova',
+    'myApp tabs --cordova',
     'myApp blank --type=ionic1',
   ],
   inputs: [
@@ -57,11 +57,11 @@ See the CLI documentation on starters: ${chalk.bold('https://ionicframework.com/
       type: String,
       aliases: ['n'],
     },
-    // {
-    //   name: 'cordova',
-    //   description: 'Include Cordova integration',
-    //   type: Boolean,
-    // },
+    {
+      name: 'cordova',
+      description: 'Include Cordova integration',
+      type: Boolean,
+    },
     {
       name: 'deps',
       description: 'Do not install npm/yarn dependencies',
@@ -324,6 +324,10 @@ export class StartCommand extends Command implements CommandPreRun {
     project.name = appName;
     await updatePackageJsonForCli(projectRoot, appName);
     await this.env.project.save();
+
+    if (options['cordova']) {
+      await this.env.runCommand(['integrations', 'enable', 'cordova', '--quiet']);
+    }
 
     this.env.tasks.end();
 

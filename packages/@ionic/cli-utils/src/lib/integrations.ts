@@ -17,7 +17,11 @@ export const INTEGRATIONS: IntegrationTemplate[] = [
   },
 ];
 
-export async function enableIntegration(env: IonicEnvironment, id: string) {
+export interface IntegrationOptions {
+  quiet?: boolean;
+}
+
+export async function enableIntegration(env: IonicEnvironment, id: string, opts: IntegrationOptions = {}) {
   const project = await env.project.load();
 
   let projectIntegration = project.integrations[id];
@@ -39,7 +43,7 @@ export async function enableIntegration(env: IonicEnvironment, id: string) {
         throw new FatalException(`Integration ${id} not found in integrations list.`);
       }
 
-      await addIntegration(env, integration);
+      await addIntegration(env, integration, opts);
 
       env.log.ok(`Added ${chalk.green(id)} integration!`);
     }
@@ -64,7 +68,7 @@ export async function disableIntegration(env: IonicEnvironment, id: string) {
   env.log.ok(`Disabled ${chalk.green(id)} integration.`);
 }
 
-async function addIntegration(env: IonicEnvironment, integration: IntegrationTemplate) {
+async function addIntegration(env: IonicEnvironment, integration: IntegrationTemplate, opts: IntegrationOptions) {
   if (!integration.archive) {
     return;
   }
@@ -145,7 +149,9 @@ async function addIntegration(env: IonicEnvironment, integration: IntegrationTem
         }
       }
 
-      env.log.info(`${chalk.green.bold('create')} ${projectf}`);
+      if (!opts.quiet) {
+        env.log.info(`${chalk.green.bold('create')} ${projectf}`);
+      }
 
       return true;
     },

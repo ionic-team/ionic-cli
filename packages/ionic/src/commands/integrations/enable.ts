@@ -15,11 +15,20 @@ import { INTEGRATIONS, enableIntegration } from '@ionic/cli-utils/lib/integratio
       validators: [contains(INTEGRATIONS.map(i => i.name), {})],
     }
   ],
+  options: [
+    {
+      name: 'quiet',
+      description: 'Do not log file operations',
+      type: Boolean,
+    }
+  ],
 })
 export class IntegrationsEnableCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ id ] = inputs;
 
-    await enableIntegration(this.env, id);
+    const { quiet } = options;
+
+    await enableIntegration(this.env, id, { quiet: Boolean(quiet) });
   }
 }
