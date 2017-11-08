@@ -17,9 +17,11 @@ import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
   longDescription: `
 This command creates a working Ionic app. It installs dependencies for you and sets up your project.
 
-${chalk.green('ionic start')} will create an app from a template. You can list all templates with the ${chalk.green('--list')} option.
+${chalk.green('ionic start')} will create a new app from ${chalk.green('template')}. You can list all templates with the ${chalk.green('--list')} option. For more information on starter templates, see the CLI documentation${chalk.cyan('[1]')}.
 
-See the CLI documentation on starters: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}
+You can also specify a git repository URL for ${chalk.green('template')} and your existing project will be cloned.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}
 `,
   exampleCommands: [
     '',
@@ -27,6 +29,7 @@ See the CLI documentation on starters: ${chalk.bold('https://ionicframework.com/
     'myApp blank',
     'myApp tabs --cordova',
     'myApp blank --type=ionic1',
+    'myConferenceApp https://github.com/ionic-team/ionic-conference-app',
   ],
   inputs: [
     {
@@ -210,23 +213,33 @@ export class StartCommand extends Command implements CommandPreRun {
     const { getHelloText } = await import('@ionic/cli-utils/lib/start');
     const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
 
-    const [ name, starterTemplateName ] = inputs;
+    const [ name, template ] = inputs;
     const displayName = options['display-name'] ? String(options['display-name']) : name;
     const proAppId = options['pro-id'] ? String(options['pro-id']) : undefined;
+    const clonedApp = template.includes(':');
     let linkConfirmed = typeof proAppId === 'string';
 
     const config = await this.env.config.load();
-
-    const cordovaIntegration = Boolean(options['cordova']);
     const gitIntegration = config.backend === BACKEND_PRO || options['git'] ? await this.isGitSetup() : false;
 
-    await this.validateName(name);
+    if (proAppId && config.backend === BACKEND_PRO && !gitIntegration) {
+      throw new FatalException(
+        `Git CLI not found on your PATH. It must be installed to connect this app to Ionic.\n` +
+        `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`
+      );
+    }
 
-    const starterTemplate = await this.findStarterTemplate(starterTemplateName, String(options['type']));
     const projectDir = path.resolve(name);
 
+    await this.validateName(name);
     await this.ensureDirectory(name, projectDir);
-    await this.downloadStarterTemplate(projectDir, starterTemplate);
+
+    if (clonedApp) {
+      await this.env.shell.run('git', ['clone', template, name, '--progress'], { showExecution: true });
+    } else {
+      const starterTemplate = await this.findStarterTemplate(template, String(options['type']));
+      await this.downloadStarterTemplate(projectDir, starterTemplate);
+    }
 
     // start is weird, once the project directory is created, it becomes a
     // "project" command and so we replace the `Project` instance that was
@@ -235,10 +248,14 @@ export class StartCommand extends Command implements CommandPreRun {
 
     const shellOptions = { cwd: projectDir };
 
-    await this.personalizeApp(projectDir, name, displayName);
+    if (!clonedApp) {
+      await this.personalizeApp(projectDir, name, displayName);
 
-    if (cordovaIntegration) {
-      await this.env.runCommand(['integrations', 'enable', 'cordova', '--quiet']);
+      if (options['cordova']) {
+        await this.env.runCommand(['integrations', 'enable', 'cordova', '--quiet']);
+      }
+
+      this.env.log.nl();
     }
 
     if (options['deps']) {
@@ -258,73 +275,68 @@ export class StartCommand extends Command implements CommandPreRun {
       await this.env.shell.run(installer, installerArgs, shellOptions);
     }
 
-    if (proAppId && config.backend === BACKEND_PRO && !gitIntegration) {
-      throw new FatalException(
-        `Git CLI not found on your PATH. It must be installed to connect this app to Ionic.\n` +
-        `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`
-      );
-    }
+    if (!clonedApp) {
+      if (gitIntegration) {
+        await this.env.shell.run('git', ['init'], { showSpinner: false, ...shellOptions });
+      }
 
-    if (gitIntegration) {
-      await this.env.shell.run('git', ['init'], { showSpinner: false, ...shellOptions });
-    }
+      if (config.backend === BACKEND_PRO) {
+        if (options['link'] && !linkConfirmed) {
+          this.env.log.msg('\n' + chalk.bold(`  ${emoji('🔥', '*')}   IONIC  PRO  ${emoji('🔥', '*')}`));
+          this.env.log.msg('\n Supercharge your Ionic development with the ' + chalk.bold('Ionic Pro') + ' SDK\n\n');
+          this.env.log.msg(`  -  ${emoji('⚠️', '')}   Track runtime errors in real-time, back to your original TypeScript`);
+          this.env.log.msg(`  -  ${emoji('📲', '')}   Push remote updates and skip the app store queue`);
+          this.env.log.msg(`\nLearn more about Ionic Pro: ${chalk.bold('https://ionicframework.com/products')}\n`);
 
-    if (config.backend === BACKEND_PRO) {
-      if (options['link'] && !linkConfirmed) {
-        this.env.log.msg('\n' + chalk.bold(`  ${emoji('🔥', '*')}   IONIC  PRO  ${emoji('🔥', '*')}`));
-        this.env.log.msg('\n Supercharge your Ionic development with the ' + chalk.bold('Ionic Pro') + ' SDK\n\n');
-        this.env.log.msg(`  -  ${emoji('⚠️', '')}   Track runtime errors in real-time, back to your original TypeScript`);
-        this.env.log.msg(`  -  ${emoji('📲', '')}   Push remote updates and skip the app store queue`);
-        this.env.log.msg(`\nLearn more about Ionic Pro: ${chalk.bold('https://ionicframework.com/products')}\n`);
+          const confirm = await this.env.prompt({
+            type: 'confirm',
+            name: 'confirm',
+            message: 'Install the free Ionic Pro SDK and connect your app?',
+            noninteractiveValue: false,
+          });
+          this.env.log.msg('\n-----------------------------------\n\n');
 
-        const confirm = await this.env.prompt({
-          type: 'confirm',
-          name: 'confirm',
-          message: 'Install the free Ionic Pro SDK and connect your app?',
-          noninteractiveValue: false,
-        });
-        this.env.log.msg('\n-----------------------------------\n\n');
+          if (confirm) {
+            linkConfirmed = true;
+          }
+        }
 
-        if (confirm) {
-          linkConfirmed = true;
+        if (linkConfirmed) {
+          const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { pkg: '@ionic/pro' });
+          await this.env.shell.run(installer, installerArgs, shellOptions);
+
+          const cmdArgs = ['link'];
+
+          if (proAppId) {
+            cmdArgs.push(proAppId);
+          }
+
+          await this.env.runCommand(cmdArgs);
         }
       }
 
-      if (linkConfirmed) {
-        const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { pkg: '@ionic/pro' });
-        await this.env.shell.run(installer, installerArgs, shellOptions);
+      const manifestPath = path.resolve(projectDir, 'ionic.starter.json');
+      const manifest = await this.loadManifest(manifestPath);
 
-        const cmdArgs = ['link'];
-
-        if (proAppId) {
-          cmdArgs.push(proAppId);
-        }
-
-        await this.env.runCommand(cmdArgs);
+      if (manifest) {
+        await fsUnlink(manifestPath);
       }
-    }
 
-    const manifestPath = path.resolve(projectDir, 'ionic.starter.json');
-    const manifest = await this.loadManifest(manifestPath);
+      if (gitIntegration) {
+        await this.env.shell.run('git', ['add', '-A'], { showSpinner: false, ...shellOptions });
+        await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], { showSpinner: false, ...shellOptions });
+      }
 
-    if (manifest) {
-      await fsUnlink(manifestPath);
-    }
+      if (config.backend === BACKEND_LEGACY) {
+        this.env.log.info(getHelloText());
+      }
 
-    if (gitIntegration) {
-      await this.env.shell.run('git', ['add', '-A'], { showSpinner: false, ...shellOptions });
-      await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], { showSpinner: false, ...shellOptions });
-    }
-
-    if (config.backend === BACKEND_LEGACY) {
-      this.env.log.info(getHelloText());
+      if (manifest) {
+        await this.performManifestOps(manifest);
+      }
     }
 
     this.env.log.nl();
-
-    if (manifest) {
-      await this.performManifestOps(manifest);
-    }
 
     await this.showNextSteps(projectDir, linkConfirmed);
   }
@@ -377,11 +389,13 @@ export class StartCommand extends Command implements CommandPreRun {
         return;
       }
     }
+
+    this.env.tasks.end();
   }
 
-  async findStarterTemplate(starterTemplateName: string, type: string): Promise<StarterTemplate> {
+  async findStarterTemplate(template: string, type: string): Promise<StarterTemplate> {
     const { STARTER_BASE_URL, STARTER_TEMPLATES, getStarterList } = await import('@ionic/cli-utils/lib/start');
-    const starterTemplate = STARTER_TEMPLATES.find(t => t.type === type && t.name === starterTemplateName);
+    const starterTemplate = STARTER_TEMPLATES.find(t => t.type === type && t.name === template);
 
     if (starterTemplate) {
       return starterTemplate;
@@ -390,7 +404,7 @@ export class StartCommand extends Command implements CommandPreRun {
     this.env.tasks.next('Looking up starter');
     const starterList = await getStarterList(this.env.config);
 
-    const starter = starterList.starters.find(t => t.type === type && t.name === starterTemplateName);
+    const starter = starterList.starters.find(t => t.type === type && t.name === template);
 
     if (starter) {
       return {
@@ -402,7 +416,7 @@ export class StartCommand extends Command implements CommandPreRun {
       };
     } else {
       throw new FatalException(
-        `Unable to find starter template for ${chalk.green(starterTemplateName)}\n` +
+        `Unable to find starter template for ${chalk.green(template)}\n` +
         `If this is not a typo, please make sure it is a valid starter template within the starters repo: ${chalk.bold('https://github.com/ionic-team/starters')}`
       );
     }
@@ -437,6 +451,7 @@ export class StartCommand extends Command implements CommandPreRun {
 
   async performManifestOps(manifest: StarterManifest) {
     if (manifest.welcome) {
+      this.env.log.nl();
       this.env.log.msg(`${chalk.bold('Starter Welcome')}:\n`);
       this.env.log.info(manifest.welcome);
     }
