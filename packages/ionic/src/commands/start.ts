@@ -3,7 +3,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework/lib';
-import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun, StarterManifest } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun, StarterManifest, StarterTemplate } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
@@ -52,7 +52,7 @@ See the CLI documentation on starters: ${chalk.bold('https://ionicframework.com/
       default: 'ionic-angular',
     },
     {
-      name: 'app-name',
+      name: 'display-name',
       description: 'Human-readable name (use quotes around the name)',
       type: String,
       aliases: ['n'],
@@ -152,6 +152,11 @@ export class StartCommand extends Command implements CommandPreRun {
       );
     }
 
+    if (options['app-name']) {
+      this.env.log.warn(`The ${chalk.green('--app-name')} option has been deprecated, please use ${chalk.green('--display-name')}.`);
+      options['display-name'] = options['app-name'];
+    }
+
     if (proAppId) {
       if (!(await this.env.session.isLoggedIn())) {
         await promptToLogin(this.env);
@@ -202,134 +207,39 @@ export class StartCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const {
-      STARTER_BASE_URL,
-      STARTER_TEMPLATES,
-      getHelloText,
-      getStarterList,
-      isProjectNameValid,
-      isSafeToCreateProjectIn,
-      readStarterManifest,
-      updatePackageJsonForCli,
-    } = await import('@ionic/cli-utils/lib/start');
-
-    const { isValidPackageName } = await import('@ionic/cli-framework/utils/npm');
+    const { getHelloText } = await import('@ionic/cli-utils/lib/start');
     const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
-    const { download } = await import('@ionic/cli-utils/lib/http');
-    const { createTarExtraction } = await import('@ionic/cli-utils/lib/utils/archive');
-    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
 
-    let [ projectName, starterTemplateName ] = inputs;
-    let appName = options['app-name'] ? String(options['app-name']) : projectName;
-    let gitIntegration = false;
+    const [ name, starterTemplateName ] = inputs;
+    const displayName = options['display-name'] ? String(options['display-name']) : name;
     const proAppId = options['pro-id'] ? String(options['pro-id']) : undefined;
     let linkConfirmed = typeof proAppId === 'string';
 
     const config = await this.env.config.load();
 
-    if (!isProjectNameValid(projectName)) {
-      throw new FatalException(`Please name your Ionic project something meaningful other than ${chalk.green(projectName)}`);
-    }
+    const cordovaIntegration = Boolean(options['cordova']);
+    const gitIntegration = config.backend === BACKEND_PRO || options['git'] ? await this.isGitSetup() : false;
 
-    if (config.backend === BACKEND_PRO || options['git']) {
-      const cmdInstalled = await this.env.shell.cmdinfo('git', ['--version']);
+    await this.validateName(name);
 
-      if (cmdInstalled) {
-        gitIntegration = true;
-      } else {
-        if (config.backend === BACKEND_LEGACY) {
-          this.env.log.warn(
-            `Git CLI not found on your PATH. You may wish to install it to version control your app.\n` +
-            `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}\n\n` +
-            `Use ${chalk.green('--no-git')} to disable this warning.\n`
-          );
-        }
-      }
-    }
+    const starterTemplate = await this.findStarterTemplate(starterTemplateName, String(options['type']));
+    const projectDir = path.resolve(name);
 
-    let starterTemplate = STARTER_TEMPLATES.find(t => t.type === options['type'] && t.name === starterTemplateName);
-
-    if (!starterTemplate) {
-      this.env.tasks.next('Looking up starter');
-      const starterList = await getStarterList(this.env.config);
-
-      const starter = starterList.starters.find(t => t.type === options['type'] && t.name === starterTemplateName);
-
-      if (starter) {
-        starterTemplate = {
-          strip: false,
-          name: starter.name,
-          type: starter.type,
-          description: '',
-          archive: `${STARTER_BASE_URL}/${starter.id}.tar.gz`,
-        };
-      } else {
-        throw new FatalException(
-          `Unable to find starter template for ${chalk.green(starterTemplateName)}\n` +
-          `If this is not a typo, please make sure it is a valid starter template within the starters repo: ${chalk.bold('https://github.com/ionic-team/starters')}`
-        );
-      }
-    }
-
-    const projectRoot = path.resolve(projectName);
-    projectName = path.basename(projectRoot);
-
-    if (!isValidPackageName(projectName)) {
-      appName = 'MyApp';
-      this.env.log.warn(`${chalk.green(projectName)} was not a valid name for ${chalk.bold('package.json')}. Using ${chalk.bold(appName)} for now.`);
-    }
-
-    const shellOptions = { cwd: projectRoot };
-    const projectExists = await pathExists(projectName);
-
-    // Create the project directory
-    if (!projectExists) {
-      this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
-      await fsMkdir(projectRoot, 0o777);
-    } else if (!(await isSafeToCreateProjectIn(projectRoot))) {
-      const confirm = await this.env.prompt({
-        type: 'confirm',
-        name: 'confirm',
-        message: (
-          `The directory ${chalk.green(projectName)} contains file(s) that could conflict. ` +
-          'Would you like to overwrite the directory with this new project?'
-        ),
-        default: false,
-      });
-
-      if (confirm) {
-        this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectRoot))}`);
-        await removeDirectory(projectRoot);
-        await fsMkdir(projectRoot, 0o777);
-      } else {
-        this.env.log.info(`Not erasing existing project in ${chalk.green(prettyPath(projectRoot))}.`);
-        return;
-      }
-    }
-
-    const task = this.env.tasks.next(`Downloading and extracting ${chalk.green(starterTemplateName.toString())} starter`);
-    const ws = await createTarExtraction({ cwd: projectRoot, strip: starterTemplate.strip ? 1 : 0 });
-    await download(this.env.config, starterTemplate.archive, ws, {
-      progress: (loaded, total) => task.progress(loaded, total),
-    });
+    await this.ensureDirectory(name, projectDir);
+    await this.downloadStarterTemplate(projectDir, starterTemplate);
 
     // start is weird, once the project directory is created, it becomes a
     // "project" command and so we replace the `Project` instance that was
     // autogenerated when the CLI booted up. This has worked thus far?
-    this.env.project = new Project(projectRoot, PROJECT_FILE);
-    const project = await this.env.project.load();
+    this.env.project = new Project(projectDir, PROJECT_FILE);
 
-    this.env.tasks.next(`Customizing ${chalk.bold('ionic.config.json')} and ${chalk.bold('package.json')}`);
+    const shellOptions = { cwd: projectDir };
 
-    project.name = appName;
-    await updatePackageJsonForCli(projectRoot, appName);
-    await this.env.project.save();
+    await this.personalizeApp(projectDir, name, displayName);
 
-    if (options['cordova']) {
+    if (cordovaIntegration) {
       await this.env.runCommand(['integrations', 'enable', 'cordova', '--quiet']);
     }
-
-    this.env.tasks.end();
 
     if (options['deps']) {
       this.env.log.info('Installing dependencies may take several minutes.');
@@ -373,7 +283,7 @@ export class StartCommand extends Command implements CommandPreRun {
           message: 'Install the free Ionic Pro SDK and connect your app?',
           noninteractiveValue: false,
         });
-        console.log('\n-----------------------------------\n');
+        this.env.log.msg('\n-----------------------------------\n\n');
 
         if (confirm) {
           linkConfirmed = true;
@@ -394,14 +304,11 @@ export class StartCommand extends Command implements CommandPreRun {
       }
     }
 
-    const manifestPath = path.resolve(projectRoot, 'ionic.starter.json');
-    let manifest: StarterManifest | undefined;
+    const manifestPath = path.resolve(projectDir, 'ionic.starter.json');
+    const manifest = await this.loadManifest(manifestPath);
 
-    try {
-      manifest = await readStarterManifest(manifestPath);
+    if (manifest) {
       await fsUnlink(manifestPath);
-    } catch (e) {
-      this.env.log.debug(`Error with manifest file ${chalk.bold(prettyPath(manifestPath))}: ${e}`);
     }
 
     if (gitIntegration) {
@@ -410,23 +317,165 @@ export class StartCommand extends Command implements CommandPreRun {
     }
 
     if (config.backend === BACKEND_LEGACY) {
-      // Print out hello text about how to get started
-      if (this.env.log.shouldLog('info')) {
-        this.env.log.msg(getHelloText());
-      }
+      this.env.log.info(getHelloText());
     }
 
     this.env.log.nl();
 
     if (manifest) {
-      if (manifest.welcome) {
-        this.env.log.msg(`${chalk.bold('Starter Welcome')}:\n`);
-        this.env.log.info(manifest.welcome);
-      }
+      await this.performManifestOps(manifest);
     }
 
+    await this.showNextSteps(projectDir, linkConfirmed);
+  }
+
+  async isGitSetup(): Promise<boolean> {
+    const config = await this.env.config.load();
+    const cmdInstalled = await this.env.shell.cmdinfo('git', ['--version']);
+
+    if (cmdInstalled) {
+      return true;
+    }
+
+    if (config.backend === BACKEND_LEGACY) {
+      this.env.log.warn(
+        `Git CLI not found on your PATH. You may wish to install it to version control your app.\n` +
+        `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}\n\n` +
+        `Use ${chalk.green('--no-git')} to disable this warning.\n`
+      );
+    }
+
+    return false;
+  }
+
+  async ensureDirectory(projectName: string, projectDir: string) {
+    const { isSafeToCreateProjectIn } = await import('@ionic/cli-utils/lib/start');
+    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
+
+    const projectExists = await pathExists(projectName);
+
+    if (!projectExists) {
+      this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectDir))}`);
+      await fsMkdir(projectDir, 0o777);
+    } else if (!(await isSafeToCreateProjectIn(projectDir))) {
+      const confirm = await this.env.prompt({
+        type: 'confirm',
+        name: 'confirm',
+        message: (
+          `The directory ${chalk.green(projectName)} contains file(s) that could conflict. ` +
+          'Would you like to overwrite the directory with this new project?'
+        ),
+        default: false,
+      });
+
+      if (confirm) {
+        this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectDir))}`);
+        await removeDirectory(projectDir);
+        await fsMkdir(projectDir, 0o777);
+      } else {
+        this.env.log.info(`Not erasing existing project in ${chalk.green(prettyPath(projectDir))}.`);
+        return;
+      }
+    }
+  }
+
+  async findStarterTemplate(starterTemplateName: string, type: string): Promise<StarterTemplate> {
+    const { STARTER_BASE_URL, STARTER_TEMPLATES, getStarterList } = await import('@ionic/cli-utils/lib/start');
+    const starterTemplate = STARTER_TEMPLATES.find(t => t.type === type && t.name === starterTemplateName);
+
+    if (starterTemplate) {
+      return starterTemplate;
+    }
+
+    this.env.tasks.next('Looking up starter');
+    const starterList = await getStarterList(this.env.config);
+
+    const starter = starterList.starters.find(t => t.type === type && t.name === starterTemplateName);
+
+    if (starter) {
+      return {
+        strip: false,
+        name: starter.name,
+        type: starter.type,
+        description: '',
+        archive: `${STARTER_BASE_URL}/${starter.id}.tar.gz`,
+      };
+    } else {
+      throw new FatalException(
+        `Unable to find starter template for ${chalk.green(starterTemplateName)}\n` +
+        `If this is not a typo, please make sure it is a valid starter template within the starters repo: ${chalk.bold('https://github.com/ionic-team/starters')}`
+      );
+    }
+  }
+
+  async validateName(name: string) {
+    const { isValidPackageName } = await import('@ionic/cli-framework/utils/npm');
+    const { isProjectNameValid } = await import('@ionic/cli-utils/lib/start');
+
+    if (!isProjectNameValid(name)) {
+      throw new FatalException(`Please name your Ionic project something meaningful other than ${chalk.green(name)}`);
+    }
+
+    if (!isValidPackageName(name) || name !== path.basename(name)) {
+      throw new FatalException(
+        `${chalk.green(name)} is not a valid package or directory name.\n` +
+        `Please choose a different name. Alphanumeric characters are always safe for app names. You can use the ${chalk.green('--display-name')} option for the human-readable name.`
+      );
+    }
+  }
+
+  async loadManifest(manifestPath: string): Promise<StarterManifest | undefined> {
+    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
+    const { readStarterManifest } = await import('@ionic/cli-utils/lib/start');
+
+    try {
+      return await readStarterManifest(manifestPath);
+    } catch (e) {
+      this.env.log.debug(`Error with manifest file ${chalk.bold(prettyPath(manifestPath))}: ${e}`);
+    }
+  }
+
+  async performManifestOps(manifest: StarterManifest) {
+    if (manifest.welcome) {
+      this.env.log.msg(`${chalk.bold('Starter Welcome')}:\n`);
+      this.env.log.info(manifest.welcome);
+    }
+  }
+
+  async personalizeApp(projectDir: string, name: string, displayName: string) {
+    const { updatePackageJsonForCli } = await import('@ionic/cli-utils/lib/start');
+
+    const project = await this.env.project.load();
+
+    this.env.tasks.next(`Personalizing ${chalk.bold('ionic.config.json')} and ${chalk.bold('package.json')}`);
+
+    project.name = displayName;
+    await updatePackageJsonForCli(projectDir, name);
+    await this.env.project.save();
+
+    this.env.tasks.end();
+  }
+
+  async downloadStarterTemplate(projectDir: string, starterTemplate: StarterTemplate) {
+    const { download } = await import('@ionic/cli-utils/lib/http');
+    const { createTarExtraction } = await import('@ionic/cli-utils/lib/utils/archive');
+
+    const task = this.env.tasks.next(`Downloading and extracting ${chalk.green(starterTemplate.name.toString())} starter`);
+    const ws = await createTarExtraction({ cwd: projectDir, strip: starterTemplate.strip ? 1 : 0 });
+    await download(this.env.config, starterTemplate.archive, ws, {
+      progress: (loaded, total) => task.progress(loaded, total),
+    });
+
+    this.env.tasks.end();
+  }
+
+  async showNextSteps(projectDir: string, linkConfirmed: boolean) {
+    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
+
+    const config = await this.env.config.load();
+
     this.env.log.msg(`${chalk.bold('Next Steps')}:\n`);
-    this.env.log.msg(`* Go to your newly created project: ${chalk.green(`cd ${prettyPath(projectRoot)}`)}`);
+    this.env.log.msg(`* Go to your newly created project: ${chalk.green(`cd ${prettyPath(projectDir)}`)}`);
     this.env.log.msg(`* Get Ionic DevApp for easy device testing: ${chalk.bold('https://bit.ly/ionic-dev-app')}`);
 
     if (config.backend === BACKEND_PRO && linkConfirmed) {
