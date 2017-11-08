@@ -366,3 +366,17 @@ export function determineDistTag(version: string): DistTag {
 
   return 'latest';
 }
+
+export async function detectAndWarnAboutDeprecatedPlugin(env: IonicEnvironment, plugin: string) {
+  const packageJson = await env.project.loadPackageJson();
+
+  if (packageJson.devDependencies && packageJson.devDependencies[plugin]) {
+    const { pkgManagerArgs } = await import('../lib/utils/npm');
+    const args = await pkgManagerArgs(env, { pkg: plugin, command: 'uninstall', saveDev: true });
+
+    env.log.warn(
+      `Detected ${chalk.bold(plugin)} in your ${chalk.bold('package.json')}.\n` +
+      `As of CLI 3.8, it is no longer needed. You can uninstall it:\n\n${chalk.green(args.join(' '))}\n`
+    );
+  }
+}

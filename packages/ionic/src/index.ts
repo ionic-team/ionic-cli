@@ -6,7 +6,6 @@ import chalk from 'chalk';
 import {
   IHookEngine,
   InfoHookItem,
-  IonicEnvironment,
   RootPlugin,
   generateIonicEnvironment,
 } from '@ionic/cli-utils';
@@ -21,114 +20,7 @@ import { IonicNamespace } from './commands';
 const name = 'ionic';
 export const namespace = new IonicNamespace();
 
-const BUILD_BEFORE_HOOK = 'build:before';
-const BUILD_BEFORE_SCRIPT = `ionic:${BUILD_BEFORE_HOOK}`;
-const BUILD_AFTER_HOOK = 'build:after';
-const BUILD_AFTER_SCRIPT = `ionic:${BUILD_AFTER_HOOK}`;
-
-const WATCH_BEFORE_HOOK = 'watch:before';
-const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
-
 export function registerHooks(hooks: IHookEngine) {
-  const detectAndWarnAboutDeprecatedPlugin = async (env: IonicEnvironment, plugin: string) => {
-    const packageJson = await env.project.loadPackageJson();
-
-    if (packageJson.devDependencies && packageJson.devDependencies[plugin]) {
-      const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
-      const args = await pkgManagerArgs(env, { pkg: plugin, command: 'uninstall', saveDev: true });
-
-      env.log.warn(
-        `Detected ${chalk.bold(plugin)} in your ${chalk.bold('package.json')}.\n` +
-        `As of CLI 3.8, it is no longer needed. You can uninstall it:\n\n${chalk.green(args.join(' '))}\n`
-      );
-    }
-  };
-
-  hooks.register(name, BUILD_BEFORE_HOOK, async ({ env }) => {
-    const packageJson = await env.project.loadPackageJson();
-
-    if (packageJson.scripts && packageJson.scripts[BUILD_BEFORE_SCRIPT]) {
-      env.log.debug(() => `Invoking ${chalk.cyan(BUILD_BEFORE_SCRIPT)} npm script.`);
-      await env.shell.run('npm', ['run', BUILD_BEFORE_SCRIPT], { showExecution: true });
-    }
-
-    if (packageJson.devDependencies) {
-      if (packageJson.devDependencies['gulp']) {
-        const { checkGulp, runTask } = await import('@ionic/cli-utils/lib/gulp');
-        await checkGulp(env);
-        await runTask(env, BUILD_BEFORE_SCRIPT);
-      }
-
-      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-cordova');
-      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic-angular');
-      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic1');
-      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-gulp');
-
-      if (packageJson.devDependencies['@ionic/cli-plugin-cordova']) {
-        const { checkCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
-        await checkCordova(env);
-      }
-    }
-  });
-
-  hooks.register(name, BUILD_AFTER_HOOK, async ({ env, platform }) => {
-    const [ project, packageJson ] = await Promise.all([env.project.load(), env.project.loadPackageJson()]);
-
-    if (packageJson.scripts && packageJson.scripts[BUILD_AFTER_SCRIPT]) {
-      env.log.debug(() => `Invoking ${chalk.cyan(BUILD_AFTER_SCRIPT)} npm script.`);
-      await env.shell.run('npm', ['run', BUILD_AFTER_SCRIPT], { showExecution: true });
-    }
-
-    if (packageJson.devDependencies) {
-      if (packageJson.devDependencies['gulp']) {
-        const { checkGulp, runTask } = await import('@ionic/cli-utils/lib/gulp');
-        await checkGulp(env);
-        await runTask(env, BUILD_AFTER_SCRIPT);
-      }
-    }
-
-    if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
-      const { BuildCommand } = await import('./commands/build');
-      const cordovaPrepareArgs = ['cordova', 'prepare'];
-
-      if (platform) {
-        cordovaPrepareArgs.push(platform);
-      }
-
-      if (env.command instanceof BuildCommand) {
-        await env.runCommand(cordovaPrepareArgs);
-      }
-    }
-  });
-
-  hooks.register(name, WATCH_BEFORE_HOOK, async ({ env }) => {
-    const packageJson = await env.project.loadPackageJson();
-
-    if (packageJson.scripts && packageJson.scripts[WATCH_BEFORE_SCRIPT]) {
-      env.log.debug(() => `Invoking ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
-      await env.shell.run('npm', ['run', WATCH_BEFORE_SCRIPT], { showExecution: true });
-    }
-
-    if (packageJson.devDependencies) {
-      if (packageJson.devDependencies['gulp']) {
-        const { checkGulp, registerWatchEvents, runTask } = await import('@ionic/cli-utils/lib/gulp');
-        await checkGulp(env);
-        await registerWatchEvents(env);
-        await runTask(env, WATCH_BEFORE_SCRIPT);
-      }
-
-      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-cordova');
-      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic-angular');
-      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic1');
-      await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-gulp');
-
-      if (packageJson.devDependencies['@ionic/cli-plugin-cordova']) {
-        const { checkCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
-        await checkCordova(env);
-      }
-    }
-  });
-
   hooks.register(name, 'info', async ({ env, project }) => {
     const osName = await import('os-name');
     const os = osName();
@@ -321,7 +213,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
       }
 
       await ienv.hooks.fire('plugins:init', { env: ienv });
-      await namespace.runCommand(ienv, pargv, { root: true });
+      await namespace.runCommand(ienv, pargv);
       config.state.lastCommand = now.toISOString();
     }
 

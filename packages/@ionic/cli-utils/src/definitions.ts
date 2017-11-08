@@ -545,7 +545,6 @@ export interface PromptModule {
 }
 
 export interface IonicEnvironment {
-  command?: ICommand; // root command being executed
   readonly flags: IonicEnvironmentFlags;
   readonly hooks: IHookEngine;
   readonly client: IClient;
@@ -627,7 +626,7 @@ export interface IRootNamespace extends INamespace {
   root: true;
   name: 'ionic';
 
-  runCommand(env: IonicEnvironment, pargv: string[], opts?: { root?: boolean; }): Promise<void>;
+  runCommand(env: IonicEnvironment, pargv: string[]): Promise<void>;
 }
 
 export interface ICommand {

@@ -293,7 +293,7 @@ async function setupProxies(env: IonicEnvironment, app: expressType.Application)
   const project = await env.project.load();
 
   for (const proxy of project.proxies || []) {
-    let opts: any = url.parse(proxy.proxyUrl);
+    const opts: any = url.parse(proxy.proxyUrl);
     if (proxy.proxyNoAgent) {
       opts.agent = false;
     }

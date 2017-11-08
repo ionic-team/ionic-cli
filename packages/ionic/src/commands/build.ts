@@ -32,7 +32,21 @@ export class BuildCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const [ platform ] = inputs;
+
     const { build } = await import('@ionic/cli-utils/commands/build');
     await build(this.env, inputs, options);
+
+    const project = await this.env.project.load();
+
+    if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
+      const cordovaPrepareArgs = ['cordova', 'prepare'];
+
+      if (platform) {
+        cordovaPrepareArgs.push(platform);
+      }
+
+      await this.env.runCommand(cordovaPrepareArgs);
+    }
   }
 }

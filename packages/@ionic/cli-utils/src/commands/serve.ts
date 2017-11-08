@@ -7,7 +7,38 @@ import { CommandLineInputs, CommandLineOptions, IonicEnvironment, ServeDetails }
 import { FatalException } from '../lib/errors';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, IONIC_LAB_URL, gatherDevAppDetails, publishDevApp } from '../lib/serve';
 
+const WATCH_BEFORE_HOOK = 'watch:before';
+const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
+
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
+  const { detectAndWarnAboutDeprecatedPlugin } = await import('../lib/plugins');
+
+  const packageJson = await env.project.loadPackageJson();
+
+  if (packageJson.scripts && packageJson.scripts[WATCH_BEFORE_SCRIPT]) {
+    env.log.debug(() => `Invoking ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
+    await env.shell.run('npm', ['run', WATCH_BEFORE_SCRIPT], { showExecution: true });
+  }
+
+  if (packageJson.devDependencies) {
+    if (packageJson.devDependencies['gulp']) {
+      const { checkGulp, registerWatchEvents, runTask } = await import('../lib/gulp');
+      await checkGulp(env);
+      await registerWatchEvents(env);
+      await runTask(env, WATCH_BEFORE_SCRIPT);
+    }
+
+    await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-cordova');
+    await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic-angular');
+    await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic1');
+    await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-gulp');
+
+    if (packageJson.devDependencies['@ionic/cli-plugin-cordova']) {
+      const { checkCordova } = await import('../lib/cordova/utils');
+      await checkCordova(env);
+    }
+  }
+
   await env.hooks.fire('watch:before', { env });
 
   const [ platform ] = inputs;
