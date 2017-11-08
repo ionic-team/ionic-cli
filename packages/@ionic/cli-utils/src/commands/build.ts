@@ -44,7 +44,8 @@ export async function build(env: IonicEnvironment, inputs: CommandLineInputs, op
     const { build } = await import('../lib/ionic-angular/build');
     await build({ env, options: { platform, ...options } });
   } else {
-    env.log.warn(`Not performing Ionic build for project type: ${chalk.bold(project.type)}.`);
+    const { build } = await import('../lib/ionic1/build');
+    await build({ env, options: { platform, ...options } });
   }
 
   if (packageJson.scripts && packageJson.scripts[BUILD_AFTER_SCRIPT]) {

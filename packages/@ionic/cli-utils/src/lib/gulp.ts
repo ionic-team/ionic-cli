@@ -91,6 +91,8 @@ export async function runTask(env: IonicEnvironment, name: string): Promise<void
         env.log.error(`Error occurred during ${chalk.cyan(name)} gulp task. Use ${chalk.green('--verbose')} to show details.`);
         throw e;
       }
+    } else {
+      env.log.debug(() => `Missing ${chalk.cyan(name)} gulp task.`);
     }
   }
 }
