@@ -46,7 +46,14 @@ export async function treatAilments(env: IonicEnvironment) {
       return [ ailment, false ];
     }
 
-    const detected = await ailment.detected(env);
+    let detected = false;
+
+    try {
+      detected = await ailment.detected(env);
+    } catch (e) {
+      env.log.debug(() => `Error while checking ${chalk.bold(ailment.id)}:\n\n${chalk.red(e.stack ? e.stack : e)}`);
+    }
+
     count++;
     env.tasks.updateMsg(`Detecting issues: ${chalk.bold(`${count} / ${registry.ailments.length}`)} complete`);
 

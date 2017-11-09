@@ -629,11 +629,12 @@ export namespace Ailments {
 
     async detected(env: IonicEnvironment) {
       const project = await env.project.load();
-      const conf = await ConfigXml.load(env.project.directory);
 
       if (!project.integrations.cordova) {
         return false;
       }
+
+      const conf = await ConfigXml.load(env.project.directory);
 
       return conf.getBundleId() === 'io.ionic.starter';
     }
