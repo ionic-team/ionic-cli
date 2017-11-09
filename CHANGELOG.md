@@ -7,6 +7,23 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.18.0"></a>
+### 3.18.0 (2017-11-09)
+
+* Added support for custom git repository URLs to the `template` argument of
+  `ionic start`. See `ionic start --help` for usage.
+* Added `--cordova` flag for `ionic start` to provide the Cordova integration
+  while creating a new app.
+* `ionic cordova prepare` will now run an Ionic Build beforehand to ensure the
+  latest files are prepared. A `--no-build` flag has been added to disable this.
+* Fixed long-standing issue with `ionic build` not running `sass` task for Ionic
+  1 apps with gulp integration. It was previously only working during `ionic
+  serve`.
+* Fixed issue with `ionic doctor check` throwing an ENOENT error when
+  `config.xml` was missing.
+* Fixed issue with app not being personalized with app name during `ionic
+  start`.
+
 <a name="3.17.0"></a>
 ### 3.17.0 (2017-11-07)
 
