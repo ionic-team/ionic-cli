@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.18.0"></a>
+# [3.18.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.17.0...ionic@3.18.0) (2017-11-09)
+
+
+### Bug Fixes
+
+* **cordova:** run ionic build before prepare ([932b2ee](https://github.com/ionic-team/ionic-cli/commit/932b2ee))
+* **start:** set proper app name ([e2f7167](https://github.com/ionic-team/ionic-cli/commit/e2f7167))
+
+
+### Features
+
+* **start:** --cordova flag to include cordova integration ([fe31173](https://github.com/ionic-team/ionic-cli/commit/fe31173))
+* **start:** custom starters by repo URL ([f54e78b](https://github.com/ionic-team/ionic-cli/commit/f54e78b))
+
+
+
+
 <a name="3.17.0"></a>
 # [3.17.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.16.0...ionic@3.17.0) (2017-11-07)
 

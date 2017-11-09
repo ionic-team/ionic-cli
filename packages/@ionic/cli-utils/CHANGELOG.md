@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.18.0"></a>
+# [1.18.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.17.0...@ionic/cli-utils@1.18.0) (2017-11-09)
+
+
+### Bug Fixes
+
+* **build:** perform sass task during build ([bb45db4](https://github.com/ionic-team/ionic-cli/commit/bb45db4))
+* **doctor:** fix ENOENT error with config.xml ([7c9fd85](https://github.com/ionic-team/ionic-cli/commit/7c9fd85))
+
+
+### Features
+
+* **start:** --cordova flag to include cordova integration ([fe31173](https://github.com/ionic-team/ionic-cli/commit/fe31173))
+
+
+
+
 <a name="1.17.0"></a>
 # [1.17.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.16.0...@ionic/cli-utils@1.17.0) (2017-11-07)
 
