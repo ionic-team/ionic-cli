@@ -40,7 +40,7 @@ export class BuildCommand extends Command implements CommandPreRun {
     const project = await this.env.project.load();
 
     if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
-      const cordovaPrepareArgs = ['cordova', 'prepare'];
+      const cordovaPrepareArgs = ['cordova', 'prepare', '--no-build'];
 
       if (platform) {
         cordovaPrepareArgs.push(platform);

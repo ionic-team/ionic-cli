@@ -3,6 +3,8 @@ import chalk from 'chalk';
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/cordova/utils';
+import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 
 import { CordovaCommand } from './base';
 
@@ -26,6 +28,15 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
       description: `The platform you would like to prepare (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
       required: false,
     },
+  ],
+  options: [
+    {
+      name: 'build',
+      description: 'Do not invoke an Ionic build',
+      type: Boolean,
+      default: true,
+    },
+    ...APP_SCRIPTS_OPTIONS,
   ]
 })
 export class PrepareCommand extends CordovaCommand implements CommandPreRun {
@@ -35,7 +46,6 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
-    const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
 
     const [ platform ] = inputs;
 
@@ -58,6 +68,11 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
           );
         }
       }
+    }
+
+    if (options.build) {
+      const { build } = await import('@ionic/cli-utils/commands/build');
+      await build(this.env, inputs, generateBuildOptions(this.metadata, options));
     }
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });
