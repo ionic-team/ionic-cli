@@ -228,7 +228,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
       ienv.daemon.save(),
     ]);
   } catch (e) {
-    ienv.log.error(e);
+    ienv.log.error(String(e.stack ? e.stack : e));
   }
 
   if (err) {
