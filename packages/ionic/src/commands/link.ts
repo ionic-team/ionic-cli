@@ -83,10 +83,19 @@ export class LinkCommand extends Command implements CommandPreRun {
     const project = await this.env.project.load();
 
     if (project.app_id) {
+      if (project.app_id === appId) {
+        this.env.log.info(`Already linked with app ${chalk.green(appId)}.`);
+        return;
+      }
+
+      const msg = appId ?
+        `Are you sure you want to link it to ${chalk.green(appId)} instead?` :
+        `Would you like to link it to a different app?`;
+
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `App ID ${chalk.green(project.app_id)} already exists in project config. Would you like to link a different app?`
+        message: `App ID ${chalk.green(project.app_id)} is already set up with this app. ${msg}`,
       });
 
       if (!confirm) {
@@ -104,11 +113,7 @@ export class LinkCommand extends Command implements CommandPreRun {
     }
 
     if (appId) {
-      if (appId === project.app_id) {
-        return this.env.log.info(`Already linked with app ${chalk.bold(appId)}.`);
-      }
-
-      this.env.tasks.next(`Looking up app ${chalk.bold(appId)}`);
+      this.env.tasks.next(`Looking up app ${chalk.green(appId)}`);
 
       const token = await this.env.session.getAppUserToken(appId);
       const appUtil = new App(token, this.env.client);
@@ -173,7 +178,7 @@ export class LinkCommand extends Command implements CommandPreRun {
         await this.env.runCommand(['config', 'set', 'app_id', `"${appId}"`, '--json']);
         await this.env.runCommand(['git', 'remote']);
 
-        this.env.log.ok(`Project linked with app ${chalk.bold(appId)}!`);
+        this.env.log.ok(`Project linked with app ${chalk.green(appId)}!`);
       } else {
         const opn = await import('opn');
         const dashUrl = await this.env.config.getDashUrl();
@@ -189,7 +194,7 @@ export class LinkCommand extends Command implements CommandPreRun {
         await this.env.runCommand(['git', 'remote']);
       }
 
-      this.env.log.ok(`Project linked with app ${chalk.bold(appId)}!`);
+      this.env.log.ok(`Project linked with app ${chalk.green(appId)}!`);
     }
 
     await Promise.all([this.env.config.save(), this.env.project.save()]);
