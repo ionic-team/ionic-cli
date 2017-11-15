@@ -75,7 +75,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     {
       name: 'git',
       description: 'Do not initialize a git repo',
-      backends: [BACKEND_LEGACY],
       type: Boolean,
       default: true,
       advanced: true,
@@ -119,7 +118,12 @@ export class StartCommand extends Command implements CommandPreRun {
       options['link'] = false;
     }
 
+
     if (options['pro-id']) {
+      if (options['link'] === false) {
+        this.env.log.warn(`The ${chalk.green('--no-link')} option has no effect with ${chalk.green('--pro-id')}.`);
+      }
+
       options['link'] = true;
     }
 
@@ -230,7 +234,7 @@ export class StartCommand extends Command implements CommandPreRun {
     let linkConfirmed = typeof proAppId === 'string';
 
     const config = await this.env.config.load();
-    const gitIntegration = config.backend === BACKEND_PRO || options['git'] ? await this.isGitSetup() : false;
+    const gitIntegration = options['git'] ? await this.isGitSetup() : false;
 
     if (proAppId && config.backend === BACKEND_PRO && !gitIntegration) {
       throw new FatalException(
@@ -410,8 +414,7 @@ export class StartCommand extends Command implements CommandPreRun {
         await removeDirectory(projectDir);
         await fsMkdir(projectDir, 0o777);
       } else {
-        this.env.log.info(`Not erasing existing project in ${chalk.green(prettyPath(projectDir))}.`);
-        return;
+        throw new FatalException(`Not erasing existing project in ${chalk.green(prettyPath(projectDir))}.`, 0);
       }
     }
 
