@@ -249,6 +249,19 @@ export class StartCommand extends Command implements CommandPreRun {
     const shellOptions = { cwd: projectDir };
 
     if (!clonedApp) {
+      if (!options['cordova']) {
+        const confirm = await this.env.prompt({
+          type: 'confirm',
+          name: 'confirm',
+          message: 'Would you like to integrate your new app with Cordova to target native iOS and Android?',
+          default: false,
+        });
+
+        if (confirm) {
+          options['cordova'] = true;
+        }
+      }
+
       await this.personalizeApp(projectDir, name, displayName);
 
       if (options['cordova']) {
