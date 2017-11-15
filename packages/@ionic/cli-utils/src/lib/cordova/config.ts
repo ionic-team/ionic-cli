@@ -67,6 +67,22 @@ export class ConfigXml {
     }
   }
 
+  setName(name: string) {
+    const root = this.doc.getroot();
+    let nameNode = root.find('name');
+
+    if (!nameNode) {
+      nameNode = et.SubElement(root, 'name', {});
+    }
+
+    nameNode.text = name;
+  }
+
+  setBundleId(bundleId: string) {
+    const root = this.doc.getroot();
+    root.set('id', bundleId);
+  }
+
   getBundleId() {
     const root = this.doc.getroot();
     return root.get('id');

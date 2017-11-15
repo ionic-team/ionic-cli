@@ -91,6 +91,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       name: 'pro-id',
       description: 'Specify an app ID from the Ionic Dashboard to link',
     },
+    {
+      name: 'bundle-id',
+      description: 'Specify the bundle ID/application ID for your app (reverse-DNS notation)',
+      advanced: true,
+    },
   ],
 })
 export class StartCommand extends Command implements CommandPreRun {
@@ -158,6 +163,11 @@ export class StartCommand extends Command implements CommandPreRun {
     if (options['app-name']) {
       this.env.log.warn(`The ${chalk.green('--app-name')} option has been deprecated, please use ${chalk.green('--display-name')}.`);
       options['display-name'] = options['app-name'];
+    }
+
+    if (options['bundle-id']) {
+      this.env.log.info(`${chalk.green('--bundle-id')} detected, using ${chalk.green('--cordova')}`);
+      options['cordova'] = true;
     }
 
     if (proAppId) {
@@ -266,6 +276,8 @@ export class StartCommand extends Command implements CommandPreRun {
 
       if (options['cordova']) {
         await this.env.runCommand(['integrations', 'enable', 'cordova', '--quiet']);
+        const bundleId = options['bundle-id'] ? String(options['bundle-id']) : undefined;
+        await this.personalizeCordovaApp(projectDir, name, bundleId);
       }
 
       this.env.log.nl();
@@ -482,6 +494,18 @@ export class StartCommand extends Command implements CommandPreRun {
     await this.env.project.save();
 
     this.env.tasks.end();
+  }
+
+  async personalizeCordovaApp(projectDir: string, name: string, bundleId?: string) {
+    const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
+    const conf = await ConfigXml.load(projectDir);
+    conf.setName(name);
+
+    if (bundleId) {
+      conf.setBundleId(bundleId);
+    }
+
+    await conf.save();
   }
 
   async downloadStarterTemplate(projectDir: string, starterTemplate: StarterTemplate) {
