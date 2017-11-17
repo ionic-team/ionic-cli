@@ -1,61 +1,67 @@
-#!/usr/bin/env node
+import * as path from 'path';
 
-const path = require('path');
+import stripAnsi = require('strip-ansi');
+import * as ansiStyle from 'ansi-styles';
+import * as escapeStringRegexp from 'escape-string-regexp';
 
-const style = require('ansi-styles');
-const escapeStringRegexp = require('escape-string-regexp');
+import { generateRootPlugin } from 'ionic';
+import { copyDirectory, fsMkdirp, fsStat, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 
-const ionicPkg = require(path.resolve(__dirname, '..', '..', 'ionic'));
-const fsPkg = require(path.resolve(__dirname, '..', 'cli-framework', 'utils', 'fs'));
-const utilsPkg = require(path.resolve(__dirname, '..', 'cli-utils'));
-const startLib = require(path.resolve(__dirname, '..', 'cli-utils', 'lib', 'start'));
+import {
+  CommandData,
+  CommandInput,
+  CommandOption,
+  IonicEnvironment,
+  StarterTemplate,
+  generateIonicEnvironment,
+} from '@ionic/cli-utils';
 
-run().then(() => console.log('done!')).catch((err) => console.error(err));
+import { STARTER_TEMPLATES } from '@ionic/cli-utils/lib/start';
 
-async function run() {
-  const plugin = await ionicPkg.generateRootPlugin();
-  const env = await utilsPkg.generateIonicEnvironment(plugin, process.argv.slice(2), process.env);
+export async function run() {
+  const plugin = await generateRootPlugin();
+  const env = await generateIonicEnvironment(plugin, process.argv.slice(2), process.env);
 
-  const indexPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'index.md');
+  const indexPath = path.resolve(__dirname, '..', '..', '..', '..', 'docs', 'index.md');
   const indexDoc = await formatIonicPage(env);
 
-  const commandsPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'commands.md');
+  const commandsPath = path.resolve(__dirname, '..', '..', '..', '..', 'docs', 'commands.md');
   const commandsDoc = await formatCommandsPage(env);
 
-  const configuringPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'configuring.md');
-  const configuringDoc = await formatConfiguringPage(env);
+  const configuringPath = path.resolve(__dirname, '..', '..', '..', '..', 'docs', 'configuring.md');
+  const configuringDoc = await formatConfiguringPage();
 
-  const startersPath = path.resolve(__dirname, '..', '..', '..', 'docs', 'starters.md');
-  const startersDoc = await formatStartersPage(env);
+  const startersPath = path.resolve(__dirname, '..', '..', '..', '..', 'docs', 'starters.md');
+  const startersDoc = await formatStartersPage();
 
-  await fsPkg.fsMkdirp(path.dirname(indexPath));
+  await fsMkdirp(path.dirname(indexPath));
 
-  await fsPkg.fsWriteFile(indexPath, indexDoc, { encoding: 'utf8' });
-  await fsPkg.fsWriteFile(commandsPath, commandsDoc, { encoding: 'utf8' });
-  await fsPkg.fsWriteFile(configuringPath, configuringDoc, { encoding: 'utf8' });
-  await fsPkg.fsWriteFile(startersPath, startersDoc, { encoding: 'utf8' });
+  await fsWriteFile(indexPath, indexDoc, { encoding: 'utf8' });
+  await fsWriteFile(commandsPath, commandsDoc, { encoding: 'utf8' });
+  await fsWriteFile(configuringPath, configuringDoc, { encoding: 'utf8' });
+  await fsWriteFile(startersPath, startersDoc, { encoding: 'utf8' });
 
   const commands = await getCommandList(env);
   const commandPromises = commands.map(async (cmd) => {
-    const cmdPath = path.resolve(__dirname, '..', '..', '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
+    const cmdPath = path.resolve(__dirname, '..', '..', '..', '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
     const cmdDoc = formatCommandDoc(env, cmd);
 
-    await fsPkg.fsMkdirp(path.dirname(cmdPath));
-    await fsPkg.fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
+    await fsMkdirp(path.dirname(cmdPath));
+    await fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
   });
 
   await Promise.all(commandPromises);
-  await copyToIonicSite(commands);
+  await copyToIonicSite();
 
   await env.close();
 }
 
-async function getCommandList(env) {
+async function getCommandList(env: IonicEnvironment) {
   const cmds = await env.namespace.getCommandMetadataList();
   return cmds.filter(cmd => cmd.visible !== false);
 }
 
-async function formatIonicPage(env) {
+async function formatIonicPage(env: IonicEnvironment) {
   return `---
 layout: fluid/cli_docs_base
 category: cli
@@ -136,12 +142,14 @@ If you're having trouble with the Ionic CLI, you can try the following:
 `;
 }
 
-async function formatCommandsPage(env) {
-  const stripAnsi = env.load('strip-ansi');
-
+async function formatCommandsPage(env: IonicEnvironment) {
   const commands = await getCommandList(env);
 
-  function listCommandLink(cmdData) {
+  function listCommandLink(cmdData: CommandData) {
+    if (!cmdData.fullName) {
+      cmdData.fullName = cmdData.name;
+    }
+
     return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '))}/) | ${cmdData.deprecated ? '(deprecated) ' : ''}${stripAnsi(cmdData.description)}`;
   }
 
@@ -322,12 +330,18 @@ By default, the Ionic CLI sends usage data to Ionic, which we use to better your
 `;
 }
 
+interface Starter {
+  type: string;
+  name: string;
+  starters: StarterTemplate[];
+}
+
 function formatStartersPage() {
-  const formatStarter = (t) => {
-    return `[${t.name}](${t.url}) | ${t.description}\n`;
+  const formatStarter = (t: StarterTemplate) => {
+    return `${t.name} | ${t.description}\n`;
   };
 
-  const formatStartersTable = (starterType) => {
+  const formatStartersTable = (starterType: Starter) => {
     return `
 ### ${starterType.name}
 
@@ -337,22 +351,16 @@ ${starterType.starters.map(formatStarter).join('')}
 `;
   };
 
-  const formatBaseTable = (base) => {
-    return `\`${base.id}\` | [${base.url}](${base.url})\n`;
-  };
-
-  const starters = [
+  const starters: Starter[] = [
     {
       type: 'ionic-angular',
       name: 'Ionic Angular',
-      base: startLib.STARTER_TYPES.find(s => s.id === 'ionic-angular'),
-      starters: startLib.STARTER_TEMPLATES.filter(s => s.type === 'ionic-angular'),
+      starters: STARTER_TEMPLATES.filter(s => s.type === 'ionic-angular'),
     },
     {
       type: 'ionic1',
       name: 'Ionic 1',
-      base: startLib.STARTER_TYPES.find(s => s.id === 'ionic1'),
-      starters: startLib.STARTER_TEMPLATES.filter(s => s.type === 'ionic1'),
+      starters: STARTER_TEMPLATES.filter(s => s.type === 'ionic1'),
     },
   ];
 
@@ -369,16 +377,10 @@ ${starters.map(formatStartersTable).join('')}
 ## How it Works
 
 The Ionic CLI will combine each starter template with its [base template](#base-templates) to provide a new project the files it needs to start development. See the [\`ionic start\`](/docs/cli/start/) docs for more information.
-
-## Base Templates
-
-Project Type |
--------------|
-${starters.map((s) => formatBaseTable(s.base)).join('')}
 `;
 }
 
-function formatPageHeader(name, id) {
+function formatPageHeader(name: string, id: string) {
   return `---
 layout: fluid/cli_docs_base
 category: cli
@@ -395,7 +397,11 @@ ${sillyNotice()}
 `;
 }
 
-function formatCommandHeader(cmd) {
+function formatCommandHeader(cmd: CommandData) {
+  if (!cmd.fullName) {
+    cmd.fullName = cmd.name;
+  }
+
   return `---
 layout: fluid/cli_docs_base
 category: cli
@@ -423,39 +429,42 @@ DO NOT MODIFY THIS FILE DIRECTLY -- IT IS GENERATED FROM THE CLI REPO
 `;
 }
 
-function links2md(str) {
+function links2md(str: string) {
   return str.replace(/((http|https):\/\/(\w+:{0,1}\w*@)?([^\s\*\)`]+)(\/|\/([\w#!:.?+=&%@!\-\/]))?)/g, '[$1]($1)');
 }
 
-function ansi2md(str) {
+function ansi2md(str: string) {
   str = str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  str = convertAnsiToMd(str, style.green, { open: '`', close: '`' });
-  str = convertAnsiToMd(str, style.yellow, { open: '', close: '' });
-  str = convertAnsiToMd(str, style.bold, { open: '**', close: '**' });
+  str = convertAnsiToMd(str, ansiStyle.green, { open: '`', close: '`' });
+  str = convertAnsiToMd(str, ansiStyle.yellow, { open: '', close: '' });
+  str = convertAnsiToMd(str, ansiStyle.bold, { open: '**', close: '**' });
   return str;
 }
 
-function convertAnsiToMd(str, style, md) {
+function convertAnsiToMd(str: string, style: ansiStyle.EscapeCodePair, md: ansiStyle.EscapeCodePair) {
   str = str.replace(new RegExp(escapeStringRegexp(style.open) + '(.*?)' + escapeStringRegexp(style.close), 'g'), md.open + '$1' + md.close);
   return str;
 }
 
-function formatCommandDoc(env, cmdMetadata) {
-  const stripAnsi = env.load('strip-ansi');
+function formatCommandDoc(env: IonicEnvironment, cmdMetadata: CommandData) {
   const description = stripAnsi(cmdMetadata.description).split('\n').join('\n  ');
+
+  if (!cmdMetadata.fullName) {
+    cmdMetadata.fullName = cmdMetadata.name;
+  }
 
   return formatCommandHeader(cmdMetadata) +
     formatName(cmdMetadata.fullName, description) +
-    formatSynopsis(cmdMetadata.inputs, cmdMetadata.fullName) +
+    formatSynopsis(cmdMetadata.inputs || [], cmdMetadata.fullName) +
     formatDescription(env, cmdMetadata) +
-    formatExamples(cmdMetadata.exampleCommands, cmdMetadata.fullName);
+    formatExamples(cmdMetadata.exampleCommands || [], cmdMetadata.fullName);
 }
 
-function formatName(fullName, description) {
+function formatName(fullName: string, description: string) {
   return description;
 }
 
-function formatSynopsis(inputs, commandName) {
+function formatSynopsis(inputs: CommandInput[], commandName: string) {
   const headerLine = `## Synopsis`;
   const usageLine =
       `${commandName} ${
@@ -475,9 +484,7 @@ $ ionic ${usageLine}
 }
 
 
-function formatDescription(env, cmdMetadata) {
-  const stripAnsi = env.load('strip-ansi');
-
+function formatDescription(env: IonicEnvironment, cmdMetadata: CommandData) {
   let longDescription = cmdMetadata.longDescription;
 
   if (longDescription) {
@@ -491,7 +498,7 @@ function formatDescription(env, cmdMetadata) {
 
   const headerLine = `## Details`;
 
-  function inputLineFn(input, index) {
+  function inputLineFn(input: CommandInput, index: number) {
     const name = input.name;
     const description = stripAnsi(ansi2md(input.description));
     const optionList = `\`${name}\``;
@@ -499,7 +506,7 @@ function formatDescription(env, cmdMetadata) {
     return `${optionList} | ${description}`;
   }
 
-  function optionLineFn(option) {
+  function optionLineFn(option: CommandOption) {
     const showInverse = option.type === Boolean && option.default === true && option.name.length > 1;
     const name = showInverse ? `--no-${option.name}` : `-${option.name.length > 1 ? '-' : ''}${option.name}`;
     const aliases = option.aliases;
@@ -531,8 +538,8 @@ ${options.map(optionLineFn).join(`
 `;
 }
 
-function formatExamples(exampleCommands, commandName) {
-  if (!Array.isArray(exampleCommands)) {
+function formatExamples(exampleCommands: string[], commandName: string) {
+  if (exampleCommands.length === 0) {
     return '';
   }
 
@@ -548,18 +555,18 @@ ${exampleLines.join('\n')}
 `;
 }
 
-async function copyToIonicSite(commands) {
-  const ionicSitePath = path.resolve(__dirname, '..', '..', '..', '..', 'ionic-site');
+async function copyToIonicSite() {
+  const ionicSitePath = path.resolve(__dirname, '..', '..', '..', '..', '..', 'ionic-site');
 
-  let dirData = await fsPkg.fsStat(ionicSitePath);
+  let dirData = await fsStat(ionicSitePath);
   if (!dirData.size) {
     // ionic-site not present
     console.error('ionic-site repo not found');
     return;
   }
 
-  return fsPkg.copyDirectory(
-    path.resolve(__dirname, '..', '..', '..', 'docs'),
+  return copyDirectory(
+    path.resolve(__dirname, '..', '..', '..', '..', 'docs'),
     path.resolve(ionicSitePath, 'content', 'docs', 'cli')
   );
 }

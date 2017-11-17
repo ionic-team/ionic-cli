@@ -72,7 +72,6 @@
     "@angular/compiler": "^4.4.4",
     "@angular/compiler-cli": "^4.4.4",
     "@angular/core": "^4.4.4",
-    "@ionic/cli-scripts": "0.3.6",
     "@types/archiver": "^2.0.1",
     "@types/basic-auth": "^1.1.2",
     "@types/body-parser": "^1.16.6",

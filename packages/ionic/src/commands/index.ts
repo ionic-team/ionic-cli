@@ -5,8 +5,8 @@ import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils/lib/namesp
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 export class IonicNamespace extends Namespace implements IRootNamespace {
-  readonly root = true;
-  readonly name = 'ionic';
+  readonly root: true = true;
+  readonly name: 'ionic' = 'ionic';
   readonly description = '';
   readonly longDescription = '';
 
