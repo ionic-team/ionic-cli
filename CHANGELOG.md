@@ -7,6 +7,16 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.19.0"></a>
+### 3.19.0 (PENDING)
+
+* Added prompt to `ionic start` that asks to install the Cordova version.
+* Added `--bundle-id` to `ionic start` for setting the Cordova bundle ID in
+  `config.xml` when creating a new app.
+* Added more personalization features to `ionic start` for Cordova.
+* Fixed some poor error handling when something _really_ goes wrong.
+* Fixed issue with SSH config parsing without `Host` directives.
+
 <a name="3.18.0"></a>
 ### 3.18.0 (2017-11-09)
 
