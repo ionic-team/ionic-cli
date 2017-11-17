@@ -317,7 +317,7 @@ export namespace Ailments {
 
     async getTreatmentSteps(env: IonicEnvironment) {
       return [
-        { name: `Visit ${chalk.bold('http://blog.ionic.io')} and ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for upgrade instructions` },
+        { name: `Visit ${chalk.bold('https://blog.ionicframework.com')} and ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for upgrade instructions` },
       ];
     }
   }
@@ -652,7 +652,7 @@ export namespace Ailments {
     async getMessage() {
       return (
         `${chalk.bold('viewport-fit=cover')} not set in ${chalk.bold('index.html')}\n` +
-        `iOS 11 introduces new "safe regions" for webviews, which can throw off component sizing, squish the header into the status bar, letterbox the app on iPhone X, etc. Fixing this issue will ensure the webview takes up the full size of the screen. See ${chalk.bold('https://blog.ionic.io/ios-11-checklist')} for more information.`
+        `iOS 11 introduces new "safe regions" for webviews, which can throw off component sizing, squish the header into the status bar, letterbox the app on iPhone X, etc. Fixing this issue will ensure the webview takes up the full size of the screen. See ${chalk.bold('https://blog.ionicframework.com/ios-11-checklist')} for more information.`
       ).trim();
     }
 

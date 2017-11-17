@@ -50,7 +50,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 ### 3.16.0 (2017-11-01)
 
 * Support for the :sparkles: [Ionic
-  DevApp](https://blog.ionic.io/announcing-ionic-devapp/) :sparkles:
+  DevApp](https://blog.ionicframework.com/announcing-ionic-devapp/) :sparkles:
 * Added `--local` flag to `ionic serve`, which is an easy way to disable
   external network usage when serving your app.
 
@@ -383,7 +383,8 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 <a name="3.0.0"></a>
 ### 3.0.0 (2017-05-09)
 
-[CLI v3 Blog Post](https://blog.ionic.io/announcing-ionic-cli-v3/) :tada:
+[CLI v3 Blog Post](https://blog.ionicframework.com/announcing-ionic-cli-v3/)
+:tada:
 
 #### Upgrading from CLI v2
 

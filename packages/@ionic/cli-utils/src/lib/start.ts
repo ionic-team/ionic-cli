@@ -71,7 +71,7 @@ ${chalk.bold('Run on a device or simulator:')}
   ${chalk.green('ionic cordova run ios')}
 
 ${chalk.bold('Test and share your app on a device with the Ionic View app:')}
-  http://view.ionic.io
+  https://ionicframework.com/products/view
   `;
 }
 

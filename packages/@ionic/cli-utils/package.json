@@ -2,8 +2,8 @@
   "name": "@ionic/cli-utils",
   "version": "1.18.0",
   "description": "Ionic CLI Utils",
-  "homepage": "https://ionic.io/",
-  "author": "Ionic Team <hi@ionic.io> (http://ionic.io)",
+  "homepage": "https://ionicframework.com",
+  "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com)",
   "main": "./index.js",
   "types": "./index.d.ts",
   "scripts": {

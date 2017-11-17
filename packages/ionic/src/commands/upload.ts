@@ -17,7 +17,7 @@ ${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}
 
 Zips up your local app files and uploads a snapshot to Ionic.
 
-From there, you can use Ionic View (${chalk.bold('https://view.ionic.io')}) to easily share your app with your organization and testers around the world.
+From there, you can use Ionic View (${chalk.bold('https://ionicframework.com/products/view')}) to easily share your app with your organization and testers around the world.
   `,
   exampleCommands: [
     '',

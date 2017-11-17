@@ -2,8 +2,8 @@
   "name": "@ionic/cli-framework",
   "version": "0.1.1",
   "description": "The foundation framework of the Ionic CLI",
-  "homepage": "http://ionicframework.com/",
-  "author": "Ionic Team <hi@ionic.io> (http://ionic.io) ",
+  "homepage": "https://ionicframework.com/",
+  "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com) ",
   "main": "./index.js",
   "types": "./index.d.ts",
   "engines": {

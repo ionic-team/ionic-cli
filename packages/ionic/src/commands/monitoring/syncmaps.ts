@@ -129,7 +129,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
         }
 
         this.env.log.ok('Uploaded sourcemap');
-        this.env.log.info('See the Error Monitoring docs for usage information and next steps: http://ionicframework.com/docs/pro/monitoring/');
+        this.env.log.info('See the Error Monitoring docs for usage information and next steps: https://ionicframework.com/docs/pro/monitoring/');
 
         Promise.resolve();
       });

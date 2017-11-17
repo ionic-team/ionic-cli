@@ -2,8 +2,8 @@
   "name": "ionic",
   "version": "3.18.0",
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
-  "homepage": "http://ionicframework.com/",
-  "author": "Ionic Team <hi@ionic.io> (http://ionic.io) ",
+  "homepage": "https://ionicframework.com",
+  "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com) ",
   "bin": {
     "ionic": "./bin/ionic"
   },
