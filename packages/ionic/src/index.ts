@@ -6,6 +6,7 @@ import chalk from 'chalk';
 import {
   IHookEngine,
   InfoHookItem,
+  IonicEnvironment,
   RootPlugin,
   generateIonicEnvironment,
 } from '@ionic/cli-utils';
@@ -123,6 +124,7 @@ export async function generateRootPlugin(): Promise<RootPlugin> {
 export async function run(pargv: string[], env: { [k: string]: string; }) {
   const now = new Date();
   let err: any;
+  let ienv: IonicEnvironment;
 
   pargv = modifyArguments(pargv.slice(2));
   env['IONIC_CLI_LIB'] = __filename;
@@ -131,7 +133,14 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
   const { isValidationErrorArray } = await import('@ionic/cli-framework/guards');
 
   const plugin = await generateRootPlugin();
-  const ienv = await generateIonicEnvironment(plugin, pargv, env);
+
+  try {
+    ienv = await generateIonicEnvironment(plugin, pargv, env);
+  } catch (e) {
+    console.error(e.message ? e.message : (e.stack ? e.stack : e));
+    process.exitCode = 1;
+    return;
+  }
 
   try {
     const config = await ienv.config.load();

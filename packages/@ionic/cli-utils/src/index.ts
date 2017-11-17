@@ -15,6 +15,7 @@ import {
   ISession,
   IonicEnvironment,
   LogLevel,
+  LogPrefix,
   RootPlugin,
 } from './definitions';
 
@@ -75,7 +76,6 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   const cwd = process.cwd();
   const argv = minimist(pargv, { boolean: true, string: '_' });
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
-  const configData = await config.load();
   const flags = gatherFlags(argv);
 
   let stream: NodeJS.WritableStream;
@@ -84,7 +84,9 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   let log: Logger;
   let level: LogLevel = 'info';
   let levelInvalid = false;
-  let prefix: string | (() => string) = '';
+  let prefix: LogPrefix = '';
+
+  const configData = await config.load();
 
   if (isCI || configData.interactive === false) {
     flags.interactive = false;

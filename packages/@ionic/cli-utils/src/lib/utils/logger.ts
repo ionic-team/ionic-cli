@@ -3,7 +3,7 @@ import * as util from 'util';
 import chalk from 'chalk';
 import { Chalk } from 'chalk';
 
-import { ILogger, LogLevel, LoggerOptions } from '../../definitions';
+import { ILogger, LogLevel, LogPrefix, LoggerOptions } from '../../definitions';
 import { LOG_LEVELS } from '../../guards';
 import { wordWrap } from './format';
 
@@ -21,7 +21,7 @@ export class Logger implements ILogger {
   public firstLineColored: LogLevel[] = ['warn', 'error', 'announce'];
 
   public readonly level: LogLevel;
-  public readonly prefix: string | (() => string);
+  public readonly prefix: LogPrefix;
   public stream: NodeJS.WritableStream;
 
   constructor({ level = 'info', prefix = '', stream = process.stdout }: LoggerOptions) {
