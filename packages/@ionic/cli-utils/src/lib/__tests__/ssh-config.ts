@@ -56,6 +56,13 @@ describe('@ionic/cli-utils', () => {
         expect(SSHConfig.stringify(conf)).toEqual(config5);
       });
 
+      it('should stringify with config6 file', async () => {
+        const config6 = await fsReadFile(path.resolve(__dirname, 'fixtures/ssh-config/config6'), { encoding: 'utf8' });
+        const conf = SSHConfig.parse(config6);
+        ensureHostAndKeyPath(conf, { host: 'bar' }, '/id_rsa');
+        expect(SSHConfig.stringify(conf)).toEqual(`${config6}\n${expected}`);
+      });
+
     });
 
   });

@@ -12,20 +12,24 @@ export async function loadFromPath(p: string): Promise<SSHConfigModule.SSHConfig
   return SSHConfig.parse(s);
 }
 
-export function isDirective(entry: SSHConfigModule.Config): entry is SSHConfigModule.ConfigDirective {
+export function isDirective(entry: any): entry is SSHConfigModule.ConfigDirective {
   return entry && entry.type === SSHConfig.DIRECTIVE;
+}
+
+export function isHostDirective(entry: SSHConfigModule.Config): entry is SSHConfigModule.ConfigHostDirective {
+  return isDirective(entry) && entry.param === 'Host';
 }
 
 export function getConfigPath() {
   return path.resolve(os.homedir(), '.ssh', 'config');
 }
 
-export function findHostSection(conf: SSHConfigModule.SSHConfig, host: string): SSHConfigModule.ConfigDirective | null {
+export function findHostSection(conf: SSHConfigModule.SSHConfig, host: string): SSHConfigModule.ConfigHostDirective | null {
   return conf.find({ Host: host });
 }
 
 export function ensureHostAndKeyPath(conf: SSHConfigModule.SSHConfig, conn: { host: string, port?: number }, keyPath: string): void {
-  const section = ensureSection(conf, conn.host);
+  const section = ensureHostSection(conf, conn.host);
   const index = conf.indexOf(section);
 
   ensureSectionLine(section, 'IdentityFile', keyPath);
@@ -41,9 +45,12 @@ export function ensureHostAndKeyPath(conf: SSHConfigModule.SSHConfig, conn: { ho
   } else {
     const previousSection = conf[index - 1];
 
-    if (isDirective(previousSection)) {
+    if (isHostDirective(previousSection)) {
       const previousSectionLastEntry = previousSection.config[previousSection.config.length - 1];
-      previousSectionLastEntry.after = '\n';
+
+      if (previousSectionLastEntry) {
+        previousSectionLastEntry.after = '\n';
+      }
     } else {
       previousSection.after = '\n';
     }
@@ -52,6 +59,10 @@ export function ensureHostAndKeyPath(conf: SSHConfigModule.SSHConfig, conn: { ho
   }
 
   section.after = '\n';
+
+  if (!section.config) {
+    section.config = [];
+  }
 
   for (let entry of section.config) {
     entry.before = '    ';
@@ -64,7 +75,7 @@ export function ensureHostAndKeyPath(conf: SSHConfigModule.SSHConfig, conn: { ho
   }
 }
 
-function ensureSection(conf: SSHConfigModule.SSHConfig, host: string): SSHConfigModule.ConfigDirective {
+function ensureHostSection(conf: SSHConfigModule.SSHConfig, host: string): SSHConfigModule.ConfigHostDirective {
   let section = findHostSection(conf, host);
 
   if (!section) {
@@ -79,7 +90,7 @@ function ensureSection(conf: SSHConfigModule.SSHConfig, host: string): SSHConfig
   return section;
 }
 
-function ensureSectionLine(section: SSHConfigModule.ConfigDirective, key: string, value: string): void {
+function ensureSectionLine(section: SSHConfigModule.ConfigHostDirective, key: string, value: string): void {
   const found = section.config.some(line => {
     if (isDirective(line)) {
       if (line.param === key) {

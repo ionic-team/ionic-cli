@@ -1,7 +1,7 @@
 declare module "ssh-config" {
   namespace SSHConfig {
-    var DIRECTIVE: number;
-    var COMMENT: number;
+    var DIRECTIVE: number; // 1
+    var COMMENT: number; // 2
 
     interface SSHConfigFindOptions {
       Host?: string;
@@ -17,16 +17,20 @@ declare module "ssh-config" {
 
     interface ConfigDirective {
       type: typeof DIRECTIVE;
-      content: string;
       before: string;
       after: string;
       param: string;
       value: string;
       separator: string;
-      config: Config[];
     }
 
-    type Config = ConfigComment | ConfigDirective;
+    interface ConfigHostDirective extends ConfigDirective {
+      config: SSHConfig;
+    }
+
+    type ConfigMatchDirective = ConfigHostDirective;
+
+    type Config = ConfigComment | ConfigDirective | ConfigHostDirective | ConfigMatchDirective;
 
     interface SSHConfig extends Array<Config> {
       find(arg: any): any; // https://github.com/dotnil/ssh-config/blob/40b55c0e31790dd78a0d4364b0e8a0a358293385/index.js#L61

@@ -24,7 +24,7 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
     const {
       findHostSection,
       getConfigPath,
-      isDirective,
+      isHostDirective,
       loadFromPath,
     } = await import('@ionic/cli-utils/lib/ssh-config');
 
@@ -38,12 +38,12 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
     const conf = await loadFromPath(sshConfigPath);
     const section = findHostSection(conf, await this.env.config.getGitHost());
 
-    if (section) {
-      const [ identityFile ] = section.config.filter((line) => { // TODO: can't use find() w/o Host or Match, ssh-config bug?
-        return isDirective(line) && line.param === 'IdentityFile';
+    if (section && section.config) {
+      const [ identityFile ] = section.config.filter(line => {
+        return isHostDirective(line) && line.param === 'IdentityFile';
       });
 
-      if (isDirective(identityFile)) {
+      if (isHostDirective(identityFile)) {
         const output = await this.env.shell.run('ssh-keygen', ['-E', 'sha256', '-lf', identityFile.value], { showCommand: false, fatalOnError: false });
         activeFingerprint = output.trim().split(' ')[1];
       }
