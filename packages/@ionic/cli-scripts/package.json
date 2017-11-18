@@ -5,7 +5,8 @@
     "clean": "rm -rf ./dist",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "test": "jest"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -22,5 +23,20 @@
     "@types/escape-string-regexp": "0.0.32",
     "@types/strip-ansi": "^3.0.0",
     "ionic": "3.18.0"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      ".(ts)": "<rootDir>/../../../node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "/__tests__/.*\\.(ts|js)$"
   }
 }

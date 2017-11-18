@@ -338,7 +338,7 @@ interface Starter {
 
 function formatStartersPage() {
   const formatStarter = (t: StarterTemplate) => {
-    return `${t.name} | ${t.description}\n`;
+    return `\`${t.name}\` | ${t.description}\n`;
   };
 
   const formatStartersTable = (starterType: Starter) => {
@@ -368,7 +368,7 @@ ${starterType.starters.map(formatStarter).join('')}
 
 {% include fluid/toc.html %}
 
-This is comprehensive list of Ionic starter templates, which are ready-to-go starter packs for your next Ionic app. See the [\`ionic start\`](/docs/cli/start/) docs for usage.
+This is list of official Ionic starter templates, which are ready-to-go starter packs for your next Ionic app. See the [\`ionic start\`](/docs/cli/start/) docs for usage.
 
 ## Starter Types
 
@@ -376,7 +376,7 @@ ${starters.map(formatStartersTable).join('')}
 
 ## How it Works
 
-The Ionic CLI will combine each starter template with its [base template](#base-templates) to provide a new project the files it needs to start development. See the [\`ionic start\`](/docs/cli/start/) docs for more information.
+Starters are constructed within the [Ionic Starters](https://github.com/ionic-team/starters) repository by overlaying a starter app onto a set of base files, constructing a compressed archive of the files, and uploading it around the world. The Ionic CLI then downloads and extracts the starter template archive and personalizes files for each new app.
 `;
 }
 
@@ -429,8 +429,10 @@ DO NOT MODIFY THIS FILE DIRECTLY -- IT IS GENERATED FROM THE CLI REPO
 `;
 }
 
-function links2md(str: string) {
-  return str.replace(/((http|https):\/\/(\w+:{0,1}\w*@)?([^\s\*\)`]+)(\/|\/([\w#!:.?+=&%@!\-\/]))?)/g, '[$1]($1)');
+export function links2md(str: string) {
+  str = str.replace(/((http|https):\/\/(\w+:{0,1}\w*@)?([^\s\*\)`]+)(\/|\/([\w#!:.?+=&%@!\-\/]))?)/g, '[$1]($1)');
+  str = str.replace(/\[(\d+)\]/g, '\\\[$1\\\]');
+  return str;
 }
 
 function ansi2md(str: string) {
