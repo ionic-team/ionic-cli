@@ -3,14 +3,7 @@ import * as util from 'util';
 
 import chalk from 'chalk';
 
-import {
-  IHookEngine,
-  InfoHookItem,
-  IonicEnvironment,
-  RootPlugin,
-  generateIonicEnvironment,
-} from '@ionic/cli-utils';
-
+import { IonicEnvironment, RootPlugin, generateIonicEnvironment } from '@ionic/cli-utils';
 import { Exception } from '@ionic/cli-utils/lib/errors';
 import { mapLegacyCommand, modifyArguments, parseArgs } from '@ionic/cli-utils/lib/init';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
@@ -18,105 +11,13 @@ import { isExitCodeException } from '@ionic/cli-utils/guards';
 
 import { IonicNamespace } from './commands';
 
-const name = 'ionic';
 export const namespace = new IonicNamespace();
-
-export function registerHooks(hooks: IHookEngine) {
-  hooks.register(name, 'info', async ({ env, project }) => {
-    const osName = await import('os-name');
-    const os = osName();
-    const node = process.version;
-
-    const npm = await env.shell.cmdinfo('npm', ['-v']);
-    const config = await env.config.load();
-
-    const info: InfoHookItem[] = [
-      { type: 'cli-packages', key: name, flair: 'Ionic CLI', value: env.plugins.ionic.meta.version, path: path.dirname(path.dirname(env.plugins.ionic.meta.filePath)) },
-      { type: 'system', key: 'Node', value: node },
-      { type: 'system', key: 'npm', value: npm || 'not installed' },
-      { type: 'system', key: 'OS', value: os },
-      { type: 'misc', key: 'backend', value: config.backend },
-    ];
-
-    const projectFile = project.directory ? await project.load() : undefined;
-
-    if (projectFile) {
-      if (projectFile.type === 'ionic1') {
-        const { getIonic1Version } = await import('@ionic/cli-utils/lib/ionic1/utils');
-        const ionic1Version = await getIonic1Version(env);
-        info.push({ type: 'local-packages', key: 'Ionic Framework', value: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown' });
-      } else if (projectFile.type === 'ionic-angular') {
-        const { getIonicAngularVersion, getAppScriptsVersion } = await import('@ionic/cli-utils/lib/ionic-angular/utils');
-        const [ ionicAngularVersion, appScriptsVersion ] = await Promise.all([getIonicAngularVersion(env, project), getAppScriptsVersion(env, project)]);
-        info.push({ type: 'local-packages', key: 'Ionic Framework', value: ionicAngularVersion ? `ionic-angular ${ionicAngularVersion}` : 'not installed' });
-        info.push({ type: 'local-packages', key: '@ionic/app-scripts', value: appScriptsVersion ? appScriptsVersion : 'not installed' });
-      }
-
-      if (projectFile.integrations.cordova && projectFile.integrations.cordova.enabled !== false) {
-        const { getAndroidSdkToolsVersion } = await import('@ionic/cli-utils/lib/android');
-        const { getCordovaCLIVersion, getCordovaPlatformVersions } = await import('@ionic/cli-utils/lib/cordova/utils');
-
-        const [
-          cordovaVersion,
-          cordovaPlatforms,
-          xcode,
-          iosDeploy,
-          iosSim,
-          androidSdkToolsVersion,
-        ] = await Promise.all([
-          getCordovaCLIVersion(env),
-          getCordovaPlatformVersions(env),
-          env.shell.cmdinfo('xcodebuild', ['-version']),
-          env.shell.cmdinfo('ios-deploy', ['--version']),
-          env.shell.cmdinfo('ios-sim', ['--version']),
-          getAndroidSdkToolsVersion(),
-        ]);
-
-        info.push({ type: 'global-packages', key: 'cordova', flair: 'Cordova CLI', value: cordovaVersion || 'not installed' });
-        info.push({ type: 'local-packages', key: 'Cordova Platforms', value: cordovaPlatforms || 'none' });
-
-        if (xcode) {
-          info.push({ type: 'system', key: 'Xcode', value: xcode });
-        }
-
-        if (iosDeploy) {
-          info.push({ type: 'system', key: 'ios-deploy', value: iosDeploy });
-        }
-
-        if (iosSim) {
-          info.push({ type: 'system', key: 'ios-sim', value: iosSim });
-        }
-
-        if (androidSdkToolsVersion) {
-          info.push({ type: 'system', key: 'Android SDK Tools', value: androidSdkToolsVersion });
-        }
-
-        info.push({ type: 'environment', key: 'ANDROID_HOME', value: process.env.ANDROID_HOME || 'not set' });
-      }
-
-      if (projectFile.integrations.gulp && projectFile.integrations.gulp.enabled !== false) {
-        const { getGulpVersion } = await import('@ionic/cli-utils/lib/gulp');
-        const gulpVersion = await getGulpVersion(env);
-        info.push({ type: 'global-packages', key: 'Gulp CLI', value: gulpVersion || 'not installed globally' });
-      }
-    }
-
-    return info;
-  });
-
-  hooks.register(name, 'cordova:project:info', async ({ env }) => {
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
-    const conf = await ConfigXml.load(env.project.directory);
-    return conf.getProjectInfo();
-  });
-}
 
 export async function generateRootPlugin(): Promise<RootPlugin> {
   const { getPluginMeta } = await import('@ionic/cli-utils/lib/plugins');
 
   return {
     namespace,
-    registerHooks,
     meta: await getPluginMeta(__filename),
   };
 }
@@ -144,8 +45,6 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
 
   try {
     const config = await ienv.config.load();
-
-    registerHooks(ienv.hooks);
 
     ienv.log.debug(() => util.inspect(ienv.meta, { breakLength: Infinity, colors: chalk.enabled }));
 

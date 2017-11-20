@@ -598,7 +598,7 @@ export interface PluginMeta {
 }
 
 export interface Plugin {
-  registerHooks(hooks: IHookEngine): void;
+  registerHooks?(hooks: IHookEngine): void;
   meta: PluginMeta; // set when loading plugin
 
   /**

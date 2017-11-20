@@ -55,6 +55,7 @@
     "lodash": "^4.17.4",
     "minimist": "^1.2.0",
     "opn": "^5.1.0",
+    "os-name": "^2.0.1",
     "proxy-middleware": "^0.15.0",
     "semver": "^5.4.1",
     "slice-ansi": "^1.0.0",

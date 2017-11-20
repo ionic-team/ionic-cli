@@ -13,6 +13,7 @@ import {
   IHookEngine,
   IProject,
   ISession,
+  InfoHookItem,
   IonicEnvironment,
   LogLevel,
   LogPrefix,
@@ -45,7 +46,7 @@ export { BACKEND_LEGACY, BACKEND_PRO, KNOWN_BACKENDS } from './lib/backends';
 
 const name = '@ionic/cli-utils';
 
-export function registerHooks(hooks: IHookEngine) {
+function registerHooks(hooks: IHookEngine) {
   hooks.register(name, 'info', async () => {
     const packageJson = await readPackageJsonFileOfResolvedModule(__filename);
     const version = packageJson.version || '';
@@ -64,6 +65,94 @@ export function registerHooks(hooks: IHookEngine) {
     if (wasLoggedIn) {
       env.log.info('You have been logged out.');
     }
+  });
+
+  hooks.register(name, 'info', async ({ env, project }) => {
+    const osName = await import('os-name');
+    const os = osName();
+    const node = process.version;
+
+    const npm = await env.shell.cmdinfo('npm', ['-v']);
+    const config = await env.config.load();
+
+    const info: InfoHookItem[] = [
+      { type: 'cli-packages', key: 'ionic', flair: 'Ionic CLI', value: env.plugins.ionic.meta.version, path: path.dirname(path.dirname(env.plugins.ionic.meta.filePath)) },
+      { type: 'system', key: 'Node', value: node },
+      { type: 'system', key: 'npm', value: npm || 'not installed' },
+      { type: 'system', key: 'OS', value: os },
+      { type: 'misc', key: 'backend', value: config.backend },
+    ];
+
+    const projectFile = project.directory ? await project.load() : undefined;
+
+    if (projectFile) {
+      if (projectFile.type === 'ionic1') {
+        const { getIonic1Version } = await import('./lib/ionic1/utils');
+        const ionic1Version = await getIonic1Version(env);
+        info.push({ type: 'local-packages', key: 'Ionic Framework', value: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown' });
+      } else if (projectFile.type === 'ionic-angular') {
+        const { getIonicAngularVersion, getAppScriptsVersion } = await import('./lib/ionic-angular/utils');
+        const [ ionicAngularVersion, appScriptsVersion ] = await Promise.all([getIonicAngularVersion(env, project), getAppScriptsVersion(env, project)]);
+        info.push({ type: 'local-packages', key: 'Ionic Framework', value: ionicAngularVersion ? `ionic-angular ${ionicAngularVersion}` : 'not installed' });
+        info.push({ type: 'local-packages', key: '@ionic/app-scripts', value: appScriptsVersion ? appScriptsVersion : 'not installed' });
+      }
+
+      if (projectFile.integrations.cordova && projectFile.integrations.cordova.enabled !== false) {
+        const { getAndroidSdkToolsVersion } = await import('./lib/android');
+        const { getCordovaCLIVersion, getCordovaPlatformVersions } = await import('./lib/cordova/utils');
+
+        const [
+          cordovaVersion,
+          cordovaPlatforms,
+          xcode,
+          iosDeploy,
+          iosSim,
+          androidSdkToolsVersion,
+        ] = await Promise.all([
+          getCordovaCLIVersion(env),
+          getCordovaPlatformVersions(env),
+          env.shell.cmdinfo('xcodebuild', ['-version']),
+          env.shell.cmdinfo('ios-deploy', ['--version']),
+          env.shell.cmdinfo('ios-sim', ['--version']),
+          getAndroidSdkToolsVersion(),
+        ]);
+
+        info.push({ type: 'global-packages', key: 'cordova', flair: 'Cordova CLI', value: cordovaVersion || 'not installed' });
+        info.push({ type: 'local-packages', key: 'Cordova Platforms', value: cordovaPlatforms || 'none' });
+
+        if (xcode) {
+          info.push({ type: 'system', key: 'Xcode', value: xcode });
+        }
+
+        if (iosDeploy) {
+          info.push({ type: 'system', key: 'ios-deploy', value: iosDeploy });
+        }
+
+        if (iosSim) {
+          info.push({ type: 'system', key: 'ios-sim', value: iosSim });
+        }
+
+        if (androidSdkToolsVersion) {
+          info.push({ type: 'system', key: 'Android SDK Tools', value: androidSdkToolsVersion });
+        }
+
+        info.push({ type: 'environment', key: 'ANDROID_HOME', value: process.env.ANDROID_HOME || 'not set' });
+      }
+
+      if (projectFile.integrations.gulp && projectFile.integrations.gulp.enabled !== false) {
+        const { getGulpVersion } = await import('./lib/gulp');
+        const gulpVersion = await getGulpVersion(env);
+        info.push({ type: 'global-packages', key: 'Gulp CLI', value: gulpVersion || 'not installed globally' });
+      }
+    }
+
+    return info;
+  });
+
+  hooks.register(name, 'cordova:project:info', async ({ env }) => {
+    const { ConfigXml } = await import('./lib/cordova/config');
+    const conf = await ConfigXml.load(env.project.directory);
+    return conf.getProjectInfo();
   });
 }
 
