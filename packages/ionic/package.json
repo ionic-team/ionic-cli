@@ -53,7 +53,7 @@
     "tslib": "^1.8.0"
   },
   "devDependencies": {
-    "@types/opn": "^3.0.28"
+    "@types/opn": "^5.1.0"
   },
   "jest": {
     "globals": {

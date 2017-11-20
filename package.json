@@ -14,7 +14,7 @@
     "prepush": "npm run lint"
   },
   "devDependencies": {
-    "@types/node": "^6.0.90",
+    "@types/node": "^6.0.92",
     "concurrently": "^3.4.0",
     "eslint-config-ionic": "0.0.2",
     "husky": "^0.14.3",
@@ -22,7 +22,7 @@
     "jest-cli": "^21.2.1",
     "lerna": "^2.5.1",
     "replace": "^0.3.0",
-    "ts-jest": "^21.1.4",
+    "ts-jest": "^21.2.3",
     "tslint": "^5.8.0",
     "tslint-ionic-rules": "^0.0.11",
     "typescript": "^2.6.1"
