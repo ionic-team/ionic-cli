@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-utils",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "description": "Ionic CLI Utils",
   "homepage": "https://ionicframework.com",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com)",
@@ -37,7 +37,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ionic/cli-framework": "0.1.1",
+    "@ionic/cli-framework": "0.1.2",
     "@ionic/discover": "0.4.0",
     "archiver": "^2.1.0",
     "basic-auth": "^1.1.0",

@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-scripts",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "scripts": {
     "clean": "rm -rf ./dist",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
@@ -17,12 +17,12 @@
     "tslib": "^1.8.0"
   },
   "devDependencies": {
-    "@ionic/cli-framework": "0.1.1",
-    "@ionic/cli-utils": "1.18.0",
+    "@ionic/cli-framework": "0.1.2",
+    "@ionic/cli-utils": "1.19.0",
     "@types/ansi-styles": "^2.0.30",
     "@types/escape-string-regexp": "0.0.32",
     "@types/strip-ansi": "^3.0.0",
-    "ionic": "3.18.0"
+    "ionic": "3.19.0"
   },
   "jest": {
     "globals": {

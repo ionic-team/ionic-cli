@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.19.0"></a>
+# [3.19.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.18.0...ionic@3.19.0) (2017-11-22)
+
+
+### Bug Fixes
+
+* convert to error stack string before displaying ([3433fdf](https://github.com/ionic-team/ionic-cli/commit/3433fdf))
+* **bin:** clean up this strange file ([b5ece73](https://github.com/ionic-team/ionic-cli/commit/b5ece73))
+* **link:** clearer words when app already linked ([aa47958](https://github.com/ionic-team/ionic-cli/commit/aa47958))
+* print message from brutal error ([5956c74](https://github.com/ionic-team/ionic-cli/commit/5956c74))
+* **ssh:** fix parsing of ssh config w/o host directives ([cf4e03f](https://github.com/ionic-team/ionic-cli/commit/cf4e03f))
+* **start:** fix some logic issues ([195e089](https://github.com/ionic-team/ionic-cli/commit/195e089))
+
+
+### Features
+
+* **start:** add prompt during start to add cordova ([62c6c3f](https://github.com/ionic-team/ionic-cli/commit/62c6c3f))
+* **start:** personalize cordova files, --bundle-id flag ([45488dd](https://github.com/ionic-team/ionic-cli/commit/45488dd))
+
+
+
+
 <a name="3.18.0"></a>
 # [3.18.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.17.0...ionic@3.18.0) (2017-11-09)
 

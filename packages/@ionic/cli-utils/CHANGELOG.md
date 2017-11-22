@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.19.0"></a>
+# [1.19.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.18.0...@ionic/cli-utils@1.19.0) (2017-11-22)
+
+
+### Bug Fixes
+
+* print message from brutal error ([5956c74](https://github.com/ionic-team/ionic-cli/commit/5956c74))
+* **ssh:** fix parsing of ssh config w/o host directives ([cf4e03f](https://github.com/ionic-team/ionic-cli/commit/cf4e03f))
+
+
+### Features
+
+* **start:** personalize cordova files, --bundle-id flag ([45488dd](https://github.com/ionic-team/ionic-cli/commit/45488dd))
+
+
+
+
 <a name="1.18.0"></a>
 # [1.18.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.17.0...@ionic/cli-utils@1.18.0) (2017-11-09)
 
