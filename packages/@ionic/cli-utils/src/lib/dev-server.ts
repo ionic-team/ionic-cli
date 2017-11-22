@@ -1,29 +1,19 @@
 import * as path from 'path';
 
 import { IonicEnvironment, LiveReloadFunction } from '../definitions';
+import { injectScript } from './html';
 
 export const DEV_SERVER_PREFIX = '__ionic';
 
-export function injectDevServerScript(content: any): string {
-  let contentStr = content.toString();
-  const devServerScript = getDevServerScript();
-
-  if (contentStr.indexOf(`/${DEV_SERVER_PREFIX}/dev-server.js`) > -1) {
+export function injectDevServerScript(content: string): string {
+  if (content.indexOf(`/${DEV_SERVER_PREFIX}/dev-server.js`) > -1) {
     // already added script
     return content;
   }
 
-  let match = contentStr.match(/<\/body>(?![\s\S]*<\/body>)/i);
-  if (!match) {
-    match = contentStr.match(/<\/html>(?![\s\S]*<\/html>)/i);
-  }
-  if (match) {
-    contentStr = contentStr.replace(match[0], `${devServerScript}\n${match[0]}`);
-  } else {
-    contentStr += devServerScript;
-  }
+  const devServerScript = getDevServerScript();
 
-  return contentStr;
+  return injectScript(content, devServerScript)
 }
 
 function getDevServerScript() {
@@ -50,24 +40,14 @@ export async function createLiveReloadServer(env: IonicEnvironment, { port, wwwD
 }
 
 export function injectLiveReloadScript(content: string, port: number): string {
-  const liveReloadScript = getLiveReloadScript(port);
-
   if (content.indexOf('/livereload.js') > -1) {
     // already added script
     return content;
   }
 
-  let match = content.match(/<\/body>(?![\s\S]*<\/body>)/i);
-  if (!match) {
-    match = content.match(/<\/html>(?![\s\S]*<\/html>)/i);
-  }
-  if (match) {
-    content = content.replace(match[0], `${liveReloadScript}\n${match[0]}`);
-  } else {
-    content += liveReloadScript;
-  }
+  const liveReloadScript = getLiveReloadScript(port);
 
-  return content;
+  return injectScript(content, liveReloadScript);
 }
 
 function getLiveReloadScript(port: number) {
