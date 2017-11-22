@@ -13,7 +13,7 @@ export function injectDevServerScript(content: string): string {
 
   const devServerScript = getDevServerScript();
 
-  return injectScript(content, devServerScript)
+  return injectScript(content, devServerScript);
 }
 
 function getDevServerScript() {
