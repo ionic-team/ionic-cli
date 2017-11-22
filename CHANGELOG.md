@@ -16,6 +16,8 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 * Added more personalization features to `ionic start` for Cordova.
 * Fixed some poor error handling when something _really_ goes wrong.
 * Fixed issue with SSH config parsing without `Host` directives.
+* Fixed issue with serving an Ionic 1 app with livereload when the host is
+  unexpectedly changed.
 
 <a name="3.18.0"></a>
 ### 3.18.0 (2017-11-09)
