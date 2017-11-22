@@ -4,6 +4,7 @@ import * as util from 'util';
 import chalk from 'chalk';
 
 import * as expressType from 'express';
+import * as proxyMiddlewareType from 'http-proxy-middleware';
 
 import { IonicEnvironment, LiveReloadFunction, LogLevel, ServeDetails, ServeOptions } from '../../definitions';
 import { isDevServerMessage } from '../../guards';
@@ -130,10 +131,20 @@ async function setupServer(env: IonicEnvironment, options: ServeMetaOptions): Pr
  */
 async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions): Promise<expressType.Application> {
   const { DEV_SERVER_PREFIX, injectDevServerScript, injectLiveReloadScript } = await import('../dev-server');
-  const [ WebSocket, express ] = await Promise.all([import('ws'), import('express')]);
   const { LOGGER_STATUS_COLORS } = await import('../../lib/utils/logger');
 
+  const [
+    WebSocket,
+    express,
+    proxyMiddleware,
+  ] = await Promise.all([
+    import('ws'),
+    import('express'),
+    import('http-proxy-middleware'),
+  ]);
+
   const app = express();
+  const project = await env.project.load();
 
   /**
    * http responder for /index.html base entrypoint
@@ -146,7 +157,7 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
     indexHtml = injectDevServerScript(indexHtml);
 
     if (options.livereload) {
-      indexHtml = injectLiveReloadScript(indexHtml, options.externalAddressRequired ? options.externalIP : 'localhost', options.livereloadPort);
+      indexHtml = injectLiveReloadScript(indexHtml, options.livereloadPort);
     }
 
     res.set('Content-Type', 'text/html');
@@ -197,6 +208,11 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
     });
   }
 
+  app.use((req, res, next) => {
+    env.log.debug(`${req.method} ${req.path}`);
+    next();
+  });
+
   app.get('/', serveIndex);
   app.use('/', express.static(options.wwwDir));
 
@@ -217,8 +233,27 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
   app.get('/cordova_plugins.js', servePlatformResource);
   app.get('/plugins/*', servePlatformResource);
 
-  if (options.proxy) {
-    await setupProxies(env, app);
+  const livereloadUrl = `http://localhost:${options.livereloadPort}`;
+  const pathPrefix = `/${DEV_SERVER_PREFIX}/tiny-lr`;
+  const proxyMiddlewareCfg: proxyMiddlewareType.Config = { changeOrigin: true, ws: true, logLevel: 'warn', logProvider: () => env.log };
+
+  app.use(pathPrefix, proxyMiddleware(pathPrefix, { target: livereloadUrl, pathRewrite: { [pathPrefix]: '' }, ...proxyMiddlewareCfg }));
+
+  if (options.proxy && project.proxies) {
+    for (const proxy of project.proxies) {
+      const opts = { target: proxy.proxyUrl, pathRewrite: { [proxy.path]: '' }, ...proxyMiddlewareCfg };
+
+      if (proxy.proxyNoAgent) {
+        opts.agent = <any>false; // TODO: type issue
+      }
+
+      if (proxy.rejectUnauthorized === false) {
+        opts.secure = false;
+      }
+
+      app.use(proxy.path, proxyMiddleware(proxy.path, opts));
+      env.log.info(`Proxy created ${chalk.bold(proxy.path)} => ${chalk.bold(opts.target)}`);
+    }
   }
 
   app.get(`/${DEV_SERVER_PREFIX}/dev-server.js`, async (req, res) => {
@@ -286,24 +321,6 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
       resolve(app);
     });
   });
-}
-
-async function setupProxies(env: IonicEnvironment, app: expressType.Application) {
-  const url = await import('url');
-  const project = await env.project.load();
-
-  for (const proxy of project.proxies || []) {
-    const opts: any = url.parse(proxy.proxyUrl);
-    if (proxy.proxyNoAgent) {
-      opts.agent = false;
-    }
-
-    opts.rejectUnauthorized = !(proxy.rejectUnauthorized === false);
-
-    const proxyMiddleware = await import('proxy-middleware');
-    app.use(proxy.path, <expressType.RequestHandler>proxyMiddleware(opts));
-    console.log('Proxy added:' + proxy.path + ' => ' + url.format(opts));
-  }
 }
 
 /**

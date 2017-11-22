@@ -31,7 +31,6 @@
     "../../../types/elementtree.d.ts",
     "../../../types/leek.d.ts",
     "../../../types/os-name.d.ts",
-    "../../../types/proxy-middleware.d.ts",
     "../../../types/slice-ansi.d.ts",
     "../../../types/ssh-config.d.ts",
     "../../../types/string-width.d.ts",

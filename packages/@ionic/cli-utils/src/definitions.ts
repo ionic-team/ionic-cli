@@ -21,7 +21,8 @@ export interface SuperAgentError extends Error {
   response: superagentType.Response;
 }
 
-export type LogFn = (msg: string | (() => string)) => void;
+export type LogMsg = string | (() => string);
+export type LogFn = (msg: LogMsg) => void;
 export type LogLevel = 'debug' | 'info' | 'ok' | 'warn' | 'error' | 'announce';
 export type LogPrefix = string | (() => string);
 
@@ -43,6 +44,7 @@ export interface ILogger {
   error: LogFn;
   announce: LogFn;
   msg: LogFn;
+  log: LogFn;
   nl(num?: number): void;
   shouldLog(level: LogLevel): boolean;
 }
@@ -90,10 +92,14 @@ export interface BowerJson {
 }
 
 export interface ProjectFileProxy {
+  path: string;
   proxyUrl: string;
   proxyNoAgent: boolean;
+
+  /**
+   * @deprecated
+   */
   rejectUnauthorized: boolean;
-  path: string;
 }
 
 export type ProjectType = 'ionic-angular' | 'ionic1' | 'custom';

@@ -3,7 +3,7 @@ import * as util from 'util';
 import chalk from 'chalk';
 import { Chalk } from 'chalk';
 
-import { ILogger, LogLevel, LogPrefix, LoggerOptions } from '../../definitions';
+import { ILogger, LogLevel, LogMsg, LogPrefix, LoggerOptions } from '../../definitions';
 import { LOG_LEVELS } from '../../guards';
 import { wordWrap } from './format';
 
@@ -30,36 +30,40 @@ export class Logger implements ILogger {
     this.stream = stream;
   }
 
-  debug(msg: string | (() => string)): void {
-    this.log('debug', msg);
+  debug(msg: LogMsg): void {
+    this._log('debug', msg);
   }
 
-  info(msg: string | (() => string)): void {
-    this.log('info', msg);
+  info(msg: LogMsg): void {
+    this._log('info', msg);
   }
 
-  ok(msg: string | (() => string)): void {
-    this.log('ok', msg);
+  ok(msg: LogMsg): void {
+    this._log('ok', msg);
   }
 
-  warn(msg: string | (() => string)): void {
-    this.log('warn', msg);
+  warn(msg: LogMsg): void {
+    this._log('warn', msg);
   }
 
-  error(msg: string | (() => string)): void {
-    this.log('error', msg);
+  error(msg: LogMsg): void {
+    this._log('error', msg);
   }
 
-  announce(msg: string | (() => string)): void {
-    this.log('announce', msg);
+  announce(msg: LogMsg): void {
+    this._log('announce', msg);
   }
 
-  msg(msg: string | (() => string)): void {
+  msg(msg: LogMsg): void {
     if (typeof msg === 'function') {
       msg = msg();
     }
 
     this.stream.write(this.enforceLF(msg));
+  }
+
+  log(msg: LogMsg): void {
+    this.msg(msg);
   }
 
   nl(num: number = 1): void {
@@ -84,7 +88,7 @@ export class Logger implements ILogger {
     return color;
   }
 
-  private log(level: LogLevel, msg: string | (() => string)): void {
+  private _log(level: LogLevel, msg: LogMsg): void {
     if (this.shouldLog(level)) {
       let prefix = this.prefix;
 
