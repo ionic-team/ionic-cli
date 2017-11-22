@@ -7,7 +7,9 @@ issues on GitHub should be reserved for bug reports and feature requests.
 ### Bug Reports
 
 Run the command(s) with `--verbose` to produce debugging output. We may ask for
-the full command output, including debug statements.
+the full command output, including debug statements. For even more debug output,
+you can prefix the command with `DEBUG="*"`, which is often unnecessarily
+verbose.
 
 Please also copy/paste the output of the `ionic info` command into your issue
 and be as descriptive as possible. Include any steps that might help us
