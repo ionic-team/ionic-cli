@@ -5,7 +5,8 @@ import { str2num } from '@ionic/cli-framework/utils/string';
 
 import { CommandLineInputs, CommandLineOptions, IonicEnvironment, ServeDetails } from '../definitions';
 import { FatalException } from '../lib/errors';
-import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, IONIC_LAB_URL, gatherDevAppDetails, publishDevApp } from '../lib/serve';
+import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, devAppPlugins, gatherDevAppDetails, IONIC_LAB_URL, publishDevApp } from '../lib/serve';
+import { isCordovaPackageJson } from '../guards';
 
 const WATCH_BEFORE_HOOK = 'watch:before';
 const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
@@ -49,6 +50,18 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
   const project = await env.project.load();
 
   const devAppDetails = await gatherDevAppDetails(env, serveOptions);
+
+  // Check if cordova plugins are present in the devapp
+  if (devAppPlugins && isCordovaPackageJson(packageJson)) {
+    const packageCordovaPlugins = Object.keys(packageJson.cordova.plugins);
+    const devAppPluginNames = new Set([...Object.keys(devAppPlugins)]);
+    const packageCordovaPluginsDiff = packageCordovaPlugins.filter(p => !devAppPluginNames.has(p));
+    if (packageCordovaPluginsDiff.length > 0) {
+      env.log.warn('Cordova plugins incompatible with dev app detected\n' +
+                  `${chalk.bold(packageCordovaPluginsDiff.join('\n'))}`);
+      env.log.warn('App may not function as expected in DevApp.\n');
+    }
+  }
 
   if (project.type === 'ionic1') {
     const { serve } = await import('../lib/ionic1/serve');
