@@ -184,10 +184,10 @@ Integrations such as Cordova are automatically activated when detected, but can 
 
 Integrations hook into CLI events. For example, when the Cordova integration is enabled, \`ionic cordova prepare\` will run after \`ionic build\` runs. See [Hooks](#hooks).
 
-| integration | enabled when...                                             | disabled with...                                         |
-| ------------|-------------------------------------------------------------|----------------------------------------------------------|
-| Cordova     | \`ionic cordova\` commands are run                          | \`ionic config set integrations.cordova.enabled false\`  |
-| Gulp        | \`gulp\` exists in \`devDependencies\` of your \`package.json\` | \`ionic config set integrations.gulp.enabled false\` |
+| integration | enabled when...                          | disabled with...                                         |
+| ------------|------------------------------------------|----------------------------------------------------------|
+| Cordova     | \`ionic cordova\` commands are run       | \`ionic config set integrations.cordova.enabled false\`  |
+| Gulp        | \`gulp\` exists in your \`package.json\` | \`ionic config set integrations.gulp.enabled false\`     |
 
 ## Environment Variables
 

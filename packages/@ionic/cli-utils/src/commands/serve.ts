@@ -31,23 +31,24 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     await env.shell.run('npm', ['run', WATCH_BEFORE_SCRIPT], { showExecution: true });
   }
 
-  if (packageJson.devDependencies) {
-    if (packageJson.devDependencies['gulp']) {
-      const { checkAndEnableGulpIntegration, registerWatchEvents, runTask } = await import('../lib/gulp');
-      await checkAndEnableGulpIntegration(env);
-      await registerWatchEvents(env);
-      await runTask(env, WATCH_BEFORE_SCRIPT);
-    }
+  const assign = await import('lodash/assign');
+  const deps = assign({}, packageJson.dependencies, packageJson.devDependencies);
 
-    await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-cordova');
-    await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic-angular');
-    await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic1');
-    await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-gulp');
+  if (deps['gulp']) {
+    const { checkAndEnableGulpIntegration, registerWatchEvents, runTask } = await import('../lib/gulp');
+    await checkAndEnableGulpIntegration(env);
+    await registerWatchEvents(env);
+    await runTask(env, WATCH_BEFORE_SCRIPT);
+  }
 
-    if (packageJson.devDependencies['@ionic/cli-plugin-cordova']) {
-      const { checkCordova } = await import('../lib/cordova/utils');
-      await checkCordova(env);
-    }
+  await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-cordova');
+  await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic-angular');
+  await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic1');
+  await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-gulp');
+
+  if (deps['@ionic/cli-plugin-cordova']) {
+    const { checkCordova } = await import('../lib/cordova/utils');
+    await checkCordova(env);
   }
 
   await env.hooks.fire('watch:before', { env });
