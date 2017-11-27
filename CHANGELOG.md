@@ -8,7 +8,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 ## Versions
 
 <a name="3.19.0"></a>
-### 3.19.0 (PENDING)
+### 3.19.0 (2017-11-21)
 
 * Added prompt to `ionic start` that asks to install the Cordova version.
 * Added `--bundle-id` to `ionic start` for setting the Cordova bundle ID in
