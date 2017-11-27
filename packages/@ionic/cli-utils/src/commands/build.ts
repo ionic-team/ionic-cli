@@ -20,8 +20,8 @@ export async function build(env: IonicEnvironment, inputs: CommandLineInputs, op
 
   if (packageJson.devDependencies) {
     if (packageJson.devDependencies['gulp']) {
-      const { checkGulp, runTask } = await import('../lib/gulp');
-      await checkGulp(env);
+      const { checkAndEnableGulpIntegration, runTask } = await import('../lib/gulp');
+      await checkAndEnableGulpIntegration(env);
       await runTask(env, BUILD_BEFORE_SCRIPT);
     }
 
@@ -55,8 +55,8 @@ export async function build(env: IonicEnvironment, inputs: CommandLineInputs, op
 
   if (packageJson.devDependencies) {
     if (packageJson.devDependencies['gulp']) {
-      const { checkGulp, runTask } = await import('../lib/gulp');
-      await checkGulp(env);
+      const { checkAndEnableGulpIntegration, runTask } = await import('../lib/gulp');
+      await checkAndEnableGulpIntegration(env);
       await runTask(env, BUILD_AFTER_SCRIPT);
     }
   }

@@ -33,8 +33,8 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
 
   if (packageJson.devDependencies) {
     if (packageJson.devDependencies['gulp']) {
-      const { checkGulp, registerWatchEvents, runTask } = await import('../lib/gulp');
-      await checkGulp(env);
+      const { checkAndEnableGulpIntegration, registerWatchEvents, runTask } = await import('../lib/gulp');
+      await checkAndEnableGulpIntegration(env);
       await registerWatchEvents(env);
       await runTask(env, WATCH_BEFORE_SCRIPT);
     }

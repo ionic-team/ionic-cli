@@ -68,9 +68,11 @@ export async function getGulpVersion(env: IonicEnvironment): Promise<string | un
   return gulpVersion;
 }
 
-export async function checkGulp(env: IonicEnvironment) {
+export async function checkAndEnableGulpIntegration(env: IonicEnvironment) {
   const project = await env.project.load();
 
+  // Our intention is to enable the gulp integration. If it has been enabled
+  // already, we don't need to. If it has been disabled, we don't want to.
   if (!project.integrations.gulp) {
     await env.runCommand(['integrations', 'enable', 'gulp']);
   }
