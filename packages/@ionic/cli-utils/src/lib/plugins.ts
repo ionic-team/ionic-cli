@@ -239,11 +239,14 @@ async function facilitateIonicUpdate(env: IonicEnvironment, ionicPlugin: Plugin,
   } else {
     env.log.info(updateMsg);
     env.log.nl();
-    env.log.warn(
-      `No write permissions for ${global ? 'global' : 'local'} ${chalk.bold('node_modules')}--automatic CLI updates are disabled.\n` +
-      `To fix, see ${chalk.bold('https://docs.npmjs.com/getting-started/fixing-npm-permissions')}\n\n` +
-      `Or, install the CLI update manually:\n\n${chalk.green(ionicInstallArgs.join(' '))}\n`
-    );
+    const msg = `No write permissions for ${global ? 'global' : 'local'} ${chalk.bold('node_modules')}--automatic CLI updates are disabled.`;
+    const extra = global ?
+      `This means you don't currently have access to install or update global packages. For Windows, try running ${chalk.green(ionicInstallArgs.join(' '))} in a command prompt as an administrator. For Mac and Linux, try running ${chalk.green(`sudo ${ionicInstallArgs.join(' ')}`)}.\n\n` +
+      `Alternatively, you can fix the permissions of your global package directories for your user by following this guide for npm${chalk.cyan('[1]')} or by using Node Version Manager${chalk.cyan('[2]')}.\n\n` +
+      `${chalk.cyan('[1]')}: ${chalk.bold('https://docs.npmjs.com/getting-started/fixing-npm-permissions')}\n` +
+      `${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/creationix/nvm')}` :
+      `This means the ownership or permissions of your ${chalk.bold('node_modules')} directories may be incorrect and will need to be addressed manually for automatic updates to work.`;
+    env.log.warn(`${msg}\n${extra}`);
   }
 }
 
