@@ -132,12 +132,12 @@ export abstract class CordovaCommand extends Command {
     await conf.save();
   }
 
-  async runCordova(argList: string[], { fatalOnNotFound = false, truncateErrorOutput = 5000, ...options }: IShellRunOptions = {}): Promise<string> {
+  async runCordova(argList: string[], { fatalOnNotFound = false, truncateErrorOutput = 5000, ...options }: IShellRunOptions = {}): Promise<void> {
     const { ERROR_SHELL_COMMAND_NOT_FOUND } = await import('@ionic/cli-utils/lib/shell');
     const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
 
     try {
-      return await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, ...options });
+      await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, ...options });
     } catch (e) {
       if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
         const cdvInstallArgs = await pkgManagerArgs(this.env, { pkg: 'cordova', global: true });
@@ -212,7 +212,7 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
 
     const conf = await ConfigXml.load(this.env.project.directory);
 
-    registerShutdownFunction(this.env, () => {
+    registerShutdownFunction(() => {
       conf.resetContentSrc();
       conf.saveSync();
     });

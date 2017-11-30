@@ -41,6 +41,7 @@ export class Environment implements IonicEnvironment {
   readonly tasks: ITaskChain;
   readonly telemetry: ITelemetry;
   readonly namespace: IRootNamespace;
+  keepopen = false;
 
   private bottomBar?: inquirerType.ui.BottomBar;
 
@@ -126,16 +127,18 @@ export class Environment implements IonicEnvironment {
   }
 
   async close() {
-    this.tasks.cleanup();
+    if (!this.keepopen) {
+      this.tasks.cleanup();
 
-    // instantiating inquirer.ui.BottomBar hangs, so when close() is called,
-    // we close BottomBar streams and replace the log stream with stdout.
-    // This means inquirer shouldn't be used after command execution finishes
-    // (which could happen during long-running processes like serve).
-    if (this.bottomBar) {
-      this.bottomBar.close();
-      this.bottomBar = undefined;
-      this.log.stream = process.stdout;
+      // instantiating inquirer.ui.BottomBar hangs, so when close() is called,
+      // we close BottomBar streams and replace the log stream with stdout.
+      // This means inquirer shouldn't be used after command execution finishes
+      // (which could happen during long-running processes like serve).
+      if (this.bottomBar) {
+        this.bottomBar.close();
+        this.bottomBar = undefined;
+        this.log.stream = process.stdout;
+      }
     }
   }
 

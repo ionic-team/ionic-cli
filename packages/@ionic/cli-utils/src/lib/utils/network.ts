@@ -1,4 +1,5 @@
 import * as os from 'os';
+import * as net from 'net';
 
 import { NetworkInterface } from '../../definitions';
 
@@ -57,5 +58,44 @@ export async function isPortAvailable(port: number, host?: string): Promise<bool
         reject(err);
       })
       .listen(port, host);
+  });
+}
+
+export async function isHostConnectable(host: string, port: number, timeout: number = 1000): Promise<boolean> {
+  let ms = 0;
+  const interval = 1000;
+
+  const tryConnect = async () => {
+    const sock = new net.Socket();
+
+    return new Promise<boolean>((resolve, reject) => {
+      sock.on('connect', () => {
+        sock.destroy();
+        resolve(true);
+      });
+
+      sock.on('error', err => {
+        reject(err);
+      });
+
+      sock.connect(port, host);
+    });
+  };
+
+  return new Promise<boolean>(async (resolve) => {
+    setInterval(() => {
+      ms += interval;
+
+      if (ms > timeout) {
+        resolve(false);
+      }
+    }, interval);
+
+    while (true) {
+      try {
+        await tryConnect();
+        resolve(true);
+      } catch (e) {}
+    }
   });
 }

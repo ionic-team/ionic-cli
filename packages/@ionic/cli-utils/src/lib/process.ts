@@ -1,17 +1,24 @@
-import { IonicEnvironment } from '../definitions';
+import { createDebugLogger } from './debug';
 
-export function registerShutdownFunction(env: IonicEnvironment, fn: () => void) {
-  const wrapfn = () => {
+const debug = createDebugLogger('lib:process');
+
+const calledFns = new Set<() => void>();
+
+function wrapfn(fn: () => void) {
+  if (!calledFns.has(fn)) {
     try {
+      calledFns.add(fn);
       fn();
     } finally {
       process.exit();
     }
-  };
+  }
+}
 
-  process.on('exit', () => { env.log.debug('registerShutdownFunction process.exit/normal shutdown'); wrapfn(); });
-  process.on('SIGINT', () => { env.log.debug('registerShutdownFunction: SIGINT'); wrapfn(); });
-  process.on('SIGTERM', () => { env.log.debug('registerShutdownFunction: SIGTERM'); wrapfn(); });
-  process.on('SIGHUP', () => { env.log.debug('registerShutdownFunction: SIGHUP'); wrapfn(); });
-  process.on('SIGBREAK', () => { env.log.debug('registerShutdownFunction: SIGBREAK'); wrapfn(); });
+export function registerShutdownFunction(fn: () => void) {
+  process.on('exit', () => { debug('registerShutdownFunction process.exit/normal shutdown'); wrapfn(fn); });
+  process.on('SIGINT', () => { debug('registerShutdownFunction: SIGINT'); wrapfn(fn); });
+  process.on('SIGTERM', () => { debug('registerShutdownFunction: SIGTERM'); wrapfn(fn); });
+  process.on('SIGHUP', () => { debug('registerShutdownFunction: SIGHUP'); wrapfn(fn); });
+  process.on('SIGBREAK', () => { debug('registerShutdownFunction: SIGBREAK'); wrapfn(fn); });
 }

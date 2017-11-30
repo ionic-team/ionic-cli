@@ -1,7 +1,7 @@
 import * as os from 'os';
 import * as path from 'path';
 
-import * as stripAnsi from 'strip-ansi';
+import stripAnsi = require('strip-ansi');
 
 describe('@ionic/cli-utils', () => {
 

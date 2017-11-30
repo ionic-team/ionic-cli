@@ -62,6 +62,47 @@ export async function selectExternalIP(env: IonicEnvironment, options: ServeOpti
   return [ chosenIP, availableInterfaces ];
 }
 
+export interface Ports {
+  port: number;
+  livereloadPort: number;
+  notificationPort: number;
+}
+
+export async function findOpenPorts(env: IonicEnvironment, address: string, ports: Ports): Promise<Ports> {
+  const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort } = await import('./utils/network');
+
+  try {
+    const [ port, livereloadPort, notificationPort ] = await Promise.all([
+      findClosestOpenPort(ports.port, '0.0.0.0'),
+      findClosestOpenPort(ports.livereloadPort, '0.0.0.0'),
+      findClosestOpenPort(ports.notificationPort, '0.0.0.0'),
+    ]);
+
+    if (ports.port !== port) {
+      env.log.debug(`Port ${chalk.bold(String(ports.port))} taken, using ${chalk.bold(String(port))}.`);
+      ports.port = port;
+    }
+
+    if (ports.livereloadPort !== livereloadPort) {
+      env.log.debug(`Port ${chalk.bold(String(ports.livereloadPort))} taken, using ${chalk.bold(String(livereloadPort))}.`);
+      ports.livereloadPort = livereloadPort;
+    }
+
+    if (ports.notificationPort !== notificationPort) {
+      env.log.debug(`Port ${chalk.bold(String(ports.notificationPort))} taken, using ${chalk.bold(String(notificationPort))}.`);
+      ports.notificationPort = notificationPort;
+    }
+
+    return { port, livereloadPort, notificationPort };
+  } catch (e) {
+    if (e !== ERROR_NETWORK_ADDRESS_NOT_AVAIL) {
+      throw e;
+    }
+
+    throw new FatalException(`${chalk.green(address)} is not available--cannot bind.`);
+  }
+}
+
 export interface DevAppDetails {
   channel?: string;
   port?: number;

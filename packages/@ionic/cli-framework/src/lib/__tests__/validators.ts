@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { validators } from '../validators';
 
-import * as stripAnsi from 'strip-ansi';
+import stripAnsi = require('strip-ansi');
 
 describe('@ionic/cli-framework', () => {
 

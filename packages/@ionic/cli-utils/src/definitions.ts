@@ -30,13 +30,16 @@ export interface LoggerOptions {
   level?: LogLevel;
   prefix?: string | (() => string);
   stream?: NodeJS.WritableStream;
+  wrap?: boolean;
 }
 
 export interface ILogger {
-  level: LogLevel;
-  prefix: LogPrefix;
+  readonly level: LogLevel;
+  readonly prefix: LogPrefix;
   stream: NodeJS.WritableStream;
+  readonly wrap: boolean;
 
+  // log functions
   debug: LogFn;
   info: LogFn;
   ok: LogFn;
@@ -46,6 +49,9 @@ export interface ILogger {
   msg: LogFn;
   log: LogFn;
   nl(num?: number): void;
+
+  createWriteStream(): NodeJS.WritableStream;
+  clone(opts?: Partial<LoggerOptions>): ILogger;
   shouldLog(level: LogLevel): boolean;
 }
 
@@ -295,18 +301,25 @@ export interface ISession {
   getAppUserToken(app_id?: string): Promise<string>;
 }
 
-export interface IShellRunOptions extends crossSpawnType.SpawnOptions {
+export interface IShellSpawnOptions extends crossSpawnType.SpawnOptions {
   showCommand?: boolean;
+}
+
+export interface IShellRunOptions extends IShellSpawnOptions {
   showExecution?: boolean;
   showError?: boolean;
   showSpinner?: boolean;
   fatalOnNotFound?: boolean;
   fatalOnError?: boolean;
   truncateErrorOutput?: number;
+  logOptions?: IShellRunLogOptions;
 }
+
+export type IShellRunLogOptions = Partial<LoggerOptions> & { stdoutTransform?: NodeJS.ReadWriteStream; stderrTransform?: NodeJS.ReadWriteStream };
 
 export interface IShell {
   run(command: string, args: string[], options: IShellRunOptions): Promise<string>;
+  spawn(command: string, args: string[], options: IShellSpawnOptions): Promise<crossSpawnType.ChildProcess>;
   cmdinfo(cmd: string, args?: string[]): Promise<string | undefined>;
 }
 
@@ -561,6 +574,7 @@ export interface IonicEnvironment {
   readonly tasks: ITaskChain;
   readonly telemetry: ITelemetry;
   readonly namespace: IRootNamespace;
+  keepopen: boolean;
 
   open(): Promise<void>;
   close(): Promise<void>;

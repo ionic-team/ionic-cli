@@ -90,8 +90,7 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
       const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
       await installPlatform(this.env, platformName);
     } else {
-      const response = await this.runCordova(optionList, { showExecution: true });
-      this.env.log.msg(response);
+      await this.runCordova(optionList, { showExecution: true });
     }
 
     const isLoggedIn = await this.env.session.isLoggedIn();

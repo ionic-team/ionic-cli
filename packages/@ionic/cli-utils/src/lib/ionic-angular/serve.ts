@@ -1,10 +1,8 @@
 import chalk from 'chalk';
 
 import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions';
-
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, selectExternalIP } from '../serve';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, findOpenPorts, selectExternalIP } from '../serve';
 import { FatalException } from '../errors';
-import { importAppScripts } from './app-scripts';
 
 export interface AppScriptsServeOptions extends ServeOptions {
   platform: string;
@@ -13,25 +11,27 @@ export interface AppScriptsServeOptions extends ServeOptions {
 }
 
 export async function serve({ env, options }: { env: IonicEnvironment, options: AppScriptsServeOptions }): Promise<ServeDetails> {
+  const split2 = await import('split2');
+  const { registerShutdownFunction } = await import('../process');
+  const { isHostConnectable } = await import('../utils/network');
   const [ externalIP, availableInterfaces ] = await selectExternalIP(env, options);
 
-  const appScriptsArgs = await serveOptionsToAppScriptsArgs(options);
-  process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
+  const { port } = await findOpenPorts(env, options.address, options);
 
-  const AppScripts = await importAppScripts(env);
-  const context = AppScripts.generateContext();
+  const p = await env.shell.spawn('ng', ['serve', '--host', options.address, '--port', String(port), '--progress', 'false'], { cwd: env.project.directory });
 
-  // using app-scripts and livereload is requested
-  // Also remove commandName from the rawArgs passed
-  env.log.info(`Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))} - Ctrl+C to cancel`);
-  const settings = await AppScripts.serve(context);
+  const log = env.log.clone({ prefix: chalk.dim('[ng]'), wrap: false });
+  const ws = log.createWriteStream();
 
-  if (!settings) { // TODO: shouldn've been fixed after app-scripts 1.3.7
-    throw new FatalException(
-      `app-scripts serve unexpectedly failed.` +
-      `settings: ${settings}` +
-      `context: ${context}`
-    );
+  p.stdout.pipe(split2()).pipe(ws);
+  p.stderr.pipe(split2()).pipe(ws);
+
+  registerShutdownFunction(() => { p.kill(); });
+
+  const connectable = await isHostConnectable(externalIP, port, 20000);
+
+  if (!connectable) {
+    throw new FatalException(`Could not connect to ng server at ${options.address}:${String(port)}.`);
   }
 
   return  {
@@ -39,31 +39,7 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
     localAddress: 'localhost',
     externalAddress: externalIP,
     externalNetworkInterfaces: availableInterfaces,
-    port: settings.httpPort,
+    port,
     externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
   };
-}
-
-export async function serveOptionsToAppScriptsArgs(options: AppScriptsServeOptions) {
-  const { minimistOptionsToArray } = await import('../utils/command');
-
-  const minimistArgs = {
-    _: [],
-    address: options.address,
-    port: String(options.port),
-    livereloadPort: String(options.livereloadPort),
-    devLoggerPort: String(options.notificationPort),
-    consolelogs: options.consolelogs,
-    serverlogs: options.serverlogs,
-    nobrowser: true,
-    nolivereload: !options.livereload,
-    noproxy: !options.proxy,
-    lab: options.lab,
-    iscordovaserve: options.iscordovaserve,
-    platform: options.platform,
-    target: options.target,
-    env: options.env,
-  };
-
-  return minimistOptionsToArray(minimistArgs, { useEquals: false });
 }

@@ -34,7 +34,6 @@
     "../../../types/slice-ansi.d.ts",
     "../../../types/ssh-config.d.ts",
     "../../../types/string-width.d.ts",
-    "../../../types/strip-ansi.d.ts",
     "../../../types/superagent.d.ts",
     "../../../types/tiny-lr.d.ts",
     "../../../types/wrap-ansi.d.ts",

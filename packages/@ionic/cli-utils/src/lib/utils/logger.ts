@@ -1,6 +1,8 @@
 import * as util from 'util';
+import * as stream from 'stream';
 
 import chalk from 'chalk';
+import stripAnsi = require('strip-ansi');
 import { Chalk } from 'chalk';
 
 import { ILogger, LogLevel, LogMsg, LogPrefix, LoggerOptions } from '../../definitions';
@@ -23,11 +25,13 @@ export class Logger implements ILogger {
   public readonly level: LogLevel;
   public readonly prefix: LogPrefix;
   public stream: NodeJS.WritableStream;
+  public readonly wrap: boolean;
 
-  constructor({ level = 'info', prefix = '', stream = process.stdout }: LoggerOptions) {
+  constructor({ level = 'info', prefix = '', stream = process.stdout, wrap = true }: LoggerOptions) {
     this.level = level;
     this.prefix = prefix;
     this.stream = stream;
+    this.wrap = wrap;
   }
 
   debug(msg: LogMsg): void {
@@ -70,6 +74,22 @@ export class Logger implements ILogger {
     this.stream.write(this.enforceLF('\n'.repeat(num)));
   }
 
+  clone(opts: Partial<LoggerOptions> = {}) {
+    const { level, prefix, stream } = this;
+    return new Logger({ level, prefix, stream, ...opts });
+  }
+
+  createWriteStream() {
+    const self = this;
+
+    return new class extends stream.Writable {
+      _write(chunk: any, encoding: string, callback: Function) {
+        self.info(chunk.toString());
+        callback();
+      }
+    }
+  }
+
   shouldLog(level: LogLevel): boolean {
     return LOG_LEVELS.indexOf(level) >= LOG_LEVELS.indexOf(this.level);
   }
@@ -108,24 +128,28 @@ export class Logger implements ILogger {
       const status = color.bold.bgBlack;
       const b = chalk.dim;
 
-      const msgLines = wordWrap(msg, { indentation: level === 'info' ? 0 : level.length + 3 }).split('\n');
+      if (this.wrap) {
+        const prefixIndentation = prefix ? stripAnsi(prefix).length + 1 : 0;
+        const levelIndentation = level === 'info' ? 0 : level.length + 3;
+        const msgLines = wordWrap(msg, { indentation: prefixIndentation + levelIndentation }).split('\n');
 
-      if (msg.trim().includes('\n')) {
-        msg = msgLines.map((l, i) => {
-          // We want these log messages to stand out a bit, so automatically
-          // color the first line and separate the first line from the other
-          // lines if the message is multi-lined.
-          if (i === 0 && this.firstLineColored.includes(level)) {
-            return color(l) + (msgLines.length > 1 ? '\n' : '');
-          }
+        if (msg.trim().includes('\n')) {
+          msg = msgLines.map((l, i) => {
+            // We want these log messages to stand out a bit, so automatically
+            // color the first line and separate the first line from the other
+            // lines if the message is multi-lined.
+            if (i === 0 && this.firstLineColored.includes(level)) {
+              return color(l) + (msgLines.length > 1 ? '\n' : '');
+            }
 
-          return l;
-        }).join('\n') + '\n\n';
-      } else {
-        msg = msgLines.join('\n');
+            return l;
+          }).join('\n') + '\n\n';
+        } else {
+          msg = msgLines.join('\n');
+        }
+
+        msg = this.enforceLF(msg);
       }
-
-      msg = this.enforceLF(msg);
 
       const fmtLevel = () => b('[') + status(level.toUpperCase()) + b(']');
 

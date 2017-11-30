@@ -22,6 +22,8 @@ const WATCH_BEFORE_HOOK = 'watch:before';
 const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
+  env.keepopen = true;
+
   const { detectAndWarnAboutDeprecatedPlugin } = await import('../lib/plugins');
 
   const packageJson = await env.project.loadPackageJson();

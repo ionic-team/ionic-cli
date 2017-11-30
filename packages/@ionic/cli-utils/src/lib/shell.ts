@@ -1,11 +1,13 @@
 import * as path from 'path';
 
+import * as crossSpawnType from 'cross-spawn';
+
 import chalk from 'chalk';
 
-import { ILogger, IProject, IShell, IShellRunOptions, ITaskChain } from '../definitions';
+import { ILogger, IProject, IShell, IShellRunOptions, IShellSpawnOptions, ITaskChain } from '../definitions';
 import { isExitCodeException } from '../guards';
 import { FatalException } from './errors';
-import { RunCmdOptions, runcmd } from './utils/shell';
+import { RunCmdOptions, prettyCommand, runcmd, spawncmd } from './utils/shell';
 
 export const ERROR_SHELL_COMMAND_NOT_FOUND = 'SHELL_COMMAND_NOT_FOUND';
 
@@ -20,21 +22,21 @@ export class Shell implements IShell {
     this.project = project;
   }
 
-  async run(command: string, args: string[], { showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, showExecution, showSpinner = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<string> {
-    const fullCmd = command + ' ' + (args.length > 0 ? args.map(a => a.includes(' ') ? `"${a}"` : a).join(' ') : '');
+  async run(command: string, args: string[], { showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, logOptions, showExecution, showSpinner = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<string> {
+    const fullCmd = prettyCommand(command, args);
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
     const options: RunCmdOptions = { ...crossSpawnOptions };
 
+    const log = this.log.clone(logOptions);
+
     if (showExecution) {
-      options.stdoutPipe = this.log.stream;
-      options.stderrPipe = this.log.stream;
+      const ws = log.createWriteStream();
+
+      options.stdoutPipe = ws;
+      options.stderrPipe = ws;
     }
 
-    if (!options.env) {
-      options.env = {};
-    }
-
-    options.env.PATH = this.supplementPATH(process.env.PATH);
+    this.prepareSpawnOptions(options);
 
     if (showCommand) {
       if (this.log.shouldLog('info')) {
@@ -109,11 +111,34 @@ export class Shell implements IShell {
     }
   }
 
+  async spawn(command: string, args: string[], { showCommand = true, ...crossSpawnOptions }: IShellSpawnOptions): Promise<crossSpawnType.ChildProcess> {
+    const fullCmd = prettyCommand(command, args);
+    this.prepareSpawnOptions(crossSpawnOptions);
+
+    const p = await spawncmd(command, args, crossSpawnOptions);
+
+    if (showCommand) {
+      if (this.log.shouldLog('info')) {
+        this.log.msg(`> ${chalk.green(fullCmd)}`);
+      }
+    }
+
+    return p;
+  }
+
   async cmdinfo(cmd: string, args: string[] = []): Promise<string | undefined> {
     try {
       const out = await runcmd(cmd, args, { env: { PATH: this.supplementPATH(process.env.PATH) } });
       return out.split('\n').join(' ');
     } catch (e) {}
+  }
+
+  protected prepareSpawnOptions(options: IShellSpawnOptions) {
+    if (!options.env) {
+      options.env = {};
+    }
+
+    options.env.PATH = this.supplementPATH(process.env.PATH);
   }
 
   protected supplementPATH(p: string) {

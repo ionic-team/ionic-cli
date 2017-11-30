@@ -17,8 +17,6 @@ export function expandTildePath(p: string) {
 }
 
 export async function runcmd(command: string, args?: string[], options: RunCmdOptions = {}): Promise<string> {
-  const crossSpawn = await import('cross-spawn');
-
   if (!options.env) {
     options.env = {};
   }
@@ -31,17 +29,18 @@ export async function runcmd(command: string, args?: string[], options: RunCmdOp
     PATH: PATH.split(path.delimiter).map(expandTildePath).join(path.delimiter),
   };
 
+  const p = await spawncmd(command, args, options);
+
   return new Promise<string>((resolve, reject) => {
-    const p = crossSpawn.spawn(command, args, options);
     const stdoutBufs: Buffer[] = [];
     const stderrBufs: Buffer[] = [];
     const dualBufs: Buffer[] = [];
 
     if (p.stdout) {
-      p.stdout.on('data', chunk => {
-        if (options.stdoutPipe) {
-          options.stdoutPipe.write(chunk);
-        } else {
+      if (options.stdoutPipe) {
+        p.stdout.pipe(options.stdoutPipe);
+      } else {
+        p.stdout.on('data', chunk => {
           if (Buffer.isBuffer(chunk)) {
             stdoutBufs.push(chunk);
             dualBufs.push(chunk);
@@ -49,15 +48,15 @@ export async function runcmd(command: string, args?: string[], options: RunCmdOp
             stdoutBufs.push(Buffer.from(chunk));
             dualBufs.push(Buffer.from(chunk));
           }
-        }
-      });
+        });
+      }
     }
 
     if (p.stderr) {
-      p.stderr.on('data', chunk => {
-        if (options.stderrPipe) {
-          options.stderrPipe.write(chunk);
-        } else {
+      if (options.stderrPipe) {
+        p.stderr.pipe(options.stderrPipe);
+      } else {
+        p.stderr.on('data', chunk => {
           if (Buffer.isBuffer(chunk)) {
             stderrBufs.push(chunk);
             dualBufs.push(chunk);
@@ -65,8 +64,8 @@ export async function runcmd(command: string, args?: string[], options: RunCmdOp
             stderrBufs.push(Buffer.from(chunk));
             dualBufs.push(Buffer.from(chunk));
           }
-        }
-      });
+        });
+      }
     }
 
     p.on('error', err => {
@@ -81,4 +80,15 @@ export async function runcmd(command: string, args?: string[], options: RunCmdOp
       }
     });
   });
+}
+
+export async function spawncmd(command: string, args?: string[], options: crossSpawnType.SpawnOptions = {}): Promise<crossSpawnType.ChildProcess> {
+  const crossSpawn = await import('cross-spawn');
+  const p = crossSpawn.spawn(command, args, options);
+
+  return p;
+}
+
+export function prettyCommand(command: string, args: string[]) {
+  return command + ' ' + (args.length > 0 ? args.map(a => a.includes(' ') ? `"${a}"` : a).join(' ') : '');
 }

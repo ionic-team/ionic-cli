@@ -5,13 +5,11 @@ import chalk from 'chalk';
 
 import * as expressType from 'express';
 import * as proxyMiddlewareType from 'http-proxy-middleware';
+import { fsReadFile, pathExists } from '@ionic/cli-framework/utils/fs';
 
 import { IonicEnvironment, LiveReloadFunction, LogLevel, ServeDetails, ServeOptions } from '../../definitions';
 import { isDevServerMessage } from '../../guards';
-
-import { BIND_ALL_ADDRESS, IONIC_LAB_URL, LOCAL_ADDRESSES, selectExternalIP } from '../serve';
-import { FatalException } from '../errors';
-import { fsReadFile, pathExists } from '@ionic/cli-framework/utils/fs';
+import { BIND_ALL_ADDRESS, IONIC_LAB_URL, LOCAL_ADDRESSES, findOpenPorts, selectExternalIP } from '../serve';
 
 const WATCH_PATTERNS = [
   'scss/**/*',
@@ -29,48 +27,23 @@ const IOS_PLATFORM_PATH = path.join('platforms', 'ios', 'www');
 const ANDROID_PLATFORM_PATH = path.join('platforms', 'android', 'assets', 'www');
 
 export async function serve({ env, options }: { env: IonicEnvironment; options: ServeOptions; }): Promise<ServeDetails> {
-  const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort } = await import('../utils/network');
-
   const [ externalIP, availableInterfaces ] = await selectExternalIP(env, options);
   const wwwDir = await env.project.getSourceDir();
 
-  try {
-    const [ port, livereloadPort, notificationPort ] = await Promise.all([
-      findClosestOpenPort(options.port, '0.0.0.0'),
-      findClosestOpenPort(options.livereloadPort, '0.0.0.0'),
-      findClosestOpenPort(options.notificationPort, '0.0.0.0'),
-    ]);
+  const { port, livereloadPort, notificationPort } = await findOpenPorts(env, options.address, options);
 
-    if (options.port !== port) {
-      env.log.debug(`Port ${chalk.bold(String(options.port))} taken, using ${chalk.bold(String(port))}.`);
-      options.port = port;
-    }
-
-    if (options.livereloadPort !== livereloadPort) {
-      env.log.debug(`Port ${chalk.bold(String(options.livereloadPort))} taken, using ${chalk.bold(String(livereloadPort))}.`);
-      options.livereloadPort = livereloadPort;
-    }
-
-    if (options.notificationPort !== notificationPort) {
-      env.log.debug(`Port ${chalk.bold(String(options.notificationPort))} taken, using ${chalk.bold(String(notificationPort))}.`);
-      options.notificationPort = notificationPort;
-    }
-  } catch (e) {
-    if (e !== ERROR_NETWORK_ADDRESS_NOT_AVAIL) {
-      throw e;
-    }
-
-    throw new FatalException(`${chalk.green(options.address)} is not available--cannot bind.`);
-  }
+  options.port = port;
+  options.livereloadPort = livereloadPort;
+  options.notificationPort = notificationPort;
 
   const details = [
     `address: ${chalk.bold(options.address)}`,
-    `port: ${chalk.bold(String(options.port))}`,
-    `dev server port: ${chalk.bold(String(options.notificationPort))}`,
+    `port: ${chalk.bold(String(port))}`,
+    `dev server port: ${chalk.bold(String(notificationPort))}`,
   ];
 
   if (options.livereload) {
-    details.push(`livereload port: ${chalk.bold(String(options.livereloadPort))}`);
+    details.push(`livereload port: ${chalk.bold(String(livereloadPort))}`);
   }
 
   env.log.info(`Starting server (${details.join(', ')}) - Ctrl+C to cancel`);

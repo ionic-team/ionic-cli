@@ -23,7 +23,6 @@
     "../../../types/cross-spawn.d.ts",
     "../../../types/dargs.d.ts",
     "../../../types/slice-ansi.d.ts",
-    "../../../types/strip-ansi.d.ts",
     "../../../types/string-width.d.ts",
     "../../../types/superagent.d.ts",
     "../../../types/superagent-proxy.d.ts",
