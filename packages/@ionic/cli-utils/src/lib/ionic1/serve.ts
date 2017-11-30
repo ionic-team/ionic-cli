@@ -17,8 +17,8 @@ import {
 import {
   BIND_ALL_ADDRESS,
   DEFAULT_PROXY_CONFIG,
-  IONIC_LAB_URL,
   LOCAL_ADDRESSES,
+  attachLab,
   attachProxy,
   attachProjectProxies,
   findOpenPorts,
@@ -191,18 +191,7 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
   app.get('/', serveIndex);
   app.use('/', express.static(options.wwwDir));
 
-  // Lab routes
-  app.use(IONIC_LAB_URL + '/static', express.static(path.join(__dirname, '..', '..', 'assets', 'ionic1', 'lab', 'static')));
-  app.get(IONIC_LAB_URL, (req, res) => res.sendFile('index.html', { root: path.join(__dirname, '..', '..', 'assets', 'ionic1', 'lab') }));
-  app.get(IONIC_LAB_URL + '/api/v1/cordova', async (req, res) => {
-    const [ info ] = await env.hooks.fire('cordova:project:info', { env });
-
-    if (info) {
-      res.json(info);
-    } else {
-      res.status(400).json({ status: 'error', message: 'Unable to load config.xml' });
-    }
-  });
+  await attachLab(app);
 
   app.get('/cordova.js', servePlatformResource, serveMockCordovaJS);
   app.get('/cordova_plugins.js', servePlatformResource);
@@ -214,7 +203,7 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
   await attachProxy(app, pathPrefix, { ...DEFAULT_PROXY_CONFIG, target: livereloadUrl, pathRewrite: { [pathPrefix]: '' }, logProvider: () => env.log });
 
   if (options.proxy) {
-    await attachProjectProxies(env, app);
+    await attachProjectProxies(app, env);
   }
 
   app.get(`/${DEV_SERVER_PREFIX}/dev-server.js`, await createDevServerHandler(options));

@@ -5,16 +5,21 @@
     <meta charset="utf-8">
     <link rel="icon" type="image/png" href="/ionic-lab/static/img/favicon.png" />
     <link rel="stylesheet" href="/ionic-lab/static/css/style.css" />
+    <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" />
   </head>
   <body>
     <div id="app">
       <div id="header">
         <div id="header-left">
-          <a target="_blank" href="https://ionicframework.com/" id="logo">
+          <a href="#" id="menu-toggle">
+            <i class="icon ion-navicon-round"></i>
           </a>
+          <div id="logo">
+          </div>
         </div>
 
         <div id="header-right">
+          <a href="/" target="_blank" id="open-fullscreen">Open fullscreen <i class="icon ion-share"></i></a>
           <div class="dropdown">
             <button class="dropdown-toggle" type="button">Platforms <span class="dropdown-caret"></span></button>
             <ul class="dropdown-menu">
@@ -25,18 +30,42 @@
           </div>
         </div>
       </div>
-      <preview>
-      </preview>
+      <div id="main">
+        <div id="sidebar" class="hidden">
+          <div class="title">Quick reference</div>
+          <div class="close"><i class="icon ion-close-circled"></i></div>
+          <ul id="menu" class="menu">
+            <li><a>Components</a>
+              <ul id="components-menu">
+              </ul>
+            </li>
+            <li><a target="_blank" href="https://ionicframework.com/docs/api">API Reference</a></li>
+            <li><a target="_blank" href="https://ionicframework.com/docs/native">Ionic Native</a></li>
+            <li><a target="_blank" href="https://ionicframework.com/docs/">All Documentation</a></li>
+          </ul>
+          <div id="view-ad" class="ad">
+            <img class="logo" src="/ionic-lab/static/img/view-logo.jpg" style="height: 64px"/>
+            <div class="ad-content">
+              Test and share your app live on iOS and Android
+              with the Ionic View app!
+              <br>
+              <a href="http://view.ionic.io">Download View</a>
+            </div>
+          </div>
+        </div>
+        <preview>
+        </preview>
+      </div>
       <div id="footer">
         <div id="footer-left">
           <span id="app-info"></span>
         </div>
         <div id="footer-right">
-          <a target="_blank" href="https://twitter.com/ionicframework">Twitter</a>
-          <a target="_blank" href="https://ionicframework.com/docs">Documentation</a>
+          <a target="_blank" href="http://twitter.com/ionicframework">Twitter</a>
+          <a target="_blank" href="http://ionicframework.com/docs">Documentation</a>
           <a target="_blank" href="https://forum.ionicframework.com/">Forum</a>
           <a target="_blank" href="https://github.com/ionic-team/ionic">GitHub</a>
-          <a target="_blank" class="view-link" href="https://ionicframework.com/products/view">Ionic View</a>
+          <a target="_blank" class="view-link" href="http://view.ionic.io/">Ionic View</a>
         </div>
       </div>
 
@@ -47,7 +76,7 @@
             <h2>Psssst...</h2>
             <p>
               You can test your app live on iOS and Android
-              with the <a href="https://ionicframework.com/products/view" target="_blank">Ionic View</a> app!
+              with the <a href="http://view.ionic.io" target="_blank">Ionic View</a> app!
             </p>
           </div>
           <div class="ionitron"></div>
@@ -87,6 +116,7 @@
         </div>
       </div>
     </template>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
     <script src="/ionic-lab/static/js/lab.js"></script>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

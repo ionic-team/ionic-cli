@@ -5,9 +5,9 @@ import * as expressType from 'express';
 import * as proxyMiddlewareType from 'http-proxy-middleware';
 
 import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions';
-import { DEV_SERVER_PREFIX, createDevServerHandler, injectDevServerScript } from '../dev-server';
+import { attachDevServer, injectDevServerScript } from '../dev-server';
 import { createRawRequest } from '../http';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, attachProjectProxies, findOpenPorts, selectExternalIP } from '../serve';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, attachLab, attachProjectProxies, findOpenPorts, selectExternalIP } from '../serve';
 import { FatalException } from '../errors';
 
 const debug = Debug('ionic:cli-utils:lib:ionic-angular:serve');
@@ -50,7 +50,7 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
   };
 
   if (options.proxy) {
-    await attachProjectProxies(env, app);
+    await attachProjectProxies(app, env);
   }
 
   app.get('/', async (request, response) => {
@@ -61,7 +61,8 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
     response.send(text);
   });
 
-  app.get(`/${DEV_SERVER_PREFIX}/dev-server.js`, await createDevServerHandler(options));
+  await attachDevServer(app, options);
+  await attachLab(app);
 
   app.use('/*', proxyMiddleware('/', { target: ngServeAddress, ...proxyMiddlewareCfg }));
 

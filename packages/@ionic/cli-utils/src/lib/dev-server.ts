@@ -31,6 +31,10 @@ export async function createDevServerHandler(options: ServeOptions): Promise<exp
   };
 }
 
+export async function attachDevServer(app: expressType.Application, options: ServeOptions) {
+  app.get(`/${DEV_SERVER_PREFIX}/dev-server.js`, await createDevServerHandler(options));
+}
+
 export function injectDevServerScript(content: string): string {
   if (content.indexOf(`/${DEV_SERVER_PREFIX}/dev-server.js`) > -1) {
     // already added script

@@ -1,17 +1,17 @@
-@font-face {font-family: 'AvenirNextLTPro-Regular';src: url('https://code.ionicframework.com/assets/fonts/28882F_0_0.eot');src: url('https://code.ionicframework.com/assets/fonts/28882F_0_0.eot?#iefix') format('embedded-opentype'),url('https://code.ionicframework.com/assets/fonts/28882F_0_0.woff') format('woff'),url('https://code.ionicframework.com/assets/fonts/28882F_0_0.ttf') format('truetype');}
+@font-face {font-family: 'AvenirNextLTPro-Regular';src: url('http://code.ionicframework.com/assets/fonts/28882F_0_0.eot');src: url('http://code.ionicframework.com/assets/fonts/28882F_0_0.eot?#iefix') format('embedded-opentype'),url('http://code.ionicframework.com/assets/fonts/28882F_0_0.woff') format('woff'),url('http://code.ionicframework.com/assets/fonts/28882F_0_0.ttf') format('truetype');}
 
 
-@font-face {font-family: 'AvenirNextLTPro-Medium';src: url('https://code.ionicframework.com/assets/fonts/28882F_1_0.eot');src: url('https://code.ionicframework.com/assets/fonts/28882F_1_0.eot?#iefix') format('embedded-opentype'),url('https://code.ionicframework.com/assets/fonts/28882F_1_0.woff') format('woff'),url('https://code.ionicframework.com/assets/fonts/28882F_1_0.ttf') format('truetype');}
+@font-face {font-family: 'AvenirNextLTPro-Medium';src: url('http://code.ionicframework.com/assets/fonts/28882F_1_0.eot');src: url('http://code.ionicframework.com/assets/fonts/28882F_1_0.eot?#iefix') format('embedded-opentype'),url('http://code.ionicframework.com/assets/fonts/28882F_1_0.woff') format('woff'),url('http://code.ionicframework.com/assets/fonts/28882F_1_0.ttf') format('truetype');}
 
 
-@font-face {font-family: 'AvenirNextLTPro-UltLt';src: url('https://code.ionicframework.com/assets/fonts/29CC36_0_0.eot');src: url('https://code.ionicframework.com/assets/fonts/29CC36_0_0.eot?#iefix') format('embedded-opentype'),url('https://code.ionicframework.com/assets/fonts/29CC36_0_0.woff') format('woff'),url('https://code.ionicframework.com/assets/fonts/29CC36_0_0.ttf') format('truetype');}
+@font-face {font-family: 'AvenirNextLTPro-UltLt';src: url('http://code.ionicframework.com/assets/fonts/29CC36_0_0.eot');src: url('http://code.ionicframework.com/assets/fonts/29CC36_0_0.eot?#iefix') format('embedded-opentype'),url('http://code.ionicframework.com/assets/fonts/29CC36_0_0.woff') format('woff'),url('http://code.ionicframework.com/assets/fonts/29CC36_0_0.ttf') format('truetype');}
 
 html, body {
   height: 100%;
 }
 
 body {
-  background-color: #f8f9fb;
+  background-color: #242A31;
   font-family: 'AvenirNextLTPro-Regular', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
   padding: 0;
   margin: 0;
@@ -59,7 +59,7 @@ h2 a {
 }
 .dropdown:hover .dropdown-toggle {
   /* increase the hit box when hovering */
-  padding-left: 100px;
+  /*padding-left: 100px;*/
 }
 .dropdown:hover .dropdown-menu {
   display: block;
@@ -102,12 +102,34 @@ h2 a {
 #header {
   width: 100%;
   height: 50px;
-  background-color: white;
+  background-color: #151A21;
   box-shadow: 0px 1px 3px rgba(0,0,0, 0.15);
 }
+#header a {
+  color: #858D9B;
+  font-family: 'AvenirNextLTPro-Medium', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+  font-size: 13px;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: bold;
+}
+#header .icon {
+  display: inline-block;
+  font-size: 22px;
+  vertical-align: middle;
+  margin-bottom: 3px;
+  margin-left: 3px;
+}
+#header .dropdown {
+  display: inline-block;
+}
+
 #header-left {
   float: left;
   line-height: 50px;
+}
+#header-left #menu-toggle {
+  margin-left: 13px;
 }
 #header a:hover {
   opacity: 1;
@@ -120,7 +142,7 @@ h2 a {
 #footer {
   width: 100%;
   border-top: 1px solid rgba(0,0,0,0.06);
-  background-color: #f8f9fb;
+  background-color: #151A21;
 }
 #footer-left {
   float: left;
@@ -156,14 +178,29 @@ h2 a {
 #logo img {
   max-width: 100%;
 }
+
+preview {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  vertical-align: middle;
+  overflow: auto;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
 .phone {
   display: inline-block;
-  margin: 20px 20px 0 20px;
+  margin: 0px 20px 0 20px;
   vertical-align: middle;
 }
 .phone h2 {
   text-align: left;
   vertical-align: middle;
+  margin-top: 0;
 }
 .phone-icon {
   display: inline-block;
@@ -210,20 +247,18 @@ h2 a {
   background-position: center;
   border-radius: 3px 3px 0 0;
 }
-
 #iphone-frame .statusbar {
   background-image: url(../img/ios-statusbar.png);
 }
-
 #android-frame .statusbar {
   background-image: url(../img/android-statusbar.png);
 }
-
 #windows-frame .statusbar {
   background-image: url(../img/wp-statusbar.png)
 }
 
-.phone-frame-wrap iframe {
+/* Android and windows don't make space for the statusbar like iOS does */
+#android-frame iframe, #windows-frame iframe {
   height: 647px;
   margin-top: 20px;
 }
@@ -281,19 +316,108 @@ h2 a {
   position: absolute;
 }
 
-preview {
-  flex: 1;
-  width: 100%;
-  display: block;
-  vertical-align: middle;
-  overflow: auto;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
+#main {
+  display: flex;
   flex-direction: row;
+  flex: 1;
 }
 
+#sidebar {
+  position: relative;
+  z-index: 1;
+  background-color: #141A21;
+  height: 100%;
+  width: 300px;
+  box-sizing: border-box;
+  padding: 15px;
+  overflow: auto;
+}
+
+#sidebar.hidden {
+  display: none;
+}
+
+#sidebar .close {
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  color: #a2a9b4;
+  font-size: 24px;
+}
+
+#sidebar .title {
+  font-size: 20px;
+  margin-top: 5px;
+  color: white;
+}
+
+.menu {
+  padding: 0;
+  margin: 0;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+     -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* Internet Explorer/Edge */
+          user-select: none; /* Non-prefixed version, currently
+                                supported by Chrome and Opera */
+}
+.menu li {
+  list-style: none;
+  margin: 15px 0;
+}
+.menu li a {
+  color: #a2a9b4;
+  text-decoration: none;
+  cursor: pointer;
+}
+.menu > li > ul {
+  display: none;
+  padding: 0;
+  margin: 0;
+}
+.menu > li > ul li {
+  padding-left: 15px;
+}
+.menu > li.expanded > ul {
+  display: block;
+}
+.menu hr {
+  height: 1px;
+  border: 0;
+  background-color: #2b3642;
+}
+.menu .version {
+  color: #a2a9b4;
+  opacity: 0.5;
+  font-size: 12px;
+}
+
+#menu {
+}
+
+.ad {
+  background-color: #232A31;
+  cursor: pointer;
+  border-radius: 2px;
+  border: 1px solid #3f4650;
+  font-size: 13px;
+  color: white;
+  padding: 10px;
+  display: flex;
+  margin-top: 55px;
+}
+.ad .logo {
+  display: block;
+  margin-right: 15px;
+}
+.ad .content {
+  flex: 1;
+}
+.ad a {
+  color: #308EFD;
+}
 
 @media screen and (max-height: 800px) {
   #header {
@@ -337,13 +461,11 @@ preview {
   .statusbar {
     width: 340px;
   }
-
   .phone-frame-wrap {
     width: 340px;
     height: 605px;
   }
-
-  .phone-frame-wrap iframe {
+  #android-frame iframe, #windows-frame iframe {
     height: 585px;
     margin-top: 20px;
   }
@@ -352,13 +474,11 @@ preview {
   .statusbar {
     width: 325px;
   }
-
   .phone-frame-wrap {
     width: 325px;
     height: 578px;
   }
-
-  .phone-frame-wrap iframe {
+  #android-frame iframe, #windows-frame iframe {
     height: 558px;
     margin-top: 20px;
   }

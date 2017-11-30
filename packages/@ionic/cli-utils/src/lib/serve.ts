@@ -130,7 +130,7 @@ export function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy, additiona
   return config;
 }
 
-export async function attachProjectProxies(env: IonicEnvironment, app: expressType.Application) {
+export async function attachProjectProxies(app: expressType.Application, env: IonicEnvironment) {
   const project = await env.project.load();
 
   if (!project.proxies) {
@@ -150,6 +150,13 @@ export async function attachProjectProxy(app: expressType.Application, proxy: Pr
 export async function attachProxy(app: expressType.Application, p: string, config: proxyMiddlewareType.Config) {
   const proxyMiddleware = await import('http-proxy-middleware');
   app.use(p, proxyMiddleware(p, config));
+}
+
+export async function attachLab(app: expressType.Application) {
+  const express = await import('express');
+
+  app.use(IONIC_LAB_URL + '/static', express.static(path.join(__dirname, '..', 'assets', 'lab', 'static')));
+  app.get(IONIC_LAB_URL, (req, res) => res.sendFile('index.html', { root: path.join(__dirname, '..', 'assets', 'lab') }));
 }
 
 export interface DevAppDetails {
