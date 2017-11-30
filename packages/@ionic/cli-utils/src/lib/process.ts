@@ -1,6 +1,6 @@
-import { createDebugLogger } from './debug';
+import * as Debug from 'debug';
 
-const debug = createDebugLogger('lib:process');
+const debug = Debug('ionic:cli-utils:lib:process');
 
 const calledFns = new Set<() => void>();
 

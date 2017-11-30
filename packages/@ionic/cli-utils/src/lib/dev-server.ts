@@ -1,9 +1,35 @@
 import * as path from 'path';
+import * as util from 'util';
 
-import { IonicEnvironment, LiveReloadFunction } from '../definitions';
+import * as expressType from 'express';
+import * as wsType from 'ws';
+import { fsReadFile } from '@ionic/cli-framework/utils/fs';
+
+import chalk from 'chalk';
+
+import { IonicEnvironment, LiveReloadFunction, LogLevel, ServeOptions } from '../definitions';
+import { isDevServerMessage } from '../guards';
 import { injectScript } from './html';
 
 export const DEV_SERVER_PREFIX = '__ionic';
+
+export async function createDevServerHandler(options: ServeOptions): Promise<expressType.RequestHandler> {
+  const devServerConfig = {
+    consolelogs: options.consolelogs,
+    wsPort: options.notificationPort,
+  };
+
+  const devServerJs = await fsReadFile(path.join(__dirname, '..', 'assets', 'dev-server', 'dev-server.js'), { encoding: 'utf8' });
+
+  return (req, res) => {
+    res.set('Content-Type', 'application/javascript');
+
+    res.send(
+      `window.Ionic = window.Ionic || {}; window.Ionic.DevServerConfig = ${JSON.stringify(devServerConfig)};\n\n` +
+      `${devServerJs}`.trim()
+    );
+  };
+}
 
 export function injectDevServerScript(content: string): string {
   if (content.indexOf(`/${DEV_SERVER_PREFIX}/dev-server.js`) > -1) {
@@ -64,4 +90,45 @@ function getLiveReloadScript(port: number) {
     </script>
     <script src="${src}" async="" defer=""></script>
 `;
+}
+
+export async function createDevLoggerServer(env: IonicEnvironment, port: number): Promise<wsType.Server> {
+  const WebSocket = await import('ws');
+  const { LOGGER_STATUS_COLORS } = await import('./utils/logger');
+
+  const wss = new WebSocket.Server({ port });
+
+  wss.on('connection', ws => {
+    ws.on('message', (data) => {
+      let msg;
+
+      try {
+        data = data.toString();
+        msg = JSON.parse(data);
+      } catch (e) {
+        env.log.error(`Error parsing JSON message from dev server: "${data}" ${chalk.red(e.stack ? e.stack : e)}`);
+        return;
+      }
+
+      if (!isDevServerMessage(msg)) {
+        const m = util.inspect(msg, { colors: chalk.enabled });
+        env.log.error(`Bad format in dev server message: ${m}`);
+        return;
+      }
+
+      if (msg.category === 'console') {
+        const status = LOGGER_STATUS_COLORS.get(<LogLevel>msg.type);
+
+        if (status) {
+          env.log.msg(`[${status('console.' + msg.type)}]: ${msg.data.join(' ')}`);
+        } else if (msg.type === 'log') {
+          env.log.msg(`[${chalk.gray('console.log')}]: ${msg.data.join(' ')}`);
+        } else {
+          env.log.msg(`[console]: ${msg.data.join(' ')}`);
+        }
+      }
+    });
+  });
+
+  return wss;
 }

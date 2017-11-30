@@ -1,15 +1,29 @@
 import * as path from 'path';
-import * as util from 'util';
 
 import chalk from 'chalk';
-
 import * as expressType from 'express';
-import * as proxyMiddlewareType from 'http-proxy-middleware';
 import { fsReadFile, pathExists } from '@ionic/cli-framework/utils/fs';
 
-import { IonicEnvironment, LiveReloadFunction, LogLevel, ServeDetails, ServeOptions } from '../../definitions';
-import { isDevServerMessage } from '../../guards';
-import { BIND_ALL_ADDRESS, IONIC_LAB_URL, LOCAL_ADDRESSES, findOpenPorts, selectExternalIP } from '../serve';
+import { IonicEnvironment, LiveReloadFunction, ServeDetails, ServeOptions } from '../../definitions';
+
+import {
+  DEV_SERVER_PREFIX,
+  createDevLoggerServer,
+  createDevServerHandler,
+  injectDevServerScript,
+  injectLiveReloadScript,
+} from '../dev-server';
+
+import {
+  BIND_ALL_ADDRESS,
+  DEFAULT_PROXY_CONFIG,
+  IONIC_LAB_URL,
+  LOCAL_ADDRESSES,
+  attachProxy,
+  attachProjectProxies,
+  findOpenPorts,
+  selectExternalIP,
+} from '../serve';
 
 const WATCH_PATTERNS = [
   'scss/**/*',
@@ -103,21 +117,9 @@ async function setupServer(env: IonicEnvironment, options: ServeMetaOptions): Pr
  * Create HTTP server
  */
 async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions): Promise<expressType.Application> {
-  const { DEV_SERVER_PREFIX, injectDevServerScript, injectLiveReloadScript } = await import('../dev-server');
-  const { LOGGER_STATUS_COLORS } = await import('../../lib/utils/logger');
-
-  const [
-    WebSocket,
-    express,
-    proxyMiddleware,
-  ] = await Promise.all([
-    import('ws'),
-    import('express'),
-    import('http-proxy-middleware'),
-  ]);
+  const express = await import('express');
 
   const app = express();
-  const project = await env.project.load();
 
   /**
    * http responder for /index.html base entrypoint
@@ -208,76 +210,16 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
 
   const livereloadUrl = `http://localhost:${options.livereloadPort}`;
   const pathPrefix = `/${DEV_SERVER_PREFIX}/tiny-lr`;
-  const proxyMiddlewareCfg: proxyMiddlewareType.Config = { changeOrigin: true, ws: true, logLevel: 'warn', logProvider: () => env.log };
 
-  app.use(pathPrefix, proxyMiddleware(pathPrefix, { target: livereloadUrl, pathRewrite: { [pathPrefix]: '' }, ...proxyMiddlewareCfg }));
+  await attachProxy(app, pathPrefix, { ...DEFAULT_PROXY_CONFIG, target: livereloadUrl, pathRewrite: { [pathPrefix]: '' }, logProvider: () => env.log });
 
-  if (options.proxy && project.proxies) {
-    for (const proxy of project.proxies) {
-      const opts = { target: proxy.proxyUrl, pathRewrite: { [proxy.path]: '' }, ...proxyMiddlewareCfg };
-
-      if (proxy.proxyNoAgent) {
-        opts.agent = <any>false; // TODO: type issue
-      }
-
-      if (proxy.rejectUnauthorized === false) {
-        opts.secure = false;
-      }
-
-      app.use(proxy.path, proxyMiddleware(proxy.path, opts));
-      env.log.info(`Proxy created ${chalk.bold(proxy.path)} => ${chalk.bold(opts.target)}`);
-    }
+  if (options.proxy) {
+    await attachProjectProxies(env, app);
   }
 
-  app.get(`/${DEV_SERVER_PREFIX}/dev-server.js`, async (req, res) => {
-    res.set('Content-Type', 'application/javascript');
+  app.get(`/${DEV_SERVER_PREFIX}/dev-server.js`, await createDevServerHandler(options));
 
-    const devServerConfig = {
-      consolelogs: options.consolelogs,
-      wsPort: options.notificationPort,
-    };
-
-    const devServerJs = await fsReadFile(path.join(__dirname, '..', '..', 'assets', 'dev-server', 'dev-server.js'), { encoding: 'utf8' });
-
-    res.send(
-      `window.Ionic = window.Ionic || {}; window.Ionic.DevServerConfig = ${JSON.stringify(devServerConfig)};\n\n` +
-      `${devServerJs}`.trim()
-    );
-  });
-
-  const wss = new WebSocket.Server({ port: options.notificationPort });
-
-  wss.on('connection', ws => {
-    ws.on('message', (data) => {
-      let msg;
-
-      try {
-        data = data.toString();
-        msg = JSON.parse(data);
-      } catch (e) {
-        env.log.error(`Error parsing JSON message from dev server: "${data}" ${chalk.red(e.stack ? e.stack : e)}`);
-        return;
-      }
-
-      if (!isDevServerMessage(msg)) {
-        const m = util.inspect(msg, { colors: chalk.enabled });
-        env.log.error(`Bad format in dev server message: ${m}`);
-        return;
-      }
-
-      if (msg.category === 'console') {
-        const status = LOGGER_STATUS_COLORS.get(<LogLevel>msg.type);
-
-        if (status) {
-          env.log.msg(`[${status('console.' + msg.type)}]: ${msg.data.join(' ')}`);
-        } else if (msg.type === 'log') {
-          env.log.msg(`[${chalk.gray('console.log')}]: ${msg.data.join(' ')}`);
-        } else {
-          env.log.msg(`[console]: ${msg.data.join(' ')}`);
-        }
-      }
-    });
-  });
+  const wss = await createDevLoggerServer(env, options.notificationPort);
 
   return new Promise<expressType.Application>((resolve, reject) => {
     const httpserv = app.listen(options.port, options.address);

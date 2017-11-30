@@ -1,10 +1,12 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as expressType from 'express';
+import * as proxyMiddlewareType from 'http-proxy-middleware';
 
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
-import { IonicEnvironment, NetworkInterface, ServeOptions } from '../definitions';
+import { IonicEnvironment, NetworkInterface, ProjectFileProxy, ServeOptions } from '../definitions';
 import { FatalException } from './errors';
 
 export const DEFAULT_DEV_LOGGER_PORT = 53703;
@@ -101,6 +103,53 @@ export async function findOpenPorts(env: IonicEnvironment, address: string, port
 
     throw new FatalException(`${chalk.green(address)} is not available--cannot bind.`);
   }
+}
+
+export const DEFAULT_PROXY_CONFIG: proxyMiddlewareType.Config = {
+  changeOrigin: true,
+  logLevel: 'warn',
+  ws: true,
+}
+
+export function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy, additionalConfig?: proxyMiddlewareType.Config): proxyMiddlewareType.Config {
+  const config = {
+    ...DEFAULT_PROXY_CONFIG,
+    pathRewrite: { [proxy.path]: '' },
+    target: proxy.proxyUrl,
+    ...additionalConfig,
+  };
+
+  if (proxy.proxyNoAgent) {
+    config.agent = <any>false; // TODO: type issue
+  }
+
+  if (proxy.rejectUnauthorized === false) {
+    config.secure = false;
+  }
+
+  return config;
+}
+
+export async function attachProjectProxies(env: IonicEnvironment, app: expressType.Application) {
+  const project = await env.project.load();
+
+  if (!project.proxies) {
+    return;
+  }
+
+  for (let proxy of project.proxies) {
+    await attachProjectProxy(app, proxy, { logProvider: () => env.log });
+    env.log.info(`Proxy created ${chalk.bold(proxy.path)} => ${chalk.bold(proxy.proxyUrl)}`);
+  }
+}
+
+export async function attachProjectProxy(app: expressType.Application, proxy: ProjectFileProxy, additionalConfig?: proxyMiddlewareType.Config) {
+  await attachProxy(app, proxy.path, proxyConfigToMiddlewareConfig(proxy));
+}
+
+export async function attachProxy(app: expressType.Application, p: string, config: proxyMiddlewareType.Config) {
+  const proxyMiddleware = await import('http-proxy-middleware');
+  app.use(p, proxyMiddleware(p, config));
 }
 
 export interface DevAppDetails {
