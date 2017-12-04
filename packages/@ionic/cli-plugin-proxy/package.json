@@ -8,7 +8,7 @@
   "types": "./dist/main.d.ts",
   "scripts": {
     "clean": "rm -rf ./dist",
-    "lint": "tslint --config ../../../tslint.js --project tsconfig.json --type-check",
+    "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
     "test": "jest",

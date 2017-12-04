@@ -109,7 +109,7 @@ export const DEFAULT_PROXY_CONFIG: proxyMiddlewareType.Config = {
   changeOrigin: true,
   logLevel: 'warn',
   ws: true,
-}
+};
 
 export function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy, additionalConfig?: proxyMiddlewareType.Config): proxyMiddlewareType.Config {
   const config = {

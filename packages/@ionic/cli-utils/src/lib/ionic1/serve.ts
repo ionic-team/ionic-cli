@@ -19,8 +19,8 @@ import {
   DEFAULT_PROXY_CONFIG,
   LOCAL_ADDRESSES,
   attachLab,
-  attachProxy,
   attachProjectProxies,
+  attachProxy,
   findOpenPorts,
   selectExternalIP,
 } from '../serve';

@@ -87,7 +87,7 @@ export class Logger implements ILogger {
         self.info(chunk.toString());
         callback();
       }
-    }
+    };
   }
 
   shouldLog(level: LogLevel): boolean {

@@ -11,7 +11,7 @@
   },
   "scripts": {
     "clean": "rm -rf index.* definitions.* guards.* ./utils",
-    "lint": "tslint --config ../../../tslint.js --project tsconfig.json --type-check",
+    "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
     "test": "jest",
