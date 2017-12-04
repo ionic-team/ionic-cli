@@ -66,6 +66,7 @@
     "strip-ansi": "^4.0.0",
     "superagent": "^3.8.1",
     "tar": "^4.0.2",
+    "through2": "^2.0.3",
     "tiny-lr": "^1.0.5",
     "tslib": "^1.8.0",
     "uuid": "^3.0.1",
@@ -91,6 +92,7 @@
     "@types/split2": "^2.1.6",
     "@types/strip-ansi": "^3.0.0",
     "@types/tar": "^4.0.0",
+    "@types/through2": "^2.0.33",
     "@types/uuid": "^3.4.3",
     "@types/ws": "^3.2.0",
     "rxjs": "^5.5.2"

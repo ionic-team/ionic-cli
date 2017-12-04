@@ -12,7 +12,7 @@ import { FatalException } from '../errors';
 
 const debug = Debug('ionic:cli-utils:lib:ionic-angular:serve');
 
-const DEFAULT_NG_SERVER_PORT = 28100;
+const DEFAULT_NG_SERVER_PORT = 28787;
 
 export interface AppScriptsServeOptions extends ServeOptions {
   platform: string;
@@ -81,15 +81,25 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
 }
 
 async function ngServe(env: IonicEnvironment, port: number) {
-  const split2 = await import('split2');
+  const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
   const { registerShutdownFunction } = await import('../process');
 
-  const p = await env.shell.spawn('ng', ['serve', '--host', 'localhost', '--port', String(port), '--progress', 'false', '--watch', 'false'], { cwd: env.project.directory });
+  const p = await env.shell.spawn('ng', ['serve', '--host', 'localhost', '--port', String(port), '--progress', 'false'], { cwd: env.project.directory });
 
   const log = env.log.clone({ prefix: chalk.dim('[ng]'), wrap: false });
   const ws = log.createWriteStream();
 
-  p.stdout.pipe(split2()).pipe(ws);
+  const stdoutFilter = through2(function(chunk, enc, callback) {
+    const str = chunk.toString();
+
+    if (!str.includes('NG Live Development Server is listening')) {
+      this.push(chunk);
+    }
+
+    callback();
+  });
+
+  p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
   p.stderr.pipe(split2()).pipe(ws);
 
   registerShutdownFunction(() => p.kill());
