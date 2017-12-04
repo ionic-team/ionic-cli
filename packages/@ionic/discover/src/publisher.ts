@@ -129,10 +129,10 @@ export class Publisher extends events.EventEmitter implements IPublisher {
   }
 }
 
-export function prepareInterfaces(interfaces: any): Interface[] {
+export function prepareInterfaces(interfaces: { [index: string]: os.NetworkInterfaceInfo[] }): Interface[] {
   const set = new Set<string>();
   return Object.keys(interfaces)
-    .map(key => interfaces[key] as any[])
+    .map(key => interfaces[key])
     .reduce((prev, current) => prev.concat(current))
     .filter(iface => iface.family === 'IPv4')
     .map(iface => {
