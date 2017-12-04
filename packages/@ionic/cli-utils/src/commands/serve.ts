@@ -13,8 +13,8 @@ import {
   DEFAULT_LIVERELOAD_PORT,
   DEFAULT_SERVER_PORT,
   IONIC_LAB_URL,
-  devAppPlugins,
   gatherDevAppDetails,
+  getSupportedDevAppPlugins,
   publishDevApp,
 } from '../lib/serve';
 
@@ -54,25 +54,27 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
   await env.hooks.fire('watch:before', { env });
 
   const [ platform ] = inputs;
-
-  let details: ServeDetails;
   const serveOptions = cliOptionsToServeOptions(options);
-
   const project = await env.project.load();
-
   const devAppDetails = await gatherDevAppDetails(env, serveOptions);
 
-  // Check if cordova plugins are present in the devapp
-  if (devAppPlugins && isCordovaPackageJson(packageJson)) {
+  // If this is regular `ionic serve`, we warn the dev about unsupported
+  // plugins in the devapp.
+  if (serveOptions.devapp && !serveOptions.iscordovaserve && isCordovaPackageJson(packageJson)) {
+    const plugins = await getSupportedDevAppPlugins();
     const packageCordovaPlugins = Object.keys(packageJson.cordova.plugins);
-    const devAppPluginNames = new Set([...Object.keys(devAppPlugins)]);
-    const packageCordovaPluginsDiff = packageCordovaPlugins.filter(p => !devAppPluginNames.has(p));
+    const packageCordovaPluginsDiff = packageCordovaPlugins.filter(p => !plugins.has(p));
+
     if (packageCordovaPluginsDiff.length > 0) {
-      env.log.warn('Cordova plugins incompatible with dev app detected\n' +
-                  `${chalk.bold(packageCordovaPluginsDiff.join('\n'))}`);
-      env.log.warn('App may not function as expected in DevApp.\n');
+      env.log.warn(
+        'Detected unsupported Cordova plugins with Ionic DevApp:\n' +
+        `${packageCordovaPluginsDiff.map(p => `- ${chalk.bold(p)}`).join('\n')}\n\n` +
+        `App may not function as expected in Ionic DevApp and Ionic View.`
+      );
     }
   }
+
+  let details: ServeDetails;
 
   if (project.type === 'ionic1') {
     const { serve } = await import('../lib/ionic1/serve');
@@ -86,7 +88,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     }});
   } else {
     throw new FatalException(
-      `Cannot perform Ionic serve/watch for project type: ${chalk.bold(project.type)}.\n` +
+      `Cannot perform Ionic serve for project type: ${chalk.bold(project.type)}.\n` +
       (project.type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to serve custom projects.\n\n` : '') +
       `If you'd like the CLI to try to detect your project type, you can unset the ${chalk.bold('type')} attribute in ${chalk.bold('ionic.config.json')}.\n`
     );
