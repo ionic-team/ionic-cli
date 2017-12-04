@@ -20,12 +20,14 @@ const message = {
 return 'ION_DP' + JSON.stringify(message);
 ```
 
-`t`    | unix timestamp in second
-`id`   | unique id for this session
-`name` | name of the announced service
-`host` | hostname of the machine announcing the service
-`ip`   | ipv4 address
-`port` | tcp port of the announced service
+| key    | description
+|--------|-------------
+| `t`    | unix timestamp in second
+| `id`   | unique id for this session
+| `name` | name of the announced service
+| `host` | hostname of the machine announcing the service
+| `ip`   | ipv4 address
+| `port` | tcp port of the announced service
 
 ## Installation
 
