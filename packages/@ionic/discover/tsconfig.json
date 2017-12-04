@@ -1,18 +1,28 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
     "declaration": true,
-    "lib": ["dom", "es2015"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
     "outDir": "./dist",
-    "target": "es6"
+    "pretty": true,
+    "strict": true,
+    "target": "es6",
+    "typeRoots": [
+      "../../../node_modules/@types"
+    ]
   },
   "include": [
     "src/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/**/__tests__/*.ts"
   ]
 }
