@@ -1,4 +1,4 @@
-import { Publisher, prepareInterfaces } from './publisher';
+import { Publisher, prepareInterfaces } from '../publisher';
 const os = require('os');
 
 const FAKE_INTERFACE = {

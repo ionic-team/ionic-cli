@@ -18,6 +18,8 @@ jobs:
           key: dependency-cache-{{ checksum "packages/@ionic/cli-plugin-proxy/package.json" }}
       - restore_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/cli-scripts/package.json" }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/discover/package.json" }}
       - run: npm install
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
@@ -44,6 +46,10 @@ jobs:
           key: dependency-cache-{{ checksum "packages/@ionic/cli-scripts/package.json" }}
           paths:
             - packages/@ionic/cli-scripts/node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/discover/package.json" }}
+          paths:
+            - packages/@ionic/discover/node_modules
       - run: npm run lint
       - run: npm run test
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc

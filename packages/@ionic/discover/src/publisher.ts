@@ -13,8 +13,8 @@ export interface Interface {
 }
 
 export interface IPublisher {
-  emit(event: "error", err: Error): boolean;
-  on(event: "error", listener: (err: Error) => void): this;
+  emit(event: 'error', err: Error): boolean;
+  on(event: 'error', listener: (err: Error) => void): this;
 }
 
 export class Publisher extends events.EventEmitter implements IPublisher {
