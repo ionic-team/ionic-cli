@@ -200,6 +200,11 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
   return [installer, ...installerArgs];
 }
 
+/**
+ * TODO: switch this to use `package-json` module?
+ *
+ * @return Promise<latest version or `undefined`>
+ */
 export async function pkgLatestVersion(env: IonicEnvironment, pkg: string, distTag: DistTag = 'latest'): Promise<string | undefined> {
   const config = await env.config.load();
   const shellOptions = { fatalOnError: false, showCommand: false };
