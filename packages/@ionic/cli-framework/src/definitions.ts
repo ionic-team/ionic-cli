@@ -45,7 +45,7 @@ export interface CommandData<T = CommandInput, U = CommandOption> {
 
 export interface PackageJson {
   name: string;
-  version?: string;
+  version: string;
   scripts?: { [key: string]: string };
   dependencies?: { [key: string]: string };
   devDependencies?: { [key: string]: string };

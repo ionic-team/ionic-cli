@@ -14,6 +14,7 @@ import {
   ExitCodeException,
   ICommand,
   INamespace,
+  LoadedPlugin,
   LogLevel,
   PackageBuild,
   PackageProjectRequest,
@@ -62,8 +63,14 @@ export function isExitCodeException(e: Error): e is ExitCodeException {
 }
 
 export function isPlugin(p: any): p is Plugin {
-  const plugin = <Plugin>p;
-  return plugin && typeof plugin.meta === 'object';
+  return p && (typeof p.registerHooks === 'undefined' || typeof p.registerHooks === 'function');
+}
+
+export function isLoadedPlugin(p: any): p is LoadedPlugin {
+  return p
+    && typeof p.meta === 'object'
+    && typeof p.fileName === 'string'
+    && typeof p.pkg === 'object';
 }
 
 export function isSuperAgentError(e: Error): e is SuperAgentError {
@@ -83,7 +90,8 @@ export function isAPIResponseError(r: APIResponse): r is APIResponseError {
 
 export function isAppDetails(d: Object): d is AppDetails {
   const details = <AppDetails>d;
-  return details && typeof details === 'object'
+  return details
+    && typeof details === 'object'
     && typeof details.id === 'string'
     && typeof details.name === 'string'
     && typeof details.slug === 'string';

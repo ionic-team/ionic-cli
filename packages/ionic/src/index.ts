@@ -113,6 +113,9 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
       config.state.lastCommand = now.toISOString();
     }
 
+    const updateNotifier = await import('update-notifier');
+    updateNotifier({ pkg: plugin.meta.pkg }).notify();
+
   } catch (e) {
     err = e;
   }

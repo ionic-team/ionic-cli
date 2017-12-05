@@ -31,8 +31,8 @@ export class DaemonCommand extends Command {
     const f = await this.env.daemon.getPid();
     const d = await this.env.daemon.load();
 
-    d.daemonVersion = this.env.plugins.ionic.meta.version;
-    const daemonDistTag = determineDistTag(this.env.plugins.ionic.meta.version);
+    d.daemonVersion = this.env.plugins.ionic.meta.pkg.version;
+    const daemonDistTag = determineDistTag(this.env.plugins.ionic.meta.pkg.version);
 
     await this.env.daemon.save();
 

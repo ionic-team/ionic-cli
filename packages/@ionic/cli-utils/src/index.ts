@@ -76,7 +76,7 @@ function registerHooks(hooks: IHookEngine) {
     const config = await env.config.load();
 
     const info: InfoHookItem[] = [
-      { type: 'cli-packages', key: 'ionic', flair: 'Ionic CLI', value: env.plugins.ionic.meta.version, path: path.dirname(path.dirname(env.plugins.ionic.meta.filePath)) },
+      { type: 'cli-packages', key: 'ionic', flair: 'Ionic CLI', value: env.plugins.ionic.meta.pkg.version, path: path.dirname(path.dirname(env.plugins.ionic.meta.filePath)) },
       { type: 'system', key: 'Node', value: node },
       { type: 'system', key: 'npm', value: npm || 'not installed' },
       { type: 'system', key: 'OS', value: os },
@@ -210,7 +210,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   env['IONIC_PROJECT_DIR'] = projectDir || '';
   env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
 
-  configData.version = plugin.meta.version;
+  configData.version = plugin.meta.pkg.version;
 
   const project = new Project(env['IONIC_PROJECT_DIR'], PROJECT_FILE);
   const client = new Client(config);

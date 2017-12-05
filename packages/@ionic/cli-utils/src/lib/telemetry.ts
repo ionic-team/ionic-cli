@@ -52,7 +52,7 @@ async function getLeek(env: IonicEnvironment): Promise<leekType> {
       name: config.tokens.telemetry,
       trackingCode: GA_CODE,
       globalName: 'ionic',
-      version: env.plugins.ionic.meta.version,
+      version: env.plugins.ionic.meta.pkg.version,
       silent: config.telemetry !== true,
     });
   }
@@ -106,7 +106,7 @@ export async function sendCommand(env: IonicEnvironment, project: IProject, comm
         'value': {
           'command': command,
           'arguments': prettyArgs.join(' '),
-          'version': env.plugins.ionic.meta.version,
+          'version': env.plugins.ionic.meta.pkg.version,
           'node_version': process.version,
           'app_id': appId,
           'user_id': config.backend === BACKEND_LEGACY ? config.user.id : undefined,

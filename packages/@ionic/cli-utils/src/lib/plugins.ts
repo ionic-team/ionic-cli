@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
-import { DistTag, IonicEnvironment, Plugin, PluginMeta } from '../definitions';
+import { DistTag, IonicEnvironment, LoadedPlugin, Plugin, PluginMeta } from '../definitions';
 import { isPlugin } from '../guards';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { getGlobalProxy } from './utils/http';
@@ -19,12 +19,12 @@ export function formatFullPluginName(name: string) {
   return `${ORG_PREFIX}/${PLUGIN_PREFIX}${name}`;
 }
 
-export function registerPlugin(env: IonicEnvironment, plugin: Plugin) {
+export function registerPlugin(env: IonicEnvironment, plugin: LoadedPlugin) {
   if (plugin.registerHooks) {
     plugin.registerHooks(env.hooks);
   }
 
-  env.plugins[plugin.meta.name] = plugin;
+  env.plugins[plugin.meta.pkg.name] = plugin;
 }
 
 export async function loadPlugins(env: IonicEnvironment) {
@@ -97,7 +97,7 @@ export function determineDistTag(version: string): DistTag {
   return 'latest';
 }
 
-export async function loadPlugin(env: IonicEnvironment, pluginName: string, { global = false }: { global: boolean; }): Promise<Plugin> {
+export async function loadPlugin(env: IonicEnvironment, pluginName: string, { global = false }: { global: boolean; }): Promise<LoadedPlugin> {
   const modulesDir = path.resolve(global ? path.dirname(path.dirname(path.dirname(env.meta.libPath))) : path.join(env.project.directory, 'node_modules'));
   let mResolvedPath: string | undefined;
   let m: Plugin;
@@ -123,23 +123,18 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { gl
   }
 
   const meta = await getPluginMeta(mResolvedPath);
-  m.meta = meta;
 
-  return m;
+  return { ...m, meta };
 }
 
 export async function getPluginMeta(p: string): Promise<PluginMeta> {
-  const packageJson = await readPackageJsonFileOfResolvedModule(p);
-
-  const name = packageJson.name;
-  const version = packageJson.version || '';
-  const distTag = determineDistTag(version);
+  const pkg = await readPackageJsonFileOfResolvedModule(p);
+  const distTag = determineDistTag(pkg.version);
 
   return {
     distTag,
     filePath: p,
-    name,
-    version,
+    pkg,
   };
 }
 

@@ -90,7 +90,7 @@ async function formatHeader(env: IonicEnvironment) {
 
   const now = new Date();
   const prefix = config.backend === BACKEND_PRO && isLoggedIn ? chalk.blue('PRO') + ' ' : '';
-  const version = env.plugins.ionic.meta.version;
+  const version = env.plugins.ionic.meta.pkg.version;
   const suffix =  now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
 
   return `   _             _

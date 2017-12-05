@@ -588,15 +588,13 @@ export interface IonicEnvironmentPlugins {
 export type DistTag = 'testing' | 'canary' | 'latest';
 
 export interface PluginMeta {
-  filePath: string;
-  name: string;
-  version: string;
   distTag: DistTag;
+  filePath: string;
+  pkg: framework.PackageJson;
 }
 
 export interface Plugin {
   registerHooks?(hooks: IHookEngine): void;
-  meta: PluginMeta; // set when loading plugin
 
   /**
    * @deprecated
@@ -604,7 +602,11 @@ export interface Plugin {
   version?: string;
 }
 
-export interface RootPlugin extends Plugin {
+export interface LoadedPlugin extends Plugin {
+  meta: PluginMeta;
+}
+
+export interface RootPlugin extends LoadedPlugin {
   namespace: IRootNamespace;
 }
 

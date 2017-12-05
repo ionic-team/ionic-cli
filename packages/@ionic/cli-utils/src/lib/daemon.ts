@@ -70,7 +70,7 @@ export class Daemon extends BaseConfig<DaemonFile> {
   }
 
   is(j: any): j is DaemonFile {
-    return j && typeof j.daemonVersion === 'object';
+    return j && typeof j.daemonVersion === 'string';
   }
 }
 
