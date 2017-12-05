@@ -36,34 +36,6 @@ export abstract class AutomaticallyTreatableAilment extends Ailment {
 }
 
 export namespace Ailments {
-  export class AutomaticUpdatesOff extends AutomaticallyTreatableAilment {
-    id = 'automatic-updates-off';
-
-    async getMessage() {
-      return (
-        `Automatic Ionic CLI updates are off.\n` +
-        `The Ionic CLI can check for updates in the background and prompt you to install updates automatically.\n`
-      ).trim();
-    }
-
-    async detected(env: IonicEnvironment) {
-      const config = await env.config.load();
-      return !config.daemon.updates;
-    }
-
-    async getTreatmentSteps(env: IonicEnvironment) {
-      return [
-        {
-          name: 'Turn on automatic updates',
-          treat: async () => {
-            const config = await env.config.load();
-            config.daemon.updates = true;
-          },
-        },
-      ];
-    }
-  }
-
   export class NpmInstalledLocally extends AutomaticallyTreatableAilment {
     id = 'npm-installed-locally';
 
@@ -706,7 +678,6 @@ export namespace Ailments {
   }
 
   export const ALL = [
-    AutomaticUpdatesOff,
     NpmInstalledLocally,
     IonicCLIInstalledLocally,
     GitNotUsed,

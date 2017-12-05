@@ -159,8 +159,12 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.daemon = {};
     }
 
-    if (typeof results.daemon.updates === 'undefined') {
-      results.daemon.updates = true;
+    if (typeof results.daemon.enabled === 'undefined') {
+      if (typeof results.daemon.updates !== 'undefined') {
+        results.daemon.enabled = results.daemon.updates;
+      } else {
+        results.daemon.enabled = true;
+      }
     }
 
     if (!results.devapp) {
@@ -238,16 +242,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       && typeof j.backend === 'string'
       && typeof j.telemetry === 'boolean'
       && typeof j.yarn === 'boolean';
-  }
-
-  async isUpdatingEnabled(): Promise<boolean> {
-    const config = await this.load();
-
-    if (!config.daemon.updates) {
-      return false;
-    }
-
-    return !config.state.lastNoResponseToUpdate || (new Date().getTime() - new Date(config.state.lastNoResponseToUpdate).getTime() > 86400000);
   }
 
   async getAPIUrl(): Promise<string> {

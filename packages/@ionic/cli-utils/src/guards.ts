@@ -63,7 +63,7 @@ export function isExitCodeException(e: Error): e is ExitCodeException {
 
 export function isPlugin(p: any): p is Plugin {
   const plugin = <Plugin>p;
-  return plugin && typeof plugin.registerHooks === 'function';
+  return plugin && typeof plugin.meta === 'object';
 }
 
 export function isSuperAgentError(e: Error): e is SuperAgentError {

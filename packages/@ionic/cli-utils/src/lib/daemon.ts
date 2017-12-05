@@ -4,16 +4,9 @@ import chalk from 'chalk';
 
 import * as expressType from 'express';
 
-import { DaemonFile, DistTag, IonicEnvironment } from '../definitions';
+import { DaemonFile, IonicEnvironment } from '../definitions';
 import { BaseConfig } from './config';
 import { fsOpen, fsReadFile, fsWriteFile } from '@ionic/cli-framework/utils/fs';
-import { KNOWN_PLUGINS, formatFullPluginName } from './plugins';
-
-const KNOWN_PACKAGES = [
-  ...([] as string[]).concat(KNOWN_PLUGINS).map(formatFullPluginName),
-  '@ionic/cli-utils',
-  'ionic',
-];
 
 export const DAEMON_PID_FILE = 'daemon.pid';
 export const DAEMON_PORT_FILE = 'daemon.port';
@@ -71,49 +64,13 @@ export class Daemon extends BaseConfig<DaemonFile> {
       results.daemonVersion = '';
     }
 
-    if (!results.latestVersions) {
-      results.latestVersions = {};
-    }
-
-    if (!results.latestVersions.latest) {
-      results.latestVersions.latest = {};
-    }
-
-    for (let distTag in results.latestVersions) {
-      for (let pkg in results.latestVersions[distTag]) {
-        if (!KNOWN_PACKAGES.includes(pkg)) {
-          delete results.latestVersions[distTag][pkg];
-        }
-      }
-    }
-
-    for (let pkg of KNOWN_PACKAGES) {
-      if (typeof results.latestVersions.latest[pkg] === 'undefined') {
-        results.latestVersions.latest[pkg] = '';
-      }
-    }
+    delete results.latestVersions;
 
     return results;
   }
 
-  populateDistTag(distTag: DistTag) {
-    if (this.configFile) {
-      if (typeof this.configFile.latestVersions[distTag] === 'undefined') {
-        this.configFile.latestVersions[distTag] = {};
-      }
-
-      for (let pkg of KNOWN_PACKAGES) {
-        if (typeof this.configFile.latestVersions[distTag][pkg] === 'undefined') {
-          this.configFile.latestVersions[distTag][pkg] = '';
-        }
-      }
-    }
-  }
-
   is(j: any): j is DaemonFile {
-    return j
-      && typeof j.latestVersions === 'object'
-      && typeof j.latestVersions.latest === 'object';
+    return j && typeof j.daemonVersion === 'object';
   }
 }
 
@@ -134,8 +91,8 @@ export function processRunning(pid: number): boolean {
 export async function checkForDaemon(env: IonicEnvironment): Promise<number> {
   const config = await env.config.load();
 
-  if (!config.daemon.updates) {
-    return 0;
+  if (!config.daemon.enabled) {
+    return -1;
   }
 
   const f = await env.daemon.getPid();

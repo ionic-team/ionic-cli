@@ -218,7 +218,6 @@ export interface IApp {
 }
 
 export interface IConfig extends IBaseConfig<ConfigFile> {
-  isUpdatingEnabled(): Promise<boolean>;
   getAPIUrl(): Promise<string>;
   getDashUrl(): Promise<string>;
   getGitHost(): Promise<string>;
@@ -239,10 +238,6 @@ export interface PackageVersions {
 
 export interface DaemonFile {
   daemonVersion: string;
-  latestVersions: {
-    latest: PackageVersions;
-    [key: string]: PackageVersions;
-  };
 }
 
 export interface IDaemon extends IBaseConfig<DaemonFile> {
@@ -253,7 +248,6 @@ export interface IDaemon extends IBaseConfig<DaemonFile> {
   setPid(pid: number): Promise<void>;
   getPort(): Promise<number | undefined>;
   setPort(port: number): Promise<void>;
-  populateDistTag(distTag: DistTag): void;
 }
 
 export type CommandOptionTypeDefaults = Map<framework.CommandOptionType, framework.CommandLineInput>;
@@ -326,7 +320,6 @@ export interface ConfigFile {
   created: string;
   state: {
     lastCommand: string;
-    lastNoResponseToUpdate?: string;
     doctor: {
       ignored: string[];
     };
@@ -338,7 +331,7 @@ export interface ConfigFile {
     gitPort?: number;
   };
   daemon: {
-    updates: boolean;
+    enabled: boolean;
   };
   devapp: {
     knownInterfaces: {
@@ -588,7 +581,7 @@ export interface IonicEnvironmentMeta {
 }
 
 export interface IonicEnvironmentPlugins {
-  ionic: Plugin;
+  ionic: RootPlugin;
   [key: string]: Plugin;
 }
 
@@ -599,8 +592,6 @@ export interface PluginMeta {
   name: string;
   version: string;
   distTag: DistTag;
-  latestVersion?: string;
-  updateAvailable?: boolean;
 }
 
 export interface Plugin {

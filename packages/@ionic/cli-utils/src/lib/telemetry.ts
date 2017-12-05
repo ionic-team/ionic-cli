@@ -115,7 +115,7 @@ export async function sendCommand(env: IonicEnvironment, project: IProject, comm
       };
 
       // We don't want to slow commands down terribly for people who opt-out of the daemon.
-      if (config.daemon.updates) {
+      if (config.daemon.enabled) {
         const v: InfoHookItem[] = [];
         const info = await env.hooks.fire('info', { env, project });
         const flattenedInfo = info.reduce((acc, currentValue) => acc.concat(currentValue), v);
