@@ -83,11 +83,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     details = await serve({ env, options: serveOptions });
   } else if (project.type === 'ionic-angular') {
     const { serve } = await import('../lib/ionic-angular/serve');
-    details = await serve({ env, options: {
-      platform,
-      target: serveOptions.iscordovaserve ? 'cordova' : undefined,
-      ...serveOptions,
-    }});
+    details = await serve({ env, options: serveOptions });
   } else {
     throw new FatalException(
       `Cannot perform Ionic serve for project type: ${chalk.bold(project.type)}.\n` +
