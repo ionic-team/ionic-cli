@@ -13,7 +13,6 @@ import {
   DevServerMessage,
   ExitCodeException,
   ICommand,
-  INamespace,
   LoadedPlugin,
   LogLevel,
   PackageBuild,
@@ -28,7 +27,7 @@ import {
 
 export const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'ok', 'warn', 'error', 'announce'];
 
-export function isCommand(cmd: ICommand | INamespace): cmd is ICommand {
+export function isCommand(cmd: any): cmd is ICommand {
   return typeof (<ICommand>cmd).run === 'function';
 }
 

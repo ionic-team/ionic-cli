@@ -36,6 +36,7 @@
   "dependencies": {
     "chalk": "^2.3.0",
     "debug": "^3.1.0",
+    "lodash": "^4.17.4",
     "ncp": "^2.0.0",
     "rimraf": "^2.6.2",
     "strip-ansi": "^4.0.0",
@@ -44,6 +45,7 @@
   },
   "devDependencies": {
     "@types/debug": "0.0.30",
+    "@types/lodash": "^4.14.88",
     "@types/minimist": "^1.2.0",
     "@types/ncp": "^2.0.1",
     "@types/rimraf": "^2.0.2",

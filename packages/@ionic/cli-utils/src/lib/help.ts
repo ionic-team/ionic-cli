@@ -150,7 +150,7 @@ async function getListOfCommandDetails(env: IonicEnvironment, commands: Hydrated
   const fillStringArray = generateFillSpaceStringList(commands.map(cmd => cmd.fullName), HELP_DOTS_WIDTH, chalk.dim('.'));
 
   return commands.map((cmd, index) => {
-    const description = (cmd.deprecated ? chalk.yellow.bold('(deprecated)') + ' ' : '') + cmd.description + `${cmd.aliases.length > 0 ? chalk.dim(' (alias' + (cmd.aliases.length === 1 ? '' : 'es') + ': ') + cmd.aliases.map((a) => chalk.green(a)).join(', ') + chalk.dim(')') : ''}`;
+    const description = (cmd.deprecated ? chalk.yellow.bold('(deprecated)') + ' ' : '') + cmd.description + `${cmd.aliases.length > 0 ? chalk.dim(' (alias' + (cmd.aliases.length === 1 ? '' : 'es') + ': ') + cmd.aliases.map(a => chalk.green(a)).join(', ') + chalk.dim(')') : ''}`;
     const wrappedDescription = wordWrap(description, { indentation: HELP_DOTS_WIDTH + 6 });
     return `${chalk.green(cmd.fullName || '')} ${fillStringArray[index]} ${wrappedDescription}`;
   });

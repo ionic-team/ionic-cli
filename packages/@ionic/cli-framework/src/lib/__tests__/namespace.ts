@@ -1,18 +1,19 @@
-import { CommandMetadata, Command } from '../command';
+import { Command } from '../command';
 import { CommandMap, Namespace } from '../namespace';
 
-describe('@ionic/cli-utils', () => {
+describe('@ionic/cli-framework', () => {
 
   describe('lib/namespace', () => {
 
     describe('CommandMap', () => {
 
-      @CommandMetadata({
-        name: 'foo',
-        type: 'global',
-        description: '',
-      })
-      class FooCommand extends Command {}
+      class FooCommand extends Command {
+        metadata = {
+          name: 'foo',
+          type: 'global',
+          description: '',
+        }
+      }
 
       describe('getAliases', () => {
 
@@ -74,19 +75,21 @@ describe('@ionic/cli-utils', () => {
         name = 'foo';
       }
 
-      @CommandMetadata({
-        name: 'foo',
-        type: 'global',
-        description: '',
-      })
-      class FooCommand extends Command {}
+      class FooCommand extends Command {
+        metadata = {
+          name: 'foo',
+          type: 'global',
+          description: '',
+        }
+      }
 
-      @CommandMetadata({
-        name: 'bar',
-        type: 'global',
-        description: '',
-      })
-      class BarCommand extends Command {}
+      class BarCommand extends Command {
+        metadata = {
+          name: 'bar',
+          type: 'global',
+          description: '',
+        }
+      }
 
       describe('locate', () => {
 

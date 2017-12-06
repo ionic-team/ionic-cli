@@ -27,7 +27,7 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
   debug('waiting for connectivity with ng serve (%dms timeout)', NG_SERVE_CONNECTIVITY_TIMEOUT);
   await isHostConnectable('localhost', ngPort, NG_SERVE_CONNECTIVITY_TIMEOUT);
 
-  return  {
+  return {
     protocol: 'http',
     localAddress: 'localhost',
     externalAddress: externalIP,

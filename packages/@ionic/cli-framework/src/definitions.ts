@@ -1,5 +1,7 @@
 import * as minimistType from 'minimist';
 
+export { HydratedCommandData } from './lib/namespace';
+
 export type CommandLineInput = string | boolean | null | undefined | string[];
 export type CommandLineInputs = string[];
 
@@ -33,6 +35,7 @@ export interface CommandOption {
 
 export interface CommandData<T = CommandInput, U = CommandOption> {
   name: string;
+  fullName?: string;
   description: string;
   longDescription?: string;
   exampleCommands?: string[];
