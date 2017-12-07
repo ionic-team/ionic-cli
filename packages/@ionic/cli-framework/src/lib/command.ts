@@ -1,3 +1,5 @@
+import * as minimist from 'minimist';
+
 import {
   CommandData,
   CommandLineInputs,
@@ -17,7 +19,7 @@ export abstract class Command<T extends CommandData> {
   abstract run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
 }
 
-export function validateInputs(argv: string[], metadata: CommandData) {
+export function validateInputs(argv: string[], metadata: CommandData): void {
   if (!metadata.inputs) {
     return;
   }
@@ -44,3 +46,5 @@ export function validateInputs(argv: string[], metadata: CommandData) {
     throw errors;
   }
 }
+
+export const parseArgs = minimist;

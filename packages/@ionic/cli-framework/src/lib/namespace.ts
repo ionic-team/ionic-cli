@@ -1,3 +1,7 @@
+import * as Debug from 'debug';
+
+const debug = Debug('ionic:cli-framework:lib:namespace');
+
 import { CommandData, CommandInput, CommandOption } from '../definitions';
 
 import { Command } from './command';
@@ -41,7 +45,10 @@ export class CommandMap<T extends Command<U>, U extends CommandData<V, W>, V ext
 export class NamespaceMap<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> extends Map<string, NamespaceMapGetter<T, U, V, W>> {}
 
 export class Namespace<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> {
-  root = false; // TODO: make this better
+  // TODO: better way to do this
+  root = false;
+
+  // TODO: make these abstract getters
   name = '';
   description = '';
   longDescription = '';
@@ -57,20 +64,25 @@ export class Namespace<T extends Command<U>, U extends CommandData<V, W>, V exte
   async locate(argv: string[]): Promise<[number, string[], T | Namespace<T, U, V, W>]> {
     const _locate = async (depth: number, inputs: string[], ns: Namespace<T, U, V, W>, namespaceDepthList: string[]): Promise<[number, string[], T | Namespace<T, U, V, W>]> => {
       const nsgetter = ns.namespaces.get(inputs[0]);
+
       if (!nsgetter) {
         const commands = ns.commands;
         const cmdgetter = commands.resolveAliases(inputs[0]);
 
         if (cmdgetter) {
           const cmd = await cmdgetter();
-          (<any>cmd.metadata).fullName = [...namespaceDepthList.slice(1), cmd.metadata.name].join(' '); // TODO fix <any>
+          cmd.metadata.fullName = [...namespaceDepthList.slice(1), cmd.metadata.name].join(' ');
+
+          debug('command %s found at depth %d', cmd.metadata.name, depth + 1);
           return [depth + 1, inputs.slice(1), cmd];
         }
 
+        debug('namespace %s found at depth %d', ns.name, depth);
         return [depth, inputs, ns];
       }
 
       const newNamespace = await nsgetter();
+      debug('nothing found in namespace %s at depth %d, slicing and recursing', newNamespace.name, depth + 1);
       return _locate(depth + 1, inputs.slice(1), newNamespace, [...namespaceDepthList, newNamespace.name]);
     };
 
@@ -123,4 +135,8 @@ export class Namespace<T extends Command<U>, U extends CommandData<V, W>, V exte
 
     return _getCommandMetadataList(this, [this.name]);
   }
+}
+
+export class RootNamespace<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> extends Namespace<T, U, V, W> {
+  root = true;
 }

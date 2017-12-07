@@ -11,6 +11,7 @@ import * as framework from '@ionic/cli-framework';
 import {
   Command as BaseCommand,
   Namespace as BaseNamespace,
+  RootNamespace as BaseRootNamespace,
 } from '@ionic/cli-framework/lib';
 
 export {
@@ -626,10 +627,7 @@ export interface RootPlugin extends LoadedPlugin {
 
 export type INamespace = BaseNamespace<ICommand, CommandData, framework.CommandInput, CommandOption>;
 
-export interface IRootNamespace extends INamespace {
-  root: true;
-  name: 'ionic';
-
+export interface IRootNamespace extends BaseRootNamespace<ICommand, CommandData, framework.CommandInput, CommandOption> {
   runCommand(env: IonicEnvironment, pargv: string[]): Promise<void>;
 }
 

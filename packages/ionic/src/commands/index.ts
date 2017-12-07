@@ -1,12 +1,13 @@
 import chalk from 'chalk';
 
-import { IRootNamespace, IonicEnvironment, KNOWN_BACKENDS } from '@ionic/cli-utils';
-import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';
+import { parseArgs } from '@ionic/cli-framework/lib';
+
+import { IonicEnvironment, KNOWN_BACKENDS } from '@ionic/cli-utils';
+import { CommandMap, RootNamespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
-export class IonicNamespace extends Namespace implements IRootNamespace {
-  readonly root: true = true;
-  readonly name: 'ionic' = 'ionic';
+export class IonicNamespace extends RootNamespace {
+  readonly name = 'ionic';
   readonly description = '';
   readonly longDescription = '';
 
@@ -45,7 +46,6 @@ export class IonicNamespace extends Namespace implements IRootNamespace {
 
   async runCommand(env: IonicEnvironment, pargv: string[]): Promise<void> {
     const { metadataToMinimistOptions } = await import('@ionic/cli-utils/lib/utils/command');
-    const { parseArgs } = await import('@ionic/cli-utils/lib/init');
     const { isCommand } = await import('@ionic/cli-utils/guards');
 
     const config = await env.config.load();

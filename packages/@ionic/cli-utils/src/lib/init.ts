@@ -1,7 +1,3 @@
-import * as minimist from 'minimist';
-
-export const parseArgs = minimist;
-
 /**
  * Map legacy options to their new equivalent
  */

@@ -2,10 +2,11 @@ import * as path from 'path';
 import * as util from 'util';
 
 import chalk from 'chalk';
+import { parseArgs } from '@ionic/cli-framework/lib';
 
 import { IonicEnvironment, RootPlugin, generateIonicEnvironment } from '@ionic/cli-utils';
 import { Exception } from '@ionic/cli-utils/lib/errors';
-import { mapLegacyCommand, modifyArguments, parseArgs } from '@ionic/cli-utils/lib/init';
+import { mapLegacyCommand, modifyArguments } from '@ionic/cli-utils/lib/init';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { isExitCodeException } from '@ionic/cli-utils/guards';
 
