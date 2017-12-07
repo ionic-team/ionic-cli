@@ -44,14 +44,13 @@ export class CommandMap<T extends Command<U>, U extends CommandData<V, W>, V ext
 
 export class NamespaceMap<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> extends Map<string, NamespaceMapGetter<T, U, V, W>> {}
 
-export class Namespace<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> {
+export abstract class Namespace<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> {
   // TODO: better way to do this
   root = false;
 
-  // TODO: make these abstract getters
-  name = '';
-  description = '';
-  longDescription = '';
+  abstract readonly name: string
+  abstract readonly description: string;
+  abstract readonly longDescription: string;
 
   namespaces = new NamespaceMap<T, U, V, W>();
   commands = new CommandMap<T, U, V, W>();
@@ -137,6 +136,6 @@ export class Namespace<T extends Command<U>, U extends CommandData<V, W>, V exte
   }
 }
 
-export class RootNamespace<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> extends Namespace<T, U, V, W> {
+export abstract class RootNamespace<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> extends Namespace<T, U, V, W> {
   root = true;
 }
