@@ -1,11 +1,10 @@
 import * as minimist from 'minimist';
 
-import { CommandData } from '../../../definitions';
 import { filterOptionsByIntent, metadataToEnvCmdOptsSchema, metadataToMinimistOptions, minimistOptionsToArray } from '../command';
 
-describe('@ionic/cli-utils', () => {
+describe('@ionic/cli-framework', () => {
 
-  describe('lib/utils/command', () => {
+  describe('lib/command', () => {
 
     describe('minimistOptionsToArray', () => {
 
@@ -53,7 +52,7 @@ describe('@ionic/cli-utils', () => {
 
     describe('metadataToMinimistOptions', () => {
 
-      const metadata: CommandData = {
+      const metadata = {
         fullName: 'foo bar',
         name: 'bar',
         inputs: [
@@ -115,7 +114,7 @@ describe('@ionic/cli-utils', () => {
 
     describe('metadataToEnvCmdOptsSchema', () => {
 
-      const metadata: CommandData = {
+      const metadata = {
         fullName: 'foo bar',
         options: [
           {
@@ -144,7 +143,7 @@ describe('@ionic/cli-utils', () => {
 
     describe('filterOptionsByIntent', () => {
 
-      const metadata: CommandData = {
+      const metadata = {
         description: '',
         inputs: [
           {

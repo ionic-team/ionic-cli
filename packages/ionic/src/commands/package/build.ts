@@ -1,6 +1,6 @@
 import chalk from 'chalk';
+import { contains, filterOptionsByIntent } from '@ionic/cli-framework/lib';
 
-import { contains } from '@ionic/cli-framework/lib';
 import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandPreRun, PackageBuild } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { APP_SCRIPTS_INTENT, APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
@@ -104,7 +104,6 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
     const { DeployClient } = await import('@ionic/cli-utils/lib/deploy');
     const { PackageClient } = await import('@ionic/cli-utils/lib/package');
     const { SecurityClient } = await import('@ionic/cli-utils/lib/security');
-    const { filterOptionsByIntent } = await import('@ionic/cli-utils/lib/utils/command');
     const { createArchive } = await import('@ionic/cli-utils/lib/utils/archive');
 
     let [ platform ] = <[PackageBuild['platform']]>inputs;

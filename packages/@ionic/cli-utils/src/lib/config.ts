@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as os from 'os';
 
 import chalk from 'chalk';
-import * as minimistType from 'minimist';
+import { ParsedArgs } from '@ionic/cli-framework/lib';
 
 import {
   ConfigFile,
@@ -293,7 +293,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
   }
 }
 
-export function gatherFlags(argv: minimistType.ParsedArgs): IonicEnvironment['flags'] {
+export function gatherFlags(argv: ParsedArgs): IonicEnvironment['flags'] {
   return {
     interactive: typeof argv['interactive'] === 'undefined' ? true : argv['interactive'],
     confirm: typeof argv['confirm'] === 'undefined' ? false : argv['confirm'],

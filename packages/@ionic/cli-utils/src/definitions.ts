@@ -4,7 +4,6 @@ import { EventEmitter } from 'events';
 import * as crossSpawnType from 'cross-spawn';
 import * as inquirerType from 'inquirer';
 import * as superagentType from 'superagent';
-import * as minimistType from 'minimist';
 
 import * as framework from '@ionic/cli-framework';
 
@@ -262,27 +261,12 @@ export interface IDaemon extends IBaseConfig<DaemonFile> {
   setPort(port: number): Promise<void>;
 }
 
-export type CommandOptionTypeDefaults = Map<framework.CommandOptionType, framework.CommandLineInput>;
-
 export interface CommandOption extends framework.CommandOption {
   backends?: BackendFlag[];
 }
 
-export interface NormalizedCommandOption extends CommandOption {
-  type: framework.CommandOptionType;
-  default: framework.CommandLineInput;
-  aliases: string[];
-}
-
 export interface ExitCodeException extends Error {
   exitCode: number;
-}
-
-export interface NormalizedMinimistOpts extends minimistType.Opts {
-  string: string[];
-  boolean: string[];
-  alias: { [key: string]: string[] };
-  default: { [key: string]: framework.CommandLineInput };
 }
 
 export type BackendFlag = 'pro' | 'legacy';

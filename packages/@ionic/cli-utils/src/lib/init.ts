@@ -1,9 +1,11 @@
+import { parseArgs } from '@ionic/cli-framework/lib';
+
 /**
  * Map legacy options to their new equivalent
  */
 export function modifyArguments(pargv: string[]): string[] {
   let modifiedArgArray: string[] = pargv.slice();
-  const minimistArgv = minimist(pargv, { boolean: true, string: '_' });
+  const minimistArgv = parseArgs(pargv, { boolean: true, string: '_' });
 
   if (pargv.length === 0) {
     return ['help'];

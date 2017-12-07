@@ -24,7 +24,6 @@
   },
   "include": [
     "../../types/cross-spawn.d.ts",
-    "../../types/dargs.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

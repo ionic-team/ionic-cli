@@ -21,6 +21,8 @@ export interface CommandInput {
   private?: boolean;
 }
 
+export type CommandOptionTypeDefaults = Map<CommandOptionType, CommandLineInput>;
+
 export interface CommandOption {
   name: string;
   description: string;
@@ -31,6 +33,19 @@ export interface CommandOption {
   intents?: string[];
   visible?: boolean;
   advanced?: boolean;
+}
+
+export interface NormalizedCommandOption extends CommandOption {
+  type: CommandOptionType;
+  default: CommandLineInput;
+  aliases: string[];
+}
+
+export interface NormalizedMinimistOpts extends minimistType.Opts {
+  string: string[];
+  boolean: string[];
+  alias: { [key: string]: string[] };
+  default: { [key: string]: CommandLineInput };
 }
 
 export interface CommandData<T = CommandInput, U = CommandOption> {

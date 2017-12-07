@@ -1,5 +1,6 @@
+import { filterOptionsByIntent, minimistOptionsToArray } from '@ionic/cli-framework/lib';
+
 import { CommandData, CommandLineInputs, CommandLineOptions, IonicEnvironment } from '../../definitions';
-import { filterOptionsByIntent, minimistOptionsToArray } from '../utils/command';
 import { APP_SCRIPTS_INTENT } from '../ionic-angular/app-scripts';
 
 export const CORDOVA_INTENT = 'cordova';

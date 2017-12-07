@@ -1,6 +1,13 @@
 import chalk from 'chalk';
 
 import {
+  Command as BaseCommand,
+  minimistOptionsToArray,
+  validateInputs,
+  validators,
+} from '@ionic/cli-framework/lib';
+
+import {
   CommandData,
   CommandLineInputs,
   CommandLineOptions,
@@ -9,9 +16,6 @@ import {
 } from '../definitions';
 
 import { isCommandPreRun } from '../guards';
-import { validators } from '@ionic/cli-framework/lib';
-import { minimistOptionsToArray } from './utils/command';
-import { Command as BaseCommand, validateInputs } from '@ionic/cli-framework/lib';
 
 export function CommandMetadata(metadata: CommandData) {
   return function(target: Function) {

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
+import { minimistOptionsToArray } from '@ionic/cli-framework/lib';
 
 import { IonicEnvironment } from '../../definitions';
-
 import { importAppScripts } from './app-scripts';
 
 export async function build({ env, options }: { env: IonicEnvironment; options: { _: string[]; [key: string]: any; }; }): Promise<void> {
@@ -16,8 +16,6 @@ export async function build({ env, options }: { env: IonicEnvironment; options: 
 }
 
 export async function buildOptionsToAppScriptsArgs(options: { _: string[]; [key: string]: any; }) {
-  const { minimistOptionsToArray } = await import('../utils/command');
-
   const minimistArgs = {
     _: [],
     prod: options.prod ? true : false,

@@ -1,9 +1,10 @@
 import * as util from 'util';
 import * as path from 'path';
 
-import { isCI } from 'ci-info';
 import chalk from 'chalk';
-import * as minimist from 'minimist';
+import { isCI } from 'ci-info';
+import { parseArgs } from '@ionic/cli-framework/lib';
+import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
 
 import * as inquirerType from 'inquirer';
 
@@ -32,7 +33,6 @@ import { Environment } from './lib/environment';
 import { HookEngine } from './lib/hooks';
 import { PROJECT_FILE, PROJECT_FILE_LEGACY, Project } from './lib/project';
 import { Logger } from './lib/utils/logger';
-import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
 import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
 import { readPackageJsonFileOfResolvedModule } from './lib/utils/npm';
 import { Telemetry } from './lib/telemetry';
@@ -163,7 +163,7 @@ async function getSession(config: IConfig, project: IProject, client: IClient): 
 
 export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
   const cwd = process.cwd();
-  const argv = minimist(pargv, { boolean: true, string: '_' });
+  const argv = parseArgs(pargv, { boolean: true, string: '_' });
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
   const flags = gatherFlags(argv);
 

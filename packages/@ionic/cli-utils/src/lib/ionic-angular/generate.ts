@@ -1,10 +1,9 @@
-import { IonicEnvironment } from '../../definitions';
+import { minimistOptionsToArray, validators } from '@ionic/cli-framework/lib';
 
+import { IonicEnvironment } from '../../definitions';
 import { importAppScripts } from './app-scripts';
 
 export async function generate(args: { env: IonicEnvironment; inputs: string[], options: { _: string[]; [key: string]: any; }; }): Promise<string[]> {
-  const { minimistOptionsToArray } = await import('../utils/command');
-
   if (!args.env.project.directory) {
     return [];
   }
@@ -92,8 +91,6 @@ async function getModules(context: any, kind: string) {
 }
 
 export async function tabsPrompt(env: IonicEnvironment) {
-  const { validators } = await import('@ionic/cli-framework/lib');
-
   const tabNames = [];
 
   const howMany = await env.prompt({

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { parseArgs } from '@ionic/cli-framework/lib';
+import { metadataToMinimistOptions, parseArgs } from '@ionic/cli-framework/lib';
 
 import { IonicEnvironment, KNOWN_BACKENDS } from '@ionic/cli-utils';
 import { CommandMap, RootNamespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';
@@ -45,7 +45,6 @@ export class IonicNamespace extends RootNamespace {
   ]);
 
   async runCommand(env: IonicEnvironment, pargv: string[]): Promise<void> {
-    const { metadataToMinimistOptions } = await import('@ionic/cli-utils/lib/utils/command');
     const { isCommand } = await import('@ionic/cli-utils/guards');
 
     const config = await env.config.load();
