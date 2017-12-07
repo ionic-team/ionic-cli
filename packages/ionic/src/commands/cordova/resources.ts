@@ -46,7 +46,6 @@ This command uses Ionic servers, so we require you to be logged into your free I
     {
       name: 'platform',
       description: `The platform for which you would like to generate resources (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
-      required: false,
     }
   ],
   options: [

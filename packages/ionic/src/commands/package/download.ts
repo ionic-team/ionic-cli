@@ -25,7 +25,6 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
     {
       name: 'id',
       description: 'The build ID to download. Defaults to the latest build',
-      required: false,
     },
   ],
   options: [

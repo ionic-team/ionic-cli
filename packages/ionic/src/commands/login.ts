@@ -22,12 +22,13 @@ If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
     {
       name: 'email',
       description: 'Your email address',
-      validators: [validators.email],
+      validators: [validators.required, validators.email],
       private: true,
     },
     {
       name: 'password',
       description: 'Your password',
+      validators: [validators.required],
       private: true,
     }
   ],
@@ -78,7 +79,7 @@ export class LoginCommand extends Command implements CommandPreRun {
         name: 'email',
         message: 'Email:',
         default: options['email'],
-        validate: v => validators.email(v),
+        validate: v => validators.required(v) && validators.email(v),
       });
 
       inputs[0] = email;
@@ -89,6 +90,7 @@ export class LoginCommand extends Command implements CommandPreRun {
         type: 'password',
         name: 'password',
         message: 'Password:',
+        validate: v => validators.required(v),
       });
 
       inputs[1] = password;

@@ -14,6 +14,7 @@ import {
   ValidationError,
 } from '../definitions';
 
+import { InputValidationError } from './errors';
 import { validate, validators } from './validators';
 
 export const parseArgs = minimist;
@@ -23,7 +24,7 @@ export abstract class Command<T extends CommandData> {
   public readonly metadata: T;
 
   async validate(inputs: CommandLineInputs): Promise<void> {
-    validateInputs(inputs, this.metadata);
+    await validateInputs(inputs, this.metadata);
   }
 
   abstract run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
@@ -170,30 +171,32 @@ export function filterOptionsByIntent(metadata: CommandData, options: CommandLin
   return r;
 }
 
-export function validateInputs(argv: string[], metadata: CommandData): void {
+export async function validateInputs(argv: string[], metadata: CommandData): Promise<void> {
+  const flatten = await import('lodash/flatten');
+
   if (!metadata.inputs) {
     return;
   }
 
-  const errors: ValidationError[] = [];
+  const errors: ValidationError[][] = [];
 
   for (let i in metadata.inputs) {
     const input = metadata.inputs[i];
 
     if (input.validators && input.validators.length > 0) {
-      const vnames = input.validators.map(v => v.name);
-
-      if (vnames.includes('required')) { // required validator is special
-        validate(argv[i], input.name, [validators.required], errors);
-      } else {
-        if (argv[i]) { // only run validators if input given
-          validate(argv[i], input.name, input.validators, errors);
+      try {
+        validate(argv[i], input.name, [...input.validators]);
+      } catch (e) {
+        if (!(e instanceof InputValidationError)) {
+          throw e;
         }
+
+        errors.push(e.errors);
       }
     }
   }
 
   if (errors.length > 0) {
-    throw errors;
+    throw new InputValidationError('Invalid inputs.', flatten(errors));
   }
 }

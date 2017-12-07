@@ -26,7 +26,7 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
     {
       name: 'platform',
       description: `The platform to target: ${chalk.green('ios')}, ${chalk.green('android')}`,
-      validators: [contains(['ios', 'android'], {})],
+      validators: [contains(['ios', 'android', undefined], {})],
     },
   ],
   options: [

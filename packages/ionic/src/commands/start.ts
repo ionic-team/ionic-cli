@@ -3,6 +3,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework/lib';
+import { isValidURL } from '@ionic/cli-framework/utils/string';
 import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun, StarterManifest, StarterTemplate } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
@@ -35,10 +36,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     {
       name: 'name',
       description: 'The name of your project directory',
+      validators: [validators.required],
     },
     {
       name: 'template',
       description: `The starter template to use (e.g. ${['blank', 'tabs'].map(t => chalk.green(t)).join(', ')}; use ${chalk.green('--list')} to see all)`,
+      validators: [validators.required],
     }
   ],
   options: [
@@ -193,7 +196,7 @@ export class StartCommand extends Command implements CommandPreRun {
           type: 'input',
           name: 'name',
           message: 'What would you like to name your project:',
-          validate: v => validators.required(v, 'name'),
+          validate: v => validators.required(v),
         });
 
         inputs[0] = name;
@@ -230,7 +233,7 @@ export class StartCommand extends Command implements CommandPreRun {
     const [ name, template ] = inputs;
     const displayName = options['display-name'] ? String(options['display-name']) : name;
     const proAppId = options['pro-id'] ? String(options['pro-id']) : undefined;
-    const clonedApp = template.includes(':');
+    const clonedApp = isValidURL(template);
     let linkConfirmed = typeof proAppId === 'string';
 
     const config = await this.env.config.load();

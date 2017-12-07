@@ -17,7 +17,6 @@ export interface CommandInput {
   name: string;
   description: string;
   validators?: Validator[];
-  required?: boolean;
   private?: boolean;
 }
 
@@ -79,9 +78,11 @@ export interface Validators {
   required: Validator;
   email: Validator;
   numeric: Validator;
+  url: Validator;
 }
 
 export interface ValidationError {
+  key: string;
   message: string;
-  inputName: string;
+  validator: Validator;
 }

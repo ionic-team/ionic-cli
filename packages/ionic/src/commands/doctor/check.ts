@@ -13,7 +13,6 @@ import { FatalException } from '@ionic/cli-utils/lib/errors';
     {
       name: 'id',
       description: 'The issue identifier',
-      required: false,
     }
   ],
 })

@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { metadataToMinimistOptions, parseArgs } from '@ionic/cli-framework/lib';
 
 import { IonicEnvironment, KNOWN_BACKENDS } from '@ionic/cli-utils';
-import { CommandMap, RootNamespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';
+import { CommandMap, NamespaceMap, RootNamespace } from '@ionic/cli-utils/lib/namespace';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 export class IonicNamespace extends RootNamespace {
@@ -71,8 +71,6 @@ export class IonicNamespace extends RootNamespace {
     const options = parseArgs(pargv, minimistOpts);
     inputs = options._.slice(depth);
     command.env = env;
-
-    await command.validate(inputs);
 
     if (!env.project.directory && command.metadata.type === 'project') {
       throw new FatalException(`Sorry! ${chalk.green('ionic ' + command.metadata.fullName)} can only be run in an Ionic project directory.`);

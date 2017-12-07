@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { contains } from '@ionic/cli-framework/lib';
+import { contains, validators } from '@ionic/cli-framework/lib';
 import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { INTEGRATIONS, disableIntegration } from '@ionic/cli-utils/lib/integrations';
@@ -13,7 +13,7 @@ import { INTEGRATIONS, disableIntegration } from '@ionic/cli-utils/lib/integrati
     {
       name: 'id',
       description: `The integration to disable (${INTEGRATIONS.map(i => chalk.green(i.name)).join(', ')})`,
-      validators: [contains(INTEGRATIONS.map(i => i.name), {})],
+      validators: [validators.required, contains(INTEGRATIONS.map(i => i.name), {})],
     }
   ],
 })

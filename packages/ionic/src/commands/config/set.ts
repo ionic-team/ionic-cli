@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 
+import { validators } from '@ionic/cli-framework/lib';
 import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
@@ -22,12 +23,12 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
     {
       name: 'property',
       description: 'The property name you wish to set',
-      required: true,
+      validators: [validators.required],
     },
     {
       name: 'value',
       description: 'The new value of the given property',
-      required: true,
+      validators: [validators.required],
     },
   ],
   options: [

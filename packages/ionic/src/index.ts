@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as util from 'util';
 
 import chalk from 'chalk';
-import { parseArgs } from '@ionic/cli-framework/lib';
+import { InputValidationError, parseArgs } from '@ionic/cli-framework/lib';
 
 import { IonicEnvironment, RootPlugin, generateIonicEnvironment } from '@ionic/cli-utils';
 import { Exception } from '@ionic/cli-utils/lib/errors';
@@ -32,7 +32,6 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
   env['IONIC_CLI_LIB'] = __filename;
 
   const { isSuperAgentError } = await import('@ionic/cli-utils/guards');
-  const { isValidationErrorArray } = await import('@ionic/cli-framework/guards');
 
   const plugin = await generateRootPlugin();
 
@@ -135,8 +134,8 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     ienv.tasks.fail();
     process.exitCode = 1;
 
-    if (isValidationErrorArray(err)) {
-      for (let e of err) {
+    if (err instanceof InputValidationError) {
+      for (let e of err.errors) {
         ienv.log.error(e.message);
       }
       ienv.log.msg(`Use the ${chalk.green('--help')} flag for more details.`);

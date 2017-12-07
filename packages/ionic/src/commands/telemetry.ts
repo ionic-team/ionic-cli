@@ -13,8 +13,7 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
     {
       name: 'status',
       description: `${chalk.green('on')} or ${chalk.green('off')}`,
-      validators: [contains(['on', 'off'], { caseSensitive: false })],
-      required: false,
+      validators: [contains(['on', 'off', undefined], { caseSensitive: false })],
     }
   ],
 })

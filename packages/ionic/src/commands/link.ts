@@ -24,7 +24,6 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold('i
     {
       name: 'app_id',
       description: `The ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
-      required: false,
     },
   ],
   options: [

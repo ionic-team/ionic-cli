@@ -24,7 +24,6 @@ This command attempts to sanitize config output for known sensitive fields, such
     {
       name: 'property',
       description: 'The property name you wish to get',
-      required: false,
     },
   ],
   options: [

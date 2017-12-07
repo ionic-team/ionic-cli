@@ -18,7 +18,6 @@ import { fsReadFile, pathExists, readDir } from '@ionic/cli-framework/utils/fs';
     {
       name: 'snapshot_id',
       description: `An Ionic Pro snapshot id to associate these sourcemaps with.`,
-      required: false
     }
   ],
 })

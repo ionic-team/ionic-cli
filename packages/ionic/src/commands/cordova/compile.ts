@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 
+import { validators } from '@ionic/cli-framework/lib';
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { CORDOVA_INTENT, filterArgumentsForCordova } from '@ionic/cli-utils/lib/cordova/utils';
@@ -22,6 +23,7 @@ Like running ${chalk.green('cordova compile')} directly, but provides friendly c
     {
       name: 'platform',
       description: `The platform to compile (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+      validators: [validators.required],
     },
   ],
   options: [

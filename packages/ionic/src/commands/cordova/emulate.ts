@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 
+import { validators } from '@ionic/cli-framework/lib';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 import { CORDOVA_RUN_COMMAND_OPTIONS, CordovaRunCommand } from './base';
@@ -20,6 +21,7 @@ Just like with ${chalk.green('ionic cordova build')}, you can pass additional op
     {
       name: 'platform',
       description: `The platform to emulate (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+      validators: [validators.required],
     }
   ],
   options: CORDOVA_RUN_COMMAND_OPTIONS,

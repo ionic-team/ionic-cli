@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { contains, validate } from '@ionic/cli-framework/lib';
+import { contains, validate, validators } from '@ionic/cli-framework/lib';
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
@@ -16,6 +16,7 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
     {
       name: 'id',
       description: 'The issue identifier',
+      validators: [validators.required],
     },
   ],
 })
@@ -34,7 +35,7 @@ export class DoctorIgnoreCommand extends Command implements CommandPreRun {
       });
     }
 
-    validate(inputs[0], 'id', [contains(ailmentIds, {})]);
+    validate(inputs[0], 'id', [contains(ailmentIds, {})]); // TODO: add to input validators
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

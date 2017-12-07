@@ -11,7 +11,7 @@ export type HydratedCommandData<T extends Command<U>, U extends CommandData<V, W
   namespace: Namespace<T, U, V, W>;
   aliases: string[];
   fullName: string;
-}
+};
 
 export type NamespaceMapGetter<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> = () => Promise<Namespace<T, U, V, W>>;
 export type CommandMapGetter<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> = () => Promise<T>;
@@ -48,7 +48,7 @@ export abstract class Namespace<T extends Command<U>, U extends CommandData<V, W
   // TODO: better way to do this
   root = false;
 
-  abstract readonly name: string
+  abstract readonly name: string;
   abstract readonly description: string;
   abstract readonly longDescription: string;
 

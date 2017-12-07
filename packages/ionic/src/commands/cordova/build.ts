@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 
+import { validators } from '@ionic/cli-framework/lib';
 import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { CORDOVA_INTENT, filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/cordova/utils';
@@ -30,6 +31,7 @@ To pass additional options to the Cordova CLI, use the ${chalk.green('--')} sepa
     {
       name: 'platform',
       description: `The platform to build (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+      validators: [validators.required],
     }
   ],
   options: [

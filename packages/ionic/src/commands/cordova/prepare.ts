@@ -26,7 +26,6 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
     {
       name: 'platform',
       description: `The platform you would like to prepare (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
-      required: false,
     },
   ],
   options: [

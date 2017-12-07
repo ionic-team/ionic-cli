@@ -10,7 +10,6 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
     {
       name: 'command',
       description: 'The command you desire help with',
-      required: false,
     }
   ],
   visible: false,

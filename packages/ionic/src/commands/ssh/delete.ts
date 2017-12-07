@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 
+import { validators } from '@ionic/cli-framework/lib';
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { isSSHKeyListResponse } from '@ionic/cli-utils/guards';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
@@ -15,6 +16,7 @@ import { SSHBaseCommand } from './base';
     {
       name: 'key-id',
       description: 'The ID of the public key to delete',
+      validators: [validators.required],
     }
   ],
 })

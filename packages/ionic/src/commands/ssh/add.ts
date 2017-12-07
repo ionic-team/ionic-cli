@@ -3,10 +3,11 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
+import { validators } from '@ionic/cli-framework/lib';
+import { ERROR_FILE_NOT_FOUND, pathAccessible, pathExists } from '@ionic/cli-framework/utils/fs';
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { isSSHKeyResponse, isSuperAgentError } from '@ionic/cli-utils/guards';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { ERROR_FILE_NOT_FOUND, pathAccessible, pathExists } from '@ionic/cli-framework/utils/fs';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { SSHBaseCommand } from './base';
@@ -20,6 +21,7 @@ import { SSHBaseCommand } from './base';
     {
       name: 'pubkey-path',
       description: 'Location of public key file to add to Ionic',
+      validators: [validators.required],
     },
   ],
   options: [

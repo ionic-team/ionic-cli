@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { contains, validators } from '@ionic/cli-framework/lib';
+import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
@@ -29,11 +29,12 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
     {
       name: 'type',
       description: `The type of generator (e.g. ${TYPE_CHOICES.map(t => chalk.green(t)).join(', ')})`,
-      validators: [contains(TYPE_CHOICES, {})],
+      validators: [validators.required, contains(TYPE_CHOICES, {})],
     },
     {
       name: 'name',
       description: 'The name of the component being generated',
+      validators: [validators.required],
     }
   ],
   options: [
@@ -75,7 +76,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
         type: 'input',
         name: 'generatorName',
         message: 'What should the name be?',
-        validate: v => validators.required(v, 'name')
+        validate: v => validators.required(v)
       });
 
       inputs[1] = generatorName;

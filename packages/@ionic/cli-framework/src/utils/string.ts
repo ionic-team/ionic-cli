@@ -1,4 +1,5 @@
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const URL_REGEX = /^[\S]+:[\S]+$/;
 
 export function isValidEmail(email?: any): boolean {
   if (typeof email !== 'string') {
@@ -6,6 +7,14 @@ export function isValidEmail(email?: any): boolean {
   }
 
   return EMAIL_REGEX.test(email);
+}
+
+export function isValidURL(url?: any): boolean {
+  if (typeof url !== 'string') {
+    return false;
+  }
+
+  return URL_REGEX.test(url);
 }
 
 export function strcmp(a: string | undefined, b: string | undefined): number {

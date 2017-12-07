@@ -18,7 +18,6 @@ Like running ${chalk.green('cordova requirements')} directly, but provides frien
     {
       name: 'platform',
       description: `The platform for which you would like to gather requirements (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
-      required: false,
     },
   ]
 })

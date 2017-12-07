@@ -1,11 +1,6 @@
 import chalk from 'chalk';
 
-import {
-  Command as BaseCommand,
-  minimistOptionsToArray,
-  validateInputs,
-  validators,
-} from '@ionic/cli-framework/lib';
+import { Command as BaseCommand, minimistOptionsToArray } from '@ionic/cli-framework/lib';
 
 import {
   CommandData,
@@ -33,28 +28,14 @@ export abstract class Command extends BaseCommand<CommandData> implements IComma
       await this.preRun(inputs, options);
     }
 
-    if (this.metadata.inputs) {
-      for (let input of this.metadata.inputs) {
-        if (!input.validators) {
-          input.validators = [];
-        }
-
-        if (input.required !== false) {
-          input.validators.unshift(validators.required);
-        }
+    try {
+      await this.validate(inputs);
+    } catch (e) {
+      if (!this.env.flags.interactive) {
+        this.env.log.warn(`Command ran non-interactively due to ${chalk.green('--no-interactive')} flag, CI being detected, or a config setting.`);
       }
 
-      try {
-        // Validate inputs again, this time with required validator (prompt input
-        // should've happened in preRun)
-        validateInputs(inputs, this.metadata);
-      } catch (e) {
-        if (!this.env.flags.interactive) {
-          this.env.log.warn(`Command ran non-interactively due to ${chalk.green('--no-interactive')} flag, CI being detected, or a config setting.`);
-        }
-
-        throw e;
-      }
+      throw e;
     }
 
     const runPromise = this.run(inputs, options);

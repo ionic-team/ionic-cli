@@ -20,7 +20,6 @@ const SSH_KEY_TYPES = ['ecdsa', 'ed25519', 'rsa'];
     {
       name: 'key-path',
       description: 'Destination of private key file',
-      required: false,
     },
   ],
   options: [
