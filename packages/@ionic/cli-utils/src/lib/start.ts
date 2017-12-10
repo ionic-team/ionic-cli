@@ -128,6 +128,14 @@ export async function getStarterList(config: IConfig): Promise<StarterList> {
 }
 
 export const STARTER_TEMPLATES: StarterTemplate[] = [
+                                                                                             
+  {
+    name: 'preview',
+    type: 'ionic-angular',
+    description: 'This app accompanies the Ionic component documentation.',
+    archive: `https://github.com/ionic-team/ionic-preview-app/archive/master.tar.gz`,
+    strip: true,
+  },                                                                                           
   {
     name: 'tabs',
     type: 'ionic-angular',
