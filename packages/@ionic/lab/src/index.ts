@@ -1,3 +1,7 @@
+import * as path from 'path';
+
+import * as express from 'express';
+
 import {
   CommandData,
   CommandInput,
@@ -28,12 +32,32 @@ class DefaultCommand extends Command {
         validators: [validators.required, validators.url],
       },
     ],
+    options: [
+      {
+        name: 'port',
+        description: 'HTTP port of Ionic Lab',
+        default: '8100',
+      },
+    ],
   };
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions) {
     const [ url ] = inputs;
+    const { port } = options;
 
     console.log(url);
+
+    const app = express();
+
+    app.use('/static', express.static(path.join(__dirname, '..', 'assets', 'lab', 'static')));
+    app.get('/', (req, res) => res.sendFile('index.html', { root: path.join(__dirname, '..', 'assets', 'lab') }));
+
+    app.get('/api/app-config', (req, res) => {
+      res.set('Content-Type', 'application/json');
+      res.send({ url });
+    });
+
+    app.listen(port);
   }
 }
 
