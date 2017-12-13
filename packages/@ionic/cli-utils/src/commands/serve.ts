@@ -22,8 +22,6 @@ const WATCH_BEFORE_HOOK = 'watch:before';
 const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
-  env.keepopen = true;
-
   const { detectAndWarnAboutDeprecatedPlugin } = await import('../lib/plugins');
 
   const packageJson = await env.project.loadPackageJson();
@@ -84,6 +82,9 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
   } else if (project.type === 'ionic-angular') {
     const { serve } = await import('../lib/ionic-angular/serve');
     details = await serve({ env, options: serveOptions });
+  } else if (project.type === 'ionic-core-angular') {
+    const { serve } = await import('../lib/ionic-core-angular/serve');
+    details = await serve({ env, options: serveOptions });
   } else {
     throw new FatalException(
       `Cannot perform Ionic serve for project type: ${chalk.bold(project.type)}.\n` +
@@ -117,6 +118,8 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     const opn = await import('opn');
     opn(openOptions.join(''), { app: serveOptions.browser, wait: false });
   }
+
+  env.keepopen = true;
 
   return details;
 }

@@ -1,6 +1,8 @@
 import chalk from 'chalk';
 import * as stringWidth from 'string-width';
 
+import { validators } from '@ionic/cli-framework/lib';
+
 import {
   BackendFlag,
   CommandData,
@@ -188,7 +190,7 @@ async function getListOfNamespaceDetails(env: IonicEnvironment, commands: Hydrat
 
 async function formatCommandUsage(env: IonicEnvironment, cmdMetadata: CommandData) {
   const formatInput = (input: CommandInput) => {
-    if (!env.flags.interactive && input.required !== false) {
+    if (!env.flags.interactive && input.validators && input.validators.includes(validators.required)) {
       return '<' + input.name + '>';
     }
 

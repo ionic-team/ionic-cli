@@ -15,7 +15,7 @@ import {
 } from '../definitions';
 
 import { InputValidationError } from './errors';
-import { validate, validators } from './validators';
+import { validate } from './validators';
 
 export const parseArgs = minimist;
 export { ParsedArgs } from 'minimist';

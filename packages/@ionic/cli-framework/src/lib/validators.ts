@@ -80,7 +80,7 @@ export function contains(values: (string | undefined)[], { caseSensitive = true 
     if (values.indexOf(input) === -1) {
       const strValues = <string[]>values.filter(v => typeof v === 'string'); // TODO: typescript bug?
       const mustBe = (strValues.length !== values.length ? 'unset or one of' : 'one of') + ': ' + strValues.map(v => chalk.green(v)).join(', ');
-      const fmtPretty = v => typeof v === 'undefined' ? 'unset' : (v === '' ? 'empty' : chalk.green(v));
+      const fmtPretty = (v?: string) => typeof v === 'undefined' ? 'unset' : (v === '' ? 'empty' : chalk.green(v));
 
       if (key) {
         return `${chalk.green(key)} must be ${mustBe} (not ${fmtPretty(input)})`;
