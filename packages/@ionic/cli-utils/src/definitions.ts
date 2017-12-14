@@ -612,7 +612,7 @@ export interface RootPlugin extends LoadedPlugin {
 export type INamespace = BaseNamespace<ICommand, CommandData, framework.CommandInput, CommandOption>;
 
 export interface IRootNamespace extends BaseRootNamespace<ICommand, CommandData, framework.CommandInput, CommandOption> {
-  runCommand(env: IonicEnvironment, pargv: string[]): Promise<void>;
+  runCommand(ienv: IonicEnvironment, pargv: string[], env: { [key: string]: string; }): Promise<void>;
 }
 
 export interface ICommand extends BaseCommand<CommandData> {

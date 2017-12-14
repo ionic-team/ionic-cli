@@ -1,4 +1,4 @@
-import { filterOptionsByIntent, minimistOptionsToArray } from '@ionic/cli-framework/lib';
+import { filterOptionsByIntent, parsedArgsToArgv } from '@ionic/cli-framework/lib';
 
 import { CommandData, CommandLineInputs, CommandLineOptions, IonicEnvironment } from '../../definitions';
 import { APP_SCRIPTS_INTENT } from '../ionic-angular/app-scripts';
@@ -10,7 +10,7 @@ export const CORDOVA_INTENT = 'cordova';
  */
 export function filterArgumentsForCordova(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
   const results = filterOptionsByIntent(metadata, options, CORDOVA_INTENT);
-  const args = minimistOptionsToArray(results, { useEquals: false, allowCamelCase: true });
+  const args = parsedArgsToArgv(results, { useEquals: false, allowCamelCase: true });
   let unparsedCdvArgs: string[] = [];
   const indexOfSep = inputs.indexOf('--');
 

@@ -109,7 +109,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
       }
 
       await ienv.hooks.fire('plugins:init', { env: ienv });
-      await namespace.runCommand(ienv, pargv);
+      await namespace.runCommand(ienv, pargv, env);
       config.state.lastCommand = now.toISOString();
     }
 

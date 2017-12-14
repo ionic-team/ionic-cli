@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
-import { metadataToMinimistOptions, parseArgs } from '@ionic/cli-framework/lib';
+import { metadataToParseArgsOptions, parseArgs } from '@ionic/cli-framework/lib';
 
-import { IonicEnvironment, KNOWN_BACKENDS } from '@ionic/cli-utils';
+import { CommandData, CommandOption, IonicEnvironment, KNOWN_BACKENDS } from '@ionic/cli-utils';
 import { CommandMap, NamespaceMap, RootNamespace } from '@ionic/cli-utils/lib/namespace';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
@@ -44,22 +44,40 @@ export class IonicNamespace extends RootNamespace {
     ['share', async () => { const { ShareCommand } = await import('./share'); return new ShareCommand(); }],
   ]);
 
-  async runCommand(env: IonicEnvironment, pargv: string[]): Promise<void> {
+  async runCommand(ienv: IonicEnvironment, pargv: string[], env: { [key: string]: string; }): Promise<void> {
     const { isCommand } = await import('@ionic/cli-utils/guards');
 
-    const config = await env.config.load();
+    const config = await ienv.config.load();
 
     const argv = parseArgs(pargv, { boolean: true, string: '_' });
     let [ depth, inputs, cmdOrNamespace ] = await this.locate(argv._);
 
     if (!isCommand(cmdOrNamespace)) {
       const { showHelp } = await import('@ionic/cli-utils/lib/help');
-      await env.telemetry.sendCommand('ionic help', argv._);
-      return showHelp(env, argv._);
+      await ienv.telemetry.sendCommand('ionic help', argv._);
+      return showHelp(ienv, argv._);
     }
 
     const command = cmdOrNamespace;
-    const minimistOpts = metadataToMinimistOptions(command.metadata);
+
+    if (command.metadata.options) {
+      const optMap = metadataToCmdOptsEnv(command.metadata);
+
+      // TODO: changes opt by reference, which is probably bad
+      for (let [ opt, envvar ] of optMap.entries()) {
+        const envdefault = env[envvar];
+
+        if (typeof envdefault !== 'undefined') {
+          if (opt.type === Boolean) {
+            opt.default = envdefault && envdefault !== '0' ? true : false;
+          } else {
+            opt.default = envdefault;
+          }
+        }
+      }
+    }
+
+    const minimistOpts = metadataToParseArgsOptions(command.metadata);
 
     if (command.metadata.backends && !command.metadata.backends.includes(config.backend)) {
       throw new FatalException(
@@ -70,9 +88,9 @@ export class IonicNamespace extends RootNamespace {
 
     const options = parseArgs(pargv, minimistOpts);
     inputs = options._.slice(depth);
-    command.env = env;
+    command.env = ienv;
 
-    if (!env.project.directory && command.metadata.type === 'project') {
+    if (!ienv.project.directory && command.metadata.type === 'project') {
       throw new FatalException(`Sorry! ${chalk.green('ionic ' + command.metadata.fullName)} can only be run in an Ionic project directory.`);
     }
 
@@ -82,15 +100,32 @@ export class IonicNamespace extends RootNamespace {
       for (let opt of command.metadata.options) {
         if (opt.backends && opt.default !== options[opt.name] && !opt.backends.includes(config.backend)) {
           found = true;
-          env.log.warn(`${chalk.green('--' + (opt.default === true ? 'no-' : '') + opt.name)} has no effect with the configured backend (${chalk.bold(config.backend)}).`);
+          ienv.log.warn(`${chalk.green('--' + (opt.default === true ? 'no-' : '') + opt.name)} has no effect with the configured backend (${chalk.bold(config.backend)}).`);
         }
       }
 
       if (found) {
-        env.log.info(`You can switch backends with ${chalk.green('ionic config set -g backend')}.`);
+        ienv.log.info(`You can switch backends with ${chalk.green('ionic config set -g backend')}.`);
       }
     }
 
     await command.execute(inputs, options);
   }
+}
+
+function metadataToCmdOptsEnv(metadata: CommandData): Map<CommandOption, string> {
+  const optMap = new Map<CommandOption, string>();
+
+  if (!metadata.options) {
+    return optMap;
+  }
+
+  const fullName = metadata.fullName ? metadata.fullName : metadata.name;
+  const prefix = `IONIC_CMDOPTS_${fullName.toUpperCase().split(' ').join('_')}`;
+
+  for (let option of metadata.options) {
+    optMap.set(option, `${prefix}_${option.name.toUpperCase().split('-').join('_')}`);
+  }
+
+  return optMap;
 }

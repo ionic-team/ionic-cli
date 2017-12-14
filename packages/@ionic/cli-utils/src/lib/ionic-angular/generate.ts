@@ -1,4 +1,4 @@
-import { minimistOptionsToArray, validators } from '@ionic/cli-framework/lib';
+import { parsedArgsToArgv, validators } from '@ionic/cli-framework/lib';
 
 import { IonicEnvironment } from '../../definitions';
 import { importAppScripts } from './app-scripts';
@@ -8,7 +8,7 @@ export async function generate(args: { env: IonicEnvironment; inputs: string[], 
     return [];
   }
 
-  const appScriptsArgs = minimistOptionsToArray(args.options, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
+  const appScriptsArgs = parsedArgsToArgv(args.options, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
   process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
 
   const AppScripts = await importAppScripts(args.env);

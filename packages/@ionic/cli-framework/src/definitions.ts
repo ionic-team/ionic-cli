@@ -40,7 +40,7 @@ export interface NormalizedCommandOption extends CommandOption {
   aliases: string[];
 }
 
-export interface NormalizedMinimistOpts extends minimistType.Opts {
+export interface NormalizedParseArgsOptions extends minimistType.Opts {
   string: string[];
   boolean: string[];
   alias: { [key: string]: string[] };

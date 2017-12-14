@@ -44,12 +44,14 @@ export class Environment implements IonicEnvironment {
   keepopen = false;
 
   private bottomBar?: inquirerType.ui.BottomBar;
+  private env: { [key: string]: string; }; // TODO: necessary?
 
   constructor({
     bottomBar,
     client,
     config,
     daemon,
+    env,
     events,
     flags,
     hooks,
@@ -68,6 +70,7 @@ export class Environment implements IonicEnvironment {
     client: IClient;
     config: IConfig; // CLI global config (~/.ionic/config.json)
     daemon: IDaemon;
+    env: { [key: string]: string; },
     events: ICLIEventEmitter;
     flags: IonicEnvironmentFlags;
     hooks: IHookEngine;
@@ -86,6 +89,7 @@ export class Environment implements IonicEnvironment {
     this.client = client;
     this.config = config;
     this.daemon = daemon;
+    this.env = env;
     this.events = events;
     this.flags = flags;
     this.hooks = hooks;
@@ -151,6 +155,6 @@ export class Environment implements IonicEnvironment {
       this.log.msg(`> ${chalk.green([this.namespace.name, ...pargv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
     }
 
-    await this.namespace.runCommand(this, pargv);
+    await this.namespace.runCommand(this, pargv, this.env); // TODO
   }
 }

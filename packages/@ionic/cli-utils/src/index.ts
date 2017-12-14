@@ -229,6 +229,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     client,
     config,
     daemon,
+    env,
     events: new CLIEventEmitter(),
     flags,
     hooks,

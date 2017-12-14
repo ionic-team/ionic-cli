@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { minimistOptionsToArray } from '@ionic/cli-framework/lib';
+import { parsedArgsToArgv } from '@ionic/cli-framework/lib';
 
 import { IonicEnvironment } from '../../definitions';
 import { importAppScripts } from './app-scripts';
@@ -28,5 +28,5 @@ export async function buildOptionsToAppScriptsArgs(options: { _: string[]; [key:
     env: options.env,
   };
 
-  return minimistOptionsToArray(minimistArgs, { useEquals: false });
+  return parsedArgsToArgv(minimistArgs, { useEquals: false });
 }

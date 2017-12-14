@@ -10,7 +10,7 @@ import {
   CommandOptionType,
   CommandOptionTypeDefaults,
   NormalizedCommandOption,
-  NormalizedMinimistOpts,
+  NormalizedParseArgsOptions,
   ValidationError,
 } from '../definitions';
 
@@ -34,11 +34,11 @@ const typeDefaults: CommandOptionTypeDefaults = new Map<CommandOptionType, Comma
   .set(String, null)
   .set(Boolean, false);
 
-export interface MinimistOptionsToArrayOptions extends dargs.Options {
+export interface ParsedArgsToArgvOptions extends dargs.Options {
   useDoubleQuotes?: boolean;
 }
 
-export function minimistOptionsToArray(options: CommandLineOptions, fnOptions: MinimistOptionsToArrayOptions = {}): string[] {
+export function parsedArgsToArgv(options: CommandLineOptions, fnOptions: ParsedArgsToArgvOptions = {}): string[] {
   if (typeof fnOptions.ignoreFalse === 'undefined') {
     fnOptions.ignoreFalse = true;
   }
@@ -71,30 +71,16 @@ function normalizeOption(option: CommandOption): NormalizedCommandOption {
   };
 }
 
-export function metadataToMinimistOptions(metadata: CommandData): minimist.Opts {
-  const options: NormalizedMinimistOpts = {
+export function metadataToParseArgsOptions(metadata: CommandData): NormalizedParseArgsOptions {
+  const options: NormalizedParseArgsOptions = {
     string: ['_'],
     boolean: [],
     alias: {},
-    default: {}
+    default: {},
   };
 
   if (!metadata.options) {
-    return { boolean: true, string: '_' };
-  }
-
-  const schema = metadataToEnvCmdOptsSchema(metadata);
-
-  for (let opt of schema) {
-    const envvar = process.env[opt.envvar];
-
-    if (typeof envvar !== 'undefined') {
-      if (opt.option.type === Boolean) {
-        opt.option.default = envvar && envvar !== '0' ? true : false;
-      } else {
-        opt.option.default = envvar;
-      }
-    }
+    return options;
   }
 
   for (let option of metadata.options) {
@@ -111,27 +97,6 @@ export function metadataToMinimistOptions(metadata: CommandData): minimist.Opts 
   }
 
   return options;
-}
-
-export interface CmdOptsSchema {
-  envvar: string;
-  option: CommandOption;
-}
-
-export function metadataToEnvCmdOptsSchema(metadata: CommandData): CmdOptsSchema[] {
-  if (!metadata.options) {
-    return [];
-  }
-
-  const schema: CmdOptsSchema[] = [];
-  const fullName = metadata.fullName ? metadata.fullName : metadata.name;
-  const prefix = `IONIC_CMDOPTS_${fullName.toUpperCase().split(' ').join('_')}`;
-
-  for (let option of metadata.options) {
-    schema.push({ envvar: `${prefix}_${option.name.toUpperCase().split('-').join('_')}`, option });
-  }
-
-  return schema;
 }
 
 /**

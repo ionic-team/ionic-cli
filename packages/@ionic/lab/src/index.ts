@@ -14,7 +14,7 @@ import {
   Command as BaseCommand,
   CommandMap as BaseCommandMap,
   RootNamespace as BaseRootNamespace,
-  metadataToMinimistOptions,
+  metadataToParseArgsOptions,
   parseArgs,
   validators,
 } from '@ionic/cli-framework/lib';
@@ -91,7 +91,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     return;
   }
 
-  const args = parseArgs(pargv, metadataToMinimistOptions(cmd.metadata));
+  const args = parseArgs(pargv, metadataToParseArgsOptions(cmd.metadata));
 
   await cmd.validate(args._);
   await cmd.run(args._, args);

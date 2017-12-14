@@ -21,5 +21,5 @@ export class NamespaceMap extends BaseNamespaceMap<ICommand, CommandData, Comman
 export abstract class Namespace extends BaseNamespace<ICommand, CommandData, CommandInput, CommandOption> implements INamespace {}
 
 export abstract class RootNamespace extends BaseRootNamespace<ICommand, CommandData, CommandInput, CommandOption> implements IRootNamespace {
-  abstract async runCommand(env: IonicEnvironment, pargv: string[]): Promise<void>;
+  abstract async runCommand(ienv: IonicEnvironment, pargv: string[], env: { [key: string]: string; }): Promise<void>;
 }

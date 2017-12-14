@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { Command as BaseCommand, minimistOptionsToArray } from '@ionic/cli-framework/lib';
+import { Command as BaseCommand, parsedArgsToArgv } from '@ionic/cli-framework/lib';
 
 import {
   CommandData,
@@ -92,7 +92,7 @@ export abstract class Command extends BaseCommand<CommandData> implements IComma
         return allOptions;
       }, initialOptions);
 
-    const optionInputs = minimistOptionsToArray(filteredOptions, { useDoubleQuotes: true });
+    const optionInputs = parsedArgsToArgv(filteredOptions, { useDoubleQuotes: true });
     return filteredInputs.concat(optionInputs);
   }
 }
