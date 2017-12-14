@@ -2,7 +2,9 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
+import { columnar } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
+
 import { CommandLineInputs, CommandLineOptions, InfoHookItem } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
@@ -13,8 +15,6 @@ import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 })
 export class InfoCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { columnar } = await import('@ionic/cli-utils/lib/utils/format');
-
     const task = this.env.tasks.next('Gathering environment info');
 
     const initialValue: InfoHookItem[] = [];

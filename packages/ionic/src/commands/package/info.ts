@@ -1,5 +1,7 @@
 import chalk from 'chalk';
 
+import { columnar } from '@ionic/cli-framework/utils/format';
+
 import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, PackageBuild } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 
@@ -36,7 +38,6 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
 export class PackageInfoCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { PackageClient } = await import('@ionic/cli-utils/lib/package');
-    const { columnar } = await import('@ionic/cli-utils/lib/utils/format');
 
     const [ id ] = inputs;
     const { json } = options;

@@ -4,7 +4,14 @@ import ui = inquirerType.ui;
 
 import { ILogger, ITask, ITaskChain } from '../../definitions';
 
-import { ICON_FAILURE, ICON_SUCCESS, SPINNER_FRAMES } from './format';
+const isWindows = process.platform === 'win32';
+
+const ICON_SUCCESS = isWindows ? '√' : '✔';
+const ICON_FAILURE = isWindows ? '×' : '✖';
+
+const SPINNER_FRAMES = isWindows ?
+  ['-', '\\', '|', '/'] :
+  ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 
 class Spinner {
   public i: number = 0;

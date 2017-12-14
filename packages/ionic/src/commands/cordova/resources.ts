@@ -1,5 +1,8 @@
 import chalk from 'chalk';
 
+import { cacheFileChecksum, pathExists } from '@ionic/cli-framework/utils/fs';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+
 import {
   CommandLineInputs,
   CommandLineOptions,
@@ -12,7 +15,6 @@ import {
 
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { cacheFileChecksum, pathExists } from '@ionic/cli-framework/utils/fs';
 
 import { CordovaCommand } from './base';
 
@@ -86,7 +88,6 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
   public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
-    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
 
     const {
       RESOURCES,

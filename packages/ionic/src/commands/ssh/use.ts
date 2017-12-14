@@ -3,9 +3,11 @@ import * as path from 'path';
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework/lib';
+import { fileToString, fsWriteFile } from '@ionic/cli-framework/utils/fs';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { fileToString, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { SSHBaseCommand } from './base';
@@ -25,7 +27,6 @@ import { SSHBaseCommand } from './base';
 })
 export class SSHUseCommand extends SSHBaseCommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { ERROR_SSH_INVALID_PRIVKEY, ERROR_SSH_MISSING_PRIVKEY, validatePrivateKey } = await import('@ionic/cli-utils/lib/ssh');
     const { ensureHostAndKeyPath, getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
 

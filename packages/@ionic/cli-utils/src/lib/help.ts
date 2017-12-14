@@ -1,7 +1,7 @@
 import chalk from 'chalk';
-import * as stringWidth from 'string-width';
 
 import { validators } from '@ionic/cli-framework/lib';
+import { generateFillSpaceStringList, stringWidth, wordWrap } from '@ionic/cli-framework/utils/format';
 
 import {
   BackendFlag,
@@ -16,7 +16,6 @@ import {
 
 import { isCommand } from '../guards';
 import { BACKEND_PRO } from './backends';
-import { generateFillSpaceStringList, wordWrap } from './utils/format';
 import { FatalException } from './errors';
 
 const HELP_DOTS_WIDTH = 25;

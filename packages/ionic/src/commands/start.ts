@@ -3,11 +3,13 @@ import * as path from 'path';
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework/lib';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
 import { isValidURL } from '@ionic/cli-framework/utils/string';
+
 import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun, StarterManifest, StarterTemplate } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
 import { PROJECT_FILE, Project } from '@ionic/cli-utils/lib/project';
 import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
 
@@ -394,7 +396,6 @@ export class StartCommand extends Command implements CommandPreRun {
 
   async ensureDirectory(projectName: string, projectDir: string) {
     const { isSafeToCreateProjectIn } = await import('@ionic/cli-utils/lib/start');
-    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
 
     const projectExists = await pathExists(projectName);
 
@@ -470,7 +471,6 @@ export class StartCommand extends Command implements CommandPreRun {
   }
 
   async loadManifest(manifestPath: string): Promise<StarterManifest | undefined> {
-    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { readStarterManifest } = await import('@ionic/cli-utils/lib/start');
 
     try {
@@ -528,8 +528,6 @@ export class StartCommand extends Command implements CommandPreRun {
   }
 
   async showNextSteps(projectDir: string, linkConfirmed: boolean) {
-    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
-
     const config = await this.env.config.load();
 
     this.env.log.msg(`${chalk.bold('Next Steps')}:\n`);

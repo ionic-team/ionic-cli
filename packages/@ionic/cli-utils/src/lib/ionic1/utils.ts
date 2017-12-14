@@ -1,14 +1,12 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
 import { IonicEnvironment } from '../../definitions';
 
-import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
-
 export async function getIonic1Version(env: IonicEnvironment): Promise<string | undefined> {
-  const { prettyPath } = await import('../utils/format');
-
   const ionicVersionFilePath = path.resolve(env.project.directory, 'www', 'lib', 'ionic', 'version.json'); // TODO
   const bowerJsonPath = path.resolve(env.project.directory, 'bower.json');
 

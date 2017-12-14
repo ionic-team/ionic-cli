@@ -5,6 +5,8 @@ import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework/lib';
 import { ERROR_FILE_NOT_FOUND, pathAccessible, pathExists } from '@ionic/cli-framework/utils/fs';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { isSSHKeyResponse, isSuperAgentError } from '@ionic/cli-utils/guards';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
@@ -34,8 +36,6 @@ import { SSHBaseCommand } from './base';
 })
 export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
-
     if (!inputs[0]) {
       const fs = await import('fs');
       const defaultPubkeyPath = path.resolve(os.homedir(), '.ssh', 'id_rsa.pub');
@@ -53,7 +53,6 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
 
     const { ERROR_SSH_INVALID_PUBKEY, parsePublicKeyFile } = await import('@ionic/cli-utils/lib/ssh');

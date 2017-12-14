@@ -1,5 +1,7 @@
 import chalk from 'chalk';
 
+import { columnar } from '@ionic/cli-framework/utils/format';
+
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { isSSHKeyListResponse } from '@ionic/cli-utils/guards';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
@@ -19,7 +21,6 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
-    const { columnar } = await import('@ionic/cli-utils/lib/utils/format');
 
     const {
       findHostSection,

@@ -1,5 +1,7 @@
 import chalk from 'chalk';
 
+import { columnar, indent } from '@ionic/cli-framework/utils/format';
+
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
@@ -11,8 +13,6 @@ import { FatalException } from '@ionic/cli-utils/lib/errors';
 })
 export class StateCommand extends Command {
   async run(): Promise<void> {
-    const { columnar, indent } = await import('@ionic/cli-utils/lib/utils/format');
-
     const data = [
       [`${indent(4)}${chalk.green('ionic cordova platform save')}`, `save existing installed platforms to ${chalk.bold('config.xml')}`],
       [`${indent(4)}${chalk.green('ionic cordova plugin save')}`, `save existing installed plugins to ${chalk.bold('config.xml')}`],

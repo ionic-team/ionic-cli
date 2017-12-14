@@ -1,8 +1,10 @@
 import chalk from 'chalk';
 
+import { pathExists } from '@ionic/cli-framework/utils/fs';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+
 import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { SSHBaseCommand } from './base';
@@ -19,7 +21,6 @@ export class SSHSetupCommand extends SSHBaseCommand {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { getGeneratedPrivateKeyPath } = await import('@ionic/cli-utils/lib/ssh');
     const { getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');

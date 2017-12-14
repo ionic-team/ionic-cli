@@ -2,15 +2,15 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import * as gulpType from 'gulp';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { promisify } from '@ionic/cli-framework/utils/promise';
 
 import { IonicEnvironment } from '../definitions';
 import { FatalException } from './errors';
-import { promisify } from '@ionic/cli-framework/utils/promise';
 
 let _gulpInst: typeof gulpType;
 
 export async function loadGulp(env: IonicEnvironment): Promise<typeof gulpType> {
-  const { prettyPath } = await import('./utils/format');
   const { pkgManagerArgs } = await import('./utils/npm');
 
   const project = await env.project.load();

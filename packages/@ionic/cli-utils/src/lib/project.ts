@@ -2,12 +2,13 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
+import { ERROR_FILE_INVALID_JSON } from '@ionic/cli-framework/utils/fs';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { ERROR_INVALID_BOWER_JSON, ERROR_INVALID_PACKAGE_JSON, readBowerJsonFile, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+
 import { BowerJson, IProject, PackageJson, ProjectFile, ProjectType } from '../definitions';
 import { BaseConfig } from './config';
 import { FatalException } from './errors';
-import { ERROR_FILE_INVALID_JSON } from '@ionic/cli-framework/utils/fs';
-import { ERROR_INVALID_BOWER_JSON, ERROR_INVALID_PACKAGE_JSON, readBowerJsonFile, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
-import { prettyPath } from './utils/format';
 
 export const PROJECT_FILE = 'ionic.config.json';
 export const PROJECT_FILE_LEGACY = 'ionic.project';

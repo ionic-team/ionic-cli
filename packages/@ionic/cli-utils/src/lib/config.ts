@@ -3,6 +3,8 @@ import * as os from 'os';
 
 import chalk from 'chalk';
 import { ParsedArgs } from '@ionic/cli-framework/lib';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { ERROR_FILE_INVALID_JSON, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 
 import {
   ConfigFile,
@@ -13,8 +15,6 @@ import {
 
 import { BACKEND_PRO } from './backends';
 import { FatalException } from './errors';
-import { prettyPath } from './utils/format';
-import { ERROR_FILE_INVALID_JSON, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 
 export abstract class BaseConfig<T> implements IBaseConfig<T> {
   public directory: string;

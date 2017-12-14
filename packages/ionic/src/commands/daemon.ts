@@ -1,8 +1,10 @@
 import chalk from 'chalk';
 
+import { fsUnlink } from '@ionic/cli-framework/utils/fs';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+
 import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
-import { fsUnlink } from '@ionic/cli-framework/utils/fs';
 
 @CommandMetadata({
   name: 'daemon',
@@ -19,7 +21,6 @@ import { fsUnlink } from '@ionic/cli-framework/utils/fs';
 })
 export class DaemonCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { createCommServer, processRunning } = await import('@ionic/cli-utils/lib/daemon');
     const { determineDistTag, versionNeedsUpdating } = await import('@ionic/cli-utils/lib/plugins');
     const { findClosestOpenPort } = await import('@ionic/cli-utils/lib/utils/network');

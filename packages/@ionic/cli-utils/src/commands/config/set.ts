@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+
 import { CommandLineInputs, CommandLineOptions, IBaseConfig, IonicEnvironment } from '../../definitions';
 import { FatalException } from '../../lib/errors';
 
 export async function set(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions) {
-  const { prettyPath } = await import('../../lib/utils/format');
-
   let [ p, v ] = inputs;
   const { global, json, force } = options;
 

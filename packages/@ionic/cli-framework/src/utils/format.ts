@@ -2,19 +2,16 @@ import * as os from 'os';
 import * as path from 'path';
 
 import chalk from 'chalk';
-import * as stringWidth from 'string-width';
-import * as sliceAnsi from 'slice-ansi';
-import * as wrapAnsi from 'wrap-ansi';
+import * as sliceAnsiModule from 'slice-ansi';
+import * as stringWidthModule from 'string-width';
+import * as wrapAnsiModule from 'wrap-ansi';
 
-const isWindows = process.platform === 'win32';
+import stripAnsiModule = require('strip-ansi');
 
-export const ICON_ELLIPSIS = isWindows ? '...' : '…';
-export const ICON_SUCCESS = isWindows ? '√' : '✔';
-export const ICON_FAILURE = isWindows ? '×' : '✖';
-
-export const SPINNER_FRAMES = isWindows ?
-  ['-', '\\', '|', '/'] :
-  ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+export const stripAnsi = stripAnsiModule;
+export const sliceAnsi = sliceAnsiModule;
+export const stringWidth = stringWidthModule;
+export const wrapAnsi = wrapAnsiModule;
 
 const MIN_TTY_WIDTH = 80;
 const MAX_TTY_WIDTH = 120;

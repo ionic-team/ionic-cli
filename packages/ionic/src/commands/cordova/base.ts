@@ -1,10 +1,12 @@
 import * as path from 'path';
 import chalk from 'chalk';
 
+import { fsMkdir, pathExists } from '@ionic/cli-framework/utils/fs';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+
 import { CommandLineInputs, CommandLineOptions, CommandOption, CommandPreRun, IShellRunOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { fsMkdir, pathExists } from '@ionic/cli-framework/utils/fs';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 import { CORDOVA_INTENT, checkCordova, filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/cordova/utils';
@@ -111,7 +113,6 @@ export const CORDOVA_RUN_COMMAND_OPTIONS: CommandOption[] = [
 export abstract class CordovaCommand extends Command {
   async preRunChecks() {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
-    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
 
     await checkCordova(this.env);
 

@@ -2,12 +2,11 @@ import * as util from 'util';
 import * as stream from 'stream';
 
 import chalk from 'chalk';
-import stripAnsi = require('strip-ansi');
+import { stripAnsi, wordWrap } from '@ionic/cli-framework/utils/format';
 import { Chalk } from 'chalk';
 
 import { ILogger, LogLevel, LogMsg, LogPrefix, LoggerOptions } from '../../definitions';
 import { LOG_LEVELS } from '../../guards';
-import { wordWrap } from './format';
 
 export const LOGGER_STATUS_COLORS = new Map<LogLevel, Chalk>([
   ['debug', chalk.magenta.dim],
