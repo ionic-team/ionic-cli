@@ -1,6 +1,6 @@
 import * as Debug from 'debug';
 
-const debug = Debug('ionic:cli-framework:lib:namespace');
+const debug = Debug('ionic:cli-framework:lib');
 
 import { CommandData, CommandInput, CommandOption } from '../definitions';
 
@@ -16,7 +16,9 @@ export type HydratedCommandData<T extends Command<U>, U extends CommandData<V, W
 export type NamespaceMapGetter<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> = () => Promise<Namespace<T, U, V, W>>;
 export type CommandMapGetter<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> = () => Promise<T>;
 
-export class CommandMap<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> extends Map<string, string | CommandMapGetter<T, U, V, W>> {
+export const CommandMapDefault = Symbol('default');
+
+export class CommandMap<T extends Command<U>, U extends CommandData<V, W>, V extends CommandInput, W extends CommandOption> extends Map<string | symbol, string | CommandMapGetter<T, U, V, W>> {
   getAliases(): Map<string, string[]> {
     const aliasmap = new Map<string, string[]>();
     const contents = Array.from(this.entries());
@@ -61,6 +63,14 @@ export abstract class Namespace<T extends Command<U>, U extends CommandData<V, W
    * right-most namespace matched if the command is not found.
    */
   async locate(argv: string[]): Promise<[number, string[], T | Namespace<T, U, V, W>]> {
+    const extractcmd = async (getter: CommandMapGetter<T, U, V, W>, inputs: string[], depth: number, namespaceDepthList: string[]): Promise<[number, string[], T]> => {
+      const cmd = await getter();
+      cmd.metadata.fullName = [...namespaceDepthList.slice(1), cmd.metadata.name].join(' ');
+
+      debug('command %s found at depth %d', cmd.metadata.name, depth + 1);
+      return [depth + 1, inputs.slice(1), cmd];
+    };
+
     const _locate = async (depth: number, inputs: string[], ns: Namespace<T, U, V, W>, namespaceDepthList: string[]): Promise<[number, string[], T | Namespace<T, U, V, W>]> => {
       const nsgetter = ns.namespaces.get(inputs[0]);
 
@@ -69,19 +79,21 @@ export abstract class Namespace<T extends Command<U>, U extends CommandData<V, W
         const cmdgetter = commands.resolveAliases(inputs[0]);
 
         if (cmdgetter) {
-          const cmd = await cmdgetter();
-          cmd.metadata.fullName = [...namespaceDepthList.slice(1), cmd.metadata.name].join(' ');
-
-          debug('command %s found at depth %d', cmd.metadata.name, depth + 1);
-          return [depth + 1, inputs.slice(1), cmd];
+          return await extractcmd(cmdgetter, inputs, depth, namespaceDepthList);
         }
 
-        debug('namespace %s found at depth %d', ns.name, depth);
+        const defaultcmdgetter = commands.get(CommandMapDefault);
+
+        if (defaultcmdgetter && typeof defaultcmdgetter !== 'string') { // TODO: string check is gross
+          return await extractcmd(defaultcmdgetter, inputs, depth, namespaceDepthList);
+        }
+
+        debug('no command/namespace found at depth %d, using namespace %s', depth + 1, ns.name);
         return [depth, inputs, ns];
       }
 
       const newNamespace = await nsgetter();
-      debug('nothing found in namespace %s at depth %d, slicing and recursing', newNamespace.name, depth + 1);
+      debug('namespace %s found at depth %d, slicing and recursing into namespace', newNamespace.name, depth + 1);
       return _locate(depth + 1, inputs.slice(1), newNamespace, [...namespaceDepthList, newNamespace.name]);
     };
 

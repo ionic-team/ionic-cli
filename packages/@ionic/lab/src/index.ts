@@ -1,6 +1,6 @@
-import * as path from 'path';
+// import * as path from 'path';
 
-import * as express from 'express';
+// import * as express from 'express';
 
 import {
   CommandData,
@@ -13,9 +13,9 @@ import {
 import {
   Command as BaseCommand,
   CommandMap as BaseCommandMap,
+  CommandMapDefault,
   RootNamespace as BaseRootNamespace,
-  metadataToParseArgsOptions,
-  parseArgs,
+  execute,
   validators,
 } from '@ionic/cli-framework/lib';
 
@@ -43,21 +43,21 @@ class DefaultCommand extends Command {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions) {
     const [ url ] = inputs;
-    const { port } = options;
+    // const { port } = options;
 
     console.log(url);
 
-    const app = express();
+    // const app = express();
 
-    app.use('/static', express.static(path.join(__dirname, '..', 'assets', 'lab', 'static')));
-    app.get('/', (req, res) => res.sendFile('index.html', { root: path.join(__dirname, '..', 'assets', 'lab') }));
+    // app.use('/static', express.static(path.join(__dirname, '..', 'assets', 'lab', 'static')));
+    // app.get('/', (req, res) => res.sendFile('index.html', { root: path.join(__dirname, '..', 'assets', 'lab') }));
 
-    app.get('/api/app-config', (req, res) => {
-      res.set('Content-Type', 'application/json');
-      res.send({ url });
-    });
+    // app.get('/api/app-config', (req, res) => {
+    //   res.set('Content-Type', 'application/json');
+    //   res.send({ url });
+    // });
 
-    app.listen(port);
+    // app.listen(port);
   }
 }
 
@@ -68,31 +68,11 @@ class Namespace extends BaseRootNamespace<Command, CommandData, CommandInput, Co
   description = '';
   longDescription = '';
 
-  commands = new CommandMap([
-    ['default', async () => new DefaultCommand()],
-  ]);
+  commands = new CommandMap([[CommandMapDefault, async () => new DefaultCommand()]]);
 }
 
 const ns = new Namespace();
 
 export async function run(pargv: string[], env: { [k: string]: string; }) {
-  pargv = pargv.slice(2);
-  const argv = parseArgs(pargv, { boolean: true, string: '_' });
-
-  // TODO: build this into cli-framework: the concept of default commands for namespaces
-  if (argv._[0] !== 'default') {
-    argv._.unshift('default');
-  }
-
-  const [ , , cmd ] = await ns.locate(argv._);
-
-  if (!(cmd instanceof DefaultCommand)) {
-    process.exitCode = 1;
-    return;
-  }
-
-  const args = parseArgs(pargv, metadataToParseArgsOptions(cmd.metadata));
-
-  await cmd.validate(args._);
-  await cmd.run(args._, args);
+  await execute(ns, pargv.slice(2), env);
 }

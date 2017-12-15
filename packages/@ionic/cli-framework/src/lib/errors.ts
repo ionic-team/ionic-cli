@@ -22,3 +22,9 @@ export class InputValidationError extends BaseError {
     super(message);
   }
 }
+
+export class CommandNotFoundError extends BaseError {
+  constructor(message: string, public args: string[]) {
+    super(message);
+  }
+}
