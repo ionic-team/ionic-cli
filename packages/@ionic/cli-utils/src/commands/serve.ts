@@ -81,7 +81,11 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     details = await serve({ env, options: serveOptions });
   } else if (project.type === 'ionic-angular') {
     const { serve } = await import('../lib/ionic-angular/serve');
-    details = await serve({ env, options: serveOptions });
+    details = await serve({ env, options: {
+      platform,
+      target: serveOptions.iscordovaserve ? 'cordova' : undefined,
+      ...serveOptions,
+    }});
   } else if (project.type === 'ionic-core-angular') {
     const { serve } = await import('../lib/ionic-core-angular/serve');
     details = await serve({ env, options: serveOptions });
