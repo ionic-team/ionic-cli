@@ -1,0 +1,65 @@
+@import '../../../assets/_fonts';
+@import '../../../assets/_variables';
+@import '../../../assets/_reboot';
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+header {
+  background: $section-bg;
+  height: 50px;
+  line-height: 50px;
+  font-size: $font-size-sm;
+  font-weight: bold;
+  color: $icon-color;
+
+  .icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -3px;
+    font-size: 22px;
+    color: $icon-color;
+  }
+}
+
+#logo {
+  display: inline-block;
+  vertical-align: middle;
+  background: url('./assets/lab-logo.png');
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin-top: -2px;
+  width: 64px;
+  height: 28px;
+  margin-left: 15px;
+}
+
+#header-left {
+  float: left;
+
+  .menu-icon {
+    margin-left: 13px;
+  }
+}
+
+#header-right {
+  float: right;
+
+  button {
+    display: inline-block;
+    height: 100%;
+    background: none;
+    border: none;
+    outline: none;
+    margin: 0;
+    padding: 0 10px;
+    cursor: pointer;
+    color: $icon-color;
+    font-weight: bold;
+  }
+
+  .fullscreen-icon {
+    margin-left: 5px;
+  }
+}

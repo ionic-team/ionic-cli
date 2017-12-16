@@ -19,7 +19,7 @@
     "clean": "rm -rf ./dist",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
-    "watch": "tsc -w",
+    "watch": "concurrently \"tsc -w\" \"stencil build --dev --watch\" \"stencil-dev-server --address localhost --httpPort 8900 --no-open\"",
     "test": "jest",
     "prepublishOnly": "npm run build"
   },
@@ -28,7 +28,10 @@
     "express": "^4.16.2"
   },
   "devDependencies": {
-    "@types/express": "^4.0.39"
+    "@stencil/core": "next",
+    "@stencil/dev-server": "next",
+    "@types/express": "^4.0.39",
+    "concurrently": "^3.5.1"
   },
   "repository": {
     "type": "git",

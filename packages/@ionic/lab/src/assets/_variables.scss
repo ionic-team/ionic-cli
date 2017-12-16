@@ -1,0 +1,31 @@
+$font-family-sans-serif:      'AvenirNextLTPro-Regular', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+$font-family-base:            $font-family-sans-serif !default;
+
+$font-size-base:              1rem !default; // Assumes the browser default, typically `16px`
+$font-size-lg:                ($font-size-base * 1.25) !default;
+$font-size-sm:                ($font-size-base * .875) !default;
+
+$font-weight-light:           300 !default;
+$font-weight-normal:          400 !default;
+$font-weight-bold:            700 !default;
+
+$font-weight-base:            $font-weight-normal !default;
+$line-height-base:            1.5 !default;
+
+$body-bg:                     #242a31 !default;
+$body-color:                  #fff !default;
+
+$spacer: 1rem !default;
+
+$headings-margin-bottom:      ($spacer / 2) !default;
+$paragraph-margin-bottom:     1rem !default;
+
+$link-color:                  #00f !default;
+$link-decoration:             none !default;
+$link-hover-color:            darken($link-color, 15%) !default;
+$link-hover-decoration:       underline !default;
+
+
+$icon-color:    #858d9b;
+$main-bg:       $body-bg;
+$section-bg:    #151a21;
