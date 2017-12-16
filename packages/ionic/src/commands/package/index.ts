@@ -5,10 +5,12 @@ import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 import { DEPRECATION_NOTICE } from './common';
 
 export class PackageNamespace extends Namespace {
-  name = 'package';
-  description = 'Commands for Ionic Package';
-  deprecated = true;
-  longDescription = `${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}`;
+  metadata = {
+    name: 'package',
+    description: 'Commands for Ionic Package',
+    longDescription: `${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}`,
+    deprecated: true,
+  };
 
   commands = new CommandMap([
     ['build', async () => { const { PackageBuildCommand } = await import('./build'); return new PackageBuildCommand(); }],

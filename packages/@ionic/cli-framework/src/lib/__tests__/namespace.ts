@@ -68,11 +68,12 @@ describe('@ionic/cli-framework', () => {
 
       class MyNamespace extends Namespace {
         root = true;
-        name = 'my';
+
+        metadata = { name: 'my' };
       }
 
       class FooNamespace extends Namespace {
-        name = 'foo';
+        metadata = { name: 'foo' };
       }
 
       class FooCommand extends Command {

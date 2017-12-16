@@ -64,9 +64,10 @@ class DefaultCommand extends Command {
 class CommandMap extends BaseCommandMap<Command, CommandData, CommandInput, CommandOption> {}
 
 class Namespace extends BaseRootNamespace<Command, CommandData, CommandInput, CommandOption> {
-  name = 'ionic-lab';
-  description = '';
-  longDescription = '';
+  metadata = {
+    name: 'ionic-lab',
+    description: '',
+  };
 
   commands = new CommandMap([[CommandMapDefault, async () => new DefaultCommand()]]);
 }

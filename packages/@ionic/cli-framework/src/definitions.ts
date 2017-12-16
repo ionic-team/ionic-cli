@@ -47,18 +47,23 @@ export interface NormalizedParseArgsOptions extends minimistType.Opts {
   default: { [key: string]: CommandLineInput };
 }
 
-export interface CommandData<T = CommandInput, U = CommandOption> {
+export interface Metadata {
   name: string;
-  fullName?: string;
   description: string;
   longDescription?: string;
-  exampleCommands?: string[];
   deprecated?: boolean;
+}
+
+export interface CommandData<T = CommandInput, U = CommandOption> extends Metadata {
+  fullName?: string;
+  exampleCommands?: string[];
   aliases?: string[];
   inputs?: T[];
   options?: U[];
   visible?: boolean;
 }
+
+export interface NamespaceData extends Metadata {}
 
 export interface PackageJson {
   name: string;

@@ -1,9 +1,10 @@
 import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class GitNamespace extends Namespace {
-  name = 'git';
-  description = 'Commands relating to git';
-  longDescription = '';
+  metadata = {
+    name: 'git',
+    description: 'Commands relating to git',
+  };
 
   commands = new CommandMap([
     ['clone', async () => { const { GitCloneCommand } = await import('./clone'); return new GitCloneCommand(); }],

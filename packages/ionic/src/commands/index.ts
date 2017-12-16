@@ -7,9 +7,10 @@ import { CommandMap, NamespaceMap, RootNamespace } from '@ionic/cli-utils/lib/na
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 export class IonicNamespace extends RootNamespace {
-  readonly name = 'ionic';
-  readonly description = '';
-  readonly longDescription = '';
+  metadata = {
+    name: 'ionic',
+    description: '',
+  };
 
   namespaces = new NamespaceMap([
     ['config', async () => { const { ConfigNamespace } = await import('./config/index'); return new ConfigNamespace(); }],

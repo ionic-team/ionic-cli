@@ -1,9 +1,10 @@
 import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class DoctorNamespace extends Namespace {
-  name = 'doctor';
-  description = 'Commands for checking the health of your Ionic project';
-  longDescription = ``;
+  metadata = {
+    name: 'doctor',
+    description: 'Commands for checking the health of your Ionic project',
+  };
 
   commands = new CommandMap([
     ['check', async () => { const { DoctorCheckCommand } = await import('./check'); return new DoctorCheckCommand(); }],

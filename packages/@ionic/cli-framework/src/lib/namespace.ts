@@ -2,7 +2,7 @@ import * as Debug from 'debug';
 
 const debug = Debug('ionic:cli-framework:lib');
 
-import { CommandData, CommandInput, CommandOption } from '../definitions';
+import { CommandData, CommandInput, CommandOption, NamespaceData } from '../definitions';
 
 import { Command } from './command';
 import { strcmp } from '../utils/string';
@@ -50,9 +50,7 @@ export abstract class Namespace<T extends Command<U>, U extends CommandData<V, W
   // TODO: better way to do this
   root = false;
 
-  abstract readonly name: string;
-  abstract readonly description: string;
-  abstract readonly longDescription: string;
+  abstract readonly metadata: NamespaceData;
 
   namespaces = new NamespaceMap<T, U, V, W>();
   commands = new CommandMap<T, U, V, W>();
@@ -88,16 +86,16 @@ export abstract class Namespace<T extends Command<U>, U extends CommandData<V, W
           return await extractcmd(defaultcmdgetter, inputs, depth, namespaceDepthList);
         }
 
-        debug('no command/namespace found at depth %d, using namespace %s', depth + 1, ns.name);
+        debug('no command/namespace found at depth %d, using namespace %s', depth + 1, ns.metadata.name);
         return [depth, inputs, ns];
       }
 
       const newNamespace = await nsgetter();
-      debug('namespace %s found at depth %d, slicing and recursing into namespace', newNamespace.name, depth + 1);
-      return _locate(depth + 1, inputs.slice(1), newNamespace, [...namespaceDepthList, newNamespace.name]);
+      debug('namespace %s found at depth %d, slicing and recursing into namespace', newNamespace.metadata.name, depth + 1);
+      return _locate(depth + 1, inputs.slice(1), newNamespace, [...namespaceDepthList, newNamespace.metadata.name]);
     };
 
-    return _locate(0, argv, this, [this.name]);
+    return _locate(0, argv, this, [this.metadata.name]);
   }
 
   /**
@@ -134,7 +132,7 @@ export abstract class Namespace<T extends Command<U>, U extends CommandData<V, W
       if (namespace.namespaces.size > 0) {
         await Promise.all([...namespace.namespaces.values()].map(async (nsgetter) => {
           const ns = await nsgetter();
-          const cmds = await _getCommandMetadataList(ns, [...namespaceDepthList, ns.name]);
+          const cmds = await _getCommandMetadataList(ns, [...namespaceDepthList, ns.metadata.name]);
           namespacedCommandList = namespacedCommandList.concat(cmds);
         }));
       }
@@ -144,7 +142,7 @@ export abstract class Namespace<T extends Command<U>, U extends CommandData<V, W
       return commandList.concat(namespacedCommandList);
     };
 
-    return _getCommandMetadataList(this, [this.name]);
+    return _getCommandMetadataList(this, [this.metadata.name]);
   }
 }
 

@@ -82,7 +82,7 @@ async function formatNamespaceHeader(env: IonicEnvironment, ns: INamespace, cmdM
   }
 
   return `
-  ${chalk.bold.green('ionic ' + ns.name)} ${chalk.bold('-')} ${namespaceIsDeprecated(cmdMetadataList) ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${chalk.bold(ns.description)}${formatLongDescription(ns.longDescription)}`;
+  ${chalk.bold.green('ionic ' + ns.metadata.name)} ${chalk.bold('-')} ${namespaceIsDeprecated(cmdMetadataList) ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${chalk.bold(ns.metadata.description)}${formatLongDescription(ns.metadata.longDescription)}`;
 }
 
 async function formatHeader(env: IonicEnvironment) {
@@ -102,7 +102,7 @@ async function formatHeader(env: IonicEnvironment) {
 }
 
 async function formatUsage(env: IonicEnvironment, ns: INamespace) {
-  let name = ns.name;
+  let name = ns.metadata.name;
 
   if (!ns.root) {
     name = `ionic ${name}`; // TODO: recurse back ns chain
@@ -163,12 +163,12 @@ async function getListOfNamespaceDetails(env: IonicEnvironment, commands: Hydrat
   const nsDescMap = new Map<string, string>();
   const grouped = commands.reduce((nsMap, cmd) => {
     if (showIt(cmd, config.backend)) { // TODO
-      nsDescMap.set(cmd.namespace.name, cmd.namespace.description);
-      let l = nsMap.get(cmd.namespace.name);
+      nsDescMap.set(cmd.namespace.metadata.name, cmd.namespace.metadata.description);
+      let l = nsMap.get(cmd.namespace.metadata.name);
 
       if (!l) {
         l = [];
-        nsMap.set(cmd.namespace.name, l);
+        nsMap.set(cmd.namespace.metadata.name, l);
       }
 
       l.push(cmd);
