@@ -2,16 +2,18 @@ import chalk from 'chalk';
 
 import { columnar, indent } from '@ionic/cli-framework/utils/format';
 
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { CommandData } from '@ionic/cli-utils';
+import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
-@CommandMetadata({
-  name: 'state',
-  type: 'global',
-  description: '',
-  visible: false,
-})
 export class StateCommand extends Command {
+  metadata: CommandData = {
+    name: 'state',
+    type: 'global',
+    description: '',
+    visible: false,
+  };
+
   async run(): Promise<void> {
     const data = [
       [`${indent(4)}${chalk.green('ionic cordova platform save')}`, `save existing installed platforms to ${chalk.bold('config.xml')}`],

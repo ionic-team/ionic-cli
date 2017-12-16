@@ -169,7 +169,7 @@ export abstract class CordovaCommand extends Command {
   }
 }
 
-export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
+export abstract class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.preRunChecks();
 

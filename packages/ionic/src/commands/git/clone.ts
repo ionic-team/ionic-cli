@@ -1,28 +1,29 @@
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command } from '@ionic/cli-utils/lib/command';
 import { validators } from '@ionic/cli-framework/lib';
 
 // import { formatGitRepoUrl } from '../../lib/git';
 
-@CommandMetadata({
-  name: 'clone',
-  type: 'global',
-  backends: [BACKEND_PRO],
-  description: 'Clones an Ionic app git repository to your computer',
-  inputs: [
-    {
-      name: 'app-id',
-      description: 'The App ID of the Ionic app to clone',
-      validators: [validators.required]
-    },
-    {
-      name: 'path',
-      description: 'The destination directory of the cloned app'
-    }
-  ],
-  visible: false, // TODO: make part of start?
-})
 export class GitCloneCommand extends Command {
+  metadata: CommandData = {
+    name: 'clone',
+    type: 'global',
+    backends: [BACKEND_PRO],
+    description: 'Clones an Ionic app git repository to your computer',
+    inputs: [
+      {
+        name: 'app-id',
+        description: 'The App ID of the Ionic app to clone',
+        validators: [validators.required]
+      },
+      {
+        name: 'path',
+        description: 'The destination directory of the cloned app'
+      }
+    ],
+    visible: false, // TODO: make part of start?
+  };
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     // let [ app_id, destination ] = inputs;
 

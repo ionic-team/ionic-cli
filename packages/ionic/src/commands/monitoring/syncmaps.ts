@@ -4,24 +4,25 @@ import chalk from 'chalk';
 
 import { APIResponseSuccess } from '@ionic/cli-utils/definitions';
 
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { isSuperAgentError } from '@ionic/cli-utils/guards';
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { Command } from '@ionic/cli-utils/lib/command';
 import { fsReadFile, pathExists, readDir } from '@ionic/cli-framework/utils/fs';
 
-@CommandMetadata({
-  name: 'syncmaps',
-  type: 'project',
-  backends: [BACKEND_PRO],
-  description: 'Sync Source Maps to Ionic Pro Error Monitoring service',
-  inputs: [
-    {
-      name: 'snapshot_id',
-      description: `An Ionic Pro snapshot id to associate these sourcemaps with.`,
-    }
-  ],
-})
 export class MonitoringSyncSourcemapsCommand extends Command {
+  metadata: CommandData = {
+    name: 'syncmaps',
+    type: 'project',
+    backends: [BACKEND_PRO],
+    description: 'Sync Source Maps to Ionic Pro Error Monitoring service',
+    inputs: [
+      {
+        name: 'snapshot_id',
+        description: `An Ionic Pro snapshot id to associate these sourcemaps with.`,
+      }
+    ],
+  };
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>  {
     const token = await this.env.session.getUserToken();
     const appId = await this.env.project.loadAppId();

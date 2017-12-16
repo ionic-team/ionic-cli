@@ -3,19 +3,19 @@ import chalk from 'chalk';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
-import { CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { SSHBaseCommand } from './base';
 
-@CommandMetadata({
-  name: 'setup',
-  type: 'global',
-  backends: [BACKEND_PRO],
-  description: 'Setup your Ionic SSH keys automatically',
-})
 export class SSHSetupCommand extends SSHBaseCommand {
+  metadata: CommandData = {
+    name: 'setup',
+    type: 'global',
+    backends: [BACKEND_PRO],
+    description: 'Setup your Ionic SSH keys automatically',
+  };
+
   async preRun() {
     await this.checkForOpenSSH();
   }

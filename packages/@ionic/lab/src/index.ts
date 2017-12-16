@@ -22,7 +22,7 @@ import {
 abstract class Command extends BaseCommand<CommandData> {}
 
 class DefaultCommand extends Command {
-  metadata = {
+  metadata: CommandData = {
     name: 'default',
     description: '',
     inputs: [

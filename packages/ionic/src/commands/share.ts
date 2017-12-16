@@ -1,15 +1,17 @@
 import chalk from 'chalk';
 
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { CommandData } from '@ionic/cli-utils';
+import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
-@CommandMetadata({
-  name: 'share',
-  type: 'global',
-  description: '',
-  visible: false,
-})
 export class ShareCommand extends Command {
+  metadata: CommandData = {
+    name: 'share',
+    type: 'global',
+    description: '',
+    visible: false,
+  };
+
   async run(): Promise<void> {
     const dashUrl = await this.env.config.getDashUrl();
 

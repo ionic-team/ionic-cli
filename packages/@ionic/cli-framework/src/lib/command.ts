@@ -21,7 +21,7 @@ export const parseArgs = minimist;
 export { ParsedArgs } from 'minimist';
 
 export abstract class Command<T extends CommandData> {
-  public readonly metadata: T;
+  abstract readonly metadata: T;
 
   async validate(inputs: CommandLineInputs): Promise<void> {
     await validateInputs(inputs, this.metadata);

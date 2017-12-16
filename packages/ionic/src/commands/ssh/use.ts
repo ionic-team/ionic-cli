@@ -6,26 +6,26 @@ import { validators } from '@ionic/cli-framework/lib';
 import { fileToString, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
-import { CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { SSHBaseCommand } from './base';
 
-@CommandMetadata({
-  name: 'use',
-  type: 'global',
-  backends: [BACKEND_PRO],
-  description: 'Set your active Ionic SSH key',
-  inputs: [
-    {
-      name: 'key-path',
-      description: 'Location of private key file to use',
-      validators: [validators.required],
-    },
-  ],
-})
 export class SSHUseCommand extends SSHBaseCommand {
+  metadata: CommandData = {
+    name: 'use',
+    type: 'global',
+    backends: [BACKEND_PRO],
+    description: 'Set your active Ionic SSH key',
+    inputs: [
+      {
+        name: 'key-path',
+        description: 'Location of private key file to use',
+        validators: [validators.required],
+      },
+    ],
+  };
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { ERROR_SSH_INVALID_PRIVKEY, ERROR_SSH_MISSING_PRIVKEY, validatePrivateKey } = await import('@ionic/cli-utils/lib/ssh');
     const { ensureHostAndKeyPath, getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');

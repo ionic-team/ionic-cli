@@ -1,26 +1,26 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework/lib';
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { isSSHKeyListResponse } from '@ionic/cli-utils/guards';
-import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 
 import { SSHBaseCommand } from './base';
 
-@CommandMetadata({
-  name: 'delete',
-  type: 'global',
-  backends: [BACKEND_PRO],
-  description: 'Delete an SSH public key from Ionic',
-  inputs: [
-    {
-      name: 'key-id',
-      description: 'The ID of the public key to delete',
-      validators: [validators.required],
-    }
-  ],
-})
 export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
+  metadata: CommandData = {
+    name: 'delete',
+    type: 'global',
+    backends: [BACKEND_PRO],
+    description: 'Delete an SSH public key from Ionic',
+    inputs: [
+      {
+        name: 'key-id',
+        description: 'The ID of the public key to delete',
+        validators: [validators.required],
+      }
+    ],
+  };
+
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
 

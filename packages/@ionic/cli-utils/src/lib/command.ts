@@ -12,12 +12,6 @@ import {
 
 import { isCommandPreRun } from '../guards';
 
-export function CommandMetadata(metadata: CommandData) {
-  return function(target: Function) {
-    target.prototype.metadata = metadata;
-  };
-}
-
 export abstract class Command extends BaseCommand<CommandData> implements ICommand {
   public env: IonicEnvironment;
 

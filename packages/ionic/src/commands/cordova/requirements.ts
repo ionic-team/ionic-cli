@@ -1,27 +1,27 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
-import { CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { isExitCodeException } from '@ionic/cli-utils/guards';
 
 import { CordovaCommand } from './base';
 
-@CommandMetadata({
-  name: 'requirements',
-  type: 'project',
-  description: 'Checks and print out all the requirements for platforms',
-  longDescription: `
-Like running ${chalk.green('cordova requirements')} directly, but provides friendly checks.
-  `,
-  inputs: [
-    {
-      name: 'platform',
-      description: `The platform for which you would like to gather requirements (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
-    },
-  ]
-})
 export class RequirementsCommand extends CordovaCommand implements CommandPreRun {
+  metadata: CommandData = {
+    name: 'requirements',
+    type: 'project',
+    description: 'Checks and print out all the requirements for platforms',
+    longDescription: `
+Like running ${chalk.green('cordova requirements')} directly, but provides friendly checks.
+    `,
+    inputs: [
+      {
+        name: 'platform',
+        description: `The platform for which you would like to gather requirements (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+      },
+    ]
+  };
+
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.preRunChecks();
   }

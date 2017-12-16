@@ -1,51 +1,52 @@
 import chalk from 'chalk';
 
-import { AppDetails, BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { AppDetails, BACKEND_LEGACY, BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 const CHOICE_CREATE_NEW_APP = 'createNewApp';
 const CHOICE_NEVERMIND = 'nevermind';
 
-@CommandMetadata({
-  name: 'link',
-  type: 'project',
-  backends: [BACKEND_LEGACY, BACKEND_PRO],
-  description: 'Connect your local app to Ionic',
-  longDescription: `
+export class LinkCommand extends Command implements CommandPreRun {
+  metadata: CommandData = {
+    name: 'link',
+    type: 'project',
+    backends: [BACKEND_LEGACY, BACKEND_PRO],
+    description: 'Connect your local app to Ionic',
+    longDescription: `
 If you have an app on Ionic, you can link it to this local Ionic project with this command.
 
 Excluding the ${chalk.green('app_id')} argument looks up your apps on Ionic and prompts you to select one.
 
 This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold('ionic.config.json')} for other commands to read.
-  `,
-  exampleCommands: ['', 'a1b2c3d4'],
-  inputs: [
-    {
-      name: 'app_id',
-      description: `The ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
-    },
-  ],
-  options: [
-    {
-      name: 'name',
-      description: 'The app name to use during the linking of a new app',
-    },
-    {
-      name: 'create',
-      description: 'Create a new app on Ionic and link it with this local Ionic project',
-      backends: [BACKEND_PRO],
-      type: Boolean,
-      visible: false,
-    },
-    {
-      name: 'pro-id',
-      description: 'Specify an app ID from the Ionic Dashboard to link',
-      visible: false,
-    },
-  ],
-})
-export class LinkCommand extends Command implements CommandPreRun {
+    `,
+    exampleCommands: ['', 'a1b2c3d4'],
+    inputs: [
+      {
+        name: 'app_id',
+        description: `The ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
+      },
+    ],
+    options: [
+      {
+        name: 'name',
+        description: 'The app name to use during the linking of a new app',
+      },
+      {
+        name: 'create',
+        description: 'Create a new app on Ionic and link it with this local Ionic project',
+        backends: [BACKEND_PRO],
+        type: Boolean,
+        visible: false,
+      },
+      {
+        name: 'pro-id',
+        description: 'Specify an app ID from the Ionic Dashboard to link',
+        visible: false,
+      },
+    ],
+  };
+
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { create } = options;
 

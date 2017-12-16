@@ -1,6 +1,6 @@
 import * as minimist from 'minimist';
 
-import { filterOptionsByIntent, metadataToEnvCmdOptsSchema, metadataToParseArgsOptions, parsedArgsToArgv } from '../command';
+import { filterOptionsByIntent, metadataToParseArgsOptions, parsedArgsToArgv } from '../command';
 
 describe('@ionic/cli-framework', () => {
 
@@ -108,35 +108,6 @@ describe('@ionic/cli-framework', () => {
           expect(result).toEqual({ _: ['cat', 'dog', 'extra'], foo: 'rabbit', f: 'rabbit', bar: 'salad', flag1: true, unknown: 'wow', 'and-again': true });
         });
 
-      });
-
-    });
-
-    describe('metadataToEnvCmdOptsSchema', () => {
-
-      const metadata = {
-        fullName: 'foo bar',
-        options: [
-          {
-            name: 'baz',
-            description: '',
-          },
-          {
-            name: 'opt-with-dashes',
-            description: '',
-          },
-        ],
-      };
-
-      it('should return empty array for command with no options', () => {
-        const result = metadataToEnvCmdOptsSchema({ fullName: 'cmd', options: [] });
-        expect(result).toEqual([]);
-      });
-
-      it('should return schema for options', () => {
-        const result = metadataToEnvCmdOptsSchema(metadata);
-        const envvars = result.map(r => r.envvar);
-        expect(envvars).toEqual(['IONIC_CMDOPTS_FOO_BAR_BAZ', 'IONIC_CMDOPTS_FOO_BAR_OPT_WITH_DASHES']);
       });
 
     });

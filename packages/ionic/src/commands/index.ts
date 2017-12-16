@@ -113,7 +113,7 @@ export class IonicNamespace extends RootNamespace {
   }
 }
 
-function metadataToCmdOptsEnv(metadata: CommandData): Map<CommandOption, string> {
+export function metadataToCmdOptsEnv(metadata: CommandData): Map<CommandOption, string> {
   const optMap = new Map<CommandOption, string>();
 
   if (!metadata.options) {

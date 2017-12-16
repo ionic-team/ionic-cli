@@ -1,26 +1,27 @@
 import chalk from 'chalk';
 
 import { contains, validate, validators } from '@ionic/cli-framework/lib';
-import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { Command } from '@ionic/cli-utils/lib/command';
 
-@CommandMetadata({
-  name: 'ignore',
-  type: 'project',
-  description: 'Ignore a particular issue',
-  exampleCommands: [
-    '',
-    'git-not-used',
-  ],
-  inputs: [
-    {
-      name: 'id',
-      description: 'The issue identifier',
-      validators: [validators.required],
-    },
-  ],
-})
 export class DoctorIgnoreCommand extends Command implements CommandPreRun {
+  metadata: CommandData = {
+    name: 'ignore',
+    type: 'project',
+    description: 'Ignore a particular issue',
+    exampleCommands: [
+      '',
+      'git-not-used',
+    ],
+    inputs: [
+      {
+        name: 'id',
+        description: 'The issue identifier',
+        validators: [validators.required],
+      },
+    ],
+  };
+
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { Ailments } = await import('@ionic/cli-utils/lib/doctor/ailments');
 

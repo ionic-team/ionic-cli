@@ -1,53 +1,54 @@
 import chalk from 'chalk';
 
-import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { BACKEND_LEGACY, BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { Command } from '@ionic/cli-utils/lib/command';
 import { SessionException } from '@ionic/cli-utils/lib/errors';
 import { validators } from '@ionic/cli-framework/lib';
 
-@CommandMetadata({
-  name: 'login',
-  type: 'global',
-  backends: [BACKEND_LEGACY, BACKEND_PRO],
-  description: 'Login with your Ionic ID',
-  longDescription: `
+export class LoginCommand extends Command implements CommandPreRun {
+  metadata: CommandData = {
+    name: 'login',
+    type: 'global',
+    backends: [BACKEND_LEGACY, BACKEND_PRO],
+    description: 'Login with your Ionic ID',
+    longDescription: `
 Authenticate with Ionic servers and retrieve a user token, which is stored in the CLI config.
 
 Alternatively, set the ${chalk.green('IONIC_EMAIL')} and ${chalk.green('IONIC_PASSWORD')} environment variables, and the CLI will automatically authenticate you.
 
 If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
-  `,
-  exampleCommands: ['', 'john@example.com', 'hello@example.com secret'],
-  inputs: [
-    {
-      name: 'email',
-      description: 'Your email address',
-      validators: [validators.required, validators.email],
-      private: true,
-    },
-    {
-      name: 'password',
-      description: 'Your password',
-      validators: [validators.required],
-      private: true,
-    }
-  ],
-  options: [
-    {
-      name: 'email',
-      description: '',
-      private: true,
-      visible: false,
-    },
-    {
-      name: 'password',
-      description: '',
-      private: true,
-      visible: false,
-    },
-  ],
-})
-export class LoginCommand extends Command implements CommandPreRun {
+    `,
+    exampleCommands: ['', 'john@example.com', 'hello@example.com secret'],
+    inputs: [
+      {
+        name: 'email',
+        description: 'Your email address',
+        validators: [validators.required, validators.email],
+        private: true,
+      },
+      {
+        name: 'password',
+        description: 'Your password',
+        validators: [validators.required],
+        private: true,
+      }
+    ],
+    options: [
+      {
+        name: 'email',
+        description: '',
+        private: true,
+        visible: false,
+      },
+      {
+        name: 'password',
+        description: '',
+        private: true,
+        visible: false,
+      },
+    ],
+  };
+
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ email, ] = inputs;
 

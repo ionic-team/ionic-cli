@@ -2,40 +2,41 @@ import chalk from 'chalk';
 
 import { columnar } from '@ionic/cli-framework/utils/format';
 
-import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, PackageBuild } from '@ionic/cli-utils';
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { BACKEND_LEGACY, CommandData, CommandLineInputs, CommandLineOptions, PackageBuild } from '@ionic/cli-utils';
+import { Command } from '@ionic/cli-utils/lib/command';
 
 import { DEPRECATION_NOTICE } from './common';
 
-@CommandMetadata({
-  name: 'info',
-  type: 'project',
-  backends: [BACKEND_LEGACY],
-  deprecated: true,
-  description: 'Get info about a build',
-  longDescription: `
+export class PackageInfoCommand extends Command {
+  metadata: CommandData = {
+    name: 'info',
+    type: 'project',
+    backends: [BACKEND_LEGACY],
+    deprecated: true,
+    description: 'Get info about a build',
+    longDescription: `
 ${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}
 
 Ionic Package makes it easy to build a native binary of your app in the cloud.
 
 Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/services/package/')}
-  `,
-  inputs: [
-    {
-      name: 'id',
-      description: 'The build ID. Defaults to the latest build',
-    },
-  ],
-  options: [
-    {
-      name: 'json',
-      description: 'Output build info in JSON',
-      type: Boolean,
-    },
-  ],
-  exampleCommands: ['', '15'],
-})
-export class PackageInfoCommand extends Command {
+    `,
+    inputs: [
+      {
+        name: 'id',
+        description: 'The build ID. Defaults to the latest build',
+      },
+    ],
+    options: [
+      {
+        name: 'json',
+        description: 'Output build info in JSON',
+        type: Boolean,
+      },
+    ],
+    exampleCommands: ['', '15'],
+  };
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { PackageClient } = await import('@ionic/cli-utils/lib/package');
 

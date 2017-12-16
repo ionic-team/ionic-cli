@@ -5,15 +5,16 @@ import chalk from 'chalk';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
 
-import { CommandLineInputs, CommandLineOptions, InfoHookItem } from '@ionic/cli-utils';
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { CommandData, CommandLineInputs, CommandLineOptions, InfoHookItem } from '@ionic/cli-utils';
+import { Command } from '@ionic/cli-utils/lib/command';
 
-@CommandMetadata({
-  name: 'info',
-  type: 'global',
-  description: 'Print system/environment info'
-})
 export class InfoCommand extends Command {
+  metadata: CommandData = {
+    name: 'info',
+    type: 'global',
+    description: 'Print system/environment info'
+  };
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const task = this.env.tasks.next('Gathering environment info');
 

@@ -1,63 +1,65 @@
-import { CommandMetadata, Command } from '../command';
+import { Command } from '../command';
 
 describe('@ionic/cli-utils', () => {
 
   describe('Command', () => {
 
-    @CommandMetadata({
-      name: 'foo',
-      type: 'global',
-      description: '',
-    })
-    class FooCommand extends Command {}
+    class FooCommand extends Command {
+      metadata = {
+        name: 'foo',
+        type: 'global',
+        description: '',
+      }
+    }
 
-    @CommandMetadata({
-      name: 'bar',
-      type: 'global',
-      description: '',
-      inputs: [
-        {
-          name: 'arg1',
-          description: '',
-        },
-        {
-          name: 'arg2',
-          description: '',
-        },
-        {
-          name: 'arg3',
-          description: '',
-          private: true,
-        },
-      ],
-      options: [
-        {
-          name: 'opt1',
-          description: '',
-          type: Boolean,
-        },
-        {
-          name: 'opt2',
-          description: '',
-        },
-        {
-          name: 'opt3',
-          description: '',
-          default: 'default',
-        },
-        {
-          name: 'opt4',
-          description: '',
-          private: true,
-        },
-        {
-          name: 'opt5',
-          description: '',
-          aliases: ['o'],
-        },
-      ],
-    })
-    class BarCommand extends Command {}
+    class BarCommand extends Command {
+      metadata = {
+        name: 'bar',
+        type: 'global',
+        description: '',
+        inputs: [
+          {
+            name: 'arg1',
+            description: '',
+          },
+          {
+            name: 'arg2',
+            description: '',
+          },
+          {
+            name: 'arg3',
+            description: '',
+            private: true,
+          },
+        ],
+        options: [
+          {
+            name: 'opt1',
+            description: '',
+            type: Boolean,
+          },
+          {
+            name: 'opt2',
+            description: '',
+          },
+          {
+            name: 'opt3',
+            description: '',
+            default: 'default',
+          },
+          {
+            name: 'opt4',
+            description: '',
+            private: true,
+          },
+          {
+            name: 'opt5',
+            description: '',
+            aliases: ['o'],
+          },
+        ],
+      }
+    }
 
     describe('getCleanInputsForTelemetry', () => {
 

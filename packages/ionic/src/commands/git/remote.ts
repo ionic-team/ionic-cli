@@ -1,16 +1,17 @@
 import chalk from 'chalk';
 
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
-@CommandMetadata({
-  name: 'remote',
-  type: 'project',
-  backends: [BACKEND_PRO],
-  description: 'Adds/updates the Ionic git remote to your local Ionic app repository',
-})
 export class GitRemoteCommand extends Command {
+  metadata: CommandData = {
+    name: 'remote',
+    type: 'project',
+    backends: [BACKEND_PRO],
+    description: 'Adds/updates the Ionic git remote to your local Ionic app repository',
+  };
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { App } = await import('@ionic/cli-utils/lib/app');
     const { addIonicRemote, getIonicRemote, initializeRepo, isRepoInitialized, setIonicRemote } = await import('@ionic/cli-utils/lib/git');

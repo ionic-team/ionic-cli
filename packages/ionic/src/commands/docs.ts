@@ -1,23 +1,24 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command } from '@ionic/cli-utils/lib/command';
 import { BROWSERS } from '@ionic/cli-utils/lib/serve';
 
-@CommandMetadata({
-  name: 'docs',
-  type: 'global',
-  description: 'Open the Ionic documentation website',
-  options: [
-    {
-      name: 'browser',
-      description: `Specifies the browser to use (${BROWSERS.map(b => chalk.green(b)).join(', ')})`,
-      aliases: ['w'],
-      advanced: true,
-    },
-  ],
-})
 export class DocsCommand extends Command {
+  metadata: CommandData = {
+    name: 'docs',
+    type: 'global',
+    description: 'Open the Ionic documentation website',
+    options: [
+      {
+        name: 'browser',
+        description: `Specifies the browser to use (${BROWSERS.map(b => chalk.green(b)).join(', ')})`,
+        aliases: ['w'],
+        advanced: true,
+      },
+    ],
+  };
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { isSuperAgentError } = await import('@ionic/cli-utils/guards');
     const { createRequest } = await import('@ionic/cli-utils/lib/http');

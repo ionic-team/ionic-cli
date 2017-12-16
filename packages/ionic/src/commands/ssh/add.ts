@@ -7,34 +7,34 @@ import { validators } from '@ionic/cli-framework/lib';
 import { ERROR_FILE_NOT_FOUND, pathAccessible, pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { isSSHKeyResponse, isSuperAgentError } from '@ionic/cli-utils/guards';
-import { CommandMetadata } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { SSHBaseCommand } from './base';
 
-@CommandMetadata({
-  name: 'add',
-  type: 'global',
-  backends: [BACKEND_PRO],
-  description: 'Add an SSH public key to Ionic',
-  inputs: [
-    {
-      name: 'pubkey-path',
-      description: 'Location of public key file to add to Ionic',
-      validators: [validators.required],
-    },
-  ],
-  options: [
-    {
-      name: 'use',
-      description: 'Use the newly added key as your default SSH key for Ionic',
-      type: Boolean,
-    },
-  ],
-})
 export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
+  metadata: CommandData = {
+    name: 'add',
+    type: 'global',
+    backends: [BACKEND_PRO],
+    description: 'Add an SSH public key to Ionic',
+    inputs: [
+      {
+        name: 'pubkey-path',
+        description: 'Location of public key file to add to Ionic',
+        validators: [validators.required],
+      },
+    ],
+    options: [
+      {
+        name: 'use',
+        description: 'Use the newly added key as your default SSH key for Ionic',
+        type: Boolean,
+      },
+    ],
+  };
+
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!inputs[0]) {
       const fs = await import('fs');

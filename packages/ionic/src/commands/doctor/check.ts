@@ -1,22 +1,23 @@
 import chalk from 'chalk';
 
 import { contains, validate } from '@ionic/cli-framework/lib';
-import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
-import { Command, CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
-@CommandMetadata({
-  name: 'check',
-  type: 'project',
-  description: 'Check the health of your Ionic project',
-  inputs: [
-    {
-      name: 'id',
-      description: 'The issue identifier',
-    }
-  ],
-})
 export class DoctorCheckCommand extends Command {
+  metadata: CommandData = {
+    name: 'check',
+    type: 'project',
+    description: 'Check the health of your Ionic project',
+    inputs: [
+      {
+        name: 'id',
+        description: 'The issue identifier',
+      }
+    ],
+  };
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ id ] = inputs;
 

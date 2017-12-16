@@ -1,18 +1,18 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
-import { CommandMetadata } from '@ionic/cli-utils/lib/command';
+import { CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/cordova/utils';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 
 import { CordovaCommand } from './base';
 
-@CommandMetadata({
-  name: 'prepare',
-  type: 'project',
-  description: 'Copies assets to Cordova platforms, preparing them for native builds',
-  longDescription: `
+export class PrepareCommand extends CordovaCommand implements CommandPreRun {
+  metadata: CommandData = {
+    name: 'prepare',
+    type: 'project',
+    description: 'Copies assets to Cordova platforms, preparing them for native builds',
+    longDescription: `
 ${chalk.green('ionic cordova prepare')} will do the following:
 - Copy the ${chalk.bold('www/')} directory into your Cordova platforms.
 - Transform ${chalk.bold('config.xml')} into platform-specific manifest files.
@@ -20,25 +20,25 @@ ${chalk.green('ionic cordova prepare')} will do the following:
 - Copy plugin files into specified platforms.
 
 You may wish to use ${chalk.green('ionic cordova prepare')} if you run your project with Android Studio or Xcode.
-  `,
-  exampleCommands: ['', 'ios', 'android'],
-  inputs: [
-    {
-      name: 'platform',
-      description: `The platform you would like to prepare (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
-    },
-  ],
-  options: [
-    {
-      name: 'build',
-      description: 'Do not invoke an Ionic build',
-      type: Boolean,
-      default: true,
-    },
-    ...APP_SCRIPTS_OPTIONS,
-  ]
-})
-export class PrepareCommand extends CordovaCommand implements CommandPreRun {
+    `,
+    exampleCommands: ['', 'ios', 'android'],
+    inputs: [
+      {
+        name: 'platform',
+        description: `The platform you would like to prepare (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+      },
+    ],
+    options: [
+      {
+        name: 'build',
+        description: 'Do not invoke an Ionic build',
+        type: Boolean,
+        default: true,
+      },
+      ...APP_SCRIPTS_OPTIONS,
+    ]
+  };
+
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.preRunChecks();
   }
