@@ -3,8 +3,6 @@
     "allowUnreachableCode": false,
     "baseUrl": "./",
     "declaration": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
     "module": "commonjs",
