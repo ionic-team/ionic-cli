@@ -1,17 +1,28 @@
 import { Component, Event, EventEmitter, State, Prop } from '@stencil/core';
 
+import { AVAILABLE_PLATFORMS, platformPrettyName } from '../../utils';
+
 @Component({
   tag: 'ionlab-platform-dropdown',
   styleUrl: 'ionlab-platform-dropdown.scss',
 })
 export class PlatformDropdown {
-  @Prop() iPhoneActive: boolean;
-  @Prop() androidActive: boolean;
-  @Prop() windowsActive: boolean;
+  @Prop() activePlatforms: string[];
   @State() visible: boolean = false;
-  @Event() ionlabPlatformIPhoneToggled: EventEmitter;
-  @Event() ionlabPlatformAndroidToggled: EventEmitter;
-  @Event() ionlabPlatformWindowsToggled: EventEmitter;
+  @Event() ionlabPlatformToggled: EventEmitter;
+
+  platformActive(platform: string) {
+    return this.activePlatforms.indexOf(platform) >= 0;
+  }
+
+  renderPlatformCheckbox(platform: string) {
+    return (
+      <li onClick={ () => this.ionlabPlatformToggled.emit(platform) }>
+        <input type="checkbox" name={ platform } checked={ this.platformActive(platform) } />
+        <label>{ platformPrettyName(platform) }</label>
+      </li>
+    );
+  }
 
   render() {
     const dropdownClasses = ['dropdown-menu'];
@@ -27,18 +38,7 @@ export class PlatformDropdown {
           <span class="dropdown-caret"></span>
         </button>
         <ul class={ dropdownClasses.join(' ') }>
-          <li onClick={ () => this.ionlabPlatformIPhoneToggled.emit() }>
-            <input type="checkbox" id="device-iphone" name="iphone" checked={ this.iPhoneActive } />
-            <label>iPhone</label>
-          </li>
-          <li onClick={ () => this.ionlabPlatformAndroidToggled.emit() }>
-            <input type="checkbox" id="device-android" name="android" checked={ this.androidActive } />
-            <label>Android</label>
-          </li>
-          <li onClick={ () => this.ionlabPlatformWindowsToggled.emit() }>
-            <input type="checkbox" id="device-windows" name="windows" checked={ this.windowsActive } />
-            <label>Windows</label>
-          </li>
+          { AVAILABLE_PLATFORMS.map(platform => this.renderPlatformCheckbox(platform)) }
         </ul>
       </div>
     );

@@ -1,0 +1,90 @@
+@import '../../../assets/_variables';
+
+ionlab-preview {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  vertical-align: middle;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  overflow: auto;
+}
+
+.device {
+  display: inline-block;
+  margin: 0 20px;
+  vertical-align: middle;
+
+  h2 {
+    font-size: $font-size-base;
+    margin: 1em 0;
+    vertical-align: middle;
+    text-align: left;
+    font-weight: $font-weight-bold;
+    vertical-align: top;
+    color: #727a87;
+
+    .icon {
+      display: inline-block;
+      margin-right: 7px;
+      font-size: $font-size-lg;
+    }
+  }
+}
+
+.device-frame {
+  position: relative;
+  width: 375px;
+  height: 667px;
+  border-radius: 3px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08), 0 0px 6px rgba(0,0,0,.1);
+  overflow: hidden;
+
+  .statusbar {
+    position: absolute;
+    top: 0;
+    width: 375px;
+    height: 20px;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 3px 3px 0 0;
+  }
+
+  iframe {
+    border: none;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+#device-ios .device-frame {
+  .statusbar {
+    background-image: url('./assets/ios-statusbar.png');
+  }
+}
+
+#device-android .device-frame {
+  iframe {
+    margin-top: 20px;
+    height: 647px;
+  }
+
+  .statusbar {
+    background-image: url('./assets/android-statusbar.png');
+  }
+}
+
+#device-windows .device-frame {
+  iframe {
+    margin-top: 20px;
+    height: 647px;
+  }
+
+  .statusbar {
+    background-image: url('./assets/wp-statusbar.png');
+    background-color: #fff;
+  }
+}

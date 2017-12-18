@@ -29,7 +29,7 @@ a {
   }
 }
 
-ionlab-app > div {
+ionlab-app {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -103,22 +103,12 @@ main {
   flex: 1;
 }
 
-#preview {
-  display: flex;
-  flex: 1;
-  flex-wrap: wrap;
-  vertical-align: middle;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
 footer {
   width: 100%;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   background: $section-bg;
   font-size: $font-size-sm;
+  color: $font-color;
 }
 
 #footer-left {

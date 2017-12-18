@@ -6,32 +6,30 @@
 
 
 import {
-  PlatformDropdown as IonlabPlatformDropdown
-} from './components/ionlab-platform-dropdown/ionlab-platform-dropdown';
+  App as IonlabApp
+} from './components/ionlab-app/ionlab-app';
 
 declare global {
-  interface HTMLIonlabPlatformDropdownElement extends IonlabPlatformDropdown, HTMLElement {
+  interface HTMLIonlabAppElement extends IonlabApp, HTMLElement {
   }
-  var HTMLIonlabPlatformDropdownElement: {
-    prototype: HTMLIonlabPlatformDropdownElement;
-    new (): HTMLIonlabPlatformDropdownElement;
+  var HTMLIonlabAppElement: {
+    prototype: HTMLIonlabAppElement;
+    new (): HTMLIonlabAppElement;
   };
   interface HTMLElementTagNameMap {
-    "ionlab-platform-dropdown": HTMLIonlabPlatformDropdownElement;
+    "ionlab-app": HTMLIonlabAppElement;
   }
   interface ElementTagNameMap {
-    "ionlab-platform-dropdown": HTMLIonlabPlatformDropdownElement;
+    "ionlab-app": HTMLIonlabAppElement;
   }
   namespace JSX {
     interface IntrinsicElements {
-      "ionlab-platform-dropdown": JSXElements.IonlabPlatformDropdownAttributes;
+      "ionlab-app": JSXElements.IonlabAppAttributes;
     }
   }
   namespace JSXElements {
-    export interface IonlabPlatformDropdownAttributes extends HTMLAttributes {
-      androidActive?: boolean;
-      iPhoneActive?: boolean;
-      windowsActive?: boolean;
+    export interface IonlabAppAttributes extends HTMLAttributes {
+      
     }
   }
 }
