@@ -152,7 +152,7 @@ export class Environment implements IonicEnvironment {
     }
 
     if (opts.showExecution) {
-      this.log.msg(`> ${chalk.green([this.namespace.name, ...pargv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
+      this.log.msg(`> ${chalk.green([this.namespace.metadata.name, ...pargv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
     }
 
     await this.namespace.runCommand(this, pargv, this.env); // TODO
