@@ -18,7 +18,7 @@
   }
 
   .dropdown-menu {
-    display: none;
+    display: block;
     position: absolute;
     z-index: 999;
     width: 150px;
@@ -30,11 +30,12 @@
     margin: 0;
     padding: 5px 0;
 
-    &.shown {
-      display: block;
+    &.hidden {
+      display: none;
     }
 
     li {
+      cursor: pointer;
       list-style: none;
       padding: 6px 5px;
     }
