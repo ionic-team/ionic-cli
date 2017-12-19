@@ -461,6 +461,12 @@ export interface ServeOptions {
   iscordovaserve?: boolean;
 }
 
+export interface LabServeDetails {
+  protocol: string;
+  address: string;
+  port: number;
+}
+
 export interface ServeDetails {
   protocol: string;
   localAddress: string;
@@ -468,6 +474,7 @@ export interface ServeDetails {
   port: number;
   externalNetworkInterfaces: NetworkInterface[];
   externallyAccessible: boolean;
+  lab?: LabServeDetails;
 }
 
 export interface CordovaProjectInfoHookResponse {

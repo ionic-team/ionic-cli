@@ -101,22 +101,23 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     devAppDetails.channel = devAppName;
   }
 
-  const localAddress = `http://localhost:${details.port}`;
-  const fmtExternalAddress = (address: string) => `http://${address}:${details.port}`;
+  const localAddress = `${details.protocol}://localhost:${details.port}`;
+  const fmtExternalAddress = (address: string) => `${details.protocol}://${address}:${details.port}`;
+  const labAddress = serveOptions.lab && details.lab ? `${details.lab.protocol}://${details.lab.address}:${details.lab.port}` : undefined;
 
-  if (!serveOptions.lab) {
-    env.log.nl();
-    env.log.ok(
-      `Development server running!\n` +
-      `Local: ${chalk.bold(localAddress)}\n` +
-      (details.externalNetworkInterfaces.length > 0 ? `External: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}\n` : '') +
-      (serveOptions.basicAuth ? `Basic Auth: ${chalk.bold(serveOptions.basicAuth[0])} / ${chalk.bold(serveOptions.basicAuth[1])}\n` : '') +
-      (devAppDetails && devAppDetails.channel ? `DevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '')
-    );
-  }
+  env.log.nl();
+  env.log.ok(
+    `Development server running!\n` +
+    (labAddress ? `Lab: ${chalk.bold(labAddress)}\n` : '') +
+    `Local: ${chalk.bold(localAddress)}\n` +
+    (details.externalNetworkInterfaces.length > 0 ? `External: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}\n` : '') +
+    (serveOptions.basicAuth ? `Basic Auth: ${chalk.bold(serveOptions.basicAuth[0])} / ${chalk.bold(serveOptions.basicAuth[1])}\n` : '') +
+    (devAppDetails && devAppDetails.channel ? `DevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '')
+  );
 
   if (serveOptions.open) {
-    const openOptions: string[] = [localAddress]
+    const openAddress = labAddress ? labAddress : localAddress;
+    const openOptions: string[] = [openAddress]
       .concat(serveOptions.browserOption ? [serveOptions.browserOption] : [])
       .concat(platform ? ['?ionicplatform=', platform] : []);
 
@@ -130,11 +131,6 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
 }
 
 export function cliOptionsToServeOptions(options: CommandLineOptions) {
-  if (options['lab']) {
-    options['local'] = true;
-    options['open'] = false;
-  }
-
   if (options['local']) {
     options['address'] = 'localhost';
     options['devapp'] = false;

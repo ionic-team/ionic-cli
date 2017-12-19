@@ -10,20 +10,6 @@
 
   <link rel="icon" type="image/png" href="/assets/favicon.png">
   <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-
-  <script>
-    var qp = {};
-    location.search.substring(1).split('&').reduce(function(obj, pair) {
-      pair = pair.split('=');
-      obj[pair[0]] = pair[1];
-    }, qp);
-
-    if (!qp.session) {
-      var session = Math.random().toString(16).substring(2, 10);
-      sessionStorage.setItem('ionic-lab-' + session, JSON.stringify({ session: session, qp }));
-      history.replaceState({}, 'Ionic Lab', '/?session=' + session);
-    }
-  </script>
 </head>
 <body>
 

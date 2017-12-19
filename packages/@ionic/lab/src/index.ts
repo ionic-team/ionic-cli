@@ -2,7 +2,6 @@ import * as http from 'http';
 import * as path from 'path';
 
 import chalk from 'chalk';
-import opn = require('opn');
 import * as express from 'express';
 
 import {
@@ -47,36 +46,41 @@ class DefaultCommand extends Command {
         default: '8200',
       },
       {
-        name: 'open',
-        description: 'Automatically open Ionic Lab',
-        type: Boolean,
-        default: true,
+        name: 'app-name',
+        description: 'App name to show in bottom left corner',
+      },
+      {
+        name: 'app-version',
+        description: 'App version to show in bottom left corner',
       },
     ],
   };
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions) {
     const [ url ] = inputs;
-    const { host, port, open } = options;
+    const { host, port } = options;
+
+    const name = options['app-name'];
+    const version = options['app-version'];
 
     const app = express();
 
     app.use('/', express.static(path.join(__dirname, '..', 'www')));
 
+    app.get('/api/app', (req, res) => {
+      res.json({ url, name, version });
+    });
+
     const server = http.createServer(app);
     server.listen({ port, host });
 
-    const labUrl = `http://localhost:${port}/?url=${encodeURIComponent(url)}`;
+    const labUrl = `http://${host}:${port}`;
 
     server.on('listening', () => {
       console.log('Ionic Lab running!');
       console.log(`Lab: ${chalk.bold(labUrl)}`);
       console.log(`App: ${chalk.bold(url)}`);
     });
-
-    if (open) {
-      opn(labUrl);
-    }
   }
 }
 

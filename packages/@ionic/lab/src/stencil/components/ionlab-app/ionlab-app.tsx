@@ -9,30 +9,41 @@ import { PLATFORM_IOS, PLATFORM_ANDROID } from '../../utils';
 export class App {
   @State() sidebarVisible: boolean = true;
   @State() activeDevices: string[] = [PLATFORM_IOS, PLATFORM_ANDROID];
-  @State() url?: string;
+  @State() details: { url?: string; name?: string; version?: string; } = {};
   session: string;
 
-  appName = 'MyApp';
-  appVersion = 'v0.0.1';
-
   componentWillLoad() {
-    const qp = {};
+    this.loadAppDetails();
+    this.loadLocalStorageState();
+  }
 
-    location.search.substring(1).split('&').reduce((obj, pair) => {
-      const [ key, value ] = pair.split('=');
-      return obj[key] = value;
-    }, qp);
+  componentWillUpdate() {
+    this.saveLocalStorageState();
+  }
 
-    this.session = qp['session'];
+  loadAppDetails() {
+    const self = this;
+    const req = new XMLHttpRequest();
 
-    if (this.session) {
-      const sessionData = JSON.parse(sessionStorage.getItem(`ionic-lab-${this.session}`));
-
-      if (sessionData.qp.url) {
-        this.url = decodeURIComponent(sessionData.qp.url);
+    req.addEventListener('load', function() {
+      try {
+        self.details = JSON.parse(this.responseText);
+      } catch (e) {
+        console.error('Error loading app details from Ionic Lab API!');
+        console.error('Response was:', this.responseText);
       }
-    }
+    });
 
+    req.addEventListener('error', (err) => {
+      console.error('Error loading app details from Ionic Lab API!');
+      console.error('Error was:', err);
+    });
+
+    req.open('GET', '/api/app');
+    req.send();
+  }
+
+  loadLocalStorageState() {
     const storedPlatforms = localStorage.getItem('ionic-lab-platforms');
 
     if (storedPlatforms) {
@@ -46,7 +57,7 @@ export class App {
     }
   }
 
-  componentWillUpdate() {
+  saveLocalStorageState() {
     localStorage.setItem('ionic-lab-platforms', JSON.stringify(this.activeDevices));
     localStorage.setItem('ionic-lab-sidebar-open', JSON.stringify(this.sidebarVisible));
   }
@@ -54,6 +65,11 @@ export class App {
   @Listen('ionlabSidebarCloseClicked')
   sidebarCloseClickedHander(event) {
     this.sidebarVisible = false;
+  }
+
+  @Listen('ionlabPlatformToggled')
+  ionlabPlatformToggledHandler(event) {
+    this.togglePlatform(event.detail);
   }
 
   togglePlatform(platform: string) {
@@ -69,22 +85,7 @@ export class App {
     this.activeDevices = devices;
   }
 
-  @Listen('ionlabPlatformToggled')
-  ionlabPlatformToggledHandler(event) {
-    this.togglePlatform(event.detail);
-  }
-
   render() {
-    if (!this.url) {
-      return (
-        <div id="error-box">
-          <h2>Uh oh!</h2>
-          <p>Ionic Lab doesn't know which URL to load. Try passing it (encoded) in the query parameter:</p>
-          <code>?url=http%3A%2F%2Flocalhost%3A8100</code>
-        </div>
-      );
-    }
-
     return [
       <header>
         <div id="header-left">
@@ -92,7 +93,7 @@ export class App {
           <div id="logo"></div>
         </div>
         <div id="header-right">
-          <a href={ this.url }>
+          <a href={ this.details.url }>
             <button type="button">
               Open fullscreen
               <i class="fullscreen-icon icon ion-share" />
@@ -103,12 +104,12 @@ export class App {
       </header>,
       <main>
         <ionlab-sidebar visible={ this.sidebarVisible } />
-        <ionlab-preview url={ this.url } activeDevices={ this.activeDevices } />
+        <ionlab-preview url={ this.details.url } activeDevices={ this.activeDevices } />
       </main>,
       <footer>
         <div id="footer-left">
           <div id="app-info">
-            { this.appName } - { this.appVersion }
+            { [this.details.name, this.details.version].filter(n => n).join(' - ') }
           </div>
         </div>
         <div id="footer-right">

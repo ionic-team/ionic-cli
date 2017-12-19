@@ -21,9 +21,9 @@
     "clean.tsc": "rm -rf ./dist",
     "clean.stencil": "rm -rf ./www",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
-    "build": "npm run clean.tsc && npm run clean.stencil  && npm run build.tsc && npm run build.stencil",
-    "build.stencil": "stencil build",
-    "build.tsc": "tsc",
+    "build": "npm run build.tsc && npm run build.stencil",
+    "build.stencil": "npm run clean.stencil && stencil build",
+    "build.tsc": "npm run clean.tsc && tsc",
     "watch": "npm run watch.tsc",
     "watch.stencil": "npm run clean.stencil && concurrently \"stencil build --dev --watch\" \"stencil-dev-server --address localhost --httpPort 8900 --no-open\"",
     "watch.tsc": "tsc -w",
@@ -33,14 +33,12 @@
   "dependencies": {
     "@ionic/cli-framework": "0.1.2",
     "chalk": "^2.3.0",
-    "express": "^4.16.2",
-    "opn": "^5.1.0"
+    "express": "^4.16.2"
   },
   "devDependencies": {
     "@stencil/core": "next",
     "@stencil/dev-server": "next",
     "@types/express": "^4.0.39",
-    "@types/opn": "^5.1.0",
     "concurrently": "^3.5.1"
   },
   "repository": {

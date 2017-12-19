@@ -8,13 +8,13 @@ import { PLATFORM_IOS, platformIoniconClass, platformPrettyName } from '../../ut
 })
 export class Preview {
   @Prop() activeDevices: string[];
-  @Prop() url: string;
-
-  deviceActive(device: string) {
-    return this.activeDevices.indexOf(device) >= 0;
-  }
+  @Prop() url?: string;
 
   platformUrl(platform: string) {
+    if (!this.url) {
+      return;
+    }
+
     const qp = { ionicplatform: platform };
 
     if (platform === PLATFORM_IOS) {
@@ -24,19 +24,13 @@ export class Preview {
     return `${this.url}?${Object.keys(qp).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(qp[k])}`).join('&')}`;
   }
 
-  renderDeviceFrame(platform: string) {
-    return (
-      <div class="device" id={ `device-${platform}` }>
-        <h2><i class={ ['icon', platformIoniconClass(platform)].join(' ') } />{ platformPrettyName(platform) }</h2>
-        <div class="device-frame">
-          <div class="statusbar" />
-          <iframe src={ this.platformUrl(platform) } />
-        </div>
-      </div>
-    );
-  }
-
   render() {
-    return this.activeDevices.map(device => this.renderDeviceFrame(device));
+    return this.activeDevices.map(device => {
+      return <ionlab-device-frame
+              platform={ device }
+              platformName={ platformPrettyName(device) }
+              url={ this.platformUrl(device) }
+              icon={ platformIoniconClass(device) } />;
+    });
   }
 }

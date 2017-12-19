@@ -36,6 +36,39 @@ declare global {
 
 
 import {
+  DeviceFrame as IonlabDeviceFrame
+} from './components/ionlab-device-frame/ionlab-device-frame';
+
+declare global {
+  interface HTMLIonlabDeviceFrameElement extends IonlabDeviceFrame, HTMLElement {
+  }
+  var HTMLIonlabDeviceFrameElement: {
+    prototype: HTMLIonlabDeviceFrameElement;
+    new (): HTMLIonlabDeviceFrameElement;
+  };
+  interface HTMLElementTagNameMap {
+    "ionlab-device-frame": HTMLIonlabDeviceFrameElement;
+  }
+  interface ElementTagNameMap {
+    "ionlab-device-frame": HTMLIonlabDeviceFrameElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      "ionlab-device-frame": JSXElements.IonlabDeviceFrameAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface IonlabDeviceFrameAttributes extends HTMLAttributes {
+      icon?: string;
+      platform?: string;
+      platformName?: string;
+      url?: string;
+    }
+  }
+}
+
+
+import {
   PlatformDropdown as IonlabPlatformDropdown
 } from './components/ionlab-platform-dropdown/ionlab-platform-dropdown';
 
@@ -121,6 +154,36 @@ declare global {
   namespace JSXElements {
     export interface IonlabSidebarAttributes extends HTMLAttributes {
       visible?: boolean;
+    }
+  }
+}
+
+
+import {
+  SpinKitFadingCircle as SkFadingCircle
+} from './components/sk-fading-circle/sk-fading-circle';
+
+declare global {
+  interface HTMLSkFadingCircleElement extends SkFadingCircle, HTMLElement {
+  }
+  var HTMLSkFadingCircleElement: {
+    prototype: HTMLSkFadingCircleElement;
+    new (): HTMLSkFadingCircleElement;
+  };
+  interface HTMLElementTagNameMap {
+    "sk-fading-circle": HTMLSkFadingCircleElement;
+  }
+  interface ElementTagNameMap {
+    "sk-fading-circle": HTMLSkFadingCircleElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      "sk-fading-circle": JSXElements.SkFadingCircleAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface SkFadingCircleAttributes extends HTMLAttributes {
+      
     }
   }
 }

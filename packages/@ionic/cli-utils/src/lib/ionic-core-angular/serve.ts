@@ -6,7 +6,7 @@ import * as Debug from 'debug';
 
 import { pathAccessible } from '@ionic/cli-framework/utils/fs';
 
-import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions';
+import { IonicEnvironment, LabServeDetails, ServeDetails, ServeOptions } from '../../definitions';
 import { BIND_ALL_ADDRESS, DEFAULT_LAB_PORT, LOCAL_ADDRESSES, runLab, selectExternalIP } from '../serve';
 
 const NG_AUTODETECTED_PROXY_FILE = 'proxy.config.js';
@@ -16,8 +16,8 @@ const debug = Debug('ionic:cli-utils:lib:ionic-core-angular:serve');
 
 export async function serve({ env, options }: { env: IonicEnvironment, options: ServeOptions }): Promise<ServeDetails> {
   const { findClosestOpenPort, isHostConnectable } = await import('../utils/network');
-
   const [ externalIP, availableInterfaces ] = await selectExternalIP(env, options);
+  let labDetails: LabServeDetails | undefined;
 
   debug('finding closest port to %d', options.port);
   const ngPort = await findClosestOpenPort(options.port, '0.0.0.0');
@@ -25,8 +25,13 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
   await ngServe(env, options.address, ngPort);
 
   if (options.lab) {
-    const labPort = await findClosestOpenPort(DEFAULT_LAB_PORT, '0.0.0.0');
-    await runLab(env, `http://localhost:${ngPort}`, labPort);
+    labDetails = {
+      protocol: 'http',
+      address: 'localhost',
+      port: await findClosestOpenPort(DEFAULT_LAB_PORT, '0.0.0.0'),
+    };
+
+    await runLab(env, `http://localhost:${ngPort}`, labDetails.port);
   }
 
   debug('waiting for connectivity with ng serve (%dms timeout)', NG_SERVE_CONNECTIVITY_TIMEOUT);
@@ -39,6 +44,7 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
     externalNetworkInterfaces: availableInterfaces,
     port: ngPort,
     externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
+    lab: labDetails,
   };
 }
 

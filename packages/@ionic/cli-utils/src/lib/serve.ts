@@ -105,11 +105,20 @@ export async function findOpenPorts(env: IonicEnvironment, address: string, port
 }
 
 export async function runLab(env: IonicEnvironment, url: string, port: number) {
+  const split2 = await import('split2');
   const { registerShutdownFunction } = await import('./process');
 
-  const p = await env.shell.spawn('ionic-lab', [url, '--open', '--port', String(port)], { cwd: env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' }, stdio: 'inherit' });
+  const project = await env.project.load();
+  const pkg = await env.project.loadPackageJson();
+
+  const p = await env.shell.spawn('ionic-lab', [url, '--port', String(port), '--app-name', project.name, '--app-version', pkg.version], { cwd: env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
 
   registerShutdownFunction(() => p.kill());
+
+  const log = env.log.clone({ prefix: chalk.dim('[lab]'), wrap: false });
+  const ws = log.createWriteStream();
+
+  p.stderr.pipe(split2()).pipe(ws);
 }
 
 export const DEFAULT_PROXY_CONFIG: proxyMiddlewareType.Config = {
