@@ -16,21 +16,27 @@
     "README.md"
   ],
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rm -rf ./dist && rm -rf ./www",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
-    "build": "npm run clean && tsc",
-    "watch": "concurrently \"tsc -w\" \"stencil build --dev --watch\" \"stencil-dev-server --address localhost --httpPort 8900 --no-open\"",
+    "build": "npm run clean && npm run build.tsc && npm run build.stencil",
+    "build.stencil": "stencil build",
+    "build.tsc": "tsc",
+    "watch": "npm run watch.tsc",
+    "watch.stencil": "concurrently \"stencil build --dev --watch\" \"stencil-dev-server --address localhost --httpPort 8900 --no-open\"",
+    "watch.tsc": "tsc -w",
     "test": "jest",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@ionic/cli-framework": "0.1.2",
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "opn": "^5.1.0"
   },
   "devDependencies": {
     "@stencil/core": "next",
     "@stencil/dev-server": "next",
     "@types/express": "^4.0.39",
+    "@types/opn": "^5.1.0",
     "concurrently": "^3.5.1"
   },
   "repository": {

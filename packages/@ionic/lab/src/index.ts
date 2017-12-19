@@ -1,6 +1,7 @@
-// import * as path from 'path';
+import * as path from 'path';
 
-// import * as express from 'express';
+import * as express from 'express';
+import opn = require('opn');
 
 import {
   CommandData,
@@ -38,26 +39,28 @@ class DefaultCommand extends Command {
         description: 'HTTP port of Ionic Lab',
         default: '8100',
       },
+      {
+        name: 'open',
+        description: 'Automatically open Ionic Lab',
+        type: Boolean,
+        default: true,
+      },
     ],
   };
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions) {
     const [ url ] = inputs;
-    // const { port } = options;
+    const { port, open } = options;
 
-    console.log(url);
+    const app = express();
 
-    // const app = express();
+    app.use('/', express.static(path.join(__dirname, '..', 'www')));
 
-    // app.use('/static', express.static(path.join(__dirname, '..', 'assets', 'lab', 'static')));
-    // app.get('/', (req, res) => res.sendFile('index.html', { root: path.join(__dirname, '..', 'assets', 'lab') }));
+    app.listen(port);
 
-    // app.get('/api/app-config', (req, res) => {
-    //   res.set('Content-Type', 'application/json');
-    //   res.send({ url });
-    // });
-
-    // app.listen(port);
+    if (open) {
+      opn(`http://localhost:${port}/?url=${encodeURIComponent(url)}`);
+    }
   }
 }
 

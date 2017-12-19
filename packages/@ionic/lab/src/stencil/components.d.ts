@@ -34,3 +34,94 @@ declare global {
   }
 }
 
+
+import {
+  PlatformDropdown as IonlabPlatformDropdown
+} from './components/ionlab-platform-dropdown/ionlab-platform-dropdown';
+
+declare global {
+  interface HTMLIonlabPlatformDropdownElement extends IonlabPlatformDropdown, HTMLElement {
+  }
+  var HTMLIonlabPlatformDropdownElement: {
+    prototype: HTMLIonlabPlatformDropdownElement;
+    new (): HTMLIonlabPlatformDropdownElement;
+  };
+  interface HTMLElementTagNameMap {
+    "ionlab-platform-dropdown": HTMLIonlabPlatformDropdownElement;
+  }
+  interface ElementTagNameMap {
+    "ionlab-platform-dropdown": HTMLIonlabPlatformDropdownElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      "ionlab-platform-dropdown": JSXElements.IonlabPlatformDropdownAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface IonlabPlatformDropdownAttributes extends HTMLAttributes {
+      activePlatforms?: string[];
+    }
+  }
+}
+
+
+import {
+  Preview as IonlabPreview
+} from './components/ionlab-preview/ionlab-preview';
+
+declare global {
+  interface HTMLIonlabPreviewElement extends IonlabPreview, HTMLElement {
+  }
+  var HTMLIonlabPreviewElement: {
+    prototype: HTMLIonlabPreviewElement;
+    new (): HTMLIonlabPreviewElement;
+  };
+  interface HTMLElementTagNameMap {
+    "ionlab-preview": HTMLIonlabPreviewElement;
+  }
+  interface ElementTagNameMap {
+    "ionlab-preview": HTMLIonlabPreviewElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      "ionlab-preview": JSXElements.IonlabPreviewAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface IonlabPreviewAttributes extends HTMLAttributes {
+      activeDevices?: string[];
+      url?: string;
+    }
+  }
+}
+
+
+import {
+  Sidebar as IonlabSidebar
+} from './components/ionlab-sidebar/ionlab-sidebar';
+
+declare global {
+  interface HTMLIonlabSidebarElement extends IonlabSidebar, HTMLElement {
+  }
+  var HTMLIonlabSidebarElement: {
+    prototype: HTMLIonlabSidebarElement;
+    new (): HTMLIonlabSidebarElement;
+  };
+  interface HTMLElementTagNameMap {
+    "ionlab-sidebar": HTMLIonlabSidebarElement;
+  }
+  interface ElementTagNameMap {
+    "ionlab-sidebar": HTMLIonlabSidebarElement;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      "ionlab-sidebar": JSXElements.IonlabSidebarAttributes;
+    }
+  }
+  namespace JSXElements {
+    export interface IonlabSidebarAttributes extends HTMLAttributes {
+      visible?: boolean;
+    }
+  }
+}
+
