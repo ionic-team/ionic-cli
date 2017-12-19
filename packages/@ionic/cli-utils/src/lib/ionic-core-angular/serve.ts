@@ -7,22 +7,27 @@ import * as Debug from 'debug';
 import { pathAccessible } from '@ionic/cli-framework/utils/fs';
 
 import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions';
-import { BIND_ALL_ADDRESS, DEFAULT_SERVER_PORT, LOCAL_ADDRESSES, selectExternalIP } from '../serve';
+import { BIND_ALL_ADDRESS, DEFAULT_LAB_PORT, LOCAL_ADDRESSES, runLab, selectExternalIP } from '../serve';
 
 const NG_AUTODETECTED_PROXY_FILE = 'proxy.config.js';
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 
-const debug = Debug('ionic:cli-utils:lib:ionic-angular:serve');
+const debug = Debug('ionic:cli-utils:lib:ionic-core-angular:serve');
 
 export async function serve({ env, options }: { env: IonicEnvironment, options: ServeOptions }): Promise<ServeDetails> {
   const { findClosestOpenPort, isHostConnectable } = await import('../utils/network');
 
   const [ externalIP, availableInterfaces ] = await selectExternalIP(env, options);
 
-  debug('finding closest port to %d', DEFAULT_SERVER_PORT);
-  const ngPort = await findClosestOpenPort(DEFAULT_SERVER_PORT, '0.0.0.0');
+  debug('finding closest port to %d', options.port);
+  const ngPort = await findClosestOpenPort(options.port, '0.0.0.0');
 
   await ngServe(env, options.address, ngPort);
+
+  if (options.lab) {
+    const labPort = await findClosestOpenPort(DEFAULT_LAB_PORT, '0.0.0.0');
+    await runLab(env, `http://localhost:${ngPort}`, labPort);
+  }
 
   debug('waiting for connectivity with ng serve (%dms timeout)', NG_SERVE_CONNECTIVITY_TIMEOUT);
   await isHostConnectable('localhost', ngPort, NG_SERVE_CONNECTIVITY_TIMEOUT);
@@ -48,7 +53,7 @@ async function ngServe(env: IonicEnvironment, host: string, port: number): Promi
     ngArgs.push(NG_AUTODETECTED_PROXY_FILE); // this is fine as long as cwd is the project directory
   }
 
-  const p = await env.shell.spawn('ng', ngArgs, { cwd: env.project.directory });
+  const p = await env.shell.spawn('ng', ngArgs, { cwd: env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
 
   registerShutdownFunction(() => p.kill());
 

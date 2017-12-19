@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@ionic/cli-framework": "0.1.2",
+    "chalk": "^2.3.0",
     "express": "^4.16.2",
     "opn": "^5.1.0"
   },

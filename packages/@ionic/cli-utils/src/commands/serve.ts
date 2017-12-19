@@ -12,7 +12,6 @@ import {
   DEFAULT_DEV_LOGGER_PORT,
   DEFAULT_LIVERELOAD_PORT,
   DEFAULT_SERVER_PORT,
-  IONIC_LAB_URL,
   gatherDevAppDetails,
   getSupportedDevAppPlugins,
   publishDevApp,
@@ -105,17 +104,19 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
   const localAddress = `http://localhost:${details.port}`;
   const fmtExternalAddress = (address: string) => `http://${address}:${details.port}`;
 
-  env.log.ok(
-    `Development server running!\n` +
-    `Local: ${chalk.bold(localAddress)}\n` +
-    (details.externalNetworkInterfaces.length > 0 ? `External: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}\n` : '') +
-    (serveOptions.basicAuth ? `Basic Auth: ${chalk.bold(serveOptions.basicAuth[0])} / ${chalk.bold(serveOptions.basicAuth[1])}\n` : '') +
-    (devAppDetails && devAppDetails.channel ? `DevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '')
-  );
+  if (!serveOptions.lab) {
+    env.log.nl();
+    env.log.ok(
+      `Development server running!\n` +
+      `Local: ${chalk.bold(localAddress)}\n` +
+      (details.externalNetworkInterfaces.length > 0 ? `External: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}\n` : '') +
+      (serveOptions.basicAuth ? `Basic Auth: ${chalk.bold(serveOptions.basicAuth[0])} / ${chalk.bold(serveOptions.basicAuth[1])}\n` : '') +
+      (devAppDetails && devAppDetails.channel ? `DevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '')
+    );
+  }
 
   if (serveOptions.open) {
     const openOptions: string[] = [localAddress]
-      .concat(serveOptions.lab ? [IONIC_LAB_URL] : [])
       .concat(serveOptions.browserOption ? [serveOptions.browserOption] : [])
       .concat(platform ? ['?ionicplatform=', platform] : []);
 
@@ -129,6 +130,11 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
 }
 
 export function cliOptionsToServeOptions(options: CommandLineOptions) {
+  if (options['lab']) {
+    options['local'] = true;
+    options['open'] = false;
+  }
+
   if (options['local']) {
     options['address'] = 'localhost';
     options['devapp'] = false;

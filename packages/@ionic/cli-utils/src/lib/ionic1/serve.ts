@@ -18,7 +18,6 @@ import {
   BIND_ALL_ADDRESS,
   DEFAULT_PROXY_CONFIG,
   LOCAL_ADDRESSES,
-  attachLab,
   attachProjectProxies,
   attachProxy,
   findOpenPorts,
@@ -190,8 +189,6 @@ async function createHttpServer(env: IonicEnvironment, options: ServeMetaOptions
 
   app.get('/', serveIndex);
   app.use('/', express.static(options.wwwDir));
-
-  await attachLab(app);
 
   app.get('/cordova.js', servePlatformResource, serveMockCordovaJS);
   app.get('/cordova_plugins.js', servePlatformResource);

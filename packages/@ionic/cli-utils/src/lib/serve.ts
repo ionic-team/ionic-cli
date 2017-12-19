@@ -12,8 +12,7 @@ import { FatalException } from './errors';
 export const DEFAULT_DEV_LOGGER_PORT = 53703;
 export const DEFAULT_LIVERELOAD_PORT = 35729;
 export const DEFAULT_SERVER_PORT = 8100;
-
-export const IONIC_LAB_URL = '/ionic-lab';
+export const DEFAULT_LAB_PORT = 8200;
 
 export const BIND_ALL_ADDRESS = '0.0.0.0';
 export const LOCAL_ADDRESSES = ['localhost', '127.0.0.1'];
@@ -105,6 +104,14 @@ export async function findOpenPorts(env: IonicEnvironment, address: string, port
   }
 }
 
+export async function runLab(env: IonicEnvironment, url: string, port: number) {
+  const { registerShutdownFunction } = await import('./process');
+
+  const p = await env.shell.spawn('ionic-lab', [url, '--open', '--port', String(port)], { cwd: env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' }, stdio: 'inherit' });
+
+  registerShutdownFunction(() => p.kill());
+}
+
 export const DEFAULT_PROXY_CONFIG: proxyMiddlewareType.Config = {
   changeOrigin: true,
   logLevel: 'warn',
@@ -150,13 +157,6 @@ export async function attachProjectProxy(app: expressType.Application, proxy: Pr
 export async function attachProxy(app: expressType.Application, p: string, config: proxyMiddlewareType.Config) {
   const proxyMiddleware = await import('http-proxy-middleware');
   app.use(p, proxyMiddleware(p, config));
-}
-
-export async function attachLab(app: expressType.Application) {
-  const express = await import('express');
-
-  app.use(IONIC_LAB_URL + '/static', express.static(path.join(__dirname, '..', 'assets', 'lab', 'static')));
-  app.get(IONIC_LAB_URL, (req, res) => res.sendFile('index.html', { root: path.join(__dirname, '..', 'assets', 'lab') }));
 }
 
 export interface DevAppDetails {
