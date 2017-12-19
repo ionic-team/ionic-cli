@@ -111,7 +111,11 @@ export async function runLab(env: IonicEnvironment, url: string, port: number) {
   const project = await env.project.load();
   const pkg = await env.project.loadPackageJson();
 
-  const p = await env.shell.spawn('ionic-lab', [url, '--port', String(port), '--app-name', project.name, '--app-version', pkg.version], { cwd: env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
+  const labArgs = [url, '--port', String(port)];
+  const nameArgs = project.name ? ['--app-name', project.name] : [];
+  const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
+
+  const p = await env.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
 
   registerShutdownFunction(() => p.kill());
 

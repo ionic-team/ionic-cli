@@ -3,7 +3,7 @@ import * as Debug from 'debug';
 
 import { parsedArgsToArgv } from '@ionic/cli-framework/lib';
 
-import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions';
+import { IonicEnvironment, LabServeDetails, ServeDetails, ServeOptions } from '../../definitions';
 import { BIND_ALL_ADDRESS, DEFAULT_LAB_PORT, LOCAL_ADDRESSES, runLab, selectExternalIP } from '../serve';
 
 const APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
@@ -19,6 +19,7 @@ export interface AppScriptsServeOptions extends ServeOptions {
 export async function serve({ env, options }: { env: IonicEnvironment, options: AppScriptsServeOptions }): Promise<ServeDetails> {
   const { findClosestOpenPort, isHostConnectable } = await import('../utils/network');
   const [ externalIP, availableInterfaces ] = await selectExternalIP(env, options);
+  let labDetails: LabServeDetails | undefined;
 
   const appScriptsPort = await findClosestOpenPort(options.port, '0.0.0.0');
 
@@ -26,8 +27,13 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
   await appScriptsServe(env, options);
 
   if (options.lab) {
-    const labPort = await findClosestOpenPort(DEFAULT_LAB_PORT, '0.0.0.0');
-    await runLab(env, `http://localhost:${appScriptsPort}`, labPort);
+    labDetails = {
+      protocol: 'http',
+      address: 'localhost',
+      port: await findClosestOpenPort(DEFAULT_LAB_PORT, '0.0.0.0'),
+    };
+
+    await runLab(env, `http://localhost:${appScriptsPort}`, labDetails.port);
   }
 
   debug('waiting for connectivity with app scripts (%dms timeout)', APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT);
@@ -40,6 +46,7 @@ export async function serve({ env, options }: { env: IonicEnvironment, options: 
     externalNetworkInterfaces: availableInterfaces,
     port: appScriptsPort,
     externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
+    lab: labDetails,
   };
 }
 
