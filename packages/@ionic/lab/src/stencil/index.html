@@ -6,35 +6,39 @@
 
   <base target="_blank" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
-  <meta name="theme-color" content="#16161d">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-
   <script src="/build/ionlab.js"></script>
 
-  <link rel="apple-touch-icon" href="/assets/icon/icon.png">
-  <link rel="icon" type="image/x-icon" href="/assets/icon/favicon.ico">
-  <link rel="manifest" href="/manifest.json">
-
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
   <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 
   <script>
-var qp = {};
-location.search.substring(1).split('&').reduce(function(obj, pair) {
-  pair = pair.split('=');
-  obj[pair[0]] = pair[1];
-}, qp);
+    var qp = {};
+    location.search.substring(1).split('&').reduce(function(obj, pair) {
+      pair = pair.split('=');
+      obj[pair[0]] = pair[1];
+    }, qp);
 
-if (!qp.session) {
-  var session = Math.random().toString(16).substring(2, 10);
-  sessionStorage.setItem('ionic-lab-' + session, JSON.stringify({ session: session, qp }));
-  history.replaceState({}, 'Ionic Lab', '/?session=' + session);
-}
+    if (!qp.session) {
+      var session = Math.random().toString(16).substring(2, 10);
+      sessionStorage.setItem('ionic-lab-' + session, JSON.stringify({ session: session, qp }));
+      history.replaceState({}, 'Ionic Lab', '/?session=' + session);
+    }
   </script>
 </head>
 <body>
 
   <ionlab-app></ionlab-app>
 
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-44023830-9', {
+      'cookieDomain': 'none'
+    })
+    ga('send', 'pageview');
+  </script>
 </body>
 </html>

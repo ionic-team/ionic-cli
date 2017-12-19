@@ -12,17 +12,20 @@
   "license": "MIT",
   "files": [
     "dist/",
+    "www/",
     "LICENSE",
     "README.md"
   ],
   "scripts": {
-    "clean": "rm -rf ./dist && rm -rf ./www",
+    "clean": "npm run clean.tsc",
+    "clean.tsc": "rm -rf ./dist",
+    "clean.stencil": "rm -rf ./www",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
-    "build": "npm run clean && npm run build.tsc && npm run build.stencil",
+    "build": "npm run clean.tsc && npm run clean.stencil  && npm run build.tsc && npm run build.stencil",
     "build.stencil": "stencil build",
     "build.tsc": "tsc",
     "watch": "npm run watch.tsc",
-    "watch.stencil": "concurrently \"stencil build --dev --watch\" \"stencil-dev-server --address localhost --httpPort 8900 --no-open\"",
+    "watch.stencil": "npm run clean.stencil && concurrently \"stencil build --dev --watch\" \"stencil-dev-server --address localhost --httpPort 8900 --no-open\"",
     "watch.tsc": "tsc -w",
     "test": "jest",
     "prepublishOnly": "npm run build"
