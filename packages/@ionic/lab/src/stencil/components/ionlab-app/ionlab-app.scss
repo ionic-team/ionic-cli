@@ -125,3 +125,13 @@ footer {
     margin-left: 10px;
   }
 }
+
+#error-box {
+  width: 500px;
+  align-self: center;
+  justify-content: center;
+  text-align: center;
+  background: $section-bg;
+  padding: 25px;
+  margin: 100px 0;
+}

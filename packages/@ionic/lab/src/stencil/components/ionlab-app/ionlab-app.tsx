@@ -9,10 +9,47 @@ import { PLATFORM_IOS, PLATFORM_ANDROID } from '../../utils';
 export class App {
   @State() sidebarVisible: boolean = true;
   @State() activeDevices: string[] = [PLATFORM_IOS, PLATFORM_ANDROID];
-  @State() url: string = 'http://localhost:8100';
+  @State() url?: string;
+  session: string;
 
   appName = 'MyApp';
   appVersion = 'v0.0.1';
+
+  componentWillLoad() {
+    const qp = {};
+
+    location.search.substring(1).split('&').reduce((obj, pair) => {
+      const [ key, value ] = pair.split('=');
+      return obj[key] = value;
+    }, qp);
+
+    this.session = qp['session'];
+
+    if (this.session) {
+      const sessionData = JSON.parse(sessionStorage.getItem(`ionic-lab-${this.session}`));
+
+      if (sessionData.qp.url) {
+        this.url = decodeURIComponent(sessionData.qp.url);
+      }
+    }
+
+    const storedPlatforms = localStorage.getItem('ionic-lab-platforms');
+
+    if (storedPlatforms) {
+      this.activeDevices = JSON.parse(storedPlatforms);
+    }
+
+    const storedSidebarOpen = localStorage.getItem('ionic-lab-sidebar-open');
+
+    if (storedSidebarOpen) {
+      this.sidebarVisible = JSON.parse(storedSidebarOpen);
+    }
+  }
+
+  componentWillUpdate() {
+    localStorage.setItem('ionic-lab-platforms', JSON.stringify(this.activeDevices));
+    localStorage.setItem('ionic-lab-sidebar-open', JSON.stringify(this.sidebarVisible));
+  }
 
   @Listen('ionlabSidebarCloseClicked')
   sidebarCloseClickedHander(event) {
@@ -33,11 +70,21 @@ export class App {
   }
 
   @Listen('ionlabPlatformToggled')
-  ionlabPlatformWindowsToggledHandler(event) {
+  ionlabPlatformToggledHandler(event) {
     this.togglePlatform(event.detail);
   }
 
   render() {
+    if (!this.url) {
+      return (
+        <div id="error-box">
+          <h2>Uh oh!</h2>
+          <p>Ionic Lab doesn't know which URL to load. Try passing it (encoded) in the query parameter:</p>
+          <code>?url=http%3A%2F%2Flocalhost%3A8100</code>
+        </div>
+      );
+    }
+
     return [
       <header>
         <div id="header-left">
