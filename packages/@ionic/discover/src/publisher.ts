@@ -23,7 +23,7 @@ export class Publisher extends events.EventEmitter implements IPublisher {
   running = false;
   interval = 2000;
 
-  timer?: number;
+  timer?: NodeJS.Timer;
   client?: dgram.Socket;
   interfaces?: Interface[];
 

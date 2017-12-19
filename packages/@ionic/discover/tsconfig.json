@@ -1,20 +1,7 @@
 {
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "allowUnreachableCode": false,
-    "declaration": true,
-    "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "outDir": "./dist",
-    "pretty": true,
-    "strict": true,
-    "target": "es6",
-    "typeRoots": [
-      "../../../node_modules/@types"
-    ]
+    "outDir": "./dist"
   },
   "include": [
     "src/**/*.ts"

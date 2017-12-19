@@ -4,9 +4,9 @@ declare module "tiny-lr" {
   namespace TinyLR {}
 
   interface TinyLRServer {
-    listen(port: number, cb?: () => {});
-    close();
-    changed(p: any);
+    listen(port: number, cb?: () => {}): void;
+    close(): void;
+    changed(p: any): void;
   }
 
   function TinyLR(): TinyLRServer;

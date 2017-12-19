@@ -1,26 +1,7 @@
 {
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "allowUnreachableCode": false,
-    "baseUrl": "./",
-    "declaration": true,
-    "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "outDir": "./",
-    "pretty": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "target": "es6",
-    "typeRoots": [
-      "../../../node_modules/@types"
-    ],
-    "lib": [
-      "es2016",
-      "dom"
-    ]
+    "outDir": "./"
   },
   "include": [
     "../../../types/ci-info.d.ts",
@@ -30,8 +11,10 @@
     "../../../types/os-name.d.ts",
     "../../../types/slice-ansi.d.ts",
     "../../../types/ssh-config.d.ts",
+    "../../../types/string-width.d.ts",
     "../../../types/superagent.d.ts",
     "../../../types/tiny-lr.d.ts",
+    "../../../types/wrap-ansi.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

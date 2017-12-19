@@ -1,24 +1,7 @@
 {
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "allowUnreachableCode": false,
-    "baseUrl": "./",
-    "declaration": true,
-    "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "outDir": "./",
-    "pretty": true,
-    "strict": true,
-    "target": "es6",
-    "typeRoots": [
-      "../../../node_modules/@types"
-    ],
-    "lib": [
-      "es2016"
-    ]
+    "outDir": "./"
   },
   "include": [
     "../../../types/string-width.d.ts",
