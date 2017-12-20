@@ -6,20 +6,53 @@ import * as wsType from 'ws';
 import { fsReadFile } from '@ionic/cli-framework/utils/fs';
 
 import chalk from 'chalk';
-
-import { IonicEnvironment, LiveReloadFunction, LogLevel, ServeOptions } from '../definitions';
-import { isDevServerMessage } from '../guards';
-import { injectScript } from './html';
+import { Chalk } from 'chalk';
 
 export const DEV_SERVER_PREFIX = '__ionic';
 
-export async function createDevServerHandler(options: ServeOptions): Promise<expressType.RequestHandler> {
+export interface DevServerMessage {
+  category: 'console';
+  type: string;
+  data: any[];
+}
+
+export interface DevServerOptions {
+  consolelogs: boolean;
+  devPort: number;
+}
+
+export type LiveReloadFunction = (changedFiles: string[]) => void;
+
+export function isDevServerMessage(m: any): m is DevServerMessage {
+  return m
+    && typeof m.category === 'string'
+    && typeof m.type === 'string'
+    && m.data && typeof m.data.length === 'number';
+}
+
+export function injectScript(content: string, code: string): string {
+  let match = content.match(/<\/body>(?![\s\S]*<\/body>)/i);
+
+  if (!match) {
+    match = content.match(/<\/html>(?![\s\S]*<\/html>)/i);
+  }
+
+  if (match) {
+    content = content.replace(match[0], `${code}${match[0]}`);
+  } else {
+    content += code;
+  }
+
+  return content;
+}
+
+export async function createDevServerHandler(options: DevServerOptions): Promise<expressType.RequestHandler> {
   const devServerConfig = {
     consolelogs: options.consolelogs,
-    wsPort: options.notificationPort,
+    wsPort: options.devPort,
   };
 
-  const devServerJs = await fsReadFile(path.join(__dirname, '..', 'assets', 'dev-server', 'dev-server.js'), { encoding: 'utf8' });
+  const devServerJs = await fsReadFile(path.join(__dirname, '..', '..', 'assets', 'dev-server.js'), { encoding: 'utf8' });
 
   return (req, res) => {
     res.set('Content-Type', 'application/javascript');
@@ -31,7 +64,7 @@ export async function createDevServerHandler(options: ServeOptions): Promise<exp
   };
 }
 
-export async function attachDevServer(app: expressType.Application, options: ServeOptions) {
+export async function attachDevServer(app: expressType.Application, options: DevServerOptions) {
   app.get(`/${DEV_SERVER_PREFIX}/dev-server.js`, await createDevServerHandler(options));
 }
 
@@ -53,7 +86,7 @@ function getDevServerScript() {
 `;
 }
 
-export async function createLiveReloadServer(env: IonicEnvironment, { port, wwwDir }: { port: number; wwwDir: string; }): Promise<LiveReloadFunction> {
+export async function createLiveReloadServer({ port, wwwDir }: { port: number; wwwDir: string; }): Promise<LiveReloadFunction> {
   const tinylr = await import('tiny-lr');
   const lrserver = tinylr();
   lrserver.listen(port);
@@ -96,9 +129,8 @@ function getLiveReloadScript(port: number) {
 `;
 }
 
-export async function createDevLoggerServer(env: IonicEnvironment, port: number): Promise<wsType.Server> {
+export async function createDevLoggerServer(port: number): Promise<wsType.Server> {
   const WebSocket = await import('ws');
-  const { LOGGER_STATUS_COLORS } = await import('./utils/logger');
 
   const wss = new WebSocket.Server({ port });
 
@@ -110,25 +142,31 @@ export async function createDevLoggerServer(env: IonicEnvironment, port: number)
         data = data.toString();
         msg = JSON.parse(data);
       } catch (e) {
-        env.log.error(`Error parsing JSON message from dev server: "${data}" ${chalk.red(e.stack ? e.stack : e)}`);
+        console.error(`Error parsing JSON message from dev server: "${data}" ${chalk.red(e.stack ? e.stack : e)}`);
         return;
       }
 
       if (!isDevServerMessage(msg)) {
         const m = util.inspect(msg, { colors: chalk.enabled });
-        env.log.error(`Bad format in dev server message: ${m}`);
+        console.error(`Bad format in dev server message: ${m}`);
         return;
       }
 
       if (msg.category === 'console') {
-        const status = LOGGER_STATUS_COLORS.get(<LogLevel>msg.type);
+        let status: Chalk | undefined; // unknown levels are normal color
+
+        if (msg.type === 'info' || msg.type === 'log') {
+          status = chalk.reset;
+        } else if (msg.type === 'error') {
+          status = chalk.red;
+        } else if (msg.type === 'warn') {
+          status = chalk.yellow;
+        }
 
         if (status) {
-          env.log.msg(`[${status('console.' + msg.type)}]: ${msg.data.join(' ')}`);
-        } else if (msg.type === 'log') {
-          env.log.msg(`[${chalk.gray('console.log')}]: ${msg.data.join(' ')}`);
+          console.log(`[${status('console.' + msg.type)}]: ${msg.data.join(' ')}`);
         } else {
-          env.log.msg(`[console]: ${msg.data.join(' ')}`);
+          console.log(`[console]: ${msg.data.join(' ')}`);
         }
       }
     });

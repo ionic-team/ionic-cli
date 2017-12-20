@@ -3,24 +3,27 @@ import * as os from 'os';
 import chalk from 'chalk';
 import { str2num } from '@ionic/cli-framework/utils/string';
 
-import { CommandLineInputs, CommandLineOptions, IonicEnvironment, ServeDetails } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, IonicEnvironment, LabServeDetails, ServeDetails } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 import { FatalException } from '../lib/errors';
 
 import {
   BIND_ALL_ADDRESS,
   DEFAULT_DEV_LOGGER_PORT,
+  DEFAULT_LAB_PORT,
   DEFAULT_LIVERELOAD_PORT,
   DEFAULT_SERVER_PORT,
   gatherDevAppDetails,
   getSupportedDevAppPlugins,
   publishDevApp,
+  runLab,
 } from '../lib/serve';
 
 const WATCH_BEFORE_HOOK = 'watch:before';
 const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
+  const { findClosestOpenPort } = await import('../lib/utils/network');
   const { detectAndWarnAboutDeprecatedPlugin } = await import('../lib/plugins');
 
   const packageJson = await env.project.loadPackageJson();
@@ -96,6 +99,18 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     );
   }
 
+  let labDetails: LabServeDetails | undefined;
+
+  if (serveOptions.lab) {
+    labDetails = {
+      protocol: 'http',
+      address: 'localhost',
+      port: await findClosestOpenPort(DEFAULT_LAB_PORT, '0.0.0.0'),
+    };
+
+    await runLab(env, `http://localhost:${details.port}`, labDetails.port);
+  }
+
   if (devAppDetails) {
     const devAppName = await publishDevApp(env, serveOptions, { port: details.port, ...devAppDetails });
     devAppDetails.channel = devAppName;
@@ -103,7 +118,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
 
   const localAddress = `${details.protocol}://localhost:${details.port}`;
   const fmtExternalAddress = (address: string) => `${details.protocol}://${address}:${details.port}`;
-  const labAddress = serveOptions.lab && details.lab ? `${details.lab.protocol}://${details.lab.address}:${details.lab.port}` : undefined;
+  const labAddress = labDetails ? `${labDetails.protocol}://${labDetails.address}:${labDetails.port}` : undefined;
 
   env.log.nl();
   env.log.ok(

@@ -1,9 +1,9 @@
 {
-  "name": "@ionic/lab",
+  "name": "@ionic/v1-util",
   "version": "0.0.0",
-  "description": "Ionic Lab utility for developing Ionic apps, used by Ionic CLI",
+  "description": "Utility CLI for Ionic 1.x apps, used by Ionic CLI",
   "bin": {
-    "ionic-lab": "./bin/ionic-lab"
+    "ionic-v1": "./bin/ionic-v1"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,35 +11,35 @@
   "author": "Ionic Team <hi@ionic.io> (https://ionic.io)",
   "license": "MIT",
   "files": [
+    "assets/",
     "dist/",
-    "www/",
     "LICENSE",
     "README.md"
   ],
   "scripts": {
-    "clean": "npm run clean.tsc",
-    "clean.tsc": "rm -rf ./dist",
-    "clean.stencil": "rm -rf ./www",
+    "clean": "rm -rf ./dist",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
-    "build": "npm run build.tsc && npm run build.stencil",
-    "build.stencil": "npm run clean.stencil && stencil build",
-    "build.tsc": "npm run clean.tsc && tsc",
-    "watch": "npm run watch.tsc",
-    "watch.stencil": "npm run clean.stencil && concurrently \"stencil build --dev --watch\" \"stencil-dev-server --address localhost --httpPort 8900 --no-open\"",
-    "watch.tsc": "tsc -w",
+    "build": "npm run clean && tsc",
+    "watch": "tsc -w",
     "test": "jest",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@ionic/cli-framework": "0.1.2",
     "chalk": "^2.3.0",
-    "express": "^4.16.2"
+    "chokidar": "^1.7.0",
+    "debug": "^3.1.0",
+    "express": "^4.16.2",
+    "http-proxy-middleware": "^0.17.4",
+    "tiny-lr": "^1.0.5",
+    "ws": "3.3.2"
   },
   "devDependencies": {
-    "@stencil/core": "next",
-    "@stencil/dev-server": "next",
+    "@types/chokidar": "^1.7.4",
+    "@types/debug": "0.0.30",
     "@types/express": "^4.0.39",
-    "concurrently": "^3.5.1"
+    "@types/http-proxy-middleware": "^0.17.2",
+    "@types/ws": "^3.2.1"
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,5 @@
 import { Command } from '../command';
-import { CommandMap, Namespace } from '../namespace';
+import { CommandMap, CommandMapDefault, Namespace } from '../namespace';
 
 describe('@ionic/cli-framework', () => {
 
@@ -121,6 +121,17 @@ describe('@ionic/cli-framework', () => {
           expect(cmd.metadata.fullName).toEqual('foo');
         });
 
+        it('should locate default command', async () => {
+          const ns = new MyNamespace();
+          const cmd = new FooCommand();
+          ns.commands.set(CommandMapDefault, () => cmd);
+          const [ depth, args, cmdOrNamespace ] = await ns.locate([]);
+          expect(depth).toEqual(0);
+          expect(args).toEqual([]);
+          expect(cmd).toBe(cmdOrNamespace);
+          expect(cmd.metadata.fullName).toEqual('');
+        });
+
         it('should locate foo namespace', async () => {
           const ns = new MyNamespace();
           const foons = new FooNamespace();
@@ -142,6 +153,19 @@ describe('@ionic/cli-framework', () => {
           expect(args).toEqual(['baz']);
           expect(cmd).toBe(cmdOrNamespace);
           expect(cmd.metadata.fullName).toEqual('foo bar');
+        });
+
+        it('should locate default command in foo', async () => {
+          const ns = new MyNamespace();
+          const foons = new FooNamespace();
+          const cmd = new BarCommand();
+          foons.commands.set(CommandMapDefault, () => cmd);
+          ns.namespaces.set('foo', () => foons);
+          const [ depth, args, cmdOrNamespace ] = await ns.locate(['foo', 'bar', 'baz']);
+          expect(depth).toEqual(1);
+          expect(args).toEqual(['bar', 'baz']);
+          expect(cmd).toBe(cmdOrNamespace);
+          expect(cmd.metadata.fullName).toEqual('foo');
         });
 
         it('should locate bar command in foo namespace by alias', async () => {

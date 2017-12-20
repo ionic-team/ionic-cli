@@ -61,12 +61,21 @@ export abstract class Namespace<T extends Command<U>, U extends CommandData<V, W
    * right-most namespace matched if the command is not found.
    */
   async locate(argv: string[]): Promise<[number, string[], T | Namespace<T, U, V, W>]> {
-    const extractcmd = async (getter: CommandMapGetter<T, U, V, W>, inputs: string[], depth: number, namespaceDepthList: string[]): Promise<[number, string[], T]> => {
+    const extractcmd = async (getter: CommandMapGetter<T, U, V, W>, inputs: string[], depth: number, namespaceDepthList: string[], slice = true): Promise<[number, string[], T]> => {
       const cmd = await getter();
-      cmd.metadata.fullName = [...namespaceDepthList.slice(1), cmd.metadata.name].join(' ');
 
-      debug('command %s found at depth %d', cmd.metadata.name, depth + 1);
-      return [depth + 1, inputs.slice(1), cmd];
+      const fullNameParts = namespaceDepthList.slice(1);
+
+      if (slice) {
+        depth += 1;
+        inputs = inputs.slice(1);
+        fullNameParts.push(cmd.metadata.name);
+      }
+
+      cmd.metadata.fullName = fullNameParts.join(' ');
+
+      debug('command %s found at depth %d', cmd.metadata.name, depth);
+      return [depth, inputs, cmd];
     };
 
     const _locate = async (depth: number, inputs: string[], ns: Namespace<T, U, V, W>, namespaceDepthList: string[]): Promise<[number, string[], T | Namespace<T, U, V, W>]> => {
@@ -83,7 +92,7 @@ export abstract class Namespace<T extends Command<U>, U extends CommandData<V, W
         const defaultcmdgetter = commands.get(CommandMapDefault);
 
         if (defaultcmdgetter && typeof defaultcmdgetter !== 'string') { // TODO: string check is gross
-          return await extractcmd(defaultcmdgetter, inputs, depth, namespaceDepthList);
+          return await extractcmd(defaultcmdgetter, inputs, depth, namespaceDepthList, false);
         }
 
         debug('no command/namespace found at depth %d, using namespace %s', depth + 1, ns.metadata.name);

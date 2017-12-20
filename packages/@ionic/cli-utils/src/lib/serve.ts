@@ -1,7 +1,6 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
-import * as expressType from 'express';
 import * as proxyMiddlewareType from 'http-proxy-middleware';
 
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
@@ -125,18 +124,10 @@ export async function runLab(env: IonicEnvironment, url: string, port: number) {
   p.stderr.pipe(split2()).pipe(ws);
 }
 
-export const DEFAULT_PROXY_CONFIG: proxyMiddlewareType.Config = {
-  changeOrigin: true,
-  logLevel: 'warn',
-  ws: true,
-};
-
-export function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy, additionalConfig?: proxyMiddlewareType.Config): proxyMiddlewareType.Config {
-  const config = {
-    ...DEFAULT_PROXY_CONFIG,
+export function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy): proxyMiddlewareType.Config {
+  const config: proxyMiddlewareType.Config = {
     pathRewrite: { [proxy.path]: '' },
     target: proxy.proxyUrl,
-    ...additionalConfig,
   };
 
   if (proxy.proxyNoAgent) {
@@ -148,28 +139,6 @@ export function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy, additiona
   }
 
   return config;
-}
-
-export async function attachProjectProxies(app: expressType.Application, env: IonicEnvironment) {
-  const project = await env.project.load();
-
-  if (!project.proxies) {
-    return;
-  }
-
-  for (let proxy of project.proxies) {
-    await attachProjectProxy(app, proxy, { logProvider: () => env.log });
-    env.log.info(`Proxy created ${chalk.bold(proxy.path)} => ${chalk.bold(proxy.proxyUrl)}`);
-  }
-}
-
-export async function attachProjectProxy(app: expressType.Application, proxy: ProjectFileProxy, additionalConfig?: proxyMiddlewareType.Config) {
-  await attachProxy(app, proxy.path, proxyConfigToMiddlewareConfig(proxy));
-}
-
-export async function attachProxy(app: expressType.Application, p: string, config: proxyMiddlewareType.Config) {
-  const proxyMiddleware = await import('http-proxy-middleware');
-  app.use(p, proxyMiddleware(p, config));
 }
 
 export interface DevAppDetails {

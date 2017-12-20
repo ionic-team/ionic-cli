@@ -15,16 +15,17 @@ export class Executor<T extends Command<U>, U extends CommandData<V, W>, V exten
   async execute(argv: string[], env: { [key: string]: string; }) {
     const parsedArgs = parseArgs(argv, { boolean: true, string: '_' });
 
-    const [ , , cmd ] = await this.namespace.locate(parsedArgs._);
+    const [ depth, , cmd ] = await this.namespace.locate(parsedArgs._);
 
     if (cmd instanceof Namespace) {
       throw new CommandNotFoundError('Command not found.', parsedArgs._);
     }
 
     const args = parseArgs(argv, metadataToParseArgsOptions(cmd.metadata));
+    const inputs = args._.slice(depth);
 
-    await cmd.validate(args._);
-    await cmd.run(args._, args);
+    await cmd.validate(inputs);
+    await cmd.run(inputs, args);
   }
 }
 

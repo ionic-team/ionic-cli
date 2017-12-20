@@ -474,7 +474,6 @@ export interface ServeDetails {
   port: number;
   externalNetworkInterfaces: NetworkInterface[];
   externallyAccessible: boolean;
-  lab?: LabServeDetails;
 }
 
 export interface CordovaProjectInfoHookResponse {
@@ -712,14 +711,6 @@ export interface StarterTemplate {
 export interface IntegrationTemplate {
   name: string;
   archive?: string;
-}
-
-export type LiveReloadFunction = (changedFiles: string[]) => void;
-
-export interface DevServerMessage {
-  category: 'console';
-  type: string;
-  data: any[];
 }
 
 export type NetworkInterface = { deviceName: string; } & os.NetworkInterfaceInfo;
