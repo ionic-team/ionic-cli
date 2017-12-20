@@ -24,7 +24,6 @@ const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
   const { findClosestOpenPort } = await import('../lib/utils/network');
-  const { detectAndWarnAboutDeprecatedPlugin } = await import('../lib/plugins');
 
   const packageJson = await env.project.loadPackageJson();
 
@@ -35,18 +34,6 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
 
   const assign = await import('lodash/assign');
   const deps = assign({}, packageJson.dependencies, packageJson.devDependencies);
-
-  if (deps['gulp']) {
-    const { checkAndEnableGulpIntegration, registerWatchEvents, runTask } = await import('../lib/gulp');
-    await checkAndEnableGulpIntegration(env);
-    await registerWatchEvents(env);
-    await runTask(env, WATCH_BEFORE_SCRIPT);
-  }
-
-  await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-cordova');
-  await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic-angular');
-  await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-ionic1');
-  await detectAndWarnAboutDeprecatedPlugin(env, '@ionic/cli-plugin-gulp');
 
   if (deps['@ionic/cli-plugin-cordova']) {
     const { checkCordova } = await import('../lib/cordova/utils');

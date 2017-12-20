@@ -1,12 +1,15 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
-import * as Debug from 'debug';
+// import * as Debug from 'debug';
+import * as chokidar from 'chokidar';
 import * as express from 'express';
 import * as proxyMiddleware from 'http-proxy-middleware';
 import { fsReadFile } from '@ionic/cli-framework/utils/fs';
 
 import { LiveReloadFunction, createLiveReloadServer } from './dev-server';
+import { runTask } from './gulp';
+import { timestamp } from './log';
 
 import {
   DEV_SERVER_PREFIX,
@@ -16,7 +19,7 @@ import {
   injectLiveReloadScript,
 } from './dev-server';
 
-const debug = Debug('ionic:v1-util:serve');
+// const debug = Debug('ionic:v1-util:lib:serve');
 
 export interface ProxyConfig extends proxyMiddleware.Config {
   mount: string;
@@ -49,21 +52,18 @@ export async function runServer(options: ServeOptions): Promise<ServeOptions> {
 
   await createHttpServer(options);
 
-  const chokidar = await import('chokidar');
-
-  // TODO: EVENTS?
-
   const watcher = chokidar.watch(options.watchPatterns);
-  // env.events.emit('watch:init');
 
   watcher.on('change', (filePath: string) => {
-    console.log(`${chalk.dim(`[${new Date().toTimeString().slice(0, 8)}]`)} ${chalk.bold(filePath)} changed`);
+    console.log(timestamp(), `${chalk.bold(filePath)} changed`);
 
     if (reloadfn) {
       reloadfn([filePath]);
     }
 
-    // env.events.emit('watch:change', filePath);
+    if (path.extname(filePath) === '.scss') {
+      runTask('sass');
+    }
   });
 
   watcher.on('error', (err: Error) => {
@@ -77,8 +77,6 @@ export async function runServer(options: ServeOptions): Promise<ServeOptions> {
  * Create HTTP server
  */
 async function createHttpServer(options: ServeOptions): Promise<express.Application> {
-  const express = await import('express');
-
   const app = express();
 
   /**
@@ -98,11 +96,6 @@ async function createHttpServer(options: ServeOptions): Promise<express.Applicat
     res.set('Content-Type', 'text/html');
     res.send(indexHtml);
   };
-
-  app.use((req, res, next) => {
-    debug(`${req.method} ${req.path}`);
-    next();
-  });
 
   app.get('/', serveIndex);
   app.use('/', express.static(options.wwwDir));
@@ -141,16 +134,3 @@ async function createHttpServer(options: ServeOptions): Promise<express.Applicat
 function attachProxy(app: express.Application, config: ProxyConfig) {
   app.use(config.mount, proxyMiddleware(config.mount, config));
 }
-
-// async function attachProjectProxies(app: expressType.Application, env: IonicEnvironment) {
-//   const project = await env.project.load();
-
-//   if (!project.proxies) {
-//     return;
-//   }
-
-//   for (let proxy of project.proxies) {
-//     await attachProjectProxy(app, proxy, { logProvider: () => env.log });
-//   }
-// }
-

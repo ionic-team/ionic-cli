@@ -1,6 +1,6 @@
 import { execute } from '@ionic/cli-framework/lib';
 
-import { ServeCommand } from './commands';
+import { BuildCommand, ServeCommand } from './commands';
 import { CommandMap, Namespace } from './lib';
 
 export class IonicV1Namespace extends Namespace {
@@ -9,7 +9,10 @@ export class IonicV1Namespace extends Namespace {
     description: '',
   };
 
-  commands = new CommandMap([['serve', async () => new ServeCommand()]]);
+  commands = new CommandMap([
+    ['build', async () => new BuildCommand()],
+    ['serve', async () => new ServeCommand()],
+  ]);
 }
 
 

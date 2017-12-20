@@ -119,17 +119,12 @@ export interface ProjectIntegration {
   enabled?: boolean;
 }
 
-export interface ProjectIntegrationGulp extends ProjectIntegration {
-  file?: string; // gulpfile.js location, because some people use Gulpfile.js
-}
-
 export interface ProjectFile {
   name: string;
   type: ProjectType;
   app_id: string;
   integrations: {
     cordova?: ProjectIntegration;
-    gulp?: ProjectIntegrationGulp;
     [key: string]: ProjectIntegration | undefined;
   };
   documentRoot?: string; // www folder location (TODO: use this everywhere)

@@ -138,12 +138,6 @@ function registerHooks(hooks: IHookEngine) {
 
         info.push({ type: 'environment', key: 'ANDROID_HOME', value: process.env.ANDROID_HOME || 'not set' });
       }
-
-      if (projectFile.integrations.gulp && projectFile.integrations.gulp.enabled !== false) {
-        const { getGulpVersion } = await import('./lib/gulp');
-        const gulpVersion = await getGulpVersion(env);
-        info.push({ type: 'global-packages', key: 'Gulp CLI', value: gulpVersion || 'not installed globally' });
-      }
     }
 
     return info;

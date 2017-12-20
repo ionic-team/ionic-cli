@@ -12,9 +12,6 @@ export const INTEGRATIONS: IntegrationTemplate[] = [
     name: 'cordova',
     archive: 'https://d2ql0qc7j8u4b2.cloudfront.net/integration-cordova.tar.gz',
   },
-  {
-    name: 'gulp',
-  },
 ];
 
 export interface IntegrationOptions {

@@ -88,15 +88,8 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
       results.type = await this.determineType();
     }
 
-    if (results.gulpFile) {
-      results.integrations.gulp = { file: results.gulpFile };
-    }
-
-    if (results.gulp && typeof results.gulp.enabled === 'undefined') {
-      results.gulp.enabled = true;
-    }
-
-    delete results.gulpFile;
+    delete results.integrations.gulp;
+    delete results.gulp;
     delete results.projectTypeId;
     delete results.typescript;
     delete results.v2;
