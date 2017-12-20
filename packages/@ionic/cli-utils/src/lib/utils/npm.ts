@@ -35,6 +35,7 @@ interface PkgManagerVocabulary {
   install: string;
   bareInstall: string;
   uninstall: string;
+  run: string;
   dedupe: string;
   rebuild: string;
 
@@ -46,11 +47,14 @@ interface PkgManagerVocabulary {
   nonInteractive: string;
 }
 
+export type PkgManagerCommand = 'dedupe' | 'rebuild' | 'install' | 'uninstall' | 'run';
+
 export interface PkgManagerOptions extends IShellRunOptions {
-  command?: 'dedupe' | 'rebuild' | 'install' | 'uninstall';
+  command?: PkgManagerCommand;
   pkg?: string;
+  script?: string;
+  scriptArgs?: string[];
   global?: boolean;
-  link?: boolean;
   save?: boolean;
   saveDev?: boolean;
   saveExact?: boolean;
@@ -58,6 +62,8 @@ export interface PkgManagerOptions extends IShellRunOptions {
 
 /**
  * Resolves pkg manager intent with command args.
+ *
+ * TODO: this is a weird function and should be split up
  *
  * @return Promise<args> If the args is an empty array, it means the pkg manager doesn't have that command.
  */
@@ -69,35 +75,24 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
     options.command = 'install';
   }
 
-  let command: PkgManagerOptions['command'] | 'link' | 'unlink' = options.command;
+  let cmd = options.command;
 
-  if (command === 'dedupe') {
+  if (cmd === 'dedupe') {
     delete options.pkg;
   }
 
-  if (command === 'dedupe' || command === 'rebuild') {
+  if (cmd === 'dedupe' || cmd === 'rebuild') {
     delete options.global;
-    delete options.link;
     delete options.save;
     delete options.saveDev;
   }
 
-  if (command === 'dedupe' || command === 'rebuild' || command === 'uninstall') {
+  if (cmd === 'dedupe' || cmd === 'rebuild' || cmd === 'uninstall') {
     delete options.saveExact;
   }
 
-  if (command === 'install' || command === 'uninstall') {
-    if (options.link) { // When installing/uninstalling with the link flag, change command
-      options.global = false;
-
-      if (command === 'install') {
-        command = 'link';
-      } else if (command === 'uninstall') {
-        command = 'unlink';
-      }
-    }
-
-    if (options.global || options.link) { // Turn off all save flags for global context or when using link/unlink
+  if (cmd === 'install' || cmd === 'uninstall') {
+    if (options.global) { // Turn off all save flags for global context
       options.save = false;
       options.saveDev = false;
       options.saveExact = false;
@@ -105,7 +100,7 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
       options.save = true;
     }
 
-    if (command === 'install' && options.pkg && typeof options.saveExact === 'undefined') { // For single package installs, prefer to save exact versions
+    if (cmd === 'install' && options.pkg && typeof options.saveExact === 'undefined') { // For single package installs, prefer to save exact versions
       options.saveExact = true;
     }
   }
@@ -132,9 +127,9 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
   const installerArgs: string[] = [];
 
   if (installer === 'npm') {
-    vocab = { install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', rebuild: 'rebuild', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '' };
+    vocab = { run: 'run', install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', rebuild: 'rebuild', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '' };
   } else if (installer === 'yarn') {
-    vocab = { install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'install', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive' };
+    vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'install', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive' };
 
     if (options.global) { // yarn installs packages globally under the 'global' prefix, instead of having a flag
       installerArgs.push('global');
@@ -143,24 +138,24 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
     throw new Error(`unknown installer: ${installer}`);
   }
 
-  if (command === 'install') {
+  if (cmd === 'install') {
     if (options.pkg) {
       installerArgs.push(vocab.install);
     } else {
       installerArgs.push(vocab.bareInstall);
     }
-  } else if (command === 'uninstall') {
+  } else if (cmd === 'uninstall') {
     installerArgs.push(vocab.uninstall);
-  } else if (command === 'dedupe') {
+  } else if (cmd === 'dedupe') {
     if (vocab.dedupe) {
       installerArgs.push(vocab.dedupe);
     } else {
       return [];
     }
-  } else if (command === 'rebuild') {
+  } else if (cmd === 'rebuild') {
     installerArgs.push(vocab.rebuild);
   } else {
-    installerArgs.push(command);
+    installerArgs.push(cmd);
   }
 
   if (options.global && vocab.global) {
@@ -184,16 +179,26 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
   }
 
   if (options.pkg) {
-    if (options.link) {
-      options.pkg = options.pkg.replace(/(.+)@.+/, '$1'); // Removes any dist tags in the pkg name, which link/unlink hate
-    }
-
     installerArgs.push(options.pkg);
   }
 
+  if (cmd === 'run' && options.script) {
+    installerArgs.push(options.script);
+  }
+
   if (installer === 'yarn') {
-    if (options.command === 'rebuild') {
+    if (cmd === 'rebuild') {
       installerArgs.push('--force');
+    }
+  }
+
+  if (cmd === 'run' && options.script && options.scriptArgs && options.scriptArgs.length > 0) {
+    if (installer === 'npm') {
+      installerArgs.push('--');
+    }
+
+    for (let arg of options.scriptArgs) {
+      installerArgs.push(arg);
     }
   }
 

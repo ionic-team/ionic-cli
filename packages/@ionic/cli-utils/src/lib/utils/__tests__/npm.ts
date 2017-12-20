@@ -27,10 +27,10 @@ describe('@ionic/cli-utils', () => {
       expect(result).toEqual(['npm', 'i', '-D', '-E', 'foo']);
     });
 
-    it('should be pkg link args w/o dist tag', async () => {
-      const result = await pkgManagerArgs(envMock, { pkg: 'foo@latest', link: true });
-      expect(result).toEqual(['npm', 'link', 'foo']);
-    });
+    // it('should be pkg link args w/o dist tag', async () => {
+    //   const result = await pkgManagerArgs(envMock, { pkg: 'foo@latest', link: true });
+    //   expect(result).toEqual(['npm', 'link', 'foo']);
+    // });
 
     it('should be pkg install args for local package uninstall', async () => {
       const result = await pkgManagerArgs(envMock, { pkg: 'foo', command: 'uninstall', saveDev: true });
@@ -57,6 +57,21 @@ describe('@ionic/cli-utils', () => {
       expect(result).toEqual(['npm', 'rebuild']);
     });
 
+    it('should be bare run args', async () => {
+      const result = await pkgManagerArgs(envMock, { command: 'run' });
+      expect(result).toEqual(['npm', 'run']);
+    });
+
+    it('should be run args with script', async () => {
+      const result = await pkgManagerArgs(envMock, { command: 'run', script: 'test' });
+      expect(result).toEqual(['npm', 'run', 'test']);
+    });
+
+    it('should be run args with script and script args', async () => {
+      const result = await pkgManagerArgs(envMock, { command: 'run', script: 'test', scriptArgs: ['-s'] });
+      expect(result).toEqual(['npm', 'run', 'test', '--', '-s']);
+    });
+
     describe('yarn', () => {
 
       jest.resetModules();
@@ -78,10 +93,10 @@ describe('@ionic/cli-utils', () => {
         expect(result).toEqual(['yarn', 'add', '--dev', '--exact', '--non-interactive', 'foo']);
       });
 
-      it('should be pkg link args w/o dist tag', async () => {
-        const result = await pkgManagerArgs(envMock, { pkg: 'foo@latest', link: true });
-        expect(result).toEqual(['yarn', 'link', '--non-interactive', 'foo']);
-      });
+      // it('should be pkg link args w/o dist tag', async () => {
+      //   const result = await pkgManagerArgs(envMock, { pkg: 'foo@latest', link: true });
+      //   expect(result).toEqual(['yarn', 'link', '--non-interactive', 'foo']);
+      // });
 
       it('should be pkg install args for local package uninstall', async () => {
         const result = await pkgManagerArgs(envMock, { pkg: 'foo', command: 'uninstall', saveDev: true });
@@ -107,6 +122,21 @@ describe('@ionic/cli-utils', () => {
         const result = await pkgManagerArgs(envMock, { command: 'rebuild' });
         expect(result).toEqual(['yarn', 'install', '--non-interactive', '--force']);
       });
+
+      it('should be run args', async () => {
+        const result = await pkgManagerArgs(envMock, { command: 'run' });
+        expect(result).toEqual(['yarn', 'run', '--non-interactive']);
+      });
+
+    it('should be run args with script', async () => {
+      const result = await pkgManagerArgs(envMock, { command: 'run', script: 'test' });
+      expect(result).toEqual(['yarn', 'run', '--non-interactive', 'test']);
+    });
+
+    it('should be run args with script and script args', async () => {
+      const result = await pkgManagerArgs(envMock, { command: 'run', script: 'test', scriptArgs: ['-s'] });
+      expect(result).toEqual(['yarn', 'run', '--non-interactive', 'test', '-s']);
+    });
 
     });
 

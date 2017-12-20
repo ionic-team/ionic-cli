@@ -3,7 +3,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 
 import { ERROR_FILE_INVALID_JSON } from '@ionic/cli-framework/utils/fs';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_BOWER_JSON, ERROR_INVALID_PACKAGE_JSON, readBowerJsonFile, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
 import { BowerJson, IProject, PackageJson, ProjectFile, ProjectType } from '../definitions';
@@ -12,7 +12,7 @@ import { FatalException } from './errors';
 
 export const PROJECT_FILE = 'ionic.config.json';
 export const PROJECT_FILE_LEGACY = 'ionic.project';
-export const PROJECT_TYPES: ProjectType[] = ['ionic-angular', 'ionic1', 'custom'];
+export const PROJECT_TYPES: ProjectType[] = ['ionic-core-angular', 'ionic-angular', 'ionic1', 'custom'];
 
 export class Project extends BaseConfig<ProjectFile> implements IProject {
   public directory: string;
@@ -116,7 +116,9 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
   }
 
   formatType(type: ProjectType) {
-    if (type === 'ionic-angular') {
+    if (type === 'ionic-core-angular') {
+      return 'Ionic Angular'; // TODO: special name?
+    } else if (type === 'ionic-angular') {
       return 'Ionic Angular';
     } else if (type === 'ionic1') {
       return 'Ionic 1';
@@ -126,6 +128,18 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
   }
 
   protected async determineType(): Promise<ProjectType> {
+    try {
+      const packageJson = await this.loadPackageJson();
+
+      if (packageJson.dependencies && typeof packageJson.dependencies['@ionic/angular'] === 'string') {
+        return 'ionic-core-angular';
+      }
+    } catch (e) {
+      if (e.fatal) {
+        throw e;
+      }
+    }
+
     try {
       const packageJson = await this.loadPackageJson();
 
@@ -150,11 +164,16 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
       }
     }
 
+    const listWrapOptions = { width: TTY_WIDTH - 8 - 3, indentation: 1 };
+
+    // TODO: move some of this to the website
+
     throw new FatalException(
       `Could not determine project type (project config: ${chalk.bold(prettyPath(this.filePath))}).\n` +
-      `For ${this.formatType('ionic-angular')} projects, make sure ${chalk.green('ionic-angular')} is listed as a dependency in ${chalk.bold('package.json')}.\n` +
-      `For ${this.formatType('ionic1')} projects, make sure ${chalk.green('ionic')} is listed as a dependency in ${chalk.bold('bower.json')}.\n\n` +
-      `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold('ionic.config.json')} to one of: ${PROJECT_TYPES.map(v => chalk.green(v)).join(', ')}.\n\n` +
+      `- ${wordWrap(`For ${this.formatType('ionic-core-angular')} projects (Ionic Angular v4+, with ${chalk.bold('@angular/cli')}), make sure ${chalk.green('@ionic/angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n\n` +
+      `- ${wordWrap(`For ${this.formatType('ionic-angular')} projects (Ionic Angular v2-v3, with ${chalk.bold('ionic-app-scripts')}), make sure ${chalk.green('ionic-angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n\n` +
+      `- ${wordWrap(`For ${this.formatType('ionic1')} projects, make sure ${chalk.green('ionic')} is listed as a dependency in ${chalk.bold('bower.json')}.`, listWrapOptions)}\n\n` +
+      `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold(PROJECT_FILE)} to one of: ${PROJECT_TYPES.map(v => chalk.green(v)).join(', ')}.\n\n` +
       `If the Ionic CLI does not know what type of project this is, ${chalk.green('ionic build')}, ${chalk.green('ionic serve')}, and other commands may not work. You can use the ${chalk.green('custom')} project type if that's okay.\n`
     );
   }

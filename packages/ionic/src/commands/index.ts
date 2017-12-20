@@ -5,6 +5,7 @@ import { metadataToParseArgsOptions, parseArgs } from '@ionic/cli-framework/lib'
 import { CommandData, CommandOption, IonicEnvironment, KNOWN_BACKENDS } from '@ionic/cli-utils';
 import { CommandMap, NamespaceMap, RootNamespace } from '@ionic/cli-utils/lib/namespace';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
 
 export class IonicNamespace extends RootNamespace {
   metadata = {
@@ -92,7 +93,10 @@ export class IonicNamespace extends RootNamespace {
     command.env = ienv;
 
     if (!ienv.project.directory && command.metadata.type === 'project') {
-      throw new FatalException(`Sorry! ${chalk.green('ionic ' + command.metadata.fullName)} can only be run in an Ionic project directory.`);
+      throw new FatalException(
+        `Sorry! ${chalk.green('ionic ' + command.metadata.fullName)} can only be run in an Ionic project directory.\n` +
+        `If this is a project you'd like to integrate with Ionic, create an ${chalk.bold(PROJECT_FILE)} file.`
+      );
     }
 
     if (command.metadata.options) {

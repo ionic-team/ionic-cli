@@ -494,7 +494,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     const project = await this.env.project.load();
 
-    this.env.tasks.next(`Personalizing ${chalk.bold('ionic.config.json')} and ${chalk.bold('package.json')}`);
+    this.env.tasks.next(`Personalizing ${chalk.bold(PROJECT_FILE)} and ${chalk.bold('package.json')}`);
 
     project.name = displayName;
     await updatePackageJsonForCli(projectDir, name);

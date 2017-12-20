@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { validators } from '@ionic/cli-framework/lib';
 import { CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
+import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
 
 export class ConfigSetCommand extends Command {
   metadata: CommandData = {
@@ -10,7 +11,7 @@ export class ConfigSetCommand extends Command {
     type: 'global',
     description: 'Set config values',
     longDescription: `
-By default, this command sets JSON properties in your project's ${chalk.bold('ionic.config.json')} file.
+By default, this command sets JSON properties in your project's ${chalk.bold(PROJECT_FILE)} file.
 
 For ${chalk.green('--global')} config, the CLI sets properties in the global CLI config file (${chalk.bold('~/.ionic/config.json')}).
 

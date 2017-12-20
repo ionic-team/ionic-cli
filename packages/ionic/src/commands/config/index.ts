@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
 import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
+import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
 
 export class ConfigNamespace extends Namespace {
   metadata = {
@@ -9,7 +10,7 @@ export class ConfigNamespace extends Namespace {
     longDescription: `
 These commands are used to programmatically read and write CLI and project config values.
 
-By default, these commands use your project's ${chalk.bold('ionic.config.json')} file.
+By default, these commands use your project's ${chalk.bold(PROJECT_FILE)} file.
 
 To use these commands for the global CLI config file (${chalk.bold('~/.ionic/config.json')}), use the ${chalk.green('--global')} flag.
     `,

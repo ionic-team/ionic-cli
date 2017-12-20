@@ -6,6 +6,7 @@ import { str2num } from '@ionic/cli-framework/utils/string';
 import { CommandLineInputs, CommandLineOptions, IonicEnvironment, LabServeDetails, ServeDetails } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 import { FatalException } from '../lib/errors';
+import { PROJECT_FILE } from '../lib/project';
 
 import {
   BIND_ALL_ADDRESS,
@@ -82,7 +83,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     throw new FatalException(
       `Cannot perform Ionic serve for project type: ${chalk.bold(project.type)}.\n` +
       (project.type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to serve custom projects.\n\n` : '') +
-      `If you'd like the CLI to try to detect your project type, you can unset the ${chalk.bold('type')} attribute in ${chalk.bold('ionic.config.json')}.\n`
+      `If you'd like the CLI to try to detect your project type, you can unset the ${chalk.bold('type')} attribute in ${chalk.bold(PROJECT_FILE)}.`
     );
   }
 

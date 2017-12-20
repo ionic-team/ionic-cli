@@ -1,14 +1,11 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
-import * as Debug from 'debug';
 import * as gulpType from 'gulp';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { promisify } from '@ionic/cli-framework/utils/promise';
 
 import { timestamp } from './log';
-
-const debug = Debug('ionic:v1-util:lib:gulp');
 
 let _gulpInst: typeof gulpType;
 
@@ -47,7 +44,7 @@ export async function runTask(name: string): Promise<void> {
     const gulpStart = promisify<void, string>(gulp.start.bind(gulp));
 
     if (gulp.hasTask(name)) {
-      debug(`Invoking ${chalk.cyan(name)} gulp task.`);
+      console.log(timestamp(), `Invoking ${chalk.cyan(name)} gulp task.`);
       await gulpStart(name);
     } else {
       console.error(timestamp(), `Cannot run ${chalk.cyan('sass')} task: missing in ${chalk.bold('gulpfile.js')}`);

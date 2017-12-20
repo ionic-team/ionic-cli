@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { AppDetails, BACKEND_LEGACY, BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
 
 const CHOICE_CREATE_NEW_APP = 'createNewApp';
 const CHOICE_NEVERMIND = 'nevermind';
@@ -18,7 +19,7 @@ If you have an app on Ionic, you can link it to this local Ionic project with th
 
 Excluding the ${chalk.green('app_id')} argument looks up your apps on Ionic and prompts you to select one.
 
-This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold('ionic.config.json')} for other commands to read.
+This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PROJECT_FILE)} for other commands to read.
     `,
     exampleCommands: ['', 'a1b2c3d4'],
     inputs: [

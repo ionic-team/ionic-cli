@@ -41,13 +41,14 @@ async function ngServe(env: IonicEnvironment, host: string, port: number): Promi
   const { registerShutdownFunction } = await import('../process');
 
   const ngArgs: string[] = ['serve', '--host', host, '--port', String(port), '--progress', 'false'];
+  const shellOptions = { showExecution: true, cwd: env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } };
 
   if (await pathAccessible(path.resolve(env.project.directory, NG_AUTODETECTED_PROXY_FILE), fs.constants.R_OK)) {
     ngArgs.push('--proxy-config');
     ngArgs.push(NG_AUTODETECTED_PROXY_FILE); // this is fine as long as cwd is the project directory
   }
 
-  const p = await env.shell.spawn('ng', ngArgs, { cwd: env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
+  const p = await env.shell.spawn('ng', ngArgs, shellOptions);
 
   registerShutdownFunction(() => p.kill());
 

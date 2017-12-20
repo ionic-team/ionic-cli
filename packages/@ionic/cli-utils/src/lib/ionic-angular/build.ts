@@ -1,18 +1,29 @@
 import chalk from 'chalk';
+import * as Debug from 'debug';
 import { parsedArgsToArgv } from '@ionic/cli-framework/lib';
 
 import { IonicEnvironment } from '../../definitions';
-import { importAppScripts } from './app-scripts';
+
+import { BUILD_SCRIPT } from '../build';
+
+const debug = Debug('ionic:cli-utils:lib:ionic-angular:build');
 
 export async function build({ env, options }: { env: IonicEnvironment; options: { _: string[]; [key: string]: any; }; }): Promise<void> {
+  const { pkgManagerArgs } = await import('../utils/npm');
+  const pkg = await env.project.loadPackageJson();
+
   const appScriptsArgs = await buildOptionsToAppScriptsArgs(options);
-  process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
+  const shellOptions = { showExecution: true, cwd: env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } };
 
-  const AppScripts = await importAppScripts(env);
-  const context = AppScripts.generateContext();
+  debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
 
-  env.log.info(`Running app-scripts build: ${chalk.bold(appScriptsArgs.join(' '))}\n`);
-  return await AppScripts.build(context);
+  if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
+    debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
+    const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(env, { command: 'run', script: BUILD_SCRIPT, scriptArgs: appScriptsArgs });
+    await env.shell.run(pkgManager, pkgArgs, shellOptions);
+  } else {
+    await env.shell.run('ionic-app-scripts', ['build', ...appScriptsArgs], shellOptions);
+  }
 }
 
 export async function buildOptionsToAppScriptsArgs(options: { _: string[]; [key: string]: any; }) {

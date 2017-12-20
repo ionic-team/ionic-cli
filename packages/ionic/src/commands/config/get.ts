@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
+import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
 
 export class ConfigGetCommand extends Command {
   metadata: CommandData = {
@@ -9,7 +10,7 @@ export class ConfigGetCommand extends Command {
     type: 'global',
     description: 'Print config values',
     longDescription: `
-By default, this command prints properties in your project's ${chalk.bold('ionic.config.json')} file.
+By default, this command prints properties in your project's ${chalk.bold(PROJECT_FILE)} file.
 
 For ${chalk.green('--global')} config, the CLI prints properties in the global CLI config file (${chalk.bold('~/.ionic/config.json')}).
 
