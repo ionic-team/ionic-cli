@@ -40,7 +40,7 @@ export function prettyPath(p: string): string {
   return p;
 }
 
-export function indent(n: number = 4): string {
+export function indent(n = 4): string {
   return new Array(n).fill(' ').join('');
 }
 
@@ -48,7 +48,7 @@ export function wordWrap(msg: string, { width = TTY_WIDTH, indentation = 0, appe
   return wrapAnsi(msg, width - indentation - append.length, { trim: false }).split('\n').join(`${append}\n${indent(indentation)}`);
 }
 
-export function generateFillSpaceStringList(list: string[], optimalLength: number = 1, fillCharacter: string = ' '): string[] {
+export function generateFillSpaceStringList(list: string[], optimalLength = 1, fillCharacter = ' '): string[] {
   if (optimalLength < 2) {
     optimalLength = 2;
   }

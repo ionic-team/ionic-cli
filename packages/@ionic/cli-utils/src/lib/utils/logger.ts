@@ -69,7 +69,7 @@ export class Logger implements ILogger {
     this.msg(msg);
   }
 
-  nl(num: number = 1): void {
+  nl(num = 1): void {
     this.stream.write(this.enforceLF('\n'.repeat(num)));
   }
 

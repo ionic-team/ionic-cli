@@ -14,7 +14,7 @@ const SPINNER_FRAMES = isWindows ?
   ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 
 class Spinner {
-  public i: number = 0;
+  public i = 0;
 
   constructor(public frames: string[] = SPINNER_FRAMES) {}
 

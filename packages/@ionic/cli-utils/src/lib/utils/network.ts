@@ -61,7 +61,7 @@ export async function isPortAvailable(port: number, host?: string): Promise<bool
   });
 }
 
-export async function isHostConnectable(host: string, port: number, timeout: number = 1000): Promise<boolean> {
+export async function isHostConnectable(host: string, port: number, timeout = 1000): Promise<boolean> {
   let ms = 0;
   const interval = 1000;
 

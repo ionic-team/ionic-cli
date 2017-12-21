@@ -18,13 +18,13 @@ export class Exception extends Error {
 export class FatalException extends Exception {
   public fatal = true;
 
-  constructor(public message: string = '', public exitCode: number = 1) {
+  constructor(public message = '', public exitCode = 1) {
     super(message);
   }
 }
 
 export class ShellException extends Exception {
-  constructor(public message: string, public exitCode: number = 0) {
+  constructor(public message: string, public exitCode = 0) {
     super(message);
   }
 }

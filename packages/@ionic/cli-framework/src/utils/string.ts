@@ -29,7 +29,7 @@ export function strcmp(a: string | undefined, b: string | undefined): number {
   return +(a > b) || +(a === b) - 1;
 }
 
-export function str2num(value: any, defaultValue: number = -1): number {
+export function str2num(value: any, defaultValue = -1): number {
   if (typeof value === 'number') {
     return value;
   }
