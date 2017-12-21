@@ -14,12 +14,12 @@ export class GitCloneCommand extends Command {
       {
         name: 'app-id',
         description: 'The App ID of the Ionic app to clone',
-        validators: [validators.required]
+        validators: [validators.required],
       },
       {
         name: 'path',
-        description: 'The destination directory of the cloned app'
-      }
+        description: 'The destination directory of the cloned app',
+      },
     ],
     visible: false, // TODO: make part of start?
   };

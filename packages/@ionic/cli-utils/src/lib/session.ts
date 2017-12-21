@@ -170,7 +170,7 @@ export async function promptToLogin(env: IonicEnvironment): Promise<void> {
   const password = await env.prompt({
     type: 'password',
     name: 'password',
-    message: 'Password:'
+    message: 'Password:',
   });
 
   await env.session.login(email, password);

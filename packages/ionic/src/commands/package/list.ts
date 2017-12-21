@@ -53,14 +53,14 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
         return this.env.log.warn(`You don't have any builds yet! Run ${chalk.green('ionic package build --help')} to learn how.`);
       }
 
-      const attrs: (keyof PackageBuild)[] =  ['id', 'status', 'platform', 'security_profile_tag', 'mode', 'created', 'completed'];
-      const buildsMatrix = builds.map((build) => {
+      const attrs: (keyof PackageBuild)[] = ['id', 'status', 'platform', 'security_profile_tag', 'mode', 'created', 'completed'];
+      const buildsMatrix = builds.map(build => {
         const formattedBuild = pkg.formatBuildValues(build);
         return attrs.map(attr => formattedBuild[attr] || '');
       });
 
       const table = columnar(buildsMatrix, {
-        columnHeaders: attrs.map((attr) => {
+        columnHeaders: attrs.map(attr => {
           if (attr === 'created') {
             return 'started';
           } else if (attr === 'completed') {

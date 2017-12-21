@@ -6,7 +6,7 @@ export async function s3SignedUpload(
   config: IConfig,
   presignedPostParams: { url: string, fields: Object },
   zip: NodeJS.ReadableStream,
-  { progress }: {  progress?: (loaded: number, total: number) => void }
+  { progress }: { progress?: (loaded: number, total: number) => void }
 ): Promise<void> {
   const { req } = await createRequest(config, 'post', presignedPostParams.url);
 
@@ -26,7 +26,7 @@ export async function s3SignedUpload(
         .buffer()
         .field(presignedPostParams.fields)
         .field('file', Buffer.concat(bufs))
-        .on('progress', (event) => {
+        .on('progress', event => {
           if (progress) {
             progress(event.loaded, event.total);
           }

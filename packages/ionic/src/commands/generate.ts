@@ -24,7 +24,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
       'page Login',
       'page Detail --no-module',
       'page About --constants',
-      'pipe MyFilterPipe'
+      'pipe MyFilterPipe',
     ],
     inputs: [
       {
@@ -36,22 +36,22 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
         name: 'name',
         description: 'The name of the component being generated',
         validators: [validators.required],
-      }
+      },
     ],
     options: [
       {
         name: 'module',
         description: 'Do not generate an NgModule for the component',
         type: Boolean,
-        default: true
+        default: true,
       },
       {
         name: 'constants',
         description: 'Generate a page constant file for lazy-loaded pages',
         type: Boolean,
-        default: false
-      }
-    ]
+        default: false,
+      },
+    ],
   };
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
@@ -77,7 +77,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
         type: 'input',
         name: 'generatorName',
         message: 'What should the name be?',
-        validate: v => validators.required(v)
+        validate: v => validators.required(v),
       });
 
       inputs[1] = generatorName;

@@ -55,7 +55,7 @@ export async function loadPlugins(env: IonicEnvironment) {
     }
   }
 
-  const pluginPromises = pluginPkgs.map(async (pkg) => {
+  const pluginPromises = pluginPkgs.map(async pkg => {
     const [ pkgName, exists ] = pkg;
 
     if (exists) {

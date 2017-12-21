@@ -77,9 +77,11 @@ class DefaultCommand extends Command {
     const labUrl = `http://${host}:${port}`;
 
     server.on('listening', () => {
-      console.log('Ionic Lab running!');
-      console.log(`Lab: ${chalk.bold(labUrl)}`);
-      console.log(`App: ${chalk.bold(url)}`);
+      process.stdout.write(
+        'Ionic Lab running!\n' +
+        `Lab: ${chalk.bold(labUrl)}\n` +
+        `App: ${chalk.bold(url)}\n`
+      );
     });
   }
 }

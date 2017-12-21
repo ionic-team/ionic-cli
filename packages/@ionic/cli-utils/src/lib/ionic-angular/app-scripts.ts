@@ -50,5 +50,5 @@ export const APP_SCRIPTS_OPTIONS: CommandOption[] = [
     description: '',
     intents: [APP_SCRIPTS_INTENT],
     visible: false,
-  }
+  },
 ];

@@ -12,7 +12,7 @@ export class InfoCommand extends Command {
   metadata: CommandData = {
     name: 'info',
     type: 'global',
-    description: 'Print system/environment info'
+    description: 'Print system/environment info',
   };
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

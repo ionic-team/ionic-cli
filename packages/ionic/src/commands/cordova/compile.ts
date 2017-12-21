@@ -61,7 +61,7 @@ Like running ${chalk.green('cordova compile')} directly, but provides friendly c
       const platform = await this.env.prompt({
         type: 'input',
         name: 'platform',
-        message: `What platform would you like to compile (${['android', 'ios'].map(v => chalk.green(v)).join(', ')}):`
+        message: `What platform would you like to compile (${['android', 'ios'].map(v => chalk.green(v)).join(', ')}):`,
       });
 
       inputs[0] = platform.trim();

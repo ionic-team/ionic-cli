@@ -26,7 +26,7 @@ export class PackageClient {
 
   async getBuilds({ page = 1, pageSize = 25 }: { page?: number, pageSize?: number }): Promise<PackageBuild[]> {
     const { req } = await this.client.make('GET', '/package/builds');
-    req.set('Authorization', `Bearer ${this.appUserToken}`).query({ page, 'page_size': pageSize, }).send();
+    req.set('Authorization', `Bearer ${this.appUserToken}`).query({ page, 'page_size': pageSize }).send();
     const res = await this.client.do(req);
 
     if (!isPackageBuildsResponse(res)) {
@@ -94,17 +94,17 @@ export class PackageClient {
       });
 
       req
-        .on('response', (res) => {
+        .on('response', res => {
           if (progress) {
             let loaded = 0;
             const total = Number(res.headers['content-length']);
-            res.on('data', (chunk) => {
+            res.on('data', chunk => {
               loaded += chunk.length;
               progress(loaded, total);
             });
           }
         })
-        .on('error', (err) => {
+        .on('error', err => {
           reject(err);
         })
         .pipe(dest);

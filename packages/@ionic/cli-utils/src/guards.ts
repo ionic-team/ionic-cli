@@ -27,7 +27,7 @@ import {
 export const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'ok', 'warn', 'error', 'announce'];
 
 export function isCommand(cmd: any): cmd is ICommand {
-  return typeof (<ICommand>cmd).run === 'function';
+  return cmd && typeof cmd.run === 'function';
 }
 
 export function isCommandPreRun(cmd: any): cmd is CommandPreRun {

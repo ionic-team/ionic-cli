@@ -36,7 +36,7 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
         default: true,
       },
       ...APP_SCRIPTS_OPTIONS,
-    ]
+    ],
   };
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

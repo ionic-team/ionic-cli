@@ -17,7 +17,7 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
         name: 'key-id',
         description: 'The ID of the public key to delete',
         validators: [validators.required],
-      }
+      },
     ],
   };
 

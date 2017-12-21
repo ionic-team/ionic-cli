@@ -17,19 +17,13 @@ import { BACKEND_PRO } from './backends';
 import { FatalException } from './errors';
 
 export abstract class BaseConfig<T> implements IBaseConfig<T> {
-  public directory: string;
-  public filePath: string;
+  directory: string;
+  filePath: string;
   protected configFile?: T;
   protected originalConfigFile?: { [key: string]: any };
 
   constructor(directory: string, public fileName: string) {
-    // TODO: better way to check if in project
-    if (directory) {
-      this.directory = path.resolve(directory);
-    } else {
-      this.directory = '';
-    }
-
+    this.directory = directory ? path.resolve(directory) : ''; // TODO: better way to check if in project
     this.filePath = path.resolve(this.directory, fileName);
   }
 
@@ -144,11 +138,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
     }
 
     if (!results.state.lastCommand) {
-      if (results.lastCommand) {
-        results.state.lastCommand = results.lastCommand;
-      } else {
-        results.state.lastCommand = new Date().toISOString();
-      }
+      results.state.lastCommand = results.lastCommand ? results.lastCommand : new Date().toISOString();
     }
 
     if (!results.created) {
@@ -160,11 +150,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
     }
 
     if (typeof results.daemon.enabled === 'undefined') {
-      if (typeof results.daemon.updates !== 'undefined') {
-        results.daemon.enabled = results.daemon.updates;
-      } else {
-        results.daemon.enabled = true;
-      }
+      results.daemon.enabled = typeof results.daemon.updates !== 'undefined' ? results.daemon.updates : true;
     }
 
     if (!results.devapp) {
@@ -210,11 +196,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
     }
 
     if (typeof results.yarn === 'undefined') {
-      if (results.cliFlags && typeof results.cliFlags.yarn !== 'undefined') {
-        results.yarn = results.cliFlags.yarn;
-      } else {
-        results.yarn = false;
-      }
+      results.yarn = results.cliFlags && typeof results.cliFlags.yarn !== 'undefined' ? results.cliFlags.yarn : false;
     }
 
     delete results.lastCommand;

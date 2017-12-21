@@ -29,10 +29,10 @@ export async function run() {
   const commandsDoc = await formatCommandsPage(env);
 
   const configuringPath = path.resolve(__dirname, '..', '..', '..', '..', 'docs', 'configuring.md');
-  const configuringDoc = await formatConfiguringPage();
+  const configuringDoc = formatConfiguringPage();
 
   const startersPath = path.resolve(__dirname, '..', '..', '..', '..', 'docs', 'starters.md');
-  const startersDoc = await formatStartersPage();
+  const startersDoc = formatStartersPage();
 
   await fsMkdirp(path.dirname(indexPath));
 
@@ -42,7 +42,7 @@ export async function run() {
   await fsWriteFile(startersPath, startersDoc, { encoding: 'utf8' });
 
   const commands = await getCommandList(env);
-  const commandPromises = commands.map(async (cmd) => {
+  const commandPromises = commands.map(async cmd => {
     const cmdPath = path.resolve(__dirname, '..', '..', '..', '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
     const cmdDoc = formatCommandDoc(env, cmd);
 
@@ -485,7 +485,6 @@ $ ionic ${usageLine}
   `;
 }
 
-
 function formatDescription(env: IonicEnvironment, cmdMetadata: CommandData) {
   let longDescription = cmdMetadata.longDescription;
 
@@ -517,7 +516,7 @@ function formatDescription(env: IonicEnvironment, cmdMetadata: CommandData) {
     const optionList = `\`${name}\`` +
       (aliases && aliases.length > 0 ? ', ' +
        aliases
-         .map((alias) => `\`-${alias}\``)
+         .map(alias => `\`-${alias}\``)
          .join(', ') : '');
 
     return `${optionList} | ${description}`;
@@ -563,7 +562,7 @@ async function copyToIonicSite() {
   let dirData = await fsStat(ionicSitePath);
   if (!dirData.size) {
     // ionic-site not present
-    console.error('ionic-site repo not found');
+    process.stderr.write('ionic-site repo not found\n');
     return;
   }
 

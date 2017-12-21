@@ -92,7 +92,7 @@ async function formatHeader(env: IonicEnvironment) {
   const now = new Date();
   const prefix = config.backend === BACKEND_PRO && isLoggedIn ? chalk.blue('PRO') + ' ' : '';
   const version = env.plugins.ionic.meta.pkg.version;
-  const suffix =  now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
+  const suffix = now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
 
   return `   _             _
   (_) ___  _ __ (_) ___
@@ -252,7 +252,7 @@ function formatOptionLine(opt: CommandOption) {
   const optionList = (showInverse ? chalk.green(`--no-${opt.name}`) : chalk.green(`-${opt.name.length > 1 ? '-' : ''}${opt.name}`)) +
     (!showInverse && opt.aliases && opt.aliases.length > 0 ? ', ' +
       opt.aliases
-      .map((alias) => chalk.green(`-${alias}`))
+      .map(alias => chalk.green(`-${alias}`))
       .join(', ') : '');
 
   const optionListLength = stringWidth(optionList);
@@ -305,13 +305,7 @@ async function formatCommandExamples(env: IonicEnvironment, exampleCommands: str
 
   const exampleLines = exampleCommands.map(cmd => {
     const sepIndex = cmd.indexOf(' -- ');
-
-    if (sepIndex === -1) {
-      cmd = chalk.green(cmd);
-    } else {
-      cmd = chalk.green(cmd.substring(0, sepIndex)) + cmd.substring(sepIndex);
-    }
-
+    cmd = sepIndex === -1 ? chalk.green(cmd) : chalk.green(cmd.substring(0, sepIndex)) + cmd.substring(sepIndex);
     const wrappedCmd = wordWrap(cmd, { indentation: 12, append: ' \\' });
 
     return `${chalk.dim('$')} ${chalk.green('ionic ' + commandName)} ${wrappedCmd}`;

@@ -38,7 +38,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
   try {
     ienv = await generateIonicEnvironment(plugin, pargv, env);
   } catch (e) {
-    console.error(e.message ? e.message : (e.stack ? e.stack : e));
+    process.stderr.write(`${e.message ? e.message : (e.stack ? e.stack : e)}\n`);
     process.exitCode = 1;
     return;
   }

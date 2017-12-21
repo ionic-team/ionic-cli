@@ -45,7 +45,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         name: 'template',
         description: `The starter template to use (e.g. ${['blank', 'tabs'].map(t => chalk.green(t)).join(', ')}; use ${chalk.green('--list')} to see all)`,
         validators: [validators.required],
-      }
+      },
     ],
     options: [
       {
@@ -123,7 +123,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       this.env.log.warn(`The ${chalk.green('--skip-link')} option has been deprecated. Please use ${chalk.green('--no-link')}.`);
       options['link'] = false;
     }
-
 
     if (options['pro-id']) {
       if (options['link'] === false) {
@@ -219,10 +218,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
               return {
                 name: text,
                 short: starterTemplates[i].name,
-                value: starterTemplates[i].name
+                value: starterTemplates[i].name,
               };
             });
-        }
+        },
       });
 
       inputs[1] = template;

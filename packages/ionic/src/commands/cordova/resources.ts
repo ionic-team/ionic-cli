@@ -49,7 +49,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       {
         name: 'platform',
         description: `The platform for which you would like to generate resources (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
-      }
+      },
     ],
     options: [
       {
@@ -70,7 +70,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
         type: Boolean,
         aliases: ['s'],
       },
-    ]
+    ],
   };
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
@@ -86,7 +86,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     }
   }
 
-  public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
     const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
 
@@ -185,7 +185,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
     // If there are any imgResources that have missing images then end
     // processing and inform the user
-    const missingSrcImages = imgResources.filter(img => img.imageId === null);
+    const missingSrcImages = imgResources.filter(img => !img.imageId);
     if (missingSrcImages.length > 0) {
       const missingImageText = missingSrcImages
         .reduce((list, img) => {
@@ -211,7 +211,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       .map(img => img.imageId);
 
     if (!force) {
-      const keepImgResources = await Promise.all(imgResources.map(async (img) => {
+      const keepImgResources = await Promise.all(imgResources.map(async img => {
         if (!await pathExists(img.dest)) {
           return true;
         }
@@ -232,18 +232,18 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
     // Upload images to service to prepare for resource transformations
     const imageUploadResponses = await uploadSourceImages(this.env, srcImagesAvailable);
-    this.env.log.debug(() => `${chalk.green('uploadSourceImages')} completed: responses=${JSON.stringify(imageUploadResponses, null, 2)}`);
+    this.env.log.debug(() => `${chalk.green('uploadSourceImages')} completed: responses=${JSON.stringify(imageUploadResponses, undefined, 2)}`);
 
     srcImagesAvailable = srcImagesAvailable.map((img, index) => {
       return {
         ...img,
         width: imageUploadResponses[index].Width,
         height: imageUploadResponses[index].Height,
-        vector: imageUploadResponses[index].Vector
+        vector: imageUploadResponses[index].Vector,
       };
     });
 
-    this.env.log.debug(() => `srcImagesAvailable=${JSON.stringify(srcImagesAvailable, null, 2)}`);
+    this.env.log.debug(() => `srcImagesAvailable=${JSON.stringify(srcImagesAvailable, undefined, 2)}`);
 
     // If any images are asking to be generated but are not of the correct size
     // inform the user and continue on.
@@ -279,9 +279,9 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
     const generateImageResponses = await Promise.all(transforms);
     this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
-    this.env.log.debug(() => `${chalk.green('generateResourceImage')} completed: responses=${JSON.stringify(generateImageResponses, null, 2)}`);
+    this.env.log.debug(() => `${chalk.green('generateResourceImage')} completed: responses=${JSON.stringify(generateImageResponses, undefined, 2)}`);
 
-    await Promise.all(srcImagesAvailable.map(async (img) => {
+    await Promise.all(srcImagesAvailable.map(async img => {
       await cacheFileChecksum(img.path, img.imageId);
     }));
 
@@ -292,22 +292,22 @@ This command uses Ionic servers, so we require you to be logged into your free I
           [img.resType]: {
             images: [],
             nodeName: '',
-            nodeAttributes: []
-          }
+            nodeAttributes: [],
+          },
         };
       }
       if (!rc[img.platform][img.resType]) {
         rc[img.platform][img.resType] = {
           images: [],
           nodeName: '',
-          nodeAttributes: []
+          nodeAttributes: [],
         };
       }
       rc[img.platform][img.resType].images.push(<ResourcesImageConfig>{
         name: img.name,
         width: img.width,
         height: img.height,
-        density: img.density || null
+        density: img.density,
       });
       rc[img.platform][img.resType].nodeName = img.nodeName;
       rc[img.platform][img.resType].nodeAttributes = img.nodeAttributes;

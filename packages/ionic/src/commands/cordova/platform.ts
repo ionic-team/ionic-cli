@@ -23,7 +23,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
       {
         name: 'platform',
         description: `The platform that you would like to add (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
-      }
+      },
     ],
     options: [
       {
@@ -32,7 +32,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
         type: Boolean,
         default: true,
       },
-    ]
+    ],
   };
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

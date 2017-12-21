@@ -14,7 +14,7 @@ const SPINNER_FRAMES = isWindows ?
   ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 
 class Spinner {
-  public i = 0;
+  i = 0;
 
   constructor(public frames: string[] = SPINNER_FRAMES) {}
 
@@ -24,10 +24,10 @@ class Spinner {
 }
 
 class Task implements ITask {
-  public msg: string;
-  public log: ILogger;
-  public running = false;
-  public progressRatio = -1;
+  msg: string;
+  log: ILogger;
+  running = false;
+  progressRatio = -1;
 
   constructor({ msg, log }: { msg: string, log: ILogger }) {
     this.msg = msg;
@@ -82,7 +82,7 @@ class Task implements ITask {
 }
 
 export class TaskChain implements ITaskChain {
-  public log: ILogger;
+  log: ILogger;
 
   protected currentTask?: ITask;
   protected tasks: ITask[];
@@ -147,9 +147,9 @@ export class TaskChain implements ITaskChain {
 }
 
 class InteractiveTask extends Task {
-  public bottomBar: ui.BottomBar;
+  bottomBar: ui.BottomBar;
 
-  public intervalId?: any;
+  intervalId?: any;
   private spinner: Spinner;
 
   constructor({ msg, log, bottomBar }: { msg: string, log: ILogger, bottomBar: ui.BottomBar }) {
@@ -209,7 +209,7 @@ class InteractiveTask extends Task {
 }
 
 export class InteractiveTaskChain extends TaskChain {
-  public bottomBar: ui.BottomBar;
+  bottomBar: ui.BottomBar;
 
   constructor({ log, bottomBar }: { log: ILogger, bottomBar: ui.BottomBar }) {
     super({ log });

@@ -38,8 +38,8 @@ Like running ${chalk.green('cordova plugin')} directly, but provides friendly ch
         name: 'variable',
         description: 'Specify plugin variables',
         intents: [CORDOVA_INTENT],
-      }
-    ]
+      },
+    ],
   };
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

@@ -123,7 +123,7 @@ export class Environment implements IonicEnvironment {
         const bottomBarHack = <any>this.bottomBar;
         bottomBarHack.rl.output.mute();
       } catch (e) {
-        console.error('EXCEPTION DURING BOTTOMBAR OUTPUT MUTE', e);
+        process.stderr.write(`EXCEPTION DURING BOTTOMBAR OUTPUT MUTE: ${e}\n`);
       }
     }
 

@@ -39,7 +39,7 @@ export async function createRawRequest(method: string, url: string): Promise<{ r
 
 export async function createRequest(config: IConfig, method: string, url: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
   const c = await config.load();
-  const [ proxy, ] = getGlobalProxy();
+  const [ proxy ] = getGlobalProxy();
 
   const { req } = await createRawRequest(method, url);
 
@@ -163,7 +163,7 @@ export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
   constructor(
     protected client: IClient,
     protected reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>,
-    protected guard: (res: APIResponseSuccess) => res is T,
+    protected guard: (res: APIResponseSuccess) => res is T
   ) {}
 
   next(): IteratorResult<Promise<T>> {
@@ -205,7 +205,7 @@ export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
 
 export function transformAPIResponse(r: superagentType.Response): APIResponse {
   if (r.status === 204) {
-    r.body = { data: null, meta: { status: 204, version: '', request_id: '' } };
+    r.body = { meta: { status: 204, version: '', request_id: '' } };
   }
 
   if (r.status !== 204 && r.type !== CONTENT_TYPE_JSON) {

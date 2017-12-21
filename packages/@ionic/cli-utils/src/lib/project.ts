@@ -15,7 +15,7 @@ export const PROJECT_FILE_LEGACY = 'ionic.project';
 export const PROJECT_TYPES: ProjectType[] = ['ionic-core-angular', 'ionic-angular', 'ionic1', 'custom'];
 
 export class Project extends BaseConfig<ProjectFile> implements IProject {
-  public directory: string;
+  directory: string;
   protected packageJsonFile?: PackageJson;
   protected bowerJsonFile?: BowerJson;
 

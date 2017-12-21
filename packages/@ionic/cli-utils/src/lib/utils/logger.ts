@@ -19,12 +19,12 @@ export const LOGGER_STATUS_COLORS = new Map<LogLevel, Chalk>([
 
 export class Logger implements ILogger {
 
-  public firstLineColored: LogLevel[] = ['warn', 'error', 'announce'];
+  firstLineColored: LogLevel[] = ['warn', 'error', 'announce'];
 
-  public readonly level: LogLevel;
-  public readonly prefix: LogPrefix;
-  public stream: NodeJS.WritableStream;
-  public readonly wrap: boolean;
+  readonly level: LogLevel;
+  readonly prefix: LogPrefix;
+  stream: NodeJS.WritableStream;
+  readonly wrap: boolean;
 
   constructor({ level = 'info', prefix = '', stream = process.stdout, wrap = true }: LoggerOptions) {
     this.level = level;
@@ -86,7 +86,7 @@ export class Logger implements ILogger {
         self.info(chunk.toString());
         callback();
       }
-    };
+    }();
   }
 
   shouldLog(level: LogLevel): boolean {

@@ -58,7 +58,7 @@ export async function generate(args: { env: IonicEnvironment; inputs: string[], 
 }
 
 async function promptQuestions(context: any) {
-  return await prompt(context);
+  return prompt(context);
 }
 
 // async function getPages(context: any) {
@@ -104,7 +104,7 @@ export async function tabsPrompt(env: IonicEnvironment) {
     const tabName = await env.prompt({
       type: 'input',
       name: 'tabName',
-      message: 'Name of this tab:'
+      message: 'Name of this tab:',
     });
 
     tabNames.push(tabName);

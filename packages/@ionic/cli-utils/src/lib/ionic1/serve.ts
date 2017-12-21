@@ -17,7 +17,7 @@ const WATCH_PATTERNS = [
   'scss/**/*',
   'www/**/*',
   '!www/lib/**/*',
-  '!www/**/*.map'
+  '!www/**/*.map',
 ];
 
 interface ProxyConfig extends proxyMiddlewareType.Config {

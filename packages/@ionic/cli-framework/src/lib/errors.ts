@@ -1,9 +1,9 @@
 import { ValidationError } from '../definitions';
 
 export class BaseError extends Error {
-  public message: string;
-  public name: string;
-  public stack: string;
+  message: string;
+  name: string;
+  stack: string;
 
   constructor(message: string) {
     super(message);
@@ -12,7 +12,7 @@ export class BaseError extends Error {
     this.stack = (new Error()).stack || '';
   }
 
-  public toString() {
+  toString() {
     return `${this.name}: ${this.message}`;
   }
 }

@@ -30,16 +30,15 @@ export class Publisher extends events.EventEmitter implements IPublisher {
   constructor(
     public namespace: string,
     public name: string,
-    public port: number,
+    public port: number
   ) {
     super();
 
     if (name.indexOf(':') >= 0) {
-      console.warn('name should not contain ":"');
-      name = name.replace(':', ' ');
+      throw new Error('name should not contain ":"');
     }
 
-    this.id = String(Math.round(Math.random() * 1000000));
+    this.id = Math.random().toString(10).substring(2, 8);
   }
 
   start(): Promise<void> {
@@ -62,7 +61,7 @@ export class Publisher extends events.EventEmitter implements IPublisher {
 
       client.on('listening', () => {
         client.setBroadcast(true);
-        this.timer = setInterval(this.sayHello.bind(this), this.interval);
+        this.timer = setInterval(() => this.sayHello(), this.interval);
         this.sayHello();
         resolve();
       });
@@ -99,8 +98,9 @@ export class Publisher extends events.EventEmitter implements IPublisher {
       host: os.hostname(),
       ip: ip,
       port: this.port,
-      path: this.path
+      path: this.path,
     };
+
     return PREFIX + JSON.stringify(message);
   }
 
@@ -113,11 +113,15 @@ export class Publisher extends events.EventEmitter implements IPublisher {
       throw new Error('No network interfaces set--was the service started?');
     }
 
+    if (!this.client) {
+      throw new Error('Client not initialized--was the service started?');
+    }
+
     try {
       for (let iface of this.interfaces) {
         const message = new Buffer(this.buildMessage(iface.address));
 
-        this.client!.send(message, 0, message.length, PORT, iface.broadcast, err => {
+        this.client.send(message, 0, message.length, PORT, iface.broadcast, err => {
           if (err) {
             this.emit('error', err);
           }
@@ -131,6 +135,7 @@ export class Publisher extends events.EventEmitter implements IPublisher {
 
 export function prepareInterfaces(interfaces: { [index: string]: os.NetworkInterfaceInfo[] }): Interface[] {
   const set = new Set<string>();
+
   return Object.keys(interfaces)
     .map(key => interfaces[key])
     .reduce((prev, current) => prev.concat(current))
@@ -144,8 +149,10 @@ export function prepareInterfaces(interfaces: { [index: string]: os.NetworkInter
     .filter(iface => {
       if (!set.has(iface.broadcast)) {
         set.add(iface.broadcast);
+
         return true;
       }
+
       return false;
     });
 }
@@ -153,13 +160,21 @@ export function prepareInterfaces(interfaces: { [index: string]: os.NetworkInter
 export function newSilentPublisher(namespace: string, name: string, port: number): Publisher {
   name = `${name}@${port}`;
   const service = new Publisher(namespace, name, port);
-  service.on('error', () => { });
-  service.start().catch(() => { });
+
+  service.on('error', () => {
+    // do not log
+  });
+
+  service.start().catch(() => {
+    // do not log
+  });
+
   return service;
 }
 
 export function computeBroadcastAddress(address: string, netmask: string): string {
   const ip = address + '/' + netmask;
   const block = new Netmask(ip);
+
   return block.broadcast;
 }

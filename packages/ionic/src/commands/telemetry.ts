@@ -19,7 +19,7 @@ export class TelemetryCommand extends Command implements CommandPreRun {
     ],
   };
 
-  public async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     this.env.log.warn(
       `${chalk.green('ionic telemetry')} is deprecated. Please use ${chalk.green('ionic config')} directly. Examples:\n` +
       `    ${chalk.green('ionic config get -g telemetry')}\n` +
@@ -28,7 +28,7 @@ export class TelemetryCommand extends Command implements CommandPreRun {
     );
   }
 
-  public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const config = await this.env.config.load();
     const [ status ] = inputs;
     const enableTelemetry = config.telemetry;

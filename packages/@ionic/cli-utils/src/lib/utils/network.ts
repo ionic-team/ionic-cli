@@ -82,7 +82,7 @@ export async function isHostConnectable(host: string, port: number, timeout = 10
     });
   };
 
-  return new Promise<boolean>(async (resolve) => {
+  return new Promise<boolean>(async resolve => {
     setInterval(() => {
       ms += interval;
 
@@ -95,7 +95,9 @@ export async function isHostConnectable(host: string, port: number, timeout = 10
       try {
         await tryConnect();
         resolve(true);
-      } catch (e) {}
+      } catch (e) {
+        // try again
+      }
     }
   });
 }

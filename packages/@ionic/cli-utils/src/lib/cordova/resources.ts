@@ -92,7 +92,7 @@ export async function getSourceImages(env: IonicEnvironment, buildPlatforms: str
   }
 
   const sourceImageChecksums = await Promise.all(
-    sourceImages.map(async (img) => {
+    sourceImages.map(async img => {
       const [ md5, cachedMd5 ] = await getFileChecksums(img.path);
 
       if (cachedMd5) {
@@ -112,8 +112,8 @@ export async function getSourceImages(env: IonicEnvironment, buildPlatforms: str
 /**
  * Find the source image that matches the requirements of the image resource provided.
  */
-export function findMostSpecificImage(imageResource: ImageResource, srcImagesAvailable: SourceImage[]): SourceImage | null {
-  return srcImagesAvailable.reduce((mostSpecificImage: SourceImage | null, sourceImage: SourceImage) => {
+export function findMostSpecificImage(imageResource: ImageResource, srcImagesAvailable: SourceImage[]): SourceImage | undefined {
+  return srcImagesAvailable.reduce((mostSpecificImage: SourceImage | undefined, sourceImage: SourceImage) => {
     if (sourceImage.platform === imageResource.platform && sourceImage.resType === imageResource.resType) {
       return sourceImage;
     }
@@ -121,7 +121,7 @@ export function findMostSpecificImage(imageResource: ImageResource, srcImagesAva
       return sourceImage;
     }
     return mostSpecificImage;
-  }, null);
+  }, undefined);
 }
 
 /**
@@ -130,7 +130,7 @@ export function findMostSpecificImage(imageResource: ImageResource, srcImagesAva
  */
 export async function uploadSourceImages(env: IonicEnvironment, srcImages: SourceImage[]): Promise<ImageUploadResponse[]> {
   return Promise.all(
-    srcImages.map(async (srcImage) => {
+    srcImages.map(async srcImage => {
       let { req } = await createRequest(env.config, 'POST', UPLOAD_URL);
       req = req
         .type('form')
@@ -163,7 +163,7 @@ export async function transformResourceImage(env: IonicEnvironment, imageResourc
         'crop': 'center',
         'encoding': 'png',
       })
-      .on('response', (res) => {
+      .on('response', res => {
         if (res.statusCode !== 200) {
           let bufs: Buffer[] = [];
 
@@ -178,7 +178,7 @@ export async function transformResourceImage(env: IonicEnvironment, imageResourc
           });
         }
       })
-      .on('error', (err) => {
+      .on('error', err => {
         if (err.code === 'ECONNABORTED') {
           reject(new Error(`timeout of ${err.timeout}ms reached for ${TRANSFORM_URL}`));
         } else {
@@ -232,7 +232,7 @@ export const RESOURCES: ResourcesConfig = {
       ],
       nodeName: 'splash',
       nodeAttributes: ['src', 'density'],
-    }
+    },
   },
   ios: {
     icon: {

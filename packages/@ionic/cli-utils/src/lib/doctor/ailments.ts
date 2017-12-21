@@ -446,7 +446,7 @@ export namespace Ailments {
 
       const modules = await fsReadDir(path.resolve(env.project.directory, 'node_modules', '@ionic-native'));
 
-      return await Promise.all(modules.filter(m => m).map(async (m) => {
+      return Promise.all(modules.filter(m => m).map(async m => {
         const [ manager, ...managerArgs ] = await pkgManagerArgs(env, { pkg: `@ionic-native/${m}@${latestVersion ? latestVersion : 'latest'}` });
 
         return {

@@ -130,7 +130,9 @@ export class Shell implements IShell {
     try {
       const out = await runcmd(cmd, args, { env: { PATH: this.supplementPATH(process.env.PATH) } });
       return out.split('\n').join(' ');
-    } catch (e) {}
+    } catch (e) {
+      // no command info at this point
+    }
   }
 
   protected prepareSpawnOptions(options: IShellSpawnOptions) {

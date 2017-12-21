@@ -63,7 +63,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
     let pubkey: string;
 
     try {
-      [ pubkey, , , ] = await parsePublicKeyFile(pubkeyPath);
+      [ pubkey ] = await parsePublicKeyFile(pubkeyPath);
     } catch (e) {
       if (e === ERROR_FILE_NOT_FOUND) {
         throw new FatalException(

@@ -19,7 +19,7 @@ export class SecurityClient {
 
   async getProfiles({ page = 1, pageSize = 25 }: { page?: number, pageSize?: number }): Promise<SecurityProfile[]> {
     const { req } = await this.client.make('GET', '/security/profiles');
-    req.set('Authorization', `Bearer ${this.appUserToken}`).query({ page, 'page_size': pageSize, }).send();
+    req.set('Authorization', `Bearer ${this.appUserToken}`).query({ page, 'page_size': pageSize }).send();
     const res = await this.client.do(req);
 
     if (!isSecurityProfilesResponse(res)) {

@@ -55,7 +55,7 @@ export async function runServer(options: ServeOptions): Promise<ServeOptions> {
   const watcher = chokidar.watch(options.watchPatterns);
 
   watcher.on('change', (filePath: string) => {
-    console.log(timestamp(), `${chalk.bold(filePath)} changed`);
+    process.stdout.write(timestamp(), `${chalk.bold(filePath)} changed\n`);
 
     if (reloadfn) {
       reloadfn([filePath]);
@@ -67,7 +67,7 @@ export async function runServer(options: ServeOptions): Promise<ServeOptions> {
   });
 
   watcher.on('error', (err: Error) => {
-    console.error(err.toString());
+    process.stderr.write(`${err.toString()}\n`);
   });
 
   return options;
@@ -107,7 +107,7 @@ async function createHttpServer(options: ServeOptions): Promise<express.Applicat
 
   for (let proxy of options.proxies) {
     attachProxy(app, { ...DEFAULT_PROXY_CONFIG, ...proxy });
-    console.log(`Proxy created ${chalk.bold(proxy.mount)} => ${proxy.target ? chalk.bold(proxy.target) : '<no target>'}`);
+    process.stdout.write(`Proxy created ${chalk.bold(proxy.mount)} => ${proxy.target ? chalk.bold(proxy.target) : '<no target>'}\n`);
   }
 
   app.get(`/${DEV_SERVER_PREFIX}/dev-server.js`, await createDevServerHandler(options));

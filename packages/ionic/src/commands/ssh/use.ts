@@ -54,7 +54,7 @@ export class SSHUseCommand extends SSHBaseCommand {
     const sshConfigPath = getConfigPath();
     const text1 = await fileToString(sshConfigPath);
     const conf = SSHConfig.parse(text1);
-    await ensureHostAndKeyPath(conf, { host: await this.env.config.getGitHost(), port: await this.env.config.getGitPort() }, keyPath);
+    ensureHostAndKeyPath(conf, { host: await this.env.config.getGitHost(), port: await this.env.config.getGitPort() }, keyPath);
     const text2 = SSHConfig.stringify(conf);
 
     if (text1 === text2) {
@@ -69,7 +69,7 @@ export class SSHUseCommand extends SSHBaseCommand {
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `May we make the above change(s) to '${prettyPath(sshConfigPath)}'?`
+        message: `May we make the above change(s) to '${prettyPath(sshConfigPath)}'?`,
       });
 
       if (!confirm) {

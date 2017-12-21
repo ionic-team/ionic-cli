@@ -9,7 +9,7 @@ export class VersionCommand extends Command {
     visible: false,
   };
 
-  public async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     // can't use logger--see https://github.com/ionic-team/ionic-cli/issues/2507
     process.stdout.write(this.env.plugins.ionic.meta.pkg.version + '\n');
   }

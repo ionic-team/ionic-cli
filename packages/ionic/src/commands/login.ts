@@ -31,7 +31,7 @@ If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
         description: 'Your password',
         validators: [validators.required],
         private: true,
-      }
+      },
     ],
     options: [
       {
@@ -50,7 +50,7 @@ If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
   };
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ email, ] = inputs;
+    const [ email ] = inputs;
 
     const config = await this.env.config.load();
 

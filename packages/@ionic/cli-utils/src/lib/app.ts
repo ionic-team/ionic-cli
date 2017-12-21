@@ -31,7 +31,7 @@ export class App implements IApp {
         req.set('Authorization', `Bearer ${this.token}`);
         return { req };
       },
-      isAppsResponse,
+      isAppsResponse
     );
   }
 

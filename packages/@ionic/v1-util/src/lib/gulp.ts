@@ -44,12 +44,12 @@ export async function runTask(name: string): Promise<void> {
     const gulpStart = promisify<void, string>(gulp.start.bind(gulp));
 
     if (gulp.hasTask(name)) {
-      console.log(timestamp(), `Invoking ${chalk.cyan(name)} gulp task.`);
+      process.stdout.write(timestamp(), `Invoking ${chalk.cyan(name)} gulp task.\n`);
       await gulpStart(name);
     } else {
-      console.error(timestamp(), `Cannot run ${chalk.cyan('sass')} task: missing in ${chalk.bold('gulpfile.js')}`);
+      process.stderr.write(timestamp(), `Cannot run ${chalk.cyan('sass')} task: missing in ${chalk.bold('gulpfile.js')}\n`);
     }
   } catch (e) {
-    console.error(timestamp(), `Cannot run ${chalk.cyan('sass')} task:`, String(e));
+    process.stderr.write(timestamp(), `Cannot run ${chalk.cyan('sass')} task: ${String(e)}\n`);
   }
 }

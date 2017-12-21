@@ -11,7 +11,7 @@ export class HelpCommand extends Command {
       {
         name: 'command',
         description: 'The command you desire help with',
-      }
+      },
     ],
     visible: false,
   };

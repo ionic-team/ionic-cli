@@ -15,7 +15,7 @@ export class IntegrationsDisableCommand extends Command {
         name: 'id',
         description: `The integration to disable (${INTEGRATIONS.map(i => chalk.green(i.name)).join(', ')})`,
         validators: [validators.required, contains(INTEGRATIONS.map(i => i.name), {})],
-      }
+      },
     ],
   };
 

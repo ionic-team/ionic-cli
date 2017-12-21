@@ -64,7 +64,7 @@ export async function treatAilments(env: IonicEnvironment) {
 
   const detectedAilments = ailments
     .filter(([ , detected ]) => detected)
-    .map(([ ailment,  ]) => ailment)
+    .map(([ ailment ]) => ailment)
     .filter(ailment => !config.state.doctor.ignored.includes(ailment.id));
 
   let treatedAilmentCount = 0;

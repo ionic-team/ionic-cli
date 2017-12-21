@@ -56,8 +56,8 @@ export async function fsReadJsonFile(filePath: string, options: FSReadFileOption
   }
 }
 
-export async function fsWriteJsonFile(filePath: string, json: { [key: string]: any}, options: FSWriteFileOptions): Promise<void> {
-  return fsWriteFile(filePath, JSON.stringify(json, null, 2) + '\n', options);
+export async function fsWriteJsonFile(filePath: string, json: { [key: string]: any; }, options: FSWriteFileOptions): Promise<void> {
+  return fsWriteFile(filePath, JSON.stringify(json, undefined, 2) + '\n', options);
 }
 
 export async function fileToString(filepath: string): Promise<string> {
@@ -219,10 +219,10 @@ export async function findBaseDirectory(dir: string, file: string): Promise<stri
       return dirInfo.root + path.join(...pathSegments);
     });
 
-  for (let i = 0; i < directoriesToCheck.length; i++) {
-    const results = await fsReadDir(directoriesToCheck[i]);
+  for (let d of directoriesToCheck) {
+    const results = await fsReadDir(d);
     if (results.includes(file)) {
-      return directoriesToCheck[i];
+      return d;
     }
   }
 }

@@ -19,11 +19,11 @@ export class MonitoringSyncSourcemapsCommand extends Command {
       {
         name: 'snapshot_id',
         description: `An Ionic Pro snapshot id to associate these sourcemaps with.`,
-      }
+      },
     ],
   };
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>  {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const token = await this.env.session.getUserToken();
     const appId = await this.env.project.loadAppId();
 
@@ -52,7 +52,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
       const doNewBuild = await this.env.prompt({
         type: 'confirm',
         name: 'isProd',
-        message: 'Do build before syncing?'
+        message: 'Do build before syncing?',
       });
       doNewBuild && await this.doProdBuild();
     }
@@ -75,7 +75,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
         name: path.basename(file),
         version: appVersion,
         commit: commitHash,
-        snapshot_id: snapshotId
+        snapshot_id: snapshotId,
       });
 
     try {
@@ -116,8 +116,8 @@ export class MonitoringSyncSourcemapsCommand extends Command {
       .buffer()
       .field(sourcemapPost.fields)
       .field('file', fileData)
-      .on('progress', (event: any) => {
-      })
+      // .on('progress', (event: any) => {
+      // })
       .end((err: any, res: any) => {
         if (err) {
           this.env.log.error('Unable to upload sourcemap');
@@ -139,10 +139,10 @@ export class MonitoringSyncSourcemapsCommand extends Command {
     const isProd = await this.env.prompt({
       type: 'confirm',
       name: 'isProd',
-      message: 'Do full prod build?'
+      message: 'Do full prod build?',
     });
 
     const { build } = await import('@ionic/cli-utils/commands/build');
-    return await build(this.env, [], { _: [], prod: isProd });
+    return build(this.env, [], { _: [], prod: isProd });
   }
 }

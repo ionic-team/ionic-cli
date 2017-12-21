@@ -26,9 +26,7 @@ export function isProjectNameValid(name: string): boolean {
  * https://github.com/facebookincubator/create-react-app/pull/368#issuecomment-243446094
  */
 export async function isSafeToCreateProjectIn(root: string): Promise<boolean> {
-  const validFiles = [
-    '.DS_Store', 'Thumbs.db', '.git', '.gitignore', '.idea', 'README.md', 'LICENSE'
-  ];
+  const validFiles = ['.DS_Store', 'Thumbs.db', '.git', '.gitignore', '.idea', 'README.md', 'LICENSE'];
 
   const entries = await fsReadDir(root);
 

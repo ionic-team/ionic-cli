@@ -70,11 +70,7 @@ export class IonicNamespace extends RootNamespace {
         const envdefault = env[envvar];
 
         if (typeof envdefault !== 'undefined') {
-          if (opt.type === Boolean) {
-            opt.default = envdefault && envdefault !== '0' ? true : false;
-          } else {
-            opt.default = envdefault;
-          }
+          opt.default = opt.type === Boolean ? (envdefault && envdefault !== '0' ? true : false) : envdefault;
         }
       }
     }

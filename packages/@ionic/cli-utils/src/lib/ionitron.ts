@@ -3,7 +3,7 @@ import chalk from 'chalk';
 export function getIonitronString(quote: string) {
   const quoteFormatted = quote
     .split('\n')
-    .map((currentString) => {
+    .map(currentString => {
       const lineLength = 68;
       const paddingLeftSize = Math.floor((lineLength - currentString.length) / 2);
       const paddingRightSize = paddingLeftSize + ((lineLength - currentString.length) % 2);
@@ -68,7 +68,7 @@ export const ionitronStatements = {
     'That\'s a nice looking app you have there.\nDefinitely one of the better human made apps I\'ve seen.',
     'Oh, hi there. I was not just indexing your hard drive,\ndefinitely not doing that.' +
     'That would need bee\'s approval',
-    'Fork you! Oh, I\'m sorry, wrong branch.'
+    'Fork you! Oh, I\'m sorry, wrong branch.',
   ],
   'es': [
     '\u0021Hola humano! \u00BFQu\u00E9 vamos a construir hoy?',
@@ -78,6 +78,6 @@ export const ionitronStatements = {
     'Es una bonita aplicaci\u00F3n esa que tienes.\nEres el mejor desarrollador humano que he visto.',
     'Oh, hola. No estaba indexando tu disco duro, no hago eso.',
     'Es necesitaria la aprobaci\u00F3n de las abejas.',
-    'Bif\u00Farcate! Oh, Lo siento, rama equivocada. '
-  ]
+    'Bif\u00Farcate! Oh, Lo siento, rama equivocada. ',
+  ],
 };

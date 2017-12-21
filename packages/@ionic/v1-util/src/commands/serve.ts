@@ -82,6 +82,6 @@ export class ServeCommand extends Command {
 
     await runServer({ host, port, lr, consolelogs, devPort, lrPort, wwwDir, watchPatterns, proxies });
 
-    console.log(`Serving directory ${chalk.bold(wwwDir)} at ${chalk.bold(url)}`);
+    process.stdout.write(`Serving directory ${chalk.bold(wwwDir)} at ${chalk.bold(url)}\n`);
   }
 }

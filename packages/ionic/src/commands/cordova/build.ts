@@ -32,7 +32,7 @@ To pass additional options to the Cordova CLI, use the ${chalk.green('--')} sepa
         name: 'platform',
         description: `The platform to build (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
         validators: [validators.required],
-      }
+      },
     ],
     options: [
       // Build Options
@@ -74,7 +74,7 @@ To pass additional options to the Cordova CLI, use the ${chalk.green('--')} sepa
         intents: [CORDOVA_INTENT],
         advanced: true,
       },
-    ]
+    ],
   };
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
@@ -84,7 +84,7 @@ To pass additional options to the Cordova CLI, use the ${chalk.green('--')} sepa
       const platform = await this.env.prompt({
         type: 'input',
         name: 'platform',
-        message: `What platform would you like to build (${['android', 'ios'].map(v => chalk.green(v)).join(', ')}):`
+        message: `What platform would you like to build (${['android', 'ios'].map(v => chalk.green(v)).join(', ')}):`,
       });
 
       inputs[0] = platform.trim();

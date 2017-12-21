@@ -151,10 +151,10 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         type: 'list',
         name: 'linkedApp',
         message: `Which app would you like to link`,
-        choices: [createAppChoice, ...apps, neverMindChoice].map((app) => ({
+        choices: [createAppChoice, ...apps, neverMindChoice].map(app => ({
           name: [CHOICE_CREATE_NEW_APP, CHOICE_NEVERMIND].includes(app.id) ? chalk.bold(app.name) : `${app.name} (${app.id})`,
-          value: app.id
-        }))
+          value: app.id,
+        })),
       });
 
       appId = linkedApp;

@@ -91,13 +91,13 @@ export async function createLiveReloadServer({ port, wwwDir }: { port: number; w
   const lrserver = tinylr();
   lrserver.listen(port);
 
-  return (changedFiles) => {
+  return changedFiles => {
     lrserver.changed({
       body: {
         files: changedFiles.map(changedFile => (
           '/' + path.relative(wwwDir, changedFile)
-        ))
-      }
+        )),
+      },
     });
   };
 }
@@ -135,20 +135,20 @@ export async function createDevLoggerServer(port: number): Promise<wsType.Server
   const wss = new WebSocket.Server({ port });
 
   wss.on('connection', ws => {
-    ws.on('message', (data) => {
+    ws.on('message', data => {
       let msg;
 
       try {
         data = data.toString();
         msg = JSON.parse(data);
       } catch (e) {
-        console.error(`Error parsing JSON message from dev server: "${data}" ${chalk.red(e.stack ? e.stack : e)}`);
+        process.stderr.write(`Error parsing JSON message from dev server: "${data}" ${chalk.red(e.stack ? e.stack : e)}\n`);
         return;
       }
 
       if (!isDevServerMessage(msg)) {
         const m = util.inspect(msg, { colors: chalk.enabled });
-        console.error(`Bad format in dev server message: ${m}`);
+        process.stderr.write(`Bad format in dev server message: ${m}\n`);
         return;
       }
 
@@ -164,9 +164,9 @@ export async function createDevLoggerServer(port: number): Promise<wsType.Server
         }
 
         if (status) {
-          console.log(`[${status('console.' + msg.type)}]: ${msg.data.join(' ')}`);
+          process.stdout.write(`[${status('console.' + msg.type)}]: ${msg.data.join(' ')}\n`);
         } else {
-          console.log(`[console]: ${msg.data.join(' ')}`);
+          process.stdout.write(`[console]: ${msg.data.join(' ')}\n`);
         }
       }
     });

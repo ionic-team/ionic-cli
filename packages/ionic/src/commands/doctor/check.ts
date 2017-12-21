@@ -14,7 +14,7 @@ export class DoctorCheckCommand extends Command {
       {
         name: 'id',
         description: 'The issue identifier',
-      }
+      },
     ],
   };
 

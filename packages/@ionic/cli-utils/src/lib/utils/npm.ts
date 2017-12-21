@@ -24,7 +24,7 @@ export async function readPackageJsonFileOfResolvedModule(resolvedModule: string
     }
 
     const p = path.dirname(resolvedModule); // "main": index.js
-    return await readPackageJsonFile(path.resolve(p, 'package.json'));
+    return readPackageJsonFile(path.resolve(p, 'package.json'));
   }
 }
 

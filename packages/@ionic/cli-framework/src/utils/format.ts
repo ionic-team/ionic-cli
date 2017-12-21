@@ -53,7 +53,7 @@ export function generateFillSpaceStringList(list: string[], optimalLength = 1, f
     optimalLength = 2;
   }
 
-  const longestItem = Math.max(...list.map((item) => stringWidth(item)));
+  const longestItem = Math.max(...list.map(item => stringWidth(item)));
   const fullLength = longestItem > optimalLength ? longestItem + 1 : optimalLength;
   const fullLengthString = Array(fullLength).fill(fillCharacter).join('');
 

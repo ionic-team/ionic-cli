@@ -13,7 +13,7 @@ import {
 import { isCommandPreRun } from '../guards';
 
 export abstract class Command extends BaseCommand<CommandData> implements ICommand {
-  public env: IonicEnvironment;
+  env: IonicEnvironment;
 
   async execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const config = await this.env.config.load();
@@ -59,7 +59,7 @@ export abstract class Command extends BaseCommand<CommandData> implements IComma
     const filteredInputs = inputs.filter((input, i) => !this.metadata.inputs || (this.metadata.inputs[i] && !this.metadata.inputs[i].private));
     const filteredOptions = Object.keys(options)
       .filter(optionName => {
-        const metadataOption = this.metadata.options && this.metadata.options.find((o) => {
+        const metadataOption = this.metadata.options && this.metadata.options.find(o => {
           return o.name === optionName || (typeof o.aliases !== 'undefined' && o.aliases.includes(optionName));
         });
 

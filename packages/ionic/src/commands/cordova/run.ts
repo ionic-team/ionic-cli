@@ -21,7 +21,7 @@ Just like with ${chalk.green('ionic cordova build')}, you can pass additional op
       {
         name: 'platform',
         description: `The platform to run (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
-      }
+      },
     ],
     options: CORDOVA_RUN_COMMAND_OPTIONS,
   };

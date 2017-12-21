@@ -11,7 +11,7 @@ export class IonitronCommand extends Command {
         name: 'es',
         description: 'Print in spanish',
         type: Boolean,
-      }
+      },
     ],
     visible: false,
   };

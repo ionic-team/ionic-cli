@@ -43,4 +43,3 @@ async function sanitize(key: string, obj: any) {
     assign(obj, await scrubTokens(obj));
   }
 }
-

@@ -9,7 +9,7 @@ const GA_CODE = 'UA-44023830-30';
 let _gaTracker: leekType | undefined;
 
 export class Telemetry implements ITelemetry {
-  public env: IonicEnvironment; // TODO: proper DI
+  env: IonicEnvironment; // TODO: proper DI
 
   async resetToken() {
     const config = await this.env.config.load();

@@ -23,7 +23,7 @@ export class HookEngine implements IHookEngine {
 
   async fire<T, U>(hook: string, args: T): Promise<U[]> {
     const registeredHooks = this.hooks.get(hook) || [];
-    return Promise.all(registeredHooks.map((h) => h.fire(args)));
+    return Promise.all(registeredHooks.map(h => h.fire(args)));
   }
 
   getSources(hook: string) {
@@ -36,7 +36,7 @@ export class HookEngine implements IHookEngine {
 
   deleteSource(source: string) {
     for (let [ hookName, hooks ] of this.hooks.entries()) {
-      this.hooks.set(hookName, hooks.filter((h) => h.source !== source));
+      this.hooks.set(hookName, hooks.filter(h => h.source !== source));
     }
   }
 

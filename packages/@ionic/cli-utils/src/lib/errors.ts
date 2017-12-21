@@ -1,7 +1,7 @@
 export class Exception extends Error {
-  public message: string;
-  public name: string;
-  public stack: string;
+  message: string;
+  name: string;
+  stack: string;
 
   constructor(message: string) {
     super(message);
@@ -10,13 +10,13 @@ export class Exception extends Error {
     this.stack = (new Error()).stack || '';
   }
 
-  public toString() {
+  toString() {
     return `${this.name}: ${this.message}`;
   }
 }
 
 export class FatalException extends Exception {
-  public fatal = true;
+  fatal = true;
 
   constructor(public message = '', public exitCode = 1) {
     super(message);

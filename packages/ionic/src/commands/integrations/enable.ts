@@ -14,14 +14,14 @@ export class IntegrationsEnableCommand extends Command {
         name: 'id',
         description: `The integration to enable (${INTEGRATIONS.map(i => chalk.green(i.name)).join(', ')})`,
         validators: [validators.required, contains(INTEGRATIONS.map(i => i.name), {})],
-      }
+      },
     ],
     options: [
       {
         name: 'quiet',
         description: 'Do not log file operations',
         type: Boolean,
-      }
+      },
     ],
   };
 

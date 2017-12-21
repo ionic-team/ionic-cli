@@ -44,7 +44,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
         description: 'Annotation (comment) in public key. Your Ionic email address will be used',
         aliases: ['C'],
         advanced: true,
-      }
+      },
     ],
   };
 

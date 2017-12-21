@@ -31,7 +31,7 @@ export abstract class Command<T extends CommandData> {
 }
 
 const typeDefaults: CommandOptionTypeDefaults = new Map<CommandOptionType, CommandLineInput>()
-  .set(String, null)
+  .set(String, null) // tslint:disable-line:no-null-keyword
   .set(Boolean, false);
 
 export interface ParsedArgsToArgvOptions extends dargs.Options {
@@ -106,15 +106,11 @@ export function metadataToParseArgsOptions(metadata: CommandData): NormalizedPar
  * To filter options that have no intent specified in the command's metadata,
  * exclude the intentName parameter.
  *
- * @param metadata
- * @param options The options to filter.
- * @param indentName
- *
  * @return The filtered options.
  */
 export function filterOptionsByIntent(metadata: CommandData, options: CommandLineOptions, intentName?: string): CommandLineOptions {
   const r = Object.keys(options).reduce((allOptions, optionName) => {
-    const metadataOptionFound = (metadata.options || []).find((mdOption) => (
+    const metadataOptionFound = (metadata.options || []).find(mdOption => (
       mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
     ));
     if (metadataOptionFound) {
