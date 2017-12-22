@@ -1,23 +1,25 @@
 import chalk from 'chalk';
 
-import { contains } from '@ionic/cli-framework/lib';
-import { CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { contains } from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class TelemetryCommand extends Command implements CommandPreRun {
-  metadata: CommandData = {
-    name: 'telemetry',
-    type: 'global',
-    description: 'Opt in and out of telemetry',
-    deprecated: true,
-    inputs: [
-      {
-        name: 'status',
-        description: `${chalk.green('on')} or ${chalk.green('off')}`,
-        validators: [contains(['on', 'off', undefined], { caseSensitive: false })],
-      }
-    ],
-  };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'telemetry',
+      type: 'global',
+      description: 'Opt in and out of telemetry',
+      deprecated: true,
+      inputs: [
+        {
+          name: 'status',
+          description: `${chalk.green('on')} or ${chalk.green('off')}`,
+          validators: [contains(['on', 'off', undefined], { caseSensitive: false })],
+        },
+      ],
+    };
+  }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     this.env.log.warn(

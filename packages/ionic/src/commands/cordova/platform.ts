@@ -1,39 +1,41 @@
 import chalk from 'chalk';
 
-import { contains, validate, validators } from '@ionic/cli-framework/lib';
-import { CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { contains, validate, validators } from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { CordovaCommand } from './base';
 
 export class PlatformCommand extends CordovaCommand implements CommandPreRun {
-  metadata: CommandData = {
-    name: 'platform',
-    type: 'project',
-    description: 'Manage Cordova platform targets',
-    longDescription: `
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'platform',
+      type: 'project',
+      description: 'Manage Cordova platform targets',
+      longDescription: `
 Like running ${chalk.green('cordova platform')} directly, but adds default Ionic icons and splash screen resources (during ${chalk.green('add')}) and provides friendly checks.
-    `,
-    exampleCommands: ['', 'add ios', 'add android', 'rm ios'],
-    inputs: [
-      {
-        name: 'action',
-        description: `${chalk.green('add')}, ${chalk.green('remove')}, or ${chalk.green('update')} a platform; ${chalk.green('ls')}, ${chalk.green('check')}, or ${chalk.green('save')} all project platforms`,
-      },
-      {
-        name: 'platform',
-        description: `The platform that you would like to add (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
-      },
-    ],
-    options: [
-      {
-        name: 'resources',
-        description: `Do not pregenerate icons and splash screen resources (corresponds to ${chalk.green('add')})`,
-        type: Boolean,
-        default: true,
-      },
-    ],
-  };
+      `,
+      exampleCommands: ['', 'add ios', 'add android', 'rm ios'],
+      inputs: [
+        {
+          name: 'action',
+          description: `${chalk.green('add')}, ${chalk.green('remove')}, or ${chalk.green('update')} a platform; ${chalk.green('ls')}, ${chalk.green('check')}, or ${chalk.green('save')} all project platforms`,
+        },
+        {
+          name: 'platform',
+          description: `The platform that you would like to add (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+        },
+      ],
+      options: [
+        {
+          name: 'resources',
+          description: `Do not pregenerate icons and splash screen resources (corresponds to ${chalk.green('add')})`,
+          type: Boolean,
+          default: true,
+        },
+      ],
+    };
+  }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.preRunChecks();
@@ -73,6 +75,8 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
 
     let [ action, platformName ] = inputs;
 
+    const metadata = await this.getMetadata();
+
     const platforms = await getPlatforms(this.env.project.directory);
 
     if (action === 'add' && platforms.includes(platformName)) {
@@ -80,7 +84,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
       return;
     }
 
-    const optionList = filterArgumentsForCordova(this.metadata, inputs, options);
+    const optionList = filterArgumentsForCordova(metadata, inputs, options);
 
     if ((action === 'add' || action === 'remove') && !optionList.includes('--save')) {
       optionList.push('--save');

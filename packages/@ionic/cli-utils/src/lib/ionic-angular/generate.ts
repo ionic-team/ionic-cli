@@ -1,4 +1,4 @@
-import { parsedArgsToArgv, validators } from '@ionic/cli-framework/lib';
+import { parsedArgsToArgv, validators } from '@ionic/cli-framework';
 
 import { IonicEnvironment } from '../../definitions';
 import { importAppScripts } from './app-scripts';

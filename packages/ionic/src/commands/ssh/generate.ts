@@ -2,51 +2,53 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
-import { contains, validate } from '@ionic/cli-framework/lib';
+import { contains, validate } from '@ionic/cli-framework';
 import { fsMkdirp, fsUnlink, pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 
 import { SSHBaseCommand } from './base';
 
 const SSH_KEY_TYPES = ['ecdsa', 'ed25519', 'rsa'];
 
 export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun {
-  metadata: CommandData = {
-    name: 'generate',
-    type: 'global',
-    backends: [BACKEND_PRO],
-    description: 'Generates a private and public SSH key pair',
-    inputs: [
-      {
-        name: 'key-path',
-        description: 'Destination of private key file',
-      },
-    ],
-    options: [
-      {
-        name: 'type',
-        description: `The type of key to generate: ${SSH_KEY_TYPES.map(v => chalk.green(v)).join(', ')}`,
-        default: 'rsa',
-        aliases: ['t'],
-        advanced: true,
-      },
-      {
-        name: 'bits',
-        description: 'Number of bits in the key',
-        aliases: ['b'],
-        default: '2048',
-        advanced: true,
-      },
-      {
-        name: 'annotation',
-        description: 'Annotation (comment) in public key. Your Ionic email address will be used',
-        aliases: ['C'],
-        advanced: true,
-      },
-    ],
-  };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'generate',
+      type: 'global',
+      backends: [BACKEND_PRO],
+      description: 'Generates a private and public SSH key pair',
+      inputs: [
+        {
+          name: 'key-path',
+          description: 'Destination of private key file',
+        },
+      ],
+      options: [
+        {
+          name: 'type',
+          description: `The type of key to generate: ${SSH_KEY_TYPES.map(v => chalk.green(v)).join(', ')}`,
+          default: 'rsa',
+          aliases: ['t'],
+          advanced: true,
+        },
+        {
+          name: 'bits',
+          description: 'Number of bits in the key',
+          aliases: ['b'],
+          default: '2048',
+          advanced: true,
+        },
+        {
+          name: 'annotation',
+          description: 'Annotation (comment) in public key. Your Ionic email address will be used',
+          aliases: ['C'],
+          advanced: true,
+        },
+      ],
+    };
+  }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.checkForOpenSSH();

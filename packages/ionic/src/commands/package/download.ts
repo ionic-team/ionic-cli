@@ -4,40 +4,42 @@ import chalk from 'chalk';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { BACKEND_LEGACY, CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 import { DEPRECATION_NOTICE } from './common';
 
 export class PackageDownloadCommand extends Command {
-  metadata: CommandData = {
-    name: 'download',
-    type: 'project',
-    backends: [BACKEND_LEGACY],
-    deprecated: true,
-    description: 'Download your packaged app',
-    longDescription: `
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'download',
+      type: 'project',
+      backends: [BACKEND_LEGACY],
+      deprecated: true,
+      description: 'Download your packaged app',
+      longDescription: `
 ${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}
 
 Ionic Package makes it easy to build a native binary of your app in the cloud.
 
 Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/services/package/')}
-    `,
-    exampleCommands: ['', '15', '--destination=my-builds'],
-    inputs: [
-      {
-        name: 'id',
-        description: 'The build ID to download. Defaults to the latest build',
-      },
-    ],
-    options: [
-      {
-        name: 'destination',
-        description: 'The download destination directory',
-        aliases: ['d'],
-      },
-    ],
-  };
+      `,
+      exampleCommands: ['', '15', '--destination=my-builds'],
+      inputs: [
+        {
+          name: 'id',
+          description: 'The build ID to download. Defaults to the latest build',
+        },
+      ],
+      options: [
+        {
+          name: 'destination',
+          description: 'The download destination directory',
+          aliases: ['d'],
+        },
+      ],
+    };
+  }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { PackageClient } = await import('@ionic/cli-utils/lib/package');

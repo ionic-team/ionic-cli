@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { CommandOption, IonicEnvironment } from '../../definitions';
+import { CommandMetadataOption, IonicEnvironment } from '../../definitions';
 
 export const APP_SCRIPTS_INTENT = 'app-scripts';
 
@@ -10,7 +10,7 @@ export async function importAppScripts(env: IonicEnvironment): Promise<any> {
   return require(appScriptsPath);
 }
 
-export const APP_SCRIPTS_OPTIONS: CommandOption[] = [
+export const APP_SCRIPTS_OPTIONS: CommandMetadataOption[] = [
   {
     name: 'prod',
     description: 'Build the application for production',

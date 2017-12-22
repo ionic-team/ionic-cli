@@ -1,46 +1,48 @@
 import chalk from 'chalk';
 
-import { contains, validate, validators } from '@ionic/cli-framework/lib';
-import { CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { contains, validate, validators } from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { CORDOVA_INTENT, filterArgumentsForCordova } from '@ionic/cli-utils/lib/cordova/utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { CordovaCommand } from './base';
 
 export class PluginCommand extends CordovaCommand implements CommandPreRun {
-  metadata: CommandData = {
-    name: 'plugin',
-    type: 'project',
-    description: 'Manage Cordova plugins',
-    longDescription: `
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'plugin',
+      type: 'project',
+      description: 'Manage Cordova plugins',
+      longDescription: `
 Like running ${chalk.green('cordova plugin')} directly, but provides friendly checks.
-    `,
-    exampleCommands: ['', 'add cordova-plugin-inappbrowser@latest', 'add phonegap-plugin-push --variable SENDER_ID=XXXXX', 'rm cordova-plugin-camera'],
-    inputs: [
-      {
-        name: 'action',
-        description: `${chalk.green('add')} or ${chalk.green('remove')} a plugin; ${chalk.green('ls')} or ${chalk.green('save')} all project plugins`,
-      },
-      {
-        name: 'plugin',
-        description: `The name of the plugin (corresponds to ${chalk.green('add')} and ${chalk.green('remove')})`,
-      },
-    ],
-    options: [
-      {
-        name: 'force',
-        description: `Force overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
-        type: Boolean,
-        intents: [CORDOVA_INTENT],
-        advanced: true,
-      },
-      {
-        name: 'variable',
-        description: 'Specify plugin variables',
-        intents: [CORDOVA_INTENT],
-      },
-    ],
-  };
+      `,
+      exampleCommands: ['', 'add cordova-plugin-inappbrowser@latest', 'add phonegap-plugin-push --variable SENDER_ID=XXXXX', 'rm cordova-plugin-camera'],
+      inputs: [
+        {
+          name: 'action',
+          description: `${chalk.green('add')} or ${chalk.green('remove')} a plugin; ${chalk.green('ls')} or ${chalk.green('save')} all project plugins`,
+        },
+        {
+          name: 'plugin',
+          description: `The name of the plugin (corresponds to ${chalk.green('add')} and ${chalk.green('remove')})`,
+        },
+      ],
+      options: [
+        {
+          name: 'force',
+          description: `Force overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
+          type: Boolean,
+          intents: [CORDOVA_INTENT],
+          advanced: true,
+        },
+        {
+          name: 'variable',
+          description: 'Specify plugin variables',
+          intents: [CORDOVA_INTENT],
+        },
+      ],
+    };
+  }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.preRunChecks();
@@ -71,7 +73,8 @@ Like running ${chalk.green('cordova plugin')} directly, but provides friendly ch
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const optionList = filterArgumentsForCordova(this.metadata, inputs.splice(0, 2), options);
+    const metadata = await this.getMetadata();
+    const optionList = filterArgumentsForCordova(metadata, inputs.splice(0, 2), options);
 
     if (!optionList.includes('--save')) {
       optionList.push('--save');

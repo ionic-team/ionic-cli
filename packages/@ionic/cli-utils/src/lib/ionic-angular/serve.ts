@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { parsedArgsToArgv } from '@ionic/cli-framework/lib';
+import { parsedArgsToArgv } from '@ionic/cli-framework';
 
 import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions';
 import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, selectExternalIP } from '../serve';

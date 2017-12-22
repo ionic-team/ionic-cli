@@ -2,18 +2,20 @@ import chalk from 'chalk';
 
 import { columnar } from '@ionic/cli-framework/utils/format';
 
-import { BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { isSSHKeyListResponse } from '@ionic/cli-utils/guards';
 
 import { SSHBaseCommand } from './base';
 
 export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
-  metadata: CommandData = {
-    name: 'list',
-    type: 'global',
-    backends: [BACKEND_PRO],
-    description: 'List your SSH public keys on Ionic',
-  };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'list',
+      type: 'global',
+      backends: [BACKEND_PRO],
+      description: 'List your SSH public keys on Ionic',
+    };
+  }
 
   async preRun() {
     await this.checkForOpenSSH();

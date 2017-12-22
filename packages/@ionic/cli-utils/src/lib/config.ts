@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as os from 'os';
 
 import chalk from 'chalk';
-import { ParsedArgs } from '@ionic/cli-framework/lib';
+import { ParsedArgs } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { ERROR_FILE_INVALID_JSON, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 

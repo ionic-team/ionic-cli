@@ -2,8 +2,7 @@ import * as path from 'path';
 import * as util from 'util';
 
 import chalk from 'chalk';
-import { InputValidationError, parseArgs } from '@ionic/cli-framework/lib';
-
+import { InputValidationError, parseArgs } from '@ionic/cli-framework';
 import { IonicEnvironment, RootPlugin, generateIonicEnvironment } from '@ionic/cli-utils';
 import { Exception } from '@ionic/cli-utils/lib/errors';
 import { mapLegacyCommand, modifyArguments } from '@ionic/cli-utils/lib/init';

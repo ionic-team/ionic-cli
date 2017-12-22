@@ -21,7 +21,7 @@ describe('@ionic/cli-utils', () => {
       };
 
       it('should return empty array for command with no options', () => {
-        const result = metadataToCmdOptsEnv({ fullName: 'cmd', options: [] });
+        const result = metadataToCmdOptsEnv({ options: [] }, 'cmd');
         expect(result.size).toEqual(0);
       });
 

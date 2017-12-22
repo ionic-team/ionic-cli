@@ -1,26 +1,28 @@
 import chalk from 'chalk';
 
-import { CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { isExitCodeException } from '@ionic/cli-utils/guards';
 
 import { CordovaCommand } from './base';
 
 export class RequirementsCommand extends CordovaCommand implements CommandPreRun {
-  metadata: CommandData = {
-    name: 'requirements',
-    type: 'project',
-    description: 'Checks and print out all the requirements for platforms',
-    longDescription: `
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'requirements',
+      type: 'project',
+      description: 'Checks and print out all the requirements for platforms',
+      longDescription: `
 Like running ${chalk.green('cordova requirements')} directly, but provides friendly checks.
-    `,
-    inputs: [
-      {
-        name: 'platform',
-        description: `The platform for which you would like to gather requirements (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
-      },
-    ],
-  };
+      `,
+      inputs: [
+        {
+          name: 'platform',
+          description: `The platform for which you would like to gather requirements (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+        },
+      ],
+    };
+  }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.preRunChecks();
@@ -53,8 +55,10 @@ Like running ${chalk.green('cordova requirements')} directly, but provides frien
       }
     }
 
+    const metadata = await this.getMetadata();
+
     try {
-      await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true, showError: false, fatalOnError: false });
+      await this.runCordova(filterArgumentsForCordova(metadata, inputs, options), { showExecution: true, showError: false, fatalOnError: false });
     } catch (e) {
       if (e.fatal || !isExitCodeException(e)) {
         throw e;

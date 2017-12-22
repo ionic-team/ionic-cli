@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import { isCI } from 'ci-info';
-import { parseArgs } from '@ionic/cli-framework/lib';
+import { parseArgs } from '@ionic/cli-framework';
 import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
 
 import * as inquirerType from 'inquirer';

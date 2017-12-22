@@ -1,7 +1,7 @@
 import chalk from 'chalk';
-import { contains, filterOptionsByIntent } from '@ionic/cli-framework/lib';
 
-import { BACKEND_LEGACY, CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun, PackageBuild } from '@ionic/cli-utils';
+import { contains, filterOptionsByIntent } from '@ionic/cli-framework';
+import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, PackageBuild } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { APP_SCRIPTS_INTENT, APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
@@ -9,46 +9,48 @@ import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { DEPRECATION_NOTICE } from './common';
 
 export class PackageBuildCommand extends Command implements CommandPreRun {
-  metadata: CommandData = {
-    name: 'build',
-    type: 'project',
-    backends: [BACKEND_LEGACY],
-    deprecated: true,
-    description: 'Start a package build',
-    longDescription: `
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'build',
+      type: 'project',
+      backends: [BACKEND_LEGACY],
+      deprecated: true,
+      description: 'Start a package build',
+      longDescription: `
 ${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}
 
 Ionic Package makes it easy to build a native binary of your app in the cloud.
 
 Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/services/package/')}
-    `,
-    exampleCommands: ['android', 'ios --profile=dev', 'android --profile=prod --release --prod'],
-    inputs: [
-      {
-        name: 'platform',
-        description: `The platform to target: ${chalk.green('ios')}, ${chalk.green('android')}`,
-        validators: [contains(['ios', 'android', undefined], {})],
-      },
-    ],
-    options: [
-      ...APP_SCRIPTS_OPTIONS,
-      {
-        name: 'release',
-        description: 'Mark as a release build',
-        type: Boolean,
-      },
-      {
-        name: 'profile',
-        description: 'The security profile to use with this build',
-        type: String,
-        aliases: ['p'],
-      },
-      {
-        name: 'note',
-        description: 'Give the package snapshot a note',
-      },
-    ],
-  };
+      `,
+      exampleCommands: ['android', 'ios --profile=dev', 'android --profile=prod --release --prod'],
+      inputs: [
+        {
+          name: 'platform',
+          description: `The platform to target: ${chalk.green('ios')}, ${chalk.green('android')}`,
+          validators: [contains(['ios', 'android', undefined], {})],
+        },
+      ],
+      options: [
+        ...APP_SCRIPTS_OPTIONS,
+        {
+          name: 'release',
+          description: 'Mark as a release build',
+          type: Boolean,
+        },
+        {
+          name: 'profile',
+          description: 'The security profile to use with this build',
+          type: String,
+          aliases: ['p'],
+        },
+        {
+          name: 'note',
+          description: 'Give the package snapshot a note',
+        },
+      ],
+    };
+  }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { PackageClient } = await import('@ionic/cli-utils/lib/package');
@@ -144,7 +146,7 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
     this.env.tasks.end();
 
     const { build } = await import('@ionic/cli-utils/commands/build');
-    await build(this.env, inputs, filterOptionsByIntent(this.metadata, options, APP_SCRIPTS_INTENT));
+    await build(this.env, inputs, filterOptionsByIntent(await this.getMetadata(), options, APP_SCRIPTS_INTENT));
 
     const snapshotRequest = await upload(this.env, { note });
 

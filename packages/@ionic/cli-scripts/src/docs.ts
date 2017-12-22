@@ -5,12 +5,13 @@ import * as ansiStyle from 'ansi-styles';
 import * as escapeStringRegexp from 'escape-string-regexp';
 
 import { generateRootPlugin } from 'ionic';
+import { generateCommandPath } from '@ionic/cli-framework';
 import { copyDirectory, fsMkdirp, fsStat, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 
 import {
-  CommandData,
-  CommandInput,
-  CommandOption,
+  CommandMetadataInput,
+  CommandMetadataOption,
+  HydratedCommandData,
   IonicEnvironment,
   StarterTemplate,
   generateIonicEnvironment,
@@ -43,8 +44,9 @@ export async function run() {
 
   const commands = await getCommandList(env);
   const commandPromises = commands.map(async cmd => {
-    const cmdPath = path.resolve(__dirname, '..', '..', '..', '..', 'docs', ...cmd.fullName.split(' '), 'index.md');
-    const cmdDoc = formatCommandDoc(env, cmd);
+    const fullName = await generateFullName(cmd);
+    const cmdPath = path.resolve(__dirname, '..', '..', '..', '..', 'docs', ...fullName.split(' '), 'index.md');
+    const cmdDoc = await formatCommandDoc(env, cmd);
 
     await fsMkdirp(path.dirname(cmdPath));
     await fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
@@ -142,15 +144,19 @@ If you're having trouble with the Ionic CLI, you can try the following:
 `;
 }
 
+async function generateFullName(cmdData: HydratedCommandData) {
+  const cmdPath = await generateCommandPath(cmdData.command);
+  const fullName = cmdPath.map(([p]) => p).slice(1).join(' '); // strip off 'ionic' from beginning
+
+  return fullName;
+}
+
 async function formatCommandsPage(env: IonicEnvironment) {
   const commands = await getCommandList(env);
 
-  function listCommandLink(cmdData: CommandData) {
-    if (!cmdData.fullName) {
-      cmdData.fullName = cmdData.name;
-    }
-
-    return `[${cmdData.fullName}](${path.join(...cmdData.fullName.split(' '))}/) | ${cmdData.deprecated ? '(deprecated) ' : ''}${stripAnsi(cmdData.description)}`;
+  async function listCommandLink(cmdData: HydratedCommandData) {
+    const fullName = await generateFullName(cmdData);
+    return `[${fullName}](${path.join(...fullName.split(' '))}/) | ${cmdData.deprecated ? '(deprecated) ' : ''}${stripAnsi(cmdData.description)}`;
   }
 
   return `${formatPageHeader('Commands', 'cli-command-list')}
@@ -159,7 +165,7 @@ This is a comprehensive list of CLI commands. The \`ionic --help\` command will 
 
 Command | Description
 ------- | -----------
-${commands.map(listCommandLink).join(`
+${(await Promise.all(commands.map(async cmd => listCommandLink(cmd)))).join(`
 `)}
 `;
 }
@@ -397,24 +403,20 @@ ${sillyNotice()}
 `;
 }
 
-function formatCommandHeader(cmd: CommandData) {
-  if (!cmd.fullName) {
-    cmd.fullName = cmd.name;
-  }
-
+function formatCommandHeader(cmd: HydratedCommandData, fullName: string) {
   return `---
 layout: fluid/cli_docs_base
 category: cli
-id: cli-${cmd.fullName.split(' ').join('-')}
-page_name: ionic ${cmd.fullName}
-command_name: ionic ${cmd.fullName}
-title: ionic ${cmd.fullName} - Ionic CLI Documentation
+id: cli-${fullName.split(' ').join('-')}
+page_name: ionic ${fullName}
+command_name: ionic ${fullName}
+title: ionic ${fullName} - Ionic CLI Documentation
 header_sub_title: Ionic CLI
 ---
 
 ${sillyNotice()}
 
-# \`$ ionic ${cmd.fullName}\`
+# \`$ ionic ${fullName}\`
 
 `;
 }
@@ -448,25 +450,23 @@ function convertAnsiToMd(str: string, style: ansiStyle.EscapeCodePair, md: ansiS
   return str;
 }
 
-function formatCommandDoc(env: IonicEnvironment, cmdMetadata: CommandData) {
-  const description = stripAnsi(cmdMetadata.description).split('\n').join('\n  ');
+async function formatCommandDoc(env: IonicEnvironment, cmd: HydratedCommandData) {
+  const description = stripAnsi(cmd.description).split('\n').join('\n  ');
 
-  if (!cmdMetadata.fullName) {
-    cmdMetadata.fullName = cmdMetadata.name;
-  }
+  const fullName = await generateFullName(cmd);
 
-  return formatCommandHeader(cmdMetadata) +
-    formatName(cmdMetadata.fullName, description) +
-    formatSynopsis(cmdMetadata.inputs || [], cmdMetadata.fullName) +
-    formatDescription(env, cmdMetadata) +
-    formatExamples(cmdMetadata.exampleCommands || [], cmdMetadata.fullName);
+  return formatCommandHeader(cmd, fullName) +
+    formatName(fullName, description) +
+    formatSynopsis(cmd.inputs || [], fullName) +
+    formatDescription(env, cmd) +
+    formatExamples(cmd.exampleCommands || [], fullName);
 }
 
 function formatName(fullName: string, description: string) {
   return description;
 }
 
-function formatSynopsis(inputs: CommandInput[], commandName: string) {
+function formatSynopsis(inputs: CommandMetadataInput[], commandName: string) {
   const headerLine = `## Synopsis`;
   const usageLine =
       `${commandName} ${
@@ -485,21 +485,21 @@ $ ionic ${usageLine}
   `;
 }
 
-function formatDescription(env: IonicEnvironment, cmdMetadata: CommandData) {
-  let longDescription = cmdMetadata.longDescription;
+function formatDescription(env: IonicEnvironment, cmd: HydratedCommandData) {
+  let longDescription = cmd.longDescription;
 
   if (longDescription) {
     longDescription = stripAnsi(links2md(ansi2md(longDescription.trim())));
   }
 
-  let inputs = cmdMetadata.inputs || [];
-  let options = cmdMetadata.options || [];
+  let inputs = cmd.inputs || [];
+  let options = cmd.options || [];
 
   options = options.filter(o => o.visible !== false);
 
   const headerLine = `## Details`;
 
-  function inputLineFn(input: CommandInput, index: number) {
+  function inputLineFn(input: CommandMetadataInput, index: number) {
     const name = input.name;
     const description = stripAnsi(ansi2md(input.description));
     const optionList = `\`${name}\``;
@@ -507,7 +507,7 @@ function formatDescription(env: IonicEnvironment, cmdMetadata: CommandData) {
     return `${optionList} | ${description}`;
   }
 
-  function optionLineFn(option: CommandOption) {
+  function optionLineFn(option: CommandMetadataOption) {
     const showInverse = option.type === Boolean && option.default === true && option.name.length > 1;
     const name = showInverse ? `--no-${option.name}` : `-${option.name.length > 1 ? '-' : ''}${option.name}`;
     const aliases = option.aliases;

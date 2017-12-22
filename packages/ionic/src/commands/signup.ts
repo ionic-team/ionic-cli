@@ -1,12 +1,14 @@
-import { CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class SignupCommand extends Command {
-  metadata: CommandData = {
-    name: 'signup',
-    type: 'global',
-    description: 'Create an Ionic account',
-  };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'signup',
+      type: 'global',
+      description: 'Create an Ionic account',
+    };
+  }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const opn = await import('opn');

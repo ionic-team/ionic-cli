@@ -1,69 +1,69 @@
 import * as path from 'path';
 import chalk from 'chalk';
 
-import { CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-framework';
-import { validators } from '@ionic/cli-framework/lib';
+import { Command, CommandLineInputs, CommandLineOptions, validators } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
 
-import { Command } from '../lib';
 import { runServer } from '../lib/serve';
 
 export class ServeCommand extends Command {
-  metadata: CommandData = {
-    name: 'serve',
-    description: '',
-    inputs: [
-      {
-        name: 'dir',
-        description: 'The www directory to server',
-        validators: [validators.required],
-      },
-    ],
-    options: [
-      {
-        name: 'host',
-        description: 'Host of HTTP server',
-        default: 'localhost',
-      },
-      {
-        name: 'port',
-        description: 'Port of HTTP server',
-        default: '8100',
-      },
-      {
-        name: 'dev-port',
-        description: 'Port of WebSocket dev server',
-        default: '53703',
-      },
-      {
-        name: 'lr-port',
-        description: 'Port of WebSocket live-reload server',
-        default: '35729',
-      },
-      {
-        name: 'lr',
-        description: 'Enable live-reload',
-        type: Boolean,
-        default: true,
-      },
-      {
-        name: 'consolelogs',
-        description: 'Enable console logs to terminal',
-        type: Boolean,
-        aliases: ['c'],
-      },
-      {
-        name: 'watch',
-        description: 'Watch file, directory, or glob pattern relative to cwd',
-        aliases: ['w'],
-      },
-      {
-        name: 'proxy',
-        description: 'Proxy configuration',
-        aliases: ['p'],
-      },
-    ],
-  };
+  async getMetadata() {
+    return {
+      name: 'serve',
+      description: '',
+      inputs: [
+        {
+          name: 'dir',
+          description: 'The www directory to server',
+          validators: [validators.required],
+        },
+      ],
+      options: [
+        {
+          name: 'host',
+          description: 'Host of HTTP server',
+          default: 'localhost',
+        },
+        {
+          name: 'port',
+          description: 'Port of HTTP server',
+          default: '8100',
+        },
+        {
+          name: 'dev-port',
+          description: 'Port of WebSocket dev server',
+          default: '53703',
+        },
+        {
+          name: 'lr-port',
+          description: 'Port of WebSocket live-reload server',
+          default: '35729',
+        },
+        {
+          name: 'lr',
+          description: 'Enable live-reload',
+          type: Boolean,
+          default: true,
+        },
+        {
+          name: 'consolelogs',
+          description: 'Enable console logs to terminal',
+          type: Boolean,
+          aliases: ['c'],
+        },
+        {
+          name: 'watch',
+          description: 'Watch file, directory, or glob pattern relative to cwd',
+          aliases: ['w'],
+        },
+        {
+          name: 'proxy',
+          description: 'Proxy configuration',
+          aliases: ['p'],
+        },
+      ],
+    };
+  }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions) {
     const wwwDir = path.resolve(inputs[0]);

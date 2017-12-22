@@ -2,17 +2,19 @@ import chalk from 'chalk';
 
 import { columnar, indent } from '@ionic/cli-framework/utils/format';
 
-import { CommandData } from '@ionic/cli-utils';
+import { CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 export class StateCommand extends Command {
-  metadata: CommandData = {
-    name: 'state',
-    type: 'global',
-    description: '',
-    visible: false,
-  };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'state',
+      type: 'global',
+      description: '',
+      visible: false,
+    };
+  }
 
   async run(): Promise<void> {
     const data = [

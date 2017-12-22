@@ -1,12 +1,16 @@
 import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class MonitoringNamespace extends Namespace {
-  metadata = {
-    name: 'monitoring',
-    description: 'Commands relating to Ionic Pro error monitoring',
-  };
+  async getMetadata() {
+    return {
+      name: 'monitoring',
+      description: 'Commands relating to Ionic Pro error monitoring',
+    };
+  }
 
-  commands = new CommandMap([
-    ['syncmaps', async () => { const { MonitoringSyncSourcemapsCommand } = await import('./syncmaps'); return new MonitoringSyncSourcemapsCommand(); }],
-  ]);
+  async getCommands(): Promise<CommandMap> {
+    return new CommandMap([
+      ['syncmaps', async () => { const { MonitoringSyncSourcemapsCommand } = await import('./syncmaps'); return new MonitoringSyncSourcemapsCommand(this); }],
+    ]);
+  }
 }

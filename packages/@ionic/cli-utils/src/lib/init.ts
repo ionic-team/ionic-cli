@@ -1,4 +1,4 @@
-import { parseArgs } from '@ionic/cli-framework/lib';
+import { parseArgs } from '@ionic/cli-framework';
 
 /**
  * Map legacy options to their new equivalent

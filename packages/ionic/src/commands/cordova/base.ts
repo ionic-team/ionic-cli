@@ -4,14 +4,14 @@ import chalk from 'chalk';
 import { fsMkdir, pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { CommandLineInputs, CommandLineOptions, CommandOption, CommandPreRun, IShellRunOptions } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadataOption, CommandPreRun, IShellRunOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 import { CORDOVA_INTENT, checkCordova, filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/cordova/utils';
 
-export const CORDOVA_RUN_COMMAND_OPTIONS: CommandOption[] = [
+export const CORDOVA_RUN_COMMAND_OPTIONS: CommandMetadataOption[] = [
   {
     name: 'list',
     description: 'List all available Cordova targets',
@@ -174,7 +174,8 @@ export abstract class CordovaRunCommand extends CordovaCommand implements Comman
     await this.preRunChecks();
 
     if (options['list']) {
-      const args = filterArgumentsForCordova(this.metadata, inputs, options);
+      const metadata = await this.getMetadata();
+      const args = filterArgumentsForCordova(metadata, inputs, options);
       if (!options['device'] && !options['emulator']) {
         if (args[0] === 'run') {
           args.push('--device');
@@ -218,9 +219,11 @@ export abstract class CordovaRunCommand extends CordovaCommand implements Comman
       conf.saveSync();
     });
 
+    const metadata = await this.getMetadata();
+
     if (isLiveReload) {
       const { serve } = await import('@ionic/cli-utils/commands/serve');
-      const serverDetails = await serve(this.env, inputs, generateBuildOptions(this.metadata, options));
+      const serverDetails = await serve(this.env, inputs, generateBuildOptions(metadata, options));
 
       if (serverDetails.externallyAccessible === false) {
         const extra = LOCAL_ADDRESSES.includes(serverDetails.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
@@ -232,11 +235,11 @@ export abstract class CordovaRunCommand extends CordovaCommand implements Comman
     } else {
       if (options.build) {
         const { build } = await import('@ionic/cli-utils/commands/build');
-        await build(this.env, inputs, generateBuildOptions(this.metadata, options));
+        await build(this.env, inputs, generateBuildOptions(metadata, options));
       }
     }
 
-    await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });
+    await this.runCordova(filterArgumentsForCordova(metadata, inputs, options), { showExecution: true });
 
     if (!isLiveReload) {
       this.env.log.ok(

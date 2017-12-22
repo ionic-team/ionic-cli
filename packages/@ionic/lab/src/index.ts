@@ -5,56 +5,50 @@ import chalk from 'chalk';
 import * as express from 'express';
 
 import {
-  CommandData,
-  CommandInput,
+  Command,
   CommandLineInputs,
   CommandLineOptions,
-  CommandOption,
-} from '@ionic/cli-framework';
-
-import {
-  Command as BaseCommand,
-  CommandMap as BaseCommandMap,
+  CommandMap,
   CommandMapDefault,
-  RootNamespace as BaseRootNamespace,
+  Namespace,
   execute,
   validators,
-} from '@ionic/cli-framework/lib';
-
-abstract class Command extends BaseCommand<CommandData> {}
+} from '@ionic/cli-framework';
 
 class DefaultCommand extends Command {
-  metadata: CommandData = {
-    name: 'default',
-    description: '',
-    inputs: [
-      {
-        name: 'url',
-        description: 'The URL of the livereload server to use with lab',
-        validators: [validators.required, validators.url],
-      },
-    ],
-    options: [
-      {
-        name: 'host',
-        description: 'HTTP host of Ionic Lab',
-        default: 'localhost',
-      },
-      {
-        name: 'port',
-        description: 'HTTP port of Ionic Lab',
-        default: '8200',
-      },
-      {
-        name: 'app-name',
-        description: 'App name to show in bottom left corner',
-      },
-      {
-        name: 'app-version',
-        description: 'App version to show in bottom left corner',
-      },
-    ],
-  };
+  async getMetadata() {
+    return {
+      name: 'default',
+      description: '',
+      inputs: [
+        {
+          name: 'url',
+          description: 'The URL of the livereload server to use with lab',
+          validators: [validators.required, validators.url],
+        },
+      ],
+      options: [
+        {
+          name: 'host',
+          description: 'HTTP host of Ionic Lab',
+          default: 'localhost',
+        },
+        {
+          name: 'port',
+          description: 'HTTP port of Ionic Lab',
+          default: '8200',
+        },
+        {
+          name: 'app-name',
+          description: 'App name to show in bottom left corner',
+        },
+        {
+          name: 'app-version',
+          description: 'App version to show in bottom left corner',
+        },
+      ],
+    };
+  }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions) {
     const [ url ] = inputs;
@@ -86,18 +80,20 @@ class DefaultCommand extends Command {
   }
 }
 
-class CommandMap extends BaseCommandMap<Command, CommandData, CommandInput, CommandOption> {}
+class LabNamespace extends Namespace {
+  async getMetadata() {
+    return {
+      name: 'ionic-lab',
+      description: '',
+    };
+  }
 
-class Namespace extends BaseRootNamespace<Command, CommandData, CommandInput, CommandOption> {
-  metadata = {
-    name: 'ionic-lab',
-    description: '',
-  };
-
-  commands = new CommandMap([[CommandMapDefault, async () => new DefaultCommand()]]);
+  async getCommands(): Promise<CommandMap> {
+    return new CommandMap([[CommandMapDefault, async () => new DefaultCommand(this)]]);
+  }
 }
 
-const ns = new Namespace();
+const ns = new LabNamespace();
 
 export async function run(pargv: string[], env: { [k: string]: string; }) {
   await execute(ns, pargv.slice(2), env);

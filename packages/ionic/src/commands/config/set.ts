@@ -1,16 +1,17 @@
 import chalk from 'chalk';
 
-import { validators } from '@ionic/cli-framework/lib';
-import { CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { validators } from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
 
 export class ConfigSetCommand extends Command {
-  metadata: CommandData = {
-    name: 'set',
-    type: 'global',
-    description: 'Set config values',
-    longDescription: `
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'set',
+      type: 'global',
+      description: 'Set config values',
+      longDescription: `
 By default, this command sets JSON properties in your project's ${chalk.bold(PROJECT_FILE)} file.
 
 For ${chalk.green('--global')} config, the CLI sets properties in the global CLI config file (${chalk.bold('~/.ionic/config.json')}).
@@ -20,40 +21,41 @@ For nested properties, separate nest levels with dots. For example, the property
 ${chalk.green('ionic config set')} will attempt to coerce ${chalk.green('value')} into a suitable JSON type. If it is JSON-parsable, such as ${chalk.green('true')} or ${chalk.green('[]')}, it takes the parsed result. Otherwise, the value is interpreted as a string. For stricter input, use ${chalk.green('--json')}, which will error with non-JSON values.
 
 By default, if ${chalk.green('property')} exists and is an object or an array, the value is not overwritten. To disable this check and always overwrite the property, use ${chalk.green('--force')}.
-    `,
-    inputs: [
-      {
-        name: 'property',
-        description: 'The property name you wish to set',
-        validators: [validators.required],
-      },
-      {
-        name: 'value',
-        description: 'The new value of the given property',
-        validators: [validators.required],
-      },
-    ],
-    options: [
-      {
-        name: 'global',
-        description: 'Use global CLI config',
-        type: Boolean,
-        aliases: ['g'],
-      },
-      {
-        name: 'json',
-        description: `Always interpret ${chalk.green('value')} as JSON`,
-        type: Boolean,
-      },
-      {
-        name: 'force',
-        description: 'Always overwrite existing values',
-        type: Boolean,
-        advanced: true,
-      },
-    ],
-    exampleCommands: ['name newAppName', 'name "\\"newAppName\\"" --json', 'watchPatterns "[]" --force', '-g yarn true'],
-  };
+      `,
+      inputs: [
+        {
+          name: 'property',
+          description: 'The property name you wish to set',
+          validators: [validators.required],
+        },
+        {
+          name: 'value',
+          description: 'The new value of the given property',
+          validators: [validators.required],
+        },
+      ],
+      options: [
+        {
+          name: 'global',
+          description: 'Use global CLI config',
+          type: Boolean,
+          aliases: ['g'],
+        },
+        {
+          name: 'json',
+          description: `Always interpret ${chalk.green('value')} as JSON`,
+          type: Boolean,
+        },
+        {
+          name: 'force',
+          description: 'Always overwrite existing values',
+          type: Boolean,
+          advanced: true,
+        },
+      ],
+      exampleCommands: ['name newAppName', 'name "\\"newAppName\\"" --json', 'watchPatterns "[]" --force', '-g yarn true'],
+    };
+  }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { set } = await import('@ionic/cli-utils/commands/config/set');

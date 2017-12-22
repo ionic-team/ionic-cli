@@ -2,23 +2,24 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
-import { validators } from '@ionic/cli-framework/lib';
+import { validators } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
 import { isValidURL } from '@ionic/cli-framework/utils/string';
 
-import { BACKEND_LEGACY, BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions, CommandPreRun, StarterManifest, StarterTemplate } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, StarterManifest, StarterTemplate } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { PROJECT_FILE, Project } from '@ionic/cli-utils/lib/project';
 import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
 
 export class StartCommand extends Command implements CommandPreRun {
-  metadata: CommandData = {
-    name: 'start',
-    type: 'global',
-    description: 'Create a new project',
-    longDescription: `
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'start',
+      type: 'global',
+      description: 'Create a new project',
+      longDescription: `
 This command creates a working Ionic app. It installs dependencies for you and sets up your project.
 
 ${chalk.green('ionic start')} will create a new app from ${chalk.green('template')}. You can list all templates with the ${chalk.green('--list')} option. For more information on starter templates, see the CLI documentation${chalk.cyan('[1]')}.
@@ -26,83 +27,84 @@ ${chalk.green('ionic start')} will create a new app from ${chalk.green('template
 You can also specify a git repository URL for ${chalk.green('template')} and your existing project will be cloned.
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}
-    `,
-    exampleCommands: [
-      '',
-      '--list',
-      'myApp blank',
-      'myApp tabs --cordova',
-      'myApp blank --type=ionic1',
-      'myConferenceApp https://github.com/ionic-team/ionic-conference-app',
-    ],
-    inputs: [
-      {
-        name: 'name',
-        description: 'The name of your project directory',
-        validators: [validators.required],
-      },
-      {
-        name: 'template',
-        description: `The starter template to use (e.g. ${['blank', 'tabs'].map(t => chalk.green(t)).join(', ')}; use ${chalk.green('--list')} to see all)`,
-        validators: [validators.required],
-      },
-    ],
-    options: [
-      {
-        name: 'list',
-        description: 'List starter templates available',
-        type: Boolean,
-        aliases: ['l'],
-      },
-      {
-        name: 'type',
-        description: `Type of project to start (e.g. ${chalk.green('ionic-angular')}, ${chalk.green('ionic1')})`,
-        type: String,
-        default: 'ionic-angular',
-      },
-      {
-        name: 'display-name',
-        description: 'Human-readable name (use quotes around the name)',
-        type: String,
-        aliases: ['n'],
-      },
-      {
-        name: 'cordova',
-        description: 'Include Cordova integration',
-        type: Boolean,
-      },
-      {
-        name: 'deps',
-        description: 'Do not install npm/yarn dependencies',
-        type: Boolean,
-        default: true,
-        advanced: true,
-      },
-      {
-        name: 'git',
-        description: 'Do not initialize a git repo',
-        type: Boolean,
-        default: true,
-        advanced: true,
-      },
-      {
-        name: 'link',
-        description: 'Do not ask to connect the app with the Ionic Dashboard',
-        type: Boolean,
-        default: true,
-        advanced: true,
-      },
-      {
-        name: 'pro-id',
-        description: 'Specify an app ID from the Ionic Dashboard to link',
-      },
-      {
-        name: 'bundle-id',
-        description: 'Specify the bundle ID/application ID for your app (reverse-DNS notation)',
-        advanced: true,
-      },
-    ],
-  };
+      `,
+      exampleCommands: [
+        '',
+        '--list',
+        'myApp blank',
+        'myApp tabs --cordova',
+        'myApp blank --type=ionic1',
+        'myConferenceApp https://github.com/ionic-team/ionic-conference-app',
+      ],
+      inputs: [
+        {
+          name: 'name',
+          description: 'The name of your project directory',
+          validators: [validators.required],
+        },
+        {
+          name: 'template',
+          description: `The starter template to use (e.g. ${['blank', 'tabs'].map(t => chalk.green(t)).join(', ')}; use ${chalk.green('--list')} to see all)`,
+          validators: [validators.required],
+        },
+      ],
+      options: [
+        {
+          name: 'list',
+          description: 'List starter templates available',
+          type: Boolean,
+          aliases: ['l'],
+        },
+        {
+          name: 'type',
+          description: `Type of project to start (e.g. ${chalk.green('ionic-angular')}, ${chalk.green('ionic1')})`,
+          type: String,
+          default: 'ionic-angular',
+        },
+        {
+          name: 'display-name',
+          description: 'Human-readable name (use quotes around the name)',
+          type: String,
+          aliases: ['n'],
+        },
+        {
+          name: 'cordova',
+          description: 'Include Cordova integration',
+          type: Boolean,
+        },
+        {
+          name: 'deps',
+          description: 'Do not install npm/yarn dependencies',
+          type: Boolean,
+          default: true,
+          advanced: true,
+        },
+        {
+          name: 'git',
+          description: 'Do not initialize a git repo',
+          type: Boolean,
+          default: true,
+          advanced: true,
+        },
+        {
+          name: 'link',
+          description: 'Do not ask to connect the app with the Ionic Dashboard',
+          type: Boolean,
+          default: true,
+          advanced: true,
+        },
+        {
+          name: 'pro-id',
+          description: 'Specify an app ID from the Ionic Dashboard to link',
+        },
+        {
+          name: 'bundle-id',
+          description: 'Specify the bundle ID/application ID for your app (reverse-DNS notation)',
+          advanced: true,
+        },
+      ],
+    };
+  }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { STARTER_TEMPLATES, getStarterTemplateTextList } = await import('@ionic/cli-utils/lib/start');

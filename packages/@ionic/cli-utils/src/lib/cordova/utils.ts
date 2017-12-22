@@ -1,6 +1,6 @@
-import { filterOptionsByIntent, parsedArgsToArgv } from '@ionic/cli-framework/lib';
+import { filterOptionsByIntent, parsedArgsToArgv } from '@ionic/cli-framework';
 
-import { CommandData, CommandLineInputs, CommandLineOptions, IonicEnvironment } from '../../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicEnvironment } from '../../definitions';
 import { APP_SCRIPTS_INTENT } from '../ionic-angular/app-scripts';
 
 export const CORDOVA_INTENT = 'cordova';
@@ -8,7 +8,7 @@ export const CORDOVA_INTENT = 'cordova';
 /**
  * Filter and gather arguments from command line to be passed to Cordova
  */
-export function filterArgumentsForCordova(metadata: CommandData, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
+export function filterArgumentsForCordova(metadata: CommandMetadata, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
   const results = filterOptionsByIntent(metadata, options, CORDOVA_INTENT);
   const args = parsedArgsToArgv(results, { useEquals: false, allowCamelCase: true });
   let unparsedCdvArgs: string[] = [];
@@ -24,7 +24,7 @@ export function filterArgumentsForCordova(metadata: CommandData, inputs: Command
 /**
  * Start the app scripts server for emulator or device
  */
-export function generateBuildOptions(metadata: CommandData, options: CommandLineOptions): CommandLineOptions {
+export function generateBuildOptions(metadata: CommandMetadata, options: CommandLineOptions): CommandLineOptions {
   const results = { ...filterOptionsByIntent(metadata, options), ...filterOptionsByIntent(metadata, options, APP_SCRIPTS_INTENT) };
 
   // Serve specific options not related to the actual run or emulate code

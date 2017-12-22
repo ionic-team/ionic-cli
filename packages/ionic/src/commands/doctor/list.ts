@@ -1,14 +1,16 @@
 import chalk from 'chalk';
 
-import { CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class DoctorListCommand extends Command {
-  metadata: CommandData = {
-    name: 'list',
-    type: 'project',
-    description: 'List all issue identifiers',
-  };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'list',
+      type: 'project',
+      description: 'List all issue identifiers',
+    };
+  }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { Ailments } = await import('@ionic/cli-utils/lib/doctor/ailments');

@@ -1,14 +1,16 @@
-import { BACKEND_LEGACY, BACKEND_PRO, CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class LogoutCommand extends Command {
-  metadata: CommandData = {
-    name: 'logout',
-    type: 'global',
-    backends: [BACKEND_LEGACY, BACKEND_PRO],
-    description: '',
-    visible: false,
-  };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'logout',
+      type: 'global',
+      backends: [BACKEND_LEGACY, BACKEND_PRO],
+      description: '',
+      visible: false,
+    };
+  }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!(await this.env.session.isLoggedIn())) {

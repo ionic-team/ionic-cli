@@ -1,18 +1,21 @@
 import chalk from 'chalk';
 
-import { Command as BaseCommand, parsedArgsToArgv } from '@ionic/cli-framework/lib';
+import { BaseCommand, generateCommandPath, parsedArgsToArgv } from '@ionic/cli-framework';
 
 import {
-  CommandData,
   CommandLineInputs,
   CommandLineOptions,
+  CommandMetadata,
+  CommandMetadataInput,
+  CommandMetadataOption,
   ICommand,
+  INamespace,
   IonicEnvironment,
 } from '../definitions';
 
 import { isCommandPreRun } from '../guards';
 
-export abstract class Command extends BaseCommand<CommandData> implements ICommand {
+export abstract class Command extends BaseCommand<INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> implements ICommand {
   env: IonicEnvironment;
 
   async execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
@@ -37,16 +40,20 @@ export abstract class Command extends BaseCommand<CommandData> implements IComma
     const telemetryPromise = (async () => {
       if (config.telemetry !== false) {
         let cmdInputs: CommandLineInputs = [];
+        const metadata = await this.getMetadata();
 
-        if (this.metadata.name === 'login' || this.metadata.name === 'logout') {
+        if (metadata.name === 'login' || metadata.name === 'logout') {
           await runPromise;
-        } else if (this.metadata.name === 'help') {
+        } else if (metadata.name === 'help') {
           cmdInputs = inputs;
         } else {
           cmdInputs = await this.getCleanInputsForTelemetry(inputs, options);
         }
 
-        await this.env.telemetry.sendCommand(`ionic ${this.metadata.fullName}`, cmdInputs);
+        const cmd: ICommand = this;
+        const path = await generateCommandPath(cmd);
+
+        await this.env.telemetry.sendCommand(path.map(([p]) => p).join(' '), cmdInputs);
       }
     })();
 
@@ -56,10 +63,11 @@ export abstract class Command extends BaseCommand<CommandData> implements IComma
   async getCleanInputsForTelemetry(inputs: CommandLineInputs, options: CommandLineOptions): Promise<string[]> {
     const initialOptions: CommandLineOptions = { _: [] };
 
-    const filteredInputs = inputs.filter((input, i) => !this.metadata.inputs || (this.metadata.inputs[i] && !this.metadata.inputs[i].private));
+    const metadata = await this.getMetadata();
+    const filteredInputs = inputs.filter((input, i) => !metadata.inputs || (metadata.inputs[i] && !metadata.inputs[i].private));
     const filteredOptions = Object.keys(options)
       .filter(optionName => {
-        const metadataOption = this.metadata.options && this.metadata.options.find(o => {
+        const metadataOption = metadata.options && metadata.options.find(o => {
           return o.name === optionName || (typeof o.aliases !== 'undefined' && o.aliases.includes(optionName));
         });
 

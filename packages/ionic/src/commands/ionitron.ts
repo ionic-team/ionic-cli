@@ -1,20 +1,22 @@
-import { CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class IonitronCommand extends Command {
-  metadata: CommandData = {
-    name: 'ionitron',
-    type: 'global',
-    description: 'Print random ionitron messages',
-    options: [
-      {
-        name: 'es',
-        description: 'Print in spanish',
-        type: Boolean,
-      },
-    ],
-    visible: false,
-  };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'ionitron',
+      type: 'global',
+      description: 'Print random ionitron messages',
+      options: [
+        {
+          name: 'es',
+          description: 'Print in spanish',
+          type: Boolean,
+        },
+      ],
+      visible: false,
+    };
+  }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { getIonitronString, ionitronStatements } = await import('@ionic/cli-utils/lib/ionitron');

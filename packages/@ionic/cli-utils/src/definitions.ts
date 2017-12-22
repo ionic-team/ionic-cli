@@ -7,18 +7,10 @@ import * as superagentType from 'superagent';
 
 import * as framework from '@ionic/cli-framework';
 
-import {
-  Command as BaseCommand,
-  Namespace as BaseNamespace,
-  RootNamespace as BaseRootNamespace,
-} from '@ionic/cli-framework/lib';
-
 export {
-  CommandInput,
-  CommandLineInput,
   CommandLineInputs,
   CommandLineOptions,
-  CommandOptionType,
+  CommandMetadataInput,
   PackageJson,
 } from '@ionic/cli-framework';
 
@@ -256,7 +248,7 @@ export interface IDaemon extends IBaseConfig<DaemonFile> {
   setPort(port: number): Promise<void>;
 }
 
-export interface CommandOption extends framework.CommandOption {
+export interface CommandMetadataOption extends framework.CommandMetadataOption {
   backends?: BackendFlag[];
 }
 
@@ -266,12 +258,12 @@ export interface ExitCodeException extends Error {
 
 export type BackendFlag = 'pro' | 'legacy';
 
-export interface CommandData extends framework.CommandData<framework.CommandInput, CommandOption> {
+export interface CommandMetadata extends framework.CommandMetadata<framework.CommandMetadataInput, CommandMetadataOption> {
   type: 'global' | 'project';
   backends?: BackendFlag[];
 }
 
-export type HydratedCommandData = framework.HydratedCommandData<ICommand, CommandData, framework.CommandInput, CommandOption>;
+export type HydratedCommandData = CommandMetadata & framework.IHydratedCommandData<ICommand, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption>;
 
 export interface ISession {
   login(email: string, password: string): Promise<void>;
@@ -610,13 +602,7 @@ export interface RootPlugin extends LoadedPlugin {
   namespace: IRootNamespace;
 }
 
-export type INamespace = BaseNamespace<ICommand, CommandData, framework.CommandInput, CommandOption>;
-
-export interface IRootNamespace extends BaseRootNamespace<ICommand, CommandData, framework.CommandInput, CommandOption> {
-  runCommand(ienv: IonicEnvironment, pargv: string[], env: { [key: string]: string; }): Promise<void>;
-}
-
-export interface ICommand extends BaseCommand<CommandData> {
+export interface ICommand extends framework.ICommand<INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption> {
   env: IonicEnvironment;
 
   execute(inputs: framework.CommandLineInputs, options: framework.CommandLineOptions): Promise<void>;
@@ -624,6 +610,12 @@ export interface ICommand extends BaseCommand<CommandData> {
 
 export interface CommandPreRun extends ICommand {
   preRun(inputs: framework.CommandLineInputs, options: framework.CommandLineOptions): Promise<void>;
+}
+
+export interface INamespace extends framework.INamespace<ICommand, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption> {}
+
+export interface IRootNamespace extends INamespace {
+  runCommand(ienv: IonicEnvironment, pargv: string[], env: { [key: string]: string; }): Promise<void>;
 }
 
 export interface ImageResource {

@@ -4,9 +4,9 @@ import { cacheFileChecksum, pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
 import {
-  CommandData,
   CommandLineInputs,
   CommandLineOptions,
+  CommandMetadata,
   CommandPreRun,
   KnownPlatform,
   ResourcesConfig,
@@ -21,11 +21,12 @@ import { CordovaCommand } from './base';
 const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
 
 export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
-  metadata: CommandData = {
-    name: 'resources',
-    type: 'project',
-    description: 'Automatically create icon and splash screen resources',
-    longDescription: `
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'resources',
+      type: 'project',
+      description: 'Automatically create icon and splash screen resources',
+      longDescription: `
 Ionic can automatically generate perfectly sized icons and splash screens from source images (${chalk.bold('.png')}, ${chalk.bold('.psd')}, or ${chalk.bold('.ai')}) for your Cordova platforms.
 
 The source image for icons should ideally be at least ${chalk.bold('1024×1024px')} and located at ${chalk.bold('resources/icon.png')}. The source image for splash screens should ideally be at least ${chalk.bold('2732×2732px')} and located at ${chalk.bold('resources/splash.png')}. If you used ${chalk.green('ionic start')}, there should already be default Ionic resources in the ${chalk.bold('resources/')} directory, which you can overwrite.
@@ -43,35 +44,36 @@ Cordova reference documentation:
 - Splash Screens: ${chalk.bold('https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-splashscreen/')}
 
 This command uses Ionic servers, so we require you to be logged into your free Ionic account. Use ${chalk.green('ionic login')} to login.
-    `,
-    exampleCommands: ['', 'ios', 'android'],
-    inputs: [
-      {
-        name: 'platform',
-        description: `The platform for which you would like to generate resources (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
-      },
-    ],
-    options: [
-      {
-        name: 'force',
-        description: 'Force regeneration of resources',
-        type: Boolean,
-        aliases: ['f'],
-      },
-      {
-        name: 'icon',
-        description: 'Generate icon resources',
-        type: Boolean,
-        aliases: ['i'],
-      },
-      {
-        name: 'splash',
-        description: 'Generate splash screen resources',
-        type: Boolean,
-        aliases: ['s'],
-      },
-    ],
-  };
+      `,
+      exampleCommands: ['', 'ios', 'android'],
+      inputs: [
+        {
+          name: 'platform',
+          description: `The platform for which you would like to generate resources (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+        },
+      ],
+      options: [
+        {
+          name: 'force',
+          description: 'Force regeneration of resources',
+          type: Boolean,
+          aliases: ['f'],
+        },
+        {
+          name: 'icon',
+          description: 'Generate icon resources',
+          type: Boolean,
+          aliases: ['i'],
+        },
+        {
+          name: 'splash',
+          description: 'Generate splash screen resources',
+          type: Boolean,
+          aliases: ['s'],
+        },
+      ],
+    };
+  }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.preRunChecks();

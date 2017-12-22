@@ -1,18 +1,21 @@
-import { execute } from '@ionic/cli-framework/lib';
+import { CommandMap, Namespace, execute } from '@ionic/cli-framework';
 
 import { BuildCommand, ServeCommand } from './commands';
-import { CommandMap, Namespace } from './lib';
 
 export class IonicV1Namespace extends Namespace {
-  metadata = {
-    name: 'ionic-lab',
-    description: '',
-  };
+  async getMetadata() {
+    return {
+      name: 'ionic-lab',
+      description: '',
+    };
+  }
 
-  commands = new CommandMap([
-    ['build', async () => new BuildCommand()],
-    ['serve', async () => new ServeCommand()],
-  ]);
+  async getCommands(): Promise<CommandMap> {
+    return new CommandMap([
+      ['build', async () => new BuildCommand(this)],
+      ['serve', async () => new ServeCommand(this)],
+    ]);
+  }
 }
 
 const ns = new IonicV1Namespace();

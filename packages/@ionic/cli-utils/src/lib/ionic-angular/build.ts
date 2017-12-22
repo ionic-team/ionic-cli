@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import { parsedArgsToArgv } from '@ionic/cli-framework/lib';
+import { parsedArgsToArgv } from '@ionic/cli-framework';
 
 import { IonicEnvironment } from '../../definitions';
 

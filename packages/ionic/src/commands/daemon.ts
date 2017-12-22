@@ -3,23 +3,25 @@ import chalk from 'chalk';
 import { fsUnlink } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class DaemonCommand extends Command {
-  metadata: CommandData = {
-    name: 'daemon',
-    type: 'global',
-    description: 'Ionic CLI daemon',
-    options: [
-      {
-        name: 'kill-existing',
-        description: 'If an existing daemon is found, force kill it',
-        type: Boolean,
-      },
-    ],
-    visible: false,
-  };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'daemon',
+      type: 'global',
+      description: 'Ionic CLI daemon',
+      options: [
+        {
+          name: 'kill-existing',
+          description: 'If an existing daemon is found, force kill it',
+          type: Boolean,
+        },
+      ],
+      visible: false,
+    };
+  }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { createCommServer, processRunning } = await import('@ionic/cli-utils/lib/daemon');

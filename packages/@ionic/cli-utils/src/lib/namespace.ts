@@ -1,25 +1,14 @@
 import {
-  CommandData,
-  CommandInput,
-  CommandOption,
+  CommandMetadata,
+  CommandMetadataInput,
+  CommandMetadataOption,
   ICommand,
   INamespace,
-  IRootNamespace,
-  IonicEnvironment,
 } from '../definitions';
 
-import {
-  CommandMap as BaseCommandMap,
-  Namespace as BaseNamespace,
-  NamespaceMap as BaseNamespaceMap,
-  RootNamespace as BaseRootNamespace,
-} from '@ionic/cli-framework/lib';
+import { BaseCommandMap, BaseNamespace, BaseNamespaceMap } from '@ionic/cli-framework';
 
-export class CommandMap extends BaseCommandMap<ICommand, CommandData, CommandInput, CommandOption> {}
-export class NamespaceMap extends BaseNamespaceMap<ICommand, CommandData, CommandInput, CommandOption> {}
+export class CommandMap extends BaseCommandMap<ICommand, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
+export class NamespaceMap extends BaseNamespaceMap<ICommand, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
 
-export abstract class Namespace extends BaseNamespace<ICommand, CommandData, CommandInput, CommandOption> implements INamespace {}
-
-export abstract class RootNamespace extends BaseRootNamespace<ICommand, CommandData, CommandInput, CommandOption> implements IRootNamespace {
-  abstract async runCommand(ienv: IonicEnvironment, pargv: string[], env: { [key: string]: string; }): Promise<void>;
-}
+export abstract class Namespace extends BaseNamespace<ICommand, CommandMetadata, CommandMetadataInput, CommandMetadataOption> implements INamespace {}

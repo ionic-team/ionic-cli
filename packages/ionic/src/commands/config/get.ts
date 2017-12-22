@@ -1,15 +1,16 @@
 import chalk from 'chalk';
 
-import { CommandData, CommandLineInputs, CommandLineOptions } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
 
 export class ConfigGetCommand extends Command {
-  metadata: CommandData = {
-    name: 'get',
-    type: 'global',
-    description: 'Print config values',
-    longDescription: `
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'get',
+      type: 'global',
+      description: 'Print config values',
+      longDescription: `
 By default, this command prints properties in your project's ${chalk.bold(PROJECT_FILE)} file.
 
 For ${chalk.green('--global')} config, the CLI prints properties in the global CLI config file (${chalk.bold('~/.ionic/config.json')}).
@@ -21,28 +22,29 @@ Without a ${chalk.green('property')} argument, this command prints out the entir
 If you are using this command programmatically, you can use the ${chalk.green('--json')} option.
 
 This command attempts to sanitize config output for known sensitive fields, such as fields within the ${chalk.bold('tokens')} object in the global CLI config file. This functionality is disabled when using ${chalk.green('--json')}.
-    `,
-    inputs: [
-      {
-        name: 'property',
-        description: 'The property name you wish to get',
-      },
-    ],
-    options: [
-      {
-        name: 'global',
-        description: 'Use global CLI config',
-        type: Boolean,
-        aliases: ['g'],
-      },
-      {
-        name: 'json',
-        description: 'Output config values in JSON',
-        type: Boolean,
-      },
-    ],
-    exampleCommands: ['', 'app_id', '--global user.email', '-g yarn'],
-  };
+      `,
+      inputs: [
+        {
+          name: 'property',
+          description: 'The property name you wish to get',
+        },
+      ],
+      options: [
+        {
+          name: 'global',
+          description: 'Use global CLI config',
+          type: Boolean,
+          aliases: ['g'],
+        },
+        {
+          name: 'json',
+          description: 'Output config values in JSON',
+          type: Boolean,
+        },
+      ],
+      exampleCommands: ['', 'app_id', '--global user.email', '-g yarn'],
+    };
+  }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { get } = await import('@ionic/cli-utils/commands/config/get');
