@@ -185,7 +185,10 @@ describe('@ionic/cli-framework', () => {
           const { args, obj, path } = await ns.locate([]);
           expect(args).toEqual([]);
           expect(ns).toBe(obj);
-          expect(path.length).toEqual(0);
+          expect(path.length).toEqual(1);
+          const [ ns1 ] = path;
+          expect(ns1[0]).toEqual('my');
+          expect(ns1[1]).toBe(ns);
         });
 
         it('should locate root namespace with args with no commands or namespaces', async () => {
@@ -193,7 +196,10 @@ describe('@ionic/cli-framework', () => {
           const { args, obj, path } = await ns.locate(['x', 'y', 'z']);
           expect(args).toEqual(['x', 'y', 'z']);
           expect(ns).toBe(obj);
-          expect(path.length).toEqual(0);
+          expect(path.length).toEqual(1);
+          const [ ns1 ] = path;
+          expect(ns1[0]).toEqual('my');
+          expect(ns1[1]).toBe(ns);
         });
 
         it('should locate foo namespace', async () => {
@@ -203,9 +209,12 @@ describe('@ionic/cli-framework', () => {
           expect(obj).toBeInstanceOf(FooNamespace);
           const metadata = await obj.getMetadata();
           expect(metadata.name).toEqual('foo');
-          expect(path.length).toEqual(1);
-          expect(path[0][0]).toEqual('foo');
-          expect(path[0][1]).toBeInstanceOf(FooNamespace);
+          expect(path.length).toEqual(2);
+          const [ ns1, ns2 ] = path;
+          expect(ns1[0]).toEqual('my');
+          expect(ns1[1]).toBe(ns);
+          expect(ns2[0]).toEqual('foo');
+          expect(ns2[1]).toBeInstanceOf(FooNamespace);
         });
 
         it('should locate default command', async () => {
@@ -215,9 +224,12 @@ describe('@ionic/cli-framework', () => {
           expect(obj).toBeInstanceOf(DefaultCommand);
           const metadata = await obj.getMetadata();
           expect(metadata.name).toEqual('def');
-          expect(path.length).toEqual(1);
-          expect(path[0][0]).toEqual('defns');
-          expect(path[0][1]).toBeInstanceOf(DefaultCommand);
+          expect(path.length).toEqual(2);
+          const [ ns1, cmd2 ] = path;
+          expect(ns1[0]).toEqual('my');
+          expect(ns1[1]).toBe(ns);
+          expect(cmd2[0]).toEqual('defns');
+          expect(cmd2[1]).toBeInstanceOf(DefaultCommand);
         });
 
         it('should locate bar command in foo namespace', async () => {
@@ -225,11 +237,14 @@ describe('@ionic/cli-framework', () => {
           const { args, obj, path } = await ns.locate(['foo', 'bar', 'arg1']);
           expect(args).toEqual(['arg1']);
           expect(obj).toBeInstanceOf(BarCommand);
-          expect(path.length).toEqual(2);
-          expect(path[0][0]).toEqual('foo');
-          expect(path[0][1]).toBeInstanceOf(FooNamespace);
-          expect(path[1][0]).toEqual('bar');
-          expect(path[1][1]).toBeInstanceOf(BarCommand);
+          expect(path.length).toEqual(3);
+          const [ ns1, ns2, cmd3 ] = path;
+          expect(ns1[0]).toEqual('my');
+          expect(ns1[1]).toBe(ns);
+          expect(ns2[0]).toEqual('foo');
+          expect(ns2[1]).toBeInstanceOf(FooNamespace);
+          expect(cmd3[0]).toEqual('bar');
+          expect(cmd3[1]).toBeInstanceOf(BarCommand);
         });
 
         it('should locate bar command in foo namespace by alias', async () => {
@@ -237,11 +252,14 @@ describe('@ionic/cli-framework', () => {
           const { args, obj, path } = await ns.locate(['foo', 'b', 'arg1']);
           expect(args).toEqual(['arg1']);
           expect(obj).toBeInstanceOf(BarCommand);
-          expect(path.length).toEqual(2);
-          expect(path[0][0]).toEqual('foo');
-          expect(path[0][1]).toBeInstanceOf(FooNamespace);
-          expect(path[1][0]).toEqual('b');
-          expect(path[1][1]).toBeInstanceOf(BarCommand);
+          expect(path.length).toEqual(3);
+          const [ ns1, ns2, cmd3 ] = path;
+          expect(ns1[0]).toEqual('my');
+          expect(ns1[1]).toBe(ns);
+          expect(ns2[0]).toEqual('foo');
+          expect(ns2[1]).toBeInstanceOf(FooNamespace);
+          expect(cmd3[0]).toEqual('b');
+          expect(cmd3[1]).toBeInstanceOf(BarCommand);
         });
 
       });

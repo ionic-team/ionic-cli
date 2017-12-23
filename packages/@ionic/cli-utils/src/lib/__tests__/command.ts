@@ -5,59 +5,63 @@ describe('@ionic/cli-utils', () => {
   describe('Command', () => {
 
     class FooCommand extends Command {
-      metadata = {
-        name: 'foo',
-        type: 'global',
-        description: '',
+      async getMetadata() {
+        return {
+          name: 'foo',
+          type: 'global',
+          description: '',
+        };
       }
     }
 
     class BarCommand extends Command {
-      metadata = {
-        name: 'bar',
-        type: 'global',
-        description: '',
-        inputs: [
-          {
-            name: 'arg1',
-            description: '',
-          },
-          {
-            name: 'arg2',
-            description: '',
-          },
-          {
-            name: 'arg3',
-            description: '',
-            private: true,
-          },
-        ],
-        options: [
-          {
-            name: 'opt1',
-            description: '',
-            type: Boolean,
-          },
-          {
-            name: 'opt2',
-            description: '',
-          },
-          {
-            name: 'opt3',
-            description: '',
-            default: 'default',
-          },
-          {
-            name: 'opt4',
-            description: '',
-            private: true,
-          },
-          {
-            name: 'opt5',
-            description: '',
-            aliases: ['o'],
-          },
-        ],
+      async getMetadata() {
+        return {
+          name: 'bar',
+          type: 'global',
+          description: '',
+          inputs: [
+            {
+              name: 'arg1',
+              description: '',
+            },
+            {
+              name: 'arg2',
+              description: '',
+            },
+            {
+              name: 'arg3',
+              description: '',
+              private: true,
+            },
+          ],
+          options: [
+            {
+              name: 'opt1',
+              description: '',
+              type: Boolean,
+            },
+            {
+              name: 'opt2',
+              description: '',
+            },
+            {
+              name: 'opt3',
+              description: '',
+              default: 'default',
+            },
+            {
+              name: 'opt4',
+              description: '',
+              private: true,
+            },
+            {
+              name: 'opt5',
+              description: '',
+              aliases: ['o'],
+            },
+          ],
+        };
       }
     }
 

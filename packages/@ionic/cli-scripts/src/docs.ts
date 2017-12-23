@@ -159,13 +159,17 @@ async function formatCommandsPage(env: IonicEnvironment) {
     return `[${fullName}](${path.join(...fullName.split(' '))}/) | ${cmdData.deprecated ? '(deprecated) ' : ''}${stripAnsi(cmdData.description)}`;
   }
 
+  const commandLinks = await Promise.all(commands.map(async cmd => listCommandLink(cmd)));
+
+  commandLinks.sort();
+
   return `${formatPageHeader('Commands', 'cli-command-list')}
 
 This is a comprehensive list of CLI commands. The \`ionic --help\` command will show a more organized and accurate list of commands.
 
 Command | Description
 ------- | -----------
-${(await Promise.all(commands.map(async cmd => listCommandLink(cmd)))).join(`
+${commandLinks.join(`
 `)}
 `;
 }

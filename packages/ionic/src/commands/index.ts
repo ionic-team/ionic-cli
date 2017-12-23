@@ -67,10 +67,10 @@ export class IonicNamespace extends Namespace {
 
     const command = obj;
     const metadata = await command.getMetadata();
-    const fullName = path.map(([p]) => p).join(' ');
+    const fullNameParts = path.map(([p]) => p);
 
     if (metadata.options) {
-      const optMap = metadataToCmdOptsEnv(metadata, fullName);
+      const optMap = metadataToCmdOptsEnv(metadata, fullNameParts.slice(1));
 
       // TODO: changes opt by reference, which is probably bad
       for (let [ opt, envvar ] of optMap.entries()) {
@@ -86,7 +86,7 @@ export class IonicNamespace extends Namespace {
 
     if (metadata.backends && !metadata.backends.includes(config.backend)) {
       throw new FatalException(
-        `Sorry! The configured backend (${chalk.bold(config.backend)}) does not know about ${chalk.green('ionic ' + fullName)}.\n` +
+        `Sorry! The configured backend (${chalk.bold(config.backend)}) does not know about ${chalk.green(fullNameParts.join(' '))}.\n` +
         `You can switch backends with ${chalk.green('ionic config set -g backend')} (choose from ${KNOWN_BACKENDS.map(v => chalk.green(v)).join(', ')}).`
       );
     }
@@ -96,7 +96,7 @@ export class IonicNamespace extends Namespace {
 
     if (!ienv.project.directory && metadata.type === 'project') {
       throw new FatalException(
-        `Sorry! ${chalk.green('ionic ' + fullName)} can only be run in an Ionic project directory.\n` +
+        `Sorry! ${chalk.green(fullNameParts.join(' '))} can only be run in an Ionic project directory.\n` +
         `If this is a project you'd like to integrate with Ionic, create an ${chalk.bold(PROJECT_FILE)} file.`
       );
     }
@@ -120,14 +120,14 @@ export class IonicNamespace extends Namespace {
   }
 }
 
-export function metadataToCmdOptsEnv(metadata: CommandMetadata, fullName: string): Map<CommandMetadataOption, string> {
+export function metadataToCmdOptsEnv(metadata: CommandMetadata, cmdNameParts: string[]): Map<CommandMetadataOption, string> {
   const optMap = new Map<CommandMetadataOption, string>();
 
   if (!metadata.options) {
     return optMap;
   }
 
-  const prefix = `IONIC_CMDOPTS_${fullName.toUpperCase().split(' ').join('_')}`;
+  const prefix = `IONIC_CMDOPTS_${cmdNameParts.map(s => s.toUpperCase()).join('_')}`;
 
   for (let option of metadata.options) {
     optMap.set(option, `${prefix}_${option.name.toUpperCase().split('-').join('_')}`);

@@ -161,7 +161,9 @@ export abstract class BaseNamespace<T extends ICommand<INamespace<T, U, V, W>, U
       return _locate(inputs.slice(1), child, [...path, [key, child]]);
     };
 
-    return _locate(argv, this, []);
+    const metadata = await this.getMetadata();
+
+    return _locate(argv, this, [[metadata.name, this]]);
   }
 
   /**

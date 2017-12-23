@@ -67,7 +67,7 @@ async function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, fu
 
   ${chalk.bold('Usage')}:
 
-${await formatUsage(env, ns, fullName)}
+${await formatUsage(env, ns)}
 
 ` + (globalCmds.length > 0 ? `  ${chalk.bold('Global Commands')}:\n\n${formatList(globalCmds)}\n` : '')
   + (projectCmds.length > 0 ? `  ${chalk.bold('Project Commands')}:\n\n${env.project.directory ? formatList(projectCmds) : '    You are not in a project directory.\n'}\n` : '');
@@ -81,7 +81,7 @@ async function formatNamespaceHeader(env: IonicEnvironment, ns: INamespace, cmdM
   const metadata = await ns.getMetadata();
 
   return `
-  ${chalk.bold.green('ionic ' + fullName)} ${chalk.bold('-')} ${namespaceIsDeprecated(cmdMetadataList) ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${chalk.bold(metadata.description)}${formatLongDescription(metadata.longDescription)}`;
+  ${chalk.bold.green(fullName)} ${chalk.bold('-')} ${namespaceIsDeprecated(cmdMetadataList) ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${chalk.bold(metadata.description)}${formatLongDescription(metadata.longDescription)}`;
 }
 
 async function formatHeader(env: IonicEnvironment) {
@@ -100,7 +100,7 @@ async function formatHeader(env: IonicEnvironment) {
   |_|\\___/|_| |_|_|\\___|  CLI ${prefix}${version}${suffix}\n`;
 }
 
-async function formatUsage(env: IonicEnvironment, ns: INamespace, fullName: string) {
+async function formatUsage(env: IonicEnvironment, ns: INamespace) {
   const metadata = await ns.getMetadata();
   let name = metadata.name;
 
@@ -131,11 +131,10 @@ async function getCommandDetails(env: IonicEnvironment, ns: INamespace, commands
 }
 
 async function formatCommandHelp(env: IonicEnvironment, cmdMetadata: CommandMetadata, fullName: string) {
-  const displayCmd = 'ionic ' + fullName;
-  const wrappedDescription = wordWrap(cmdMetadata.description, { indentation: displayCmd.length + 5 });
+  const wrappedDescription = wordWrap(cmdMetadata.description, { indentation: fullName.length + 5 });
 
   return `
-  ${chalk.bold(chalk.green(displayCmd) + ' - ' + wrappedDescription)}${formatLongDescription(cmdMetadata.longDescription)}
+  ${chalk.bold(chalk.green(fullName) + ' - ' + wrappedDescription)}${formatLongDescription(cmdMetadata.longDescription)}
   ` +
   (await formatCommandUsage(env, cmdMetadata, fullName)) +
   (await formatCommandInputs(env, cmdMetadata.inputs)) +
@@ -195,7 +194,7 @@ async function formatCommandUsage(env: IonicEnvironment, cmdMetadata: CommandMet
   };
 
   const options = await filterOptionsForHelp(env, cmdMetadata.options);
-  const usageLine = `${chalk.dim('$')} ${chalk.green('ionic ' + fullName + (typeof cmdMetadata.inputs === 'undefined' ? '' : ' ' + cmdMetadata.inputs.map(formatInput).join(' ')))} ${options.length > 0 ? chalk.green('[options]') : ''}`;
+  const usageLine = `${chalk.dim('$')} ${chalk.green(fullName + (typeof cmdMetadata.inputs === 'undefined' ? '' : ' ' + cmdMetadata.inputs.map(formatInput).join(' ')))} ${options.length > 0 ? chalk.green('[options]') : ''}`;
 
   return `
   ${chalk.bold('Usage')}:
@@ -296,7 +295,7 @@ async function formatCommandOptions(env: IonicEnvironment, options: CommandMetad
   return basicOptionsOutput + advancedOptionsOutput;
 }
 
-async function formatCommandExamples(env: IonicEnvironment, exampleCommands: string[] | undefined, commandName: string) {
+async function formatCommandExamples(env: IonicEnvironment, exampleCommands: string[] | undefined, fullName: string) {
   if (!Array.isArray(exampleCommands)) {
     return '';
   }
@@ -306,7 +305,7 @@ async function formatCommandExamples(env: IonicEnvironment, exampleCommands: str
     cmd = sepIndex === -1 ? chalk.green(cmd) : chalk.green(cmd.substring(0, sepIndex)) + cmd.substring(sepIndex);
     const wrappedCmd = wordWrap(cmd, { indentation: 12, append: ' \\' });
 
-    return `${chalk.dim('$')} ${chalk.green('ionic ' + commandName)} ${wrappedCmd}`;
+    return `${chalk.dim('$')} ${chalk.green(fullName)} ${wrappedCmd}`;
   });
 
   return `
