@@ -41,6 +41,7 @@ import { Shell } from './lib/shell';
 import { createPromptModule } from './lib/prompts';
 
 export * from './definitions';
+export * from './guards';
 
 export { BACKEND_LEGACY, BACKEND_PRO, KNOWN_BACKENDS } from './lib/backends';
 
@@ -246,7 +247,9 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     telemetry,
   });
 
-  telemetry.env = ienv; // TODO: proper DI
+  // TODO: proper DI
+  ienv.namespace.env = ienv;
+  telemetry.env = ienv;
 
   await ienv.open();
 

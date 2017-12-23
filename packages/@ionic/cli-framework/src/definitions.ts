@@ -24,10 +24,6 @@ export interface CommandMetadataOption {
   type?: CommandOptionType;
   default?: ParsedArg;
   aliases?: string[];
-  private?: boolean;
-  intents?: string[];
-  visible?: boolean;
-  advanced?: boolean;
 }
 
 export interface NormalizedCommandOption extends CommandMetadataOption {
@@ -50,56 +46,56 @@ export interface Metadata {
   deprecated?: boolean;
 }
 
-export interface CommandMetadata<T = CommandMetadataInput, U = CommandMetadataOption> extends Metadata {
+export interface CommandMetadata<I = CommandMetadataInput, O = CommandMetadataOption> extends Metadata {
   exampleCommands?: string[];
   aliases?: string[];
-  inputs?: T[];
-  options?: U[];
+  inputs?: I[];
+  options?: O[];
   visible?: boolean;
 }
 
-export interface ICommand<T extends INamespace<ICommand<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption> {
-  namespace: T;
+export interface ICommand<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+  namespace: N;
 
-  getMetadata(): Promise<U>;
+  getMetadata(): Promise<M>;
   run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
   validate(argv: CommandLineInputs): Promise<void>;
 }
 
 export type ICommandMapKey = string | symbol;
-export type ICommandMapGetter<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption> = () => Promise<T>;
-export type INamespaceMapGetter<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption> = () => Promise<INamespace<T, U, V, W>>;
+export type ICommandMapGetter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = () => Promise<C>;
+export type INamespaceMapGetter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = () => Promise<N>;
 
-export interface ICommandMap<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption> extends Map<ICommandMapKey, string | ICommandMapGetter<T, U, V, W>> {
+export interface ICommandMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<ICommandMapKey, string | ICommandMapGetter<C, N, M, I, O>> {
   getAliases(): Map<ICommandMapKey, ICommandMapKey[]>;
-  resolveAliases(cmd: string): ICommandMapGetter<T, U, V, W> | undefined;
+  resolveAliases(cmd: string): ICommandMapGetter<C, N, M, I, O> | undefined;
 }
 
-export interface INamespaceMap<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption> extends Map<string, INamespaceMapGetter<T, U, V, W>> {}
+export interface INamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<string, INamespaceMapGetter<C, N, M, I, O>> {}
 
-export interface INamespace<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption> {
-  parent: INamespace<T, U, V, W> | undefined;
+export interface INamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+  parent: N | undefined;
 
   getMetadata(): Promise<INamespaceMetadata>;
-  getNamespaces(): Promise<INamespaceMap<T, U, V, W>>;
-  getCommands(): Promise<ICommandMap<T, U, V, W>>;
+  getNamespaces(): Promise<INamespaceMap<C, N, M, I, O>>;
+  getCommands(): Promise<ICommandMap<C, N, M, I, O>>;
 
-  locate(argv: string[]): Promise<INamespaceLocateResult<T, U, V, W>>;
-  getCommandMetadataList(): Promise<(U & IHydratedCommandData<T, U, V, W>)[]>;
+  locate(argv: string[]): Promise<INamespaceLocateResult<C, N, M, I, O>>;
+  getCommandMetadataList(): Promise<(M & IHydratedCommandData<C, N, M, I, O>)[]>;
 }
 
-export type CommandPathItem<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption> = [string, T | INamespace<T, U, V, W>];
+export type CommandPathItem<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = [string, C | N];
 
-export interface INamespaceLocateResult<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption> {
-  obj: T | INamespace<T, U, V, W>;
+export interface INamespaceLocateResult<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+  obj: C | N;
   args: string[];
-  path: CommandPathItem<T, U, V, W>[];
+  path: CommandPathItem<C, N, M, I, O>[];
 }
 
-export interface IHydratedCommandData<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption> {
-  command: T;
-  namespace: INamespace<T, U, V, W>;
-  path: CommandPathItem<T, U, V, W>[];
+export interface IHydratedCommandData<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+  command: C;
+  namespace: N;
+  path: CommandPathItem<C, N, M, I, O>[];
   aliases: string[];
 }
 

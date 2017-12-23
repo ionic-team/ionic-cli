@@ -4,8 +4,7 @@ import chalk from 'chalk';
 
 import { APIResponseSuccess } from '@ionic/cli-utils/definitions';
 
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
-import { isSuperAgentError } from '@ionic/cli-utils/guards';
+import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, isSuperAgentError } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { fsReadFile, pathExists, readDir } from '@ionic/cli-framework/utils/fs';
 

@@ -6,7 +6,6 @@ import {
   CommandMapDefault,
   Namespace,
   NamespaceMap,
-  filterOptionsByIntent,
   generateCommandPath,
   metadataToParseArgsOptions,
   parsedArgsToArgv,
@@ -465,61 +464,6 @@ describe('@ionic/cli-framework', () => {
           expect(result).toEqual({ _: ['cat', 'dog', 'extra'], foo: 'rabbit', f: 'rabbit', bar: 'salad', flag1: true, unknown: 'wow', 'and-again': true });
         });
 
-      });
-
-    });
-
-    describe('filterOptionsByIntent', () => {
-
-      const metadata = {
-        description: '',
-        inputs: [
-          {
-            name: 'input1',
-            description: '',
-          },
-        ],
-        options: [
-          {
-            name: 'foo',
-            description: '',
-            intents: ['foobar'],
-          },
-          {
-            name: 'bar',
-            description: '',
-            intents: ['foobar'],
-          },
-          {
-            name: 'baz',
-            description: '',
-            intents: ['baz'],
-          },
-          {
-            name: 'intentless',
-            description: '',
-          },
-        ],
-      };
-
-      const givenOptions = { foo: 'a', bar: 'b', baz: 'c', intentless: 'nope' };
-
-      it('should only return options with no intent with no intent supplied', () => {
-        const results = filterOptionsByIntent(metadata, givenOptions);
-        const { foo, bar, baz, ...expected } = givenOptions;
-        expect(results).toEqual(expected);
-      });
-
-      it('should only return options that match the intent supplied', () => {
-        const results = filterOptionsByIntent(metadata, givenOptions, 'foobar');
-        const { baz, intentless, ...expected } = givenOptions;
-        expect(results).toEqual(expected);
-      });
-
-      it('should return no options with a bogus intent supplied', () => {
-        const results = filterOptionsByIntent(metadata, givenOptions, 'literally bogus');
-        const expected = {};
-        expect(results).toEqual(expected);
       });
 
     });

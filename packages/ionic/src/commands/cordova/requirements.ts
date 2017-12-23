@@ -1,8 +1,7 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isExitCodeException } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { isExitCodeException } from '@ionic/cli-utils/guards';
 
 import { CordovaCommand } from './base';
 

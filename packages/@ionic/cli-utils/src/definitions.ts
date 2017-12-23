@@ -250,6 +250,10 @@ export interface IDaemon extends IBaseConfig<DaemonFile> {
 
 export interface CommandMetadataOption extends framework.CommandMetadataOption {
   backends?: BackendFlag[];
+  intents?: string[];
+  private?: boolean;
+  visible?: boolean;
+  advanced?: boolean;
 }
 
 export interface ExitCodeException extends Error {
@@ -263,7 +267,7 @@ export interface CommandMetadata extends framework.CommandMetadata<framework.Com
   backends?: BackendFlag[];
 }
 
-export type HydratedCommandData = CommandMetadata & framework.IHydratedCommandData<ICommand, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption>;
+export type HydratedCommandData = CommandMetadata & framework.IHydratedCommandData<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption>;
 
 export interface ISession {
   login(email: string, password: string): Promise<void>;
@@ -602,7 +606,7 @@ export interface RootPlugin extends LoadedPlugin {
   namespace: IRootNamespace;
 }
 
-export interface ICommand extends framework.ICommand<INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption> {
+export interface ICommand extends framework.ICommand<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption> {
   env: IonicEnvironment;
 
   execute(inputs: framework.CommandLineInputs, options: framework.CommandLineOptions): Promise<void>;
@@ -612,10 +616,12 @@ export interface CommandPreRun extends ICommand {
   preRun(inputs: framework.CommandLineInputs, options: framework.CommandLineOptions): Promise<void>;
 }
 
-export interface INamespace extends framework.INamespace<ICommand, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption> {}
+export interface INamespace extends framework.INamespace<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption> {
+  env: IonicEnvironment;
+}
 
 export interface IRootNamespace extends INamespace {
-  runCommand(ienv: IonicEnvironment, pargv: string[], env: { [key: string]: string; }): Promise<void>;
+  runCommand(pargv: string[], env: { [key: string]: string; }): Promise<void>;
 }
 
 export interface ImageResource {

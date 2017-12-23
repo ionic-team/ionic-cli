@@ -3,15 +3,14 @@ import * as util from 'util';
 
 import chalk from 'chalk';
 import { InputValidationError, parseArgs } from '@ionic/cli-framework';
-import { IonicEnvironment, RootPlugin, generateIonicEnvironment } from '@ionic/cli-utils';
+import { IonicEnvironment, RootPlugin, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
 import { Exception } from '@ionic/cli-utils/lib/errors';
 import { mapLegacyCommand, modifyArguments } from '@ionic/cli-utils/lib/init';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
-import { isExitCodeException } from '@ionic/cli-utils/guards';
 
 import { IonicNamespace } from './commands';
 
-export const namespace = new IonicNamespace();
+export const namespace = new IonicNamespace(undefined, <any>undefined); // TODO: see `generateIonicEnvironment`
 
 export async function generateRootPlugin(): Promise<RootPlugin> {
   const { getPluginMeta } = await import('@ionic/cli-utils/lib/plugins');
@@ -29,8 +28,6 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
 
   pargv = modifyArguments(pargv.slice(2));
   env['IONIC_CLI_LIB'] = __filename;
-
-  const { isSuperAgentError } = await import('@ionic/cli-utils/guards');
 
   const plugin = await generateRootPlugin();
 
@@ -108,7 +105,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
       }
 
       await ienv.hooks.fire('plugins:init', { env: ienv });
-      await namespace.runCommand(ienv, pargv, env);
+      await namespace.runCommand(pargv, env);
       config.state.lastCommand = now.toISOString();
     }
 

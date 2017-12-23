@@ -1,6 +1,7 @@
-import { filterOptionsByIntent, parsedArgsToArgv } from '@ionic/cli-framework';
+import { parsedArgsToArgv } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicEnvironment } from '../../definitions';
+import { filterOptionsByIntent } from '../command';
 import { APP_SCRIPTS_INTENT } from '../ionic-angular/app-scripts';
 
 export const CORDOVA_INTENT = 'cordova';

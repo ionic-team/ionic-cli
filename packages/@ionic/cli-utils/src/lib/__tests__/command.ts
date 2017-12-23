@@ -1,4 +1,4 @@
-import { Command } from '../command';
+import { Command, filterOptionsByIntent } from '../command';
 
 describe('@ionic/cli-utils', () => {
 
@@ -109,6 +109,61 @@ describe('@ionic/cli-utils', () => {
         const bar = new BarCommand();
         const results = await bar.getCleanInputsForTelemetry([], { o: 'wow', opt5: 'wow' });
         expect(results).toEqual(['--opt5=wow']);
+      });
+
+    });
+
+    describe('filterOptionsByIntent', () => {
+
+      const metadata = {
+        description: '',
+        inputs: [
+          {
+            name: 'input1',
+            description: '',
+          },
+        ],
+        options: [
+          {
+            name: 'foo',
+            description: '',
+            intents: ['foobar'],
+          },
+          {
+            name: 'bar',
+            description: '',
+            intents: ['foobar'],
+          },
+          {
+            name: 'baz',
+            description: '',
+            intents: ['baz'],
+          },
+          {
+            name: 'intentless',
+            description: '',
+          },
+        ],
+      };
+
+      const givenOptions = { foo: 'a', bar: 'b', baz: 'c', intentless: 'nope' };
+
+      it('should only return options with no intent with no intent supplied', () => {
+        const results = filterOptionsByIntent(metadata, givenOptions);
+        const { foo, bar, baz, ...expected } = givenOptions;
+        expect(results).toEqual(expected);
+      });
+
+      it('should only return options that match the intent supplied', () => {
+        const results = filterOptionsByIntent(metadata, givenOptions, 'foobar');
+        const { baz, intentless, ...expected } = givenOptions;
+        expect(results).toEqual(expected);
+      });
+
+      it('should return no options with a bogus intent supplied', () => {
+        const results = filterOptionsByIntent(metadata, givenOptions, 'literally bogus');
+        const expected = {};
+        expect(results).toEqual(expected);
       });
 
     });

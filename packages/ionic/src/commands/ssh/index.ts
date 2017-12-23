@@ -17,12 +17,12 @@ To begin, run ${chalk.green('ionic ssh setup')}, which lets you use existing key
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
-      ['generate', async () => { const { SSHGenerateCommand } = await import('./generate'); return new SSHGenerateCommand(this); }],
-      ['use', async () => { const { SSHUseCommand } = await import('./use'); return new SSHUseCommand(this); }],
-      ['add', async () => { const { SSHAddCommand } = await import('./add'); return new SSHAddCommand(this); }],
-      ['delete', async () => { const { SSHDeleteCommand } = await import('./delete'); return new SSHDeleteCommand(this); }],
-      ['list', async () => { const { SSHListCommand } = await import('./list'); return new SSHListCommand(this); }],
-      ['setup', async () => { const { SSHSetupCommand } = await import('./setup'); return new SSHSetupCommand(this); }],
+      ['generate', async () => { const { SSHGenerateCommand } = await import('./generate'); return new SSHGenerateCommand(this, this.env); }],
+      ['use', async () => { const { SSHUseCommand } = await import('./use'); return new SSHUseCommand(this, this.env); }],
+      ['add', async () => { const { SSHAddCommand } = await import('./add'); return new SSHAddCommand(this, this.env); }],
+      ['delete', async () => { const { SSHDeleteCommand } = await import('./delete'); return new SSHDeleteCommand(this, this.env); }],
+      ['list', async () => { const { SSHListCommand } = await import('./list'); return new SSHListCommand(this, this.env); }],
+      ['setup', async () => { const { SSHSetupCommand } = await import('./setup'); return new SSHSetupCommand(this, this.env); }],
       ['ls', 'list'],
       ['remove', 'delete'],
       ['rm', 'delete'],

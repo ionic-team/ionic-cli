@@ -15,8 +15,10 @@ import {
 
 import { isCommandPreRun } from '../guards';
 
-export abstract class Command extends BaseCommand<INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> implements ICommand {
-  env: IonicEnvironment;
+export abstract class Command extends BaseCommand<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> implements ICommand {
+  constructor(public namespace: INamespace, public env: IonicEnvironment) {
+    super(namespace);
+  }
 
   async execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const config = await this.env.config.load();
@@ -97,4 +99,37 @@ export abstract class Command extends BaseCommand<INamespace, CommandMetadata, C
     const optionInputs = parsedArgsToArgv(filteredOptions, { useDoubleQuotes: true });
     return filteredInputs.concat(optionInputs);
   }
+}
+
+/**
+ * Filter command line options that match a given "intent", which are specified
+ * in the command's metadata.
+ *
+ * To filter options that have no intent specified in the command's metadata,
+ * exclude the intentName parameter.
+ *
+ * @return The filtered options.
+ */
+export function filterOptionsByIntent(metadata: CommandMetadata, options: CommandLineOptions, intentName?: string): CommandLineOptions {
+  const r = Object.keys(options).reduce((allOptions, optionName) => {
+    const metadataOptionFound = (metadata.options || []).find(mdOption => (
+      mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
+    ));
+    if (metadataOptionFound) {
+      if (intentName && metadataOptionFound.intents && metadataOptionFound.intents.includes(intentName)) {
+        allOptions[optionName] = options[optionName];
+      } else if (!intentName && !metadataOptionFound.intents) {
+        allOptions[optionName] = options[optionName];
+      }
+    }
+    return allOptions;
+  }, <CommandLineOptions>{});
+
+  r._ = options._;
+
+  if (options['--']) {
+    r['--'] = options['--'];
+  }
+
+  return r;
 }

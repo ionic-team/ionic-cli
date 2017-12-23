@@ -9,14 +9,14 @@ import {
   PackageJson,
 } from './definitions';
 
-export function isNamespace<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption>(obj: any): obj is INamespace<T, U, V, W> {
+export function isNamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(obj: any): obj is N {
   return obj &&
     typeof obj.getMetadata === 'function' &&
     typeof obj.getNamespaces === 'function' &&
     typeof obj.getCommands === 'function';
 }
 
-export function isCommand<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption>(obj: any): obj is T {
+export function isCommand<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(obj: any): obj is C {
   return obj && isNamespace(obj.namespace) &&
     typeof obj.getMetadata === 'function' &&
     typeof obj.run === 'function' &&

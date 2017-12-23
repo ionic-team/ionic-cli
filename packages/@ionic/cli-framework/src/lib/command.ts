@@ -34,10 +34,10 @@ import { validate } from './validators';
 export const parseArgs = minimist;
 export { ParsedArgs } from 'minimist';
 
-export abstract class BaseCommand<T extends INamespace<ICommand<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption> implements ICommand<T, U, V, W> {
-  constructor(public namespace: T) {}
+export abstract class BaseCommand<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+  constructor(public namespace: N) {}
 
-  abstract getMetadata(): Promise<U>;
+  abstract getMetadata(): Promise<M>;
 
   abstract run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
 
@@ -75,7 +75,7 @@ export abstract class BaseCommand<T extends INamespace<ICommand<T, U, V, W>, U, 
 
 export const CommandMapDefault = Symbol('default');
 
-export class BaseCommandMap<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption> extends Map<ICommandMapKey, string | ICommandMapGetter<T, U, V, W>> implements ICommandMap<T, U, V, W> {
+export class BaseCommandMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<ICommandMapKey, string | ICommandMapGetter<C, N, M, I, O>> implements ICommandMap<C, N, M, I, O> {
   getAliases(): Map<ICommandMapKey, ICommandMapKey[]> {
     const aliasmap = new Map<ICommandMapKey, ICommandMapKey[]>();
 
@@ -91,7 +91,7 @@ export class BaseCommandMap<T extends ICommand<INamespace<T, U, V, W>, U, V, W>,
     return aliasmap;
   }
 
-  resolveAliases(cmdName: string): undefined | ICommandMapGetter<T, U, V, W> {
+  resolveAliases(cmdName: string): undefined | ICommandMapGetter<C, N, M, I, O> {
     const r = this.get(cmdName);
 
     if (typeof r !== 'string') {
@@ -102,21 +102,21 @@ export class BaseCommandMap<T extends ICommand<INamespace<T, U, V, W>, U, V, W>,
   }
 }
 
-export class BaseNamespaceMap<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption> extends Map<string, INamespaceMapGetter<T, U, V, W>> implements INamespaceMap<T, U, V, W> {}
+export class BaseNamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<string, INamespaceMapGetter<C, N, M, I, O>> implements INamespaceMap<C, N, M, I, O> {}
 
-export abstract class BaseNamespace<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption> implements INamespace<T, U, V, W> {
-  constructor(public parent: INamespace<T, U, V, W> | undefined = undefined) {}
+export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> implements INamespace<C, N, M, I, O> {
+  constructor(public parent: N | undefined = undefined) {}
 
   abstract getMetadata(): Promise<INamespaceMetadata>;
 
   // TODO: https://github.com/Microsoft/TypeScript/issues/9659
-  async getNamespaces(): Promise<INamespaceMap<T, U, V, W>> {
-    return new BaseNamespaceMap<T, U, V, W>();
+  async getNamespaces(): Promise<INamespaceMap<C, N, M, I, O>> {
+    return new BaseNamespaceMap<C, N, M, I, O>();
   }
 
   // TODO: https://github.com/Microsoft/TypeScript/issues/9659
-  async getCommands(): Promise<ICommandMap<T, U, V, W>> {
-    return new BaseCommandMap<T, U, V, W>();
+  async getCommands(): Promise<ICommandMap<C, N, M, I, O>> {
+    return new BaseCommandMap<C, N, M, I, O>();
   }
 
   /**
@@ -124,8 +124,8 @@ export abstract class BaseNamespace<T extends ICommand<INamespace<T, U, V, W>, U
    * namespaces available to find the command that we will execute or the
    * right-most namespace matched if the command is not found.
    */
-  async locate(argv: string[]): Promise<INamespaceLocateResult<T, U, V, W>> {
-    const _locate = async (inputs: string[], parent: INamespace<T, U, V, W>, path: CommandPathItem<T, U, V, W>[]): Promise<INamespaceLocateResult<T, U, V, W>> => {
+  async locate(argv: string[]): Promise<INamespaceLocateResult<C, N, M, I, O>> {
+    const _locate = async (inputs: string[], parent: N, path: CommandPathItem<C, N, M, I, O>[]): Promise<INamespaceLocateResult<C, N, M, I, O>> => {
       const [ key ] = inputs;
       const children = await parent.getNamespaces();
       const nsgetter = children.get(key);
@@ -163,17 +163,20 @@ export abstract class BaseNamespace<T extends ICommand<INamespace<T, U, V, W>, U
 
     const metadata = await this.getMetadata();
 
-    return _locate(argv, this, [[metadata.name, this]]);
+    // TODO: typescript complains about `this`. Calling this method on
+    // BaseNamespace would be unsafe if the class weren't abstract. Typescript
+    // bug? I may be wrong.
+    return _locate(argv, <any>this, [[metadata.name, <any>this]]);
   }
 
   /**
    * Get all command metadata in a flat structure.
    */
-  async getCommandMetadataList(): Promise<(U & IHydratedCommandData<T, U, V, W>)[]> {
-    const _getCommandMetadataList = async (parent: INamespace<T, U, V, W>, path: CommandPathItem<T, U, V, W>[]) => {
+  async getCommandMetadataList(): Promise<(M & IHydratedCommandData<C, N, M, I, O>)[]> {
+    const _getCommandMetadataList = async (parent: N, path: CommandPathItem<C, N, M, I, O>[]) => {
       const assign = await import('lodash/assign');
 
-      const commandList: (U & IHydratedCommandData<T, U, V, W>)[] = [];
+      const commandList: (M & IHydratedCommandData<C, N, M, I, O>)[] = [];
       const commands = await parent.getCommands();
       const nsAliases = commands.getAliases();
 
@@ -202,7 +205,7 @@ export abstract class BaseNamespace<T extends ICommand<INamespace<T, U, V, W>, U
 
       commandList.sort((a, b) => strcmp(a.name, b.name));
 
-      let namespacedCommandList: (U & IHydratedCommandData<T, U, V, W>)[] = [];
+      let namespacedCommandList: (M & IHydratedCommandData<C, N, M, I, O>)[] = [];
 
       const children = await parent.getNamespaces();
 
@@ -215,20 +218,20 @@ export abstract class BaseNamespace<T extends ICommand<INamespace<T, U, V, W>, U
         }));
       }
 
-      // TODO?
-      // namespacedCommandList.sort((a, b) => strcmp(a.fullName, b.fullName));
-
       return commandList.concat(namespacedCommandList);
     };
 
-    return _getCommandMetadataList(this, []);
+    // TODO: typescript complains about `this`. Calling this method on
+    // BaseNamespace would be unsafe if the class weren't abstract. Typescript
+    // bug? I may be wrong.
+    return _getCommandMetadataList(<any>this, []);
   }
 }
 
-export abstract class Command extends BaseCommand<Namespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
-export abstract class Namespace extends BaseNamespace<Command, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
-export class CommandMap extends BaseCommandMap<Command, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
-export class NamespaceMap extends BaseNamespaceMap<Command, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
+export abstract class Command extends BaseCommand<Command, Namespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
+export abstract class Namespace extends BaseNamespace<Command, Namespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
+export class CommandMap extends BaseCommandMap<Command, Namespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
+export class NamespaceMap extends BaseNamespaceMap<Command, Namespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
 
 const typeDefaults = new Map<CommandOptionType, ParsedArg>()
   .set(String, null) // tslint:disable-line:no-null-keyword
@@ -299,46 +302,13 @@ export function metadataToParseArgsOptions(metadata: CommandMetadata): Normalize
   return options;
 }
 
-/**
- * Filter command line options that match a given "intent", which are specified
- * in the command's metadata.
- *
- * To filter options that have no intent specified in the command's metadata,
- * exclude the intentName parameter.
- *
- * @return The filtered options.
- */
-export function filterOptionsByIntent(metadata: CommandMetadata, options: CommandLineOptions, intentName?: string): CommandLineOptions {
-  const r = Object.keys(options).reduce((allOptions, optionName) => {
-    const metadataOptionFound = (metadata.options || []).find(mdOption => (
-      mdOption.name === optionName || (mdOption.aliases || []).includes(optionName)
-    ));
-    if (metadataOptionFound) {
-      if (intentName && metadataOptionFound.intents && metadataOptionFound.intents.includes(intentName)) {
-        allOptions[optionName] = options[optionName];
-      } else if (!intentName && !metadataOptionFound.intents) {
-        allOptions[optionName] = options[optionName];
-      }
-    }
-    return allOptions;
-  }, <CommandLineOptions>{});
-
-  r._ = options._;
-
-  if (options['--']) {
-    r['--'] = options['--'];
-  }
-
-  return r;
-}
-
-export async function generateCommandPath<T extends ICommand<INamespace<T, U, V, W>, U, V, W>, U extends CommandMetadata<V, W>, V extends CommandMetadataInput, W extends CommandMetadataOption>(cmd: T): Promise<CommandPathItem<T, U, V, W>[]> {
+export async function generateCommandPath<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(cmd: C): Promise<CommandPathItem<C, N, M, I, O>[]> {
   const ns = cmd.namespace;
   const cmdmeta = await cmd.getMetadata();
 
-  const _cmdpath = async (namespace: INamespace<T, U, V, W>): Promise<CommandPathItem<T, U, V, W>[]> => {
+  const _cmdpath = async (namespace: N): Promise<CommandPathItem<C, N, M, I, O>[]> => {
     const nsmeta = await namespace.getMetadata();
-    const nspath: CommandPathItem<T, U, V, W> = [nsmeta.name, namespace];
+    const nspath: CommandPathItem<C, N, M, I, O> = [nsmeta.name, namespace];
 
     if (!namespace.parent) {
       return [nspath];

@@ -4,11 +4,16 @@ import {
   CommandMetadataOption,
   ICommand,
   INamespace,
+  IonicEnvironment,
 } from '../definitions';
 
 import { BaseCommandMap, BaseNamespace, BaseNamespaceMap } from '@ionic/cli-framework';
 
-export class CommandMap extends BaseCommandMap<ICommand, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
-export class NamespaceMap extends BaseNamespaceMap<ICommand, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
+export class CommandMap extends BaseCommandMap<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
+export class NamespaceMap extends BaseNamespaceMap<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
 
-export abstract class Namespace extends BaseNamespace<ICommand, CommandMetadata, CommandMetadataInput, CommandMetadataOption> implements INamespace {}
+export abstract class Namespace extends BaseNamespace<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> implements INamespace {
+  constructor(public parent: INamespace | undefined, public env: IonicEnvironment) {
+    super(parent);
+  }
+}
