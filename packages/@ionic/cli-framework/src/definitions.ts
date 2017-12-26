@@ -29,13 +29,13 @@ export interface CommandMetadataOption {
   groups?: MetadataGroup[];
 }
 
-export interface NormalizedCommandOption extends CommandMetadataOption {
+export interface HydratedCommandOption {
   type: CommandOptionType;
   default: ParsedArg;
   aliases: string[];
 }
 
-export interface NormalizedParseArgsOptions extends minimistType.Opts {
+export interface HydratedParseArgsOptions extends minimistType.Opts {
   string: string[];
   boolean: string[];
   alias: { [key: string]: string[]; };
@@ -83,7 +83,7 @@ export interface INamespace<C extends ICommand<C, N, M, I, O>, N extends INamesp
   getCommands(): Promise<ICommandMap<C, N, M, I, O>>;
 
   locate(argv: string[]): Promise<NamespaceLocateResult<C, N, M, I, O>>;
-  getCommandMetadataList(): Promise<(M & HydratedCommandData<C, N, M, I, O>)[]>;
+  getCommandMetadataList(): Promise<(M & HydratedCommandMetadata<C, N, M, I, O>)[]>;
 }
 
 export type CommandPathItem<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = [string, C | N];
@@ -94,7 +94,7 @@ export interface NamespaceLocateResult<C extends ICommand<C, N, M, I, O>, N exte
   path: CommandPathItem<C, N, M, I, O>[];
 }
 
-export interface HydratedCommandData<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+export interface HydratedCommandMetadata<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   command: C;
   namespace: N;
   path: CommandPathItem<C, N, M, I, O>[];

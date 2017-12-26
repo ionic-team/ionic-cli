@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { metadataToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
+import { hydrateCommandMetadataOption, metadataToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
 import { CommandMetadata, CommandMetadataOption, KNOWN_BACKENDS, isCommand } from '@ionic/cli-utils';
 import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
@@ -102,7 +102,9 @@ export class IonicNamespace extends Namespace {
     if (metadata.options) {
       let found = false;
 
-      for (let opt of metadata.options) {
+      for (let o of metadata.options) {
+        const opt = hydrateCommandMetadataOption(o);
+
         if (opt.backends && opt.default !== options[opt.name] && !opt.backends.includes(config.backend)) {
           found = true;
           this.env.log.warn(`${chalk.green('--' + (opt.default === true ? 'no-' : '') + opt.name)} has no effect with the configured backend (${chalk.bold(config.backend)}).`);

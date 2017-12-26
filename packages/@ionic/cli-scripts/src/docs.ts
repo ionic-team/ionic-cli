@@ -12,7 +12,7 @@ import {
   CommandGroup,
   CommandMetadataInput,
   CommandMetadataOption,
-  HydratedCommandData,
+  HydratedCommandMetadata,
   IonicEnvironment,
   OptionGroup,
   StarterTemplate,
@@ -146,7 +146,7 @@ If you're having trouble with the Ionic CLI, you can try the following:
 `;
 }
 
-async function generateFullName(cmd: HydratedCommandData) {
+async function generateFullName(cmd: HydratedCommandMetadata) {
   const cmdPath = await generateCommandPath(cmd.command);
   const fullName = cmdPath.map(([p]) => p).slice(1).join(' '); // strip off 'ionic' from beginning
 
@@ -156,7 +156,7 @@ async function generateFullName(cmd: HydratedCommandData) {
 async function formatCommandsPage(env: IonicEnvironment) {
   const commands = await getCommandList(env);
 
-  async function listCommandLink(cmd: HydratedCommandData) {
+  async function listCommandLink(cmd: HydratedCommandMetadata) {
     const fullName = await generateFullName(cmd);
     return `[${fullName}](${path.join(...fullName.split(' '))}/) | ${cmd.groups && cmd.groups.includes(CommandGroup.Deprecated) ? '(deprecated) ' : ''}${stripAnsi(cmd.description)}`;
   }
@@ -409,7 +409,7 @@ ${sillyNotice()}
 `;
 }
 
-function formatCommandHeader(cmd: HydratedCommandData, fullName: string) {
+function formatCommandHeader(cmd: HydratedCommandMetadata, fullName: string) {
   return `---
 layout: fluid/cli_docs_base
 category: cli
@@ -456,7 +456,7 @@ function convertAnsiToMd(str: string, style: ansiStyle.EscapeCodePair, md: ansiS
   return str;
 }
 
-async function formatCommandDoc(env: IonicEnvironment, cmd: HydratedCommandData) {
+async function formatCommandDoc(env: IonicEnvironment, cmd: HydratedCommandMetadata) {
   const description = stripAnsi(cmd.description).split('\n').join('\n  ');
 
   const fullName = await generateFullName(cmd);
@@ -491,7 +491,7 @@ $ ionic ${usageLine}
   `;
 }
 
-function formatDescription(env: IonicEnvironment, cmd: HydratedCommandData) {
+function formatDescription(env: IonicEnvironment, cmd: HydratedCommandMetadata) {
   let longDescription = cmd.longDescription;
 
   if (longDescription) {

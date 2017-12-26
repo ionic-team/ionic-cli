@@ -11,7 +11,7 @@ import {
   CommandMetadataInput,
   CommandMetadataOption,
   CommandPathItem,
-  HydratedCommandData,
+  HydratedCommandMetadata,
   ICommand,
   ICommandMap,
   INamespace,
@@ -163,9 +163,9 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
   /**
    * Get all command metadata in a flat structure.
    */
-  async getCommandMetadataList(): Promise<(M & HydratedCommandData<C, N, M, I, O>)[]> {
+  async getCommandMetadataList(): Promise<(M & HydratedCommandMetadata<C, N, M, I, O>)[]> {
     const _getCommandMetadataList = async (parent: N, path: CommandPathItem<C, N, M, I, O>[]) => {
-      const commandList: (M & HydratedCommandData<C, N, M, I, O>)[] = [];
+      const commandList: (M & HydratedCommandMetadata<C, N, M, I, O>)[] = [];
       const commands = await parent.getCommands();
       const nsAliases = commands.getAliases();
 
@@ -194,7 +194,7 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
 
       commandList.sort((a, b) => strcmp(a.name, b.name));
 
-      let namespacedCommandList: (M & HydratedCommandData<C, N, M, I, O>)[] = [];
+      let namespacedCommandList: (M & HydratedCommandMetadata<C, N, M, I, O>)[] = [];
 
       const children = await parent.getNamespaces();
 

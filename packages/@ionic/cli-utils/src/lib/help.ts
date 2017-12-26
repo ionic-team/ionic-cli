@@ -8,7 +8,7 @@ import {
   CommandMetadata,
   CommandMetadataInput,
   CommandMetadataOption,
-  HydratedCommandData,
+  HydratedCommandMetadata,
   ICommand,
   INamespace,
   IonicEnvironment,
@@ -70,7 +70,7 @@ ${await formatUsage(env, ns)}
   + (projectCmds.length > 0 ? `  ${chalk.bold('Project Commands')}:\n\n${env.project.directory ? formatList(projectCmds) : '    You are not in a project directory.\n'}\n` : '');
 }
 
-async function formatNamespaceHeader(env: IonicEnvironment, ns: INamespace, cmdMetadataList: HydratedCommandData[], fullName: string) {
+async function formatNamespaceHeader(env: IonicEnvironment, ns: INamespace, cmdMetadataList: HydratedCommandMetadata[], fullName: string) {
   if (!ns.parent) {
     return formatHeader(env);
   }
@@ -113,7 +113,7 @@ async function formatUsage(env: IonicEnvironment, ns: INamespace) {
   return usageLines.map(u => `    ${chalk.dim('$')} ${chalk.green(name + ' ' + u)}`).join('\n') + '\n';
 }
 
-async function getCommandDetails(env: IonicEnvironment, ns: INamespace, commands: HydratedCommandData[]): Promise<string[]> {
+async function getCommandDetails(env: IonicEnvironment, ns: INamespace, commands: HydratedCommandMetadata[]): Promise<string[]> {
   const config = await env.config.load();
   commands = commands.filter(cmd => showCommand(cmd, config.backend));
 
@@ -139,7 +139,7 @@ async function formatCommandHelp(env: IonicEnvironment, cmdMetadata: CommandMeta
   (await formatCommandExamples(env, cmdMetadata.exampleCommands, fullName));
 }
 
-async function getListOfCommandDetails(env: IonicEnvironment, commands: HydratedCommandData[]) {
+async function getListOfCommandDetails(env: IonicEnvironment, commands: HydratedCommandMetadata[]) {
   const wow = commands.map(cmd => cmd.path.map(([p]) => p).join(' '));
   const fillStringArray = generateFillSpaceStringList(wow, HELP_DOTS_WIDTH, chalk.dim('.'));
 
@@ -150,11 +150,11 @@ async function getListOfCommandDetails(env: IonicEnvironment, commands: Hydrated
   });
 }
 
-async function getListOfNamespaceDetails(env: IonicEnvironment, commands: HydratedCommandData[]) {
+async function getListOfNamespaceDetails(env: IonicEnvironment, commands: HydratedCommandMetadata[]) {
   const config = await env.config.load();
 
   const descriptions = new Map<string, string>();
-  const grouped = new Map<string, { meta: NamespaceMetadata; cmds: HydratedCommandData[]; }>();
+  const grouped = new Map<string, { meta: NamespaceMetadata; cmds: HydratedCommandMetadata[]; }>();
 
   await Promise.all(commands.map(async cmd => {
     if (showCommand(cmd, config.backend)) {

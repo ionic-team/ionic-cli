@@ -8,9 +8,9 @@ import {
   CommandMetadataInput,
   CommandMetadataOption,
   CommandOptionType,
+  HydratedCommandOption,
+  HydratedParseArgsOptions,
   MetadataGroup,
-  NormalizedCommandOption,
-  NormalizedParseArgsOptions,
   ParsedArg,
 } from '../definitions';
 
@@ -29,7 +29,7 @@ const typeDefaults = new Map<CommandOptionType, ParsedArg>()
 /**
  * Takes a Minimist command option and normalizes its values.
  */
-function normalizeOption(option: CommandMetadataOption): NormalizedCommandOption {
+export function hydrateCommandMetadataOption<O extends CommandMetadataOption>(option: O): O & HydratedCommandOption {
   const type = option.type ? option.type : String;
 
   return {
@@ -40,8 +40,8 @@ function normalizeOption(option: CommandMetadataOption): NormalizedCommandOption
   };
 }
 
-export function metadataToParseArgsOptions(metadata: CommandMetadata): NormalizedParseArgsOptions {
-  const options: NormalizedParseArgsOptions = {
+export function metadataToParseArgsOptions(metadata: CommandMetadata): HydratedParseArgsOptions {
+  const options: HydratedParseArgsOptions = {
     string: ['_'],
     boolean: [],
     alias: {},
@@ -52,17 +52,17 @@ export function metadataToParseArgsOptions(metadata: CommandMetadata): Normalize
     return options;
   }
 
-  for (let option of metadata.options) {
-    const normalizedOption = normalizeOption(option);
+  for (let o of metadata.options) {
+    const opt = hydrateCommandMetadataOption(o);
 
-    if (normalizedOption.type === String) {
-      options.string.push(normalizedOption.name);
-    } else if (normalizedOption.type === Boolean) {
-      options.boolean.push(normalizedOption.name);
+    if (opt.type === String) {
+      options.string.push(opt.name);
+    } else if (opt.type === Boolean) {
+      options.boolean.push(opt.name);
     }
 
-    options.default[normalizedOption.name] = normalizedOption.default;
-    options.alias[normalizedOption.name] = normalizedOption.aliases;
+    options.default[opt.name] = opt.default;
+    options.alias[opt.name] = opt.aliases;
   }
 
   return options;
