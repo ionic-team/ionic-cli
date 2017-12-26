@@ -11,7 +11,6 @@
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
-    "test": "jest",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -57,6 +56,6 @@
   "dependencies": {
     "@ionic/cli-utils": "1.19.0",
     "superagent-proxy": "^1.0.2",
-    "tslib": "^1.7.1"
+    "tslib": "^1.8.1"
   }
 }

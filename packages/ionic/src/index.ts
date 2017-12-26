@@ -3,7 +3,7 @@ import * as util from 'util';
 
 import chalk from 'chalk';
 import { InputValidationError, parseArgs } from '@ionic/cli-framework';
-import { IonicEnvironment, RootPlugin, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
+import { IPCMessage, IonicEnvironment, RootPlugin, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
 import { Exception } from '@ionic/cli-utils/lib/errors';
 import { mapLegacyCommand, modifyArguments } from '@ionic/cli-utils/lib/init';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
@@ -39,89 +39,84 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     return;
   }
 
-  try {
-    const config = await ienv.config.load();
+  if (pargv[0] !== '_') {
+    try {
+      const config = await ienv.config.load();
 
-    ienv.log.debug(() => util.inspect(ienv.meta, { breakLength: Infinity, colors: chalk.enabled }));
+      ienv.log.debug(() => util.inspect(ienv.meta, { breakLength: Infinity, colors: chalk.enabled }));
 
-    if (env['IONIC_EMAIL'] && env['IONIC_PASSWORD']) {
-      ienv.log.debug(() => `${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables detected`);
+      if (env['IONIC_EMAIL'] && env['IONIC_PASSWORD']) {
+        ienv.log.debug(() => `${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables detected`);
 
-      if (config.user.email !== env['IONIC_EMAIL']) {
-        ienv.log.debug(() => `${chalk.bold('IONIC_EMAIL')} mismatch with current session--attempting login`);
+        if (config.user.email !== env['IONIC_EMAIL']) {
+          ienv.log.debug(() => `${chalk.bold('IONIC_EMAIL')} mismatch with current session--attempting login`);
+
+          try {
+            await ienv.session.login(env['IONIC_EMAIL'], env['IONIC_PASSWORD']);
+          } catch (e) {
+            ienv.log.error(`Error occurred during automatic login via ${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables.`);
+            throw e;
+          }
+        }
+      }
+
+      if (ienv.project.directory) {
+        const nodeModulesExists = await pathExists(path.join(ienv.project.directory, 'node_modules'));
+
+        if (!nodeModulesExists) {
+          const confirm = await ienv.prompt({
+            type: 'confirm',
+            name: 'confirm',
+            message: `Looks like a fresh checkout! No ${chalk.green('./node_modules')} directory found. Would you like to install project dependencies?`,
+          });
+
+          if (confirm) {
+            ienv.log.info('Installing dependencies may take several minutes!');
+            const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
+            const [ installer, ...installerArgs ] = await pkgManagerArgs(ienv, { command: 'install' });
+            await ienv.shell.run(installer, installerArgs, {});
+          }
+        }
+      }
+
+      const argv = parseArgs(pargv, { boolean: true, string: '_' });
+
+      // If an legacy command is being executed inform the user that there is a new command available
+      const foundCommand = mapLegacyCommand(argv._[0]);
+      if (foundCommand) {
+        ienv.log.msg(`The ${chalk.green(argv._[0])} command has been renamed. To find out more, run:\n\n` +
+                     `  ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`);
+      } else {
+        const { loadPlugins } = await import ('@ionic/cli-utils/lib/plugins');
 
         try {
-          await ienv.session.login(env['IONIC_EMAIL'], env['IONIC_PASSWORD']);
+          await loadPlugins(ienv);
         } catch (e) {
-          ienv.log.error(`Error occurred during automatic login via ${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables.`);
-          throw e;
-        }
-      }
-    }
+          if (e.fatal) {
+            throw e;
+          }
 
-    if (ienv.project.directory) {
-      const nodeModulesExists = await pathExists(path.join(ienv.project.directory, 'node_modules'));
-
-      if (!nodeModulesExists) {
-        const confirm = await ienv.prompt({
-          type: 'confirm',
-          name: 'confirm',
-          message: `Looks like a fresh checkout! No ${chalk.green('./node_modules')} directory found. Would you like to install project dependencies?`,
-        });
-
-        if (confirm) {
-          ienv.log.info('Installing dependencies may take several minutes!');
-          const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
-          const [ installer, ...installerArgs ] = await pkgManagerArgs(ienv, { command: 'install' });
-          await ienv.shell.run(installer, installerArgs, {});
-        }
-      }
-    }
-
-    const argv = parseArgs(pargv, { boolean: true, string: '_' });
-
-    // If an legacy command is being executed inform the user that there is a new command available
-    const foundCommand = mapLegacyCommand(argv._[0]);
-    if (foundCommand) {
-      ienv.log.msg(`The ${chalk.green(argv._[0])} command has been renamed. To find out more, run:\n\n` +
-                   `  ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`);
-    } else {
-      const { loadPlugins } = await import ('@ionic/cli-utils/lib/plugins');
-
-      try {
-        await loadPlugins(ienv);
-      } catch (e) {
-        if (e.fatal) {
-          throw e;
+          ienv.log.error(chalk.red.bold('Error occurred while loading plugins. CLI functionality may be limited.'));
+          ienv.log.debug(() => chalk.red(chalk.bold('Plugin error: ') + (e.stack ? e.stack : e)));
         }
 
-        ienv.log.error(chalk.red.bold('Error occurred while loading plugins. CLI functionality may be limited.'));
-        ienv.log.debug(() => chalk.red(chalk.bold('Plugin error: ') + (e.stack ? e.stack : e)));
+        await ienv.hooks.fire('plugins:init', { env: ienv });
+        await namespace.runCommand(pargv, env);
+        config.state.lastCommand = now.toISOString();
       }
 
-      if (ienv.flags.interactive && config.daemon.enabled) {
-        const { checkForDaemon } = await import('@ionic/cli-utils/lib/daemon');
-        await checkForDaemon(ienv);
+      if (ienv.flags.interactive) {
+        const updateNotifier = await import('update-notifier');
+        updateNotifier({ pkg: plugin.meta.pkg }).notify();
       }
 
-      await ienv.hooks.fire('plugins:init', { env: ienv });
-      await namespace.runCommand(pargv, env);
-      config.state.lastCommand = now.toISOString();
+    } catch (e) {
+      err = e;
     }
-
-    const updateNotifier = await import('update-notifier');
-    updateNotifier({ pkg: plugin.meta.pkg }).notify();
-
-  } catch (e) {
-    err = e;
   }
 
   try {
-    await Promise.all([
-      ienv.config.save(),
-      ienv.project.save(),
-      ienv.daemon.save(),
-    ]);
+    await Promise.all([ienv.config.save(), ienv.project.save()]);
   } catch (e) {
     ienv.log.error(String(e.stack ? e.stack : e));
   }
@@ -166,4 +161,14 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
   }
 
   await ienv.close();
+}
+
+export async function receive(msg: IPCMessage) {
+  const env = namespace.env;
+
+  if (msg.type === 'telemetry') {
+    const { sendCommand } = await import('@ionic/cli-utils/lib/telemetry');
+
+    await sendCommand(env, msg.data.command, msg.data.args);
+  }
 }

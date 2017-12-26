@@ -15,17 +15,17 @@
     "prepush": "npm run lint"
   },
   "devDependencies": {
-    "@types/node": "^6.0.92",
-    "concurrently": "^3.4.0",
+    "@types/node": "^6.0.95",
+    "concurrently": "^3.5.1",
     "eslint-config-ionic": "0.0.2",
     "husky": "^0.14.3",
-    "jest": "^21.2.1",
-    "jest-cli": "^21.2.1",
+    "jest": "^22.0.4",
+    "jest-cli": "^22.0.4",
     "lerna": "^2.5.1",
     "replace": "^0.3.0",
-    "ts-jest": "^21.2.3",
+    "ts-jest": "^22.0.0",
     "tslint": "^5.8.0",
     "tslint-ionic-rules": "^0.0.11",
-    "typescript": "^2.6.1"
+    "typescript": "^2.6.2"
   }
 }

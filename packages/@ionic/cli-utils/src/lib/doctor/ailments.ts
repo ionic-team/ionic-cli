@@ -202,7 +202,7 @@ export namespace Ailments {
 
     async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
       if (!this.currentVersion || !this.latestVersion) {
-        this.currentVersion = await getIonicAngularVersion(env, env.project);
+        this.currentVersion = await getIonicAngularVersion(env);
         this.latestVersion = await pkgLatestVersion(env, 'ionic-angular');
       }
 
@@ -254,7 +254,7 @@ export namespace Ailments {
 
     async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
       if (!this.currentVersion || !this.latestVersion) {
-        this.currentVersion = await getIonicAngularVersion(env, env.project);
+        this.currentVersion = await getIonicAngularVersion(env);
         this.latestVersion = await pkgLatestVersion(env, 'ionic-angular');
       }
 
@@ -301,7 +301,7 @@ export namespace Ailments {
 
     async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
       if (!this.currentVersion || !this.latestVersion) {
-        this.currentVersion = await getAppScriptsVersion(env, env.project);
+        this.currentVersion = await getAppScriptsVersion(env);
         this.latestVersion = await pkgLatestVersion(env, '@ionic/app-scripts');
       }
 
@@ -356,7 +356,7 @@ export namespace Ailments {
 
     async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
       if (!this.currentVersion || !this.latestVersion) {
-        this.currentVersion = await getAppScriptsVersion(env, env.project);
+        this.currentVersion = await getAppScriptsVersion(env);
         this.latestVersion = await pkgLatestVersion(env, '@ionic/app-scripts');
       }
 

@@ -29,25 +29,24 @@ export class IonicNamespace extends Namespace {
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
-      ['start', async () => { const { StartCommand } = await import('./start'); return new StartCommand(this, this.env); }],
-      ['serve', async () => { const { ServeCommand } = await import('./serve'); return new ServeCommand(this, this.env); }],
       ['build', async () => { const { BuildCommand } = await import('./build'); return new BuildCommand(this, this.env); }],
+      ['docs', async () => { const { DocsCommand } = await import('./docs'); return new DocsCommand(this, this.env); }],
+      ['g', 'generate'],
+      ['generate', async () => { const { GenerateCommand } = await import('./generate'); return new GenerateCommand(this, this.env); }],
       ['help', async () => { const { HelpCommand } = await import('./help'); return new HelpCommand(this, this.env); }],
       ['info', async () => { const { InfoCommand } = await import('./info'); return new InfoCommand(this, this.env); }],
+      ['ionitron', async () => { const { IonitronCommand } = await import('./ionitron'); return new IonitronCommand(this, this.env); }],
+      ['link', async () => { const { LinkCommand } = await import('./link'); return new LinkCommand(this, this.env); }],
       ['login', async () => { const { LoginCommand } = await import('./login'); return new LoginCommand(this, this.env); }],
       ['logout', async () => { const { LogoutCommand } = await import('./logout'); return new LogoutCommand(this, this.env); }],
-      ['signup', async () => { const { SignupCommand } = await import('./signup'); return new SignupCommand(this, this.env); }],
-      ['version', async () => { const { VersionCommand } = await import('./version'); return new VersionCommand(this, this.env); }],
-      ['telemetry', async () => { const { TelemetryCommand } = await import('./telemetry'); return new TelemetryCommand(this, this.env); }],
-      ['docs', async () => { const { DocsCommand } = await import('./docs'); return new DocsCommand(this, this.env); }],
-      ['daemon', async () => { const { DaemonCommand } = await import('./daemon'); return new DaemonCommand(this, this.env); }],
-      ['ionitron', async () => { const { IonitronCommand } = await import('./ionitron'); return new IonitronCommand(this, this.env); }],
-      ['generate', async () => { const { GenerateCommand } = await import('./generate'); return new GenerateCommand(this, this.env); }],
-      ['link', async () => { const { LinkCommand } = await import('./link'); return new LinkCommand(this, this.env); }],
-      ['upload', async () => { const { UploadCommand } = await import('./upload'); return new UploadCommand(this, this.env); }],
-      ['state', async () => { const { StateCommand } = await import('./state'); return new StateCommand(this, this.env); }],
+      ['serve', async () => { const { ServeCommand } = await import('./serve'); return new ServeCommand(this, this.env); }],
       ['share', async () => { const { ShareCommand } = await import('./share'); return new ShareCommand(this, this.env); }],
-      ['g', 'generate'],
+      ['signup', async () => { const { SignupCommand } = await import('./signup'); return new SignupCommand(this, this.env); }],
+      ['start', async () => { const { StartCommand } = await import('./start'); return new StartCommand(this, this.env); }],
+      ['state', async () => { const { StateCommand } = await import('./state'); return new StateCommand(this, this.env); }],
+      ['telemetry', async () => { const { TelemetryCommand } = await import('./telemetry'); return new TelemetryCommand(this, this.env); }],
+      ['upload', async () => { const { UploadCommand } = await import('./upload'); return new UploadCommand(this, this.env); }],
+      ['version', async () => { const { VersionCommand } = await import('./version'); return new VersionCommand(this, this.env); }],
     ]);
   }
 

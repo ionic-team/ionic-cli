@@ -89,6 +89,13 @@ export async function spawncmd(command: string, args?: string[], options: crossS
   return p;
 }
 
+export async function forkcmd(command: string, args?: string[], options: crossSpawnType.SpawnOptions = {}): Promise<crossSpawnType.ChildProcess> {
+  const cp = await import('child_process');
+  const p = cp.fork(command, args, options);
+
+  return p;
+}
+
 export function prettyCommand(command: string, args: string[]) {
   return command + ' ' + (args.length > 0 ? args.map(a => a.includes(' ') ? `"${a}"` : a).join(' ') : '');
 }

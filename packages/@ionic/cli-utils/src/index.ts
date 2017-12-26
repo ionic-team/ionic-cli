@@ -26,7 +26,6 @@ import { LOG_LEVELS, isLogLevel } from './guards';
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { BACKEND_LEGACY } from './lib/backends';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
-import { DAEMON_JSON_FILE, Daemon } from './lib/daemon';
 import { Client } from './lib/http';
 import { CLIEventEmitter } from './lib/events';
 import { Environment } from './lib/environment';
@@ -69,7 +68,7 @@ function registerHooks(hooks: IHookEngine) {
     }
   });
 
-  hooks.register(name, 'info', async ({ env, project }) => {
+  hooks.register(name, 'info', async ({ env }) => {
     const osName = await import('os-name');
     const os = osName();
     const node = process.version;
@@ -85,7 +84,7 @@ function registerHooks(hooks: IHookEngine) {
       { type: 'misc', key: 'backend', value: config.backend },
     ];
 
-    const projectFile = project.directory ? await project.load() : undefined;
+    const projectFile = env.project.directory ? await env.project.load() : undefined;
 
     if (projectFile) {
       if (projectFile.type === 'ionic1') {
@@ -94,7 +93,7 @@ function registerHooks(hooks: IHookEngine) {
         info.push({ type: 'local-packages', key: 'Ionic Framework', value: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown' });
       } else if (projectFile.type === 'ionic-angular') {
         const { getIonicAngularVersion, getAppScriptsVersion } = await import('./lib/ionic-angular/utils');
-        const [ ionicAngularVersion, appScriptsVersion ] = await Promise.all([getIonicAngularVersion(env, project), getAppScriptsVersion(env, project)]);
+        const [ ionicAngularVersion, appScriptsVersion ] = await Promise.all([getIonicAngularVersion(env), getAppScriptsVersion(env)]);
         info.push({ type: 'local-packages', key: 'Ionic Framework', value: ionicAngularVersion ? `ionic-angular ${ionicAngularVersion}` : 'not installed' });
         info.push({ type: 'local-packages', key: '@ionic/app-scripts', value: appScriptsVersion ? appScriptsVersion : 'not installed' });
       }
@@ -212,19 +211,17 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   const client = new Client(config);
   const session = await getSession(config, project, client);
   const hooks = new HookEngine();
-  const daemon = new Daemon(env['IONIC_DAEMON_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, DAEMON_JSON_FILE);
   const telemetry = new Telemetry();
   const shell = new Shell({ tasks, log, project });
 
   registerHooks(hooks);
 
-  await Promise.all([config.prepare(), daemon.prepare()]);
+  await config.prepare();
 
   const ienv = new Environment({
     bottomBar,
     client,
     config,
-    daemon,
     env,
     events: new CLIEventEmitter(),
     flags,

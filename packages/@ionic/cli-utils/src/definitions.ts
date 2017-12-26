@@ -235,20 +235,6 @@ export interface PackageVersions {
   [key: string]: string;
 }
 
-export interface DaemonFile {
-  daemonVersion: string;
-}
-
-export interface IDaemon extends IBaseConfig<DaemonFile> {
-  pidFilePath: string;
-  portFilePath: string;
-  logFilePath: string;
-  getPid(): Promise<number | undefined>;
-  setPid(pid: number): Promise<void>;
-  getPort(): Promise<number | undefined>;
-  setPort(port: number): Promise<void>;
-}
-
 export interface CommandMetadataOption extends framework.CommandMetadataOption {
   backends?: BackendFlag[];
   intents?: string[];
@@ -318,9 +304,6 @@ export interface ConfigFile {
     apiUrl?: string;
     gitHost?: string;
     gitPort?: number;
-  };
-  daemon: {
-    enabled: boolean;
   };
   devapp: {
     knownInterfaces: {
@@ -409,10 +392,6 @@ export interface EnvironmentHookArgs {
   env: IonicEnvironment;
 }
 
-export interface InfoHookArgs extends EnvironmentHookArgs {
-  project: IProject;
-}
-
 export interface BuildAfterHookArgs extends EnvironmentHookArgs {
   platform?: string;
 }
@@ -481,7 +460,7 @@ export interface IHook<T, U> {
 }
 
 export interface IHookEngine {
-  fire(hook: 'info', args: InfoHookArgs): Promise<InfoHookItem[]>;
+  fire(hook: 'info', args: EnvironmentHookArgs): Promise<InfoHookItem[]>;
   fire(hook: 'cordova:project:info', args: EnvironmentHookArgs): Promise<CordovaProjectInfoHookResponse[]>;
   fire(hook: 'plugins:init', args: EnvironmentHookArgs): Promise<void[]>;
   fire(hook: 'build:before', args: EnvironmentHookArgs): Promise<void[]>;
@@ -489,7 +468,7 @@ export interface IHookEngine {
   fire(hook: 'watch:before', args: EnvironmentHookArgs): Promise<void[]>;
   fire(hook: 'backend:changed', args: EnvironmentHookArgs): Promise<void[]>;
 
-  register(source: string, hook: 'info', listener: (args: InfoHookArgs) => Promise<InfoHookItem[]>): void;
+  register(source: string, hook: 'info', listener: (args: EnvironmentHookArgs) => Promise<InfoHookItem[]>): void;
   register(source: string, hook: 'cordova:project:info', listener: (args: EnvironmentHookArgs) => Promise<CordovaProjectInfoHookResponse>): void;
   register(source: string, hook: 'plugins:init', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
   register(source: string, hook: 'build:before', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
@@ -544,7 +523,6 @@ export interface IonicEnvironment {
   readonly hooks: IHookEngine;
   readonly client: IClient;
   readonly config: IConfig; // CLI global config (~/.ionic/config.json)
-  readonly daemon: IDaemon;
   readonly events: ICLIEventEmitter;
   readonly log: ILogger;
   readonly prompt: PromptModule;
@@ -707,3 +685,8 @@ export interface IntegrationTemplate {
 }
 
 export type NetworkInterface = { deviceName: string; } & os.NetworkInterfaceInfo;
+
+export interface IPCMessage {
+  type: 'telemetry';
+  data: { command: string; args: string[]; };
+}

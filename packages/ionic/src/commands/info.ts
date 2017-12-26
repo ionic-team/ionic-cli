@@ -21,7 +21,7 @@ export class InfoCommand extends Command {
     const task = this.env.tasks.next('Gathering environment info');
 
     const initialValue: InfoHookItem[] = [];
-    const results = await this.env.hooks.fire('info', { env: this.env, project: this.env.project });
+    const results = await this.env.hooks.fire('info', { env: this.env });
     const flattenedResults = results.reduce((acc, currentValue) => acc.concat(currentValue), initialValue);
 
     const cliDetails = flattenedResults.filter(item => item.type === 'cli-packages');

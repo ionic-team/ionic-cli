@@ -7,7 +7,6 @@ import {
   IClient,
   ICommand,
   IConfig,
-  IDaemon,
   IHookEngine,
   ILogger,
   IProject,
@@ -29,7 +28,6 @@ export class Environment implements IonicEnvironment {
   readonly hooks: IHookEngine;
   readonly client: IClient;
   readonly config: IConfig; // CLI global config (~/.ionic/config.json)
-  readonly daemon: IDaemon;
   readonly events: ICLIEventEmitter;
   readonly log: ILogger;
   readonly prompt: PromptModule;
@@ -50,7 +48,6 @@ export class Environment implements IonicEnvironment {
     bottomBar,
     client,
     config,
-    daemon,
     env,
     events,
     flags,
@@ -69,7 +66,6 @@ export class Environment implements IonicEnvironment {
     bottomBar?: inquirerType.ui.BottomBar;
     client: IClient;
     config: IConfig; // CLI global config (~/.ionic/config.json)
-    daemon: IDaemon;
     env: { [key: string]: string; },
     events: ICLIEventEmitter;
     flags: IonicEnvironmentFlags;
@@ -88,7 +84,6 @@ export class Environment implements IonicEnvironment {
     this.bottomBar = bottomBar;
     this.client = client;
     this.config = config;
-    this.daemon = daemon;
     this.env = env;
     this.events = events;
     this.flags = flags;

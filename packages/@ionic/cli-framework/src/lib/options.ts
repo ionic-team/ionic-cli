@@ -32,12 +32,11 @@ const typeDefaults = new Map<CommandOptionType, ParsedArg>()
 export function hydrateCommandMetadataOption<O extends CommandMetadataOption>(option: O): O & HydratedCommandOption {
   const type = option.type ? option.type : String;
 
-  return {
+  return lodash.assign({}, option, {
     type,
     default: option.default ? option.default : typeDefaults.get(type),
     aliases: option.aliases ? option.aliases : [],
-    ...option,
-  };
+  });
 }
 
 export function metadataToParseArgsOptions(metadata: CommandMetadata): HydratedParseArgsOptions {

@@ -1,11 +1,17 @@
-import * as leekType from 'leek';
+import * as path from 'path';
 
-import { IProject, ITelemetry, InfoHookItem, IonicEnvironment } from '../definitions';
+import * as leekType from 'leek';
+import * as Debug from 'debug';
+
+import { fsOpen } from '@ionic/cli-framework/utils/fs';
+
+import { IPCMessage, ITelemetry, InfoHookItem, IonicEnvironment } from '../definitions';
 import { BACKEND_LEGACY, BACKEND_PRO } from './backends';
 import { generateUUID } from './utils/uuid';
+import { forkcmd } from './utils/shell';
 
+const debug = Debug('ionic:cli-utils:lib:telemetry');
 const GA_CODE = 'UA-44023830-30';
-
 let _gaTracker: leekType | undefined;
 
 export class Telemetry implements ITelemetry {
@@ -17,24 +23,15 @@ export class Telemetry implements ITelemetry {
   }
 
   async sendCommand(command: string, args: string[]): Promise<void> {
-    const { CONTENT_TYPE_JSON, createRawRequest } = await import('./http');
+    const config = await this.env.config.load();
 
-    const port = await this.env.daemon.getPort();
-
-    if (port) {
-      const { req } = await createRawRequest('POST', `http://localhost:${port}/events/command`);
-      req
-        .set('Content-Type', CONTENT_TYPE_JSON)
-        .set('Accept', CONTENT_TYPE_JSON)
-        .send({ command, args, projectDir: this.env.project.directory });
-
-      try {
-        await req;
-      } catch (e) {
-        // TODO
-      }
-    } else {
-      await sendCommand(this.env, this.env.project, command, args);
+    if (config.telemetry && command !== 'ionic _') {
+      const fd = await fsOpen(path.resolve(this.env.config.directory, 'helper.log'), 'a');
+      const p = await forkcmd(this.env.meta.binPath, ['_', '--no-interactive'], { stdio: ['ignore', fd, fd, 'ipc'] });
+      const msg: IPCMessage = { type: 'telemetry', data: { command, args } };
+      p.send(msg);
+      p.disconnect();
+      p.unref();
     }
   }
 }
@@ -60,7 +57,7 @@ async function getLeek(env: IonicEnvironment): Promise<leekType> {
   return _gaTracker;
 }
 
-export async function sendCommand(env: IonicEnvironment, project: IProject, command: string, args: string[]) {
+export async function sendCommand(env: IonicEnvironment, command: string, args: string[]) {
   const messageList: string[] = [];
   const name = 'command execution';
   const prettyArgs = args.map(a => a.includes(' ') ? `"${a}"` : a);
@@ -72,7 +69,7 @@ export async function sendCommand(env: IonicEnvironment, project: IProject, comm
       try {
         await leek.track({ name, message });
       } catch (e) {
-        // TODO
+        debug('leek track error', e);
       }
     })(),
     (async () => {
@@ -87,7 +84,7 @@ export async function sendCommand(env: IonicEnvironment, project: IProject, comm
 
       let appId: string | undefined;
 
-      const projectFile = project.directory ? await project.load() : undefined;
+      const projectFile = env.project.directory ? await env.project.load() : undefined;
 
       if (projectFile) {
         appId = projectFile.app_id;
@@ -114,58 +111,57 @@ export async function sendCommand(env: IonicEnvironment, project: IProject, comm
         },
       };
 
-      // We don't want to slow commands down terribly for people who opt-out of the daemon.
-      if (config.daemon.enabled) {
-        const v: InfoHookItem[] = [];
-        const info = await env.hooks.fire('info', { env, project });
-        const flattenedInfo = info.reduce((acc, currentValue) => acc.concat(currentValue), v);
+      const v: InfoHookItem[] = [];
+      const info = await env.hooks.fire('info', { env });
+      const flattenedInfo = info.reduce((acc, currentValue) => acc.concat(currentValue), v);
 
-        if (isLoggedIn && config.backend === BACKEND_PRO) {
-          const token = await env.session.getUserToken();
-          req.set('Authorization', `Bearer ${token}`);
-        }
-
-        const frameworkInfo = flattenedInfo.find(item => item.key === 'Ionic Framework');
-        const npmInfo = flattenedInfo.find(item => item.key === 'npm');
-        const osInfo = flattenedInfo.find(item => item.key === 'OS');
-        const xcodeInfo = flattenedInfo.find(item => item.key === 'Xcode');
-        const androidSdkInfo = flattenedInfo.find(item => item.key === 'Android SDK Tools');
-        const cordovaInfo = flattenedInfo.find(item => item.key === 'Cordova CLI');
-        const cordovaPlatformsInfo = flattenedInfo.find(item => item.key === 'Cordova Platforms');
-        const appScriptsInfo = flattenedInfo.find(item => item.key === '@ionic/app-scripts');
-
-        if (frameworkInfo) {
-          metric['value']['framework'] = frameworkInfo.value;
-        }
-
-        if (npmInfo) {
-          metric['value']['npm_version'] = npmInfo.value;
-        }
-
-        if (osInfo) {
-          metric['value']['os'] = osInfo.value;
-        }
-
-        if (xcodeInfo) {
-          metric['value']['xcode_version'] = xcodeInfo.value;
-        }
-
-        if (androidSdkInfo) {
-          metric['value']['android_sdk_version'] = androidSdkInfo.value;
-        }
-
-        if (cordovaInfo) {
-          metric['value']['cordova_version'] = cordovaInfo.value;
-        }
-
-        if (cordovaPlatformsInfo) {
-          metric['value']['cordova_platforms'] = cordovaPlatformsInfo.value;
-        }
-
-        if (appScriptsInfo) {
-          metric['value']['app_scripts_version'] = appScriptsInfo.value;
-        }
+      if (isLoggedIn && config.backend === BACKEND_PRO) {
+        const token = await env.session.getUserToken();
+        req.set('Authorization', `Bearer ${token}`);
       }
+
+      const frameworkInfo = flattenedInfo.find(item => item.key === 'Ionic Framework');
+      const npmInfo = flattenedInfo.find(item => item.key === 'npm');
+      const osInfo = flattenedInfo.find(item => item.key === 'OS');
+      const xcodeInfo = flattenedInfo.find(item => item.key === 'Xcode');
+      const androidSdkInfo = flattenedInfo.find(item => item.key === 'Android SDK Tools');
+      const cordovaInfo = flattenedInfo.find(item => item.key === 'Cordova CLI');
+      const cordovaPlatformsInfo = flattenedInfo.find(item => item.key === 'Cordova Platforms');
+      const appScriptsInfo = flattenedInfo.find(item => item.key === '@ionic/app-scripts');
+
+      if (frameworkInfo) {
+        metric['value']['framework'] = frameworkInfo.value;
+      }
+
+      if (npmInfo) {
+        metric['value']['npm_version'] = npmInfo.value;
+      }
+
+      if (osInfo) {
+        metric['value']['os'] = osInfo.value;
+      }
+
+      if (xcodeInfo) {
+        metric['value']['xcode_version'] = xcodeInfo.value;
+      }
+
+      if (androidSdkInfo) {
+        metric['value']['android_sdk_version'] = androidSdkInfo.value;
+      }
+
+      if (cordovaInfo) {
+        metric['value']['cordova_version'] = cordovaInfo.value;
+      }
+
+      if (cordovaPlatformsInfo) {
+        metric['value']['cordova_platforms'] = cordovaPlatformsInfo.value;
+      }
+
+      if (appScriptsInfo) {
+        metric['value']['app_scripts_version'] = appScriptsInfo.value;
+      }
+
+      debug('metric: %o', metric);
 
       req.send({
         'metrics': [metric],
@@ -175,7 +171,7 @@ export async function sendCommand(env: IonicEnvironment, project: IProject, comm
       try {
         await client.do(req);
       } catch (e) {
-        // TODO
+        debug('metric send error', e);
       }
     })(),
   ]);

@@ -44,14 +44,14 @@
     "slice-ansi": "^1.0.0",
     "string-width": "^2.1.1",
     "strip-ansi": "^4.0.0",
-    "superagent": "^3.8.1",
-    "tslib": "^1.8.0",
+    "superagent": "^3.8.2",
+    "tslib": "^1.8.1",
     "wrap-ansi": "^3.0.1"
   },
   "devDependencies": {
     "@types/dargs": "^5.1.0",
     "@types/debug": "0.0.30",
-    "@types/lodash": "^4.14.88",
+    "@types/lodash": "^4.14.91",
     "@types/minimist": "^1.2.0",
     "@types/ncp": "^2.0.1",
     "@types/rimraf": "^2.0.2",

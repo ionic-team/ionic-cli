@@ -3,11 +3,11 @@ import * as path from 'path';
 import chalk from 'chalk';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { IProject, IonicEnvironment } from '../../definitions';
+import { IonicEnvironment } from '../../definitions';
 
-export async function getIonicAngularVersion(env: IonicEnvironment, project: IProject): Promise<string | undefined> {
+export async function getIonicAngularVersion(env: IonicEnvironment): Promise<string | undefined> {
   const { readPackageJsonFile } = await import('@ionic/cli-framework/utils/npm');
-  const ionicAngularPackageJsonFilePath = path.resolve(project.directory, 'node_modules', 'ionic-angular', 'package.json'); // TODO
+  const ionicAngularPackageJsonFilePath = path.resolve(env.project.directory, 'node_modules', 'ionic-angular', 'package.json'); // TODO
 
   try {
     const ionicAngularPackageJson = await readPackageJsonFile(ionicAngularPackageJsonFilePath);
@@ -17,9 +17,9 @@ export async function getIonicAngularVersion(env: IonicEnvironment, project: IPr
   }
 }
 
-export async function getAppScriptsVersion(env: IonicEnvironment, project: IProject): Promise<string | undefined> {
+export async function getAppScriptsVersion(env: IonicEnvironment): Promise<string | undefined> {
   const { readPackageJsonFile } = await import('@ionic/cli-framework/utils/npm');
-  const appScriptsPackageJsonFilePath = path.resolve(project.directory, 'node_modules', '@ionic', 'app-scripts', 'package.json'); // TODO
+  const appScriptsPackageJsonFilePath = path.resolve(env.project.directory, 'node_modules', '@ionic', 'app-scripts', 'package.json'); // TODO
 
   try {
     const appScriptsPackageJson = await readPackageJsonFile(appScriptsPackageJsonFilePath);

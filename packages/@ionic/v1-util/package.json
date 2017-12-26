@@ -38,8 +38,8 @@
   "devDependencies": {
     "@types/chokidar": "^1.7.4",
     "@types/debug": "0.0.30",
-    "@types/express": "^4.0.39",
-    "@types/gulp": "^3.8.35",
+    "@types/express": "^4.11.0",
+    "@types/gulp": "^3.8.36",
     "@types/http-proxy-middleware": "^0.17.2",
     "@types/ws": "^3.2.1"
   },

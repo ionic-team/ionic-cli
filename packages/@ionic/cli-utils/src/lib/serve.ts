@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
-import * as proxyMiddlewareType from 'http-proxy-middleware';
+import * as proxyMiddlewareType from 'http-proxy-middleware'; // tslint:disable-line:no-implicit-dependencies
 
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 

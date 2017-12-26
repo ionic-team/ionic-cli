@@ -5,6 +5,17 @@
 process.title = 'ionic';
 process.on('unhandledRejection', function(r) { console.error(r); });
 
+var events = require('events');
+var evt = new events.EventEmitter();
+
+var cli;
+
+process.on('message', msg => {
+  evt.once('ready', () => {
+    cli.receive(msg);
+  });
+});
+
 var semver = require('semver');
 
 if (semver.lt(process.version, 'v6.4.0')) {
@@ -14,19 +25,23 @@ if (semver.lt(process.version, 'v6.4.0')) {
 
 var bootstrap = require('@ionic/cli-utils/bootstrap');
 
-bootstrap.detectLocalCLI().then(function(localPath) {
-  var cli = require(localPath);
-  process.env.IONIC_CLI_LOCAL = localPath;
-  process.env.IONIC_CLI_BIN = __filename;
-  cli.run(process.argv, process.env);
-}, function(err) {
-  var cli = require('../');
+bootstrap.detectLocalCLI()
+  .then(function(localPath) {
+    cli = require(localPath);
+    process.env.IONIC_CLI_LOCAL = localPath;
+    process.env.IONIC_CLI_BIN = __filename;
+    return cli.run(process.argv, process.env);
+  }, function(err) {
+    cli = require('../');
 
-  if (typeof err !== 'string') {
-    throw err;
-  }
+    if (typeof err !== 'string') {
+      throw err;
+    }
 
-  process.env.IONIC_CLI_LOCAL_ERROR = err;
-  process.env.IONIC_CLI_BIN = __filename;
-  cli.run(process.argv, process.env);
-});
+    process.env.IONIC_CLI_LOCAL_ERROR = err;
+    process.env.IONIC_CLI_BIN = __filename;
+    return cli.run(process.argv, process.env);
+  })
+  .then(function() {
+    evt.emit('ready');
+  });
