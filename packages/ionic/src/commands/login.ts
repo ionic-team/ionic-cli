@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
-import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { SessionException } from '@ionic/cli-utils/lib/errors';
 
@@ -39,13 +39,13 @@ If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
           name: 'email',
           description: '',
           private: true,
-          visible: false,
+          groups: [OptionGroup.Hidden],
         },
         {
           name: 'password',
           description: '',
           private: true,
-          visible: false,
+          groups: [OptionGroup.Hidden],
         },
       ],
     };

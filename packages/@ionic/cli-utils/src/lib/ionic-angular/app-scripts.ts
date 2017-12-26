@@ -43,7 +43,6 @@ export const APP_SCRIPTS_OPTIONS: CommandMetadataOption[] = [
   {
     name: 'env',
     description: '',
-    groups: [OptionGroup.AppScripts],
-    visible: false,
+    groups: [OptionGroup.Hidden, OptionGroup.AppScripts],
   },
 ];

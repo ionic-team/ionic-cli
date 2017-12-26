@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class IonitronCommand extends Command {
@@ -14,7 +14,7 @@ export class IonitronCommand extends Command {
           type: Boolean,
         },
       ],
-      visible: false,
+      groups: [CommandGroup.Hidden],
     };
   }
 

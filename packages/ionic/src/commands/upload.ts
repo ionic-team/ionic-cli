@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { ParsedArg } from '@ionic/cli-framework';
-import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 
@@ -13,7 +13,7 @@ export class UploadCommand extends Command implements CommandPreRun {
       name: 'upload',
       type: 'project',
       backends: [BACKEND_LEGACY],
-      deprecated: true,
+      groups: [CommandGroup.Deprecated],
       description: 'Upload a new snapshot of your app',
       longDescription: `
 ${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}

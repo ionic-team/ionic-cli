@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class VersionCommand extends Command {
@@ -7,7 +7,7 @@ export class VersionCommand extends Command {
       name: 'version',
       type: 'global',
       description: 'Returns the current CLI version',
-      visible: false,
+      groups: [CommandGroup.Hidden],
     };
   }
 

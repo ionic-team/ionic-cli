@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { columnar, indent } from '@ionic/cli-framework/utils/format';
 
-import { CommandMetadata } from '@ionic/cli-utils';
+import { CommandGroup, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
@@ -12,7 +12,7 @@ export class StateCommand extends Command {
       name: 'state',
       type: 'global',
       description: '',
-      visible: false,
+      groups: [CommandGroup.Hidden],
     };
   }
 

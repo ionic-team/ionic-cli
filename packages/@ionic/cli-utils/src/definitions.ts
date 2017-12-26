@@ -11,6 +11,7 @@ export {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadataInput,
+  NamespaceMetadata,
   PackageJson,
 } from '@ionic/cli-framework';
 

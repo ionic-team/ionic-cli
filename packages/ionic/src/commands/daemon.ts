@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { fsUnlink } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class DaemonCommand extends Command {
@@ -19,7 +19,7 @@ export class DaemonCommand extends Command {
           type: Boolean,
         },
       ],
-      visible: false,
+      groups: [CommandGroup.Hidden],
     };
   }
 

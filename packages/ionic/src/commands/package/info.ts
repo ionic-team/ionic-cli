@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { columnar } from '@ionic/cli-framework/utils/format';
 
-import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandMetadata, PackageBuild } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata, PackageBuild } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 import { DEPRECATION_NOTICE } from './common';
@@ -13,7 +13,7 @@ export class PackageInfoCommand extends Command {
       name: 'info',
       type: 'project',
       backends: [BACKEND_LEGACY],
-      deprecated: true,
+      groups: [CommandGroup.Deprecated],
       description: 'Get info about a build',
       longDescription: `
 ${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}

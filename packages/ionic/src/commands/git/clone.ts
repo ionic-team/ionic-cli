@@ -1,5 +1,5 @@
 import { validators } from '@ionic/cli-framework';
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { BACKEND_PRO, CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 // import { formatGitRepoUrl } from '../../lib/git';
@@ -22,7 +22,7 @@ export class GitCloneCommand extends Command {
           description: 'The destination directory of the cloned app',
         },
       ],
-      visible: false, // TODO: make part of start?
+      groups: [CommandGroup.Hidden], // TODO: make part of start?
     };
   }
 

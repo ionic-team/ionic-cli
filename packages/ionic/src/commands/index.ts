@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { metadataToParseArgsOptions, parseArgs } from '@ionic/cli-framework';
+import { metadataToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
 import { CommandMetadata, CommandMetadataOption, KNOWN_BACKENDS, isCommand } from '@ionic/cli-utils';
 import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
@@ -54,13 +54,14 @@ export class IonicNamespace extends Namespace {
   async runCommand(pargv: string[], env: { [key: string]: string; }): Promise<void> {
     const config = await this.env.config.load();
 
-    const argv = parseArgs(pargv, { boolean: true, string: '_' });
-    let { args, obj, path } = await this.locate(argv._);
+    const pargs = stripOptions(pargv);
+
+    let { args, obj, path } = await this.locate(pargs);
 
     if (!isCommand(obj)) {
       const { showHelp } = await import('@ionic/cli-utils/lib/help');
-      await this.env.telemetry.sendCommand('ionic help', argv._);
-      return showHelp(this.env, argv._);
+      await this.env.telemetry.sendCommand('ionic help', pargs);
+      return showHelp(this.env, pargs);
     }
 
     const command = obj;

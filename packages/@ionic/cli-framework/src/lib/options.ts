@@ -17,6 +17,11 @@ import {
 export const parseArgs = minimist;
 export { ParsedArgs } from 'minimist';
 
+export function stripOptions(pargv: string[]) {
+  const r = /^\-/;
+  return pargv.filter(arg => !r.test(arg));
+}
+
 const typeDefaults = new Map<CommandOptionType, ParsedArg>()
   .set(String, null) // tslint:disable-line:no-null-keyword
   .set(Boolean, false);

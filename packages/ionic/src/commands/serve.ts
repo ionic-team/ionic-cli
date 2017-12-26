@@ -30,7 +30,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
           description: 'Print dev server logs to Ionic CLI',
           type: Boolean,
           aliases: ['s'],
-          visible: false,
+          groups: [OptionGroup.Hidden, OptionGroup.Hidden],
         },
         {
           name: 'address',
@@ -50,7 +50,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
           description: 'Spin up server to live-reload www files',
           type: Boolean,
           default: true,
-          visible: false,
+          groups: [OptionGroup.Hidden],
         },
         {
           name: 'livereload-port',
@@ -119,7 +119,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
           name: 'auth',
           description: 'HTTP Basic Auth password to secure the server on your local network',
           type: String,
-          visible: false,
+          groups: [OptionGroup.Hidden],
         },
       ],
     };

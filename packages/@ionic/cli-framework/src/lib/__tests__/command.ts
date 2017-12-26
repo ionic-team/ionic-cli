@@ -229,8 +229,8 @@ describe('@ionic/cli-framework', () => {
 
         it('should locate bar command in foo namespace', async () => {
           const ns = new MyNamespace();
-          const { args, obj, path } = await ns.locate(['foo', 'bar', 'arg1']);
-          expect(args).toEqual(['arg1']);
+          const { args, obj, path } = await ns.locate(['foo', 'bar', 'arg1', 'arg2']);
+          expect(args).toEqual(['arg1', 'arg2']);
           expect(obj).toBeInstanceOf(BarCommand);
           expect(path.length).toEqual(3);
           const [ ns1, ns2, cmd3 ] = path;

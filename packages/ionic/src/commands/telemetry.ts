@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { contains } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class TelemetryCommand extends Command implements CommandPreRun {
@@ -10,7 +10,7 @@ export class TelemetryCommand extends Command implements CommandPreRun {
       name: 'telemetry',
       type: 'global',
       description: 'Opt in and out of telemetry',
-      deprecated: true,
+      groups: [CommandGroup.Deprecated],
       inputs: [
         {
           name: 'status',

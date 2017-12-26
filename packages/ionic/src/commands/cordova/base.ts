@@ -35,7 +35,7 @@ export const CORDOVA_RUN_COMMAND_OPTIONS: CommandMetadataOption[] = [
     description: 'Print out dev server logs to terminal',
     type: Boolean,
     aliases: ['s'],
-    visible: false,
+    groups: [OptionGroup.Deprecated, OptionGroup.Hidden],
   },
   {
     name: 'address',

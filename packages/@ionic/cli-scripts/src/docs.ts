@@ -9,10 +9,12 @@ import { generateCommandPath } from '@ionic/cli-framework';
 import { copyDirectory, fsMkdirp, fsStat, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 
 import {
+  CommandGroup,
   CommandMetadataInput,
   CommandMetadataOption,
   HydratedCommandData,
   IonicEnvironment,
+  OptionGroup,
   StarterTemplate,
   generateIonicEnvironment,
 } from '@ionic/cli-utils';
@@ -60,7 +62,7 @@ export async function run() {
 
 async function getCommandList(env: IonicEnvironment) {
   const cmds = await env.namespace.getCommandMetadataList();
-  return cmds.filter(cmd => cmd.visible !== false);
+  return cmds.filter(cmd => !cmd.groups || !cmd.groups.includes(CommandGroup.Hidden));
 }
 
 async function formatIonicPage(env: IonicEnvironment) {
@@ -144,8 +146,8 @@ If you're having trouble with the Ionic CLI, you can try the following:
 `;
 }
 
-async function generateFullName(cmdData: HydratedCommandData) {
-  const cmdPath = await generateCommandPath(cmdData.command);
+async function generateFullName(cmd: HydratedCommandData) {
+  const cmdPath = await generateCommandPath(cmd.command);
   const fullName = cmdPath.map(([p]) => p).slice(1).join(' '); // strip off 'ionic' from beginning
 
   return fullName;
@@ -154,9 +156,9 @@ async function generateFullName(cmdData: HydratedCommandData) {
 async function formatCommandsPage(env: IonicEnvironment) {
   const commands = await getCommandList(env);
 
-  async function listCommandLink(cmdData: HydratedCommandData) {
-    const fullName = await generateFullName(cmdData);
-    return `[${fullName}](${path.join(...fullName.split(' '))}/) | ${cmdData.deprecated ? '(deprecated) ' : ''}${stripAnsi(cmdData.description)}`;
+  async function listCommandLink(cmd: HydratedCommandData) {
+    const fullName = await generateFullName(cmd);
+    return `[${fullName}](${path.join(...fullName.split(' '))}/) | ${cmd.groups && cmd.groups.includes(CommandGroup.Deprecated) ? '(deprecated) ' : ''}${stripAnsi(cmd.description)}`;
   }
 
   const commandLinks = await Promise.all(commands.map(async cmd => listCommandLink(cmd)));
@@ -499,7 +501,7 @@ function formatDescription(env: IonicEnvironment, cmd: HydratedCommandData) {
   let inputs = cmd.inputs || [];
   let options = cmd.options || [];
 
-  options = options.filter(o => o.visible !== false);
+  options = options.filter(o => !o.groups || !o.groups.includes(OptionGroup.Hidden));
 
   const headerLine = `## Details`;
 

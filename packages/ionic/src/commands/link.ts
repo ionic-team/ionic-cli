@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { AppDetails, BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { AppDetails, BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
@@ -39,12 +39,12 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
           description: 'Create a new app on Ionic and link it with this local Ionic project',
           backends: [BACKEND_PRO],
           type: Boolean,
-          visible: false,
+          groups: [OptionGroup.Hidden],
         },
         {
           name: 'pro-id',
           description: 'Specify an app ID from the Ionic Dashboard to link',
-          visible: false,
+          groups: [OptionGroup.Hidden],
         },
       ],
     };

@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 
+import { NamespaceGroup } from '@ionic/cli-utils';
 import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 import { DEPRECATION_NOTICE } from './common';
@@ -10,7 +11,7 @@ export class PackageNamespace extends Namespace {
       name: 'package',
       description: 'Commands for Ionic Package',
       longDescription: `${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}`,
-      deprecated: true,
+      groups: [NamespaceGroup.Deprecated],
     };
   }
 

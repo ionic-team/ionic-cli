@@ -46,7 +46,7 @@ export interface Metadata {
   name: string;
   description: string;
   longDescription?: string;
-  deprecated?: boolean;
+  groups?: MetadataGroup[];
 }
 
 export interface CommandMetadata<I = CommandMetadataInput, O = CommandMetadataOption> extends Metadata {
@@ -54,7 +54,6 @@ export interface CommandMetadata<I = CommandMetadataInput, O = CommandMetadataOp
   aliases?: string[];
   inputs?: I[];
   options?: O[];
-  visible?: boolean;
 }
 
 export interface ICommand<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {

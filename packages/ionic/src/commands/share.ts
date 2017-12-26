@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { CommandMetadata } from '@ionic/cli-utils';
+import { CommandGroup, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
@@ -10,7 +10,7 @@ export class ShareCommand extends Command {
       name: 'share',
       type: 'global',
       description: '',
-      visible: false,
+      groups: [CommandGroup.Hidden],
     };
   }
 

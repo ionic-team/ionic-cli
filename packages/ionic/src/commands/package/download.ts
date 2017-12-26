@@ -4,7 +4,7 @@ import chalk from 'chalk';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 import { DEPRECATION_NOTICE } from './common';
@@ -15,7 +15,7 @@ export class PackageDownloadCommand extends Command {
       name: 'download',
       type: 'project',
       backends: [BACKEND_LEGACY],
-      deprecated: true,
+      groups: [CommandGroup.Deprecated],
       description: 'Download your packaged app',
       longDescription: `
 ${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}

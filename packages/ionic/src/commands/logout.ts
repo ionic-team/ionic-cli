@@ -1,4 +1,4 @@
-import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, BACKEND_PRO, CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class LogoutCommand extends Command {
@@ -8,7 +8,7 @@ export class LogoutCommand extends Command {
       type: 'global',
       backends: [BACKEND_LEGACY, BACKEND_PRO],
       description: '',
-      visible: false,
+      groups: [CommandGroup.Hidden],
     };
   }
 

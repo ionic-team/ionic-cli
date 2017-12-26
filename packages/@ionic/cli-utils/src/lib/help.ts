@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { validators } from '@ionic/cli-framework';
+import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '@ionic/cli-framework/utils/format';
 
 import {
@@ -12,9 +12,10 @@ import {
   ICommand,
   INamespace,
   IonicEnvironment,
+  NamespaceMetadata,
 } from '../definitions';
 
-import { OptionGroup } from '../constants';
+import { CommandGroup, NamespaceGroup, OptionGroup } from '../constants';
 import { isCommand } from '../guards';
 
 import { BACKEND_PRO } from './backends';
@@ -52,11 +53,6 @@ async function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INam
   return formatCommandHelp(env, await command.getMetadata(), fullName);
 }
 
-function namespaceIsDeprecated(cmdMetadataList: CommandMetadata[]) {
-  const deprecatedCommands = cmdMetadataList.filter(cmd => cmd.deprecated);
-  return deprecatedCommands.length === cmdMetadataList.length;
-}
-
 async function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, fullName: string) {
   const cmdMetadataList = await ns.getCommandMetadataList();
   const formatList = (details: string[]) => details.map(hd => `    ${hd}\n`).join('');
@@ -82,7 +78,7 @@ async function formatNamespaceHeader(env: IonicEnvironment, ns: INamespace, cmdM
   const metadata = await ns.getMetadata();
 
   return `
-  ${chalk.bold.green(fullName)} ${chalk.bold('-')} ${namespaceIsDeprecated(cmdMetadataList) ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${chalk.bold(metadata.description)}${formatLongDescription(metadata.longDescription)}`;
+  ${chalk.bold.green(fullName)} ${chalk.bold('-')} ${metadata.groups && metadata.groups.includes(NamespaceGroup.Deprecated) ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${chalk.bold(metadata.description)}${formatLongDescription(metadata.longDescription)}`;
 }
 
 async function formatHeader(env: IonicEnvironment) {
@@ -119,7 +115,7 @@ async function formatUsage(env: IonicEnvironment, ns: INamespace) {
 
 async function getCommandDetails(env: IonicEnvironment, ns: INamespace, commands: HydratedCommandData[]): Promise<string[]> {
   const config = await env.config.load();
-  commands = commands.filter(cmd => showIt(cmd, config.backend));
+  commands = commands.filter(cmd => showCommand(cmd, config.backend));
 
   const [ cmdDetails, nsDetails ] = await Promise.all([
     getListOfCommandDetails(env, commands.filter(cmd => cmd.namespace === ns)),
@@ -148,7 +144,7 @@ async function getListOfCommandDetails(env: IonicEnvironment, commands: Hydrated
   const fillStringArray = generateFillSpaceStringList(wow, HELP_DOTS_WIDTH, chalk.dim('.'));
 
   return commands.map((cmd, index) => {
-    const description = (cmd.deprecated ? chalk.yellow.bold('(deprecated)') + ' ' : '') + cmd.description + `${cmd.aliases.length > 0 ? chalk.dim(' (alias' + (cmd.aliases.length === 1 ? '' : 'es') + ': ') + cmd.aliases.map(a => chalk.green(a)).join(', ') + chalk.dim(')') : ''}`;
+    const description = (cmd.groups && cmd.groups.includes(CommandGroup.Deprecated) ? chalk.yellow.bold('(deprecated)') + ' ' : '') + cmd.description + `${cmd.aliases.length > 0 ? chalk.dim(' (alias' + (cmd.aliases.length === 1 ? '' : 'es') + ': ') + cmd.aliases.map(a => chalk.green(a)).join(', ') + chalk.dim(')') : ''}`;
     const wrappedDescription = wordWrap(description, { indentation: HELP_DOTS_WIDTH + 6 });
     return `${chalk.green(cmd.path.map(p => p[0]).join(' '))} ${fillStringArray[index]} ${wrappedDescription}`;
   });
@@ -158,30 +154,30 @@ async function getListOfNamespaceDetails(env: IonicEnvironment, commands: Hydrat
   const config = await env.config.load();
 
   const descriptions = new Map<string, string>();
-  const grouped = new Map<string, HydratedCommandData[]>();
+  const grouped = new Map<string, { meta: NamespaceMetadata; cmds: HydratedCommandData[]; }>();
 
   await Promise.all(commands.map(async cmd => {
-    if (showIt(cmd, config.backend)) {
+    if (showCommand(cmd, config.backend)) {
       const nsmeta = await cmd.namespace.getMetadata();
       descriptions.set(nsmeta.name, nsmeta.description);
-      let n = grouped.get(nsmeta.name);
+      let entry = grouped.get(nsmeta.name);
 
-      if (!n) {
-        n = [];
-        grouped.set(nsmeta.name, n);
+      if (!entry) {
+        entry = { meta: nsmeta, cmds: [] };
+        grouped.set(nsmeta.name, entry);
       }
 
-      n.push(cmd);
+      entry.cmds.push(cmd);
     }
   }));
 
   const entries = [...grouped.entries()];
-  const fillStringArray = generateFillSpaceStringList(entries.map(v => v[0] + ' <subcommand>'), HELP_DOTS_WIDTH, chalk.dim('.'));
+  const fillStringArray = generateFillSpaceStringList(entries.map(([name]) => name + ' <subcommand>'), HELP_DOTS_WIDTH, chalk.dim('.'));
 
-  return entries.map((v, i) => {
-    const subcommands = v[1].map(c => chalk.green(c.name)).join(', ');
-    const wrappedDescription = wordWrap(`${namespaceIsDeprecated(v[1]) ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${descriptions.get(v[0])} ${chalk.dim('(subcommands:')} ${subcommands}${chalk.dim(')')}`, { indentation: HELP_DOTS_WIDTH + 6 });
-    return `${chalk.green(v[0] + ' <subcommand>')} ${fillStringArray[i]} ${wrappedDescription}`;
+  return entries.map(([name, { meta, cmds }], i) => {
+    const subcommands = cmds.map(c => chalk.green(c.name)).join(', ');
+    const wrappedDescription = wordWrap(`${meta.groups && meta.groups.includes(NamespaceGroup.Deprecated) ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${descriptions.get(name)} ${chalk.dim('(subcommands:')} ${subcommands}${chalk.dim(')')}`, { indentation: HELP_DOTS_WIDTH + 6 });
+    return `${chalk.green(name + ' <subcommand>')} ${fillStringArray[i]} ${wrappedDescription}`;
   });
 }
 
@@ -260,13 +256,17 @@ function formatOptionLine(opt: CommandMetadataOption) {
   return `${optionList} ${Array(fullLength - optionListLength).fill(chalk.dim('.')).join('')} ${wrappedDescription}`;
 }
 
-function showIt(thing: { name: string; visible?: boolean; backends?: BackendFlag[]; }, backend: BackendFlag): boolean {
-  return thing.visible !== false && (!thing.backends || thing.backends.includes(backend));
+function showCommand(thing: { name: string; groups?: MetadataGroup[]; backends?: BackendFlag[]; }, backend: BackendFlag): boolean {
+  return !thing.groups || !thing.groups.includes(CommandGroup.Hidden) && (!thing.backends || thing.backends.includes(backend));
+}
+
+function showOption(thing: { name: string; groups?: MetadataGroup[]; backends?: BackendFlag[]; }, backend: BackendFlag): boolean {
+  return !thing.groups || !thing.groups.includes(OptionGroup.Hidden) && (!thing.backends || thing.backends.includes(backend));
 }
 
 async function filterOptionsForHelp(env: IonicEnvironment, options: CommandMetadataOption[] = []) {
   const config = await env.config.load();
-  return options.filter(opt => showIt(opt, config.backend));
+  return options.filter(opt => showOption(opt, config.backend));
 }
 
 async function formatCommandOptions(env: IonicEnvironment, options: CommandMetadataOption[] = []) {

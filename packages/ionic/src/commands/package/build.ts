@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { contains, filterCommandLineOptionsByGroup } from '@ionic/cli-framework';
-import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, PackageBuild } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, PackageBuild } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
@@ -14,7 +14,7 @@ export class PackageBuildCommand extends Command implements CommandPreRun {
       name: 'build',
       type: 'project',
       backends: [BACKEND_LEGACY],
-      deprecated: true,
+      groups: [CommandGroup.Deprecated],
       description: 'Start a package build',
       longDescription: `
 ${chalk.bold.yellow('WARNING')}: ${DEPRECATION_NOTICE}

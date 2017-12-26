@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class HelpCommand extends Command {
@@ -14,7 +14,7 @@ export class HelpCommand extends Command {
           description: 'The command you desire help with',
         },
       ],
-      visible: false,
+      groups: [CommandGroup.Hidden],
     };
   }
 
