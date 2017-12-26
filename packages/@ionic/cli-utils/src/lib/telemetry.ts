@@ -1,14 +1,10 @@
-import * as path from 'path';
-
 import * as leekType from 'leek';
 import * as Debug from 'debug';
 
-import { fsOpen } from '@ionic/cli-framework/utils/fs';
-
-import { IPCMessage, ITelemetry, InfoHookItem, IonicEnvironment } from '../definitions';
+import { ITelemetry, InfoHookItem, IonicEnvironment } from '../definitions';
 import { BACKEND_LEGACY, BACKEND_PRO } from './backends';
 import { generateUUID } from './utils/uuid';
-import { forkcmd } from './utils/shell';
+import { sendMessage } from './helper';
 
 const debug = Debug('ionic:cli-utils:lib:telemetry');
 const GA_CODE = 'UA-44023830-30';
@@ -26,12 +22,7 @@ export class Telemetry implements ITelemetry {
     const config = await this.env.config.load();
 
     if (config.telemetry && command !== 'ionic _') {
-      const fd = await fsOpen(path.resolve(this.env.config.directory, 'helper.log'), 'a');
-      const p = await forkcmd(this.env.meta.binPath, ['_', '--no-interactive'], { stdio: ['ignore', fd, fd, 'ipc'] });
-      const msg: IPCMessage = { type: 'telemetry', data: { command, args } };
-      p.send(msg);
-      p.disconnect();
-      p.unref();
+      await sendMessage(this.env, { type: 'telemetry', data: { command, args } });
     }
   }
 }
