@@ -266,7 +266,7 @@ export interface CommandMetadata extends framework.CommandMetadata<framework.Com
   backends?: BackendFlag[];
 }
 
-export type HydratedCommandData = CommandMetadata & framework.IHydratedCommandData<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption>;
+export type HydratedCommandData = CommandMetadata & framework.HydratedCommandData<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption>;
 
 export interface ISession {
   login(email: string, password: string): Promise<void>;

@@ -5,20 +5,20 @@ import { strcmp } from '../utils/string';
 import {
   CommandLineInputs,
   CommandLineOptions,
+  CommandMapGetter,
+  CommandMapKey,
   CommandMetadata,
   CommandMetadataInput,
   CommandMetadataOption,
   CommandPathItem,
+  HydratedCommandData,
   ICommand,
   ICommandMap,
-  ICommandMapGetter,
-  ICommandMapKey,
-  IHydratedCommandData,
   INamespace,
-  INamespaceLocateResult,
   INamespaceMap,
-  INamespaceMapGetter,
-  INamespaceMetadata,
+  NamespaceLocateResult,
+  NamespaceMapGetter,
+  NamespaceMetadata,
   ValidationError,
 } from '../definitions';
 
@@ -66,12 +66,12 @@ export abstract class BaseCommand<C extends ICommand<C, N, M, I, O>, N extends I
 
 export const CommandMapDefault = Symbol('default');
 
-export class BaseCommandMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<ICommandMapKey, string | ICommandMapGetter<C, N, M, I, O>> implements ICommandMap<C, N, M, I, O> {
-  getAliases(): Map<ICommandMapKey, ICommandMapKey[]> {
-    const aliasmap = new Map<ICommandMapKey, ICommandMapKey[]>();
+export class BaseCommandMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<CommandMapKey, string | CommandMapGetter<C, N, M, I, O>> implements ICommandMap<C, N, M, I, O> {
+  getAliases(): Map<CommandMapKey, CommandMapKey[]> {
+    const aliasmap = new Map<CommandMapKey, CommandMapKey[]>();
 
     // TODO: waiting for https://github.com/Microsoft/TypeScript/issues/18562
-    const aliases = <[ICommandMapKey, ICommandMapKey][]>[...this.entries()].filter(([, v]) => isCommandMapKey(v));
+    const aliases = <[CommandMapKey, CommandMapKey][]>[...this.entries()].filter(([, v]) => isCommandMapKey(v));
 
     aliases.forEach(([alias, cmd]) => {
       const cmdaliases = aliasmap.get(cmd) || [];
@@ -82,7 +82,7 @@ export class BaseCommandMap<C extends ICommand<C, N, M, I, O>, N extends INamesp
     return aliasmap;
   }
 
-  resolveAliases(cmdName: string): undefined | ICommandMapGetter<C, N, M, I, O> {
+  resolveAliases(cmdName: string): undefined | CommandMapGetter<C, N, M, I, O> {
     const r = this.get(cmdName);
 
     if (typeof r !== 'string') {
@@ -93,12 +93,12 @@ export class BaseCommandMap<C extends ICommand<C, N, M, I, O>, N extends INamesp
   }
 }
 
-export class BaseNamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<string, INamespaceMapGetter<C, N, M, I, O>> implements INamespaceMap<C, N, M, I, O> {}
+export class BaseNamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<string, NamespaceMapGetter<C, N, M, I, O>> implements INamespaceMap<C, N, M, I, O> {}
 
 export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> implements INamespace<C, N, M, I, O> {
   constructor(public parent: N | undefined = undefined) {}
 
-  abstract getMetadata(): Promise<INamespaceMetadata>;
+  abstract getMetadata(): Promise<NamespaceMetadata>;
 
   // TODO: https://github.com/Microsoft/TypeScript/issues/9659
   async getNamespaces(): Promise<INamespaceMap<C, N, M, I, O>> {
@@ -115,8 +115,8 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
    * namespaces available to find the command that we will execute or the
    * right-most namespace matched if the command is not found.
    */
-  async locate(argv: string[]): Promise<INamespaceLocateResult<C, N, M, I, O>> {
-    const _locate = async (inputs: string[], parent: N, path: CommandPathItem<C, N, M, I, O>[]): Promise<INamespaceLocateResult<C, N, M, I, O>> => {
+  async locate(argv: string[]): Promise<NamespaceLocateResult<C, N, M, I, O>> {
+    const _locate = async (inputs: string[], parent: N, path: CommandPathItem<C, N, M, I, O>[]): Promise<NamespaceLocateResult<C, N, M, I, O>> => {
       const [ key ] = inputs;
       const children = await parent.getNamespaces();
       const nsgetter = children.get(key);
@@ -163,9 +163,9 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
   /**
    * Get all command metadata in a flat structure.
    */
-  async getCommandMetadataList(): Promise<(M & IHydratedCommandData<C, N, M, I, O>)[]> {
+  async getCommandMetadataList(): Promise<(M & HydratedCommandData<C, N, M, I, O>)[]> {
     const _getCommandMetadataList = async (parent: N, path: CommandPathItem<C, N, M, I, O>[]) => {
-      const commandList: (M & IHydratedCommandData<C, N, M, I, O>)[] = [];
+      const commandList: (M & HydratedCommandData<C, N, M, I, O>)[] = [];
       const commands = await parent.getCommands();
       const nsAliases = commands.getAliases();
 
@@ -194,7 +194,7 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
 
       commandList.sort((a, b) => strcmp(a.name, b.name));
 
-      let namespacedCommandList: (M & IHydratedCommandData<C, N, M, I, O>)[] = [];
+      let namespacedCommandList: (M & HydratedCommandData<C, N, M, I, O>)[] = [];
 
       const children = await parent.getNamespaces();
 

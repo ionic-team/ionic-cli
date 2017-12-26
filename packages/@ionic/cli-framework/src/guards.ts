@@ -1,10 +1,10 @@
 import {
   BowerJson,
+  CommandMapKey,
   CommandMetadata,
   CommandMetadataInput,
   CommandMetadataOption,
   ICommand,
-  ICommandMapKey,
   INamespace,
   PackageJson,
 } from './definitions';
@@ -23,7 +23,7 @@ export function isCommand<C extends ICommand<C, N, M, I, O>, N extends INamespac
     typeof obj.validate === 'function';
 }
 
-export function isCommandMapKey(v: any): v is ICommandMapKey {
+export function isCommandMapKey(v: any): v is CommandMapKey {
   return typeof v === 'string' || typeof v === 'symbol';
 }
 

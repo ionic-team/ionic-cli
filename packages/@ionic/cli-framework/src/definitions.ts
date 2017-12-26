@@ -18,7 +18,7 @@ export interface CommandMetadataInput {
   private?: boolean;
 }
 
-export type CommandMetadataGroup = string | number | symbol;
+export type MetadataGroup = string | number | symbol;
 
 export interface CommandMetadataOption {
   name: string;
@@ -26,7 +26,7 @@ export interface CommandMetadataOption {
   type?: CommandOptionType;
   default?: ParsedArg;
   aliases?: string[];
-  groups?: CommandMetadataGroup[];
+  groups?: MetadataGroup[];
 }
 
 export interface NormalizedCommandOption extends CommandMetadataOption {
@@ -65,44 +65,44 @@ export interface ICommand<C extends ICommand<C, N, M, I, O>, N extends INamespac
   validate(argv: CommandLineInputs): Promise<void>;
 }
 
-export type ICommandMapKey = string | symbol;
-export type ICommandMapGetter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = () => Promise<C>;
-export type INamespaceMapGetter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = () => Promise<N>;
+export type CommandMapKey = string | symbol;
+export type CommandMapGetter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = () => Promise<C>;
+export type NamespaceMapGetter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = () => Promise<N>;
 
-export interface ICommandMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<ICommandMapKey, string | ICommandMapGetter<C, N, M, I, O>> {
-  getAliases(): Map<ICommandMapKey, ICommandMapKey[]>;
-  resolveAliases(cmd: string): ICommandMapGetter<C, N, M, I, O> | undefined;
+export interface ICommandMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<CommandMapKey, string | CommandMapGetter<C, N, M, I, O>> {
+  getAliases(): Map<CommandMapKey, CommandMapKey[]>;
+  resolveAliases(cmd: string): CommandMapGetter<C, N, M, I, O> | undefined;
 }
 
-export interface INamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<string, INamespaceMapGetter<C, N, M, I, O>> {}
+export interface INamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<string, NamespaceMapGetter<C, N, M, I, O>> {}
 
 export interface INamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   parent: N | undefined;
 
-  getMetadata(): Promise<INamespaceMetadata>;
+  getMetadata(): Promise<NamespaceMetadata>;
   getNamespaces(): Promise<INamespaceMap<C, N, M, I, O>>;
   getCommands(): Promise<ICommandMap<C, N, M, I, O>>;
 
-  locate(argv: string[]): Promise<INamespaceLocateResult<C, N, M, I, O>>;
-  getCommandMetadataList(): Promise<(M & IHydratedCommandData<C, N, M, I, O>)[]>;
+  locate(argv: string[]): Promise<NamespaceLocateResult<C, N, M, I, O>>;
+  getCommandMetadataList(): Promise<(M & HydratedCommandData<C, N, M, I, O>)[]>;
 }
 
 export type CommandPathItem<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = [string, C | N];
 
-export interface INamespaceLocateResult<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+export interface NamespaceLocateResult<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   obj: C | N;
   args: string[];
   path: CommandPathItem<C, N, M, I, O>[];
 }
 
-export interface IHydratedCommandData<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+export interface HydratedCommandData<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   command: C;
   namespace: N;
   path: CommandPathItem<C, N, M, I, O>[];
   aliases: string[];
 }
 
-export interface INamespaceMetadata extends Metadata {}
+export interface NamespaceMetadata extends Metadata {}
 
 export interface PackageJson {
   name: string;
