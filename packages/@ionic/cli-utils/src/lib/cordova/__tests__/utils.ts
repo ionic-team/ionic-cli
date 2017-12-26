@@ -1,5 +1,5 @@
-import { APP_SCRIPTS_INTENT } from '../../ionic-angular/app-scripts';
-import { CORDOVA_INTENT, filterArgumentsForCordova, generateBuildOptions } from '../utils';
+import { OptionGroup } from '../../../constants';
+import { filterArgumentsForCordova, generateBuildOptions } from '../utils';
 
 describe('@ionic/cli-utils', () => {
 
@@ -22,25 +22,25 @@ describe('@ionic/cli-utils', () => {
       {
         name: 'cdvopt1',
         description: '',
-        intents: [CORDOVA_INTENT],
+        groups: [OptionGroup.Cordova],
       },
       {
         name: 'cdvopt2',
         description: '',
         type: Boolean,
-        intents: [CORDOVA_INTENT],
+        groups: [OptionGroup.Cordova],
       },
       {
         name: 'prod',
         description: '',
         type: Boolean,
-        intents: [APP_SCRIPTS_INTENT],
+        groups: [OptionGroup.AppScripts],
       },
       {
         name: 'optimizejs',
         description: '',
         type: Boolean,
-        intents: [APP_SCRIPTS_INTENT],
+        groups: [OptionGroup.AppScripts],
       },
     ]
   };
@@ -83,7 +83,7 @@ describe('@ionic/cli-utils', () => {
       expect(result).toEqual({ '_': [], externalAddressRequired: true, iscordovaserve: true, nobrowser: true, target: "cordova" });
     });
 
-    it('should include the options with app-scripts intent and with no intent', () => {
+    it('should include the options with app-scripts group or no group, but not cordova group', () => {
       const inputs = ['ios'];
       const options = { _: [], boolopt: false, cdvopt1: null, cdvopt2: false, prod: true, optimizejs: true };
 

@@ -1,8 +1,7 @@
 import * as path from 'path';
 
 import { CommandMetadataOption, IonicEnvironment } from '../../definitions';
-
-export const APP_SCRIPTS_INTENT = 'app-scripts';
+import { OptionGroup } from '../../constants';
 
 export async function importAppScripts(env: IonicEnvironment): Promise<any> {
   const appScriptsPath = path.resolve(env.project.directory, 'node_modules', '@ionic', 'app-scripts'); // TODO
@@ -15,40 +14,36 @@ export const APP_SCRIPTS_OPTIONS: CommandMetadataOption[] = [
     name: 'prod',
     description: 'Build the application for production',
     type: Boolean,
-    intents: [APP_SCRIPTS_INTENT],
+    groups: [OptionGroup.AppScripts],
   },
   {
     name: 'aot',
     description: 'Perform ahead-of-time compilation for this build',
     type: Boolean,
-    intents: [APP_SCRIPTS_INTENT],
-    advanced: true,
+    groups: [OptionGroup.Advanced, OptionGroup.AppScripts],
   },
   {
     name: 'minifyjs',
     description: 'Minify JS for this build',
     type: Boolean,
-    intents: [APP_SCRIPTS_INTENT],
-    advanced: true,
+    groups: [OptionGroup.Advanced, OptionGroup.AppScripts],
   },
   {
     name: 'minifycss',
     description: 'Minify CSS for this build',
     type: Boolean,
-    intents: [APP_SCRIPTS_INTENT],
-    advanced: true,
+    groups: [OptionGroup.Advanced, OptionGroup.AppScripts],
   },
   {
     name: 'optimizejs',
     description: 'Perform JS optimizations for this build',
     type: Boolean,
-    intents: [APP_SCRIPTS_INTENT],
-    advanced: true,
+    groups: [OptionGroup.Advanced, OptionGroup.AppScripts],
   },
   {
     name: 'env',
     description: '',
-    intents: [APP_SCRIPTS_INTENT],
+    groups: [OptionGroup.AppScripts],
     visible: false,
   },
 ];

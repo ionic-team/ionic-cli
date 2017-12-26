@@ -18,12 +18,15 @@ export interface CommandMetadataInput {
   private?: boolean;
 }
 
+export type CommandMetadataGroup = string | number | symbol;
+
 export interface CommandMetadataOption {
   name: string;
   description: string;
   type?: CommandOptionType;
   default?: ParsedArg;
   aliases?: string[];
+  groups?: CommandMetadataGroup[];
 }
 
 export interface NormalizedCommandOption extends CommandMetadataOption {
@@ -35,8 +38,8 @@ export interface NormalizedCommandOption extends CommandMetadataOption {
 export interface NormalizedParseArgsOptions extends minimistType.Opts {
   string: string[];
   boolean: string[];
-  alias: { [key: string]: string[] };
-  default: { [key: string]: ParsedArg };
+  alias: { [key: string]: string[]; };
+  default: { [key: string]: ParsedArg; };
 }
 
 export interface Metadata {

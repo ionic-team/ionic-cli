@@ -253,7 +253,6 @@ export interface CommandMetadataOption extends framework.CommandMetadataOption {
   intents?: string[];
   private?: boolean;
   visible?: boolean;
-  advanced?: boolean;
 }
 
 export interface ExitCodeException extends Error {

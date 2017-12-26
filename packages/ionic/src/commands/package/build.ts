@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 
-import { contains } from '@ionic/cli-framework';
-import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, PackageBuild } from '@ionic/cli-utils';
-import { Command, filterOptionsByIntent } from '@ionic/cli-utils/lib/command';
-import { APP_SCRIPTS_INTENT, APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
+import { contains, filterCommandLineOptionsByGroup } from '@ionic/cli-framework';
+import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, PackageBuild } from '@ionic/cli-utils';
+import { Command } from '@ionic/cli-utils/lib/command';
+import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { DEPRECATION_NOTICE } from './common';
@@ -146,7 +146,7 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
     this.env.tasks.end();
 
     const { build } = await import('@ionic/cli-utils/commands/build');
-    await build(this.env, inputs, filterOptionsByIntent(await this.getMetadata(), options, APP_SCRIPTS_INTENT));
+    await build(this.env, inputs, filterCommandLineOptionsByGroup(await this.getMetadata(), options, OptionGroup.AppScripts));
 
     const snapshotRequest = await upload(this.env, { note });
 

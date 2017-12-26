@@ -7,7 +7,7 @@ import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
 import { isValidURL } from '@ionic/cli-framework/utils/string';
 
-import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, StarterManifest, StarterTemplate } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, StarterManifest, StarterTemplate } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { PROJECT_FILE, Project } from '@ionic/cli-utils/lib/project';
@@ -77,21 +77,21 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           description: 'Do not install npm/yarn dependencies',
           type: Boolean,
           default: true,
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
         {
           name: 'git',
           description: 'Do not initialize a git repo',
           type: Boolean,
           default: true,
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
         {
           name: 'link',
           description: 'Do not ask to connect the app with the Ionic Dashboard',
           type: Boolean,
           default: true,
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
         {
           name: 'pro-id',
@@ -100,7 +100,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         {
           name: 'bundle-id',
           description: 'Specify the bundle ID/application ID for your app (reverse-DNS notation)',
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
       ],
     };

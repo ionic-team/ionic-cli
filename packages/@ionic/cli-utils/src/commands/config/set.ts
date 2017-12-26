@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import * as lodash from 'lodash';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
@@ -16,9 +17,7 @@ export async function set(env: IonicEnvironment, inputs: CommandLineInputs, opti
   const file: IBaseConfig<Object> = global ? env.config : env.project;
 
   const config = await file.load();
-  const [ get, set ] = await Promise.all([import('lodash/get'), import('lodash/set')]);
-
-  const oldValue = get(config, p);
+  const oldValue = lodash.get(config, p);
 
   if (!v.match(/^\d+e\d+$/)) {
     try {
@@ -45,7 +44,7 @@ export async function set(env: IonicEnvironment, inputs: CommandLineInputs, opti
 
   const valueChanged = oldValue !== newValue;
 
-  set(config, p, newValue);
+  lodash.set(config, p, newValue);
   await file.save();
 
   if (global && p === 'backend' && valueChanged) {

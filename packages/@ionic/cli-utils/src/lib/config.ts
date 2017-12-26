@@ -2,6 +2,8 @@ import * as path from 'path';
 import * as os from 'os';
 
 import chalk from 'chalk';
+import * as lodash from 'lodash';
+
 import { ParsedArgs } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { ERROR_FILE_INVALID_JSON, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
@@ -80,8 +82,7 @@ export abstract class BaseConfig<T> implements IBaseConfig<T> {
         }
       }
 
-      const cloneDeep = await import('lodash/cloneDeep');
-      this.originalConfigFile = cloneDeep(o);
+      this.originalConfigFile = lodash.cloneDeep(o);
 
       o = await this.provideDefaults(o);
 
@@ -105,13 +106,11 @@ export abstract class BaseConfig<T> implements IBaseConfig<T> {
     }
 
     if (configFile) {
-      const [ isEqual, cloneDeep ] = await Promise.all([import('lodash/isEqual'), import('lodash/cloneDeep')]);
-
-      if (!isEqual(configFile, this.originalConfigFile)) {
+      if (!lodash.isEqual(configFile, this.originalConfigFile)) {
         await fsWriteJsonFile(this.filePath, configFile, { encoding: 'utf8' });
 
         this.configFile = configFile;
-        this.originalConfigFile = cloneDeep(configFile);
+        this.originalConfigFile = lodash.cloneDeep(configFile);
       }
     }
   }
@@ -122,8 +121,7 @@ export const DEFAULT_CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
 
 export class Config extends BaseConfig<ConfigFile> implements IConfig {
   async provideDefaults(o: any): Promise<ConfigFile> {
-    const cloneDeep = await import('lodash/cloneDeep');
-    const results = cloneDeep(o);
+    const results = lodash.cloneDeep(o);
 
     if (!results.state) {
       results.state = {};

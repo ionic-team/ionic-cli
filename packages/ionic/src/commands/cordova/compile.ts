@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { CORDOVA_INTENT, filterArgumentsForCordova } from '@ionic/cli-utils/lib/cordova/utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/cordova/utils';
 
 import { CordovaCommand } from './base';
 
@@ -32,25 +32,25 @@ Like running ${chalk.green('cordova compile')} directly, but provides friendly c
           name: 'debug',
           description: 'Create a Cordova debug build',
           type: Boolean,
-          intents: [CORDOVA_INTENT],
+          groups: [OptionGroup.Cordova],
         },
         {
           name: 'release',
           description: 'Create a Cordova release build',
           type: Boolean,
-          intents: [CORDOVA_INTENT],
+          groups: [OptionGroup.Cordova],
         },
         {
           name: 'device',
           description: 'Compile Cordova build to a device',
           type: Boolean,
-          intents: [CORDOVA_INTENT],
+          groups: [OptionGroup.Cordova],
         },
         {
           name: 'emulator',
           description: 'Compile Cordova build to an emulator',
           type: Boolean,
-          intents: [CORDOVA_INTENT],
+          groups: [OptionGroup.Cordova],
         },
       ],
     };

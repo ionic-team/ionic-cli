@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, isSuperAgentError } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, OptionGroup, isSuperAgentError } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { BROWSERS } from '@ionic/cli-utils/lib/serve';
 
@@ -15,7 +15,7 @@ export class DocsCommand extends Command {
           name: 'browser',
           description: `Specifies the browser to use (${BROWSERS.map(b => chalk.green(b)).join(', ')})`,
           aliases: ['w'],
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
       ],
     };

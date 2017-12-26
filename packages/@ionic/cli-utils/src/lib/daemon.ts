@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
-
+import * as lodash from 'lodash';
 import * as expressType from 'express';
 
 import { DaemonFile, IonicEnvironment } from '../definitions';
@@ -57,8 +57,7 @@ export class Daemon extends BaseConfig<DaemonFile> {
   }
 
   async provideDefaults(o: any): Promise<DaemonFile> {
-    const cloneDeep = await import('lodash/cloneDeep');
-    const results = cloneDeep(o);
+    const results = lodash.cloneDeep(o);
 
     if (!results.daemonVersion) {
       results.daemonVersion = '';

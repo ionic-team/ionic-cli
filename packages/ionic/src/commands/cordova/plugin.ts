@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
 import { contains, validate, validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { CORDOVA_INTENT, filterArgumentsForCordova } from '@ionic/cli-utils/lib/cordova/utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/cordova/utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { CordovaCommand } from './base';
@@ -32,13 +32,12 @@ Like running ${chalk.green('cordova plugin')} directly, but provides friendly ch
           name: 'force',
           description: `Force overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
           type: Boolean,
-          intents: [CORDOVA_INTENT],
-          advanced: true,
+          groups: [OptionGroup.Advanced, OptionGroup.Cordova],
         },
         {
           name: 'variable',
           description: 'Specify plugin variables',
-          intents: [CORDOVA_INTENT],
+          groups: [OptionGroup.Cordova],
         },
       ],
     };

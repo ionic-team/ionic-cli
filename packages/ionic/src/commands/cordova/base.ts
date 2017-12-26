@@ -4,19 +4,19 @@ import chalk from 'chalk';
 import { fsMkdir, pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadataOption, CommandPreRun, IShellRunOptions } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadataOption, CommandPreRun, IShellRunOptions, OptionGroup } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
-import { CORDOVA_INTENT, checkCordova, filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/cordova/utils';
+import { checkCordova, filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/cordova/utils';
 
 export const CORDOVA_RUN_COMMAND_OPTIONS: CommandMetadataOption[] = [
   {
     name: 'list',
     description: 'List all available Cordova targets',
     type: Boolean,
-    intents: [CORDOVA_INTENT],
+    groups: [OptionGroup.Cordova],
   },
   {
     name: 'livereload',
@@ -41,27 +41,27 @@ export const CORDOVA_RUN_COMMAND_OPTIONS: CommandMetadataOption[] = [
     name: 'address',
     description: 'Use specific address for the dev server',
     default: BIND_ALL_ADDRESS,
-    advanced: true,
+    groups: [OptionGroup.Advanced],
   },
   {
     name: 'port',
     description: 'Use specific port for HTTP',
     default: String(DEFAULT_SERVER_PORT),
     aliases: ['p'],
-    advanced: true,
+    groups: [OptionGroup.Advanced],
   },
   {
     name: 'livereload-port',
     description: 'Use specific port for live-reload',
     default: String(DEFAULT_LIVERELOAD_PORT),
     aliases: ['r'],
-    advanced: true,
+    groups: [OptionGroup.Advanced],
   },
   {
     name: 'dev-logger-port',
     description: 'Use specific port for dev server communication',
     default: String(DEFAULT_DEV_LOGGER_PORT),
-    advanced: true,
+    groups: [OptionGroup.Advanced],
   },
   // Build Options
   {
@@ -76,37 +76,36 @@ export const CORDOVA_RUN_COMMAND_OPTIONS: CommandMetadataOption[] = [
     name: 'debug',
     description: 'Mark as a debug build',
     type: Boolean,
-    intents: [CORDOVA_INTENT],
+    groups: [OptionGroup.Cordova],
   },
   {
     name: 'release',
     description: 'Mark as a release build',
     type: Boolean,
-    intents: [CORDOVA_INTENT],
+    groups: [OptionGroup.Cordova],
   },
   {
     name: 'device',
     description: 'Deploy Cordova build to a device',
     type: Boolean,
-    intents: [CORDOVA_INTENT],
+    groups: [OptionGroup.Cordova],
   },
   {
     name: 'emulator',
     description: 'Deploy Cordova build to an emulator',
     type: Boolean,
-    intents: [CORDOVA_INTENT],
+    groups: [OptionGroup.Cordova],
   },
   {
     name: 'target',
     description: `Deploy Cordova build to a device (use ${chalk.green('--list')} to see all)`,
     type: String,
-    intents: [CORDOVA_INTENT],
+    groups: [OptionGroup.Cordova],
   },
   {
     name: 'buildConfig',
     description: 'Use the specified Cordova build configuration',
-    intents: [CORDOVA_INTENT],
-    advanced: true,
+    groups: [OptionGroup.Advanced, OptionGroup.Cordova],
   },
 ];
 

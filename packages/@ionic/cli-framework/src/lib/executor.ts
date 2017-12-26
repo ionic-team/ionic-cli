@@ -6,17 +6,17 @@ import {
   INamespace,
 } from '../definitions';
 
-import { metadataToParseArgsOptions, parseArgs } from './command';
 import { CommandNotFoundError } from './errors';
+import { metadataToParseArgsOptions, parseArgs } from './options';
 import { isNamespace } from '../guards';
 
-export abstract class AbstractExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+export abstract class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   constructor(public namespace: N) {}
 
   abstract execute(argv: string[], env: { [key: string]: string; }): Promise<void>;
 }
 
-export class Executor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends AbstractExecutor<C, N, M, I, O> {
+export class Executor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends BaseExecutor<C, N, M, I, O> {
   async execute(argv: string[], env: { [key: string]: string; }) {
     const parsedArgs = parseArgs(argv, { boolean: true, string: '_' });
 

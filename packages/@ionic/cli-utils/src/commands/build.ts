@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
+import * as lodash from 'lodash';
 
 import { CommandLineInputs, CommandLineOptions, IonicEnvironment } from '../definitions';
 import { BUILD_AFTER_HOOK, BUILD_AFTER_SCRIPT, BUILD_BEFORE_HOOK, BUILD_BEFORE_SCRIPT } from '../lib/build';
@@ -22,8 +23,7 @@ export async function build(env: IonicEnvironment, inputs: CommandLineInputs, op
     await env.shell.run(pkgManager, pkgArgs, { showExecution: true });
   }
 
-  const assign = await import('lodash/assign');
-  const deps = assign({}, pkg.dependencies, pkg.devDependencies);
+  const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
 
   if (deps['@ionic/cli-plugin-cordova']) {
     const { checkCordova } = await import('../lib/cordova/utils');

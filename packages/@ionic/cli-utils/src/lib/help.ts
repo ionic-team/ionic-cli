@@ -14,6 +14,7 @@ import {
   IonicEnvironment,
 } from '../definitions';
 
+import { OptionGroup } from '../constants';
 import { isCommand } from '../guards';
 
 import { BACKEND_PRO } from './backends';
@@ -275,8 +276,8 @@ async function formatCommandOptions(env: IonicEnvironment, options: CommandMetad
     return '';
   }
 
-  const basicOptions = options.filter(o => !o.advanced);
-  const advancedOptions = options.filter(o => o.advanced);
+  const basicOptions = options.filter(o => !o.groups || !o.groups.includes(OptionGroup.Advanced));
+  const advancedOptions = options.filter(o => o.groups && o.groups.includes(OptionGroup.Advanced));
 
   const basicOptionsOutput = basicOptions.length > 0 ? `
   ${chalk.bold('Options')}:

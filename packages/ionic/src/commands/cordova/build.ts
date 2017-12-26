@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { CORDOVA_INTENT, filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/cordova/utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/cordova/utils';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 
 import { CordovaCommand } from './base';
@@ -49,31 +49,30 @@ To pass additional options to the Cordova CLI, use the ${chalk.green('--')} sepa
           name: 'debug',
           description: 'Create a Cordova debug build',
           type: Boolean,
-          intents: [CORDOVA_INTENT],
+          groups: [OptionGroup.Cordova],
         },
         {
           name: 'release',
           description: 'Create a Cordova release build',
           type: Boolean,
-          intents: [CORDOVA_INTENT],
+          groups: [OptionGroup.Cordova],
         },
         {
           name: 'device',
           description: 'Create a Cordova build for a device',
           type: Boolean,
-          intents: [CORDOVA_INTENT],
+          groups: [OptionGroup.Cordova],
         },
         {
           name: 'emulator',
           description: 'Create a Cordova build for an emulator',
           type: Boolean,
-          intents: [CORDOVA_INTENT],
+          groups: [OptionGroup.Cordova],
         },
         {
           name: 'buildConfig',
           description: 'Use the specified Cordova build configuration',
-          intents: [CORDOVA_INTENT],
-          advanced: true,
+          groups: [OptionGroup.Advanced, OptionGroup.Cordova],
         },
       ],
     };

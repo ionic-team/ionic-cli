@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { ParsedArg } from '@ionic/cli-framework';
-import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
 
@@ -39,7 +39,7 @@ From there, you can use Ionic View (${chalk.bold('https://ionicframework.com/pro
         {
           name: 'metadata',
           description: 'Set custom metadata JSON for the deploy',
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
         {
           name: 'build',

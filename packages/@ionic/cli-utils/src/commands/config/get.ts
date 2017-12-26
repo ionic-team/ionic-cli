@@ -1,5 +1,7 @@
 import * as util from 'util';
+
 import chalk from 'chalk';
+import * as lodash from 'lodash';
 
 import { CommandLineInputs, CommandLineOptions, IonicEnvironment } from '../../definitions';
 import { FatalException } from '../../lib/errors';
@@ -15,9 +17,7 @@ export async function get(env: IonicEnvironment, inputs: CommandLineInputs, opti
   const file = global ? env.config : env.project;
 
   const config = await file.load();
-  const [ cloneDeep, get ] = await Promise.all([import('lodash/cloneDeep'), import('lodash/get')]);
-
-  const v = cloneDeep(p ? get(config, p) : config);
+  const v = lodash.cloneDeep(p ? lodash.get(config, p) : config);
 
   if (json) {
     process.stdout.write(JSON.stringify(v));
@@ -28,18 +28,15 @@ export async function get(env: IonicEnvironment, inputs: CommandLineInputs, opti
 }
 
 async function scrubTokens(obj: any) {
-  const mapValues = await import('lodash/mapValues');
-  return mapValues(obj, () => '*****');
+  return lodash.mapValues(obj, () => '*****');
 }
 
 async function sanitize(key: string, obj: any) {
-  const assign = await import('lodash/assign');
-
   if (typeof obj === 'object' && 'tokens' in obj) {
     obj['tokens'] = await scrubTokens(obj['tokens']);
   }
 
   if (key === 'tokens') {
-    assign(obj, await scrubTokens(obj));
+    lodash.assign(obj, await scrubTokens(obj));
   }
 }

@@ -1,5 +1,4 @@
-import * as dargs from 'dargs';
-import * as minimist from 'minimist';
+import * as lodash from 'lodash';
 
 import { strcmp } from '../utils/string';
 
@@ -9,7 +8,6 @@ import {
   CommandMetadata,
   CommandMetadataInput,
   CommandMetadataOption,
-  CommandOptionType,
   CommandPathItem,
   ICommand,
   ICommandMap,
@@ -21,18 +19,12 @@ import {
   INamespaceMap,
   INamespaceMapGetter,
   INamespaceMetadata,
-  NormalizedCommandOption,
-  NormalizedParseArgsOptions,
-  ParsedArg,
   ValidationError,
 } from '../definitions';
 
 import { isCommandMapKey } from '../guards';
 import { InputValidationError } from './errors';
 import { validate } from './validators';
-
-export const parseArgs = minimist;
-export { ParsedArgs } from 'minimist';
 
 export abstract class BaseCommand<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   constructor(public namespace: N) {}
@@ -42,7 +34,6 @@ export abstract class BaseCommand<C extends ICommand<C, N, M, I, O>, N extends I
   abstract run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
 
   async validate(argv: CommandLineInputs): Promise<void> {
-    const flatten = await import('lodash/flatten');
     const metadata = await this.getMetadata();
 
     if (!metadata.inputs) {
@@ -68,7 +59,7 @@ export abstract class BaseCommand<C extends ICommand<C, N, M, I, O>, N extends I
     }
 
     if (errors.length > 0) {
-      throw new InputValidationError('Invalid inputs.', flatten(errors));
+      throw new InputValidationError('Invalid inputs.', lodash.flatten(errors));
     }
   }
 }
@@ -174,8 +165,6 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
    */
   async getCommandMetadataList(): Promise<(M & IHydratedCommandData<C, N, M, I, O>)[]> {
     const _getCommandMetadataList = async (parent: N, path: CommandPathItem<C, N, M, I, O>[]) => {
-      const assign = await import('lodash/assign');
-
       const commandList: (M & IHydratedCommandData<C, N, M, I, O>)[] = [];
       const commands = await parent.getCommands();
       const nsAliases = commands.getAliases();
@@ -199,7 +188,7 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
         }
 
         // TODO: can't use spread: https://github.com/Microsoft/TypeScript/pull/13288
-        const result = assign({}, metadata, { command, namespace: parent, aliases, path: cmdPath });
+        const result = lodash.assign({}, metadata, { command, namespace: parent, aliases, path: cmdPath });
         commandList.push(result);
       }));
 
@@ -232,75 +221,6 @@ export abstract class Command extends BaseCommand<Command, Namespace, CommandMet
 export abstract class Namespace extends BaseNamespace<Command, Namespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
 export class CommandMap extends BaseCommandMap<Command, Namespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
 export class NamespaceMap extends BaseNamespaceMap<Command, Namespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
-
-const typeDefaults = new Map<CommandOptionType, ParsedArg>()
-  .set(String, null) // tslint:disable-line:no-null-keyword
-  .set(Boolean, false);
-
-export interface ParsedArgsToArgvOptions extends dargs.Options {
-  useDoubleQuotes?: boolean;
-}
-
-export function parsedArgsToArgv(options: CommandLineOptions, fnOptions: ParsedArgsToArgvOptions = {}): string[] {
-  if (typeof fnOptions.ignoreFalse === 'undefined') {
-    fnOptions.ignoreFalse = true;
-  }
-
-  if (fnOptions.useDoubleQuotes) {
-    fnOptions.useEquals = true;
-  }
-
-  let results = dargs(options, fnOptions);
-  results.splice(results.length - options._.length); // take out arguments
-
-  if (fnOptions.useDoubleQuotes) {
-    results = results.map(r => r.replace(/^(\-\-[A-Za-z0-9-]+)=(.+\s+.+)$/, '$1="$2"'));
-  }
-
-  return results;
-}
-
-/**
- * Takes a Minimist command option and normalizes its values.
- */
-function normalizeOption(option: CommandMetadataOption): NormalizedCommandOption {
-  const type = option.type ? option.type : String;
-
-  return {
-    type,
-    default: option.default ? option.default : typeDefaults.get(type),
-    aliases: option.aliases ? option.aliases : [],
-    ...option,
-  };
-}
-
-export function metadataToParseArgsOptions(metadata: CommandMetadata): NormalizedParseArgsOptions {
-  const options: NormalizedParseArgsOptions = {
-    string: ['_'],
-    boolean: [],
-    alias: {},
-    default: {},
-  };
-
-  if (!metadata.options) {
-    return options;
-  }
-
-  for (let option of metadata.options) {
-    const normalizedOption = normalizeOption(option);
-
-    if (normalizedOption.type === String) {
-      options.string.push(normalizedOption.name);
-    } else if (normalizedOption.type === Boolean) {
-      options.boolean.push(normalizedOption.name);
-    }
-
-    options.default[normalizedOption.name] = normalizedOption.default;
-    options.alias[normalizedOption.name] = normalizedOption.aliases;
-  }
-
-  return options;
-}
 
 export async function generateCommandPath<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(cmd: C): Promise<CommandPathItem<C, N, M, I, O>[]> {
   const ns = cmd.namespace;

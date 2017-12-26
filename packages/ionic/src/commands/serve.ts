@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { BIND_ALL_ADDRESS, BROWSERS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
 
@@ -36,14 +36,14 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
           name: 'address',
           description: 'Use specific address for the dev server',
           default: BIND_ALL_ADDRESS,
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
         {
           name: 'port',
           description: 'Use specific port for HTTP',
           default: String(DEFAULT_SERVER_PORT),
           aliases: ['p'],
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
         {
           name: 'livereload',
@@ -57,20 +57,20 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
           description: 'Use specific port for live-reload',
           default: String(DEFAULT_LIVERELOAD_PORT),
           aliases: ['r'],
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
         {
           name: 'dev-logger-port',
           description: 'Use specific port for dev server communication',
           default: String(DEFAULT_DEV_LOGGER_PORT),
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
         {
           name: 'devapp',
           description: 'Do not publish DevApp service',
           type: Boolean,
           default: true,
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
         {
           name: 'open',
@@ -89,20 +89,20 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
           description: 'Do not add proxies',
           type: Boolean,
           default: true,
-          advanced: true,
+          groups: [OptionGroup.Advanced],
           // TODO: Adding 'x' to aliases here has some weird behavior with minimist.
         },
         {
           name: 'browser',
           description: `Specifies the browser to use (${BROWSERS.map(b => chalk.green(b)).join(', ')})`,
           aliases: ['w'],
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
         {
           name: 'browseroption',
           description: `Specifies a path to open to (${chalk.green('/#/tab/dash')})`,
           aliases: ['o'],
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
         {
           name: 'lab',

@@ -1,16 +1,13 @@
-import { parsedArgsToArgv } from '@ionic/cli-framework';
+import { OptionFilters, filterCommandLineOptions, filterCommandLineOptionsByGroup, parsedArgsToArgv } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicEnvironment } from '../../definitions';
-import { filterOptionsByIntent } from '../command';
-import { APP_SCRIPTS_INTENT } from '../ionic-angular/app-scripts';
-
-export const CORDOVA_INTENT = 'cordova';
+import { OptionGroup } from '../../constants';
 
 /**
  * Filter and gather arguments from command line to be passed to Cordova
  */
 export function filterArgumentsForCordova(metadata: CommandMetadata, inputs: CommandLineInputs, options: CommandLineOptions): string[] {
-  const results = filterOptionsByIntent(metadata, options, CORDOVA_INTENT);
+  const results = filterCommandLineOptionsByGroup(metadata, options, OptionGroup.Cordova);
   const args = parsedArgsToArgv(results, { useEquals: false, allowCamelCase: true });
   let unparsedCdvArgs: string[] = [];
   const indexOfSep = inputs.indexOf('--');
@@ -22,11 +19,10 @@ export function filterArgumentsForCordova(metadata: CommandMetadata, inputs: Com
   return [metadata.name].concat(inputs, args, unparsedCdvArgs);
 }
 
-/**
- * Start the app scripts server for emulator or device
- */
 export function generateBuildOptions(metadata: CommandMetadata, options: CommandLineOptions): CommandLineOptions {
-  const results = { ...filterOptionsByIntent(metadata, options), ...filterOptionsByIntent(metadata, options, APP_SCRIPTS_INTENT) };
+  const includesAppScriptsGroup = OptionFilters.includesGroups(OptionGroup.AppScripts);
+  const excludesCordovaGroup = OptionFilters.excludesGroups(OptionGroup.Cordova);
+  const results = filterCommandLineOptions(metadata, options, o => excludesCordovaGroup(o) || includesAppScriptsGroup(o));
 
   // Serve specific options not related to the actual run or emulate code
   return {

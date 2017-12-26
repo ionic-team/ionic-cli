@@ -1,6 +1,8 @@
 import * as os from 'os';
 
 import chalk from 'chalk';
+import * as lodash from 'lodash';
+
 import { str2num } from '@ionic/cli-framework/utils/string';
 
 import { CommandLineInputs, CommandLineOptions, IonicEnvironment, LabServeDetails, ServeDetails } from '../definitions';
@@ -33,8 +35,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     await env.shell.run('npm', ['run', WATCH_BEFORE_SCRIPT], { showExecution: true });
   }
 
-  const assign = await import('lodash/assign');
-  const deps = assign({}, packageJson.dependencies, packageJson.devDependencies);
+  const deps = lodash.assign({}, packageJson.dependencies, packageJson.devDependencies);
 
   if (deps['@ionic/cli-plugin-cordova']) {
     const { checkCordova } = await import('../lib/cordova/utils');

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, OptionGroup } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
 
@@ -50,7 +50,7 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
           name: 'force',
           description: 'Always overwrite existing values',
           type: Boolean,
-          advanced: true,
+          groups: [OptionGroup.Advanced],
         },
       ],
       exampleCommands: ['name newAppName', 'name "\\"newAppName\\"" --json', 'watchPatterns "[]" --force', '-g yarn true'],
