@@ -26,7 +26,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
   let err: any;
   let ienv: IonicEnvironment;
 
-  pargv = modifyArguments(pargv.slice(2));
+  pargv = modifyArguments(pargv);
   env['IONIC_CLI_LIB'] = __filename;
 
   const plugin = await generateRootPlugin();

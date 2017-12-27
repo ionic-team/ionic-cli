@@ -96,5 +96,5 @@ class LabNamespace extends Namespace {
 const ns = new LabNamespace();
 
 export async function run(pargv: string[], env: { [k: string]: string; }) {
-  await execute(ns, pargv.slice(2), env);
+  await execute(ns, pargv, env);
 }

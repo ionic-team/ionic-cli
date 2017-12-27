@@ -21,7 +21,7 @@ export class Telemetry implements ITelemetry {
   async sendCommand(command: string, args: string[]): Promise<void> {
     const config = await this.env.config.load();
 
-    if (config.telemetry && command !== 'ionic _') {
+    if (config.telemetry) {
       await sendMessage(this.env, { type: 'telemetry', data: { command, args } });
     }
   }

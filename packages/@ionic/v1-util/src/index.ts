@@ -21,5 +21,5 @@ export class IonicV1Namespace extends Namespace {
 const ns = new IonicV1Namespace();
 
 export async function run(pargv: string[], env: { [key: string]: string; }) {
-  await execute(ns, pargv.slice(2), env);
+  await execute(ns, pargv, env);
 }
