@@ -7,6 +7,26 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="4.0.0"></a>
+### 4.0.0 (PENDING)
+
+**Key Changes**
+
+* Ionic CLI v4 brings support for :sparkles: Ionic Angular v4 :sparkles:
+* Ionic Lab has been rebuilt using [StencilJS](https://stenciljs.com) and now
+  works for any Ionic Framework version.
+* **BREAKING**: Some functionality has been reorganized into separate packages,
+  which will need to be installed. Most Ionic 1 functionality has been moved
+  into the
+  [`@ionic/v1-util`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-util)
+  package. Ionic Lab has been moved into the
+  [`@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/lab)
+  package.
+* **BREAKING**: The gulp integration has been removed from the Ionic CLI and put
+  into the
+  [`@ionic/v1-util`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-util)
+  package, which is only for Ionic v1 apps.
+
 <a name="3.19.0"></a>
 ### 3.19.0 (2017-11-21)
 

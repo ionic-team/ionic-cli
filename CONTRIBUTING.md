@@ -30,22 +30,26 @@ bug fixes are welcome any time.
 
 ##### Structure
 
-Our CLI is organized into a single multi-package repository. Common tools, such
-as Typescript and jest, are installed in the base directory while package
-dependencies are each installed in their respective `packages/**/node_modules`
-directories.
+Our CLI is organized into a monorepo. Common tools, such as Typescript and jest,
+are installed in the base directory while package dependencies are each
+installed in their respective `packages/**/node_modules` directories.
 
 Each `packages/*` folder represents a package on npm.
 
 * `packages/ionic`: Ionic CLI executable.
-* `packages/@ionic/cli-utils`: Ionic CLI utilities.
+* `packages/@ionic/cli-utils`: Ionic CLI library and utilities.
 * `packages/@ionic/cli-plugin-*`: Ionic CLI plugins.
 * `packages/@ionic/cli-framework`: Framework for command-line programs.
+* `packages/@ionic/discover`: Service discovery library used for `ionic serve`
+  with the [Ionic DevApp](https://ionicframework.com/docs/pro/devapp/).
+* `packages/@ionic/v1-util`: Utility CLI for Ionic v1 Apps, used by `ionic
+  serve`.
+* `packages/@ionic/lab`: Utility CLI for Ionic Lab, used by `ionic serve`.
 
 ##### Toolset
 
 * npm 5 is required.
-* Node 8 LTS is required.
+* Node 8+ is required.
 * Our codebase is written in [Typescript](https://www.typescriptlang.org/). If
   you're unfamiliar with Typescript, we recommend using [VS
   Code](https://code.visualstudio.com/) and finding a tutorial to familiarize
