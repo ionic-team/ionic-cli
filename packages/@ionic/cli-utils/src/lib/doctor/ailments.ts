@@ -237,7 +237,7 @@ export namespace Ailments {
 
     async getTreatmentSteps(env: IonicEnvironment) {
       const [ , latestVersion ] = await this.getVersionPair(env);
-      const args = await pkgManagerArgs(env, { pkg: `ionic-angular@${latestVersion ? latestVersion : 'latest'}` });
+      const args = await pkgManagerArgs(env, { command: 'install', pkg: `ionic-angular@${latestVersion ? latestVersion : 'latest'}` });
 
       return [
         { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for each upgrade's instructions` },
@@ -336,7 +336,7 @@ export namespace Ailments {
 
     async getTreatmentSteps(env: IonicEnvironment) {
       const [ , latestVersion ] = await this.getVersionPair(env);
-      const [ manager, ...managerArgs ] = await pkgManagerArgs(env, { pkg: `@ionic/app-scripts@${latestVersion ? latestVersion : 'latest'}`, saveDev: true });
+      const [ manager, ...managerArgs ] = await pkgManagerArgs(env, { command: 'install', pkg: `@ionic/app-scripts@${latestVersion ? latestVersion : 'latest'}`, saveDev: true });
 
       return [
         {
@@ -447,7 +447,7 @@ export namespace Ailments {
       const modules = await fsReadDir(path.resolve(env.project.directory, 'node_modules', '@ionic-native'));
 
       return Promise.all(modules.filter(m => m).map(async m => {
-        const [ manager, ...managerArgs ] = await pkgManagerArgs(env, { pkg: `@ionic-native/${m}@${latestVersion ? latestVersion : 'latest'}` });
+        const [ manager, ...managerArgs ] = await pkgManagerArgs(env, { command: 'install', pkg: `@ionic-native/${m}@${latestVersion ? latestVersion : 'latest'}` });
 
         return {
           name: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
@@ -506,7 +506,7 @@ export namespace Ailments {
 
     async getTreatmentSteps(env: IonicEnvironment) {
       const [ , latestVersion ] = await this.getVersionPair(env);
-      const args = await pkgManagerArgs(env, { pkg: `@ionic-native/core@${latestVersion ? latestVersion : 'latest'}` });
+      const args = await pkgManagerArgs(env, { command: 'install', pkg: `@ionic-native/core@${latestVersion ? latestVersion : 'latest'}` });
 
       return [
         { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-native/releases')}, looking for breaking changes` },
@@ -531,7 +531,7 @@ export namespace Ailments {
     }
 
     async getTreatmentSteps(env: IonicEnvironment) {
-      const args = await pkgManagerArgs(env, { pkg: 'ionic-native', command: 'uninstall' });
+      const args = await pkgManagerArgs(env, { command: 'uninstall', pkg: 'ionic-native' });
 
       return [
         { name: `Run ${chalk.green(args.join(' '))}` },

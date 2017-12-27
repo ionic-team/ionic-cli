@@ -338,7 +338,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         }
 
         if (linkConfirmed) {
-          const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { pkg: '@ionic/pro' });
+          const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { command: 'install', pkg: '@ionic/pro' });
           await this.env.shell.run(installer, installerArgs, shellOptions);
 
           const cmdArgs = ['link'];

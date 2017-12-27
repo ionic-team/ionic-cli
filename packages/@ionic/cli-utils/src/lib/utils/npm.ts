@@ -50,7 +50,7 @@ interface PkgManagerVocabulary {
 export type PkgManagerCommand = 'dedupe' | 'rebuild' | 'install' | 'uninstall' | 'run';
 
 export interface PkgManagerOptions extends IShellRunOptions {
-  command?: PkgManagerCommand;
+  command: PkgManagerCommand;
   pkg?: string;
   script?: string;
   scriptArgs?: string[];
@@ -67,13 +67,9 @@ export interface PkgManagerOptions extends IShellRunOptions {
  *
  * @return Promise<args> If the args is an empty array, it means the pkg manager doesn't have that command.
  */
-export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerOptions = {}): Promise<string[]> {
+export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerOptions): Promise<string[]> {
   let vocab: PkgManagerVocabulary;
   const config = await env.config.load();
-
-  if (!options.command) {
-    options.command = 'install';
-  }
 
   let cmd = options.command;
 
@@ -230,4 +226,23 @@ export async function pkgLatestVersion(env: IonicEnvironment, pkg: string, distT
       throw e;
     }
   }
+}
+
+export async function promptToInstallPkg(env: IonicEnvironment, options: Partial<PkgManagerOptions> & { pkg: string }): Promise<boolean> {
+  const [ manager, ...managerArgs ] = await pkgManagerArgs(env, { command: 'install', ...options });
+
+  const confirm = await env.prompt({
+    name: 'confirm',
+    message: `Install ${chalk.green(options.pkg)}?`,
+    type: 'confirm',
+  });
+
+  if (!confirm) {
+    env.log.warn(`Not installing--here's how to install it manually: ${chalk.green(`${manager} ${managerArgs.join(' ')}`)}`);
+    return false;
+  }
+
+  await env.shell.run(manager, managerArgs, { cwd: env.project.directory });
+
+  return true;
 }

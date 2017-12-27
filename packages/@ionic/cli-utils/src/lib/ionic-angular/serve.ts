@@ -67,16 +67,20 @@ async function appScriptsServe(env: IonicEnvironment, options: AppScriptsServeOp
 
   const p = await env.shell.spawn('ionic-app-scripts', ['serve', ...appScriptsArgs], { cwd: env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
 
-  registerShutdownFunction(() => p.kill());
+  return new Promise<void>((resolve, reject) => {
+    p.on('error', err => {
+      reject(err);
+    });
 
-  const log = env.log.clone({ prefix: chalk.dim('[app-scripts]'), wrap: false });
-  const ws = log.createWriteStream();
+    registerShutdownFunction(() => p.kill());
 
-  return new Promise<void>(resolve => {
+    const log = env.log.clone({ prefix: chalk.dim('[app-scripts]'), wrap: false });
+    const ws = log.createWriteStream();
+
     const stdoutFilter = through2(function(chunk, enc, callback) {
       const str = chunk.toString();
 
-      if (str.includes('dev server running')) {
+      if (str.includes('server running')) {
         resolve();
       } else {
         this.push(chunk);

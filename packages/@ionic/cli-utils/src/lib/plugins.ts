@@ -46,7 +46,7 @@ export async function loadPlugins(env: IonicEnvironment) {
     env.log.debug(() => `Detected ${chalk.green(proxyVar)} in environment`);
 
     if (!pluginPkgs.find(v => v[0] === proxyPluginPkg && v[1])) {
-      const proxyInstallArgs = await pkgManagerArgs(env, { pkg: proxyPluginPkg, global });
+      const proxyInstallArgs = await pkgManagerArgs(env, { command: 'install', pkg: proxyPluginPkg, global });
 
       env.log.warn(
         `Detected ${chalk.green(proxyVar)} in environment, but to proxy CLI requests, you'll need ${chalk.cyan(proxyPluginPkg)} installed.\n` +
@@ -76,13 +76,6 @@ export async function loadPlugins(env: IonicEnvironment) {
       registerPlugin(env, plugin);
     }
   }
-}
-
-export async function versionNeedsUpdating(version: string, latestVersion: string): Promise<boolean> {
-  const semver = await import('semver');
-  const distTag = determineDistTag(version);
-
-  return semver.gt(latestVersion, version) || (['canary', 'testing'].includes(distTag) && latestVersion !== version);
 }
 
 export function determineDistTag(version: string): DistTag {
@@ -136,18 +129,4 @@ export async function getPluginMeta(p: string): Promise<PluginMeta> {
     filePath: p,
     pkg,
   };
-}
-
-export async function detectAndWarnAboutDeprecatedPlugin(env: IonicEnvironment, plugin: string) {
-  const packageJson = await env.project.loadPackageJson();
-
-  if (packageJson.devDependencies && packageJson.devDependencies[plugin]) {
-    const { pkgManagerArgs } = await import('../lib/utils/npm');
-    const args = await pkgManagerArgs(env, { pkg: plugin, command: 'uninstall', saveDev: true });
-
-    env.log.warn(
-      `Detected ${chalk.bold(plugin)} in your ${chalk.bold('package.json')}.\n` +
-      `As of CLI 3.8, it is no longer needed. You can uninstall it:\n\n${chalk.green(args.join(' '))}\n`
-    );
-  }
 }

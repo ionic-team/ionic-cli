@@ -80,8 +80,10 @@ export class ServeCommand extends Command {
     const proxies = Array.isArray(proxy) ? proxy : [JSON.parse(String(proxy))];
     const url = `http://${host}:${port}`;
 
+    process.stdout.write(`Serving directory ${chalk.bold(wwwDir)}\n`);
+
     await runServer({ host, port, lr, consolelogs, devPort, lrPort, wwwDir, watchPatterns, proxies });
 
-    process.stdout.write(`Serving directory ${chalk.bold(wwwDir)} at ${chalk.bold(url)}\n`);
+    process.stdout.write(`Dev server running at ${chalk.bold(url)}\n`);
   }
 }

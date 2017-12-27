@@ -1,6 +1,7 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as lodash from 'lodash';
 
 import { ERROR_FILE_INVALID_JSON } from '@ionic/cli-framework/utils/fs';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
@@ -69,8 +70,7 @@ export class Project extends BaseConfig<ProjectFile> implements IProject {
   }
 
   async provideDefaults(o: any): Promise<any> {
-    const cloneDeep = await import('lodash/cloneDeep');
-    const results = cloneDeep(o);
+    const results = lodash.cloneDeep(o);
 
     if (!results.name) {
       results.name = '';
