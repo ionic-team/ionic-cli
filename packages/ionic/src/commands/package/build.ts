@@ -145,7 +145,7 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
 
     this.env.tasks.end();
 
-    const { build } = await import('@ionic/cli-utils/commands/build');
+    const { build } = await import('@ionic/cli-utils/lib/build');
     await build(this.env, inputs, filterCommandLineOptionsByGroup(await this.getMetadata(), options, OptionGroup.AppScripts));
 
     const snapshotRequest = await upload(this.env, { note });

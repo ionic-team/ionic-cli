@@ -39,10 +39,10 @@ For Ionic/Cordova apps, the CLI will run ${chalk.green('cordova prepare')}, whic
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ platform ] = inputs;
 
-    const { build } = await import('@ionic/cli-utils/commands/build');
-    await build(this.env, inputs, options);
-
     const project = await this.env.project.load();
+
+    const { build } = await import('@ionic/cli-utils/lib/build');
+    await build(this.env, inputs, options);
 
     if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
       const cordovaPrepareArgs = ['cordova', 'prepare', '--no-build'];

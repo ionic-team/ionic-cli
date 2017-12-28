@@ -80,7 +80,7 @@ describe('@ionic/cli-utils', () => {
       const options = { _: [] };
 
       const result = generateBuildOptions(metadata, options);
-      expect(result).toEqual({ '_': [], externalAddressRequired: true, iscordovaserve: true, nobrowser: true, target: "cordova" });
+      expect(result).toEqual({ '_': [], externalAddressRequired: true, nobrowser: true, target: "cordova" });
     });
 
     it('should include the options with app-scripts group or no group, but not cordova group', () => {
@@ -88,7 +88,7 @@ describe('@ionic/cli-utils', () => {
       const options = { _: [], boolopt: false, cdvopt1: null, cdvopt2: false, prod: true, optimizejs: true };
 
       const result = generateBuildOptions(metadata, options);
-      expect(result).toEqual({ '_': [], boolopt: false, externalAddressRequired: true, iscordovaserve: true, nobrowser: true, target: "cordova", prod: true, optimizejs: true });
+      expect(result).toEqual({ '_': [], boolopt: false, externalAddressRequired: true, nobrowser: true, target: "cordova", prod: true, optimizejs: true });
     });
 
   });

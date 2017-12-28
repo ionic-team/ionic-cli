@@ -6,7 +6,7 @@ import * as proxyMiddlewareType from 'http-proxy-middleware'; // tslint:disable-
 
 import { ProjectFileProxy, ServeDetails, ServeOptions } from '../../definitions';
 import { FatalException } from '../errors';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner } from '../serve';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../serve';
 
 const WATCH_PATTERNS = [
   'scss/**/*',
@@ -25,7 +25,7 @@ interface ProxyConfig extends proxyMiddlewareType.Config {
   mount: string;
 }
 
-interface ServeMetaOptions {
+interface ServeMetaOptions extends ServeOptions {
   wwwDir: string;
   watchPatterns: string[];
   proxies: ProxyConfig[];
@@ -48,19 +48,19 @@ function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy): proxyMiddleware
   return config;
 }
 
-export class Ionic1ServeRunner<T extends ServeOptions> extends ServeRunner<T> {
-  async serveProject(): Promise<ServeDetails> {
+export class ServeRunner extends BaseServeRunner<ServeOptions> {
+  async serveProject(options: ServeOptions): Promise<ServeDetails> {
     const { promptToInstallPkg } = await import('../utils/npm');
 
-    const [ externalIP, availableInterfaces ] = await this.selectExternalIP();
+    const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
     const project = await this.env.project.load();
     const wwwDir = await this.env.project.getSourceDir();
 
-    const { port, livereloadPort, notificationPort } = await this.findOpenPorts(this.options.address, this.options);
+    const { port, livereloadPort, notificationPort } = await this.findOpenPorts(options.address, options);
 
-    this.options.port = port;
-    this.options.livereloadPort = livereloadPort;
-    this.options.notificationPort = notificationPort;
+    options.port = port;
+    options.livereloadPort = livereloadPort;
+    options.notificationPort = notificationPort;
 
     if (!project.watchPatterns || project.watchPatterns.length === 1 && project.watchPatterns[0] === 'scss/**/*') {
       project.watchPatterns = WATCH_PATTERNS;
@@ -71,16 +71,16 @@ export class Ionic1ServeRunner<T extends ServeOptions> extends ServeRunner<T> {
     const proxies = project.proxies ? project.proxies.map(p => ({ mount: p.path, ...proxyConfigToMiddlewareConfig(p) })) : [];
 
     const details = [
-      `address: ${chalk.bold(this.options.address)}`,
+      `address: ${chalk.bold(options.address)}`,
       `port: ${chalk.bold(String(port))}`,
       `dev server port: ${chalk.bold(String(notificationPort))}`,
     ];
 
-    if (this.options.livereload) {
+    if (options.livereload) {
       details.push(`livereload port: ${chalk.bold(String(livereloadPort))}`);
     }
 
-    const cmdopts = lodash.assign({ wwwDir, watchPatterns: project.watchPatterns, proxies }, this.options);
+    const cmdopts = lodash.assign({ wwwDir, watchPatterns: project.watchPatterns, proxies }, options);
 
     try {
       await this.servecmd(cmdopts);
@@ -121,11 +121,11 @@ export class Ionic1ServeRunner<T extends ServeOptions> extends ServeRunner<T> {
 
     const args = ['serve', path.relative(workingDir, options.wwwDir)];
 
-    if (this.options.consolelogs) {
+    if (options.consolelogs) {
       args.push('-c');
     }
 
-    const networkArgs = ['--host', this.options.address, '--port', String(this.options.port), '--lr-port', String(this.options.livereloadPort), '--dev-port', String(this.options.notificationPort)];
+    const networkArgs = ['--host', options.address, '--port', String(options.port), '--lr-port', String(options.livereloadPort), '--dev-port', String(options.notificationPort)];
     const watchPatternsArgs = lodash.flatten(options.watchPatterns.map(p => ['-w', p]));
     const proxiesArgs = lodash.flatten(options.proxies.map(p => ['-p', JSON.stringify(p)]));
 

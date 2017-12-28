@@ -219,13 +219,10 @@ export abstract class CordovaRunCommand extends CordovaCommand implements Comman
     });
 
     const metadata = await this.getMetadata();
-    const project = await this.env.project.load();
 
     if (isLiveReload) {
-      const { ServeRunner } = await import('@ionic/cli-utils/lib/serve');
-      const opts = ServeRunner.createOptionsFromCommandLine(inputs, generateBuildOptions(metadata, options));
-      const runner = await ServeRunner.fromProjectType(this.env, opts, project.type);
-      const details = await runner.run();
+      const { serve } = await import('@ionic/cli-utils/lib/serve');
+      const details = await serve(this.env, inputs, generateBuildOptions(metadata, options));
 
       if (details.externallyAccessible === false) {
         const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
@@ -236,7 +233,7 @@ export abstract class CordovaRunCommand extends CordovaCommand implements Comman
       await conf.save();
     } else {
       if (options.build) {
-        const { build } = await import('@ionic/cli-utils/commands/build');
+        const { build } = await import('@ionic/cli-utils/lib/build');
         await build(this.env, inputs, generateBuildOptions(metadata, options));
       }
     }

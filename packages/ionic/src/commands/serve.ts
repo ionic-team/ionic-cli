@@ -151,12 +151,8 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { ServeRunner } = await import('@ionic/cli-utils/lib/serve');
+    const { serve } = await import('@ionic/cli-utils/lib/serve');
 
-    const project = await this.env.project.load();
-    const opts = ServeRunner.createOptionsFromCommandLine(inputs, options);
-    const runner = await ServeRunner.fromProjectType(this.env, opts, project.type);
-
-    await runner.run();
+    await serve(this.env, inputs, options);
   }
 }

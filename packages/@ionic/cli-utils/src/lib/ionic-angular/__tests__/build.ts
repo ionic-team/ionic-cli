@@ -1,15 +1,14 @@
-import { buildOptionsToAppScriptsArgs } from '../build';
+import { BuildRunner } from '../build';
 
 describe('@ionic/cli-utils', () => {
 
-  describe('ionic-angular', () => {
+  describe('lib/ionic-angular', () => {
 
-    describe('build', () => {
+    describe('BuildRunner', () => {
 
-      describe('buildOptionsToAppScriptsArgs', () => {
+      describe('generateAppScriptsArgs', () => {
 
         const options = {
-          _: [],
           prod: true,
           aot: true,
           minifyjs: true,
@@ -18,12 +17,14 @@ describe('@ionic/cli-utils', () => {
         };
 
         it('should transform defaults', async () => {
-          const result = await buildOptionsToAppScriptsArgs({ _: [] });
+          const runner = new BuildRunner();
+          const result = await runner.generateAppScriptsArgs({});
           expect(result).toEqual([]);
         });
 
         it('should transform base options', async () => {
-          const result = await buildOptionsToAppScriptsArgs(options);
+          const runner = new BuildRunner();
+          const result = await runner.generateAppScriptsArgs(options);
           expect(result).toEqual(['--prod', '--aot', '--minifyjs', '--minifycss', '--optimizejs']);
         });
 

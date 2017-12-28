@@ -5,35 +5,29 @@ import { parsedArgsToArgv } from '@ionic/cli-framework';
 
 import { ServeDetails, ServeOptions } from '../../definitions';
 import { FatalException } from '../errors';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner } from '../serve';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../serve';
 
 const APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 
 const debug = Debug('ionic:cli-utils:lib:ionic-angular:serve');
 
-export interface AppScriptsServeOptions extends ServeOptions {
-  platform?: string;
-  target?: string;
-  iscordovaserve: boolean;
-}
-
-export class IonicAngularServeRunner<T extends AppScriptsServeOptions> extends ServeRunner<T> {
-  async serveProject(): Promise<ServeDetails> {
+export class ServeRunner extends BaseServeRunner<ServeOptions> {
+  async serveProject(options: ServeOptions): Promise<ServeDetails> {
     const { promptToInstallPkg } = await import('../utils/npm');
     const { findClosestOpenPort, isHostConnectable } = await import('../utils/network');
-    const [ externalIP, availableInterfaces ] = await this.selectExternalIP();
+    const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
 
-    const appScriptsPort = await findClosestOpenPort(this.options.port, '0.0.0.0');
+    const appScriptsPort = await findClosestOpenPort(options.port, '0.0.0.0');
 
     try {
-      await this.servecmd();
+      await this.servecmd(options);
     } catch (e) {
       if (e.code === 'ENOENT') {
         const pkg = '@ionic/app-scripts';
         this.env.log.nl();
         this.env.log.warn(
           `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
-          `This package is required for ${chalk.green('ionic serve')} in Ionic Angular v2/v3 projects.`
+          `This package is required for ${chalk.green('ionic serve')} in ${this.env.project.formatType('ionic-core-angular')} projects.`
         );
 
         const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });
@@ -42,7 +36,7 @@ export class IonicAngularServeRunner<T extends AppScriptsServeOptions> extends S
           throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.`);
         }
 
-        await this.servecmd();
+        await this.servecmd(options);
       }
     }
 
@@ -59,11 +53,11 @@ export class IonicAngularServeRunner<T extends AppScriptsServeOptions> extends S
     };
   }
 
-  async servecmd(): Promise<void> {
+  async servecmd(options: ServeOptions): Promise<void> {
     const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
     const { registerShutdownFunction } = await import('../process');
 
-    const appScriptsArgs = await serveOptionsToAppScriptsArgs(this.options);
+    const appScriptsArgs = await serveOptionsToAppScriptsArgs(options);
 
     const p = await this.env.shell.spawn('ionic-app-scripts', ['serve', ...appScriptsArgs], { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
 
@@ -95,7 +89,7 @@ export class IonicAngularServeRunner<T extends AppScriptsServeOptions> extends S
   }
 }
 
-export async function serveOptionsToAppScriptsArgs(options: AppScriptsServeOptions) {
+export async function serveOptionsToAppScriptsArgs(options: ServeOptions) {
   const args = {
     _: [],
     address: options.address,
@@ -107,7 +101,7 @@ export async function serveOptionsToAppScriptsArgs(options: AppScriptsServeOptio
     nobrowser: true,
     nolivereload: !options.livereload,
     noproxy: !options.proxy,
-    iscordovaserve: options.iscordovaserve,
+    iscordovaserve: options.target === 'cordova',
     platform: options.platform,
     target: options.target,
     env: options.env,

@@ -404,12 +404,17 @@ export interface InfoHookItem {
   path?: string;
 }
 
+export interface BuildOptions {
+  target?: string;
+  platform?: string;
+}
+
 export interface ServeOptions {
   // Command Options
   address: string;
   port: number;
-  livereloadPort: number;
-  notificationPort: number;
+  livereloadPort: number; // TODO: move to `ionic-angular` and `ionic1` serve options
+  notificationPort: number; // TODO: move to `ionic-angular` and `ionic1` serve options
   consolelogs: boolean;
   serverlogs: boolean;
   livereload: boolean;
@@ -420,19 +425,11 @@ export interface ServeOptions {
   browserOption?: string;
   env?: string;
   devapp: boolean;
+  target?: string;
+  platform?: string;
 
   // Additional Options
   externalAddressRequired?: boolean;
-
-  /**
-   * @deprecated
-   */
-  iscordovaserve: boolean;
-
-  /**
-   * @deprecated
-   */
-  platform?: string;
 }
 
 export interface LabServeDetails {

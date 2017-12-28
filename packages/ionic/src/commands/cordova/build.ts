@@ -98,7 +98,7 @@ To pass additional options to the Cordova CLI, use the ${chalk.green('--')} sepa
     const metadata = await this.getMetadata();
 
     if (options.build) {
-      const { build } = await import('@ionic/cli-utils/commands/build');
+      const { build } = await import('@ionic/cli-utils/lib/build');
       await build(this.env, inputs, generateBuildOptions(metadata, options));
     }
 

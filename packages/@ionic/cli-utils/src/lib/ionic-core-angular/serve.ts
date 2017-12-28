@@ -8,24 +8,24 @@ import { pathAccessible } from '@ionic/cli-framework/utils/fs';
 
 import { ServeDetails, ServeOptions } from '../../definitions';
 import { FatalException } from '../errors';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner } from '../serve';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../serve';
 
 const NG_AUTODETECTED_PROXY_FILE = 'proxy.config.js';
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 
 const debug = Debug('ionic:cli-utils:lib:ionic-core-angular:serve');
 
-export class IonicCoreAngularServeRunner<T extends ServeOptions> extends ServeRunner<T> {
-  async serveProject(): Promise<ServeDetails> {
+export class ServeRunner extends BaseServeRunner<ServeOptions> {
+  async serveProject(options: ServeOptions): Promise<ServeDetails> {
     const { promptToInstallPkg } = await import('../utils/npm');
     const { findClosestOpenPort, isHostConnectable } = await import('../utils/network');
-    const [ externalIP, availableInterfaces ] = await this.selectExternalIP();
+    const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
 
-    debug('finding closest port to %d', this.options.port);
-    const ngPort = await findClosestOpenPort(this.options.port, '0.0.0.0');
+    debug('finding closest port to %d', options.port);
+    const ngPort = await findClosestOpenPort(options.port, '0.0.0.0');
 
     try {
-      await this.servecmd(this.options.address, ngPort);
+      await this.servecmd(options.address, ngPort);
     } catch (e) {
       if (e.code === 'ENOENT') {
         const pkg = '@angular/cli';
@@ -41,7 +41,7 @@ export class IonicCoreAngularServeRunner<T extends ServeOptions> extends ServeRu
           throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.`);
         }
 
-        await this.servecmd(this.options.address, ngPort);
+        await this.servecmd(options.address, ngPort);
       }
     }
 

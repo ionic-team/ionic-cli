@@ -99,11 +99,10 @@ From there, you can use Ionic View (${chalk.bold('https://ionicframework.com/pro
     }
 
     if (options['build']) {
-      const { build } = await import('@ionic/cli-utils/commands/build');
+      const { build } = await import('@ionic/cli-utils/lib/build');
       await build(this.env, inputs, options);
     }
 
     await upload(this.env, { note, channelTag, metadata });
   }
-
 }

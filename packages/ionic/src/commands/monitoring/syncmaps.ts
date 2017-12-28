@@ -143,7 +143,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
       message: 'Do full prod build?',
     });
 
-    const { build } = await import('@ionic/cli-utils/commands/build');
+    const { build } = await import('@ionic/cli-utils/lib/build');
     return build(this.env, [], { _: [], prod: isProd });
   }
 }
