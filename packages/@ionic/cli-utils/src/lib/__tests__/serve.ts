@@ -1,10 +1,10 @@
-import { cliOptionsToServeOptions } from '../serve';
+import { ServeRunner } from '../serve';
 
 describe('@ionic/cli-utils', () => {
 
-  describe('commands/serve', () => {
+  describe('lib/serve', () => {
 
-    describe('cliOptionsToServeOptions', () => {
+    describe('createOptionsFromCommandLine', () => {
 
       const defaults = {
         address: '0.0.0.0',
@@ -20,30 +20,26 @@ describe('@ionic/cli-utils', () => {
         devapp: true,
         externalAddressRequired: false,
         iscordovaserve: false,
+        platform: undefined,
       };
 
       it('should provide defaults with no options', () => {
-        const result = cliOptionsToServeOptions({});
+        const result = ServeRunner.createOptionsFromCommandLine([], {});
         expect(result).toEqual(defaults);
       });
 
       it('should provide options from negations of cli flag defaults', () => {
-        const result = cliOptionsToServeOptions({ consolelogs: true, serverlogs: true, livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true, iscordovaserve: true });
+        const result = ServeRunner.createOptionsFromCommandLine([], { consolelogs: true, serverlogs: true, livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true, iscordovaserve: true });
         expect(result).toEqual({ ...defaults, consolelogs: true, serverlogs: true, livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true, iscordovaserve: true });
       });
 
-      it('should provide options for optional cli options', () => {
-        const result = cliOptionsToServeOptions({ browser: 'google chrome', browseroption: '/#/something', auth: 'test', env: 'prod' });
-        expect(result).toEqual({ ...defaults, browser: 'google chrome', browserOption: '/#/something', basicAuth: ['ionic', 'test'], env: 'prod' });
-      });
-
       it('should allow overrides of default values', () => {
-        const result = cliOptionsToServeOptions({ address: 'localhost', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
+        const result = ServeRunner.createOptionsFromCommandLine([], { address: 'localhost', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
         expect(result).toEqual({ ...defaults, address: 'localhost', port: 1111, livereloadPort: 2222, notificationPort: 3333 });
       });
 
       it('should respect --local flag', () => {
-        const result = cliOptionsToServeOptions({ local: true });
+        const result = ServeRunner.createOptionsFromCommandLine([], { local: true });
         expect(result).toEqual({ ...defaults, address: 'localhost', devapp: false });
       });
 

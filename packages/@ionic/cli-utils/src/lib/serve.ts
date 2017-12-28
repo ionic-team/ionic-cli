@@ -1,12 +1,17 @@
+import * as os from 'os';
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as lodash from 'lodash';
 import * as proxyMiddlewareType from 'http-proxy-middleware'; // tslint:disable-line:no-implicit-dependencies
 
+import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
-import { IonicEnvironment, NetworkInterface, ProjectFileProxy, ServeOptions } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, IonicEnvironment, LabServeDetails, NetworkInterface, ProjectFileProxy, ProjectType, ServeDetails, ServeOptions } from '../definitions';
+import { isCordovaPackageJson } from '../guards';
 import { FatalException } from './errors';
+import { PROJECT_FILE } from './project';
 
 export const DEFAULT_DEV_LOGGER_PORT = 53703;
 export const DEFAULT_LIVERELOAD_PORT = 35729;
@@ -18,111 +23,8 @@ export const LOCAL_ADDRESSES = ['localhost', '127.0.0.1'];
 
 export const BROWSERS = ['safari', 'firefox', process.platform === 'win32' ? 'chrome' : (process.platform === 'darwin' ? 'google chrome' : 'google-chrome')];
 
-export async function selectExternalIP(env: IonicEnvironment, options: ServeOptions): Promise<[string, NetworkInterface[]]> {
-  const { getSuitableNetworkInterfaces } = await import('./utils/network');
-
-  let availableInterfaces: NetworkInterface[] = [];
-  let chosenIP = options.address;
-
-  if (options.address === BIND_ALL_ADDRESS) {
-    availableInterfaces = getSuitableNetworkInterfaces();
-
-    if (availableInterfaces.length === 0) {
-      if (options.externalAddressRequired) {
-        throw new FatalException(
-          `No external network interfaces detected. In order to use livereload with run/emulate you will need one.\n` +
-          `Are you connected to a local network?\n`
-        );
-      }
-    } else if (availableInterfaces.length === 1) {
-      chosenIP = availableInterfaces[0].address;
-    } else if (availableInterfaces.length > 1) {
-      if (options.externalAddressRequired) {
-        env.log.warn(
-          'Multiple network interfaces detected!\n' +
-          'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n\n' +
-          `You may also use the ${chalk.green('--address')} option to skip this prompt.`
-        );
-
-        const promptedIp = await env.prompt({
-          type: 'list',
-          name: 'promptedIp',
-          message: 'Please select which IP to use:',
-          choices: availableInterfaces.map(i => ({
-            name: `${i.address} ${chalk.dim(`(${i.deviceName})`)}`,
-            value: i.address,
-          })),
-        });
-
-        chosenIP = promptedIp;
-      }
-    }
-  }
-
-  return [ chosenIP, availableInterfaces ];
-}
-
-export interface Ports {
-  port: number;
-  livereloadPort: number;
-  notificationPort: number;
-}
-
-export async function findOpenPorts(env: IonicEnvironment, address: string, ports: Ports): Promise<Ports> {
-  const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort } = await import('./utils/network');
-
-  try {
-    const [ port, livereloadPort, notificationPort ] = await Promise.all([
-      findClosestOpenPort(ports.port, '0.0.0.0'),
-      findClosestOpenPort(ports.livereloadPort, '0.0.0.0'),
-      findClosestOpenPort(ports.notificationPort, '0.0.0.0'),
-    ]);
-
-    if (ports.port !== port) {
-      env.log.debug(`Port ${chalk.bold(String(ports.port))} taken, using ${chalk.bold(String(port))}.`);
-      ports.port = port;
-    }
-
-    if (ports.livereloadPort !== livereloadPort) {
-      env.log.debug(`Port ${chalk.bold(String(ports.livereloadPort))} taken, using ${chalk.bold(String(livereloadPort))}.`);
-      ports.livereloadPort = livereloadPort;
-    }
-
-    if (ports.notificationPort !== notificationPort) {
-      env.log.debug(`Port ${chalk.bold(String(ports.notificationPort))} taken, using ${chalk.bold(String(notificationPort))}.`);
-      ports.notificationPort = notificationPort;
-    }
-
-    return { port, livereloadPort, notificationPort };
-  } catch (e) {
-    if (e !== ERROR_NETWORK_ADDRESS_NOT_AVAIL) {
-      throw e;
-    }
-
-    throw new FatalException(`${chalk.green(address)} is not available--cannot bind.`);
-  }
-}
-
-export async function runLab(env: IonicEnvironment, url: string, port: number) {
-  const split2 = await import('split2');
-  const { registerShutdownFunction } = await import('./process');
-
-  const project = await env.project.load();
-  const pkg = await env.project.loadPackageJson();
-
-  const labArgs = [url, '--port', String(port)];
-  const nameArgs = project.name ? ['--app-name', project.name] : [];
-  const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
-
-  const p = await env.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
-
-  registerShutdownFunction(() => p.kill());
-
-  const log = env.log.clone({ prefix: chalk.dim('[lab]'), wrap: false });
-  const ws = log.createWriteStream();
-
-  p.stderr.pipe(split2()).pipe(ws);
-}
+const WATCH_BEFORE_HOOK = 'watch:before';
+const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
 
 export function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy): proxyMiddlewareType.Config {
   const config: proxyMiddlewareType.Config = {
@@ -150,7 +52,7 @@ export interface DevAppDetails {
   }[];
 }
 
-export async function gatherDevAppDetails(env: IonicEnvironment, options: ServeOptions): Promise<DevAppDetails | undefined> {
+async function gatherDevAppDetails(env: IonicEnvironment, options: ServeOptions): Promise<DevAppDetails | undefined> {
   let devAppActive = !options.iscordovaserve && options.devapp;
 
   if (devAppActive) {
@@ -213,7 +115,7 @@ export async function gatherDevAppDetails(env: IonicEnvironment, options: ServeO
   }
 }
 
-export async function publishDevApp(env: IonicEnvironment, options: ServeOptions, details: DevAppDetails & { port: number; }): Promise<string | undefined> {
+async function publishDevApp(env: IonicEnvironment, options: ServeOptions, details: DevAppDetails & { port: number; }): Promise<string | undefined> {
   let devAppActive = !options.iscordovaserve && options.devapp;
 
   if (devAppActive) {
@@ -235,7 +137,7 @@ export async function publishDevApp(env: IonicEnvironment, options: ServeOptions
   }
 }
 
-export async function getSupportedDevAppPlugins(): Promise<Set<string>> {
+async function getSupportedDevAppPlugins(): Promise<Set<string>> {
   const p = path.resolve(__dirname, '..', 'assets', 'devapp', 'plugins.json');
   const plugins = await fsReadJsonFile(p);
 
@@ -248,4 +150,212 @@ export async function getSupportedDevAppPlugins(): Promise<Set<string>> {
   plugins.push('cordova-plugin-splashscreen');
 
   return new Set(plugins);
+}
+
+export abstract class ServeRunner<T extends ServeOptions> {
+  constructor(protected env: IonicEnvironment, public options: T) {}
+
+  abstract serveProject(): Promise<ServeDetails>;
+
+  static async fromProjectType<O extends ServeOptions>(env: IonicEnvironment, options: O, type: ProjectType): Promise<ServeRunner<O>> {
+    if (type === 'ionic1') {
+      const { Ionic1ServeRunner } = await import('./ionic1/serve');
+      return new Ionic1ServeRunner(env, options);
+    } else if (type === 'ionic-angular') {
+      const { IonicAngularServeRunner } = await import('./ionic-angular/serve');
+      return new IonicAngularServeRunner(env, lodash.assign({}, { target: options.iscordovaserve ? 'cordova' : undefined }, options));
+    } else if (type === 'ionic-core-angular') {
+      const { IonicCoreAngularServeRunner } = await import('./ionic-core-angular/serve');
+      return new IonicCoreAngularServeRunner(env, options);
+    } else {
+      throw new FatalException(
+        `Cannot perform Ionic serve for project type: ${chalk.bold(type)}.\n` +
+        (type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to serve custom projects.\n\n` : '') +
+        `If you'd like the CLI to try to detect your project type, you can unset the ${chalk.bold('type')} attribute in ${chalk.bold(PROJECT_FILE)}.`
+      );
+    }
+  }
+
+  static createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
+    const [ platform ] = inputs;
+
+    if (options['local']) {
+      options['address'] = 'localhost';
+      options['devapp'] = false;
+    }
+
+    const address = options['address'] ? String(options['address']) : BIND_ALL_ADDRESS;
+    const port = str2num(options['port'], DEFAULT_SERVER_PORT);
+    const livereloadPort = str2num(options['livereload-port'], DEFAULT_LIVERELOAD_PORT);
+    const notificationPort = str2num(options['dev-logger-port'], DEFAULT_DEV_LOGGER_PORT);
+
+    return {
+      address,
+      browser: options['browser'] ? String(options['browser']) : undefined,
+      browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
+      consolelogs: options['consolelogs'] ? true : false,
+      devapp: typeof options['devapp'] === 'undefined' || options['devapp'] ? true : false,
+      env: options['env'] ? String(options['env']) : undefined,
+      externalAddressRequired: options['externalAddressRequired'] ? true : false,
+      iscordovaserve: typeof options['iscordovaserve'] === 'boolean' ? Boolean(options['iscordovaserve']) : false,
+      lab: options['lab'] ? true : false,
+      livereload: typeof options['livereload'] === 'boolean' ? Boolean(options['livereload']) : true,
+      livereloadPort,
+      notificationPort,
+      open: options['open'] ? true : false,
+      platform,
+      port,
+      proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
+      serverlogs: options['serverlogs'] ? true : false,
+    };
+  }
+
+  async run(): Promise<ServeDetails> {
+    const { findClosestOpenPort } = await import('../lib/utils/network');
+
+    const packageJson = await this.env.project.loadPackageJson();
+
+    if (packageJson.scripts && packageJson.scripts[WATCH_BEFORE_SCRIPT]) {
+      this.env.log.debug(() => `Invoking ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
+      await this.env.shell.run('npm', ['run', WATCH_BEFORE_SCRIPT], { showExecution: true });
+    }
+
+    const deps = lodash.assign({}, packageJson.dependencies, packageJson.devDependencies);
+
+    if (deps['@ionic/cli-plugin-cordova']) {
+      const { checkCordova } = await import('../lib/cordova/utils');
+      await checkCordova(this.env);
+    }
+
+    await this.env.hooks.fire('watch:before', { env: this.env });
+
+    const devAppDetails = await gatherDevAppDetails(this.env, this.options);
+
+    // If this is regular `ionic serve`, we warn the dev about unsupported
+    // plugins in the devapp.
+    if (this.options.devapp && !this.options.iscordovaserve && isCordovaPackageJson(packageJson)) {
+      const plugins = await getSupportedDevAppPlugins();
+      const packageCordovaPlugins = Object.keys(packageJson.cordova.plugins);
+      const packageCordovaPluginsDiff = packageCordovaPlugins.filter(p => !plugins.has(p));
+
+      if (packageCordovaPluginsDiff.length > 0) {
+        this.env.log.warn(
+          'Detected unsupported Cordova plugins with Ionic DevApp:\n' +
+          `${packageCordovaPluginsDiff.map(p => `- ${chalk.bold(p)}`).join('\n')}\n\n` +
+          `App may not function as expected in Ionic DevApp and Ionic View.`
+        );
+      }
+    }
+
+    const details = await this.serveProject();
+
+    let labDetails: LabServeDetails | undefined;
+
+    if (this.options.lab) {
+      labDetails = {
+        protocol: 'http',
+        address: 'localhost',
+        port: await findClosestOpenPort(DEFAULT_LAB_PORT, '0.0.0.0'),
+      };
+
+      await this.runLab(`http://localhost:${details.port}`, labDetails.port);
+    }
+
+    if (devAppDetails) {
+      const devAppName = await publishDevApp(this.env, this.options, { port: details.port, ...devAppDetails });
+      devAppDetails.channel = devAppName;
+    }
+
+    const localAddress = `${details.protocol}://localhost:${details.port}`;
+    const fmtExternalAddress = (address: string) => `${details.protocol}://${address}:${details.port}`;
+    const labAddress = labDetails ? `${labDetails.protocol}://${labDetails.address}:${labDetails.port}` : undefined;
+
+    this.env.log.nl();
+    this.env.log.ok(
+      `Development server running!\n` +
+      (labAddress ? `Lab: ${chalk.bold(labAddress)}\n` : '') +
+      `Local: ${chalk.bold(localAddress)}\n` +
+      (details.externalNetworkInterfaces.length > 0 ? `External: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}\n` : '') +
+      (devAppDetails && devAppDetails.channel ? `DevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '')
+    );
+
+    if (this.options.open) {
+      const openAddress = labAddress ? labAddress : localAddress;
+      const openOptions: string[] = [openAddress]
+        .concat(this.options.browserOption ? [this.options.browserOption] : [])
+        .concat(this.options.platform ? ['?ionicplatform=', this.options.platform] : []);
+
+      const opn = await import('opn');
+      opn(openOptions.join(''), { app: this.options.browser, wait: false });
+    }
+
+    this.env.keepopen = true;
+
+    return details;
+  }
+
+  async runLab(url: string, port: number) {
+    const split2 = await import('split2');
+    const { registerShutdownFunction } = await import('./process');
+
+    const project = await this.env.project.load();
+    const pkg = await this.env.project.loadPackageJson();
+
+    const labArgs = [url, '--port', String(port)];
+    const nameArgs = project.name ? ['--app-name', project.name] : [];
+    const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
+
+    const p = await this.env.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
+
+    registerShutdownFunction(() => p.kill());
+
+    const log = this.env.log.clone({ prefix: chalk.dim('[lab]'), wrap: false });
+    const ws = log.createWriteStream();
+
+    p.stderr.pipe(split2()).pipe(ws);
+  }
+
+  async selectExternalIP(): Promise<[string, NetworkInterface[]]> {
+    const { getSuitableNetworkInterfaces } = await import('./utils/network');
+
+    let availableInterfaces: NetworkInterface[] = [];
+    let chosenIP = this.options.address;
+
+    if (this.options.address === BIND_ALL_ADDRESS) {
+      availableInterfaces = getSuitableNetworkInterfaces();
+
+      if (availableInterfaces.length === 0) {
+        if (this.options.externalAddressRequired) {
+          throw new FatalException(
+            `No external network interfaces detected. In order to use livereload with run/emulate you will need one.\n` +
+            `Are you connected to a local network?\n`
+          );
+        }
+      } else if (availableInterfaces.length === 1) {
+        chosenIP = availableInterfaces[0].address;
+      } else if (availableInterfaces.length > 1) {
+        if (this.options.externalAddressRequired) {
+          this.env.log.warn(
+            'Multiple network interfaces detected!\n' +
+            'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n\n' +
+            `You may also use the ${chalk.green('--address')} option to skip this prompt.`
+          );
+
+          const promptedIp = await this.env.prompt({
+            type: 'list',
+            name: 'promptedIp',
+            message: 'Please select which IP to use:',
+            choices: availableInterfaces.map(i => ({
+              name: `${i.address} ${chalk.dim(`(${i.deviceName})`)}`,
+              value: i.address,
+            })),
+          });
+
+          chosenIP = promptedIp;
+        }
+      }
+    }
+
+    return [ chosenIP, availableInterfaces ];
+  }
 }

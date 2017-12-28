@@ -418,7 +418,6 @@ export interface ServeOptions {
   open: boolean;
   browser?: string;
   browserOption?: string;
-  basicAuth?: [string, string];
   env?: string;
   devapp: boolean;
 
@@ -428,7 +427,12 @@ export interface ServeOptions {
   /**
    * @deprecated
    */
-  iscordovaserve?: boolean;
+  iscordovaserve: boolean;
+
+  /**
+   * @deprecated
+   */
+  platform?: string;
 }
 
 export interface LabServeDetails {

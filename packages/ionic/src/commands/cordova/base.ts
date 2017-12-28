@@ -219,17 +219,20 @@ export abstract class CordovaRunCommand extends CordovaCommand implements Comman
     });
 
     const metadata = await this.getMetadata();
+    const project = await this.env.project.load();
 
     if (isLiveReload) {
-      const { serve } = await import('@ionic/cli-utils/commands/serve');
-      const serverDetails = await serve(this.env, inputs, generateBuildOptions(metadata, options));
+      const { ServeRunner } = await import('@ionic/cli-utils/lib/serve');
+      const opts = ServeRunner.createOptionsFromCommandLine(inputs, generateBuildOptions(metadata, options));
+      const runner = await ServeRunner.fromProjectType(this.env, opts, project.type);
+      const details = await runner.run();
 
-      if (serverDetails.externallyAccessible === false) {
-        const extra = LOCAL_ADDRESSES.includes(serverDetails.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
-        this.env.log.warn(`Your device or emulator may not be able to access ${chalk.bold(serverDetails.externalAddress)}.${extra}\n\n`);
+      if (details.externallyAccessible === false) {
+        const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
+        this.env.log.warn(`Your device or emulator may not be able to access ${chalk.bold(details.externalAddress)}.${extra}\n\n`);
       }
 
-      conf.writeContentSrc(`${serverDetails.protocol || 'http'}://${serverDetails.externalAddress}:${serverDetails.port}`);
+      conf.writeContentSrc(`${details.protocol || 'http'}://${details.externalAddress}:${details.port}`);
       await conf.save();
     } else {
       if (options.build) {

@@ -3,39 +3,96 @@ import * as Debug from 'debug';
 
 import { parsedArgsToArgv } from '@ionic/cli-framework';
 
-import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, selectExternalIP } from '../serve';
+import { ServeDetails, ServeOptions } from '../../definitions';
+import { FatalException } from '../errors';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner } from '../serve';
 
 const APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 
 const debug = Debug('ionic:cli-utils:lib:ionic-angular:serve');
 
 export interface AppScriptsServeOptions extends ServeOptions {
-  platform: string;
+  platform?: string;
   target?: string;
   iscordovaserve: boolean;
 }
 
-export async function serve({ env, options }: { env: IonicEnvironment, options: AppScriptsServeOptions }): Promise<ServeDetails> {
-  const { findClosestOpenPort, isHostConnectable } = await import('../utils/network');
-  const [ externalIP, availableInterfaces ] = await selectExternalIP(env, options);
+export class IonicAngularServeRunner<T extends AppScriptsServeOptions> extends ServeRunner<T> {
+  async serveProject(): Promise<ServeDetails> {
+    const { promptToInstallPkg } = await import('../utils/npm');
+    const { findClosestOpenPort, isHostConnectable } = await import('../utils/network');
+    const [ externalIP, availableInterfaces ] = await this.selectExternalIP();
 
-  const appScriptsPort = await findClosestOpenPort(options.port, '0.0.0.0');
+    const appScriptsPort = await findClosestOpenPort(this.options.port, '0.0.0.0');
 
-  // env.log.info(`Starting app-scripts server: ${chalk.bold(appScriptsArgs.join(' '))} - Ctrl+C to cancel`);
-  await appScriptsServe(env, options);
+    try {
+      await this.servecmd();
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        const pkg = '@ionic/app-scripts';
+        this.env.log.nl();
+        this.env.log.warn(
+          `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
+          `This package is required for ${chalk.green('ionic serve')} in Ionic Angular v2/v3 projects.`
+        );
 
-  debug('waiting for connectivity with app scripts (%dms timeout)', APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT);
-  await isHostConnectable('localhost', appScriptsPort, APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT);
+        const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });
 
-  return {
-    protocol: 'http',
-    localAddress: 'localhost',
-    externalAddress: externalIP,
-    externalNetworkInterfaces: availableInterfaces,
-    port: appScriptsPort,
-    externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
-  };
+        if (!installed) {
+          throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.`);
+        }
+
+        await this.servecmd();
+      }
+    }
+
+    debug('waiting for connectivity with app scripts (%dms timeout)', APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT);
+    await isHostConnectable('localhost', appScriptsPort, APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT);
+
+    return {
+      protocol: 'http',
+      localAddress: 'localhost',
+      externalAddress: externalIP,
+      externalNetworkInterfaces: availableInterfaces,
+      port: appScriptsPort,
+      externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
+    };
+  }
+
+  async servecmd(): Promise<void> {
+    const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
+    const { registerShutdownFunction } = await import('../process');
+
+    const appScriptsArgs = await serveOptionsToAppScriptsArgs(this.options);
+
+    const p = await this.env.shell.spawn('ionic-app-scripts', ['serve', ...appScriptsArgs], { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
+
+    return new Promise<void>((resolve, reject) => {
+      p.on('error', err => {
+        reject(err);
+      });
+
+      registerShutdownFunction(() => p.kill());
+
+      const log = this.env.log.clone({ prefix: chalk.dim('[app-scripts]'), wrap: false });
+      const ws = log.createWriteStream();
+
+      const stdoutFilter = through2(function(chunk, enc, callback) {
+        const str = chunk.toString();
+
+        if (str.includes('server running')) {
+          resolve();
+        } else {
+          this.push(chunk);
+        }
+
+        callback();
+      });
+
+      p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
+      p.stderr.pipe(split2()).pipe(ws);
+    });
+  }
 }
 
 export async function serveOptionsToAppScriptsArgs(options: AppScriptsServeOptions) {
@@ -57,39 +114,4 @@ export async function serveOptionsToAppScriptsArgs(options: AppScriptsServeOptio
   };
 
   return parsedArgsToArgv(args, { useEquals: false });
-}
-
-async function appScriptsServe(env: IonicEnvironment, options: AppScriptsServeOptions): Promise<void> {
-  const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
-  const { registerShutdownFunction } = await import('../process');
-
-  const appScriptsArgs = await serveOptionsToAppScriptsArgs(options);
-
-  const p = await env.shell.spawn('ionic-app-scripts', ['serve', ...appScriptsArgs], { cwd: env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
-
-  return new Promise<void>((resolve, reject) => {
-    p.on('error', err => {
-      reject(err);
-    });
-
-    registerShutdownFunction(() => p.kill());
-
-    const log = env.log.clone({ prefix: chalk.dim('[app-scripts]'), wrap: false });
-    const ws = log.createWriteStream();
-
-    const stdoutFilter = through2(function(chunk, enc, callback) {
-      const str = chunk.toString();
-
-      if (str.includes('server running')) {
-        resolve();
-      } else {
-        this.push(chunk);
-      }
-
-      callback();
-    });
-
-    p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
-    p.stderr.pipe(split2()).pipe(ws);
-  });
 }

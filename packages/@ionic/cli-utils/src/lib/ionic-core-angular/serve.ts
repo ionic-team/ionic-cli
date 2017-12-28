@@ -6,69 +6,96 @@ import * as Debug from 'debug';
 
 import { pathAccessible } from '@ionic/cli-framework/utils/fs';
 
-import { IonicEnvironment, ServeDetails, ServeOptions } from '../../definitions';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, selectExternalIP } from '../serve';
+import { ServeDetails, ServeOptions } from '../../definitions';
+import { FatalException } from '../errors';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner } from '../serve';
 
 const NG_AUTODETECTED_PROXY_FILE = 'proxy.config.js';
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 
 const debug = Debug('ionic:cli-utils:lib:ionic-core-angular:serve');
 
-export async function serve({ env, options }: { env: IonicEnvironment, options: ServeOptions }): Promise<ServeDetails> {
-  const { findClosestOpenPort, isHostConnectable } = await import('../utils/network');
-  const [ externalIP, availableInterfaces ] = await selectExternalIP(env, options);
+export class IonicCoreAngularServeRunner<T extends ServeOptions> extends ServeRunner<T> {
+  async serveProject(): Promise<ServeDetails> {
+    const { promptToInstallPkg } = await import('../utils/npm');
+    const { findClosestOpenPort, isHostConnectable } = await import('../utils/network');
+    const [ externalIP, availableInterfaces ] = await this.selectExternalIP();
 
-  debug('finding closest port to %d', options.port);
-  const ngPort = await findClosestOpenPort(options.port, '0.0.0.0');
+    debug('finding closest port to %d', this.options.port);
+    const ngPort = await findClosestOpenPort(this.options.port, '0.0.0.0');
 
-  await ngServe(env, options.address, ngPort);
+    try {
+      await this.servecmd(this.options.address, ngPort);
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        const pkg = '@angular/cli';
+        this.env.log.nl();
+        this.env.log.warn(
+          `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
+          `This package is required for ${chalk.green('ionic serve')} as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#4.0.0')}`
+        );
 
-  debug('waiting for connectivity with ng serve (%dms timeout)', NG_SERVE_CONNECTIVITY_TIMEOUT);
-  await isHostConnectable('localhost', ngPort, NG_SERVE_CONNECTIVITY_TIMEOUT);
+        const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });
 
-  return {
-    protocol: 'http',
-    localAddress: 'localhost',
-    externalAddress: externalIP,
-    externalNetworkInterfaces: availableInterfaces,
-    port: ngPort,
-    externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
-  };
-}
+        if (!installed) {
+          throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.`);
+        }
 
-async function ngServe(env: IonicEnvironment, host: string, port: number): Promise<void> {
-  const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
-  const { registerShutdownFunction } = await import('../process');
+        await this.servecmd(this.options.address, ngPort);
+      }
+    }
 
-  const ngArgs: string[] = ['serve', '--host', host, '--port', String(port), '--progress', 'false'];
-  const shellOptions = { showExecution: true, cwd: env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } };
+    debug('waiting for connectivity with ng serve (%dms timeout)', NG_SERVE_CONNECTIVITY_TIMEOUT);
+    await isHostConnectable('localhost', ngPort, NG_SERVE_CONNECTIVITY_TIMEOUT);
 
-  if (await pathAccessible(path.resolve(env.project.directory, NG_AUTODETECTED_PROXY_FILE), fs.constants.R_OK)) {
-    ngArgs.push('--proxy-config');
-    ngArgs.push(NG_AUTODETECTED_PROXY_FILE); // this is fine as long as cwd is the project directory
+    return {
+      protocol: 'http',
+      localAddress: 'localhost',
+      externalAddress: externalIP,
+      externalNetworkInterfaces: availableInterfaces,
+      port: ngPort,
+      externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
+    };
   }
 
-  const p = await env.shell.spawn('ng', ngArgs, shellOptions);
+  async servecmd(host: string, port: number): Promise<void> {
+    const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
+    const { registerShutdownFunction } = await import('../process');
 
-  registerShutdownFunction(() => p.kill());
+    const ngArgs: string[] = ['serve', '--host', host, '--port', String(port), '--progress', 'false'];
+    const shellOptions = { showExecution: true, cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } };
 
-  const log = env.log.clone({ prefix: chalk.dim('[ng]'), wrap: false });
-  const ws = log.createWriteStream();
+    if (await pathAccessible(path.resolve(this.env.project.directory, NG_AUTODETECTED_PROXY_FILE), fs.constants.R_OK)) {
+      ngArgs.push('--proxy-config');
+      ngArgs.push(NG_AUTODETECTED_PROXY_FILE); // this is fine as long as cwd is the project directory
+    }
 
-  return new Promise<void>(resolve => {
-    const stdoutFilter = through2(function(chunk, enc, callback) {
-      const str = chunk.toString();
+    const p = await this.env.shell.spawn('ng', ngArgs, shellOptions);
 
-      if (!str.includes('NG Live Development Server is listening')) {
-        this.push(chunk);
-      }
+    return new Promise<void>((resolve, reject) => {
+      p.on('error', err => {
+        reject(err);
+      });
 
-      callback();
+      registerShutdownFunction(() => p.kill());
+
+      const log = this.env.log.clone({ prefix: chalk.dim('[ng]'), wrap: false });
+      const ws = log.createWriteStream();
+
+      const stdoutFilter = through2(function(chunk, enc, callback) {
+        const str = chunk.toString();
+
+        if (str.includes('Development Server is listening')) {
+          resolve();
+        } else {
+          this.push(chunk);
+        }
+
+        callback();
+      });
+
+      p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
+      p.stderr.pipe(split2()).pipe(ws);
     });
-
-    p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
-    p.stderr.pipe(split2()).pipe(ws);
-
-    resolve(); // TODO: find a way to detect when webpack is finished bundling
-  });
+  }
 }
