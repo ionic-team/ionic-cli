@@ -3,12 +3,11 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import * as lodash from 'lodash';
-import * as proxyMiddlewareType from 'http-proxy-middleware'; // tslint:disable-line:no-implicit-dependencies
 
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
-import { CommandLineInputs, CommandLineOptions, IonicEnvironment, LabServeDetails, NetworkInterface, ProjectFileProxy, ProjectType, ServeDetails, ServeOptions } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, IonicEnvironment, LabServeDetails, NetworkInterface, ProjectType, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 import { FatalException } from './errors';
 import { PROJECT_FILE } from './project';
@@ -26,23 +25,6 @@ export const BROWSERS = ['safari', 'firefox', process.platform === 'win32' ? 'ch
 const WATCH_BEFORE_HOOK = 'watch:before';
 const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
 
-export function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy): proxyMiddlewareType.Config {
-  const config: proxyMiddlewareType.Config = {
-    pathRewrite: { [proxy.path]: '' },
-    target: proxy.proxyUrl,
-  };
-
-  if (proxy.proxyNoAgent) {
-    config.agent = <any>false; // TODO: type issue
-  }
-
-  if (proxy.rejectUnauthorized === false) {
-    config.secure = false;
-  }
-
-  return config;
-}
-
 export interface DevAppDetails {
   channel?: string;
   port?: number;
@@ -50,106 +32,6 @@ export interface DevAppDetails {
     address: string;
     broadcast: string;
   }[];
-}
-
-async function gatherDevAppDetails(env: IonicEnvironment, options: ServeOptions): Promise<DevAppDetails | undefined> {
-  let devAppActive = !options.iscordovaserve && options.devapp;
-
-  if (devAppActive) {
-    const { getSuitableNetworkInterfaces } = await import('./utils/network');
-    const { computeBroadcastAddress } = await import('./devapp');
-
-    const availableInterfaces = getSuitableNetworkInterfaces();
-
-    // TODO: Unfortunately, we can't do this yet--there is no
-    // accurate/reliable/realistic way to identify a WiFi network uniquely in
-    // NodeJS. The best thing we can do is tell the dev what is happening.
-
-    // const config = await env.config.load();
-
-    // const knownInterfaces = new Set(config.devapp.knownInterfaces.map(i => i.mac));
-    // const diff = [...new Set(availableInterfaces.filter(i => !knownInterfaces.has(i.mac)))];
-
-    // if (diff.length > 0) {
-    //   env.log.warn(
-    //     `New network interface(s) detected!\n` +
-    //     `You will be prompted to select which network interfaces are trusted for your app to show up in Ionic DevApp. If you're on public WiFi, you may not want to broadcast your app. To trust all networks, just press ${chalk.cyan.bold('<enter>')}.\n\n` +
-    //     `Need to install the DevApp? ${emoji('👉 ', '-->')} ${chalk.bold('https://bit.ly/ionic-dev-app')}`
-    //   );
-
-    //   const trustedInterfaceMacs = await env.prompt({
-    //     type: 'checkbox',
-    //     name: 'checkbox',
-    //     message: 'Please select trusted interfaces:',
-    //     choices: diff.map(i => ({
-    //       name: `${chalk.bold(i.address)} ${chalk.dim(`(mac: ${i.mac}, label: ${i.deviceName})`)}`,
-    //       value: i.mac,
-    //       checked: true,
-    //     })),
-    //   });
-
-    //   const untrustedInterfaceMacs = diff
-    //     .filter(i => !trustedInterfaceMacs.includes(i.mac))
-    //     .map(i => i.mac);
-
-    //   const trustedInterfaces = trustedInterfaceMacs.map(mac => ({ trusted: true, mac }));
-    //   const untrustedInterfaces = untrustedInterfaceMacs.map(mac => ({ trusted: false, mac }));
-
-    //   config.devapp.knownInterfaces = config.devapp.knownInterfaces.concat(trustedInterfaces);
-    //   config.devapp.knownInterfaces = config.devapp.knownInterfaces.concat(untrustedInterfaces);
-    // }
-
-    // const trustedInterfaceMacs = config.devapp.knownInterfaces
-    //   .filter(i => i.trusted)
-    //   .map(i => i.mac);
-
-    // const availableTrustedInterfaces = availableInterfaces.filter(i => trustedInterfaceMacs.includes(i.mac));
-
-    const interfaces = availableInterfaces
-      .map(i => ({
-        ...i,
-        broadcast: computeBroadcastAddress(i.address, i.netmask),
-      }));
-
-    return { interfaces };
-  }
-}
-
-async function publishDevApp(env: IonicEnvironment, options: ServeOptions, details: DevAppDetails & { port: number; }): Promise<string | undefined> {
-  let devAppActive = !options.iscordovaserve && options.devapp;
-
-  if (devAppActive) {
-    const { createPublisher } = await import('./devapp');
-    const publisher = await createPublisher(env, details.port);
-    publisher.interfaces = details.interfaces;
-
-    publisher.on('error', (err: Error) => {
-      env.log.debug(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
-    });
-
-    try {
-      await publisher.start();
-    } catch (e) {
-      env.log.error(`Could not publish DevApp service: ${String(e.stack ? e.stack : e)}`);
-    }
-
-    return publisher.name;
-  }
-}
-
-async function getSupportedDevAppPlugins(): Promise<Set<string>> {
-  const p = path.resolve(__dirname, '..', 'assets', 'devapp', 'plugins.json');
-  const plugins = await fsReadJsonFile(p);
-
-  if (!Array.isArray(plugins)) {
-    throw new Error(`Cannot read ${p} file of supported plugins.`);
-  }
-
-  // This one is common, and hopefully obvious enough that the devapp doesn't
-  // use any splash screen but its own, so we mark it as "supported".
-  plugins.push('cordova-plugin-splashscreen');
-
-  return new Set(plugins);
 }
 
 export abstract class ServeRunner<T extends ServeOptions> {
@@ -229,12 +111,12 @@ export abstract class ServeRunner<T extends ServeOptions> {
 
     await this.env.hooks.fire('watch:before', { env: this.env });
 
-    const devAppDetails = await gatherDevAppDetails(this.env, this.options);
+    const devAppDetails = await this.gatherDevAppDetails();
 
     // If this is regular `ionic serve`, we warn the dev about unsupported
     // plugins in the devapp.
     if (this.options.devapp && !this.options.iscordovaserve && isCordovaPackageJson(packageJson)) {
-      const plugins = await getSupportedDevAppPlugins();
+      const plugins = await this.getSupportedDevAppPlugins();
       const packageCordovaPlugins = Object.keys(packageJson.cordova.plugins);
       const packageCordovaPluginsDiff = packageCordovaPlugins.filter(p => !plugins.has(p));
 
@@ -262,7 +144,7 @@ export abstract class ServeRunner<T extends ServeOptions> {
     }
 
     if (devAppDetails) {
-      const devAppName = await publishDevApp(this.env, this.options, { port: details.port, ...devAppDetails });
+      const devAppName = await this.publishDevApp({ port: details.port, ...devAppDetails });
       devAppDetails.channel = devAppName;
     }
 
@@ -292,6 +174,67 @@ export abstract class ServeRunner<T extends ServeOptions> {
     this.env.keepopen = true;
 
     return details;
+  }
+
+  async gatherDevAppDetails(): Promise<DevAppDetails | undefined> {
+    let devAppActive = !this.options.iscordovaserve && this.options.devapp;
+
+    if (devAppActive) {
+      const { getSuitableNetworkInterfaces } = await import('./utils/network');
+      const { computeBroadcastAddress } = await import('./devapp');
+
+      const availableInterfaces = getSuitableNetworkInterfaces();
+
+      // TODO: There is no accurate/reliable/realistic way to identify a WiFi
+      // network uniquely in NodeJS. But this is where we could detect new
+      // networks and prompt the dev if they want to "trust" it (allow binding to
+      // 0.0.0.0 and broadcasting).
+
+      const interfaces = availableInterfaces
+        .map(i => ({
+          ...i,
+          broadcast: computeBroadcastAddress(i.address, i.netmask),
+        }));
+
+      return { interfaces };
+    }
+  }
+
+  async publishDevApp(details: DevAppDetails & { port: number; }): Promise<string | undefined> {
+    let devAppActive = !this.options.iscordovaserve && this.options.devapp;
+
+    if (devAppActive) {
+      const { createPublisher } = await import('./devapp');
+      const publisher = await createPublisher(this.env, details.port);
+      publisher.interfaces = details.interfaces;
+
+      publisher.on('error', (err: Error) => {
+        this.env.log.debug(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
+      });
+
+      try {
+        await publisher.start();
+      } catch (e) {
+        this.env.log.error(`Could not publish DevApp service: ${String(e.stack ? e.stack : e)}`);
+      }
+
+      return publisher.name;
+    }
+  }
+
+  async getSupportedDevAppPlugins(): Promise<Set<string>> {
+    const p = path.resolve(__dirname, '..', 'assets', 'devapp', 'plugins.json');
+    const plugins = await fsReadJsonFile(p);
+
+    if (!Array.isArray(plugins)) {
+      throw new Error(`Cannot read ${p} file of supported plugins.`);
+    }
+
+    // This one is common, and hopefully obvious enough that the devapp doesn't
+    // use any splash screen but its own, so we mark it as "supported".
+    plugins.push('cordova-plugin-splashscreen');
+
+    return new Set(plugins);
   }
 
   async runLab(url: string, port: number) {

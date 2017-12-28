@@ -4,9 +4,9 @@ import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as proxyMiddlewareType from 'http-proxy-middleware'; // tslint:disable-line:no-implicit-dependencies
 
-import { ServeDetails, ServeOptions } from '../../definitions';
+import { ProjectFileProxy, ServeDetails, ServeOptions } from '../../definitions';
 import { FatalException } from '../errors';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner, proxyConfigToMiddlewareConfig } from '../serve';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner } from '../serve';
 
 const WATCH_PATTERNS = [
   'scss/**/*',
@@ -29,6 +29,23 @@ interface ServeMetaOptions {
   wwwDir: string;
   watchPatterns: string[];
   proxies: ProxyConfig[];
+}
+
+function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy): proxyMiddlewareType.Config {
+  const config: proxyMiddlewareType.Config = {
+    pathRewrite: { [proxy.path]: '' },
+    target: proxy.proxyUrl,
+  };
+
+  if (proxy.proxyNoAgent) {
+    config.agent = <any>false; // TODO: type issue
+  }
+
+  if (proxy.rejectUnauthorized === false) {
+    config.secure = false;
+  }
+
+  return config;
 }
 
 export class Ionic1ServeRunner<T extends ServeOptions> extends ServeRunner<T> {
