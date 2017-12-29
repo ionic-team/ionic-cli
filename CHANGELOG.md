@@ -16,8 +16,8 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 * Ionic Lab has been rebuilt using [StencilJS](https://stenciljs.com) and now
   works for any Ionic Framework version.
 * **BREAKING**: Some functionality has been reorganized into separate packages,
-  which will need to be installed. Most Ionic 1 functionality has been moved
-  into the
+  which will need to be installed in your project(s). Most Ionic 1 functionality
+  has been moved into the
   [`@ionic/v1-util`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-util)
   package. Ionic Lab has been moved into the
   [`@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/lab)
@@ -26,6 +26,9 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   into the
   [`@ionic/v1-util`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-util)
   package, which is only for Ionic v1 apps.
+* **BREAKING**: `ionic start <name> conference` no longer works. For functional
+  apps, please use a repository URL, such as `ionic start <name>
+  https://github.com/ionic-team/ionic-conference-app`.
 
 <a name="3.19.0"></a>
 ### 3.19.0 (2017-11-21)

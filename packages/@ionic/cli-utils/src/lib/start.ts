@@ -151,13 +151,6 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     archive: `${STARTER_BASE_URL}/ionic-angular-official-super.tar.gz`,
   },
   {
-    name: 'conference',
-    type: 'ionic-angular',
-    description: 'A project that demonstrates a realworld application',
-    archive: `https://github.com/ionic-team/ionic-conference-app/archive/master.tar.gz`,
-    strip: true,
-  },
-  {
     name: 'tutorial',
     type: 'ionic-angular',
     description: 'A tutorial based project that goes along with the Ionic documentation',
