@@ -148,6 +148,7 @@ export abstract class ServeRunner<T extends ServeOptions> {
   }
 
   async run(options: T): Promise<ServeDetails> {
+    const { promptToInstallPkg } = await import('./utils/npm');
     const { findClosestOpenPort } = await import('./utils/network');
 
     await this.invokeBeforeHook();
@@ -165,7 +166,26 @@ export abstract class ServeRunner<T extends ServeOptions> {
         port: await findClosestOpenPort(DEFAULT_LAB_PORT, '0.0.0.0'),
       };
 
-      await this.runLab(`http://localhost:${details.port}`, labDetails.port);
+      try {
+        await this.runLab(`http://localhost:${details.port}`, labDetails.port);
+      } catch (e) {
+        if (e.code === 'ENOENT') {
+          const pkg = '@ionic/lab';
+          this.env.log.nl();
+          this.env.log.warn(
+            `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
+            `This package is required for Ionic Lab as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#4.0.0')}`
+          );
+
+          const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });
+
+          if (!installed) {
+            throw new FatalException(`${chalk.green(pkg)} is required for Ionic Lab to work properly.`);
+          }
+
+          await this.runLab(`http://localhost:${details.port}`, labDetails.port);
+        }
+      }
     }
 
     if (devAppDetails) {
