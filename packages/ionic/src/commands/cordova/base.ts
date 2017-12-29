@@ -61,7 +61,15 @@ export const CORDOVA_RUN_COMMAND_OPTIONS: CommandOption[] = [
     default: String(DEFAULT_DEV_LOGGER_PORT),
     advanced: true,
   },
+  // Build Options
+  {
+    name: 'build',
+    description: 'Do not invoke an Ionic build',
+    type: Boolean,
+    default: true,
+  },
   ...APP_SCRIPTS_OPTIONS,
+  // Cordova Options
   {
     name: 'debug',
     description: 'Mark as a debug build',
@@ -221,8 +229,10 @@ export class CordovaRunCommand extends CordovaCommand implements CommandPreRun {
       conf.writeContentSrc(`${serverDetails.protocol || 'http'}://${serverDetails.externalAddress}:${serverDetails.port}`);
       await conf.save();
     } else {
-      const { build } = await import('@ionic/cli-utils/commands/build');
-      await build(this.env, inputs, generateBuildOptions(this.metadata, options));
+      if (options.build) {
+        const { build } = await import('@ionic/cli-utils/commands/build');
+        await build(this.env, inputs, generateBuildOptions(this.metadata, options));
+      }
     }
 
     await this.runCordova(filterArgumentsForCordova(this.metadata, inputs, options), { showExecution: true });
