@@ -263,7 +263,7 @@ export abstract class ServeRunner<T extends ServeOptions> {
   }
 
   async runLab(url: string, port: number) {
-    const split2 = await import('split2');
+    const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
     const { registerShutdownFunction } = await import('./process');
 
     const project = await this.env.project.load();
@@ -275,12 +275,31 @@ export abstract class ServeRunner<T extends ServeOptions> {
 
     const p = await this.env.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
 
-    registerShutdownFunction(() => p.kill());
+    return new Promise<void>((resolve, reject) => {
+      p.on('error', err => {
+        reject(err);
+      });
 
-    const log = this.env.log.clone({ prefix: chalk.dim('[lab]'), wrap: false });
-    const ws = log.createWriteStream();
+      registerShutdownFunction(() => p.kill());
 
-    p.stderr.pipe(split2()).pipe(ws);
+      const log = this.env.log.clone({ prefix: chalk.dim('[lab]'), wrap: false });
+      const ws = log.createWriteStream();
+
+      const stdoutFilter = through2(function(chunk, enc, callback) {
+        const str = chunk.toString();
+
+        if (str.includes('Ionic Lab running')) {
+          resolve();
+        } else {
+          // no stdout
+        }
+
+        callback();
+      });
+
+      p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
+      p.stderr.pipe(split2()).pipe(ws);
+    });
   }
 
   async selectExternalIP(options: T): Promise<[string, NetworkInterface[]]> {
