@@ -92,6 +92,12 @@ export async function getStarterList(config: IConfig): Promise<StarterList> {
 
 export const STARTER_TEMPLATES: StarterTemplate[] = [
   {
+    name: 'blank',
+    type: 'ionic-core-angular',
+    description: 'A blank starter project',
+    archive: `${STARTER_BASE_URL}/ionic-core-angular-official-blank.tar.gz`,
+  },
+  {
     name: 'tabs',
     type: 'ionic-angular',
     description: 'A starting project with a simple tabbed interface',
