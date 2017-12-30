@@ -21,7 +21,7 @@ export interface SuperAgentError extends Error {
 
 export type LogMsg = string | (() => string);
 export type LogFn = (msg: LogMsg) => void;
-export type LogLevel = 'debug' | 'info' | 'ok' | 'warn' | 'error' | 'announce';
+export type LogLevel = 'debug' | 'info' | 'msg' | 'ok' | 'warn' | 'error' | 'announce';
 export type LogPrefix = string | (() => string);
 
 export interface LoggerOptions {
@@ -45,7 +45,7 @@ export interface ILogger {
   error: LogFn;
   announce: LogFn;
   msg: LogFn;
-  log: LogFn;
+  rawmsg: LogFn;
   nl(num?: number): void;
 
   createWriteStream(): NodeJS.WritableStream;

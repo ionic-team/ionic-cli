@@ -35,26 +35,6 @@ export async function isSafeToCreateProjectIn(root: string): Promise<boolean> {
   });
 }
 
-export function getStarterTemplateText(templateList: StarterTemplate[]): string {
-  let headerLine = chalk.bold(`Ionic Starter templates`);
-  let formattedTemplateList = getStarterTemplateTextList(templateList);
-
-  return `
-    ${headerLine}
-      ${formattedTemplateList.join(`
-      `)}
-  `;
-}
-
-export function getStarterTemplateTextList(templateList: StarterTemplate[]): string[] {
-
-  return templateList.map(({ name, type, description }) => {
-    let templateName = chalk.green(name);
-
-    return `${templateName} ${Array(20 - name.length).join(chalk.dim('.'))} ${chalk.bold(type)} ${description}`;
-  });
-}
-
 export function getHelloText(): string {
   return `
 ${chalk.bold('♬ ♫ ♬ ♫  Your Ionic app is ready to go! ♬ ♫ ♬ ♫')}

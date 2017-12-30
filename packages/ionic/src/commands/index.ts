@@ -111,7 +111,7 @@ export class IonicNamespace extends Namespace {
       }
 
       if (found) {
-        this.env.log.info(`You can switch backends with ${chalk.green('ionic config set -g backend')}.`);
+        this.env.log.msg(`You can switch backends with ${chalk.green('ionic config set -g backend')}.`);
       }
     }
 

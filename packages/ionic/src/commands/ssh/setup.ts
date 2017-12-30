@@ -49,7 +49,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
         return;
       }
     } else {
-      this.env.log.info(`Looks like you haven't configured your SSH settings yet.`);
+      this.env.log.msg(`Looks like you haven't configured your SSH settings yet.`);
     }
 
     // TODO: link to docs about manual git setup
@@ -105,7 +105,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
       }
 
       if (pubkeyExists && keyExists) {
-        this.env.log.info(
+        this.env.log.msg(
           `Using your previously generated key: ${chalk.bold(prettyPath(keyPath))}.\n` +
           `You can generate a new one by deleting it.`
         );

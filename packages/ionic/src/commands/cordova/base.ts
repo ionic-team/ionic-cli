@@ -205,7 +205,7 @@ export abstract class CordovaRunCommand extends CordovaCommand implements Comman
     const { registerShutdownFunction } = await import('@ionic/cli-utils/lib/process');
 
     if (!options['livereload'] && (options['consolelogs'] || options['serverlogs'])) {
-      this.env.log.info(`${chalk.green('--consolelogs')} or ${chalk.green('--serverlogs')} detected, using ${chalk.green('--livereload')}`);
+      this.env.log.msg(`${chalk.green('--consolelogs')} or ${chalk.green('--serverlogs')} detected, using ${chalk.green('--livereload')}`);
       options['livereload'] = true;
     }
 

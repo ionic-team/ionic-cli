@@ -17,9 +17,14 @@ export const LOGGER_STATUS_COLORS = new Map<LogLevel, Chalk>([
   ['announce', chalk.cyan],
 ]);
 
-export class Logger implements ILogger {
+const LOGGER_STATUS_DEFINED_COLORS = new Map<LogLevel, Chalk>([
+  ['info', chalk.bold],
+  ['warn', chalk.bold.yellow],
+  ['error', chalk.bold.red],
+  ['announce', chalk.bold.cyan],
+]);
 
-  firstLineColored: LogLevel[] = ['warn', 'error', 'announce'];
+export class Logger implements ILogger {
 
   readonly level: LogLevel;
   readonly prefix: LogPrefix;
@@ -58,15 +63,15 @@ export class Logger implements ILogger {
   }
 
   msg(msg: LogMsg): void {
+    this._log('msg', msg);
+  }
+
+  rawmsg(msg: LogMsg): void {
     if (typeof msg === 'function') {
       msg = msg();
     }
 
     this.stream.write(this.enforceLF(msg));
-  }
-
-  log(msg: LogMsg): void {
-    this.msg(msg);
   }
 
   nl(num = 1): void {
@@ -83,7 +88,7 @@ export class Logger implements ILogger {
 
     return new class extends stream.Writable {
       _write(chunk: any, encoding: string, callback: Function) {
-        self.info(chunk.toString());
+        self.msg(chunk.toString());
         callback();
       }
     }();
@@ -129,16 +134,17 @@ export class Logger implements ILogger {
 
       if (this.wrap) {
         const prefixIndentation = prefix ? stripAnsi(prefix).length + 1 : 0;
-        const levelIndentation = level === 'info' ? 0 : level.length + 3;
+        const levelIndentation = level === 'msg' ? 0 : level.length + 3;
         const msgLines = wordWrap(msg, { indentation: prefixIndentation + levelIndentation }).split('\n');
+        const definedColor = LOGGER_STATUS_DEFINED_COLORS.get(level);
 
-        if (msg.trim().includes('\n')) {
+        if (definedColor && msg.trim().includes('\n')) {
           msg = msgLines.map((l, i) => {
             // We want these log messages to stand out a bit, so automatically
             // color the first line and separate the first line from the other
             // lines if the message is multi-lined.
-            if (i === 0 && this.firstLineColored.includes(level)) {
-              return color(l) + (msgLines.length > 1 ? '\n' : '');
+            if (i === 0) {
+              return definedColor(l) + (msgLines.length > 1 ? '\n' : '');
             }
 
             return l;
@@ -152,7 +158,7 @@ export class Logger implements ILogger {
 
       const fmtLevel = () => b('[') + status(level.toUpperCase()) + b(']');
 
-      if (level !== 'info') {
+      if (level !== 'msg') {
         msg = `${fmtLevel()} ${msg}`;
       }
 

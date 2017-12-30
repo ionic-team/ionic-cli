@@ -40,7 +40,7 @@ export class Shell implements IShell {
 
     if (showCommand) {
       if (this.log.shouldLog('info')) {
-        this.log.msg(`> ${chalk.green(fullCmd)}`);
+        this.log.rawmsg(`> ${chalk.green(fullCmd)}`);
       }
 
       if (!showExecution && showSpinner) {
@@ -119,7 +119,7 @@ export class Shell implements IShell {
 
     if (showCommand) {
       if (this.log.shouldLog('info')) {
-        this.log.msg(`> ${chalk.green(fullCmd)}`);
+        this.log.rawmsg(`> ${chalk.green(fullCmd)}`);
       }
     }
 

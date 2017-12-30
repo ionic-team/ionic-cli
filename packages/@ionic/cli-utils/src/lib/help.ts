@@ -25,7 +25,7 @@ const HELP_DOTS_WIDTH = 25;
 export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise<void> {
   // If there are no inputs then show global command details.
   if (inputs.length === 0) {
-    return env.log.msg(await getFormattedHelpDetails(env, env.namespace, ''));
+    return env.log.rawmsg(await getFormattedHelpDetails(env, env.namespace, ''));
   }
 
   const { args, obj, path } = await env.namespace.locate(inputs);
@@ -39,7 +39,7 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise
 
   const fullName = path.map(([p]) => p).join(' ');
 
-  env.log.msg(await formatHelp(env, obj, fullName));
+  env.log.rawmsg(await formatHelp(env, obj, fullName));
 }
 
 async function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INamespace, fullName: string) {

@@ -14,7 +14,7 @@ export class LogoutCommand extends Command {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!(await this.env.session.isLoggedIn())) {
-      this.env.log.info('You are already logged out.');
+      this.env.log.msg('You are already logged out.');
       return;
     }
 

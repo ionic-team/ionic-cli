@@ -93,7 +93,7 @@ export async function treatAilments(env: IonicEnvironment) {
     }
 
     if (manuallyTreatableAilmentCount > 0) {
-      env.log.info(`${manuallyTreatableAilmentCount} ${manuallyTreatableAilmentCount === 1 ? 'issue needs' : 'issues need'} to be fixed manually.`);
+      env.log.msg(`${manuallyTreatableAilmentCount} ${manuallyTreatableAilmentCount === 1 ? 'issue needs' : 'issues need'} to be fixed manually.`);
     }
   }
 }

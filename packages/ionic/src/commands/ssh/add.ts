@@ -99,7 +99,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
       this.env.log.ok(`Your public key (${chalk.bold(res.data.fingerprint)}) has been ${words} Ionic!`);
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 409) {
-        this.env.log.info('Pubkey already added to Ionic.');
+        this.env.log.msg('Pubkey already added to Ionic.');
       } else {
         throw e;
       }

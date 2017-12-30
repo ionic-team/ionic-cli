@@ -25,6 +25,6 @@ export class IonitronCommand extends Command {
     const localeStatements = ionitronStatements[locale];
     const statement = localeStatements[Math.floor(Math.random() * (localeStatements.length))];
 
-    this.env.log.msg(getIonitronString(statement));
+    this.env.log.rawmsg(getIonitronString(statement));
   }
 }

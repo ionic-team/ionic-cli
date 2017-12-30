@@ -54,6 +54,6 @@ export async function set(env: IonicEnvironment, inputs: CommandLineInputs, opti
   if (valueChanged) {
     env.log.ok(`${chalk.green(p)} set to ${chalk.green(JSON.stringify(v))} in ${chalk.bold(prettyPath(file.filePath))}!`);
   } else {
-    env.log.info(`${chalk.green(p)} is already set to ${chalk.bold(JSON.stringify(v))}.`);
+    env.log.msg(`${chalk.green(p)} is already set to ${chalk.bold(JSON.stringify(v))}.`);
   }
 }

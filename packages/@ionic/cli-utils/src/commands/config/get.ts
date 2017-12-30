@@ -23,7 +23,7 @@ export async function get(env: IonicEnvironment, inputs: CommandLineInputs, opti
     process.stdout.write(JSON.stringify(v));
   } else {
     await sanitize(p, v);
-    env.log.msg(util.inspect(v, { colors: chalk.enabled }));
+    env.log.rawmsg(util.inspect(v, { colors: chalk.enabled }));
   }
 }
 

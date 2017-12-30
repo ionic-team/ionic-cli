@@ -42,7 +42,7 @@ export class GitRemoteCommand extends Command {
 
     if (found) {
       if (remote === found) {
-        this.env.log.info(`Existing remote ${chalk.bold('ionic')} found.`);
+        this.env.log.msg(`Existing remote ${chalk.bold('ionic')} found.`);
       } else {
         await setIonicRemote(this.env, remote);
         this.env.log.ok(`Updated remote ${chalk.bold('ionic')}.`);

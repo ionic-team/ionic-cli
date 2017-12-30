@@ -24,7 +24,7 @@ import {
   SuperAgentError,
 } from './definitions';
 
-export const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'ok', 'warn', 'error', 'announce'];
+export const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'msg', 'ok', 'warn', 'error', 'announce'];
 
 export function isCommand(cmd: any): cmd is ICommand {
   return cmd && typeof cmd.run === 'function';

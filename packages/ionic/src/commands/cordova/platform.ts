@@ -80,7 +80,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
     const platforms = await getPlatforms(this.env.project.directory);
 
     if (action === 'add' && platforms.includes(platformName)) {
-      this.env.log.info(`Platform ${platformName} already exists.`);
+      this.env.log.msg(`Platform ${platformName} already exists.`);
       return;
     }
 

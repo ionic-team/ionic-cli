@@ -87,7 +87,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
 
     if (project.app_id) {
       if (project.app_id === appId) {
-        this.env.log.info(`Already linked with app ${chalk.green(appId)}.`);
+        this.env.log.msg(`Already linked with app ${chalk.green(appId)}.`);
         return;
       }
 
@@ -102,7 +102,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       });
 
       if (!confirm) {
-        this.env.log.info('Not linking.');
+        this.env.log.msg('Not linking.');
         return;
       }
     }
@@ -186,10 +186,10 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         const opn = await import('opn');
         const dashUrl = await this.env.config.getDashUrl();
         opn(`${dashUrl}/?user_token=${token}`, { wait: false });
-        this.env.log.info(`Rerun ${chalk.green(`ionic link`)} to link to the new app.`);
+        this.env.log.msg(`Rerun ${chalk.green(`ionic link`)} to link to the new app.`);
       }
     } else if (appId === CHOICE_NEVERMIND) {
-      this.env.log.info('Not linking app.');
+      this.env.log.msg('Not linking app.');
     } else {
       await this.env.runCommand(['config', 'set', 'app_id', `"${appId}"`, '--json']);
 

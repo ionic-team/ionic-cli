@@ -64,7 +64,7 @@ function registerHooks(hooks: IHookEngine) {
     env.session = await getSession(env.config, env.project, env.client);
 
     if (wasLoggedIn) {
-      env.log.info('You have been logged out.');
+      env.log.msg('You have been logged out.');
     }
   });
 

@@ -78,7 +78,7 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
       this.env.tasks.end();
 
       this.env.log.nl();
-      this.env.log.msg(table);
+      this.env.log.rawmsg(table);
       this.env.log.nl();
       this.env.log.ok(`Showing ${chalk.bold(String(builds.length))} of your latest builds.`);
       this.env.log.nl();

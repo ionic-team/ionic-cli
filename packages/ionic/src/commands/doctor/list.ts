@@ -17,6 +17,6 @@ export class DoctorListCommand extends Command {
 
     const ailmentIds = Ailments.ALL.map(Ailment => new Ailment().id);
 
-    this.env.log.msg(ailmentIds.map(id => chalk.green(id)).join('\n'));
+    this.env.log.rawmsg(ailmentIds.map(id => chalk.green(id)).join('\n'));
   }
 }

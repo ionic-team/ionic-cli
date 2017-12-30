@@ -74,7 +74,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
 
     if (!(await pathExists(keyPathDir))) {
       await fsMkdirp(keyPathDir, 0o700);
-      this.env.log.info(`Created ${chalk.bold(prettyPath(keyPathDir))} directory for you.\n`);
+      this.env.log.msg(`Created ${chalk.bold(prettyPath(keyPathDir))} directory for you.\n`);
     }
 
     if (await pathExists(keyPath)) {
@@ -87,15 +87,14 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
       if (confirm) {
         await fsUnlink(keyPath);
       } else {
-        this.env.log.info(`Not overwriting ${chalk.bold(prettyPath(keyPath))}.`);
+        this.env.log.msg(`Not overwriting ${chalk.bold(prettyPath(keyPath))}.`);
         return;
       }
     }
 
     this.env.log.info(
-      `You will be prompted to provide a ${chalk.bold('passphrase')}, which is ` +
-      'used to protect your private key should you lose it. (If someone has your ' +
-      'private key, they can impersonate you!) Passphrases are recommended, but not required.'
+      'Enter a passphrase for your private key.\n' +
+      `You will be prompted to provide a ${chalk.bold('passphrase')}, which is used to protect your private key should you lose it. (If someone has your private key, they can impersonate you!) Passphrases are recommended, but not required.\n`
     );
 
     await this.env.close();
@@ -103,16 +102,18 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
     await this.env.shell.run('ssh-keygen', ['-q', '-t', String(options['type']), '-b', String(bits), '-C', String(annotation), '-f', keyPath], shellOptions);
     await this.env.open();
 
+    this.env.log.nl();
+
     this.env.log.ok(
       'A new pair of SSH keys has been generated!\n' +
       `Private Key (${chalk.bold(prettyPath(keyPath))}): Keep this safe!\n` +
-      `Public Key (${chalk.bold(prettyPath(pubkeyPath))}): Give this to all your friends!`
+      `Public Key (${chalk.bold(prettyPath(pubkeyPath))}): Give this to all your friends!\n`
     );
 
-    this.env.log.info(
-      'Next steps:\n' +
-      `- Add your public key to Ionic: ${chalk.green('ionic ssh add ' + prettyPath(pubkeyPath))}\n` +
-      `- Use your private key for secure communication with Ionic: ${chalk.green('ionic ssh use ' + prettyPath(keyPath))}`
+    this.env.log.msg(
+      `${chalk.bold('Next steps:')}\n` +
+      ` * Add your public key to Ionic: ${chalk.green('ionic ssh add ' + prettyPath(pubkeyPath))}\n` +
+      ` * Use your private key for secure communication with Ionic: ${chalk.green('ionic ssh use ' + prettyPath(keyPath))}`
     );
   }
 }

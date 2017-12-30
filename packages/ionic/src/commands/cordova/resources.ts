@@ -329,7 +329,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
         .concat((imagesTooLargeForSource.length > 0) ? `\nThe following images were not created because their source image was too small:` : [])
         .reverse();
 
-      this.env.log.info(imagesTooLargeForSourceMsg.join('\n'));
+      this.env.log.msg(imagesTooLargeForSourceMsg.join('\n'));
     }
 
     await conf.save();

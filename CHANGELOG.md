@@ -26,8 +26,9 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   into the
   [`@ionic/v1-util`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-util)
   package, which is only for Ionic v1 apps.
-* **BREAKING**: `ionic start <name> conference` no longer works. For functional
-  apps, please use a repository URL, such as `ionic start <name>
+* **BREAKING**: `ionic start <name> conference` no longer works. For using
+  `ionic start` with functional apps (as opposed to starter templates), please
+  use a repository URL, such as `ionic start <name>
   https://github.com/ionic-team/ionic-conference-app`.
 
 <a name="3.19.0"></a>

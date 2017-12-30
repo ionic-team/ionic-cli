@@ -106,7 +106,7 @@ If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
     const config = await this.env.config.load();
 
     if (await this.env.session.isLoggedIn()) {
-      this.env.log.info('Logging you out.');
+      this.env.log.msg('Logging you out.');
       await this.env.runCommand(['logout']);
       await this.env.telemetry.resetToken();
     }

@@ -27,10 +27,10 @@ export async function createPromptModule({ interactive, confirm, log, config }: 
 
       if (question.type === 'confirm') {
         if (confirm) {
-          log.info(`${chalk.green('--confirm')}: ${chalk.dim(question.message)} ${chalk.cyan('Yes')}`);
+          log.msg(`${chalk.green('--confirm')}: ${chalk.dim(question.message)} ${chalk.cyan('Yes')}`);
           return true;
         } else {
-          log.info(`${chalk.green('--no-confirm')}: ${chalk.dim(question.message)} ${chalk.cyan('No')}`);
+          log.msg(`${chalk.green('--no-confirm')}: ${chalk.dim(question.message)} ${chalk.cyan('No')}`);
           return false;
         }
       }

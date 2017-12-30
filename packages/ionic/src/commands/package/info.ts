@@ -100,13 +100,13 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
       const table = columnar(attrs.map(attr => [formatAttr(attr), formattedBuild[attr] || '']), {});
 
       this.env.log.nl();
-      this.env.log.msg(table);
+      this.env.log.rawmsg(table);
       this.env.log.nl();
 
       if (build.status === 'FAILED') {
         if (build.output) {
-          this.env.log.msg(`${chalk.bold('output')}:\n`);
-          this.env.log.msg(build.output);
+          this.env.log.msg(`${chalk.bold('output')}:`);
+          this.env.log.rawmsg(build.output);
         } else {
           this.env.log.msg('no output');
         }

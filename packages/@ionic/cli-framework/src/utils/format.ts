@@ -60,7 +60,7 @@ export function generateFillSpaceStringList(list: string[], optimalLength = 1, f
   return list.map(item => sliceAnsi(fullLengthString, 0, fullLength - stringWidth(item)));
 }
 
-export function columnar(rows: string[][], options: { hsep?: string, vsep?: string, columnHeaders?: string[] } = {}) {
+export function columnar(rows: string[][], options: { hsep?: string, vsep?: string, columnHeaders?: string[] } = {}): string {
   if (!options.hsep) {
     options.hsep = chalk.dim('-');
   }

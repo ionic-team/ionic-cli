@@ -71,7 +71,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
           });
 
           if (confirm) {
-            ienv.log.info('Installing dependencies may take several minutes!');
+            ienv.log.msg('Installing dependencies may take several minutes!');
             const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
             const [ installer, ...installerArgs ] = await pkgManagerArgs(ienv, { command: 'install' });
             await ienv.shell.run(installer, installerArgs, {});
@@ -84,8 +84,10 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
       // If an legacy command is being executed inform the user that there is a new command available
       const foundCommand = mapLegacyCommand(argv._[0]);
       if (foundCommand) {
-        ienv.log.msg(`The ${chalk.green(argv._[0])} command has been renamed. To find out more, run:\n\n` +
-                     `  ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`);
+        ienv.log.msg(
+          `The ${chalk.green(argv._[0])} command has been renamed. To find out more, run:\n\n` +
+          `    ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`
+        );
       } else {
         const { loadPlugins } = await import ('@ionic/cli-utils/lib/plugins');
 
@@ -132,7 +134,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
       ienv.log.msg(`Use the ${chalk.green('--help')} flag for more details.`);
     } else if (isSuperAgentError(err)) {
       const { formatSuperAgentError } = await import('@ionic/cli-utils/lib/http');
-      ienv.log.msg(formatSuperAgentError(err));
+      ienv.log.rawmsg(formatSuperAgentError(err));
     } else if (err.code && err.code === 'ENOTFOUND' || err.code === 'ECONNREFUSED') {
       ienv.log.error(
         `Network connectivity error occurred, are you offline?\n` +

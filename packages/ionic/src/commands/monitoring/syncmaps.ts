@@ -42,7 +42,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
     let sourcemapsExist = await pathExists(sourcemapsDir);
 
     if (!sourcemapsExist) {
-      this.env.log.info('No sourcemaps found, doing build...');
+      this.env.log.msg('No sourcemaps found, doing build...');
       await this.doProdBuild();
       sourcemapsExist = await pathExists(sourcemapsDir);
       if (!sourcemapsExist) {
@@ -58,7 +58,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
       doNewBuild && await this.doProdBuild();
     }
 
-    this.env.log.info(`Syncing SourceMaps for app version ${chalk.green(appVersion)} of ${chalk.green(cordovaInfo.id)} (snapshot: ${snapshotId})- App ID ${appId}`);
+    this.env.log.msg(`Syncing SourceMaps for app version ${chalk.green(appVersion)} of ${chalk.green(cordovaInfo.id)} (snapshot: ${snapshotId})- App ID ${appId}`);
     readDir(sourcemapsDir).then(files => {
       const maps = files.filter(f => f.indexOf('.js.map') >= 0);
       Promise.all(maps.map(f => this.syncSourcemap(path.join(sourcemapsDir, f), snapshotId, appVersion, commitHash, appId, token)));
@@ -80,7 +80,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
       });
 
     try {
-      this.env.log.info(`Syncing ${chalk.green(file)}`);
+      this.env.log.msg(`Syncing ${chalk.green(file)}`);
       const res = await this.env.client.do(req);
 
       if (res.meta.status !== 201) {
@@ -109,8 +109,8 @@ export class MonitoringSyncSourcemapsCommand extends Command {
     const fileData = await fsReadFile(file, { encoding: 'utf8' });
     const sourcemapPost = r.data.sourcemap_post;
 
-    this.env.log.info('Doing this thing');
-    this.env.log.info(await this.env.config.getAPIUrl());
+    // this.env.log.info('Doing this thing');
+    this.env.log.msg(await this.env.config.getAPIUrl());
 
     let { req } = await createRequest(this.env.config, 'post', sourcemapPost.url);
     req = req
@@ -130,7 +130,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
         }
 
         this.env.log.ok('Uploaded sourcemap');
-        this.env.log.info('See the Error Monitoring docs for usage information and next steps: https://ionicframework.com/docs/pro/monitoring/');
+        this.env.log.msg('See the Error Monitoring docs for usage information and next steps: https://ionicframework.com/docs/pro/monitoring/');
 
         Promise.resolve();
       });

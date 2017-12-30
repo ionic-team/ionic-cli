@@ -1,9 +1,10 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as lodash from 'lodash';
 
 import { validators } from '@ionic/cli-framework';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
 import { isValidURL } from '@ionic/cli-framework/utils/string';
 
@@ -15,6 +16,8 @@ import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
 
 export class StartCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
+    const { STARTER_TEMPLATES } = await import('@ionic/cli-utils/lib/start');
+
     return {
       name: 'start',
       type: 'global',
@@ -24,16 +27,18 @@ This command creates a working Ionic app. It installs dependencies for you and s
 
 ${chalk.green('ionic start')} will create a new app from ${chalk.green('template')}. You can list all templates with the ${chalk.green('--list')} option. For more information on starter templates, see the CLI documentation${chalk.cyan('[1]')}.
 
-You can also specify a git repository URL for ${chalk.green('template')} and your existing project will be cloned.
+You can also specify a git repository URL for ${chalk.green('template')} and the existing project will be cloned.
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}
       `,
       exampleCommands: [
         '',
         '--list',
+        'myApp',
         'myApp blank',
         'myApp tabs --cordova',
         'myApp blank --type=ionic1',
+        'myApp super --type=ionic-angular',
         'myConferenceApp https://github.com/ionic-team/ionic-conference-app',
       ],
       inputs: [
@@ -57,9 +62,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         },
         {
           name: 'type',
-          description: `Type of project to start (e.g. ${chalk.green('ionic-angular')}, ${chalk.green('ionic1')})`,
+          description: `Type of project to start (e.g. ${lodash.uniq(STARTER_TEMPLATES.map(t => t.type)).map(type => chalk.green(type)).join(', ')})`,
           type: String,
-          default: 'ionic-angular',
         },
         {
           name: 'display-name',
@@ -107,12 +111,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { STARTER_TEMPLATES, getStarterTemplateTextList } = await import('@ionic/cli-utils/lib/start');
+    const { STARTER_TEMPLATES } = await import('@ionic/cli-utils/lib/start');
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
 
     // If the action is list then lets just end here.
     if (options['list']) {
-      this.env.log.msg(getStarterTemplateTextList(STARTER_TEMPLATES).join('\n'));
+      const columnHeaders = ['name', 'project type', 'description'];
+      this.env.log.rawmsg(columnar(STARTER_TEMPLATES.map(({ name, type, description }) => [chalk.green(name), chalk.bold(type), description]), { columnHeaders }));
       throw new FatalException('', 0);
     }
 
@@ -156,7 +161,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       });
 
       if (!confirm) {
-        this.env.log.info('Not starting project within existing project.');
+        this.env.log.msg('Not starting project within existing project.');
         throw new FatalException();
       }
     }
@@ -177,7 +182,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
 
     if (options['bundle-id']) {
-      this.env.log.info(`${chalk.green('--bundle-id')} detected, using ${chalk.green('--cordova')}`);
+      this.env.log.msg(`${chalk.green('--bundle-id')} detected, using ${chalk.green('--cordova')}`);
       options['cordova'] = true;
     }
 
@@ -193,7 +198,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         const token = await this.env.session.getUserToken();
         const appLoader = new App(token, this.env.client);
         const app = await appLoader.load(proAppId);
-        this.env.log.info(`Using ${chalk.bold(app.slug)} for ${chalk.green('name')}.`);
+        this.env.log.msg(`Using ${chalk.bold(app.slug)} for ${chalk.green('name')}.`);
         inputs[0] = app.slug;
       } else {
         const name = await this.env.prompt({
@@ -207,22 +212,49 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       }
     }
 
+    if (!options['type']) {
+      const recommendedType = 'ionic-core-angular';
+
+      this.env.log.info(
+        `What type of project would you like to create?\n` +
+        `To bypass this prompt next time, supply the ${chalk.green('--type')} option.`
+      );
+
+      const type = await this.env.prompt({
+        type: 'list',
+        name: 'template',
+        message: 'Project type:',
+        choices: () => {
+          const projectTypes = lodash.uniq(STARTER_TEMPLATES.map(t => t.type));
+          const cols = columnar(projectTypes.map(type => [`${chalk.green(type)}${type === recommendedType ? ' (recommended)' : ''}`, this.env.project.formatType(type)])).split('\n');
+
+          return cols.map((col, i) => ({
+            name: col,
+            short: projectTypes[i],
+            value: projectTypes[i],
+          }));
+        },
+      });
+
+      options['type'] = type;
+    }
+
     if (!inputs[1]) {
       const template = await this.env.prompt({
         type: 'list',
         name: 'template',
-        message: 'What starter would you like to use:',
+        message: 'Starter template:',
         choices: () => {
           const starterTemplates = STARTER_TEMPLATES.filter(st => st.type === options['type']);
+          const cols = columnar(starterTemplates.map(({ name, type, description }) => [chalk.green(name), chalk.bold(type), description])).split('\n');
 
-          return getStarterTemplateTextList(starterTemplates)
-            .map((text, i) => {
-              return {
-                name: text,
-                short: starterTemplates[i].name,
-                value: starterTemplates[i].name,
-              };
-            });
+          return cols.map((col, i) => {
+            return {
+              name: col,
+              short: starterTemplates[i].name,
+              value: starterTemplates[i].name,
+            };
+          });
         },
       });
 
@@ -295,17 +327,16 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
 
     if (options['deps']) {
-      this.env.log.info('Installing dependencies may take several minutes.');
+      this.env.log.msg('Installing dependencies may take several minutes.');
 
-      this.env.log.msg('\n');
-      this.env.log.msg(chalk.bold(`  ${emoji('✨', '*')}   IONIC  DEVAPP  ${emoji('✨', '*')}`));
-
-      this.env.log.msg('\n Speed up development with the ' + chalk.bold('Ionic DevApp') +
-      ', our fast, on-device testing mobile app\n\n');
-      this.env.log.msg(`  -  ${emoji('🔑', '')}   Test on iOS and Android without Native SDKs`);
-      this.env.log.msg(`  -  ${emoji('🚀', '')}   LiveReload for instant style and JS updates`);
-
-      this.env.log.msg('\n ️-->    Install DevApp: ' + chalk.bold('https://bit.ly/ionic-dev-app') + '    <--\n\n');
+      this.env.log.nl();
+      this.env.log.rawmsg(
+        `     ${chalk.bold(`${emoji('✨', '*')}   IONIC  DEVAPP  ${emoji('✨', '*')}`)}\n\n` +
+        ` Speed up development with the ${chalk.bold('Ionic DevApp')}, our fast, on-device testing mobile app\n\n` +
+        `  -  ${emoji('🔑', '')}   Test on iOS and Android without Native SDKs\n` +
+        `  -  ${emoji('🚀', '')}   LiveReload for instant style and JS updates\n\n` +
+        ` ️-->    Install DevApp: ${chalk.bold('https://bit.ly/ionic-dev-app')}    <--\n\n`
+      );
 
       const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
@@ -318,11 +349,14 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
       if (config.backend === BACKEND_PRO) {
         if (options['link'] && !linkConfirmed) {
-          this.env.log.msg('\n' + chalk.bold(`  ${emoji('🔥', '*')}   IONIC  PRO  ${emoji('🔥', '*')}`));
-          this.env.log.msg('\n Supercharge your Ionic development with the ' + chalk.bold('Ionic Pro') + ' SDK\n\n');
-          this.env.log.msg(`  -  ${emoji('⚠️', '')}   Track runtime errors in real-time, back to your original TypeScript`);
-          this.env.log.msg(`  -  ${emoji('📲', '')}   Push remote updates and skip the app store queue`);
-          this.env.log.msg(`\nLearn more about Ionic Pro: ${chalk.bold('https://ionicframework.com/products')}\n`);
+          this.env.log.nl();
+          this.env.log.rawmsg(
+            `    ${chalk.bold(`${emoji('🔥', '*')}   IONIC  PRO  ${emoji('🔥', '*')}`)}\n\n` +
+            ` Supercharge your Ionic development with the ${chalk.bold('Ionic Pro')} SDK\n\n` +
+            `  -  ${emoji('⚠️', '')}   Track runtime errors in real-time, back to your original TypeScript\n` +
+            `  -  ${emoji('📲', '')}  Push remote updates and skip the app store queue\n\n` +
+            ` Learn more about Ionic Pro: ${chalk.bold('https://ionicframework.com/pro')}\n`
+          );
 
           const confirm = await this.env.prompt({
             type: 'confirm',
@@ -330,6 +364,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
             message: 'Install the free Ionic Pro SDK and connect your app?',
             noninteractiveValue: false,
           });
+
           this.env.log.msg('\n-----------------------------------\n\n');
 
           if (confirm) {
@@ -364,7 +399,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       }
 
       if (config.backend === BACKEND_LEGACY) {
-        this.env.log.info(getHelloText());
+        this.env.log.msg(getHelloText());
       }
 
       if (manifest) {
@@ -485,8 +520,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   async performManifestOps(manifest: StarterManifest) {
     if (manifest.welcome) {
       this.env.log.nl();
-      this.env.log.msg(`${chalk.bold('Starter Welcome')}:\n`);
-      this.env.log.info(manifest.welcome);
+      this.env.log.msg(`${chalk.bold('Starter Welcome')}:`);
+      this.env.log.msg(manifest.welcome);
     }
   }
 
@@ -532,15 +567,16 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   async showNextSteps(projectDir: string, linkConfirmed: boolean) {
     const config = await this.env.config.load();
 
-    this.env.log.msg(`${chalk.bold('Next Steps')}:\n`);
-    this.env.log.msg(`* Go to your newly created project: ${chalk.green(`cd ${prettyPath(projectDir)}`)}`);
-    this.env.log.msg(`* Get Ionic DevApp for easy device testing: ${chalk.bold('https://bit.ly/ionic-dev-app')}`);
+    const steps = [
+      `Go to your newly created project: ${chalk.green(`cd ${prettyPath(projectDir)}`)}`,
+      `Get Ionic DevApp for easy device testing: ${chalk.bold('https://bit.ly/ionic-dev-app')}`,
+    ];
 
     if (config.backend === BACKEND_PRO && linkConfirmed) {
-      this.env.log.msg(`* Finish setting up Ionic Pro Error Monitoring: ${chalk.bold('https://ionicframework.com/docs/pro/monitoring/#getting-started')}\n`);
-      this.env.log.msg(`* Finally, push your code to Ionic Pro to perform real-time updates, and more: ${chalk.green('git push ionic master')}`);
+      steps.push(`Finish setting up Ionic Pro Error Monitoring: ${chalk.bold('https://ionicframework.com/docs/pro/monitoring/#getting-started')}`);
+      steps.push(`Finally, push your code to Ionic Pro to perform real-time updates, and more: ${chalk.green('git push ionic master')}`);
     }
 
-    this.env.log.nl();
+    this.env.log.info(`${chalk.bold('Next Steps')}:\n${steps.map(s => `- ${s}`).join('\n')}`);
   }
 }

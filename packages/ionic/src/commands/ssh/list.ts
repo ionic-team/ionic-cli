@@ -82,10 +82,10 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
     this.env.log.nl();
 
     if (foundActiveKey) {
-      this.env.log.info(`The row in ${chalk.bold('bold')} is the key that this computer is using. To change, use ${chalk.green('ionic ssh use')}.\n`);
+      this.env.log.msg(`The row in ${chalk.bold('bold')} is the key that this computer is using. To change, use ${chalk.green('ionic ssh use')}.\n`);
     }
 
-    this.env.log.msg(table);
+    this.env.log.rawmsg(table);
     this.env.log.nl();
     this.env.log.ok(`Showing ${chalk.bold(String(res.data.length))} SSH key${res.data.length === 1 ? '' : 's'}.`);
     this.env.log.nl();

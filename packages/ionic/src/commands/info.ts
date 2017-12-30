@@ -36,9 +36,9 @@ export class InfoCommand extends Command {
 
     const splitInfo = (ary: InfoHookItem[]) => ary
       .sort((a, b) => strcmp(a.key.toLowerCase(), b.key.toLowerCase()))
-      .map((item): [string, string] => [`${item.key}${item.flair ? ' ' + chalk.dim('(' + item.flair + ')') : ''}`, chalk.dim(item.value) + (item.path && pkgPath && !item.path.startsWith(pkgPath) ? ` ${chalk.dim('(' + item.path + ')')}` : '')]);
+      .map((item): [string, string] => [`   ${item.key}${item.flair ? ' ' + chalk.dim('(' + item.flair + ')') : ''}`, chalk.dim(item.value) + (item.path && pkgPath && !item.path.startsWith(pkgPath) ? ` ${chalk.dim('(' + item.path + ')')}` : '')]);
 
-    const format = (details: [string, string][]) => columnar(details, { vsep: ':' }).split('\n').join('\n    ');
+    const format = (details: [string, string][]) => columnar(details, { vsep: ':' });
 
     task.end();
 
@@ -47,35 +47,33 @@ export class InfoCommand extends Command {
     }
 
     if (cliDetails.length > 0) {
-      this.env.log.msg('\n' + chalk.bold('cli packages:') + (pkgPath ? ' ' + chalk.dim('(' + pkgPath + ')') : ''));
-      this.env.log.msg(`\n    ${format(splitInfo(cliDetails))}`);
+      this.env.log.rawmsg(`${chalk.bold('cli packages:')}${pkgPath ? ' ' + chalk.dim('(' + pkgPath + ')') : ''}\n\n`);
+      this.env.log.rawmsg(`${format(splitInfo(cliDetails))}\n\n`);
     }
 
     if (globalNpmDetails.length > 0) {
-      this.env.log.msg('\n' + chalk.bold('global packages:'));
-      this.env.log.msg(`\n    ${format(splitInfo(globalNpmDetails))}`);
+      this.env.log.rawmsg(`${chalk.bold('global packages:')}\n\n`);
+      this.env.log.rawmsg(`${format(splitInfo(globalNpmDetails))}\n\n`);
     }
 
     if (localNpmDetails.length > 0) {
-      this.env.log.msg('\n' + chalk.bold('local packages:'));
-      this.env.log.msg(`\n    ${format(splitInfo(localNpmDetails))}`);
+      this.env.log.rawmsg(`${chalk.bold('local packages:')}\n\n`);
+      this.env.log.rawmsg(`${format(splitInfo(localNpmDetails))}\n\n`);
     }
 
     if (systemDetails.length > 0) {
-      this.env.log.msg('\n' + chalk.bold('System:'));
-      this.env.log.msg(`\n    ${format(splitInfo(systemDetails))}`);
+      this.env.log.rawmsg(`${chalk.bold('System:')}\n\n`);
+      this.env.log.rawmsg(`${format(splitInfo(systemDetails))}\n\n`);
     }
 
     if (environmentDetails.length > 0) {
-      this.env.log.msg('\n' + chalk.bold('Environment Variables:'));
-      this.env.log.msg(`\n    ${format(splitInfo(environmentDetails))}`);
+      this.env.log.rawmsg(`${chalk.bold('Environment Variables:')}\n\n`);
+      this.env.log.rawmsg(`${format(splitInfo(environmentDetails))}\n\n`);
     }
 
     if (miscDetails.length > 0) {
-      this.env.log.msg('\n' + chalk.bold('Misc:'));
-      this.env.log.msg(`\n    ${format(splitInfo(miscDetails))}`);
+      this.env.log.rawmsg(`${chalk.bold('Misc:')}\n\n`);
+      this.env.log.rawmsg(`${format(splitInfo(miscDetails))}\n\n`);
     }
-
-    this.env.log.nl();
   }
 }

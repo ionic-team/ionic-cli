@@ -60,13 +60,13 @@ export class SSHUseCommand extends SSHBaseCommand {
     const text2 = SSHConfig.stringify(conf);
 
     if (text1 === text2) {
-      this.env.log.info(`${chalk.bold(keyPath)} is already your active SSH key.`);
+      this.env.log.msg(`${chalk.bold(keyPath)} is already your active SSH key.`);
       return;
     } else {
       const { diffPatch } = await import('@ionic/cli-utils/lib/diff');
       const diff = await diffPatch(sshConfigPath, text1, text2);
 
-      this.env.log.msg(diff);
+      this.env.log.rawmsg(diff);
 
       const confirm = await this.env.prompt({
         type: 'confirm',
