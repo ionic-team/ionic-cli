@@ -15,6 +15,8 @@ import { PROJECT_FILE, Project } from '@ionic/cli-utils/lib/project';
 import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
 
 export class StartCommand extends Command implements CommandPreRun {
+  canRemoveExisting?: boolean;
+
   async getMetadata(): Promise<CommandMetadata> {
     const { STARTER_TEMPLATES } = await import('@ionic/cli-utils/lib/start');
 
@@ -67,7 +69,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         },
         {
           name: 'display-name',
-          description: 'Human-readable name (use quotes around the name)',
+          description: 'Human-friendly name (use quotes around the name)',
           type: String,
           aliases: ['n'],
         },
@@ -201,10 +203,15 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         this.env.log.msg(`Using ${chalk.bold(app.slug)} for ${chalk.green('name')}.`);
         inputs[0] = app.slug;
       } else {
+        this.env.log.info(
+          `Every great app needs a name! ${emoji('😍', '')}\n` +
+          `We will use this name for the project's folder name and package name. You can change this at any time. To bypass this prompt next time, supply ${chalk.green('name')}, the first argument to ${chalk.green('ionic start')}.`
+        );
+
         const name = await this.env.prompt({
           type: 'input',
           name: 'name',
-          message: 'What would you like to name your project:',
+          message: 'Project name:',
           validate: v => validators.required(v),
         });
 
@@ -212,12 +219,16 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       }
     }
 
+    const projectDir = path.resolve(inputs[0]);
+    await this.checkForExisting(inputs[0], projectDir);
+
     if (!options['type']) {
       const recommendedType = 'ionic-core-angular';
 
       this.env.log.info(
         `What type of project would you like to create?\n` +
-        `To bypass this prompt next time, supply the ${chalk.green('--type')} option.`
+        `We recommend ${chalk.green(recommendedType)}. To learn more about project types, see the CLI documentation${chalk.cyan('[1]')}. To bypass this prompt next time, supply the ${chalk.green('--type')} option.\n\n` +
+        `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}`
       );
 
       const type = await this.env.prompt({
@@ -240,6 +251,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
 
     if (!inputs[1]) {
+      this.env.log.info(
+        `Let's pick the perfect starter template! ${emoji('💪', '')}\n` +
+        `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${chalk.green('template')}, the second argument to ${chalk.green('ionic start')}.`
+      );
+
       const template = await this.env.prompt({
         type: 'list',
         name: 'template',
@@ -285,7 +301,14 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     const projectDir = path.resolve(name);
 
     await this.validateName(name);
-    await this.ensureDirectory(name, projectDir);
+
+    this.env.tasks.next(`Preparing directory ${chalk.green(prettyPath(projectDir))}`);
+
+    if (this.canRemoveExisting) {
+      await removeDirectory(projectDir);
+    }
+
+    await fsMkdir(projectDir, 0o777);
 
     if (clonedApp) {
       await this.env.shell.run('git', ['clone', template, name, '--progress'], { showExecution: true });
@@ -431,15 +454,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     return false;
   }
 
-  async ensureDirectory(projectName: string, projectDir: string) {
-    const { isSafeToCreateProjectIn } = await import('@ionic/cli-utils/lib/start');
-
+  async checkForExisting(projectName: string, projectDir: string) {
     const projectExists = await pathExists(projectName);
 
-    if (!projectExists) {
-      this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectDir))}`);
-      await fsMkdir(projectDir, 0o777);
-    } else if (!(await isSafeToCreateProjectIn(projectDir))) {
+    if (projectExists) {
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
@@ -450,13 +468,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         default: false,
       });
 
-      if (confirm) {
-        this.env.tasks.next(`Creating directory ${chalk.green(prettyPath(projectDir))}`);
-        await removeDirectory(projectDir);
-        await fsMkdir(projectDir, 0o777);
-      } else {
+      if (!confirm) {
         throw new FatalException(`Not erasing existing project in ${chalk.green(prettyPath(projectDir))}.`, 0);
       }
+
+      this.canRemoveExisting = confirm;
     }
 
     this.env.tasks.end();
@@ -502,7 +518,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     if (!isValidPackageName(name) || name !== path.basename(name)) {
       throw new FatalException(
         `${chalk.green(name)} is not a valid package or directory name.\n` +
-        `Please choose a different name. Alphanumeric characters are always safe for app names. You can use the ${chalk.green('--display-name')} option for the human-readable name.`
+        `Please choose a different name. Alphanumeric characters are always safe for app names. You can use the ${chalk.green('--display-name')} option for the human-friendly name.`
       );
     }
   }
