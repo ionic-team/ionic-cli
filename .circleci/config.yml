@@ -65,7 +65,7 @@ jobs:
       - run: npm run lint
       - run: npm run test
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-      - run: npm run publish:ci-4.x
+      - run: npm run publish:ci-4.x -- --yes
     branches:
       only:
         - master
