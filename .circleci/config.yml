@@ -9,27 +9,27 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - restore_cache:
-          key: dependency-cache-{{ checksum "packages/ionic/package.json" }}
-      - restore_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/cli-framework/package.json" }}
       - restore_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/cli-utils/package.json" }}
       - restore_cache:
-          key: dependency-cache-{{ checksum "packages/@ionic/cli-plugin-proxy/package.json" }}
-      - restore_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/cli-scripts/package.json" }}
       - restore_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/cli-plugin-proxy/package.json" }}
+      - restore_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/discover/package.json" }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/lab/package.json" }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/v1-util/package.json" }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "packages/ionic/package.json" }}
       - run: npm install
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
       - run: npm run bootstrap
-      - save_cache:
-          key: dependency-cache-{{ checksum "packages/ionic/package.json" }}
-          paths:
-            - packages/ionic/node_modules
       - save_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/cli-framework/package.json" }}
           paths:
@@ -39,21 +39,33 @@ jobs:
           paths:
             - packages/@ionic/cli-utils/node_modules
       - save_cache:
-          key: dependency-cache-{{ checksum "packages/@ionic/cli-plugin-proxy/package.json" }}
-          paths:
-            - packages/@ionic/cli-plugin-proxy/node_modules
-      - save_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/cli-scripts/package.json" }}
           paths:
             - packages/@ionic/cli-scripts/node_modules
       - save_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/cli-plugin-proxy/package.json" }}
+          paths:
+            - packages/@ionic/cli-plugin-proxy/node_modules
+      - save_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/discover/package.json" }}
           paths:
             - packages/@ionic/discover/node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/lab/package.json" }}
+          paths:
+            - packages/@ionic/lab/node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/v1-util/package.json" }}
+          paths:
+            - packages/@ionic/v1-util/node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "packages/ionic/package.json" }}
+          paths:
+            - packages/ionic/node_modules
       - run: npm run lint
       - run: npm run test
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-      - run: npm run publish:canary -- --yes
+      - run: npm run publish:ci-4.x
     branches:
       only:
         - master
