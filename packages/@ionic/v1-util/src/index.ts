@@ -5,7 +5,7 @@ import { BuildCommand, ServeCommand } from './commands';
 export class IonicV1Namespace extends Namespace {
   async getMetadata() {
     return {
-      name: 'ionic-lab',
+      name: 'v1-util',
       description: '',
     };
   }

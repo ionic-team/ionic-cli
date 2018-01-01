@@ -77,7 +77,7 @@ export class ServeCommand extends Command {
     const proxy = options['proxy'];
 
     const watchPatterns = Array.isArray(watch) ? watch : [String(watch)];
-    const proxies = Array.isArray(proxy) ? proxy : [JSON.parse(String(proxy))];
+    const proxies = Array.isArray(proxy) ? proxy : (proxy ? [JSON.parse(String(proxy))] : []);
     const url = `http://${host}:${port}`;
 
     process.stdout.write(`Serving directory ${chalk.bold(wwwDir)}\n`);

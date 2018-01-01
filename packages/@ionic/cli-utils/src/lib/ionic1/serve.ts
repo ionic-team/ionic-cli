@@ -68,7 +68,7 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
 
     this.env.log.debug(`Watch patterns: ${project.watchPatterns.map(v => chalk.bold(v)).join(', ')}`);
 
-    const proxies = project.proxies ? project.proxies.map(p => ({ mount: p.path, ...proxyConfigToMiddlewareConfig(p) })) : [];
+    const proxies = project.proxies && options.proxy ? project.proxies.map(p => ({ mount: p.path, ...proxyConfigToMiddlewareConfig(p) })) : [];
 
     const details = [
       `address: ${chalk.bold(options.address)}`,

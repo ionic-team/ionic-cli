@@ -2,17 +2,16 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
-import { IConfig, StarterList, StarterManifest, StarterTemplate } from '../definitions';
-import { isStarterManifest } from '../guards';
-import { createRequest } from './http';
-
 import {
   ERROR_FILE_INVALID_JSON,
   ERROR_FILE_NOT_FOUND,
-  fsReadDir,
   fsReadJsonFile,
   fsWriteJsonFile,
 } from '@ionic/cli-framework/utils/fs';
+
+import { IConfig, StarterList, StarterManifest, StarterTemplate } from '../definitions';
+import { isStarterManifest } from '../guards';
+import { createRequest } from './http';
 
 export const STARTER_BASE_URL = 'https://d2ql0qc7j8u4b2.cloudfront.net';
 

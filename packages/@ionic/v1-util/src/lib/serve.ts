@@ -1,7 +1,6 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
-// import * as Debug from 'debug';
 import * as chokidar from 'chokidar';
 import * as express from 'express';
 import * as proxyMiddleware from 'http-proxy-middleware';
@@ -18,8 +17,6 @@ import {
   injectDevServerScript,
   injectLiveReloadScript,
 } from './dev-server';
-
-// const debug = Debug('ionic:v1-util:lib:serve');
 
 export interface ProxyConfig extends proxyMiddleware.Config {
   mount: string;

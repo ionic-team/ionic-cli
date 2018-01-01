@@ -16,7 +16,7 @@ function wrapfn(fn: () => void) {
 }
 
 export function registerShutdownFunction(fn: () => void) {
-  process.on('exit', () => { debug('registerShutdownFunction process.exit/normal shutdown'); wrapfn(fn); });
+  process.on('exit', () => { debug('registerShutdownFunction: process.exit/normal shutdown'); wrapfn(fn); });
   process.on('SIGINT', () => { debug('registerShutdownFunction: SIGINT'); wrapfn(fn); });
   process.on('SIGTERM', () => { debug('registerShutdownFunction: SIGTERM'); wrapfn(fn); });
   process.on('SIGHUP', () => { debug('registerShutdownFunction: SIGHUP'); wrapfn(fn); });

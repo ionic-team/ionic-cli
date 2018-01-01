@@ -17,7 +17,7 @@ By default, ${chalk.green('ionic serve')} boots up a development server on all n
 
 Try the ${chalk.green('--lab')} option to see multiple platforms at once.
       `,
-      exampleCommands: ['-c', '--lab -c'],
+      exampleCommands: ['', '-c', '--lab -c'],
       options: [
         {
           name: 'consolelogs',
