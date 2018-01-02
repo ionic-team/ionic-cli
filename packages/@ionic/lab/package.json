@@ -11,6 +11,7 @@
   "author": "Ionic Team <hi@ionic.io> (https://ionic.io)",
   "license": "MIT",
   "files": [
+    "bin/",
     "dist/",
     "www/",
     "LICENSE",

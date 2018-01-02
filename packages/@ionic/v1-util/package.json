@@ -12,6 +12,7 @@
   "license": "MIT",
   "files": [
     "assets/",
+    "bin/",
     "dist/",
     "LICENSE",
     "README.md"
