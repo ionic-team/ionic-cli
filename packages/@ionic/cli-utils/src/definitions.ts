@@ -675,9 +675,13 @@ export interface StarterList {
 export interface StarterTemplate {
   name: string;
   type: ProjectType;
-  description: string;
-  archive: string;
+  id: string;
+  description?: string;
   strip?: boolean;
+}
+
+export interface ResolvedStarterTemplate extends StarterTemplate {
+  archive: string;
 }
 
 export interface IntegrationTemplate {

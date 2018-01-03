@@ -79,8 +79,8 @@ export async function updatePackageJsonForCli(projectRoot: string, appName: stri
   }
 }
 
-export async function getStarterList(config: IConfig): Promise<StarterList> {
-  const { req } = await createRequest(config, 'get', `${STARTER_BASE_URL}/starters.json`);
+export async function getStarterList(config: IConfig, tag = 'latest'): Promise<StarterList> {
+  const { req } = await createRequest(config, 'get', `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}starters.json`);
 
   const res = await req;
 
@@ -94,66 +94,66 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     name: 'blank',
     type: 'ionic-core-angular',
     description: 'A blank starter project',
-    archive: `${STARTER_BASE_URL}/ionic-core-angular-official-blank.tar.gz`,
+    id: 'ionic-core-angular-official-blank',
   },
   {
     name: 'tabs',
     type: 'ionic-angular',
     description: 'A starting project with a simple tabbed interface',
-    archive: `${STARTER_BASE_URL}/ionic-angular-official-tabs.tar.gz`,
+    id: 'ionic-angular-official-tabs',
   },
   {
     name: 'blank',
     type: 'ionic-angular',
     description: 'A blank starter project',
-    archive: `${STARTER_BASE_URL}/ionic-angular-official-blank.tar.gz`,
+    id: 'ionic-angular-official-blank',
   },
   {
     name: 'sidemenu',
     type: 'ionic-angular',
     description: 'A starting project with a side menu with navigation in the content area',
-    archive: `${STARTER_BASE_URL}/ionic-angular-official-sidemenu.tar.gz`,
+    id: 'ionic-angular-official-sidemenu',
   },
   {
     name: 'super',
     type: 'ionic-angular',
     description: 'A starting project complete with pre-built pages, providers and best practices for Ionic development.',
-    archive: `${STARTER_BASE_URL}/ionic-angular-official-super.tar.gz`,
+    id: 'ionic-angular-official-super',
   },
   {
     name: 'tutorial',
     type: 'ionic-angular',
     description: 'A tutorial based project that goes along with the Ionic documentation',
-    archive: `${STARTER_BASE_URL}/ionic-angular-official-tutorial.tar.gz`,
+    id: 'ionic-angular-official-tutorial',
   },
   {
     name: 'aws',
     type: 'ionic-angular',
     description: 'AWS Mobile Hub Starter',
-    archive: `${STARTER_BASE_URL}/ionic-angular-official-aws.tar.gz`,
+    id: 'ionic-angular-official-aws',
   },
   {
     name: 'tabs',
     type: 'ionic1',
     description: 'A starting project for Ionic using a simple tabbed interface',
-    archive: `${STARTER_BASE_URL}/ionic1-official-tabs.tar.gz`,
+    id: 'ionic1-official-tabs',
   },
   {
     name: 'blank',
     type: 'ionic1',
     description: 'A blank starter project for Ionic',
-    archive: `${STARTER_BASE_URL}/ionic1-official-blank.tar.gz`,
+    id: 'ionic1-official-blank',
   },
   {
     name: 'sidemenu',
     type: 'ionic1',
     description: 'A starting project for Ionic using a side menu with navigation in the content area',
-    archive: `${STARTER_BASE_URL}/ionic1-official-sidemenu.tar.gz`,
+    id: 'ionic1-official-sidemenu',
   },
   {
     name: 'maps',
     type: 'ionic1',
     description: 'An Ionic starter project using Google Maps and a side menu',
-    archive: `${STARTER_BASE_URL}/ionic1-official-maps.tar.gz`,
+    id: 'ionic1-official-maps',
   },
 ];

@@ -8,7 +8,7 @@ import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
 import { isValidURL } from '@ionic/cli-framework/utils/string';
 
-import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, StarterManifest, StarterTemplate } from '@ionic/cli-utils';
+import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, ResolvedStarterTemplate, StarterManifest } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { PROJECT_FILE, Project } from '@ionic/cli-utils/lib/project';
@@ -108,6 +108,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           description: 'Specify the bundle ID/application ID for your app (reverse-DNS notation)',
           groups: [OptionGroup.Advanced],
         },
+        {
+          name: 'tag',
+          description: `Specify a tag to use for the starters (e.g. ${['latest', 'testing', 'next'].map(t => chalk.green(t)).join(', ')})`,
+          default: 'latest',
+          groups: [OptionGroup.Hidden],
+        },
       ],
     };
   }
@@ -119,7 +125,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     // If the action is list then lets just end here.
     if (options['list']) {
       const columnHeaders = ['name', 'project type', 'description'];
-      this.env.log.rawmsg(columnar(STARTER_TEMPLATES.map(({ name, type, description }) => [chalk.green(name), chalk.bold(type), description]), { columnHeaders }));
+      this.env.log.rawmsg(columnar(STARTER_TEMPLATES.map(({ name, type, description }) => [chalk.green(name), chalk.bold(type), description || '']), { columnHeaders }));
       throw new FatalException('', 0);
     }
 
@@ -262,7 +268,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         message: 'Starter template:',
         choices: () => {
           const starterTemplates = STARTER_TEMPLATES.filter(st => st.type === options['type']);
-          const cols = columnar(starterTemplates.map(({ name, type, description }) => [chalk.green(name), chalk.bold(type), description])).split('\n');
+          const cols = columnar(starterTemplates.map(({ name, type, description }) => [chalk.green(name), chalk.bold(type), description || ''])).split('\n');
 
           return cols.map((col, i) => {
             return {
@@ -285,6 +291,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     const [ name, template ] = inputs;
     const displayName = options['display-name'] ? String(options['display-name']) : name;
     const proAppId = options['pro-id'] ? String(options['pro-id']) : undefined;
+    const tag = options['tag'] ? String(options['tag']) : 'latest';
     const clonedApp = isValidURL(template);
     let linkConfirmed = typeof proAppId === 'string';
 
@@ -313,7 +320,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     if (clonedApp) {
       await this.env.shell.run('git', ['clone', template, name, '--progress'], { showExecution: true });
     } else {
-      const starterTemplate = await this.findStarterTemplate(template, String(options['type']));
+      const starterTemplate = await this.findStarterTemplate(template, String(options['type']), tag);
       await this.downloadStarterTemplate(projectDir, starterTemplate);
     }
 
@@ -478,26 +485,26 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     this.env.tasks.end();
   }
 
-  async findStarterTemplate(template: string, type: string): Promise<StarterTemplate> {
+  async findStarterTemplate(template: string, type: string, tag: string): Promise<ResolvedStarterTemplate> {
     const { STARTER_BASE_URL, STARTER_TEMPLATES, getStarterList } = await import('@ionic/cli-utils/lib/start');
     const starterTemplate = STARTER_TEMPLATES.find(t => t.type === type && t.name === template);
 
     if (starterTemplate) {
-      return starterTemplate;
+      return {
+        ...starterTemplate,
+        archive: `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}${starterTemplate.id}.tar.gz`,
+      };
     }
 
     this.env.tasks.next('Looking up starter');
-    const starterList = await getStarterList(this.env.config);
+    const starterList = await getStarterList(this.env.config, tag);
 
     const starter = starterList.starters.find(t => t.type === type && t.name === template);
 
     if (starter) {
       return {
-        strip: false,
-        name: starter.name,
-        type: starter.type,
-        description: '',
-        archive: `${STARTER_BASE_URL}/${starter.id}.tar.gz`,
+        ...starter,
+        archive: `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}${starter.id}.tar.gz`,
       };
     } else {
       throw new FatalException(
@@ -567,7 +574,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     await conf.save();
   }
 
-  async downloadStarterTemplate(projectDir: string, starterTemplate: StarterTemplate) {
+  async downloadStarterTemplate(projectDir: string, starterTemplate: ResolvedStarterTemplate) {
     const { download } = await import('@ionic/cli-utils/lib/http');
     const { createTarExtraction } = await import('@ionic/cli-utils/lib/utils/archive');
 
