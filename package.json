@@ -4,7 +4,7 @@
     "bootstrap": "lerna bootstrap && npm run build",
     "clean": "lerna run clean",
     "lint": "lerna run lint",
-    "lint:fix": "lerna run lint -- -- -- --fix",
+    "lint:fix": "lerna run lint -- -- --fix",
     "link": "lerna exec --scope=ionic --scope='@ionic/+(lab|v1-util)' npm link",
     "unlink": "lerna exec --scope=ionic --scope='@ionic/+(lab|v1-util)' npm unlink",
     "test": "lerna run test",
