@@ -92,9 +92,9 @@ export async function getStarterList(config: IConfig, tag = 'latest'): Promise<S
 export const STARTER_TEMPLATES: StarterTemplate[] = [
   {
     name: 'blank',
-    type: 'ionic-core-angular',
+    type: 'angular',
     description: 'A blank starter project',
-    id: 'ionic-core-angular-official-blank',
+    id: 'angular-official-blank',
   },
   {
     name: 'tabs',

@@ -5,7 +5,7 @@ import { BuildOptions, CommandLineInputs, CommandLineOptions } from '../../defin
 
 import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../build';
 
-const debug = Debug('ionic:cli-utils:lib:ionic-core-angular:build');
+const debug = Debug('ionic:cli-utils:lib:angular:build');
 
 export class BuildRunner extends BaseBuildRunner<BuildOptions> {
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions) {

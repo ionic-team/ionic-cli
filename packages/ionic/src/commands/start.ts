@@ -180,7 +180,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       throw new FatalException(
         `Sorry! The ${chalk.green('--v1')} and ${chalk.green('--v2')} flags have been removed.\n` +
         `Use the ${chalk.green('--type')} option. (${chalk.green('ionic start --help')})\n\n` +
-        `For ${chalk.bold(this.env.project.formatType(type))} projects, try ${chalk.green('ionic start ' + (inputs.length > 0 ? inputs.join(' ') + ' ' : '') + '--type=' + type)}`
+        `For ${chalk.bold(this.env.project.formatTypeName(type))} projects, try ${chalk.green('ionic start ' + (inputs.length > 0 ? inputs.join(' ') + ' ' : '') + '--type=' + type)}`
       );
     }
 
@@ -229,7 +229,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     await this.checkForExisting(inputs[0], projectDir);
 
     if (!options['type']) {
-      const recommendedType = 'ionic-core-angular';
+      const recommendedType = 'angular';
 
       this.env.log.info(
         `What type of project would you like to create?\n` +
@@ -243,7 +243,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         message: 'Project type:',
         choices: () => {
           const projectTypes = lodash.uniq(STARTER_TEMPLATES.map(t => t.type));
-          const cols = columnar(projectTypes.map(type => [`${chalk.green(type)}${type === recommendedType ? ' (recommended)' : ''}`, this.env.project.formatType(type)])).split('\n');
+          const cols = columnar(projectTypes.map(type => [`${chalk.green(type)}${type === recommendedType ? ' (recommended)' : ''}`, this.env.project.formatTypeName(type)])).split('\n');
 
           return cols.map((col, i) => ({
             name: col,

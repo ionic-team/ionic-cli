@@ -13,7 +13,7 @@ import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } fro
 const NG_AUTODETECTED_PROXY_FILE = 'proxy.config.js';
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 
-const debug = Debug('ionic:cli-utils:lib:ionic-core-angular:serve');
+const debug = Debug('ionic:cli-utils:lib:angular:serve');
 
 export class ServeRunner extends BaseServeRunner<ServeOptions> {
   async serveProject(options: ServeOptions): Promise<ServeDetails> {

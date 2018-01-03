@@ -27,7 +27,7 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
         this.env.log.nl();
         this.env.log.warn(
           `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
-          `This package is required for ${chalk.green('ionic serve')} in ${this.env.project.formatType('ionic-core-angular')} projects.`
+          `This package is required for ${chalk.green('ionic serve')} in ${this.env.project.formatTypeName('angular')} projects.`
         );
 
         const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });

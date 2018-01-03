@@ -106,7 +106,7 @@ export interface ProjectFileProxy {
   rejectUnauthorized: boolean;
 }
 
-export type ProjectType = 'ionic-core-angular' | 'ionic-angular' | 'ionic1' | 'custom';
+export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom';
 
 export interface ProjectIntegration {
   enabled?: boolean;
@@ -224,7 +224,7 @@ export interface IConfig extends IBaseConfig<ConfigFile> {
 }
 
 export interface IProject extends IBaseConfig<ProjectFile> {
-  formatType(input: ProjectType): string;
+  formatTypeName(input: ProjectType): string;
   getSourceDir(): Promise<string>;
   loadAppId(): Promise<string>;
   loadPackageJson(): Promise<framework.PackageJson>;

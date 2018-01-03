@@ -15,7 +15,7 @@ import { PROJECT_FILE } from './project';
 
 import * as ionic1ServeLibType from './ionic1/serve';
 import * as ionicAngularServeLibType from './ionic-angular/serve';
-import * as ionicCoreAngularServeLibType from './ionic-core-angular/serve';
+import * as angularServeLibType from './angular/serve';
 
 const debug = Debug('ionic:cli-utils:lib:serve');
 
@@ -47,8 +47,8 @@ export abstract class ServeRunner<T extends ServeOptions> {
   abstract serveProject(options: T): Promise<ServeDetails>;
 
   static async createFromProjectType(env: IonicEnvironment, type: 'ionic1'): Promise<ionic1ServeLibType.ServeRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type: 'ionic-core-angular'): Promise<ionicCoreAngularServeLibType.ServeRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: 'ionic-angular'): Promise<ionicAngularServeLibType.ServeRunner>;
+  static async createFromProjectType(env: IonicEnvironment, type: 'angular'): Promise<angularServeLibType.ServeRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: ProjectType): Promise<ServeRunner<any>>;
   static async createFromProjectType(env: IonicEnvironment, type: ProjectType): Promise<ServeRunner<any>> {
     if (type === 'ionic1') {
@@ -57,8 +57,8 @@ export abstract class ServeRunner<T extends ServeOptions> {
     } else if (type === 'ionic-angular') {
       const { ServeRunner } = await import('./ionic-angular/serve');
       return new ServeRunner(env);
-    } else if (type === 'ionic-core-angular') {
-      const { ServeRunner } = await import('./ionic-core-angular/serve');
+    } else if (type === 'angular') {
+      const { ServeRunner } = await import('./angular/serve');
       return new ServeRunner(env);
     } else {
       throw new FatalException(

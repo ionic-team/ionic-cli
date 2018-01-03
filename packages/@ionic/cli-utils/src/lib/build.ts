@@ -9,7 +9,7 @@ import { PROJECT_FILE } from './project';
 
 import * as ionic1BuildLibType from './ionic1/build';
 import * as ionicAngularBuildLibType from './ionic-angular/build';
-import * as ionicCoreAngularBuildLibType from './ionic-core-angular/build';
+import * as angularBuildLibType from './angular/build';
 
 const debug = Debug('ionic:cli-utils:lib:build');
 
@@ -26,8 +26,8 @@ export abstract class BuildRunner<T extends BuildOptions> {
   constructor(protected env: IonicEnvironment) {}
 
   static async createFromProjectType(env: IonicEnvironment, type: 'ionic1'): Promise<ionic1BuildLibType.BuildRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type: 'ionic-core-angular'): Promise<ionicCoreAngularBuildLibType.BuildRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: 'ionic-angular'): Promise<ionicAngularBuildLibType.BuildRunner>;
+  static async createFromProjectType(env: IonicEnvironment, type: 'angular'): Promise<angularBuildLibType.BuildRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: ProjectType): Promise<BuildRunner<any>>;
   static async createFromProjectType(env: IonicEnvironment, type: ProjectType): Promise<BuildRunner<any>> {
     if (type === 'ionic1') {
@@ -36,8 +36,8 @@ export abstract class BuildRunner<T extends BuildOptions> {
     } else if (type === 'ionic-angular') {
       const { BuildRunner } = await import('./ionic-angular/build');
       return new BuildRunner(env);
-    } else if (type === 'ionic-core-angular') {
-      const { BuildRunner } = await import('./ionic-core-angular/build');
+    } else if (type === 'angular') {
+      const { BuildRunner } = await import('./angular/build');
       return new BuildRunner(env);
     } else {
       throw new FatalException(
