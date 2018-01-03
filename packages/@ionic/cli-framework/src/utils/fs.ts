@@ -174,10 +174,10 @@ export async function removeDirectory(dir: string): Promise<void> {
   await rimrafp(dir);
 }
 
-export function copyFile(fileName: string, target: string, mode = 0o777) {
+export function copyFile(fileName: string, target: string, mode = 0o666) {
   return new Promise((resolve, reject) => {
     const rs = fs.createReadStream(fileName);
-    const ws = fs.createWriteStream(target, { mode: mode });
+    const ws = fs.createWriteStream(target, { mode });
 
     rs.on('error', reject);
     ws.on('error', reject);

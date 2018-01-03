@@ -205,6 +205,7 @@ export abstract class ServeRunner<T extends ServeOptions> {
       (details.externalNetworkInterfaces.length > 0 ? `External: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}\n` : '') +
       (devAppDetails && devAppDetails.channel ? `DevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '')
     );
+    this.env.log.nl();
 
     if (options.open) {
       const openAddress = labAddress ? labAddress : localAddress;
