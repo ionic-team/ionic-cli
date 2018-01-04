@@ -104,7 +104,7 @@ export class Environment implements IonicEnvironment {
     return require(p);
   }
 
-  async open() {
+  open() {
     if (this.flags.interactive) {
       if (!this.bottomBar) {
         const inquirer = require('inquirer');
@@ -122,10 +122,11 @@ export class Environment implements IonicEnvironment {
       }
     }
 
-    this.log.stream = typeof this.bottomBar === 'undefined' ? process.stdout : this.bottomBar.log;
+    this.log.outstream = typeof this.bottomBar === 'undefined' ? process.stdout : this.bottomBar.log;
+    this.log.errstream = typeof this.bottomBar === 'undefined' ? process.stderr : this.bottomBar.log;
   }
 
-  async close() {
+  close() {
     if (!this.keepopen) {
       this.tasks.cleanup();
 
@@ -136,7 +137,8 @@ export class Environment implements IonicEnvironment {
       if (this.bottomBar) {
         this.bottomBar.close();
         this.bottomBar = undefined;
-        this.log.stream = process.stdout;
+        this.log.outstream = process.stdout;
+        this.log.errstream = process.stderr;
       }
     }
   }

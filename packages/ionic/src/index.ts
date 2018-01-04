@@ -162,7 +162,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     }
   }
 
-  await ienv.close();
+  ienv.close();
 }
 
 export async function receive(msg: IPCMessage) {

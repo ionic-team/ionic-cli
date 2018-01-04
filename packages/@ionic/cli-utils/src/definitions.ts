@@ -27,14 +27,16 @@ export type LogPrefix = string | (() => string);
 export interface LoggerOptions {
   level?: LogLevel;
   prefix?: string | (() => string);
-  stream?: NodeJS.WritableStream;
+  outstream?: NodeJS.WritableStream;
+  errstream?: NodeJS.WritableStream;
   wrap?: boolean;
 }
 
 export interface ILogger {
   readonly level: LogLevel;
   readonly prefix: LogPrefix;
-  stream: NodeJS.WritableStream;
+  outstream: NodeJS.WritableStream;
+  errstream: NodeJS.WritableStream;
   readonly wrap: boolean;
 
   // log functions
@@ -87,12 +89,6 @@ export interface CordovaPackageJson extends framework.PackageJson {
       [key: string]: {};
     };
   };
-}
-
-export interface BowerJson {
-  name: string;
-  dependencies?: { [key: string]: string };
-  devDependencies?: { [key: string]: string };
 }
 
 export interface ProjectFileProxy {
@@ -227,9 +223,9 @@ export interface IProject extends IBaseConfig<ProjectFile> {
 
   getSourceDir(): Promise<string>;
   getInfo(): Promise<InfoHookItem[]>;
+  detected(): Promise<boolean>;
   loadAppId(): Promise<string>;
   loadPackageJson(): Promise<framework.PackageJson>;
-  loadBowerJson(): Promise<BowerJson>;
 }
 
 export interface PackageVersions {
@@ -548,8 +544,8 @@ export interface IonicEnvironment {
   readonly namespace: IRootNamespace;
   keepopen: boolean;
 
-  open(): Promise<void>;
-  close(): Promise<void>;
+  open(): void;
+  close(): void;
   runCommand(pargv: string[], opts?: { showExecution?: boolean; }): Promise<void>;
   load(modulePath: 'superagent'): typeof superagentType;
 }

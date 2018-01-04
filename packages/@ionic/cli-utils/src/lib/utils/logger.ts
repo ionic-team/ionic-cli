@@ -8,6 +8,8 @@ import { Chalk } from 'chalk';
 import { ILogger, LogLevel, LogMsg, LogPrefix, LoggerOptions } from '../../definitions';
 import { LOG_LEVELS } from '../../guards';
 
+const LOGGER_ERROR_LEVELS: LogLevel[] = ['debug', 'warn', 'error', 'announce'];
+
 export const LOGGER_STATUS_COLORS = new Map<LogLevel, Chalk>([
   ['debug', chalk.magenta.dim],
   ['info', chalk.gray],
@@ -28,13 +30,15 @@ export class Logger implements ILogger {
 
   readonly level: LogLevel;
   readonly prefix: LogPrefix;
-  stream: NodeJS.WritableStream;
+  outstream: NodeJS.WritableStream;
+  errstream: NodeJS.WritableStream;
   readonly wrap: boolean;
 
-  constructor({ level = 'info', prefix = '', stream = process.stdout, wrap = true }: LoggerOptions) {
+  constructor({ level = 'info', prefix = '', outstream = process.stdout, errstream = process.stderr, wrap = true }: LoggerOptions) {
     this.level = level;
     this.prefix = prefix;
-    this.stream = stream;
+    this.outstream = outstream;
+    this.errstream = errstream;
     this.wrap = wrap;
   }
 
@@ -71,16 +75,16 @@ export class Logger implements ILogger {
       msg = msg();
     }
 
-    this.stream.write(this.enforceLF(msg));
+    this.outstream.write(this.enforceLF(msg));
   }
 
   nl(num = 1): void {
-    this.stream.write(this.enforceLF('\n'.repeat(num)));
+    this.outstream.write(this.enforceLF('\n'.repeat(num)));
   }
 
   clone(opts: Partial<LoggerOptions> = {}) {
-    const { level, prefix, stream } = this;
-    return new Logger({ level, prefix, stream, ...opts });
+    const { level, prefix, outstream, errstream } = this;
+    return new Logger({ level, prefix, outstream, errstream, ...opts });
   }
 
   createWriteStream() {
@@ -162,7 +166,11 @@ export class Logger implements ILogger {
         msg = `${fmtLevel()} ${msg}`;
       }
 
-      this.stream.write(util.format(msg));
+      if (LOGGER_ERROR_LEVELS.includes(level)) {
+        this.errstream.write(util.format(msg));
+      } else {
+        this.outstream.write(util.format(msg));
+      }
     }
   }
 }

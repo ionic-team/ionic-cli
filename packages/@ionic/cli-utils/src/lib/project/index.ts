@@ -5,15 +5,16 @@ import * as lodash from 'lodash';
 
 import { ERROR_FILE_INVALID_JSON, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
-import { ERROR_INVALID_BOWER_JSON, ERROR_INVALID_PACKAGE_JSON, readBowerJsonFile, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+import { ERROR_INVALID_PACKAGE_JSON, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-import { BowerJson, IProject, ILogger, InfoHookItem, PackageJson, ProjectFile, ProjectType } from '../../definitions';
+import { IProject, ILogger, InfoHookItem, PackageJson, ProjectFile, ProjectType } from '../../definitions';
 import { BaseConfig } from '../config';
 import { FatalException } from '../errors';
 
 import * as angularProjectLibType from './angular';
 import * as ionicAngularProjectLibType from './ionic-angular';
 import * as ionic1ProjectLibType from './ionic1';
+import * as customProjectLibType from './custom';
 
 export const PROJECT_FILE = 'ionic.config.json';
 export const PROJECT_FILE_LEGACY = 'ionic.project';
@@ -27,7 +28,6 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   type?: ProjectType;
   directory: string;
   protected packageJsonFile?: PackageJson;
-  protected bowerJsonFile?: BowerJson;
   protected log: ILogger;
 
   constructor(dir: string, file: string, { log }: ProjectDeps) {
@@ -35,49 +35,40 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     this.log = log;
   }
 
-  static async determineType(projectDir: string): Promise<ProjectType | undefined> {
-    let pkg: PackageJson | undefined;
-    let bwr: BowerJson | undefined;
+  static async determineType(projectDir: string, deps: ProjectDeps): Promise<ProjectType | undefined> {
+    const projectFilePath = path.resolve(projectDir, PROJECT_FILE);
+    let projectFile: { [key: string]: any; } | undefined;
 
     try {
-      const f = await fsReadJsonFile(path.resolve(projectDir, PROJECT_FILE));
-
-      if (PROJECT_TYPES.includes(f.type)) {
-        return f.type;
-      }
+      projectFile = await fsReadJsonFile(projectFilePath);
     } catch (e) {
       // ignore
     }
 
-    try {
-      pkg = await readPackageJsonFile(path.resolve(projectDir, 'package.json'));
-    } catch (e) {
-      // ignore
-    }
+    if (projectFile) {
+      if (PROJECT_TYPES.includes(projectFile.type)) {
+        return projectFile.type;
+      } else {
+        const listWrapOptions = { width: TTY_WIDTH - 8 - 3, indentation: 1 };
 
-    if (pkg) {
-      const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
+        // TODO: move some of this to the CLI docs
 
-      if (typeof deps['@ionic/angular'] === 'string') {
-        return 'angular';
+        deps.log.error(
+          `Could not determine project type (project config: ${chalk.bold(prettyPath(projectFilePath))}).\n` +
+          `- ${wordWrap(`For ${chalk.bold(prettyProjectName('angular'))} projects, make sure ${chalk.green('@ionic/angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n\n` +
+          `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic-angular'))} projects, make sure ${chalk.green('ionic-angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n\n` +
+          `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic1'))} projects, make sure ${chalk.green('ionic')} is listed as a dependency in ${chalk.bold('bower.json')}.`, listWrapOptions)}\n\n` +
+          `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold(PROJECT_FILE)} to one of: ${PROJECT_TYPES.map(v => chalk.green(v)).join(', ')}.\n\n` +
+          `If the Ionic CLI does not know what type of project this is, ${chalk.green('ionic build')}, ${chalk.green('ionic serve')}, and other commands may not work. You can use the ${chalk.green('custom')} project type if that's okay.`
+        );
       }
-
-      if (typeof deps['ionic-angular'] === 'string') {
-        return 'ionic-angular';
-      }
     }
 
-    try {
-      bwr = await readBowerJsonFile(path.resolve(projectDir, 'bower.json'));
-    } catch (e) {
-      // ignore
-    }
+    for (let projectType of PROJECT_TYPES) {
+      const p = await BaseProject.createFromProjectType(projectDir, PROJECT_FILE, deps, projectType);
 
-    if (bwr) {
-      const deps = lodash.assign({}, bwr.dependencies, bwr.devDependencies);
-
-      if (typeof deps['ionic'] === 'string') {
-        return 'ionic1';
+      if (await p.detected()) {
+        return p.type;
       }
     }
   }
@@ -85,6 +76,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'angular'): Promise<angularProjectLibType.Project>;
   static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'ionic-angular'): Promise<ionicAngularProjectLibType.Project>;
   static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'ionic1'): Promise<ionic1ProjectLibType.Project>;
+  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'custom'): Promise<customProjectLibType.Project>;
   static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: ProjectType): Promise<IProject>;
   static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: ProjectType): Promise<IProject> {
     if (type === 'angular') {
@@ -95,6 +87,9 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       return new Project(dir, file, deps);
     } else if (type === 'ionic1') {
       const { Project } = await import('./ionic1');
+      return new Project(dir, file, deps);
+    } else if (type === 'custom') {
+      const { Project } = await import('./custom');
       return new Project(dir, file, deps);
     }
 
@@ -133,25 +128,6 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     return this.packageJsonFile;
   }
 
-  async loadBowerJson(): Promise<BowerJson> {
-    if (!this.bowerJsonFile) {
-      const bowerJsonPath = path.resolve(this.directory, 'bower.json');
-      try {
-        this.bowerJsonFile = await readBowerJsonFile(bowerJsonPath);
-      } catch (e) {
-        if (e === ERROR_FILE_INVALID_JSON) {
-          throw new FatalException(`Could not parse ${chalk.bold('bower.json')}. Is it a valid JSON file?`);
-        } else if (e === ERROR_INVALID_BOWER_JSON) {
-          throw new FatalException(`The ${chalk.bold('bower.json')} file seems malformed.`);
-        }
-
-        throw e; // Probably file not found
-      }
-    }
-
-    return this.bowerJsonFile;
-  }
-
   async provideDefaults(o: any): Promise<any> {
     const results = lodash.cloneDeep(o);
 
@@ -185,6 +161,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   }
 
   abstract getInfo(): Promise<InfoHookItem[]>;
+  abstract detected(): Promise<boolean>;
 
   async getSourceDir(): Promise<string> {
     const project = await this.load();
@@ -201,6 +178,12 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   }
 }
 
+/**
+ * This is a gross hack.
+ *
+ * TODO: minimize IonicEnvironment & `env.project.directory` usage, make
+ * `env.project` undefined when outside a project.
+ */
 export class OutsideProject extends BaseConfig<never> implements IProject {
   type = undefined;
 
@@ -209,18 +192,14 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
   }
 
   private _createError() {
-    const listWrapOptions = { width: TTY_WIDTH - 8 - 3, indentation: 1 };
-
-    // TODO: move some of this to the website
-
     return new FatalException(
-      `Could not determine project type (project config: ${chalk.bold(prettyPath(this.filePath))}).\n` +
-      `- ${wordWrap(`For ${chalk.bold(prettyProjectName('angular'))} projects, make sure ${chalk.green('@ionic/angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n\n` +
-      `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic-angular'))} projects, make sure ${chalk.green('ionic-angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n\n` +
-      `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic1'))} projects, make sure ${chalk.green('ionic')} is listed as a dependency in ${chalk.bold('bower.json')}.`, listWrapOptions)}\n\n` +
-      `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold(PROJECT_FILE)} to one of: ${PROJECT_TYPES.map(v => chalk.green(v)).join(', ')}.\n\n` +
-      `If the Ionic CLI does not know what type of project this is, ${chalk.green('ionic build')}, ${chalk.green('ionic serve')}, and other commands may not work. You can use the ${chalk.green('custom')} project type if that's okay.\n`
+      `Attempted to load an Ionic project outside a detected project directory.` +
+      `Would you mind reporting this issue? ${chalk.bold('https://github.com/ionic-team/ionic-cli/issues/')}`
     );
+  }
+
+  async detected() {
+    return true;
   }
 
   async getInfo(): Promise<InfoHookItem[]> {
@@ -236,10 +215,6 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
   }
 
   async loadPackageJson(): Promise<never> {
-    throw this._createError();
-  }
-
-  async loadBowerJson(): Promise<never> {
     throw this._createError();
   }
 

@@ -1,6 +1,7 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as lodash from 'lodash';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
@@ -28,6 +29,21 @@ export class Project extends BaseProject {
       { type: 'local-packages', key: '@ionic/core', value: ionicCoreVersion ? ionicCoreVersion : 'not installed' },
       { type: 'local-packages', key: '@angular/cli', value: angularCLIVersion ? angularCLIVersion : 'not installed' },
     ];
+  }
+
+  async detected() {
+    try {
+      const pkg = await readPackageJsonFile(path.resolve(this.directory, 'package.json'));
+      const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
+
+      if (typeof deps['@ionic/angular'] === 'string') {
+        return true;
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    return false;
   }
 
   async getFrameworkVersion() {

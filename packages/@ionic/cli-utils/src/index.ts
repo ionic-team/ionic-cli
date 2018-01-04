@@ -86,9 +86,9 @@ function registerHooks(hooks: IHookEngine) {
 
     const projectFile = env.project.directory ? await env.project.load() : undefined;
 
-    if (projectFile) {
-      info.push(...(await env.project.getInfo()));
+    info.push(...(await env.project.getInfo()));
 
+    if (projectFile) {
       if (projectFile.integrations.cordova && projectFile.integrations.cordova.enabled !== false) {
         const { getAndroidSdkToolsVersion } = await import('./lib/android');
         const { getCordovaCLIVersion, getCordovaPlatformVersions } = await import('./lib/cordova/utils');
@@ -154,7 +154,7 @@ export async function getProject(projectDir: string | undefined, deps: ProjectDe
     return new OutsideProject('', PROJECT_FILE);
   }
 
-  const type = await BaseProject.determineType(projectDir);
+  const type = await BaseProject.determineType(projectDir, deps);
 
   if (!type) {
     return new OutsideProject('', PROJECT_FILE);
@@ -169,7 +169,8 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
   const flags = gatherFlags(argv);
 
-  let stream: NodeJS.WritableStream;
+  let outstream: NodeJS.WritableStream;
+  let errstream: NodeJS.WritableStream;
   let tasks: TaskChain;
   let bottomBar: inquirerType.ui.BottomBar | undefined;
   let log: Logger;
@@ -198,12 +199,14 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   if (flags.interactive) {
     const inquirer = await import('inquirer');
     bottomBar = new inquirer.ui.BottomBar();
-    stream = bottomBar.log;
-    log = new Logger({ level, prefix, stream });
+    outstream = bottomBar.log;
+    errstream = bottomBar.log;
+    log = new Logger({ level, prefix, outstream, errstream });
     tasks = new InteractiveTaskChain({ log, bottomBar });
   } else {
-    stream = process.stdout;
-    log = new Logger({ level, prefix, stream });
+    outstream = process.stdout;
+    errstream = process.stderr;
+    log = new Logger({ level, prefix, outstream, errstream });
     tasks = new TaskChain({ log });
   }
 
