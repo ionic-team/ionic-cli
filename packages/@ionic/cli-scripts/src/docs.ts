@@ -57,7 +57,7 @@ export async function run() {
   await Promise.all(commandPromises);
   await copyToIonicSite();
 
-  await env.close();
+  env.close();
 }
 
 async function getCommandList(env: IonicEnvironment) {
