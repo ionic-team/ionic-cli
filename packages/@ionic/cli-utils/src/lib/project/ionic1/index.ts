@@ -6,7 +6,7 @@ import * as lodash from 'lodash';
 import { BowerJson } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { ERROR_FILE_INVALID_JSON, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
-import { ERROR_INVALID_BOWER_JSON, readBowerJsonFile } from '@ionic/cli-framework/utils/npm';
+import { ERROR_INVALID_BOWER_JSON, readBowerJsonFile, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
 import { InfoHookItem, ProjectType } from '../../../definitions';
 import { FatalException } from '../../errors';
@@ -18,10 +18,11 @@ export class Project extends BaseProject {
   protected bowerJsonFile?: BowerJson;
 
   async getInfo(): Promise<InfoHookItem[]> {
-    const ionic1Version = await this.getFrameworkVersion();
+    const [ ionic1Version, v1UtilVersion ] = await Promise.all([this.getFrameworkVersion(), this.getV1UtilVersion()]);
 
     return [
       { type: 'local-packages', key: 'Ionic Framework', value: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown' },
+      { type: 'local-packages', key: '@ionic/v1-util', value: v1UtilVersion ? v1UtilVersion : 'not installed' },
     ];
   }
 
@@ -78,6 +79,17 @@ export class Project extends BaseProject {
       }
     } catch (e) {
       this.log.error(`Error with ${chalk.bold(prettyPath(bowerJsonPath))} file: ${e}`);
+    }
+  }
+
+  async getV1UtilVersion(): Promise<string | undefined> {
+    const pkgPath = path.resolve(this.directory, 'node_modules', '@ionic', 'v1-util', 'package.json');
+
+    try {
+      const pkg = await readPackageJsonFile(pkgPath);
+      return pkg.version;
+    } catch (e) {
+      this.log.error(`Error with ${chalk.bold(prettyPath(pkgPath))} file: ${e}`);
     }
   }
 
