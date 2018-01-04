@@ -7,9 +7,9 @@ import { BuildOptions, CommandLineInputs, CommandLineOptions, IonicEnvironment, 
 import { FatalException } from './errors';
 import { PROJECT_FILE } from './project';
 
-import * as ionic1BuildLibType from './ionic1/build';
-import * as ionicAngularBuildLibType from './ionic-angular/build';
-import * as angularBuildLibType from './angular/build';
+import * as ionic1BuildLibType from './project/ionic1/build';
+import * as ionicAngularBuildLibType from './project/ionic-angular/build';
+import * as angularBuildLibType from './project/angular/build';
 
 const debug = Debug('ionic:cli-utils:lib:build');
 
@@ -28,20 +28,20 @@ export abstract class BuildRunner<T extends BuildOptions> {
   static async createFromProjectType(env: IonicEnvironment, type: 'ionic1'): Promise<ionic1BuildLibType.BuildRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: 'ionic-angular'): Promise<ionicAngularBuildLibType.BuildRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: 'angular'): Promise<angularBuildLibType.BuildRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type: ProjectType): Promise<BuildRunner<any>>;
-  static async createFromProjectType(env: IonicEnvironment, type: ProjectType): Promise<BuildRunner<any>> {
+  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<BuildRunner<any>>;
+  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<BuildRunner<any>> {
     if (type === 'ionic1') {
-      const { BuildRunner } = await import('./ionic1/build');
+      const { BuildRunner } = await import('./project/ionic1/build');
       return new BuildRunner(env);
     } else if (type === 'ionic-angular') {
-      const { BuildRunner } = await import('./ionic-angular/build');
+      const { BuildRunner } = await import('./project/ionic-angular/build');
       return new BuildRunner(env);
     } else if (type === 'angular') {
-      const { BuildRunner } = await import('./angular/build');
+      const { BuildRunner } = await import('./project/angular/build');
       return new BuildRunner(env);
     } else {
       throw new FatalException(
-        `Cannot perform Ionic build for project type: ${chalk.bold(type)}.\n` +
+        `Cannot perform Ionic build for ${type ? '' : 'unknown '}project type${type ? `: ${chalk.bold(type)}` :  ''}.\n` +
         (type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to build custom projects.\n\n` : '') +
         `If you'd like the CLI to try to detect your project type, you can unset the ${chalk.bold('type')} attribute in ${chalk.bold(PROJECT_FILE)}.`
       );
@@ -108,8 +108,7 @@ export abstract class BuildRunner<T extends BuildOptions> {
 }
 
 export async function build(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-  const project = await env.project.load();
-  const runner = await BuildRunner.createFromProjectType(env, project.type);
+  const runner = await BuildRunner.createFromProjectType(env, env.project.type);
   const opts = runner.createOptionsFromCommandLine(inputs, options);
   await runner.run(opts);
 }

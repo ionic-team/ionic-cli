@@ -4,9 +4,9 @@ import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as proxyMiddlewareType from 'http-proxy-middleware'; // tslint:disable-line:no-implicit-dependencies
 
-import { ProjectFileProxy, ServeDetails, ServeOptions } from '../../definitions';
-import { FatalException } from '../errors';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../serve';
+import { ProjectFileProxy, ServeDetails, ServeOptions } from '../../../definitions';
+import { FatalException } from '../../errors';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../../serve';
 
 const WATCH_PATTERNS = [
   'scss/**/*',
@@ -50,7 +50,7 @@ function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy): proxyMiddleware
 
 export class ServeRunner extends BaseServeRunner<ServeOptions> {
   async serveProject(options: ServeOptions): Promise<ServeDetails> {
-    const { promptToInstallPkg } = await import('../utils/npm');
+    const { promptToInstallPkg } = await import('../../utils/npm');
 
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
     const project = await this.env.project.load();
@@ -115,7 +115,7 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
 
   private async servecmd(options: ServeMetaOptions): Promise<void> {
     const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
-    const { registerShutdownFunction } = await import('../process');
+    const { registerShutdownFunction } = await import('../../process');
 
     const workingDir = this.env.project.directory;
 
@@ -159,7 +159,7 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
   }
 
   private async findOpenPorts(address: string, ports: Ports): Promise<Ports> {
-    const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort } = await import('../utils/network');
+    const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort } = await import('../../utils/network');
 
     try {
       const [ port, livereloadPort, notificationPort ] = await Promise.all([

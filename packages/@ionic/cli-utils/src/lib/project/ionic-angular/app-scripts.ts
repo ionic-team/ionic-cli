@@ -1,7 +1,7 @@
 import * as path from 'path';
 
-import { CommandMetadataOption, IonicEnvironment } from '../../definitions';
-import { OptionGroup } from '../../constants';
+import { CommandMetadataOption, IonicEnvironment } from '../../../definitions';
+import { OptionGroup } from '../../../constants';
 
 export async function importAppScripts(env: IonicEnvironment): Promise<any> {
   const appScriptsPath = path.resolve(env.project.directory, 'node_modules', '@ionic', 'app-scripts'); // TODO

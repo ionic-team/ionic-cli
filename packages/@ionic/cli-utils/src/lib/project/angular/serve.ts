@@ -6,19 +6,19 @@ import * as Debug from 'debug';
 
 import { pathAccessible } from '@ionic/cli-framework/utils/fs';
 
-import { ServeDetails, ServeOptions } from '../../definitions';
-import { FatalException } from '../errors';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../serve';
+import { ServeDetails, ServeOptions } from '../../../definitions';
+import { FatalException } from '../../errors';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../../serve';
 
 const NG_AUTODETECTED_PROXY_FILE = 'proxy.config.js';
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 
-const debug = Debug('ionic:cli-utils:lib:angular:serve');
+const debug = Debug('ionic:cli-utils:lib:project:angular:serve');
 
 export class ServeRunner extends BaseServeRunner<ServeOptions> {
   async serveProject(options: ServeOptions): Promise<ServeDetails> {
-    const { promptToInstallPkg } = await import('../utils/npm');
-    const { findClosestOpenPort, isHostConnectable } = await import('../utils/network');
+    const { promptToInstallPkg } = await import('../../utils/npm');
+    const { findClosestOpenPort, isHostConnectable } = await import('../../utils/network');
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
 
     debug('finding closest port to %d', options.port);
@@ -60,14 +60,13 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
 
   async servecmd(host: string, port: number): Promise<void> {
     const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
-    const { registerShutdownFunction } = await import('../process');
+    const { registerShutdownFunction } = await import('../../process');
 
     const ngArgs: string[] = ['serve', '--host', host, '--port', String(port), '--progress', 'false'];
     const shellOptions = { showExecution: true, cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } };
 
     if (await pathAccessible(path.resolve(this.env.project.directory, NG_AUTODETECTED_PROXY_FILE), fs.constants.R_OK)) {
-      ngArgs.push('--proxy-config');
-      ngArgs.push(NG_AUTODETECTED_PROXY_FILE); // this is fine as long as cwd is the project directory
+      ngArgs.push('--proxy-config', NG_AUTODETECTED_PROXY_FILE); // this is fine as long as cwd is the project directory
     }
 
     const p = await this.env.shell.spawn('ng', ngArgs, shellOptions);

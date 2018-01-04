@@ -12,7 +12,7 @@ describe('@ionic/cli-utils', () => {
     describe('getImageResources', () => {
 
       it('should take the resources.json structure and flatten it', async () => {
-        const result = await resources.getImageResources({ project: { directory: '/path/to/proj' } });
+        const result = resources.getImageResources('/path/to/proj');
 
         expect(result).toEqual(jasmine.any(Array));
         expect(result.length).toEqual(53);
@@ -83,7 +83,7 @@ describe('@ionic/cli-utils', () => {
       it('should look in resources directory and platform directories to find images', async () => {
         spyOn(fsSpy, 'readDir').and.returnValue(Promise.resolve([]));
 
-        await resources.getSourceImages({ project: { directory: '/path/to/proj' } }, ['ios', 'android'], ['splash', 'icon']);
+        await resources.getSourceImages('/path/to/proj', ['ios', 'android'], ['splash', 'icon']);
 
         expect(fsSpy.readDir.calls.count()).toEqual(3);
         expect(fsSpy.readDir.calls.argsFor(0)).toEqual(['/path/to/proj/resources/ios']);
@@ -116,7 +116,7 @@ describe('@ionic/cli-utils', () => {
           }
         });
 
-        const sourceImages = await resources.getSourceImages({ project: { directory: '/path/to/proj' } }, ['ios', 'android'], ['splash', 'icon']);
+        const sourceImages = await resources.getSourceImages('/path/to/proj', ['ios', 'android'], ['splash', 'icon']);
         expect(sourceImages).toEqual([
           {
             ext: '.png',

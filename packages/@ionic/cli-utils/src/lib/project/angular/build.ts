@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { BuildOptions, CommandLineInputs, CommandLineOptions } from '../../definitions';
+import { BuildOptions, CommandLineInputs, CommandLineOptions } from '../../../definitions';
 
-import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../build';
+import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
 
-const debug = Debug('ionic:cli-utils:lib:ionic1:build');
+const debug = Debug('ionic:cli-utils:lib:project:angular:build');
 
 export class BuildRunner extends BaseBuildRunner<BuildOptions> {
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions) {
@@ -15,8 +15,10 @@ export class BuildRunner extends BaseBuildRunner<BuildOptions> {
   }
 
   async buildProject(options: BuildOptions): Promise<void> {
-    const { pkgManagerArgs } = await import('../utils/npm');
+    const { pkgManagerArgs } = await import('../../utils/npm');
     const pkg = await this.env.project.loadPackageJson();
+
+    const ngArgs = ['build'];
     const shellOptions = { showExecution: true, cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
@@ -26,7 +28,7 @@ export class BuildRunner extends BaseBuildRunner<BuildOptions> {
       const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.env, { command: 'run', script: BUILD_SCRIPT });
       await this.env.shell.run(pkgManager, pkgArgs, shellOptions);
     } else {
-      await this.env.shell.run('ionic-v1', ['build'], shellOptions);
+      await this.env.shell.run('ng', ngArgs, shellOptions);
     }
   }
 }

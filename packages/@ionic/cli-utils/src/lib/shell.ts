@@ -14,9 +14,9 @@ export const ERROR_SHELL_COMMAND_NOT_FOUND = 'SHELL_COMMAND_NOT_FOUND';
 export class Shell implements IShell {
   protected tasks: ITaskChain;
   protected log: ILogger;
-  protected project: IProject;
+  protected project?: IProject;
 
-  constructor({ tasks, log, project }: { tasks: ITaskChain; log: ILogger; project: IProject }) {
+  constructor({ tasks, log, project }: { tasks: ITaskChain; log: ILogger; project?: IProject }) {
     this.tasks = tasks;
     this.log = log;
     this.project = project;
@@ -144,6 +144,6 @@ export class Shell implements IShell {
   }
 
   protected supplementPATH(p: string) {
-    return this.project.directory ? `${path.resolve(this.project.directory, 'node_modules', '.bin')}${path.delimiter}${p}` : p;
+    return this.project ? `${path.resolve(this.project.directory, 'node_modules', '.bin')}${path.delimiter}${p}` : p;
   }
 }

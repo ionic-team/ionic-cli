@@ -30,7 +30,7 @@ import { Client } from './lib/http';
 import { CLIEventEmitter } from './lib/events';
 import { Environment } from './lib/environment';
 import { HookEngine } from './lib/hooks';
-import { PROJECT_FILE, PROJECT_FILE_LEGACY, Project } from './lib/project';
+import { PROJECT_FILE, PROJECT_FILE_LEGACY, BaseProject, OutsideProject, ProjectDeps } from './lib/project';
 import { Logger } from './lib/utils/logger';
 import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
 import { readPackageJsonFileOfResolvedModule } from './lib/utils/npm';
@@ -61,7 +61,7 @@ function registerHooks(hooks: IHookEngine) {
     const wasLoggedIn = await env.session.isLoggedIn();
     await env.session.logout();
 
-    env.session = await getSession(env.config, env.project, env.client);
+    env.session = await getSession(env.config, env.client, env.project);
 
     if (wasLoggedIn) {
       env.log.msg('You have been logged out.');
@@ -87,16 +87,7 @@ function registerHooks(hooks: IHookEngine) {
     const projectFile = env.project.directory ? await env.project.load() : undefined;
 
     if (projectFile) {
-      if (projectFile.type === 'ionic1') {
-        const { getIonic1Version } = await import('./lib/ionic1/utils');
-        const ionic1Version = await getIonic1Version(env);
-        info.push({ type: 'local-packages', key: 'Ionic Framework', value: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown' });
-      } else if (projectFile.type === 'ionic-angular') {
-        const { getIonicAngularVersion, getAppScriptsVersion } = await import('./lib/ionic-angular/utils');
-        const [ ionicAngularVersion, appScriptsVersion ] = await Promise.all([getIonicAngularVersion(env), getAppScriptsVersion(env)]);
-        info.push({ type: 'local-packages', key: 'Ionic Framework', value: ionicAngularVersion ? `ionic-angular ${ionicAngularVersion}` : 'not installed' });
-        info.push({ type: 'local-packages', key: '@ionic/app-scripts', value: appScriptsVersion ? appScriptsVersion : 'not installed' });
-      }
+      info.push(...(await env.project.getInfo()));
 
       if (projectFile.integrations.cordova && projectFile.integrations.cordova.enabled !== false) {
         const { getAndroidSdkToolsVersion } = await import('./lib/android');
@@ -118,8 +109,10 @@ function registerHooks(hooks: IHookEngine) {
           getAndroidSdkToolsVersion(),
         ]);
 
-        info.push({ type: 'global-packages', key: 'cordova', flair: 'Cordova CLI', value: cordovaVersion || 'not installed' });
-        info.push({ type: 'local-packages', key: 'Cordova Platforms', value: cordovaPlatforms || 'none' });
+        info.push(
+          { type: 'global-packages', key: 'cordova', flair: 'Cordova CLI', value: cordovaVersion || 'not installed' },
+          { type: 'local-packages', key: 'Cordova Platforms', value: cordovaPlatforms || 'none' },
+        );
 
         if (xcode) {
           info.push({ type: 'system', key: 'Xcode', value: xcode });
@@ -151,9 +144,23 @@ function registerHooks(hooks: IHookEngine) {
   });
 }
 
-async function getSession(config: IConfig, project: IProject, client: IClient): Promise<ISession> {
+async function getSession(config: IConfig, client: IClient, project?: IProject): Promise<ISession> {
   const configData = await config.load();
-  return configData.backend === BACKEND_LEGACY ? new CloudSession(config, project, client) : new ProSession(config, project, client);
+  return configData.backend === BACKEND_LEGACY ? new CloudSession(config, client, project) : new ProSession(config, client, project);
+}
+
+export async function getProject(projectDir: string | undefined, deps: ProjectDeps): Promise<IProject> {
+  if (!projectDir) {
+    return new OutsideProject('', PROJECT_FILE);
+  }
+
+  const type = await BaseProject.determineType(projectDir);
+
+  if (!type) {
+    return new OutsideProject('', PROJECT_FILE);
+  }
+
+  return await BaseProject.createFromProjectType(projectDir, PROJECT_FILE, deps, type);
 }
 
 export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
@@ -207,9 +214,9 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
 
   configData.version = plugin.meta.pkg.version;
 
-  const project = new Project(env['IONIC_PROJECT_DIR'], PROJECT_FILE);
+  const project = await getProject(projectDir, { log });
   const client = new Client(config);
-  const session = await getSession(config, project, client);
+  const session = await getSession(config, client, project);
   const hooks = new HookEngine();
   const telemetry = new Telemetry();
   const shell = new Shell({ tasks, log, project });

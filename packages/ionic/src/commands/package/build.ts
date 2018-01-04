@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { contains, filterCommandLineOptionsByGroup } from '@ionic/cli-framework';
 import { BACKEND_LEGACY, CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, PackageBuild } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/ionic-angular/app-scripts';
+import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { DEPRECATION_NOTICE } from './common';
@@ -116,7 +116,6 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
       note = 'Ionic Package Upload';
     }
 
-    const project = await this.env.project.load();
     const token = await this.env.session.getAppUserToken();
     const deploy = new DeployClient(token, this.env.client);
     const sec = new SecurityClient(token, this.env.client);
@@ -139,7 +138,7 @@ Full documentation can be found here: ${chalk.bold('https://docs.ionic.io/servic
       }
     }
 
-    if (project.type === 'ionic-angular' && release && !prod) {
+    if (this.env.project.type === 'ionic-angular' && release && !prod) {
       this.env.log.warn(`We recommend using ${chalk.green('--prod')} for production builds when using ${chalk.green('--release')}.`);
     }
 

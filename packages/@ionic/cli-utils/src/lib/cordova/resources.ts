@@ -17,7 +17,7 @@ const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];
 const UPLOAD_URL = 'https://res.ionic.io/api/v1/upload';
 const TRANSFORM_URL = 'https://res.ionic.io/api/v1/transform';
 
-export async function getImageResources(env: IonicEnvironment): Promise<ImageResource[]> {
+export function getImageResources(projectDir: string): ImageResource[] {
   const images: ImageResource[] = [];
 
   for (let platform in RESOURCES) {
@@ -30,7 +30,7 @@ export async function getImageResources(env: IonicEnvironment): Promise<ImageRes
         images.push({
           platform,
           resType: imageType,
-          dest: path.resolve(env.project.directory, 'resources', platform, imageType, image.name), // TODO: hard-coded
+          dest: path.resolve(projectDir, 'resources', platform, imageType, image.name), // TODO: hard-coded
           name: image.name,
           width: image.width,
           height: image.height,
@@ -61,8 +61,8 @@ export async function createImgDestinationDirectories(imgResources: ImageResourc
 /**
  * Find all source images within the resources directory
  */
-export async function getSourceImages(env: IonicEnvironment, buildPlatforms: string[], resourceTypes: string[]): Promise<SourceImage[]> {
-  const resourceDir = path.resolve(env.project.directory, 'resources'); // TODO: hard-coded
+export async function getSourceImages(projectDir: string, buildPlatforms: string[], resourceTypes: string[]): Promise<SourceImage[]> {
+  const resourceDir = path.resolve(projectDir, 'resources'); // TODO: hard-coded
 
   const srcDirList = buildPlatforms
     .map(platform => ({ platform, path: path.resolve(resourceDir, platform) }))

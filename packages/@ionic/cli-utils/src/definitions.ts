@@ -114,7 +114,6 @@ export interface ProjectIntegration {
 
 export interface ProjectFile {
   name: string;
-  type: ProjectType;
   app_id: string;
   integrations: {
     cordova?: ProjectIntegration;
@@ -224,8 +223,10 @@ export interface IConfig extends IBaseConfig<ConfigFile> {
 }
 
 export interface IProject extends IBaseConfig<ProjectFile> {
-  formatTypeName(input: ProjectType): string;
+  type?: ProjectType;
+
   getSourceDir(): Promise<string>;
+  getInfo(): Promise<InfoHookItem[]>;
   loadAppId(): Promise<string>;
   loadPackageJson(): Promise<framework.PackageJson>;
   loadBowerJson(): Promise<BowerJson>;
@@ -407,6 +408,16 @@ export interface InfoHookItem {
 export interface BuildOptions {
   target?: string;
   platform?: string;
+}
+
+export interface IonicAngularBuildOptions extends BuildOptions {
+  prod: boolean;
+  aot: boolean;
+  minifyjs: boolean;
+  minifycss: boolean;
+  optimizejs: boolean;
+  target?: string;
+  env?: string;
 }
 
 export interface ServeOptions {

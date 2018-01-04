@@ -3,18 +3,19 @@ import * as Debug from 'debug';
 
 import { parsedArgsToArgv } from '@ionic/cli-framework';
 
-import { ServeDetails, ServeOptions } from '../../definitions';
-import { FatalException } from '../errors';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../serve';
+import { ServeDetails, ServeOptions } from '../../../definitions';
+import { FatalException } from '../../errors';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../../serve';
+import { prettyProjectName } from '../';
 
 const APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 
-const debug = Debug('ionic:cli-utils:lib:ionic-angular:serve');
+const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:serve');
 
 export class ServeRunner extends BaseServeRunner<ServeOptions> {
   async serveProject(options: ServeOptions): Promise<ServeDetails> {
-    const { promptToInstallPkg } = await import('../utils/npm');
-    const { findClosestOpenPort, isHostConnectable } = await import('../utils/network');
+    const { promptToInstallPkg } = await import('../../utils/npm');
+    const { findClosestOpenPort, isHostConnectable } = await import('../../utils/network');
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
 
     const appScriptsPort = await findClosestOpenPort(options.port, '0.0.0.0');
@@ -27,7 +28,7 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
         this.env.log.nl();
         this.env.log.warn(
           `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
-          `This package is required for ${chalk.green('ionic serve')} in ${this.env.project.formatTypeName('angular')} projects.`
+          `This package is required for ${chalk.green('ionic serve')} in ${prettyProjectName('angular')} projects.`
         );
 
         const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });
@@ -55,7 +56,7 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
 
   async servecmd(options: ServeOptions): Promise<void> {
     const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
-    const { registerShutdownFunction } = await import('../process');
+    const { registerShutdownFunction } = await import('../../process');
 
     const appScriptsArgs = await serveOptionsToAppScriptsArgs(options);
 

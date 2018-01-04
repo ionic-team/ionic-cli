@@ -73,7 +73,7 @@ export abstract class BaseConfig<T> implements IBaseConfig<T> {
         } catch (e) {
           if (e === ERROR_FILE_INVALID_JSON) {
             throw new FatalException(
-              `The config file (${chalk.bold(prettyPath(this.filePath))}) is not valid JSON format.\n\n` +
+              `The config file (${chalk.bold(prettyPath(this.filePath))}) is not valid JSON format.\n` +
               `Please fix any JSON errors in the file.`
             );
           } else {
@@ -90,7 +90,7 @@ export abstract class BaseConfig<T> implements IBaseConfig<T> {
         this.configFile = o;
       } else {
         throw new FatalException(
-          `The config file (${chalk.bold(prettyPath(this.filePath))}) has an unrecognized JSON format.\n\n` +
+          `The config file (${chalk.bold(prettyPath(this.filePath))}) has an unrecognized JSON format.\n` +
           `This usually means a key had an unexpected value. Please look through it and fix any issues.\n` +
           `If all else fails--the CLI will recreate the file if you delete it.`
         );

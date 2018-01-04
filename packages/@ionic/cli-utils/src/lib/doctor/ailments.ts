@@ -11,7 +11,7 @@ import { getIonicRemote, isRepoInitialized } from '../git';
 import { fsReadDir, fsReadFile, pathExists } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 import { pkgLatestVersion, pkgManagerArgs } from '../utils/npm';
-import { getAppScriptsVersion, getIonicAngularVersion } from '../ionic-angular/utils';
+import { Project as IonicAngularProject } from '../project/ionic-angular';
 import { getPlatforms } from '../cordova/project';
 import { ConfigXml } from '../cordova/config';
 
@@ -201,8 +201,8 @@ export namespace Ailments {
     latestVersion?: string;
 
     async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
-      if (!this.currentVersion || !this.latestVersion) {
-        this.currentVersion = await getIonicAngularVersion(env);
+      if (env.project instanceof IonicAngularProject && (!this.currentVersion || !this.latestVersion)) {
+        this.currentVersion = await env.project.getFrameworkVersion();
         this.latestVersion = await pkgLatestVersion(env, 'ionic-angular');
       }
 
@@ -223,9 +223,7 @@ export namespace Ailments {
     }
 
     async detected(env: IonicEnvironment) {
-      const project = await env.project.load();
-
-      if (project.type !== 'ionic-angular') {
+      if (env.project.type !== 'ionic-angular') {
         return false;
       }
 
@@ -253,8 +251,8 @@ export namespace Ailments {
     latestVersion?: string;
 
     async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
-      if (!this.currentVersion || !this.latestVersion) {
-        this.currentVersion = await getIonicAngularVersion(env);
+      if (env.project instanceof IonicAngularProject && (!this.currentVersion || !this.latestVersion)) {
+        this.currentVersion = await env.project.getFrameworkVersion();
         this.latestVersion = await pkgLatestVersion(env, 'ionic-angular');
       }
 
@@ -275,9 +273,7 @@ export namespace Ailments {
     }
 
     async detected(env: IonicEnvironment) {
-      const project = await env.project.load();
-
-      if (project.type !== 'ionic-angular') {
+      if (env.project.type !== 'ionic-angular') {
         return false;
       }
 
@@ -300,8 +296,8 @@ export namespace Ailments {
     latestVersion?: string;
 
     async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
-      if (!this.currentVersion || !this.latestVersion) {
-        this.currentVersion = await getAppScriptsVersion(env);
+      if (env.project instanceof IonicAngularProject && (!this.currentVersion || !this.latestVersion)) {
+        this.currentVersion = await env.project.getAppScriptsVersion();
         this.latestVersion = await pkgLatestVersion(env, '@ionic/app-scripts');
       }
 
@@ -322,9 +318,7 @@ export namespace Ailments {
     }
 
     async detected(env: IonicEnvironment) {
-      const project = await env.project.load();
-
-      if (project.type !== 'ionic-angular') {
+      if (env.project.type !== 'ionic-angular') {
         return false;
       }
 
@@ -355,8 +349,8 @@ export namespace Ailments {
     latestVersion?: string;
 
     async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
-      if (!this.currentVersion || !this.latestVersion) {
-        this.currentVersion = await getAppScriptsVersion(env);
+      if (env.project instanceof IonicAngularProject && (!this.currentVersion || !this.latestVersion)) {
+        this.currentVersion = await env.project.getAppScriptsVersion();
         this.latestVersion = await pkgLatestVersion(env, '@ionic/app-scripts');
       }
 
@@ -377,9 +371,7 @@ export namespace Ailments {
     }
 
     async detected(env: IonicEnvironment) {
-      const project = await env.project.load();
-
-      if (project.type !== 'ionic-angular') {
+      if (env.project.type !== 'ionic-angular') {
         return false;
       }
 
@@ -429,9 +421,7 @@ export namespace Ailments {
     }
 
     async detected(env: IonicEnvironment) {
-      const project = await env.project.load();
-
-      if (project.type !== 'ionic-angular') {
+      if (env.project.type !== 'ionic-angular') {
         return false;
       }
 
@@ -492,9 +482,7 @@ export namespace Ailments {
     }
 
     async detected(env: IonicEnvironment) {
-      const project = await env.project.load();
-
-      if (project.type !== 'ionic-angular') {
+      if (env.project.type !== 'ionic-angular') {
         return false;
       }
 

@@ -2,24 +2,14 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import { parsedArgsToArgv } from '@ionic/cli-framework';
 
-import { BuildOptions as BaseBuildOptions, CommandLineInputs, CommandLineOptions } from '../../definitions';
+import { IonicAngularBuildOptions, CommandLineInputs, CommandLineOptions } from '../../../definitions';
 
-import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../build';
+import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
 
-const debug = Debug('ionic:cli-utils:lib:ionic-angular:build');
+const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:build');
 
-export interface BuildOptions extends BaseBuildOptions {
-  prod: boolean;
-  aot: boolean;
-  minifyjs: boolean;
-  minifycss: boolean;
-  optimizejs: boolean;
-  target?: string;
-  env?: string;
-}
-
-export class BuildRunner extends BaseBuildRunner<BuildOptions> {
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): BuildOptions {
+export class BuildRunner extends BaseBuildRunner<IonicAngularBuildOptions> {
+  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicAngularBuildOptions {
     return {
       prod: options['prod'] ? true : false,
       aot: options['aot'] ? true : false,
@@ -31,8 +21,8 @@ export class BuildRunner extends BaseBuildRunner<BuildOptions> {
     };
   }
 
-  async buildProject(options: BuildOptions): Promise<void> {
-    const { pkgManagerArgs } = await import('../utils/npm');
+  async buildProject(options: IonicAngularBuildOptions): Promise<void> {
+    const { pkgManagerArgs } = await import('../../utils/npm');
     const pkg = await this.env.project.loadPackageJson();
 
     const appScriptsArgs = this.generateAppScriptsArgs(options);
@@ -49,7 +39,7 @@ export class BuildRunner extends BaseBuildRunner<BuildOptions> {
     }
   }
 
-  generateAppScriptsArgs(options: BuildOptions) {
+  generateAppScriptsArgs(options: IonicAngularBuildOptions) {
     const minimistArgs = {
       _: [],
       prod: options.prod ? true : false,

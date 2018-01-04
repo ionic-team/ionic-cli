@@ -57,9 +57,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const project = await this.env.project.load();
-
-    if (project.type !== 'ionic-angular') {
+    if (this.env.project.type !== 'ionic-angular') {
       throw new FatalException('Generators are only supported in Ionic Angular projects.');
     }
 
@@ -93,7 +91,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ type, name ] = inputs;
 
-    const { generate } = await import('@ionic/cli-utils/lib/ionic-angular/generate');
+    const { generate } = await import('@ionic/cli-utils/lib/project/ionic-angular/generate');
     await generate({ env: this.env, inputs, options });
 
     this.env.log.ok(`Generated a ${chalk.bold(type)}${type === 'tabs' ? ' page' : ''} named ${chalk.bold(name)}!`);

@@ -1,6 +1,6 @@
 import { parsedArgsToArgv, validators } from '@ionic/cli-framework';
 
-import { IonicEnvironment } from '../../definitions';
+import { IonicEnvironment } from '../../../definitions';
 import { importAppScripts } from './app-scripts';
 
 export async function generate(args: { env: IonicEnvironment; inputs: string[], options: { _: string[]; [key: string]: any; }; }): Promise<string[]> {

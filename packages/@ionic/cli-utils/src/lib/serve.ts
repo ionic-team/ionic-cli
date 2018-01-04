@@ -13,9 +13,9 @@ import { isCordovaPackageJson } from '../guards';
 import { FatalException } from './errors';
 import { PROJECT_FILE } from './project';
 
-import * as ionic1ServeLibType from './ionic1/serve';
-import * as ionicAngularServeLibType from './ionic-angular/serve';
-import * as angularServeLibType from './angular/serve';
+import * as ionic1ServeLibType from './project/ionic1/serve';
+import * as ionicAngularServeLibType from './project/ionic-angular/serve';
+import * as angularServeLibType from './project/angular/serve';
 
 const debug = Debug('ionic:cli-utils:lib:serve');
 
@@ -49,20 +49,20 @@ export abstract class ServeRunner<T extends ServeOptions> {
   static async createFromProjectType(env: IonicEnvironment, type: 'ionic1'): Promise<ionic1ServeLibType.ServeRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: 'ionic-angular'): Promise<ionicAngularServeLibType.ServeRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: 'angular'): Promise<angularServeLibType.ServeRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type: ProjectType): Promise<ServeRunner<any>>;
-  static async createFromProjectType(env: IonicEnvironment, type: ProjectType): Promise<ServeRunner<any>> {
+  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<ServeRunner<any>>;
+  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<ServeRunner<any>> {
     if (type === 'ionic1') {
-      const { ServeRunner } = await import('./ionic1/serve');
+      const { ServeRunner } = await import('./project/ionic1/serve');
       return new ServeRunner(env);
     } else if (type === 'ionic-angular') {
-      const { ServeRunner } = await import('./ionic-angular/serve');
+      const { ServeRunner } = await import('./project/ionic-angular/serve');
       return new ServeRunner(env);
     } else if (type === 'angular') {
-      const { ServeRunner } = await import('./angular/serve');
+      const { ServeRunner } = await import('./project/angular/serve');
       return new ServeRunner(env);
     } else {
       throw new FatalException(
-        `Cannot perform Ionic serve for project type: ${chalk.bold(type)}.\n` +
+        `Cannot perform Ionic serve for ${type ? '' : 'unknown '}project type${type ? `: ${chalk.bold(type)}` :  ''}.\n` +
         (type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to serve custom projects.\n\n` : '') +
         `If you'd like the CLI to try to detect your project type, you can unset the ${chalk.bold('type')} attribute in ${chalk.bold(PROJECT_FILE)}.`
       );
@@ -369,8 +369,7 @@ export abstract class ServeRunner<T extends ServeOptions> {
 }
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
-  const project = await env.project.load();
-  const runner = await ServeRunner.createFromProjectType(env, project.type);
+  const runner = await ServeRunner.createFromProjectType(env, env.project.type);
   const opts = runner.createOptionsFromCommandLine(inputs, options);
   const details = await runner.run(opts);
 

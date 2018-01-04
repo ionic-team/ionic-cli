@@ -10,14 +10,14 @@ import {
 
 import { isAuthTokensResponse, isLegacyLoginResponse, isProLoginResponse, isSuperAgentError } from '../guards';
 
-import { SessionException } from './errors';
+import { FatalException, SessionException } from './errors';
 import { createFatalAPIFormat } from './http';
 
 export class BaseSession {
   constructor(
     protected config: IConfig,
-    protected project: IProject,
-    protected client: IClient
+    protected client: IClient,
+    protected project?: IProject,
   ) {}
 
   async isLoggedIn(): Promise<boolean> {
@@ -81,6 +81,10 @@ export class CloudSession extends BaseSession implements ISession {
 
   async getAppUserToken(app_id?: string): Promise<string> {
     if (!app_id) {
+      if (!this.project) {
+        throw new FatalException(`Cannot determine ${chalk.bold('app_id')}--outside of Ionic project.`);
+      }
+
       app_id = await this.project.loadAppId();
     }
 

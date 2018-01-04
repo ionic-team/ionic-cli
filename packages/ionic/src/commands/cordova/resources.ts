@@ -150,7 +150,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     // Convert the resource structure to a flat array then filter the array so
     // that it only has img resources that we need. Finally add src path to the
     // items that remain.
-    let imgResources = (await getImageResources(this.env))
+    let imgResources = getImageResources(this.env.project.directory)
       .filter(img => orientation === 'default' || typeof img.orientation === 'undefined' || img.orientation === orientation)
       .filter(img => buildPlatforms.includes(img.platform))
       .filter(img => resourceTypes.includes(img.resType));
@@ -171,7 +171,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     let srcImagesAvailable: SourceImage[] = [];
 
     try {
-      srcImagesAvailable = await getSourceImages(this.env, buildPlatforms, resourceTypes);
+      srcImagesAvailable = await getSourceImages(this.env.project.directory, buildPlatforms, resourceTypes);
       this.env.log.debug(() => `${chalk.green('getSourceImages')} completed: (${srcImagesAvailable.map(v => chalk.bold(prettyPath(v.path))).join(', ')})`);
     } catch (e) {
       this.env.log.error(`Error in ${chalk.green('getSourceImages')}: ${e.stack ? e.stack : e}`);
