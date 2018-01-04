@@ -40,6 +40,16 @@ export class Project extends BaseProject {
     return false;
   }
 
+  async getSourceDir(): Promise<string> {
+    const project = await this.load();
+
+    if (project.documentRoot) {
+      return path.resolve(this.directory, project.documentRoot);
+    }
+
+    return path.resolve(this.directory, 'www');
+  }
+
   async getFrameworkVersion(): Promise<string | undefined> {
     const ionicVersionFilePath = path.resolve(this.directory, 'www', 'lib', 'ionic', 'version.json'); // TODO
     const bowerJsonPath = path.resolve(this.directory, 'bower.json');

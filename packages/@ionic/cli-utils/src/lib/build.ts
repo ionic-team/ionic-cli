@@ -41,7 +41,7 @@ export abstract class BuildRunner<T extends BuildOptions> {
       return new BuildRunner(env);
     } else {
       throw new FatalException(
-        `Cannot perform Ionic build for ${type ? '' : 'unknown '}project type${type ? `: ${chalk.bold(type)}` :  ''}.\n` +
+        `Cannot perform Ionic build for ${type ? '' : 'unknown '}project type${type ? `: ${chalk.bold(type)}` : ''}.\n` +
         (type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to build custom projects.\n\n` : '') +
         `If you'd like the CLI to try to detect your project type, you can unset the ${chalk.bold('type')} attribute in ${chalk.bold(PROJECT_FILE)}.`
       );

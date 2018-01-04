@@ -62,7 +62,7 @@ export abstract class ServeRunner<T extends ServeOptions> {
       return new ServeRunner(env);
     } else {
       throw new FatalException(
-        `Cannot perform Ionic serve for ${type ? '' : 'unknown '}project type${type ? `: ${chalk.bold(type)}` :  ''}.\n` +
+        `Cannot perform Ionic serve for ${type ? '' : 'unknown '}project type${type ? `: ${chalk.bold(type)}` : ''}.\n` +
         (type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to serve custom projects.\n\n` : '') +
         `If you'd like the CLI to try to detect your project type, you can unset the ${chalk.bold('type')} attribute in ${chalk.bold(PROJECT_FILE)}.`
       );

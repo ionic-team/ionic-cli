@@ -7,7 +7,7 @@ import { ERROR_FILE_INVALID_JSON, fsReadJsonFile } from '@ionic/cli-framework/ut
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-import { IProject, ILogger, InfoHookItem, PackageJson, ProjectFile, ProjectType } from '../../definitions';
+import { ILogger, IProject, InfoHookItem, PackageJson, ProjectFile, ProjectType } from '../../definitions';
 import { BaseConfig } from '../config';
 import { FatalException } from '../errors';
 
@@ -22,7 +22,7 @@ export const PROJECT_TYPES: ProjectType[] = ['angular', 'ionic-angular', 'ionic1
 
 export interface ProjectDeps {
   log: ILogger;
-};
+}
 
 export abstract class BaseProject extends BaseConfig<ProjectFile> implements IProject {
   type?: ProjectType;
@@ -168,10 +168,6 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
 
     if (project.documentRoot) {
       return path.resolve(this.directory, project.documentRoot);
-    }
-
-    if (this.type === 'ionic1') {
-      return path.resolve(this.directory, 'www');
     }
 
     return path.resolve(this.directory, 'src');

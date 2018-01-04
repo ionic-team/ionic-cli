@@ -17,7 +17,7 @@ export class BaseSession {
   constructor(
     protected config: IConfig,
     protected client: IClient,
-    protected project?: IProject,
+    protected project?: IProject
   ) {}
 
   async isLoggedIn(): Promise<boolean> {

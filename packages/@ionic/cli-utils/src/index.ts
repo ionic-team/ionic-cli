@@ -23,14 +23,14 @@ import {
 
 import { LOG_LEVELS, isLogLevel } from './guards';
 
+import { BaseProject, OutsideProject, PROJECT_FILE, PROJECT_FILE_LEGACY, ProjectDeps } from './lib/project';
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
-import { BACKEND_LEGACY } from './lib/backends';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
 import { Client } from './lib/http';
 import { CLIEventEmitter } from './lib/events';
 import { Environment } from './lib/environment';
 import { HookEngine } from './lib/hooks';
-import { PROJECT_FILE, PROJECT_FILE_LEGACY, BaseProject, OutsideProject, ProjectDeps } from './lib/project';
+import { BACKEND_LEGACY } from './lib/backends';
 import { Logger } from './lib/utils/logger';
 import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
 import { readPackageJsonFileOfResolvedModule } from './lib/utils/npm';
@@ -111,7 +111,7 @@ function registerHooks(hooks: IHookEngine) {
 
         info.push(
           { type: 'global-packages', key: 'cordova', flair: 'Cordova CLI', value: cordovaVersion || 'not installed' },
-          { type: 'local-packages', key: 'Cordova Platforms', value: cordovaPlatforms || 'none' },
+          { type: 'local-packages', key: 'Cordova Platforms', value: cordovaPlatforms || 'none' }
         );
 
         if (xcode) {
@@ -160,7 +160,7 @@ export async function getProject(projectDir: string | undefined, deps: ProjectDe
     return new OutsideProject('', PROJECT_FILE);
   }
 
-  return await BaseProject.createFromProjectType(projectDir, PROJECT_FILE, deps, type);
+  return BaseProject.createFromProjectType(projectDir, PROJECT_FILE, deps, type);
 }
 
 export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
@@ -259,7 +259,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   ienv.namespace.env = ienv;
   telemetry.env = ienv;
 
-  await ienv.open();
+  ienv.open();
 
   if (env['IONIC_CLI_LOCAL_ERROR']) {
     log.debug(() => `Reason for not using local CLI: ${chalk.bold(env['IONIC_CLI_LOCAL_ERROR'])}`);

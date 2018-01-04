@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import { parsedArgsToArgv } from '@ionic/cli-framework';
 
-import { IonicAngularBuildOptions, CommandLineInputs, CommandLineOptions } from '../../../definitions';
+import { CommandLineInputs, CommandLineOptions, IonicAngularBuildOptions } from '../../../definitions';
 
 import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
 
