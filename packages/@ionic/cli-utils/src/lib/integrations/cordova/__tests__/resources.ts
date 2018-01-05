@@ -13,7 +13,7 @@ describe('@ionic/cli-utils', () => {
 
     describe('getImageResources', () => {
 
-      it('should take the resources.json structure and flatten it', async () => {
+      it('should take the resources structure and flatten it', async () => {
         const result = resources.getImageResources('/path/to/proj');
 
         expect(result).toEqual(jasmine.any(Array));
