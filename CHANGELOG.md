@@ -10,26 +10,36 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 <a name="4.0.0"></a>
 ### 4.0.0 (PENDING)
 
-**Key Changes**
+#### :boom: Breaking Change
 
-* Ionic CLI v4 brings support for :sparkles: Ionic Angular v4 :sparkles:
-* Ionic Lab has been rebuilt using [StencilJS](https://stenciljs.com) and now
-  works for any Ionic Framework version.
-* **BREAKING**: Some functionality has been reorganized into separate packages,
-  which will need to be installed in your project(s). Most Ionic 1 functionality
-  has been moved into the
+* Support for Legacy Ionic Cloud ended on January 31st, 2018. The `ionic upload`
+  and `ionic package` commands have been removed from the CLI. Support for
+  [Ionic Pro](https://ionicframework.com/pro/) will be a major focus for the CLI
+  going forward. :ok_hand:
+* Ionic 1 build/serve functionality has been moved into the
   [`@ionic/v1-util`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-util)
-  package. Ionic Lab has been moved into the
+  package, which will need to be installed in your Ionic 1 project(s).
+* Ionic Lab has been moved into the
   [`@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/lab)
-  package.
-* **BREAKING**: The gulp integration has been removed from the Ionic CLI and put
-  into the
+  package, which will need to be installed (globally or locally) for Lab to
+  work.
+* The gulp integration has been removed from the CLI and put into the
   [`@ionic/v1-util`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-util)
   package, which is only for Ionic v1 apps.
-* **BREAKING**: `ionic start <name> conference` no longer works. For using
-  `ionic start` with functional apps (as opposed to starter templates), please
-  use a repository URL, such as `ionic start <name>
+* The `conference` starter template has been removed from `ionic start`. For
+  creating functional apps (as opposed to starting new apps from starter
+  templates), please use the repository URL. For example, to create the
+  conference app, use `ionic start <name>
   https://github.com/ionic-team/ionic-conference-app`.
+
+#### :rocket: Enhancement
+
+* Support for :sparkles: Ionic Angular v4 :sparkles:
+
+#### :house: Internal
+
+* Ionic Lab has been rebuilt using [StencilJS](https://stenciljs.com) and now
+  works for any Ionic Framework version.
 
 <a name="3.19.0"></a>
 ### 3.19.0 (2017-11-21)

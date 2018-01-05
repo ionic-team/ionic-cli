@@ -32,9 +32,17 @@ let KEYS: string[] | undefined;
 
 export async function createRawRequest(method: string, url: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
   const superagent = await import('superagent');
-  const req = superagent(method, url);
 
-  return { req };
+  try {
+    const superagentProxy = await import('superagent-proxy');
+    superagentProxy(superagent);
+  } catch (e) {
+    if (e.code !== 'MODULE_NOT_FOUND') {
+      throw e;
+    }
+  }
+
+  return { req: superagent(method, url) };
 }
 
 export async function createRequest(config: IConfig, method: string, url: string): Promise<{ req: superagentType.SuperAgentRequest; }> {

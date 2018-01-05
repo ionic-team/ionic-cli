@@ -104,6 +104,10 @@ export interface ProjectFileProxy {
 
 export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom';
 
+export interface ProjectIntegrations {
+  cordova?: ProjectIntegration;
+}
+
 export interface ProjectIntegration {
   enabled?: boolean;
 }
@@ -111,10 +115,7 @@ export interface ProjectIntegration {
 export interface ProjectFile {
   name: string;
   app_id: string;
-  integrations: {
-    cordova?: ProjectIntegration;
-    [key: string]: ProjectIntegration | undefined;
-  };
+  integrations: ProjectIntegrations;
   documentRoot?: string; // www folder location (TODO: use this everywhere)
   watchPatterns?: string[];
   proxies?: ProjectFileProxy[];
@@ -131,15 +132,6 @@ export interface AppDetails {
   repo_url?: string;
 }
 
-export interface AuthToken {
-  token: string;
-  details: {
-    app_id: string;
-    type: 'app-user';
-    user_id: string;
-  };
-}
-
 export interface SSHKey {
   id: string;
   pubkey: string;
@@ -148,50 +140,6 @@ export interface SSHKey {
   name: string;
   created: string;
   updated: string;
-}
-
-export interface DeploySnapshot {
-  uuid: string;
-  url: string;
-}
-
-export interface DeploySnapshotRequest extends DeploySnapshot {
-  presigned_post: {
-    url: string;
-    fields: Object;
-  };
-}
-
-export interface DeployChannel {
-  uuid: string;
-  tag: string;
-}
-
-export interface Deploy {
-  uuid: string;
-  snapshot: string;
-  channel: string;
-}
-
-export interface PackageProjectRequest {
-  id: number;
-  presigned_post: {
-    url: string;
-    fields: Object;
-  };
-}
-
-export interface PackageBuild {
-  id: number;
-  name: string | null;
-  created: string;
-  completed: string | null;
-  platform: 'android' | 'ios';
-  status: 'SUCCESS' | 'FAILED' | 'QUEUED' | 'BUILDING';
-  mode: 'debug' | 'release';
-  security_profile_tag: string | null;
-  url?: string | null;
-  output?: string | null;
 }
 
 export interface SecurityProfile {
@@ -220,6 +168,7 @@ export interface IConfig extends IBaseConfig<ConfigFile> {
 
 export interface IProject extends IBaseConfig<ProjectFile> {
   type?: ProjectType;
+  integrations: IIntegration[];
 
   getSourceDir(): Promise<string>;
   getInfo(): Promise<InfoHookItem[]>;
@@ -228,12 +177,20 @@ export interface IProject extends IBaseConfig<ProjectFile> {
   loadPackageJson(): Promise<framework.PackageJson>;
 }
 
+export type IntegrationName = keyof ProjectIntegrations;
+
+export interface IIntegration {
+  name: IntegrationName;
+  shell: IShell;
+
+  getInfo(): Promise<InfoHookItem[]>;
+}
+
 export interface PackageVersions {
   [key: string]: string;
 }
 
 export interface CommandMetadataOption extends framework.CommandMetadataOption {
-  backends?: BackendFlag[];
   intents?: string[];
   private?: boolean;
   visible?: boolean;
@@ -243,11 +200,8 @@ export interface ExitCodeException extends Error {
   exitCode: number;
 }
 
-export type BackendFlag = 'pro' | 'legacy';
-
 export interface CommandMetadata extends framework.CommandMetadata<framework.CommandMetadataInput, CommandMetadataOption> {
   type: 'global' | 'project';
-  backends?: BackendFlag[];
 }
 
 export type HydratedCommandMetadata = CommandMetadata & framework.HydratedCommandMetadata<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption>;
@@ -257,7 +211,6 @@ export interface ISession {
   logout(): Promise<void>;
   isLoggedIn(): Promise<boolean>;
   getUserToken(): Promise<string>;
-  getAppUserToken(app_id?: string): Promise<string>;
 }
 
 export interface IShellSpawnOptions extends crossSpawnType.SpawnOptions {
@@ -325,7 +278,6 @@ export interface ConfigFile {
     telemetry?: string;
     appUser: { [app_id: string]: string };
   };
-  backend: BackendFlag;
   telemetry: boolean;
   interactive?: boolean;
   yarn: boolean;
@@ -384,14 +336,6 @@ export interface IClient {
 }
 
 export interface IPaginator<T extends Response<Object[]>> extends IterableIterator<Promise<T>> {}
-
-export interface EnvironmentHookArgs {
-  env: IonicEnvironment;
-}
-
-export interface BuildAfterHookArgs extends EnvironmentHookArgs {
-  platform?: string;
-}
 
 export interface InfoHookItem {
   type: 'system' | 'global-packages' | 'local-packages' | 'cli-packages' | 'environment' | 'misc';
@@ -454,12 +398,6 @@ export interface ServeDetails {
   externallyAccessible: boolean;
 }
 
-export interface CordovaProjectInfoHookResponse {
-  id: string;
-  name: string;
-  version: string;
-}
-
 export interface IHook<T, U> {
   source: string;
   name: string;
@@ -468,21 +406,9 @@ export interface IHook<T, U> {
 }
 
 export interface IHookEngine {
-  fire(hook: 'info', args: EnvironmentHookArgs): Promise<InfoHookItem[]>;
-  fire(hook: 'cordova:project:info', args: EnvironmentHookArgs): Promise<CordovaProjectInfoHookResponse[]>;
-  fire(hook: 'plugins:init', args: EnvironmentHookArgs): Promise<void[]>;
-  fire(hook: 'build:before', args: EnvironmentHookArgs): Promise<void[]>;
-  fire(hook: 'build:after', args: BuildAfterHookArgs): Promise<void[]>;
-  fire(hook: 'watch:before', args: EnvironmentHookArgs): Promise<void[]>;
-  fire(hook: 'backend:changed', args: EnvironmentHookArgs): Promise<void[]>;
+  fire(hook: 'info'): Promise<InfoHookItem[]>;
 
-  register(source: string, hook: 'info', listener: (args: EnvironmentHookArgs) => Promise<InfoHookItem[]>): void;
-  register(source: string, hook: 'cordova:project:info', listener: (args: EnvironmentHookArgs) => Promise<CordovaProjectInfoHookResponse>): void;
-  register(source: string, hook: 'plugins:init', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
-  register(source: string, hook: 'build:before', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
-  register(source: string, hook: 'build:after', listener: (args: BuildAfterHookArgs) => Promise<void>): void;
-  register(source: string, hook: 'watch:before', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
-  register(source: string, hook: 'backend:changed', listener: (args: EnvironmentHookArgs) => Promise<void>): void;
+  register(source: string, hook: 'info', listener: () => Promise<InfoHookItem[]>): void;
 
   getSources(hook: string): string[];
   hasSources(hook: string, sources: string[]): boolean;
@@ -534,7 +460,7 @@ export interface IonicEnvironment {
   readonly events: ICLIEventEmitter;
   readonly log: ILogger;
   readonly prompt: PromptModule;
-  readonly meta: IonicEnvironmentMeta;
+  readonly meta: CLIMeta;
   project: IProject; // project config (ionic.config.json)
   readonly plugins: IonicEnvironmentPlugins;
   session: ISession;
@@ -547,7 +473,6 @@ export interface IonicEnvironment {
   open(): void;
   close(): void;
   runCommand(pargv: string[], opts?: { showExecution?: boolean; }): Promise<void>;
-  load(modulePath: 'superagent'): typeof superagentType;
 }
 
 export interface IonicEnvironmentFlags {
@@ -555,7 +480,7 @@ export interface IonicEnvironmentFlags {
   confirm: boolean;
 }
 
-export interface IonicEnvironmentMeta {
+export interface CLIMeta {
   cwd: string;
   local: boolean; // CLI running in local mode?
   binPath: string;
@@ -674,7 +599,7 @@ export interface StarterList {
     type: ProjectType;
   }[];
   integrations: {
-    name: string;
+    name: IntegrationName;
     id: string;
   }[];
 }
@@ -692,7 +617,7 @@ export interface ResolvedStarterTemplate extends StarterTemplate {
 }
 
 export interface IntegrationTemplate {
-  name: string;
+  name: IntegrationName;
   archive?: string;
 }
 

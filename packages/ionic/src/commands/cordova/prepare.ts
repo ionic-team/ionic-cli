@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/cordova/utils';
+import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
 
 import { CordovaCommand } from './base';
@@ -46,7 +46,7 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
+    const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
 
     const [ platform ] = inputs;
 

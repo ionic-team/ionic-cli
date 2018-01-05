@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
-import { hydrateCommandMetadataOption, metadataToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
-import { CommandMetadata, CommandMetadataOption, KNOWN_BACKENDS, isCommand } from '@ionic/cli-utils';
+import { metadataToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
+import { CommandMetadata, CommandMetadataOption, isCommand } from '@ionic/cli-utils';
 import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
@@ -20,7 +20,6 @@ export class IonicNamespace extends Namespace {
       ['cordova', async () => { const { CordovaNamespace } = await import('./cordova/index'); return new CordovaNamespace(this, this.env); }],
       ['git', async () => { const { GitNamespace } = await import('./git/index'); return new GitNamespace(this, this.env); }],
       ['ssh', async () => { const { SSHNamespace } = await import('./ssh/index'); return new SSHNamespace(this, this.env); }],
-      ['package', async () => { const { PackageNamespace } = await import('./package/index'); return new PackageNamespace(this, this.env); }],
       ['monitoring', async () => { const { MonitoringNamespace } = await import('./monitoring/index'); return new MonitoringNamespace(this, this.env); }],
       ['doctor', async () => { const { DoctorNamespace } = await import('./doctor/index'); return new DoctorNamespace(this, this.env); }],
       ['integrations', async () => { const { IntegrationsNamespace } = await import('./integrations/index'); return new IntegrationsNamespace(this, this.env); }],
@@ -45,14 +44,11 @@ export class IonicNamespace extends Namespace {
       ['start', async () => { const { StartCommand } = await import('./start'); return new StartCommand(this, this.env); }],
       ['state', async () => { const { StateCommand } = await import('./state'); return new StateCommand(this, this.env); }],
       ['telemetry', async () => { const { TelemetryCommand } = await import('./telemetry'); return new TelemetryCommand(this, this.env); }],
-      ['upload', async () => { const { UploadCommand } = await import('./upload'); return new UploadCommand(this, this.env); }],
       ['version', async () => { const { VersionCommand } = await import('./version'); return new VersionCommand(this, this.env); }],
     ]);
   }
 
   async runCommand(pargv: string[], env: { [key: string]: string; }): Promise<void> {
-    const config = await this.env.config.load();
-
     const pargs = stripOptions(pargv);
 
     let { args, obj, path } = await this.locate(pargs);
@@ -81,14 +77,6 @@ export class IonicNamespace extends Namespace {
     }
 
     const minimistOpts = metadataToParseArgsOptions(metadata);
-
-    if (metadata.backends && !metadata.backends.includes(config.backend)) {
-      throw new FatalException(
-        `Sorry! The configured backend (${chalk.bold(config.backend)}) does not know about ${chalk.green(fullNameParts.join(' '))}.\n` +
-        `You can switch backends with ${chalk.green('ionic config set -g backend')} (choose from ${KNOWN_BACKENDS.map(v => chalk.green(v)).join(', ')}).`
-      );
-    }
-
     const options = parseArgs(pargv, minimistOpts);
 
     if (!this.env.project.directory && metadata.type === 'project') {
@@ -96,23 +84,6 @@ export class IonicNamespace extends Namespace {
         `Sorry! ${chalk.green(fullNameParts.join(' '))} can only be run in an Ionic project directory.\n` +
         `If this is a project you'd like to integrate with Ionic, create an ${chalk.bold(PROJECT_FILE)} file.`
       );
-    }
-
-    if (metadata.options) {
-      let found = false;
-
-      for (let o of metadata.options) {
-        const opt = hydrateCommandMetadataOption(o);
-
-        if (opt.backends && opt.default !== options[opt.name] && !opt.backends.includes(config.backend)) {
-          found = true;
-          this.env.log.warn(`${chalk.green('--' + (opt.default === true ? 'no-' : '') + opt.name)} has no effect with the configured backend (${chalk.bold(config.backend)}).`);
-        }
-      }
-
-      if (found) {
-        this.env.log.msg(`You can switch backends with ${chalk.green('ionic config set -g backend')}.`);
-      }
     }
 
     await command.execute(args, options);

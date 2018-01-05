@@ -6,14 +6,13 @@ import * as semver from 'semver';
 import { IonicEnvironment } from '../../definitions';
 // import { isCordovaPackageJson } from '../../guards';
 import { App } from '../app';
-import { BACKEND_PRO } from '../backends';
 import { getIonicRemote, isRepoInitialized } from '../git';
 import { fsReadDir, fsReadFile, pathExists } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 import { pkgLatestVersion, pkgManagerArgs } from '../utils/npm';
 import { Project as IonicAngularProject } from '../project/ionic-angular';
-import { getPlatforms } from '../cordova/project';
-import { ConfigXml } from '../cordova/config';
+import { getPlatforms } from '../integrations/cordova/project';
+import { ConfigXml } from '../integrations/cordova/config';
 
 export interface TreatmentStep {
   name: string;
@@ -148,13 +147,8 @@ export namespace Ailments {
     }
 
     async detected(env: IonicEnvironment) {
-      const config = await env.config.load();
       const project = await env.project.load();
       const appId = project.app_id;
-
-      if (config.backend !== BACKEND_PRO) {
-        return false;
-      }
 
       if (!appId) {
         return false;

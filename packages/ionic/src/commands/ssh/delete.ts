@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isSSHKeyListResponse } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isSSHKeyListResponse } from '@ionic/cli-utils';
 
 import { SSHBaseCommand } from './base';
 
@@ -10,7 +10,6 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
     return {
       name: 'delete',
       type: 'global',
-      backends: [BACKEND_PRO],
       description: 'Delete an SSH public key from Ionic',
       inputs: [
         {

@@ -1,10 +1,9 @@
 import chalk from 'chalk';
 
-import { MetadataGroup, validators } from '@ionic/cli-framework';
+import { validators } from '@ionic/cli-framework';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '@ionic/cli-framework/utils/format';
 
 import {
-  BackendFlag,
   CommandMetadata,
   CommandMetadataInput,
   CommandMetadataOption,
@@ -17,8 +16,6 @@ import {
 
 import { CommandGroup, NamespaceGroup, OptionGroup } from '../constants';
 import { isCommand } from '../guards';
-
-import { BACKEND_PRO } from './backends';
 
 const HELP_DOTS_WIDTH = 25;
 
@@ -81,11 +78,10 @@ async function formatNamespaceHeader(env: IonicEnvironment, ns: INamespace, cmdM
 }
 
 async function formatHeader(env: IonicEnvironment) {
-  const config = await env.config.load();
   const isLoggedIn = await env.session.isLoggedIn();
 
   const now = new Date();
-  const prefix = config.backend === BACKEND_PRO && isLoggedIn ? chalk.blue('PRO') + ' ' : '';
+  const prefix = isLoggedIn ? chalk.blue('PRO') + ' ' : '';
   const version = env.plugins.ionic.meta.pkg.version;
   const suffix = now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
 
@@ -113,8 +109,7 @@ async function formatUsage(env: IonicEnvironment, ns: INamespace) {
 }
 
 async function getCommandDetails(env: IonicEnvironment, ns: INamespace, commands: HydratedCommandMetadata[]): Promise<string[]> {
-  const config = await env.config.load();
-  commands = commands.filter(cmd => showCommand(cmd, config.backend));
+  commands = commands.filter(cmd => !cmd.groups || !cmd.groups.includes(CommandGroup.Hidden));
 
   const [ cmdDetails, nsDetails ] = await Promise.all([
     getListOfCommandDetails(env, commands.filter(cmd => cmd.namespace === ns)),
@@ -150,13 +145,11 @@ async function getListOfCommandDetails(env: IonicEnvironment, commands: Hydrated
 }
 
 async function getListOfNamespaceDetails(env: IonicEnvironment, commands: HydratedCommandMetadata[]) {
-  const config = await env.config.load();
-
   const descriptions = new Map<string, string>();
   const grouped = new Map<string, { meta: NamespaceMetadata; cmds: HydratedCommandMetadata[]; }>();
 
   await Promise.all(commands.map(async cmd => {
-    if (showCommand(cmd, config.backend)) {
+    if (!cmd.groups || !cmd.groups.includes(CommandGroup.Hidden)) {
       const nsmeta = await cmd.namespace.getMetadata();
       descriptions.set(nsmeta.name, nsmeta.description);
       let entry = grouped.get(nsmeta.name);
@@ -255,17 +248,8 @@ function formatOptionLine(opt: CommandMetadataOption) {
   return `${optionList} ${Array(fullLength - optionListLength).fill(chalk.dim('.')).join('')} ${wrappedDescription}`;
 }
 
-function showCommand(thing: { name: string; groups?: MetadataGroup[]; backends?: BackendFlag[]; }, backend: BackendFlag): boolean {
-  return !thing.groups || !thing.groups.includes(CommandGroup.Hidden) && (!thing.backends || thing.backends.includes(backend));
-}
-
-function showOption(thing: { name: string; groups?: MetadataGroup[]; backends?: BackendFlag[]; }, backend: BackendFlag): boolean {
-  return !thing.groups || !thing.groups.includes(OptionGroup.Hidden) && (!thing.backends || thing.backends.includes(backend));
-}
-
 async function filterOptionsForHelp(env: IonicEnvironment, options: CommandMetadataOption[] = []) {
-  const config = await env.config.load();
-  return options.filter(opt => showOption(opt, config.backend));
+  return options.filter(opt => !opt.groups || !opt.groups.includes(OptionGroup.Hidden));
 }
 
 async function formatCommandOptions(env: IonicEnvironment, options: CommandMetadataOption[] = []) {

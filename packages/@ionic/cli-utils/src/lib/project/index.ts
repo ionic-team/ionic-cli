@@ -7,9 +7,10 @@ import { ERROR_FILE_INVALID_JSON, fsReadJsonFile } from '@ionic/cli-framework/ut
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-import { ILogger, IProject, InfoHookItem, PackageJson, ProjectFile, ProjectType } from '../../definitions';
+import { IIntegration, ILogger, IProject, IShell, InfoHookItem, IntegrationName, PackageJson, ProjectFile, ProjectType } from '../../definitions';
 import { BaseConfig } from '../config';
 import { FatalException } from '../errors';
+import { BaseIntegration } from '../integrations';
 
 import * as angularProjectLibType from './angular';
 import * as ionicAngularProjectLibType from './ionic-angular';
@@ -22,17 +23,21 @@ export const PROJECT_TYPES: ProjectType[] = ['angular', 'ionic-angular', 'ionic1
 
 export interface ProjectDeps {
   log: ILogger;
+  shell: IShell;
 }
 
 export abstract class BaseProject extends BaseConfig<ProjectFile> implements IProject {
   type?: ProjectType;
+  integrations: IIntegration[] = [];
   directory: string;
   protected packageJsonFile?: PackageJson;
   protected log: ILogger;
+  protected shell: IShell;
 
-  constructor(dir: string, file: string, { log }: ProjectDeps) {
+  constructor(dir: string, file: string, { log, shell }: ProjectDeps) {
     super(dir, file);
     this.log = log;
+    this.shell = shell;
   }
 
   static async determineType(projectDir: string, deps: ProjectDeps): Promise<ProjectType | undefined> {
@@ -79,21 +84,32 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'custom'): Promise<customProjectLibType.Project>;
   static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: ProjectType): Promise<IProject>;
   static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: ProjectType): Promise<IProject> {
+    let project: IProject | undefined;
+
     if (type === 'angular') {
       const { Project } = await import('./angular');
-      return new Project(dir, file, deps);
+      project = new Project(dir, file, deps);
     } else if (type === 'ionic-angular') {
       const { Project } = await import('./ionic-angular');
-      return new Project(dir, file, deps);
+      project = new Project(dir, file, deps);
     } else if (type === 'ionic1') {
       const { Project } = await import('./ionic1');
-      return new Project(dir, file, deps);
+      project = new Project(dir, file, deps);
     } else if (type === 'custom') {
       const { Project } = await import('./custom');
-      return new Project(dir, file, deps);
+      project = new Project(dir, file, deps);
     }
 
-    throw new FatalException(`Bad project type: ${chalk.bold(type)}`); // TODO?
+    if (!project) {
+      throw new FatalException(`Bad project type: ${chalk.bold(type)}`); // TODO?
+    }
+
+    const p = await project.load();
+
+    const integrationNames = <IntegrationName[]>Object.keys(p.integrations); // TODO
+    project.integrations.push(...(await Promise.all(integrationNames.map(async name => BaseIntegration.createFromName(deps, name)))));
+
+    return project;
   }
 
   async loadAppId(): Promise<string> {
@@ -160,7 +176,10 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     return j && typeof j.name === 'string' && typeof j.app_id === 'string';
   }
 
-  abstract getInfo(): Promise<InfoHookItem[]>;
+  async getInfo(): Promise<InfoHookItem[]> {
+    return lodash.flatten(await Promise.all(this.integrations.map(async i => i.getInfo())));
+  }
+
   abstract detected(): Promise<boolean>;
 
   async getSourceDir(): Promise<string> {
@@ -182,6 +201,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
  */
 export class OutsideProject extends BaseConfig<never> implements IProject {
   type = undefined;
+  integrations = [];
 
   is(j: any): j is never {
     return false;

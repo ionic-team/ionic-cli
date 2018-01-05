@@ -47,10 +47,6 @@ export async function set(env: IonicEnvironment, inputs: CommandLineInputs, opti
   lodash.set(config, p, newValue);
   await file.save();
 
-  if (global && p === 'backend' && valueChanged) {
-    await env.hooks.fire('backend:changed', { env });
-  }
-
   if (valueChanged) {
     env.log.ok(`${chalk.green(p)} set to ${chalk.green(JSON.stringify(v))} in ${chalk.bold(prettyPath(file.filePath))}!`);
   } else {

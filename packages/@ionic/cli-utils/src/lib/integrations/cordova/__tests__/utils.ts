@@ -1,4 +1,4 @@
-import { OptionGroup } from '../../../constants';
+import { OptionGroup } from '../../../../constants';
 import { filterArgumentsForCordova, generateBuildOptions } from '../utils';
 
 describe('@ionic/cli-utils', () => {

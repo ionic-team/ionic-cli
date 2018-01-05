@@ -6,7 +6,7 @@ import { validators } from '@ionic/cli-framework';
 import { fileToString, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { SSHBaseCommand } from './base';
@@ -16,7 +16,6 @@ export class SSHUseCommand extends SSHBaseCommand {
     return {
       name: 'use',
       type: 'global',
-      backends: [BACKEND_PRO],
       description: 'Set your active Ionic SSH key',
       inputs: [
         {

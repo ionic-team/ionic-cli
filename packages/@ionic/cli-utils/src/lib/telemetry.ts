@@ -1,8 +1,7 @@
 import * as leekType from 'leek';
 import * as Debug from 'debug';
 
-import { ITelemetry, InfoHookItem, IonicEnvironment } from '../definitions';
-import { BACKEND_LEGACY, BACKEND_PRO } from './backends';
+import { CLIMeta, IClient, IConfig, IHookEngine, IProject, ISession, ITelemetry, InfoHookItem, LoadedPlugin } from '../definitions';
 import { generateUUID } from './utils/uuid';
 import { sendMessage } from './helper';
 
@@ -10,45 +9,71 @@ const debug = Debug('ionic:cli-utils:lib:telemetry');
 const GA_CODE = 'UA-44023830-30';
 let _gaTracker: leekType | undefined;
 
+export interface TelemetryDeps {
+  cli: LoadedPlugin;
+  client: IClient;
+  config: IConfig;
+  hooks: IHookEngine;
+  meta: CLIMeta;
+  project: IProject;
+  session: ISession;
+}
+
 export class Telemetry implements ITelemetry {
-  env: IonicEnvironment; // TODO: proper DI
+  protected cli: LoadedPlugin;
+  protected client: IClient;
+  protected config: IConfig;
+  protected hooks: IHookEngine;
+  protected meta: CLIMeta;
+  protected project: IProject;
+  protected session: ISession;
+
+  constructor({ cli, config, client, hooks, meta, project, session }: TelemetryDeps) {
+    this.cli = cli;
+    this.client = client;
+    this.config = config;
+    this.hooks = hooks;
+    this.meta = meta;
+    this.project = project;
+    this.session = session;
+  }
 
   async resetToken() {
-    const config = await this.env.config.load();
+    const config = await this.config.load();
     config.tokens.telemetry = generateUUID();
   }
 
   async sendCommand(command: string, args: string[]): Promise<void> {
-    const config = await this.env.config.load();
+    const config = await this.config.load();
 
     if (config.telemetry) {
-      await sendMessage(this.env, { type: 'telemetry', data: { command, args } });
+      await sendMessage({ meta: this.meta, config: this.config }, { type: 'telemetry', data: { command, args } });
     }
   }
 }
 
-async function getLeek(env: IonicEnvironment): Promise<leekType> {
+async function getLeek({ config, version }: { config: IConfig; version: string; }): Promise<leekType> {
   if (!_gaTracker) {
     const Leek = await import('leek');
-    const config = await env.config.load();
+    const c = await config.load();
 
-    if (!config.tokens.telemetry) {
-      config.tokens.telemetry = generateUUID();
+    if (!c.tokens.telemetry) {
+      c.tokens.telemetry = generateUUID();
     }
 
     _gaTracker = new Leek({
-      name: config.tokens.telemetry,
+      name: c.tokens.telemetry,
       trackingCode: GA_CODE,
       globalName: 'ionic',
-      version: env.plugins.ionic.meta.pkg.version,
-      silent: config.telemetry !== true,
+      version,
+      silent: c.telemetry !== true,
     });
   }
 
   return _gaTracker;
 }
 
-export async function sendCommand(env: IonicEnvironment, command: string, args: string[]) {
+export async function sendCommand({ cli, config, client, hooks, session, project }: TelemetryDeps, command: string, args: string[]) {
   const messageList: string[] = [];
   const name = 'command execution';
   const prettyArgs = args.map(a => a.includes(' ') ? `"${a}"` : a);
@@ -56,7 +81,7 @@ export async function sendCommand(env: IonicEnvironment, command: string, args: 
 
   await Promise.all([
     (async () => {
-      const leek = await getLeek(env);
+      const leek = await getLeek({ config, version: cli.meta.pkg.version });
       try {
         await leek.track({ name, message });
       } catch (e) {
@@ -64,50 +89,41 @@ export async function sendCommand(env: IonicEnvironment, command: string, args: 
       }
     })(),
     (async () => {
-      const { Client } = await import('./http');
-
-      const config = await env.config.load();
-      const client = new Client(env.config);
-
-      if (config.backend === BACKEND_LEGACY) {
-        return;
-      }
+      const c = await config.load();
+      const now = new Date().toISOString();
 
       let appId: string | undefined;
 
-      const projectFile = env.project.directory ? await env.project.load() : undefined;
+      const p = project.directory ? await project.load() : undefined;
 
-      if (projectFile) {
-        appId = projectFile.app_id;
+      if (p) {
+        appId = p.app_id;
       }
 
-      const now = new Date().toISOString();
-      const isLoggedIn = await env.session.isLoggedIn();
-
-      const { req } = await client.make('POST', 'https://api.ionicjs.com/events/metrics'); // TODO: full URL is temporary
+      const { req } = await client.make('POST', '/events/metrics');
 
       const metric: { [key: string]: any; } = {
         'name': 'cli_command_metrics',
         'timestamp': now,
-        'session_id': config.tokens.telemetry,
+        'session_id': c.tokens.telemetry,
         'source': 'cli',
         'value': {
           'command': command,
           'arguments': prettyArgs.join(' '),
-          'version': env.plugins.ionic.meta.pkg.version,
+          'version': cli.meta.pkg.version,
           'node_version': process.version,
           'app_id': appId,
-          'user_id': config.backend === BACKEND_LEGACY ? config.user.id : undefined,
-          'backend': config.backend,
+          'backend': 'pro', // TODO: is this necessary?
         },
       };
 
+      const isLoggedIn = await session.isLoggedIn();
       const v: InfoHookItem[] = [];
-      const info = await env.hooks.fire('info', { env });
+      const info = await hooks.fire('info');
       const flattenedInfo = info.reduce((acc, currentValue) => acc.concat(currentValue), v);
 
-      if (isLoggedIn && config.backend === BACKEND_PRO) {
-        const token = await env.session.getUserToken();
+      if (isLoggedIn) {
+        const token = await session.getUserToken();
         req.set('Authorization', `Bearer ${token}`);
       }
 

@@ -29,8 +29,7 @@ export const LOCAL_ADDRESSES = ['localhost', '127.0.0.1'];
 
 export const BROWSERS = ['safari', 'firefox', process.platform === 'win32' ? 'chrome' : (process.platform === 'darwin' ? 'google chrome' : 'google-chrome')];
 
-const WATCH_BEFORE_HOOK = 'watch:before';
-const WATCH_BEFORE_SCRIPT = `ionic:${WATCH_BEFORE_HOOK}`;
+const WATCH_BEFORE_SCRIPT = `ionic:watch:before`;
 
 export interface DevAppDetails {
   channel?: string;
@@ -119,12 +118,11 @@ export abstract class ServeRunner<T extends ServeOptions> {
 
     const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
 
+    // TODO: move
     if (deps['@ionic/cli-plugin-cordova']) {
-      const { checkCordova } = await import('./cordova/utils');
+      const { checkCordova } = await import('./integrations/cordova/utils');
       await checkCordova(this.env);
     }
-
-    await this.env.hooks.fire('watch:before', { env: this.env });
   }
 
   async checkDevApp(options: T) {

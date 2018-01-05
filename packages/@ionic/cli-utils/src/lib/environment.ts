@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import * as inquirerType from 'inquirer';
 
 import {
+  CLIMeta,
   ICLIEventEmitter,
   IClient,
   ICommand,
@@ -17,7 +18,6 @@ import {
   ITelemetry,
   IonicEnvironment,
   IonicEnvironmentFlags,
-  IonicEnvironmentMeta,
   IonicEnvironmentPlugins,
   PromptModule,
 } from '../definitions';
@@ -31,7 +31,7 @@ export class Environment implements IonicEnvironment {
   readonly events: ICLIEventEmitter;
   readonly log: ILogger;
   readonly prompt: PromptModule;
-  readonly meta: IonicEnvironmentMeta;
+  readonly meta: CLIMeta;
   project: IProject; // project config (ionic.config.json)
   readonly plugins: IonicEnvironmentPlugins;
   session: ISession;
@@ -71,7 +71,7 @@ export class Environment implements IonicEnvironment {
     flags: IonicEnvironmentFlags;
     hooks: IHookEngine;
     log: ILogger;
-    meta: IonicEnvironmentMeta;
+    meta: CLIMeta;
     namespace: IRootNamespace;
     plugins: IonicEnvironmentPlugins;
     project: IProject; // project config (ionic.config.json)
@@ -98,10 +98,6 @@ export class Environment implements IonicEnvironment {
     this.shell = shell;
     this.tasks = tasks;
     this.telemetry = telemetry;
-  }
-
-  load(p: any): any {
-    return require(p);
   }
 
   open() {

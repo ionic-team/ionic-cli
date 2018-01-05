@@ -1,9 +1,11 @@
 import * as path from 'path';
+
 import * as fsSpy from '@ionic/cli-framework/utils/fs';
-import * as httpSpy from '../../http';
+
+import * as httpSpy from '../../../http';
 import * as resources from '../resources';
 
-import { ImageResource, SourceImage } from '../../../definitions';
+import { ImageResource, SourceImage } from '../../../../definitions';
 
 describe('@ionic/cli-utils', () => {
 

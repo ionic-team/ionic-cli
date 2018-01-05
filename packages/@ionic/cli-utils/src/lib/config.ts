@@ -15,7 +15,6 @@ import {
   IonicEnvironment,
 } from '../definitions';
 
-import { BACKEND_PRO } from './backends';
 import { FatalException } from './errors';
 
 export abstract class BaseConfig<T> implements IBaseConfig<T> {
@@ -179,10 +178,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.tokens.appUser = {};
     }
 
-    if (typeof results.backend !== 'string') {
-      results.backend = BACKEND_PRO;
-    }
-
     if (typeof results.telemetry === 'undefined') {
       if (results.cliFlags && typeof results.cliFlags.enableTelemetry !== 'undefined') {
         results.telemetry = results.cliFlags.enableTelemetry;
@@ -197,6 +192,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.yarn = results.cliFlags && typeof results.cliFlags.yarn !== 'undefined' ? results.cliFlags.yarn : false;
     }
 
+    delete results.backend;
     delete results.lastCommand;
     delete results.lastUpdated;
     delete results.cliFlags;
@@ -219,7 +215,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       && typeof j.user === 'object'
       && typeof j.tokens === 'object'
       && typeof j.tokens.appUser === 'object'
-      && typeof j.backend === 'string'
       && typeof j.telemetry === 'boolean'
       && typeof j.yarn === 'boolean';
   }
@@ -231,10 +226,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       return config.addresses.apiUrl;
     }
 
-    if (config.backend === 'legacy') {
-      return 'https://api.ionic.io';
-    }
-
     return 'https://api.ionicjs.com';
   }
 
@@ -243,10 +234,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
 
     if (config.addresses.dashUrl) {
       return config.addresses.dashUrl;
-    }
-
-    if (config.backend === 'legacy') {
-      return 'https://apps.ionic.io';
     }
 
     return 'https://dashboard.ionicjs.com';

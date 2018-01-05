@@ -1,5 +1,7 @@
 import * as path from 'path';
 
+import { fsMkdirp, getFileChecksums, readDir, writeStreamToFile } from '@ionic/cli-framework/utils/fs';
+
 import {
   ImageResource,
   ImageUploadResponse,
@@ -7,10 +9,9 @@ import {
   KnownPlatform,
   ResourcesConfig,
   SourceImage,
-} from '../../definitions';
+} from '../../../definitions';
 
-import { fsMkdirp, getFileChecksums, readDir, writeStreamToFile } from '@ionic/cli-framework/utils/fs';
-import { createRequest } from '../http';
+import { createRequest } from '../../http';
 import { ConfigXml } from './config';
 
 const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];

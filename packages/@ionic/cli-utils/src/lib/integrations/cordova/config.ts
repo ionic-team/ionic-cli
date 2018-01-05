@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import * as et from 'elementtree';
 
-import { ResourcesPlatform } from '../../definitions';
+import { ResourcesPlatform } from '../../../definitions';
 import { fsReadFile, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 
 export interface PlatformEngine {

@@ -89,8 +89,8 @@ This command uses Ionic servers, so we require you to be logged into your free I
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
-    const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
+    const { ConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
+    const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
 
     const {
       RESOURCES,
@@ -101,7 +101,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       getSourceImages,
       transformResourceImage,
       uploadSourceImages,
-    } = await import('@ionic/cli-utils/lib/cordova/resources');
+    } = await import('@ionic/cli-utils/lib/integrations/cordova/resources');
 
     const [ platform ] = inputs;
     const { force } = options;

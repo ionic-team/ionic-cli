@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
@@ -9,7 +9,6 @@ export class GitRemoteCommand extends Command {
     return {
       name: 'remote',
       type: 'project',
-      backends: [BACKEND_PRO],
       description: 'Adds/updates the Ionic git remote to your local Ionic app repository',
     };
   }

@@ -6,7 +6,7 @@ import { contains, validate } from '@ionic/cli-framework';
 import { fsMkdirp, fsUnlink, pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
 
 import { SSHBaseCommand } from './base';
 
@@ -17,7 +17,6 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
     return {
       name: 'generate',
       type: 'global',
-      backends: [BACKEND_PRO],
       description: 'Generates a private and public SSH key pair',
       inputs: [
         {

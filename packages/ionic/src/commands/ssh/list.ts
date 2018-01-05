@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { columnar } from '@ionic/cli-framework/utils/format';
 
-import { BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isSSHKeyListResponse } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isSSHKeyListResponse } from '@ionic/cli-utils';
 
 import { SSHBaseCommand } from './base';
 
@@ -11,7 +11,6 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
     return {
       name: 'list',
       type: 'global',
-      backends: [BACKEND_PRO],
       description: 'List your SSH public keys on Ionic',
     };
   }

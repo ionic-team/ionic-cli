@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
-import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/cordova/utils';
+import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
 import { CordovaCommand } from './base';
 

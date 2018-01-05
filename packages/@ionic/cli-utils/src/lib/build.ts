@@ -13,14 +13,11 @@ import * as angularBuildLibType from './project/angular/build';
 
 const debug = Debug('ionic:cli-utils:lib:build');
 
-const BUILD_BEFORE_HOOK = 'build:before';
-const BUILD_AFTER_HOOK = 'build:after';
-
 // npm script names
 const npmPrefix = 'ionic';
 export const BUILD_SCRIPT = `${npmPrefix}:build`;
-const BUILD_BEFORE_SCRIPT = `${npmPrefix}:${BUILD_BEFORE_HOOK}`;
-const BUILD_AFTER_SCRIPT = `${npmPrefix}:${BUILD_AFTER_HOOK}`;
+const BUILD_BEFORE_SCRIPT = `${npmPrefix}:build:before`;
+const BUILD_AFTER_SCRIPT = `${npmPrefix}:build:after`;
 
 export abstract class BuildRunner<T extends BuildOptions> {
   constructor(protected env: IonicEnvironment) {}
@@ -76,12 +73,11 @@ export abstract class BuildRunner<T extends BuildOptions> {
 
     const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
 
+    // TODO: move
     if (deps['@ionic/cli-plugin-cordova']) {
-      const { checkCordova } = await import('./cordova/utils');
+      const { checkCordova } = await import('./integrations/cordova/utils');
       await checkCordova(this.env);
     }
-
-    await this.env.hooks.fire(BUILD_BEFORE_HOOK, { env: this.env });
   }
 
   async invokeAfterHook(options: T) {
@@ -96,8 +92,6 @@ export abstract class BuildRunner<T extends BuildOptions> {
       const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.env, { command: 'run', script: BUILD_AFTER_SCRIPT });
       await this.env.shell.run(pkgManager, pkgArgs, { showExecution: true });
     }
-
-    await this.env.hooks.fire(BUILD_AFTER_HOOK, { env: this.env, platform: options.platform });
   }
 
   async run(options: T): Promise<void> {

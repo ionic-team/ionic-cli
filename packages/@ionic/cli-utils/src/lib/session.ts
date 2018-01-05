@@ -8,9 +8,9 @@ import {
   IonicEnvironment,
 } from '../definitions';
 
-import { isAuthTokensResponse, isLegacyLoginResponse, isProLoginResponse, isSuperAgentError } from '../guards';
+import { isLoginResponse, isSuperAgentError } from '../guards';
 
-import { FatalException, SessionException } from './errors';
+import { SessionException } from './errors';
 import { createFatalAPIFormat } from './http';
 
 export class BaseSession {
@@ -48,79 +48,6 @@ export class BaseSession {
   }
 }
 
-export class CloudSession extends BaseSession implements ISession {
-  async login(email: string, password: string): Promise<void> {
-    const { req } = await this.client.make('POST', '/login');
-    req.send({ email, password });
-
-    try {
-      const res = await this.client.do(req);
-
-      if (!isLegacyLoginResponse(res)) {
-        throw createFatalAPIFormat(req, res);
-      }
-
-      const { token, user_id } = res.data;
-      const c = await this.config.load();
-
-      if (c.user.id !== user_id) { // User changed
-        await this.logout();
-      }
-
-      c.user.id = user_id;
-      c.user.email = email;
-      c.tokens.user = token;
-    } catch (e) {
-      if (isSuperAgentError(e) && e.response.status === 401) {
-        throw new SessionException('Incorrect email or password.');
-      }
-
-      throw e;
-    }
-  }
-
-  async getAppUserToken(app_id?: string): Promise<string> {
-    if (!app_id) {
-      if (!this.project) {
-        throw new FatalException(`Cannot determine ${chalk.bold('app_id')}--outside of Ionic project.`);
-      }
-
-      app_id = await this.project.loadAppId();
-    }
-
-    const c = await this.config.load();
-
-    if (!c.tokens.appUser[app_id]) {
-      const token = await this.getUserToken();
-      const paginator = await this.client.paginate(
-        async () => {
-          const { req } = await this.client.make('GET', '/auth/tokens');
-          req.set('Authorization', `Bearer ${token}`).query({ 'page_size': 100, type: 'app-user' });
-          return { req };
-        },
-        isAuthTokensResponse
-      );
-
-      for (let r of paginator) {
-        const res = await r;
-
-        for (let token of res.data) {
-          c.tokens.appUser[token.details.app_id] = token.token;
-        }
-      }
-    }
-
-    // TODO: if this is a new app, an app-user token may not exist for the user
-    // TODO: if tokens are invalidated, what do (hint: app tokens)
-
-    if (!c.tokens.appUser[app_id]) {
-      throw new SessionException(`A token does not exist for your account on app ${chalk.bold(app_id)}.`);
-    }
-
-    return c.tokens.appUser[app_id];
-  }
-}
-
 export class ProSession extends BaseSession implements ISession {
   async login(email: string, password: string): Promise<void> {
     const { req } = await this.client.make('POST', '/login');
@@ -129,7 +56,7 @@ export class ProSession extends BaseSession implements ISession {
     try {
       const res = await this.client.do(req);
 
-      if (!isProLoginResponse(res)) {
+      if (!isLoginResponse(res)) {
         throw createFatalAPIFormat(req, res);
       }
 
@@ -152,10 +79,6 @@ export class ProSession extends BaseSession implements ISession {
 
       throw e;
     }
-  }
-
-  async getAppUserToken(app_id?: string): Promise<string> {
-    return this.getUserToken();
   }
 }
 

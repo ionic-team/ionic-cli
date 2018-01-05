@@ -21,6 +21,7 @@ export class Project extends BaseProject {
     const [ ionic1Version, v1UtilVersion ] = await Promise.all([this.getFrameworkVersion(), this.getV1UtilVersion()]);
 
     return [
+      ...(await super.getInfo()),
       { type: 'local-packages', key: 'Ionic Framework', value: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown' },
       { type: 'local-packages', key: '@ionic/v1-util', value: v1UtilVersion ? v1UtilVersion : 'not installed' },
     ];

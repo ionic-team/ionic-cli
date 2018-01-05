@@ -70,8 +70,8 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { getPlatforms } = await import('@ionic/cli-utils/lib/cordova/project');
-    const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
+    const { getPlatforms } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
+    const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/integrations/cordova/utils');
 
     let [ action, platformName ] = inputs;
 
@@ -91,7 +91,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
     }
 
     if (action === 'add') {
-      const { installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
+      const { installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
       await installPlatform(this.env, platformName);
     } else {
       await this.runCordova(optionList, { showExecution: true });

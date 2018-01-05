@@ -9,7 +9,7 @@ import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
-import { checkCordova, filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/cordova/utils';
+import { checkCordova, filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
 export const CORDOVA_RUN_COMMAND_OPTIONS: CommandMetadataOption[] = [
   {
@@ -111,7 +111,7 @@ export const CORDOVA_RUN_COMMAND_OPTIONS: CommandMetadataOption[] = [
 
 export abstract class CordovaCommand extends Command {
   async preRunChecks() {
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
+    const { ConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
 
     await checkCordova(this.env);
 
@@ -158,7 +158,7 @@ export abstract class CordovaCommand extends Command {
 
   async checkForPlatformInstallation(runPlatform: string) {
     if (runPlatform) {
-      const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
+      const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
       const platforms = await getPlatforms(this.env.project.directory);
 
       if (!platforms.includes(runPlatform)) {
@@ -201,7 +201,7 @@ export abstract class CordovaRunCommand extends CordovaCommand implements Comman
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/cordova/config');
+    const { ConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
     const { registerShutdownFunction } = await import('@ionic/cli-utils/lib/process');
 
     if (!options['livereload'] && (options['consolelogs'] || options['serverlogs'])) {

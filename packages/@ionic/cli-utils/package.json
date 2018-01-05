@@ -75,6 +75,9 @@
     "@types/through2": "^2.0.33",
     "@types/uuid": "^3.4.3"
   },
+  "optionalDependencies": {
+    "superagent-proxy": "^1.0.2"
+  },
   "jest": {
     "globals": {
       "ts-jest": {

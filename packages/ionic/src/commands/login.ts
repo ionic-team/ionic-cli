@@ -1,16 +1,14 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
-import { BACKEND_LEGACY, BACKEND_PRO, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { SessionException } from '@ionic/cli-utils/lib/errors';
 
 export class LoginCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
     return {
       name: 'login',
       type: 'global',
-      backends: [BACKEND_LEGACY, BACKEND_PRO],
       description: 'Login with your Ionic ID',
       longDescription: `
 Authenticate with Ionic servers and retrieve a user token, which is stored in the CLI config.
@@ -103,32 +101,16 @@ If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ email, password ] = inputs;
 
-    const config = await this.env.config.load();
-
     if (await this.env.session.isLoggedIn()) {
       this.env.log.msg('Logging you out.');
       await this.env.runCommand(['logout']);
       await this.env.telemetry.resetToken();
     }
 
-    try {
-      await this.env.session.login(email, password);
-    } catch (e) {
-      if (e instanceof SessionException && config.backend === BACKEND_LEGACY) {
-        this.env.log.warn(
-          `Logging into Ionic Pro?\n` +
-          `We noticed your CLI is still configured for Ionic Cloud. Fix this with the following command:\n` +
-          `    ${chalk.green('ionic config set -g backend pro')}`
-        );
-      }
-
-      throw e;
-    }
+    await this.env.session.login(email, password);
 
     this.env.log.ok('You are logged in!');
 
-    if (config.backend === BACKEND_PRO && !config.git.setup) {
-      await this.env.runCommand(['ssh', 'setup']);
-    }
+    await this.env.runCommand(['ssh', 'setup']);
   }
 }

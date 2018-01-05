@@ -4,22 +4,28 @@ import * as crossSpawnType from 'cross-spawn';
 
 import chalk from 'chalk';
 
-import { ILogger, IProject, IShell, IShellRunOptions, IShellSpawnOptions, ITaskChain } from '../definitions';
+import { ILogger, IShell, IShellRunOptions, IShellSpawnOptions, ITaskChain } from '../definitions';
 import { isExitCodeException } from '../guards';
 import { FatalException } from './errors';
 import { RunCmdOptions, prettyCommand, runcmd, spawncmd } from './utils/shell';
 
 export const ERROR_SHELL_COMMAND_NOT_FOUND = 'SHELL_COMMAND_NOT_FOUND';
 
+export interface ShellDeps {
+  tasks: ITaskChain;
+  log: ILogger;
+  projectDir?: string;
+}
+
 export class Shell implements IShell {
   protected tasks: ITaskChain;
   protected log: ILogger;
-  protected project?: IProject;
+  protected projectDir?: string;
 
-  constructor({ tasks, log, project }: { tasks: ITaskChain; log: ILogger; project?: IProject }) {
+  constructor({ tasks, log, projectDir }: ShellDeps) {
     this.tasks = tasks;
     this.log = log;
-    this.project = project;
+    this.projectDir = projectDir;
   }
 
   async run(command: string, args: string[], { showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, logOptions, showExecution, showSpinner = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<string> {
@@ -144,6 +150,6 @@ export class Shell implements IShell {
   }
 
   protected supplementPATH(p: string) {
-    return this.project ? `${path.resolve(this.project.directory, 'node_modules', '.bin')}${path.delimiter}${p}` : p;
+    return this.projectDir ? `${path.resolve(this.projectDir, 'node_modules', '.bin')}${path.delimiter}${p}` : p;
   }
 }

@@ -1,7 +1,5 @@
 import * as path from 'path';
 
-import chalk from 'chalk';
-
 import {
   ERROR_FILE_INVALID_JSON,
   ERROR_FILE_NOT_FOUND,
@@ -17,24 +15,6 @@ export const STARTER_BASE_URL = 'https://d2ql0qc7j8u4b2.cloudfront.net';
 
 export function isProjectNameValid(name: string): boolean {
   return name !== '.';
-}
-
-export function getHelloText(): string {
-  return `
-${chalk.bold('♬ ♫ ♬ ♫  Your Ionic app is ready to go! ♬ ♫ ♬ ♫')}
-
-${chalk.bold('Run your app in the browser (great for initial development):')}
-  ${chalk.green('ionic serve')}
-
-${chalk.bold('Install the DevApp to easily test on iOS and Android')}
-  ${chalk.green('https://bit.ly/ionic-dev-app')}
-
-${chalk.bold('Run on a device or simulator:')}
-  ${chalk.green('ionic cordova run ios')}
-
-${chalk.bold('Test and share your app on a device with the Ionic View app:')}
-  https://ionicframework.com/products/view
-  `;
 }
 
 export async function readStarterManifest(p: string): Promise<StarterManifest> {

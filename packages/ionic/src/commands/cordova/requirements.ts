@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isExitCodeException } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
 import { CordovaCommand } from './base';
 
@@ -28,8 +29,7 @@ Like running ${chalk.green('cordova requirements')} directly, but provides frien
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/cordova/project');
-    const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/cordova/utils');
+    const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
 
     const [ platform ] = inputs;
 

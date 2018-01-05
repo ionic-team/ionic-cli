@@ -9,11 +9,7 @@ import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
 import * as inquirerType from 'inquirer';
 
 import {
-  IClient,
-  IConfig,
-  IHookEngine,
   IProject,
-  ISession,
   InfoHookItem,
   IonicEnvironment,
   LogLevel,
@@ -30,12 +26,11 @@ import { Client } from './lib/http';
 import { CLIEventEmitter } from './lib/events';
 import { Environment } from './lib/environment';
 import { HookEngine } from './lib/hooks';
-import { BACKEND_LEGACY } from './lib/backends';
 import { Logger } from './lib/utils/logger';
 import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
 import { readPackageJsonFileOfResolvedModule } from './lib/utils/npm';
 import { Telemetry } from './lib/telemetry';
-import { CloudSession, ProSession } from './lib/session';
+import { ProSession } from './lib/session';
 import { Shell } from './lib/shell';
 import { createPromptModule } from './lib/prompts';
 
@@ -43,111 +38,7 @@ export * from './definitions';
 export * from './constants';
 export * from './guards';
 
-export { BACKEND_LEGACY, BACKEND_PRO, KNOWN_BACKENDS } from './lib/backends';
-
 const name = '@ionic/cli-utils';
-
-function registerHooks(hooks: IHookEngine) {
-  hooks.register(name, 'info', async () => {
-    const packageJson = await readPackageJsonFileOfResolvedModule(__filename);
-    const version = packageJson.version || '';
-
-    return [
-      { type: 'cli-packages', key: name, value: version, path: path.dirname(__filename) },
-    ];
-  });
-
-  hooks.register(name, 'backend:changed', async ({ env }) => {
-    const wasLoggedIn = await env.session.isLoggedIn();
-    await env.session.logout();
-
-    env.session = await getSession(env.config, env.client, env.project);
-
-    if (wasLoggedIn) {
-      env.log.msg('You have been logged out.');
-    }
-  });
-
-  hooks.register(name, 'info', async ({ env }) => {
-    const osName = await import('os-name');
-    const os = osName();
-    const node = process.version;
-
-    const npm = await env.shell.cmdinfo('npm', ['-v']);
-    const config = await env.config.load();
-
-    const info: InfoHookItem[] = [
-      { type: 'cli-packages', key: 'ionic', flair: 'Ionic CLI', value: env.plugins.ionic.meta.pkg.version, path: path.dirname(path.dirname(env.plugins.ionic.meta.filePath)) },
-      { type: 'system', key: 'Node', value: node },
-      { type: 'system', key: 'npm', value: npm || 'not installed' },
-      { type: 'system', key: 'OS', value: os },
-      { type: 'misc', key: 'backend', value: config.backend },
-    ];
-
-    const projectFile = env.project.directory ? await env.project.load() : undefined;
-
-    info.push(...(await env.project.getInfo()));
-
-    if (projectFile) {
-      if (projectFile.integrations.cordova && projectFile.integrations.cordova.enabled !== false) {
-        const { getAndroidSdkToolsVersion } = await import('./lib/android');
-        const { getCordovaCLIVersion, getCordovaPlatformVersions } = await import('./lib/cordova/utils');
-
-        const [
-          cordovaVersion,
-          cordovaPlatforms,
-          xcode,
-          iosDeploy,
-          iosSim,
-          androidSdkToolsVersion,
-        ] = await Promise.all([
-          getCordovaCLIVersion(env),
-          getCordovaPlatformVersions(env),
-          env.shell.cmdinfo('xcodebuild', ['-version']),
-          env.shell.cmdinfo('ios-deploy', ['--version']),
-          env.shell.cmdinfo('ios-sim', ['--version']),
-          getAndroidSdkToolsVersion(),
-        ]);
-
-        info.push(
-          { type: 'global-packages', key: 'cordova', flair: 'Cordova CLI', value: cordovaVersion || 'not installed' },
-          { type: 'local-packages', key: 'Cordova Platforms', value: cordovaPlatforms || 'none' }
-        );
-
-        if (xcode) {
-          info.push({ type: 'system', key: 'Xcode', value: xcode });
-        }
-
-        if (iosDeploy) {
-          info.push({ type: 'system', key: 'ios-deploy', value: iosDeploy });
-        }
-
-        if (iosSim) {
-          info.push({ type: 'system', key: 'ios-sim', value: iosSim });
-        }
-
-        if (androidSdkToolsVersion) {
-          info.push({ type: 'system', key: 'Android SDK Tools', value: androidSdkToolsVersion });
-        }
-
-        info.push({ type: 'environment', key: 'ANDROID_HOME', value: process.env.ANDROID_HOME || 'not set' });
-      }
-    }
-
-    return info;
-  });
-
-  hooks.register(name, 'cordova:project:info', async ({ env }) => {
-    const { ConfigXml } = await import('./lib/cordova/config');
-    const conf = await ConfigXml.load(env.project.directory);
-    return conf.getProjectInfo();
-  });
-}
-
-async function getSession(config: IConfig, client: IClient, project?: IProject): Promise<ISession> {
-  const configData = await config.load();
-  return configData.backend === BACKEND_LEGACY ? new CloudSession(config, client, project) : new ProSession(config, client, project);
-}
 
 export async function getProject(projectDir: string | undefined, deps: ProjectDeps): Promise<IProject> {
   if (!projectDir) {
@@ -217,14 +108,47 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
 
   configData.version = plugin.meta.pkg.version;
 
-  const project = await getProject(projectDir, { log });
-  const client = new Client(config);
-  const session = await getSession(config, client, project);
-  const hooks = new HookEngine();
-  const telemetry = new Telemetry();
-  const shell = new Shell({ tasks, log, project });
+  const meta = {
+    cwd,
+    local: env['IONIC_CLI_LOCAL'] ? true : false,
+    binPath: env['IONIC_CLI_BIN'],
+    libPath: env['IONIC_CLI_LIB'],
+  };
 
-  registerHooks(hooks);
+  const shell = new Shell({ tasks, log, projectDir });
+  const project = await getProject(projectDir, { log, shell });
+  const client = new Client(config);
+  const session = new ProSession(config, client, project);
+  const hooks = new HookEngine();
+  const telemetry = new Telemetry({ config, client, meta, session, hooks, cli: plugin, project });
+
+  hooks.register(name, 'info', async () => {
+    const packageJson = await readPackageJsonFileOfResolvedModule(__filename);
+    const version = packageJson.version || '';
+
+    return [
+      { type: 'cli-packages', key: name, value: version, path: path.dirname(__filename) },
+    ];
+  });
+
+  hooks.register(name, 'info', async () => {
+    const osName = await import('os-name');
+    const os = osName();
+    const node = process.version;
+
+    const npm = await shell.cmdinfo('npm', ['-v']);
+
+    const info: InfoHookItem[] = [
+      { type: 'cli-packages', key: 'ionic', flair: 'Ionic CLI', value: plugin.meta.pkg.version, path: path.dirname(path.dirname(plugin.meta.filePath)) },
+      { type: 'system', key: 'Node', value: node },
+      { type: 'system', key: 'npm', value: npm || 'not installed' },
+      { type: 'system', key: 'OS', value: os },
+    ];
+
+    info.push(...(await project.getInfo()));
+
+    return info;
+  });
 
   await config.prepare();
 
@@ -237,12 +161,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     flags,
     hooks,
     log,
-    meta: {
-      cwd,
-      local: env['IONIC_CLI_LOCAL'] ? true : false,
-      binPath: env['IONIC_CLI_BIN'],
-      libPath: env['IONIC_CLI_LIB'],
-    },
+    meta,
     namespace: plugin.namespace,
     plugins: {
       ionic: plugin,
@@ -257,7 +176,6 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
 
   // TODO: proper DI
   ienv.namespace.env = ienv;
-  telemetry.env = ienv;
 
   ienv.open();
 

@@ -102,7 +102,6 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
           ienv.log.debug(() => chalk.red(chalk.bold('Plugin error: ') + (e.stack ? e.stack : e)));
         }
 
-        await ienv.hooks.fire('plugins:init', { env: ienv });
         await namespace.runCommand(pargv, env);
         config.state.lastCommand = now.toISOString();
       }
@@ -171,6 +170,6 @@ export async function receive(msg: IPCMessage) {
   if (msg.type === 'telemetry') {
     const { sendCommand } = await import('@ionic/cli-utils/lib/telemetry');
 
-    await sendCommand(env, msg.data.command, msg.data.args);
+    await sendCommand({ cli: env.plugins.ionic, hooks: env.hooks, meta: env.meta, client: env.client, config: env.config, project: env.project, session: env.session }, msg.data.command, msg.data.args);
   }
 }

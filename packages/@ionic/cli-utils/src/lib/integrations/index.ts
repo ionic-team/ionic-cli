@@ -4,8 +4,10 @@ import * as path from 'path';
 import chalk from 'chalk';
 import { copyDirectory, fsMkdirp, fsStat, pathExists, readDir, removeDirectory } from '@ionic/cli-framework/utils/fs';
 
-import { IntegrationTemplate, IonicEnvironment } from '../definitions';
-import { FatalException } from './errors';
+import { IIntegration, IShell, InfoHookItem, IntegrationName, IntegrationTemplate, IonicEnvironment } from '../../definitions';
+import { FatalException } from '../errors';
+
+import * as cordovaLibType from './cordova';
 
 export const INTEGRATIONS: IntegrationTemplate[] = [
   {
@@ -18,13 +20,45 @@ export interface IntegrationOptions {
   quiet?: boolean;
 }
 
-export async function enableIntegration(env: IonicEnvironment, id: string, opts: IntegrationOptions = {}) {
-  const project = await env.project.load();
+export interface IntegrationDeps {
+  shell: IShell;
+}
 
-  let projectIntegration = project.integrations[id];
+export abstract class BaseIntegration implements IIntegration {
+  shell: IShell;
+
+  abstract name: IntegrationName;
+
+  constructor({ shell }: IntegrationDeps) {
+    this.shell = shell;
+  }
+
+  static async createFromName(deps: IntegrationDeps, name: 'cordova'): Promise<cordovaLibType.Integration>;
+  static async createFromName(deps: IntegrationDeps, name: IntegrationName): Promise<IIntegration>;
+  static async createFromName(deps: IntegrationDeps, name: IntegrationName): Promise<IIntegration> {
+    if (name === 'cordova') {
+      const { Integration } = await import('./cordova');
+      return new Integration(deps);
+    }
+
+    throw new FatalException(`Bad integration name: ${chalk.bold(name)}`); // TODO?
+  }
+
+  abstract getInfo(): Promise<InfoHookItem[]>;
+}
+
+export async function enableIntegration(env: IonicEnvironment, id: string, opts: IntegrationOptions = {}) {
+  const integration = INTEGRATIONS.find(i => i.name === id);
+
+  if (!integration) {
+    throw new FatalException(`Integration ${chalk.green(id)} not found in integrations list.`);
+  }
+
+  const project = await env.project.load();
+  let projectIntegration = project.integrations[integration.name];
 
   if (projectIntegration && projectIntegration.enabled !== false) {
-    env.log.ok(`${chalk.green(id)} integration already enabled.`);
+    env.log.ok(`${chalk.green(integration.name)} integration already enabled.`);
   } else {
     if (!projectIntegration) {
       projectIntegration = {};
@@ -32,37 +66,38 @@ export async function enableIntegration(env: IonicEnvironment, id: string, opts:
 
     if (projectIntegration.enabled === false) {
       projectIntegration.enabled = true;
-      env.log.ok(`Enabled ${chalk.green(id)} integration!`);
+      env.log.ok(`Enabled ${chalk.green(integration.name)} integration!`);
     } else {
-      const integration = INTEGRATIONS.find(i => i.name === id);
-
-      if (!integration) {
-        throw new FatalException(`Integration ${id} not found in integrations list.`);
-      }
 
       await addIntegration(env, integration, opts);
 
-      env.log.ok(`Added ${chalk.green(id)} integration!`);
+      env.log.ok(`Added ${chalk.green(integration.name)} integration!`);
     }
 
-    project.integrations[id] = projectIntegration;
+    project.integrations[integration.name] = projectIntegration;
   }
 
   await env.project.save();
 }
 
 export async function disableIntegration(env: IonicEnvironment, id: string) {
+  const integration = INTEGRATIONS.find(i => i.name === id);
+
+  if (!integration) {
+    throw new FatalException(`Integration ${chalk.green(id)} not found in integrations list.`);
+  }
+
   const project = await env.project.load();
-  let projectIntegration = project.integrations[id];
+  let projectIntegration = project.integrations[integration.name];
 
   if (!projectIntegration) {
     projectIntegration = {};
   }
 
   projectIntegration.enabled = false;
-  project.integrations[id] = projectIntegration;
+  project.integrations[integration.name] = projectIntegration;
 
-  env.log.ok(`Disabled ${chalk.green(id)} integration.`);
+  env.log.ok(`Disabled ${chalk.green(integration.name)} integration.`);
 }
 
 async function addIntegration(env: IonicEnvironment, integration: IntegrationTemplate, opts: IntegrationOptions) {
@@ -70,8 +105,8 @@ async function addIntegration(env: IonicEnvironment, integration: IntegrationTem
     return;
   }
 
-  const { download } = await import('./http');
-  const { createTarExtraction } = await import('./utils/archive');
+  const { download } = await import('../http');
+  const { createTarExtraction } = await import('../utils/archive');
 
   const task = env.tasks.next(`Downloading integration ${chalk.green(integration.name)}`);
 

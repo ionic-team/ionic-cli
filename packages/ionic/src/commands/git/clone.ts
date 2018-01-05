@@ -1,5 +1,5 @@
 import { validators } from '@ionic/cli-framework';
-import { BACKEND_PRO, CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 // import { formatGitRepoUrl } from '../../lib/git';
@@ -9,7 +9,6 @@ export class GitCloneCommand extends Command {
     return {
       name: 'clone',
       type: 'global',
-      backends: [BACKEND_PRO],
       description: 'Clones an Ionic app git repository to your computer',
       inputs: [
         {
@@ -29,7 +28,7 @@ export class GitCloneCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     // let [ app_id, destination ] = inputs;
 
-    // const appLoader = new App(await this.env.session.getAppUserToken(), this.env.client);
+    // const appLoader = new App(await this.env.session.getUserToken(), this.env.client);
     // const app = await appLoader.load(app_id);
     // const remote = await formatGitRepoUrl(this.env.config, app.id);
 
