@@ -22,7 +22,7 @@ const HELP_DOTS_WIDTH = 25;
 export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise<void> {
   // If there are no inputs then show global command details.
   if (inputs.length === 0) {
-    return env.log.rawmsg(await getFormattedHelpDetails(env, env.namespace, ''));
+    return env.log.rawmsg(await formatNamespaceHelp(env, env.namespace, ''));
   }
 
   const { args, obj, path } = await env.namespace.locate(inputs);
@@ -42,7 +42,7 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise
 async function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INamespace, fullName: string) {
   // If the command is located on the global namespace then show its help
   if (!isCommand(cmdOrNamespace)) {
-    return getFormattedHelpDetails(env, cmdOrNamespace, fullName);
+    return formatNamespaceHelp(env, cmdOrNamespace, fullName);
   }
 
   const command = cmdOrNamespace;
@@ -50,12 +50,12 @@ async function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INam
   return formatCommandHelp(env, await command.getMetadata(), fullName);
 }
 
-async function getFormattedHelpDetails(env: IonicEnvironment, ns: INamespace, fullName: string) {
+async function formatNamespaceHelp(env: IonicEnvironment, ns: INamespace, fullName: string) {
   const cmdMetadataList = await ns.getCommandMetadataList();
   const formatList = (details: string[]) => details.map(hd => `    ${hd}\n`).join('');
 
-  const globalCmds = await getCommandDetails(env, ns, cmdMetadataList.filter(cmd => cmd.type === 'global'));
-  const projectCmds = await getCommandDetails(env, ns, cmdMetadataList.filter(cmd => cmd.type === 'project'));
+  const globalCmds = await getCommandDetails(ns, cmdMetadataList.filter(cmd => cmd.type === 'global'));
+  const projectCmds = await getCommandDetails(ns, cmdMetadataList.filter(cmd => cmd.type === 'project'));
 
   return `${await formatNamespaceHeader(env, ns, cmdMetadataList, fullName)}
 
@@ -108,12 +108,12 @@ async function formatUsage(env: IonicEnvironment, ns: INamespace) {
   return usageLines.map(u => `    ${chalk.dim('$')} ${chalk.green(name + ' ' + u)}`).join('\n') + '\n';
 }
 
-async function getCommandDetails(env: IonicEnvironment, ns: INamespace, commands: HydratedCommandMetadata[]): Promise<string[]> {
+async function getCommandDetails(ns: INamespace, commands: HydratedCommandMetadata[]): Promise<string[]> {
   commands = commands.filter(cmd => !cmd.groups || !cmd.groups.includes(CommandGroup.Hidden));
 
   const [ cmdDetails, nsDetails ] = await Promise.all([
-    getListOfCommandDetails(env, commands.filter(cmd => cmd.namespace === ns)),
-    getListOfNamespaceDetails(env, commands.filter(cmd => cmd.namespace !== ns)),
+    getListOfCommandDetails(commands.filter(cmd => cmd.namespace === ns)),
+    getListOfNamespaceDetails(commands.filter(cmd => cmd.namespace !== ns)),
   ]);
 
   const details = [...cmdDetails, ...nsDetails];
@@ -128,12 +128,12 @@ async function formatCommandHelp(env: IonicEnvironment, metadata: CommandMetadat
   ${chalk.bold(chalk.green(fullName) + ' - ' + (metadata.groups && metadata.groups.includes(CommandGroup.Deprecated) ? chalk.yellow('(deprecated)') + ' ' : '') + wrappedDescription)}${formatLongDescription(metadata.longDescription)}
   ` +
   (await formatCommandUsage(env, metadata, fullName)) +
-  (await formatCommandInputs(env, metadata.inputs)) +
-  (await formatCommandOptions(env, metadata.options)) +
-  (await formatCommandExamples(env, metadata.exampleCommands, fullName));
+  (await formatCommandInputs(metadata.inputs)) +
+  (await formatCommandOptions(metadata.options)) +
+  (await formatCommandExamples(metadata.exampleCommands, fullName));
 }
 
-async function getListOfCommandDetails(env: IonicEnvironment, commands: HydratedCommandMetadata[]) {
+async function getListOfCommandDetails(commands: HydratedCommandMetadata[]) {
   const wow = commands.map(cmd => cmd.path.map(([p]) => p).join(' '));
   const fillStringArray = generateFillSpaceStringList(wow, HELP_DOTS_WIDTH, chalk.dim('.'));
 
@@ -144,7 +144,7 @@ async function getListOfCommandDetails(env: IonicEnvironment, commands: Hydrated
   });
 }
 
-async function getListOfNamespaceDetails(env: IonicEnvironment, commands: HydratedCommandMetadata[]) {
+async function getListOfNamespaceDetails(commands: HydratedCommandMetadata[]) {
   const descriptions = new Map<string, string>();
   const grouped = new Map<string, { meta: NamespaceMetadata; cmds: HydratedCommandMetadata[]; }>();
 
@@ -182,7 +182,7 @@ async function formatCommandUsage(env: IonicEnvironment, metadata: CommandMetada
     return '[<' + input.name + '>]';
   };
 
-  const options = await filterOptionsForHelp(env, metadata.options);
+  const options = await filterOptionsForHelp(metadata.options);
   const usageLine = `${chalk.dim('$')} ${chalk.green(fullName + (typeof metadata.inputs === 'undefined' ? '' : ' ' + metadata.inputs.map(formatInput).join(' ')))} ${options.length > 0 ? chalk.green('[options]') : ''}`;
 
   return `
@@ -203,7 +203,7 @@ function formatLongDescription(longDescription?: string) {
   return '\n\n    ' + longDescription;
 }
 
-async function formatCommandInputs(env: IonicEnvironment, inputs: CommandMetadataInput[] = []) {
+async function formatCommandInputs(inputs: CommandMetadataInput[] = []) {
   if (inputs.length === 0) {
     return '';
   }
@@ -248,12 +248,12 @@ function formatOptionLine(opt: CommandMetadataOption) {
   return `${optionList} ${Array(fullLength - optionListLength).fill(chalk.dim('.')).join('')} ${wrappedDescription}`;
 }
 
-async function filterOptionsForHelp(env: IonicEnvironment, options: CommandMetadataOption[] = []) {
+async function filterOptionsForHelp(options: CommandMetadataOption[] = []) {
   return options.filter(opt => !opt.groups || !opt.groups.includes(OptionGroup.Hidden));
 }
 
-async function formatCommandOptions(env: IonicEnvironment, options: CommandMetadataOption[] = []) {
-  options = await filterOptionsForHelp(env, options);
+async function formatCommandOptions(options: CommandMetadataOption[] = []) {
+  options = await filterOptionsForHelp(options);
 
   if (options.length === 0) {
     return '';
@@ -279,7 +279,7 @@ async function formatCommandOptions(env: IonicEnvironment, options: CommandMetad
   return basicOptionsOutput + advancedOptionsOutput;
 }
 
-async function formatCommandExamples(env: IonicEnvironment, exampleCommands: string[] | undefined, fullName: string) {
+async function formatCommandExamples(exampleCommands: string[] | undefined, fullName: string) {
   if (!Array.isArray(exampleCommands)) {
     return '';
   }

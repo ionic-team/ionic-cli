@@ -197,8 +197,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   log.debug(() => `CLI flags: ${util.inspect(flags, { breakLength: Infinity, colors: chalk.enabled })}`);
 
   if (typeof argv['yarn'] === 'boolean') {
-    log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} switch is deprecated. Use ${chalk.green('ionic config set -g yarn ' + String(argv['yarn']))}.`);
-    configData.yarn = argv['yarn'];
+    log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} was removed in CLI 4.0. Use ${chalk.green(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);
   }
 
   if (!projectDir) {

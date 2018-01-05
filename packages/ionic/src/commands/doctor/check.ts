@@ -23,10 +23,11 @@ export class DoctorCheckCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ id ] = inputs;
 
-    const { detectAndTreatAilment, registry, treatAilments } = await import('@ionic/cli-utils/lib/doctor/index');
+    const { detectAndTreatAilment, getRegistry, treatAilments } = await import('@ionic/cli-utils/lib/doctor/index');
     const { Ailments } = await import('@ionic/cli-utils/lib/doctor/ailments');
 
-    const ailmentIds = Ailments.ALL.map(Ailment => new Ailment().id);
+    const registry = await getRegistry(this.env);
+    const ailmentIds = Ailments.ALL.map(Ailment => new Ailment(this.env).id);
 
     if (id) {
       validate(id, 'id', [contains(ailmentIds, {})]);

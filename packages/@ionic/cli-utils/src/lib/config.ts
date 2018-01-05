@@ -188,10 +188,11 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       }
     }
 
-    if (typeof results.yarn === 'undefined') {
-      results.yarn = results.cliFlags && typeof results.cliFlags.yarn !== 'undefined' ? results.cliFlags.yarn : false;
+    if (typeof results.npmClient === 'undefined') {
+      results.npmClient = results.yarn ? 'yarn' : 'npm';
     }
 
+    delete results.yarn;
     delete results.backend;
     delete results.lastCommand;
     delete results.lastUpdated;
@@ -216,7 +217,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       && typeof j.tokens === 'object'
       && typeof j.tokens.appUser === 'object'
       && typeof j.telemetry === 'boolean'
-      && typeof j.yarn === 'boolean';
+      && typeof j.npmClient === 'string';
   }
 
   async getAPIUrl(): Promise<string> {

@@ -26,8 +26,8 @@ export class GitRemoteCommand extends Command {
       throw new FatalException(`Missing ${chalk.bold('repo_url')} property in app.`);
     }
 
-    if (!(await isRepoInitialized(this.env))) {
-      await initializeRepo(this.env);
+    if (!(await isRepoInitialized(this.env.project.directory))) {
+      await initializeRepo({ shell: this.env.shell }, this.env.project.directory);
 
       this.env.log.warn(
         `Initializing a git repository for your project.\n` +
@@ -37,17 +37,17 @@ export class GitRemoteCommand extends Command {
     }
 
     const remote = app.repo_url;
-    const found = await getIonicRemote(this.env);
+    const found = await getIonicRemote({ shell: this.env.shell }, this.env.project.directory);
 
     if (found) {
       if (remote === found) {
         this.env.log.msg(`Existing remote ${chalk.bold('ionic')} found.`);
       } else {
-        await setIonicRemote(this.env, remote);
+        await setIonicRemote({ shell: this.env.shell }, this.env.project.directory, remote);
         this.env.log.ok(`Updated remote ${chalk.bold('ionic')}.`);
       }
     } else {
-      await addIonicRemote(this.env, remote);
+      await addIonicRemote({ shell: this.env.shell }, this.env.project.directory, remote);
       this.env.log.ok(`Added remote ${chalk.bold('ionic')}.`);
     }
   }

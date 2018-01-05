@@ -23,13 +23,22 @@ export class AilmentRegistry {
   }
 }
 
-export const registry = new AilmentRegistry();
+let _registry: AilmentRegistry | undefined = undefined;
 
-for (let Ailment of Ailments.ALL) {
-  registry.register(new Ailment());
+export async function getRegistry(env: IonicEnvironment) {
+  if (!_registry) {
+    _registry = new AilmentRegistry();
+
+    for (let Ailment of Ailments.ALL) {
+      _registry.register(new Ailment(env));
+    }
+  }
+
+  return _registry;
 }
 
 export async function treatAilments(env: IonicEnvironment) {
+  const registry = await getRegistry(env);
   const config = await env.config.load();
   let count = 0;
 
@@ -49,7 +58,7 @@ export async function treatAilments(env: IonicEnvironment) {
     let detected = false;
 
     try {
-      detected = await ailment.detected(env);
+      detected = await ailment.detected();
     } catch (e) {
       env.log.debug(() => `Error while checking ${chalk.bold(ailment.id)}:\n\n${chalk.red(e.stack ? e.stack : e)}`);
     }
@@ -99,7 +108,7 @@ export async function treatAilments(env: IonicEnvironment) {
 }
 
 export async function detectAndTreatAilment(env: IonicEnvironment, ailment: Ailment) {
-  const detected = await ailment.detected(env);
+  const detected = await ailment.detected();
 
   if (detected) {
     await treatAilment(env, ailment);
@@ -123,10 +132,10 @@ async function treatAilment(env: IonicEnvironment, ailment: Ailment): Promise<bo
       }
     }
   } else {
-    const treatmentSteps = await ailment.getTreatmentSteps(env);
+    const treatmentSteps = await ailment.getTreatmentSteps();
     const stepOutput = treatmentSteps.length > 0 ? `To fix, take the following step(s):\n\n${treatmentSteps.map((step, i) => `    ${i + 1}) ${step.name}`).join('\n')}` : '';
     env.log.warn(
-      `${await ailment.getMessage(env)} ${stepOutput}\n\n` +
+      `${await ailment.getMessage()} ${stepOutput}\n\n` +
       `Ignore this issue with: ${chalk.green(`ionic doctor ignore ${ailment.id}`)}`
     );
   }
@@ -136,9 +145,9 @@ async function treatAilment(env: IonicEnvironment, ailment: Ailment): Promise<bo
 
 async function automaticallyTreatAilment(env: IonicEnvironment, ailment: AutomaticallyTreatableAilment): Promise<boolean> {
   const config = await env.config.load();
-  const treatmentSteps = await ailment.getTreatmentSteps(env);
+  const treatmentSteps = await ailment.getTreatmentSteps();
   const stepOutput = treatmentSteps.map((step, i) => `    ${i + 1}) ${step.name}`).join('\n');
-  env.log.warn(`${await ailment.getMessage(env)} To fix, the following step(s) need to be taken:\n\n${stepOutput}`);
+  env.log.warn(`${await ailment.getMessage()} To fix, the following step(s) need to be taken:\n\n${stepOutput}`);
 
   const CHOICE_YES = 'yes';
   const CHOICE_NO = 'no';

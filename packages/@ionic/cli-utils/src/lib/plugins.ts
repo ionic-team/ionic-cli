@@ -29,6 +29,8 @@ export function registerPlugin(env: IonicEnvironment, plugin: LoadedPlugin) {
 
 export async function loadPlugins(env: IonicEnvironment) {
   const global = !env.meta.local;
+  const config = await env.config.load();
+  const { npmClient } = config;
 
   const modulesDir = path.resolve(global ? path.dirname(path.dirname(path.dirname(env.meta.libPath))) : path.join(env.project.directory, 'node_modules'));
   const pluginPkgs = await Promise.all(KNOWN_PLUGINS
@@ -46,7 +48,7 @@ export async function loadPlugins(env: IonicEnvironment) {
     env.log.debug(() => `Detected ${chalk.green(proxyVar)} in environment`);
 
     if (!pluginPkgs.find(v => v[0] === proxyPluginPkg && v[1])) {
-      const proxyInstallArgs = await pkgManagerArgs(env, { command: 'install', pkg: proxyPluginPkg, global });
+      const proxyInstallArgs = await pkgManagerArgs({ npmClient, shell: env.shell }, { command: 'install', pkg: proxyPluginPkg, global });
 
       env.log.warn(
         `Detected ${chalk.green(proxyVar)} in environment, but to proxy CLI requests, you'll need ${chalk.cyan(proxyPluginPkg)} installed.\n` +

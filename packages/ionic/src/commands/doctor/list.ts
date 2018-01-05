@@ -15,7 +15,7 @@ export class DoctorListCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { Ailments } = await import('@ionic/cli-utils/lib/doctor/ailments');
 
-    const ailmentIds = Ailments.ALL.map(Ailment => new Ailment().id);
+    const ailmentIds = Ailments.ALL.map(Ailment => new Ailment(this.env).id);
 
     this.env.log.rawmsg(ailmentIds.map(id => chalk.green(id)).join('\n'));
   }

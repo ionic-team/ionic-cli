@@ -23,15 +23,16 @@ export interface AutomaticTreatmentStep extends TreatmentStep {
 }
 
 export abstract class Ailment {
+  constructor(protected env: IonicEnvironment) {}
   requiresAuthentication = false;
   abstract id: string;
-  abstract async getMessage(env: IonicEnvironment): Promise<string>;
-  abstract async getTreatmentSteps(env: IonicEnvironment): Promise<TreatmentStep[]>;
-  abstract async detected(env: IonicEnvironment): Promise<boolean>;
+  abstract async getMessage(): Promise<string>;
+  abstract async getTreatmentSteps(): Promise<TreatmentStep[]>;
+  abstract async detected(): Promise<boolean>;
 }
 
 export abstract class AutomaticallyTreatableAilment extends Ailment {
-  abstract async getTreatmentSteps(env: IonicEnvironment): Promise<AutomaticTreatmentStep[]>;
+  abstract async getTreatmentSteps(): Promise<AutomaticTreatmentStep[]>;
 }
 
 export namespace Ailments {
@@ -45,18 +46,20 @@ export namespace Ailments {
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      return pathExists(path.join(env.project.directory, 'node_modules', 'npm'));
+    async detected() {
+      return pathExists(path.join(this.env.project.directory, 'node_modules', 'npm'));
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
-      const [ manager, ...managerArgs ] = await pkgManagerArgs(env, { command: 'uninstall', pkg: 'npm' });
+    async getTreatmentSteps() {
+      const config = await this.env.config.load();
+      const { npmClient } = config;
+      const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'uninstall', pkg: 'npm' });
 
       return [
         {
           name: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
           treat: async () => {
-            await env.shell.run(manager, managerArgs, {});
+            await this.env.shell.run(manager, managerArgs, {});
           },
         },
       ];
@@ -73,18 +76,20 @@ export namespace Ailments {
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      return pathExists(path.join(env.project.directory, 'node_modules', 'ionic'));
+    async detected() {
+      return pathExists(path.join(this.env.project.directory, 'node_modules', 'ionic'));
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
-      const [ manager, ...managerArgs ] = await pkgManagerArgs(env, { command: 'uninstall', pkg: 'ionic' });
+    async getTreatmentSteps() {
+      const config = await this.env.config.load();
+      const { npmClient } = config;
+      const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'uninstall', pkg: 'ionic' });
 
       return [
         {
           name: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
           treat: async () => {
-            await env.shell.run(manager, managerArgs, {});
+            await this.env.shell.run(manager, managerArgs, {});
           },
         },
       ];
@@ -101,20 +106,20 @@ export namespace Ailments {
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      if (!(await isRepoInitialized(env))) {
+    async detected() {
+      if (!(await isRepoInitialized(this.env.project.directory))) {
         return true;
       }
 
-      const cmdInstalled = await env.shell.cmdinfo('git', ['--version']);
+      const cmdInstalled = await this.env.shell.cmdinfo('git', ['--version']);
 
       if (!cmdInstalled) {
         return true;
       }
 
       const [ revListCount, status ] = await Promise.all([
-        env.shell.run('git', ['rev-list', '--count', 'HEAD'], { showCommand: false }),
-        env.shell.run('git', ['status', '--porcelain'], { showCommand: false }),
+        this.env.shell.run('git', ['rev-list', '--count', 'HEAD'], { showCommand: false }),
+        this.env.shell.run('git', ['status', '--porcelain'], { showCommand: false }),
       ]);
 
       const commitCount = Number(revListCount);
@@ -123,7 +128,7 @@ export namespace Ailments {
       return commitCount === 1 && changes;
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
+    async getTreatmentSteps() {
       return [
         { name: `Download git if you don't have it installed: ${chalk.bold('https://git-scm.com/downloads')}` },
         { name: `Learn the basics if you're unfamiliar with git: ${chalk.bold('https://try.github.io')}` },
@@ -136,8 +141,8 @@ export namespace Ailments {
     id = 'git-config-invalid';
     requiresAuthentication = true;
 
-    async getMessage(env: IonicEnvironment) {
-      const project = await env.project.load();
+    async getMessage() {
+      const project = await this.env.project.load();
       const appId = project.app_id;
 
       return (
@@ -146,26 +151,26 @@ export namespace Ailments {
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      const project = await env.project.load();
+    async detected() {
+      const project = await this.env.project.load();
       const appId = project.app_id;
 
       if (!appId) {
         return false;
       }
 
-      if (!(await isRepoInitialized(env))) {
+      if (!(await isRepoInitialized(this.env.project.directory))) {
         return false;
       }
 
-      const remote = await getIonicRemote(env);
+      const remote = await getIonicRemote({ shell: this.env.shell }, this.env.project.directory);
 
       if (!remote) {
         return true;
       }
 
-      const token = await env.session.getUserToken();
-      const appLoader = new App(token, env.client);
+      const token = await this.env.session.getUserToken();
+      const appLoader = new App(token, this.env.client);
       const app = await appLoader.load(appId);
 
       if (app.repo_url !== remote) {
@@ -175,14 +180,14 @@ export namespace Ailments {
       return false;
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
+    async getTreatmentSteps() {
       const args = ['git', 'remote'];
 
       return [
         {
           name: `Run: ${chalk.green('ionic ' + args.join(' '))}`,
           treat: async () => {
-            await env.runCommand(args);
+            await this.env.runCommand(args);
           },
         },
       ];
@@ -194,10 +199,10 @@ export namespace Ailments {
     currentVersion?: string;
     latestVersion?: string;
 
-    async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
-      if (env.project instanceof IonicAngularProject && (!this.currentVersion || !this.latestVersion)) {
-        this.currentVersion = await env.project.getFrameworkVersion();
-        this.latestVersion = await pkgLatestVersion(env, 'ionic-angular');
+    async getVersionPair(): Promise<[string, string]> {
+      if (this.env.project instanceof IonicAngularProject && (!this.currentVersion || !this.latestVersion)) {
+        this.currentVersion = await this.env.project.getFrameworkVersion();
+        this.latestVersion = await pkgLatestVersion('ionic-angular');
       }
 
       if (!this.currentVersion || !this.latestVersion) {
@@ -207,8 +212,8 @@ export namespace Ailments {
       return [ this.currentVersion, this.latestVersion ];
     }
 
-    async getMessage(env: IonicEnvironment) {
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+    async getMessage() {
+      const [ currentVersion, latestVersion ] = await this.getVersionPair();
 
       return (
         `Update available for Ionic Framework.\n` +
@@ -216,20 +221,22 @@ export namespace Ailments {
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      if (env.project.type !== 'ionic-angular') {
+    async detected() {
+      if (this.env.project.type !== 'ionic-angular') {
         return false;
       }
 
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+      const [ currentVersion, latestVersion ] = await this.getVersionPair();
       const diff = semver.diff(currentVersion, latestVersion);
 
       return diff === 'minor' || diff === 'patch';
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
-      const [ , latestVersion ] = await this.getVersionPair(env);
-      const args = await pkgManagerArgs(env, { command: 'install', pkg: `ionic-angular@${latestVersion ? latestVersion : 'latest'}` });
+    async getTreatmentSteps() {
+      const config = await this.env.config.load();
+      const { npmClient } = config;
+      const [ , latestVersion ] = await this.getVersionPair();
+      const args = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'install', pkg: `ionic-angular@${latestVersion ? latestVersion : 'latest'}` });
 
       return [
         { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for each upgrade's instructions` },
@@ -244,10 +251,10 @@ export namespace Ailments {
     currentVersion?: string;
     latestVersion?: string;
 
-    async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
-      if (env.project instanceof IonicAngularProject && (!this.currentVersion || !this.latestVersion)) {
-        this.currentVersion = await env.project.getFrameworkVersion();
-        this.latestVersion = await pkgLatestVersion(env, 'ionic-angular');
+    async getVersionPair(): Promise<[string, string]> {
+      if (this.env.project instanceof IonicAngularProject && (!this.currentVersion || !this.latestVersion)) {
+        this.currentVersion = await this.env.project.getFrameworkVersion();
+        this.latestVersion = await pkgLatestVersion('ionic-angular');
       }
 
       if (!this.currentVersion || !this.latestVersion) {
@@ -257,8 +264,8 @@ export namespace Ailments {
       return [ this.currentVersion, this.latestVersion ];
     }
 
-    async getMessage(env: IonicEnvironment) {
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+    async getMessage() {
+      const [ currentVersion, latestVersion ] = await this.getVersionPair();
 
       return (
         `Major update available for Ionic Framework.\n` +
@@ -266,18 +273,18 @@ export namespace Ailments {
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      if (env.project.type !== 'ionic-angular') {
+    async detected() {
+      if (this.env.project.type !== 'ionic-angular') {
         return false;
       }
 
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+      const [ currentVersion, latestVersion ] = await this.getVersionPair();
       const diff = semver.diff(currentVersion, latestVersion);
 
       return diff === 'major';
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
+    async getTreatmentSteps() {
       return [
         { name: `Visit ${chalk.bold('https://blog.ionicframework.com')} and ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for upgrade instructions` },
       ];
@@ -289,10 +296,10 @@ export namespace Ailments {
     currentVersion?: string;
     latestVersion?: string;
 
-    async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
-      if (env.project instanceof IonicAngularProject && (!this.currentVersion || !this.latestVersion)) {
-        this.currentVersion = await env.project.getAppScriptsVersion();
-        this.latestVersion = await pkgLatestVersion(env, '@ionic/app-scripts');
+    async getVersionPair(): Promise<[string, string]> {
+      if (this.env.project instanceof IonicAngularProject && (!this.currentVersion || !this.latestVersion)) {
+        this.currentVersion = await this.env.project.getAppScriptsVersion();
+        this.latestVersion = await pkgLatestVersion('@ionic/app-scripts');
       }
 
       if (!this.currentVersion || !this.latestVersion) {
@@ -302,8 +309,8 @@ export namespace Ailments {
       return [ this.currentVersion, this.latestVersion ];
     }
 
-    async getMessage(env: IonicEnvironment) {
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+    async getMessage() {
+      const [ currentVersion, latestVersion ] = await this.getVersionPair();
 
       return (
         `Update available for ${chalk.bold('@ionic/app-scripts')}.\n` +
@@ -311,26 +318,28 @@ export namespace Ailments {
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      if (env.project.type !== 'ionic-angular') {
+    async detected() {
+      if (this.env.project.type !== 'ionic-angular') {
         return false;
       }
 
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+      const [ currentVersion, latestVersion ] = await this.getVersionPair();
       const diff = semver.diff(currentVersion, latestVersion);
 
       return diff === 'minor' || diff === 'patch';
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
-      const [ , latestVersion ] = await this.getVersionPair(env);
-      const [ manager, ...managerArgs ] = await pkgManagerArgs(env, { command: 'install', pkg: `@ionic/app-scripts@${latestVersion ? latestVersion : 'latest'}`, saveDev: true });
+    async getTreatmentSteps() {
+      const config = await this.env.config.load();
+      const { npmClient } = config;
+      const [ , latestVersion ] = await this.getVersionPair();
+      const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'install', pkg: `@ionic/app-scripts@${latestVersion ? latestVersion : 'latest'}`, saveDev: true });
 
       return [
         {
           name: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
           treat: async () => {
-            await env.shell.run(manager, managerArgs, {});
+            await this.env.shell.run(manager, managerArgs, {});
           },
         },
       ];
@@ -342,10 +351,10 @@ export namespace Ailments {
     currentVersion?: string;
     latestVersion?: string;
 
-    async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
-      if (env.project instanceof IonicAngularProject && (!this.currentVersion || !this.latestVersion)) {
-        this.currentVersion = await env.project.getAppScriptsVersion();
-        this.latestVersion = await pkgLatestVersion(env, '@ionic/app-scripts');
+    async getVersionPair(): Promise<[string, string]> {
+      if (this.env.project instanceof IonicAngularProject && (!this.currentVersion || !this.latestVersion)) {
+        this.currentVersion = await this.env.project.getAppScriptsVersion();
+        this.latestVersion = await pkgLatestVersion('@ionic/app-scripts');
       }
 
       if (!this.currentVersion || !this.latestVersion) {
@@ -355,8 +364,8 @@ export namespace Ailments {
       return [ this.currentVersion, this.latestVersion ];
     }
 
-    async getMessage(env: IonicEnvironment) {
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+    async getMessage() {
+      const [ currentVersion, latestVersion ] = await this.getVersionPair();
 
       return (
         `Major update available for ${chalk.bold('@ionic/app-scripts')}.\n` +
@@ -364,18 +373,18 @@ export namespace Ailments {
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      if (env.project.type !== 'ionic-angular') {
+    async detected() {
+      if (this.env.project.type !== 'ionic-angular') {
         return false;
       }
 
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+      const [ currentVersion, latestVersion ] = await this.getVersionPair();
       const diff = semver.diff(currentVersion, latestVersion);
 
       return diff === 'major';
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
+    async getTreatmentSteps() {
       return [
         { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-app-scripts/releases')} for upgrade instructions` },
       ];
@@ -387,15 +396,15 @@ export namespace Ailments {
     currentVersion?: string;
     latestVersion?: string;
 
-    async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
+    async getVersionPair(): Promise<[string, string]> {
       if (!this.currentVersion || !this.latestVersion) {
         try {
-          this.currentVersion = (await readPackageJsonFile(path.resolve(env.project.directory, 'node_modules', '@ionic-native', 'core', 'package.json'))).version;
+          this.currentVersion = (await readPackageJsonFile(path.resolve(this.env.project.directory, 'node_modules', '@ionic-native', 'core', 'package.json'))).version;
         } catch (e) {
           // Not installed
         }
 
-        this.latestVersion = await pkgLatestVersion(env, '@ionic-native/core');
+        this.latestVersion = await pkgLatestVersion('@ionic-native/core');
       }
 
       if (!this.currentVersion || !this.latestVersion) {
@@ -405,8 +414,8 @@ export namespace Ailments {
       return [ this.currentVersion, this.latestVersion ];
     }
 
-    async getMessage(env: IonicEnvironment) {
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+    async getMessage() {
+      const [ currentVersion, latestVersion ] = await this.getVersionPair();
 
       return (
         `Update available for Ionic Native.\n` +
@@ -414,29 +423,31 @@ export namespace Ailments {
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      if (env.project.type !== 'ionic-angular') {
+    async detected() {
+      if (this.env.project.type !== 'ionic-angular') {
         return false;
       }
 
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+      const [ currentVersion, latestVersion ] = await this.getVersionPair();
       const diff = semver.diff(currentVersion, latestVersion);
 
       return diff === 'minor' || diff === 'patch';
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
-      const [ , latestVersion ] = await this.getVersionPair(env);
+    async getTreatmentSteps() {
+      const config = await this.env.config.load();
+      const { npmClient } = config;
+      const [ , latestVersion ] = await this.getVersionPair();
 
-      const modules = await fsReadDir(path.resolve(env.project.directory, 'node_modules', '@ionic-native'));
+      const modules = await fsReadDir(path.resolve(this.env.project.directory, 'node_modules', '@ionic-native'));
 
       return Promise.all(modules.filter(m => m).map(async m => {
-        const [ manager, ...managerArgs ] = await pkgManagerArgs(env, { command: 'install', pkg: `@ionic-native/${m}@${latestVersion ? latestVersion : 'latest'}` });
+        const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'install', pkg: `@ionic-native/${m}@${latestVersion ? latestVersion : 'latest'}` });
 
         return {
           name: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
           treat: async () => {
-            await env.shell.run(manager, managerArgs, {});
+            await this.env.shell.run(manager, managerArgs, {});
           },
         };
       }));
@@ -448,15 +459,15 @@ export namespace Ailments {
     currentVersion?: string;
     latestVersion?: string;
 
-    async getVersionPair(env: IonicEnvironment): Promise<[string, string]> {
+    async getVersionPair(): Promise<[string, string]> {
       if (!this.currentVersion || !this.latestVersion) {
         try {
-          this.currentVersion = (await readPackageJsonFile(path.resolve(env.project.directory, 'node_modules', '@ionic-native', 'core', 'package.json'))).version;
+          this.currentVersion = (await readPackageJsonFile(path.resolve(this.env.project.directory, 'node_modules', '@ionic-native', 'core', 'package.json'))).version;
         } catch (e) {
           // Not installed
         }
 
-        this.latestVersion = await pkgLatestVersion(env, '@ionic-native/core');
+        this.latestVersion = await pkgLatestVersion('@ionic-native/core');
       }
 
       if (!this.currentVersion || !this.latestVersion) {
@@ -466,8 +477,8 @@ export namespace Ailments {
       return [ this.currentVersion, this.latestVersion ];
     }
 
-    async getMessage(env: IonicEnvironment) {
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+    async getMessage() {
+      const [ currentVersion, latestVersion ] = await this.getVersionPair();
 
       return (
         `Major update available for Ionic Native.\n` +
@@ -475,20 +486,22 @@ export namespace Ailments {
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      if (env.project.type !== 'ionic-angular') {
+    async detected() {
+      if (this.env.project.type !== 'ionic-angular') {
         return false;
       }
 
-      const [ currentVersion, latestVersion ] = await this.getVersionPair(env);
+      const [ currentVersion, latestVersion ] = await this.getVersionPair();
       const diff = semver.diff(currentVersion, latestVersion);
 
       return diff === 'major';
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
-      const [ , latestVersion ] = await this.getVersionPair(env);
-      const args = await pkgManagerArgs(env, { command: 'install', pkg: `@ionic-native/core@${latestVersion ? latestVersion : 'latest'}` });
+    async getTreatmentSteps() {
+      const config = await this.env.config.load();
+      const { npmClient } = config;
+      const [ , latestVersion ] = await this.getVersionPair();
+      const args = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'install', pkg: `@ionic-native/core@${latestVersion ? latestVersion : 'latest'}` });
 
       return [
         { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-native/releases')}, looking for breaking changes` },
@@ -501,19 +514,21 @@ export namespace Ailments {
   export class IonicNativeOldVersionInstalled extends Ailment {
     id = 'ionic-native-old-version-installed';
 
-    async getMessage(env: IonicEnvironment) {
+    async getMessage() {
       return (
         `Old version of Ionic Native installed.\n` +
         `Ionic Native ${chalk.bold('ionic-native')} has been restructured into individual packages under the ${chalk.bold('@ionic-native/')} namespace to allow for better bundling and faster apps.\n`
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      return pathExists(path.join(env.project.directory, 'node_modules', 'ionic-native'));
+    async detected() {
+      return pathExists(path.join(this.env.project.directory, 'node_modules', 'ionic-native'));
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
-      const args = await pkgManagerArgs(env, { command: 'uninstall', pkg: 'ionic-native' });
+    async getTreatmentSteps() {
+      const config = await this.env.config.load();
+      const { npmClient } = config;
+      const args = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'uninstall', pkg: 'ionic-native' });
 
       return [
         { name: `Run ${chalk.green(args.join(' '))}` },
@@ -525,16 +540,16 @@ export namespace Ailments {
   export class UnsavedCordovaPlatforms extends AutomaticallyTreatableAilment {
     id = 'unsaved-cordova-platforms';
 
-    async getMessage(env: IonicEnvironment) {
+    async getMessage() {
       return (
         `Cordova platforms unsaved.\n` +
         `There are Cordova platforms installed that are not saved in ${chalk.bold('config.xml')} or ${chalk.bold('package.json')}. It is good practice to manage Cordova platforms and their versions. See ${chalk.bold('https://cordova.apache.org/docs/en/latest/platform_plugin_versioning_ref/')} for more information.\n`
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      const project = await env.project.load();
-      // const packageJson = await env.project.loadPackageJson();
+    async detected() {
+      const project = await this.env.project.load();
+      // const packageJson = await this.env.project.loadPackageJson();
 
       if (!project.integrations.cordova) {
         return false;
@@ -544,8 +559,8 @@ export namespace Ailments {
       //   return false;
       // }
 
-      const platforms = await getPlatforms(env.project.directory);
-      const conf = await ConfigXml.load(env.project.directory);
+      const platforms = await getPlatforms(this.env.project.directory);
+      const conf = await ConfigXml.load(this.env.project.directory);
       const engines = conf.getPlatformEngines();
       const engineNames = new Set([...engines.map(e => e.name)]);
       // const packageJsonPlatforms = new Set([...packageJson.cordova.platforms]);
@@ -557,14 +572,14 @@ export namespace Ailments {
       return configXmlDiff.length > 0;
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
+    async getTreatmentSteps() {
       const args = ['cordova', 'platform', 'save'];
 
       return [
         {
           name: `Run: ${chalk.green('ionic ' + args.join(' '))}`,
           treat: async () => {
-            await env.runCommand(args);
+            await this.env.runCommand(args);
           },
         },
       ];
@@ -581,14 +596,14 @@ export namespace Ailments {
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      const project = await env.project.load();
+    async detected() {
+      const project = await this.env.project.load();
 
       if (!project.integrations.cordova) {
         return false;
       }
 
-      const conf = await ConfigXml.load(env.project.directory);
+      const conf = await ConfigXml.load(this.env.project.directory);
 
       return conf.getBundleId() === 'io.ionic.starter';
     }
@@ -610,13 +625,13 @@ export namespace Ailments {
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      const indexHtml = await fsReadFile(path.resolve(await env.project.getSourceDir(), 'index.html'), { encoding: 'utf8' });
+    async detected() {
+      const indexHtml = await fsReadFile(path.resolve(await this.env.project.getSourceDir(), 'index.html'), { encoding: 'utf8' });
       const m = indexHtml.match(/\<meta.*viewport-fit=cover/);
       return !Boolean(m);
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
+    async getTreatmentSteps() {
       return [
         { name: `Add ${chalk.bold('viewport-fit=cover')} to the ${chalk.bold('<meta name="viewport">')} tag in your ${chalk.bold('index.html')} file` },
       ];
@@ -638,23 +653,23 @@ export namespace Ailments {
       ).trim();
     }
 
-    async detected(env: IonicEnvironment) {
-      if (!(await isRepoInitialized(env))) {
+    async detected() {
+      if (!(await isRepoInitialized(this.env.project.directory))) {
         return false;
       }
 
-      const cmdInstalled = await env.shell.cmdinfo('git', ['--version']);
+      const cmdInstalled = await this.env.shell.cmdinfo('git', ['--version']);
 
       if (!cmdInstalled) {
         return false;
       }
 
-      const files = (await env.shell.run('git', ['ls-tree', '--name-only', 'HEAD'], { showCommand: false })).split('\n');
+      const files = (await this.env.shell.run('git', ['ls-tree', '--name-only', 'HEAD'], { showCommand: false })).split('\n');
 
       return files.includes('platforms'); // TODO
     }
 
-    async getTreatmentSteps(env: IonicEnvironment) {
+    async getTreatmentSteps() {
       return [];
     }
   }

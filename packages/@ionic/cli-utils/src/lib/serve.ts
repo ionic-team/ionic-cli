@@ -105,14 +105,15 @@ export abstract class ServeRunner<T extends ServeOptions> {
 
   async invokeBeforeHook() {
     const { pkgManagerArgs } = await import('./utils/npm');
-
+    const config = await this.env.config.load();
+    const { npmClient } = config;
     const pkg = await this.env.project.loadPackageJson();
 
     debug(`Looking for ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[WATCH_BEFORE_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.env, { command: 'run', script: WATCH_BEFORE_SCRIPT });
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: WATCH_BEFORE_SCRIPT });
       await this.env.shell.run(pkgManager, pkgArgs, { showExecution: true });
     }
 

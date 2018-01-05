@@ -1,21 +1,25 @@
 import * as path from 'path';
 
-import { IonicEnvironment } from '../definitions';
+import { IShell } from '../definitions';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
 
-export async function isRepoInitialized(env: IonicEnvironment): Promise<boolean> {
-  return pathExists(path.join(env.project.directory, '.git'));
+export interface GitUtilDeps {
+  shell: IShell;
 }
 
-export async function initializeRepo(env: IonicEnvironment) {
-  await env.shell.run('git', ['init'], { showSpinner: false, cwd: env.project.directory });
+export async function isRepoInitialized(dir: string): Promise<boolean> {
+  return pathExists(path.join(dir, '.git'));
 }
 
-export async function getIonicRemote(env: IonicEnvironment): Promise<string | undefined> {
+export async function initializeRepo({ shell }: GitUtilDeps, dir: string) {
+  await shell.run('git', ['init'], { showSpinner: false, cwd: dir });
+}
+
+export async function getIonicRemote({ shell }: GitUtilDeps, dir: string): Promise<string | undefined> {
   const regex = /ionic\t(.+) \(\w+\)/;
 
   // would like to use get-url, but not available in git 2.0.0
-  const remotes = await env.shell.run('git', ['remote', '-v'], { showCommand: false, cwd: env.project.directory });
+  const remotes = await shell.run('git', ['remote', '-v'], { showCommand: false, cwd: dir });
 
   for (let line of remotes.split('\n')) {
     const match = regex.exec(line.trim());
@@ -26,10 +30,10 @@ export async function getIonicRemote(env: IonicEnvironment): Promise<string | un
   }
 }
 
-export async function addIonicRemote(env: IonicEnvironment, url: string) {
-  await env.shell.run('git', ['remote', 'add', 'ionic', url], { showSpinner: false, cwd: env.project.directory });
+export async function addIonicRemote({ shell }: GitUtilDeps, dir: string, url: string) {
+  await shell.run('git', ['remote', 'add', 'ionic', url], { showSpinner: false, cwd: dir });
 }
 
-export async function setIonicRemote(env: IonicEnvironment, url: string) {
-  await env.shell.run('git', ['remote', 'set-url', 'ionic', url], { showSpinner: false, cwd: env.project.directory });
+export async function setIonicRemote({ shell }: GitUtilDeps, dir: string, url: string) {
+  await shell.run('git', ['remote', 'set-url', 'ionic', url], { showSpinner: false, cwd: dir });
 }

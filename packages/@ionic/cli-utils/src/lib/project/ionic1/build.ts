@@ -16,6 +16,8 @@ export class BuildRunner extends BaseBuildRunner<BuildOptions> {
 
   async buildProject(options: BuildOptions): Promise<void> {
     const { pkgManagerArgs } = await import('../../utils/npm');
+    const config = await this.env.config.load();
+    const { npmClient } = config;
     const pkg = await this.env.project.loadPackageJson();
     const shellOptions = { showExecution: true, cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } };
 
@@ -23,7 +25,7 @@ export class BuildRunner extends BaseBuildRunner<BuildOptions> {
 
     if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.env, { command: 'run', script: BUILD_SCRIPT });
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: BUILD_SCRIPT });
       await this.env.shell.run(pkgManager, pkgArgs, shellOptions);
     } else {
       await this.env.shell.run('ionic-v1', ['build'], shellOptions);

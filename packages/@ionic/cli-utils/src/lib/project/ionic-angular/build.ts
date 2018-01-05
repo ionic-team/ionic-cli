@@ -23,6 +23,8 @@ export class BuildRunner extends BaseBuildRunner<IonicAngularBuildOptions> {
 
   async buildProject(options: IonicAngularBuildOptions): Promise<void> {
     const { pkgManagerArgs } = await import('../../utils/npm');
+    const config = await this.env.config.load();
+    const { npmClient } = config;
     const pkg = await this.env.project.loadPackageJson();
 
     const appScriptsArgs = this.generateAppScriptsArgs(options);
@@ -32,7 +34,7 @@ export class BuildRunner extends BaseBuildRunner<IonicAngularBuildOptions> {
 
     if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.env, { command: 'run', script: BUILD_SCRIPT, scriptArgs: appScriptsArgs });
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: BUILD_SCRIPT, scriptArgs: appScriptsArgs });
       await this.env.shell.run(pkgManager, pkgArgs, shellOptions);
     } else {
       await this.env.shell.run('ionic-app-scripts', ['build', ...appScriptsArgs], shellOptions);

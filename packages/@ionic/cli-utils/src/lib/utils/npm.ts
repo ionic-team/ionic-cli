@@ -2,9 +2,7 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
-import { DistTag, IShellRunOptions, IonicEnvironment } from '../../definitions';
-import { isExitCodeException } from '../../guards';
-import { ERROR_SHELL_COMMAND_NOT_FOUND } from '../shell';
+import { DistTag, IShell, IShellRunOptions, IonicEnvironment, NpmClient } from '../../definitions';
 
 import { PackageJson } from '@ionic/cli-framework';
 import { ERROR_FILE_NOT_FOUND } from '@ionic/cli-framework/utils/fs';
@@ -28,7 +26,10 @@ export async function readPackageJsonFileOfResolvedModule(resolvedModule: string
   }
 }
 
-let installer: undefined | 'npm' | 'yarn';
+export interface PkgManagerDeps {
+  npmClient: NpmClient;
+  shell: IShell;
+}
 
 interface PkgManagerVocabulary {
   // commands
@@ -67,9 +68,8 @@ export interface PkgManagerOptions extends IShellRunOptions {
  *
  * @return Promise<args> If the args is an empty array, it means the pkg manager doesn't have that command.
  */
-export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerOptions): Promise<string[]> {
+export async function pkgManagerArgs({ npmClient = 'npm', shell }: PkgManagerDeps, options: PkgManagerOptions): Promise<string[]> {
   let vocab: PkgManagerVocabulary;
-  const config = await env.config.load();
 
   let cmd = options.command;
 
@@ -101,37 +101,18 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
     }
   }
 
-  if (config.yarn) {
-    if (!installer) {
-      try {
-        await env.shell.run('yarn', ['--version'], { fatalOnNotFound: false, showCommand: false });
-        installer = 'yarn';
-      } catch (e) {
-        if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
-          env.log.warn(`You have opted into yarn, but ${chalk.green('yarn')} was not found in your PATH.`);
-        } else {
-          env.log.debug(() => `Error running yarn: ${e}`);
-        }
-
-        installer = 'npm';
-      }
-    }
-  } else {
-    installer = 'npm';
-  }
-
   const installerArgs: string[] = [];
 
-  if (installer === 'npm') {
+  if (npmClient === 'npm') {
     vocab = { run: 'run', install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', rebuild: 'rebuild', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '' };
-  } else if (installer === 'yarn') {
+  } else if (npmClient === 'yarn') {
     vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'install', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive' };
 
     if (options.global) { // yarn installs packages globally under the 'global' prefix, instead of having a flag
       installerArgs.push('global');
     }
   } else {
-    throw new Error(`unknown installer: ${installer}`);
+    throw new Error(`unknown installer: ${npmClient}`);
   }
 
   if (cmd === 'install') {
@@ -182,14 +163,14 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
     installerArgs.push(options.script);
   }
 
-  if (installer === 'yarn') {
+  if (npmClient === 'yarn') {
     if (cmd === 'rebuild') {
       installerArgs.push('--force');
     }
   }
 
   if (cmd === 'run' && options.script && options.scriptArgs && options.scriptArgs.length > 0) {
-    if (installer === 'npm') {
+    if (npmClient === 'npm') {
       installerArgs.push('--');
     }
 
@@ -198,7 +179,7 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
     }
   }
 
-  return [installer, ...installerArgs];
+  return [npmClient, ...installerArgs];
 }
 
 /**
@@ -206,30 +187,22 @@ export async function pkgManagerArgs(env: IonicEnvironment, options: PkgManagerO
  *
  * @return Promise<latest version or `undefined`>
  */
-export async function pkgLatestVersion(env: IonicEnvironment, pkg: string, distTag: DistTag = 'latest'): Promise<string | undefined> {
-  const config = await env.config.load();
-  const shellOptions = { fatalOnError: false, showCommand: false };
+export async function pkgLatestVersion(name: string, distTag: DistTag = 'latest'): Promise<string | undefined> {
+  const packageJson = await import('package-json');
 
   try {
-    if (config.yarn) {
-      const cmdResult = await env.shell.run('yarn', ['info', pkg, `dist-tags.${distTag}`, '--json'], shellOptions);
-      return JSON.parse(cmdResult).data;
-    } else {
-      const cmdResult = await env.shell.run('npm', ['view', pkg, `dist-tags.${distTag}`, '--json'], shellOptions);
-
-      if (cmdResult) {
-        return JSON.parse(cmdResult);
-      }
-    }
+    const pkg = await packageJson(name, { version: distTag });
+    const { version } = <PackageJson>pkg; // TODO
+    return typeof version === 'string' ? version : undefined;
   } catch (e) {
-    if (e.fatal || !isExitCodeException(e)) {
-      throw e;
-    }
+    // ignore
   }
 }
 
 export async function promptToInstallPkg(env: IonicEnvironment, options: Partial<PkgManagerOptions> & { pkg: string }): Promise<boolean> {
-  const [ manager, ...managerArgs ] = await pkgManagerArgs(env, { command: 'install', ...options });
+  const config = await env.config.load();
+  const { npmClient } = config;
+  const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: env.shell }, { command: 'install', ...options });
 
   const confirm = await env.prompt({
     name: 'confirm',

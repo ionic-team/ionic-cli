@@ -275,6 +275,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
+    const config = await this.env.config.load();
+    const { npmClient } = config;
 
     const [ name, template ] = inputs;
     const displayName = options['display-name'] ? String(options['display-name']) : name;
@@ -355,7 +357,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         ` ️-->    Install DevApp: ${chalk.bold('https://bit.ly/ionic-dev-app')}    <--\n\n`
       );
 
-      const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { command: 'install' });
+      const [ installer, ...installerArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
     }
 
@@ -389,7 +391,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       }
 
       if (linkConfirmed) {
-        const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env, { command: 'install', pkg: '@ionic/pro' });
+        const [ installer, ...installerArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'install', pkg: '@ionic/pro' });
         await this.env.shell.run(installer, installerArgs, shellOptions);
 
         const cmdArgs = ['link'];

@@ -62,12 +62,14 @@ export abstract class BuildRunner<T extends BuildOptions> {
     const { pkgManagerArgs } = await import('./utils/npm');
 
     const pkg = await this.env.project.loadPackageJson();
+    const config = await this.env.config.load();
+    const { npmClient } = config;
 
     debug(`Looking for ${chalk.cyan(BUILD_BEFORE_SCRIPT)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[BUILD_BEFORE_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(BUILD_BEFORE_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.env, { command: 'run', script: BUILD_BEFORE_SCRIPT });
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: BUILD_BEFORE_SCRIPT });
       await this.env.shell.run(pkgManager, pkgArgs, { showExecution: true });
     }
 
@@ -84,12 +86,14 @@ export abstract class BuildRunner<T extends BuildOptions> {
     const { pkgManagerArgs } = await import('./utils/npm');
 
     const pkg = await this.env.project.loadPackageJson();
+    const config = await this.env.config.load();
+    const { npmClient } = config;
 
     debug(`Looking for ${chalk.cyan(BUILD_AFTER_SCRIPT)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[BUILD_AFTER_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(BUILD_AFTER_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.env, { command: 'run', script: BUILD_AFTER_SCRIPT });
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: BUILD_AFTER_SCRIPT });
       await this.env.shell.run(pkgManager, pkgArgs, { showExecution: true });
     }
   }

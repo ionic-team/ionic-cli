@@ -240,6 +240,8 @@ export interface ITelemetry {
   resetToken(): Promise<void>;
 }
 
+export type NpmClient = 'yarn' | 'npm';
+
 export interface ConfigFile {
   version: string;
   created: string;
@@ -280,7 +282,7 @@ export interface ConfigFile {
   };
   telemetry: boolean;
   interactive?: boolean;
-  yarn: boolean;
+  npmClient: NpmClient;
 }
 
 export interface IBaseConfig<T extends { [key: string]: any }> {
