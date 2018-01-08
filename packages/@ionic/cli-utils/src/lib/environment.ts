@@ -139,12 +139,8 @@ export class Environment implements IonicEnvironment {
     }
   }
 
-  async runCommand(pargv: string[], opts: { showExecution?: boolean; } = {}): Promise<void> {
-    if (typeof opts.showExecution === 'undefined') {
-      opts.showExecution = true;
-    }
-
-    if (opts.showExecution) {
+  async runCommand(pargv: string[], { showExecution = true }: { showExecution?: boolean; } = {}): Promise<void> {
+    if (showExecution) {
       const metadata = await this.namespace.getMetadata();
       this.log.rawmsg(`> ${chalk.green([metadata.name, ...pargv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
     }

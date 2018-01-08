@@ -102,6 +102,6 @@ To pass additional options to the Cordova CLI, use the ${chalk.green('--')} sepa
       await build(this.env, inputs, generateBuildOptions(metadata, options));
     }
 
-    await this.runCordova(filterArgumentsForCordova(metadata, inputs, options), { showExecution: true });
+    await this.runCordova(filterArgumentsForCordova(metadata, inputs, options), {});
   }
 }

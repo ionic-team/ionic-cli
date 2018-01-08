@@ -57,7 +57,7 @@ Like running ${chalk.green('cordova requirements')} directly, but provides frien
     const metadata = await this.getMetadata();
 
     try {
-      await this.runCordova(filterArgumentsForCordova(metadata, inputs, options), { showExecution: true, showError: false, fatalOnError: false });
+      await this.runCordova(filterArgumentsForCordova(metadata, inputs, options), { showError: false, fatalOnError: false });
     } catch (e) {
       if (e.fatal || !isExitCodeException(e)) {
         throw e;

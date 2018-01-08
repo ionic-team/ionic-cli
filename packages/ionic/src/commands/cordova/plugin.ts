@@ -54,7 +54,7 @@ Like running ${chalk.green('cordova plugin')} directly, but provides friendly ch
 
     // If the action is list then lets just end here.
     if (['ls', 'save'].includes(inputs[0])) {
-      await this.runCordova(['plugin', inputs[0]], { showExecution: true });
+      await this.runCordova(['plugin', inputs[0]], {});
       throw new FatalException('', 0);
     }
 
@@ -79,6 +79,6 @@ Like running ${chalk.green('cordova plugin')} directly, but provides friendly ch
       optionList.push('--save');
     }
 
-    await this.runCordova(optionList, { showExecution: true });
+    await this.runCordova(optionList, {});
   }
 }

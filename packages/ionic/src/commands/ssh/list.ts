@@ -21,13 +21,7 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
-
-    const {
-      findHostSection,
-      getConfigPath,
-      isHostDirective,
-      loadFromPath,
-    } = await import('@ionic/cli-utils/lib/ssh-config');
+    const { findHostSection, getConfigPath, isDirective, loadFromPath } = await import('@ionic/cli-utils/lib/ssh-config');
 
     const token = await this.env.session.getUserToken();
     const config = await this.env.config.load();
@@ -41,11 +35,11 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
 
     if (section && section.config) {
       const [ identityFile ] = section.config.filter(line => {
-        return isHostDirective(line) && line.param === 'IdentityFile';
+        return isDirective(line) && line.param === 'IdentityFile';
       });
 
-      if (isHostDirective(identityFile)) {
-        const output = await this.env.shell.run('ssh-keygen', ['-E', 'sha256', '-lf', identityFile.value], { showCommand: false, fatalOnError: false });
+      if (isDirective(identityFile)) {
+        const output = await this.env.shell.output('ssh-keygen', ['-E', 'sha256', '-lf', identityFile.value], { fatalOnError: false });
         activeFingerprint = output.trim().split(' ')[1];
       }
     }
@@ -78,12 +72,12 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
       columnHeaders: ['fingerprint', 'name', 'annotation'],
     });
 
-    this.env.log.nl();
-
     if (foundActiveKey) {
+      this.env.log.nl();
       this.env.log.msg(`The row in ${chalk.bold('bold')} is the key that this computer is using. To change, use ${chalk.green('ionic ssh use')}.\n`);
     }
 
+    this.env.log.nl();
     this.env.log.rawmsg(table);
     this.env.log.nl();
     this.env.log.ok(`Showing ${chalk.bold(String(res.data.length))} SSH key${res.data.length === 1 ? '' : 's'}.`);

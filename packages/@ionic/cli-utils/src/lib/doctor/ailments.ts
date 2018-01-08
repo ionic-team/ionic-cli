@@ -664,7 +664,7 @@ export namespace Ailments {
         return false;
       }
 
-      const files = (await this.env.shell.run('git', ['ls-tree', '--name-only', 'HEAD'], { showCommand: false })).split('\n');
+      const files = (await this.env.shell.output('git', ['ls-tree', '--name-only', 'HEAD'], { showCommand: false })).split('\n');
 
       return files.includes('platforms'); // TODO
     }

@@ -70,7 +70,7 @@ export abstract class BuildRunner<T extends BuildOptions> {
     if (pkg.scripts && pkg.scripts[BUILD_BEFORE_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(BUILD_BEFORE_SCRIPT)} npm script.`);
       const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: BUILD_BEFORE_SCRIPT });
-      await this.env.shell.run(pkgManager, pkgArgs, { showExecution: true });
+      await this.env.shell.run(pkgManager, pkgArgs, {});
     }
 
     const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
@@ -94,7 +94,7 @@ export abstract class BuildRunner<T extends BuildOptions> {
     if (pkg.scripts && pkg.scripts[BUILD_AFTER_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(BUILD_AFTER_SCRIPT)} npm script.`);
       const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: BUILD_AFTER_SCRIPT });
-      await this.env.shell.run(pkgManager, pkgArgs, { showExecution: true });
+      await this.env.shell.run(pkgManager, pkgArgs, {});
     }
   }
 

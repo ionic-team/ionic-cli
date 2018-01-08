@@ -218,12 +218,13 @@ export interface IShellSpawnOptions extends crossSpawnType.SpawnOptions {
   showCommand?: boolean;
 }
 
-export interface IShellRunOptions extends IShellSpawnOptions {
-  showExecution?: boolean;
-  showError?: boolean;
-  showSpinner?: boolean;
-  fatalOnNotFound?: boolean;
+export interface IShellOutputOptions extends IShellSpawnOptions {
   fatalOnError?: boolean;
+}
+
+export interface IShellRunOptions extends IShellOutputOptions {
+  showError?: boolean;
+  fatalOnNotFound?: boolean;
   truncateErrorOutput?: number;
   logOptions?: IShellRunLogOptions;
 }
@@ -231,7 +232,8 @@ export interface IShellRunOptions extends IShellSpawnOptions {
 export type IShellRunLogOptions = Partial<LoggerOptions> & { stdoutTransform?: NodeJS.ReadWriteStream; stderrTransform?: NodeJS.ReadWriteStream };
 
 export interface IShell {
-  run(command: string, args: string[], options: IShellRunOptions): Promise<string>;
+  run(command: string, args: string[], options: IShellRunOptions): Promise<void>;
+  output(command: string, args: string[], options: IShellOutputOptions): Promise<string>;
   spawn(command: string, args: string[], options: IShellSpawnOptions): Promise<crossSpawnType.ChildProcess>;
   cmdinfo(cmd: string, args?: string[]): Promise<string | undefined>;
 }

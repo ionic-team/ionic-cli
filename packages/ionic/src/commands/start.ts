@@ -216,8 +216,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     const projectDir = path.resolve(inputs[0]);
     await this.checkForExisting(inputs[0], projectDir);
+    const clonedApp = isValidURL(inputs[1]);
 
-    if (!options['type']) {
+    if (!clonedApp && !options['type']) {
       const recommendedType = 'angular';
 
       this.env.log.info(
@@ -307,7 +308,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     await fsMkdir(projectDir, 0o777);
 
     if (clonedApp) {
-      await this.env.shell.run('git', ['clone', template, name, '--progress'], { showExecution: true });
+      await this.env.shell.run('git', ['clone', template, name, '--progress'], {});
     } else {
       const starterTemplate = await this.findStarterTemplate(template, String(options['type']), tag);
       await this.downloadStarterTemplate(projectDir, starterTemplate);
@@ -363,7 +364,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     if (!clonedApp) {
       if (gitIntegration) {
-        await this.env.shell.run('git', ['init'], { showSpinner: false, ...shellOptions });
+        await this.env.shell.run('git', ['init'], shellOptions); // TODO: use initializeRepo()?
       }
 
       if (options['link'] && !linkConfirmed) {
@@ -411,8 +412,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       }
 
       if (gitIntegration) {
-        await this.env.shell.run('git', ['add', '-A'], { showSpinner: false, ...shellOptions });
-        await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], { showSpinner: false, ...shellOptions });
+        await this.env.shell.run('git', ['add', '-A'], shellOptions);
+        await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], shellOptions);
       }
 
       if (manifest) {

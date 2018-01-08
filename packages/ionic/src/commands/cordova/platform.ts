@@ -52,7 +52,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
 
     // If the action is list, check, or save, then just end here.
     if (['ls', 'check', 'save'].includes(inputs[0])) {
-      await this.runCordova(['platform', inputs[0]], { showExecution: true });
+      await this.runCordova(['platform', inputs[0]], {});
       throw new FatalException('', 0);
     }
 
@@ -94,7 +94,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
       const { installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
       await installPlatform(this.env, platformName);
     } else {
-      await this.runCordova(optionList, { showExecution: true });
+      await this.runCordova(optionList, {});
     }
 
     const isLoggedIn = await this.env.session.isLoggedIn();

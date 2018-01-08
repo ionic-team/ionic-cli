@@ -114,7 +114,7 @@ export abstract class ServeRunner<T extends ServeOptions> {
     if (pkg.scripts && pkg.scripts[WATCH_BEFORE_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
       const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: WATCH_BEFORE_SCRIPT });
-      await this.env.shell.run(pkgManager, pkgArgs, { showExecution: true });
+      await this.env.shell.run(pkgManager, pkgArgs, {});
     }
 
     const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);

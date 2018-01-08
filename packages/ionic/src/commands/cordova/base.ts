@@ -185,7 +185,7 @@ export abstract class CordovaRunCommand extends CordovaCommand implements Comman
         }
       }
       args[0] = 'run';
-      await this.runCordova(args, { showExecution: true });
+      await this.runCordova(args, {});
       throw new FatalException('', 0);
     }
 
@@ -240,7 +240,7 @@ export abstract class CordovaRunCommand extends CordovaCommand implements Comman
       }
     }
 
-    await this.runCordova(filterArgumentsForCordova(metadata, inputs, options), { showExecution: true });
+    await this.runCordova(filterArgumentsForCordova(metadata, inputs, options), {});
 
     if (!isLiveReload) {
       this.env.log.ok(

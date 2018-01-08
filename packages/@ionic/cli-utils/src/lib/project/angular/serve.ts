@@ -63,7 +63,7 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
     const { registerShutdownFunction } = await import('../../process');
 
     const ngArgs: string[] = ['serve', '--host', host, '--port', String(port), '--progress', 'false'];
-    const shellOptions = { showExecution: true, cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } };
+    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } };
 
     if (await pathAccessible(path.resolve(this.env.project.directory, NG_AUTODETECTED_PROXY_FILE), fs.constants.R_OK)) {
       ngArgs.push('--proxy-config', NG_AUTODETECTED_PROXY_FILE); // this is fine as long as cwd is the project directory

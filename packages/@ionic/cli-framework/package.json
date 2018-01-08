@@ -51,7 +51,7 @@
   "devDependencies": {
     "@types/dargs": "^5.1.0",
     "@types/debug": "0.0.30",
-    "@types/lodash": "^4.14.91",
+    "@types/lodash": "^4.14.92",
     "@types/minimist": "^1.2.0",
     "@types/ncp": "^2.0.1",
     "@types/rimraf": "^2.0.2",

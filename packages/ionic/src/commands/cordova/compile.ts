@@ -74,6 +74,6 @@ Like running ${chalk.green('cordova compile')} directly, but provides friendly c
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const metadata = await this.getMetadata();
-    await this.runCordova(filterArgumentsForCordova(metadata, inputs, options), { showExecution: true });
+    await this.runCordova(filterArgumentsForCordova(metadata, inputs, options), {});
   }
 }

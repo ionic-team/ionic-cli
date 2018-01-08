@@ -34,7 +34,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
     const cordovaInfo = conf.getProjectInfo();
 
     const appVersion = cordovaInfo.version;
-    const commitHash = await this.env.shell.run('git', ['rev-parse', 'HEAD'], { cwd: this.env.project.directory });
+    const commitHash = await this.env.shell.output('git', ['rev-parse', 'HEAD'], { cwd: this.env.project.directory });
 
     const sourcemapsDir = path.join(this.env.project.directory, '.sourcemaps');
 
