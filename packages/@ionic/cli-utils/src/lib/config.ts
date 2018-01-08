@@ -174,10 +174,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.tokens = {};
     }
 
-    if (!results.tokens.appUser) {
-      results.tokens.appUser = {};
-    }
-
     if (typeof results.telemetry === 'undefined') {
       if (results.cliFlags && typeof results.cliFlags.enableTelemetry !== 'undefined') {
         results.telemetry = results.cliFlags.enableTelemetry;
@@ -192,6 +188,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.npmClient = results.yarn ? 'yarn' : 'npm';
     }
 
+    delete results.tokens.appUser;
     delete results.yarn;
     delete results.backend;
     delete results.lastCommand;
@@ -215,7 +212,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       && typeof j.devapp === 'object'
       && typeof j.user === 'object'
       && typeof j.tokens === 'object'
-      && typeof j.tokens.appUser === 'object'
       && typeof j.telemetry === 'boolean'
       && typeof j.npmClient === 'string';
   }

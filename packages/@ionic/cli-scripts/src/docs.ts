@@ -205,7 +205,8 @@ The CLI will look for the following environment variables:
 
 * \`IONIC_CONFIG_DIRECTORY\`: The directory of the global CLI config. Defaults to \`~/.ionic\`.
 * \`IONIC_HTTP_PROXY\`: Set a URL for proxying all CLI requests through. See [Using a Proxy](#using-a-proxy). The CLI will also look for \`HTTP_PROXY\` and \`HTTPS_PROXY\`, both of which npm use.
-* \`IONIC_EMAIL\` / \`IONIC_PASSWORD\`: For automatic login via environment variables.
+* \`IONIC_TOKEN\`: For automatic login with an auth token.
+* \`IONIC_EMAIL\` / \`IONIC_PASSWORD\`: For automatic login with email & password.
 
 ### Command Options
 

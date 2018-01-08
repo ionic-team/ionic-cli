@@ -8,7 +8,7 @@ import {
   IonicEnvironment,
 } from '../definitions';
 
-import { isLoginResponse, isSuperAgentError } from '../guards';
+import { isLoginResponse, isSuperAgentError, isUserResponse } from '../guards';
 
 import { SessionException } from './errors';
 import { createFatalAPIFormat } from './http';
@@ -29,7 +29,6 @@ export class BaseSession {
     const c = await this.config.load();
 
     c.user = {};
-    c.tokens.appUser = {};
     delete c.tokens.user;
     c.git.setup = false;
   }
@@ -73,8 +72,40 @@ export class ProSession extends BaseSession implements ISession {
       c.user.email = email;
       c.tokens.user = token;
     } catch (e) {
-      if (isSuperAgentError(e) && e.response.status === 401) {
+      if (isSuperAgentError(e) && (e.response.status === 401 || e.response.status === 403)) {
         throw new SessionException('Incorrect email or password.');
+      }
+
+      throw e;
+    }
+  }
+
+  async tokenLogin(token: string) {
+    const { req } = await this.client.make('GET', '/users/self');
+    req.set('Authorization', `Bearer ${token}`);
+
+    try {
+      const res = await this.client.do(req);
+
+      if (!isUserResponse(res)) {
+        throw createFatalAPIFormat(req, res);
+      }
+
+      const user = res.data;
+      const c = await this.config.load();
+
+      const user_id = String(user.id);
+
+      if (c.user.id !== user_id) { // User changed
+        await this.logout();
+      }
+
+      c.user.id = user_id;
+      c.user.email = user.email;
+      c.tokens.user = token;
+    } catch (e) {
+      if (isSuperAgentError(e) && (e.response.status === 401 || e.response.status === 403)) {
+        throw new SessionException('Invalid auth token.');
       }
 
       throw e;

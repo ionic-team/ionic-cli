@@ -45,7 +45,19 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
 
       ienv.log.debug(() => util.inspect(ienv.meta, { breakLength: Infinity, colors: chalk.enabled }));
 
-      if (env['IONIC_EMAIL'] && env['IONIC_PASSWORD']) {
+      if (env['IONIC_TOKEN']) {
+        const wasLoggedIn = await ienv.session.isLoggedIn();
+        ienv.log.debug(() => `${chalk.bold('IONIC_TOKEN')} environment variable detected`);
+
+        if (config.tokens.user !== env['IONIC_TOKEN']) {
+          ienv.log.debug(() => `${chalk.bold('IONIC_TOKEN')} mismatch with current session--attempting login`);
+          await ienv.session.tokenLogin(env['IONIC_TOKEN']);
+
+          if (wasLoggedIn) {
+            ienv.log.info(`You have been logged out--using ${chalk.bold('IONIC_TOKEN')} environment variable`);
+          }
+        }
+      } else if (env['IONIC_EMAIL'] && env['IONIC_PASSWORD']) {
         ienv.log.debug(() => `${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables detected`);
 
         if (config.user.email !== env['IONIC_EMAIL']) {

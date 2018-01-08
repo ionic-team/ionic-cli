@@ -208,6 +208,7 @@ export type HydratedCommandMetadata = CommandMetadata & framework.HydratedComman
 
 export interface ISession {
   login(email: string, password: string): Promise<void>;
+  tokenLogin(token: string): Promise<void>;
   logout(): Promise<void>;
   isLoggedIn(): Promise<boolean>;
   getUserToken(): Promise<string>;
@@ -278,7 +279,6 @@ export interface ConfigFile {
   tokens: {
     user?: string;
     telemetry?: string;
-    appUser: { [app_id: string]: string };
   };
   telemetry: boolean;
   interactive?: boolean;
