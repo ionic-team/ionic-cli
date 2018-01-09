@@ -17,8 +17,6 @@ import {
   RootPlugin,
 } from './definitions';
 
-import { LOG_LEVELS, isLogLevel } from './guards';
-
 import { BaseProject, OutsideProject, PROJECT_FILE, PROJECT_FILE_LEGACY, ProjectDeps } from './lib/project';
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
@@ -66,7 +64,6 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   let bottomBar: inquirerType.ui.BottomBar | undefined;
   let log: Logger;
   let level: LogLevel = 'info';
-  let levelInvalid = false;
   let prefix: LogPrefix = '';
 
   const configData = await config.load();
@@ -75,12 +72,10 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     flags.interactive = false;
   }
 
-  if (argv['log-level']) {
-    if (isLogLevel(argv['log-level'])) {
-      level = argv['log-level'];
-    } else {
-      levelInvalid = true;
-    }
+  if (argv['verbose']) {
+    level = 'debug';
+  } else if (argv['quiet']) {
+    level = 'warn';
   }
 
   if (argv['log-timestamps']) {
@@ -185,13 +180,6 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     if (env['IONIC_CLI_LOCAL_ERROR'] === ERROR_VERSION_TOO_OLD) {
       log.warn(`Detected locally installed Ionic CLI, but it's too old--using global CLI.`);
     }
-  }
-
-  if (levelInvalid) {
-    log.warn(
-      `${chalk.green(argv['log-level'])} is an invalid log level--defaulting back to ${chalk.bold(level)}.\n` +
-      `You can choose from the following log levels: ${LOG_LEVELS.map(l => chalk.green(l)).join(', ')}.\n`
-    );
   }
 
   log.debug(() => `CLI flags: ${util.inspect(flags, { breakLength: Infinity, colors: chalk.enabled })}`);

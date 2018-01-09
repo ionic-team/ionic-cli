@@ -1,5 +1,7 @@
 import * as os from 'os';
 import * as path from 'path';
+import * as split2 from 'split2';
+
 import * as crossSpawnType from 'cross-spawn';
 
 import { ShellException } from '../errors';
@@ -38,7 +40,7 @@ export async function runcmd(command: string, args?: string[], options: RunCmdOp
 
     if (p.stdout) {
       if (options.stdoutPipe) {
-        p.stdout.pipe(options.stdoutPipe);
+        p.stdout.pipe(split2()).pipe(options.stdoutPipe);
       } else {
         p.stdout.on('data', chunk => {
           if (Buffer.isBuffer(chunk)) {
@@ -54,7 +56,7 @@ export async function runcmd(command: string, args?: string[], options: RunCmdOp
 
     if (p.stderr) {
       if (options.stderrPipe) {
-        p.stderr.pipe(options.stderrPipe);
+        p.stderr.pipe(split2()).pipe(options.stderrPipe);
       } else {
         p.stderr.on('data', chunk => {
           if (Buffer.isBuffer(chunk)) {

@@ -17,9 +17,42 @@ import {
 export const parseArgs = minimist;
 export { ParsedArgs } from 'minimist';
 
-export function stripOptions(pargv: string[]) {
+/**
+ * Remove options, which are any arguments that starts with a hyphen (-), from
+ * a list of process args and return the result.
+ *
+ * If a double-hyphen separator (--) is encountered, it and the remaining
+ * arguments are included in the result, as they are not interpreted.
+ */
+export function stripOptions(pargv: string[]): string[] {
+  const [ ownArgs, otherArgs ] = separateArgv(pargv);
   const r = /^\-/;
-  return pargv.filter(arg => !r.test(arg));
+
+  if (otherArgs.length > 0) {
+    otherArgs.unshift('--');
+  }
+
+  return [...ownArgs.filter(arg => !r.test(arg)), ...otherArgs];
+}
+
+/**
+ * Split a list of process args into own-arguments and other-arguments, which
+ * are separated by the double-hyphen (--) separator.
+ *
+ * For example, `['cmd', 'arg1', '--', 'arg2']` will be split into
+ * `['cmd', 'arg1']` and `['arg2']`.
+ */
+export function separateArgv(pargv: string[]): [string[], string[]] {
+  const ownArgs = [...pargv];
+  const otherArgs: string[] = [];
+  const sepIndex = pargv.indexOf('--');
+
+  if (sepIndex >= 0) {
+    otherArgs.push(...ownArgs.splice(sepIndex));
+    otherArgs.shift(); // strip separator
+  }
+
+  return [ ownArgs, otherArgs ];
 }
 
 const typeDefaults = new Map<CommandOptionType, ParsedArg>()

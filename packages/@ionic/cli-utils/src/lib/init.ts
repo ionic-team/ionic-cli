@@ -28,14 +28,6 @@ export function modifyArguments(pargv: string[]): string[] {
     modifiedArgArray.push('--lab');
   }
 
-  if (minimistArgv['verbose']) {
-    modifiedArgArray[modifiedArgArray.indexOf('--verbose')] = '--log-level=debug';
-  }
-
-  if (minimistArgv['quiet']) {
-    modifiedArgArray[modifiedArgArray.indexOf('--quiet')] = '--log-level=warn';
-  }
-
   return modifiedArgArray;
 }
 

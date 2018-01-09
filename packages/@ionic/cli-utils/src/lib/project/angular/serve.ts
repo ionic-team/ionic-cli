@@ -3,6 +3,8 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import * as Debug from 'debug';
+import * as through2 from 'through2';
+import * as split2 from 'split2';
 
 import { pathAccessible } from '@ionic/cli-framework/utils/fs';
 
@@ -59,7 +61,6 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
   }
 
   async servecmd(host: string, port: number): Promise<void> {
-    const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
     const { registerShutdownFunction } = await import('../../process');
 
     const ngArgs: string[] = ['serve', '--host', host, '--port', String(port), '--progress', 'false'];

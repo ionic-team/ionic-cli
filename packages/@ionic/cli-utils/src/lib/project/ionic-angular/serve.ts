@@ -1,5 +1,7 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
+import * as through2 from 'through2';
+import * as split2 from 'split2';
 
 import { parsedArgsToArgv } from '@ionic/cli-framework';
 
@@ -55,7 +57,6 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
   }
 
   async servecmd(options: ServeOptions): Promise<void> {
-    const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
     const { registerShutdownFunction } = await import('../../process');
 
     const appScriptsArgs = await serveOptionsToAppScriptsArgs(options);

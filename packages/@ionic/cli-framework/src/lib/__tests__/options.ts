@@ -6,6 +6,7 @@ import {
   filterCommandLineOptionsByGroup,
   metadataToParseArgsOptions,
   parsedArgsToArgv,
+  separateArgv,
   stripOptions,
 } from '../options';
 
@@ -38,6 +39,35 @@ describe('@ionic/cli-framework', () => {
       it('should strip options from anywhere', () => {
         const result = stripOptions(['-f', 'a', '--opt1', 'b', '--opt2']);
         expect(result).toEqual(['a', 'b']);
+      });
+
+      it('should preserve options after -- separator', () => {
+        const result = stripOptions(['-f', 'a', '--', '--opt1', 'b', '--opt2']);
+        expect(result).toEqual(['a', '--', '--opt1', 'b', '--opt2']);
+      });
+
+    });
+
+    describe('separateArgv', () => {
+
+      it('should work for empty array', () => {
+        const result = separateArgv([]);
+        expect(result).toEqual([[], []]);
+      });
+
+      it('should work for arg list with no separator', () => {
+        const result = separateArgv(['a', 'b']);
+        expect(result).toEqual([['a', 'b'], []]);
+      });
+
+      it('should work for arg list with no separator with options', () => {
+        const result = separateArgv(['a', '--foo', 'b']);
+        expect(result).toEqual([['a', '--foo', 'b'], []]);
+      });
+
+      it('should work for arg list with separator', () => {
+        const result = separateArgv(['a', 'b', '--', 'c']);
+        expect(result).toEqual([['a', 'b'], ['c']]);
       });
 
     });

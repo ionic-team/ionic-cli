@@ -2,6 +2,8 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import * as lodash from 'lodash';
+import * as through2 from 'through2';
+import * as split2 from 'split2';
 import * as proxyMiddlewareType from 'http-proxy-middleware'; // tslint:disable-line:no-implicit-dependencies
 
 import { ProjectFileProxy, ServeDetails, ServeOptions } from '../../../definitions';
@@ -114,7 +116,6 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
   }
 
   private async servecmd(options: ServeMetaOptions): Promise<void> {
-    const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
     const { registerShutdownFunction } = await import('../../process');
 
     const workingDir = this.env.project.directory;

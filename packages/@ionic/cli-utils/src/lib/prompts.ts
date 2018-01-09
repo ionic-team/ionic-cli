@@ -18,8 +18,6 @@ export async function createPromptModule({ interactive, confirm, log, config }: 
   async function createPrompter(question: NonConfirmPromptQuestion): Promise<string>;
   async function createPrompter(question: ConfirmPromptQuestion): Promise<boolean>;
   async function createPrompter(question: ConfirmPromptQuestion | NonConfirmPromptQuestion | CheckboxPromptQuestion): Promise<boolean | string | string[]> {
-    log.nl();
-
     if (interactive === false) {
       if (typeof question.noninteractiveValue !== 'undefined') {
         return question.noninteractiveValue;

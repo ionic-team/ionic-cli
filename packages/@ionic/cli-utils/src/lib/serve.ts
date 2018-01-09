@@ -4,6 +4,8 @@ import * as path from 'path';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
+import * as through2 from 'through2';
+import * as split2 from 'split2';
 
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
@@ -283,7 +285,6 @@ export abstract class ServeRunner<T extends ServeOptions> {
   }
 
   async runLab(url: string, port: number) {
-    const [ through2, split2 ] = await Promise.all([import('through2'), import('split2')]);
     const { registerShutdownFunction } = await import('./process');
 
     const project = await this.env.project.load();

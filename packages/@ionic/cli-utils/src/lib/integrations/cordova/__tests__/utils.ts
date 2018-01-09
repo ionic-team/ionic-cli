@@ -63,12 +63,28 @@ describe('@ionic/cli-utils', () => {
       expect(result).toEqual(['build', 'ios', '--cdvopt1', 'foo', '--cdvopt2']);
     });
 
-    it('should include unparsed options', () => {
-      const inputs = ['android', '--', '--gradleArg=-PcdvBuildMultipleApks=true'];
+    it('should include --verbose', () => {
+      const inputs = ['ios'];
+      const options = { _: [], boolopt: true, cdvopt1: 'foo', cdvopt2: true, prod: true, optimizejs: true, verbose: true };
+
+      const result = filterArgumentsForCordova(metadata, inputs, options);
+      expect(result).toEqual(['build', 'ios', '--cdvopt1', 'foo', '--cdvopt2', '--verbose']);
+    });
+
+    it('should include additional options', () => {
+      const inputs = ['android', '--', '--someopt'];
       const options = { _: [], boolopt: true, cdvopt1: 'foo', cdvopt2: true, prod: true, optimizejs: true };
 
       const result = filterArgumentsForCordova(metadata, inputs, options);
-      expect(result).toEqual(['build', 'android', '--cdvopt1', 'foo', '--cdvopt2', '--', '--gradleArg=-PcdvBuildMultipleApks=true']);
+      expect(result).toEqual(['build', 'android', '--cdvopt1', 'foo', '--cdvopt2', '--someopt']);
+    });
+
+    it('should include additional and unparsed options', () => {
+      const inputs = ['android', '--', '--someopt', '--', '--gradleArg=-PcdvBuildMultipleApks=true'];
+      const options = { _: [], boolopt: true, cdvopt1: 'foo', cdvopt2: true, prod: true, optimizejs: true };
+
+      const result = filterArgumentsForCordova(metadata, inputs, options);
+      expect(result).toEqual(['build', 'android', '--cdvopt1', 'foo', '--cdvopt2', '--someopt', '--', '--gradleArg=-PcdvBuildMultipleApks=true']);
     });
 
   });

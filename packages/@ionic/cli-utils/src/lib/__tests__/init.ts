@@ -54,11 +54,6 @@ describe('ionic', () => {
       expect(args).toEqual(['serve', '--opt', 'foo', '--lab']);
     });
 
-    it('should change --verbose to --log-level=debug', () => {
-      const args = modifyArguments(['foo', '--verbose', 'bar']);
-      expect(args).toEqual(['foo', '--log-level=debug', 'bar']);
-    });
-
   });
 
 });
