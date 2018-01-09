@@ -50,10 +50,6 @@ export class Shell implements IShell {
 
     try {
       await runcmd(command, args, options);
-
-      if (showCommand) {
-        this.log.nl();
-      }
     } catch (e) {
       if (e.code === 'ENOENT') {
         if (fatalOnNotFound) {

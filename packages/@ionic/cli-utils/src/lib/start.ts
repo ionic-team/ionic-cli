@@ -1,5 +1,7 @@
 import * as path from 'path';
 
+import chalk from 'chalk';
+
 import {
   ERROR_FILE_INVALID_JSON,
   ERROR_FILE_NOT_FOUND,
@@ -9,6 +11,7 @@ import {
 
 import { IConfig, StarterList, StarterManifest, StarterTemplate } from '../definitions';
 import { isStarterManifest } from '../guards';
+import { emoji } from './utils/emoji';
 import { createRequest } from './http';
 
 export const STARTER_BASE_URL = 'https://d2ql0qc7j8u4b2.cloudfront.net';
@@ -57,6 +60,32 @@ export async function updatePackageJsonForCli(projectRoot: string, appName: stri
     }
     throw e;
   }
+}
+
+const advertisementSeparator = '─';
+
+export async function getIonicDevAppText() {
+  const msg = `
+     ${chalk.bold(`${emoji('✨', '*')}   IONIC  DEVAPP   ${emoji('✨', '*')}`)}\n
+ Speed up development with the ${chalk.bold('Ionic DevApp')}, our fast, on-device testing mobile app\n
+  -  ${emoji('🔑', '')}   Test on iOS and Android without Native SDKs
+  -  ${emoji('🚀', '')}   LiveReload for instant style and JS updates\n
+ -->    Install DevApp: ${chalk.bold('https://bit.ly/ionic-dev-app')}    <--
+`;
+
+  return `${msg}\n${advertisementSeparator.repeat(60)}\n\n`;
+}
+
+export async function getIonicProText() {
+  const msg = `
+     ${chalk.bold(`${emoji('🔥', '*')}   IONIC  PRO   ${emoji('🔥', '*')}`)}\n
+ Supercharge your Ionic development with the ${chalk.bold('Ionic Pro')} SDK\n
+  -  ${emoji('⚠️', '')}   Track runtime errors in real-time, back to your original TypeScript
+  -  ${emoji('📲', '')}  Push remote updates and skip the app store queue\n
+ Learn more about Ionic Pro: ${chalk.bold('https://ionicframework.com/pro')}
+`;
+
+  return `${msg}\n${advertisementSeparator.repeat(60)}\n\n`;
 }
 
 export async function getStarterList(config: IConfig, tag = 'latest'): Promise<StarterList> {
