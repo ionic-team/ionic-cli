@@ -13,7 +13,7 @@ export class RunCommand extends CordovaRunCommand {
       longDescription: `
 Like running ${chalk.green('cordova run')} directly, but also watches for changes in web assets and provides live-reload functionality with the ${chalk.green('--livereload')} option.
 
-For Android and iOS, you can setup Remote Debugging on your device with browser development tools: ${chalk.bold('https://docs.ionic.io/tools/developer/#remote-debugging')}
+For Android and iOS, you can setup Remote Debugging on your device with browser development tools: ${chalk.bold('https://ionicframework.com/docs/developer-resources/developer-tips/')}
 
 Just like with ${chalk.green('ionic cordova build')}, you can pass additional options to the Cordova CLI using the ${chalk.green('--')} separator.
       `,
