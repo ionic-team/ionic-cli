@@ -19,7 +19,7 @@ export default async function(env: IonicEnvironment) {
 
   return `${formatPageHeader('Commands', 'cli-command-list')}
 
-This is a comprehensive list of CLI commands. The \`ionic --help\` command will show a more organized and accurate list of commands.
+This is a comprehensive list of CLI commands. Running \`ionic --help\` will also show a list of commands.
 
 Command | Description
 ------- | -----------

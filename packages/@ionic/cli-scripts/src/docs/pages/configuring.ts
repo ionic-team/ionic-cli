@@ -12,18 +12,15 @@ Configuration values are stored in JSON files.
 * Global config file (\`~/.ionic/config.json\`): for global CLI config and auth
 * Project config files (\`ionic.config.json\`): for Ionic project config
 
-The CLI provides commands for setting and printing config values from project config files and the global CLI config file. See \`ionic config set --help\` and \`ionic config get --help\` for usage.
+The CLI provides the \`ionic config\` commands for setting and printing config values from project config files and the global CLI config file.
 
 ## Integrations
 
-Integrations such as Cordova are automatically activated when detected, but can be easily disabled.
+You can manage integrations with the \`ionic integrations\` commands.
 
-Integrations hook into CLI events. For example, when the Cordova integration is enabled, \`ionic cordova prepare\` will run after \`ionic build\` runs. See [Hooks](#hooks).
+Integrations may also be auto-activated, but can also be disabled easily. When integrations are enabled, the behavior of the CLI may change. For example, when the Cordova integration is enabled, \`ionic cordova prepare\` will run after \`ionic build\` runs.
 
-| integration | enabled when...                                       | disabled with...                                         |
-| ------------|-------------------------------------------------------|----------------------------------------------------------|
-| Cordova     | \`ionic cordova\` commands are run                    | \`ionic config set integrations.cordova.enabled false\`  |
-| Gulp        | \`gulp\` exists in your \`package.json\` dependencies | \`ionic config set integrations.gulp.enabled false\`     |
+* \`cordova\`: Provides integration with [Apache Cordova](https://cordova.apache.org/) to target Native iOS and Android.
 
 ## Environment Variables
 
@@ -33,6 +30,8 @@ The CLI will look for the following environment variables:
 * \`IONIC_HTTP_PROXY\`: Set a URL for proxying all CLI requests through. See [Using a Proxy](#using-a-proxy). The CLI will also look for \`HTTP_PROXY\` and \`HTTPS_PROXY\`, both of which npm use.
 * \`IONIC_TOKEN\`: For automatic login with an auth token.
 * \`IONIC_EMAIL\` / \`IONIC_PASSWORD\`: For automatic login with email & password.
+
+\`IONIC_TOKEN\` and \`IONIC_EMAIL\` / \`IONIC_PASSWORD\` both initiate a session, which means they write your token to the global CLI config file. When the CLI detects a change in these environment variables, a new session is used.
 
 ### Command Options
 
@@ -57,6 +56,7 @@ CLI flags are global options that alter the behavior of a CLI command.
 * \`--verbose\`: Show all log messages for debugging purposes.
 * \`--quiet\`: Only show \`WARN\` and \`ERROR\` log messages.
 * \`--no-interactive\`: Turn off interactive prompts and fancy outputs. If a CI server is detected (we use [ci-info](https://www.npmjs.com/package/ci-info)), the CLI is automatically non-interactive.
+* \`--no-color\`: Turn off colors.
 * \`--confirm\`: Turn on auto-confirmation of confirmation prompts. *Careful*: the CLI prompts before doing something potentially harmful. Auto-confirming may have unintended results.
 
 ## Hooks
@@ -76,8 +76,6 @@ CLI hooks are how you can run scripts during CLI events, such as "watch" and "bu
     "ionic:build:before": "cp somefile www/somefile",
   }
 \`\`\`
-
-*Note: If you use [gulp](https://gulpjs.com/), the CLI will run gulp tasks by the same name as the npm scripts above.*
 
 ## Service Proxies
 

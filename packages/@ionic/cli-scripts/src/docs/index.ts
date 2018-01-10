@@ -2,14 +2,9 @@ import * as path from 'path';
 
 import { generateRootPlugin } from 'ionic';
 import { Command } from '@ionic/cli-framework';
-import { copyDirectory, fsMkdirp, fsStat, fsWriteFile } from '@ionic/cli-framework/utils/fs';
-
+import { copyDirectory, fsMkdirp, fsReadDir, fsStat, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 import { generateIonicEnvironment } from '@ionic/cli-utils';
 
-import formatIndexPage from './pages/index';
-import formatConfiguringPage from './pages/configuring';
-import formatCommandsPage from './pages/commands';
-import formatStartersPage from './pages/starters';
 import { formatCommandDoc, generateFullName, getCommandList } from './pages/commands';
 
 export class DocsCommand extends Command {
@@ -24,24 +19,19 @@ export class DocsCommand extends Command {
     const plugin = await generateRootPlugin();
     const env = await generateIonicEnvironment(plugin, process.argv.slice(2), process.env);
 
-    const indexPath = path.resolve(__dirname, '..', '..', '..', '..', '..', 'docs', 'index.md');
-    const indexDoc = await formatIndexPage(env);
+    const mdPath = path.resolve(__dirname, '..', '..', '..', '..', '..', 'docs');
+    const pagesDir = path.resolve(__dirname, 'pages');
+    const pages = (await fsReadDir(pagesDir)).filter(f => path.extname(f) === '.js').map(f => path.resolve(pagesDir, f)); // dist/docs/pages/*.js
 
-    const commandsPath = path.resolve(__dirname, '..', '..', '..', '..', '..', 'docs', 'commands.md');
-    const commandsDoc = await formatCommandsPage(env);
+    await fsMkdirp(mdPath);
 
-    const configuringPath = path.resolve(__dirname, '..', '..', '..', '..', '..', 'docs', 'configuring.md');
-    const configuringDoc = await formatConfiguringPage();
-
-    const startersPath = path.resolve(__dirname, '..', '..', '..', '..', '..', 'docs', 'starters.md');
-    const startersDoc = await formatStartersPage();
-
-    await fsMkdirp(path.dirname(indexPath));
-
-    await fsWriteFile(indexPath, indexDoc, { encoding: 'utf8' });
-    await fsWriteFile(commandsPath, commandsDoc, { encoding: 'utf8' });
-    await fsWriteFile(configuringPath, configuringDoc, { encoding: 'utf8' });
-    await fsWriteFile(startersPath, startersDoc, { encoding: 'utf8' });
+    for (const p of pages) {
+      const name = path.basename(p).slice(0, -path.extname(p).length);
+      const render = require(p).default;
+      const pageMdPath = path.resolve(mdPath, `${name}.md`);
+      const renderedPage = await render(env);
+      await fsWriteFile(pageMdPath, renderedPage, { encoding: 'utf8' });
+    }
 
     const commands = await getCommandList(env);
     const commandPromises = commands.map(async cmd => {
