@@ -78,6 +78,10 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     level = 'warn';
   }
 
+  if (argv['color'] === false) {
+    chalk.enabled = false;
+  }
+
   if (argv['log-timestamps']) {
     prefix = () => `${chalk.dim('[' + new Date().toISOString() + ']')}`;
   }

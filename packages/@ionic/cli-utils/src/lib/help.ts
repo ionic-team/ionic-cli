@@ -100,7 +100,7 @@ async function formatUsage(env: IonicEnvironment, ns: INamespace) {
     name = `ionic ${name}`; // TODO: recurse back ns chain
   }
 
-  const options = ['--help', '--verbose', '--quiet', '--no-interactive', '--confirm'];
+  const options = ['--help', '--verbose', '--quiet', '--no-interactive', '--no-color', '--confirm'];
   const usageLines = [
     `<command> ${chalk.dim('[<args>]')} ${options.map(opt => chalk.dim('[' + opt + ']')).join(' ')} ${chalk.dim('[options]')}`,
   ];
