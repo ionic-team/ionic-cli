@@ -102,7 +102,7 @@ async function createHttpServer(options: ServeOptions): Promise<express.Applicat
 
   attachProxy(app, { ...DEFAULT_PROXY_CONFIG, mount: pathPrefix, target: livereloadUrl, pathRewrite: { [pathPrefix]: '' } });
 
-  for (let proxy of options.proxies) {
+  for (const proxy of options.proxies) {
     attachProxy(app, { ...DEFAULT_PROXY_CONFIG, ...proxy });
     process.stdout.write(`Proxy created ${chalk.bold(proxy.mount)} => ${proxy.target ? chalk.bold(proxy.target) : '<no target>'}\n`);
   }

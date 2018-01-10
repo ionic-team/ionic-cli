@@ -21,7 +21,7 @@ export async function getIonicRemote({ shell }: GitUtilDeps, dir: string): Promi
   // would like to use get-url, but not available in git 2.0.0
   const remotes = await shell.output('git', ['remote', '-v'], { cwd: dir });
 
-  for (let line of remotes.split('\n')) {
+  for (const line of remotes.split('\n')) {
     const match = regex.exec(line.trim());
 
     if (match) {

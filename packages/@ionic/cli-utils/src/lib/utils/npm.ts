@@ -71,7 +71,7 @@ export interface PkgManagerOptions extends IShellRunOptions {
 export async function pkgManagerArgs({ npmClient = 'npm', shell }: PkgManagerDeps, options: PkgManagerOptions): Promise<string[]> {
   let vocab: PkgManagerVocabulary;
 
-  let cmd = options.command;
+  const cmd = options.command;
 
   if (cmd === 'dedupe') {
     delete options.pkg;
@@ -174,7 +174,7 @@ export async function pkgManagerArgs({ npmClient = 'npm', shell }: PkgManagerDep
       installerArgs.push('--');
     }
 
-    for (let arg of options.scriptArgs) {
+    for (const arg of options.scriptArgs) {
       installerArgs.push(arg);
     }
   }

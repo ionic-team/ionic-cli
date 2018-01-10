@@ -55,7 +55,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       throw new FatalException(`Sorry--cannot use both ${chalk.green('app_id')} and ${chalk.green('--create')}. You must either link an existing app or create a new one.`);
     }
 
-    let proAppId = <string>options['pro-id'] || '';
+    const proAppId = <string>options['pro-id'] || '';
 
     if (proAppId) {
       inputs[0] = proAppId;
@@ -67,7 +67,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     const { App } = await import('@ionic/cli-utils/lib/app');
 
     let [ appId ] = inputs;
-    let { create, name } = options;
+    const { create, name } = options;
 
     const config = await this.env.config.load();
     const project = await this.env.project.load();
@@ -119,7 +119,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       const appUtil = new App(token, this.env.client);
       const paginator = await appUtil.paginate();
 
-      for (let r of paginator) {
+      for (const r of paginator) {
         const res = await r;
         apps = apps.concat(res.data);
       }

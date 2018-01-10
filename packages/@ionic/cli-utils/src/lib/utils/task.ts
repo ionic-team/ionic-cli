@@ -134,7 +134,7 @@ export class TaskChain implements ITaskChain {
   }
 
   cleanup(): this {
-    for (let task of this.tasks) {
+    for (const task of this.tasks) {
       if (task.running) {
         task.fail();
       }

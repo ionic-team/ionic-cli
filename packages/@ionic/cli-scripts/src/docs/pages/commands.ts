@@ -1,7 +1,7 @@
 import stripAnsi = require('strip-ansi');
 
 import { generateCommandPath } from '@ionic/cli-framework';
-import { CommandGroup, CommandMetadata, CommandMetadataInput, CommandMetadataOption, IonicEnvironment, HydratedCommandMetadata, OptionGroup } from '@ionic/cli-utils';
+import { CommandGroup, CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, IonicEnvironment, OptionGroup } from '@ionic/cli-utils';
 
 import { ansi2md, formatPageHeader, getWarning, links2md } from '../utils';
 
@@ -100,7 +100,7 @@ function formatDescription(env: IonicEnvironment, cmd: HydratedCommandMetadata) 
     longDescription = stripAnsi(links2md(ansi2md(longDescription.trim())));
   }
 
-  let inputs = cmd.inputs || [];
+  const inputs = cmd.inputs || [];
   let options = cmd.options || [];
 
   options = options.filter(o => !o.groups || !o.groups.includes(OptionGroup.Hidden));

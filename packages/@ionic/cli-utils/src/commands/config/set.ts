@@ -7,7 +7,7 @@ import { CommandLineInputs, CommandLineOptions, IBaseConfig, IonicEnvironment } 
 import { FatalException } from '../../lib/errors';
 
 export async function set(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions) {
-  let [ p, v ] = inputs;
+  const [ p, v ] = inputs;
   const { global, json, force } = options;
 
   if (!global && !env.project.directory) {
@@ -33,7 +33,7 @@ export async function set(env: IonicEnvironment, inputs: CommandLineInputs, opti
     }
   }
 
-  let newValue = v;
+  const newValue = v;
 
   if (oldValue && typeof oldValue === 'object' && !force) {
     throw new FatalException(

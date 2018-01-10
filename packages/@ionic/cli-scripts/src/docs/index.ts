@@ -52,7 +52,7 @@ export class DocsCommand extends Command {
   async copyToIonicSite() {
     const ionicSitePath = path.resolve(__dirname, '..', '..', '..', '..', '..', '..', 'ionic-site');
 
-    let dirData = await fsStat(ionicSitePath);
+    const dirData = await fsStat(ionicSitePath);
     if (!dirData.size) {
       // ionic-site not present
       process.stderr.write('ionic-site repo not found\n');

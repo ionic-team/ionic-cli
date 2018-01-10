@@ -75,7 +75,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
     const { getPlatforms } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
     const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/integrations/cordova/utils');
 
-    let [ action, platformName ] = inputs;
+    const [ action, platformName ] = inputs;
 
     const metadata = await this.getMetadata();
 

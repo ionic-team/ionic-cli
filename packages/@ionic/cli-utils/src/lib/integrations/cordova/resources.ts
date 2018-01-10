@@ -21,13 +21,13 @@ const TRANSFORM_URL = 'https://res.ionic.io/api/v1/transform';
 export function getImageResources(projectDir: string): ImageResource[] {
   const images: ImageResource[] = [];
 
-  for (let platform in RESOURCES) {
+  for (const platform in RESOURCES) {
     const platformConfig = RESOURCES[platform];
 
-    for (let imageType in platformConfig) {
+    for (const imageType in platformConfig) {
       const imageTypeConfig = platformConfig[imageType];
 
-      for (let image of imageTypeConfig.images) {
+      for (const image of imageTypeConfig.images) {
         images.push({
           platform,
           resType: imageType,
@@ -71,10 +71,10 @@ export async function getSourceImages(projectDir: string, buildPlatforms: string
 
   const sourceImages: SourceImage[] = [];
 
-  for (let srcImgDir of srcDirList) {
+  for (const srcImgDir of srcDirList) {
     const srcImageDirContents = await readDir(srcImgDir.path);
 
-    for (let srcImage of srcImageDirContents) {
+    for (const srcImage of srcImageDirContents) {
       const ext = path.extname(srcImage);
       const resType = path.basename(srcImage, ext);
 
@@ -166,7 +166,7 @@ export async function transformResourceImage(env: IonicEnvironment, imageResourc
       })
       .on('response', res => {
         if (res.statusCode !== 200) {
-          let bufs: Buffer[] = [];
+          const bufs: Buffer[] = [];
 
           res.on('data', (chunk: Buffer) => {
             bufs.push(chunk);
@@ -195,7 +195,7 @@ export async function transformResourceImage(env: IonicEnvironment, imageResourc
  * Add image resource references for the provided platforms to the project's config.xml file.
  */
 export async function addResourcesToConfigXml(conf: ConfigXml, platformList: KnownPlatform[], resourceJson: ResourcesConfig): Promise<void> {
-  for (let platform of platformList) {
+  for (const platform of platformList) {
     await conf.ensurePlatformImages(platform, resourceJson[platform]);
   }
 

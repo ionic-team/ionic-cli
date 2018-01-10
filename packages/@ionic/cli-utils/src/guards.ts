@@ -94,7 +94,7 @@ export function isAppResponse(r: APIResponse): r is Response<AppDetails> {
 }
 
 export function isAppsResponse(r: APIResponse): r is Response<AppDetails[]> {
-  let res = <Response<AppDetails[]>>r;
+  const res = <Response<AppDetails[]>>r;
   if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
     return false;
   }

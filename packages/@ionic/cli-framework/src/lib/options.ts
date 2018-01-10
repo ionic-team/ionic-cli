@@ -84,7 +84,7 @@ export function metadataToParseArgsOptions(metadata: CommandMetadata): HydratedP
     return options;
   }
 
-  for (let o of metadata.options) {
+  for (const o of metadata.options) {
     const opt = hydrateCommandMetadataOption(o);
 
     if (opt.type === String) {

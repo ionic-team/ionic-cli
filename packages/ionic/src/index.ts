@@ -141,7 +141,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     process.exitCode = 1;
 
     if (err instanceof InputValidationError) {
-      for (let e of err.errors) {
+      for (const e of err.errors) {
         ienv.log.error(e.message);
       }
       ienv.log.msg(`Use the ${chalk.green('--help')} flag for more details.`);

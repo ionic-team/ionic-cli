@@ -199,7 +199,7 @@ export class ConfigXml {
     const root = this.doc.getroot();
     const orientation = this.getPreference('Orientation') || 'default';
 
-    for (let imgName in resourcesPlatform) {
+    for (const imgName in resourcesPlatform) {
       const imgType = resourcesPlatform[imgName];
       let platformElement = root.find(`platform[@name='${platform}']`);
 
@@ -209,7 +209,7 @@ export class ConfigXml {
 
       const images = imgType.images.filter(img => orientation === 'default' || typeof img.orientation === 'undefined' || img.orientation === orientation);
 
-      for (let image of images) {
+      for (const image of images) {
         // We use forward slashes, (not path.join) here to provide
         // cross-platform compatibility for paths.
         const imgPath = ['resources', platform, imgType.nodeName, image.name].join('/'); // TODO: hard-coded 'resources' dir
@@ -222,7 +222,7 @@ export class ConfigXml {
         if (!imgElement) {
           const attrs: { [key: string]: string } = {};
 
-          for (let attr of imgType.nodeAttributes) {
+          for (const attr of imgType.nodeAttributes) {
             let v = (<any>image)[attr]; // TODO
 
             if (attr === 'src') {

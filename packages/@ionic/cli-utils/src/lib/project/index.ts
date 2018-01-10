@@ -69,7 +69,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       }
     }
 
-    for (let projectType of PROJECT_TYPES) {
+    for (const projectType of PROJECT_TYPES) {
       const p = await BaseProject.createFromProjectType(projectDir, PROJECT_FILE, deps, projectType);
 
       if (await p.detected()) {

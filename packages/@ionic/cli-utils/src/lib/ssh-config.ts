@@ -64,7 +64,7 @@ export function ensureHostAndKeyPath(conf: SSHConfigModule.SSHConfig, conn: { ho
     section.config = [];
   }
 
-  for (let entry of section.config) {
+  for (const entry of section.config) {
     entry.before = '    ';
     entry.after = '\n';
   }

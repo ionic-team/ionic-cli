@@ -71,7 +71,7 @@ export async function loadPlugins(env: IonicEnvironment) {
     }
   });
 
-  for (let p of pluginPromises) {
+  for (const p of pluginPromises) {
     const plugin = await p;
 
     if (plugin) {

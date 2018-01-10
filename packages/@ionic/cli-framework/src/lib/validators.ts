@@ -7,7 +7,7 @@ import { isValidEmail, isValidURL } from '../utils/string';
 export function validate(input: string, key: string, validators: Validator[]) {
   const errors: ValidationError[] = [];
 
-  for (let validator of validators) {
+  for (const validator of validators) {
     const message = validator(input, key);
 
     if (message !== true) {

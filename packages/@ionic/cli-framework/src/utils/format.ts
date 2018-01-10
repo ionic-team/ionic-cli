@@ -80,8 +80,8 @@ export function columnar(rows: string[][], options: { hsep?: string, vsep?: stri
     options.columnHeaders.map(header => [chalk.bold(header)]) :
     new Array(columnCount).fill([]).map(() => []);
 
-  for (let row of rows) {
-    for (let i in row) {
+  for (const row of rows) {
+    for (const i in row) {
       if (columns[i]) {
         columns[i].push(row[i]);
       }

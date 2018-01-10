@@ -7,7 +7,7 @@ import { CommandLineInputs, CommandLineOptions, IonicEnvironment } from '../../d
 import { FatalException } from '../../lib/errors';
 
 export async function get(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions) {
-  let [ p ] = inputs;
+  const [ p ] = inputs;
   const { global, json } = options;
 
   if (!global && !env.project.directory) {

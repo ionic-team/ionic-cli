@@ -118,7 +118,7 @@ export class Publisher extends events.EventEmitter implements IPublisher {
     }
 
     try {
-      for (let iface of this.interfaces) {
+      for (const iface of this.interfaces) {
         const message = new Buffer(this.buildMessage(iface.address));
 
         this.client.send(message, 0, message.length, PORT, iface.broadcast, err => {

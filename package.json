@@ -18,17 +18,17 @@
     "prepush": "npm run lint"
   },
   "devDependencies": {
-    "@types/node": "^6.0.95",
+    "@types/node": "^6.0.96",
     "concurrently": "^3.5.1",
     "eslint-config-ionic": "0.0.2",
     "husky": "^0.14.3",
-    "jest": "^22.0.4",
-    "jest-cli": "^22.0.4",
+    "jest": "^22.0.5",
+    "jest-cli": "^22.0.5",
     "lerna": "^2.5.1",
     "replace": "^0.3.0",
-    "ts-jest": "^22.0.0",
-    "tslint": "^5.8.0",
-    "tslint-ionic-rules": "^0.0.11",
+    "ts-jest": "^22.0.1",
+    "tslint": "^5.9.0",
+    "tslint-ionic-rules": "0.0.12",
     "typescript": "^2.6.2"
   }
 }

@@ -42,7 +42,7 @@ export abstract class BaseCommand<C extends ICommand<C, N, M, I, O>, N extends I
 
     const errors: ValidationError[][] = [];
 
-    for (let i in metadata.inputs) {
+    for (const i in metadata.inputs) {
       const input = metadata.inputs[i];
 
       if (input.validators && input.validators.length > 0) {

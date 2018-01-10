@@ -171,7 +171,7 @@ async function addIntegration(env: IonicEnvironment, integration: IntegrationTem
 
       const projectf = f.substring(tmpdir.length + 1);
 
-      for (let item of blacklist) {
+      for (const item of blacklist) {
         if (item.slice(-1) === '/' && `${projectf}/` === item) {
           return false;
         }

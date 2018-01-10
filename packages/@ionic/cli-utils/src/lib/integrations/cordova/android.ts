@@ -9,7 +9,7 @@ export async function getAndroidSdkToolsVersion(): Promise<string | undefined> {
     try {
       const f = await fsReadFile(path.join(androidHome, 'tools', 'source.properties'), { encoding: 'utf8' });
 
-      for (let l of f.split('\n')) {
+      for (const l of f.split('\n')) {
         const [ a, b ] = l.split('=');
         if (a === 'Pkg.Revision') {
           return b;

@@ -35,7 +35,7 @@ export class HookEngine implements IHookEngine {
   }
 
   deleteSource(source: string) {
-    for (let [ hookName, hooks ] of this.hooks.entries()) {
+    for (const [ hookName, hooks ] of this.hooks.entries()) {
       this.hooks.set(hookName, hooks.filter(h => h.source !== source));
     }
   }

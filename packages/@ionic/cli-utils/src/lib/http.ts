@@ -220,7 +220,7 @@ export function transformAPIResponse(r: superagentType.Response): APIResponse {
     throw ERROR_UNKNOWN_CONTENT_TYPE;
   }
 
-  let j = <APIResponse>r.body;
+  const j = <APIResponse>r.body;
 
   if (!j.meta) {
     throw ERROR_UNKNOWN_RESPONSE_FORMAT;

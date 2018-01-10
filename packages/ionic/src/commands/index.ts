@@ -51,7 +51,7 @@ export class IonicNamespace extends Namespace {
   async runCommand(pargv: string[], env: { [key: string]: string; }): Promise<void> {
     const pargs = stripOptions(pargv);
 
-    let { args, obj, path } = await this.locate(pargs);
+    const { args, obj, path } = await this.locate(pargs);
 
     if (!isCommand(obj)) {
       const { showHelp } = await import('@ionic/cli-utils/lib/help');
@@ -67,7 +67,7 @@ export class IonicNamespace extends Namespace {
       const optMap = metadataToCmdOptsEnv(metadata, fullNameParts.slice(1));
 
       // TODO: changes opt by reference, which is probably bad
-      for (let [ opt, envvar ] of optMap.entries()) {
+      for (const [ opt, envvar ] of optMap.entries()) {
         const envdefault = env[envvar];
 
         if (typeof envdefault !== 'undefined') {
@@ -99,7 +99,7 @@ export function metadataToCmdOptsEnv(metadata: CommandMetadata, cmdNameParts: st
 
   const prefix = `IONIC_CMDOPTS_${cmdNameParts.map(s => s.toUpperCase()).join('_')}`;
 
-  for (let option of metadata.options) {
+  for (const option of metadata.options) {
     optMap.set(option, `${prefix}_${option.name.toUpperCase().split('-').join('_')}`);
   }
 

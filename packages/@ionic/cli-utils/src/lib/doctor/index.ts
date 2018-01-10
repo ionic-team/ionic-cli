@@ -29,7 +29,7 @@ export async function getRegistry(env: IonicEnvironment) {
   if (!_registry) {
     _registry = new AilmentRegistry();
 
-    for (let Ailment of Ailments.ALL) {
+    for (const Ailment of Ailments.ALL) {
       _registry.register(new Ailment(env));
     }
   }
@@ -84,7 +84,7 @@ export async function treatAilments(env: IonicEnvironment) {
   fn(`Detected ${chalk.bold(String(detectedAilments.length))} issue${detectedAilments.length === 1 ? '' : 's'}.${detectedAilments.length === 0 ? ' Aww yeah! 💪' : ''}`);
 
   if (detectedAilments.length > 0) {
-    for (let ailment of detectedAilments) {
+    for (const ailment of detectedAilments) {
       const treated = await treatAilment(env, ailment);
 
       if (ailment instanceof AutomaticallyTreatableAilment) {
@@ -176,7 +176,7 @@ async function automaticallyTreatAilment(env: IonicEnvironment, ailment: Automat
   if (choice === CHOICE_YES) {
     // env.tasks.next(`Steps`);
 
-    for (let i in treatmentSteps) {
+    for (const i in treatmentSteps) {
       const step = treatmentSteps[i];
       env.log.debug(typeof i);
       // env.tasks.updateMsg(`Steps: ${chalk.bold(`${Number(i) + 1} / ${treatmentSteps.length}`)}`);

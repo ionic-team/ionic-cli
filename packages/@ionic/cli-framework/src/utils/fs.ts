@@ -78,7 +78,7 @@ export async function fsMkdirp(p: string, mode = 0o777): Promise<void> {
   const dirnames = absPath.split(path.sep).splice(1);
   const dirs = dirnames.map((v, i) => path.resolve(pathObj.root, ...dirnames.slice(0, i), v));
 
-  for (let dir of dirs) {
+  for (const dir of dirs) {
     try {
       await fsMkdir(dir, mode);
     } catch (e) {
@@ -215,11 +215,11 @@ export async function findBaseDirectory(dir: string, file: string): Promise<stri
     .split(path.sep)
     .concat(dirInfo.base)
     .map((segment: string, index: number, array: string[]) => {
-      let pathSegments = array.slice(0, (array.length - index));
+      const pathSegments = array.slice(0, (array.length - index));
       return dirInfo.root + path.join(...pathSegments);
     });
 
-  for (let d of directoriesToCheck) {
+  for (const d of directoriesToCheck) {
     const results = await fsReadDir(d);
     if (results.includes(file)) {
       return d;
