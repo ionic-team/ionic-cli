@@ -24,10 +24,10 @@
     "husky": "^0.14.3",
     "jest": "^22.0.5",
     "jest-cli": "^22.0.5",
-    "lerna": "^2.5.1",
+    "lerna": "^2.6.0",
     "replace": "^0.3.0",
     "ts-jest": "^22.0.1",
-    "tslint": "^5.9.0",
+    "tslint": "^5.9.1",
     "tslint-ionic-rules": "0.0.12",
     "typescript": "^2.6.2"
   }
