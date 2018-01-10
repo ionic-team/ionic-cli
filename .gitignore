@@ -10,7 +10,7 @@ coverage/
 npm-debug.log*
 lerna-debug.log
 
-docs
+/docs
 dist
 
 package-lock.json*

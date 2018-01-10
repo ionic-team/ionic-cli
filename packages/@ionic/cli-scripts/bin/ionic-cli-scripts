@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+
+'use strict';
+
+process.title = 'ionic-cli-scripts';
+process.on('unhandledRejection', function(r) { console.error(r); });
+
+var cli = require('../');
+cli.run(process.argv.slice(2), process.env);
