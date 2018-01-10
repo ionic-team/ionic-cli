@@ -35,6 +35,18 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 #### :rocket: Enhancement
 
 * Support for :sparkles: Ionic Angular v4 :sparkles:
+* Automatic login via `IONIC_TOKEN` environment variable
+  [#2410](https://github.com/ionic-team/ionic-cli/issues/2410)
+* `--no-color` flag for turning off CLI colors
+* `--no-build` option for `ionic cordova run` and `ionic cordova emulate`
+  [#2930](https://github.com/ionic-team/ionic-cli/pull/2930)
+* Chain `--verbose` flag to Cordova for `ionic cordova` commands
+  [#2919](https://github.com/ionic-team/ionic-cli/issues/2919)
+
+#### :bug: Bug Fix
+
+* Respect `--nosave` flag for `ionic cordova platform` and `ionic cordova
+  plugin` [#2946](https://github.com/ionic-team/ionic-cli/issues/2946)
 
 #### :house: Internal
 
