@@ -4,7 +4,7 @@ import * as crossSpawnType from 'cross-spawn';
 
 import chalk from 'chalk';
 
-import { ILogger, IShell, IShellRunOptions, IShellOutputOptions, IShellSpawnOptions, ITaskChain } from '../definitions';
+import { ILogger, IShell, IShellOutputOptions, IShellRunOptions, IShellSpawnOptions, ITaskChain } from '../definitions';
 import { isExitCodeException } from '../guards';
 import { FatalException } from './errors';
 import { RunCmdOptions, prettyCommand, runcmd, spawncmd } from './utils/shell';

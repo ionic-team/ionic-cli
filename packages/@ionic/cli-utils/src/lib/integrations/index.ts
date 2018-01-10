@@ -182,7 +182,7 @@ async function addIntegration(env: IonicEnvironment, integration: IntegrationTem
       }
 
       if (!opts.quiet) {
-        env.log.msg(`${chalk.green.bold('create')} ${projectf}`);
+        env.log.msg(` ${chalk.green.bold('create')} ${projectf}`);
       }
 
       return true;
