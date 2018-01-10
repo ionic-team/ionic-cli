@@ -5,7 +5,7 @@ import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, 
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
 
-import { CordovaCommand } from './base';
+import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 
 export class BuildCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -16,18 +16,14 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
       longDescription: `
 Like running ${chalk.green('cordova build')} directly, but also builds web assets and provides friendly checks.
 
-To pass additional options to the Cordova CLI, use the ${chalk.green('--')} separator after the Ionic CLI arguments. For example, for verbose log output from Cordova during an iOS build, one would use ${chalk.green('ionic cordova build ios -- -d')}. See additional examples below.
+To pass additional options to the Cordova CLI, use the ${chalk.green('--')} separator after the Ionic CLI arguments.
+
+The Cordova CLI requires a separator for platform-specific arguments for Android builds${chalk.cyan('[1]')}, so an additional separator is required for the Ionic CLI, but it is not required for iOS builds${chalk.cyan('[2]')}. See the example commands for usage with separators. To avoid using flags, consider using ${chalk.green('--buildConfig')} with a ${chalk.bold('build.json')} file.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html#using-flags')}
+${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/platforms/ios/index.html#using-flags')}
       `,
-      exampleCommands: [
-        'ios',
-        'ios --prod --release',
-        'ios --device --prod --release -- --developmentTeam="ABCD" --codeSignIdentity="iPhone Developer" --packageType="app-store"',
-        'android',
-        'android --prod --release -- -- --keystore=filename.keystore --alias=myalias',
-        'android --prod --release -- -- --minSdkVersion=21',
-        'android --prod --release -- -- --versionCode=55',
-        'android --prod --release -- -- --gradleArg=-PcdvBuildMultipleApks=true',
-      ],
+      exampleCommands: CORDOVA_BUILD_EXAMPLE_COMMANDS,
       inputs: [
         {
           name: 'platform',

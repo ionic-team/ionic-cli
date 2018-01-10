@@ -109,6 +109,21 @@ export const CORDOVA_RUN_COMMAND_OPTIONS: CommandMetadataOption[] = [
   },
 ];
 
+export const CORDOVA_BUILD_EXAMPLE_COMMANDS = [
+  'ios',
+  'ios --prod --release',
+  'ios --prod --release -- --developmentTeam="ABCD" --codeSignIdentity="iPhone Developer" --packageType="app-store"',
+  'ios --buildConfig=build.json',
+  'ios --prod --release --buildConfig=build.json',
+  'android',
+  'android --prod --release -- -- --keystore=filename.keystore --alias=myalias',
+  'android --prod --release -- -- --minSdkVersion=21',
+  'android --prod --release -- -- --versionCode=55',
+  'android --prod --release -- -- --gradleArg=-PcdvBuildMultipleApks=true',
+  'android --buildConfig=build.json',
+  'android --prod --release --buildConfig=build.json',
+];
+
 export abstract class CordovaCommand extends Command {
   async preRunChecks() {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
