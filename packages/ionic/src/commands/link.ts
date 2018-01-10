@@ -67,7 +67,8 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     const { App } = await import('@ionic/cli-utils/lib/app');
 
     let [ appId ] = inputs;
-    const { create, name } = options;
+    let { name } = options;
+    const { create } = options;
 
     const config = await this.env.config.load();
     const project = await this.env.project.load();
