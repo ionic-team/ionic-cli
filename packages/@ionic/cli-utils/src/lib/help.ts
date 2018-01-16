@@ -122,15 +122,25 @@ async function getCommandDetails(ns: INamespace, commands: HydratedCommandMetada
 }
 
 async function formatCommandHelp(env: IonicEnvironment, metadata: CommandMetadata, fullName: string) {
-  const wrappedDescription = wordWrap(metadata.description, { indentation: fullName.length + 5 });
+  const isHidden = metadata.groups && metadata.groups.includes(CommandGroup.Hidden);
 
-  return `
-  ${chalk.bold(chalk.green(fullName) + ' - ' + (metadata.groups && metadata.groups.includes(CommandGroup.Deprecated) ? chalk.yellow('(deprecated)') + ' ' : '') + wrappedDescription)}${formatLongDescription(metadata.longDescription)}
-  ` +
-  (await formatCommandUsage(env, metadata, fullName)) +
-  (await formatCommandInputs(metadata.inputs)) +
-  (await formatCommandOptions(metadata.options)) +
-  (await formatCommandExamples(metadata.exampleCommands, fullName));
+  if (isHidden) {
+    env.log.warn(`${chalk.green(fullName)} is a hidden command. These docs may not be helpful.`);
+  }
+
+  return formatCommandHeader(metadata, fullName) +
+    (await formatCommandUsage(env, metadata, fullName)) +
+    (await formatCommandInputs(metadata.inputs)) +
+    (await formatCommandOptions(metadata.options)) +
+    (await formatCommandExamples(metadata.exampleCommands, fullName));
+}
+
+function formatCommandHeader(metadata: CommandMetadata, fullName: string) {
+  const wrappedDescription = wordWrap(metadata.description, { indentation: fullName.length + 5 });
+  const isDeprecated = metadata.groups && metadata.groups.includes(CommandGroup.Deprecated);
+  const subtitle = (isDeprecated ? chalk.yellow('(deprecated)') + ' ' : '') + wrappedDescription;
+
+  return `\n  ${chalk.bold(chalk.green(fullName) + (subtitle ? ` - ${subtitle}` : ''))}${formatLongDescription(metadata.longDescription)}\n`;
 }
 
 async function getListOfCommandDetails(commands: HydratedCommandMetadata[]) {
@@ -138,7 +148,8 @@ async function getListOfCommandDetails(commands: HydratedCommandMetadata[]) {
   const fillStringArray = generateFillSpaceStringList(wow, HELP_DOTS_WIDTH, chalk.dim('.'));
 
   return commands.map((cmd, index) => {
-    const description = (cmd.groups && cmd.groups.includes(CommandGroup.Deprecated) ? chalk.yellow.bold('(deprecated)') + ' ' : '') + cmd.description + `${cmd.aliases.length > 0 ? chalk.dim(' (alias' + (cmd.aliases.length === 1 ? '' : 'es') + ': ') + cmd.aliases.map(a => chalk.green(a)).join(', ') + chalk.dim(')') : ''}`;
+    const isDeprecated = cmd.groups && cmd.groups.includes(CommandGroup.Deprecated);
+    const description = (isDeprecated ? chalk.yellow.bold('(deprecated)') + ' ' : '') + cmd.description + `${cmd.aliases.length > 0 ? chalk.dim(' (alias' + (cmd.aliases.length === 1 ? '' : 'es') + ': ') + cmd.aliases.map(a => chalk.green(a)).join(', ') + chalk.dim(')') : ''}`;
     const wrappedDescription = wordWrap(description, { indentation: HELP_DOTS_WIDTH + 6 });
     return `${chalk.green(cmd.path.map(p => p[0]).join(' '))} ${fillStringArray[index]} ${wrappedDescription}`;
   });
@@ -168,7 +179,8 @@ async function getListOfNamespaceDetails(commands: HydratedCommandMetadata[]) {
 
   return entries.map(([name, { meta, cmds }], i) => {
     const subcommands = cmds.map(c => chalk.green(c.name)).join(', ');
-    const wrappedDescription = wordWrap(`${meta.groups && meta.groups.includes(NamespaceGroup.Deprecated) ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${descriptions.get(name)} ${chalk.dim('(subcommands:')} ${subcommands}${chalk.dim(')')}`, { indentation: HELP_DOTS_WIDTH + 6 });
+    const isDeprecated = meta.groups && meta.groups.includes(NamespaceGroup.Deprecated);
+    const wrappedDescription = wordWrap(`${isDeprecated ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${descriptions.get(name)} ${chalk.dim('(subcommands:')} ${subcommands}${chalk.dim(')')}`, { indentation: HELP_DOTS_WIDTH + 6 });
     return `${chalk.green(name + ' <subcommand>')} ${fillStringArray[i]} ${wrappedDescription}`;
   });
 }
