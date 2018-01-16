@@ -10,7 +10,13 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 <a name="4.0.0"></a>
 ### 4.0.0 (PENDING)
 
-#### :boom: Breaking Change
+#### Upgrading from CLI v3
+
+The focus for Ionic CLI v4 has been to support **Ionic Angular v4** while
+maintaining prime support for **Ionic Angular v2/v3** *and* **Ionic 1**. Aside
+from the breaking changes listed below, upgrading to CLI v4 should be seamless.
+
+#### :boom: Breaking Changes
 
 * Support for Legacy Ionic Cloud ended on January 31st, 2018. The `ionic upload`
   and `ionic package` commands have been removed from the CLI. Support for
@@ -32,9 +38,9 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
   conference app, use `ionic start <name>
   https://github.com/ionic-team/ionic-conference-app`.
 
-#### :rocket: Enhancement
+#### :rocket: Enhancements
 
-* Support for :sparkles: Ionic Angular v4 :sparkles:
+* Support for :sparkles: **Ionic Angular v4** :sparkles:
 * Automatic login via `IONIC_TOKEN` environment variable
   [#2410](https://github.com/ionic-team/ionic-cli/issues/2410)
 * `--no-color` flag for turning off CLI colors
@@ -43,7 +49,7 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 * Chain `--verbose` flag to Cordova for `ionic cordova` commands
   [#2919](https://github.com/ionic-team/ionic-cli/issues/2919)
 
-#### :bug: Bug Fix
+#### :bug: Bug Fixes
 
 * Respect `--nosave` flag for `ionic cordova platform` and `ionic cordova
   plugin` [#2946](https://github.com/ionic-team/ionic-cli/issues/2946)
