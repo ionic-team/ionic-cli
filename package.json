@@ -10,7 +10,8 @@
     "test": "lerna run test",
     "build": "lerna run build",
     "watch": "lerna run watch --parallel",
-    "docs": "node ./packages/@ionic/cli-scripts/bin/ionic-cli-scripts docs",
+    "docs": "node packages/@ionic/cli-scripts/bin/ionic-cli-scripts docs",
+    "docs:watch": "chokidar 'packages/@ionic/cli-scripts/dist/docs/**/*.js' -c 'npm run docs'",
     "publish:canary": "lerna publish --canary --exact --npm-tag=canary --skip-git",
     "publish:ci-4.x": "lerna publish --canary --exact --npm-tag=canary --skip-git --cd-version=major",
     "publish:testing": "lerna publish --canary=testing --exact --npm-tag=testing --skip-git",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@types/node": "^6.0.96",
+    "chokidar-cli": "^1.2.0",
     "concurrently": "^3.5.1",
     "eslint-config-ionic": "0.0.2",
     "husky": "^0.14.3",

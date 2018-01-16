@@ -6,7 +6,10 @@
   "include": [
     "../../../types/ascii-tree.d.ts",
     "../../../types/cross-spawn.d.ts",
+    "../../../types/slice-ansi.d.ts",
+    "../../../types/string-width.d.ts",
     "../../../types/superagent.d.ts",
+    "../../../types/wrap-ansi.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

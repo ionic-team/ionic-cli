@@ -15,6 +15,7 @@
     "@ionic/cli-utils": "1.19.0",
     "ansi-styles": "^3.2.0",
     "ascii-tree": "^0.3.0",
+    "chalk": "^2.3.0",
     "escape-string-regexp": "^1.0.5",
     "ionic": "3.19.0",
     "strip-ansi": "^4.0.0",

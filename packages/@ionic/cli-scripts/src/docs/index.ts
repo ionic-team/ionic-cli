@@ -1,8 +1,11 @@
 import * as path from 'path';
 
+import chalk from 'chalk';
+
 import { generateRootPlugin } from 'ionic';
 import { Command } from '@ionic/cli-framework';
 import { copyDirectory, fsMkdirp, fsReadDir, fsStat, fsWriteFile } from '@ionic/cli-framework/utils/fs';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { generateIonicEnvironment } from '@ionic/cli-utils';
 
 import { formatCommandDoc, generateFullName, getCommandList } from './pages/commands';
@@ -47,6 +50,8 @@ export class DocsCommand extends Command {
     await this.copyToIonicSite();
 
     env.close();
+
+    process.stdout.write(`${chalk.green('Done.')}\n`);
   }
 
   async copyToIonicSite() {
@@ -55,13 +60,15 @@ export class DocsCommand extends Command {
     const dirData = await fsStat(ionicSitePath);
     if (!dirData.size) {
       // ionic-site not present
-      process.stderr.write('ionic-site repo not found\n');
+      process.stderr.write(`${chalk.red('ERROR: ionic-site repo not found')}\n`);
       return;
     }
 
-    return copyDirectory(
-      path.resolve(__dirname, '..', '..', '..', '..', '..', 'docs'),
-      path.resolve(ionicSitePath, 'content', 'docs', 'cli')
-    );
+    const srcDir = path.resolve(__dirname, '..', '..', '..', '..', '..', 'docs');
+    const destDir = path.resolve(ionicSitePath, 'content', 'docs', 'cli');
+
+    await copyDirectory(srcDir, destDir);
+
+    process.stdout.write(`${chalk.green(`Docs written to ${chalk.bold(prettyPath(destDir))}.`)}\n`);
   }
 }
