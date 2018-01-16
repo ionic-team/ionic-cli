@@ -51,6 +51,35 @@ ${generateTree(`
 **www/ # build output directory
 `.trim())}
 \`\`\`
+
+### Proxies
+
+The CLI can add proxies to the HTTP server for "livereload" commands like \`ionic serve\` and \`ionic cordova run android -lc\`. These proxies are useful if you are developing in the browser and you need to make calls to an external API. With this feature you can proxy requests to the external API through the Ionic CLI, which prevents the \`No 'Access-Control-Allow-Origin' header is present on the requested resource\` error.
+
+In the \`ionic.config.json\` file you can add a property with an array of proxies you want to add. The proxies are an object with the following properties:
+
+* \`path\`: string that will be matched against the beginning of the incoming request URL.
+* \`proxyUrl\`: a string with the url of where the proxied request should go.
+* \`proxyNoAgent\`: (optional) true/false, if true opts out of connection pooling, see [HttpAgent](https://nodejs.org/api/http.html#http_class_http_agent)
+
+\`\`\`json
+{
+  "name": "appname",
+  "app_id": "",
+  "type": "ionic-angular",
+  "proxies": [
+    {
+      "path": "/v1",
+      "proxyUrl": "https://api.instagram.com/v1"
+    }
+  ]
+}
+\`\`\`
+
+Using the above configuration, you can now make requests to your local server at \`http://localhost:8100/v1\` to have it proxy out requests to \`https://api.instagram.com/v1\`.
+
+*Note: Don't forget to change the URLs being requested in your app to the local URL. Also, the "livereload" command must be restarted for the proxy configuration to take effect.*
+
 ## Ionic 1
 
 Ionic 1 ([\`ionic-v1\`](https://github.com/ionic-team/ionic-v1/)) uses [AngularJS](https://angularjs.org/).
@@ -95,6 +124,34 @@ You can use [Sass](http://sass-lang.com/) by changing which CSS file \`www/index
 The main Sass source file is located at \`scss/ionic.app.scss\`.
 
 If your \`gulpfile.js\` contains the \`sass\` task, the CLI will run it automatically during the \`ionic build\` and \`ionic serve\` commands.
+
+### Proxies
+
+The CLI can add proxies to the HTTP server for "livereload" commands like \`ionic serve\` and \`ionic cordova run android -lc\`. These proxies are useful if you are developing in the browser and you need to make calls to an external API. With this feature you can proxy requests to the external API through the Ionic CLI, which prevents the \`No 'Access-Control-Allow-Origin' header is present on the requested resource\` error.
+
+In the \`ionic.config.json\` file you can add a property with an array of proxies you want to add. The proxies are an object with the following properties:
+
+* \`path\`: string that will be matched against the beginning of the incoming request URL.
+* \`proxyUrl\`: a string with the url of where the proxied request should go.
+* \`proxyNoAgent\`: (optional) true/false, if true opts out of connection pooling, see [HttpAgent](https://nodejs.org/api/http.html#http_class_http_agent)
+
+\`\`\`json
+{
+  "name": "appname",
+  "app_id": "",
+  "type": "ionic-angular",
+  "proxies": [
+    {
+      "path": "/v1",
+      "proxyUrl": "https://api.instagram.com/v1"
+    }
+  ]
+}
+\`\`\`
+
+Using the above configuration, you can now make requests to your local server at \`http://localhost:8100/v1\` to have it proxy out requests to \`https://api.instagram.com/v1\`.
+
+*Note: Don't forget to change the URLs being requested in your app to the local URL. Also, the "livereload" command must be restarted for the proxy configuration to take effect.*
 
 `;
 }

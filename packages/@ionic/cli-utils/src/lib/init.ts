@@ -35,7 +35,7 @@ export function modifyArguments(pargv: string[]): string[] {
  * Find the command that is the equivalent of a legacy command.
  */
 export function mapLegacyCommand(command: string): string | undefined {
-  const commandMap: { [command: string]: string} = {
+  const commandMap: { [command: string]: string; } = {
     'compile': 'cordova compile',
     'emulate': 'cordova emulate',
     'platform': 'cordova platform',
