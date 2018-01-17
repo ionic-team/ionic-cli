@@ -1,5 +1,3 @@
-import * as path from 'path';
-
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework/lib';
@@ -25,11 +23,11 @@ import { SSHBaseCommand } from './base';
 })
 export class SSHUseCommand extends SSHBaseCommand {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
+    const { expandPath, prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { ERROR_SSH_INVALID_PRIVKEY, ERROR_SSH_MISSING_PRIVKEY, validatePrivateKey } = await import('@ionic/cli-utils/lib/ssh');
     const { ensureHostAndKeyPath, getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
 
-    const keyPath = path.resolve(inputs[0]);
+    const keyPath = expandPath(inputs[0]);
 
     try {
       await validatePrivateKey(keyPath);
@@ -57,7 +55,7 @@ export class SSHUseCommand extends SSHBaseCommand {
     const text2 = SSHConfig.stringify(conf);
 
     if (text1 === text2) {
-      this.env.log.info(`${chalk.bold(keyPath)} is already your active SSH key.`);
+      this.env.log.info(`${chalk.bold(prettyPath(keyPath))} is already your active SSH key.`);
       return;
     } else {
       const { diffPatch } = await import('@ionic/cli-utils/lib/diff');

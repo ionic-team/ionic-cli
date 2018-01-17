@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import * as stringWidth from 'string-width';
 import * as sliceAnsi from 'slice-ansi';
 import * as wrapAnsi from 'wrap-ansi';
+import untildify = require('untildify');
 
 const isWindows = process.platform === 'win32';
 
@@ -21,7 +22,7 @@ const MAX_TTY_WIDTH = 120;
 export const TTY_WIDTH = process.stdout.columns ? Math.max(MIN_TTY_WIDTH, Math.min(process.stdout.columns, MAX_TTY_WIDTH)) : Infinity;
 
 export function prettyPath(p: string): string {
-  p = path.resolve(p);
+  p = expandPath(p);
   const cwd = process.cwd();
   const d = path.dirname(p);
   const h = os.homedir();
@@ -41,6 +42,10 @@ export function prettyPath(p: string): string {
   }
 
   return p;
+}
+
+export function expandPath(p: string): string {
+  return path.resolve(untildify(p));
 }
 
 export function indent(n: number = 4): string {

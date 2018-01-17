@@ -61,12 +61,12 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
+    const { expandPath, prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
     const { getGeneratedPrivateKeyPath } = await import('@ionic/cli-utils/lib/ssh');
 
     const { bits, annotation } = options;
 
-    const keyPath = inputs[0] ? path.resolve(String(inputs[0])) : await getGeneratedPrivateKeyPath(this.env);
+    const keyPath = inputs[0] ? expandPath(String(inputs[0])) : await getGeneratedPrivateKeyPath(this.env);
     const keyPathDir = path.dirname(keyPath);
     const pubkeyPath = `${keyPath}.pub`;
 

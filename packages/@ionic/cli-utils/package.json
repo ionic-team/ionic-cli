@@ -65,6 +65,7 @@
     "tar": "^4.0.2",
     "tiny-lr": "^1.0.5",
     "tslib": "^1.8.0",
+    "untildify": "^3.0.2",
     "uuid": "^3.0.1",
     "wrap-ansi": "^3.0.1",
     "ws": "^3.2.0"
@@ -88,6 +89,7 @@
     "@types/opn": "^3.0.28",
     "@types/semver": "^5.4.0",
     "@types/tar": "^4.0.0",
+    "@types/untildify": "^3.0.0",
     "@types/uuid": "^3.4.3",
     "@types/ws": "^3.2.0",
     "rxjs": "^5.5.2"
