@@ -3,6 +3,7 @@ import * as lodash from 'lodash';
 import { strcmp } from '../utils/string';
 
 import {
+  CommandInstanceInfo,
   CommandLineInputs,
   CommandLineOptions,
   CommandMapGetter,
@@ -31,7 +32,7 @@ export abstract class BaseCommand<C extends ICommand<C, N, M, I, O>, N extends I
 
   abstract getMetadata(): Promise<M>;
 
-  abstract run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
+  abstract run(inputs: CommandLineInputs, options: CommandLineOptions, runtime?: CommandInstanceInfo<C, N, M, I, O>): Promise<void>;
 
   async validate(argv: CommandLineInputs): Promise<void> {
     const metadata = await this.getMetadata();

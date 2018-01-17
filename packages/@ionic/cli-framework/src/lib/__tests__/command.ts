@@ -7,78 +7,78 @@ import {
   generateCommandPath,
 } from '../command';
 
+class MyNamespace extends Namespace {
+  async getMetadata() {
+    return { name: 'my' };
+  }
+
+  async getNamespaces() {
+    return new NamespaceMap([
+      ['foo', async () => new FooNamespace(this)],
+      ['defns', async () => new NamespaceWithDefault(this)],
+    ]);
+  }
+}
+
+class NamespaceWithDefault extends Namespace {
+  async getMetadata() {
+    return { name: 'defns' };
+  }
+
+  async getCommands() {
+    return new CommandMap([
+      [CommandMapDefault, async () => new DefaultCommand(this)],
+    ]);
+  }
+}
+
+class FooNamespace extends Namespace {
+  async getMetadata() {
+    return { name: 'foo' };
+  }
+
+  async getCommands() {
+    return new CommandMap([
+      ['bar', async () => new BarCommand(this)],
+      ['baz', async () => new BazCommand(this)],
+      ['b', 'bar'],
+    ]);
+  }
+}
+
+class DefaultCommand extends Command {
+  async getMetadata() {
+    return { name: 'def', description: '' };
+  }
+}
+
+class BarCommand extends Command {
+  async getMetadata() {
+    return { name: 'bar', description: '' };
+  }
+}
+
+class BazCommand extends Command {
+  async getMetadata() {
+    return { name: 'baz', description: '' };
+  }
+}
+
+class FooCommand extends Command {
+  async getMetadata() {
+    return {
+      name: 'foo',
+      type: 'global',
+      description: '',
+    };
+  }
+}
+
 describe('@ionic/cli-framework', () => {
 
   describe('lib/command', () => {
 
-    class MyNamespace extends Namespace {
-      async getMetadata() {
-        return { name: 'my' };
-      }
-
-      async getNamespaces() {
-        return new NamespaceMap([
-          ['foo': async () => new FooNamespace(this)],
-          ['defns', async () => new NamespaceWithDefault(this)],
-        ]);
-      }
-    }
-
-    class NamespaceWithDefault extends Namespace {
-      async getMetadata() {
-        return { name: 'defns' };
-      }
-
-      async getCommands() {
-        return new CommandMap([
-          [CommandMapDefault, async () => new DefaultCommand(this)],
-        ]);
-      }
-    }
-
-    class FooNamespace extends Namespace {
-      async getMetadata() {
-        return { name: 'foo' };
-      }
-
-      async getCommands() {
-        return new CommandMap([
-          ['bar', async () => new BarCommand(this)],
-          ['baz', async () => new BazCommand(this)],
-          ['b', 'bar'],
-        ]);
-      }
-    }
-
-    class DefaultCommand extends Command {
-      async getMetadata() {
-        return { name: 'def', description: '' };
-      }
-    }
-
-    class BarCommand extends Command {
-      async getMetadata() {
-        return { name: 'bar', description: '' };
-      }
-    }
-
-    class BazCommand extends Command {
-      async getMetadata() {
-        return { name: 'baz', description: '' };
-      }
-    }
-
     describe('CommandMap', () => {
-
-      class FooCommand extends Command {
-        async getMetadata() {
-          return {
-            name: 'foo',
-            type: 'global',
-            description: '',
-          };
-        }
-      }
 
       describe('getAliases', () => {
 

@@ -56,11 +56,15 @@ export interface CommandMetadata<I = CommandMetadataInput, O = CommandMetadataOp
   options?: O[];
 }
 
+export interface CommandInstanceInfo<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+  location: NamespaceLocateResult<C, N, M, I, O>;
+}
+
 export interface ICommand<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   namespace: N;
 
-  getMetadata(): Promise<M>;
-  run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void>;
+  getMetadata(runinfo?: CommandInstanceInfo<C, N, M, I, O>): Promise<M>;
+  run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo?: CommandInstanceInfo<C, N, M, I, O>): Promise<void>;
   validate(argv: CommandLineInputs): Promise<void>;
 }
 
