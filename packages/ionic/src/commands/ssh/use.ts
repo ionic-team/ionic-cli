@@ -1,10 +1,7 @@
-import * as path from 'path';
-
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
 import { fileToString, fsWriteFile } from '@ionic/cli-framework/utils/fs';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
@@ -28,22 +25,23 @@ export class SSHUseCommand extends SSHBaseCommand {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { expandPath, prettyPath } = await import('@ionic/cli-framework/utils/format');
     const { ERROR_SSH_INVALID_PRIVKEY, ERROR_SSH_MISSING_PRIVKEY, validatePrivateKey } = await import('@ionic/cli-utils/lib/ssh');
     const { ensureHostAndKeyPath, getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
 
-    const keyPath = path.resolve(inputs[0]);
+    const keyPath = expandPath(inputs[0]);
 
     try {
       await validatePrivateKey(keyPath);
     } catch (e) {
       if (e === ERROR_SSH_MISSING_PRIVKEY) {
         throw new FatalException(
-          `${chalk.bold(keyPath)} does not appear to exist. Please specify a valid SSH private key.\n` +
+          `${chalk.bold(prettyPath(keyPath))} does not appear to exist. Please specify a valid SSH private key.\n` +
           `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
         );
       } else if (e === ERROR_SSH_INVALID_PRIVKEY) {
         throw new FatalException(
-          `${chalk.bold(keyPath)} does not appear to be a valid SSH private key. (Missing '-----BEGIN RSA PRIVATE KEY-----' header.)\n` +
+          `${chalk.bold(prettyPath(keyPath))} does not appear to be a valid SSH private key. (Missing '-----BEGIN RSA PRIVATE KEY-----' header.)\n` +
           `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
         );
       } else {
@@ -59,7 +57,7 @@ export class SSHUseCommand extends SSHBaseCommand {
     const text2 = SSHConfig.stringify(conf);
 
     if (text1 === text2) {
-      this.env.log.msg(`${chalk.bold(keyPath)} is already your active SSH key.`);
+      this.env.log.msg(`${chalk.bold(prettyPath(keyPath))} is already your active SSH key.`);
       return;
     } else {
       const { diffPatch } = await import('@ionic/cli-utils/lib/diff');

@@ -2,23 +2,21 @@ import * as os from 'os';
 import * as path from 'path';
 
 import chalk from 'chalk';
-import * as sliceAnsiModule from 'slice-ansi';
-import * as stringWidthModule from 'string-width';
-import * as wrapAnsiModule from 'wrap-ansi';
-
+import sliceAnsi = require('slice-ansi');
+import stringWidthModule = require('string-width');
 import stripAnsiModule = require('strip-ansi');
+import untildify = require('untildify');
+import wrapAnsi = require('wrap-ansi');
 
-export const stripAnsi = stripAnsiModule;
-export const sliceAnsi = sliceAnsiModule;
 export const stringWidth = stringWidthModule;
-export const wrapAnsi = wrapAnsiModule;
+export const stripAnsi = stripAnsiModule;
 
 const MIN_TTY_WIDTH = 80;
 const MAX_TTY_WIDTH = 120;
 export const TTY_WIDTH = process.stdout.columns ? Math.max(MIN_TTY_WIDTH, Math.min(process.stdout.columns, MAX_TTY_WIDTH)) : Infinity;
 
 export function prettyPath(p: string): string {
-  p = path.resolve(p);
+  p = expandPath(p);
   const cwd = process.cwd();
   const d = path.dirname(p);
   const h = os.homedir();
@@ -38,6 +36,10 @@ export function prettyPath(p: string): string {
   }
 
   return p;
+}
+
+export function expandPath(p: string): string {
+  return path.resolve(untildify(p));
 }
 
 export function indent(n = 4): string {

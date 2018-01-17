@@ -4,7 +4,6 @@ import chalk from 'chalk';
 
 import { contains, validate } from '@ionic/cli-framework';
 import { fsMkdirp, fsUnlink, pathExists } from '@ionic/cli-framework/utils/fs';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
 
@@ -63,12 +62,13 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { expandPath, prettyPath } = await import('@ionic/cli-framework/utils/format');
     const { getGeneratedPrivateKeyPath } = await import('@ionic/cli-utils/lib/ssh');
 
     const { bits, annotation } = options;
 
     const config = await this.env.config.load();
-    const keyPath = inputs[0] ? path.resolve(String(inputs[0])) : await getGeneratedPrivateKeyPath(config.user.id);
+    const keyPath = inputs[0] ? expandPath(String(inputs[0])) : await getGeneratedPrivateKeyPath(config.user.id);
     const keyPathDir = path.dirname(keyPath);
     const pubkeyPath = `${keyPath}.pub`;
 

@@ -53,11 +53,12 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { expandPath, prettyPath } = await import('@ionic/cli-framework/utils/format');
     const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
 
     const { ERROR_SSH_INVALID_PUBKEY, parsePublicKeyFile } = await import('@ionic/cli-utils/lib/ssh');
 
-    const pubkeyPath = path.resolve(inputs[0]);
+    const pubkeyPath = expandPath(inputs[0]);
     const pubkeyName = prettyPath(pubkeyPath);
 
     let pubkey: string;
@@ -120,7 +121,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
         const keyExists = await pathExists(keyPath);
 
         if (keyExists) {
-          await this.env.runCommand(['ssh', 'use', keyPath]);
+          await this.env.runCommand(['ssh', 'use', prettyPath(keyPath)]);
         } else {
           this.env.log.error(
             `SSH key does not exist: ${chalk.bold(prettyPath(keyPath))}.\n` +
