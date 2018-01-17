@@ -81,6 +81,7 @@ export abstract class ServeRunner<T extends ServeOptions> {
     const address = options['address'] ? String(options['address']) : BIND_ALL_ADDRESS;
     const livereloadPort = str2num(options['livereload-port'], DEFAULT_LIVERELOAD_PORT);
     const notificationPort = str2num(options['dev-logger-port'], DEFAULT_DEV_LOGGER_PORT);
+    const labPort = str2num(options['lab-port'], DEFAULT_LAB_PORT);
     const port = str2num(options['port'], DEFAULT_SERVER_PORT);
     const target = options['target'] ? String(options['target']) : undefined;
 
@@ -93,6 +94,8 @@ export abstract class ServeRunner<T extends ServeOptions> {
       env: options['env'] ? String(options['env']) : undefined,
       externalAddressRequired: options['externalAddressRequired'] ? true : false,
       lab: options['lab'] ? true : false,
+      labHost: options['lab-host'] ? String(options['lab-host']) : 'localhost',
+      labPort,
       livereload: typeof options['livereload'] === 'boolean' ? Boolean(options['livereload']) : true,
       livereloadPort,
       notificationPort,
@@ -163,12 +166,12 @@ export abstract class ServeRunner<T extends ServeOptions> {
     if (options.lab) {
       labDetails = {
         protocol: 'http',
-        address: 'localhost',
-        port: await findClosestOpenPort(DEFAULT_LAB_PORT, '0.0.0.0'),
+        address: options.labHost,
+        port: await findClosestOpenPort(options.labPort, '0.0.0.0'),
       };
 
       try {
-        await this.runLab(`http://localhost:${details.port}`, labDetails.port);
+        await this.runLab(`http://localhost:${details.port}`, labDetails);
       } catch (e) {
         if (e.code === 'ENOENT') {
           const pkg = '@ionic/lab';
@@ -184,7 +187,7 @@ export abstract class ServeRunner<T extends ServeOptions> {
             throw new FatalException(`${chalk.green(pkg)} is required for Ionic Lab to work properly.`);
           }
 
-          await this.runLab(`http://localhost:${details.port}`, labDetails.port);
+          await this.runLab(`http://localhost:${details.port}`, labDetails);
         }
       }
     }
@@ -284,13 +287,13 @@ export abstract class ServeRunner<T extends ServeOptions> {
     return new Set(plugins);
   }
 
-  async runLab(url: string, port: number) {
+  async runLab(url: string, details: LabServeDetails) {
     const { registerShutdownFunction } = await import('./process');
 
     const project = await this.env.project.load();
     const pkg = await this.env.project.loadPackageJson();
 
-    const labArgs = [url, '--port', String(port)];
+    const labArgs = [url, '--host', details.address, '--port', String(details.port)];
     const nameArgs = project.name ? ['--app-name', project.name] : [];
     const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
 

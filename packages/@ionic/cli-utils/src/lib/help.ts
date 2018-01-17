@@ -8,10 +8,10 @@ import {
   CommandMetadataInput,
   CommandMetadataOption,
   HydratedCommandMetadata,
-  ICommand,
   INamespace,
   IonicEnvironment,
   NamespaceMetadata,
+  NamespaceLocateResult,
 } from '../definitions';
 
 import { CommandGroup, NamespaceGroup, OptionGroup } from '../constants';
@@ -25,29 +25,29 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise
     return env.log.rawmsg(await formatNamespaceHelp(env, env.namespace, ''));
   }
 
-  const { args, obj, path } = await env.namespace.locate(inputs);
+  const location = await env.namespace.locate(inputs);
 
-  if (!isCommand(obj) && args.length > 0) {
+  if (!isCommand(location.obj) && location.args.length > 0) {
     env.log.error(
       `Unable to find command: ${chalk.green(inputs.join(' '))}` +
       (env.project.directory ? '' : '\nYou may need to be in an Ionic project directory.')
     );
   }
 
-  const fullName = path.map(([p]) => p).join(' ');
+  const fullName = location.path.map(([p]) => p).join(' ');
 
-  env.log.rawmsg(await formatHelp(env, obj, fullName));
+  env.log.rawmsg(await formatHelp(env, location, fullName));
 }
 
-async function formatHelp(env: IonicEnvironment, cmdOrNamespace: ICommand | INamespace, fullName: string) {
+async function formatHelp(env: IonicEnvironment, location: NamespaceLocateResult, fullName: string) {
   // If the command is located on the global namespace then show its help
-  if (!isCommand(cmdOrNamespace)) {
-    return formatNamespaceHelp(env, cmdOrNamespace, fullName);
+  if (!isCommand(location.obj)) {
+    return formatNamespaceHelp(env, location.obj, fullName);
   }
 
-  const command = cmdOrNamespace;
+  const command = location.obj;
 
-  return formatCommandHelp(env, await command.getMetadata(), fullName);
+  return formatCommandHelp(env, await command.getMetadata({ location }), fullName);
 }
 
 async function formatNamespaceHelp(env: IonicEnvironment, ns: INamespace, fullName: string) {

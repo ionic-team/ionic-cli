@@ -1,3 +1,4 @@
+import * as lodash from 'lodash';
 import chalk from 'chalk';
 
 import { metadataToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
@@ -45,23 +46,24 @@ export class IonicNamespace extends Namespace {
       ['state', async () => { const { StateCommand } = await import('./state'); return new StateCommand(this, this.env); }],
       ['telemetry', async () => { const { TelemetryCommand } = await import('./telemetry'); return new TelemetryCommand(this, this.env); }],
       ['version', async () => { const { VersionCommand } = await import('./version'); return new VersionCommand(this, this.env); }],
+      ['lab', 'serve'],
     ]);
   }
 
   async runCommand(pargv: string[], env: { [key: string]: string; }): Promise<void> {
     const pargs = stripOptions(pargv);
 
-    const { args, obj, path } = await this.locate(pargs);
+    const location = await this.locate(pargs);
 
-    if (!isCommand(obj)) {
+    if (!isCommand(location.obj)) {
       const { showHelp } = await import('@ionic/cli-utils/lib/help');
       await this.env.telemetry.sendCommand('ionic help', pargs);
       return showHelp(this.env, pargs);
     }
 
-    const command = obj;
+    const command = location.obj;
     const metadata = await command.getMetadata();
-    const fullNameParts = path.map(([p]) => p);
+    const fullNameParts = location.path.map(([p]) => p);
 
     if (metadata.options) {
       const optMap = metadataToCmdOptsEnv(metadata, fullNameParts.slice(1));
@@ -78,6 +80,7 @@ export class IonicNamespace extends Namespace {
 
     const minimistOpts = metadataToParseArgsOptions(metadata);
     const options = parseArgs(pargv, minimistOpts);
+    const inputs = lodash.drop(options._, location.path.length - 1);
 
     if (!this.env.project.directory && metadata.type === 'project') {
       throw new FatalException(
@@ -86,7 +89,7 @@ export class IonicNamespace extends Namespace {
       );
     }
 
-    await command.execute(args, options);
+    await command.execute(inputs, options, { location });
   }
 }
 

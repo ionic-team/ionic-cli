@@ -205,6 +205,8 @@ export interface CommandMetadata extends framework.CommandMetadata<framework.Com
 }
 
 export type HydratedCommandMetadata = CommandMetadata & framework.HydratedCommandMetadata<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption>;
+export type CommandInstanceInfo = framework.CommandInstanceInfo<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption>;
+export type NamespaceLocateResult = framework.NamespaceLocateResult<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption>;
 
 export interface ISession {
   login(email: string, password: string): Promise<void>;
@@ -375,6 +377,8 @@ export interface ServeOptions {
   livereload: boolean;
   proxy: boolean;
   lab: boolean;
+  labHost: string;
+  labPort: number;
   open: boolean;
   browser?: string;
   browserOption?: string;
@@ -524,11 +528,11 @@ export interface RootPlugin extends LoadedPlugin {
 export interface ICommand extends framework.ICommand<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption> {
   env: IonicEnvironment;
 
-  execute(inputs: framework.CommandLineInputs, options: framework.CommandLineOptions): Promise<void>;
+  execute(inputs: framework.CommandLineInputs, options: framework.CommandLineOptions, metadata: CommandInstanceInfo): Promise<void>;
 }
 
 export interface CommandPreRun extends ICommand {
-  preRun(inputs: framework.CommandLineInputs, options: framework.CommandLineOptions): Promise<void>;
+  preRun(inputs: framework.CommandLineInputs, options: framework.CommandLineOptions, metadata: CommandInstanceInfo): Promise<void>;
 }
 
 export interface INamespace extends framework.INamespace<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption> {

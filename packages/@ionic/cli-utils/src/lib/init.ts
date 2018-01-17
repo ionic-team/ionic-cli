@@ -23,11 +23,6 @@ export function modifyArguments(pargv: string[]): string[] {
     return ['version'];
   }
 
-  if (minimistArgv._[0] === 'lab') {
-    modifiedArgArray[0] = 'serve';
-    modifiedArgArray.push('--lab');
-  }
-
   return modifiedArgArray;
 }
 

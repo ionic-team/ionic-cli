@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { BaseCommand, generateCommandPath, parsedArgsToArgv } from '@ionic/cli-framework';
 
 import {
+  CommandInstanceInfo,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
@@ -20,11 +21,11 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
     super(namespace);
   }
 
-  async execute(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async execute(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const config = await this.env.config.load();
 
     if (isCommandPreRun(this)) {
-      await this.preRun(inputs, options);
+      await this.preRun(inputs, options, runinfo);
     }
 
     try {
@@ -37,7 +38,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
       throw e;
     }
 
-    const runPromise = this.run(inputs, options);
+    const runPromise = this.run(inputs, options, runinfo);
 
     const telemetryPromise = (async () => {
       if (config.telemetry !== false) {

@@ -1,23 +1,41 @@
+import * as lodash from 'lodash';
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { BIND_ALL_ADDRESS, BROWSERS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
+import { BIND_ALL_ADDRESS, BROWSERS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LAB_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
 
 export class ServeCommand extends Command implements CommandPreRun {
-  async getMetadata(): Promise<CommandMetadata> {
-    return {
-      name: 'serve',
-      type: 'project',
-      description: 'Start a local dev server for app dev/testing',
-      longDescription: `
+  async getMetadata(runinfo?: CommandInstanceInfo): Promise<CommandMetadata> {
+    const [ alias ] = (runinfo && lodash.last(runinfo.location.path)) || [undefined];
+
+    const exampleCommands = ['', '-c', '--local'];
+
+    if (alias !== 'lab') {
+      exampleCommands.push('--lab');
+    }
+
+    const description = alias === 'lab' ? 'Start Ionic Lab for multi-platform dev/testing' : 'Start a local dev server for app dev/testing';
+
+    const longDescription = alias === 'lab' ?
+    `
+Start an instance of ${chalk.bold('Ionic Lab')}, a tool for developing Ionic apps for multiple platforms at once side-by-side.
+
+${chalk.green('ionic lab')} is just a convenient shortcut for ${chalk.green('ionic serve --lab')}.
+` :
+    `
 Easily spin up a development server which launches in your browser. It watches for changes in your source files and automatically reloads with the updated build.
 
 By default, ${chalk.green('ionic serve')} boots up a development server on all network interfaces and prints the external address(es) on which your app is being served. It also broadcasts your app to the Ionic DevApp on your network. To disable the DevApp and bind to ${chalk.green('localhost')}, use ${chalk.green('--local')}.
 
-Try the ${chalk.green('--lab')} option to see multiple platforms at once.
-      `,
-      exampleCommands: ['', '-c', '--lab -c'],
+Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
+
+    return {
+      name: 'serve',
+      type: 'project',
+      description,
+      longDescription,
+      exampleCommands,
       options: [
         {
           name: 'consolelogs',
@@ -30,7 +48,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
           description: 'Print dev server logs to Ionic CLI',
           type: Boolean,
           aliases: ['s'],
-          groups: [OptionGroup.Hidden, OptionGroup.Hidden],
+          groups: [OptionGroup.Hidden],
         },
         {
           name: 'address',
@@ -41,7 +59,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
         {
           name: 'port',
           description: 'Use specific port for HTTP',
-          default: String(DEFAULT_SERVER_PORT),
+          default: DEFAULT_SERVER_PORT.toString(),
           aliases: ['p'],
           groups: [OptionGroup.Advanced],
         },
@@ -55,14 +73,26 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
         {
           name: 'livereload-port',
           description: 'Use specific port for live-reload',
-          default: String(DEFAULT_LIVERELOAD_PORT),
+          default: DEFAULT_LIVERELOAD_PORT.toString(),
           aliases: ['r'],
           groups: [OptionGroup.Advanced],
         },
         {
           name: 'dev-logger-port',
           description: 'Use specific port for dev server communication',
-          default: String(DEFAULT_DEV_LOGGER_PORT),
+          default: DEFAULT_DEV_LOGGER_PORT.toString(),
+          groups: [OptionGroup.Advanced],
+        },
+        {
+          name: 'lab-host',
+          description: 'Use specific address for Ionic Lab server',
+          default: 'localhost',
+          groups: [OptionGroup.Advanced],
+        },
+        {
+          name: 'lab-port',
+          description: 'Use specific port for Ionic Lab server',
+          default: DEFAULT_LAB_PORT.toString(),
           groups: [OptionGroup.Advanced],
         },
         {
@@ -109,11 +139,13 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
           description: 'Test your apps on multiple platform types in the browser',
           type: Boolean,
           aliases: ['l'],
+          groups: alias === 'lab' ? [OptionGroup.Hidden] : [],
         },
         {
           name: 'platform',
           description: `Start serve with a specific platform (${['android', 'ios'].map(t => chalk.green(t)).join(', ')})`,
           aliases: ['t'],
+          groups: alias === 'lab' ? [OptionGroup.Hidden] : [],
         },
         {
           name: 'auth',
@@ -125,7 +157,13 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.
     };
   }
 
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
+    const [ alias ] = lodash.last(runinfo.location.path) || [undefined];
+
+    if (alias === 'lab') {
+      options['lab'] = true;
+    }
+
     if (options['nolivereload']) {
       this.env.log.warn(`The ${chalk.green('--nolivereload')} option has been deprecated. Please use ${chalk.green('--no-livereload')}.`);
       options['livereload'] = false;
