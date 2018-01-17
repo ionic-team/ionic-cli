@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.19.1"></a>
+## [3.19.1](https://github.com/ionic-team/ionic-cli/compare/ionic@3.19.0...ionic@3.19.1) (2018-01-17)
+
+
+### Bug Fixes
+
+* **ssh:** allow tilde expansion upon path inputs ([95f809e](https://github.com/ionic-team/ionic-cli/commit/95f809e))
+
+
+
+
 <a name="3.19.0"></a>
 # [3.19.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.18.0...ionic@3.19.0) (2017-11-22)
 
