@@ -48,13 +48,13 @@
     "@ionic/cli-utils": "1.19.0",
     "chalk": "^2.3.0",
     "lodash": "^4.17.4",
-    "opn": "^5.1.0",
-    "semver": "^5.3.0",
+    "opn": "^5.2.0",
+    "semver": "^5.5.0",
     "tslib": "^1.8.1",
     "update-notifier": "^2.3.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.91",
+    "@types/lodash": "^4.14.92",
     "@types/opn": "^5.1.0",
     "@types/update-notifier": "^1.0.2"
   },

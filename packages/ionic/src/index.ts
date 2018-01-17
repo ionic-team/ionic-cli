@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as util from 'util';
 
 import chalk from 'chalk';
+
 import { InputValidationError, parseArgs } from '@ionic/cli-framework';
 import { IPCMessage, IonicEnvironment, RootPlugin, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
 import { Exception } from '@ionic/cli-utils/lib/errors';
@@ -122,7 +123,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
 
       if (ienv.flags.interactive) {
         const updateNotifier = await import('update-notifier');
-        updateNotifier({ pkg: plugin.meta.pkg }).notify();
+        updateNotifier({ pkg: plugin.meta.pkg }).notify(<any>{ isGlobal: !ienv.meta.local });
       }
 
     } catch (e) {
