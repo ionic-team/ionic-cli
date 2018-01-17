@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -37,7 +38,6 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!inputs[0]) {
-      const fs = await import('fs');
       const defaultPubkeyPath = path.resolve(os.homedir(), '.ssh', 'id_rsa.pub');
       const defaultPubkeyExists = await pathAccessible(defaultPubkeyPath, fs.constants.R_OK);
 
