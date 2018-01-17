@@ -7,7 +7,7 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "scripts": {
-    "clean": "rm -rf index.* bootstrap.* definitions.* guards.* ./lib ./commands ./dist",
+    "clean": "rm -rf index.* bootstrap.* constants.* definitions.* guards.* ./lib ./commands",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",

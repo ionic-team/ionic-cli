@@ -49,11 +49,6 @@ describe('ionic', () => {
       expect(args).toEqual(['foo', '--version', 'bar']);
     });
 
-    it('should change lab command to serve --lab', () => {
-      const args = modifyArguments(['lab', '--opt', 'foo']);
-      expect(args).toEqual(['serve', '--opt', 'foo', '--lab']);
-    });
-
   });
 
 });

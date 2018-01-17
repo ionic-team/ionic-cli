@@ -10,8 +10,8 @@ import {
   HydratedCommandMetadata,
   INamespace,
   IonicEnvironment,
-  NamespaceMetadata,
   NamespaceLocateResult,
+  NamespaceMetadata,
 } from '../definitions';
 
 import { CommandGroup, NamespaceGroup, OptionGroup } from '../constants';

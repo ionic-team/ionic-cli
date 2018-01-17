@@ -10,7 +10,7 @@
     "node": ">=6.4.0"
   },
   "scripts": {
-    "clean": "rm -rf index.* definitions.* guards.* ./utils",
+    "clean": "rm -rf index.* definitions.* guards.* ./lib ./utils",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
