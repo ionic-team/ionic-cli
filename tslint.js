@@ -24,6 +24,11 @@ module.exports = {
     "space-within-parens": 0,
     "trailing-comma": [true, { "multiline": { "objects": "always", "arrays": "always", "functions": "never", "typeLiterals": "always" }, "singleline": "never" }],
 
+    // https://github.com/ionic-team/tslint-ionic-rules/commit/065e3e9937104f6ec03e594adf762002616353df
+    "no-conditional-assignment": true,
+    "no-unnecessary-type-assertion": true,
+    "prefer-for-of": true,
+
     // TODO: look at these later
     // "newline-before-return": true,
     // "no-unsafe-any": true,
