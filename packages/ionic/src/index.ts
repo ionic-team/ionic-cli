@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as util from 'util';
 
 import chalk from 'chalk';
+import * as Debug from 'debug';
 
 import { InputValidationError, stripOptions } from '@ionic/cli-framework';
 import { IPCMessage, IonicEnvironment, RootPlugin, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
@@ -11,6 +12,7 @@ import { pathExists } from '@ionic/cli-framework/utils/fs';
 
 import { IonicNamespace } from './commands';
 
+const debug = Debug('ionic:cli');
 export const namespace = new IonicNamespace(undefined, <any>undefined); // TODO: see `generateIonicEnvironment`
 
 export async function generateRootPlugin(): Promise<RootPlugin> {
@@ -44,14 +46,14 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     try {
       const config = await ienv.config.load();
 
-      ienv.log.debug(() => util.inspect(ienv.meta, { breakLength: Infinity, colors: chalk.enabled }));
+      debug(util.inspect(ienv.meta, { breakLength: Infinity, colors: chalk.enabled }));
 
       if (env['IONIC_TOKEN']) {
         const wasLoggedIn = await ienv.session.isLoggedIn();
-        ienv.log.debug(() => `${chalk.bold('IONIC_TOKEN')} environment variable detected`);
+        debug(`${chalk.bold('IONIC_TOKEN')} environment variable detected`);
 
         if (config.tokens.user !== env['IONIC_TOKEN']) {
-          ienv.log.debug(() => `${chalk.bold('IONIC_TOKEN')} mismatch with current session--attempting login`);
+          debug(`${chalk.bold('IONIC_TOKEN')} mismatch with current session--attempting login`);
           await ienv.session.tokenLogin(env['IONIC_TOKEN']);
 
           if (wasLoggedIn) {
@@ -59,10 +61,10 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
           }
         }
       } else if (env['IONIC_EMAIL'] && env['IONIC_PASSWORD']) {
-        ienv.log.debug(() => `${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables detected`);
+        debug(`${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables detected`);
 
         if (config.user.email !== env['IONIC_EMAIL']) {
-          ienv.log.debug(() => `${chalk.bold('IONIC_EMAIL')} mismatch with current session--attempting login`);
+          debug(`${chalk.bold('IONIC_EMAIL')} mismatch with current session--attempting login`);
 
           try {
             await ienv.session.login(env['IONIC_EMAIL'], env['IONIC_PASSWORD']);
@@ -115,7 +117,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
           }
 
           ienv.log.error(chalk.red.bold('Error occurred while loading plugins. CLI functionality may be limited.'));
-          ienv.log.debug(() => chalk.red(chalk.bold('Plugin error: ') + (e.stack ? e.stack : e)));
+          debug(chalk.red(chalk.bold('Plugin error: ') + (e.stack ? e.stack : e)));
         }
 
         await namespace.runCommand(pargv, env);
@@ -172,7 +174,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
       ienv.log.msg(chalk.red(String(err.stack ? err.stack : err)));
 
       if (err.stack) {
-        ienv.log.debug(() => chalk.red(String(err.stack)));
+        debug(chalk.red(String(err.stack)));
       }
     }
   }

@@ -1,8 +1,11 @@
 import chalk from 'chalk';
+import * as Debug from 'debug';
 
 import { IonicEnvironment } from '../../definitions';
 import { isExitCodeException } from '../../guards';
 import { Ailment, Ailments, AutomaticallyTreatableAilment } from './ailments';
+
+const debug = Debug('ionic:cli-utils:lib:doctor');
 
 const ERROR_AILMENT_SKIPPED = 'AILMENT_SKIPPED';
 const ERROR_AILMENT_IGNORED = 'AILMENT_IGNORED';
@@ -60,7 +63,7 @@ export async function treatAilments(env: IonicEnvironment) {
     try {
       detected = await ailment.detected();
     } catch (e) {
-      env.log.debug(() => `Error while checking ${chalk.bold(ailment.id)}:\n\n${chalk.red(e.stack ? e.stack : e)}`);
+      debug(`Error while checking ${chalk.bold(ailment.id)}:\n\n${chalk.red(e.stack ? e.stack : e)}`);
     }
 
     count++;
@@ -174,12 +177,9 @@ async function automaticallyTreatAilment(env: IonicEnvironment, ailment: Automat
   });
 
   if (choice === CHOICE_YES) {
-    // env.tasks.next(`Steps`);
-
     for (const i in treatmentSteps) {
       const step = treatmentSteps[i];
-      env.log.debug(typeof i);
-      // env.tasks.updateMsg(`Steps: ${chalk.bold(`${Number(i) + 1} / ${treatmentSteps.length}`)}`);
+
       try {
         await step.treat();
       } catch (e) {
@@ -188,9 +188,6 @@ async function automaticallyTreatAilment(env: IonicEnvironment, ailment: Automat
         }
       }
     }
-
-    // env.tasks.updateMsg(`Steps: ${chalk.bold(`${treatmentSteps.length} / ${treatmentSteps.length}`)}`);
-    // env.tasks.end();
 
     return true;
   } else if (choice === CHOICE_NO) {

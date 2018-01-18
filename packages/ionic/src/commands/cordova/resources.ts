@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import * as Debug from 'debug';
 
 import { cacheFileChecksum, pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
@@ -17,6 +18,8 @@ import {
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { CordovaCommand } from './base';
+
+const debug = Debug('ionic:cli:commands:cordova:resources');
 
 const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
 
@@ -113,11 +116,11 @@ This command uses Ionic servers, so we require you to be logged into your free I
     resourceTypes = resourceTypes.length ? resourceTypes : AVAILABLE_RESOURCE_TYPES;
 
     this.env.tasks.next(`Collecting resource configuration and source images`);
-    this.env.log.debug(() => `resourceJsonStructure=${Object.keys(RESOURCES).length}`);
+    debug(`resourceJsonStructure=${Object.keys(RESOURCES).length}`);
 
     // check that at least one platform has been installed
     let platforms = await getPlatforms(this.env.project.directory);
-    this.env.log.debug(() => `platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
+    debug(`platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
 
     if (platform && !platforms.includes(platform)) {
       this.env.tasks.end();
@@ -131,19 +134,19 @@ This command uses Ionic servers, so we require you to be logged into your free I
         await installPlatform(this.env, platform);
         conf = await ConfigXml.load(this.env.project.directory);
         platforms = await getPlatforms(this.env.project.directory);
-        this.env.log.debug(() => `platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
+        debug(`platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
       } else {
         throw new FatalException(`Platform ${chalk.green(platform)} not installed.`);
       }
     }
 
     const buildPlatforms = Object.keys(RESOURCES).filter(p => platforms.includes(p));
-    this.env.log.debug(() => `buildPlatforms=${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
+    debug(`buildPlatforms=${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
     if (buildPlatforms.length === 0) {
       this.env.tasks.end();
       throw new FatalException(`No platforms detected. Please run: ${chalk.green('ionic cordova platform add')}`);
     }
-    this.env.log.debug(() => `${chalk.green('getProjectPlatforms')} completed: ${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
+    debug(`${chalk.green('getProjectPlatforms')} completed: ${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
 
     const orientation = conf.getPreference('Orientation') || 'default';
 
@@ -159,11 +162,11 @@ This command uses Ionic servers, so we require you to be logged into your free I
       imgResources = imgResources.filter(img => img.platform === platform);
     }
 
-    this.env.log.debug(() => `imgResources=${imgResources.length}`);
+    debug(`imgResources=${imgResources.length}`);
 
     // Create the resource directories that are needed for the images we will create
     const buildDirResponses = await createImgDestinationDirectories(imgResources);
-    this.env.log.debug(() => `${chalk.green('createImgDestinationDirectories')} completed: ${buildDirResponses.length}`);
+    debug(`${chalk.green('createImgDestinationDirectories')} completed: ${buildDirResponses.length}`);
 
     // Check /resources and /resources/<platform> directories for src files
     // Update imgResources to have their src attributes to equal the most
@@ -172,7 +175,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
     try {
       srcImagesAvailable = await getSourceImages(this.env.project.directory, buildPlatforms, resourceTypes);
-      this.env.log.debug(() => `${chalk.green('getSourceImages')} completed: (${srcImagesAvailable.map(v => chalk.bold(prettyPath(v.path))).join(', ')})`);
+      debug(`${chalk.green('getSourceImages')} completed: (${srcImagesAvailable.map(v => chalk.bold(prettyPath(v.path))).join(', ')})`);
     } catch (e) {
       this.env.log.error(`Error in ${chalk.green('getSourceImages')}: ${e.stack ? e.stack : e}`);
     }
@@ -234,7 +237,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
     // Upload images to service to prepare for resource transformations
     const imageUploadResponses = await uploadSourceImages(this.env, srcImagesAvailable);
-    this.env.log.debug(() => `${chalk.green('uploadSourceImages')} completed: responses=${JSON.stringify(imageUploadResponses, undefined, 2)}`);
+    debug(`${chalk.green('uploadSourceImages')} completed: responses=${JSON.stringify(imageUploadResponses, undefined, 2)}`);
 
     srcImagesAvailable = srcImagesAvailable.map((img, index) => {
       return {
@@ -245,7 +248,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       };
     });
 
-    this.env.log.debug(() => `srcImagesAvailable=${JSON.stringify(srcImagesAvailable, undefined, 2)}`);
+    debug(`srcImagesAvailable=${JSON.stringify(srcImagesAvailable, undefined, 2)}`);
 
     // If any images are asking to be generated but are not of the correct size
     // inform the user and continue on.
@@ -281,7 +284,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
     const generateImageResponses = await Promise.all(transforms);
     this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
-    this.env.log.debug(() => `${chalk.green('generateResourceImage')} completed: responses=${JSON.stringify(generateImageResponses, undefined, 2)}`);
+    debug(`${chalk.green('generateResourceImage')} completed: responses=${JSON.stringify(generateImageResponses, undefined, 2)}`);
 
     await Promise.all(srcImagesAvailable.map(async img => {
       await cacheFileChecksum(img.path, img.imageId);

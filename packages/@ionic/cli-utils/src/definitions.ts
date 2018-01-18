@@ -19,9 +19,8 @@ export interface SuperAgentError extends Error {
   response: superagentType.Response;
 }
 
-export type LogMsg = string | (() => string);
-export type LogFn = (msg: LogMsg) => void;
-export type LogLevel = 'debug' | 'info' | 'msg' | 'ok' | 'warn' | 'error' | 'announce';
+export type LogFn = (msg: string) => void;
+export type LogLevel = 'info' | 'msg' | 'ok' | 'warn' | 'error' | 'announce';
 export type LogPrefix = string | (() => string);
 
 export interface LoggerOptions {
@@ -40,7 +39,6 @@ export interface ILogger {
   readonly wrap: boolean;
 
   // log functions
-  debug: LogFn;
   info: LogFn;
   ok: LogFn;
   warn: LogFn;

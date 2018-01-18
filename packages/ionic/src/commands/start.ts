@@ -1,6 +1,7 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
 import { validators } from '@ionic/cli-framework';
@@ -13,6 +14,8 @@ import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { PROJECT_FILE, prettyProjectName } from '@ionic/cli-utils/lib/project';
 import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
+
+const debug = Debug('ionic:cli:commands:start');
 
 export class StartCommand extends Command implements CommandPreRun {
   canRemoveExisting?: boolean;
@@ -492,7 +495,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     try {
       return await readStarterManifest(manifestPath);
     } catch (e) {
-      this.env.log.debug(`Error with manifest file ${chalk.bold(prettyPath(manifestPath))}: ${e}`);
+      debug(`Error with manifest file ${chalk.bold(prettyPath(manifestPath))}: ${e}`);
     }
   }
 

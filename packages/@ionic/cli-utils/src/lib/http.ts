@@ -1,6 +1,7 @@
 import * as util from 'util';
 
 import chalk from 'chalk';
+
 import * as superagentType from 'superagent';
 
 import {
@@ -32,28 +33,32 @@ let KEYS: string[] | undefined;
 
 export async function createRawRequest(method: string, url: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
   const superagent = await import('superagent');
+  const [ proxy, proxyVar ] = getGlobalProxy();
 
-  try {
-    const superagentProxy = await import('superagent-proxy');
-    superagentProxy(superagent);
-  } catch (e) {
-    if (e.code !== 'MODULE_NOT_FOUND') {
-      throw e;
+  const req = superagent(method, url);
+
+  if (proxy && proxyVar) {
+    try {
+      const superagentProxy = await import('superagent-proxy');
+      superagentProxy(superagent);
+    } catch (e) {
+      if (e.code !== 'MODULE_NOT_FOUND') {
+        throw e;
+      }
+    }
+
+    if (req.proxy) {
+      req.proxy(proxy);
     }
   }
 
-  return { req: superagent(method, url) };
+  return { req };
 }
 
 export async function createRequest(config: IConfig, method: string, url: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
   const c = await config.load();
-  const [ proxy ] = getGlobalProxy();
 
   const { req } = await createRawRequest(method, url);
-
-  if (proxy && req.proxy) {
-    req.proxy(proxy);
-  }
 
   if (c.ssl) {
     const conform = (p?: string | string[]): string[] => {

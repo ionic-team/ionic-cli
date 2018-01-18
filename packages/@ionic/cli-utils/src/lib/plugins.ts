@@ -1,12 +1,15 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as Debug from 'debug';
 
 import { DistTag, IonicEnvironment, LoadedPlugin, Plugin, PluginMeta } from '../definitions';
 import { isPlugin } from '../guards';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { getGlobalProxy } from './utils/http';
 import { pkgManagerArgs, readPackageJsonFileOfResolvedModule } from './utils/npm';
+
+const debug = Debug('ionic:cli-utils:lib:plugins');
 
 export const ERROR_PLUGIN_NOT_INSTALLED = 'PLUGIN_NOT_INSTALLED';
 export const ERROR_PLUGIN_INVALID = 'PLUGIN_INVALID';
@@ -45,7 +48,7 @@ export async function loadPlugins(env: IonicEnvironment) {
 
   if (proxyVar) {
     const proxyPluginPkg = formatFullPluginName('proxy');
-    env.log.debug(() => `Detected ${chalk.green(proxyVar)} in environment`);
+    debug(`Detected ${chalk.green(proxyVar)} in environment`);
 
     if (!pluginPkgs.find(v => v[0] === proxyPluginPkg && v[1])) {
       const proxyInstallArgs = await pkgManagerArgs({ npmClient, shell: env.shell }, { command: 'install', pkg: proxyPluginPkg, global });
@@ -97,7 +100,7 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { gl
   let mResolvedPath: string | undefined;
   let m: Plugin;
 
-  env.log.debug(() => `Loading ${global ? 'global' : 'local'} plugin ${chalk.bold(pluginName)}`);
+  debug(`Loading ${global ? 'global' : 'local'} plugin ${chalk.bold(pluginName)}`);
 
   try {
     mResolvedPath = require.resolve(path.resolve(modulesDir, pluginName));
@@ -108,12 +111,12 @@ export async function loadPlugin(env: IonicEnvironment, pluginName: string, { gl
       throw e;
     }
 
-    env.log.debug(() => `${chalk.red(ERROR_PLUGIN_NOT_INSTALLED)}: ${global ? 'global' : 'local'} ${chalk.bold(pluginName)}`);
+    debug(`${chalk.red(ERROR_PLUGIN_NOT_INSTALLED)}: ${global ? 'global' : 'local'} ${chalk.bold(pluginName)}`);
     throw ERROR_PLUGIN_NOT_INSTALLED;
   }
 
   if (m.version || !isPlugin(m) || !mResolvedPath) { // m.version means old-style plugins, so not loading
-    env.log.debug(() => `${chalk.red(ERROR_PLUGIN_INVALID)}: ${global ? 'global' : 'local'} ${chalk.bold(pluginName)}`);
+    debug(`${chalk.red(ERROR_PLUGIN_INVALID)}: ${global ? 'global' : 'local'} ${chalk.bold(pluginName)}`);
     throw ERROR_PLUGIN_INVALID;
   }
 

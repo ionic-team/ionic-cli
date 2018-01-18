@@ -259,7 +259,7 @@ export abstract class ServeRunner<T extends ServeOptions> {
       publisher.interfaces = details.interfaces;
 
       publisher.on('error', (err: Error) => {
-        this.env.log.debug(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
+        debug(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
       });
 
       try {

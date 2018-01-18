@@ -2,6 +2,7 @@ import * as util from 'util';
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as Debug from 'debug';
 import { isCI } from 'ci-info';
 import { parseArgs } from '@ionic/cli-framework';
 import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
@@ -37,6 +38,7 @@ export * from './constants';
 export * from './guards';
 
 const name = '@ionic/cli-utils';
+const debug = Debug('ionic:cli-utils');
 
 export async function getProject(projectDir: string | undefined, deps: ProjectDeps): Promise<IProject> {
   if (!projectDir) {
@@ -73,7 +75,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   }
 
   if (argv['verbose']) {
-    level = 'debug';
+    Debug.enable('*');
   } else if (argv['quiet']) {
     level = 'warn';
   }
@@ -179,14 +181,14 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   ienv.open();
 
   if (env['IONIC_CLI_LOCAL_ERROR']) {
-    log.debug(() => `Reason for not using local CLI: ${chalk.bold(env['IONIC_CLI_LOCAL_ERROR'])}`);
+    debug(`Reason for not using local CLI: ${chalk.bold(env['IONIC_CLI_LOCAL_ERROR'])}`);
 
     if (env['IONIC_CLI_LOCAL_ERROR'] === ERROR_VERSION_TOO_OLD) {
       log.warn(`Detected locally installed Ionic CLI, but it's too old--using global CLI.`);
     }
   }
 
-  log.debug(() => `CLI flags: ${util.inspect(flags, { breakLength: Infinity, colors: chalk.enabled })}`);
+  debug(`CLI flags: ${util.inspect(flags, { breakLength: Infinity, colors: chalk.enabled })}`);
 
   if (typeof argv['yarn'] === 'boolean') {
     log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} was removed in CLI 4.0. Use ${chalk.green(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);

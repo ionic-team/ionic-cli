@@ -1,6 +1,7 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
@@ -9,6 +10,8 @@ import * as proxyMiddlewareType from 'http-proxy-middleware'; // tslint:disable-
 import { ProjectFileProxy, ServeDetails, ServeOptions } from '../../../definitions';
 import { FatalException } from '../../errors';
 import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../../serve';
+
+const debug = Debug('ionic:cli-utils:lib:project:ionic1');
 
 const WATCH_PATTERNS = [
   'scss/**/*',
@@ -68,7 +71,7 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
       project.watchPatterns = WATCH_PATTERNS;
     }
 
-    this.env.log.debug(`Watch patterns: ${project.watchPatterns.map(v => chalk.bold(v)).join(', ')}`);
+    debug(`Watch patterns: ${project.watchPatterns.map(v => chalk.bold(v)).join(', ')}`);
 
     const proxies = project.proxies && options.proxy ? project.proxies.map(p => ({ mount: p.path, ...proxyConfigToMiddlewareConfig(p) })) : [];
 
@@ -170,17 +173,17 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
       ]);
 
       if (ports.port !== port) {
-        this.env.log.debug(`Port ${chalk.bold(String(ports.port))} taken, using ${chalk.bold(String(port))}.`);
+        debug(`Port ${chalk.bold(String(ports.port))} taken, using ${chalk.bold(String(port))}.`);
         ports.port = port;
       }
 
       if (ports.livereloadPort !== livereloadPort) {
-        this.env.log.debug(`Port ${chalk.bold(String(ports.livereloadPort))} taken, using ${chalk.bold(String(livereloadPort))}.`);
+        debug(`Port ${chalk.bold(String(ports.livereloadPort))} taken, using ${chalk.bold(String(livereloadPort))}.`);
         ports.livereloadPort = livereloadPort;
       }
 
       if (ports.notificationPort !== notificationPort) {
-        this.env.log.debug(`Port ${chalk.bold(String(ports.notificationPort))} taken, using ${chalk.bold(String(notificationPort))}.`);
+        debug(`Port ${chalk.bold(String(ports.notificationPort))} taken, using ${chalk.bold(String(notificationPort))}.`);
         ports.notificationPort = notificationPort;
       }
 

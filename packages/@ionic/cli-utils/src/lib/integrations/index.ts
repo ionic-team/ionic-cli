@@ -2,12 +2,15 @@ import * as os from 'os';
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as Debug from 'debug';
 import { copyDirectory, fsMkdirp, fsStat, pathExists, readDir, removeDirectory } from '@ionic/cli-framework/utils/fs';
 
 import { IIntegration, IShell, InfoHookItem, IntegrationName, IntegrationTemplate, IonicEnvironment } from '../../definitions';
 import { FatalException } from '../errors';
 
 import * as cordovaLibType from './cordova';
+
+const debug = Debug('ionic:cli-utils:lib:integrations');
 
 export const INTEGRATIONS: IntegrationTemplate[] = [
   {
@@ -129,7 +132,7 @@ async function addIntegration(env: IonicEnvironment, integration: IntegrationTem
   const contents = await readDir(tmpdir);
   const blacklist: string[] = [];
 
-  env.log.debug(() => `Integration files downloaded to ${chalk.bold(tmpdir)} (files: ${contents.map(f => chalk.bold(f)).join(', ')})`);
+  debug(`Integration files downloaded to ${chalk.bold(tmpdir)} (files: ${contents.map(f => chalk.bold(f)).join(', ')})`);
 
   for (let f of contents) {
     const projectf = path.resolve(env.project.directory, f);
@@ -161,7 +164,7 @@ async function addIntegration(env: IonicEnvironment, integration: IntegrationTem
   }
 
   env.tasks.next(`Copying integrations files to project`);
-  env.log.debug(() => `Blacklist: ${blacklist.map(f => chalk.bold(f)).join(', ')}`);
+  debug(`Blacklist: ${blacklist.map(f => chalk.bold(f)).join(', ')}`);
 
   await copyDirectory(tmpdir, env.project.directory, {
     filter: f => {
