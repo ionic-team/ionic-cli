@@ -3,7 +3,7 @@ import * as util from 'util';
 
 import chalk from 'chalk';
 
-import { InputValidationError, parseArgs } from '@ionic/cli-framework';
+import { InputValidationError, stripOptions } from '@ionic/cli-framework';
 import { IPCMessage, IonicEnvironment, RootPlugin, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
 import { Exception } from '@ionic/cli-utils/lib/errors';
 import { mapLegacyCommand, modifyArguments } from '@ionic/cli-utils/lib/init';
@@ -94,13 +94,14 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
         }
       }
 
-      const argv = parseArgs(pargv, { boolean: true, string: '_' });
+      const parsedArgs = stripOptions(pargv, { includeSeparated: false });
 
       // If an legacy command is being executed inform the user that there is a new command available
-      const foundCommand = mapLegacyCommand(argv._[0]);
+      const foundCommand = mapLegacyCommand(parsedArgs[0]);
+
       if (foundCommand) {
         ienv.log.msg(
-          `The ${chalk.green(argv._[0])} command has been renamed. To find out more, run:\n\n` +
+          `The ${chalk.green(parsedArgs[0])} command has been renamed. To find out more, run:\n\n` +
           `    ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`
         );
       } else {

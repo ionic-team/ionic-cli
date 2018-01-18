@@ -1,4 +1,4 @@
-import { OptionFilters, filterCommandLineOptions, filterCommandLineOptionsByGroup, parsedArgsToArgv, separateArgv } from '@ionic/cli-framework';
+import { OptionFilters, filterCommandLineOptions, filterCommandLineOptionsByGroup, parsedArgsToArgv } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IonicEnvironment } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
@@ -26,9 +26,13 @@ export function filterArgumentsForCordova(metadata: CommandMetadata, inputs: Com
 
   const results = filterCommandLineOptionsByGroup(m, options, OptionGroup.Cordova);
   const args = parsedArgsToArgv(results, { useEquals: false, allowCamelCase: true });
-  const [ ownArgs, otherArgs ] = separateArgv(inputs);
+  const i = args.indexOf('--');
 
-  return [metadata.name, ...ownArgs, ...args, ...otherArgs];
+  if (i >= 0) {
+    args.splice(i, 1); // join separated args onto main args, use them verbatim
+  }
+
+  return [metadata.name, ...inputs, ...args];
 }
 
 export function generateBuildOptions(metadata: CommandMetadata, options: CommandLineOptions): CommandLineOptions {

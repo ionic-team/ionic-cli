@@ -50,7 +50,6 @@ describe('@ionic/cli-utils', () => {
     it('should return the command name and inputs if no options passed', () => {
       const inputs = ['ios'];
       const options = { _: [], boolopt: false, cdvopt1: null, cdvopt2: false, prod: true, optimizejs: true };
-
       const result = filterArgumentsForCordova(metadata, inputs, options);
       expect(result).toEqual(['build', 'ios']);
     });
@@ -58,7 +57,6 @@ describe('@ionic/cli-utils', () => {
     it('should only include options with the Cordova intent', () => {
       const inputs = ['ios'];
       const options = { _: [], boolopt: true, cdvopt1: 'foo', cdvopt2: true, prod: true, optimizejs: true };
-
       const result = filterArgumentsForCordova(metadata, inputs, options);
       expect(result).toEqual(['build', 'ios', '--cdvopt1', 'foo', '--cdvopt2']);
     });
@@ -66,23 +64,20 @@ describe('@ionic/cli-utils', () => {
     it('should include --verbose', () => {
       const inputs = ['ios'];
       const options = { _: [], boolopt: true, cdvopt1: 'foo', cdvopt2: true, prod: true, optimizejs: true, verbose: true };
-
       const result = filterArgumentsForCordova(metadata, inputs, options);
       expect(result).toEqual(['build', 'ios', '--cdvopt1', 'foo', '--cdvopt2', '--verbose']);
     });
 
     it('should include additional options', () => {
-      const inputs = ['android', '--', '--someopt'];
-      const options = { _: [], boolopt: true, cdvopt1: 'foo', cdvopt2: true, prod: true, optimizejs: true };
-
+      const inputs = ['android'];
+      const options = { _: [], '--': ['--someopt'], boolopt: true, cdvopt1: 'foo', cdvopt2: true, prod: true, optimizejs: true };
       const result = filterArgumentsForCordova(metadata, inputs, options);
       expect(result).toEqual(['build', 'android', '--cdvopt1', 'foo', '--cdvopt2', '--someopt']);
     });
 
     it('should include additional and unparsed options', () => {
-      const inputs = ['android', '--', '--someopt', '--', '--gradleArg=-PcdvBuildMultipleApks=true'];
-      const options = { _: [], boolopt: true, cdvopt1: 'foo', cdvopt2: true, prod: true, optimizejs: true };
-
+      const inputs = ['android'];
+      const options = { _: [], '--': ['--someopt', '--', '--gradleArg=-PcdvBuildMultipleApks=true'], boolopt: true, cdvopt1: 'foo', cdvopt2: true, prod: true, optimizejs: true };
       const result = filterArgumentsForCordova(metadata, inputs, options);
       expect(result).toEqual(['build', 'android', '--cdvopt1', 'foo', '--cdvopt2', '--someopt', '--', '--gradleArg=-PcdvBuildMultipleApks=true']);
     });

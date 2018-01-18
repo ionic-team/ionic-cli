@@ -22,17 +22,24 @@ export { ParsedArgs } from 'minimist';
  * a list of process args and return the result.
  *
  * If a double-hyphen separator (--) is encountered, it and the remaining
- * arguments are included in the result, as they are not interpreted.
+ * arguments are included in the result, as they are not interpreted. This
+ * behavior can be disabled by setting the `includeSeparated` option to
+ * `false`.
  */
-export function stripOptions(pargv: string[]): string[] {
-  const [ ownArgs, otherArgs ] = separateArgv(pargv);
+export function stripOptions(pargv: string[], { includeSeparated = true }: { includeSeparated?: boolean; } = {}): string[] {
   const r = /^\-/;
+  const [ ownArgs, otherArgs ] = separateArgv(pargv);
+  const filteredArgs = ownArgs.filter(arg => !r.test(arg));
+
+  if (!includeSeparated) {
+    return filteredArgs;
+  }
 
   if (otherArgs.length > 0) {
     otherArgs.unshift('--');
   }
 
-  return [...ownArgs.filter(arg => !r.test(arg)), ...otherArgs];
+  return [...filteredArgs, ...otherArgs];
 }
 
 /**
@@ -78,6 +85,7 @@ export function metadataToParseArgsOptions(metadata: CommandMetadata): HydratedP
     boolean: [],
     alias: {},
     default: {},
+    '--': true,
   };
 
   if (!metadata.options) {
@@ -113,11 +121,11 @@ export function parsedArgsToArgv(options: CommandLineOptions, fnOptions: ParsedA
     fnOptions.useEquals = true;
   }
 
-  let results = dargs(options, fnOptions);
+  const results = dargs(options, fnOptions);
   results.splice(results.length - options._.length); // take out arguments
 
   if (fnOptions.useDoubleQuotes) {
-    results = results.map(r => r.replace(/^(\-\-[A-Za-z0-9-]+)=(.+\s+.+)$/, '$1="$2"'));
+    return results.map(r => r.replace(/^(\-\-[A-Za-z0-9-]+)=(.+\s+.+)$/, '$1="$2"'));
   }
 
   return results;

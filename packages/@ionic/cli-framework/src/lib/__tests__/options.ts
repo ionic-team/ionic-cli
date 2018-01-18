@@ -46,6 +46,11 @@ describe('@ionic/cli-framework', () => {
         expect(result).toEqual(['a', '--', '--opt1', 'b', '--opt2']);
       });
 
+      it('should remove options after -- separator if option is supplied', () => {
+        const result = stripOptions(['-f', 'a', '--', '--opt1', 'b', '--opt2'], { includeSeparated: false });
+        expect(result).toEqual(['a']);
+      });
+
     });
 
     describe('separateArgv', () => {
@@ -114,6 +119,7 @@ describe('@ionic/cli-framework', () => {
           boolean: ['flag1'],
           alias: { foo: ['f'], bar: [], flag1: [] },
           default: { foo: null, bar: 'soup', flag1: false },
+          '--': true,
         });
       });
 
@@ -122,13 +128,13 @@ describe('@ionic/cli-framework', () => {
         it('should parse with empty argv', () => {
           const opts = metadataToParseArgsOptions(metadata1);
           const result = minimist([], opts);
-          expect(result).toEqual({ _: [], foo: null, f: null, bar: 'soup', flag1: false, });
+          expect(result).toEqual({ _: [], foo: null, f: null, bar: 'soup', flag1: false, '--': [] });
         });
 
         it('should parse with comprehensive argv', () => {
           const opts = metadataToParseArgsOptions(metadata1);
           const result = minimist(['cat', '--foo', 'rabbit', 'dog', '--bar=salad', '--unknown', 'wow', '--flag1', 'extra', '--and-again'], opts);
-          expect(result).toEqual({ _: ['cat', 'dog', 'extra'], foo: 'rabbit', f: 'rabbit', bar: 'salad', flag1: true, unknown: 'wow', 'and-again': true });
+          expect(result).toEqual({ _: ['cat', 'dog', 'extra'], foo: 'rabbit', f: 'rabbit', bar: 'salad', flag1: true, unknown: 'wow', 'and-again': true, '--': [] });
         });
 
       });
@@ -175,6 +181,11 @@ describe('@ionic/cli-framework', () => {
       it('should parse out string option from minimist result and wrap strings with spaces in double quotes with flag provided', () => {
         const result = parsedArgsToArgv({ _: [], cat: 'meow meow meow' }, { useDoubleQuotes: true });
         expect(result).toEqual(['--cat="meow meow meow"']);
+      });
+
+      it('should account for -- separator', () => {
+        const result = parsedArgsToArgv({ _: [], '--': ['--claws'], cat: 'meow meow meow' }, { useDoubleQuotes: true });
+        expect(result).toEqual(['--cat="meow meow meow"', '--', '--claws']);
       });
 
     });

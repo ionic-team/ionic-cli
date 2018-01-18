@@ -1,41 +1,23 @@
-import * as lodash from 'lodash';
 import chalk from 'chalk';
+import * as lodash from 'lodash';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { CommandGroup, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { BIND_ALL_ADDRESS, BROWSERS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LAB_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
 
 export class ServeCommand extends Command implements CommandPreRun {
-  async getMetadata(runinfo?: CommandInstanceInfo): Promise<CommandMetadata> {
-    const [ alias ] = (runinfo && lodash.last(runinfo.location.path)) || [undefined];
-
-    const exampleCommands = ['', '-c', '--local'];
-
-    if (alias !== 'lab') {
-      exampleCommands.push('--lab');
-    }
-
-    const description = alias === 'lab' ? 'Start Ionic Lab for multi-platform dev/testing' : 'Start a local dev server for app dev/testing';
-
-    const longDescription = alias === 'lab' ?
-    `
-Start an instance of ${chalk.bold('Ionic Lab')}, a tool for developing Ionic apps for multiple platforms at once side-by-side.
-
-${chalk.green('ionic lab')} is just a convenient shortcut for ${chalk.green('ionic serve --lab')}.
-` :
-    `
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'serve',
+      type: 'project',
+      description: 'Start a local dev server for app dev/testing',
+      longDescription: `
 Easily spin up a development server which launches in your browser. It watches for changes in your source files and automatically reloads with the updated build.
 
 By default, ${chalk.green('ionic serve')} boots up a development server on all network interfaces and prints the external address(es) on which your app is being served. It also broadcasts your app to the Ionic DevApp on your network. To disable the DevApp and bind to ${chalk.green('localhost')}, use ${chalk.green('--local')}.
 
-Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
-
-    return {
-      name: 'serve',
-      type: 'project',
-      description,
-      longDescription,
-      exampleCommands,
+Try the ${chalk.green('--lab')} option to see multiple platforms at once.`,
+      exampleCommands: ['', '-c', '--local', '--lab'],
       options: [
         {
           name: 'consolelogs',
@@ -139,13 +121,11 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
           description: 'Test your apps on multiple platform types in the browser',
           type: Boolean,
           aliases: ['l'],
-          groups: alias === 'lab' ? [OptionGroup.Hidden] : [],
         },
         {
           name: 'platform',
           description: `Start serve with a specific platform (${['android', 'ios'].map(t => chalk.green(t)).join(', ')})`,
           aliases: ['t'],
-          groups: alias === 'lab' ? [OptionGroup.Hidden] : [],
         },
         {
           name: 'auth',
@@ -192,5 +172,24 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
     const { serve } = await import('@ionic/cli-utils/lib/serve');
 
     await serve(this.env, inputs, options);
+  }
+}
+
+export class LabCommand extends ServeCommand {
+  async getMetadata(): Promise<CommandMetadata> {
+    const metadata = await super.getMetadata();
+    const groups = [...metadata.groups || [], CommandGroup.Hidden];
+    const exampleCommands = [...metadata.exampleCommands || []].filter(c => !c.includes('--lab'));
+
+    return {
+      ...metadata,
+      description: 'Start Ionic Lab for multi-platform dev/testing',
+      longDescription: `
+Start an instance of ${chalk.bold('Ionic Lab')}, a tool for developing Ionic apps for multiple platforms at once side-by-side.
+
+${chalk.green('ionic lab')} is just a convenient shortcut for ${chalk.green('ionic serve --lab')}.`,
+      groups,
+      exampleCommands,
+    };
   }
 }
