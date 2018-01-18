@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { BaseCommand, generateCommandPath, parsedArgsToArgv } from '@ionic/cli-framework';
+import { BaseCommand, generateCommandPath, unparseArgs } from '@ionic/cli-framework';
 
 import {
   CommandInstanceInfo,
@@ -97,7 +97,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
         return allOptions;
       }, initialOptions);
 
-    const optionInputs = parsedArgsToArgv(filteredOptions, { useDoubleQuotes: true });
+    const optionInputs = unparseArgs(filteredOptions, { useDoubleQuotes: true });
     return filteredInputs.concat(optionInputs);
   }
 }

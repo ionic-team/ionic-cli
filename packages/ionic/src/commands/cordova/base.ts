@@ -191,7 +191,7 @@ export abstract class CordovaRunCommand extends CordovaCommand implements Comman
 
     if (options['list']) {
       const metadata = await this.getMetadata();
-      const args = filterArgumentsForCordova(metadata, inputs, options);
+      const args = filterArgumentsForCordova(metadata, options);
       if (!options['device'] && !options['emulator']) {
         if (args[0] === 'run') {
           args.push('--device');
@@ -255,7 +255,7 @@ export abstract class CordovaRunCommand extends CordovaCommand implements Comman
       }
     }
 
-    await this.runCordova(filterArgumentsForCordova(metadata, inputs, options), {});
+    await this.runCordova(filterArgumentsForCordova(metadata, options), {});
 
     if (!isLiveReload) {
       this.env.log.ok(

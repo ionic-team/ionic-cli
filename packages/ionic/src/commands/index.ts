@@ -50,8 +50,8 @@ export class IonicNamespace extends Namespace {
     ]);
   }
 
-  async runCommand(pargv: string[], env: { [key: string]: string; }): Promise<void> {
-    const pargs = stripOptions(pargv);
+  async runCommand(argv: string[], env: { [key: string]: string; }): Promise<void> {
+    const pargs = stripOptions(argv);
 
     const location = await this.locate(pargs);
 
@@ -79,8 +79,8 @@ export class IonicNamespace extends Namespace {
     }
 
     const minimistOpts = metadataToParseArgsOptions(metadata);
-    const options = parseArgs(pargv, minimistOpts);
-    const inputs = lodash.drop(options._, location.path.length - 1);
+    const options = parseArgs(lodash.drop(argv, location.path.length - 1), minimistOpts);
+    const inputs = options._;
 
     if (!this.env.project.directory && metadata.type === 'project') {
       throw new FatalException(

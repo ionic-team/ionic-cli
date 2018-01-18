@@ -28,8 +28,8 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
     const cmd = location.obj;
 
     const metadata = await cmd.getMetadata();
-    const options = parseArgs(argv, metadataToParseArgsOptions(metadata));
-    const inputs = lodash.drop(options._, location.path.length - 1);
+    const options = parseArgs(lodash.drop(argv, location.path.length - 1), metadataToParseArgsOptions(metadata));
+    const inputs = options._;
 
     await cmd.validate(inputs);
     await cmd.run(inputs, options, { location });

@@ -5,9 +5,9 @@ import {
   filterCommandLineOptions,
   filterCommandLineOptionsByGroup,
   metadataToParseArgsOptions,
-  parsedArgsToArgv,
   separateArgv,
   stripOptions,
+  unparseArgs,
 } from '../options';
 
 describe('@ionic/cli-framework', () => {
@@ -141,51 +141,61 @@ describe('@ionic/cli-framework', () => {
 
     });
 
-    describe('parsedArgsToArgv', () => {
+    describe('unparseArgs', () => {
 
       it('should handle empty argv', () => {
-        const result = parsedArgsToArgv({ _: [] });
+        const result = unparseArgs({ _: [] });
         expect(result).toEqual([]);
       });
 
       it('should filter out arguments', () => {
-        const result = parsedArgsToArgv({ _: ['foo', 'bar'] });
-        expect(result).toEqual([]);
+        const result = unparseArgs({ _: ['foo', 'bar'] });
+        expect(result).toEqual(['foo', 'bar']);
       });
 
       it('should parse out boolean option from minimist result', () => {
-        const result = parsedArgsToArgv({ _: ['foo', 'bar'], wow: true });
-        expect(result).toEqual(['--wow']);
+        const result = unparseArgs({ _: ['foo', 'bar'], wow: true });
+        expect(result).toEqual(['foo', 'bar', '--wow']);
       });
 
       it('should parse out string option from minimist result', () => {
-        const result = parsedArgsToArgv({ _: [], cat: 'meow' });
+        const result = unparseArgs({ _: [], cat: 'meow' });
         expect(result).toEqual(['--cat=meow']);
       });
 
       it('should parse out option list from minimist result', () => {
-        const result = parsedArgsToArgv({ _: [], cat: 'meow', dog: 'bark', flag1: true });
+        const result = unparseArgs({ _: [], cat: 'meow', dog: 'bark', flag1: true });
         expect(result).toEqual(['--cat=meow', '--dog=bark', '--flag1']);
       });
 
       it('should parse out option list from minimist result without equal signs', () => {
-        const result = parsedArgsToArgv({ _: [], cat: 'meow', dog: 'bark', flag1: true }, { useEquals: false });
+        const result = unparseArgs({ _: [], cat: 'meow', dog: 'bark', flag1: true }, { useEquals: false });
         expect(result).toEqual(['--cat', 'meow', '--dog', 'bark', '--flag1']);
       });
 
       it('should parse out string option from minimist result and not wrap strings with spaces in double quotes without flag', () => {
-        const result = parsedArgsToArgv({ _: [], cat: 'meow meow meow' });
+        const result = unparseArgs({ _: [], cat: 'meow meow meow' });
         expect(result).toEqual(['--cat=meow meow meow']);
       });
 
       it('should parse out string option from minimist result and wrap strings with spaces in double quotes with flag provided', () => {
-        const result = parsedArgsToArgv({ _: [], cat: 'meow meow meow' }, { useDoubleQuotes: true });
+        const result = unparseArgs({ _: [], cat: 'meow meow meow' }, { useDoubleQuotes: true });
         expect(result).toEqual(['--cat="meow meow meow"']);
       });
 
       it('should account for -- separator', () => {
-        const result = parsedArgsToArgv({ _: [], '--': ['--claws'], cat: 'meow meow meow' }, { useDoubleQuotes: true });
+        const result = unparseArgs({ _: [], '--': ['--claws'], cat: 'meow meow meow' }, { useDoubleQuotes: true });
         expect(result).toEqual(['--cat="meow meow meow"', '--', '--claws']);
+      });
+
+      it('should account for double -- separator', () => {
+        const result = unparseArgs({ _: [], '--': ['--', '--claws'], cat: 'meow meow meow' }, { useDoubleQuotes: true });
+        expect(result).toEqual(['--cat="meow meow meow"', '--', '--', '--claws']);
+      });
+
+      it('should account for args, options, and -- args', () => {
+        const result = unparseArgs({ _: ['foo', 'bar'], '--': ['--', '--claws'], cat: 'meow meow meow' }, { useDoubleQuotes: true });
+        expect(result).toEqual(['foo', 'bar', '--cat="meow meow meow"', '--', '--', '--claws']);
       });
 
     });

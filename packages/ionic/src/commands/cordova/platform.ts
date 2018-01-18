@@ -86,7 +86,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
       return;
     }
 
-    const cordovaArgs = filterArgumentsForCordova(metadata, inputs, options);
+    const cordovaArgs = filterArgumentsForCordova(metadata, options);
 
     if ((action === 'add' || action === 'remove') && lodash.intersection(cordovaArgs, ['--save', '--nosave', '--no-save']).length === 0) {
       cordovaArgs.push('--save');

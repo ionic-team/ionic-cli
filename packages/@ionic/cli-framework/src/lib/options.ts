@@ -1,4 +1,3 @@
-import * as dargs from 'dargs';
 import * as minimist from 'minimist';
 import * as lodash from 'lodash';
 
@@ -108,29 +107,6 @@ export function metadataToParseArgsOptions(metadata: CommandMetadata): HydratedP
   return options;
 }
 
-export interface ParsedArgsToArgvOptions extends dargs.Options {
-  useDoubleQuotes?: boolean;
-}
-
-export function parsedArgsToArgv(options: CommandLineOptions, fnOptions: ParsedArgsToArgvOptions = {}): string[] {
-  if (typeof fnOptions.ignoreFalse === 'undefined') {
-    fnOptions.ignoreFalse = true;
-  }
-
-  if (fnOptions.useDoubleQuotes) {
-    fnOptions.useEquals = true;
-  }
-
-  const results = dargs(options, fnOptions);
-  results.splice(results.length - options._.length); // take out arguments
-
-  if (fnOptions.useDoubleQuotes) {
-    return results.map(r => r.replace(/^(\-\-[A-Za-z0-9-]+)=(.+\s+.+)$/, '$1="$2"'));
-  }
-
-  return results;
-}
-
 export type OptionPredicate<O extends CommandMetadataOption> = (option: O, value?: ParsedArg) => boolean;
 
 export namespace OptionFilters {
@@ -186,4 +162,73 @@ export function filterCommandLineOptions<M extends CommandMetadata<I, O>, I exte
  */
 export function filterCommandLineOptionsByGroup<M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(metadata: M, parsedArgs: CommandLineOptions, groups: MetadataGroup | MetadataGroup[]): CommandLineOptions {
   return filterCommandLineOptions(metadata, parsedArgs, OptionFilters.includesGroups(groups));
+}
+
+export interface UnparseArgsOptions {
+  useDoubleQuotes?: boolean;
+  useEquals?: boolean;
+  ignoreFalse?: boolean;
+  allowCamelCase?: boolean;
+}
+
+/**
+ * The opposite of `parseArgs()`. This function takes parsed args and converts
+ * them back into an argv array of arguments and options.
+ */
+export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, useEquals = true, ignoreFalse = true, allowCamelCase }: UnparseArgsOptions = {}): string[] {
+  // Based on dargs, by sindresorhus
+  // @see https://github.com/sindresorhus/dargs/blob/master/license
+
+  const args = [...parsedArgs['_'] || []];
+  const separatedArgs = parsedArgs['--'];
+
+  if (useDoubleQuotes) {
+    useEquals = true;
+  }
+
+  const pushPairs = (...pairs: [string, string | undefined][]) => {
+    for (const [ k, val ] of pairs) {
+      const key = '--' + (allowCamelCase ? k : k.replace(/[A-Z]/g, '-$&').toLowerCase());
+
+      if (useEquals) {
+        args.push(key + (val ? `=${useDoubleQuotes ? `"${val}"` : val}` : ''));
+      } else {
+        args.push(key);
+
+        if (val) {
+          args.push(val);
+        }
+      }
+    }
+  };
+
+  const pairs = lodash.toPairs(parsedArgs).filter(([k]) => k !== '_' && k !== '--');
+
+  for (const [ key, val ] of pairs) {
+    if (val === true) {
+      pushPairs([key, undefined]);
+    }
+
+    if (val === false && !ignoreFalse) {
+      pushPairs([`no-${key}`, undefined]);
+    }
+
+    if (typeof val === 'string') {
+      pushPairs([key, val]);
+    }
+
+    if (typeof val === 'number' && !Number.isNaN(val)) {
+      pushPairs([key, val.toString()]);
+    }
+
+    if (Array.isArray(val)) {
+      pushPairs(...val.map((v): [string, string] => [key, v]));
+    }
+  }
+
+  if (separatedArgs) {
+    args.push('--', ...separatedArgs);
+  }
+
+  return args;
 }

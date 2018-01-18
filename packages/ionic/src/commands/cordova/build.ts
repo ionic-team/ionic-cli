@@ -98,7 +98,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/gu
       await build(this.env, inputs, generateBuildOptions(metadata, options));
     }
 
-    const cordovaArgs = filterArgumentsForCordova(metadata, inputs, options);
+    const cordovaArgs = filterArgumentsForCordova(metadata, options);
     await this.runCordova(cordovaArgs, {});
   }
 }

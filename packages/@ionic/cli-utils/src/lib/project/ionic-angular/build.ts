@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import { parsedArgsToArgv } from '@ionic/cli-framework';
+import { unparseArgs } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, IonicAngularBuildOptions } from '../../../definitions';
 
@@ -54,6 +54,6 @@ export class BuildRunner extends BaseBuildRunner<IonicAngularBuildOptions> {
       env: options.env,
     };
 
-    return parsedArgsToArgv(minimistArgs, { useEquals: false });
+    return unparseArgs(minimistArgs, { useEquals: false });
   }
 }

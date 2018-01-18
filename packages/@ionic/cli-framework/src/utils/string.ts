@@ -40,7 +40,7 @@ export function str2num(value: any, defaultValue = -1): number {
 
   const result = parseInt(value, 10);
 
-  if (isNaN(result)) {
+  if (Number.isNaN(result)) {
     return defaultValue;
   }
 

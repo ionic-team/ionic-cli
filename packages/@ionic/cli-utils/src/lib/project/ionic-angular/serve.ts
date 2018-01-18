@@ -3,7 +3,7 @@ import * as Debug from 'debug';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
-import { parsedArgsToArgv } from '@ionic/cli-framework';
+import { unparseArgs } from '@ionic/cli-framework';
 
 import { ServeDetails, ServeOptions } from '../../../definitions';
 import { FatalException } from '../../errors';
@@ -109,5 +109,5 @@ export async function serveOptionsToAppScriptsArgs(options: ServeOptions) {
     env: options.env,
   };
 
-  return parsedArgsToArgv(args, { useEquals: false });
+  return unparseArgs(args, { useEquals: false });
 }

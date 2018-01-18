@@ -73,7 +73,7 @@ Like running ${chalk.green('cordova plugin')} directly, but provides friendly ch
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const metadata = await this.getMetadata();
-    const optionList = filterArgumentsForCordova(metadata, inputs.splice(0, 2), options);
+    const optionList = filterArgumentsForCordova(metadata, options);
 
     if (!optionList.includes('--save')) {
       optionList.push('--save');

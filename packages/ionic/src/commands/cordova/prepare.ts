@@ -78,6 +78,6 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
       await build(this.env, inputs, generateBuildOptions(metadata, options));
     }
 
-    await this.runCordova(filterArgumentsForCordova(metadata, inputs, options), {});
+    await this.runCordova(filterArgumentsForCordova(metadata, options), {});
   }
 }
