@@ -191,7 +191,7 @@ export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, 
       const key = '--' + (allowCamelCase ? k : k.replace(/[A-Z]/g, '-$&').toLowerCase());
 
       if (useEquals) {
-        args.push(key + (val ? `=${useDoubleQuotes ? `"${val}"` : val}` : ''));
+        args.push(key + (val ? `=${useDoubleQuotes && val.includes(' ') ? `"${val}"` : val}` : ''));
       } else {
         args.push(key);
 
