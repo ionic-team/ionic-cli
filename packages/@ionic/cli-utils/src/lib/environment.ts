@@ -6,7 +6,6 @@ import {
   CLIMeta,
   ICLIEventEmitter,
   IClient,
-  ICommand,
   IConfig,
   IHookEngine,
   ILogger,
@@ -23,7 +22,6 @@ import {
 } from '../definitions';
 
 export class Environment implements IonicEnvironment {
-  command?: ICommand;
   readonly flags: IonicEnvironmentFlags;
   readonly hooks: IHookEngine;
   readonly client: IClient;

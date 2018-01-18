@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
+import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 import { fileToString, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
@@ -25,7 +26,6 @@ export class SSHUseCommand extends SSHBaseCommand {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { expandPath, prettyPath } = await import('@ionic/cli-framework/utils/format');
     const { ERROR_SSH_INVALID_PRIVKEY, ERROR_SSH_MISSING_PRIVKEY, validatePrivateKey } = await import('@ionic/cli-utils/lib/ssh');
     const { ensureHostAndKeyPath, getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
 

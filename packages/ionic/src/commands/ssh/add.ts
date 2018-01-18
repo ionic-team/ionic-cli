@@ -6,7 +6,7 @@ import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
 import { ERROR_FILE_NOT_FOUND, pathAccessible, pathExists } from '@ionic/cli-framework/utils/fs';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isSSHKeyResponse, isSuperAgentError } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
@@ -53,7 +53,6 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { expandPath, prettyPath } = await import('@ionic/cli-framework/utils/format');
     const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
 
     const { ERROR_SSH_INVALID_PUBKEY, parsePublicKeyFile } = await import('@ionic/cli-utils/lib/ssh');

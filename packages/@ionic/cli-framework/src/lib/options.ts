@@ -175,7 +175,7 @@ export interface UnparseArgsOptions {
  * The opposite of `parseArgs()`. This function takes parsed args and converts
  * them back into an argv array of arguments and options.
  */
-export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, useEquals = true, ignoreFalse = true, allowCamelCase }: UnparseArgsOptions = {}): string[] {
+export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, useEquals = true, ignoreFalse = true, allowCamelCase }: UnparseArgsOptions): string[] {
   // Based on dargs, by sindresorhus
   // @see https://github.com/sindresorhus/dargs/blob/master/license
 

@@ -1,8 +1,12 @@
 import chalk from 'chalk';
+import * as lodash from 'lodash';
 
 import { validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, OptionGroup } from '@ionic/cli-utils';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, IBaseConfig, OptionGroup } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
 
 export class ConfigSetCommand extends Command {
@@ -58,7 +62,52 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { set } = await import('@ionic/cli-utils/commands/config/set');
-    await set(this.env, inputs, options);
+    const [ p ] = inputs;
+    let [ , v ] = inputs;
+
+    const { global, json, force } = options;
+
+    if (!global && !this.env.project.directory) {
+      throw new FatalException(`Sorry--this won't work outside an Ionic project directory. Did you mean to set global config using ${chalk.green('--global')}?`);
+    }
+
+    const file: IBaseConfig<Object> = global ? this.env.config : this.env.project;
+
+    const config = await file.load();
+    const oldValue = lodash.get(config, p);
+
+    if (!v.match(/^\d+e\d+$/)) {
+      try {
+        v = JSON.parse(v);
+      } catch (e) {
+        if (!(e instanceof SyntaxError)) {
+          throw e;
+        }
+
+        if (json) {
+          throw new FatalException(`${chalk.green('--json')}: ${chalk.green(v)} is invalid JSON: ${chalk.red(String(e))}`);
+        }
+      }
+    }
+
+    const newValue = v;
+
+    if (oldValue && typeof oldValue === 'object' && !force) {
+      throw new FatalException(
+        `Sorry--will not override objects or arrays without ${chalk.green('--force')}.\n` +
+        `Value of ${chalk.green(p)} is: ${chalk.bold(JSON.stringify(oldValue))}`
+      );
+    }
+
+    const valueChanged = oldValue !== newValue;
+
+    lodash.set(config, p, newValue);
+    await file.save();
+
+    if (valueChanged) {
+      this.env.log.ok(`${chalk.green(p)} set to ${chalk.green(JSON.stringify(v))} in ${chalk.bold(prettyPath(file.filePath))}!`);
+    } else {
+      this.env.log.msg(`${chalk.green(p)} is already set to ${chalk.bold(JSON.stringify(v))}.`);
+    }
   }
 }
