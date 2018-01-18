@@ -44,7 +44,7 @@
     "string-width": "^2.1.1",
     "strip-ansi": "^4.0.0",
     "superagent": "^3.8.2",
-    "tslib": "^1.8.1",
+    "tslib": "^1.9.0",
     "untildify": "^3.0.2",
     "wrap-ansi": "^3.0.1"
   },

@@ -34,11 +34,11 @@
     "@ionic/cli-framework": "0.1.2",
     "chalk": "^2.3.0",
     "express": "^4.16.2",
-    "tslib": "^1.8.1"
+    "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "@stencil/core": "^0.1.1-0",
-    "@stencil/dev-server": "next",
+    "@stencil/core": "^0.1.6",
+    "@stencil/dev-server": "0.0.18",
     "@types/express": "^4.11.0",
     "concurrently": "^3.5.1"
   },

@@ -19,7 +19,7 @@
     "escape-string-regexp": "^1.0.5",
     "ionic": "3.19.0",
     "strip-ansi": "^4.0.0",
-    "tslib": "^1.8.1"
+    "tslib": "^1.9.0"
   },
   "devDependencies": {
     "@types/ansi-styles": "^2.0.30",

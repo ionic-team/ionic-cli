@@ -33,7 +33,7 @@
     "express": "^4.16.2",
     "http-proxy-middleware": "^0.17.4",
     "tiny-lr": "^1.0.5",
-    "tslib": "^1.8.1",
+    "tslib": "^1.9.0",
     "ws": "3.3.2"
   },
   "devDependencies": {

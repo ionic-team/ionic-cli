@@ -21,7 +21,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "netmask": "^1.0.6"
+    "netmask": "^1.0.6",
+    "tslib": "^1.9.0"
   },
   "devDependencies": {
     "@types/netmask": "^1.0.30"
