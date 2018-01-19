@@ -1,99 +1,65 @@
 import chalk from 'chalk';
 
-import { contains, validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GenerateOptions } from '@ionic/cli-utils';
+import { CommandGroup } from '@ionic/cli-utils/constants';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
+import { prettyProjectName } from '@ionic/cli-utils/lib/project';
 
-const TYPE_CHOICES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
+import * as generateLibType from '@ionic/cli-utils/lib/generate';
 
 export class GenerateCommand extends Command implements CommandPreRun {
+  protected runner?: generateLibType.GenerateRunner<GenerateOptions>;
+
+  async getRunner() {
+    if (!this.runner) {
+      const { GenerateRunner } = await import('@ionic/cli-utils/lib/generate');
+      this.runner = await GenerateRunner.createFromProjectType(this.env, this.env.project.type);
+    }
+
+    return this.runner;
+  }
+
   async getMetadata(): Promise<CommandMetadata> {
-    return {
+    let projectMetadata: Partial<CommandMetadata> | undefined;
+    const longDescription = this.env.project.type
+      ? chalk.red(`Generators are not supported in this project type (${chalk.bold(prettyProjectName(this.env.project.type))}).`)
+      : chalk.red('Generators help is available within an Ionic project directory.');
+
+    const metadata: CommandMetadata = {
       name: 'generate',
       type: 'project',
-      description: `Generate pipes, components, pages, directives, providers, and tabs ${chalk.bold(`(ionic-angular >= 3.0.0)`)}`,
-      longDescription: `
-Automatically create components for your Ionic app.
-
-The given ${chalk.green('name')} is normalized into an appropriate naming convention. For example, ${chalk.green('ionic generate page neat')} creates a page by the name of ${chalk.green('NeatPage')} in ${chalk.green('src/pages/neat/')}.
-      `,
-      exampleCommands: [
-        '',
-        ...TYPE_CHOICES,
-        'component foo',
-        'page Login',
-        'page Detail --no-module',
-        'page About --constants',
-        'pipe MyFilterPipe',
-      ],
-      inputs: [
-        {
-          name: 'type',
-          description: `The type of generator (e.g. ${TYPE_CHOICES.map(t => chalk.green(t)).join(', ')})`,
-          validators: [validators.required, contains(TYPE_CHOICES, {})],
-        },
-        {
-          name: 'name',
-          description: 'The name of the component being generated',
-          validators: [validators.required],
-        },
-      ],
-      options: [
-        {
-          name: 'module',
-          description: 'Do not generate an NgModule for the component',
-          type: Boolean,
-          default: true,
-        },
-        {
-          name: 'constants',
-          description: 'Generate a page constant file for lazy-loaded pages',
-          type: Boolean,
-          default: false,
-        },
-      ],
+      description: 'Automatically create framework components',
+      longDescription,
+      groups: [CommandGroup.Hidden],
     };
+
+    try {
+      const runner = await this.getRunner();
+      projectMetadata = await runner.getCommandMetadata();
+    } catch (e) {
+      if (!(e instanceof RunnerNotFoundException)) {
+        throw e;
+      }
+    }
+
+    return { ...metadata, ...projectMetadata };
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    if (this.env.project.type !== 'ionic-angular') {
-      throw new FatalException('Generators are only supported in Ionic Angular projects.');
-    }
-
-    if (!inputs[0]) {
-      const generatorType = await this.env.prompt({
-        type: 'list',
-        name: 'generatorType',
-        message: 'What would you like to generate:',
-        choices: TYPE_CHOICES,
-      });
-
-      inputs[0] = generatorType;
-    }
-
-    if (!inputs[1]) {
-      const generatorName = await this.env.prompt({
-        type: 'input',
-        name: 'generatorName',
-        message: 'What should the name be?',
-        validate: v => validators.required(v),
-      });
-
-      inputs[1] = generatorName;
-    }
-
-    if (!this.env.flags.interactive && inputs[0] === 'tabs') {
-      throw new FatalException(`Cannot generate tabs without prompts. Run without ${chalk.green('--no-interactive')}.`);
+    try {
+      const runner = await this.getRunner();
+      await runner.ensureCommandLine(inputs, options);
+    } catch (e) {
+      if (!(e instanceof RunnerNotFoundException)) {
+        throw e;
+      }
     }
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ type, name ] = inputs;
-
-    const { generate } = await import('@ionic/cli-utils/lib/project/ionic-angular/generate');
-    await generate({ env: this.env, inputs, options });
-
-    this.env.log.ok(`Generated a ${chalk.bold(type)}${type === 'tabs' ? ' page' : ''} named ${chalk.bold(name)}!`);
+    const runner = await this.getRunner();
+    const opts = runner.createOptionsFromCommandLine(inputs, options);
+    await runner.run(opts);
   }
 }

@@ -1,82 +1,136 @@
-import { unparseArgs, validators } from '@ionic/cli-framework';
+import chalk from 'chalk';
 
-import { IonicEnvironment } from '../../../definitions';
+import { contains, unparseArgs, validators } from '@ionic/cli-framework';
+
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularGenerateOptions, IonicEnvironment } from '../../../definitions';
 import { importAppScripts } from './app-scripts';
+import { GenerateRunner as BaseGenerateRunner } from '../../generate';
+import { FatalException } from '../../errors';
 
-export async function generate(args: { env: IonicEnvironment; inputs: string[], options: { _: string[]; [key: string]: any; }; }): Promise<string[]> {
-  if (!args.env.project.directory) {
-    return [];
+const TYPE_CHOICES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
+
+export class GenerateRunner extends BaseGenerateRunner<IonicAngularGenerateOptions> {
+  async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
+    return {
+      groups: [],
+      description: `Generate pipes, components, pages, directives, providers, and tabs`,
+      longDescription: `
+Automatically create components for your Ionic app.
+
+The given ${chalk.green('name')} is normalized into an appropriate naming convention. For example, ${chalk.green('ionic generate page neat')} creates a page by the name of ${chalk.green('NeatPage')} in ${chalk.green('src/pages/neat/')}.
+      `,
+      exampleCommands: [
+        '',
+        ...TYPE_CHOICES,
+        'component foo',
+        'page Login',
+        'page Detail --no-module',
+        'page About --constants',
+        'pipe MyFilterPipe',
+      ],
+      inputs: [
+        {
+          name: 'type',
+          description: `The type of generator (e.g. ${TYPE_CHOICES.map(t => chalk.green(t)).join(', ')})`,
+          validators: [validators.required, contains(TYPE_CHOICES, {})],
+        },
+        {
+          name: 'name',
+          description: 'The name of the component being generated',
+          validators: [validators.required],
+        },
+      ],
+      options: [
+        {
+          name: 'module',
+          description: 'Do not generate an NgModule for the component',
+          type: Boolean,
+          default: true,
+        },
+        {
+          name: 'constants',
+          description: 'Generate a page constant file for lazy-loaded pages',
+          type: Boolean,
+          default: false,
+        },
+      ],
+    };
   }
 
-  const appScriptsArgs = unparseArgs(args.options, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
-  process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
+  async ensureCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (!inputs[0]) {
+      const generatorType = await this.env.prompt({
+        type: 'list',
+        name: 'generatorType',
+        message: 'What would you like to generate:',
+        choices: TYPE_CHOICES,
+      });
 
-  const AppScripts = await importAppScripts(args.env);
-  const context = AppScripts.generateContext();
+      inputs[0] = generatorType;
+    }
 
-  const [ type, name ] = args.inputs;
-  const commandOptions = {
-    module: false,
-    constants: false,
-  };
+    if (!inputs[1]) {
+      const generatorName = await this.env.prompt({
+        type: 'input',
+        name: 'generatorName',
+        message: 'What should the name be?',
+        validate: v => validators.required(v),
+      });
 
-  if (args.options['module']) {
-    commandOptions.module = true;
+      inputs[1] = generatorName;
+    }
+
+    if (!this.env.flags.interactive && inputs[0] === 'tabs') {
+      throw new FatalException(`Cannot generate tabs without prompts. Run without ${chalk.green('--no-interactive')}.`);
+    }
   }
 
-  if (args.options['constants']) {
-    commandOptions.constants = true;
+  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicAngularGenerateOptions {
+    const [ type, name ] = inputs;
+
+    return {
+      type,
+      name,
+      module: options['module'] ? true : false,
+      constants: options['constants'] ? true : false,
+    };
   }
 
-  switch (type) {
-    case 'page':
-      await AppScripts.processPageRequest(context, name, commandOptions);
-      break;
-    case 'component':
-      const componentData = await getModules(context, 'component');
-      await AppScripts.processComponentRequest(context, name, componentData);
-      break;
-    case 'directive':
-      const directiveData = await getModules(context, 'directive');
-      await AppScripts.processDirectiveRequest(context, name, directiveData);
-      break;
-    case 'pipe':
-      const pipeData = await getModules(context, 'pipe');
-      await AppScripts.processPipeRequest(context, name, pipeData);
-      break;
-    case 'provider':
-      const providerData = await promptQuestions(context);
-      await AppScripts.processProviderRequest(context, name, providerData);
-      break;
-    case 'tabs':
-      const tabsData = await tabsPrompt(args.env);
-      await AppScripts.processTabsRequest(context, name, tabsData, commandOptions);
-      break;
+  async run(options: IonicAngularGenerateOptions) {
+    const appScriptsArgs = unparseArgs({ _: [], module: options.module, constants: options.constants }, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
+    process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
+
+    const AppScripts = await importAppScripts(this.env);
+    const context = AppScripts.generateContext();
+
+    switch (options.type) {
+      case 'page':
+        await AppScripts.processPageRequest(context, options.name, options);
+        break;
+      case 'component':
+        const componentData = await getModules(context, 'component');
+        await AppScripts.processComponentRequest(context, options.name, componentData);
+        break;
+      case 'directive':
+        const directiveData = await getModules(context, 'directive');
+        await AppScripts.processDirectiveRequest(context, options.name, directiveData);
+        break;
+      case 'pipe':
+        const pipeData = await getModules(context, 'pipe');
+        await AppScripts.processPipeRequest(context, options.name, pipeData);
+        break;
+      case 'provider':
+        const providerData = context.appNgModulePath;
+        await AppScripts.processProviderRequest(context, options.name, providerData);
+        break;
+      case 'tabs':
+        const tabsData = await tabsPrompt(this.env);
+        await AppScripts.processTabsRequest(context, options.name, tabsData, options);
+        break;
+    }
+
+    this.env.log.ok(`Generated a ${chalk.bold(options.type)}${options.type === 'tabs' ? ' page' : ''} named ${chalk.bold(options.name)}!`);
   }
-
-  return [];
-}
-
-async function promptQuestions(context: any) {
-  return prompt(context);
-}
-
-// async function getPages(context: any) {
-//   const AppScripts = await import('@ionic/app-scripts');
-//   const pages = await AppScripts.getNgModules(context, ['page', 'component']);
-//   const ngModuleSuffix = await AppScripts.getStringPropertyValue('IONIC_NG_MODULE_FILENAME_SUFFIX');
-
-//   return pages.map((page: any) => {
-//     return {
-//       fileName: path.basename(page.absolutePath, ngModuleSuffix),
-//       absolutePath: page.absolutePath,
-//       relativePath: path.relative(context.rootDir, page.absolutePath)
-//     };
-//   });
-// }
-
-async function prompt(context: any) {
-  return context.appNgModulePath;
 }
 
 async function getModules(context: any, kind: string) {

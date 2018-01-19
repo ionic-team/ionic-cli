@@ -30,3 +30,7 @@ export class ShellException extends Exception {
 }
 
 export class SessionException extends Exception {}
+
+export class RunnerException extends Exception {}
+
+export class RunnerNotFoundException extends RunnerException {}

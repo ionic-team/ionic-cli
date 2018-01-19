@@ -12,8 +12,9 @@ import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
 import { CommandLineInputs, CommandLineOptions, IonicEnvironment, LabServeDetails, NetworkInterface, ProjectType, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
-import { FatalException } from './errors';
+import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { PROJECT_FILE } from './project';
+import { Runner } from './runner';
 
 import * as ionic1ServeLibType from './project/ionic1/serve';
 import * as ionicAngularServeLibType from './project/ionic-angular/serve';
@@ -42,8 +43,10 @@ export interface DevAppDetails {
   }[];
 }
 
-export abstract class ServeRunner<T extends ServeOptions> {
-  constructor(protected env: IonicEnvironment) {}
+export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, ServeDetails> {
+  constructor(protected env: IonicEnvironment) {
+    super();
+  }
 
   abstract serveProject(options: T): Promise<ServeDetails>;
 
@@ -62,8 +65,8 @@ export abstract class ServeRunner<T extends ServeOptions> {
       const { ServeRunner } = await import('./project/angular/serve');
       return new ServeRunner(env);
     } else {
-      throw new FatalException(
-        `Cannot perform Ionic serve for ${type ? '' : 'unknown '}project type${type ? `: ${chalk.bold(type)}` : ''}.\n` +
+      throw new RunnerNotFoundException(
+        `Cannot perform serve for ${type ? '' : 'unknown '}project type${type ? `: ${chalk.bold(type)}` : ''}.\n` +
         (type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to serve custom projects.\n\n` : '') +
         `If you'd like the CLI to try to detect your project type, you can unset the ${chalk.bold('type')} attribute in ${chalk.bold(PROJECT_FILE)}.`
       );
@@ -372,9 +375,17 @@ export abstract class ServeRunner<T extends ServeOptions> {
 }
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
-  const runner = await ServeRunner.createFromProjectType(env, env.project.type);
-  const opts = runner.createOptionsFromCommandLine(inputs, options);
-  const details = await runner.run(opts);
+  try {
+    const runner = await ServeRunner.createFromProjectType(env, env.project.type);
+    const opts = runner.createOptionsFromCommandLine(inputs, options);
+    const details = await runner.run(opts);
 
-  return details;
+    return details;
+  } catch (e) {
+    if (e instanceof RunnerException) {
+      throw new FatalException(e.message);
+    }
+
+    throw e;
+  }
 }

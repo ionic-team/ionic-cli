@@ -60,8 +60,8 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
 
         deps.log.error(
           `Could not determine project type (project config: ${chalk.bold(prettyPath(projectFilePath))}).\n` +
-          `- ${wordWrap(`For ${chalk.bold(prettyProjectName('angular'))} projects, make sure ${chalk.green('@ionic/angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n\n` +
-          `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic-angular'))} projects, make sure ${chalk.green('ionic-angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n\n` +
+          `- ${wordWrap(`For ${chalk.bold(prettyProjectName('angular'))} projects, make sure ${chalk.green('@ionic/angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n` +
+          `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic-angular'))} projects, make sure ${chalk.green('ionic-angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n` +
           `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic1'))} projects, make sure ${chalk.green('ionic')} is listed as a dependency in ${chalk.bold('bower.json')}.`, listWrapOptions)}\n\n` +
           `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold(PROJECT_FILE)} to one of: ${PROJECT_TYPES.map(v => chalk.green(v)).join(', ')}.\n\n` +
           `If the Ionic CLI does not know what type of project this is, ${chalk.green('ionic build')}, ${chalk.green('ionic serve')}, and other commands may not work. You can use the ${chalk.green('custom')} project type if that's okay.`
@@ -239,7 +239,11 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
   }
 }
 
-export function prettyProjectName(type: ProjectType): string {
+export function prettyProjectName(type?: string): string {
+  if (!type) {
+    return 'Unknown';
+  }
+
   if (type === 'angular') {
     return 'Ionic Angular v4+';
   } else if (type === 'ionic-angular') {

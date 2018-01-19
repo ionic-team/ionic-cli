@@ -364,6 +364,15 @@ export interface IonicAngularBuildOptions extends BuildOptions {
   env?: string;
 }
 
+export interface GenerateOptions {}
+
+export interface IonicAngularGenerateOptions {
+  type: string;
+  name: string;
+  module: boolean;
+  constants: boolean;
+}
+
 export interface ServeOptions {
   // Command Options
   address: string;

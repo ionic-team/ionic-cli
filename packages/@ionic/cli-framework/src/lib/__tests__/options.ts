@@ -144,27 +144,27 @@ describe('@ionic/cli-framework', () => {
     describe('unparseArgs', () => {
 
       it('should handle empty argv', () => {
-        const result = unparseArgs({ _: [] });
+        const result = unparseArgs({ _: [] }, {});
         expect(result).toEqual([]);
       });
 
       it('should filter out arguments', () => {
-        const result = unparseArgs({ _: ['foo', 'bar'] });
+        const result = unparseArgs({ _: ['foo', 'bar'] }, {});
         expect(result).toEqual(['foo', 'bar']);
       });
 
       it('should parse out boolean option from minimist result', () => {
-        const result = unparseArgs({ _: ['foo', 'bar'], wow: true });
+        const result = unparseArgs({ _: ['foo', 'bar'], wow: true }, {});
         expect(result).toEqual(['foo', 'bar', '--wow']);
       });
 
       it('should parse out string option from minimist result', () => {
-        const result = unparseArgs({ _: [], cat: 'meow' });
+        const result = unparseArgs({ _: [], cat: 'meow' }, {});
         expect(result).toEqual(['--cat=meow']);
       });
 
       it('should parse out option list from minimist result', () => {
-        const result = unparseArgs({ _: [], cat: 'meow', dog: 'bark', flag1: true });
+        const result = unparseArgs({ _: [], cat: 'meow', dog: 'bark', flag1: true }, {});
         expect(result).toEqual(['--cat=meow', '--dog=bark', '--flag1']);
       });
 
@@ -174,7 +174,7 @@ describe('@ionic/cli-framework', () => {
       });
 
       it('should parse out string option from minimist result and not wrap strings with spaces in double quotes without flag', () => {
-        const result = unparseArgs({ _: [], cat: 'meow meow meow' });
+        const result = unparseArgs({ _: [], cat: 'meow meow meow' }, {});
         expect(result).toEqual(['--cat=meow meow meow']);
       });
 
