@@ -97,10 +97,11 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
   }
 
   async run(options: IonicAngularGenerateOptions) {
-    const appScriptsArgs = unparseArgs({ _: [], module: options.module, constants: options.constants }, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
-    process.argv = ['node', 'appscripts'].concat(appScriptsArgs);
-
     const AppScripts = await importAppScripts(this.env);
+
+    const appScriptsArgs = unparseArgs({ _: [], module: options.module, constants: options.constants }, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
+    AppScripts.setProcessArgs(['node', 'appscripts'].concat(appScriptsArgs));
+
     const context = AppScripts.generateContext();
 
     switch (options.type) {
