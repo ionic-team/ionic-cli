@@ -25,7 +25,7 @@ export { ParsedArgs } from 'minimist';
  * behavior can be disabled by setting the `includeSeparated` option to
  * `false`.
  */
-export function stripOptions(pargv: string[], { includeSeparated = true }: { includeSeparated?: boolean; } = {}): string[] {
+export function stripOptions(pargv: string[], { includeSeparated = true }: { includeSeparated?: boolean; }): string[] {
   const r = /^\-/;
   const [ ownArgs, otherArgs ] = separateArgv(pargv);
   const filteredArgs = ownArgs.filter(arg => !r.test(arg));

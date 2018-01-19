@@ -17,32 +17,32 @@ describe('@ionic/cli-framework', () => {
     describe('stripOptions', () => {
 
       it('should not affect only args', () => {
-        const result = stripOptions(['a', 'b']);
+        const result = stripOptions(['a', 'b'], {});
         expect(result).toEqual(['a', 'b']);
       });
 
       it('should strip single hyphen options', () => {
-        const result = stripOptions(['a', 'b', '-c']);
+        const result = stripOptions(['a', 'b', '-c'], {});
         expect(result).toEqual(['a', 'b']);
       });
 
       it('should strip double hyphen options', () => {
-        const result = stripOptions(['a', 'b', '--opt1']);
+        const result = stripOptions(['a', 'b', '--opt1'], {});
         expect(result).toEqual(['a', 'b']);
       });
 
       it('should strip double hyphen options with equal sign', () => {
-        const result = stripOptions(['a', 'b', '--opt1=test']);
+        const result = stripOptions(['a', 'b', '--opt1=test'], {});
         expect(result).toEqual(['a', 'b']);
       });
 
       it('should strip options from anywhere', () => {
-        const result = stripOptions(['-f', 'a', '--opt1', 'b', '--opt2']);
+        const result = stripOptions(['-f', 'a', '--opt1', 'b', '--opt2'], {});
         expect(result).toEqual(['a', 'b']);
       });
 
       it('should preserve options after -- separator', () => {
-        const result = stripOptions(['-f', 'a', '--', '--opt1', 'b', '--opt2']);
+        const result = stripOptions(['-f', 'a', '--', '--opt1', 'b', '--opt2'], {});
         expect(result).toEqual(['a', '--', '--opt1', 'b', '--opt2']);
       });
 

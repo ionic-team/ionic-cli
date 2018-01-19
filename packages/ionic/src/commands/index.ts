@@ -51,7 +51,7 @@ export class IonicNamespace extends Namespace {
   }
 
   async runCommand(argv: string[], env: { [key: string]: string; }): Promise<void> {
-    const pargs = stripOptions(argv);
+    const pargs = stripOptions(argv, {});
 
     const location = await this.locate(pargs);
 
