@@ -1,14 +1,19 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-import { InfoHookItem, ProjectType } from '../../../definitions';
+import { InfoHookItem, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
 
 import { BaseProject } from '../';
+import { ANGULAR_CLI_FILE, readAngularCLIJsonFile } from './utils';
+
+const debug = Debug('ionic:cli-utils:lib:project:angular');
 
 export class Project extends BaseProject {
   type: ProjectType = 'angular';
@@ -38,6 +43,7 @@ export class Project extends BaseProject {
       const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
 
       if (typeof deps['@ionic/angular'] === 'string') {
+        debug(`${chalk.bold('@ionic/angular')} detected in ${chalk.bold('package.json')}`);
         return true;
       }
     } catch (e) {
@@ -45,6 +51,22 @@ export class Project extends BaseProject {
     }
 
     return false;
+  }
+
+  async personalize(details: ProjectPersonalizationDetails) {
+    await super.personalize(details);
+
+    const { appName, displayName } = details;
+    const angularJsonPath = path.resolve(this.directory, ANGULAR_CLI_FILE);
+
+    try {
+      const angularJson = await readAngularCLIJsonFile(angularJsonPath);
+      angularJson.project.name = displayName ? displayName : appName;
+
+      await fsWriteJsonFile(angularJsonPath, angularJson, { encoding: 'utf8' });
+    } catch (e) {
+      this.log.error(`Error with ${chalk.bold(prettyPath(angularJsonPath))} file: ${e}`);
+    }
   }
 
   async getFrameworkVersion() {

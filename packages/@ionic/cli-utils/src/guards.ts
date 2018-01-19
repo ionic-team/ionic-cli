@@ -2,6 +2,7 @@ import {
   APIResponse,
   APIResponseError,
   APIResponseSuccess,
+  AngularCLIJson,
   AppDetails,
   CommandPreRun,
   CordovaPackageJson,
@@ -46,6 +47,12 @@ export function isCordovaPackageJson(o: Object): o is CordovaPackageJson {
     typeof obj.cordova === 'object' &&
     typeof obj.cordova.platforms === 'object' &&
     typeof obj.cordova.plugins === 'object';
+}
+
+export function isAngularCLIJson(o: any): o is AngularCLIJson {
+  return o &&
+    typeof o.project === 'object' &&
+    typeof o.project.name === 'string';
 }
 
 export function isExitCodeException(e: Error): e is ExitCodeException {

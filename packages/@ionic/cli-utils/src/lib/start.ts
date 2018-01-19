@@ -1,12 +1,9 @@
-import * as path from 'path';
-
 import chalk from 'chalk';
 
 import {
   ERROR_FILE_INVALID_JSON,
   ERROR_FILE_NOT_FOUND,
   fsReadJsonFile,
-  fsWriteJsonFile,
 } from '@ionic/cli-framework/utils/fs';
 
 import { IConfig, StarterList, StarterManifest, StarterTemplate } from '../definitions';
@@ -36,28 +33,6 @@ export async function readStarterManifest(p: string): Promise<StarterManifest> {
       throw new Error(`${p} is not valid JSON.`);
     }
 
-    throw e;
-  }
-}
-
-export async function updatePackageJsonForCli(projectRoot: string, appName: string): Promise<void> {
-  const filePath = path.resolve(projectRoot, 'package.json');
-
-  try {
-    const jsonStructure = await fsReadJsonFile(filePath);
-
-    jsonStructure['name'] = appName;
-    jsonStructure['version'] = '0.0.1';
-    jsonStructure['description'] = 'An Ionic project';
-
-    await fsWriteJsonFile(filePath, jsonStructure, { encoding: 'utf8' });
-
-  } catch (e) {
-    if (e === ERROR_FILE_NOT_FOUND) {
-      throw new Error(`${filePath} not found`);
-    } else if (e === ERROR_FILE_INVALID_JSON) {
-      throw new Error(`${filePath} is not valid JSON.`);
-    }
     throw e;
   }
 }

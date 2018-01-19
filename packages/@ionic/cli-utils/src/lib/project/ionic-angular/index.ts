@@ -1,6 +1,7 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
@@ -9,6 +10,8 @@ import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 import { InfoHookItem, ProjectType } from '../../../definitions';
 
 import { BaseProject } from '../';
+
+const debug = Debug('ionic:cli-utils:lib:project:ionic-angular');
 
 export class Project extends BaseProject {
   type: ProjectType = 'ionic-angular';
@@ -29,6 +32,7 @@ export class Project extends BaseProject {
       const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
 
       if (typeof deps['ionic-angular'] === 'string') {
+        debug(`${chalk.bold('ionic-angular')} detected in ${chalk.bold('package.json')}`);
         return true;
       }
     } catch (e) {

@@ -88,7 +88,6 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
           if (confirm) {
             ienv.log.msg('Installing dependencies may take several minutes!');
             const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
-            const config = await ienv.config.load();
             const { npmClient } = config;
             const [ installer, ...installerArgs ] = await pkgManagerArgs({ npmClient, shell: ienv.shell }, { command: 'install' });
             await ienv.shell.run(installer, installerArgs, {});

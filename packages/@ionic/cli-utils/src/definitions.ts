@@ -164,6 +164,13 @@ export interface IConfig extends IBaseConfig<ConfigFile> {
   getGitPort(): Promise<number>;
 }
 
+export interface ProjectPersonalizationDetails {
+  appName: string;
+  displayName?: string;
+  version?: string;
+  description?: string;
+}
+
 export interface IProject extends IBaseConfig<ProjectFile> {
   type?: ProjectType;
   integrations: IIntegration[];
@@ -173,6 +180,7 @@ export interface IProject extends IBaseConfig<ProjectFile> {
   detected(): Promise<boolean>;
   loadAppId(): Promise<string>;
   loadPackageJson(): Promise<framework.PackageJson>;
+  personalize(details: ProjectPersonalizationDetails): Promise<void>;
 }
 
 export type IntegrationName = keyof ProjectIntegrations;
@@ -411,6 +419,12 @@ export interface ServeDetails {
   port: number;
   externalNetworkInterfaces: NetworkInterface[];
   externallyAccessible: boolean;
+}
+
+export interface AngularCLIJson {
+  project: {
+    name: string;
+  };
 }
 
 export interface IHook<T, U> {

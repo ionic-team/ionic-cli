@@ -1,6 +1,7 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
 import { BowerJson } from '@ionic/cli-framework';
@@ -12,6 +13,8 @@ import { InfoHookItem, ProjectType } from '../../../definitions';
 import { FatalException } from '../../errors';
 
 import { BaseProject } from '../';
+
+const debug = Debug('ionic:cli-utils:lib:project:angular');
 
 export class Project extends BaseProject {
   type: ProjectType = 'ionic1';
@@ -33,6 +36,7 @@ export class Project extends BaseProject {
       const deps = lodash.assign({}, bwr.dependencies, bwr.devDependencies);
 
       if (typeof deps['ionic'] === 'string') {
+        debug(`${chalk.bold('ionic')} detected in ${chalk.bold('bower.json')}`);
         return true;
       }
     } catch (e) {

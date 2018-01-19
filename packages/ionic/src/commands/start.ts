@@ -12,7 +12,7 @@ import { isValidURL } from '@ionic/cli-framework/utils/string';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, ResolvedStarterTemplate, StarterManifest, getProject } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { PROJECT_FILE, prettyProjectName } from '@ionic/cli-utils/lib/project';
+import { prettyProjectName } from '@ionic/cli-utils/lib/project';
 import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
 
 const debug = Debug('ionic:cli:commands:start');
@@ -339,7 +339,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         }
       }
 
-      await this.personalizeApp(projectDir, name, displayName);
+      await this.env.project.personalize({ appName: name, displayName });
 
       if (options['cordova']) {
         await this.env.runCommand(['integrations', 'enable', 'cordova', '--quiet']);
@@ -505,20 +505,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       this.env.log.msg(`${chalk.bold('Starter Welcome')}:`);
       this.env.log.msg(manifest.welcome);
     }
-  }
-
-  async personalizeApp(projectDir: string, name: string, displayName: string) {
-    const { updatePackageJsonForCli } = await import('@ionic/cli-utils/lib/start');
-
-    const project = await this.env.project.load();
-
-    this.env.tasks.next(`Personalizing ${chalk.bold(PROJECT_FILE)} and ${chalk.bold('package.json')}`);
-
-    project.name = displayName;
-    await updatePackageJsonForCli(projectDir, name);
-    await this.env.project.save();
-
-    this.env.tasks.end();
   }
 
   async personalizeCordovaApp(projectDir: string, name: string, bundleId?: string) {

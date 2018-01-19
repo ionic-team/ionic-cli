@@ -12,8 +12,8 @@ export function isValidPackageName(name: string): boolean {
   return encodeURIComponent(name) === name;
 }
 
-export async function readPackageJsonFile(path: string): Promise<PackageJson> {
-  const packageJson = await fsReadJsonFile(path);
+export async function readPackageJsonFile(p: string): Promise<PackageJson> {
+  const packageJson = await fsReadJsonFile(p);
 
   if (!isPackageJson(packageJson)) {
     throw ERROR_INVALID_PACKAGE_JSON;
@@ -22,8 +22,8 @@ export async function readPackageJsonFile(path: string): Promise<PackageJson> {
   return packageJson;
 }
 
-export async function readBowerJsonFile(path: string): Promise<BowerJson> {
-  const bowerJson = await fsReadJsonFile(path);
+export async function readBowerJsonFile(p: string): Promise<BowerJson> {
+  const bowerJson = await fsReadJsonFile(p);
 
   if (!isBowerJson(bowerJson)) {
     throw ERROR_INVALID_BOWER_JSON;
