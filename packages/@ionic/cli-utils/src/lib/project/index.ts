@@ -101,18 +101,25 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     } else if (type === 'custom') {
       const { Project } = await import('./custom');
       project = new Project(dir, file, deps);
-    }
-
-    if (!project) {
+    } else {
       throw new FatalException(`Bad project type: ${chalk.bold(type)}`); // TODO?
     }
 
-    const p = await project.load();
-
-    const integrationNames = <IntegrationName[]>Object.keys(p.integrations); // TODO
-    project.integrations.push(...(await Promise.all(integrationNames.map(async name => BaseIntegration.createFromName(deps, name)))));
+    await project.refreshIntegrations();
 
     return project;
+  }
+
+  async refreshIntegrations() {
+    const p = await this.load();
+    const projectIntegrations = <IntegrationName[]>Object.keys(p.integrations); // TODO
+
+    const integrationNames = projectIntegrations.filter(n => {
+      const i = p.integrations[n];
+      return i && i.enabled !== false;
+    });
+
+    this.integrations = await Promise.all(integrationNames.map(async name => BaseIntegration.createFromName({ project: this, shell: this.shell }, name)));
   }
 
   abstract detected(): Promise<boolean>;
@@ -198,7 +205,9 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     return path.resolve(this.directory, 'src');
   }
 
-  async personalize({ appName, displayName, description, version }: ProjectPersonalizationDetails) {
+  async personalize(details: ProjectPersonalizationDetails) {
+    const { appName, displayName, description, version } = details;
+
     const project = await this.load();
     project.name = displayName ? displayName : appName;
     await this.save();
@@ -210,6 +219,8 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     pkg.description = description ? description : 'An Ionic project';
 
     await fsWriteJsonFile(this.packageJsonPath, pkg, { encoding: 'utf8' });
+
+    await Promise.all(this.integrations.map(async i => i.personalize(details)));
   }
 }
 
@@ -259,6 +270,10 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
   }
 
   async personalize(): Promise<never> {
+    throw this._createError();
+  }
+
+  async refreshIntegrations(): Promise<never> {
     throw this._createError();
   }
 }

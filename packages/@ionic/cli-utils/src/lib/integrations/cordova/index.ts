@@ -1,4 +1,4 @@
-import { InfoHookItem, IntegrationName } from '../../../definitions';
+import { InfoHookItem, IntegrationName, ProjectPersonalizationDetails } from '../../../definitions';
 
 import { BaseIntegration } from '../';
 
@@ -50,6 +50,18 @@ export class Integration extends BaseIntegration {
     info.push({ type: 'environment', key: 'ANDROID_HOME', value: process.env.ANDROID_HOME || 'not set' });
 
     return info;
+  }
+
+  async personalize({ appName, bundleId }: ProjectPersonalizationDetails) {
+    const { ConfigXml } = await import('./config');
+    const conf = await ConfigXml.load(this.project.directory);
+    conf.setName(appName);
+
+    if (bundleId) {
+      conf.setBundleId(bundleId);
+    }
+
+    await conf.save();
   }
 
   async getCordovaVersion(): Promise<string | undefined> {

@@ -167,6 +167,7 @@ export interface IConfig extends IBaseConfig<ConfigFile> {
 export interface ProjectPersonalizationDetails {
   appName: string;
   displayName?: string;
+  bundleId?: string;
   version?: string;
   description?: string;
 }
@@ -175,6 +176,7 @@ export interface IProject extends IBaseConfig<ProjectFile> {
   type?: ProjectType;
   integrations: IIntegration[];
 
+  refreshIntegrations(): Promise<void>;
   getSourceDir(): Promise<string>;
   getInfo(): Promise<InfoHookItem[]>;
   detected(): Promise<boolean>;
@@ -190,6 +192,7 @@ export interface IIntegration {
   shell: IShell;
 
   getInfo(): Promise<InfoHookItem[]>;
+  personalize(details: ProjectPersonalizationDetails): Promise<void>;
 }
 
 export interface PackageVersions {

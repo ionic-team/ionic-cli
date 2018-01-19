@@ -286,6 +286,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     const [ name, template ] = inputs;
     const displayName = options['display-name'] ? String(options['display-name']) : name;
     const proAppId = options['pro-id'] ? String(options['pro-id']) : undefined;
+    const bundleId = options['bundle-id'] ? String(options['bundle-id']) : undefined;
     const tag = options['tag'] ? String(options['tag']) : 'latest';
     const clonedApp = isValidURL(template);
     let linkConfirmed = typeof proAppId === 'string';
@@ -339,14 +340,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         }
       }
 
-      await this.env.project.personalize({ appName: name, displayName });
-
       if (options['cordova']) {
         await this.env.runCommand(['integrations', 'enable', 'cordova', '--quiet']);
-        const bundleId = options['bundle-id'] ? String(options['bundle-id']) : undefined;
-        await this.personalizeCordovaApp(projectDir, name, bundleId);
       }
 
+      await this.env.project.personalize({ appName: name, bundleId, displayName });
       this.env.log.nl();
     }
 
@@ -505,18 +503,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       this.env.log.msg(`${chalk.bold('Starter Welcome')}:`);
       this.env.log.msg(manifest.welcome);
     }
-  }
-
-  async personalizeCordovaApp(projectDir: string, name: string, bundleId?: string) {
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
-    const conf = await ConfigXml.load(projectDir);
-    conf.setName(name);
-
-    if (bundleId) {
-      conf.setBundleId(bundleId);
-    }
-
-    await conf.save();
   }
 
   async downloadStarterTemplate(projectDir: string, starterTemplate: ResolvedStarterTemplate) {

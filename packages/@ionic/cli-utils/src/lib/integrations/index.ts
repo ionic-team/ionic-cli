@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import { copyDirectory, fsMkdirp, fsStat, pathExists, readDir, removeDirectory } from '@ionic/cli-framework/utils/fs';
 
-import { IIntegration, IShell, InfoHookItem, IntegrationName, IntegrationTemplate, IonicEnvironment } from '../../definitions';
+import { IIntegration, IShell, IProject, InfoHookItem, IntegrationName, IntegrationTemplate, IonicEnvironment, ProjectPersonalizationDetails } from '../../definitions';
 import { FatalException } from '../errors';
 
 import * as cordovaLibType from './cordova';
@@ -25,15 +25,18 @@ export interface IntegrationOptions {
 
 export interface IntegrationDeps {
   shell: IShell;
+  project: IProject;
 }
 
 export abstract class BaseIntegration implements IIntegration {
   shell: IShell;
+  project: IProject;
 
   abstract name: IntegrationName;
 
-  constructor({ shell }: IntegrationDeps) {
+  constructor({ shell, project }: IntegrationDeps) {
     this.shell = shell;
+    this.project = project;
   }
 
   static async createFromName(deps: IntegrationDeps, name: 'cordova'): Promise<cordovaLibType.Integration>;
@@ -48,6 +51,10 @@ export abstract class BaseIntegration implements IIntegration {
   }
 
   abstract getInfo(): Promise<InfoHookItem[]>;
+
+  async personalize(details: ProjectPersonalizationDetails) {
+    // overwritten by subclasses
+  }
 }
 
 export async function enableIntegration(env: IonicEnvironment, id: string, opts: IntegrationOptions = {}) {
@@ -69,18 +76,21 @@ export async function enableIntegration(env: IonicEnvironment, id: string, opts:
 
     if (projectIntegration.enabled === false) {
       projectIntegration.enabled = true;
-      env.log.ok(`Enabled ${chalk.green(integration.name)} integration!`);
     } else {
-
       await addIntegration(env, integration, opts);
-
-      env.log.ok(`Added ${chalk.green(integration.name)} integration!`);
     }
 
     project.integrations[integration.name] = projectIntegration;
   }
 
+  await env.project.refreshIntegrations();
   await env.project.save();
+
+  if (projectIntegration.enabled) {
+    env.log.ok(`Enabled ${chalk.green(integration.name)} integration!`);
+  } else {
+    env.log.ok(`Added ${chalk.green(integration.name)} integration!`);
+  }
 }
 
 export async function disableIntegration(env: IonicEnvironment, id: string) {
@@ -99,6 +109,9 @@ export async function disableIntegration(env: IonicEnvironment, id: string) {
 
   projectIntegration.enabled = false;
   project.integrations[integration.name] = projectIntegration;
+
+  await env.project.refreshIntegrations();
+  await env.project.save();
 
   env.log.ok(`Disabled ${chalk.green(integration.name)} integration.`);
 }
