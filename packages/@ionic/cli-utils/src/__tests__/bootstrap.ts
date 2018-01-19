@@ -15,7 +15,7 @@ describe('@ionic/cli-utils', () => {
         }));
 
         jest.mock('@ionic/cli-framework/utils/npm', () => ({
-          readPackageJsonFile: () => Promise.resolve({ version: '3.999.0' }),
+          readPackageJsonFile: () => Promise.resolve({ version: '4.999.0' }),
         }));
 
         const bootstrap = require('../bootstrap');
