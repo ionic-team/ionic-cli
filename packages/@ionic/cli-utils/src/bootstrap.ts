@@ -26,7 +26,7 @@ export async function detectLocalCLI(): Promise<string> {
 
   const pkg = await readPackageJsonFile(path.join(local, 'package.json'));
 
-  if (semver.lt(pkg.version || '', '3.10.0')) { // TODO: Really, the versions should match or be close. 3.10.0 is arbitrary.
+  if (semver.lt(pkg.version, '4.0.0')) {
     throw ERROR_VERSION_TOO_OLD;
   }
 
