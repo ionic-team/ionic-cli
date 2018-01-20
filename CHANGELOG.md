@@ -60,7 +60,7 @@ from the breaking changes listed below, upgrading to CLI v4 should be seamless.
   works for any Ionic Framework version.
 
 <a name="3.19.1"></a>
-### 3.19.1 (2018-01-27)
+### 3.19.1 (2018-01-17)
 
 * Quick fix for SSH path input tilde expansion
   ([#2958](https://github.com/ionic-team/ionic-cli/issues/2958))
