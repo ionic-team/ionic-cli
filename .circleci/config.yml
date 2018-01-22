@@ -59,7 +59,7 @@ jobs:
       - save_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/schematics-angular/package.json" }}
           paths:
-            - packages/@ionic/v1-util/node_modules
+            - packages/@ionic/schematics-angular/node_modules
       - save_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/v1-util/package.json" }}
           paths:
