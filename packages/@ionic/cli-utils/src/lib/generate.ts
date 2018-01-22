@@ -6,6 +6,7 @@ import { FatalException, RunnerException, RunnerNotFoundException } from './erro
 import { Runner } from './runner';
 import { prettyProjectName } from './project';
 
+import * as angularGenerateLibType from './project/angular/generate';
 import * as ionicAngularGenerateLibType from './project/ionic-angular/generate';
 
 export abstract class GenerateRunner<T extends GenerateOptions> extends Runner<T, void> {
@@ -13,10 +14,14 @@ export abstract class GenerateRunner<T extends GenerateOptions> extends Runner<T
     super();
   }
 
+  static async createFromProjectType(env: IonicEnvironment, type: 'angular'): Promise<angularGenerateLibType.GenerateRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: 'ionic-angular'): Promise<ionicAngularGenerateLibType.GenerateRunner>;
   static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<GenerateRunner<any>>;
   static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<GenerateRunner<any>> {
-    if (type === 'ionic-angular') {
+    if (type === 'angular') {
+      const { GenerateRunner } = await import('./project/angular/generate');
+      return new GenerateRunner(env);
+    } else if (type === 'ionic-angular') {
       const { GenerateRunner } = await import('./project/ionic-angular/generate');
       return new GenerateRunner(env);
     } else {

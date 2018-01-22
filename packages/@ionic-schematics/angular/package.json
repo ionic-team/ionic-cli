@@ -20,13 +20,16 @@
     "ionicframework"
   ],
   "schematics": "./collection.json",
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
   "devDependencies": {
     "@angular-devkit/core": "0.0.28",
     "@angular-devkit/schematics": "0.0.51",
     "@types/lodash": "^4.14.93",
     "source-map": "^0.7.0"
   },
-  "dependencies": {
-    "lodash": "^4.17.4"
+  "peerDependencies": {
+    "@angular-devkit/schematics": "*"
   }
 }

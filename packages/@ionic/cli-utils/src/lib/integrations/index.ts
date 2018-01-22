@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import { copyDirectory, fsMkdirp, fsStat, pathExists, readDir, removeDirectory } from '@ionic/cli-framework/utils/fs';
 
-import { IIntegration, IShell, IProject, InfoHookItem, IntegrationName, IntegrationTemplate, IonicEnvironment, ProjectPersonalizationDetails } from '../../definitions';
+import { IIntegration, IProject, IShell, InfoHookItem, IntegrationName, IntegrationTemplate, IonicEnvironment, ProjectPersonalizationDetails } from '../../definitions';
 import { FatalException } from '../errors';
 
 import * as cordovaLibType from './cordova';

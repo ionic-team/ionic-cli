@@ -375,11 +375,18 @@ export interface IonicAngularBuildOptions extends BuildOptions {
   env?: string;
 }
 
-export interface GenerateOptions {}
-
-export interface IonicAngularGenerateOptions {
+export interface GenerateOptions {
   type: string;
   name: string;
+}
+
+export interface AngularGenerateOptions extends GenerateOptions {
+  dryRun: boolean;
+  force: boolean;
+  [key: string]: string | boolean;
+}
+
+export interface IonicAngularGenerateOptions extends GenerateOptions {
   module: boolean;
   constants: boolean;
 }

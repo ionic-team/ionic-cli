@@ -7,7 +7,7 @@ import { importAppScripts } from './app-scripts';
 import { GenerateRunner as BaseGenerateRunner } from '../../generate';
 import { FatalException } from '../../errors';
 
-const TYPE_CHOICES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
+const GENERATOR_TYPES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
 
 export class GenerateRunner extends BaseGenerateRunner<IonicAngularGenerateOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
@@ -21,7 +21,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
       `,
       exampleCommands: [
         '',
-        ...TYPE_CHOICES,
+        ...GENERATOR_TYPES,
         'component foo',
         'page Login',
         'page Detail --no-module',
@@ -31,8 +31,8 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
       inputs: [
         {
           name: 'type',
-          description: `The type of generator (e.g. ${TYPE_CHOICES.map(t => chalk.green(t)).join(', ')})`,
-          validators: [validators.required, contains(TYPE_CHOICES, {})],
+          description: `The type of generator (e.g. ${GENERATOR_TYPES.map(t => chalk.green(t)).join(', ')})`,
+          validators: [validators.required, contains(GENERATOR_TYPES, {})],
         },
         {
           name: 'name',
@@ -63,7 +63,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
         type: 'list',
         name: 'generatorType',
         message: 'What would you like to generate:',
-        choices: TYPE_CHOICES,
+        choices: GENERATOR_TYPES,
       });
 
       inputs[0] = generatorType;
