@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsIonicAngularPage",
+  "title": "Ionic Angular Page Options Schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path to create the page",
+      "default": "app",
+      "visible": false
+    },
+    "sourceDir": {
+      "type": "string",
+      "format": "path",
+      "description": "The code source directory",
+      "default": "src",
+      "alias": "sd",
+      "visible": false
+    },
+    "appRoot": {
+      "type": "string",
+      "format": "path",
+      "description": "The root of the application",
+      "visible": false
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the page"
+    },
+    "styleext": {
+      "type": "string",
+      "description": "The file extension of the style file for the page",
+      "default": "css"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "schematics": {
+    "page": {
+      "aliases": ["pg"],
+      "factory": "./page",
+      "description": "Create an Ionic page",
+      "schema": "./page/schema.json"
+    }
+  }
+}
