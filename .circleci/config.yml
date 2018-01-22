@@ -21,6 +21,8 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/lab/package.json" }}
       - restore_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/schematics-angular/package.json" }}
+      - restore_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/v1-util/package.json" }}
       - restore_cache:
           key: dependency-cache-{{ checksum "packages/ionic/package.json" }}
@@ -54,6 +56,10 @@ jobs:
           key: dependency-cache-{{ checksum "packages/@ionic/lab/package.json" }}
           paths:
             - packages/@ionic/lab/node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "packages/@ionic/schematics-angular/package.json" }}
+          paths:
+            - packages/@ionic/v1-util/node_modules
       - save_cache:
           key: dependency-cache-{{ checksum "packages/@ionic/v1-util/package.json" }}
           paths:

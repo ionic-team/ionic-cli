@@ -1,5 +1,5 @@
 {
-  "name": "@ionic-schematics/angular",
+  "name": "@ionic/schematics-angular",
   "version": "0.0.0",
   "description": "Schematics specific to Ionic for Angular",
   "homepage": "https://ionicframework.com/",

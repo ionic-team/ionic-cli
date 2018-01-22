@@ -27,7 +27,7 @@ Automatically create components for your Ionic app.
 This command uses the Angular CLI to generate components. Not all component generation options are listed.
 
  - For a detailed list of options for each generator, use ${chalk.green('ng generate <type> --help')}.
- - For ${IONIC_GENERATOR_TYPES.map(t => chalk.green(t)).join(', ')} types, use ${chalk.green('ng generate <type> --help --collection @ionic-schematics/angular')}.
+ - For ${IONIC_GENERATOR_TYPES.map(t => chalk.green(t)).join(', ')} types, use ${chalk.green('ng generate <type> --help --collection @ionic/schematics-angular')}.
       `,
       inputs: [
         {
@@ -110,7 +110,7 @@ This command uses the Angular CLI to generate components. Not all component gene
 
     const ngArgs = unparseArgs({
       _: ['generate', type, name],
-      collection: '@ionic-schematics/angular',
+      collection: '@ionic/schematics-angular',
       ...options,
     }, {});
 
