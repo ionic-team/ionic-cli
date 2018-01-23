@@ -24,9 +24,16 @@ Pull requests are most welcome! But, if you plan to add features or do large
 refactors, please **open a dialogue** with us first by creating an issue. Small
 bug fixes are welcome any time.
 
-#### Local Setup
+#### Help Wanted
 
-##### Structure
+Looking for small issues to help with? You can browse the [`help
+wanted`](https://github.com/ionic-team/ionic-cli/labels/help%20wanted) label.
+These are issues that have been marked as great opportunities for someone's
+first PR to the Ionic CLI. :heart_eyes:
+
+### Local Setup
+
+#### Structure
 
 Our CLI is organized into a monorepo. Common tools, such as Typescript and jest,
 are installed in the base directory while package dependencies are each
@@ -40,11 +47,13 @@ Each `packages/*` folder represents a package on npm.
 * `packages/@ionic/cli-framework`: Framework for command-line programs.
 * `packages/@ionic/discover`: Service discovery library used for `ionic serve`
   with the [Ionic DevApp](https://ionicframework.com/docs/pro/devapp/).
+* `packages/@ionic/schematics-angular`: Ionic Angular v4+ schematics for `ionic
+  generate`.
 * `packages/@ionic/v1-util`: Utility CLI for Ionic v1 Apps, used by `ionic
   serve`.
 * `packages/@ionic/lab`: Utility CLI for Ionic Lab, used by `ionic serve`.
 
-##### Toolset
+#### Toolset
 
 * npm 5 is required.
 * Node 8+ is required.
@@ -54,35 +63,33 @@ Each `packages/*` folder represents a package on npm.
   yourself with basic concepts.
 * Our test suite uses [Jest](https://facebook.github.io/jest/).
 
-##### Setup
+#### Setup
 
 1. Fork the repo & clone it locally.
 1. `npm install` to install the dev tools.
 1. `npm run bootstrap` (will install package dependencies and link packages
    together)
-1. Optionally `npm link` inside `packages/ionic/` to make `ionic` point to your
+1. Optionally `npm run link` to make `ionic` and other bin files point to your
    dev CLI.
 1. `npm run watch` will spin up Typescript watch scripts for all packages.
 1. Typescript source files are in `packages/**/src`.
 1. Good luck! :muscle: Please open an issue if you have questions or something
    is unclear.
 
-##### Running Dev CLI
+#### Running Dev CLI
 
 Switch to dev CLI:
 
 ```bash
 $ npm uninstall -g ionic
-$ cd packages/ionic/
-$ npm link
+$ npm run link
 ```
 
 Switch back to stable CLI:
 
 ```bash
-$ cd packages/ionic/
-$ npm unlink
-$ npm i -g ionic
+$ npm run unlink
+$ npm install -g ionic
 ```
 
 ##### Code Structure
