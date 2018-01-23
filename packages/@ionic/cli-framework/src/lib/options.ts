@@ -226,7 +226,7 @@ export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, 
     }
   }
 
-  if (separatedArgs) {
+  if (separatedArgs && separatedArgs.length > 0) {
     args.push('--', ...separatedArgs);
   }
 

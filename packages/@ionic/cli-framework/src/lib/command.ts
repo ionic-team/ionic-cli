@@ -223,6 +223,11 @@ export abstract class Namespace extends BaseNamespace<Command, Namespace, Comman
 export class CommandMap extends BaseCommandMap<Command, Namespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
 export class NamespaceMap extends BaseNamespaceMap<Command, Namespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
 
+/**
+ * Given a command object, backtrack through the command's namespace to compile
+ * a list of command path items which represents how the command was
+ * found/constructed.
+ */
 export async function generateCommandPath<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(cmd: C): Promise<CommandPathItem<C, N, M, I, O>[]> {
   const ns = cmd.namespace;
   const cmdmeta = await cmd.getMetadata();

@@ -188,6 +188,11 @@ describe('@ionic/cli-framework', () => {
         expect(result).toEqual(['--cat="meow meow meow"', '--', '--claws']);
       });
 
+      it('should account for empty -- separator', () => {
+        const result = unparseArgs({ _: [], '--': [], cat: 'meow meow meow' }, { useDoubleQuotes: true });
+        expect(result).toEqual(['--cat="meow meow meow"']);
+      });
+
       it('should account for double -- separator', () => {
         const result = unparseArgs({ _: [], '--': ['--', '--claws'], cat: 'meow meow meow' }, { useDoubleQuotes: true });
         expect(result).toEqual(['--cat="meow meow meow"', '--', '--', '--claws']);
