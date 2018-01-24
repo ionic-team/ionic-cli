@@ -21,7 +21,7 @@ export class BuildRunner extends BaseBuildRunner<BuildOptions> {
     const pkg = await this.env.project.loadPackageJson();
 
     const ngArgs = ['build'];
-    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } };
+    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
 

@@ -1,13 +1,25 @@
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { CommandGroup, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { CommandGroup, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, ServeOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { BIND_ALL_ADDRESS, BROWSERS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LAB_PORT, DEFAULT_LIVERELOAD_PORT, DEFAULT_SERVER_PORT } from '@ionic/cli-utils/lib/serve';
+import { BIND_ALL_ADDRESS, BROWSERS, DEFAULT_LAB_PORT, DEFAULT_SERVER_PORT, ServeRunner } from '@ionic/cli-utils/lib/serve';
+import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
 
 export class ServeCommand extends Command implements CommandPreRun {
+  protected runner?: ServeRunner<ServeOptions>;
+
+  async getRunner() {
+    if (!this.runner) {
+      const { ServeRunner } = await import('@ionic/cli-utils/lib/serve');
+      this.runner = await ServeRunner.createFromProjectType(this.env, this.env.project.type);
+    }
+
+    return this.runner;
+  }
+
   async getMetadata(): Promise<CommandMetadata> {
-    return {
+    const metadata: CommandMetadata = {
       name: 'serve',
       type: 'project',
       description: 'Start a local dev server for app dev/testing',
@@ -19,19 +31,6 @@ By default, ${chalk.green('ionic serve')} boots up a development server on all n
 Try the ${chalk.green('--lab')} option to see multiple platforms at once.`,
       exampleCommands: ['', '-c', '--local', '--lab'],
       options: [
-        {
-          name: 'consolelogs',
-          description: 'Print app console logs to Ionic CLI',
-          type: Boolean,
-          aliases: ['c'],
-        },
-        {
-          name: 'serverlogs',
-          description: 'Print dev server logs to Ionic CLI',
-          type: Boolean,
-          aliases: ['s'],
-          groups: [OptionGroup.Hidden],
-        },
         {
           name: 'address',
           description: 'Use specific address for the dev server',
@@ -51,19 +50,6 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`,
           type: Boolean,
           default: true,
           groups: [OptionGroup.Hidden],
-        },
-        {
-          name: 'livereload-port',
-          description: 'Use specific port for live-reload',
-          default: DEFAULT_LIVERELOAD_PORT.toString(),
-          aliases: ['r'],
-          groups: [OptionGroup.Advanced],
-        },
-        {
-          name: 'dev-logger-port',
-          description: 'Use specific port for dev server communication',
-          default: DEFAULT_DEV_LOGGER_PORT.toString(),
-          groups: [OptionGroup.Advanced],
         },
         {
           name: 'lab-host',
@@ -135,6 +121,17 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`,
         },
       ],
     };
+
+    try {
+      const runner = await this.getRunner();
+      return runner.specializeCommandMetadata(metadata);
+    } catch (e) {
+      if (!(e instanceof RunnerNotFoundException)) {
+        throw e;
+      }
+    }
+
+    return metadata;
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {

@@ -32,9 +32,13 @@ export abstract class GenerateRunner<T extends GenerateOptions> extends Runner<T
     }
   }
 
+  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): GenerateOptions {
+    const [ type, name ] = inputs;
+    return { type, name };
+  }
+
   async ensureCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> { /* overwritten in subclasses */ }
-  abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
-  abstract createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): T;
+  abstract specializeCommandMetadata(metadata: CommandMetadata): Promise<CommandMetadata>;
 }
 
 export async function generate(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

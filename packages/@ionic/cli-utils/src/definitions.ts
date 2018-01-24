@@ -395,10 +395,6 @@ export interface ServeOptions {
   // Command Options
   address: string;
   port: number;
-  livereloadPort: number; // TODO: move to `ionic-angular` and `ionic1` serve options
-  notificationPort: number; // TODO: move to `ionic-angular` and `ionic1` serve options
-  consolelogs: boolean;
-  serverlogs: boolean;
   livereload: boolean;
   proxy: boolean;
   lab: boolean;
@@ -407,13 +403,33 @@ export interface ServeOptions {
   open: boolean;
   browser?: string;
   browserOption?: string;
-  env?: string;
   devapp: boolean;
-  target?: string;
-  platform?: string;
+  platform?: string; // android, ios, etc.
+  '--': string[];
 
   // Additional Options
   externalAddressRequired?: boolean;
+  engine: string; // browser, cordova, etc.
+}
+
+export interface Ionic1ServeOptions extends ServeOptions {
+  consolelogs: boolean;
+  serverlogs: boolean;
+  livereloadPort: number;
+  notificationPort: number;
+}
+
+export interface IonicAngularServeOptions extends ServeOptions {
+  consolelogs: boolean;
+  serverlogs: boolean;
+  env?: string;
+  livereloadPort: number;
+  notificationPort: number;
+}
+
+export interface AngularServeOptions extends ServeOptions {
+  target?: string;
+  environment?: string;
 }
 
 export interface LabServeDetails {

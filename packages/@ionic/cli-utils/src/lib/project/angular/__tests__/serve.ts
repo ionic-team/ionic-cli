@@ -2,7 +2,7 @@ import { ServeRunner } from '../serve';
 
 describe('@ionic/cli-utils', () => {
 
-  describe('lib/serve', () => {
+  describe('lib/project/angular/serve', () => {
 
     describe('ServeRunner', () => {
 
@@ -37,9 +37,15 @@ describe('@ionic/cli-utils', () => {
           expect(result).toEqual({ ...defaults, livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
         });
 
+        it('should turn off devapp for cordova', () => {
+          const runner = new ServeRunner();
+          const result = runner.createOptionsFromCommandLine([], { engine: 'cordova' });
+          expect(result).toEqual({ ...defaults, devapp: false, engine: 'cordova' });
+        });
+
         it('should allow overrides of default values', () => {
           const runner = new ServeRunner();
-          const result = runner.createOptionsFromCommandLine([], { address: 'localhost', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
+          const result = runner.createOptionsFromCommandLine([], { address: 'localhost', port: '1111' });
           expect(result).toEqual({ ...defaults, address: 'localhost', port: 1111 });
         });
 

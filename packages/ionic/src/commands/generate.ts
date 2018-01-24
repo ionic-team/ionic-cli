@@ -21,7 +21,6 @@ export class GenerateCommand extends Command implements CommandPreRun {
   }
 
   async getMetadata(): Promise<CommandMetadata> {
-    let projectMetadata: Partial<CommandMetadata> | undefined;
     const longDescription = this.env.project.type
       ? chalk.red(`Generators are not supported in this project type (${chalk.bold(prettyProjectName(this.env.project.type))}).`)
       : chalk.red('Generators help is available within an Ionic project directory.');
@@ -36,14 +35,14 @@ export class GenerateCommand extends Command implements CommandPreRun {
 
     try {
       const runner = await this.getRunner();
-      projectMetadata = await runner.getCommandMetadata();
+      return runner.specializeCommandMetadata(metadata);
     } catch (e) {
       if (!(e instanceof RunnerNotFoundException)) {
         throw e;
       }
     }
 
-    return { ...metadata, ...projectMetadata };
+    return metadata;
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

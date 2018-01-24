@@ -95,7 +95,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/gu
 
     if (options.build) {
       const { build } = await import('@ionic/cli-utils/lib/build');
-      await build(this.env, inputs, generateBuildOptions(metadata, options));
+      await build(this.env, inputs, generateBuildOptions(metadata, inputs, options));
     }
 
     const cordovaArgs = filterArgumentsForCordova(metadata, options);

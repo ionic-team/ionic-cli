@@ -75,7 +75,7 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
 
     if (options.build) {
       const { build } = await import('@ionic/cli-utils/lib/build');
-      await build(this.env, inputs, generateBuildOptions(metadata, options));
+      await build(this.env, inputs, generateBuildOptions(metadata, inputs, options));
     }
 
     await this.runCordova(filterArgumentsForCordova(metadata, options), {});

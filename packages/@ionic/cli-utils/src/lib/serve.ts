@@ -10,7 +10,7 @@ import * as split2 from 'split2';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
-import { CommandLineInputs, CommandLineOptions, IonicEnvironment, LabServeDetails, NetworkInterface, ProjectType, ServeDetails, ServeOptions } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicEnvironment, LabServeDetails, NetworkInterface, ProjectType, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { PROJECT_FILE } from './project';
@@ -48,8 +48,6 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     super();
   }
 
-  abstract serveProject(options: T): Promise<ServeDetails>;
-
   static async createFromProjectType(env: IonicEnvironment, type: 'ionic1'): Promise<ionic1ServeLibType.ServeRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: 'ionic-angular'): Promise<ionicAngularServeLibType.ServeRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: 'angular'): Promise<angularServeLibType.ServeRunner>;
@@ -73,41 +71,38 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     }
   }
 
+  abstract specializeCommandMetadata(metadata: CommandMetadata): Promise<CommandMetadata>;
+  abstract serveProject(options: T): Promise<ServeDetails>;
+
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
-    const [ platform ] = inputs;
+    const separatedArgs = options['--'];
 
     if (options['local']) {
       options['address'] = 'localhost';
       options['devapp'] = false;
     }
 
+    const engine = options['engine'] ? String(options['engine']) : 'browser';
     const address = options['address'] ? String(options['address']) : BIND_ALL_ADDRESS;
-    const livereloadPort = str2num(options['livereload-port'], DEFAULT_LIVERELOAD_PORT);
-    const notificationPort = str2num(options['dev-logger-port'], DEFAULT_DEV_LOGGER_PORT);
     const labPort = str2num(options['lab-port'], DEFAULT_LAB_PORT);
     const port = str2num(options['port'], DEFAULT_SERVER_PORT);
-    const target = options['target'] ? String(options['target']) : undefined;
 
     return {
+      '--': separatedArgs ? separatedArgs : [],
       address,
       browser: options['browser'] ? String(options['browser']) : undefined,
       browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
-      consolelogs: options['consolelogs'] ? true : false,
-      devapp: !target && (typeof options['devapp'] === 'undefined' || options['devapp']) ? true : false,
-      env: options['env'] ? String(options['env']) : undefined,
+      devapp: engine === 'browser' && (typeof options['devapp'] === 'undefined' || options['devapp']) ? true : false,
+      engine,
       externalAddressRequired: options['externalAddressRequired'] ? true : false,
       lab: options['lab'] ? true : false,
       labHost: options['lab-host'] ? String(options['lab-host']) : 'localhost',
       labPort,
       livereload: typeof options['livereload'] === 'boolean' ? Boolean(options['livereload']) : true,
-      livereloadPort,
-      notificationPort,
       open: options['open'] ? true : false,
-      platform,
       port,
+      platform: options['platform'] ? String(options['platform']) : undefined,
       proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
-      serverlogs: options['serverlogs'] ? true : false,
-      target,
     };
   }
 
@@ -139,7 +134,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
 
     // If this is regular `ionic serve`, we warn the dev about unsupported
     // plugins in the devapp.
-    if (this.isDevAppActive(options) && isCordovaPackageJson(pkg)) {
+    if (options.devapp && isCordovaPackageJson(pkg)) {
       const plugins = await this.getSupportedDevAppPlugins();
       const packageCordovaPlugins = Object.keys(pkg.cordova.plugins);
       const packageCordovaPluginsDiff = packageCordovaPlugins.filter(p => !plugins.has(p));
@@ -229,12 +224,8 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     return details;
   }
 
-  isDevAppActive(options: T) {
-    return options.devapp && !options.target;
-  }
-
   async gatherDevAppDetails(options: T): Promise<DevAppDetails | undefined> {
-    if (this.isDevAppActive(options)) {
+    if (options.devapp) {
       const { getSuitableNetworkInterfaces } = await import('./utils/network');
       const { computeBroadcastAddress } = await import('./devapp');
 
@@ -256,7 +247,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async publishDevApp(options: T, details: DevAppDetails & { port: number; }): Promise<string | undefined> {
-    if (this.isDevAppActive(options)) {
+    if (options.devapp) {
       const { createPublisher } = await import('./devapp');
       const publisher = await createPublisher(this.env, details.port);
       publisher.interfaces = details.interfaces;
@@ -300,7 +291,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     const nameArgs = project.name ? ['--app-name', project.name] : [];
     const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
 
-    const p = await this.env.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
+    const p = await this.env.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } });
 
     return new Promise<void>((resolve, reject) => {
       p.on('error', err => {

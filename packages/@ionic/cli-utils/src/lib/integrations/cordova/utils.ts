@@ -1,6 +1,6 @@
 import { OptionFilters, filterCommandLineOptions, filterCommandLineOptionsByGroup, unparseArgs } from '@ionic/cli-framework';
 
-import { CommandLineOptions, CommandMetadata, CommandMetadataOption, IonicEnvironment } from '../../../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IonicEnvironment } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
 
 /**
@@ -35,17 +35,18 @@ export function filterArgumentsForCordova(metadata: CommandMetadata, options: Co
   return [m.name, ...args];
 }
 
-export function generateBuildOptions(metadata: CommandMetadata, options: CommandLineOptions): CommandLineOptions {
+export function generateBuildOptions(metadata: CommandMetadata, inputs: CommandLineInputs, options: CommandLineOptions): CommandLineOptions {
+  const [ platform ] = inputs;
   const includesAppScriptsGroup = OptionFilters.includesGroups(OptionGroup.AppScripts);
   const excludesCordovaGroup = OptionFilters.excludesGroups(OptionGroup.Cordova);
   const results = filterCommandLineOptions(metadata, options, o => excludesCordovaGroup(o) || includesAppScriptsGroup(o));
 
-  // Serve specific options not related to the actual run or emulate code
   return {
     ...results,
     externalAddressRequired: true,
     nobrowser: true,
-    target: 'cordova',
+    engine: 'cordova',
+    platform,
   };
 }
 

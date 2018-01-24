@@ -2,7 +2,7 @@ import { ServeRunner } from '../serve';
 
 describe('@ionic/cli-utils', () => {
 
-  describe('lib/serve', () => {
+    describe('lib/project/ionic-angular/serve', () => {
 
     describe('ServeRunner', () => {
 
@@ -13,15 +13,20 @@ describe('@ionic/cli-utils', () => {
           address: '0.0.0.0',
           browser: undefined,
           browserOption: undefined,
+          consolelogs: false,
           devapp: true,
+          env: undefined,
           externalAddressRequired: false,
           lab: false,
           labHost: 'localhost',
           labPort: 8200,
           livereload: true,
+          livereloadPort: 35729,
+          notificationPort: 53703,
           open: false,
           port: 8100,
           proxy: true,
+          serverlogs: false,
           engine: 'browser',
         };
 
@@ -37,10 +42,16 @@ describe('@ionic/cli-utils', () => {
           expect(result).toEqual({ ...defaults, livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
         });
 
+        it('should turn off devapp for cordova', () => {
+          const runner = new ServeRunner();
+          const result = runner.createOptionsFromCommandLine([], { engine: 'cordova' });
+          expect(result).toEqual({ ...defaults, devapp: false, engine: 'cordova' });
+        });
+
         it('should allow overrides of default values', () => {
           const runner = new ServeRunner();
-          const result = runner.createOptionsFromCommandLine([], { address: 'localhost', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
-          expect(result).toEqual({ ...defaults, address: 'localhost', port: 1111 });
+          const result = runner.createOptionsFromCommandLine([], { address: 'localhost', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333', env: 'prod' });
+          expect(result).toEqual({ ...defaults, address: 'localhost', port: 1111, livereloadPort: 2222, notificationPort: 3333, env: 'prod' });
         });
 
         it('should respect --local flag', () => {

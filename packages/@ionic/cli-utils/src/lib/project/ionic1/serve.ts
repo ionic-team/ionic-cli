@@ -7,9 +7,12 @@ import * as through2 from 'through2';
 import * as split2 from 'split2';
 import * as proxyMiddlewareType from 'http-proxy-middleware'; // tslint:disable-line:no-implicit-dependencies
 
-import { ProjectFileProxy, ServeDetails, ServeOptions } from '../../../definitions';
+import { str2num } from '@ionic/cli-framework/utils/string';
+
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1ServeOptions, ProjectFileProxy, ServeDetails } from '../../../definitions';
+import { OptionGroup } from '../../../constants';
 import { FatalException } from '../../errors';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../../serve';
+import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../../serve';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic1');
 
@@ -30,7 +33,7 @@ interface ProxyConfig extends proxyMiddlewareType.Config {
   mount: string;
 }
 
-interface ServeMetaOptions extends ServeOptions {
+interface ServeMetaOptions extends Ionic1ServeOptions {
   wwwDir: string;
   watchPatterns: string[];
   proxies: ProxyConfig[];
@@ -53,8 +56,56 @@ function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy): proxyMiddleware
   return config;
 }
 
-export class ServeRunner extends BaseServeRunner<ServeOptions> {
-  async serveProject(options: ServeOptions): Promise<ServeDetails> {
+export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
+  async specializeCommandMetadata(metadata: CommandMetadata): Promise<CommandMetadata> {
+    const options = metadata.options ? metadata.options : [];
+
+    options.push(...[
+      {
+        name: 'consolelogs',
+        description: 'Print app console logs to Ionic CLI',
+        type: Boolean,
+        aliases: ['c'],
+      },
+      {
+        name: 'serverlogs',
+        description: 'Print dev server logs to Ionic CLI',
+        type: Boolean,
+        aliases: ['s'],
+        groups: [OptionGroup.Hidden],
+      },
+      {
+        name: 'livereload-port',
+        description: 'Use specific port for live-reload',
+        default: DEFAULT_LIVERELOAD_PORT.toString(),
+        aliases: ['r'],
+        groups: [OptionGroup.Advanced],
+      },
+      {
+        name: 'dev-logger-port',
+        description: 'Use specific port for dev server communication',
+        default: DEFAULT_DEV_LOGGER_PORT.toString(),
+        groups: [OptionGroup.Advanced],
+      },
+    ]);
+
+    return { ...metadata, options };
+  }
+  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Ionic1ServeOptions {
+    const baseOptions = super.createOptionsFromCommandLine(inputs, options);
+    const livereloadPort = str2num(options['livereload-port'], DEFAULT_LIVERELOAD_PORT);
+    const notificationPort = str2num(options['dev-logger-port'], DEFAULT_DEV_LOGGER_PORT);
+
+    return {
+      ...baseOptions,
+      consolelogs: options['consolelogs'] ? true : false,
+      serverlogs: options['serverlogs'] ? true : false,
+      livereloadPort,
+      notificationPort,
+    };
+  }
+
+  async serveProject(options: Ionic1ServeOptions): Promise<ServeDetails> {
     const { promptToInstallPkg } = await import('../../utils/npm');
 
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
@@ -133,7 +184,7 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
     const watchPatternsArgs = lodash.flatten(options.watchPatterns.map(p => ['-w', p]));
     const proxiesArgs = lodash.flatten(options.proxies.map(p => ['-p', JSON.stringify(p)]));
 
-    const p = await this.env.shell.spawn('ionic-v1', [...args, ...networkArgs, ...watchPatternsArgs, ...proxiesArgs], { cwd: workingDir, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } });
+    const p = await this.env.shell.spawn('ionic-v1', [...args, ...networkArgs, ...watchPatternsArgs, ...proxiesArgs], { cwd: workingDir, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } });
 
     return new Promise<void>((resolve, reject) => {
       p.on('error', err => {

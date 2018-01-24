@@ -28,7 +28,7 @@ export class BuildRunner extends BaseBuildRunner<IonicAngularBuildOptions> {
     const pkg = await this.env.project.loadPackageJson();
 
     const appScriptsArgs = this.generateAppScriptsArgs(options);
-    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } };
+    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
 

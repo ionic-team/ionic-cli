@@ -6,28 +6,96 @@ import * as Debug from 'debug';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
+import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { pathAccessible } from '@ionic/cli-framework/utils/fs';
 
-import { ServeDetails, ServeOptions } from '../../../definitions';
+import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
+import { OptionGroup } from '../../../constants';
 import { FatalException } from '../../errors';
 import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../../serve';
 
-const NG_AUTODETECTED_PROXY_FILE = 'proxy.config.js';
+const NG_AUTODETECTED_PROXY_FILES = ['proxy.conf.json', 'proxy.conf.js', 'proxy.config.json', 'proxy.config.js'];
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:serve');
 
-export class ServeRunner extends BaseServeRunner<ServeOptions> {
-  async serveProject(options: ServeOptions): Promise<ServeDetails> {
+export class ServeRunner extends BaseServeRunner<AngularServeOptions> {
+  async specializeCommandMetadata(metadata: CommandMetadata): Promise<CommandMetadata> {
+    const options = metadata.options ? metadata.options : [];
+    const exampleCommands = ['-- --extract-css=true'];
+
+    options.push(...[
+      {
+        name: 'dev',
+        description: `Sets the build target to ${chalk.green('development')}`,
+        type: Boolean,
+      },
+      {
+        name: 'prod',
+        description: `Sets the build target to ${chalk.green('production')}`,
+        type: Boolean,
+      },
+      {
+        name: 'target',
+        description: 'Set the build target to a custom value',
+        aliases: ['t'],
+        groups: [OptionGroup.Advanced],
+      },
+      {
+        name: 'environment',
+        description: 'Set the build environment to a custom value',
+        aliases: ['e'],
+        groups: [OptionGroup.Advanced],
+      },
+    ]);
+
+    return {
+      ...metadata,
+      exampleCommands: metadata.exampleCommands ? [...metadata.exampleCommands, ...exampleCommands] : [],
+      longDescription: `${metadata.longDescription}
+
+${chalk.green('ionic serve')} uses the Angular CLI under the hood. Common Angular CLI options such as ${chalk.green('--target')} and ${chalk.green('--environment')} are mixed in with Ionic CLI options. Use ${chalk.green('ng serve --help')} to list all options. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
+
+If a ${chalk.bold('proxy.config.json')} or ${chalk.bold('proxy.config.js')} file is detected in your project, the Angular CLI's ${chalk.green('--proxy-config')} option is automatically specified. You can use ${chalk.green('--no-proxy')} to disable this behavior. See the Angular CLI proxy documentation${chalk.cyan('[2]')} for more information.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/build#ng-build')}
+${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/stories-proxy#proxy-to-backend')}
+`,
+      options,
+    };
+  }
+
+  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularServeOptions {
+    const baseOptions = super.createOptionsFromCommandLine(inputs, options);
+    let target = options['target'] ? String(options['target']) : undefined;
+    const environment = options['environment'] ? String(options['environment']) : undefined;
+
+    if (!target) {
+      if (options['dev']) {
+        target = 'development';
+      } else if (options['prod']) {
+        target = 'production';
+      }
+    }
+
+    return {
+      ...baseOptions,
+      target,
+      environment,
+    };
+  }
+
+  async serveProject(options: AngularServeOptions): Promise<ServeDetails> {
     const { promptToInstallPkg } = await import('../../utils/npm');
     const { findClosestOpenPort, isHostConnectable } = await import('../../utils/network');
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
 
     debug('finding closest port to %d', options.port);
     const ngPort = await findClosestOpenPort(options.port, '0.0.0.0');
+    options.port = ngPort;
 
     try {
-      await this.servecmd(options.address, ngPort);
+      await this.servecmd(options);
     } catch (e) {
       if (e.code === 'ENOENT') {
         const pkg = '@angular/cli';
@@ -43,7 +111,7 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
           throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.`);
         }
 
-        await this.servecmd(options.address, ngPort);
+        await this.servecmd(options);
       }
     }
 
@@ -60,15 +128,11 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
     };
   }
 
-  async servecmd(host: string, port: number): Promise<void> {
+  async servecmd(options: AngularServeOptions): Promise<void> {
     const { registerShutdownFunction } = await import('../../process');
 
-    const ngArgs: string[] = ['serve', '--host', host, '--port', String(port), '--progress', 'false'];
-    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } };
-
-    if (await pathAccessible(path.resolve(this.env.project.directory, NG_AUTODETECTED_PROXY_FILE), fs.constants.R_OK)) {
-      ngArgs.push('--proxy-config', NG_AUTODETECTED_PROXY_FILE); // this is fine as long as cwd is the project directory
-    }
+    const ngArgs = await this.serveOptionsToNgArgs(options);
+    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
 
     const p = await this.env.shell.spawn('ng', ngArgs, shellOptions);
 
@@ -97,5 +161,38 @@ export class ServeRunner extends BaseServeRunner<ServeOptions> {
       p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
       p.stderr.pipe(split2()).pipe(ws);
     });
+  }
+
+  async serveOptionsToNgArgs(options: AngularServeOptions): Promise<string[]> {
+    const args: ParsedArgs = {
+      _: ['serve'],
+      host: options.address,
+      port: String(options.port),
+      progress: 'false',
+      target: options.target,
+      environment: options.environment,
+    };
+
+    if (options.proxy) {
+      const proxyConfig = await this.detectProxyConfig();
+      // this is fine as long as cwd of ng serve is the project directory
+
+      if (proxyConfig) {
+        args.proxyConfig = proxyConfig;
+      }
+    }
+
+    return [...unparseArgs(args, {}), ...options['--']];
+  }
+
+  async detectProxyConfig(): Promise<string | undefined> {
+    for (const f of NG_AUTODETECTED_PROXY_FILES) {
+      if (await pathAccessible(path.resolve(this.env.project.directory, f), fs.constants.R_OK)) {
+        debug(`Detected ${chalk.bold(f)} proxy file`);
+        return f;
+      }
+    }
+
+    debug(`None of the following proxy files found: ${NG_AUTODETECTED_PROXY_FILES.map(f => chalk.bold(f)).join(', ')}`);
   }
 }

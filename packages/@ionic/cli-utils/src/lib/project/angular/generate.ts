@@ -17,8 +17,9 @@ const ANGULAR_GENERATOR_TYPES = ['class', 'component', 'directive', 'enum', 'gua
 const GENERATOR_TYPES = [...IONIC_GENERATOR_TYPES, ...ANGULAR_GENERATOR_TYPES];
 
 export class GenerateRunner extends BaseGenerateRunner<AngularGenerateOptions> {
-  async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
+  async specializeCommandMetadata(metadata: CommandMetadata): Promise<CommandMetadata> {
     return {
+      ...metadata,
       groups: [],
       description: `Generate Angular classes such as pages, components, directives, services, etc.`,
       longDescription: `
@@ -83,12 +84,11 @@ This command uses the Angular CLI to generate components. Not all component gene
   }
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularGenerateOptions {
-    const [ type, name ] = inputs;
+    const baseOptions = super.createOptionsFromCommandLine(inputs, options);
 
     return {
       ...lodash.omit(options, '_', '--', 'dry-run', 'd', 'force', 'f'),
-      type,
-      name,
+      ...baseOptions,
       force: options['force'] ? true : false,
       dryRun: options['dry-run'] ? true : false,
     };
@@ -108,13 +108,12 @@ This command uses the Angular CLI to generate components. Not all component gene
   async generateComponent(type: string, name: string, options: { [key: string]: string | boolean; }) {
     const { registerShutdownFunction } = await import('../../process');
 
-    const ngArgs = unparseArgs({
-      _: ['generate', type, name],
-      collection: '@ionic/schematics-angular',
-      ...options,
-    }, {});
+    if (type === 'page') {
+      options.collection = '@ionic/schematics-angular';
+    }
 
-    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0' } };
+    const ngArgs = unparseArgs({ _: ['generate', type, name], ...options }, {});
+    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
 
     const p = await this.env.shell.spawn('ng', ngArgs, shellOptions);
 
