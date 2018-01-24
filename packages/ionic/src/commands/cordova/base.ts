@@ -255,7 +255,7 @@ export abstract class CordovaRunCommand extends CordovaCommand implements Comman
       }
     }
 
-    await this.runCordova(filterArgumentsForCordova(metadata, options), {});
+    await this.runCordova(filterArgumentsForCordova(metadata, options), { logOptions: { prefix: chalk.dim('[cordova]'), wrap: false } });
 
     if (!isLiveReload) {
       this.env.log.ok(
