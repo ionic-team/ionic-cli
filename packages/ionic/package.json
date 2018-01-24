@@ -56,9 +56,9 @@
   },
   "devDependencies": {
     "@types/debug": "0.0.30",
-    "@types/lodash": "^4.14.92",
+    "@types/lodash": "^4.14.95",
     "@types/opn": "^5.1.0",
-    "@types/update-notifier": "^1.0.2"
+    "@types/update-notifier": "^2.0.0"
   },
   "jest": {
     "globals": {

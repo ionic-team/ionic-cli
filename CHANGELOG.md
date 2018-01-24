@@ -24,7 +24,12 @@ from the breaking changes listed below, upgrading to CLI v4 should be seamless.
   going forward. :ok_hand:
 * Ionic 1 build/serve functionality has been moved into the
   [`@ionic/v1-util`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-util)
-  package, which will need to be installed in your Ionic 1 project(s).
+  package, which will need to be installed in your Ionic 1 project(s). The file
+  watcher, [chokidar](https://github.com/paulmillr/chokidar), has been updated
+  to 2.0.0, which will require those using `watchPatterns` to [always use
+  POSIX-style
+  slashes](https://github.com/paulmillr/chokidar/blob/master/CHANGELOG.md#chokidar-200-dec-29-2017)
+  (not an issue if you've never used `\` in globs for Windows).
 * Ionic Lab has been moved into the
   [`@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/lab)
   package, which will need to be installed (globally or locally) for Lab to

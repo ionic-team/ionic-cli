@@ -125,7 +125,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
 
       if (ienv.flags.interactive) {
         const updateNotifier = await import('update-notifier');
-        updateNotifier({ pkg: plugin.meta.pkg }).notify(<any>{ isGlobal: !ienv.meta.local });
+        updateNotifier({ pkg: plugin.meta.pkg }).notify({ isGlobal: !ienv.meta.local });
       }
 
     } catch (e) {

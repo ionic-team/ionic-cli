@@ -28,11 +28,11 @@
   "dependencies": {
     "@ionic/cli-framework": "0.1.2",
     "chalk": "^2.3.0",
-    "chokidar": "^1.7.0",
+    "chokidar": "^2.0.0",
     "debug": "^3.1.0",
     "express": "^4.16.2",
     "http-proxy-middleware": "^0.17.4",
-    "tiny-lr": "^1.0.5",
+    "tiny-lr": "^1.1.0",
     "tslib": "^1.9.0",
     "ws": "3.3.2"
   },

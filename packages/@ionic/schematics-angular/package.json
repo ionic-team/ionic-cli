@@ -27,6 +27,7 @@
     "@angular-devkit/core": "0.0.28",
     "@angular-devkit/schematics": "0.0.51",
     "@types/lodash": "^4.14.93",
+    "@types/lodash": "^4.14.95",
     "rimraf": "^2.6.2",
     "source-map": "^0.7.0"
   },

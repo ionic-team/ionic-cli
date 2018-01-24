@@ -50,12 +50,12 @@
   },
   "devDependencies": {
     "@types/debug": "0.0.30",
-    "@types/lodash": "^4.14.92",
+    "@types/lodash": "^4.14.95",
     "@types/minimist": "^1.2.0",
     "@types/ncp": "^2.0.1",
     "@types/rimraf": "^2.0.2",
     "@types/strip-ansi": "^3.0.0",
-    "@types/superagent": "^3.5.6",
+    "@types/superagent": "^3.5.7",
     "@types/untildify": "^3.0.0"
   }
 }
