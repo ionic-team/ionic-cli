@@ -5,22 +5,16 @@
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint -- -- --fix",
-    "link":
-      "lerna exec --scope=ionic --scope=\"@ionic/+(lab|v1-util)\" npm link",
-    "unlink":
-      "lerna exec --scope=ionic --scope=\"@ionic/+(lab|v1-util)\" npm unlink",
+    "link": "lerna exec --scope=ionic --scope=\"@ionic/+(lab|v1-util)\" npm link",
+    "unlink": "lerna exec --scope=ionic --scope=\"@ionic/+(lab|v1-util)\" npm unlink",
     "test": "lerna run test",
     "build": "lerna run build",
     "watch": "lerna run watch --parallel",
     "docs": "node packages/@ionic/cli-scripts/bin/ionic-cli-scripts docs",
-    "docs:watch":
-      "chokidar 'packages/@ionic/cli-scripts/dist/docs/**/*.js' -c 'npm run docs'",
-    "publish:canary":
-      "lerna publish --canary --exact --npm-tag=canary --skip-git",
-    "publish:ci-4.x":
-      "lerna publish --canary --exact --npm-tag=canary --skip-git --cd-version=major",
-    "publish:testing":
-      "lerna publish --canary=testing --exact --npm-tag=testing --skip-git",
+    "docs:watch": "chokidar 'packages/@ionic/cli-scripts/dist/docs/**/*.js' -c 'npm run docs'",
+    "publish:canary": "lerna publish --canary --exact --npm-tag=canary --skip-git",
+    "publish:ci-4.x": "lerna publish --canary --exact --npm-tag=canary --skip-git --cd-version=major",
+    "publish:testing": "lerna publish --canary=testing --exact --npm-tag=testing --skip-git",
     "publish": "lerna publish --exact --conventional-commits",
     "prepush": "npm run lint"
   },
