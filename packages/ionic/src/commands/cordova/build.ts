@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
 
-import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
+import { COMMON_CORDOVA_BUILD_COMMAND_OPTIONS, CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 
 export class BuildCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -14,7 +14,7 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
       type: 'project',
       description: 'Build (prepare + compile) an Ionic project for a given platform',
       longDescription: `
-Like running ${chalk.green('cordova build')} directly, but also builds web assets and provides friendly checks.
+Like running ${chalk.green('cordova build')} directly, but also builds web assets with configuration from ${chalk.green('ionic build')} and provides friendly checks.
 
 To pass additional options to the Cordova CLI, use the ${chalk.green('--')} separator after the Ionic CLI arguments.
 
@@ -27,7 +27,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/gu
       inputs: [
         {
           name: 'platform',
-          description: `The platform to build (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          description: `The platform to build (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
           validators: [validators.required],
         },
       ],
@@ -40,36 +40,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/gu
           default: true,
         },
         ...APP_SCRIPTS_OPTIONS,
-        // Cordova Options
-        {
-          name: 'debug',
-          description: 'Create a Cordova debug build',
-          type: Boolean,
-          groups: [OptionGroup.Cordova],
-        },
-        {
-          name: 'release',
-          description: 'Create a Cordova release build',
-          type: Boolean,
-          groups: [OptionGroup.Cordova],
-        },
-        {
-          name: 'device',
-          description: 'Create a Cordova build for a device',
-          type: Boolean,
-          groups: [OptionGroup.Cordova],
-        },
-        {
-          name: 'emulator',
-          description: 'Create a Cordova build for an emulator',
-          type: Boolean,
-          groups: [OptionGroup.Cordova],
-        },
-        {
-          name: 'buildConfig',
-          description: 'Use the specified Cordova build configuration',
-          groups: [OptionGroup.Advanced, OptionGroup.Cordova],
-        },
+        ...COMMON_CORDOVA_BUILD_COMMAND_OPTIONS,
       ],
     };
   }

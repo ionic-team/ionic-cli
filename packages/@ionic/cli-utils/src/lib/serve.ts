@@ -66,7 +66,7 @@ export const COMMON_SERVE_COMMAND_OPTIONS: CommandMetadataOption[] = [
   },
   {
     name: 'livereload',
-    description: 'Do not spin up live reload server',
+    description: 'Do not spin up dev server--just serve files',
     type: Boolean,
     default: true,
   },

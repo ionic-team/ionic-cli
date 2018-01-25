@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
-import { CordovaCommand } from './base';
+import { COMMON_CORDOVA_BUILD_COMMAND_OPTIONS, CordovaCommand } from './base';
 
 export class CompileCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -28,30 +28,7 @@ Like running ${chalk.green('cordova compile')} directly, but provides friendly c
         },
       ],
       options: [
-        {
-          name: 'debug',
-          description: 'Create a Cordova debug build',
-          type: Boolean,
-          groups: [OptionGroup.Cordova],
-        },
-        {
-          name: 'release',
-          description: 'Create a Cordova release build',
-          type: Boolean,
-          groups: [OptionGroup.Cordova],
-        },
-        {
-          name: 'device',
-          description: 'Compile Cordova build to a device',
-          type: Boolean,
-          groups: [OptionGroup.Cordova],
-        },
-        {
-          name: 'emulator',
-          description: 'Compile Cordova build to an emulator',
-          type: Boolean,
-          groups: [OptionGroup.Cordova],
-        },
+        ...COMMON_CORDOVA_BUILD_COMMAND_OPTIONS,
       ],
     };
   }

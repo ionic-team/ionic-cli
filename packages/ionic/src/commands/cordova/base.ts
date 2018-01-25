@@ -4,11 +4,48 @@ import chalk from 'chalk';
 import { fsMkdir, pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { IShellRunOptions } from '@ionic/cli-utils';
+import { CommandMetadataOption, IShellRunOptions, OptionGroup } from '@ionic/cli-utils';
 
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { checkCordova } from '@ionic/cli-utils/lib/integrations/cordova/utils';
+
+export const COMMON_CORDOVA_BUILD_COMMAND_OPTIONS: CommandMetadataOption[] = [
+  {
+    name: 'debug',
+    description: 'Create a debug build',
+    type: Boolean,
+    groups: [OptionGroup.Cordova],
+    hint: 'cordova',
+  },
+  {
+    name: 'release',
+    description: 'Create a release build',
+    type: Boolean,
+    groups: [OptionGroup.Cordova],
+    hint: 'cordova',
+  },
+  {
+    name: 'device',
+    description: 'Create a build for a device',
+    type: Boolean,
+    groups: [OptionGroup.Cordova],
+    hint: 'cordova',
+  },
+  {
+    name: 'emulator',
+    description: 'Create a build for an emulator',
+    type: Boolean,
+    groups: [OptionGroup.Cordova],
+    hint: 'cordova',
+  },
+  {
+    name: 'buildConfig',
+    description: 'Use the specified build configuration',
+    groups: [OptionGroup.Advanced, OptionGroup.Cordova],
+    hint: 'cordova',
+  },
+];
 
 export const CORDOVA_BUILD_EXAMPLE_COMMANDS = [
   'ios',

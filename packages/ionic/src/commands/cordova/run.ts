@@ -32,16 +32,19 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       type: 'project',
       description: 'Run an Ionic project on a connected device',
       longDescription: `
-Like running ${chalk.green('cordova run')} directly, but also watches for changes in web assets and provides live-reload functionality with the ${chalk.green('--livereload')} option.
+Like running ${chalk.green('cordova run')} or ${chalk.green('cordova emulate')} directly, but also uses the dev server from ${chalk.green('ionic serve')} for livereload functionality.
 
-For Android and iOS, you can setup Remote Debugging on your device with browser development tools: ${chalk.bold('https://ionicframework.com/docs/developer-resources/developer-tips/')}
+For Android and iOS, you can setup Remote Debugging on your device with browser development tools using these docs${chalk.cyan('[1]')}.
 
-Just like with ${chalk.green('ionic cordova build')}, you can pass additional options to the Cordova CLI using the ${chalk.green('--')} separator.`,
+Just like with ${chalk.green('ionic cordova build')}, you can pass additional options to the Cordova CLI using the ${chalk.green('--')} separator.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-resources/developer-tips/')}
+      `,
       exampleCommands: CORDOVA_BUILD_EXAMPLE_COMMANDS,
       inputs: [
         {
           name: 'platform',
-          description: `The platform to run (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          description: `The platform to run (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
         },
       ],
       options: [
@@ -51,7 +54,6 @@ Just like with ${chalk.green('ionic cordova build')}, you can pass additional op
           type: Boolean,
           groups: [OptionGroup.Cordova],
         },
-        ...COMMON_SERVE_COMMAND_OPTIONS,
         // Build Options
         {
           name: 'build',
@@ -59,6 +61,7 @@ Just like with ${chalk.green('ionic cordova build')}, you can pass additional op
           type: Boolean,
           default: true,
         },
+        ...COMMON_SERVE_COMMAND_OPTIONS,
         // Cordova Options
         {
           name: 'debug',
