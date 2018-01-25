@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "@ionic/lab",
   "version": "0.0.0",
   "description": "Ionic Lab utility for developing Ionic apps, used by Ionic CLI",
@@ -66,4 +66,3 @@
     "testRegex": "/__tests__/.*\\.(ts|js)$"
   }
 }
-
