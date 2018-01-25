@@ -2,7 +2,6 @@ import * as path from 'path';
 import * as util from 'util';
 
 import chalk from 'chalk';
-import * as Debug from 'debug';
 
 import { InputValidationError, stripOptions } from '@ionic/cli-framework';
 import { IPCMessage, IonicEnvironment, RootPlugin, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
@@ -12,7 +11,6 @@ import { pathExists } from '@ionic/cli-framework/utils/fs';
 
 import { IonicNamespace } from './commands';
 
-const debug = Debug('ionic:cli');
 export const namespace = new IonicNamespace(undefined, <any>undefined); // TODO: see `generateIonicEnvironment`
 
 export async function generateRootPlugin(): Promise<RootPlugin> {
@@ -41,6 +39,10 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     process.exitCode = 1;
     return;
   }
+
+  // `generateIonicEnvironment` enables debug output with --verbose flag
+  const Debug = await import('debug');
+  const debug = Debug('ionic:cli');
 
   if (pargv[0] !== '_') {
     try {
