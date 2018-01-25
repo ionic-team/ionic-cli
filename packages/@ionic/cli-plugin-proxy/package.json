@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "@ionic/cli-plugin-proxy",
   "version": "1.5.6",
   "description": "Ionic CLI plugin for proxying all CLI HTTP requests",
