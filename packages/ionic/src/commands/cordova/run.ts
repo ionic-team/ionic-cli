@@ -128,17 +128,20 @@ Just like with ${chalk.green('ionic cordova build')}, you can pass additional op
       options['proxy'] = false;
     }
 
-    const metadata = await this.getMetadata();
-
-    if (!options['device'] && !options['emulator']) {
-      if (metadata.name === 'run') {
-        options['device'] = true;
-      } else if (metadata.name === 'emulate') {
-        options['emulator'] = true;
-      }
+    if (!options['build'] && options['livereload']) {
+      this.env.log.warn(`No livereload with ${chalk.green('--no-build')}.`);
+      options['livereload'] = false;
     }
 
+    const metadata = await this.getMetadata();
+
     if (options['list']) {
+      if (!options['device'] && !options['emulator']) {
+        if (metadata.name === 'emulate') {
+          options['emulator'] = true;
+        }
+      }
+
       const args = filterArgumentsForCordova(metadata, options);
       await this.runCordova(['run', ...args.slice(1)], {});
       throw new FatalException('', 0);
