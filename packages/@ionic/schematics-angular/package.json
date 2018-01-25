@@ -5,7 +5,7 @@
   "homepage": "https://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com) ",
   "scripts": {
-    "clean": "rm -rf */index.{js,d.ts}",
+    "clean": "rimraf */index.{js,d.ts}",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
@@ -27,6 +27,7 @@
     "@angular-devkit/core": "0.0.28",
     "@angular-devkit/schematics": "0.0.51",
     "@types/lodash": "^4.14.93",
+    "rimraf": "^2.6.2",
     "source-map": "^0.7.0"
   },
   "peerDependencies": {

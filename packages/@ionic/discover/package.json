@@ -13,7 +13,7 @@
     "README.md"
   ],
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
@@ -25,7 +25,8 @@
     "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "@types/netmask": "^1.0.30"
+    "@types/netmask": "^1.0.30",
+    "rimraf": "^2.6.2"
   },
   "repository": {
     "type": "git",

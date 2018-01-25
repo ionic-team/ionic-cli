@@ -1,8 +1,8 @@
-{
+﻿{
   "name": "@ionic/cli-scripts",
   "version": "0.3.7",
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
@@ -24,7 +24,8 @@
   "devDependencies": {
     "@types/ansi-styles": "^2.0.30",
     "@types/escape-string-regexp": "0.0.32",
-    "@types/strip-ansi": "^3.0.0"
+    "@types/strip-ansi": "^3.0.0",
+    "rimraf": "^2.6.2"
   },
   "jest": {
     "globals": {
@@ -42,3 +43,4 @@
     "testRegex": "/__tests__/.*\\.(ts|js)$"
   }
 }
+

@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "@ionic/lab",
   "version": "0.0.0",
   "description": "Ionic Lab utility for developing Ionic apps, used by Ionic CLI",
@@ -19,8 +19,8 @@
   ],
   "scripts": {
     "clean": "npm run clean.tsc",
-    "clean.tsc": "rm -rf ./dist",
-    "clean.stencil": "rm -rf ./www",
+    "clean.tsc": "rimraf ./dist",
+    "clean.stencil": "rimraf ./www",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run build.tsc && npm run build.stencil",
     "build.stencil": "npm run clean.stencil && stencil build",
@@ -40,7 +40,8 @@
     "@stencil/core": "^0.1.6",
     "@stencil/dev-server": "0.0.18",
     "@types/express": "^4.11.0",
-    "concurrently": "^3.5.1"
+    "concurrently": "^3.5.1",
+    "rimraf": "^2.6.2"
   },
   "repository": {
     "type": "git",
@@ -65,3 +66,4 @@
     "testRegex": "/__tests__/.*\\.(ts|js)$"
   }
 }
+
