@@ -31,7 +31,6 @@ export class IonicNamespace extends Namespace {
     return new CommandMap([
       ['build', async () => { const { BuildCommand } = await import('./build'); return new BuildCommand(this, this.env); }],
       ['docs', async () => { const { DocsCommand } = await import('./docs'); return new DocsCommand(this, this.env); }],
-      ['g', 'generate'],
       ['generate', async () => { const { GenerateCommand } = await import('./generate'); return new GenerateCommand(this, this.env); }],
       ['help', async () => { const { HelpCommand } = await import('./help'); return new HelpCommand(this, this.env); }],
       ['info', async () => { const { InfoCommand } = await import('./info'); return new InfoCommand(this, this.env); }],
@@ -47,6 +46,8 @@ export class IonicNamespace extends Namespace {
       ['telemetry', async () => { const { TelemetryCommand } = await import('./telemetry'); return new TelemetryCommand(this, this.env); }],
       ['version', async () => { const { VersionCommand } = await import('./version'); return new VersionCommand(this, this.env); }],
       ['lab', async () => { const { LabCommand } = await import('./serve'); return new LabCommand(this, this.env); }],
+      ['g', 'generate'],
+      ['s', 'serve'],
     ]);
   }
 

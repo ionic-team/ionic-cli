@@ -50,6 +50,7 @@ from the breaking changes listed below, upgrading to CLI v4 should be seamless.
 #### :rocket: Enhancements
 
 * Support for :sparkles: **Ionic Angular v4** :sparkles:
+* `ionic s` is now an alias for `ionic serve`.
 * If `ionic:build` or `ionic:serve` npm scripts are defined in your
   `package.json`, the Ionic CLI will use them for the Ionic build/serve instead
   of the default for your project type. See [the
