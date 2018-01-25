@@ -7,9 +7,10 @@ import * as lodash from 'lodash';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-import { InfoHookItem, ProjectType } from '../../../definitions';
+import { IAilmentRegistry, InfoHookItem, ProjectType } from '../../../definitions';
 
 import { BaseProject } from '../';
+import * as doctorLibType from '../../doctor';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic-angular');
 
@@ -24,6 +25,16 @@ export class Project extends BaseProject {
       { type: 'local-packages', key: 'Ionic Framework', value: ionicAngularVersion ? `ionic-angular ${ionicAngularVersion}` : 'not installed' },
       { type: 'local-packages', key: '@ionic/app-scripts', value: appScriptsVersion ? appScriptsVersion : 'not installed' },
     ];
+  }
+
+  async getAilmentRegistry(deps: doctorLibType.AutomaticallyTreatableAilmentDeps): Promise<IAilmentRegistry> {
+    const { registerAilments } = await import('./ailments');
+
+    const registry = await super.getAilmentRegistry(deps);
+
+    registerAilments(registry, { ...deps, project: this });
+
+    return registry;
   }
 
   async detected() {

@@ -25,9 +25,8 @@ export class DoctorIgnoreCommand extends Command implements CommandPreRun {
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { Ailments } = await import('@ionic/cli-utils/lib/doctor/ailments');
-
-    const ailmentIds = Ailments.ALL.map(Ailment => new Ailment(this.env).id);
+    const registry = await this.env.project.getAilmentRegistry(this.env);
+    const ailmentIds = registry.ailments.map(ailment => ailment.id);
 
     if (!inputs[0]) {
       inputs[0] = await this.env.prompt({

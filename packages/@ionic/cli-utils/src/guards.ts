@@ -7,6 +7,7 @@ import {
   CommandPreRun,
   CordovaPackageJson,
   ExitCodeException,
+  IAutomaticallyTreatableAilment,
   ICommand,
   LoadedPlugin,
   LogLevel,
@@ -186,4 +187,8 @@ export function isSecurityProfilesResponse(r: APIResponse): r is Response<Securi
   }
 
   return true;
+}
+
+export function isAutomaticallyTreatableAilment(ailment: any): ailment is IAutomaticallyTreatableAilment {
+  return ailment && typeof ailment.treat === 'function';
 }

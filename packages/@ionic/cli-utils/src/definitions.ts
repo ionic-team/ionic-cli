@@ -183,6 +183,7 @@ export interface IProject extends IBaseConfig<ProjectFile> {
   loadAppId(): Promise<string>;
   loadPackageJson(): Promise<framework.PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
+  getAilmentRegistry(env: IonicEnvironment): Promise<IAilmentRegistry>;
 }
 
 export type IntegrationName = keyof ProjectIntegrations;
@@ -445,6 +446,33 @@ export interface ServeDetails {
   port: number;
   externalNetworkInterfaces: NetworkInterface[];
   externallyAccessible: boolean;
+}
+
+export interface IAilment {
+  id: string;
+  getMessage(): Promise<string>;
+  getTreatmentSteps(): Promise<TreatmentStep[]>;
+  detected(): Promise<boolean>;
+}
+
+export interface IAutomaticallyTreatableAilment extends IAilment {
+  treat(): Promise<boolean>;
+  getTreatmentSteps(): Promise<AutomaticTreatmentStep[]>;
+}
+
+export interface TreatmentStep {
+  name: string;
+}
+
+export interface AutomaticTreatmentStep extends TreatmentStep {
+  treat(): Promise<void>;
+}
+
+export interface IAilmentRegistry {
+  ailments: IAilment[];
+
+  register(ailment: IAilment): void;
+  get(id: string): void;
 }
 
 export interface AngularCLIJson {

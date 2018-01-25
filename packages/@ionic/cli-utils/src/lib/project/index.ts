@@ -8,10 +8,12 @@ import { ERROR_FILE_INVALID_JSON, fsReadJsonFile, fsWriteJsonFile } from '@ionic
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-import { IIntegration, ILogger, IProject, IShell, InfoHookItem, IntegrationName, PackageJson, ProjectFile, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
+import { IAilmentRegistry, IIntegration, ILogger, IProject, IShell, InfoHookItem, IntegrationName, PackageJson, ProjectFile, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { BaseConfig } from '../config';
 import { FatalException } from '../errors';
 import { BaseIntegration } from '../integrations';
+
+import * as doctorLibType from '../doctor';
 
 import * as angularProjectLibType from './angular';
 import * as ionicAngularProjectLibType from './ionic-angular';
@@ -222,6 +224,16 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
 
     await Promise.all(this.integrations.map(async i => i.personalize(details)));
   }
+
+  async getAilmentRegistry(deps: doctorLibType.AutomaticallyTreatableAilmentDeps): Promise<IAilmentRegistry> {
+    const { AilmentRegistry, registerAilments } = await import('../doctor/ailments');
+
+    const registry = new AilmentRegistry();
+
+    registerAilments(registry, deps);
+
+    return registry;
+  }
 }
 
 /**
@@ -274,6 +286,10 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
   }
 
   async refreshIntegrations(): Promise<never> {
+    throw this._createError();
+  }
+
+  async getAilmentRegistry(): Promise<never> {
     throw this._createError();
   }
 }
