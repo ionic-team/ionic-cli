@@ -255,7 +255,7 @@ function formatOptionLine(opt: CommandMetadataOption) {
 
   const optionListLength = stringWidth(optionList);
   const fullLength = optionListLength > HELP_DOTS_WIDTH ? optionListLength + 1 : HELP_DOTS_WIDTH;
-  const wrappedDescription = wordWrap(opt.description + formatOptionDefault(opt), { indentation: HELP_DOTS_WIDTH + 6 });
+  const wrappedDescription = wordWrap((opt.hint ? `${chalk.dim(`[${opt.hint}]`)} ` : '') + opt.description + formatOptionDefault(opt), { indentation: HELP_DOTS_WIDTH + 6 });
 
   return `${optionList} ${Array(fullLength - optionListLength).fill(chalk.dim('.')).join('')} ${wrappedDescription}`;
 }

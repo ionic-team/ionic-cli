@@ -59,21 +59,23 @@ CLI flags are global options that alter the behavior of a CLI command.
 * \`--no-color\`: Turn off colors.
 * \`--confirm\`: Turn on auto-confirmation of confirmation prompts. *Careful*: the CLI prompts before doing something potentially harmful. Auto-confirming may have unintended results.
 
-## Building your App
-
-The [\`ionic build\`](/docs/cli/build/) command will build your app (compile your source code and assets into a distributable set of files). It knows what to do for your Ionic app based upon its [project type](docs/cli/projects.html).
-
-You can configure this by using the \`ionic:build\` [npm script](https://docs.npmjs.com/misc/scripts). If this script is defined in \`package.json\`, the \`ionic build\` command will call it instead of the default. It is important to continue using \`ionic build\` so Ionic functionality (such as Ionic Pro features) continue working.
-
 ## Hooks
 
-CLI hooks are how you can run scripts during CLI events, such as "watch" and "build". To hook into the CLI, use the following [npm scripts](https://docs.npmjs.com/misc/scripts) in your \`package.json\` file:
+CLI hooks are how you can run scripts during CLI events, such as "serve" and "build". To hook into the CLI, use the following [npm scripts](https://docs.npmjs.com/misc/scripts) in your \`package.json\` file:
 
 | npm script             | commands                                                                                   |
 |------------------------|--------------------------------------------------------------------------------------------|
-| \`ionic:watch:before\` | \`ionic serve\`, \`ionic cordova run -l\`, \`ionic cordova emulate -l\`                    |
+| \`ionic:serve:before\` | \`ionic serve\`, \`ionic cordova run -l\`, \`ionic cordova emulate -l\`                    |
 | \`ionic:build:before\` | \`ionic build\`, \`ionic cordova build\`, \`ionic cordova run\`, \`ionic cordova emulate\` |
 | \`ionic:build:after\`  | \`ionic build\`, \`ionic cordova build\`, \`ionic cordova run\`, \`ionic cordova emulate\` |
+
+## Building and Serving your App
+
+The [\`ionic build\`](/docs/cli/build/) and [\`ionic serve\`](/docs/cli/serve/) commands will build your app (compile your source code and assets into a distributable set of files) and serve your app (compile your source code and assets, watch for file changes, reload the app when recompiled), respectively. It knows what to do for your Ionic app based upon its [project type](docs/cli/projects.html). If possible, please use [hooks](#hooks) instead of overwriting the defaults.
+
+You can configure what the Ionic CLI does to build and serve your project by using the \`ionic:build\` and \`ionic:serve\` [npm scripts](https://docs.npmjs.com/misc/scripts). If these scripts are defined in \`package.json\`, the build and serve commands will call them instead of the default. It is important to continue using \`ionic build\` and \`ionic serve\` so Ionic functionality (such as Ionic Pro features, DevApp, Ionic Lab, etc) continue working.
+
+The Ionic CLI will append options to your custom \`ionic serve\` script, such as \`--port\`. It is important to use these options, as the Ionic CLI needs to know details about the development server for other features to continue working.
 
 ### Example
 

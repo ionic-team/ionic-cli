@@ -11,13 +11,18 @@ import { pathAccessible } from '@ionic/cli-framework/utils/fs';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
-import { FatalException } from '../../errors';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../../serve';
+import { FatalException, ServeCommandNotFoundException } from '../../errors';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
 
-const NG_AUTODETECTED_PROXY_FILES = ['proxy.conf.json', 'proxy.conf.js', 'proxy.config.json', 'proxy.config.js'];
+const DEFAULT_PROGRAM = 'ng';
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
+const NG_AUTODETECTED_PROXY_FILES = ['proxy.conf.json', 'proxy.conf.js', 'proxy.config.json', 'proxy.config.js'];
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:serve');
+
+interface ServeCmdDetails {
+  program: string;
+}
 
 export class ServeRunner extends BaseServeRunner<AngularServeOptions> {
   async specializeCommandMetadata(metadata: CommandMetadata): Promise<CommandMetadata> {
@@ -29,23 +34,27 @@ export class ServeRunner extends BaseServeRunner<AngularServeOptions> {
         name: 'dev',
         description: `Sets the build target to ${chalk.green('development')}`,
         type: Boolean,
+        hint: 'ng',
       },
       {
         name: 'prod',
         description: `Sets the build target to ${chalk.green('production')}`,
         type: Boolean,
+        hint: 'ng',
       },
       {
         name: 'target',
         description: 'Set the build target to a custom value',
         aliases: ['t'],
         groups: [OptionGroup.Advanced],
+        hint: 'ng',
       },
       {
         name: 'environment',
         description: 'Set the build environment to a custom value',
         aliases: ['e'],
         groups: [OptionGroup.Advanced],
+        hint: 'ng',
       },
     ]);
 
@@ -86,7 +95,6 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   }
 
   async serveProject(options: AngularServeOptions): Promise<ServeDetails> {
-    const { promptToInstallPkg } = await import('../../utils/npm');
     const { findClosestOpenPort, isHostConnectable } = await import('../../utils/network');
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
 
@@ -94,31 +102,13 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const ngPort = await findClosestOpenPort(options.port, '0.0.0.0');
     options.port = ngPort;
 
-    try {
-      await this.servecmd(options);
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        const pkg = '@angular/cli';
-        this.env.log.nl();
-        this.env.log.warn(
-          `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
-          `This package is required for ${chalk.green('ionic serve')} as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#4.0.0')}`
-        );
-
-        const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });
-
-        if (!installed) {
-          throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.`);
-        }
-
-        await this.servecmd(options);
-      }
-    }
+    const { program } = await this.serveCommandWrapper(options);
 
     debug('waiting for connectivity with ng serve (%dms timeout)', NG_SERVE_CONNECTIVITY_TIMEOUT);
     await isHostConnectable('localhost', ngPort, NG_SERVE_CONNECTIVITY_TIMEOUT);
 
     return {
+      custom: program !== DEFAULT_PROGRAM,
       protocol: 'http',
       localAddress: 'localhost',
       externalAddress: externalIP,
@@ -128,38 +118,91 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     };
   }
 
-  async servecmd(options: AngularServeOptions): Promise<void> {
+  private async serveCommandWrapper(options: AngularServeOptions): Promise<ServeCmdDetails> {
+    const { promptToInstallPkg } = await import('../../utils/npm');
+
+    try {
+      return await this.servecmd(options);
+    } catch (e) {
+      if (!(e instanceof ServeCommandNotFoundException)) {
+        throw e;
+      }
+
+      const pkg = '@angular/cli';
+      this.env.log.nl();
+      this.env.log.warn(
+        `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
+        `This package is required for ${chalk.green('ionic serve')} as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#4.0.0')}`
+      );
+
+      const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });
+
+      if (!installed) {
+        throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.`);
+      }
+
+      return this.servecmd(options);
+    }
+  }
+
+  private async servecmd(options: AngularServeOptions): Promise<ServeCmdDetails> {
+    const { pkgManagerArgs } = await import('../../utils/npm');
     const { registerShutdownFunction } = await import('../../process');
 
-    const ngArgs = await this.serveOptionsToNgArgs(options);
+    const config = await this.env.config.load();
+    const pkg = await this.env.project.loadPackageJson();
+    const { npmClient } = config;
+
+    let program = DEFAULT_PROGRAM;
+    let args = await this.serveOptionsToNgArgs(options);
     const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
 
-    const p = await this.env.shell.spawn('ng', ngArgs, shellOptions);
+    debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
 
-    return new Promise<void>((resolve, reject) => {
-      p.on('error', err => {
-        reject(err);
+    if (pkg.scripts && pkg.scripts[SERVE_SCRIPT]) {
+      debug(`Invoking ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
+      program = pkgManager;
+      args = pkgArgs;
+    } else {
+      args = ['serve', ...args];
+    }
+
+    const p = await this.env.shell.spawn(program, args, shellOptions);
+
+    return new Promise<ServeCmdDetails>((resolve, reject) => {
+      p.on('error', (err: NodeJS.ErrnoException) => {
+        if (program === DEFAULT_PROGRAM && err.code === 'ENOENT') {
+          reject(new ServeCommandNotFoundException(`${chalk.bold(DEFAULT_PROGRAM)} command not found.`));
+        } else {
+          reject(err);
+        }
       });
 
       registerShutdownFunction(() => p.kill());
 
-      const log = this.env.log.clone({ prefix: chalk.dim('[ng]'), wrap: false });
+      const log = this.env.log.clone({ prefix: chalk.dim(`[${program}]`), wrap: false });
       const ws = log.createWriteStream();
 
-      const stdoutFilter = through2(function(chunk, enc, callback) {
-        const str = chunk.toString();
+      if (program === DEFAULT_PROGRAM) {
+        const stdoutFilter = through2(function(chunk, enc, callback) {
+          const str = chunk.toString();
 
-        if (str.includes('Development Server is listening')) {
-          resolve();
-        } else {
-          this.push(chunk);
-        }
+          if (!str.includes('Development Server is listening')) {
+            this.push(chunk);
+          }
 
-        callback();
-      });
+          callback();
+        });
 
-      p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
-      p.stderr.pipe(split2()).pipe(ws);
+        p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
+        p.stderr.pipe(split2()).pipe(ws);
+      } else {
+        p.stdout.pipe(split2()).pipe(ws);
+        p.stderr.pipe(split2()).pipe(ws);
+      }
+
+      resolve({ program });
     });
   }
 

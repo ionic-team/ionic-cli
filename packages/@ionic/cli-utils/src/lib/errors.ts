@@ -29,6 +29,10 @@ export class ShellException extends Exception {
   }
 }
 
+export class ServeException extends Exception {}
+
+export class ServeCommandNotFoundException extends ServeException {}
+
 export class SessionException extends Exception {}
 
 export class RunnerException extends Exception {}

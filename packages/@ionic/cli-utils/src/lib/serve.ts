@@ -10,8 +10,21 @@ import * as split2 from 'split2';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicEnvironment, LabServeDetails, NetworkInterface, ProjectType, ServeDetails, ServeOptions } from '../definitions';
+import {
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandMetadata,
+  CommandMetadataOption,
+  IonicEnvironment,
+  LabServeDetails,
+  NetworkInterface,
+  ProjectType,
+  ServeDetails,
+  ServeOptions,
+} from '../definitions';
+
 import { isCordovaPackageJson } from '../guards';
+import { OptionGroup } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { PROJECT_FILE } from './project';
 import { Runner } from './runner';
@@ -32,7 +45,40 @@ export const LOCAL_ADDRESSES = ['localhost', '127.0.0.1'];
 
 export const BROWSERS = ['safari', 'firefox', process.platform === 'win32' ? 'chrome' : (process.platform === 'darwin' ? 'google chrome' : 'google-chrome')];
 
-const WATCH_BEFORE_SCRIPT = `ionic:watch:before`;
+// npm script names
+export const SERVE_SCRIPT = 'ionic:serve';
+export const SERVE_BEFORE_SCRIPT = 'ionic:serve:before';
+const WATCH_BEFORE_SCRIPT = 'ionic:watch:before';
+
+export const COMMON_SERVE_COMMAND_OPTIONS: CommandMetadataOption[] = [
+  {
+    name: 'address',
+    description: 'Use specific address for the dev server',
+    default: BIND_ALL_ADDRESS,
+    groups: [OptionGroup.Advanced],
+  },
+  {
+    name: 'port',
+    description: 'Use specific port for HTTP',
+    default: DEFAULT_SERVER_PORT.toString(),
+    aliases: ['p'],
+    groups: [OptionGroup.Advanced],
+  },
+  {
+    name: 'livereload',
+    description: 'Do not spin up live reload server',
+    type: Boolean,
+    default: true,
+  },
+  {
+    name: 'proxy',
+    description: 'Do not add proxies',
+    type: Boolean,
+    default: true,
+    groups: [OptionGroup.Advanced],
+    // TODO: Adding 'x' to aliases here has some weird behavior with minimist.
+  },
+];
 
 export interface DevAppDetails {
   channel?: string;
@@ -112,12 +158,19 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     const { npmClient } = config;
     const pkg = await this.env.project.loadPackageJson();
 
-    debug(`Looking for ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
+    debug(`Looking for ${chalk.cyan(SERVE_BEFORE_SCRIPT)} npm script.`);
 
-    if (pkg.scripts && pkg.scripts[WATCH_BEFORE_SCRIPT]) {
-      debug(`Invoking ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: WATCH_BEFORE_SCRIPT });
+    if (pkg.scripts && pkg.scripts[SERVE_BEFORE_SCRIPT]) {
+      debug(`Invoking ${chalk.cyan(SERVE_BEFORE_SCRIPT)} npm script.`);
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: SERVE_BEFORE_SCRIPT });
       await this.env.shell.run(pkgManager, pkgArgs, {});
+    } else {
+      if (pkg.scripts && pkg.scripts[WATCH_BEFORE_SCRIPT]) {
+        this.env.log.warn(`The ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script is deprecated. Please use ${chalk.cyan(SERVE_BEFORE_SCRIPT)}.`);
+        debug(`Invoking ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
+        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: WATCH_BEFORE_SCRIPT });
+        await this.env.shell.run(pkgManager, pkgArgs, {});
+      }
     }
 
     const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
@@ -211,12 +264,16 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
 
     if (options.open) {
       const openAddress = labAddress ? labAddress : localAddress;
-      const openOptions: string[] = [openAddress]
+      const openURL = [openAddress]
         .concat(options.browserOption ? [options.browserOption] : [])
-        .concat(options.platform ? ['?ionicplatform=', options.platform] : []);
+        .concat(options.platform ? ['?ionicplatform=', options.platform] : [])
+        .join('');
 
       const opn = await import('opn');
-      opn(openOptions.join(''), { app: options.browser, wait: false });
+      opn(openURL, { app: options.browser, wait: false });
+
+      this.env.log.info(`Browser window opened to ${chalk.bold(openURL)}!`);
+      this.env.log.nl();
     }
 
     this.env.keepopen = true;

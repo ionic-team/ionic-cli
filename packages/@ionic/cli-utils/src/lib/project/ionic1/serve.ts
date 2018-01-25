@@ -11,8 +11,11 @@ import { str2num } from '@ionic/cli-framework/utils/string';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1ServeOptions, ProjectFileProxy, ServeDetails } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
-import { FatalException } from '../../errors';
-import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, ServeRunner as BaseServeRunner } from '../../serve';
+import { FatalException, ServeCommandNotFoundException } from '../../errors';
+import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
+
+export const DEFAULT_PROGRAM = 'ionic-v1';
+const IONIC_V1_SERVE_CONNECTIVITY_TIMEOUT = 5000; // ms
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic1');
 
@@ -37,6 +40,10 @@ interface ServeMetaOptions extends Ionic1ServeOptions {
   wwwDir: string;
   watchPatterns: string[];
   proxies: ProxyConfig[];
+}
+
+interface ServeCmdDetails {
+  program: string;
 }
 
 function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy): proxyMiddlewareType.Config {
@@ -91,6 +98,7 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
 
     return { ...metadata, options };
   }
+
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Ionic1ServeOptions {
     const baseOptions = super.createOptionsFromCommandLine(inputs, options);
     const livereloadPort = str2num(options['livereload-port'], DEFAULT_LIVERELOAD_PORT);
@@ -106,25 +114,14 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
   }
 
   async serveProject(options: Ionic1ServeOptions): Promise<ServeDetails> {
-    const { promptToInstallPkg } = await import('../../utils/npm');
+    const { isHostConnectable } = await import('../../utils/network');
 
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
-    const project = await this.env.project.load();
-    const wwwDir = await this.env.project.getSourceDir();
-
     const { port, livereloadPort, notificationPort } = await this.findOpenPorts(options.address, options);
 
     options.port = port;
     options.livereloadPort = livereloadPort;
     options.notificationPort = notificationPort;
-
-    if (!project.watchPatterns || project.watchPatterns.length === 1 && project.watchPatterns[0] === 'scss/**/*') {
-      project.watchPatterns = WATCH_PATTERNS;
-    }
-
-    debug(`Watch patterns: ${project.watchPatterns.map(v => chalk.bold(v)).join(', ')}`);
-
-    const proxies = project.proxies && options.proxy ? project.proxies.map(p => ({ mount: p.path, ...proxyConfigToMiddlewareConfig(p) })) : [];
 
     const details = [
       `address: ${chalk.bold(options.address)}`,
@@ -136,30 +133,13 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
       details.push(`livereload port: ${chalk.bold(String(livereloadPort))}`);
     }
 
-    const cmdopts = lodash.assign({ wwwDir, watchPatterns: project.watchPatterns, proxies }, options);
+    const { program } = await this.serveCommandWrapper(options);
 
-    try {
-      await this.servecmd(cmdopts);
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        const pkg = '@ionic/v1-util';
-        this.env.log.nl();
-        this.env.log.warn(
-          `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
-          `This package is required for ${chalk.green('ionic serve')} as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#4.0.0')}`
-        );
-
-        const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });
-
-        if (!installed) {
-          throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.`);
-        }
-
-        await this.servecmd(cmdopts);
-      }
-    }
+    debug('waiting for connectivity with ionic-v1 (%dms timeout)', IONIC_V1_SERVE_CONNECTIVITY_TIMEOUT);
+    await isHostConnectable('localhost', port, IONIC_V1_SERVE_CONNECTIVITY_TIMEOUT);
 
     return {
+      custom: program !== DEFAULT_PROGRAM,
       protocol: 'http',
       localAddress: 'localhost',
       externalAddress: externalIP,
@@ -169,47 +149,115 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
     };
   }
 
-  private async servecmd(options: ServeMetaOptions): Promise<void> {
+  private async serveCommandWrapper(options: Ionic1ServeOptions): Promise<ServeCmdDetails> {
+    const { promptToInstallPkg } = await import('../../utils/npm');
+
+    const project = await this.env.project.load();
+    const wwwDir = await this.env.project.getSourceDir();
+    const proxies = project.proxies && options.proxy ? project.proxies.map(p => ({ mount: p.path, ...proxyConfigToMiddlewareConfig(p) })) : [];
+
+    if (!project.watchPatterns || project.watchPatterns.length === 1 && project.watchPatterns[0] === 'scss/**/*') {
+      project.watchPatterns = WATCH_PATTERNS;
+    }
+
+    debug(`Watch patterns: ${project.watchPatterns.map(v => chalk.bold(v)).join(', ')}`);
+
+    const cmdopts = lodash.assign({ wwwDir, watchPatterns: project.watchPatterns, proxies }, options);
+
+    try {
+      return await this.servecmd(cmdopts);
+    } catch (e) {
+      if (!(e instanceof ServeCommandNotFoundException)) {
+        throw e;
+      }
+
+      const pkg = '@ionic/v1-util';
+      this.env.log.nl();
+      this.env.log.warn(
+        `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
+        `This package is required for ${chalk.green('ionic serve')} as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#4.0.0')}`
+      );
+
+      const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });
+
+      if (!installed) {
+        throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.`);
+      }
+
+      return this.servecmd(cmdopts);
+    }
+  }
+
+  private async servecmd(options: ServeMetaOptions): Promise<ServeCmdDetails> {
+    const { pkgManagerArgs } = await import('../../utils/npm');
     const { registerShutdownFunction } = await import('../../process');
 
+    const config = await this.env.config.load();
+    const pkg = await this.env.project.loadPackageJson();
+    const { npmClient } = config;
     const workingDir = this.env.project.directory;
-
-    const args = ['serve', path.relative(workingDir, options.wwwDir)];
-
-    if (options.consolelogs) {
-      args.push('-c');
-    }
 
     const networkArgs = ['--host', options.address, '--port', String(options.port), '--lr-port', String(options.livereloadPort), '--dev-port', String(options.notificationPort)];
     const watchPatternsArgs = lodash.flatten(options.watchPatterns.map(p => ['-w', p]));
     const proxiesArgs = lodash.flatten(options.proxies.map(p => ['-p', JSON.stringify(p)]));
 
-    const p = await this.env.shell.spawn('ionic-v1', [...args, ...networkArgs, ...watchPatternsArgs, ...proxiesArgs], { cwd: workingDir, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } });
+    let program = DEFAULT_PROGRAM;
+    let args = [...networkArgs, ...watchPatternsArgs, ...proxiesArgs];
+    const shellOptions = { cwd: workingDir, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
 
-    return new Promise<void>((resolve, reject) => {
-      p.on('error', err => {
-        reject(err);
+    debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
+
+    if (pkg.scripts && pkg.scripts[SERVE_SCRIPT]) {
+      debug(`Invoking ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
+      program = pkgManager;
+      args = pkgArgs;
+    } else {
+      const v1utilArgs = ['serve', path.relative(workingDir, options.wwwDir)];
+
+      if (options.consolelogs) {
+        v1utilArgs.push('-c');
+      }
+
+      args = [...v1utilArgs, ...args];
+    }
+
+    const p = await this.env.shell.spawn(program, args, shellOptions);
+
+    return new Promise<ServeCmdDetails>((resolve, reject) => {
+      p.on('error', (err: NodeJS.ErrnoException) => {
+        if (program === DEFAULT_PROGRAM && err.code === 'ENOENT') {
+          reject(new ServeCommandNotFoundException(`${chalk.bold(DEFAULT_PROGRAM)} command not found.`));
+        } else {
+          reject(err);
+        }
       });
 
       registerShutdownFunction(() => p.kill());
 
-      const log = this.env.log.clone({ prefix: chalk.dim('[v1]'), wrap: false });
+      const log = this.env.log.clone({ prefix: chalk.dim(`[${program === DEFAULT_PROGRAM ? 'v1' : program}]`), wrap: false });
       const ws = log.createWriteStream();
 
-      const stdoutFilter = through2(function(chunk, enc, callback) {
-        const str = chunk.toString();
+      if (program === DEFAULT_PROGRAM) {
+        const stdoutFilter = through2(function(chunk, enc, callback) {
+          const str = chunk.toString();
 
-        if (str.includes('server running')) {
-          resolve();
-        } else {
-          this.push(chunk);
-        }
+          if (str.includes('server running')) {
+            resolve({ program });
+          } else {
+            this.push(chunk);
+          }
 
-        callback();
-      });
+          callback();
+        });
 
-      p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
-      p.stderr.pipe(split2()).pipe(ws);
+        p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
+        p.stderr.pipe(split2()).pipe(ws);
+      } else {
+        p.stdout.pipe(split2()).pipe(ws);
+        p.stderr.pipe(split2()).pipe(ws);
+        resolve({ program });
+      }
     });
   }
 

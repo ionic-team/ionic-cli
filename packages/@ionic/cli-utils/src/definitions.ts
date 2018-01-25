@@ -200,9 +200,8 @@ export interface PackageVersions {
 }
 
 export interface CommandMetadataOption extends framework.CommandMetadataOption {
-  intents?: string[];
   private?: boolean;
-  visible?: boolean;
+  hint?: string;
 }
 
 export interface ExitCodeException extends Error {
@@ -439,6 +438,7 @@ export interface LabServeDetails {
 }
 
 export interface ServeDetails {
+  custom: boolean;
   protocol: string;
   localAddress: string;
   externalAddress: string;
@@ -464,11 +464,6 @@ export interface IHookEngine {
   fire(hook: 'info'): Promise<InfoHookItem[]>;
 
   register(source: string, hook: 'info', listener: () => Promise<InfoHookItem[]>): void;
-
-  getSources(hook: string): string[];
-  hasSources(hook: string, sources: string[]): boolean;
-  deleteSource(source: string): void;
-
   getRegistered<T, U>(hook: string): IHook<T, U>[];
 }
 

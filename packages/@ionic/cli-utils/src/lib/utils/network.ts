@@ -66,9 +66,9 @@ export async function isHostConnectable(host: string, port: number, timeout = 10
   const interval = 1000;
 
   const tryConnect = async () => {
-    const sock = new net.Socket();
-
     return new Promise<boolean>((resolve, reject) => {
+      const sock = net.connect({ port, host });
+
       sock.on('connect', () => {
         sock.destroy();
         resolve(true);
@@ -77,8 +77,6 @@ export async function isHostConnectable(host: string, port: number, timeout = 10
       sock.on('error', err => {
         reject(err);
       });
-
-      sock.connect(port, host);
     });
   };
 
@@ -95,6 +93,7 @@ export async function isHostConnectable(host: string, port: number, timeout = 10
       try {
         await tryConnect();
         resolve(true);
+        break;
       } catch (e) {
         // try again
       }

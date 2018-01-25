@@ -42,10 +42,17 @@ from the breaking changes listed below, upgrading to CLI v4 should be seamless.
   templates), please use the repository URL. For example, to create the
   conference app, use `ionic start <name>
   https://github.com/ionic-team/ionic-conference-app`.
+* The `--target` option for Cordova has been renamed to `--cordova-target` to
+  disambiguate from the Angular CLI's `--target` option.
 
 #### :rocket: Enhancements
 
 * Support for :sparkles: **Ionic Angular v4** :sparkles:
+* If `ionic:build` or `ionic:serve` npm scripts are defined in your
+  `package.json`, the Ionic CLI will use them for the Ionic build/serve instead
+  of the default for your project type. See [the
+  docs](https://ionicframework.com/docs/cli/configuring.html#building-and-serving-your-app)
+  for details.
 * Automatic login via `IONIC_TOKEN` environment variable
   [#2410](https://github.com/ionic-team/ionic-cli/issues/2410)
 * `--no-color` flag for turning off CLI colors

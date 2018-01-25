@@ -3,7 +3,7 @@ import * as lodash from 'lodash';
 
 import { CommandGroup, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, ServeOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { BIND_ALL_ADDRESS, BROWSERS, DEFAULT_LAB_PORT, DEFAULT_SERVER_PORT, ServeRunner } from '@ionic/cli-utils/lib/serve';
+import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT, ServeRunner } from '@ionic/cli-utils/lib/serve';
 import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
 
 export class ServeCommand extends Command implements CommandPreRun {
@@ -11,7 +11,6 @@ export class ServeCommand extends Command implements CommandPreRun {
 
   async getRunner() {
     if (!this.runner) {
-      const { ServeRunner } = await import('@ionic/cli-utils/lib/serve');
       this.runner = await ServeRunner.createFromProjectType(this.env, this.env.project.type);
     }
 
@@ -31,26 +30,7 @@ By default, ${chalk.green('ionic serve')} boots up a development server on all n
 Try the ${chalk.green('--lab')} option to see multiple platforms at once.`,
       exampleCommands: ['', '-c', '--local', '--lab'],
       options: [
-        {
-          name: 'address',
-          description: 'Use specific address for the dev server',
-          default: BIND_ALL_ADDRESS,
-          groups: [OptionGroup.Advanced],
-        },
-        {
-          name: 'port',
-          description: 'Use specific port for HTTP',
-          default: DEFAULT_SERVER_PORT.toString(),
-          aliases: ['p'],
-          groups: [OptionGroup.Advanced],
-        },
-        {
-          name: 'livereload',
-          description: 'Spin up server to live-reload www files',
-          type: Boolean,
-          default: true,
-          groups: [OptionGroup.Hidden],
-        },
+        ...COMMON_SERVE_COMMAND_OPTIONS,
         {
           name: 'lab-host',
           description: 'Use specific address for Ionic Lab server',
@@ -81,14 +61,6 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`,
           name: 'local',
           description: 'Disable external network usage',
           type: Boolean,
-        },
-        {
-          name: 'proxy',
-          description: 'Do not add proxies',
-          type: Boolean,
-          default: true,
-          groups: [OptionGroup.Advanced],
-          // TODO: Adding 'x' to aliases here has some weird behavior with minimist.
         },
         {
           name: 'browser',

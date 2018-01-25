@@ -15,10 +15,9 @@ import * as angularBuildLibType from './project/angular/build';
 const debug = Debug('ionic:cli-utils:lib:build');
 
 // npm script names
-const npmPrefix = 'ionic';
-export const BUILD_SCRIPT = `${npmPrefix}:build`;
-const BUILD_BEFORE_SCRIPT = `${npmPrefix}:build:before`;
-const BUILD_AFTER_SCRIPT = `${npmPrefix}:build:after`;
+export const BUILD_SCRIPT = 'ionic:build';
+export const BUILD_BEFORE_SCRIPT = 'ionic:build:before';
+export const BUILD_AFTER_SCRIPT = 'ionic:build:after';
 
 export abstract class BuildRunner<T extends BuildOptions> extends Runner<T, void> {
   constructor(protected env: IonicEnvironment) {
