@@ -7,7 +7,7 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "scripts": {
-    "clean": "rm -rf index.* bootstrap.* constants.* definitions.* guards.* ./lib ./commands",
+    "clean": "rimraf index.* bootstrap.* constants.* definitions.* guards.* ./lib ./commands",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
@@ -73,7 +73,8 @@
     "@types/split2": "^2.1.6",
     "@types/tar": "^4.0.0",
     "@types/through2": "^2.0.33",
-    "@types/uuid": "^3.4.3"
+    "@types/uuid": "^3.4.3",
+    "rimraf": "^2.6.2"
   },
   "optionalDependencies": {
     "superagent-proxy": "^1.0.2"

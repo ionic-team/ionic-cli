@@ -18,7 +18,7 @@
     "README.md"
   ],
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
@@ -42,7 +42,8 @@
     "@types/express": "^4.11.0",
     "@types/gulp": "^3.8.36",
     "@types/http-proxy-middleware": "^0.17.2",
-    "@types/ws": "^3.2.1"
+    "@types/ws": "^3.2.1",
+    "rimraf": "^2.6.2"
   },
   "optionalDependencies": {
     "gulp": "^3.9.1"

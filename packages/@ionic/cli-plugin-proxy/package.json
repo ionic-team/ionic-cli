@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "@ionic/cli-plugin-proxy",
   "version": "1.5.6",
   "description": "Ionic CLI plugin for proxying all CLI HTTP requests",
@@ -7,7 +7,7 @@
   "main": "./dist/index.js",
   "types": "./dist/main.d.ts",
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rimraf ./dist",
     "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
@@ -57,5 +57,9 @@
     "@ionic/cli-utils": "1.19.0",
     "superagent-proxy": "^1.0.2",
     "tslib": "^1.9.0"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.2"
   }
 }
+
