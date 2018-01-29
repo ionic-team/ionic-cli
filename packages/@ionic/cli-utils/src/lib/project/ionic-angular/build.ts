@@ -7,6 +7,7 @@ import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularBui
 import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
 import { APP_SCRIPTS_OPTIONS } from './app-scripts';
 
+const DEFAULT_PROGRAM = 'ionic-app-scripts';
 const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:build');
 
 export class BuildRunner extends BaseBuildRunner<IonicAngularBuildOptions> {
@@ -40,18 +41,27 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
     const { npmClient } = config;
     const pkg = await this.env.project.loadPackageJson();
 
-    const appScriptsArgs = this.generateAppScriptsArgs(options);
+    let program = DEFAULT_PROGRAM;
+    let args = this.generateAppScriptsArgs(options);
     const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
-      debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: BUILD_SCRIPT, scriptArgs: appScriptsArgs });
-      await this.env.shell.run(pkgManager, pkgArgs, shellOptions);
+      if (pkg.scripts[BUILD_SCRIPT] === 'ionic-app-scripts build') {
+        debug(`Found ${chalk.cyan(BUILD_SCRIPT)}, but it is the default. Not running.`);
+        args = ['build', ...args];
+      } else {
+        debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
+        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: BUILD_SCRIPT, scriptArgs: args });
+        program = pkgManager;
+        args = pkgArgs;
+      }
     } else {
-      await this.env.shell.run('ionic-app-scripts', ['build', ...appScriptsArgs], shellOptions);
+      args = ['build', ...args];
     }
+
+    await this.env.shell.run(program, args, shellOptions);
   }
 
   generateAppScriptsArgs(options: IonicAngularBuildOptions): string[] {
