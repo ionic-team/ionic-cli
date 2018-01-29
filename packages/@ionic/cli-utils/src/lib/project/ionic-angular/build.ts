@@ -2,22 +2,31 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import { unparseArgs } from '@ionic/cli-framework';
 
-import { CommandLineInputs, CommandLineOptions, IonicAngularBuildOptions } from '../../../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularBuildOptions } from '../../../definitions';
 
 import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
+import { APP_SCRIPTS_OPTIONS } from './app-scripts';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:build');
 
 export class BuildRunner extends BaseBuildRunner<IonicAngularBuildOptions> {
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicAngularBuildOptions {
+  async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
+      options: APP_SCRIPTS_OPTIONS,
+    };
+  }
+
+  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicAngularBuildOptions {
+    const baseOptions = super.createOptionsFromCommandLine(inputs, options);
+
+    return {
+      ...baseOptions,
       prod: options['prod'] ? true : false,
       aot: options['aot'] ? true : false,
       minifyjs: options['minifyjs'] ? true : false,
       minifycss: options['minifycss'] ? true : false,
       optimizejs: options['optimizejs'] ? true : false,
       env: options['env'] ? String(options['env']) : undefined,
-      ...this.createBaseOptionsFromCommandLine(inputs, options),
     };
   }
 

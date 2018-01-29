@@ -1,27 +1,47 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
+import { BuildRunner } from '@ionic/cli-utils/lib/build';
+import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
 
 export class BuildCommand extends Command implements CommandPreRun {
+  protected runner?: BuildRunner<BuildOptions>;
+
+  async getRunner() {
+    if (!this.runner) {
+      this.runner = await BuildRunner.createFromProjectType(this.env, this.env.project.type);
+    }
+
+    return this.runner;
+  }
+
   async getMetadata(): Promise<CommandMetadata> {
+    const options: CommandMetadataOption[] = [];
+    const exampleCommands = ['', '--prod'];
+    let longDescription = `${chalk.green('ionic build')} will perform an Ionic build, which compiles web assets and prepares them for deployment.`;
+
+    try {
+      const runner = await this.getRunner();
+      const libmetadata = await runner.getCommandMetadata();
+      options.push(...libmetadata.options || []);
+      longDescription += libmetadata.longDescription ? `\n\n${libmetadata.longDescription.trim()}` : '';
+      exampleCommands.push(...libmetadata.exampleCommands || []);
+    } catch (e) {
+      if (!(e instanceof RunnerNotFoundException)) {
+        throw e;
+      }
+    }
+
+    // TODO: only do this for apps w/ cordova integration
+    longDescription += `\n\n${`For Ionic/Cordova apps, the Ionic CLI will run ${chalk.green('cordova prepare')}, which copies the built web assets into the Cordova platforms that you've installed. For full details, see ${chalk.green('ionic cordova prepare --help')}.`}`;
+
     return {
       name: 'build',
       type: 'project',
       description: 'Build web assets and prepare your app for any platform targets',
-      longDescription: `
-${chalk.green('ionic build')} will perform an Ionic build, which compiles web assets and prepares them for deployment.
-
-For Ionic/Cordova apps, the CLI will run ${chalk.green('cordova prepare')}, which copies the built web assets into the Cordova platforms that you've installed. For full details, see ${chalk.green('ionic cordova prepare --help')}.
-      `,
-      exampleCommands: [
-        '',
-        '--prod',
-      ],
-      options: [
-        ...APP_SCRIPTS_OPTIONS,
-      ],
+      longDescription,
+      options,
     };
   }
 

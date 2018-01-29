@@ -1,26 +1,90 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { BuildOptions, CommandLineInputs, CommandLineOptions } from '../../../definitions';
+import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+
+import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
+import { OptionGroup } from '../../../constants';
 
 import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:build');
 
-export class BuildRunner extends BaseBuildRunner<BuildOptions> {
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions) {
+export class BuildRunner extends BaseBuildRunner<AngularBuildOptions> {
+  async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
-      platform: options['platform'] ? String(options['platform']) : undefined,
+      longDescription: `
+${chalk.green('ionic build')} uses the Angular CLI under the hood. Common Angular CLI options such as ${chalk.green('--target')} and ${chalk.green('--environment')} are mixed in with Ionic CLI options. Use ${chalk.green('ng build --help')} to list all options. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/build#ng-build')}`,
+      options: [
+        {
+          name: 'dev',
+          description: `Sets the build target to ${chalk.green('development')}`,
+          type: Boolean,
+          hint: 'ng',
+        },
+        {
+          name: 'prod',
+          description: `Sets the build target to ${chalk.green('production')}`,
+          type: Boolean,
+          hint: 'ng',
+        },
+        {
+          name: 'target',
+          description: 'Set the build target to a custom value',
+          aliases: ['t'],
+          groups: [OptionGroup.Advanced],
+          hint: 'ng',
+        },
+        {
+          name: 'environment',
+          description: 'Set the build environment to a custom value',
+          aliases: ['e'],
+          groups: [OptionGroup.Advanced],
+          hint: 'ng',
+        },
+      ],
     };
   }
 
-  async buildProject(options: BuildOptions): Promise<void> {
+  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions) {
+    const baseOptions = super.createOptionsFromCommandLine(inputs, options);
+    let target = options['target'] ? String(options['target']) : undefined;
+    const environment = options['environment'] ? String(options['environment']) : undefined;
+
+    if (!target) {
+      if (options['dev']) {
+        target = 'development';
+      } else if (options['prod']) {
+        target = 'production';
+      }
+    }
+
+    return {
+      ...baseOptions,
+      target,
+      environment,
+    };
+  }
+
+  async buildOptionsToNgArgs(options: AngularBuildOptions): Promise<string[]> {
+    const args: ParsedArgs = {
+      _: [],
+      target: options.target,
+      environment: options.environment,
+    };
+
+    return [...unparseArgs(args, {}), ...options['--']];
+  }
+
+  async buildProject(options: AngularBuildOptions): Promise<void> {
     const { pkgManagerArgs } = await import('../../utils/npm');
     const config = await this.env.config.load();
     const { npmClient } = config;
     const pkg = await this.env.project.loadPackageJson();
 
-    const ngArgs = ['build'];
+    const args = await this.buildOptionsToNgArgs(options);
     const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
@@ -30,7 +94,7 @@ export class BuildRunner extends BaseBuildRunner<BuildOptions> {
       const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: BUILD_SCRIPT });
       await this.env.shell.run(pkgManager, pkgArgs, shellOptions);
     } else {
-      await this.env.shell.run('ng', ngArgs, shellOptions);
+      await this.env.shell.run('ng', ['build', ...args], shellOptions);
     }
   }
 }

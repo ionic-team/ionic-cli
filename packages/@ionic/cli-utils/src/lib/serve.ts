@@ -117,7 +117,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     }
   }
 
-  abstract specializeCommandMetadata(metadata: CommandMetadata): Promise<CommandMetadata>;
+  abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
   abstract serveProject(options: T): Promise<ServeDetails>;
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {

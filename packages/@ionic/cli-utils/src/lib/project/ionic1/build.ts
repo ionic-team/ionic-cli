@@ -1,17 +1,15 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { BuildOptions, CommandLineInputs, CommandLineOptions } from '../../../definitions';
+import { BuildOptions, CommandMetadata } from '../../../definitions';
 
 import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic1:build');
 
 export class BuildRunner extends BaseBuildRunner<BuildOptions> {
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions) {
-    return {
-      platform: options['platform'] ? String(options['platform']) : undefined,
-    };
+  async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
+    return {};
   }
 
   async buildProject(options: BuildOptions): Promise<void> {

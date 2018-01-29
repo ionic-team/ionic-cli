@@ -64,39 +64,37 @@ function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy): proxyMiddleware
 }
 
 export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
-  async specializeCommandMetadata(metadata: CommandMetadata): Promise<CommandMetadata> {
-    const options = metadata.options ? metadata.options : [];
-
-    options.push(...[
-      {
-        name: 'consolelogs',
-        description: 'Print app console logs to Ionic CLI',
-        type: Boolean,
-        aliases: ['c'],
-      },
-      {
-        name: 'serverlogs',
-        description: 'Print dev server logs to Ionic CLI',
-        type: Boolean,
-        aliases: ['s'],
-        groups: [OptionGroup.Hidden],
-      },
-      {
-        name: 'livereload-port',
-        description: 'Use specific port for live-reload',
-        default: DEFAULT_LIVERELOAD_PORT.toString(),
-        aliases: ['r'],
-        groups: [OptionGroup.Advanced],
-      },
-      {
-        name: 'dev-logger-port',
-        description: 'Use specific port for dev server communication',
-        default: DEFAULT_DEV_LOGGER_PORT.toString(),
-        groups: [OptionGroup.Advanced],
-      },
-    ]);
-
-    return { ...metadata, options };
+  async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
+    return {
+      options: [
+        {
+          name: 'consolelogs',
+          description: 'Print app console logs to Ionic CLI',
+          type: Boolean,
+          aliases: ['c'],
+        },
+        {
+          name: 'serverlogs',
+          description: 'Print dev server logs to Ionic CLI',
+          type: Boolean,
+          aliases: ['s'],
+          groups: [OptionGroup.Hidden],
+        },
+        {
+          name: 'livereload-port',
+          description: 'Use specific port for live-reload',
+          default: DEFAULT_LIVERELOAD_PORT.toString(),
+          aliases: ['r'],
+          groups: [OptionGroup.Advanced],
+        },
+        {
+          name: 'dev-logger-port',
+          description: 'Use specific port for dev server communication',
+          default: DEFAULT_DEV_LOGGER_PORT.toString(),
+          groups: [OptionGroup.Advanced],
+        },
+      ],
+    };
   }
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Ionic1ServeOptions {

@@ -25,52 +25,44 @@ interface ServeCmdDetails {
 }
 
 export class ServeRunner extends BaseServeRunner<AngularServeOptions> {
-  async specializeCommandMetadata(metadata: CommandMetadata): Promise<CommandMetadata> {
-    const options = metadata.options ? metadata.options : [];
-    const exampleCommands = metadata.name === 'serve' ? ['-- --extract-css=true'] : [];
-    const longDescription = metadata.name === 'serve' ? `${(metadata.longDescription || '').trim()}
-
+  async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
+    return {
+      exampleCommands: ['-- --extract-css=true'],
+      longDescription: `
 ${chalk.green('ionic serve')} uses the Angular CLI under the hood. Common Angular CLI options such as ${chalk.green('--target')} and ${chalk.green('--environment')} are mixed in with Ionic CLI options. Use ${chalk.green('ng serve --help')} to list all options. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
 
 If a ${chalk.bold('proxy.config.json')} or ${chalk.bold('proxy.config.js')} file is detected in your project, the Angular CLI's ${chalk.green('--proxy-config')} option is automatically specified. You can use ${chalk.green('--no-proxy')} to disable this behavior. See the Angular CLI proxy documentation${chalk.cyan('[2]')} for more information.
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/build#ng-build')}
-${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/stories-proxy#proxy-to-backend')}` : metadata.longDescription;
-
-    options.push(...[
-      {
-        name: 'dev',
-        description: `Sets the build target to ${chalk.green('development')}`,
-        type: Boolean,
-        hint: 'ng',
-      },
-      {
-        name: 'prod',
-        description: `Sets the build target to ${chalk.green('production')}`,
-        type: Boolean,
-        hint: 'ng',
-      },
-      {
-        name: 'target',
-        description: 'Set the build target to a custom value',
-        aliases: ['t'],
-        groups: [OptionGroup.Advanced],
-        hint: 'ng',
-      },
-      {
-        name: 'environment',
-        description: 'Set the build environment to a custom value',
-        aliases: ['e'],
-        groups: [OptionGroup.Advanced],
-        hint: 'ng',
-      },
-    ]);
-
-    return {
-      ...metadata,
-      exampleCommands: metadata.exampleCommands ? [...metadata.exampleCommands, ...exampleCommands] : [],
-      longDescription,
-      options,
+${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/stories-proxy#proxy-to-backend')}`,
+      options: [
+        {
+          name: 'dev',
+          description: `Sets the build target to ${chalk.green('development')}`,
+          type: Boolean,
+          hint: 'ng',
+        },
+        {
+          name: 'prod',
+          description: `Sets the build target to ${chalk.green('production')}`,
+          type: Boolean,
+          hint: 'ng',
+        },
+        {
+          name: 'target',
+          description: 'Set the build target to a custom value',
+          aliases: ['t'],
+          groups: [OptionGroup.Advanced],
+          hint: 'ng',
+        },
+        {
+          name: 'environment',
+          description: 'Set the build environment to a custom value',
+          aliases: ['e'],
+          groups: [OptionGroup.Advanced],
+          hint: 'ng',
+        },
+      ],
     };
   }
 
@@ -208,7 +200,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
   async serveOptionsToNgArgs(options: AngularServeOptions): Promise<string[]> {
     const args: ParsedArgs = {
-      _: ['serve'],
+      _: [],
       host: options.address,
       port: String(options.port),
       progress: 'false',

@@ -4,6 +4,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
+  CommandMetadataOption,
   CommandPreRun,
   OptionGroup,
   ServeOptions,
@@ -27,7 +28,76 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
   }
 
   async getMetadata(): Promise<CommandMetadata> {
-    const metadata: CommandMetadata = {
+    const options: CommandMetadataOption[] = [
+      {
+        name: 'list',
+        description: 'List all available Cordova targets',
+        type: Boolean,
+        groups: [OptionGroup.Cordova],
+      },
+      // Build Options
+      {
+        name: 'build',
+        description: 'Do not invoke Ionic build/serve',
+        type: Boolean,
+        default: true,
+      },
+      ...COMMON_SERVE_COMMAND_OPTIONS,
+      // Cordova Options
+      {
+        name: 'debug',
+        description: 'Mark as a debug build',
+        type: Boolean,
+        groups: [OptionGroup.Cordova],
+        hint: 'cordova',
+      },
+      {
+        name: 'release',
+        description: 'Mark as a release build',
+        type: Boolean,
+        groups: [OptionGroup.Cordova],
+        hint: 'cordova',
+      },
+      {
+        name: 'device',
+        description: 'Deploy build to a device',
+        type: Boolean,
+        groups: [OptionGroup.Cordova],
+        hint: 'cordova',
+      },
+      {
+        name: 'emulator',
+        description: 'Deploy build to an emulator',
+        type: Boolean,
+        groups: [OptionGroup.Cordova],
+        hint: 'cordova',
+      },
+      {
+        name: 'cordova-target',
+        description: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
+        type: String,
+        groups: [OptionGroup.Advanced, OptionGroup.Cordova],
+        hint: 'cordova',
+      },
+      {
+        name: 'buildConfig',
+        description: 'Use the specified build configuration',
+        groups: [OptionGroup.Advanced, OptionGroup.Cordova],
+        hint: 'cordova',
+      },
+    ];
+
+    try {
+      const runner = await this.getRunner();
+      const libmetadata = await runner.getCommandMetadata();
+      options.push(...libmetadata.options || []);
+    } catch (e) {
+      if (!(e instanceof RunnerNotFoundException)) {
+        throw e;
+      }
+    }
+
+    return {
       name: 'run',
       type: 'project',
       description: 'Run an Ionic project on a connected device',
@@ -47,76 +117,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
           description: `The platform to run (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
         },
       ],
-      options: [
-        {
-          name: 'list',
-          description: 'List all available Cordova targets',
-          type: Boolean,
-          groups: [OptionGroup.Cordova],
-        },
-        // Build Options
-        {
-          name: 'build',
-          description: 'Do not invoke Ionic build/serve',
-          type: Boolean,
-          default: true,
-        },
-        ...COMMON_SERVE_COMMAND_OPTIONS,
-        // Cordova Options
-        {
-          name: 'debug',
-          description: 'Mark as a debug build',
-          type: Boolean,
-          groups: [OptionGroup.Cordova],
-          hint: 'cordova',
-        },
-        {
-          name: 'release',
-          description: 'Mark as a release build',
-          type: Boolean,
-          groups: [OptionGroup.Cordova],
-          hint: 'cordova',
-        },
-        {
-          name: 'device',
-          description: 'Deploy build to a device',
-          type: Boolean,
-          groups: [OptionGroup.Cordova],
-          hint: 'cordova',
-        },
-        {
-          name: 'emulator',
-          description: 'Deploy build to an emulator',
-          type: Boolean,
-          groups: [OptionGroup.Cordova],
-          hint: 'cordova',
-        },
-        {
-          name: 'cordova-target',
-          description: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
-          type: String,
-          groups: [OptionGroup.Advanced, OptionGroup.Cordova],
-          hint: 'cordova',
-        },
-        {
-          name: 'buildConfig',
-          description: 'Use the specified build configuration',
-          groups: [OptionGroup.Advanced, OptionGroup.Cordova],
-          hint: 'cordova',
-        },
-      ],
+      options,
     };
-
-    try {
-      const runner = await this.getRunner();
-      return runner.specializeCommandMetadata(metadata);
-    } catch (e) {
-      if (!(e instanceof RunnerNotFoundException)) {
-        throw e;
-      }
-    }
-
-    return metadata;
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

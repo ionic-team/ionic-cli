@@ -361,8 +361,13 @@ export interface InfoHookItem {
 }
 
 export interface BuildOptions {
-  target?: string;
   platform?: string;
+  '--': string[];
+}
+
+export interface AngularBuildOptions extends BuildOptions {
+  target?: string;
+  environment?: string;
 }
 
 export interface IonicAngularBuildOptions extends BuildOptions {
@@ -419,17 +424,17 @@ export interface Ionic1ServeOptions extends ServeOptions {
   notificationPort: number;
 }
 
+export interface AngularServeOptions extends ServeOptions {
+  target?: string;
+  environment?: string;
+}
+
 export interface IonicAngularServeOptions extends ServeOptions {
   consolelogs: boolean;
   serverlogs: boolean;
   env?: string;
   livereloadPort: number;
   notificationPort: number;
-}
-
-export interface AngularServeOptions extends ServeOptions {
-  target?: string;
-  environment?: string;
 }
 
 export interface LabServeDetails {

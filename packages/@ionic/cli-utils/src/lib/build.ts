@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { BuildOptions, CommandLineInputs, CommandLineOptions, IonicEnvironment, ProjectType } from '../definitions';
+import { BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, IonicEnvironment, ProjectType } from '../definitions';
 
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { PROJECT_FILE } from './project';
@@ -24,19 +24,19 @@ export abstract class BuildRunner<T extends BuildOptions> extends Runner<T, void
     super();
   }
 
-  static async createFromProjectType(env: IonicEnvironment, type: 'ionic1'): Promise<ionic1BuildLibType.BuildRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type: 'ionic-angular'): Promise<ionicAngularBuildLibType.BuildRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: 'angular'): Promise<angularBuildLibType.BuildRunner>;
+  static async createFromProjectType(env: IonicEnvironment, type: 'ionic-angular'): Promise<ionicAngularBuildLibType.BuildRunner>;
+  static async createFromProjectType(env: IonicEnvironment, type: 'ionic1'): Promise<ionic1BuildLibType.BuildRunner>;
   static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<BuildRunner<any>>;
   static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<BuildRunner<any>> {
-    if (type === 'ionic1') {
-      const { BuildRunner } = await import('./project/ionic1/build');
+    if (type === 'angular') {
+      const { BuildRunner } = await import('./project/angular/build');
       return new BuildRunner(env);
     } else if (type === 'ionic-angular') {
       const { BuildRunner } = await import('./project/ionic-angular/build');
       return new BuildRunner(env);
-    } else if (type === 'angular') {
-      const { BuildRunner } = await import('./project/angular/build');
+    } else if (type === 'ionic1') {
+      const { BuildRunner } = await import('./project/ionic1/build');
       return new BuildRunner(env);
     } else {
       throw new RunnerNotFoundException(
@@ -47,15 +47,13 @@ export abstract class BuildRunner<T extends BuildOptions> extends Runner<T, void
     }
   }
 
-  abstract createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): T;
+  abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
 
-  createBaseOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): BuildOptions {
-    const [ platform ] = inputs;
+  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): BuildOptions {
+    const separatedArgs = options['--'];
+    const platform = options['platform'] ? String(options['platform']) : undefined;
 
-    return {
-      target: options['target'] ? String(options['target']) : undefined,
-      platform,
-    };
+    return { '--': separatedArgs ? separatedArgs : [], platform };
   }
 
   abstract buildProject(options: T): Promise<void>;
