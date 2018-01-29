@@ -9,6 +9,7 @@ describe('@ionic/cli-utils', () => {
       describe('generateAppScriptsArgs', () => {
 
         const options = {
+          '--': ['--generateSourceMap', 'false'],
           prod: true,
           aot: true,
           minifyjs: true,
@@ -18,14 +19,14 @@ describe('@ionic/cli-utils', () => {
 
         it('should transform defaults', async () => {
           const runner = new BuildRunner();
-          const result = await runner.generateAppScriptsArgs({});
+          const result = await runner.generateAppScriptsArgs({ '--': [] });
           expect(result).toEqual([]);
         });
 
-        it('should transform base options', async () => {
+        it('should transform options', async () => {
           const runner = new BuildRunner();
           const result = await runner.generateAppScriptsArgs(options);
-          expect(result).toEqual(['--prod', '--aot', '--minifyjs', '--minifycss', '--optimizejs']);
+          expect(result).toEqual(['--prod', '--aot', '--minifyjs', '--minifycss', '--optimizejs', '--generateSourceMap', 'false']);
         });
 
       });

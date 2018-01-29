@@ -12,6 +12,10 @@ const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:build');
 export class BuildRunner extends BaseBuildRunner<IonicAngularBuildOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
+      exampleCommands: ['--prod', '-- --generateSourceMap false'],
+      longDescription: `${chalk.green('ionic build')} uses ${chalk.bold('@ionic/app-scripts')}. See the project's ${chalk.bold('README.md')}${chalk.cyan('[1]')} for documentation. Options not listed below are considered advanced and can be passed to the ${chalk.green('ionic-app-scripts')} CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scripts/blob/master/README.md')}`,
       options: APP_SCRIPTS_OPTIONS,
     };
   }
@@ -50,7 +54,7 @@ export class BuildRunner extends BaseBuildRunner<IonicAngularBuildOptions> {
     }
   }
 
-  generateAppScriptsArgs(options: IonicAngularBuildOptions) {
+  generateAppScriptsArgs(options: IonicAngularBuildOptions): string[] {
     const minimistArgs = {
       _: [],
       prod: options.prod ? true : false,
@@ -63,6 +67,6 @@ export class BuildRunner extends BaseBuildRunner<IonicAngularBuildOptions> {
       env: options.env,
     };
 
-    return unparseArgs(minimistArgs, { useEquals: false });
+    return [...unparseArgs(minimistArgs, { useEquals: false }), ...options['--']];
   }
 }
