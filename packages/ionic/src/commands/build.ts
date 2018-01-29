@@ -18,7 +18,7 @@ export class BuildCommand extends Command implements CommandPreRun {
 
   async getMetadata(): Promise<CommandMetadata> {
     const options: CommandMetadataOption[] = [];
-    const exampleCommands = ['', '--prod'];
+    const exampleCommands = [''];
     let longDescription = `${chalk.green('ionic build')} will perform an Ionic build, which compiles web assets and prepares them for deployment.`;
 
     try {
@@ -41,6 +41,7 @@ export class BuildCommand extends Command implements CommandPreRun {
       type: 'project',
       description: 'Build web assets and prepare your app for any platform targets',
       longDescription,
+      exampleCommands,
       options,
     };
   }

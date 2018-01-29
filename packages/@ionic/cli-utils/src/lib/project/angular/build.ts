@@ -13,8 +13,9 @@ const debug = Debug('ionic:cli-utils:lib:project:angular:build');
 export class BuildRunner extends BaseBuildRunner<AngularBuildOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
+      exampleCommands: ['--prod', '-- --extract-css=true'],
       longDescription: `
-${chalk.green('ionic build')} uses the Angular CLI under the hood. Common Angular CLI options such as ${chalk.green('--target')} and ${chalk.green('--environment')} are mixed in with Ionic CLI options. Use ${chalk.green('ng build --help')} to list all options. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
+${chalk.green('ionic build')} uses the Angular CLI. Use ${chalk.green('ng build --help')} to list all Angular CLI options for building your app. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the ${chalk.green('ng')} CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/build#ng-build')}`,
       options: [
@@ -71,9 +72,16 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   async buildOptionsToNgArgs(options: AngularBuildOptions): Promise<string[]> {
     const args: ParsedArgs = {
       _: [],
-      target: options.target,
       environment: options.environment,
     };
+
+    if (options.target === 'development') {
+      args['dev'] = true;
+    } else if (options.target === 'production') {
+      args['prod'] = true;
+    } else {
+      args['target'] = options.target;
+    }
 
     return [...unparseArgs(args, {}), ...options['--']];
   }
