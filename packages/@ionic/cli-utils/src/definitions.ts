@@ -114,9 +114,13 @@ export interface ProjectFile {
   name: string;
   app_id: string;
   integrations: ProjectIntegrations;
-  documentRoot?: string; // www folder location (TODO: use this everywhere)
   watchPatterns?: string[];
   proxies?: ProjectFileProxy[];
+
+  /**
+   * @deprecated
+   */
+  documentRoot?: string;
 }
 
 export interface Response<T> extends APIResponseSuccess {

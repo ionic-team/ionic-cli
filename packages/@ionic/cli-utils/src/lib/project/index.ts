@@ -198,12 +198,6 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   }
 
   async getSourceDir(): Promise<string> {
-    const project = await this.load();
-
-    if (project.documentRoot) {
-      return path.resolve(this.directory, project.documentRoot);
-    }
-
     return path.resolve(this.directory, 'src');
   }
 

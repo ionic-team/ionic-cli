@@ -13,12 +13,6 @@ describe('@ionic/cli-utils', () => {
 
       describe('getSourceDir', () => {
 
-        it('should use documentRoot, if set', async () => {
-          const p = new Project('/path/to/proj', 'file', {});
-          spyOn(p, 'load').and.callFake(() => Promise.resolve({ documentRoot: 'some/dir' }));
-          expect(await p.getSourceDir()).toEqual('/path/to/proj/some/dir');
-        });
-
         it('should default to src', async () => {
           const p = new Project('/path/to/proj', 'file', {});
           const result = await p.getSourceDir();
