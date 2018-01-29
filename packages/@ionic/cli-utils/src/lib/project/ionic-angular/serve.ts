@@ -13,10 +13,11 @@ import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOC
 import { prettyProjectName } from '../';
 import { APP_SCRIPTS_OPTIONS } from './app-scripts';
 
-export const DEFAULT_PROGRAM = 'ionic-app-scripts';
-const APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
-
 const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:serve');
+
+export const DEFAULT_PROGRAM = 'ionic-app-scripts';
+export const DEFAULT_SERVE_SCRIPT_VALUE = `${DEFAULT_PROGRAM} serve`;
+const APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 
 interface ServeCmdDetails {
   program: string;
@@ -137,7 +138,7 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
     debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[SERVE_SCRIPT]) {
-      if (pkg.scripts[SERVE_SCRIPT] === 'ionic-app-scripts serve') {
+      if (pkg.scripts[SERVE_SCRIPT] === DEFAULT_SERVE_SCRIPT_VALUE) {
         debug(`Found ${chalk.cyan(SERVE_SCRIPT)}, but it is the default. Not running.`);
         args = ['serve', ...args];
       } else {

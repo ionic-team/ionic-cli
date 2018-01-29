@@ -7,8 +7,10 @@ import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularBui
 import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
 import { APP_SCRIPTS_OPTIONS } from './app-scripts';
 
-const DEFAULT_PROGRAM = 'ionic-app-scripts';
 const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:build');
+
+export const DEFAULT_PROGRAM = 'ionic-app-scripts';
+export const DEFAULT_BUILD_SCRIPT_VALUE = `${DEFAULT_PROGRAM} build`;
 
 export class BuildRunner extends BaseBuildRunner<IonicAngularBuildOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
@@ -48,7 +50,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
-      if (pkg.scripts[BUILD_SCRIPT] === 'ionic-app-scripts build') {
+      if (pkg.scripts[BUILD_SCRIPT] === DEFAULT_BUILD_SCRIPT_VALUE) {
         debug(`Found ${chalk.cyan(BUILD_SCRIPT)}, but it is the default. Not running.`);
         args = ['build', ...args];
       } else {

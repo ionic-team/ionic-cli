@@ -4,6 +4,10 @@ import * as semver from 'semver';
 import { IAilmentRegistry } from '../../../definitions';
 import { Ailment, AilmentDeps, AutomaticallyTreatableAilment, AutomaticallyTreatableAilmentDeps } from '../../doctor/ailments';
 import { pkgLatestVersion, pkgManagerArgs } from '../../utils/npm';
+import { BUILD_SCRIPT } from '../../build';
+import { SERVE_SCRIPT } from '../../serve';
+import { DEFAULT_BUILD_SCRIPT_VALUE } from './build';
+import { DEFAULT_SERVE_SCRIPT_VALUE } from './serve';
 
 import { Project as IonicAngularProject } from './';
 
@@ -12,6 +16,8 @@ export function registerAilments(registry: IAilmentRegistry, deps: Automatically
   registry.register(new IonicAngularMajorUpdateAvailable(deps));
   registry.register(new AppScriptsUpdateAvailable(deps));
   registry.register(new AppScriptsMajorUpdateAvailable(deps));
+  registry.register(new IonicAngularPackageJsonHasDefaultIonicBuildCommand(deps));
+  registry.register(new IonicAngularPackageJsonHasDefaultIonicServeCommand(deps));
 }
 
 interface IonicAngularAilmentDeps extends AilmentDeps {
@@ -215,6 +221,66 @@ class AppScriptsMajorUpdateAvailable extends IonicAngularAilment {
   async getTreatmentSteps() {
     return [
       { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-app-scripts/releases')} for upgrade instructions` },
+    ];
+  }
+}
+
+class IonicAngularPackageJsonHasDefaultIonicBuildCommand extends IonicAngularAilment {
+  id = 'ionic-angular-package-json-has-default-ionic-build-command';
+  currentVersion?: string;
+  latestVersion?: string;
+
+  async getMessage() {
+    return (
+      `The ${chalk.bold(BUILD_SCRIPT)} npm script is unchanged.\n` +
+      `The Ionic CLI as of version 4.0 looks for the ${chalk.bold(BUILD_SCRIPT)} npm script in ${chalk.bold('package.json')} for a custom build script to run instead of the default (${chalk.green(DEFAULT_BUILD_SCRIPT_VALUE)}). If you don't use it, it's considered quicker and cleaner to just remove it.`
+    ).trim();
+  }
+
+  async detected() {
+    const pkg = await this.project.loadPackageJson();
+
+    if (pkg.scripts && pkg.scripts[BUILD_SCRIPT] === DEFAULT_BUILD_SCRIPT_VALUE) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async getTreatmentSteps() {
+    return [
+      { name: `Remove the ${chalk.bold(BUILD_SCRIPT)} npm script from ${chalk.bold('package.json')}` },
+      { name: `Continue using ${chalk.green('ionic build')} normally` },
+    ];
+  }
+}
+
+class IonicAngularPackageJsonHasDefaultIonicServeCommand extends IonicAngularAilment {
+  id = 'ionic-angular-package-json-has-default-ionic-serve-command';
+  currentVersion?: string;
+  latestVersion?: string;
+
+  async getMessage() {
+    return (
+      `The ${chalk.bold(SERVE_SCRIPT)} npm script is unchanged.\n` +
+      `The Ionic CLI as of version 4.0 looks for the ${chalk.bold(SERVE_SCRIPT)} npm script in ${chalk.bold('package.json')} for a custom serve script to run instead of the default (${chalk.green(DEFAULT_SERVE_SCRIPT_VALUE)}). If you don't use it, it's considered quicker and cleaner to just remove it.`
+    ).trim();
+  }
+
+  async detected() {
+    const pkg = await this.project.loadPackageJson();
+
+    if (pkg.scripts && pkg.scripts[SERVE_SCRIPT] === DEFAULT_SERVE_SCRIPT_VALUE) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async getTreatmentSteps() {
+    return [
+      { name: `Remove the ${chalk.bold(SERVE_SCRIPT)} npm script from ${chalk.bold('package.json')}` },
+      { name: `Continue using ${chalk.green('ionic serve')} normally` },
     ];
   }
 }
