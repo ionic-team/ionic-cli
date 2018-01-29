@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { Command, CommandLineInputs, CommandLineOptions, validators } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
 
+import { hasTask, runTask } from '../lib/gulp';
 import { runServer } from '../lib/serve';
 
 export class ServeCommand extends Command {
@@ -79,6 +80,10 @@ export class ServeCommand extends Command {
     const watchPatterns = Array.isArray(watch) ? watch : [String(watch)];
     const proxies = Array.isArray(proxy) ? proxy : (proxy ? [JSON.parse(String(proxy))] : []);
     const url = `http://${host}:${port}`;
+
+    if (await hasTask('ionic:serve:before')) {
+      await runTask('ionic:serve:before');
+    }
 
     process.stdout.write(`Serving directory ${chalk.bold(wwwDir)}\n`);
 

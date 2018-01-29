@@ -38,18 +38,30 @@ export async function loadGulp(): Promise<typeof gulpType> {
   return _gulpInst;
 }
 
+export async function hasTask(name: string): Promise<boolean> {
+  try {
+    const gulp = await loadGulp();
+    return gulp.hasTask(name);
+  } catch (e) {
+    process.stderr.write(`${timestamp()} Cannot load gulp: ${String(e)}\n`);
+  }
+
+  return false;
+}
+
 export async function runTask(name: string): Promise<void> {
+  if (!(await hasTask(name))) {
+    process.stderr.write(`${timestamp()} Cannot run ${chalk.cyan(name)} task: missing in ${chalk.bold('gulpfile.js')}\n`);
+    return;
+  }
+
   try {
     const gulp = await loadGulp();
     const gulpStart = promisify<void, string>(gulp.start.bind(gulp));
 
-    if (gulp.hasTask(name)) {
-      process.stdout.write(timestamp(), `Invoking ${chalk.cyan(name)} gulp task.\n`);
-      await gulpStart(name);
-    } else {
-      process.stderr.write(timestamp(), `Cannot run ${chalk.cyan('sass')} task: missing in ${chalk.bold('gulpfile.js')}\n`);
-    }
+    process.stdout.write(`${timestamp()} Invoking ${chalk.cyan(name)} gulp task.\n`);
+    await gulpStart(name);
   } catch (e) {
-    process.stderr.write(timestamp(), `Cannot run ${chalk.cyan('sass')} task: ${String(e)}\n`);
+    process.stderr.write(`${timestamp()} Cannot run ${chalk.cyan(name)} task: ${String(e)}\n`);
   }
 }

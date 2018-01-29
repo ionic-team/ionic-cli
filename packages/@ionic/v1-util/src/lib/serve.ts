@@ -52,7 +52,7 @@ export async function runServer(options: ServeOptions): Promise<ServeOptions> {
   const watcher = chokidar.watch(options.watchPatterns);
 
   watcher.on('change', (filePath: string) => {
-    process.stdout.write(timestamp(), `${chalk.bold(filePath)} changed\n`);
+    process.stdout.write(`${timestamp()} ${chalk.bold(filePath)} changed\n`);
 
     if (reloadfn) {
       reloadfn([filePath]);
