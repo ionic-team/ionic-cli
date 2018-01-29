@@ -206,6 +206,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       progress: 'false',
       target: options.target,
       environment: options.environment,
+      deleteOutputPath: options.engine === 'cordova' ? 'false' : undefined,
     };
 
     if (options.proxy) {
