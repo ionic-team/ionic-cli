@@ -5,11 +5,12 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { copyDirectory, fsMkdirp, fsStat, pathExists, readDir, removeDirectory } from '@ionic/cli-framework/utils/fs';
+import { noop } from '@ionic/cli-framework/utils/fn';
 
 import {
+  IConfig,
   IIntegration,
   IIntegrationAddOptions,
-  IConfig,
   IProject,
   IShell,
   ITaskChain,
@@ -105,7 +106,7 @@ export abstract class BaseIntegration implements IIntegration {
       return;
     }
 
-    const onFileCreate = opts && opts.onFileCreate ? opts.onFileCreate : () => {};
+    const onFileCreate = opts && opts.onFileCreate ? opts.onFileCreate : noop;
     const conflictHandler = opts && opts.conflictHandler ? opts.conflictHandler : async () => false;
 
     const { download } = await import('../http');
@@ -135,7 +136,7 @@ export abstract class BaseIntegration implements IIntegration {
 
     debug(`Integration files downloaded to ${chalk.bold(tmpdir)} (files: ${contents.map(f => chalk.bold(f)).join(', ')})`);
 
-    for (let f of contents) {
+    for (const f of contents) {
       const projectf = path.resolve(this.project.directory, f);
 
       try {

@@ -6,7 +6,7 @@ import { contains, validators } from '@ionic/cli-framework';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, isIntegrationName } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { Exception, FatalException } from '@ionic/cli-utils/lib/errors';
-import { INTEGRATION_NAMES, BaseIntegration } from '@ionic/cli-utils/lib/integrations';
+import { BaseIntegration, INTEGRATION_NAMES } from '@ionic/cli-utils/lib/integrations';
 
 export class IntegrationsEnableCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
@@ -53,7 +53,7 @@ export class IntegrationsEnableCommand extends Command {
       } else { // never been added to project
         await integration.add({
           conflictHandler: async (f, stats) => {
-            const isDirectory = await stats.isDirectory();
+            const isDirectory = stats.isDirectory();
             const filename = `${path.basename(f)}${isDirectory ? '/' : ''}`;
             const type = isDirectory ? 'directory' : 'file';
 
@@ -66,7 +66,7 @@ export class IntegrationsEnableCommand extends Command {
 
             return confirm;
           },
-          onFileCreate: (f) => {
+          onFileCreate: f => {
             if (!quiet) {
               this.env.log.msg(`  ${chalk.green('create')} ${f}`);
             }

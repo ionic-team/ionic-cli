@@ -115,7 +115,15 @@ export interface ProjectFile {
   name: string;
   app_id: string;
   readonly integrations: ProjectIntegrations;
+
+  /**
+   * @deprecated
+   */
   watchPatterns?: string[];
+
+  /**
+   * @deprecated
+   */
   proxies?: ProjectFileProxy[];
 
   /**
