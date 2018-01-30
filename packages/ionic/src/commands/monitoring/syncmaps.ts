@@ -111,8 +111,10 @@ export class MonitoringSyncSourcemapsCommand extends Command {
     // this.env.log.info('Doing this thing');
     this.env.log.msg(await this.env.config.getAPIUrl());
 
-    let { req } = await createRequest(this.env.config, 'post', sourcemapPost.url);
-    req = req
+    const c = await this.env.config.load();
+    const { req } = await createRequest('post', sourcemapPost.url, c);
+
+    req
       .buffer()
       .field(sourcemapPost.fields)
       .field('file', fileData)

@@ -1,9 +1,12 @@
+import * as path from 'path';
+
 import chalk from 'chalk';
 
 import { contains, validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, isIntegrationName } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { INTEGRATIONS, enableIntegration } from '@ionic/cli-utils/lib/integrations';
+import { Exception, FatalException } from '@ionic/cli-utils/lib/errors';
+import { INTEGRATION_NAMES, BaseIntegration } from '@ionic/cli-utils/lib/integrations';
 
 export class IntegrationsEnableCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
@@ -13,9 +16,9 @@ export class IntegrationsEnableCommand extends Command {
       description: 'Add various integrations to your app',
       inputs: [
         {
-          name: 'id',
-          description: `The integration to enable (${INTEGRATIONS.map(i => chalk.green(i.name)).join(', ')})`,
-          validators: [validators.required, contains(INTEGRATIONS.map(i => i.name), {})],
+          name: 'name',
+          description: `The integration to enable (${INTEGRATION_NAMES.map(i => chalk.green(i)).join(', ')})`,
+          validators: [validators.required, contains(INTEGRATION_NAMES, {})],
         },
       ],
       options: [
@@ -29,10 +32,55 @@ export class IntegrationsEnableCommand extends Command {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ id ] = inputs;
-
+    const [ name ] = inputs;
     const { quiet } = options;
 
-    await enableIntegration(this.env, id, { quiet: Boolean(quiet) });
+    if (!isIntegrationName(name)) {
+      throw new FatalException(`Don't know about ${chalk.green(name)} integration!`);
+    }
+
+    const integration = await BaseIntegration.createFromName(this.env, name);
+    const integrationConfig = await integration.getConfig();
+
+    try {
+      if (integrationConfig) {
+        if (integrationConfig.enabled !== false) {
+          this.env.log.info(`Integration ${chalk.green(integration.name)} already enabled.`);
+        } else {
+          await integration.enable();
+          this.env.log.ok(`Integration ${chalk.green(integration.name)} enabled!`);
+        }
+      } else { // never been added to project
+        await integration.add({
+          conflictHandler: async (f, stats) => {
+            const isDirectory = await stats.isDirectory();
+            const filename = `${path.basename(f)}${isDirectory ? '/' : ''}`;
+            const type = isDirectory ? 'directory' : 'file';
+
+            const confirm = await this.env.prompt({
+              type: 'confirm',
+              name: 'confirm',
+              message: `The ${chalk.cyan(filename)} ${type} exists in project. Overwrite?`,
+              default: false,
+            });
+
+            return confirm;
+          },
+          onFileCreate: (f) => {
+            if (!quiet) {
+              this.env.log.msg(`  ${chalk.green('create')} ${f}`);
+            }
+          },
+        });
+
+        this.env.log.ok(`Integration ${chalk.green(integration.name)} added!`);
+      }
+    } catch (e) {
+      if (e instanceof Exception) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
   }
 }

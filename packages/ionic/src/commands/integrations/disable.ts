@@ -1,9 +1,10 @@
 import chalk from 'chalk';
 
 import { contains, validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, isIntegrationName } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { INTEGRATIONS, disableIntegration } from '@ionic/cli-utils/lib/integrations';
+import { Exception, FatalException } from '@ionic/cli-utils/lib/errors';
+import { INTEGRATION_NAMES, BaseIntegration } from '@ionic/cli-utils/lib/integrations';
 
 export class IntegrationsDisableCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
@@ -13,17 +14,37 @@ export class IntegrationsDisableCommand extends Command {
       description: 'Disable an integration',
       inputs: [
         {
-          name: 'id',
-          description: `The integration to disable (${INTEGRATIONS.map(i => chalk.green(i.name)).join(', ')})`,
-          validators: [validators.required, contains(INTEGRATIONS.map(i => i.name), {})],
+          name: 'name',
+          description: `The integration to disable (${INTEGRATION_NAMES.map(i => chalk.green(i)).join(', ')})`,
+          validators: [validators.required, contains(INTEGRATION_NAMES, {})],
         },
       ],
     };
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ id ] = inputs;
+    const [ name ] = inputs;
 
-    await disableIntegration(this.env, id);
+    if (!isIntegrationName(name)) {
+      throw new FatalException(`Don't know about ${chalk.green(name)} integration!`);
+    }
+
+    const integration = await BaseIntegration.createFromName(this.env, name);
+    const integrationConfig = await integration.getConfig();
+
+    try {
+      if (!integrationConfig || integrationConfig.enabled === false) {
+        this.env.log.info(`Integration ${chalk.green(integration.name)} already disabled.`);
+      } else {
+        await integration.disable();
+        this.env.log.ok(`Integration ${chalk.green(integration.name)} disabled!`);
+      }
+    } catch (e) {
+      if (e instanceof Exception) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
   }
 }

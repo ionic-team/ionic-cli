@@ -4,6 +4,7 @@ import { BaseIntegration } from '../';
 
 export class Integration extends BaseIntegration {
   name: IntegrationName = 'cordova';
+  archiveUrl = 'https://d2ql0qc7j8u4b2.cloudfront.net/integration-cordova.tar.gz';
 
   async getInfo(): Promise<InfoHookItem[]> {
     const { getAndroidSdkToolsVersion } = await import('./android');

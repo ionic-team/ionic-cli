@@ -308,7 +308,7 @@ describe('@ionic/cli-utils', () => {
           imageId: '60278b0fa1d5abf43d07c5ae0f8a0b41'
         }];
 
-        const response = await resources.uploadSourceImages({ config: undefined }, sourceImages);
+        const response = await resources.uploadSourceImages({ config: { load: async () => undefined } }, sourceImages);
         expect(response).toEqual([{
           Error: '',
           Width: 337,
@@ -349,7 +349,7 @@ describe('@ionic/cli-utils', () => {
           dest: path.join(__dirname, 'fixtures', 'drawable-land-ldpi-screen.png')
         };
 
-        await resources.transformResourceImage({ config: undefined }, imgResource);
+        await resources.transformResourceImage({ config: { load: async () => undefined } }, imgResource);
 
         expect(fsSpy.writeStreamToFile).toHaveBeenCalledWith(
           requestMock.req, imgResource.dest

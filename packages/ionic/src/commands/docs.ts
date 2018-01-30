@@ -22,10 +22,11 @@ export class DocsCommand extends Command {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { createRequest } = await import('@ionic/cli-utils/lib/http');
-    const browser = options['browser'] ? String(options['browser']) : undefined;
-
     const opn = await import('opn');
+    const { createRequest } = await import('@ionic/cli-utils/lib/http');
+
+    const browser = options['browser'] ? String(options['browser']) : undefined;
+    const config = await this.env.config.load();
 
     const docsHomepage = 'https://ionicframework.com/docs';
     let url = docsHomepage;
@@ -39,7 +40,7 @@ export class DocsCommand extends Command {
     }
 
     try {
-      const { req } = await createRequest(this.env.config, 'head', url);
+      const { req } = await createRequest('head', url, config);
       await req;
     } catch (e) {
       if (isSuperAgentError(e)) {

@@ -8,6 +8,7 @@ import {
   APIResponse,
   APIResponseError,
   APIResponseSuccess,
+  CreateRequestOptions,
   HttpMethod,
   IClient,
   IConfig,
@@ -31,7 +32,7 @@ let CAS: string[] | undefined;
 let CERTS: string[] | undefined;
 let KEYS: string[] | undefined;
 
-export async function createRawRequest(method: string, url: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
+export async function createRequest(method: string, url: string, opts?: CreateRequestOptions): Promise<{ req: superagentType.SuperAgentRequest; }> {
   const superagent = await import('superagent');
   const [ proxy, proxyVar ] = getGlobalProxy();
 
@@ -52,15 +53,7 @@ export async function createRawRequest(method: string, url: string): Promise<{ r
     }
   }
 
-  return { req };
-}
-
-export async function createRequest(config: IConfig, method: string, url: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
-  const c = await config.load();
-
-  const { req } = await createRawRequest(method, url);
-
-  if (c.ssl) {
+  if (opts && opts.ssl) {
     const conform = (p?: string | string[]): string[] => {
       if (!p) {
         return [];
@@ -74,15 +67,15 @@ export async function createRequest(config: IConfig, method: string, url: string
     };
 
     if (!CAS) {
-      CAS = await Promise.all(conform(c.ssl.cafile).map(p => fsReadFile(p, { encoding: 'utf8' })));
+      CAS = await Promise.all(conform(opts.ssl.cafile).map(p => fsReadFile(p, { encoding: 'utf8' })));
     }
 
     if (!CERTS) {
-      CERTS = await Promise.all(conform(c.ssl.certfile).map(p => fsReadFile(p, { encoding: 'utf8' })));
+      CERTS = await Promise.all(conform(opts.ssl.certfile).map(p => fsReadFile(p, { encoding: 'utf8' })));
     }
 
     if (!KEYS) {
-      KEYS = await Promise.all(conform(c.ssl.keyfile).map(p => fsReadFile(p, { encoding: 'utf8' })));
+      KEYS = await Promise.all(conform(opts.ssl.keyfile).map(p => fsReadFile(p, { encoding: 'utf8' })));
     }
 
     if (CAS.length > 0) {
@@ -101,8 +94,8 @@ export async function createRequest(config: IConfig, method: string, url: string
   return { req };
 }
 
-export async function download(config: IConfig, url: string, ws: NodeJS.WritableStream, opts?: { progress?: (loaded: number, total: number) => void; }) {
-  const { req } = await createRequest(config, 'get', url);
+export async function download(url: string, ws: NodeJS.WritableStream, opts?: { progress?: (loaded: number, total: number) => void; } & CreateRequestOptions) {
+  const { req } = await createRequest('get', url, opts);
 
   const progressFn = opts ? opts.progress : undefined;
 
@@ -142,8 +135,9 @@ export class Client implements IClient {
   constructor(public config: IConfig) {}
 
   async make(method: HttpMethod, path: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
+    const c = await this.config.load();
     const url = path.startsWith('http://') || path.startsWith('https://') ? path : `${await this.config.getAPIUrl()}${path}`;
-    const { req } = await createRequest(this.config, method, url);
+    const { req } = await createRequest(method, url, c);
 
     req
       .set('Content-Type', CONTENT_TYPE_JSON)

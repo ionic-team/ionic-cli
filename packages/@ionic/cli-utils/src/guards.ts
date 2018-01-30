@@ -9,6 +9,7 @@ import {
   ExitCodeException,
   IAutomaticallyTreatableAilment,
   ICommand,
+  IntegrationName,
   LoadedPlugin,
   LogLevel,
   Plugin,
@@ -20,6 +21,7 @@ import {
 } from './definitions';
 
 export const LOG_LEVELS: LogLevel[] = ['info', 'msg', 'ok', 'warn', 'error', 'announce'];
+export const INTEGRATION_NAMES: IntegrationName[] = ['cordova'];
 
 export function isCommand(cmd: any): cmd is ICommand {
   return cmd && typeof cmd.run === 'function';
@@ -191,4 +193,9 @@ export function isSecurityProfilesResponse(r: APIResponse): r is Response<Securi
 
 export function isAutomaticallyTreatableAilment(ailment: any): ailment is IAutomaticallyTreatableAilment {
   return ailment && typeof ailment.treat === 'function';
+}
+
+export function isIntegrationName(name: string): name is IntegrationName {
+  const n = <IntegrationName>name;
+  return INTEGRATION_NAMES.includes(n);
 }

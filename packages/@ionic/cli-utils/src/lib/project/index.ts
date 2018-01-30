@@ -8,7 +8,22 @@ import { ERROR_FILE_INVALID_JSON, fsReadJsonFile, fsWriteJsonFile } from '@ionic
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-import { IAilmentRegistry, IIntegration, ILogger, IProject, IShell, InfoHookItem, IntegrationName, PackageJson, ProjectFile, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
+import {
+  IAilmentRegistry,
+  IConfig,
+  IIntegration,
+  ILogger,
+  IProject,
+  IShell,
+  ITaskChain,
+  InfoHookItem,
+  IntegrationName,
+  PackageJson,
+  ProjectFile,
+  ProjectPersonalizationDetails,
+  ProjectType,
+} from '../../definitions';
+
 import { BaseConfig } from '../config';
 import { FatalException } from '../errors';
 import { BaseIntegration } from '../integrations';
@@ -27,22 +42,30 @@ export const PROJECT_FILE_LEGACY = 'ionic.project';
 export const PROJECT_TYPES: ProjectType[] = ['angular', 'ionic-angular', 'ionic1', 'custom'];
 
 export interface ProjectDeps {
+  config: IConfig;
   log: ILogger;
   shell: IShell;
+  tasks: ITaskChain;
 }
 
 export abstract class BaseProject extends BaseConfig<ProjectFile> implements IProject {
   type?: ProjectType;
-  integrations: IIntegration[] = [];
   directory: string;
-  protected packageJsonFile?: PackageJson;
-  protected log: ILogger;
-  protected shell: IShell;
 
-  constructor(dir: string, file: string, { log, shell }: ProjectDeps) {
+  protected readonly config: IConfig;
+  protected readonly log: ILogger;
+  protected readonly shell: IShell;
+  protected readonly tasks: ITaskChain;
+
+  protected integrations: IIntegration[] = [];
+  protected packageJsonFile?: PackageJson;
+
+  constructor(dir: string, file: string, { config, log, shell, tasks }: ProjectDeps) {
     super(dir, file);
+    this.config = config;
     this.log = log;
     this.shell = shell;
+    this.tasks = tasks;
   }
 
   static async determineType(projectDir: string, deps: ProjectDeps): Promise<ProjectType | undefined> {
@@ -121,7 +144,14 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       return i && i.enabled !== false;
     });
 
-    this.integrations = await Promise.all(integrationNames.map(async name => BaseIntegration.createFromName({ project: this, shell: this.shell }, name)));
+    this.integrations = await Promise.all(
+      integrationNames.map(async name => BaseIntegration.createFromName({
+        config: this.config,
+        project: this,
+        shell: this.shell,
+        tasks: this.tasks,
+      }, name))
+    );
   }
 
   abstract detected(): Promise<boolean>;

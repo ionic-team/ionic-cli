@@ -117,7 +117,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   };
 
   const shell = new Shell({ tasks, log, projectDir });
-  const project = await getProject(projectDir, { log, shell });
+  const project = await getProject(projectDir, { config, log, shell, tasks });
   const client = new Client(config);
   const session = new ProSession(config, client, project);
   const hooks = new HookEngine();

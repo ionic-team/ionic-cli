@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as os from 'os';
 import { EventEmitter } from 'events';
 
@@ -113,7 +114,7 @@ export interface ProjectIntegration {
 export interface ProjectFile {
   name: string;
   app_id: string;
-  integrations: ProjectIntegrations;
+  readonly integrations: ProjectIntegrations;
   watchPatterns?: string[];
   proxies?: ProjectFileProxy[];
 
@@ -178,7 +179,6 @@ export interface ProjectPersonalizationDetails {
 
 export interface IProject extends IBaseConfig<ProjectFile> {
   type?: ProjectType;
-  integrations: IIntegration[];
 
   refreshIntegrations(): Promise<void>;
   getSourceDir(): Promise<string>;
@@ -192,10 +192,20 @@ export interface IProject extends IBaseConfig<ProjectFile> {
 
 export type IntegrationName = keyof ProjectIntegrations;
 
+export interface IIntegrationAddOptions {
+  conflictHandler?(f: string, stats: fs.Stats): Promise<boolean>;
+  onFileCreate?(f: string): void;
+}
+
 export interface IIntegration {
   name: IntegrationName;
-  shell: IShell;
+  archiveUrl?: string;
 
+  add(opts?: IIntegrationAddOptions): Promise<void>;
+  enable(): Promise<void>;
+  disable(): Promise<void>;
+
+  getConfig(): Promise<ProjectIntegration | undefined>;
   getInfo(): Promise<InfoHookItem[]>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
 }
@@ -281,11 +291,7 @@ export interface ConfigFile {
       trusted: boolean;
     }[];
   };
-  ssl?: {
-    cafile?: string | string[];
-    certfile?: string | string[];
-    keyfile?: string | string[];
-  };
+  ssl?: SSLConfig;
   git: {
     setup?: boolean;
   };
@@ -300,6 +306,16 @@ export interface ConfigFile {
   telemetry: boolean;
   interactive?: boolean;
   npmClient: NpmClient;
+}
+
+export interface SSLConfig {
+  cafile?: string | string[];
+  certfile?: string | string[];
+  keyfile?: string | string[];
+}
+
+export interface CreateRequestOptions {
+  ssl?: SSLConfig;
 }
 
 export interface IBaseConfig<T extends { [key: string]: any }> {
@@ -701,11 +717,6 @@ export interface StarterTemplate {
 
 export interface ResolvedStarterTemplate extends StarterTemplate {
   archive: string;
-}
-
-export interface IntegrationTemplate {
-  name: IntegrationName;
-  archive?: string;
 }
 
 export type NetworkInterface = { deviceName: string; } & os.NetworkInterfaceInfo;
