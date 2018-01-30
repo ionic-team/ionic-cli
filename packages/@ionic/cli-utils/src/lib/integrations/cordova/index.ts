@@ -70,16 +70,13 @@ export class Integration extends BaseIntegration {
   }
 
   async getCordovaPlatformVersions(): Promise<string | undefined> {
-    let cordovaPlatforms = await this.shell.cmdinfo('cordova', ['platform', 'ls', '--no-telemetry']);
+    const output = await this.shell.cmdinfo('cordova', ['platform', 'ls', '--no-telemetry']);
 
-    if (cordovaPlatforms) {
-      cordovaPlatforms = cordovaPlatforms.replace(/\s+/g, ' ');
-      cordovaPlatforms = cordovaPlatforms.replace('Installed platforms:', '');
-      cordovaPlatforms = cordovaPlatforms.replace(/Available platforms.+/, '');
-      cordovaPlatforms = cordovaPlatforms.trim();
-    }
-
-    return cordovaPlatforms;
+    return output ? output
+      .replace(/\s+/g, ' ')
+      .replace('Installed platforms:', '')
+      .replace(/Available platforms.+/, '')
+      .trim() : undefined;
   }
 
   async getXcodebuildVersion(): Promise<string | undefined> {
