@@ -8,7 +8,7 @@ import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-import { InfoHookItem, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
+import { InfoItem, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
 
 import { BaseProject } from '../';
 import { ANGULAR_CLI_FILE, readAngularCLIJsonFile } from './utils';
@@ -18,7 +18,7 @@ const debug = Debug('ionic:cli-utils:lib:project:angular');
 export class Project extends BaseProject {
   type: ProjectType = 'angular';
 
-  async getInfo(): Promise<InfoHookItem[]> {
+  async getInfo(): Promise<InfoItem[]> {
     const [
       ionicAngularVersion,
       ionicCoreVersion,

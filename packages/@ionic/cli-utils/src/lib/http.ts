@@ -1,6 +1,7 @@
 import * as util from 'util';
 
 import chalk from 'chalk';
+import { conform } from '@ionic/cli-framework/utils/fn';
 
 import * as superagentType from 'superagent';
 
@@ -54,18 +55,6 @@ export async function createRequest(method: string, url: string, opts?: CreateRe
   }
 
   if (opts && opts.ssl) {
-    const conform = (p?: string | string[]): string[] => {
-      if (!p) {
-        return [];
-      }
-
-      if (typeof p === 'string') {
-        return [p];
-      }
-
-      return p;
-    };
-
     if (!CAS) {
       CAS = await Promise.all(conform(opts.ssl.cafile).map(p => fsReadFile(p, { encoding: 'utf8' })));
     }

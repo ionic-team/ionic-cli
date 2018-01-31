@@ -64,7 +64,7 @@ export function isExitCodeException(e: Error): e is ExitCodeException {
 }
 
 export function isPlugin(p: any): p is Plugin {
-  return p && (typeof p.registerHooks === 'undefined' || typeof p.registerHooks === 'function');
+  return p && (typeof p.getInfo === 'undefined' || typeof p.getInfo === 'function');
 }
 
 export function isLoadedPlugin(p: any): p is LoadedPlugin {

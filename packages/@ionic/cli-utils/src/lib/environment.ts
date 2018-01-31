@@ -4,10 +4,8 @@ import * as inquirerType from 'inquirer';
 
 import {
   CLIMeta,
-  ICLIEventEmitter,
   IClient,
   IConfig,
-  IHookEngine,
   ILogger,
   IProject,
   IRootNamespace,
@@ -15,6 +13,7 @@ import {
   IShell,
   ITaskChain,
   ITelemetry,
+  InfoItem,
   IonicEnvironment,
   IonicEnvironmentFlags,
   IonicEnvironmentPlugins,
@@ -23,10 +22,9 @@ import {
 
 export class Environment implements IonicEnvironment {
   readonly flags: IonicEnvironmentFlags;
-  readonly hooks: IHookEngine;
   readonly client: IClient;
   readonly config: IConfig; // CLI global config (~/.ionic/config.json)
-  readonly events: ICLIEventEmitter;
+  getInfo: () => Promise<InfoItem[]>;
   readonly log: ILogger;
   readonly prompt: PromptModule;
   readonly meta: CLIMeta;
@@ -47,9 +45,8 @@ export class Environment implements IonicEnvironment {
     client,
     config,
     env,
-    events,
     flags,
-    hooks,
+    getInfo,
     log,
     meta,
     namespace,
@@ -65,9 +62,8 @@ export class Environment implements IonicEnvironment {
     client: IClient;
     config: IConfig; // CLI global config (~/.ionic/config.json)
     env: { [key: string]: string; },
-    events: ICLIEventEmitter;
     flags: IonicEnvironmentFlags;
-    hooks: IHookEngine;
+    getInfo: () => Promise<InfoItem[]>;
     log: ILogger;
     meta: CLIMeta;
     namespace: IRootNamespace;
@@ -83,9 +79,8 @@ export class Environment implements IonicEnvironment {
     this.client = client;
     this.config = config;
     this.env = env;
-    this.events = events;
     this.flags = flags;
-    this.hooks = hooks;
+    this.getInfo = getInfo;
     this.log = log;
     this.meta = meta;
     this.namespace = namespace;

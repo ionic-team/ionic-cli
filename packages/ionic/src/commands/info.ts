@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, InfoHookItem } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, InfoItem } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class InfoCommand extends Command {
@@ -20,8 +20,8 @@ export class InfoCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const task = this.env.tasks.next('Gathering environment info');
 
-    const initialValue: InfoHookItem[] = [];
-    const results = await this.env.hooks.fire('info');
+    const initialValue: InfoItem[] = [];
+    const results = await this.env.getInfo();
     const flattenedResults = results.reduce((acc, currentValue) => acc.concat(currentValue), initialValue);
 
     const cliDetails = flattenedResults.filter(item => item.type === 'cli-packages');
@@ -34,7 +34,7 @@ export class InfoCommand extends Command {
     const ionicPkg = cliDetails.find(item => item.key === 'ionic');
     const pkgPath = ionicPkg && ionicPkg.path ? path.dirname(ionicPkg.path) : undefined;
 
-    const splitInfo = (ary: InfoHookItem[]) => ary
+    const splitInfo = (ary: InfoItem[]) => ary
       .sort((a, b) => strcmp(a.key.toLowerCase(), b.key.toLowerCase()))
       .map((item): [string, string] => [`   ${item.key}${item.flair ? ' ' + chalk.dim('(' + item.flair + ')') : ''}`, chalk.dim(item.value) + (item.path && pkgPath && !item.path.startsWith(pkgPath) ? ` ${chalk.dim('(' + item.path + ')')}` : '')]);
 

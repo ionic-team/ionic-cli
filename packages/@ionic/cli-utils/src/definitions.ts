@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as os from 'os';
-import { EventEmitter } from 'events';
 
 import * as crossSpawnType from 'cross-spawn';
 import * as inquirerType from 'inquirer';
@@ -102,19 +101,21 @@ export interface ProjectFileProxy {
 }
 
 export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom';
-
-export interface ProjectIntegrations {
-  cordova?: ProjectIntegration;
-}
+export type IntegrationName = 'cordova';
 
 export interface ProjectIntegration {
   enabled?: boolean;
 }
 
+export type HookName = 'build:before' | 'build:after' | 'serve:before';
+
+export interface HookContext {}
+
 export interface ProjectFile {
   name: string;
   app_id: string;
-  readonly integrations: ProjectIntegrations;
+  readonly integrations: Record<IntegrationName, ProjectIntegration | undefined>;
+  readonly hooks: Record<HookName, string | string[] | undefined>;
 
   /**
    * @deprecated
@@ -190,15 +191,13 @@ export interface IProject extends IBaseConfig<ProjectFile> {
 
   refreshIntegrations(): Promise<void>;
   getSourceDir(): Promise<string>;
-  getInfo(): Promise<InfoHookItem[]>;
+  getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
   loadAppId(): Promise<string>;
   loadPackageJson(): Promise<framework.PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
   getAilmentRegistry(env: IonicEnvironment): Promise<IAilmentRegistry>;
 }
-
-export type IntegrationName = keyof ProjectIntegrations;
 
 export interface IIntegrationAddOptions {
   conflictHandler?(f: string, stats: fs.Stats): Promise<boolean>;
@@ -214,7 +213,7 @@ export interface IIntegration {
   disable(): Promise<void>;
 
   getConfig(): Promise<ProjectIntegration | undefined>;
-  getInfo(): Promise<InfoHookItem[]>;
+  getInfo(): Promise<InfoItem[]>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
 }
 
@@ -380,7 +379,7 @@ export interface IClient {
 
 export interface IPaginator<T extends Response<Object[]>> extends IterableIterator<Promise<T>> {}
 
-export interface InfoHookItem {
+export interface InfoItem {
   type: 'system' | 'global-packages' | 'local-packages' | 'cli-packages' | 'environment' | 'misc';
   key: string;
   value: string;
@@ -514,28 +513,6 @@ export interface AngularCLIJson {
   };
 }
 
-export interface IHook<T, U> {
-  source: string;
-  name: string;
-
-  fire(args: T): Promise<U>;
-}
-
-export interface IHookEngine {
-  fire(hook: 'info'): Promise<InfoHookItem[]>;
-
-  register(source: string, hook: 'info', listener: () => Promise<InfoHookItem[]>): void;
-  getRegistered<T, U>(hook: string): IHook<T, U>[];
-}
-
-export interface ICLIEventEmitter extends EventEmitter {
-  on(event: 'watch:init', listener: () => void): this;
-  on(event: 'watch:change', listener: (path: string) => void): this;
-
-  emit(event: 'watch:init'): boolean;
-  emit(event: 'watch:change', path: string): boolean;
-}
-
 export interface PromptQuestion extends inquirerType.Question {
   type: string; // type is required
   message: string; // message is required
@@ -565,10 +542,8 @@ export interface PromptModule {
 
 export interface IonicEnvironment {
   readonly flags: IonicEnvironmentFlags;
-  readonly hooks: IHookEngine;
   readonly client: IClient;
   readonly config: IConfig; // CLI global config (~/.ionic/config.json)
-  readonly events: ICLIEventEmitter;
   readonly log: ILogger;
   readonly prompt: PromptModule;
   readonly meta: CLIMeta;
@@ -583,6 +558,7 @@ export interface IonicEnvironment {
 
   open(): void;
   close(): void;
+  getInfo(): Promise<InfoItem[]>;
   runCommand(pargv: string[], opts?: { showExecution?: boolean; }): Promise<void>;
 }
 
@@ -612,7 +588,7 @@ export interface PluginMeta {
 }
 
 export interface Plugin {
-  registerHooks?(hooks: IHookEngine): void;
+  getInfo?(): Promise<InfoItem[]>;
 
   /**
    * @deprecated

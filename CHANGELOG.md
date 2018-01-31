@@ -46,6 +46,9 @@ from the breaking changes listed below, upgrading to CLI v4 should be seamless.
   emulate`. This behavior can be disabled with the `--no-livereload` option.
 * The `--target` option for Cordova has been renamed to `--cordova-target` to
   disambiguate from the Angular CLI's `--target` option.
+* The `ionic:watch:before` hook has been renamed to `ionic:serve:before`, but
+  behaves the same. See the [hook
+  documentation](https://ionicframework.com/docs/cli/configuring.html#hooks).
 
 #### :rocket: Enhancements
 

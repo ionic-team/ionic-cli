@@ -189,6 +189,6 @@ export async function receive(msg: IPCMessage) {
   if (msg.type === 'telemetry') {
     const { sendCommand } = await import('@ionic/cli-utils/lib/telemetry');
 
-    await sendCommand({ cli: env.plugins.ionic, hooks: env.hooks, meta: env.meta, client: env.client, config: env.config, project: env.project, session: env.session }, msg.data.command, msg.data.args);
+    await sendCommand({ cli: env.plugins.ionic, getInfo: env.getInfo, meta: env.meta, client: env.client, config: env.config, project: env.project, session: env.session }, msg.data.command, msg.data.args);
   }
 }

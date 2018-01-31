@@ -9,7 +9,7 @@ import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { ERROR_FILE_INVALID_JSON, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { ERROR_INVALID_BOWER_JSON, readBowerJsonFile, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-import { InfoHookItem, ProjectType } from '../../../definitions';
+import { InfoItem, ProjectType } from '../../../definitions';
 import { FatalException } from '../../errors';
 
 import { BaseProject } from '../';
@@ -20,7 +20,7 @@ export class Project extends BaseProject {
   type: ProjectType = 'ionic1';
   protected bowerJsonFile?: BowerJson;
 
-  async getInfo(): Promise<InfoHookItem[]> {
+  async getInfo(): Promise<InfoItem[]> {
     const [ ionic1Version, v1UtilVersion ] = await Promise.all([this.getFrameworkVersion(), this.getV1UtilVersion()]);
 
     return [

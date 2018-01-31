@@ -16,7 +16,7 @@ import {
   IProject,
   IShell,
   ITaskChain,
-  InfoHookItem,
+  InfoItem,
   IntegrationName,
   PackageJson,
   ProjectFile,
@@ -206,6 +206,10 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       results.integrations = {};
     }
 
+    if (!results.hooks) {
+      results.hooks = {};
+    }
+
     if (!results.type) {
       results.type = this.type;
     }
@@ -220,10 +224,14 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   }
 
   is(j: any): j is ProjectFile {
-    return j && typeof j.name === 'string' && typeof j.app_id === 'string';
+    return j
+      && typeof j.name === 'string'
+      && typeof j.app_id === 'string'
+      && typeof j.integrations === 'object'
+      && typeof j.hooks === 'object';
   }
 
-  async getInfo(): Promise<InfoHookItem[]> {
+  async getInfo(): Promise<InfoItem[]> {
     return lodash.flatten(await Promise.all(this.integrations.map(async i => i.getInfo())));
   }
 
@@ -285,7 +293,7 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
     return true;
   }
 
-  async getInfo(): Promise<InfoHookItem[]> {
+  async getInfo(): Promise<InfoItem[]> {
     return [];
   }
 

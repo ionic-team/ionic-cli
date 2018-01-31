@@ -2,8 +2,9 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import * as Debug from 'debug';
+import * as lodash from 'lodash';
 
-import { DistTag, IonicEnvironment, LoadedPlugin, Plugin, PluginMeta } from '../definitions';
+import { DistTag, InfoItem, IonicEnvironment, LoadedPlugin, Plugin, PluginMeta } from '../definitions';
 import { isPlugin } from '../guards';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { getGlobalProxy } from './utils/http';
@@ -23,10 +24,6 @@ export function formatFullPluginName(name: string) {
 }
 
 export function registerPlugin(env: IonicEnvironment, plugin: LoadedPlugin) {
-  if (plugin.registerHooks) {
-    plugin.registerHooks(env.hooks);
-  }
-
   env.plugins[plugin.meta.pkg.name] = plugin;
 }
 
@@ -74,13 +71,27 @@ export async function loadPlugins(env: IonicEnvironment) {
     }
   });
 
+  const infofns: (() => Promise<InfoItem[]>)[] = [];
+
   for (const p of pluginPromises) {
     const plugin = await p;
 
     if (plugin) {
       registerPlugin(env, plugin);
+
+      if (plugin.getInfo) {
+        infofns.push(plugin.getInfo);
+      }
     }
   }
+
+  const originalGetInfo = env.getInfo;
+
+  env.getInfo = async (): Promise<InfoItem[]> => {
+    const infos = lodash.flatten(await Promise.all(infofns.map(f => f())));
+
+    return [...infos, ...await originalGetInfo()];
+  };
 }
 
 export function determineDistTag(version: string): DistTag {

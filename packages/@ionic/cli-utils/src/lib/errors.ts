@@ -42,3 +42,5 @@ export class RunnerNotFoundException extends RunnerException {}
 export class IntegrationException extends Exception {}
 
 export class IntegrationNotFoundException extends IntegrationException {}
+
+export class HookException extends Exception {}

@@ -1,23 +1,25 @@
 import chalk from 'chalk';
-import * as Debug from 'debug';
-import * as lodash from 'lodash';
 
-import { BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, IonicEnvironment, ProjectType } from '../definitions';
+import {
+  BuildOptions,
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandMetadata,
+  HookContext,
+  IonicEnvironment,
+  ProjectType,
+} from '../definitions';
 
-import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
+import { Exception, FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { PROJECT_FILE } from './project';
 import { Runner } from './runner';
+import { Hook } from './hooks';
 
 import * as ionic1BuildLibType from './project/ionic1/build';
 import * as ionicAngularBuildLibType from './project/ionic-angular/build';
 import * as angularBuildLibType from './project/angular/build';
 
-const debug = Debug('ionic:cli-utils:lib:build');
-
-// npm script names
 export const BUILD_SCRIPT = 'ionic:build';
-export const BUILD_BEFORE_SCRIPT = 'ionic:build:before';
-export const BUILD_AFTER_SCRIPT = 'ionic:build:after';
 
 export abstract class BuildRunner<T extends BuildOptions> extends Runner<T, void> {
   constructor(protected env: IonicEnvironment) {
@@ -58,51 +60,47 @@ export abstract class BuildRunner<T extends BuildOptions> extends Runner<T, void
 
   abstract buildProject(options: T): Promise<void>;
 
-  async invokeBeforeHook() {
-    const { pkgManagerArgs } = await import('./utils/npm');
-
-    const pkg = await this.env.project.loadPackageJson();
-    const config = await this.env.config.load();
-    const { npmClient } = config;
-
-    debug(`Looking for ${chalk.cyan(BUILD_BEFORE_SCRIPT)} npm script.`);
-
-    if (pkg.scripts && pkg.scripts[BUILD_BEFORE_SCRIPT]) {
-      debug(`Invoking ${chalk.cyan(BUILD_BEFORE_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: BUILD_BEFORE_SCRIPT });
-      await this.env.shell.run(pkgManager, pkgArgs, {});
-    }
-
-    const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
-
-    // TODO: move
-    if (deps['@ionic/cli-plugin-cordova']) {
-      const { checkCordova } = await import('./integrations/cordova/utils');
-      await checkCordova(this.env);
-    }
-  }
-
-  async invokeAfterHook(options: T) {
-    const { pkgManagerArgs } = await import('./utils/npm');
-
-    const pkg = await this.env.project.loadPackageJson();
-    const config = await this.env.config.load();
-    const { npmClient } = config;
-
-    debug(`Looking for ${chalk.cyan(BUILD_AFTER_SCRIPT)} npm script.`);
-
-    if (pkg.scripts && pkg.scripts[BUILD_AFTER_SCRIPT]) {
-      debug(`Invoking ${chalk.cyan(BUILD_AFTER_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: BUILD_AFTER_SCRIPT });
-      await this.env.shell.run(pkgManager, pkgArgs, {});
-    }
-  }
-
   async run(options: T): Promise<void> {
-    await this.invokeBeforeHook();
+    const before = new BuildBeforeHook(this.env);
+
+    try {
+      await before.run({ build: { options } });
+    } catch (e) {
+      if (e instanceof Exception) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
+
     await this.buildProject(options);
-    await this.invokeAfterHook(options);
+
+    const after = new BuildAfterHook(this.env);
+
+    try {
+      await after.run({ build: { options } });
+    } catch (e) {
+      if (e instanceof Exception) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
   }
+}
+
+interface BuildHookContext extends HookContext {
+  build: {
+    options: BuildOptions;
+  };
+}
+
+class BuildBeforeHook extends Hook<BuildHookContext> {
+  readonly name = 'build:before';
+}
+
+class BuildAfterHook extends Hook<BuildHookContext> {
+  readonly name = 'build:after';
 }
 
 export async function build(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

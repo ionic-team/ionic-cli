@@ -1,4 +1,4 @@
-import { InfoHookItem, IntegrationName, ProjectPersonalizationDetails } from '../../../definitions';
+import { InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../../definitions';
 
 import { BaseIntegration } from '../';
 
@@ -6,7 +6,7 @@ export class Integration extends BaseIntegration {
   name: IntegrationName = 'cordova';
   archiveUrl = 'https://d2ql0qc7j8u4b2.cloudfront.net/integration-cordova.tar.gz';
 
-  async getInfo(): Promise<InfoHookItem[]> {
+  async getInfo(): Promise<InfoItem[]> {
     const { getAndroidSdkToolsVersion } = await import('./android');
 
     const [
@@ -25,7 +25,7 @@ export class Integration extends BaseIntegration {
       getAndroidSdkToolsVersion(),
     ]);
 
-    const info: InfoHookItem[] = [];
+    const info: InfoItem[] = [];
 
     info.push(
       { type: 'global-packages', key: 'cordova', flair: 'Cordova CLI', value: cordovaVersion || 'not installed' },

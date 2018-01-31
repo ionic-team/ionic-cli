@@ -1,37 +1,95 @@
-import { IHook, IHookEngine } from '../definitions';
+import * as path from 'path';
+import * as util from 'util';
 
-export class Hook<T, U> implements IHook<T, U> {
-  constructor(
-    public source: string,
-    public name: string,
-    protected callable: (args: T) => Promise<U>
-  ) {}
+import chalk from 'chalk';
+import * as Debug from 'debug';
+import * as lodash from 'lodash';
 
-  fire(args: T): Promise<U> {
-    return this.callable(args);
-  }
+import { conform } from '@ionic/cli-framework/utils/fn';
+
+import { HookContext, HookName, IConfig, IProject, IShell } from '../definitions';
+import { HookException } from './errors';
+
+const debug = Debug('ionic:cli-utils:lib:hooks');
+
+export interface HookDeps {
+  config: IConfig;
+  project: IProject;
+  shell: IShell;
 }
 
-export class HookEngine implements IHookEngine {
-  private hooks = new Map<string, IHook<any, any>[]>();
+export abstract class Hook<T extends HookContext> {
+  abstract readonly name: HookName;
 
-  register<T, U>(source: string, hook: string, listener: (args?: T) => Promise<U>) {
-    const h = new Hook(source, hook, listener);
-    this.getRegistered<T, U>(hook).push(h);
+  protected readonly config: IConfig;
+  protected readonly project: IProject;
+  protected readonly shell: IShell;
+
+  get script() {
+    return `ionic:${this.name}`;
   }
 
-  async fire<T, U>(hook: string, args?: T): Promise<U[]> {
-    const registeredHooks = this.hooks.get(hook) || [];
-    return Promise.all(registeredHooks.map(h => h.fire(args)));
+  constructor({ config, project, shell }: HookDeps) {
+    this.config = config;
+    this.project = project;
+    this.shell = shell;
   }
 
-  getRegistered<T, U>(hook: string): IHook<T, U>[] {
-    let registeredHooks = this.hooks.get(hook);
-    if (!registeredHooks) {
-      registeredHooks = [];
-      this.hooks.set(hook, registeredHooks);
+  async run(ctx: T) {
+    const { pkgManagerArgs } = await import('./utils/npm');
+
+    const project = await this.project.load();
+    const pkg = await this.project.loadPackageJson();
+    const config = await this.config.load();
+    const { npmClient } = config;
+
+    debug(`Looking for ${chalk.cyan(this.script)} npm script.`);
+
+    if (pkg.scripts && pkg.scripts[this.script]) {
+      debug(`Invoking ${chalk.cyan(this.script)} npm script.`);
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'run', script: this.script });
+      await this.shell.run(pkgManager, pkgArgs, {});
     }
 
-    return registeredHooks;
+    const hooks = conform(project.hooks[this.name]);
+
+    for (const h of hooks) {
+      const p = path.resolve(this.project.directory, h);
+      const hook = await this.loadHookFn(p);
+
+      if (hook) {
+        try {
+          await hook(lodash.assign({}, ctx, {
+            name: this.name,
+            dir: this.project.directory,
+            argv: process.argv,
+            env: process.env,
+          }));
+        } catch (e) {
+          throw new HookException(`Error in "${chalk.bold(this.name)}" hook ${chalk.bold(p)}:\n${chalk.red(e.stack ? e.stack : e)}`);
+        }
+      }
+    }
+  }
+
+  protected async loadHookFn(p: string): Promise<Function | undefined> {
+    try {
+      const module = require(p);
+
+      if (typeof module === 'function') {
+        return module;
+      } else if (typeof module.default === 'function') {
+        return module.default;
+      }
+
+      const inspection = util.inspect(module, { colors: chalk.enabled });
+      debug(`Could not load hook function ${chalk.bold(p)}: ${inspection} not a function`);
+    } catch (e) {
+      if (e.code !== 'ENOENT') {
+        throw e;
+      }
+
+      debug(`Could not load hook function ${chalk.bold(p)}: ${e}`);
+    }
   }
 }

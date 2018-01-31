@@ -1,7 +1,7 @@
 import * as leekType from 'leek';
 import * as Debug from 'debug';
 
-import { CLIMeta, IClient, IConfig, IHookEngine, IProject, ISession, ITelemetry, InfoHookItem, LoadedPlugin } from '../definitions';
+import { CLIMeta, IClient, IConfig, IProject, ISession, ITelemetry, InfoItem, LoadedPlugin } from '../definitions';
 import { generateUUID } from './utils/uuid';
 import { sendMessage } from './helper';
 
@@ -13,26 +13,26 @@ export interface TelemetryDeps {
   cli: LoadedPlugin;
   client: IClient;
   config: IConfig;
-  hooks: IHookEngine;
+  getInfo: () => Promise<InfoItem[]>;
   meta: CLIMeta;
   project: IProject;
   session: ISession;
 }
 
 export class Telemetry implements ITelemetry {
-  protected cli: LoadedPlugin;
-  protected client: IClient;
-  protected config: IConfig;
-  protected hooks: IHookEngine;
-  protected meta: CLIMeta;
-  protected project: IProject;
-  protected session: ISession;
+  protected readonly cli: LoadedPlugin;
+  protected readonly client: IClient;
+  protected readonly config: IConfig;
+  protected readonly getInfo: () => Promise<InfoItem[]>;
+  protected readonly meta: CLIMeta;
+  protected readonly project: IProject;
+  protected readonly session: ISession;
 
-  constructor({ cli, config, client, hooks, meta, project, session }: TelemetryDeps) {
+  constructor({ cli, config, client, getInfo, meta, project, session }: TelemetryDeps) {
     this.cli = cli;
     this.client = client;
     this.config = config;
-    this.hooks = hooks;
+    this.getInfo = getInfo;
     this.meta = meta;
     this.project = project;
     this.session = session;
@@ -73,7 +73,7 @@ async function getLeek({ config, version }: { config: IConfig; version: string; 
   return _gaTracker;
 }
 
-export async function sendCommand({ cli, config, client, hooks, session, project }: TelemetryDeps, command: string, args: string[]) {
+export async function sendCommand({ cli, config, client, getInfo, session, project }: TelemetryDeps, command: string, args: string[]) {
   const messageList: string[] = [];
   const name = 'command execution';
   const prettyArgs = args.map(a => a.includes(' ') ? `"${a}"` : a);
@@ -118,8 +118,8 @@ export async function sendCommand({ cli, config, client, hooks, session, project
       };
 
       const isLoggedIn = await session.isLoggedIn();
-      const v: InfoHookItem[] = [];
-      const info = await hooks.fire('info');
+      const v: InfoItem[] = [];
+      const info = await getInfo();
       const flattenedInfo = info.reduce((acc, currentValue) => acc.concat(currentValue), v);
 
       if (isLoggedIn) {

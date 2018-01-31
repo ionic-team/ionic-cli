@@ -14,7 +14,7 @@ import {
   IProject,
   IShell,
   ITaskChain,
-  InfoHookItem,
+  InfoItem,
   IntegrationName,
   ProjectIntegration,
   ProjectPersonalizationDetails,
@@ -65,7 +65,7 @@ export abstract class BaseIntegration implements IIntegration {
     throw new IntegrationNotFoundException(`Bad integration name: ${chalk.bold(name)}`); // TODO?
   }
 
-  abstract getInfo(): Promise<InfoHookItem[]>;
+  abstract getInfo(): Promise<InfoItem[]>;
 
   async getConfig(): Promise<ProjectIntegration | undefined> {
     const p = await this.project.load();

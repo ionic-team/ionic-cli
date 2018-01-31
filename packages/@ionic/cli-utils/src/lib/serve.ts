@@ -3,7 +3,6 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import * as lodash from 'lodash';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
@@ -15,6 +14,7 @@ import {
   CommandLineOptions,
   CommandMetadata,
   CommandMetadataOption,
+  HookContext,
   IonicEnvironment,
   LabServeDetails,
   NetworkInterface,
@@ -25,9 +25,10 @@ import {
 
 import { isCordovaPackageJson } from '../guards';
 import { OptionGroup } from '../constants';
-import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
+import { Exception, FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { PROJECT_FILE } from './project';
 import { Runner } from './runner';
+import { Hook } from './hooks';
 
 import * as ionic1ServeLibType from './project/ionic1/serve';
 import * as ionicAngularServeLibType from './project/ionic-angular/serve';
@@ -45,10 +46,8 @@ export const LOCAL_ADDRESSES = ['localhost', '127.0.0.1'];
 
 export const BROWSERS = ['safari', 'firefox', process.platform === 'win32' ? 'chrome' : (process.platform === 'darwin' ? 'google chrome' : 'google-chrome')];
 
-// npm script names
+// npm script name
 export const SERVE_SCRIPT = 'ionic:serve';
-export const SERVE_BEFORE_SCRIPT = 'ionic:serve:before';
-const WATCH_BEFORE_SCRIPT = 'ionic:watch:before';
 
 export const COMMON_SERVE_COMMAND_OPTIONS: CommandMetadataOption[] = [
   {
@@ -152,36 +151,6 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     };
   }
 
-  async invokeBeforeHook() {
-    const { pkgManagerArgs } = await import('./utils/npm');
-    const config = await this.env.config.load();
-    const { npmClient } = config;
-    const pkg = await this.env.project.loadPackageJson();
-
-    debug(`Looking for ${chalk.cyan(SERVE_BEFORE_SCRIPT)} npm script.`);
-
-    if (pkg.scripts && pkg.scripts[SERVE_BEFORE_SCRIPT]) {
-      debug(`Invoking ${chalk.cyan(SERVE_BEFORE_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: SERVE_BEFORE_SCRIPT });
-      await this.env.shell.run(pkgManager, pkgArgs, {});
-    } else {
-      if (pkg.scripts && pkg.scripts[WATCH_BEFORE_SCRIPT]) {
-        this.env.log.warn(`The ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script is deprecated. Please use ${chalk.cyan(SERVE_BEFORE_SCRIPT)}.`);
-        debug(`Invoking ${chalk.cyan(WATCH_BEFORE_SCRIPT)} npm script.`);
-        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: WATCH_BEFORE_SCRIPT });
-        await this.env.shell.run(pkgManager, pkgArgs, {});
-      }
-    }
-
-    const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
-
-    // TODO: move
-    if (deps['@ionic/cli-plugin-cordova']) {
-      const { checkCordova } = await import('./integrations/cordova/utils');
-      await checkCordova(this.env);
-    }
-  }
-
   async checkDevApp(options: T) {
     const pkg = await this.env.project.loadPackageJson();
 
@@ -206,7 +175,18 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     const { promptToInstallPkg } = await import('./utils/npm');
     const { findClosestOpenPort } = await import('./utils/network');
 
-    await this.invokeBeforeHook();
+    const before = new ServeBeforeHook(this.env);
+
+    try {
+      await before.run({ serve: { options } });
+    } catch (e) {
+      if (e instanceof Exception) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
+
     await this.checkDevApp(options);
 
     const devAppDetails = await this.gatherDevAppDetails(options);
@@ -420,6 +400,16 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
 
     return [ chosenIP, availableInterfaces ];
   }
+}
+
+interface ServeHookContext extends HookContext {
+  serve: {
+    options: ServeOptions;
+  };
+}
+
+class ServeBeforeHook extends Hook<ServeHookContext> {
+  readonly name = 'serve:before';
 }
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {

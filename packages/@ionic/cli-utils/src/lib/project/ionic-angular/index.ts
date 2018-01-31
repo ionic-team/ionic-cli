@@ -7,7 +7,7 @@ import * as lodash from 'lodash';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-import { IAilmentRegistry, InfoHookItem, ProjectType } from '../../../definitions';
+import { IAilmentRegistry, InfoItem, ProjectType } from '../../../definitions';
 
 import { BaseProject } from '../';
 import * as doctorLibType from '../../doctor';
@@ -17,7 +17,7 @@ const debug = Debug('ionic:cli-utils:lib:project:ionic-angular');
 export class Project extends BaseProject {
   type: ProjectType = 'ionic-angular';
 
-  async getInfo(): Promise<InfoHookItem[]> {
+  async getInfo(): Promise<InfoItem[]> {
     const [ ionicAngularVersion, appScriptsVersion ] = await Promise.all([this.getFrameworkVersion(), this.getAppScriptsVersion()]);
 
     return [

@@ -11,7 +11,7 @@ import * as inquirerType from 'inquirer';
 
 import {
   IProject,
-  InfoHookItem,
+  InfoItem,
   IonicEnvironment,
   LogLevel,
   LogPrefix,
@@ -22,9 +22,7 @@ import { BaseProject, OutsideProject, PROJECT_FILE, PROJECT_FILE_LEGACY, Project
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
 import { Client } from './lib/http';
-import { CLIEventEmitter } from './lib/events';
 import { Environment } from './lib/environment';
-import { HookEngine } from './lib/hooks';
 import { Logger } from './lib/utils/logger';
 import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
 import { readPackageJsonFileOfResolvedModule } from './lib/utils/npm';
@@ -116,30 +114,17 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     libPath: env['IONIC_CLI_LIB'],
   };
 
-  const shell = new Shell({ tasks, log, projectDir });
-  const project = await getProject(projectDir, { config, log, shell, tasks });
-  const client = new Client(config);
-  const session = new ProSession(config, client, project);
-  const hooks = new HookEngine();
-  const telemetry = new Telemetry({ config, client, meta, session, hooks, cli: plugin, project });
-
-  hooks.register(name, 'info', async () => {
+  const getInfo = async () => {
     const packageJson = await readPackageJsonFileOfResolvedModule(__filename);
     const version = packageJson.version || '';
-
-    return [
-      { type: 'cli-packages', key: name, value: version, path: path.dirname(__filename) },
-    ];
-  });
-
-  hooks.register(name, 'info', async () => {
     const osName = await import('os-name');
     const os = osName();
     const node = process.version;
 
     const npm = await shell.cmdinfo('npm', ['-v']);
 
-    const info: InfoHookItem[] = [
+    const info: InfoItem[] = [
+      { type: 'cli-packages', key: name, value: version, path: path.dirname(__filename) },
       { type: 'cli-packages', key: 'ionic', flair: 'Ionic CLI', value: plugin.meta.pkg.version, path: path.dirname(path.dirname(plugin.meta.filePath)) },
       { type: 'system', key: 'Node', value: node },
       { type: 'system', key: 'npm', value: npm || 'not installed' },
@@ -149,7 +134,13 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     info.push(...(await project.getInfo()));
 
     return info;
-  });
+  };
+
+  const shell = new Shell({ tasks, log, projectDir });
+  const project = await getProject(projectDir, { config, log, shell, tasks });
+  const client = new Client(config);
+  const session = new ProSession(config, client, project);
+  const telemetry = new Telemetry({ config, client, getInfo, meta, session, cli: plugin, project });
 
   await config.prepare();
 
@@ -158,9 +149,8 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     client,
     config,
     env,
-    events: new CLIEventEmitter(),
     flags,
-    hooks,
+    getInfo,
     log,
     meta,
     namespace: plugin.namespace,
