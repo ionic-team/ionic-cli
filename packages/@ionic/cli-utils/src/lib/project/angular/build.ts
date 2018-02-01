@@ -49,8 +49,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     };
   }
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions) {
-    const baseOptions = super.createOptionsFromCommandLine(inputs, options);
+  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularBuildOptions {
+    const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
     let target = options['target'] ? String(options['target']) : undefined;
     const environment = options['environment'] ? String(options['environment']) : undefined;
 
@@ -64,6 +64,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
     return {
       ...baseOptions,
+      type: 'angular',
       target,
       environment,
     };

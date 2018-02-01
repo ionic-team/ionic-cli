@@ -7,8 +7,9 @@ import * as lodash from 'lodash';
 
 import { conform } from '@ionic/cli-framework/utils/fn';
 
-import { HookContext, HookName, IConfig, IProject, IShell } from '../definitions';
+import { HookFn, HookInput, HookName, IConfig, IProject, IShell } from '../definitions';
 import { HookException } from './errors';
+import { PROJECT_FILE } from './project';
 
 const debug = Debug('ionic:cli-utils:lib:hooks');
 
@@ -18,7 +19,7 @@ export interface HookDeps {
   shell: IShell;
 }
 
-export abstract class Hook<T extends HookContext> {
+export abstract class Hook {
   abstract readonly name: HookName;
 
   protected readonly config: IConfig;
@@ -35,7 +36,7 @@ export abstract class Hook<T extends HookContext> {
     this.shell = shell;
   }
 
-  async run(ctx: T) {
+  async run(input: HookInput) {
     const { pkgManagerArgs } = await import('./utils/npm');
 
     const project = await this.project.load();
@@ -55,41 +56,43 @@ export abstract class Hook<T extends HookContext> {
 
     for (const h of hooks) {
       const p = path.resolve(this.project.directory, h);
-      const hook = await this.loadHookFn(p);
 
-      if (hook) {
-        try {
-          await hook(lodash.assign({}, ctx, {
-            name: this.name,
-            dir: this.project.directory,
-            argv: process.argv,
-            env: process.env,
-          }));
-        } catch (e) {
-          throw new HookException(`Error in "${chalk.bold(this.name)}" hook ${chalk.bold(p)}:\n${chalk.red(e.stack ? e.stack : e)}`);
+      try {
+        const hook = await this.loadHookFn(p);
+
+        if (!hook) {
+          throw new Error(`Module must have a function for its default export.`);
         }
+
+        await hook(lodash.assign({}, input, {
+          project: {
+            dir: this.project.directory,
+            srcDir: await this.project.getSourceDir(),
+          },
+          argv: process.argv,
+          env: process.env,
+        }));
+      } catch (e) {
+        throw new HookException(
+          `An error occurred while running an Ionic CLI hook defined in ${chalk.bold(PROJECT_FILE)}.\n` +
+          `Hook: ${chalk.bold(this.name)}\n` +
+          `File: ${chalk.bold(p)}\n\n` +
+          `${chalk.red(e.stack ? e.stack : e)}`
+        );
       }
     }
   }
 
-  protected async loadHookFn(p: string): Promise<Function | undefined> {
-    try {
-      const module = require(p);
+  protected async loadHookFn(p: string): Promise<HookFn | undefined> {
+    const module = require(p);
 
-      if (typeof module === 'function') {
-        return module;
-      } else if (typeof module.default === 'function') {
-        return module.default;
-      }
-
-      const inspection = util.inspect(module, { colors: chalk.enabled });
-      debug(`Could not load hook function ${chalk.bold(p)}: ${inspection} not a function`);
-    } catch (e) {
-      if (e.code !== 'ENOENT') {
-        throw e;
-      }
-
-      debug(`Could not load hook function ${chalk.bold(p)}: ${e}`);
+    if (typeof module === 'function') {
+      return module;
+    } else if (typeof module.default === 'function') {
+      return module.default;
     }
+
+    const inspection = util.inspect(module, { colors: chalk.enabled });
+    debug(`Could not load hook function ${chalk.bold(p)}: ${inspection} not a function`);
   }
 }

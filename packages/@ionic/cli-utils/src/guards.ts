@@ -36,14 +36,14 @@ export function isLogLevel(l: string): l is LogLevel {
   return LOG_LEVELS.includes(loglevel);
 }
 
-export function isStarterManifest(o: Object): o is StarterManifest {
+export function isStarterManifest(o: object): o is StarterManifest {
   const obj = <StarterManifest>o;
   return obj &&
     typeof obj.name === 'string' &&
     typeof obj.baseref === 'string';
 }
 
-export function isCordovaPackageJson(o: Object): o is CordovaPackageJson {
+export function isCordovaPackageJson(o: object): o is CordovaPackageJson {
   const obj = <CordovaPackageJson>o;
   return obj &&
     typeof obj.name === 'string' &&
@@ -89,7 +89,7 @@ export function isAPIResponseError(r: APIResponse): r is APIResponseError {
   return res && typeof res.error === 'object';
 }
 
-export function isAppDetails(d: Object): d is AppDetails {
+export function isAppDetails(d: object): d is AppDetails {
   const details = <AppDetails>d;
   return details
     && typeof details === 'object'
@@ -163,7 +163,7 @@ export function isSSHKeyResponse(r: APIResponse): r is Response<SSHKey> {
     && typeof res.data.updated === 'string';
 }
 
-export function isSecurityProfile(o: Object): o is SecurityProfile {
+export function isSecurityProfile(o: object): o is SecurityProfile {
   const obj = <SecurityProfile>o;
   return obj && typeof obj === 'object'
     && typeof obj.name === 'string'

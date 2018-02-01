@@ -1,18 +1,27 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { BuildOptions, CommandMetadata } from '../../../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1BuildOptions } from '../../../definitions';
 
 import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic1:build');
 
-export class BuildRunner extends BaseBuildRunner<BuildOptions> {
+export class BuildRunner extends BaseBuildRunner<Ionic1BuildOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {};
   }
 
-  async buildProject(options: BuildOptions): Promise<void> {
+  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Ionic1BuildOptions {
+    const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
+
+    return {
+      ...baseOptions,
+      type: 'ionic1',
+    };
+  }
+
+  async buildProject(options: Ionic1BuildOptions): Promise<void> {
     const { pkgManagerArgs } = await import('../../utils/npm');
     const config = await this.env.config.load();
     const { npmClient } = config;

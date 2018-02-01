@@ -101,7 +101,7 @@ declare module "superagent" {
         clearTimeout(): this;
         end(callback?: CallbackHandler): this;
         field(name: string, val: string | Buffer): this;
-        field(fields: Object): this;
+        field(fields: object): this;
         get(field: string): string;
         on(name: string, handler: Function): this;
         on(name: 'progress', handler: (event: { direction: string; lengthComputable: boolean; loaded: number; total: number; }) => void): this;
@@ -110,14 +110,14 @@ declare module "superagent" {
         on(name: 'response', handler: (err: http.IncomingMessage) => void): this;
         part(): this;
         pipe<T extends NodeJS.WritableStream>(destination: T, options?: { end?: boolean | undefined; }): T;
-        query(val: Object): this;
+        query(val: object): this;
         redirects(n: number): this;
         responseType(type: string): this;
         send(data: string): this;
-        send(data: Object): this;
+        send(data: object): this;
         send(): this;
         set(field: string, val: string): this;
-        set(field: Object): this;
+        set(field: object): this;
         timeout(ms: number | { response?: number, read?: number, deadline?: number }): this;
         ca(v: string | string[]): this;
         key(v: string | string[]): this;

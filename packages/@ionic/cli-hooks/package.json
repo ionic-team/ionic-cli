@@ -1,0 +1,45 @@
+{
+  "name": "@ionic/cli-hooks",
+  "version": "0.0.0",
+  "description": "Useful hook scripts for Ionic apps",
+  "homepage": "https://ionicframework.com/",
+  "author": "Ionic Team <hi@ionic.io> (https://ionic.io)",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf *.js utils",
+    "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
+    "build": "npm run clean && tsc",
+    "watch": "tsc -w",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "parse5": "^4.0.0",
+    "tslib": "^1.9.0"
+  },
+  "devDependencies": {
+    "@ionic/cli-utils": "*",
+    "rimraf": "^2.6.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ionic-team/ionic-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ionic-team/ionic-cli/issues"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      ".(ts)": "<rootDir>/../../../node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "/__tests__/.*\\.(ts|js)$"
+  }
+}

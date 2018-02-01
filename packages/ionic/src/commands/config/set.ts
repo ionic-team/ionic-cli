@@ -71,7 +71,7 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
       throw new FatalException(`Sorry--this won't work outside an Ionic project directory. Did you mean to set global config using ${chalk.green('--global')}?`);
     }
 
-    const file: IBaseConfig<Object> = global ? this.env.config : this.env.project;
+    const file: IBaseConfig<object> = global ? this.env.config : this.env.project;
 
     const config = await file.load();
     const oldValue = lodash.get(config, p);

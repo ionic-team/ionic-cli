@@ -24,10 +24,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
   }
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicAngularBuildOptions {
-    const baseOptions = super.createOptionsFromCommandLine(inputs, options);
+    const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
 
     return {
       ...baseOptions,
+      type: 'ionic-angular',
       prod: options['prod'] ? true : false,
       aot: options['aot'] ? true : false,
       minifyjs: options['minifyjs'] ? true : false,

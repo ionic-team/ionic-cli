@@ -109,7 +109,29 @@ export interface ProjectIntegration {
 
 export type HookName = 'build:before' | 'build:after' | 'serve:before';
 
-export interface HookContext {}
+export interface BaseHookContext {
+  project: {
+    dir: string;
+    srcDir: string;
+  };
+  argv: string[];
+  env: { [key: string]: string | undefined; };
+}
+
+export interface BuildHookInput {
+  name: 'build:before' | 'build:after';
+  build: AngularBuildOptions | IonicAngularBuildOptions | Ionic1BuildOptions;
+}
+
+export interface ServeHookInput {
+  name: 'serve:before';
+  serve: AngularServeOptions | IonicAngularServeOptions | Ionic1ServeOptions;
+}
+
+export type HookInput = BuildHookInput | ServeHookInput;
+export type HookContext = BaseHookContext & HookInput;
+
+export type HookFn = (ctx: HookContext) => Promise<void>;
 
 export interface ProjectFile {
   name: string;
@@ -160,8 +182,8 @@ export interface SecurityProfile {
   type: 'development' | 'production';
   created: string;
   credentials: {
-    android?: Object;
-    ios?: Object;
+    android?: object;
+    ios?: object;
   };
 }
 
@@ -342,7 +364,7 @@ export interface APIResponseMeta {
   request_id: string;
 }
 
-export type APIResponseData = Object | Object[] | string;
+export type APIResponseData = object | object[] | string;
 
 export interface APIResponseErrorDetails {
   error_type: string;
@@ -374,10 +396,10 @@ export interface IClient {
 
   make(method: HttpMethod, path: string): Promise<{ req: superagentType.SuperAgentRequest; }>;
   do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess>;
-  paginate<T extends Response<Object[]>>(reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>, guard: (res: APIResponseSuccess) => res is T): Promise<IPaginator<T>>;
+  paginate<T extends Response<object[]>>(reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>, guard: (res: APIResponseSuccess) => res is T): Promise<IPaginator<T>>;
 }
 
-export interface IPaginator<T extends Response<Object[]>> extends IterableIterator<Promise<T>> {}
+export interface IPaginator<T extends Response<object[]>> extends IterableIterator<Promise<T>> {}
 
 export interface InfoItem {
   type: 'system' | 'global-packages' | 'local-packages' | 'cli-packages' | 'environment' | 'misc';
@@ -387,17 +409,22 @@ export interface InfoItem {
   path?: string;
 }
 
-export interface BuildOptions {
+export interface BaseBuildOptions {
+  engine: string; // browser, cordova, etc.
   platform?: string;
   '--': string[];
 }
 
-export interface AngularBuildOptions extends BuildOptions {
+export interface BuildOptions<T extends ProjectType> extends BaseBuildOptions {
+  type: T;
+}
+
+export interface AngularBuildOptions extends BuildOptions<'angular'> {
   target?: string;
   environment?: string;
 }
 
-export interface IonicAngularBuildOptions extends BuildOptions {
+export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> {
   prod: boolean;
   aot: boolean;
   minifyjs: boolean;
@@ -406,6 +433,8 @@ export interface IonicAngularBuildOptions extends BuildOptions {
   target?: string;
   env?: string;
 }
+
+export interface Ionic1BuildOptions extends BuildOptions<'ionic1'> {}
 
 export interface GenerateOptions {
   type: string;
@@ -444,13 +473,6 @@ export interface ServeOptions {
   engine: string; // browser, cordova, etc.
 }
 
-export interface Ionic1ServeOptions extends ServeOptions {
-  consolelogs: boolean;
-  serverlogs: boolean;
-  livereloadPort: number;
-  notificationPort: number;
-}
-
 export interface AngularServeOptions extends ServeOptions {
   target?: string;
   environment?: string;
@@ -460,6 +482,13 @@ export interface IonicAngularServeOptions extends ServeOptions {
   consolelogs: boolean;
   serverlogs: boolean;
   env?: string;
+  livereloadPort: number;
+  notificationPort: number;
+}
+
+export interface Ionic1ServeOptions extends ServeOptions {
+  consolelogs: boolean;
+  serverlogs: boolean;
   livereloadPort: number;
   notificationPort: number;
 }

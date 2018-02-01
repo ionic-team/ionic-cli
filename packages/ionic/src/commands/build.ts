@@ -6,7 +6,7 @@ import { BuildRunner } from '@ionic/cli-utils/lib/build';
 import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
 
 export class BuildCommand extends Command implements CommandPreRun {
-  protected runner?: BuildRunner<BuildOptions>;
+  protected runner?: BuildRunner<BuildOptions<any>>;
 
   async getRunner() {
     if (!this.runner) {

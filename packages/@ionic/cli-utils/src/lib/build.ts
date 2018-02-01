@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 
 import {
+  BaseBuildOptions,
   BuildOptions,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
-  HookContext,
   IonicEnvironment,
   ProjectType,
 } from '../definitions';
@@ -21,7 +21,7 @@ import * as angularBuildLibType from './project/angular/build';
 
 export const BUILD_SCRIPT = 'ionic:build';
 
-export abstract class BuildRunner<T extends BuildOptions> extends Runner<T, void> {
+export abstract class BuildRunner<T extends BuildOptions<any>> extends Runner<T, void> {
   constructor(protected env: IonicEnvironment) {
     super();
   }
@@ -29,8 +29,8 @@ export abstract class BuildRunner<T extends BuildOptions> extends Runner<T, void
   static async createFromProjectType(env: IonicEnvironment, type: 'angular'): Promise<angularBuildLibType.BuildRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: 'ionic-angular'): Promise<ionicAngularBuildLibType.BuildRunner>;
   static async createFromProjectType(env: IonicEnvironment, type: 'ionic1'): Promise<ionic1BuildLibType.BuildRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<BuildRunner<any>>;
-  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<BuildRunner<any>> {
+  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<BuildRunner<BuildOptions<any>>>;
+  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<BuildRunner<BuildOptions<any>>> {
     if (type === 'angular') {
       const { BuildRunner } = await import('./project/angular/build');
       return new BuildRunner(env);
@@ -50,21 +50,22 @@ export abstract class BuildRunner<T extends BuildOptions> extends Runner<T, void
   }
 
   abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
+  abstract createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): T;
+  abstract buildProject(options: T): Promise<void>;
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): BuildOptions {
+  createBaseOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): BaseBuildOptions {
     const separatedArgs = options['--'];
     const platform = options['platform'] ? String(options['platform']) : undefined;
+    const engine = options['engine'] ? String(options['engine']) : 'browser';
 
-    return { '--': separatedArgs ? separatedArgs : [], platform };
+    return { '--': separatedArgs ? separatedArgs : [], engine, platform };
   }
-
-  abstract buildProject(options: T): Promise<void>;
 
   async run(options: T): Promise<void> {
     const before = new BuildBeforeHook(this.env);
 
     try {
-      await before.run({ build: { options } });
+      await before.run({ name: before.name, build: options });
     } catch (e) {
       if (e instanceof Exception) {
         throw new FatalException(e.message);
@@ -78,7 +79,7 @@ export abstract class BuildRunner<T extends BuildOptions> extends Runner<T, void
     const after = new BuildAfterHook(this.env);
 
     try {
-      await after.run({ build: { options } });
+      await after.run({ name: after.name, build: options });
     } catch (e) {
       if (e instanceof Exception) {
         throw new FatalException(e.message);
@@ -89,17 +90,11 @@ export abstract class BuildRunner<T extends BuildOptions> extends Runner<T, void
   }
 }
 
-interface BuildHookContext extends HookContext {
-  build: {
-    options: BuildOptions;
-  };
-}
-
-class BuildBeforeHook extends Hook<BuildHookContext> {
+class BuildBeforeHook extends Hook {
   readonly name = 'build:before';
 }
 
-class BuildAfterHook extends Hook<BuildHookContext> {
+class BuildAfterHook extends Hook {
   readonly name = 'build:after';
 }
 

@@ -14,7 +14,6 @@ import {
   CommandLineOptions,
   CommandMetadata,
   CommandMetadataOption,
-  HookContext,
   IonicEnvironment,
   LabServeDetails,
   NetworkInterface,
@@ -178,7 +177,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     const before = new ServeBeforeHook(this.env);
 
     try {
-      await before.run({ serve: { options } });
+      await before.run({ name: before.name, serve: options });
     } catch (e) {
       if (e instanceof Exception) {
         throw new FatalException(e.message);
@@ -402,13 +401,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 }
 
-interface ServeHookContext extends HookContext {
-  serve: {
-    options: ServeOptions;
-  };
-}
-
-class ServeBeforeHook extends Hook<ServeHookContext> {
+class ServeBeforeHook extends Hook {
   readonly name = 'serve:before';
 }
 
