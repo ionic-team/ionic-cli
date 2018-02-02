@@ -101,12 +101,6 @@ export interface ProjectFileProxy {
 }
 
 export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom';
-export type IntegrationName = 'cordova';
-
-export interface ProjectIntegration {
-  enabled?: boolean;
-}
-
 export type HookName = 'build:before' | 'build:after' | 'serve:before';
 
 export interface BaseHookContext {
@@ -133,10 +127,24 @@ export type HookContext = BaseHookContext & HookInput;
 
 export type HookFn = (ctx: HookContext) => Promise<void>;
 
+export type IntegrationName = 'cordova';
+
+export interface ProjectIntegration {
+  enabled?: boolean;
+}
+
+export interface ProjectCordovaIntegration extends ProjectIntegration {
+  setupEngineHooks?: boolean;
+}
+
+export interface ProjectIntegrations {
+  cordova?: ProjectCordovaIntegration;
+}
+
 export interface ProjectFile {
   name: string;
   app_id: string;
-  readonly integrations: Record<IntegrationName, ProjectIntegration | undefined>;
+  readonly integrations: ProjectIntegrations;
   readonly hooks: Record<HookName, string | string[] | undefined>;
 
   /**

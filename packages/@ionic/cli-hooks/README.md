@@ -29,5 +29,5 @@ details.
 
 ## List
 
-* `node_modules/@ionic/cli-hooks/prepare-cordova-engine.js`: Before a build, insert `cordova.js` script tag into your `index.html` file if it does not already exist.
-* `node_modules/@ionic/cli-hooks/revert-cordova-engine.js`: After a build, restore the original `index.html` file.
+* `node_modules/@ionic/cli-hooks/add-cordova-engine.js`: Before a build, insert `cordova.js` script tag into your `index.html` file if it does not already exist.
+* `node_modules/@ionic/cli-hooks/remove-cordova-engine.js`: After a build, restore the original `index.html` file.

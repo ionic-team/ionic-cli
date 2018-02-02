@@ -13,6 +13,10 @@ import { PROJECT_FILE } from './project';
 
 const debug = Debug('ionic:cli-utils:lib:hooks');
 
+export const HOOKS_PKG = '@ionic/cli-hooks';
+export const ADD_CORDOVA_ENGINE_HOOK = path.join('node_modules', HOOKS_PKG, 'add-cordova-engine.js');
+export const REMOVE_CORDOVA_ENGINE_HOOK = path.join('node_modules', HOOKS_PKG, 'remove-cordova-engine.js');
+
 export interface HookDeps {
   config: IConfig;
   project: IProject;
@@ -95,4 +99,30 @@ export abstract class Hook {
     const inspection = util.inspect(module, { colors: chalk.enabled });
     debug(`Could not load hook function ${chalk.bold(p)}: ${inspection} not a function`);
   }
+}
+
+export function addHook(baseDir: string, hooks: string | string[] | undefined, hook: string): string[] {
+  const hookPaths = conform(hooks);
+  const resolvedHookPaths = hookPaths.map(p => path.resolve(baseDir, p));
+
+  if (!resolvedHookPaths.includes(path.resolve(baseDir, hook))) {
+    hookPaths.push(hook);
+  }
+
+  return hookPaths;
+}
+
+export function removeHook(baseDir: string, hooks: string | string[] | undefined, hook: string): string[] {
+  const hookPaths = conform(hooks);
+  const i = locateHook(baseDir, hookPaths, hook);
+
+  if (i >= 0) {
+    hookPaths.splice(i, 1);
+  }
+
+  return hookPaths;
+}
+
+export function locateHook(baseDir: string, hooks: string[], hook: string): number {
+  return conform(hooks).map(p => path.resolve(baseDir, p)).indexOf(path.resolve(baseDir, hook));
 }

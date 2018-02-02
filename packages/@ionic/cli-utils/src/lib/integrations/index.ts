@@ -83,7 +83,6 @@ export abstract class BaseIntegration implements IIntegration {
     project.integrations[this.name] = integrationConfig;
 
     await this.project.refreshIntegrations();
-    await this.project.save();
   }
 
   async disable(): Promise<void> {
@@ -94,7 +93,6 @@ export abstract class BaseIntegration implements IIntegration {
     project.integrations[this.name] = integrationConfig;
 
     await this.project.refreshIntegrations();
-    await this.project.save();
   }
 
   async personalize(details: ProjectPersonalizationDetails) {

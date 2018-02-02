@@ -44,10 +44,15 @@ export class IntegrationsEnableCommand extends Command {
 
     try {
       if (integrationConfig) {
-        if (integrationConfig.enabled !== false) {
-          this.env.log.info(`Integration ${chalk.green(integration.name)} already enabled.`);
+        const wasEnabled = integrationConfig.enabled !== false;
+
+        // We still need to run this whenever this command is run to make sure
+        // everything is good with the integration.
+        await integration.enable();
+
+        if (wasEnabled) {
+          this.env.log.info(`Integration ${chalk.green(integration.name)} enabled.`);
         } else {
-          await integration.enable();
           this.env.log.ok(`Integration ${chalk.green(integration.name)} enabled!`);
         }
       } else { // never been added to project
@@ -82,5 +87,7 @@ export class IntegrationsEnableCommand extends Command {
 
       throw e;
     }
+
+    await this.env.project.save();
   }
 }

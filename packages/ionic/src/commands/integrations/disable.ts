@@ -46,5 +46,7 @@ export class IntegrationsDisableCommand extends Command {
 
       throw e;
     }
+
+    await this.env.project.save();
   }
 }
