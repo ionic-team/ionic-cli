@@ -354,7 +354,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       this.env.log.rawmsg(await getIonicDevAppText());
 
       const [ installer, ...installerArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'install' });
-      await this.env.shell.run(installer, installerArgs, shellOptions);
+      await this.env.shell.run(installer, installerArgs, { ...shellOptions, stdio: 'inherit' });
     }
 
     if (!clonedApp) {
@@ -433,7 +433,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       });
 
       if (!confirm) {
-        throw new FatalException(`Not erasing existing project in ${chalk.green(prettyPath(projectDir))}.`, 0);
+        this.env.log.msg(`Not erasing existing project in ${chalk.green(prettyPath(projectDir))}.`);
+        throw new FatalException();
       }
 
       this.canRemoveExisting = confirm;
