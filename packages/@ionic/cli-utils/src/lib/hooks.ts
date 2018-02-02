@@ -62,6 +62,10 @@ export abstract class Hook {
       const p = path.resolve(this.project.directory, h);
 
       try {
+        if (path.extname(p) !== '.js') {
+          throw new Error(`Hooks must be .js files with a function for its default export.`);
+        }
+
         const hook = await this.loadHookFn(p);
 
         if (!hook) {
