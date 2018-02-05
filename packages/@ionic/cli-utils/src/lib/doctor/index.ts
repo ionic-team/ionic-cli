@@ -29,7 +29,10 @@ export async function treatAilments(env: IonicEnvironment) {
       debug(`Detecting ${chalk.bold(ailment.id)}`);
       detected = await ailment.detected();
     } catch (e) {
-      env.log.error(`Error while checking ${chalk.bold(ailment.id)}:\n\n${chalk.red(e.stack ? e.stack : e)}`);
+      env.log.error(
+        `Error while checking ${chalk.bold(ailment.id)}:\n` +
+        `${chalk.red(e.stack ? e.stack : e)}`
+      );
     }
 
     count++;
