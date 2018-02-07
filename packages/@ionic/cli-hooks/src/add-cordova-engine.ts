@@ -9,7 +9,13 @@ import { findElementByAttribute, findElementByTag, findElementsByTag } from './u
 const ta = parse5.treeAdapters.default;
 
 export default async function (ctx: HookContext) {
-  if (ctx.name !== 'build:before' || ctx.build.engine !== 'cordova') {
+  if (ctx.name !== 'build:before' && ctx.name !== 'serve:before') {
+    return;
+  }
+
+  const engine = ctx.name === 'serve:before' ? ctx.serve.engine : ctx.build.engine;
+
+  if (engine !== 'cordova') {
     return;
   }
 

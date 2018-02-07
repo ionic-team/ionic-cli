@@ -5,7 +5,13 @@ import { HookContext } from '@ionic/cli-utils';
 import { readFile, unlink, writeFile } from './utils/fs';
 
 export default async function (ctx: HookContext) {
-  if (ctx.name !== 'build:after' || ctx.build.engine !== 'cordova') {
+  if (ctx.name !== 'build:after' && ctx.name !== 'serve:after') {
+    return;
+  }
+
+  const engine = ctx.name === 'serve:after' ? ctx.serve.engine : ctx.build.engine;
+
+  if (engine !== 'cordova') {
     return;
   }
 

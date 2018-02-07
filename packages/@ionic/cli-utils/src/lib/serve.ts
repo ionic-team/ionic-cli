@@ -3,6 +3,7 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import * as Debug from 'debug';
+import * as lodash from 'lodash';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
@@ -256,6 +257,20 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       this.env.log.nl();
     }
 
+    onBeforeExit(async () => {
+      const after = new ServeAfterHook(this.env);
+
+      try {
+        await after.run({ name: after.name, serve: lodash.assign({}, options, details) });
+      } catch (e) {
+        if (e instanceof Exception) {
+          throw new FatalException(e.message);
+        }
+
+        throw e;
+      }
+    });
+
     this.env.keepopen = true;
 
     return details;
@@ -402,6 +417,10 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
 
 class ServeBeforeHook extends Hook {
   readonly name = 'serve:before';
+}
+
+class ServeAfterHook extends Hook {
+  readonly name = 'serve:after';
 }
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {

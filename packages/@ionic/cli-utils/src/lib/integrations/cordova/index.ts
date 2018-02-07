@@ -74,6 +74,8 @@ export class Integration extends BaseIntegration {
 
     project.hooks['build:before'] = addHook(this.project.directory, project.hooks['build:before'], ADD_CORDOVA_ENGINE_HOOK);
     project.hooks['build:after'] = addHook(this.project.directory, project.hooks['build:after'], REMOVE_CORDOVA_ENGINE_HOOK);
+    project.hooks['serve:before'] = addHook(this.project.directory, project.hooks['serve:before'], ADD_CORDOVA_ENGINE_HOOK);
+    project.hooks['serve:after'] = addHook(this.project.directory, project.hooks['serve:after'], REMOVE_CORDOVA_ENGINE_HOOK);
   }
 
   async disable() {
@@ -83,6 +85,8 @@ export class Integration extends BaseIntegration {
 
     project.hooks['build:before'] = removeHook(this.project.directory, project.hooks['build:before'], ADD_CORDOVA_ENGINE_HOOK);
     project.hooks['build:after'] = removeHook(this.project.directory, project.hooks['build:after'], REMOVE_CORDOVA_ENGINE_HOOK);
+    project.hooks['serve:before'] = removeHook(this.project.directory, project.hooks['serve:before'], ADD_CORDOVA_ENGINE_HOOK);
+    project.hooks['serve:after'] = removeHook(this.project.directory, project.hooks['serve:after'], REMOVE_CORDOVA_ENGINE_HOOK);
   }
 
   async personalize({ appName, bundleId }: ProjectPersonalizationDetails) {

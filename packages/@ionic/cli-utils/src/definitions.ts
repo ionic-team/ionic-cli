@@ -101,7 +101,7 @@ export interface ProjectFileProxy {
 }
 
 export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom';
-export type HookName = 'build:before' | 'build:after' | 'serve:before';
+export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after';
 
 export interface BaseHookContext {
   project: {
@@ -113,16 +113,21 @@ export interface BaseHookContext {
 }
 
 export interface BuildHookInput {
-  name: 'build:before' | 'build:after';
-  build: AngularBuildOptions | IonicAngularBuildOptions | Ionic1BuildOptions;
+  readonly name: 'build:before' | 'build:after';
+  readonly build: AngularBuildOptions | IonicAngularBuildOptions | Ionic1BuildOptions;
 }
 
-export interface ServeHookInput {
-  name: 'serve:before';
-  serve: AngularServeOptions | IonicAngularServeOptions | Ionic1ServeOptions;
+export interface ServeBeforeHookInput {
+  readonly name: 'serve:before';
+  readonly serve: AngularServeOptions | IonicAngularServeOptions | Ionic1ServeOptions;
 }
 
-export type HookInput = BuildHookInput | ServeHookInput;
+export interface ServeAfterHookInput {
+  readonly name: 'serve:after';
+  readonly serve: (AngularServeOptions | IonicAngularServeOptions | Ionic1ServeOptions) & ServeDetails;
+}
+
+export type HookInput = BuildHookInput | ServeBeforeHookInput | ServeAfterHookInput;
 export type HookContext = BaseHookContext & HookInput;
 
 export type HookFn = (ctx: HookContext) => Promise<void>;
