@@ -5,6 +5,7 @@ import * as through2 from 'through2';
 import * as split2 from 'split2';
 
 import { contains, unparseArgs, validators } from '@ionic/cli-framework';
+import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { GenerateRunner as BaseGenerateRunner } from '../../generate';
@@ -106,8 +107,6 @@ This command uses the Angular CLI to generate components. Not all component gene
   }
 
   async generateComponent(type: string, name: string, options: { [key: string]: string | boolean; }) {
-    const { registerShutdownFunction } = await import('../../process');
-
     if (type === 'page') {
       options.collection = '@ionic/schematics-angular';
     }
@@ -136,7 +135,7 @@ This command uses the Angular CLI to generate components. Not all component gene
         }
       });
 
-      registerShutdownFunction(() => p.kill());
+      onBeforeExit(async () => p.kill());
 
       const log = this.env.log.clone({ wrap: false });
       const ws = log.createWriteStream();

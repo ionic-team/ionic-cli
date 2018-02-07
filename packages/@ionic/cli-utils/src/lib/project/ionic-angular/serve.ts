@@ -4,6 +4,7 @@ import * as through2 from 'through2';
 import * as split2 from 'split2';
 
 import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularServeOptions, ServeDetails } from '../../../definitions';
@@ -125,7 +126,6 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
 
   private async servecmd(options: IonicAngularServeOptions): Promise<ServeCmdDetails> {
     const { pkgManagerArgs } = await import('../../utils/npm');
-    const { registerShutdownFunction } = await import('../../process');
 
     const config = await this.env.config.load();
     const pkg = await this.env.project.loadPackageJson();
@@ -162,7 +162,7 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
         }
       });
 
-      registerShutdownFunction(() => p.kill());
+      onBeforeExit(async () => p.kill());
 
       const log = this.env.log.clone({ prefix: chalk.dim(`[${program === DEFAULT_PROGRAM ? 'app-scripts' : program}]`), wrap: false });
       const ws = log.createWriteStream();

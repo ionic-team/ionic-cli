@@ -1,5 +1,7 @@
 import chalk from 'chalk';
 
+import { onBeforeExit } from '@ionic/cli-framework/utils/process';
+
 import {
   CommandLineInputs,
   CommandLineOptions,
@@ -167,13 +169,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
-    const { registerShutdownFunction } = await import('@ionic/cli-utils/lib/process');
 
     const conf = await ConfigXml.load(this.env.project.directory);
 
-    registerShutdownFunction(() => {
+    onBeforeExit(async () => {
       conf.resetContentSrc();
-      conf.saveSync();
+      await conf.save();
     });
 
     const metadata = await this.getMetadata();

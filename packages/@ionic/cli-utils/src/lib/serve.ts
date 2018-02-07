@@ -6,6 +6,7 @@ import * as Debug from 'debug';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
+import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
@@ -318,8 +319,6 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async runLab(url: string, details: LabServeDetails) {
-    const { registerShutdownFunction } = await import('./process');
-
     const project = await this.env.project.load();
     const pkg = await this.env.project.loadPackageJson();
 
@@ -334,7 +333,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
         reject(err);
       });
 
-      registerShutdownFunction(() => p.kill());
+      onBeforeExit(async () => p.kill());
 
       const log = this.env.log.clone({ prefix: chalk.dim('[lab]'), wrap: false });
       const ws = log.createWriteStream();

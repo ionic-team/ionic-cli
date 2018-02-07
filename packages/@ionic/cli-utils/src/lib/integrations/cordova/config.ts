@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
 import * as et from 'elementtree';
@@ -55,14 +54,6 @@ export class ConfigXml {
     if (!this.saving) {
       this.saving = true;
       await fsWriteFile(this.filePath, this.write(), { encoding: 'utf8' });
-      this.saving = false;
-    }
-  }
-
-  saveSync(): void {
-    if (!this.saving) {
-      this.saving = true;
-      fs.writeFileSync(this.filePath, this.write(), { encoding: 'utf8' });
       this.saving = false;
     }
   }

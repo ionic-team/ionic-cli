@@ -7,6 +7,7 @@ import * as through2 from 'through2';
 import * as split2 from 'split2';
 
 import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { pathAccessible } from '@ionic/cli-framework/utils/fs';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
@@ -139,7 +140,6 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
   private async servecmd(options: AngularServeOptions): Promise<ServeCmdDetails> {
     const { pkgManagerArgs } = await import('../../utils/npm');
-    const { registerShutdownFunction } = await import('../../process');
 
     const config = await this.env.config.load();
     const pkg = await this.env.project.loadPackageJson();
@@ -171,7 +171,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
         }
       });
 
-      registerShutdownFunction(() => p.kill());
+      onBeforeExit(async () => p.kill());
 
       const log = this.env.log.clone({ prefix: chalk.dim(`[${program}]`), wrap: false });
       const ws = log.createWriteStream();
@@ -206,6 +206,8 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       progress: 'false',
       target: options.target,
       environment: options.environment,
+
+      // Added so Cordova doesn't complain about www directory missing.
       deleteOutputPath: options.engine === 'cordova' ? 'false' : undefined,
     };
 
