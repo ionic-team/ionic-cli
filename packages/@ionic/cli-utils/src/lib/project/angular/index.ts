@@ -8,10 +8,11 @@ import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-import { InfoItem, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
+import { IAilmentRegistry, InfoItem, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
 
 import { BaseProject } from '../';
 import { ANGULAR_CLI_FILE, readAngularCLIJsonFile } from './utils';
+import * as doctorLibType from '../../doctor';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular');
 
@@ -67,6 +68,16 @@ export class Project extends BaseProject {
     } catch (e) {
       this.log.error(`Error with ${chalk.bold(prettyPath(angularJsonPath))} file: ${e}`);
     }
+  }
+
+  async getAilmentRegistry(deps: doctorLibType.AutomaticallyTreatableAilmentDeps): Promise<IAilmentRegistry> {
+    const { registerAilments } = await import('./ailments');
+
+    const registry = await super.getAilmentRegistry(deps);
+
+    registerAilments(registry, { ...deps, project: this });
+
+    return registry;
   }
 
   async getFrameworkVersion() {
