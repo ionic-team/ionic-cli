@@ -1,5 +1,5 @@
-import * as once from 'once';
 import * as Debug from 'debug';
+import * as lodash from 'lodash';
 
 const debug = Debug('ionic:cli-framework:utils:process');
 
@@ -65,7 +65,7 @@ const BEFORE_EXIT_SIGNALS = ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGBREAK'];
 
 const exitQueue: ExitQueueFn[] = [];
 
-const beforeExitHandlerWrapper = (signal: string) => once(async () => {
+const beforeExitHandlerWrapper = (signal: string) => lodash.once(async () => {
   debug(`onBeforeExit handler: ${signal} received`);
   debug(`onBeforeExit handler: running ${exitQueue.length} queued functions`);
 
