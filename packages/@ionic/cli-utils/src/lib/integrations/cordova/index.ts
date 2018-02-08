@@ -62,31 +62,35 @@ export class Integration extends BaseIntegration {
 
     await super.enable();
 
-    const project = await this.project.load();
+    if (this.project.type === 'angular') { // TODO: better way?
+      const project = await this.project.load();
 
-    if (!(await pathExists(path.resolve(this.project.directory, 'node_modules', HOOKS_PKG)))) {
-      const config = await this.config.load();
-      const { npmClient } = config;
-      const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'install', pkg: HOOKS_PKG });
+      if (!(await pathExists(path.resolve(this.project.directory, 'node_modules', HOOKS_PKG)))) {
+        const config = await this.config.load();
+        const { npmClient } = config;
+        const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'install', pkg: HOOKS_PKG });
 
-      await this.shell.run(manager, managerArgs, { cwd: this.project.directory });
+        await this.shell.run(manager, managerArgs, { cwd: this.project.directory });
+      }
+
+      project.hooks['build:before'] = addHook(this.project.directory, project.hooks['build:before'], ADD_CORDOVA_ENGINE_HOOK);
+      project.hooks['build:after'] = addHook(this.project.directory, project.hooks['build:after'], REMOVE_CORDOVA_ENGINE_HOOK);
+      project.hooks['serve:before'] = addHook(this.project.directory, project.hooks['serve:before'], ADD_CORDOVA_ENGINE_HOOK);
+      project.hooks['serve:after'] = addHook(this.project.directory, project.hooks['serve:after'], REMOVE_CORDOVA_ENGINE_HOOK);
     }
-
-    project.hooks['build:before'] = addHook(this.project.directory, project.hooks['build:before'], ADD_CORDOVA_ENGINE_HOOK);
-    project.hooks['build:after'] = addHook(this.project.directory, project.hooks['build:after'], REMOVE_CORDOVA_ENGINE_HOOK);
-    project.hooks['serve:before'] = addHook(this.project.directory, project.hooks['serve:before'], ADD_CORDOVA_ENGINE_HOOK);
-    project.hooks['serve:after'] = addHook(this.project.directory, project.hooks['serve:after'], REMOVE_CORDOVA_ENGINE_HOOK);
   }
 
   async disable() {
     await super.disable();
 
-    const project = await this.project.load();
+    if (this.project.type === 'angular') {
+      const project = await this.project.load();
 
-    project.hooks['build:before'] = removeHook(this.project.directory, project.hooks['build:before'], ADD_CORDOVA_ENGINE_HOOK);
-    project.hooks['build:after'] = removeHook(this.project.directory, project.hooks['build:after'], REMOVE_CORDOVA_ENGINE_HOOK);
-    project.hooks['serve:before'] = removeHook(this.project.directory, project.hooks['serve:before'], ADD_CORDOVA_ENGINE_HOOK);
-    project.hooks['serve:after'] = removeHook(this.project.directory, project.hooks['serve:after'], REMOVE_CORDOVA_ENGINE_HOOK);
+      project.hooks['build:before'] = removeHook(this.project.directory, project.hooks['build:before'], ADD_CORDOVA_ENGINE_HOOK);
+      project.hooks['build:after'] = removeHook(this.project.directory, project.hooks['build:after'], REMOVE_CORDOVA_ENGINE_HOOK);
+      project.hooks['serve:before'] = removeHook(this.project.directory, project.hooks['serve:before'], ADD_CORDOVA_ENGINE_HOOK);
+      project.hooks['serve:after'] = removeHook(this.project.directory, project.hooks['serve:after'], REMOVE_CORDOVA_ENGINE_HOOK);
+    }
   }
 
   async personalize({ appName, bundleId }: ProjectPersonalizationDetails) {

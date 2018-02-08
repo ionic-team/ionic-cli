@@ -67,16 +67,27 @@ export async function checkCordova(env: IonicEnvironment) {
     return;
   }
 
-  const addCordovaEngineHookIndex = locateHook(env.project.directory, conform(project.hooks['build:before']), ADD_CORDOVA_ENGINE_HOOK);
-  const removeCordovaEngineHookIndex = locateHook(env.project.directory, conform(project.hooks['build:after']), REMOVE_CORDOVA_ENGINE_HOOK);
+  // TODO: better way?
+  let hooksNeedInstalling = false;
 
-  const hooksNeedInstalling = (!project.integrations.cordova || project.integrations.cordova.setupEngineHooks !== false) && (addCordovaEngineHookIndex < 0 || removeCordovaEngineHookIndex < 0);
+  if (env.project.type === 'angular') {
+    const allowedByConfig = !project.integrations.cordova || project.integrations.cordova.setupEngineHooks !== false;
 
-  if (hooksNeedInstalling) {
-    env.log.info(
-      `Cordova engine hooks not found in existing Cordova integration. Re-enabling integration.\n` +
-      `This process will make sure the ${chalk.bold(HOOKS_PKG)} package is installed and that the hooks are defined in ${chalk.bold(PROJECT_FILE)}. To disable this process, run: ${chalk.green('ionic config set integrations.cordova.setupEngineHooks false')}`
+    const hooksFound = (
+      locateHook(env.project.directory, conform(project.hooks['build:before']), ADD_CORDOVA_ENGINE_HOOK) >= 0 &&
+      locateHook(env.project.directory, conform(project.hooks['build:after']), REMOVE_CORDOVA_ENGINE_HOOK) >= 0 &&
+      locateHook(env.project.directory, conform(project.hooks['serve:before']), ADD_CORDOVA_ENGINE_HOOK) >= 0 &&
+      locateHook(env.project.directory, conform(project.hooks['serve:after']), REMOVE_CORDOVA_ENGINE_HOOK) >= 0
     );
+
+    hooksNeedInstalling = allowedByConfig && !hooksFound;
+
+    if (hooksNeedInstalling) {
+      env.log.info(
+        `Cordova engine hooks not found in existing Cordova integration. Re-enabling integration.\n` +
+        `This process will make sure the ${chalk.bold(HOOKS_PKG)} package is installed and that the hooks are defined in ${chalk.bold(PROJECT_FILE)}. To disable this process, run: ${chalk.green('ionic config set integrations.cordova.setupEngineHooks false')}`
+      );
+    }
   }
 
   if (!project.integrations.cordova || hooksNeedInstalling) {

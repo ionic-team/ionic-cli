@@ -35,3 +35,24 @@ export async function unlink(p: string): Promise<void> {
     });
   });
 }
+
+export async function access(p: string, mode = fs.constants.F_OK): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    fs.access(p, mode, err => {
+      if (err) {
+        return reject(err);
+      }
+
+      resolve();
+    });
+  });
+}
+
+export async function exists(p: string): Promise<boolean> {
+  try {
+    await access(p);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
