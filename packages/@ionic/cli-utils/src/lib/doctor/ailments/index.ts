@@ -253,10 +253,6 @@ class IonicNativeUpdateAvailable extends AutomaticallyTreatableAilment {
   }
 
   async detected() {
-    if (this.project.type !== 'ionic-angular') {
-      return false;
-    }
-
     const [ currentVersion, latestVersion ] = await this.getVersionPair();
     const diff = semver.diff(currentVersion, latestVersion);
 
@@ -316,10 +312,6 @@ class IonicNativeMajorUpdateAvailable extends Ailment {
   }
 
   async detected() {
-    if (this.project.type !== 'ionic-angular') {
-      return false;
-    }
-
     const [ currentVersion, latestVersion ] = await this.getVersionPair();
     const diff = semver.diff(currentVersion, latestVersion);
 

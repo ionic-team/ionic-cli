@@ -231,12 +231,16 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       && typeof j.hooks === 'object';
   }
 
-  async getInfo(): Promise<InfoItem[]> {
-    return lodash.flatten(await Promise.all(this.integrations.map(async i => i.getInfo())));
+  async getDocsUrl(): Promise<string> {
+    return 'https://ionicframework.com/docs';
   }
 
   async getSourceDir(): Promise<string> {
     return path.resolve(this.directory, 'src');
+  }
+
+  async getInfo(): Promise<InfoItem[]> {
+    return lodash.flatten(await Promise.all(this.integrations.map(async i => i.getInfo())));
   }
 
   async personalize(details: ProjectPersonalizationDetails) {
@@ -293,37 +297,21 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
     return true;
   }
 
+  async getDocsUrl(): Promise<string> {
+    return 'https://ionicframework.com/docs';
+  }
+
   async getInfo(): Promise<InfoItem[]> {
     return [];
   }
 
-  async getSourceDir(): Promise<never> {
-    throw this._createError();
-  }
-
-  async loadAppId(): Promise<never> {
-    throw this._createError();
-  }
-
-  async loadPackageJson(): Promise<never> {
-    throw this._createError();
-  }
-
-  async provideDefaults(): Promise<never> {
-    throw this._createError();
-  }
-
-  async personalize(): Promise<never> {
-    throw this._createError();
-  }
-
-  async refreshIntegrations(): Promise<never> {
-    throw this._createError();
-  }
-
-  async getAilmentRegistry(): Promise<never> {
-    throw this._createError();
-  }
+  async getSourceDir(): Promise<never> { throw this._createError(); }
+  async loadAppId(): Promise<never> { throw this._createError(); }
+  async loadPackageJson(): Promise<never> { throw this._createError(); }
+  async provideDefaults(): Promise<never> { throw this._createError(); }
+  async personalize(): Promise<never> { throw this._createError(); }
+  async refreshIntegrations(): Promise<never> { throw this._createError(); }
+  async getAilmentRegistry(): Promise<never> { throw this._createError(); }
 }
 
 export function prettyProjectName(type?: string): string {

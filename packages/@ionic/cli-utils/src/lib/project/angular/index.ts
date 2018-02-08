@@ -40,7 +40,7 @@ export class Project extends BaseProject {
 
   async detected() {
     try {
-      const pkg = await readPackageJsonFile(path.resolve(this.directory, 'package.json'));
+      const pkg = await this.loadPackageJson();
       const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
 
       if (typeof deps['@ionic/angular'] === 'string') {

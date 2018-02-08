@@ -46,6 +46,10 @@ export class Project extends BaseProject {
     return false;
   }
 
+  async getDocsUrl(): Promise<string> {
+    return 'https://ionicframework.com/docs/v1/';
+  }
+
   async getSourceDir(): Promise<string> {
     const project = await this.load();
 

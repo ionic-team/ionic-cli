@@ -48,6 +48,8 @@ export function onExit(fn: () => void) {
 
 export type ExitQueueFn = () => Promise<void>;
 
+const exitQueue: ExitQueueFn[] = [];
+
 /**
  * Register an asynchronous function to be called when the process wants to
  * exit.
@@ -61,9 +63,14 @@ export function onBeforeExit(fn: ExitQueueFn): void {
   exitQueue.push(fn);
 }
 
-const BEFORE_EXIT_SIGNALS = ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGBREAK'];
+/**
+ * Remove a function that was registered with `onBeforeExit`.
+ */
+export function offBeforeExit(fn: ExitQueueFn): void {
+  lodash.pull(exitQueue, fn);
+}
 
-const exitQueue: ExitQueueFn[] = [];
+const BEFORE_EXIT_SIGNALS = ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGBREAK'];
 
 const beforeExitHandlerWrapper = (signal: string) => lodash.once(async () => {
   debug(`onBeforeExit handler: ${signal} received`);

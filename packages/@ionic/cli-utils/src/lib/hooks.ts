@@ -43,6 +43,12 @@ export abstract class Hook {
   async run(input: HookInput) {
     const { pkgManagerArgs } = await import('./utils/npm');
 
+    const type = this.project.type;
+
+    if (!type || !this.project.directory) {
+      return; // TODO: will we need hooks outside a project?
+    }
+
     const project = await this.project.load();
     const pkg = await this.project.loadPackageJson();
     const config = await this.config.load();
@@ -74,6 +80,7 @@ export abstract class Hook {
 
         await hook(lodash.assign({}, input, {
           project: {
+            type,
             dir: this.project.directory,
             srcDir: await this.project.getSourceDir(),
           },

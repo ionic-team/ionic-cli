@@ -105,6 +105,7 @@ export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:
 
 export interface BaseHookContext {
   project: {
+    type: ProjectType;
     dir: string;
     srcDir: string;
   };
@@ -225,6 +226,7 @@ export interface IProject extends IBaseConfig<ProjectFile> {
   type?: ProjectType;
 
   refreshIntegrations(): Promise<void>;
+  getDocsUrl(): Promise<string>;
   getSourceDir(): Promise<string>;
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
@@ -424,7 +426,7 @@ export interface InfoItem {
 
 export interface BaseBuildOptions {
   engine: string; // browser, cordova, etc.
-  platform?: string;
+  platform?: string; // android, ios, etc.
   '--': string[];
 }
 

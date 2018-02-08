@@ -28,27 +28,16 @@ export class DocsCommand extends Command {
     const browser = options['browser'] ? String(options['browser']) : undefined;
     const config = await this.env.config.load();
 
-    const docsHomepage = 'https://ionicframework.com/docs';
-    let url = docsHomepage;
-
-    if (this.env.project.type) {
-      if (this.env.project.type === 'ionic1') {
-        url = 'https://ionicframework.com/docs/v1/';
-      } else if (this.env.project.type === 'ionic-angular') {
-        url = 'https://ionicframework.com/docs/api'; // TODO: can know framework version, HEAD request, etc
-      }
-    }
+    const url = await this.env.project.getDocsUrl();
 
     try {
       const { req } = await createRequest('head', url, config);
       await req;
     } catch (e) {
-      if (isSuperAgentError(e)) {
-        if (e.response.status === 404) {
-          this.env.log.warn(`Docs not found for your specific version of Ionic. Directing you to latest docs.`);
-          opn(`${docsHomepage}/api`, { wait: false });
-          return;
-        }
+      if (isSuperAgentError(e) && e.response.status === 404) {
+        this.env.log.warn(`Docs not found for your specific version of Ionic. Directing you to docs homepage.`);
+        opn('https://ionicframework.com/docs', { app: browser, wait: false });
+        return;
       }
 
       throw e;
