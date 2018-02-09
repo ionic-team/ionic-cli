@@ -54,6 +54,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
       inputs,
       options,
       groups,
+      exampleCommands,
     };
   }
 

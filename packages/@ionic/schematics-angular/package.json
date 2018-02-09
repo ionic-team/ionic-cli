@@ -21,17 +21,19 @@
   ],
   "schematics": "./collection.json",
   "dependencies": {
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.5",
+    "typescript": "~2.6.2"
   },
   "devDependencies": {
-    "@angular-devkit/core": "0.0.28",
-    "@angular-devkit/schematics": "0.0.51",
-    "@types/lodash": "^4.14.93",
-    "@types/lodash": "^4.14.95",
+    "@angular-devkit/core": "^0.3.1",
+    "@angular-devkit/schematics": "^0.3.1",
+    "@schematics/angular": "^0.3.1",
+    "@types/lodash": "^4.14.102",
     "rimraf": "^2.6.2",
     "source-map": "^0.7.0"
   },
   "peerDependencies": {
-    "@angular-devkit/schematics": "*"
+    "@angular-devkit/schematics": "*",
+    "@schematics/angular": "*"
   }
 }

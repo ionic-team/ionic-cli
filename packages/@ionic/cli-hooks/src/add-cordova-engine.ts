@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as parse5 from 'parse5';
 import { HookContext } from '@ionic/cli-utils';
 
-import { exists, readFile, writeFile, unlink } from './utils/fs';
+import { exists, readFile, unlink, writeFile } from './utils/fs';
 import { findElementByAttribute, findElementByTag, findElementsByTag } from './utils/html';
 
 const ta = parse5.treeAdapters.default;

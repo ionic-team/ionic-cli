@@ -4,4 +4,6 @@ export interface Schema {
   appRoot?: string;
   name: string;
   styleext?: string;
+  flat?: boolean;
+  module?: string;
 }

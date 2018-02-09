@@ -16,6 +16,24 @@ const debug = Debug('ionic:cli-utils:lib:project:angular:generate');
 const IONIC_GENERATOR_TYPES = ['page'];
 const ANGULAR_GENERATOR_TYPES = ['class', 'component', 'directive', 'enum', 'guard', 'interface', 'module', 'pipe', 'service'];
 const GENERATOR_TYPES = [...IONIC_GENERATOR_TYPES, ...ANGULAR_GENERATOR_TYPES];
+const SIMPLE_GENERATOR_TYPES = ['class', 'interface', 'module', 'enum'];
+
+function pluralizeGeneratorType(type: string): string {
+  const suffix = type === 'class' ? 'es' : 's';
+  return `${type}${suffix}`;
+}
+
+export function buildPathForGeneratorType(type: string, name: string): string {
+  if (SIMPLE_GENERATOR_TYPES.includes(type)) {
+    return name;
+  }
+
+  if (name.includes('/')) {
+    return name;
+  }
+
+  return `${pluralizeGeneratorType(type)}/${name}`;
+}
 
 export class GenerateRunner extends BaseGenerateRunner<AngularGenerateOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
@@ -29,7 +47,18 @@ This command uses the Angular CLI to generate components. Not all component gene
 
  - For a detailed list of options for each generator, use ${chalk.green('ng generate <type> --help')}.
  - For ${IONIC_GENERATOR_TYPES.map(t => chalk.green(t)).join(', ')} types, use ${chalk.green('ng generate <type> --help --collection @ionic/schematics-angular')}.
+
+${chalk.green('ionic generate')} is more opinionated than ${chalk.green('ng generate')}. Aside from simpler generator types (${SIMPLE_GENERATOR_TYPES.map(t => chalk.green(pluralizeGeneratorType(t))).join(', ')}), generated files are placed in ${chalk.bold('src/app/<type>/<name>/')}. See the CLI documentation${chalk.cyan('[1]')} for an overview of recommended project structure.
+
+Remember, you can use slashes in ${chalk.green('name')} to nest components deeper, but you must specify the full path within ${chalk.bold('src/app/')}. For example, specify a name of ${chalk.green('pages/tabs-page/tab1')} to generate page files at ${chalk.bold('src/app/pages/tabs-page/tab1/')}.
+
+To test a generator before file modifications are made, use the ${chalk.green('--dry-run')} option.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects.html#project-structure')}
       `,
+      exampleCommands: [
+        '-d',
+      ],
       inputs: [
         {
           name: 'type',
@@ -95,18 +124,23 @@ This command uses the Angular CLI to generate components. Not all component gene
   }
 
   async run(options: AngularGenerateOptions) {
+    const name = buildPathForGeneratorType(options.type, options.name);
+    debug(`${options.name} normalized to ${name}`);
+
     try {
-      await this.generateComponent(options.type, options.name, lodash.omit(options, 'type', 'name'));
+      await this.generateComponent(options.type, name, lodash.omit(options, 'type', 'name'));
     } catch (e) {
       debug(e);
       throw new FatalException(`Could not generate ${chalk.green(options.type)}.`);
     }
 
-    this.env.log.ok(`Generated ${chalk.green(options.type)}!`);
+    if (!options.dryRun) {
+      this.env.log.ok(`Generated ${chalk.green(options.type)}!`);
+    }
   }
 
   async generateComponent(type: string, name: string, options: { [key: string]: string | boolean; }) {
-    if (type === 'page') {
+    if (IONIC_GENERATOR_TYPES.includes(type)) {
       options.collection = '@ionic/schematics-angular';
     }
 
