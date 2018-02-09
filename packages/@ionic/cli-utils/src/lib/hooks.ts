@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { conform } from '@ionic/cli-framework/utils/fn';
+import { conform } from '@ionic/cli-framework/utils/array';
 
 import { HookFn, HookInput, HookName, IConfig, IProject, IShell } from '../definitions';
 import { HookException } from './errors';

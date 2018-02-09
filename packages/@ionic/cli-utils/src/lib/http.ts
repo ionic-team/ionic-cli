@@ -1,7 +1,7 @@
 import * as util from 'util';
 
 import chalk from 'chalk';
-import { conform } from '@ionic/cli-framework/utils/fn';
+import { conform } from '@ionic/cli-framework/utils/array';
 
 import * as superagentType from 'superagent';
 

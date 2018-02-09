@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { OptionFilters, filterCommandLineOptions, filterCommandLineOptionsByGroup, unparseArgs } from '@ionic/cli-framework';
-import { conform } from '@ionic/cli-framework/utils/fn';
+import { conform } from '@ionic/cli-framework/utils/array';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IonicEnvironment } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
