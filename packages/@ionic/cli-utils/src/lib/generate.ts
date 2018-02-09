@@ -38,7 +38,7 @@ export abstract class GenerateRunner<T extends GenerateOptions> extends Runner<T
   }
 
   async ensureCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> { /* overwritten in subclasses */ }
-  abstract specializeCommandMetadata(metadata: CommandMetadata): Promise<CommandMetadata>;
+  abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
 }
 
 export async function generate(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

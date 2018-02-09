@@ -3,7 +3,6 @@ import chalk from 'chalk';
 import { contains, unparseArgs, validators } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularGenerateOptions, IonicEnvironment } from '../../../definitions';
-import { CommandGroup } from '../../../constants';
 import { importAppScripts } from './app-scripts';
 import { GenerateRunner as BaseGenerateRunner } from '../../generate';
 import { FatalException } from '../../errors';
@@ -11,12 +10,9 @@ import { FatalException } from '../../errors';
 const GENERATOR_TYPES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
 
 export class GenerateRunner extends BaseGenerateRunner<IonicAngularGenerateOptions> {
-  async specializeCommandMetadata(metadata: CommandMetadata): Promise<CommandMetadata> {
-    const groups = metadata.groups ? metadata.groups.filter(g => g !== CommandGroup.Hidden) : []; // unhide command
-
+  async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
-      ...metadata,
-      groups,
+      groups: [],
       description: `Generate pipes, components, pages, directives, providers, and tabs`,
       longDescription: `
 Automatically create components for your Ionic app.

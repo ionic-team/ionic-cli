@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GenerateOptions } from '@ionic/cli-utils';
+import { MetadataGroup } from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandPreRun, GenerateOptions } from '@ionic/cli-utils';
 import { CommandGroup } from '@ionic/cli-utils/constants';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
@@ -21,28 +22,39 @@ export class GenerateCommand extends Command implements CommandPreRun {
   }
 
   async getMetadata(): Promise<CommandMetadata> {
-    const longDescription = this.env.project.type
+    const inputs: CommandMetadataInput[] = [];
+    const options: CommandMetadataOption[] = [];
+    const exampleCommands = [''];
+
+    let groups: MetadataGroup[] = [CommandGroup.Hidden];
+
+    let longDescription = this.env.project.type
       ? chalk.red(`Generators are not supported in this project type (${chalk.bold(prettyProjectName(this.env.project.type))}).`)
       : chalk.red('Generators help is available within an Ionic project directory.');
 
-    const metadata: CommandMetadata = {
-      name: 'generate',
-      type: 'project',
-      description: 'Automatically create framework components',
-      longDescription,
-      groups: [CommandGroup.Hidden],
-    };
-
     try {
       const runner = await this.getRunner();
-      return runner.specializeCommandMetadata(metadata);
+      const libmetadata = await runner.getCommandMetadata();
+      groups = libmetadata.groups || [];
+      inputs.push(...libmetadata.inputs || []);
+      options.push(...libmetadata.options || []);
+      longDescription = (libmetadata.longDescription || '').trim();
+      exampleCommands.push(...libmetadata.exampleCommands || []);
     } catch (e) {
       if (!(e instanceof RunnerNotFoundException)) {
         throw e;
       }
     }
 
-    return metadata;
+    return {
+      name: 'generate',
+      type: 'project',
+      description: 'Automatically create framework components',
+      longDescription,
+      inputs,
+      options,
+      groups,
+    };
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

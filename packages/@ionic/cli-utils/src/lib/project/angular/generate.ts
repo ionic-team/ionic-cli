@@ -18,9 +18,8 @@ const ANGULAR_GENERATOR_TYPES = ['class', 'component', 'directive', 'enum', 'gua
 const GENERATOR_TYPES = [...IONIC_GENERATOR_TYPES, ...ANGULAR_GENERATOR_TYPES];
 
 export class GenerateRunner extends BaseGenerateRunner<AngularGenerateOptions> {
-  async specializeCommandMetadata(metadata: CommandMetadata): Promise<CommandMetadata> {
+  async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
-      ...metadata,
       groups: [],
       description: `Generate Angular classes such as pages, components, directives, services, etc.`,
       longDescription: `
