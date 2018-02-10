@@ -1,30 +1,23 @@
 import { Publisher, prepareInterfaces } from '../publisher';
 const os = require('os');
 
-const FAKE_INTERFACE = {
-  address: '192.168.0.1',
-  netmask: '255.255.0.0',
-  family: 'IPv4',
-  mac: '45:45:45:45:45:45',
-  internal: false,
-  broadcast: '192.168.255.255'
-};
-
 describe('publisher', () => {
   it('create', () => {
     const p = new Publisher('devapp', 'conference-app', 8100);
+    p.on('error', () => {});
     expect(p.client).toBeUndefined();
-    expect(p.namespace).toBe('devapp');
-    expect(p.name).toBe('conference-app');
-    expect(p.interval).toBe(2000);
-    expect(p.path).toBe('/');
-    expect(p.port).toBe(8100);
+    expect(p.namespace).toEqual('devapp');
+    expect(p.name).toEqual('conference-app');
+    expect(p.interval).toEqual(2000);
+    expect(p.path).toEqual('/');
+    expect(p.port).toEqual(8100);
     expect(p.id.length).toBeGreaterThan(0);
     expect(p.running).toBeFalsy();
   });
 
   it('start', async () => {
     const p = new Publisher('devapp', 'conference-app', 8100);
+    p.on('error', () => {});
     await p.start();
     expect(p.timer).toBeDefined();
     p.stop();
@@ -33,6 +26,7 @@ describe('publisher', () => {
 
   it('start/stop', async () => {
     const p = new Publisher('devapp', 'conference-app', 8100);
+    p.on('error', () => {});
     await p.start();
     expect(p.running).toBeTruthy();
     expect(p.client).toBeDefined();
@@ -45,6 +39,7 @@ describe('publisher', () => {
 
   it('buildMessage', () => {
     const p = new Publisher('devapp', 'conference-app', 8100);
+    p.on('error', () => {});
     p.path = '/?devapp=true';
     const now = Date.now();
     const message = p.buildMessage('192.168.0.1');
@@ -58,7 +53,7 @@ describe('publisher', () => {
       port: 8100,
       path: '/?devapp=true'
     });
-    expect(message).toBe(expected);
+    expect(message).toEqual(expected);
   });
 
 });
@@ -86,7 +81,8 @@ it('prepareInterfaces', () => {
     'en0': [iface1, iface2, iface3],
     'lo': [iface4, iface5]
   });
-  expect(JSON.stringify(output)).toBe(JSON.stringify([{
+
+  expect(output).toEqual([{
     address: '192.168.0.2',
     broadcast: '192.168.255.255'
   }, {
@@ -95,6 +91,6 @@ it('prepareInterfaces', () => {
   }, {
     address: '195.168.0.5',
     broadcast: '195.168.255.255'
-  }]));
+  }]);
 });
 
