@@ -7,24 +7,43 @@ import * as split2 from 'split2';
 import { contains, unparseArgs, validators } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
+import * as schematicsToolsLibType from '@angular-devkit/schematics/tools';
+
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { GenerateRunner as BaseGenerateRunner } from '../../generate';
 import { FatalException } from '../../errors';
 
+const ANGULAR_SCHEMATICS_PACKAGE = '@schematics/angular';
+const IONIC_SCHEMATICS_PACKAGE = '@ionic/schematics-angular';
+
 const debug = Debug('ionic:cli-utils:lib:project:angular:generate');
 
-const IONIC_GENERATOR_TYPES = ['page'];
-const ANGULAR_GENERATOR_TYPES = ['class', 'component', 'directive', 'enum', 'guard', 'interface', 'module', 'pipe', 'service'];
-const GENERATOR_TYPES = [...IONIC_GENERATOR_TYPES, ...ANGULAR_GENERATOR_TYPES];
-const SIMPLE_GENERATOR_TYPES = ['class', 'interface', 'module', 'enum'];
+const ANGULAR_SCHEMATICS_BLACKLIST = ['application', 'appShell', 'universal'];
+const ANGULAR_SCHEMATICS_SIMPLE = ['class', 'interface', 'enum'];
 
 function pluralizeGeneratorType(type: string): string {
   const suffix = type === 'class' ? 'es' : 's';
   return `${type}${suffix}`;
 }
 
+interface Schematic {
+  type: string;
+  collection: string;
+  aliases: string[];
+}
+
+function generateAliasMap(schematics: Schematic[]): Map<string, string> {
+  return new Map(lodash.flatten(schematics.map(s => [...s.aliases.map<[string, string]>(a => [a, s.type])])));
+}
+
+function extractSchematicsFromCollection(collection: schematicsToolsLibType.FileSystemCollection): Schematic[] {
+  return lodash.toPairs(collection.description.schematics)
+    .filter(([ k, v ]) => !ANGULAR_SCHEMATICS_BLACKLIST.includes(k))
+    .map<Schematic>(([ type, v ]) => ({ type, collection: collection.description.name, aliases: v.aliases || [] }));
+}
+
 export function buildPathForGeneratorType(type: string, name: string): string {
-  if (SIMPLE_GENERATOR_TYPES.includes(type)) {
+  if (ANGULAR_SCHEMATICS_SIMPLE.includes(type)) {
     return name;
   }
 
@@ -36,7 +55,13 @@ export function buildPathForGeneratorType(type: string, name: string): string {
 }
 
 export class GenerateRunner extends BaseGenerateRunner<AngularGenerateOptions> {
+  private schematics?: Schematic[];
+
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
+    const schematics = await this.getSchematics();
+    const schematicNames = schematics.map(s => s.type);
+    const schematicNamesAndAliases = [...schematicNames, ...lodash.flatten(schematics.map(s => s.aliases))];
+
     return {
       groups: [],
       description: `Generate Angular classes such as pages, components, directives, services, etc.`,
@@ -46,9 +71,9 @@ Automatically create components for your Ionic app.
 This command uses the Angular CLI to generate components. Not all component generation options are listed.
 
  - For a detailed list of options for each generator, use ${chalk.green('ng generate <type> --help')}.
- - For ${IONIC_GENERATOR_TYPES.map(t => chalk.green(t)).join(', ')} types, use ${chalk.green('ng generate <type> --help --collection @ionic/schematics-angular')}.
+ - For ${schematics.filter(s => s.collection === IONIC_SCHEMATICS_PACKAGE).map(t => chalk.green(t.type)).join(', ')} types, use ${chalk.green('ng generate <type> --help --collection @ionic/schematics-angular')}.
 
-${chalk.green('ionic generate')} is more opinionated than ${chalk.green('ng generate')}. Aside from simpler generator types (${SIMPLE_GENERATOR_TYPES.map(t => chalk.green(pluralizeGeneratorType(t))).join(', ')}), generated files are placed in ${chalk.bold('src/app/<type>/<name>/')}. See the CLI documentation${chalk.cyan('[1]')} for an overview of recommended project structure.
+${chalk.green('ionic generate')} is more opinionated than ${chalk.green('ng generate')}. Aside from simpler generator types (${ANGULAR_SCHEMATICS_SIMPLE.map(t => chalk.green(pluralizeGeneratorType(t))).join(', ')}), generated files are placed in ${chalk.bold('src/app/<type>/<name>/')}. See the CLI documentation${chalk.cyan('[1]')} for an overview of recommended project structure.
 
 Remember, you can use slashes in ${chalk.green('name')} to nest components deeper, but you must specify the full path within ${chalk.bold('src/app/')}. For example, specify a name of ${chalk.green('pages/tabs-page/tab1')} to generate page files at ${chalk.bold('src/app/pages/tabs-page/tab1/')}.
 
@@ -58,12 +83,18 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
       `,
       exampleCommands: [
         '-d',
+        'page',
+        'page contact',
+        'component pages/contact/form',
+        'component form --change-detection OnPush',
+        'directive ripple --skip-import',
+        's services/api/user',
       ],
       inputs: [
         {
           name: 'type',
-          description: `The type of generator (e.g. ${GENERATOR_TYPES.map(t => chalk.green(t)).join(', ')})`,
-          validators: [validators.required, contains(GENERATOR_TYPES, {})],
+          description: `The type of generator (e.g. ${schematics.map(t => `${chalk.green(t.type)} ${`(${t.aliases.map(a => chalk.green(a)).join(', ')})`}`).join(', ')})`,
+          validators: [validators.required, contains(schematicNamesAndAliases, {})],
         },
         {
           name: 'name',
@@ -89,12 +120,14 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
   }
 
   async ensureCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const schematics = await this.getSchematics();
+
     if (!inputs[0]) {
       const type = await this.env.prompt({
         type: 'list',
         name: 'type',
         message: 'What would you like to generate:',
-        choices: GENERATOR_TYPES,
+        choices: schematics.map(t => t.type),
       });
 
       inputs[0] = type;
@@ -124,27 +157,57 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
   }
 
   async run(options: AngularGenerateOptions) {
-    const name = buildPathForGeneratorType(options.type, options.name);
+    const schematics = await this.getSchematics();
+
+    const aliases = generateAliasMap(schematics);
+
+    const type = aliases.get(options.type) || options.type;
+    const schematic = schematics.find(s => s.type === type);
+
+    if (!schematic) {
+      throw new FatalException(`Unknown generator type: ${chalk.green(type)}`);
+    }
+
+    const name = buildPathForGeneratorType(type, options.name);
+
+    debug(`${options.type} resolved to ${type}`);
     debug(`${options.name} normalized to ${name}`);
 
     try {
-      await this.generateComponent(options.type, name, lodash.omit(options, 'type', 'name'));
+      await this.generateComponent(schematic, name, lodash.omit(options, 'type', 'name'));
     } catch (e) {
       debug(e);
-      throw new FatalException(`Could not generate ${chalk.green(options.type)}.`);
+      throw new FatalException(`Could not generate ${chalk.green(type)}.`);
     }
 
     if (!options.dryRun) {
-      this.env.log.ok(`Generated ${chalk.green(options.type)}!`);
+      this.env.log.ok(`Generated ${chalk.green(type)}!`);
     }
   }
 
-  async generateComponent(type: string, name: string, options: { [key: string]: string | boolean; }) {
-    if (IONIC_GENERATOR_TYPES.includes(type)) {
-      options.collection = '@ionic/schematics-angular';
+  private async getSchematics(): Promise<Schematic[]> {
+    if (!this.schematics) {
+      const { SchematicEngine } = await import('@angular-devkit/schematics');
+      const { NodeModulesEngineHost } = await import('@angular-devkit/schematics/tools');
+
+      const engineHost = new NodeModulesEngineHost();
+      const engine = new SchematicEngine(engineHost);
+
+      this.schematics = [
+        ...extractSchematicsFromCollection(engine.createCollection(IONIC_SCHEMATICS_PACKAGE)),
+        ...extractSchematicsFromCollection(engine.createCollection(ANGULAR_SCHEMATICS_PACKAGE)),
+      ];
     }
 
-    const ngArgs = unparseArgs({ _: ['generate', type, name], ...options }, {});
+    return this.schematics;
+  }
+
+  private async generateComponent(schematic: Schematic, name: string, options: { [key: string]: string | boolean; }) {
+    if (schematic.collection !== ANGULAR_SCHEMATICS_PACKAGE) {
+      options.collection = schematic.collection;
+    }
+
+    const ngArgs = unparseArgs({ _: ['generate', schematic.type, name], ...options }, {});
     const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
 
     const p = await this.env.shell.spawn('ng', ngArgs, shellOptions);
