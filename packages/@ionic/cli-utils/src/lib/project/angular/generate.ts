@@ -19,7 +19,7 @@ const IONIC_SCHEMATICS_PACKAGE = '@ionic/schematics-angular';
 const debug = Debug('ionic:cli-utils:lib:project:angular:generate');
 
 const ANGULAR_SCHEMATICS_BLACKLIST = ['application', 'appShell', 'universal'];
-const ANGULAR_SCHEMATICS_SIMPLE = ['class', 'interface', 'enum'];
+const ANGULAR_SCHEMATICS_SIMPLE = ['class', 'interface', 'module', 'enum'];
 
 function pluralizeGeneratorType(type: string): string {
   const suffix = type === 'class' ? 'es' : 's';
