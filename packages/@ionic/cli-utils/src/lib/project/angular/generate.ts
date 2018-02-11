@@ -5,6 +5,7 @@ import * as through2 from 'through2';
 import * as split2 from 'split2';
 
 import { contains, unparseArgs, validators } from '@ionic/cli-framework';
+import { columnar } from '@ionic/cli-framework/utils/format';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
 import * as schematicsToolsLibType from '@angular-devkit/schematics/tools';
@@ -28,6 +29,7 @@ function pluralizeGeneratorType(type: string): string {
 
 interface Schematic {
   type: string;
+  description: string;
   collection: string;
   aliases: string[];
 }
@@ -39,7 +41,7 @@ function generateAliasMap(schematics: Schematic[]): Map<string, string> {
 function extractSchematicsFromCollection(collection: schematicsToolsLibType.FileSystemCollection): Schematic[] {
   return lodash.toPairs(collection.description.schematics)
     .filter(([ k, v ]) => !ANGULAR_SCHEMATICS_BLACKLIST.includes(k))
-    .map<Schematic>(([ type, v ]) => ({ type, collection: collection.description.name, aliases: v.aliases || [] }));
+    .map<Schematic>(([ type, v ]) => ({ type, description: v.description, collection: collection.description.name, aliases: v.aliases || [] }));
 }
 
 export function buildPathForGeneratorType(type: string, name: string): string {
@@ -68,8 +70,9 @@ export class GenerateRunner extends BaseGenerateRunner<AngularGenerateOptions> {
       longDescription: `
 Automatically create components for your Ionic app.
 
-This command uses the Angular CLI to generate components. Not all component generation options are listed.
+This command uses the Angular CLI to generate components.
 
+ - List generators with the ${chalk.green('--list')} option.
  - For a detailed list of options for each generator, use ${chalk.green('ng generate <type> --help')}.
  - For ${schematics.filter(s => s.collection === IONIC_SCHEMATICS_PACKAGE).map(t => chalk.green(t.type)).join(', ')} types, use ${chalk.green('ng generate <type> --help --collection @ionic/schematics-angular')}.
 
@@ -82,6 +85,7 @@ To test a generator before file modifications are made, use the ${chalk.green('-
 ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects.html#project-structure')}
       `,
       exampleCommands: [
+        '--list',
         '-d',
         'page',
         'page contact',
@@ -93,7 +97,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
       inputs: [
         {
           name: 'type',
-          description: `The type of generator (e.g. ${schematics.map(t => `${chalk.green(t.type)} ${`(${t.aliases.map(a => chalk.green(a)).join(', ')})`}`).join(', ')})`,
+          description: `The type of generator (e.g. ${schematics.slice(0, 4).map(t => chalk.green(t.type)).join(', ')}; use ${chalk.green('--list')} to see all)`,
           validators: [validators.required, contains(schematicNamesAndAliases, {})],
         },
         {
@@ -103,6 +107,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
         },
       ],
       options: [
+        {
+          name: 'list',
+          description: 'List available generators',
+          type: Boolean,
+          aliases: ['l'],
+        },
         {
           name: 'dry-run',
           description: 'Run generate without making any file changes',
@@ -121,6 +131,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
 
   async ensureCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const schematics = await this.getSchematics();
+
+    if (options['list']) {
+      const columnHeaders = ['name', 'aliases', 'description', 'collection'];
+      this.env.log.rawmsg(columnar(schematics.map(({ type, description, collection, aliases }) => [chalk.green(type), aliases.map(a => chalk.green(a)).join(', '), description, chalk.green(collection)]), { columnHeaders }));
+      throw new FatalException('', 0);
+    }
 
     if (!inputs[0]) {
       const type = await this.env.prompt({
