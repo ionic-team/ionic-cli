@@ -61,7 +61,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       options: [
         {
           name: 'list',
-          description: 'List starter templates available',
+          description: 'List available starter templates',
           type: Boolean,
           aliases: ['l'],
         },
@@ -261,7 +261,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         message: 'Starter template:',
         choices: () => {
           const starterTemplates = STARTER_TEMPLATES.filter(st => st.type === options['type']);
-          const cols = columnar(starterTemplates.map(({ name, type, description }) => [chalk.green(name), chalk.bold(type), description || ''])).split('\n');
+          const cols = columnar(starterTemplates.map(({ name, description }) => [chalk.green(name), description || ''])).split('\n');
 
           return cols.map((col, i) => {
             return {
@@ -425,10 +425,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: (
-          `The directory ${chalk.green(projectName)} contains file(s) that could conflict. ` +
-          'Would you like to overwrite the directory with this new project?'
-        ),
+        message: `The directory ${chalk.green(projectName)}/ exists. Would you like to overwrite the directory with this new project?`,
         default: false,
       });
 
