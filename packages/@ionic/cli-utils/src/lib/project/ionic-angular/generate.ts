@@ -100,6 +100,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
 
     const appScriptsArgs = unparseArgs({ _: [], module: options.module, constants: options.constants }, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
     AppScripts.setProcessArgs(['node', 'appscripts'].concat(appScriptsArgs));
+    AppScripts.setCwd(this.env.project.directory);
 
     const context = AppScripts.generateContext();
 
