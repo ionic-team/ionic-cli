@@ -34,6 +34,11 @@
       "description": "The file extension of the style file for the page",
       "default": "css"
     },
+    "spec": {
+      "type": "boolean",
+      "description": "Specifies if a spec file is generated.",
+      "default": true
+    },
     "flat": {
       "type": "boolean",
       "description": "Flag to indicate if a dir is created.",

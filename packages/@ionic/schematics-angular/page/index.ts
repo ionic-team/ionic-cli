@@ -7,8 +7,10 @@ import {
   apply,
   branchAndMerge,
   chain,
+  filter,
   mergeWith,
   move,
+  noop,
   template,
   url,
 } from '@angular-devkit/schematics';
@@ -74,6 +76,7 @@ export default function (options: PageOptions): Rule {
     options.module = findModuleFromOptions(host, options);
 
     const templateSource = apply(url('./files'), [
+      options.spec ? noop() : filter(p => !p.endsWith('.spec.ts')),
       template({
         camelCase,
         kebabCase,
