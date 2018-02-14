@@ -3,9 +3,9 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import * as Debug from 'debug';
+import * as lodash from 'lodash';
 
 import { copyDirectory, fsMkdirp, fsStat, pathExists, readDir, removeDirectory } from '@ionic/cli-framework/utils/fs';
-import { noop } from '@ionic/cli-framework/utils/fn';
 
 import {
   IConfig,
@@ -104,7 +104,7 @@ export abstract class BaseIntegration implements IIntegration {
       return;
     }
 
-    const onFileCreate = opts && opts.onFileCreate ? opts.onFileCreate : noop;
+    const onFileCreate = opts && opts.onFileCreate ? opts.onFileCreate : lodash.noop;
     const conflictHandler = opts && opts.conflictHandler ? opts.conflictHandler : async () => false;
 
     const { download } = await import('../http');
