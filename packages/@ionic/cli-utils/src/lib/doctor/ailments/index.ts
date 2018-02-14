@@ -2,9 +2,10 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import * as semver from 'semver';
+import * as lodash from 'lodash';
 
-import { fsReadDir, fsReadFile, pathExists } from '@ionic/cli-framework/utils/fs';
-import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+import { fsReadDir, fsReadFile } from '@ionic/cli-framework/utils/fs';
+import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { IAilmentRegistry } from '../../../definitions';
 import { App } from '../../app';
@@ -42,7 +43,7 @@ class NpmInstalledLocally extends AutomaticallyTreatableAilment {
   }
 
   async detected() {
-    return pathExists(path.join(this.project.directory, 'node_modules', 'npm'));
+    return !(lodash.attempt(() => resolve('npm', { paths: compileNodeModulesPaths(this.project.directory) })) instanceof Error);
   }
 
   async getTreatmentSteps() {
@@ -72,7 +73,7 @@ class IonicCLIInstalledLocally extends AutomaticallyTreatableAilment {
   }
 
   async detected() {
-    return pathExists(path.join(this.project.directory, 'node_modules', 'ionic'));
+    return !(lodash.attempt(() => resolve('ionic', { paths: compileNodeModulesPaths(this.project.directory) })) instanceof Error);
   }
 
   async getTreatmentSteps() {
@@ -102,8 +103,8 @@ class IonicCLIPluginProxyInstalledLocally extends AutomaticallyTreatableAilment 
   }
 
   async detected() {
-    const cliExists = await pathExists(path.join(this.project.directory, 'node_modules', 'ionic'));
-    return !cliExists && pathExists(path.join(this.project.directory, 'node_modules', '@ionic/cli-plugin-proxy'));
+    const cliExists = !(lodash.attempt(() => resolve('ionic', { paths: compileNodeModulesPaths(this.project.directory) })) instanceof Error);
+    return !cliExists && !(lodash.attempt(() => resolve('@ionic/cli-plugin-proxy', { paths: compileNodeModulesPaths(this.project.directory) })) instanceof Error);
   }
 
   async getTreatmentSteps() {
@@ -228,7 +229,8 @@ class IonicNativeUpdateAvailable extends AutomaticallyTreatableAilment {
   async getVersionPair(): Promise<[string, string]> {
     if (!this.currentVersion || !this.latestVersion) {
       try {
-        this.currentVersion = (await readPackageJsonFile(path.resolve(this.project.directory, 'node_modules', '@ionic-native', 'core', 'package.json'))).version;
+        const pkgPath = resolve('@ionic-native/core/package', { paths: compileNodeModulesPaths(this.project.directory) });
+        this.currentVersion = (await readPackageJsonFile(pkgPath)).version;
       } catch (e) {
         // Not installed
       }
@@ -264,7 +266,8 @@ class IonicNativeUpdateAvailable extends AutomaticallyTreatableAilment {
     const { npmClient } = config;
     const [ , latestVersion ] = await this.getVersionPair();
 
-    const modules = await fsReadDir(path.resolve(this.project.directory, 'node_modules', '@ionic-native'));
+    const modulePath = path.dirname(path.dirname(resolve('@ionic-native/core/package', { paths: compileNodeModulesPaths(this.project.directory) })));
+    const modules = await fsReadDir(modulePath);
 
     return Promise.all(modules.filter(m => m).map(async m => {
       const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'install', pkg: `@ionic-native/${m}@${latestVersion ? latestVersion : 'latest'}` });
@@ -287,7 +290,8 @@ class IonicNativeMajorUpdateAvailable extends Ailment {
   async getVersionPair(): Promise<[string, string]> {
     if (!this.currentVersion || !this.latestVersion) {
       try {
-        this.currentVersion = (await readPackageJsonFile(path.resolve(this.project.directory, 'node_modules', '@ionic-native', 'core', 'package.json'))).version;
+        const pkgPath = resolve('@ionic-native/core/package', { paths: compileNodeModulesPaths(this.project.directory) });
+        this.currentVersion = (await readPackageJsonFile(pkgPath)).version;
       } catch (e) {
         // Not installed
       }
@@ -343,7 +347,7 @@ class IonicNativeOldVersionInstalled extends Ailment {
   }
 
   async detected() {
-    return pathExists(path.join(this.project.directory, 'node_modules', 'ionic-native'));
+    return !(lodash.attempt(() => resolve('ionic-native', { paths: compileNodeModulesPaths(this.project.directory) })) instanceof Error);
   }
 
   async getTreatmentSteps() {

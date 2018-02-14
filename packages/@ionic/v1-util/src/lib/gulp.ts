@@ -13,7 +13,7 @@ export async function loadGulp(): Promise<typeof gulpType> {
   const gulpFilePath = path.resolve('gulpfile.js');
 
   try {
-    _gulpInst = require(path.resolve('node_modules', 'gulp'));
+    _gulpInst = require('gulp');
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') {
       throw e;

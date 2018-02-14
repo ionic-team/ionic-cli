@@ -9,12 +9,9 @@ describe('@ionic/cli-utils', () => {
       });
 
       it('should detect local cli if installed in project', async () => {
-        jest.mock('@ionic/cli-framework/utils/fs', () => ({
-          findBaseDirectory: () => Promise.resolve('/path/to/project'),
-          pathAccessible: () => Promise.resolve(true),
-        }));
-
         jest.mock('@ionic/cli-framework/utils/npm', () => ({
+          resolve: () => '/path/to/project/node_modules/ionic/package.json',
+          compileNodeModulesPaths: () => [],
           readPackageJsonFile: () => Promise.resolve({ version: '4.999.0' }),
         }));
 
@@ -24,12 +21,9 @@ describe('@ionic/cli-utils', () => {
       });
 
       it('should not detect local cli if installed and too old', async () => {
-        jest.mock('@ionic/cli-framework/utils/fs', () => ({
-          findBaseDirectory: () => Promise.resolve('/path/to/project'),
-          pathAccessible: () => Promise.resolve(true),
-        }));
-
         jest.mock('@ionic/cli-framework/utils/npm', () => ({
+          resolve: () => '/path/to/project/node_modules/ionic/package.json',
+          compileNodeModulesPaths: () => [],
           readPackageJsonFile: () => Promise.resolve({ version: '3.9.2' }),
         }));
 
@@ -37,19 +31,10 @@ describe('@ionic/cli-utils', () => {
         expect(bootstrap.detectLocalCLI()).rejects.toEqual('VERSION_TOO_OLD');
       });
 
-      it('should not detect local cli when marker file not found', async () => {
-        jest.mock('@ionic/cli-framework/utils/fs', () => ({
-          findBaseDirectory: () => Promise.resolve(undefined),
-        }));
-
-        const bootstrap = require('../bootstrap');
-        expect(bootstrap.detectLocalCLI()).rejects.toEqual('BASE_DIRECTORY_NOT_FOUND');
-      });
-
       it('should not detect local cli if not installed in project', async () => {
-        jest.mock('@ionic/cli-framework/utils/fs', () => ({
-          findBaseDirectory: () => Promise.resolve('/path/to/project'),
-          pathAccessible: () => Promise.resolve(false),
+        jest.mock('@ionic/cli-framework/utils/npm', () => ({
+          resolve: () => { throw new Error('Module not found') },
+          compileNodeModulesPaths: () => [],
         }));
 
         const bootstrap = require('../bootstrap');

@@ -1,12 +1,11 @@
-import * as path from 'path';
-
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
+import { compileNodeModulesPaths, resolve } from '@ionic/cli-framework/utils/npm';
+
 import { DistTag, InfoItem, IonicEnvironment, LoadedPlugin, Plugin, PluginMeta } from '../definitions';
 import { isPlugin } from '../guards';
-import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { getGlobalProxy } from './utils/http';
 import { pkgManagerArgs, readPackageJsonFileOfResolvedModule } from './utils/npm';
 
@@ -32,14 +31,27 @@ export async function loadPlugins(env: IonicEnvironment) {
   const config = await env.config.load();
   const { npmClient } = config;
 
-  const modulesDir = path.resolve(global ? path.dirname(path.dirname(path.dirname(env.meta.libPath))) : path.join(env.project.directory, 'node_modules'));
-  const pluginPkgs = await Promise.all(KNOWN_PLUGINS
+  const pluginPkgs = KNOWN_PLUGINS
     .map(formatFullPluginName)
-    .map(async (pkgName): Promise<[string, boolean]> => {
-      const pluginPath = path.resolve(modulesDir, path.normalize(pkgName));
-      const exists = await pathExists(pluginPath);
-      return [pkgName, exists];
-    }));
+    .map((pkgName): [string, boolean] => {
+      const exists = () => {
+        try {
+          if (global) {
+            require.resolve(pkgName);
+          } else {
+            resolve(pkgName, { paths: compileNodeModulesPaths(env.project.directory) });
+          }
+
+          return true;
+        } catch (e) {
+          // ignore
+        }
+
+        return false;
+      };
+
+      return [ pkgName, exists() ];
+    });
 
   const [ , proxyVar ] = getGlobalProxy();
 
@@ -107,14 +119,13 @@ export function determineDistTag(version: string): DistTag {
 }
 
 export async function loadPlugin(env: IonicEnvironment, pluginName: string, { global = false }: { global: boolean; }): Promise<LoadedPlugin> {
-  const modulesDir = path.resolve(global ? path.dirname(path.dirname(path.dirname(env.meta.libPath))) : path.join(env.project.directory, 'node_modules'));
   let mResolvedPath: string | undefined;
   let m: Plugin;
 
   debug(`Loading ${global ? 'global' : 'local'} plugin ${chalk.bold(pluginName)}`);
 
   try {
-    mResolvedPath = require.resolve(path.resolve(modulesDir, pluginName));
+    mResolvedPath = global ? require.resolve(pluginName) : resolve(pluginName, { paths: compileNodeModulesPaths(env.project.directory) });
     delete require.cache[mResolvedPath];
     m = require(mResolvedPath);
   } catch (e) {

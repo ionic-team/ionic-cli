@@ -73,14 +73,8 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     flags.interactive = false;
   }
 
-  if (argv['verbose']) {
-    Debug.enable('*');
-  } else if (argv['quiet']) {
+  if (argv['quiet']) {
     level = 'warn';
-  }
-
-  if (argv['color'] === false) {
-    chalk.enabled = false;
   }
 
   if (argv['log-timestamps']) {
@@ -172,8 +166,6 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   ienv.open();
 
   if (env['IONIC_CLI_LOCAL_ERROR']) {
-    debug(`Reason for not using local CLI: ${chalk.bold(env['IONIC_CLI_LOCAL_ERROR'])}`);
-
     if (env['IONIC_CLI_LOCAL_ERROR'] === ERROR_VERSION_TOO_OLD) {
       log.warn(`Detected locally installed Ionic CLI, but it's too old--using global CLI.`);
     }

@@ -1,6 +1,4 @@
-import * as path from 'path';
-
-import { pathExists } from '@ionic/cli-framework/utils/fs';
+import { compileNodeModulesPaths, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../../definitions';
 import { BaseIntegration } from '../';
@@ -65,7 +63,18 @@ export class Integration extends BaseIntegration {
     if (this.project.type === 'angular') { // TODO: better way?
       const project = await this.project.load();
 
-      if (!(await pathExists(path.resolve(this.project.directory, 'node_modules', HOOKS_PKG)))) {
+      const exists = () => {
+        try {
+          resolve(HOOKS_PKG, { paths: compileNodeModulesPaths(this.project.directory) });
+          return true;
+        } catch (e) {
+          // ignore
+        }
+
+        return false;
+      };
+
+      if (!exists()) {
         const config = await this.config.load();
         const { npmClient } = config;
         const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'install', pkg: HOOKS_PKG });

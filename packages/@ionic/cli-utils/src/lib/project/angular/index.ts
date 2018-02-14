@@ -6,7 +6,7 @@ import * as lodash from 'lodash';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
-import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { IAilmentRegistry, InfoItem, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
 
@@ -81,7 +81,7 @@ export class Project extends BaseProject {
   }
 
   async getFrameworkVersion() {
-    const pkgPath = path.resolve(this.directory, 'node_modules', '@ionic', 'angular', 'package.json');
+    const pkgPath = resolve('@ionic/angular/package', { paths: compileNodeModulesPaths(this.directory) });
 
     try {
       const pkg = await readPackageJsonFile(pkgPath);
@@ -92,7 +92,7 @@ export class Project extends BaseProject {
   }
 
   async getCoreVersion() {
-    const pkgPath = path.resolve(this.directory, 'node_modules', '@ionic', 'core', 'package.json');
+    const pkgPath = resolve('@ionic/core/package', { paths: compileNodeModulesPaths(this.directory) });
 
     try {
       const pkg = await readPackageJsonFile(pkgPath);
@@ -103,7 +103,7 @@ export class Project extends BaseProject {
   }
 
   async getAngularCLIVersion() {
-    const pkgPath = path.resolve(this.directory, 'node_modules', '@angular', 'cli', 'package.json');
+    const pkgPath = resolve('@angular/cli/package', { paths: compileNodeModulesPaths(this.directory) });
 
     try {
       const pkg = await readPackageJsonFile(pkgPath);

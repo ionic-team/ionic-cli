@@ -110,6 +110,7 @@ export interface NamespaceMetadata extends Metadata {}
 export interface PackageJson {
   name: string;
   version: string;
+  main?: string;
   description?: string;
   scripts?: { [key: string]: string; };
   dependencies?: { [key: string]: string; };

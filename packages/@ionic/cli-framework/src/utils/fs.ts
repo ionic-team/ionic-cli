@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as ncpType from 'ncp';
 
 import { promisify } from './promise';
+import { compilePaths } from './path';
 
 export const ERROR_FILE_NOT_FOUND = 'FILE_NOT_FOUND';
 export const ERROR_FILE_INVALID_JSON = 'FILE_INVALID_JSON';
@@ -60,9 +61,9 @@ export async function fsWriteJsonFile(filePath: string, json: { [key: string]: a
   return fsWriteFile(filePath, JSON.stringify(json, undefined, 2) + '\n', options);
 }
 
-export async function fileToString(filepath: string): Promise<string> {
+export async function fileToString(filePath: string): Promise<string> {
   try {
-    return await fsReadFile(filepath, { encoding: 'utf8' });
+    return await fsReadFile(filePath, { encoding: 'utf8' });
   } catch (e) {
     if (e.code === 'ENOENT') {
       return '';
@@ -208,19 +209,13 @@ export async function pathExists(filePath: string): Promise<boolean> {
  * Find the base directory based on the path given and a marker file to look for.
  */
 export async function findBaseDirectory(dir: string, file: string): Promise<string | undefined> {
-  dir = path.normalize(dir);
-  const dirInfo = path.parse(dir);
-  const directoriesToCheck = dirInfo.dir
-    .slice(dirInfo.root.length)
-    .split(path.sep)
-    .concat(dirInfo.base)
-    .map((segment: string, index: number, array: string[]) => {
-      const pathSegments = array.slice(0, (array.length - index));
-      return dirInfo.root + path.join(...pathSegments);
-    });
+  if (!dir || !file) {
+    return;
+  }
 
-  for (const d of directoriesToCheck) {
+  for (const d of compilePaths(dir)) {
     const results = await fsReadDir(d);
+
     if (results.includes(file)) {
       return d;
     }

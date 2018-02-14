@@ -6,6 +6,7 @@ import * as lodash from 'lodash';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { ERROR_FILE_INVALID_JSON, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
+import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { InfoItem, ProjectType } from '../../../definitions';
 import { FatalException } from '../../errors';
@@ -112,7 +113,7 @@ export class Project extends BaseProject {
   }
 
   async getV1UtilVersion(): Promise<string | undefined> {
-    const pkgPath = path.resolve(this.directory, 'node_modules', '@ionic', 'v1-util', 'package.json');
+    const pkgPath = resolve('@ionic/v1-util/package', { paths: compileNodeModulesPaths(this.directory) });
 
     try {
       const pkg = await readPackageJsonFile(pkgPath);

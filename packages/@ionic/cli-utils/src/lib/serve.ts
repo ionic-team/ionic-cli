@@ -25,7 +25,7 @@ import {
 } from '../definitions';
 
 import { isCordovaPackageJson } from '../guards';
-import { PROJECT_FILE, OptionGroup } from '../constants';
+import { OptionGroup, PROJECT_FILE } from '../constants';
 import { Exception, FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Runner } from './runner';
 import { Hook } from './hooks';

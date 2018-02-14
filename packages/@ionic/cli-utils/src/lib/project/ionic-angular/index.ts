@@ -1,11 +1,9 @@
-import * as path from 'path';
-
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { IAilmentRegistry, InfoItem, ProjectType } from '../../../definitions';
 
@@ -54,7 +52,7 @@ export class Project extends BaseProject {
   }
 
   async getFrameworkVersion(): Promise<string | undefined> {
-    const pkgPath = path.resolve(this.directory, 'node_modules', 'ionic-angular', 'package.json');
+    const pkgPath = resolve('ionic-angular/package', { paths: compileNodeModulesPaths(this.directory) });
 
     try {
       const pkg = await readPackageJsonFile(pkgPath);
@@ -65,7 +63,7 @@ export class Project extends BaseProject {
   }
 
   async getAppScriptsVersion(): Promise<string | undefined> {
-    const pkgPath = path.resolve(this.directory, 'node_modules', '@ionic', 'app-scripts', 'package.json');
+    const pkgPath = resolve('@ionic/app-scripts/package', { paths: compileNodeModulesPaths(this.directory) });
 
     try {
       const pkg = await readPackageJsonFile(pkgPath);

@@ -1,34 +1,41 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
+import chalk from 'chalk';
 import * as semver from 'semver';
+import * as Debug from 'debug';
 
-import { findBaseDirectory, pathAccessible } from '@ionic/cli-framework/utils/fs';
-import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
+
+if (process.argv.includes('--no-color')) {
+  chalk.enabled = false;
+}
+
+const debug = Debug('ionic:cli-utils:bootstrap');
 
 export const ERROR_BASE_DIRECTORY_NOT_FOUND = 'BASE_DIRECTORY_NOT_FOUND';
 export const ERROR_LOCAL_CLI_NOT_FOUND = 'LOCAL_CLI_NOT_FOUND';
 export const ERROR_VERSION_TOO_OLD = 'VERSION_TOO_OLD';
 
 export async function detectLocalCLI(): Promise<string> {
-  const dir = await findBaseDirectory(process.cwd(), 'package.json');
+  let pkgPath: string | undefined;
 
-  if (!dir) {
-    throw ERROR_BASE_DIRECTORY_NOT_FOUND;
+  try {
+    pkgPath = resolve('ionic/package', { paths: compileNodeModulesPaths(process.cwd()) });
+  } catch (e) {
+    // ignore
   }
 
-  const local = path.join(dir, 'node_modules', 'ionic');
-  const ok = await pathAccessible(local, fs.constants.R_OK);
+  if (pkgPath) {
+    const pkg = await readPackageJsonFile(pkgPath);
 
-  if (!ok) {
-    throw ERROR_LOCAL_CLI_NOT_FOUND;
+    debug(`local CLI ${chalk.bold(pkg.version)} found at ${chalk.bold(pkgPath)}`);
+
+    if (semver.lt(pkg.version, '4.0.0')) {
+      throw ERROR_VERSION_TOO_OLD;
+    }
+
+    return path.dirname(pkgPath);
   }
 
-  const pkg = await readPackageJsonFile(path.join(local, 'package.json'));
-
-  if (semver.lt(pkg.version, '4.0.0')) {
-    throw ERROR_VERSION_TOO_OLD;
-  }
-
-  return local;
+  throw ERROR_LOCAL_CLI_NOT_FOUND;
 }

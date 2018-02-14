@@ -23,6 +23,14 @@ if (semver.lt(process.version, 'v6.4.0')) {
   process.exit(1);
 }
 
+if (process.argv.includes('--verbose')) {
+  process.env.DEBUG = '*';
+}
+
+if (process.argv.includes('--no-color')) {
+  process.env.DEBUG_COLORS = '0';
+}
+
 var bootstrap = require('@ionic/cli-utils/bootstrap');
 
 var pargv = process.argv.slice(2);
