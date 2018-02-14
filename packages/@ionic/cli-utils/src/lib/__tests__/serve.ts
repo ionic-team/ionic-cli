@@ -14,6 +14,7 @@ describe('@ionic/cli-utils', () => {
           browser: undefined,
           browserOption: undefined,
           devapp: true,
+          engine: 'browser',
           externalAddressRequired: false,
           lab: false,
           labHost: 'localhost',
@@ -22,7 +23,7 @@ describe('@ionic/cli-utils', () => {
           open: false,
           port: 8100,
           proxy: true,
-          engine: 'browser',
+          ssl: false,
         };
 
         it('should provide defaults with no options', () => {

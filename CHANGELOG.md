@@ -53,12 +53,21 @@ from the breaking changes listed below, upgrading to CLI v4 should be seamless.
 #### :rocket: Enhancements
 
 * Support for :sparkles: **Ionic Angular v4** :sparkles:
+* Ionic Angular v4 generators: page, component, directive, enum, guard,
+  interface, class, module, pipe, service. Use `ionic g -h` for more info.
+* `--ssl`/`-s` option added to `ionic serve` for Ionic Angular v4 projects. This
+  will generate a self-signed certificate unless the `ssl.key` and `ssl.cert`
+  project config settings are set. See `ionic serve --help`.
 * `ionic s` is now an alias for `ionic serve`.
 * If `ionic:build` or `ionic:serve` npm scripts are defined in your
   `package.json`, the Ionic CLI will use them for the Ionic build/serve instead
   of the default for your project type. See [the
   docs](https://ionicframework.com/docs/cli/configuring.html#building-and-serving-your-app)
   for details.
+* New JS hook system. See [the
+  docs](https://ionicframework.com/docs/cli/configuring.html#hooks).
+* New `serve:after` hook. See [the
+  docs](https://ionicframework.com/docs/cli/configuring.html#hooks).
 * Automatic login via `IONIC_TOKEN` environment variable
   [#2410](https://github.com/ionic-team/ionic-cli/issues/2410)
 * `--no-color` flag for turning off CLI colors
@@ -66,6 +75,8 @@ from the breaking changes listed below, upgrading to CLI v4 should be seamless.
   [#2930](https://github.com/ionic-team/ionic-cli/pull/2930)
 * Chain `--verbose` flag to Cordova for `ionic cordova` commands
   [#2919](https://github.com/ionic-team/ionic-cli/issues/2919)
+* Partial monorepo support. See the discussion in
+  [#2232](https://github.com/ionic-team/ionic-cli/issues/2232).
 
 #### :bug: Bug Fixes
 

@@ -14,6 +14,7 @@ describe('@ionic/cli-utils', () => {
           browser: undefined,
           browserOption: undefined,
           devapp: true,
+          engine: 'browser',
           externalAddressRequired: false,
           lab: false,
           labHost: 'localhost',
@@ -22,7 +23,7 @@ describe('@ionic/cli-utils', () => {
           open: false,
           port: 8100,
           proxy: true,
-          engine: 'browser',
+          ssl: false,
         };
 
         it('should provide defaults with no options', () => {
@@ -33,8 +34,8 @@ describe('@ionic/cli-utils', () => {
 
         it('should provide options from negations of cli flag defaults', () => {
           const runner = new ServeRunner();
-          const result = runner.createOptionsFromCommandLine([], { livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
-          expect(result).toEqual({ ...defaults, livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
+          const result = runner.createOptionsFromCommandLine([], { livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true, ssl: true });
+          expect(result).toEqual({ ...defaults, livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true, ssl: true });
         });
 
         it('should turn off devapp for cordova', () => {

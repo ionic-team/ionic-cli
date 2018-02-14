@@ -145,9 +145,10 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       labPort,
       livereload: typeof options['livereload'] === 'boolean' ? Boolean(options['livereload']) : true,
       open: options['open'] ? true : false,
-      port,
       platform: options['platform'] ? String(options['platform']) : undefined,
+      port,
       proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
+      ssl: false,
     };
   }
 
@@ -202,7 +203,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       };
 
       try {
-        await this.runLab(`http://localhost:${details.port}`, labDetails);
+        await this.runLab(`${details.protocol}://localhost:${details.port}`, labDetails);
       } catch (e) {
         if (e.code === 'ENOENT') {
           const pkg = '@ionic/lab';
@@ -218,7 +219,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
             throw new FatalException(`${chalk.green(pkg)} is required for Ionic Lab to work properly.`);
           }
 
-          await this.runLab(`http://localhost:${details.port}`, labDetails);
+          await this.runLab(`${details.protocol}://localhost:${details.port}`, labDetails);
         }
       }
     }
