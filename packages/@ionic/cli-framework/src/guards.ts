@@ -1,5 +1,4 @@
 import {
-  BowerJson,
   CommandMapKey,
   CommandMetadata,
   CommandMetadataInput,
@@ -28,9 +27,5 @@ export function isCommandMapKey(v: any): v is CommandMapKey {
 }
 
 export function isPackageJson(obj: any): obj is PackageJson {
-  return obj && typeof obj.name === 'string';
-}
-
-export function isBowerJson(obj: any): obj is BowerJson {
   return obj && typeof obj.name === 'string';
 }

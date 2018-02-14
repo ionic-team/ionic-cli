@@ -4,10 +4,8 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { BowerJson } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { ERROR_FILE_INVALID_JSON, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
-import { ERROR_INVALID_BOWER_JSON, readBowerJsonFile, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
 import { InfoItem, ProjectType } from '../../../definitions';
 import { FatalException } from '../../errors';
@@ -15,6 +13,28 @@ import { FatalException } from '../../errors';
 import { BaseProject } from '../';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular');
+
+export const ERROR_INVALID_BOWER_JSON = 'INVALID_BOWER_JSON';
+
+export interface BowerJson {
+  name: string;
+  dependencies?: { [key: string]: string };
+  devDependencies?: { [key: string]: string };
+}
+
+function isBowerJson(obj: any): obj is BowerJson {
+  return obj && typeof obj.name === 'string';
+}
+
+async function readBowerJsonFile(p: string): Promise<BowerJson> {
+  const bowerJson = await fsReadJsonFile(p);
+
+  if (!isBowerJson(bowerJson)) {
+    throw ERROR_INVALID_BOWER_JSON;
+  }
+
+  return bowerJson;
+}
 
 export class Project extends BaseProject {
   type: ProjectType = 'ionic1';

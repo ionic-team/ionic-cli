@@ -116,12 +116,6 @@ export interface PackageJson {
   devDependencies?: { [key: string]: string; };
 }
 
-export interface BowerJson {
-  name: string;
-  dependencies?: { [key: string]: string };
-  devDependencies?: { [key: string]: string };
-}
-
 export interface Validators {
   required: Validator;
   email: Validator;
