@@ -24,6 +24,7 @@ import {
   ProjectType,
 } from '../../definitions';
 
+import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
 import { BaseConfig } from '../config';
 import { FatalException } from '../errors';
 import { BaseIntegration } from '../integrations';
@@ -36,10 +37,6 @@ import * as ionic1ProjectLibType from './ionic1';
 import * as customProjectLibType from './custom';
 
 const debug = Debug('ionic:cli-utils:lib:project');
-
-export const PROJECT_FILE = 'ionic.config.json';
-export const PROJECT_FILE_LEGACY = 'ionic.project';
-export const PROJECT_TYPES: ProjectType[] = ['angular', 'ionic-angular', 'ionic1', 'custom'];
 
 export interface ProjectDeps {
   config: IConfig;

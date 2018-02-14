@@ -3,10 +3,9 @@ import * as util from 'util';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, PROJECT_FILE } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
 
 export class ConfigGetCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {

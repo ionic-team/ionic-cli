@@ -1,9 +1,8 @@
 import chalk from 'chalk';
 
-import { AppDetails, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { AppDetails, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, PROJECT_FILE } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
 
 const CHOICE_CREATE_NEW_APP = 'createNewApp';
 const CHOICE_NEVERMIND = 'nevermind';

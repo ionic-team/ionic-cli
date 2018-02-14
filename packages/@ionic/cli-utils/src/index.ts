@@ -18,7 +18,8 @@ import {
   RootPlugin,
 } from './definitions';
 
-import { BaseProject, OutsideProject, PROJECT_FILE, PROJECT_FILE_LEGACY, ProjectDeps } from './lib/project';
+import { PROJECT_FILE, PROJECT_FILE_LEGACY } from './constants';
+import { BaseProject, OutsideProject, ProjectDeps } from './lib/project';
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
 import { Client } from './lib/http';

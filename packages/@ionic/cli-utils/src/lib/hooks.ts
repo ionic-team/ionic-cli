@@ -8,8 +8,8 @@ import * as lodash from 'lodash';
 import { conform } from '@ionic/cli-framework/utils/array';
 
 import { HookFn, HookInput, HookName, IConfig, IProject, IShell } from '../definitions';
+import { PROJECT_FILE } from '../constants';
 import { HookException } from './errors';
-import { PROJECT_FILE } from './project';
 
 const debug = Debug('ionic:cli-utils:lib:hooks');
 

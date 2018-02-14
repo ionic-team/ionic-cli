@@ -10,8 +10,8 @@ import {
   ProjectType,
 } from '../definitions';
 
+import { PROJECT_FILE } from '../constants';
 import { Exception, FatalException, RunnerException, RunnerNotFoundException } from './errors';
-import { PROJECT_FILE } from './project';
 import { Runner } from './runner';
 import { Hook } from './hooks';
 

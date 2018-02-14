@@ -4,8 +4,7 @@ import { OptionFilters, filterCommandLineOptions, filterCommandLineOptionsByGrou
 import { conform } from '@ionic/cli-framework/utils/array';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IonicEnvironment } from '../../../definitions';
-import { OptionGroup } from '../../../constants';
-import { PROJECT_FILE } from '../../project';
+import { PROJECT_FILE, OptionGroup } from '../../../constants';
 
 /**
  * Filter and gather arguments from command line to be passed to Cordova

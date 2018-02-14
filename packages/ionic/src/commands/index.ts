@@ -2,10 +2,9 @@ import * as lodash from 'lodash';
 import chalk from 'chalk';
 
 import { metadataToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
-import { CommandMetadata, CommandMetadataOption, isCommand } from '@ionic/cli-utils';
+import { CommandMetadata, CommandMetadataOption, PROJECT_FILE, isCommand } from '@ionic/cli-utils';
 import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { PROJECT_FILE } from '@ionic/cli-utils/lib/project';
 
 export class IonicNamespace extends Namespace {
   async getMetadata() {
