@@ -224,10 +224,11 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
     const project = await this.env.project.load();
 
-    if (project.ssl) {
+    if (options.ssl && project.ssl) {
       if (project.ssl.key && project.ssl.cert) {
-        args['ssl-key'] = path.resolve(this.env.project.directory, project.ssl.key);
-        args['ssl-cert'] = path.resolve(this.env.project.directory, project.ssl.cert);
+        // unresolved paths--cwd of subprocess is project directory
+        args['ssl-key'] = project.ssl.key;
+        args['ssl-cert'] = project.ssl.cert;
       } else {
         this.env.log.warn(
           `Both ${chalk.green('ssl.key')} and ${chalk.green('ssl.cert')} config entries must be set.\n` +
@@ -240,9 +241,9 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
     if (options.proxy) {
       const proxyConfig = await this.detectProxyConfig();
-      // this is fine as long as cwd of ng serve is the project directory
 
       if (proxyConfig) {
+        // unresolved path--cwd of subprocess is project directory
         args.proxyConfig = proxyConfig;
       }
     }
