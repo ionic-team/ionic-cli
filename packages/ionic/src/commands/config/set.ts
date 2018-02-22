@@ -56,7 +56,7 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
           groups: [OptionGroup.Advanced],
         },
       ],
-      exampleCommands: ['name newAppName', 'name "\\"newAppName\\"" --json', 'watchPatterns "[]" --force', '-g yarn true'],
+      exampleCommands: ['name newAppName', 'name "\\"newAppName\\"" --json', '-g interactive true'],
     };
   }
 

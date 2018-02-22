@@ -59,6 +59,7 @@ from the breaking changes listed below, upgrading to CLI v4 should be seamless.
   will generate a self-signed certificate unless the `ssl.key` and `ssl.cert`
   project config settings are set. See `ionic serve --help`.
 * `ionic s` is now an alias for `ionic serve`.
+* New `ionic config unset` command for deleting config values.
 * If `ionic:build` or `ionic:serve` npm scripts are defined in your
   `package.json`, the Ionic CLI will use them for the Ionic build/serve instead
   of the default for your project type. See [the
