@@ -320,8 +320,6 @@ export interface ITelemetry {
 export type NpmClient = 'yarn' | 'npm';
 
 export interface ConfigFile {
-  version: string;
-  created: string;
   state: {
     lastCommand: string;
     doctor: {
@@ -333,12 +331,6 @@ export interface ConfigFile {
     apiUrl?: string;
     gitHost?: string;
     gitPort?: number;
-  };
-  devapp: {
-    knownInterfaces: {
-      mac: string;
-      trusted: boolean;
-    }[];
   };
   ssl?: SSLConfig;
   git: {

@@ -142,22 +142,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.created = new Date().toISOString();
     }
 
-    if (!results.daemon) {
-      results.daemon = {};
-    }
-
-    if (typeof results.daemon.enabled === 'undefined') {
-      results.daemon.enabled = typeof results.daemon.updates !== 'undefined' ? results.daemon.updates : true;
-    }
-
-    if (!results.devapp) {
-      results.devapp = {};
-    }
-
-    if (!results.devapp.knownInterfaces) {
-      results.devapp.knownInterfaces = [];
-    }
-
     if (!results.addresses) {
       results.addresses = {};
     }
@@ -188,6 +172,10 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.npmClient = results.yarn ? 'yarn' : 'npm';
     }
 
+    delete results.created;
+    delete results.daemon;
+    delete results.version;
+    delete results.devapp;
     delete results.tokens.appUser;
     delete results.yarn;
     delete results.backend;
@@ -208,8 +196,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       && typeof j.state === 'object'
       && typeof j.state.lastCommand === 'string'
       && typeof j.state.doctor === 'object'
-      && typeof j.daemon === 'object'
-      && typeof j.devapp === 'object'
       && typeof j.user === 'object'
       && typeof j.tokens === 'object'
       && typeof j.telemetry === 'boolean'

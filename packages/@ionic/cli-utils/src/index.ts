@@ -100,8 +100,6 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   env['IONIC_PROJECT_DIR'] = projectDir || '';
   env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
 
-  configData.version = plugin.meta.pkg.version;
-
   const meta = {
     cwd,
     local: env['IONIC_CLI_LOCAL'] ? true : false,
