@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
 import { Command } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 export abstract class SSHBaseCommand extends Command {
   async checkForOpenSSH() {
@@ -13,8 +14,9 @@ export abstract class SSHBaseCommand extends Command {
         throw e;
       }
 
-      this.env.log.error(`Command not found: ${chalk.bold('ssh')}`);
       this.env.log.warn('OpenSSH not found on your computer.'); // TODO: more helpful message
+
+      throw new FatalException(`Command not found: ${chalk.bold('ssh')}`);
     }
   }
 }
