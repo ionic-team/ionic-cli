@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { validators } from '@ionic/cli-framework';
+import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '@ionic/cli-framework/utils/format';
 
 import {
@@ -18,6 +18,17 @@ import { CommandGroup, NamespaceGroup, OptionGroup } from '../constants';
 import { isCommand } from '../guards';
 
 const HELP_DOTS_WIDTH = 25;
+
+type Decoration = [number, string];
+
+const COMMAND_DECORATIONS: Decoration[] = [
+  [CommandGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
+];
+
+const NAMESPACE_DECORATIONS: Decoration[] = [
+  [NamespaceGroup.Beta, chalk.red.bold('(beta)')],
+  [NamespaceGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
+];
 
 export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise<void> {
   // If there are no inputs then show global command details.
@@ -66,6 +77,15 @@ ${await formatUsage(env, ns)}
   + (projectCmds.length > 0 ? `  ${chalk.bold('Project Commands')}:\n\n${env.project.directory ? formatList(projectCmds) : '    You are not in a project directory.\n'}\n` : '');
 }
 
+function formatGroupDecorations(decorations: Decoration[], groups?: MetadataGroup[]): string {
+  if (!groups) {
+    return '';
+  }
+
+  const prepends = decorations.filter(([g]) => groups.includes(g)).map(([,d]) => d)
+  return prepends.length ? prepends.join(' ') + ' ' : '';
+}
+
 async function formatNamespaceHeader(env: IonicEnvironment, ns: INamespace, cmdMetadataList: HydratedCommandMetadata[], fullName: string) {
   if (!ns.parent) {
     return formatHeader(env);
@@ -74,7 +94,7 @@ async function formatNamespaceHeader(env: IonicEnvironment, ns: INamespace, cmdM
   const metadata = await ns.getMetadata();
 
   return `
-  ${chalk.bold.green(fullName)} ${chalk.bold('-')} ${metadata.groups && metadata.groups.includes(NamespaceGroup.Deprecated) ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${chalk.bold(metadata.description)}${formatLongDescription(metadata.longDescription)}`;
+  ${chalk.bold.green(fullName)} ${chalk.bold('-')} ${formatGroupDecorations(NAMESPACE_DECORATIONS, metadata.groups)}${chalk.bold(metadata.description)}${formatLongDescription(metadata.longDescription)}`;
 }
 
 async function formatHeader(env: IonicEnvironment) {
@@ -137,8 +157,7 @@ async function formatCommandHelp(env: IonicEnvironment, metadata: CommandMetadat
 
 function formatCommandHeader(metadata: CommandMetadata, fullName: string) {
   const wrappedDescription = wordWrap(metadata.description, { indentation: fullName.length + 5 });
-  const isDeprecated = metadata.groups && metadata.groups.includes(CommandGroup.Deprecated);
-  const subtitle = (isDeprecated ? chalk.yellow('(deprecated)') + ' ' : '') + wrappedDescription;
+  const subtitle = (formatGroupDecorations(COMMAND_DECORATIONS, metadata.groups)) + wrappedDescription;
 
   return `\n  ${chalk.bold(chalk.green(fullName) + (subtitle ? ` - ${subtitle}` : ''))}${formatLongDescription(metadata.longDescription)}\n`;
 }
@@ -148,8 +167,7 @@ async function getListOfCommandDetails(commands: HydratedCommandMetadata[]) {
   const fillStringArray = generateFillSpaceStringList(wow, HELP_DOTS_WIDTH, chalk.dim('.'));
 
   return commands.map((cmd, index) => {
-    const isDeprecated = cmd.groups && cmd.groups.includes(CommandGroup.Deprecated);
-    const description = (isDeprecated ? chalk.yellow.bold('(deprecated)') + ' ' : '') + cmd.description + `${cmd.aliases.length > 0 ? chalk.dim(' (alias' + (cmd.aliases.length === 1 ? '' : 'es') + ': ') + cmd.aliases.map(a => chalk.green(a)).join(', ') + chalk.dim(')') : ''}`;
+    const description = (formatGroupDecorations(COMMAND_DECORATIONS, cmd.groups)) + cmd.description + `${cmd.aliases.length > 0 ? chalk.dim(' (alias' + (cmd.aliases.length === 1 ? '' : 'es') + ': ') + cmd.aliases.map(a => chalk.green(a)).join(', ') + chalk.dim(')') : ''}`;
     const wrappedDescription = wordWrap(description, { indentation: HELP_DOTS_WIDTH + 6 });
     return `${chalk.green(cmd.path.map(p => p[0]).join(' '))} ${fillStringArray[index]} ${wrappedDescription}`;
   });
@@ -179,8 +197,7 @@ async function getListOfNamespaceDetails(commands: HydratedCommandMetadata[]) {
 
   return entries.map(([name, { meta, cmds }], i) => {
     const subcommands = cmds.map(c => chalk.green(c.name)).join(', ');
-    const isDeprecated = meta.groups && meta.groups.includes(NamespaceGroup.Deprecated);
-    const wrappedDescription = wordWrap(`${isDeprecated ? chalk.yellow.bold('(deprecated)') + ' ' : ''}${descriptions.get(name)} ${chalk.dim('(subcommands:')} ${subcommands}${chalk.dim(')')}`, { indentation: HELP_DOTS_WIDTH + 6 });
+    const wrappedDescription = wordWrap(`${formatGroupDecorations(NAMESPACE_DECORATIONS, meta.groups)}${descriptions.get(name)} ${chalk.dim('(subcommands:')} ${subcommands}${chalk.dim(')')}`, { indentation: HELP_DOTS_WIDTH + 6 });
     return `${chalk.green(name + ' <subcommand>')} ${fillStringArray[i]} ${wrappedDescription}`;
   });
 }

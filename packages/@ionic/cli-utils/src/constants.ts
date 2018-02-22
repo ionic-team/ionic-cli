@@ -12,6 +12,7 @@ export enum CommandGroup {
 export enum NamespaceGroup {
   Deprecated,
   Hidden,
+  Beta,
 }
 
 export enum OptionGroup {
