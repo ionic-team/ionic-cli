@@ -32,13 +32,19 @@ export class ServeRunner extends BaseServeRunner<AngularServeOptions> {
       longDescription: `
 ${chalk.green('ionic serve')} uses the Angular CLI. Common Angular CLI options such as ${chalk.green('--target')} and ${chalk.green('--environment')} are mixed in with Ionic CLI options. Use ${chalk.green('ng serve --help')} to list all options. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
 
-For serving your app with HTTPS, use the ${chalk.green('--ssl')} option. You can provide your own SSL key and certificate with the ${chalk.green('ionic config set ssl.key <path>')} and ${chalk.green('ionic config set ssl.cert <path>')} commands. If these config entries are not set, a self-signed certificate is generated.
+For serving your app with HTTPS, use the ${chalk.green('--ssl')} option. You can provide your own SSL key and certificate with the ${chalk.green('ionic config set ssl.key <path>')} and ${chalk.green('ionic config set ssl.cert <path>')} commands.
 
 If a ${chalk.bold('proxy.config.json')} or ${chalk.bold('proxy.config.js')} file is detected in your project, the Angular CLI's ${chalk.green('--proxy-config')} option is automatically specified. You can use ${chalk.green('--no-proxy')} to disable this behavior. See the Angular CLI proxy documentation${chalk.cyan('[2]')} for more information.
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/build#ng-build')}
 ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/stories-proxy#proxy-to-backend')}`,
       options: [
+        {
+          name: 'ssl',
+          description: 'Use HTTPS for the dev server',
+          aliases: ['s'],
+          type: Boolean,
+        },
         {
           name: 'dev',
           description: `Sets the build target to ${chalk.green('development')}`,
@@ -63,13 +69,6 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
           description: 'Set the build environment to a custom value',
           aliases: ['e'],
           groups: [OptionGroup.Advanced],
-          hint: 'ng',
-        },
-        {
-          name: 'ssl',
-          description: 'Use HTTPS for the dev server',
-          aliases: ['s'],
-          type: Boolean,
           hint: 'ng',
         },
       ],
@@ -222,20 +221,18 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       deleteOutputPath: options.engine === 'cordova' ? 'false' : undefined,
     };
 
-    const project = await this.env.project.load();
+    if (options.ssl) {
+      const project = await this.env.project.load();
 
-    if (options.ssl && project.ssl) {
-      if (project.ssl.key && project.ssl.cert) {
+      if (project.ssl && project.ssl.key && project.ssl.cert) {
         // unresolved paths--cwd of subprocess is project directory
         args['ssl-key'] = project.ssl.key;
         args['ssl-cert'] = project.ssl.cert;
       } else {
-        this.env.log.warn(
+        throw new FatalException(
           `Both ${chalk.green('ssl.key')} and ${chalk.green('ssl.cert')} config entries must be set.\n` +
-          `See ${chalk.green('ionic serve --help')} for details on using your own SSL key and certificate for the dev server. Using self-signed certificate.`
+          `See ${chalk.green('ionic serve --help')} for details on using your own SSL key and certificate for the dev server.`
         );
-
-        args.ssl = true;
       }
     }
 

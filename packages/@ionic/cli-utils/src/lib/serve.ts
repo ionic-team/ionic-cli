@@ -197,10 +197,23 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
 
     if (options.lab) {
       labDetails = {
-        protocol: 'http',
+        protocol: options.ssl ? 'https' : 'http',
         address: options.labHost,
         port: await findClosestOpenPort(options.labPort, '0.0.0.0'),
       };
+
+      if (options.ssl) {
+        const project = await this.env.project.load();
+
+        if (project.ssl && project.ssl.key && project.ssl.cert) {
+          labDetails.ssl = { key: project.ssl.key, cert: project.ssl.cert };
+        } else {
+          throw new FatalException(
+            `Both ${chalk.green('ssl.key')} and ${chalk.green('ssl.cert')} config entries must be set.\n` +
+            `See ${chalk.green('ionic serve --help')} for details on using your own SSL key and certificate for Ionic Lab and the dev server.`
+          );
+        }
+      }
 
       try {
         await this.runLab(`${details.protocol}://localhost:${details.port}`, labDetails);
@@ -340,6 +353,10 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     const labArgs = [url, '--host', details.address, '--port', String(details.port)];
     const nameArgs = project.name ? ['--app-name', project.name] : [];
     const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
+
+    if (details.ssl) {
+      labArgs.push('--ssl', '--ssl-key', details.ssl.key, '--ssl-cert', details.ssl.cert);
+    }
 
     const p = await this.env.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } });
 

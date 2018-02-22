@@ -510,6 +510,10 @@ export interface LabServeDetails {
   protocol: string;
   address: string;
   port: number;
+  ssl?: {
+    key: string;
+    cert: string;
+  };
 }
 
 export interface ServeDetails {

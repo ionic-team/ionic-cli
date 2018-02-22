@@ -1,4 +1,6 @@
+import * as tls from 'tls';
 import * as http from 'http';
+import * as https from 'https';
 import * as path from 'path';
 
 import chalk from 'chalk';
@@ -14,6 +16,8 @@ import {
   execute,
   validators,
 } from '@ionic/cli-framework';
+
+import { fsReadFile } from '@ionic/cli-framework/utils/fs';
 
 class DefaultCommand extends Command {
   async getMetadata() {
@@ -39,6 +43,19 @@ class DefaultCommand extends Command {
           default: '8200',
         },
         {
+          name: 'ssl',
+          description: 'Host Ionic Lab with HTTPS',
+          type: Boolean,
+        },
+        {
+          name: 'ssl-key',
+          description: 'Path to SSL key',
+        },
+        {
+          name: 'ssl-cert',
+          description: 'Path to SSL certificate',
+        },
+        {
           name: 'app-name',
           description: 'App name to show in bottom left corner',
         },
@@ -52,7 +69,8 @@ class DefaultCommand extends Command {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions) {
     const [ url ] = inputs;
-    const { host, port } = options;
+    const { host, port, ssl } = options;
+    const protocol = ssl ? 'https' : 'http';
 
     const name = options['app-name'];
     const version = options['app-version'];
@@ -65,10 +83,10 @@ class DefaultCommand extends Command {
       res.json({ url, name, version });
     });
 
-    const server = http.createServer(app);
+    const server = ssl ? https.createServer(await this.collectSecureContextOptions(options), app) : http.createServer(app);
     server.listen({ port, host });
 
-    const labUrl = `http://${host}:${port}`;
+    const labUrl = `${protocol}://${host}:${port}`;
 
     server.on('listening', () => {
       process.stdout.write(
@@ -77,6 +95,28 @@ class DefaultCommand extends Command {
         `App: ${chalk.bold(url)}\n`
       );
     });
+  }
+
+  async collectSecureContextOptions(options: CommandLineOptions): Promise<tls.SecureContextOptions> {
+    const sslKeyPath = options['ssl-key'] ? String(options['ssl-key']) : undefined;
+    const sslCertPath = options['ssl-cert'] ? String(options['ssl-cert']) : undefined;
+
+    if (!sslKeyPath || !sslCertPath) {
+      throw new Error('SSL key and cert required for serving SSL');
+    }
+
+    const [ key, cert ] = await Promise.all([this.readPem(sslKeyPath), this.readPem(sslCertPath)]);
+
+    return { key, cert };
+  }
+
+  async readPem(p: string): Promise<string> {
+    try {
+      return await fsReadFile(p, { encoding: 'utf8' });
+    } catch (e) {
+      process.stderr.write(String(e.stack ? e.stack : e) + '\n');
+      throw new Error(`Error encountered with ${p}`);
+    }
   }
 }
 
