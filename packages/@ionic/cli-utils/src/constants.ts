@@ -7,6 +7,7 @@ export const PROJECT_TYPES: ProjectType[] = ['angular', 'ionic-angular', 'ionic1
 export enum CommandGroup {
   Deprecated,
   Hidden,
+  Beta,
 }
 
 export enum NamespaceGroup {

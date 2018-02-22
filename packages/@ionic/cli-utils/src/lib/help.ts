@@ -22,6 +22,7 @@ const HELP_DOTS_WIDTH = 25;
 type Decoration = [number, string];
 
 const COMMAND_DECORATIONS: Decoration[] = [
+  [CommandGroup.Beta, chalk.red.bold('(beta)')],
   [CommandGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
 ];
 
@@ -82,7 +83,7 @@ function formatGroupDecorations(decorations: Decoration[], groups?: MetadataGrou
     return '';
   }
 
-  const prepends = decorations.filter(([g]) => groups.includes(g)).map(([,d]) => d)
+  const prepends = decorations.filter(([g]) => groups.includes(g)).map(([, d]) => d);
   return prepends.length ? prepends.join(' ') + ' ' : '';
 }
 
