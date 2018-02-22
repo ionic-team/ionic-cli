@@ -201,10 +201,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         this.env.log.msg(`Using ${chalk.bold(app.slug)} for ${chalk.green('name')}.`);
         inputs[0] = app.slug;
       } else {
-        this.env.log.info(
-          `Every great app needs a name! ${emoji('😍', '')}\n` +
-          `We will use this name for the project's folder name and package name. You can change this at any time. To bypass this prompt next time, supply ${chalk.green('name')}, the first argument to ${chalk.green('ionic start')}.`
-        );
+        if (this.env.flags.interactive) {
+          this.env.log.info(
+            `Every great app needs a name! ${emoji('😍', '')}\n` +
+            `We will use this name for the project's folder name and package name. You can change this at any time. To bypass this prompt next time, supply ${chalk.green('name')}, the first argument to ${chalk.green('ionic start')}.`
+          );
+        }
 
         const name = await this.env.prompt({
           type: 'input',
@@ -224,11 +226,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     if (!clonedApp && !options['type']) {
       const recommendedType = 'angular';
 
-      this.env.log.info(
-        `What type of project would you like to create?\n` +
-        `We recommend ${chalk.green(recommendedType)}. To learn more about project types, see the CLI documentation${chalk.cyan('[1]')}. To bypass this prompt next time, supply the ${chalk.green('--type')} option.\n\n` +
-        `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}`
-      );
+      if (this.env.flags.interactive) {
+        this.env.log.info(
+          `What type of project would you like to create?\n` +
+          `We recommend ${chalk.green(recommendedType)}. To learn more about project types, see the CLI documentation${chalk.cyan('[1]')}. To bypass this prompt next time, supply the ${chalk.green('--type')} option.\n\n` +
+          `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}`
+        );
+      }
 
       const type = await this.env.prompt({
         type: 'list',
@@ -250,10 +254,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
 
     if (!inputs[1]) {
-      this.env.log.info(
-        `Let's pick the perfect starter template! ${emoji('💪', '')}\n` +
-        `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${chalk.green('template')}, the second argument to ${chalk.green('ionic start')}.`
-      );
+      if (this.env.flags.interactive) {
+        this.env.log.info(
+          `Let's pick the perfect starter template! ${emoji('💪', '')}\n` +
+          `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${chalk.green('template')}, the second argument to ${chalk.green('ionic start')}.`
+        );
+      }
 
       const template = await this.env.prompt({
         type: 'list',
