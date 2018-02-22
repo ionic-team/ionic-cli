@@ -1,4 +1,19 @@
+import * as os from 'os';
 import * as path from 'path';
+
+export const tmpdir = os.tmpdir();
+
+/**
+ * Generate a random file path within the computer's temporary directory.
+ *
+ * @param prefix Optionally provide a filename prefix.
+ */
+export function tmpfilepath(prefix?: string): string {
+  const rn = Math.random().toString(16).substring(2, 8);
+  const p = path.resolve(tmpdir, prefix ? `${prefix}-${rn}` : rn);
+
+  return p;
+}
 
 /**
  * Given an absolute system path, compile an array of paths working backwards
