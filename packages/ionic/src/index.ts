@@ -3,9 +3,8 @@ import * as util from 'util';
 
 import chalk from 'chalk';
 
-import { InputValidationError, stripOptions } from '@ionic/cli-framework';
+import { BaseError, InputValidationError, stripOptions } from '@ionic/cli-framework';
 import { IPCMessage, IonicEnvironment, RootPlugin, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
-import { Exception } from '@ionic/cli-utils/lib/errors';
 import { mapLegacyCommand, modifyArguments } from '@ionic/cli-utils/lib/init';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
 
@@ -169,7 +168,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
           ienv.log.msg(err.message);
         }
       }
-    } else if (err instanceof Exception) {
+    } else if (err instanceof BaseError) {
       ienv.log.error(err.message);
     } else {
       ienv.log.msg(chalk.red(String(err.stack ? err.stack : err)));
