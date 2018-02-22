@@ -28,6 +28,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://dashboard.ionicjs.com/settings/ssh-k
       ['ls', 'list'],
       ['remove', 'delete'],
       ['rm', 'delete'],
+      ['g', 'generate'],
     ]);
   }
 }
