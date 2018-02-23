@@ -8,7 +8,7 @@ export function getIonitronString(quote: string) {
       const paddingLeftSize = Math.floor((lineLength - currentString.length) / 2);
       const paddingRightSize = paddingLeftSize + ((lineLength - currentString.length) % 2);
 
-      return `       |${Array(paddingLeftSize).join(' ')}${currentString}${Array(paddingRightSize).join(' ')}|`;
+      return `       |${' '.repeat(paddingLeftSize - 1)}${currentString}${' '.repeat(paddingRightSize - 1)}|`;
     })
     .join('\n');
 

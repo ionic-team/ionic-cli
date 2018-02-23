@@ -43,7 +43,7 @@ export function expandPath(p: string): string {
 }
 
 export function indent(n = 4): string {
-  return new Array(n).fill(' ').join('');
+  return ' '.repeat(n);
 }
 
 export function wordWrap(msg: string, { width = TTY_WIDTH, indentation = 0, append = '' }: { width?: number; indentation?: number; append?: string; }) {
@@ -57,7 +57,7 @@ export function generateFillSpaceStringList(list: string[], optimalLength = 1, f
 
   const longestItem = Math.max(...list.map(item => stringWidth(item)));
   const fullLength = longestItem > optimalLength ? longestItem + 1 : optimalLength;
-  const fullLengthString = Array(fullLength).fill(fillCharacter).join('');
+  const fullLengthString = fillCharacter.repeat(fullLength);
 
   return list.map(item => sliceAnsi(fullLengthString, 0, fullLength - stringWidth(item)));
 }
@@ -80,7 +80,7 @@ export function columnar(rows: string[][], options: { hsep?: string, vsep?: stri
   const columnCount = options.columnHeaders ? options.columnHeaders.length : rows[0].length;
   const columns = options.columnHeaders ?
     options.columnHeaders.map(header => [chalk.bold(header)]) :
-    new Array(columnCount).fill([]).map(() => []);
+    Array(columnCount).map(() => []);
 
   for (const row of rows) {
     for (const i in row) {
