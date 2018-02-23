@@ -10,24 +10,27 @@ import {
   IAutomaticallyTreatableAilment,
   ICommand,
   IntegrationName,
-  LoadedPlugin,
   LogLevel,
+  Login,
   Plugin,
   Response,
   SSHKey,
   SecurityProfile,
   StarterManifest,
   SuperAgentError,
+  User,
 } from './definitions';
 
 export const LOG_LEVELS: LogLevel[] = ['info', 'msg', 'ok', 'warn', 'error', 'announce'];
 export const INTEGRATION_NAMES: IntegrationName[] = ['cordova'];
 
-export function isCommand(cmd: any): cmd is ICommand {
+export function isCommand(c: object): c is ICommand {
+  const cmd = <ICommand>c;
   return cmd && typeof cmd.run === 'function';
 }
 
-export function isCommandPreRun(cmd: any): cmd is CommandPreRun {
+export function isCommandPreRun(c: ICommand): c is CommandPreRun {
+  const cmd = <CommandPreRun>c;
   return cmd && typeof cmd.preRun === 'function';
 }
 
@@ -52,10 +55,11 @@ export function isCordovaPackageJson(o: object): o is CordovaPackageJson {
     typeof obj.cordova.plugins === 'object';
 }
 
-export function isAngularCLIJson(o: any): o is AngularCLIJson {
-  return o &&
-    typeof o.project === 'object' &&
-    typeof o.project.name === 'string';
+export function isAngularCLIJson(o: object): o is AngularCLIJson {
+  const obj = <AngularCLIJson>o;
+  return obj &&
+    typeof obj.project === 'object' &&
+    typeof obj.project.name === 'string';
 }
 
 export function isExitCodeException(e: Error): e is ExitCodeException {
@@ -65,13 +69,6 @@ export function isExitCodeException(e: Error): e is ExitCodeException {
 
 export function isPlugin(p: any): p is Plugin {
   return p && (typeof p.getInfo === 'undefined' || typeof p.getInfo === 'function');
-}
-
-export function isLoadedPlugin(p: any): p is LoadedPlugin {
-  return p
-    && typeof p.meta === 'object'
-    && typeof p.fileName === 'string'
-    && typeof p.pkg === 'object';
 }
 
 export function isSuperAgentError(e: Error): e is SuperAgentError {
@@ -99,68 +96,80 @@ export function isAppDetails(d: object): d is AppDetails {
 }
 
 export function isAppResponse(r: APIResponse): r is Response<AppDetails> {
-  const res = <Response<AppDetails>>r;
-  return isAPIResponseSuccess(res) && isAppDetails(res.data);
+  return isAPIResponseSuccess(r)
+    && typeof r.data === 'object'
+    && isAppDetails(r.data);
 }
 
 export function isAppsResponse(r: APIResponse): r is Response<AppDetails[]> {
-  const res = <Response<AppDetails[]>>r;
-  if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
-    return false;
-  }
-
-  if (res.data.length > 0) {
-    return isAppDetails(res.data[0]);
-  }
-
-  return true;
-}
-
-export function isLoginResponse(r: APIResponse): r is Response<{ user: { id: number; email: string; }; token: string; }> {
-  const res = <any>r;
-  return isAPIResponseSuccess(r)
-    && typeof res.data.user === 'object'
-    && typeof res.data.user.id === 'number'
-    && typeof res.data.user.email === 'string'
-    && typeof res.data.token === 'string';
-}
-
-export function isUserResponse(r: APIResponse): r is Response<{ id: number; email: string; }> {
-  const res = <any>r;
-  return isAPIResponseSuccess(r)
-    && typeof res.data.id === 'number'
-    && typeof res.data.email === 'string';
-}
-
-export function isSSHKeyListResponse(r: APIResponse): r is Response<SSHKey[]> {
-  const res = <any>r;
   if (!isAPIResponseSuccess(r) || !Array.isArray(r.data)) {
     return false;
   }
 
-  if (typeof r.data[0] === 'object') {
-    return typeof res.data[0].id === 'string'
-      && typeof res.data[0].pubkey === 'string'
-      && typeof res.data[0].fingerprint === 'string'
-      && typeof res.data[0].annotation === 'string'
-      && typeof res.data[0].name === 'string'
-      && typeof res.data[0].created === 'string'
-      && typeof res.data[0].updated === 'string';
+  if (r.data.length === 0) {
+    return true;
   }
 
-  return true;
+  return typeof r.data[0] === 'object' && isAppDetails(r.data[0]);
+}
+
+}
+
+export function isLogin(l: object): l is Login {
+  const login = <Login>l;
+  return login
+    && isUser(login.user)
+    && typeof login.token === 'string';
+}
+
+export function isLoginResponse(r: APIResponse): r is Response<Login> {
+  const res = <APIResponseSuccess>r;
+  return isAPIResponseSuccess(res)
+    && typeof res.data === 'object'
+    && isLogin(res.data);
+}
+
+export function isUser(u: object): u is User {
+  const user = <User>u;
+  return user
+    && typeof user.id === 'string'
+    && typeof user.email === 'string';
+}
+
+export function isUserResponse(r: APIResponse): r is Response<User> {
+  return isAPIResponseSuccess(r)
+    && typeof r.data === 'object'
+    && isUser(r.data);
+}
+
+export function isSSHKey(k: object): k is SSHKey {
+  const key = <SSHKey>k;
+  return key
+    && typeof key.id === 'string'
+    && typeof key.pubkey === 'string'
+    && typeof key.fingerprint === 'string'
+    && typeof key.annotation === 'string'
+    && typeof key.name === 'string'
+    && typeof key.created === 'string'
+    && typeof key.updated === 'string';
+}
+
+export function isSSHKeyListResponse(r: APIResponse): r is Response<SSHKey[]> {
+  if (!isAPIResponseSuccess(r) || !Array.isArray(r.data)) {
+    return false;
+  }
+
+  if (r.data.length === 0) {
+    return true;
+  }
+
+  return typeof r.data[0] === 'object' && isSSHKey(r.data[0]);
 }
 
 export function isSSHKeyResponse(r: APIResponse): r is Response<SSHKey> {
-  const res = <any>r;
   return isAPIResponseSuccess(r)
-    && typeof res.data.id === 'string'
-    && typeof res.data.pubkey === 'string'
-    && typeof res.data.fingerprint === 'string'
-    && typeof res.data.annotation === 'string'
-    && typeof res.data.name === 'string'
-    && typeof res.data.created === 'string'
-    && typeof res.data.updated === 'string';
+    && typeof r.data === 'object'
+    && isSSHKey(r.data);
 }
 
 export function isSecurityProfile(o: object): o is SecurityProfile {

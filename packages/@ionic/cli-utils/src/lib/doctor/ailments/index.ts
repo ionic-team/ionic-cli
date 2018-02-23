@@ -8,7 +8,7 @@ import { fsReadDir, fsReadFile } from '@ionic/cli-framework/utils/fs';
 import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { IAilmentRegistry } from '../../../definitions';
-import { App } from '../../app';
+import { AppClient } from '../../app';
 import { getIonicRemote, isRepoInitialized } from '../../git';
 import { pkgLatestVersion, pkgManagerArgs } from '../../utils/npm';
 import { getPlatforms } from '../../integrations/cordova/project';
@@ -202,8 +202,8 @@ class GitConfigInvalid extends Ailment {
     }
 
     const token = await this.session.getUserToken();
-    const appLoader = new App(token, this.client);
-    const app = await appLoader.load(appId);
+    const appClient = new AppClient({ token, client: this.client });
+    const app = await appClient.load(appId);
 
     if (app.repo_url !== remote) {
       return true;

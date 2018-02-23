@@ -33,6 +33,19 @@ export class BaseSession {
     c.git.setup = false;
   }
 
+  async getUser(): Promise<{ id: string; email: string; }> {
+    const c = await this.config.load();
+
+    if (!c.user.id || !c.user.email) {
+      throw new SessionException(
+        `Oops, sorry! You'll need to log in:\n    ${chalk.green('ionic login')}\n\n` +
+        `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`
+      );
+    }
+
+    return { id: c.user.id, email: c.user.email };
+  }
+
   async getUserToken(): Promise<string> {
     const c = await this.config.load();
 

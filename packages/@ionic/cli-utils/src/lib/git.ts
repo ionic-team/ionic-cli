@@ -1,7 +1,8 @@
 import * as path from 'path';
 
-import { IShell } from '../definitions';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
+
+import { IShell } from '../definitions';
 
 export interface GitUtilDeps {
   shell: IShell;

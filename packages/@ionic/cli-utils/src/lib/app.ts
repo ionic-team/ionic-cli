@@ -1,20 +1,30 @@
 import {
   AppDetails,
-  IApp,
   IClient,
   IPaginator,
   Response,
 } from '../definitions';
 
-import { createFatalAPIFormat } from './http';
 import { isAppResponse, isAppsResponse } from '../guards';
+import { createFatalAPIFormat } from './http';
 
-export class App implements IApp {
-  constructor(public token: string, protected client: IClient) {}
+export interface AppClientDeps {
+  readonly client: IClient;
+  readonly token: string;
+}
 
-  async load(app_id: string): Promise<AppDetails> {
-    const { req } = await this.client.make('GET', `/apps/${app_id}`);
-    req.set('Authorization', `Bearer ${this.token}`).send({});
+export class AppClient {
+  protected client: IClient;
+  protected token: string;
+
+  constructor({ client, token }: AppClientDeps) {
+    this.client = client;
+    this.token = token;
+  }
+
+  async load(id: string): Promise<AppDetails> {
+    const { req } = await this.client.make('GET', `/apps/${id}`);
+    req.set('Authorization', `Bearer ${this.token}`);
     const res = await this.client.do(req);
 
     if (!isAppResponse(res)) {

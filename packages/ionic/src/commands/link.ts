@@ -63,7 +63,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
-    const { App } = await import('@ionic/cli-utils/lib/app');
+    const { AppClient } = await import('@ionic/cli-utils/lib/app');
 
     let [ appId ] = inputs;
     let { name } = options;
@@ -103,25 +103,24 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     }
 
     const token = await this.env.session.getUserToken();
+    const appClient = new AppClient({ token, client: this.env.client });
 
     if (appId) {
       this.env.tasks.next(`Looking up app ${chalk.green(appId)}`);
 
-      const appUtil = new App(token, this.env.client);
-      await appUtil.load(appId);
+      await appClient.load(appId);
 
       this.env.tasks.end();
 
     } else if (!create) {
       this.env.tasks.next(`Looking up your apps`);
-      let apps: AppDetails[] = [];
+      const apps: AppDetails[] = [];
 
-      const appUtil = new App(token, this.env.client);
-      const paginator = await appUtil.paginate();
+      const paginator = await appClient.paginate();
 
       for (const r of paginator) {
         const res = await r;
-        apps = apps.concat(res.data);
+        apps.push(...res.data);
       }
 
       this.env.tasks.end();
@@ -158,8 +157,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         });
       }
 
-      const appUtil = new App(token, this.env.client);
-      const app = await appUtil.create({ name: String(name) });
+      const app = await appClient.create({ name: String(name) });
 
       appId = app.id;
       await this.env.runCommand(['config', 'set', 'app_id', `"${appId}"`, '--json']);

@@ -3,6 +3,9 @@ import * as path from 'path';
 
 import { ERROR_FILE_NOT_FOUND, fsReadFile, fsStat } from '@ionic/cli-framework/utils/fs';
 
+import { IClient, IPaginator, Response, SSHKey } from '../definitions';
+import { isSSHKeyListResponse } from '../guards';
+
 export const ERROR_SSH_MISSING_PRIVKEY = 'SSH_MISSING_PRIVKEY';
 export const ERROR_SSH_INVALID_PUBKEY = 'SSH_INVALID_PUBKEY';
 export const ERROR_SSH_INVALID_PRIVKEY = 'SSH_INVALID_PRIVKEY';
@@ -62,5 +65,31 @@ export async function validatePrivateKey(keyPath: string): Promise<void> {
 
   if (!lines[0].match(/^\-{5}BEGIN [R|D]SA PRIVATE KEY\-{5}$/)) {
     throw ERROR_SSH_INVALID_PRIVKEY;
+  }
+}
+
+export interface SSHKeyClientDeps {
+  readonly client: IClient;
+  readonly token: string;
+}
+
+export class SSHKeyClient {
+  protected client: IClient;
+  protected token: string;
+
+  constructor({ client, token }: SSHKeyClientDeps) {
+    this.client = client;
+    this.token = token;
+  }
+
+  async paginate(userId: string): Promise<IPaginator<Response<SSHKey[]>>> {
+    return this.client.paginate(
+      async () => {
+        const { req } = await this.client.make('GET', `/users/${userId}/sshkeys`);
+        req.set('Authorization', `Bearer ${this.token}`);
+        return { req };
+      },
+      isSSHKeyListResponse
+    );
   }
 }

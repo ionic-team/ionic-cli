@@ -194,10 +194,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     if (!inputs[0]) {
       if (proAppId) {
-        const { App } = await import('@ionic/cli-utils/lib/app');
+        const { AppClient } = await import('@ionic/cli-utils/lib/app');
         const token = await this.env.session.getUserToken();
-        const appLoader = new App(token, this.env.client);
-        const app = await appLoader.load(proAppId);
+        const appClient = new AppClient({ token, client: this.env.client });
+        const app = await appClient.load(proAppId);
         this.env.log.msg(`Using ${chalk.bold(app.slug)} for ${chalk.green('name')}.`);
         inputs[0] = app.slug;
       } else {

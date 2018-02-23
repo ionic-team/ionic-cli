@@ -185,6 +185,16 @@ export interface AppDetails {
   repo_url?: string;
 }
 
+export interface Login {
+  user: User;
+  token: string;
+}
+
+export interface User {
+  id: number;
+  email: string;
+}
+
 export interface SSHKey {
   id: string;
   pubkey: string;
@@ -204,12 +214,6 @@ export interface SecurityProfile {
     android?: object;
     ios?: object;
   };
-}
-
-export interface IApp {
-  load(app_id?: string): Promise<AppDetails>;
-  paginate(): Promise<IPaginator<Response<AppDetails[]>>>;
-  create(app: { name: string; }): Promise<AppDetails>;
 }
 
 export interface IConfig extends IBaseConfig<ConfigFile> {
@@ -285,6 +289,7 @@ export interface ISession {
   tokenLogin(token: string): Promise<void>;
   logout(): Promise<void>;
   isLoggedIn(): Promise<boolean>;
+  getUser(): Promise<{ id: string; email: string; }>;
   getUserToken(): Promise<string>;
 }
 
