@@ -4,7 +4,7 @@ import * as path from 'path';
 import { ERROR_FILE_NOT_FOUND, fsReadFile, fsStat } from '@ionic/cli-framework/utils/fs';
 
 import { IClient, IPaginator, ResourceClient, Response, SSHKey } from '../definitions';
-import { isSSHKeyResponse, isSSHKeyListResponse } from '../guards';
+import { isSSHKeyListResponse, isSSHKeyResponse } from '../guards';
 
 import { createFatalAPIFormat } from './http';
 

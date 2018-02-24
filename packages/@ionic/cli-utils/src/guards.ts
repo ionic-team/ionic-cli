@@ -16,6 +16,7 @@ import {
   Response,
   SSHKey,
   SecurityProfile,
+  Snapshot,
   StarterManifest,
   SuperAgentError,
   User,
@@ -113,6 +114,32 @@ export function isAppsResponse(r: APIResponse): r is Response<App[]> {
   return typeof r.data[0] === 'object' && isApp(r.data[0]);
 }
 
+export function isSnapshot(s: object): s is Snapshot {
+  const snapshot = <Snapshot>s;
+  return snapshot
+    && typeof snapshot.id === 'string'
+    && typeof snapshot.sha === 'string'
+    && typeof snapshot.ref === 'string'
+    && typeof snapshot.state === 'string'
+    && typeof snapshot.created === 'string'
+    && typeof snapshot.note === 'string';
+}
+
+export function isSnapshotResponse(r: APIResponse): r is Response<Snapshot> {
+  const res = <Response<Snapshot>>r;
+  return isAPIResponseSuccess(res) && isSnapshot(res.data);
+}
+
+export function isSnapshotListResponse(r: APIResponse): r is Response<Snapshot[]> {
+  if (!isAPIResponseSuccess(r) || !Array.isArray(r.data)) {
+    return false;
+  }
+
+  if (r.data.length === 0) {
+    return true;
+  }
+
+  return typeof r.data[0] === 'object' && isSnapshot(r.data[0]);
 }
 
 export function isLogin(l: object): l is Login {
