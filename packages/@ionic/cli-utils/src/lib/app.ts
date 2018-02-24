@@ -1,7 +1,8 @@
 import {
-  AppDetails,
+  App,
   IClient,
   IPaginator,
+  ResourceClient,
   Response,
 } from '../definitions';
 
@@ -13,7 +14,11 @@ export interface AppClientDeps {
   readonly token: string;
 }
 
-export class AppClient {
+export interface AppCreateDetails {
+  name: string;
+}
+
+export class AppClient implements ResourceClient<App, AppCreateDetails> {
   protected client: IClient;
   protected token: string;
 
@@ -22,7 +27,7 @@ export class AppClient {
     this.token = token;
   }
 
-  async load(id: string): Promise<AppDetails> {
+  async load(id: string): Promise<App> {
     const { req } = await this.client.make('GET', `/apps/${id}`);
     req.set('Authorization', `Bearer ${this.token}`);
     const res = await this.client.do(req);
@@ -34,18 +39,7 @@ export class AppClient {
     return res.data;
   }
 
-  async paginate(): Promise<IPaginator<Response<AppDetails[]>>> {
-    return this.client.paginate(
-      async () => {
-        const { req } = await this.client.make('GET', '/apps');
-        req.set('Authorization', `Bearer ${this.token}`);
-        return { req };
-      },
-      isAppsResponse
-    );
-  }
-
-  async create({ name }: { name: string; }) {
+  async create({ name }: AppCreateDetails): Promise<App> {
     const { req } = await this.client.make('POST', '/apps');
     req.set('Authorization', `Bearer ${this.token}`).send({ name });
     const res = await this.client.do(req);
@@ -55,5 +49,16 @@ export class AppClient {
     }
 
     return res.data;
+  }
+
+  paginate(): IPaginator<Response<App[]>> {
+    return this.client.paginate(
+      async () => {
+        const { req } = await this.client.make('GET', '/apps');
+        req.set('Authorization', `Bearer ${this.token}`);
+        return { req };
+      },
+      isAppsResponse
+    );
   }
 }

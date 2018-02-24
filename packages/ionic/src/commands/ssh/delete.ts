@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isSSHKeyListResponse } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 
 import { SSHBaseCommand } from './base';
 
@@ -22,19 +22,17 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
+    const { SSHKeyClient } = await import('@ionic/cli-utils/lib/ssh');
 
     if (!inputs[0]) {
-      const config = await this.env.config.load();
+      const user = await this.env.session.getUser();
       const token = await this.env.session.getUserToken();
 
-      const { req } = await this.env.client.make('GET', `/users/${config.user.id}/sshkeys`);
-      req.set('Authorization', `Bearer ${token}`);
-      const res = await this.env.client.do(req);
+      const sshkeyClient = new SSHKeyClient({ client: this.env.client, user, token });
+      const paginator = sshkeyClient.paginate();
 
-      if (!isSSHKeyListResponse(res)) {
-        throw createFatalAPIFormat(req, res);
-      }
+      const [ r ] = paginator;
+      const res = await r;
 
       if (res.data.length === 0) {
         this.env.log.warn(`No SSH keys found. Use ${chalk.green('ionic ssh add')} to add keys to Ionic.`);
@@ -53,15 +51,16 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const id = inputs[0];
+    const { SSHKeyClient } = await import('@ionic/cli-utils/lib/ssh');
 
-    const config = await this.env.config.load();
+    const [ id ] = inputs;
+
+    const user = await this.env.session.getUser();
     const token = await this.env.session.getUserToken();
 
-    const { req } = await this.env.client.make('DELETE', `/users/${config.user.id}/sshkeys/${id}`);
-    req.set('Authorization', `Bearer ${token}`);
-    await this.env.client.do(req);
+    const sshkeyClient = new SSHKeyClient({ client: this.env.client, user, token });
+    await sshkeyClient.delete(id);
 
-    this.env.log.ok(`Your public key (${chalk.bold(id)}) has been deleted from Ionic.`);
+    this.env.log.ok(`Your public key (${chalk.bold(id)}) has been removed from Ionic.`);
   }
 }

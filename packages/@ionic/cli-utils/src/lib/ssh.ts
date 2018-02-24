@@ -3,8 +3,10 @@ import * as path from 'path';
 
 import { ERROR_FILE_NOT_FOUND, fsReadFile, fsStat } from '@ionic/cli-framework/utils/fs';
 
-import { IClient, IPaginator, Response, SSHKey } from '../definitions';
-import { isSSHKeyListResponse } from '../guards';
+import { IClient, IPaginator, ResourceClient, Response, SSHKey } from '../definitions';
+import { isSSHKeyResponse, isSSHKeyListResponse } from '../guards';
+
+import { createFatalAPIFormat } from './http';
 
 export const ERROR_SSH_MISSING_PRIVKEY = 'SSH_MISSING_PRIVKEY';
 export const ERROR_SSH_INVALID_PUBKEY = 'SSH_INVALID_PUBKEY';
@@ -71,21 +73,58 @@ export async function validatePrivateKey(keyPath: string): Promise<void> {
 export interface SSHKeyClientDeps {
   readonly client: IClient;
   readonly token: string;
+  readonly user: { id: string; };
 }
 
-export class SSHKeyClient {
+export interface SSHKeyCreateDetails {
+  pubkey: string;
+}
+
+export class SSHKeyClient implements ResourceClient<SSHKey, SSHKeyCreateDetails> {
   protected client: IClient;
   protected token: string;
+  protected user: { id: string; };
 
-  constructor({ client, token }: SSHKeyClientDeps) {
+  constructor({ client, token, user }: SSHKeyClientDeps) {
     this.client = client;
     this.token = token;
+    this.user = user;
   }
 
-  async paginate(userId: string): Promise<IPaginator<Response<SSHKey[]>>> {
+  async create({ pubkey }: SSHKeyCreateDetails): Promise<SSHKey> {
+    const { req } = await this.client.make('POST', `/users/${this.user.id}/sshkeys`);
+    req.set('Authorization', `Bearer ${this.token}`).send({ pubkey });
+    const res = await this.client.do(req);
+
+    if (!isSSHKeyResponse(res)) {
+      throw createFatalAPIFormat(req, res);
+    }
+
+    return res.data;
+  }
+
+  async load(id: string): Promise<SSHKey> {
+    const { req } = await this.client.make('GET', `/users/${this.user.id}/sshkeys/${id}`);
+    req.set('Authorization', `Bearer ${this.token}`);
+    const res = await this.client.do(req);
+
+    if (!isSSHKeyResponse(res)) {
+      throw createFatalAPIFormat(req, res);
+    }
+
+    return res.data;
+  }
+
+  async delete(id: string): Promise<void> {
+    const { req } = await this.client.make('DELETE', `/users/${this.user.id}/sshkeys/${id}`);
+    req.set('Authorization', `Bearer ${this.token}`);
+    await this.client.do(req);
+  }
+
+  paginate(): IPaginator<Response<SSHKey[]>> {
     return this.client.paginate(
       async () => {
-        const { req } = await this.client.make('GET', `/users/${userId}/sshkeys`);
+        const { req } = await this.client.make('GET', `/users/${this.user.id}/sshkeys`);
         req.set('Authorization', `Bearer ${this.token}`);
         return { req };
       },

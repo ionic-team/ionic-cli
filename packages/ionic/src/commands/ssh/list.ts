@@ -35,8 +35,8 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
     const user = await this.env.session.getUser();
     const token = await this.env.session.getUserToken();
 
-    const sshkeyClient = new SSHKeyClient({ token, client: this.env.client });
-    const paginator = await sshkeyClient.paginate(user.id);
+    const sshkeyClient = new SSHKeyClient({ client: this.env.client, user, token });
+    const paginator = sshkeyClient.paginate();
 
     const [ r ] = paginator;
     const res = await r;

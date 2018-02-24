@@ -178,7 +178,14 @@ export interface Response<T> extends APIResponseSuccess {
   data: T;
 }
 
-export interface AppDetails {
+export interface ResourceClient<T extends object, U extends object> {
+  load?(id: string): Promise<T>;
+  delete?(id: string): Promise<void>;
+  create?(details: U): Promise<T>;
+  paginate?(): IPaginator<Response<T[]>>;
+}
+
+export interface App {
   id: string;
   name: string;
   slug: string;
@@ -193,6 +200,15 @@ export interface Login {
 export interface User {
   id: number;
   email: string;
+}
+
+export interface Snapshot {
+  id: string;
+  sha: string;
+  ref: string;
+  state: string;
+  created: string;
+  note: string;
 }
 
 export interface SSHKey {
@@ -413,7 +429,7 @@ export interface IClient {
 
   make(method: HttpMethod, path: string): Promise<{ req: superagentType.SuperAgentRequest; }>;
   do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess>;
-  paginate<T extends Response<object[]>>(reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>, guard: (res: APIResponseSuccess) => res is T): Promise<IPaginator<T>>;
+  paginate<T extends Response<object[]>>(reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>, guard: (res: APIResponseSuccess) => res is T): IPaginator<T>;
 }
 
 export interface IPaginator<T extends Response<object[]>> extends IterableIterator<Promise<T>> {}

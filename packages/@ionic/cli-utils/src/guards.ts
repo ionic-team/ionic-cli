@@ -3,7 +3,7 @@ import {
   APIResponseError,
   APIResponseSuccess,
   AngularCLIJson,
-  AppDetails,
+  App,
   CommandPreRun,
   CordovaPackageJson,
   ExitCodeException,
@@ -86,8 +86,8 @@ export function isAPIResponseError(r: APIResponse): r is APIResponseError {
   return res && typeof res.error === 'object';
 }
 
-export function isAppDetails(d: object): d is AppDetails {
-  const details = <AppDetails>d;
+export function isApp(d: object): d is App {
+  const details = <App>d;
   return details
     && typeof details === 'object'
     && typeof details.id === 'string'
@@ -95,13 +95,13 @@ export function isAppDetails(d: object): d is AppDetails {
     && typeof details.slug === 'string';
 }
 
-export function isAppResponse(r: APIResponse): r is Response<AppDetails> {
+export function isAppResponse(r: APIResponse): r is Response<App> {
   return isAPIResponseSuccess(r)
     && typeof r.data === 'object'
-    && isAppDetails(r.data);
+    && isApp(r.data);
 }
 
-export function isAppsResponse(r: APIResponse): r is Response<AppDetails[]> {
+export function isAppsResponse(r: APIResponse): r is Response<App[]> {
   if (!isAPIResponseSuccess(r) || !Array.isArray(r.data)) {
     return false;
   }
@@ -110,7 +110,7 @@ export function isAppsResponse(r: APIResponse): r is Response<AppDetails[]> {
     return true;
   }
 
-  return typeof r.data[0] === 'object' && isAppDetails(r.data[0]);
+  return typeof r.data[0] === 'object' && isApp(r.data[0]);
 }
 
 }
@@ -185,19 +185,6 @@ export function isSecurityProfile(o: object): o is SecurityProfile {
 export function isSecurityProfileResponse(r: APIResponse): r is Response<SecurityProfile> {
   const res = <Response<SecurityProfile>>r;
   return isAPIResponseSuccess(res) && isSecurityProfile(res.data);
-}
-
-export function isSecurityProfilesResponse(r: APIResponse): r is Response<SecurityProfile[]> {
-  const res = <Response<SecurityProfile[]>>r;
-  if (!isAPIResponseSuccess(res) || !Array.isArray(res.data)) {
-    return false;
-  }
-
-  if (res.data.length > 0) {
-    return isSecurityProfile(res.data[0]);
-  }
-
-  return true;
 }
 
 export function isAutomaticallyTreatableAilment(ailment: any): ailment is IAutomaticallyTreatableAilment {

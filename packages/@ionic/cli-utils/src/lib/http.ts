@@ -147,7 +147,7 @@ export class Client implements IClient {
     return r;
   }
 
-  async paginate<T extends Response<object[]>>(reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>, guard: (res: APIResponseSuccess) => res is T): Promise<Paginator<T>> {
+  paginate<T extends Response<object[]>>(reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>, guard: (res: APIResponseSuccess) => res is T): Paginator<T> {
     return new Paginator<T>(this, reqgen, guard);
   }
 }

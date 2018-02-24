@@ -8,7 +8,7 @@ import { validators } from '@ionic/cli-framework';
 import { ERROR_FILE_NOT_FOUND, pathAccessible, pathExists } from '@ionic/cli-framework/utils/fs';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isSSHKeyResponse, isSuperAgentError } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isSuperAgentError } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { SSHBaseCommand } from './base';
@@ -53,9 +53,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
-
-    const { ERROR_SSH_INVALID_PUBKEY, parsePublicKeyFile } = await import('@ionic/cli-utils/lib/ssh');
+    const { ERROR_SSH_INVALID_PUBKEY, SSHKeyClient, parsePublicKeyFile } = await import('@ionic/cli-utils/lib/ssh');
 
     const pubkeyPath = expandPath(inputs[0]);
     const pubkeyName = prettyPath(pubkeyPath);
@@ -80,22 +78,13 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
       throw e;
     }
 
-    const config = await this.env.config.load();
+    const user = await this.env.session.getUser();
     const token = await this.env.session.getUserToken();
-
-    const { req } = await this.env.client.make('POST', `/users/${config.user.id}/sshkeys`);
-    req.set('Authorization', `Bearer ${token}`).send({ pubkey });
+    const sshkeyClient = new SSHKeyClient({ client: this.env.client, token, user });
 
     try {
-      const res = await this.env.client.do(req);
-
-      if (!isSSHKeyResponse(res)) {
-        throw createFatalAPIFormat(req, res);
-      }
-
-      const words = res.meta.status === 201 ? 'added to' : 'updated on';
-
-      this.env.log.ok(`Your public key (${chalk.bold(res.data.fingerprint)}) has been ${words} Ionic!`);
+      const key = await sshkeyClient.create({ pubkey });
+      this.env.log.ok(`Your public key (${chalk.bold(key.fingerprint)}) has been added to Ionic!`);
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 409) {
         this.env.log.msg('Pubkey already added to Ionic.');

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { AppDetails, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, PROJECT_FILE } from '@ionic/cli-utils';
+import { App, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, PROJECT_FILE } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
@@ -114,9 +114,9 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
 
     } else if (!create) {
       this.env.tasks.next(`Looking up your apps`);
-      const apps: AppDetails[] = [];
+      const apps: App[] = [];
 
-      const paginator = await appClient.paginate();
+      const paginator = appClient.paginate();
 
       for (const r of paginator) {
         const res = await r;
