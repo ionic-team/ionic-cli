@@ -80,7 +80,7 @@ export function columnar(rows: string[][], options: { hsep?: string, vsep?: stri
   const columnCount = options.columnHeaders ? options.columnHeaders.length : rows[0].length;
   const columns = options.columnHeaders ?
     options.columnHeaders.map(header => [chalk.bold(header)]) :
-    Array(columnCount).map(() => []);
+    rows[0].map(() => []);
 
   for (const row of rows) {
     for (const i in row) {
