@@ -63,10 +63,8 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
-    const { AppClient, formatName } = await import('@ionic/cli-utils/lib/app');
 
     let [ appId ] = inputs;
-    let { name } = options;
     const { create } = options;
 
     const config = await this.env.config.load();
@@ -102,55 +100,15 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       await this.env.runCommand(['ssh', 'setup']);
     }
 
-    const token = await this.env.session.getUserToken();
-    const appClient = new AppClient({ token, client: this.env.client });
-
     if (appId) {
-      this.env.tasks.next(`Looking up app ${chalk.green(appId)}`);
-
-      await appClient.load(appId);
-
-      this.env.tasks.end();
-
+      await this.lookUpApp(appId);
     } else if (!create) {
-      this.env.tasks.next(`Looking up your apps`);
-      const apps: App[] = [];
-
-      const paginator = appClient.paginate();
-
-      for (const r of paginator) {
-        const res = await r;
-        apps.push(...res.data);
-      }
-
-      this.env.tasks.end();
-
-      const createAppChoice = {
-        name: 'Create a new app',
-        id: CHOICE_CREATE_NEW_APP,
-        org: null,
-      };
-
-      const neverMindChoice = {
-        name: 'Nevermind',
-        id: CHOICE_NEVERMIND,
-        org: null,
-      };
-
-      const linkedApp = await this.env.prompt({
-        type: 'list',
-        name: 'linkedApp',
-        message: `Which app would you like to link`,
-        choices: [createAppChoice, ...apps, neverMindChoice].map(app => ({
-          name: [CHOICE_CREATE_NEW_APP, CHOICE_NEVERMIND].includes(app.id) ? chalk.bold(app.name) : `${formatName(app)} ${chalk.dim(`(${app.id})`)}`,
-          value: app.id,
-        })),
-      });
-
-      appId = linkedApp;
+      appId = await this.chooseApp();
     }
 
     if (create || appId === CHOICE_CREATE_NEW_APP) {
+      let name = options['name'] ? String(options['name']) : undefined;
+
       if (!name) {
         name = await this.env.prompt({
           type: 'input',
@@ -159,22 +117,85 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         });
       }
 
-      const app = await appClient.create({ name: String(name) });
-
-      appId = app.id;
-      await this.env.runCommand(['config', 'set', 'app_id', `"${appId}"`, '--json']);
-      await this.env.runCommand(['git', 'remote']);
-
-      this.env.log.ok(`Project linked with app ${chalk.green(appId)}!`);
+      appId = await this.createApp({ name });
     } else if (appId === CHOICE_NEVERMIND) {
       this.env.log.msg('Not linking app.');
     } else {
-      await this.env.runCommand(['config', 'set', 'app_id', `"${appId}"`, '--json']);
-      await this.env.runCommand(['git', 'remote']);
-
-      this.env.log.ok(`Project linked with app ${chalk.green(appId)}!`);
+      await this.linkApp(appId);
     }
 
     await Promise.all([this.env.config.save(), this.env.project.save()]);
+  }
+
+  private async getAppClient() {
+    const { AppClient } = await import('@ionic/cli-utils/lib/app');
+    const token = await this.env.session.getUserToken();
+    return new AppClient({ token, client: this.env.client });
+  }
+
+  async lookUpApp(appId: string) {
+    this.env.tasks.next(`Looking up app ${chalk.green(appId)}`);
+
+    const appClient = await this.getAppClient();
+    await appClient.load(appId); // Make sure the user has access to the app
+
+    this.env.tasks.end();
+  }
+
+  async createApp({ name }: { name: string; }): Promise<string> {
+    const appClient = await this.getAppClient();
+    const app = await appClient.create({ name });
+
+    await this.linkApp(app.id);
+
+    return app.id;
+  }
+
+  async linkApp(appId: string) {
+    await this.env.runCommand(['config', 'set', 'app_id', `"${appId}"`, '--json']);
+    await this.env.runCommand(['git', 'remote']);
+
+    this.env.log.ok(`Project linked with app ${chalk.green(appId)}!`);
+  }
+
+  async chooseApp(): Promise<string> {
+    const { formatName } = await import('@ionic/cli-utils/lib/app');
+
+    this.env.tasks.next(`Looking up your apps`);
+    const apps: App[] = [];
+
+    const appClient = await this.getAppClient();
+    const paginator = appClient.paginate();
+
+    for (const r of paginator) {
+      const res = await r;
+      apps.push(...res.data);
+    }
+
+    this.env.tasks.end();
+
+    const createAppChoice = {
+      name: 'Create a new app',
+      id: CHOICE_CREATE_NEW_APP,
+      org: null,
+    };
+
+    const neverMindChoice = {
+      name: 'Nevermind',
+      id: CHOICE_NEVERMIND,
+      org: null,
+    };
+
+    const linkedApp = await this.env.prompt({
+      type: 'list',
+      name: 'linkedApp',
+      message: 'Which app would you like to link',
+      choices: [createAppChoice, ...apps, neverMindChoice].map(app => ({
+        name: [CHOICE_CREATE_NEW_APP, CHOICE_NEVERMIND].includes(app.id) ? chalk.bold(app.name) : `${formatName(app)} ${chalk.dim(`(${app.id})`)}`,
+        value: app.id,
+      })),
+    });
+
+    return linkedApp;
   }
 }
