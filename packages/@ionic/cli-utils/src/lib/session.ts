@@ -8,17 +8,27 @@ import {
   IonicEnvironment,
 } from '../definitions';
 
-import { isLoginResponse, isSuperAgentError, isUserResponse } from '../guards';
+import { isLoginResponse, isSuperAgentError } from '../guards';
 
 import { SessionException } from './errors';
 import { createFatalAPIFormat } from './http';
 
+export class SessionDeps {
+  readonly config: IConfig;
+  readonly client: IClient;
+  readonly project?: IProject;
+}
+
 export class BaseSession {
-  constructor(
-    protected config: IConfig,
-    protected client: IClient,
-    protected project?: IProject
-  ) {}
+  protected config: IConfig;
+  protected client: IClient;
+  protected project?: IProject;
+
+  constructor({ config, client, project }: SessionDeps) {
+    this.config = config;
+    this.client = client;
+    this.project = project;
+  }
 
   async isLoggedIn(): Promise<boolean> {
     const c = await this.config.load();
@@ -94,19 +104,13 @@ export class ProSession extends BaseSession implements ISession {
   }
 
   async tokenLogin(token: string) {
-    const { req } = await this.client.make('GET', '/users/self');
-    req.set('Authorization', `Bearer ${token}`);
+    const { UserClient } = await import('./user');
+
+    const userClient = new UserClient({ client: this.client, token });
+    const c = await this.config.load();
 
     try {
-      const res = await this.client.do(req);
-
-      if (!isUserResponse(res)) {
-        throw createFatalAPIFormat(req, res);
-      }
-
-      const user = res.data;
-      const c = await this.config.load();
-
+      const user = await userClient.loadSelf();
       const user_id = String(user.id);
 
       if (c.user.id !== user_id) { // User changed

@@ -1,13 +1,6 @@
 import chalk from 'chalk';
 
-import {
-  App,
-  IClient,
-  IPaginator,
-  ResourceClient,
-  Response,
-} from '../definitions';
-
+import { App, IClient, IPaginator, ResourceClient, Response } from '../definitions';
 import { isAppResponse, isAppsResponse } from '../guards';
 import { createFatalAPIFormat } from './http';
 

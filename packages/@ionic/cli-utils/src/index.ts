@@ -132,7 +132,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   const shell = new Shell({ tasks, log, projectDir });
   const project = await getProject(projectDir, { config, log, shell, tasks });
   const client = new Client(config);
-  const session = new ProSession(config, client, project);
+  const session = new ProSession({ config, client, project });
   const telemetry = new Telemetry({ config, client, getInfo, meta, session, cli: plugin, project });
 
   await config.prepare();
