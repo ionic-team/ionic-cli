@@ -63,7 +63,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
-    const { AppClient } = await import('@ionic/cli-utils/lib/app');
+    const { AppClient, formatName } = await import('@ionic/cli-utils/lib/app');
 
     let [ appId ] = inputs;
     let { name } = options;
@@ -128,11 +128,13 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       const createAppChoice = {
         name: 'Create a new app',
         id: CHOICE_CREATE_NEW_APP,
+        org: null,
       };
 
       const neverMindChoice = {
         name: 'Nevermind',
         id: CHOICE_NEVERMIND,
+        org: null,
       };
 
       const linkedApp = await this.env.prompt({
@@ -140,7 +142,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         name: 'linkedApp',
         message: `Which app would you like to link`,
         choices: [createAppChoice, ...apps, neverMindChoice].map(app => ({
-          name: [CHOICE_CREATE_NEW_APP, CHOICE_NEVERMIND].includes(app.id) ? chalk.bold(app.name) : `${app.name} (${app.id})`,
+          name: [CHOICE_CREATE_NEW_APP, CHOICE_NEVERMIND].includes(app.id) ? chalk.bold(app.name) : `${formatName(app)} ${chalk.dim(`(${app.id})`)}`,
           value: app.id,
         })),
       });

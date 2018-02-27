@@ -185,10 +185,15 @@ export interface ResourceClient<T extends object, U extends object> {
   paginate?(): IPaginator<Response<T[]>>;
 }
 
+export interface Org {
+  name: string;
+}
+
 export interface App {
   id: string;
   name: string;
   slug: string;
+  org: null | Org;
   repo_url?: string;
 }
 

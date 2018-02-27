@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+
 import {
   App,
   IClient,
@@ -8,6 +10,14 @@ import {
 
 import { isAppResponse, isAppsResponse } from '../guards';
 import { createFatalAPIFormat } from './http';
+
+export function formatName(app: Pick<App, 'name' | 'org'>) {
+  if (app.org) {
+    return `${chalk.dim(`${app.org.name} / `)}${app.name}`;
+  }
+
+  return app.name;
+}
 
 export interface AppClientDeps {
   readonly client: IClient;

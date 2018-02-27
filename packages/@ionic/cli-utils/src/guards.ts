@@ -93,7 +93,8 @@ export function isApp(d: object): d is App {
     && typeof details === 'object'
     && typeof details.id === 'string'
     && typeof details.name === 'string'
-    && typeof details.slug === 'string';
+    && typeof details.slug === 'string'
+    && (details.org === null || typeof details.org === 'object');
 }
 
 export function isAppResponse(r: APIResponse): r is Response<App> {
