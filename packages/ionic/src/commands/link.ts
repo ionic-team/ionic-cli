@@ -285,7 +285,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     }
 
     const url = await userClient.oAuthGithubLogin(userId);
-    opn(url);
+    opn(url, { wait: false });
 
     confirm = await this.env.prompt({
       type: 'confirm',
@@ -321,6 +321,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         if (isSuperAgentError(e) && e.response.status === 401) {
           await this.oAuthProcess(userId);
           await appClient.deleteGithubAssociation(app.id);
+          return true;
         }
 
         throw e;
