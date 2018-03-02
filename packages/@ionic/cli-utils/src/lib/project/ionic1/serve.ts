@@ -201,7 +201,7 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
 
     let program = DEFAULT_PROGRAM;
     let args = [...networkArgs, ...watchPatternsArgs, ...proxiesArgs];
-    const shellOptions = { cwd: workingDir, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
+    const shellOptions = { cwd: workingDir };
 
     debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
 

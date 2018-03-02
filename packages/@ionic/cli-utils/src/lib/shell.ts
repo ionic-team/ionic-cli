@@ -1,8 +1,10 @@
 import * as path from 'path';
 
+import chalk from 'chalk';
+
 import * as crossSpawnType from 'cross-spawn';
 
-import chalk from 'chalk';
+import { createProcessEnv } from '@ionic/cli-framework/utils/process';
 
 import { ILogger, IShell, IShellOutputOptions, IShellRunOptions, IShellSpawnOptions, ITaskChain } from '../definitions';
 import { isExitCodeException } from '../guards';
@@ -146,10 +148,11 @@ export class Shell implements IShell {
 
   protected prepareSpawnOptions(options: IShellSpawnOptions) {
     if (!options.env) {
-      options.env = {};
+      options.env = createProcessEnv(process.env);
     }
 
     options.env.PATH = this.supplementPATH(process.env.PATH);
+    options.env.FORCE_COLOR = chalk.enabled ? '1' : '0';
   }
 
   protected supplementPATH(p: string) {

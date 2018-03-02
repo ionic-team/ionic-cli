@@ -46,7 +46,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
 
     let program = DEFAULT_PROGRAM;
     let args = this.generateAppScriptsArgs(options);
-    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
+    const shellOptions = { cwd: this.env.project.directory };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
 

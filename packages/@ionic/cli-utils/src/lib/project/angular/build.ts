@@ -94,7 +94,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const pkg = await this.env.project.loadPackageJson();
 
     const args = await this.buildOptionsToNgArgs(options);
-    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
+    const shellOptions = { cwd: this.env.project.directory };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
 

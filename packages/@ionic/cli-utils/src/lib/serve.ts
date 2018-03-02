@@ -358,7 +358,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       labArgs.push('--ssl', '--ssl-key', details.ssl.key, '--ssl-cert', details.ssl.cert);
     }
 
-    const p = await this.env.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } });
+    const p = await this.env.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.env.project.directory });
 
     return new Promise<void>((resolve, reject) => {
       p.on('error', err => {

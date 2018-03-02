@@ -133,7 +133,7 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
 
     let program = DEFAULT_PROGRAM;
     let args = await this.serveOptionsToAppScriptsArgs(options);
-    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
+    const shellOptions = { cwd: this.env.project.directory };
 
     debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
 

@@ -156,7 +156,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
     let program = DEFAULT_PROGRAM;
     let args = await this.serveOptionsToNgArgs(options);
-    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
+    const shellOptions = { cwd: this.env.project.directory };
 
     debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
 

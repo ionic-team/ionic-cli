@@ -224,7 +224,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
     }
 
     const ngArgs = unparseArgs({ _: ['generate', schematic.type, name], ...options }, {});
-    const shellOptions = { cwd: this.env.project.directory, env: { FORCE_COLOR: chalk.enabled ? '1' : '0', ...process.env } };
+    const shellOptions = { cwd: this.env.project.directory };
 
     const p = await this.env.shell.spawn('ng', ngArgs, shellOptions);
 
