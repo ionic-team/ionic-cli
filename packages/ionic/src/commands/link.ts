@@ -1,10 +1,13 @@
 import chalk from 'chalk';
+import * as Debug from 'debug';
 
 import { validators } from '@ionic/cli-framework';
 
 import { App, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GithubRepo, OptionGroup, PROJECT_FILE, isSuperAgentError } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+
+const debug = Debug('ionic:commands:link');
 
 const CHOICE_CREATE_NEW_APP = 'createNewApp';
 const CHOICE_NEVERMIND = 'nevermind';
@@ -318,10 +321,15 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         // TODO: maybe we can use a PUT instead of DELETE now + POST later?
         await appClient.deleteGithubAssociation(app.id);
       } catch (e) {
-        if (isSuperAgentError(e) && e.response.status === 401) {
-          await this.oAuthProcess(userId);
-          await appClient.deleteGithubAssociation(app.id);
-          return true;
+        if (isSuperAgentError(e)) {
+          if (e.response.status === 401) {
+            await this.oAuthProcess(userId);
+            await appClient.deleteGithubAssociation(app.id);
+            return true;
+          } else if (e.response.status === 404) {
+            debug(`DELETE ${app.id} Github association not found`);
+            return true;
+          }
         }
 
         throw e;

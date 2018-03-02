@@ -45,7 +45,7 @@ export class UserClient extends ResourceClient implements ResourceClientLoad<Use
   async oAuthGithubLogin(id: number): Promise<string> {
     const { req } = await this.client.make('POST', `/users/${id}/oauth/github`);
     this.applyAuthentication(req, this.token);
-    req.send({});
+    req.send({ source: 'cli' });
 
     const res = await this.client.do(req);
 
