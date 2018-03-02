@@ -3,9 +3,10 @@ import * as path from 'path';
 import chalk from 'chalk';
 
 import { contains, validators } from '@ionic/cli-framework';
+import { BaseError } from '@ionic/cli-framework/lib/errors';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, isIntegrationName } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { Exception, FatalException } from '@ionic/cli-utils/lib/errors';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { BaseIntegration, INTEGRATION_NAMES } from '@ionic/cli-utils/lib/integrations';
 
 export class IntegrationsEnableCommand extends Command {
@@ -81,7 +82,7 @@ export class IntegrationsEnableCommand extends Command {
         this.env.log.ok(`Integration ${chalk.green(integration.name)} added!`);
       }
     } catch (e) {
-      if (e instanceof Exception) {
+      if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }
 

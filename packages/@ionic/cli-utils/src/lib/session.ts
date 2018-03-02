@@ -43,17 +43,17 @@ export class BaseSession {
     c.git.setup = false;
   }
 
-  async getUser(): Promise<{ id: string; email: string; }> {
+  async getUser(): Promise<{ id: number; }> {
     const c = await this.config.load();
 
-    if (!c.user.id || !c.user.email) {
+    if (!c.user.id) {
       throw new SessionException(
         `Oops, sorry! You'll need to log in:\n    ${chalk.green('ionic login')}\n\n` +
         `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`
       );
     }
 
-    return { id: c.user.id, email: c.user.email };
+    return { id: c.user.id };
   }
 
   async getUserToken(): Promise<string> {
@@ -85,7 +85,7 @@ export class ProSession extends BaseSession implements ISession {
       const { token, user } = res.data;
       const c = await this.config.load();
 
-      const user_id = String(user.id);
+      const user_id = user.id;
 
       if (c.user.id !== user_id) { // User changed
         await this.logout();
@@ -111,7 +111,7 @@ export class ProSession extends BaseSession implements ISession {
 
     try {
       const user = await userClient.loadSelf();
-      const user_id = String(user.id);
+      const user_id = user.id;
 
       if (c.user.id !== user_id) { // User changed
         await this.logout();
@@ -139,13 +139,15 @@ export async function promptToLogin(env: IonicEnvironment): Promise<void> {
     type: 'input',
     name: 'email',
     message: 'Email:',
-    validate: v => validators.email(v),
+    validate: v => validators.required(v) && validators.email(v),
   });
 
   const password = await env.prompt({
     type: 'password',
     name: 'password',
     message: 'Password:',
+    mask: '*',
+    validate: v => validators.required(v),
   });
 
   await env.session.login(email, password);

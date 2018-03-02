@@ -1,7 +1,5 @@
 import * as os from 'os';
 
-import { mutatePATH } from '../shell';
-
 describe('@ionic/cli-utils', () => {
 
   describe('lib/utils/shell', () => {

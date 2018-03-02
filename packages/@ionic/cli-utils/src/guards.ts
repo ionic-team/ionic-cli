@@ -4,14 +4,17 @@ import {
   APIResponseSuccess,
   AngularCLIJson,
   App,
+  AppAssociation,
   CommandPreRun,
   CordovaPackageJson,
   ExitCodeException,
+  GithubRepo,
   IAutomaticallyTreatableAilment,
   ICommand,
   IntegrationName,
   LogLevel,
   Login,
+  Org,
   Plugin,
   Response,
   SSHKey,
@@ -87,6 +90,45 @@ export function isAPIResponseError(r: APIResponse): r is APIResponseError {
   return res && typeof res.error === 'object';
 }
 
+export function isOrg(o: object): o is Org {
+  const org = <Org>o;
+  return org && typeof org.name === 'string';
+}
+
+export function isGithubRepo(r: object): r is GithubRepo {
+  const repo = <GithubRepo>r;
+  return repo
+    && typeof repo.full_name === 'string'
+    && typeof repo.id === 'number';
+}
+
+export function isGithubRepoListResponse(r: APIResponse): r is Response<GithubRepo[]> {
+  if (!isAPIResponseSuccess(r) || !Array.isArray(r.data)) {
+    return false;
+  }
+
+  if (r.data.length === 0) {
+    return true;
+  }
+
+  return typeof r.data[0] === 'object' && isGithubRepo(r.data[0]);
+}
+
+export function isAppAssociation(a: object): a is AppAssociation {
+  const association = <AppAssociation>a;
+  return association
+    && typeof association.repository === 'object'
+    && typeof association.repository.type === 'string'
+    && typeof association.repository.github_id === 'number'
+    && typeof association.repository.html_url === 'string';
+}
+
+export function isAppAssociationResponse(r: APIResponse): r is Response<AppAssociation> {
+  return isAPIResponseSuccess(r)
+    && typeof r.data === 'object'
+    && isAppAssociation(r.data);
+}
+
 export function isApp(d: object): d is App {
   const details = <App>d;
   return details
@@ -94,7 +136,8 @@ export function isApp(d: object): d is App {
     && typeof details.id === 'string'
     && typeof details.name === 'string'
     && typeof details.slug === 'string'
-    && (details.org === null || typeof details.org === 'object');
+    && (!details.org || isOrg(details.org))
+    && (!details.association || isAppAssociation(details.association));
 }
 
 export function isAppResponse(r: APIResponse): r is Response<App> {
@@ -113,6 +156,15 @@ export function isAppsResponse(r: APIResponse): r is Response<App[]> {
   }
 
   return typeof r.data[0] === 'object' && isApp(r.data[0]);
+}
+
+export interface OAuthLogin {
+  redirect_url: string;
+}
+
+export function isOAuthLoginResponse(r: APIResponse): r is Response<OAuthLogin> {
+  const res = <Response<OAuthLogin>>r;
+  return isAPIResponseSuccess(res) && typeof res.data === 'object' && typeof res.data.redirect_url === 'string';
 }
 
 export function isSnapshot(s: object): s is Snapshot {
@@ -160,7 +212,7 @@ export function isLoginResponse(r: APIResponse): r is Response<Login> {
 export function isUser(u: object): u is User {
   const user = <User>u;
   return user
-    && typeof user.id === 'string'
+    && typeof user.id === 'number'
     && typeof user.email === 'string';
 }
 

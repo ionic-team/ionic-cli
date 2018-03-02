@@ -178,15 +178,41 @@ export interface Response<T> extends APIResponseSuccess {
   data: T;
 }
 
-export interface ResourceClient<T extends object, U extends object> {
-  load?(id: string): Promise<T>;
-  delete?(id: string): Promise<void>;
-  create?(details: U): Promise<T>;
-  paginate?(): IPaginator<Response<T[]>>;
+export interface ResourceClientLoad<T extends object> {
+  load(id: string | number, modifiers: ResourceClientRequestModifiers): Promise<T>;
+}
+
+export interface ResourceClientDelete {
+  delete(id: string | number): Promise<void>;
+}
+
+export interface ResourceClientCreate<T extends object, U extends object> {
+  create(details: U): Promise<T>;
+}
+
+export interface ResourceClientPaginate<T extends object> {
+  paginate(args?: Partial<PaginateArgs<Response<T[]>>>): IPaginator<Response<T[]>, PaginatorState>;
+}
+
+export interface ResourceClientRequestModifiers {
+  fields?: string[];
 }
 
 export interface Org {
   name: string;
+}
+
+export interface GithubRepo {
+  full_name: string;
+  id: number;
+}
+
+export interface AppAssociation {
+  repository: {
+    type: 'github';
+    github_id: number;
+    html_url: string;
+  };
 }
 
 export interface App {
@@ -195,6 +221,7 @@ export interface App {
   slug: string;
   org: null | Org;
   repo_url?: string;
+  association?: null | AppAssociation;
 }
 
 export interface Login {
@@ -205,6 +232,7 @@ export interface Login {
 export interface User {
   id: number;
   email: string;
+  oauths?: string[];
 }
 
 export interface Snapshot {
@@ -310,7 +338,7 @@ export interface ISession {
   tokenLogin(token: string): Promise<void>;
   logout(): Promise<void>;
   isLoggedIn(): Promise<boolean>;
-  getUser(): Promise<{ id: string; email: string; }>;
+  getUser(): Promise<{ id: number; }>;
   getUserToken(): Promise<string>;
 }
 
@@ -363,7 +391,7 @@ export interface ConfigFile {
     setup?: boolean;
   };
   user: {
-    id?: string;
+    id?: number;
     email?: string;
   };
   tokens: {
@@ -427,6 +455,11 @@ export interface APIResponseSuccess {
   meta: APIResponseMeta;
 }
 
+export interface APIResponsePageTokenMeta extends APIResponseMeta {
+  prev_page_token?: string;
+  next_page_token?: string;
+}
+
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' | 'HEAD' | 'OPTIONS';
 
 export interface IClient {
@@ -434,10 +467,39 @@ export interface IClient {
 
   make(method: HttpMethod, path: string): Promise<{ req: superagentType.SuperAgentRequest; }>;
   do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess>;
-  paginate<T extends Response<object[]>>(reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>, guard: (res: APIResponseSuccess) => res is T): IPaginator<T>;
+  paginate<T extends Response<object[]>>(args: PaginateArgs<T>): IPaginator<T>;
 }
 
-export interface IPaginator<T extends Response<object[]>> extends IterableIterator<Promise<T>> {}
+export type PaginateArgs<T extends Response<object[]>> = Pick<PaginatorDeps<T>, 'reqgen' | 'guard' | 'state' | 'max'>;
+
+export interface IPaginator<T extends Response<object[]>, S = PaginatorState> extends IterableIterator<Promise<T>> {
+  readonly state: S;
+}
+
+export type PaginatorRequestGenerator = () => Promise<{ req: superagentType.SuperAgentRequest; }>;
+export type PaginatorGuard<T extends Response<object[]>> = (res: APIResponseSuccess) => res is T;
+
+export interface PaginatorState {
+  done: boolean;
+  loaded: number;
+}
+
+export interface PagePaginatorState extends PaginatorState {
+  page: number;
+  page_size?: number;
+}
+
+export interface TokenPaginatorState extends PaginatorState {
+  page_token?: string;
+}
+
+export interface PaginatorDeps<T extends Response<object[]>, S = PaginatorState> {
+  readonly client: IClient;
+  readonly reqgen: PaginatorRequestGenerator;
+  readonly guard: PaginatorGuard<T>;
+  readonly state?: Partial<S>;
+  readonly max?: number;
+}
 
 export interface InfoItem {
   type: 'system' | 'global-packages' | 'local-packages' | 'cli-packages' | 'environment' | 'misc';

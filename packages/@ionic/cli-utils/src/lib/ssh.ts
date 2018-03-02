@@ -3,17 +3,16 @@ import * as path from 'path';
 
 import { ERROR_FILE_NOT_FOUND, fsReadFile, fsStat } from '@ionic/cli-framework/utils/fs';
 
-import { IClient, IPaginator, ResourceClient, Response, SSHKey } from '../definitions';
+import { IClient, IPaginator, PaginateArgs, PaginatorState, ResourceClientCreate, ResourceClientDelete, ResourceClientLoad, ResourceClientPaginate, Response, SSHKey } from '../definitions';
 import { isSSHKeyListResponse, isSSHKeyResponse } from '../guards';
-
-import { createFatalAPIFormat } from './http';
+import { ResourceClient, createFatalAPIFormat } from './http';
 
 export const ERROR_SSH_MISSING_PRIVKEY = 'SSH_MISSING_PRIVKEY';
 export const ERROR_SSH_INVALID_PUBKEY = 'SSH_INVALID_PUBKEY';
 export const ERROR_SSH_INVALID_PRIVKEY = 'SSH_INVALID_PRIVKEY';
 
-export async function getGeneratedPrivateKeyPath(userId = 'anonymous'): Promise<string> {
-  return path.resolve(os.homedir(), '.ssh', 'ionic', userId);
+export async function getGeneratedPrivateKeyPath(userId = 0): Promise<string> {
+  return path.resolve(os.homedir(), '.ssh', 'ionic', String(userId));
 }
 
 export async function parsePublicKeyFile(pubkeyPath: string): Promise<[string, string, string, string]> {
@@ -73,19 +72,20 @@ export async function validatePrivateKey(keyPath: string): Promise<void> {
 export interface SSHKeyClientDeps {
   readonly client: IClient;
   readonly token: string;
-  readonly user: { id: string; };
+  readonly user: { id: number; };
 }
 
 export interface SSHKeyCreateDetails {
   pubkey: string;
 }
 
-export class SSHKeyClient implements ResourceClient<SSHKey, SSHKeyCreateDetails> {
+export class SSHKeyClient extends ResourceClient implements ResourceClientLoad<SSHKey>, ResourceClientDelete, ResourceClientCreate<SSHKey, SSHKeyCreateDetails>, ResourceClientPaginate<SSHKey> {
   protected client: IClient;
   protected token: string;
-  protected user: { id: string; };
+  protected user: { id: number; };
 
   constructor({ client, token, user }: SSHKeyClientDeps) {
+    super();
     this.client = client;
     this.token = token;
     this.user = user;
@@ -93,7 +93,8 @@ export class SSHKeyClient implements ResourceClient<SSHKey, SSHKeyCreateDetails>
 
   async create({ pubkey }: SSHKeyCreateDetails): Promise<SSHKey> {
     const { req } = await this.client.make('POST', `/users/${this.user.id}/sshkeys`);
-    req.set('Authorization', `Bearer ${this.token}`).send({ pubkey });
+    this.applyAuthentication(req, this.token);
+    req.send({ pubkey });
     const res = await this.client.do(req);
 
     if (!isSSHKeyResponse(res)) {
@@ -105,7 +106,7 @@ export class SSHKeyClient implements ResourceClient<SSHKey, SSHKeyCreateDetails>
 
   async load(id: string): Promise<SSHKey> {
     const { req } = await this.client.make('GET', `/users/${this.user.id}/sshkeys/${id}`);
-    req.set('Authorization', `Bearer ${this.token}`);
+    this.applyAuthentication(req, this.token);
     const res = await this.client.do(req);
 
     if (!isSSHKeyResponse(res)) {
@@ -117,18 +118,18 @@ export class SSHKeyClient implements ResourceClient<SSHKey, SSHKeyCreateDetails>
 
   async delete(id: string): Promise<void> {
     const { req } = await this.client.make('DELETE', `/users/${this.user.id}/sshkeys/${id}`);
-    req.set('Authorization', `Bearer ${this.token}`);
+    this.applyAuthentication(req, this.token);
     await this.client.do(req);
   }
 
-  paginate(): IPaginator<Response<SSHKey[]>> {
-    return this.client.paginate(
-      async () => {
+  paginate(args: Partial<PaginateArgs<Response<SSHKey[]>>> = {}): IPaginator<Response<SSHKey[]>, PaginatorState> {
+    return this.client.paginate({
+      reqgen: async () => {
         const { req } = await this.client.make('GET', `/users/${this.user.id}/sshkeys`);
-        req.set('Authorization', `Bearer ${this.token}`);
+        this.applyAuthentication(req, this.token);
         return { req };
       },
-      isSSHKeyListResponse
-    );
+      guard: isSSHKeyListResponse,
+    });
   }
 }

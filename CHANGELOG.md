@@ -58,6 +58,7 @@ from the breaking changes listed below, upgrading to CLI v4 should be seamless.
 * `--ssl`/`-s` option added to `ionic serve` for Ionic Angular v4 projects. This
   will generate a self-signed certificate unless the `ssl.key` and `ssl.cert`
   project config settings are set. See `ionic serve --help`.
+* `ionic link` now supports linking Github repos to your Ionic Pro app.
 * `ionic s` is now an alias for `ionic serve`.
 * New `ionic config unset` command for deleting config values.
 * If `ionic:build` or `ionic:serve` npm scripts are defined in your

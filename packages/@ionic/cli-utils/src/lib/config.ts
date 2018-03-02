@@ -7,6 +7,7 @@ import * as lodash from 'lodash';
 import { ParsedArgs } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { ERROR_FILE_INVALID_JSON, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
+import { str2num } from '@ionic/cli-framework/utils/string';
 
 import {
   ConfigFile,
@@ -152,6 +153,10 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
 
     if (!results.user) {
       results.user = {};
+    }
+
+    if (typeof results.user.id === 'string') {
+      results.user.id = str2num(results.user.id);
     }
 
     if (!results.tokens) {

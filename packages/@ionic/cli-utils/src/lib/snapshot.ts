@@ -1,13 +1,7 @@
-import {
-  IClient,
-  IPaginator,
-  ResourceClient,
-  Response,
-  Snapshot,
-} from '../definitions';
+import { IClient, IPaginator, PaginateArgs, ResourceClientLoad, ResourceClientPaginate, Response, Snapshot } from '../definitions';
 
 import { isSnapshotListResponse, isSnapshotResponse } from '../guards';
-import { createFatalAPIFormat } from './http';
+import { ResourceClient, createFatalAPIFormat } from './http';
 
 export interface SnapshotClientDeps {
   readonly client: IClient;
@@ -15,12 +9,13 @@ export interface SnapshotClientDeps {
   readonly app: { id: string; };
 }
 
-export class SnapshotClient implements ResourceClient<Snapshot, never> {
+export class SnapshotClient extends ResourceClient implements ResourceClientLoad<Snapshot>, ResourceClientPaginate<Snapshot> {
   protected client: IClient;
   protected token: string;
   protected app: { id: string; };
 
   constructor({ client, app, token }: SnapshotClientDeps) {
+    super();
     this.client = client;
     this.token = token;
     this.app = app;
@@ -28,7 +23,7 @@ export class SnapshotClient implements ResourceClient<Snapshot, never> {
 
   async load(id: string): Promise<Snapshot> {
     const { req } = await this.client.make('GET', `/apps/${this.app.id}/snapshots/${id}`);
-    req.set('Authorization', `Bearer ${this.token}`);
+    this.applyAuthentication(req, this.token);
     const res = await this.client.do(req);
 
     if (!isSnapshotResponse(res)) {
@@ -38,15 +33,14 @@ export class SnapshotClient implements ResourceClient<Snapshot, never> {
     return res.data;
   }
 
-  paginate(): IPaginator<Response<Snapshot[]>> {
-    return this.client.paginate(
-      async () => {
+  paginate(args: Partial<PaginateArgs<Response<Snapshot[]>>> = {}): IPaginator<Response<Snapshot[]>> {
+    return this.client.paginate({
+      reqgen: async () => {
         const { req } = await this.client.make('GET', `/apps/${this.app.id}/snapshots`);
-        req.set('Authorization', `Bearer ${this.token}`);
+        this.applyAuthentication(req, this.token);
         return { req };
       },
-      isSnapshotListResponse
-    );
+      guard: isSnapshotListResponse,
+    });
   }
-
 }

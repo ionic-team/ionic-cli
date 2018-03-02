@@ -1,23 +1,12 @@
 import * as util from 'util';
 
 import chalk from 'chalk';
+import * as lodash from 'lodash';
 import { conform } from '@ionic/cli-framework/utils/array';
 
 import * as superagentType from 'superagent';
 
-import {
-  APIResponse,
-  APIResponseError,
-  APIResponseSuccess,
-  CreateRequestOptions,
-  HttpMethod,
-  IClient,
-  IConfig,
-  IPaginator,
-  Response,
-  SuperAgentError,
-} from '../definitions';
-
+import { APIResponse, APIResponseError, APIResponseMeta, APIResponsePageTokenMeta, APIResponseSuccess, CreateRequestOptions, HttpMethod, IClient, IConfig, IPaginator, PagePaginatorState, PaginateArgs, PaginatorDeps, PaginatorGuard, PaginatorRequestGenerator, ResourceClientRequestModifiers, Response, SuperAgentError, TokenPaginatorState } from '../definitions';
 import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
 import { getGlobalProxy } from './utils/http';
 import { fsReadFile } from '@ionic/cli-framework/utils/fs';
@@ -147,23 +136,36 @@ export class Client implements IClient {
     return r;
   }
 
-  paginate<T extends Response<object[]>>(reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>, guard: (res: APIResponseSuccess) => res is T): Paginator<T> {
-    return new Paginator<T>(this, reqgen, guard);
+  paginate<T extends Response<object[]>>(args: PaginateArgs<T>): IPaginator<T> {
+    return new Paginator<T>({ client: this, ...args });
   }
 }
 
-export class Paginator<T extends Response<object[]>> implements IPaginator<T> {
-  protected state?: { page: number; pageSize: number; };
-  protected done = false;
+export class Paginator<T extends Response<object[]>> implements IPaginator<T, PagePaginatorState> {
+  protected client: IClient;
+  protected reqgen: PaginatorRequestGenerator;
+  protected guard: PaginatorGuard<T>;
+  protected max?: number;
 
-  constructor(
-    protected client: IClient,
-    protected reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>,
-    protected guard: (res: APIResponseSuccess) => res is T
-  ) {}
+  readonly state: PagePaginatorState;
+
+  constructor({ client, reqgen, guard, state, max }: PaginatorDeps<T, PagePaginatorState>) {
+    const defaultState = { page: 1, done: false, loaded: 0 };
+
+    this.client = client;
+    this.reqgen = reqgen;
+    this.guard = guard;
+    this.max = max;
+
+    if (!state) {
+      state = { page_size: 100, ...defaultState };
+    }
+
+    this.state = lodash.assign({}, state, defaultState);
+  }
 
   next(): IteratorResult<Promise<T>> {
-    if (this.done) {
+    if (this.state.done) {
       return { done: true } as IteratorResult<Promise<T>>; // TODO: why can't I exclude value?
     }
 
@@ -172,19 +174,22 @@ export class Paginator<T extends Response<object[]>> implements IPaginator<T> {
       value: (async () => {
         const { req } = await this.reqgen();
 
-        if (!this.state) {
-          this.state = { page: 1, pageSize: 100 };
-        }
-
-        req.query({ 'page': this.state.page, 'page_size': this.state.pageSize });
+        req.query(lodash.pick(this.state, ['page', 'page_size']));
 
         const res = await this.client.do(req);
+
         if (!this.guard(res)) {
           throw createFatalAPIFormat(req, res);
         }
 
-        if (res.data.length === 0 || res.data.length < this.state.pageSize) {
-          this.done = true;
+        this.state.loaded += res.data.length;
+
+        if (
+          res.data.length === 0 || // no resources in this page, we're done
+          (typeof this.max === 'number' && this.state.loaded >= this.max) || // met or exceeded maximum requested
+          (typeof this.state.page_size === 'number' && res.data.length < this.state.page_size) // number of resources less than page size, so nothing on next page
+        ) {
+          this.state.done = true;
         }
 
         this.state.page++;
@@ -196,6 +201,100 @@ export class Paginator<T extends Response<object[]>> implements IPaginator<T> {
 
   [Symbol.iterator](): this {
     return this;
+  }
+}
+
+export class TokenPaginator<T extends Response<object[]>> implements IPaginator<T, TokenPaginatorState> {
+  protected client: IClient;
+  protected reqgen: PaginatorRequestGenerator;
+  protected guard: PaginatorGuard<T>;
+  protected max?: number;
+
+  readonly state: TokenPaginatorState;
+
+  constructor({ client, reqgen, guard, state, max }: PaginatorDeps<T, TokenPaginatorState>) {
+    const defaultState = { done: false, loaded: 0 };
+
+    this.client = client;
+    this.reqgen = reqgen;
+    this.guard = guard;
+    this.max = max;
+
+    if (!state) {
+      state = { ...defaultState };
+    }
+
+    this.state = lodash.assign({}, state, defaultState);
+  }
+
+  next(): IteratorResult<Promise<T>> {
+    if (this.state.done) {
+      return { done: true } as IteratorResult<Promise<T>>; // TODO: why can't I exclude value?
+    }
+
+    return {
+      done: false,
+      value: (async () => {
+        const { req } = await this.reqgen();
+
+        if (this.state.page_token) {
+          req.query({ page_token: this.state.page_token });
+        }
+
+        const res = await this.client.do(req);
+
+        if (!this.isPageTokenResponseMeta(res.meta)) {
+          throw createFatalAPIFormat(req, res);
+        }
+
+        const nextPageToken = res.meta.next_page_token;
+
+        if (!this.guard(res)) {
+          throw createFatalAPIFormat(req, res);
+        }
+
+        this.state.loaded += res.data.length;
+
+        if (
+          res.data.length === 0 || // no resources in this page, we're done
+          (typeof this.max === 'number' && this.state.loaded >= this.max) || // met or exceeded maximum requested
+          !nextPageToken // no next page token, must be done
+        ) {
+          this.state.done = true;
+        }
+
+        this.state.page_token = nextPageToken;
+
+        return res;
+      })(),
+    };
+  }
+
+  isPageTokenResponseMeta(m: APIResponseMeta): m is APIResponsePageTokenMeta {
+    const meta = <APIResponsePageTokenMeta>m;
+    return meta
+      && (!meta.prev_page_token || typeof meta.prev_page_token === 'string')
+      && (!meta.next_page_token || typeof meta.next_page_token === 'string');
+  }
+
+  [Symbol.iterator](): this {
+    return this;
+  }
+}
+
+export abstract class ResourceClient {
+  protected applyModifiers(req: superagentType.Request, modifiers?: ResourceClientRequestModifiers) {
+    if (!modifiers) {
+      return;
+    }
+
+    if (modifiers.fields) {
+      req.query({ fields: modifiers.fields });
+    }
+  }
+
+  protected applyAuthentication(req: superagentType.Request, token: string) {
+    req.set('Authorization', `Bearer ${token}`);
   }
 }
 

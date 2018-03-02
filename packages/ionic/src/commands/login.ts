@@ -91,6 +91,7 @@ If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
         type: 'password',
         name: 'password',
         message: 'Password:',
+        mask: '*',
         validate: v => validators.required(v),
       });
 
@@ -110,7 +111,5 @@ If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
     await this.env.session.login(email, password);
 
     this.env.log.ok('You are logged in!');
-
-    await this.env.runCommand(['ssh', 'setup']);
   }
 }

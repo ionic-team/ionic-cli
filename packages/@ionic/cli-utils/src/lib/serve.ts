@@ -7,6 +7,7 @@ import * as lodash from 'lodash';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
+import { BaseError } from '@ionic/cli-framework/lib/errors';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
@@ -26,7 +27,7 @@ import {
 
 import { isCordovaPackageJson } from '../guards';
 import { OptionGroup, PROJECT_FILE } from '../constants';
-import { Exception, FatalException, RunnerException, RunnerNotFoundException } from './errors';
+import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Runner } from './runner';
 import { Hook } from './hooks';
 
@@ -181,7 +182,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     try {
       await before.run({ name: before.name, serve: options });
     } catch (e) {
-      if (e instanceof Exception) {
+      if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }
 
@@ -276,7 +277,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       try {
         await after.run({ name: after.name, serve: lodash.assign({}, options, details) });
       } catch (e) {
-        if (e instanceof Exception) {
+        if (e instanceof BaseError) {
           throw new FatalException(e.message);
         }
 

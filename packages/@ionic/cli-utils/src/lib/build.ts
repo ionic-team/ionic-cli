@@ -1,17 +1,10 @@
 import chalk from 'chalk';
 
-import {
-  BaseBuildOptions,
-  BuildOptions,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  IonicEnvironment,
-  ProjectType,
-} from '../definitions';
+import { BaseError } from '@ionic/cli-framework/lib/errors';
 
+import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, IonicEnvironment, ProjectType } from '../definitions';
 import { PROJECT_FILE } from '../constants';
-import { Exception, FatalException, RunnerException, RunnerNotFoundException } from './errors';
+import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Runner } from './runner';
 import { Hook } from './hooks';
 
@@ -67,7 +60,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> extends Runner<T,
     try {
       await before.run({ name: before.name, build: options });
     } catch (e) {
-      if (e instanceof Exception) {
+      if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }
 
@@ -81,7 +74,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> extends Runner<T,
     try {
       await after.run({ name: after.name, build: options });
     } catch (e) {
-      if (e instanceof Exception) {
+      if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }
 
