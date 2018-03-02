@@ -1,9 +1,23 @@
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
+import { createCaseInsensitiveObject } from './object';
+
 const debug = Debug('ionic:cli-framework:utils:process');
 
 export const ERROR_TIMEOUT_REACHED = 'TIMEOUT_REACHED';
+
+/**
+ * Creates an alternative implementation of `process.env` object.
+ *
+ * On Windows, `process.env` is a magic object that offers case-insensitive
+ * environment variable access. On other platforms, case sensitivity matters.
+ * This method creates an empty "`process.env`" object type that works for all
+ * platforms.
+ */
+export function createProcessEnv(...sources: { [key: string]: string; }[]): { [key: string]: string; } {
+  return lodash.assign(process.platform === 'win32' ? createCaseInsensitiveObject() : {}, ...sources);
+}
 
 /**
  * Resolves when the given amount of milliseconds has passed.
