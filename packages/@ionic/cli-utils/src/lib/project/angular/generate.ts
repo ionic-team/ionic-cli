@@ -133,7 +133,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
     const schematics = await this.getSchematics();
 
     if (options['list']) {
-      const columnHeaders = ['name', 'aliases', 'description', 'collection'];
+      const columnHeaders = ['name', 'alias', 'description', 'collection'];
       this.env.log.rawmsg(columnar(schematics.map(({ type, description, collection, aliases }) => [chalk.green(type), aliases.map(a => chalk.green(a)).join(', '), description, chalk.green(collection)]), { columnHeaders }));
       throw new FatalException('', 0);
     }
