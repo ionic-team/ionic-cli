@@ -17,9 +17,16 @@
     "LICENSE",
     "README.md"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ionic-team/ionic-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ionic-team/ionic-cli/issues"
+  },
   "scripts": {
-    "clean": "rimraf ./dist",
-    "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
+    "clean": "rimraf dist",
+    "lint": "tslint --config tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
     "test": "jest",
@@ -42,18 +49,17 @@
     "@types/express": "^4.11.0",
     "@types/gulp": "^3.8.36",
     "@types/http-proxy-middleware": "^0.17.2",
+    "@types/node": "^6.0.101",
     "@types/ws": "^3.2.1",
-    "rimraf": "^2.6.2"
+    "jest": "^22.4.2",
+    "jest-cli": "^22.4.2",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^22.4.1",
+    "tslint": "^5.9.1",
+    "typescript": "~2.6.2"
   },
   "optionalDependencies": {
     "gulp": "^3.9.1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ionic-team/ionic-cli.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ionic-team/ionic-cli/issues"
   },
   "jest": {
     "globals": {

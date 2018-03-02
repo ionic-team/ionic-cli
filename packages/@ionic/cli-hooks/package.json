@@ -7,18 +7,10 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf *.js utils",
-    "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
+    "lint": "tslint --config tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
     "prepublishOnly": "npm run build"
-  },
-  "dependencies": {
-    "parse5": "^4.0.0",
-    "tslib": "^1.9.0"
-  },
-  "devDependencies": {
-    "@ionic/cli-utils": "*",
-    "rimraf": "^2.6.2"
   },
   "repository": {
     "type": "git",
@@ -26,6 +18,20 @@
   },
   "bugs": {
     "url": "https://github.com/ionic-team/ionic-cli/issues"
+  },
+  "dependencies": {
+    "parse5": "^4.0.0",
+    "tslib": "^1.9.0"
+  },
+  "devDependencies": {
+    "@ionic/cli-utils": "*",
+    "@types/node": "^6.0.101",
+    "jest": "^22.4.2",
+    "jest-cli": "^22.4.2",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^22.4.1",
+    "tslint": "^5.9.1",
+    "typescript": "~2.6.2"
   },
   "jest": {
     "globals": {

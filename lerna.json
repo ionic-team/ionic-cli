@@ -4,6 +4,11 @@
   "packages": [
     "packages/**"
   ],
+  "commands": {
+    "bootstrap": {
+      "hoist": true
+    }
+  },
   "changelog": {
     "repo": "ionic-team/ionic-cli",
     "labels": {

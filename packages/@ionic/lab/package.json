@@ -17,11 +17,18 @@
     "LICENSE",
     "README.md"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ionic-team/ionic-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ionic-team/ionic-cli/issues"
+  },
   "scripts": {
     "clean": "npm run clean.tsc",
-    "clean.tsc": "rimraf ./dist",
-    "clean.stencil": "rimraf ./www",
-    "lint": "tslint --config ../../../tslint.js --project tsconfig.json",
+    "clean.tsc": "rimraf dist",
+    "clean.stencil": "rimraf www",
+    "lint": "tslint --config tslint.js --project tsconfig.json",
     "build": "npm run build.tsc && npm run build.stencil",
     "build.stencil": "npm run clean.stencil && stencil build",
     "build.tsc": "npm run clean.tsc && tsc",
@@ -40,15 +47,14 @@
     "@stencil/core": "^0.1.6",
     "@stencil/dev-server": "0.0.18",
     "@types/express": "^4.11.0",
+    "@types/node": "^6.0.101",
     "concurrently": "^3.5.1",
-    "rimraf": "^2.6.2"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ionic-team/ionic-cli.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ionic-team/ionic-cli/issues"
+    "jest": "^22.4.2",
+    "jest-cli": "^22.4.2",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^22.4.1",
+    "tslint": "^5.9.1",
+    "typescript": "~2.6.2"
   },
   "jest": {
     "globals": {
