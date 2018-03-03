@@ -48,6 +48,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         name: 'livereload',
         description: 'Spin up dev server to live-reload www files',
         type: Boolean,
+        aliases: ['l'],
       } : o),
       // Cordova Options
       {
