@@ -6,7 +6,7 @@
   "author": "Ionic Team <hi@ionic.io> (https://ionic.io)",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf *.js utils",
+    "clean": "rimraf add-cordova-engine.* remove-cordova-engine.* utils",
     "lint": "tslint --config tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
