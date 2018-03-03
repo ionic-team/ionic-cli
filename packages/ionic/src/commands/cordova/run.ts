@@ -44,7 +44,11 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         type: Boolean,
         default: true,
       },
-      ...COMMON_SERVE_COMMAND_OPTIONS,
+      ...COMMON_SERVE_COMMAND_OPTIONS.map(o => o.name === 'livereload' ? {
+        name: 'livereload',
+        description: 'Spin up dev server to live-reload www files',
+        type: Boolean,
+      } : o),
       // Cordova Options
       {
         name: 'debug',

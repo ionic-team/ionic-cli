@@ -42,8 +42,6 @@ from the breaking changes listed below, upgrading to CLI v4 should be seamless.
   templates), please use the repository URL. For example, to create the
   conference app, use `ionic start <name>
   https://github.com/ionic-team/ionic-conference-app`.
-* Livereload is now the default for `ionic cordova run` and `ionic cordova
-  emulate`. This behavior can be disabled with the `--no-livereload` option.
 * The `--target` option for Cordova has been renamed to `--cordova-target` to
   disambiguate from the Angular CLI's `--target` option.
 * The `ionic:watch:before` hook has been renamed to `ionic:serve:before`, but
