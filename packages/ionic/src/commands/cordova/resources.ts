@@ -200,11 +200,11 @@ This command uses Ionic servers, so we require you to be logged into your free I
           }
           return list;
         }, <string[]>[])
-        .map(v => chalk.bold(v))
-        .join(', ');
+        .map(v => `- ${chalk.bold(v)}`)
+        .join('\n');
 
       throw new FatalException(
-        `Source image files were not found for the following platforms/types: ${missingImageText}\n` +
+        `Source image files were not found for the following platforms/types:\n${missingImageText}\n\n` +
         `Please review ${chalk.green('--help')}`
       );
     }
