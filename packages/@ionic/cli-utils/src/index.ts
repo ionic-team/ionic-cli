@@ -119,7 +119,7 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     const info: InfoItem[] = [
       { type: 'cli-packages', key: name, value: version, path: path.dirname(__filename) },
       { type: 'cli-packages', key: 'ionic', flair: 'Ionic CLI', value: plugin.meta.pkg.version, path: path.dirname(path.dirname(plugin.meta.filePath)) },
-      { type: 'system', key: 'Node', value: node },
+      { type: 'system', key: 'NodeJS', value: node },
       { type: 'system', key: 'npm', value: npm || 'not installed' },
       { type: 'system', key: 'OS', value: os },
     ];
