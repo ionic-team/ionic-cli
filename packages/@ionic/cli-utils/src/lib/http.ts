@@ -6,7 +6,7 @@ import { conform } from '@ionic/cli-framework/utils/array';
 
 import * as superagentType from 'superagent';
 
-import { APIResponse, APIResponseError, APIResponseMeta, APIResponsePageTokenMeta, APIResponseSuccess, CreateRequestOptions, HttpMethod, IClient, IConfig, IPaginator, PagePaginatorState, PaginateArgs, PaginatorDeps, PaginatorGuard, PaginatorRequestGenerator, ResourceClientRequestModifiers, Response, SuperAgentError, TokenPaginatorState } from '../definitions';
+import { APIResponse, APIResponseMeta, APIResponsePageTokenMeta, APIResponseSuccess, CreateRequestOptions, HttpMethod, IClient, IConfig, IPaginator, PagePaginatorState, PaginateArgs, PaginatorDeps, PaginatorGuard, PaginatorRequestGenerator, ResourceClientRequestModifiers, Response, SuperAgentError, TokenPaginatorState } from '../definitions';
 import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
 import { getGlobalProxy } from './utils/http';
 import { fsReadFile } from '@ionic/cli-framework/utils/fs';
@@ -129,8 +129,10 @@ export class Client implements IClient {
     const r = transformAPIResponse(res);
 
     if (isAPIResponseError(r)) {
-      throw new FatalException('API request was successful, but the response output format was that of an error.\n'
-                             + formatAPIError(req, r));
+      throw new FatalException(
+        'API request was successful, but the response output format was that of an error.\n' +
+        formatAPIResponse(req, r)
+      );
     }
 
     return r;
@@ -317,8 +319,10 @@ export function transformAPIResponse(r: superagentType.Response): APIResponse {
 }
 
 export function createFatalAPIFormat(req: superagentType.SuperAgentRequest, res: APIResponse): FatalException {
-  return new FatalException('API request was successful, but the response format was unrecognized.\n'
-                          + formatAPIResponse(req, res));
+  return new FatalException(
+    'API request was successful, but the response format was unrecognized.\n' +
+    formatAPIResponse(req, res)
+  );
 }
 
 export function formatSuperAgentError(e: SuperAgentError): string {
@@ -332,34 +336,27 @@ export function formatSuperAgentError(e: SuperAgentError): string {
     const r = transformAPIResponse(res);
     f += formatAPIResponse(req, r);
   } catch (e) {
-    f += `HTTP Error ${statusCode}: ${req.method.toUpperCase()} ${req.url}\n`;
-    // TODO: do this only if verbose?
-    f += '\n' + (res.text ? res.text.substring(0, FORMAT_ERROR_BODY_MAX_LENGTH) : '<no buffered body>');
+    f += (
+      `HTTP Error ${statusCode}: ${req.method.toUpperCase()} ${req.url}\n` +
+      '\n' + (res.text ? res.text.substring(0, FORMAT_ERROR_BODY_MAX_LENGTH) : '<no buffered body>')
+    );
 
     if (res.text && res.text.length > FORMAT_ERROR_BODY_MAX_LENGTH) {
       f += ` ...\n\n[ truncated ${res.text.length - FORMAT_ERROR_BODY_MAX_LENGTH} characters ]`;
     }
   }
 
-  return chalk.bold(chalk.red(f));
+  return chalk.red.bold(f);
 }
 
-export function formatAPIResponse(req: superagentType.SuperAgentRequest, r: APIResponse) {
-  if (isAPIResponseSuccess(r)) {
-    return formatAPISuccess(req, r);
-  } else {
-    return formatAPIError(req, r);
-  }
+function formatAPIResponse(req: superagentType.SuperAgentRequest, r: APIResponse): string {
+  return formatAPIData(req, r.meta.status, isAPIResponseSuccess(r) ? r.data : r.error);
 }
 
-export function formatAPISuccess(req: superagentType.SuperAgentRequest, r: APIResponseSuccess): string {
-  return `Request: ${req.method} ${req.url}\n`
-    + `Response: ${r.meta.status}\n`
-    + `Body: \n${util.inspect(r.data, { colors: chalk.enabled })}`;
-}
-
-export function formatAPIError(req: superagentType.SuperAgentRequest, r: APIResponseError): string {
-  return `Request: ${req.method} ${req.url}\n`
-    + `Response: ${r.meta.status}\n`
-    + `Body: \n${util.inspect(r.error, { colors: chalk.enabled })}`;
+export function formatAPIData(req: superagentType.SuperAgentRequest, status: number, msg: object | string): string {
+  return (
+    `Request: ${req.method} ${req.url}\n` +
+    `Response: ${status}\n` +
+    `Body: \n${util.inspect(msg, { colors: chalk.enabled })}`
+  );
 }

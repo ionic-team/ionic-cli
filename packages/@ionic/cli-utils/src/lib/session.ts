@@ -1,17 +1,10 @@
 import chalk from 'chalk';
 
-import {
-  IClient,
-  IConfig,
-  IProject,
-  ISession,
-  IonicEnvironment,
-} from '../definitions';
-
+import { IClient, IConfig, IProject, ISession, IonicEnvironment } from '../definitions';
 import { isLoginResponse, isSuperAgentError } from '../guards';
 
-import { SessionException } from './errors';
-import { createFatalAPIFormat } from './http';
+import { FatalException, SessionException } from './errors';
+import { formatAPIData } from './http';
 
 export class SessionDeps {
   readonly config: IConfig;
@@ -79,7 +72,16 @@ export class ProSession extends BaseSession implements ISession {
       const res = await this.client.do(req);
 
       if (!isLoginResponse(res)) {
-        throw createFatalAPIFormat(req, res);
+        const data = res.data;
+
+        if (hasTokenAttribute(data)) {
+          data.token = '*****';
+        }
+
+        throw new FatalException(
+          'API request was successful, but the response format was unrecognized.\n' +
+          formatAPIData(req, res.meta.status, data)
+        );
       }
 
       const { token, user } = res.data;
@@ -133,7 +135,10 @@ export class ProSession extends BaseSession implements ISession {
 export async function promptToLogin(env: IonicEnvironment): Promise<void> {
   const { validators } = await import('@ionic/cli-framework');
 
-  env.log.msg(`Log into your Ionic account\nIf you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`);
+  env.log.msg(
+    `Log into your Ionic account\n` +
+    `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`
+  );
 
   const email = await env.prompt({
     type: 'input',
@@ -151,4 +156,9 @@ export async function promptToLogin(env: IonicEnvironment): Promise<void> {
   });
 
   await env.session.login(email, password);
+}
+
+function hasTokenAttribute(r: any): r is { token: string; } {
+  const res = <any>r;
+  return res && typeof res === 'object' && typeof res.token === 'string';
 }
