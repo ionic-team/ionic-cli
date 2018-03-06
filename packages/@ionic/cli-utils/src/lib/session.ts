@@ -4,7 +4,7 @@ import { IClient, IConfig, IProject, ISession, IonicEnvironment } from '../defin
 import { isLoginResponse, isSuperAgentError } from '../guards';
 
 import { FatalException, SessionException } from './errors';
-import { formatAPIData } from './http';
+import { formatResponseError } from './http';
 
 export class SessionDeps {
   readonly config: IConfig;
@@ -80,7 +80,7 @@ export class ProSession extends BaseSession implements ISession {
 
         throw new FatalException(
           'API request was successful, but the response format was unrecognized.\n' +
-          formatAPIData(req, res.meta.status, data)
+          formatResponseError(req, res.meta.status, data)
         );
       }
 

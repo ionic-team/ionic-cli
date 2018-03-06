@@ -174,7 +174,7 @@ describe('@ionic/cli-utils', () => {
       });
     });
 
-    describe('findMostSpecificImage', () => {
+    describe('findMostSpecificSourceImage', () => {
       const srcImagesAvailable: SourceImage[] = [
         {
           width: 640,
@@ -237,7 +237,7 @@ describe('@ionic/cli-utils', () => {
           dest: '/resourcesDir/ios/splash/Default-568h@2x~iphone.png'
         };
 
-        const result = resources.findMostSpecificImage(imgResource, srcImagesAvailable);
+        const result = resources.findMostSpecificSourceImage(imgResource, srcImagesAvailable);
 
         expect(result).toEqual({
           width: 640,
@@ -264,7 +264,7 @@ describe('@ionic/cli-utils', () => {
           dest: '/resourcesDir/ios/splash/Default-568h@2x~iphone.png'
         };
 
-        const result = resources.findMostSpecificImage(imgResource, srcImagesAvailable);
+        const result = resources.findMostSpecificSourceImage(imgResource, srcImagesAvailable);
 
         expect(result).toEqual({
           ext: '.png',
@@ -278,7 +278,7 @@ describe('@ionic/cli-utils', () => {
       });
     });
 
-    describe('uploadSourceImages', () => {
+    describe('uploadSourceImage', () => {
       it('should upload an image and receive back metadata', async () => {
         const createRequestSpy = jest.spyOn(httpSpy, 'createRequest');
         const createRequestMock = Promise.resolve({ req: {
@@ -297,7 +297,7 @@ describe('@ionic/cli-utils', () => {
 
         createRequestSpy.mockImplementationOnce(() => createRequestMock);
 
-        const sourceImages: SourceImage[] = [{
+        const sourceImage = {
           ext: '.png',
           height: 421,
           width: 337,
@@ -306,56 +306,17 @@ describe('@ionic/cli-utils', () => {
           resType: 'icon',
           path: path.join(__dirname, 'fixtures', 'icon.png'),
           imageId: '60278b0fa1d5abf43d07c5ae0f8a0b41'
-        }];
+        };
 
-        const response = await resources.uploadSourceImages({ config: { load: async () => undefined } }, sourceImages);
-        expect(response).toEqual([{
+        const response = await resources.uploadSourceImage({ config: { load: async () => undefined } }, sourceImage);
+        expect(response).toEqual({
           Error: '',
           Width: 337,
           Height: 421,
           Type: 'png',
           Vector: false
-        }]);
+        });
       });
-    });
-
-    describe('transformResourceImage', () => {
-
-      it('should upload an image and write a stream to the destination', async () => {
-        jest.spyOn(fsSpy, 'writeStreamToFile').mockImplementationOnce(() => Promise.resolve());
-        const createRequestSpy = jest.spyOn(httpSpy, 'createRequest');
-        const requestMock = {
-          req: {
-            type: jest.fn().mockReturnThis(),
-            send: jest.fn().mockReturnThis(),
-            on: jest.fn().mockReturnThis(),
-          }
-        };
-
-        const createRequestMock = Promise.resolve(requestMock);
-
-        createRequestSpy.mockImplementationOnce(() => createRequestMock);
-
-        const imgResource: ImageResource = {
-          platform: 'android',
-          resType: 'splash',
-          name: 'drawable-land-ldpi-screen.png',
-          width: 320,
-          height: 240,
-          density: 'land-ldpi',
-          nodeName: 'splash' ,
-          nodeAttributes: ['src', 'density'],
-          imageId: '60278b0fa1d5abf43d07c5ae0f8a0b41',
-          dest: path.join(__dirname, 'fixtures', 'drawable-land-ldpi-screen.png')
-        };
-
-        await resources.transformResourceImage({ config: { load: async () => undefined } }, imgResource);
-
-        expect(fsSpy.writeStreamToFile).toHaveBeenCalledWith(
-          requestMock.req, imgResource.dest
-        );
-      });
-
     });
 
   });

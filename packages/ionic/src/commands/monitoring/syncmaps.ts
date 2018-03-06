@@ -112,7 +112,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
     this.env.log.msg(await this.env.config.getAPIUrl());
 
     const c = await this.env.config.load();
-    const { req } = await createRequest('post', sourcemapPost.url, c);
+    const { req } = await createRequest('POST', sourcemapPost.url, c);
 
     req
       .buffer()
@@ -120,7 +120,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
       .field('file', fileData)
       // .on('progress', (event: any) => {
       // })
-      .end((err: any, res: any) => {
+      .end((err, res) => {
         if (err) {
           this.env.log.error('Unable to upload sourcemap');
           this.env.log.error(err);

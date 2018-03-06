@@ -22,7 +22,7 @@ let CAS: string[] | undefined;
 let CERTS: string[] | undefined;
 let KEYS: string[] | undefined;
 
-export async function createRequest(method: string, url: string, opts?: CreateRequestOptions): Promise<{ req: superagentType.SuperAgentRequest; }> {
+export async function createRequest(method: HttpMethod, url: string, opts?: CreateRequestOptions): Promise<{ req: superagentType.SuperAgentRequest; }> {
   const superagent = await import('superagent');
   const [ proxy, proxyVar ] = getGlobalProxy();
 
@@ -73,7 +73,7 @@ export async function createRequest(method: string, url: string, opts?: CreateRe
 }
 
 export async function download(url: string, ws: NodeJS.WritableStream, opts?: { progress?: (loaded: number, total: number) => void; } & CreateRequestOptions) {
-  const { req } = await createRequest('get', url, opts);
+  const { req } = await createRequest('GET', url, opts);
 
   const progressFn = opts ? opts.progress : undefined;
 
@@ -350,13 +350,13 @@ export function formatSuperAgentError(e: SuperAgentError): string {
 }
 
 function formatAPIResponse(req: superagentType.SuperAgentRequest, r: APIResponse): string {
-  return formatAPIData(req, r.meta.status, isAPIResponseSuccess(r) ? r.data : r.error);
+  return formatResponseError(req, r.meta.status, isAPIResponseSuccess(r) ? r.data : r.error);
 }
 
-export function formatAPIData(req: superagentType.SuperAgentRequest, status: number, msg: object | string): string {
-  return (
+export function formatResponseError(req: superagentType.SuperAgentRequest, status?: number, body?: object | string): string {
+  return chalk.red(
     `Request: ${req.method} ${req.url}\n` +
-    `Response: ${status}\n` +
-    `Body: \n${util.inspect(msg, { colors: chalk.enabled })}`
+    (status ? `Response: ${status}\n` : '') +
+    (body ? `Body: \n${util.inspect(body, { colors: chalk.enabled })}` : '')
   );
 }

@@ -1,6 +1,11 @@
+import * as fs from 'fs';
 import * as path from 'path';
 
-import { fsMkdirp, getFileChecksums, readDir, writeStreamToFile } from '@ionic/cli-framework/utils/fs';
+import chalk from 'chalk';
+import * as Debug from 'debug';
+
+import { fsMkdirp, getFileChecksums, readDir } from '@ionic/cli-framework/utils/fs';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
 
 import {
   ImageResource,
@@ -11,8 +16,11 @@ import {
   SourceImage,
 } from '../../../definitions';
 
-import { createRequest } from '../../http';
+import { FatalException } from '../../errors';
+import { createRequest, formatResponseError } from '../../http';
 import { ConfigXml } from './config';
+
+const debug = Debug('ionic:cli-utils:lib:integrations:cordova:resources');
 
 const SUPPORTED_SOURCE_EXTENSIONS = ['.psd', '.ai', '.png'];
 const UPLOAD_URL = 'https://res.ionic.io/api/v1/upload';
@@ -51,7 +59,7 @@ export function getImageResources(projectDir: string): ImageResource[] {
  * Create the destination directories for the provided image resources.
  */
 export async function createImgDestinationDirectories(imgResources: ImageResource[]): Promise<void[]> {
-  const buildDirPromises: Promise<void>[] = imgResources
+  const buildDirPromises = imgResources
     .map(img => path.dirname(img.dest))
     .filter((dir, i, dirNames) => dirNames.indexOf(dir) === i)
     .map(dir => fsMkdirp(dir));
@@ -97,6 +105,7 @@ export async function getSourceImages(projectDir: string, buildPlatforms: string
       const [ md5, cachedMd5 ] = await getFileChecksums(img.path);
 
       if (cachedMd5) {
+        debug(`${chalk.cyan('getSourceImages')}: ${chalk.bold(prettyPath(img.path))} cache md5: ${chalk.bold(cachedMd5)}`);
         img.cachedId = cachedMd5;
       }
 
@@ -113,7 +122,7 @@ export async function getSourceImages(projectDir: string, buildPlatforms: string
 /**
  * Find the source image that matches the requirements of the image resource provided.
  */
-export function findMostSpecificImage(imageResource: ImageResource, srcImagesAvailable: SourceImage[]): SourceImage | undefined {
+export function findMostSpecificSourceImage(imageResource: ImageResource, srcImagesAvailable: SourceImage[]): SourceImage | undefined {
   return srcImagesAvailable.reduce((mostSpecificImage: SourceImage | undefined, sourceImage: SourceImage) => {
     if (sourceImage.platform === imageResource.platform && sourceImage.resType === imageResource.resType) {
       return sourceImage;
@@ -129,35 +138,32 @@ export function findMostSpecificImage(imageResource: ImageResource, srcImagesAva
  * Upload the provided source image through the resources web service. This will make it available
  * for transforms for the next 5 minutes.
  */
-export async function uploadSourceImages(env: IonicEnvironment, srcImages: SourceImage[]): Promise<ImageUploadResponse[]> {
+export async function uploadSourceImage(env: IonicEnvironment, srcImage: SourceImage): Promise<ImageUploadResponse> {
   const c = await env.config.load();
 
-  return Promise.all(
-    srcImages.map(async srcImage => {
-      let { req } = await createRequest('POST', UPLOAD_URL, c);
+  let { req } = await createRequest('POST', UPLOAD_URL, c);
 
-      req = req
-        .type('form')
-        .attach('src', srcImage.path)
-        .field('image_id', srcImage.imageId || '');
+  req = req
+    .type('form')
+    .attach('src', srcImage.path)
+    .field('image_id', srcImage.imageId || '');
 
-      const res = await req;
+  const res = await req;
 
-      return res.body;
-    })
-  );
+  return res.body;
 }
 
 /**
- * Using the transformation web service transform the provided image resource
- * into the appropriate w x h and then write this file to the provided destination directory.
+ * Using the transformation web service, transform the provided image resource
+ * into the appropriate w x h and then write the file.
  */
-export async function transformResourceImage(env: IonicEnvironment, imageResource: ImageResource) {
+export async function transformResourceImage(env: IonicEnvironment, imageResource: ImageResource): Promise<string> {
   const c = await env.config.load();
   const { req } = await createRequest('POST', TRANSFORM_URL, c);
 
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     req
+      .parse((res, cb) => cb(null, null))
       .type('form')
       .send({
         'name': imageResource.name,
@@ -169,29 +175,22 @@ export async function transformResourceImage(env: IonicEnvironment, imageResourc
         'encoding': 'png',
       })
       .on('response', res => {
-        if (res.statusCode !== 200) {
-          const bufs: Buffer[] = [];
+        if (res.statusCode === 200) {
+          const fp = fs.createWriteStream(imageResource.dest)
+            .on('error', reject)
+            .on('finish', () => resolve(imageResource.dest));
 
-          res.on('data', (chunk: Buffer) => {
-            bufs.push(chunk);
-          });
-
-          res.on('end', () => {
-            const buf = Buffer.concat(bufs);
-            const body = buf.toString();
-            reject(new Error(`encountered bad status code (${res.statusCode}) for ${TRANSFORM_URL}\nbody: ${body}`));
-          });
+          res.pipe(fp);
+        } else {
+          reject(new FatalException(
+            `Resource server responded with an error.\n` +
+            `This could mean the server is experiencing difficulties right now--please try again later.\n\n` +
+            formatResponseError(req, res.statusCode)
+          ));
         }
       })
-      .on('error', err => {
-        if (err.code === 'ECONNABORTED') {
-          reject(new Error(`timeout of ${err.timeout}ms reached for ${TRANSFORM_URL}`));
-        } else {
-          reject(err);
-        }
-      });
-
-    writeStreamToFile(req, imageResource.dest).then(resolve, reject);
+      .on('error', reject)
+      .end();
   });
 }
 

@@ -31,7 +31,7 @@ export class DocsCommand extends Command {
     const url = await this.env.project.getDocsUrl();
 
     try {
-      const { req } = await createRequest('head', url, config);
+      const { req } = await createRequest('HEAD', url, config);
       await req;
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 404) {

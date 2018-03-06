@@ -1,3 +1,5 @@
+import * as util from 'util';
+
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
@@ -99,11 +101,11 @@ This command uses Ionic servers, so we require you to be logged into your free I
       RESOURCES,
       addResourcesToConfigXml,
       createImgDestinationDirectories,
-      findMostSpecificImage,
+      findMostSpecificSourceImage,
       getImageResources,
       getSourceImages,
       transformResourceImage,
-      uploadSourceImages,
+      uploadSourceImage,
     } = await import('@ionic/cli-utils/lib/integrations/cordova/resources');
 
     const [ platform ] = inputs;
@@ -146,7 +148,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       this.env.tasks.end();
       throw new FatalException(`No platforms detected. Please run: ${chalk.green('ionic cordova platform add')}`);
     }
-    debug(`${chalk.green('getProjectPlatforms')} completed: ${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
+    debug(`${chalk.cyan('getProjectPlatforms')} completed: ${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
 
     const orientation = conf.getPreference('Orientation') || 'default';
 
@@ -166,7 +168,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
     // Create the resource directories that are needed for the images we will create
     const buildDirResponses = await createImgDestinationDirectories(imgResources);
-    debug(`${chalk.green('createImgDestinationDirectories')} completed: ${buildDirResponses.length}`);
+    debug(`${chalk.cyan('createImgDestinationDirectories')} completed: ${buildDirResponses.length}`);
 
     // Check /resources and /resources/<platform> directories for src files
     // Update imgResources to have their src attributes to equal the most
@@ -175,18 +177,20 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
     try {
       srcImagesAvailable = await getSourceImages(this.env.project.directory, buildPlatforms, resourceTypes);
-      debug(`${chalk.green('getSourceImages')} completed: (${srcImagesAvailable.map(v => chalk.bold(prettyPath(v.path))).join(', ')})`);
+      debug(`${chalk.cyan('getSourceImages')} completed: (${srcImagesAvailable.map(v => chalk.bold(prettyPath(v.path))).join(', ')})`);
     } catch (e) {
       this.env.log.error(`Error in ${chalk.green('getSourceImages')}: ${e.stack ? e.stack : e}`);
     }
 
     imgResources = imgResources.map(img => {
-      const mostSpecificImageAvailable = findMostSpecificImage(img, srcImagesAvailable);
+      const mostSpecificImageAvailable = findMostSpecificSourceImage(img, srcImagesAvailable);
       return {
         ...img,
         imageId: mostSpecificImageAvailable && mostSpecificImageAvailable.imageId ? mostSpecificImageAvailable.imageId : undefined,
       };
     });
+
+    debug(`imgResources=${imgResources.length}`);
 
     // If there are any imgResources that have missing images then end
     // processing and inform the user
@@ -228,16 +232,29 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
       if (imgResources.length === 0) {
         this.env.tasks.end();
-        this.env.log.ok('No need to regenerate images--source files unchanged.');
-        return;
+        this.env.log.nl();
+        this.env.log.ok(
+          'No need to regenerate images.\n\n' +
+          'This could mean your generated images exist and do not need updating or your source files are unchanged.\n\n' +
+          `You can force image regeneration with the ${chalk.green('--force')} option.`
+        );
+
+        throw new FatalException('', 0);
       }
     }
 
     this.env.tasks.next(`Uploading source images to prepare for transformations`);
 
+    let count = 0;
     // Upload images to service to prepare for resource transformations
-    const imageUploadResponses = await uploadSourceImages(this.env, srcImagesAvailable);
-    debug(`${chalk.green('uploadSourceImages')} completed: responses=${JSON.stringify(imageUploadResponses, undefined, 2)}`);
+    const imageUploadResponses = await Promise.all(srcImagesAvailable.map(async srcImage => {
+      const response = await uploadSourceImage(this.env, srcImage);
+      count += 1;
+      this.env.tasks.updateMsg(`Uploading source images to prepare for transformations: ${chalk.bold(`${count} / ${srcImagesAvailable.length}`)} complete`);
+      return response;
+    }));
+
+    debug(`${chalk.cyan('uploadSourceImages')} completed: responses=${util.inspect(imageUploadResponses, { colors: chalk.enabled })}`);
 
     srcImagesAvailable = srcImagesAvailable.map((img, index) => {
       return {
@@ -248,7 +265,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       };
     });
 
-    debug(`srcImagesAvailable=${JSON.stringify(srcImagesAvailable, undefined, 2)}`);
+    debug(`srcImagesAvailable=${util.inspect(srcImagesAvailable, { colors: chalk.enabled })}`);
 
     // If any images are asking to be generated but are not of the correct size
     // inform the user and continue on.
@@ -261,6 +278,8 @@ This command uses Ionic servers, so we require you to be logged into your free I
       return !resourceSourceImage.vector && (img.width > resourceSourceImage.width || img.height > resourceSourceImage.height);
     });
 
+    debug(`imagesTooLargeForSource=${util.inspect(imagesTooLargeForSource, { colors: chalk.enabled })}`);
+
     // Remove all images too large for transformations
     imgResources = imgResources.filter(img => {
       return !imagesTooLargeForSource.find(tooLargeForSourceImage => img.name === tooLargeForSourceImage.name);
@@ -268,23 +287,25 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
     if (imgResources.length === 0) {
       this.env.tasks.end();
+      this.env.log.nl();
       this.env.log.ok('No need to regenerate images--images too large for transformation.'); // TODO: improve messaging
-      return;
+      throw new FatalException('', 0);
     }
 
     // Call the transform service and output images to appropriate destination
     this.env.tasks.next(`Generating platform resources`);
-    let count = 0;
+    count = 0;
 
-    const transforms = imgResources.map(async (img, index) => {
-      await transformResourceImage(this.env, img);
+    const transforms = imgResources.map(async img => {
+      const response = await transformResourceImage(this.env, img);
       count += 1;
       this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`);
+      return response;
     });
 
     const generateImageResponses = await Promise.all(transforms);
     this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
-    debug(`${chalk.green('generateResourceImage')} completed: responses=${JSON.stringify(generateImageResponses, undefined, 2)}`);
+    debug(`${chalk.cyan('generateResourceImage')} completed: responses=${util.inspect(generateImageResponses.map(p => prettyPath(p)), { colors: chalk.enabled })}`);
 
     await Promise.all(srcImagesAvailable.map(async img => {
       await cacheFileChecksum(img.path, img.imageId);
