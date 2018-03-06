@@ -19,6 +19,7 @@ export const LOGGER_STATUS_COLORS = new Map<LogLevel, Chalk>([
 ]);
 
 const LOGGER_STATUS_DEFINED_COLORS = new Map<LogLevel, Chalk>([
+  ['ok', chalk.green],
   ['info', chalk.bold],
   ['warn', chalk.bold.yellow],
   ['error', chalk.bold.red],

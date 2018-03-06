@@ -138,7 +138,7 @@ The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert
     this.env.log.nl();
 
     this.env.log.ok(
-      `Generated key & certificate!\n\n` +
+      `Generated key & certificate!\n` +
       `Key:  ${chalk.bold(keyPath)}\n` +
       `Cert: ${chalk.bold(certPath)}`
     );

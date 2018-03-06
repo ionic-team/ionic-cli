@@ -234,7 +234,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
         this.env.tasks.end();
         this.env.log.nl();
         this.env.log.ok(
-          'No need to regenerate images.\n\n' +
+          'No need to regenerate images.\n' +
           'This could mean your generated images exist and do not need updating or your source files are unchanged.\n\n' +
           `You can force image regeneration with the ${chalk.green('--force')} option.`
         );
