@@ -15,9 +15,9 @@ import {
   url,
 } from '@angular-devkit/schematics';
 
-import { addDeclarationToModule } from '@schematics/angular/utility/ast-utils';
-import { InsertChange } from '@schematics/angular/utility/change';
-import { buildRelativePath, findModuleFromOptions } from '@schematics/angular/utility/find-module';
+import { addDeclarationToModule } from '../utils/angular/ast-utils';
+import { InsertChange } from '../utils/angular/change';
+import { buildRelativePath, findModuleFromOptions } from '../utils/angular/find-module';
 
 import { Schema as PageOptions } from './schema';
 

@@ -21,13 +21,12 @@
   ],
   "schematics": "./collection.json",
   "dependencies": {
+    "@angular-devkit/core": "~0.4.2",
+    "@angular-devkit/schematics": "~0.4.2",
     "lodash": "^4.17.5",
     "typescript": "~2.6.2"
   },
   "devDependencies": {
-    "@angular-devkit/core": "^0.3.1",
-    "@angular-devkit/schematics": "^0.3.1",
-    "@schematics/angular": "^0.3.1",
     "@types/lodash": "^4.14.104",
     "@types/node": "^6.0.101",
     "jest": "^22.4.2",
@@ -35,11 +34,6 @@
     "rimraf": "^2.6.2",
     "source-map": "^0.7.0",
     "ts-jest": "^22.4.1",
-    "tslint": "^5.9.1",
-    "typescript": "~2.6.2"
-  },
-  "peerDependencies": {
-    "@angular-devkit/schematics": "*",
-    "@schematics/angular": "*"
+    "tslint": "^5.9.1"
   }
 }
