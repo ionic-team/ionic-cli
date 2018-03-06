@@ -1,1 +1,4 @@
-# empty to exclude .gitignore entries
+# having this file excludes .gitignore entries
+
+tsconfig.json
+tslint.js
