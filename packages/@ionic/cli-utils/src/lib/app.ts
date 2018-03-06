@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { App, AppAssociation, IClient, IPaginator, PaginateArgs, PaginatorState, ResourceClientCreate, ResourceClientLoad, ResourceClientPaginate, Response } from '../definitions';
+import { App, AppAssociation, AssociationType, IClient, IPaginator, PaginateArgs, PaginatorState, ResourceClientCreate, ResourceClientLoad, ResourceClientPaginate, Response } from '../definitions';
 import { isAppAssociationResponse, isAppResponse, isAppsResponse } from '../guards';
 import { ResourceClient, createFatalAPIFormat } from './http';
 
@@ -68,8 +68,8 @@ export class AppClient extends ResourceClient implements ResourceClientLoad<App>
     });
   }
 
-  async createGithubAssociation(id: string, association: { repoId: string; }): Promise<AppAssociation> {
-    const { req } = await this.client.make('POST', `/apps/${id}/github`);
+  async createAssociation(id: string, association: { repoId: number; type: AssociationType; }): Promise<AppAssociation> {
+    const { req } = await this.client.make('POST', `/apps/${id}/repository`);
 
     req
       .set('Authorization', `Bearer ${this.token}`)
@@ -84,8 +84,8 @@ export class AppClient extends ResourceClient implements ResourceClientLoad<App>
     return res.data;
   }
 
-  async deleteGithubAssociation(id: string): Promise<void> {
-    const { req } = await this.client.make('DELETE', `/apps/${id}/github`);
+  async deleteAssociation(id: string): Promise<void> {
+    const { req } = await this.client.make('DELETE', `/apps/${id}/repository`);
 
     req
       .set('Authorization', `Bearer ${this.token}`)

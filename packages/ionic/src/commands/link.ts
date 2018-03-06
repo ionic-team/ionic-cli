@@ -259,6 +259,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     }
 
     if (await this.needsAssociation(app, user.id)) {
+      //TODO: inform the user on how to create a repo if they haven't
       const repoId = await this.selectGithubRepo();
       await this.connectGithub(app, repoId);
     }
@@ -319,12 +320,12 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
 
       try {
         // TODO: maybe we can use a PUT instead of DELETE now + POST later?
-        await appClient.deleteGithubAssociation(app.id);
+        await appClient.deleteAssociation(app.id);
       } catch (e) {
         if (isSuperAgentError(e)) {
           if (e.response.status === 401) {
             await this.oAuthProcess(userId);
-            await appClient.deleteGithubAssociation(app.id);
+            await appClient.deleteAssociation(app.id);
             return true;
           } else if (e.response.status === 404) {
             debug(`DELETE ${app.id} Github association not found`);
@@ -339,11 +340,11 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     return true;
   }
 
-  async connectGithub(app: App, repoId: string) {
+  async connectGithub(app: App, repoId: number) {
     const appClient = await this.getAppClient();
 
     try {
-      const association = await appClient.createGithubAssociation(app.id, { repoId });
+      const association = await appClient.createAssociation(app.id, { repoId, type: 'github' });
       this.env.log.ok(`App ${chalk.green(app.id)} connected to ${chalk.bold(association.repository.html_url)}`);
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 403) {
@@ -393,7 +394,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     return linkedApp;
   }
 
-  async selectGithubRepo(): Promise<string> {
+  async selectGithubRepo(): Promise<number> {
     const user = await this.env.session.getUser();
     const userClient = await this.getUserClient();
 
@@ -432,6 +433,6 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       })),
     });
 
-    return repoId;
+    return Number(repoId);
   }
 }

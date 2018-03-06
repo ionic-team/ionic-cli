@@ -208,12 +208,21 @@ export interface GithubRepo {
 }
 
 export interface AppAssociation {
-  repository: {
-    type: 'github';
-    github_id: number;
-    html_url: string;
-  };
+  repository: GithubRepoAssociation;
 }
+
+export interface RepoAssociation {
+  html_url: string;
+  clone_url: string;
+  full_name: string;
+}
+
+export interface GithubRepoAssociation extends RepoAssociation {
+    type: 'github';
+    id: number;
+}
+
+export type AssociationType = 'github';
 
 export interface App {
   id: string;

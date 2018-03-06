@@ -9,6 +9,7 @@ import {
   CordovaPackageJson,
   ExitCodeException,
   GithubRepo,
+  GithubRepoAssociation,
   IAutomaticallyTreatableAilment,
   ICommand,
   IntegrationName,
@@ -118,15 +119,21 @@ export function isAppAssociation(a: object): a is AppAssociation {
   const association = <AppAssociation>a;
   return association
     && typeof association.repository === 'object'
-    && typeof association.repository.type === 'string'
-    && typeof association.repository.github_id === 'number'
-    && typeof association.repository.html_url === 'string';
+    && typeof association.repository.html_url === 'string'
+    && isGithubRepoAssociation(association.repository);
 }
 
 export function isAppAssociationResponse(r: APIResponse): r is Response<AppAssociation> {
   return isAPIResponseSuccess(r)
     && typeof r.data === 'object'
     && isAppAssociation(r.data);
+}
+
+export function isGithubRepoAssociation(a: object): a is GithubRepoAssociation {
+  const repo = <GithubRepoAssociation>a;
+  return repo
+    && repo.type === 'github'
+    && typeof repo.id === 'number';
 }
 
 export function isApp(d: object): d is App {
