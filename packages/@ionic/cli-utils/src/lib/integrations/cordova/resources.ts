@@ -163,7 +163,7 @@ export async function transformResourceImage(env: IonicEnvironment, imageResourc
 
   return new Promise<string>((resolve, reject) => {
     req
-      .parse((res, cb) => cb(null, null))
+      .parse((res, cb) => cb(null, null)) // tslint:disable-line:no-null-keyword
       .type('form')
       .send({
         'name': imageResource.name,
