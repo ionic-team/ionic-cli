@@ -259,7 +259,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     }
 
     if (await this.needsAssociation(app, user.id)) {
-      //TODO: inform the user on how to create a repo if they haven't
+      // TODO: inform the user on how to create a repo if they haven't
       const repoId = await this.selectGithubRepo();
       await this.connectGithub(app, repoId);
     }
