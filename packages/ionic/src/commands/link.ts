@@ -468,109 +468,81 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     return Number(repoId);
   }
 
-  async selectGithubBranches(repoId: number, linkedBranches: string[] = [], availableBranches: GithubBranch[] = []): Promise<string[]> {
+  async selectGithubBranches(repoId: number): Promise<string[]> {
 
-    // If the array is empty this is the first time this was called so we should explain the process
-    // else see if they need to add more branches
-    if (linkedBranches.length === 0) {
-      this.env.log.nl();
-      this.env.log.info(chalk.bold(`By default Ionic Pro links only to the ${chalk.green('master')} branch.`));
-      this.env.log.info(
-        `${chalk.bold('If you\'d like to link to another branch or multiple branches you\'ll need to select each branch to connect to.')}\n` +
-        `If you're not familiar with on working with branches in GitHub you can read about them here:\n\n` +
-        chalk.cyan(`https://guides.github.com/introduction/flow/ \n\n`)
-      );
+    this.env.log.nl();
+    this.env.log.info(chalk.bold(`By default Ionic Pro links only to the ${chalk.green('master')} branch.`));
+    this.env.log.info(
+      `${chalk.bold('If you\'d like to link to another branch or multiple branches you\'ll need to select each branch to connect to.')}\n` +
+      `If you're not familiar with on working with branches in GitHub you can read about them here:\n\n` +
+      chalk.cyan(`https://guides.github.com/introduction/flow/ \n\n`)
+    );
 
-      const choice = await this.env.prompt({
-        type: 'list',
-        name: 'githubMultipleBranches',
-        message: 'Which would you like to do?',
-        choices: [
-          {
-            name: `Link to ${chalk.green('master')} branch only`,
-            value: CHOICE_MASTER_ONLY,
-          },
-          {
-            name: `Link to specific branches`,
-            value: CHOICE_SPECIFIC_BRANCHES,
-          },
-          {
-            name: `Link to all branches`,
-            value: CHOICE_ALL_BRANCHES,
-          },
-        ],
-      });
+    const choice = await this.env.prompt({
+      type: 'list',
+      name: 'githubMultipleBranches',
+      message: 'Which would you like to do?',
+      choices: [
+        {
+          name: `Link to ${chalk.green('master')} branch only`,
+          value: CHOICE_MASTER_ONLY,
+        },
+        {
+          name: `Link to specific branches`,
+          value: CHOICE_SPECIFIC_BRANCHES,
+        },
+        {
+          name: `Link to all branches`,
+          value: CHOICE_ALL_BRANCHES,
+        },
+      ],
+    });
 
-      switch (choice) {
-        case CHOICE_MASTER_ONLY:
-          return ['master'];
-        case CHOICE_SPECIFIC_BRANCHES:
-          // fall through and begin prompting to choose branches
-          break;
-        case CHOICE_ALL_BRANCHES:
-          return ['*'];
-        default:
-          throw new FatalException('Aborting. No branch choice specified.');
-      }
-    } else {
-      const confirm = await this.env.prompt({
-        type: 'confirm',
-        name: 'confirm',
-        message: `Would you like to link additional branches?`,
-      });
-
-      if (!confirm) {
-        return linkedBranches;
-      }
+    switch (choice) {
+      case CHOICE_MASTER_ONLY:
+        return ['master'];
+      case CHOICE_SPECIFIC_BRANCHES:
+        // fall through and begin prompting to choose branches
+        break;
+      case CHOICE_ALL_BRANCHES:
+        return ['*'];
+      default:
+        throw new FatalException('Aborting. No branch choice specified.');
     }
 
-    // If no available branches were passed in look for some
-    if (availableBranches.length === 0) {
-      const user = await this.env.session.getUser();
-      const userClient = await this.getUserClient();
-      const paginator = userClient.paginateGithubBranches(user.id, repoId);
-      this.env.tasks.next('Looking for available branches');
-      try {
-        for (const r of paginator) {
-          const res = await r;
-          availableBranches.push(...res.data);
+    const user = await this.env.session.getUser();
+    const userClient = await this.getUserClient();
+    const paginator = userClient.paginateGithubBranches(user.id, repoId);
+    this.env.tasks.next('Looking for available branches');
+    const availableBranches: GithubBranch[] = [];
+    try {
+      for (const r of paginator) {
+        const res = await r;
+        availableBranches.push(...res.data);
 
-          this.env.tasks.updateMsg(`Looking up the available branches on your GitHub repository: ${chalk.bold(String(availableBranches.length))} found`);
-        }
-      } catch (e) {
-        this.env.tasks.fail();
-        throw e;
+        this.env.tasks.updateMsg(`Looking up the available branches on your GitHub repository: ${chalk.bold(String(availableBranches.length))} found`);
       }
-      this.env.tasks.end();
+    } catch (e) {
+      this.env.tasks.fail();
+      throw e;
     }
+    this.env.tasks.end();
 
-    // filter out already chosen branches from available list
-    availableBranches = availableBranches.filter(branch => !linkedBranches.includes(branch.name));
     const choices = availableBranches.map(branch => ({
       name: branch.name,
       value: branch.name,
+      checked: branch.name === 'master',
     }));
 
-    // NOTE: the ~ is not a valid branch char so this will never conflict with existing branches
-    const CHOICE_DONE_LINKING = '~done';
-    // let them back out if they change there mind and have selected at least 1 branch
-    if (linkedBranches.length > 0) {
-      choices.push({name: chalk.bold('Done linking branches'), value: CHOICE_DONE_LINKING});
-    }
-
-    const selectedBranch = await this.env.prompt({
-      type: 'list',
+    const selectedBranches = await this.env.prompt({
+      type: 'checkbox',
       name: 'githubBranches',
       message: 'Which branch would you like to link?',
       choices: choices,
+      default: ['master'],
     });
 
-    if (selectedBranch === CHOICE_DONE_LINKING) {
-      return linkedBranches;
-    }
-
-    linkedBranches.push(selectedBranch);
-    return this.selectGithubBranches(repoId, linkedBranches, availableBranches);
+    return selectedBranches;
   }
 
 }
