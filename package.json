@@ -16,7 +16,7 @@
     "publish:ci-4.x": "lerna publish --canary --exact --npm-tag=canary --skip-git --cd-version=major",
     "publish:testing": "lerna publish --canary=testing --exact --npm-tag=testing --skip-git",
     "publish": "lerna publish --exact --conventional-commits",
-    "prepush": "npm run lint"
+    "precommit": "npm run lint"
   },
   "devDependencies": {
     "chokidar-cli": "^1.2.0",
