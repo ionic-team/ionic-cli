@@ -8,6 +8,7 @@ import {
   CommandPreRun,
   CordovaPackageJson,
   ExitCodeException,
+  GithubBranch,
   GithubRepo,
   GithubRepoAssociation,
   IAutomaticallyTreatableAilment,
@@ -103,6 +104,12 @@ export function isGithubRepo(r: object): r is GithubRepo {
     && typeof repo.id === 'number';
 }
 
+export function isGithubBranch(r: object): r is GithubBranch {
+  const branch = <GithubBranch>r;
+  return branch
+    && typeof branch.name === 'string';
+}
+
 export function isGithubRepoListResponse(r: APIResponse): r is Response<GithubRepo[]> {
   if (!isAPIResponseSuccess(r) || !Array.isArray(r.data)) {
     return false;
@@ -113,6 +120,18 @@ export function isGithubRepoListResponse(r: APIResponse): r is Response<GithubRe
   }
 
   return typeof r.data[0] === 'object' && isGithubRepo(r.data[0]);
+}
+
+export function isGithubBranchListResponse(r: APIResponse): r is Response<GithubBranch[]> {
+  if (!isAPIResponseSuccess(r) || !Array.isArray(r.data)) {
+    return false;
+  }
+
+  if (r.data.length === 0) {
+    return true;
+  }
+
+  return typeof r.data[0] === 'object' && isGithubBranch(r.data[0]);
 }
 
 export function isAppAssociation(a: object): a is AppAssociation {

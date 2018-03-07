@@ -68,12 +68,16 @@ export class AppClient extends ResourceClient implements ResourceClientLoad<App>
     });
   }
 
-  async createAssociation(id: string, association: { repoId: number; type: AssociationType; }): Promise<AppAssociation> {
+  async createAssociation(id: string, association: { repoId: number; type: AssociationType; branches: string[] }): Promise<AppAssociation> {
     const { req } = await this.client.make('POST', `/apps/${id}/repository`);
 
     req
       .set('Authorization', `Bearer ${this.token}`)
-      .send({ repository_id: association.repoId });
+    .send({
+      repository_id: association.repoId,
+      type: association.type,
+      branches: association.branches,
+    });
 
     const res = await this.client.do(req);
 

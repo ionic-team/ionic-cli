@@ -1,5 +1,5 @@
-import { GithubRepo, IClient, IPaginator, ResourceClientLoad, ResourceClientRequestModifiers, Response, TokenPaginatorState, User } from '../definitions';
-import { isGithubRepoListResponse, isOAuthLoginResponse, isUserResponse } from '../guards';
+import { GithubBranch, GithubRepo, IClient, IPaginator, ResourceClientLoad, ResourceClientRequestModifiers, Response, TokenPaginatorState, User } from '../definitions';
+import { isGithubBranchListResponse, isGithubRepoListResponse, isOAuthLoginResponse, isUserResponse } from '../guards';
 import { ResourceClient, TokenPaginator, createFatalAPIFormat } from './http';
 
 export interface UserClientDeps {
@@ -65,6 +65,18 @@ export class UserClient extends ResourceClient implements ResourceClientLoad<Use
         return { req };
       },
       guard: isGithubRepoListResponse,
+    });
+  }
+
+  paginateGithubBranches(userId: number, repoId: number): IPaginator<Response<GithubBranch[]>, TokenPaginatorState> {
+    return new TokenPaginator({
+      client: this.client,
+      reqgen: async () => {
+        const { req } = await this.client.make('GET', `/users/${userId}/oauth/github/repositories/${repoId}/branches`);
+        req.set('Authorization', `Bearer ${this.token}`);
+        return { req };
+      },
+      guard: isGithubBranchListResponse,
     });
   }
 }

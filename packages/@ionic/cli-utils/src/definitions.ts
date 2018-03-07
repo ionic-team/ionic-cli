@@ -207,6 +207,10 @@ export interface GithubRepo {
   id: number;
 }
 
+export interface GithubBranch {
+  name: string;
+}
+
 export interface AppAssociation {
   repository: GithubRepoAssociation;
 }

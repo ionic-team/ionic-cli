@@ -3,7 +3,7 @@ import * as Debug from 'debug';
 
 import { validators } from '@ionic/cli-framework';
 
-import { App, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GithubRepo, OptionGroup, PROJECT_FILE, isSuperAgentError } from '@ionic/cli-utils';
+import { App, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GithubBranch, GithubRepo, OptionGroup, PROJECT_FILE, isSuperAgentError } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
@@ -17,6 +17,10 @@ const CHOICE_LINK_EXISTING_APP = 'linkExistingApp';
 
 const CHOICE_IONIC = 'ionic';
 const CHOICE_GITHUB = 'github';
+
+const CHOICE_MASTER_ONLY = 'master';
+const CHOICE_SPECIFIC_BRANCHES = 'specific';
+const CHOICE_ALL_BRANCHES = 'all';
 
 export class LinkCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -259,9 +263,35 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     }
 
     if (await this.needsAssociation(app, user.id)) {
-      // TODO: inform the user on how to create a repo if they haven't
+      await this.confirmGithubRepoExists();
       const repoId = await this.selectGithubRepo();
-      await this.connectGithub(app, repoId);
+      const branches = await this.selectGithubBranches(repoId);
+      await this.connectGithub(app, repoId, branches);
+    }
+  }
+
+  async confirmGithubRepoExists() {
+
+    let confirm = false;
+
+    this.env.log.nl();
+    this.env.log.info(chalk.bold(`In order to link to a GitHub repository the repository must already exist on GitHub.`));
+    this.env.log.info(
+      `${chalk.bold('If the repository does not exist please create one now before continuing.')}\n` +
+      `If you're not familiar with Git you can learn how to set it up with GitHub here:\n\n` +
+      chalk.cyan(`https://help.github.com/articles/set-up-git/ \n\n`) +
+      `You can find documenation on how to create a repository on GitHub and push to it here:\n\n` +
+      chalk.cyan(`https://help.github.com/articles/create-a-repo/`)
+    );
+
+    confirm = await this.env.prompt({
+      type: 'confirm',
+      name: 'confirm',
+      message: 'Does the repository exist on GitHub?',
+    });
+
+    if (!confirm) {
+      throw new FatalException('Aborting.');
     }
   }
 
@@ -275,7 +305,9 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     this.env.log.nl();
     this.env.log.info(
       `Github OAuth setup required.\n` +
-      `To continue, we need you to authorize Ionic Pro with your Github account. A browser will open and prompt you to complete the authorization request. When finished, please return to the CLI to continue linking your app.`
+      `To continue, we need you to authorize Ionic Pro with your Github account. ` +
+      `A browser will open and prompt you to complete the authorization request. ` +
+      `When finished, please return to the CLI to continue linking your app.`
     );
 
     confirm = await this.env.prompt({
@@ -340,11 +372,11 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     return true;
   }
 
-  async connectGithub(app: App, repoId: number) {
+  async connectGithub(app: App, repoId: number, branches: string[]) {
     const appClient = await this.getAppClient();
 
     try {
-      const association = await appClient.createAssociation(app.id, { repoId, type: 'github' });
+      const association = await appClient.createAssociation(app.id, { repoId, type: 'github', branches });
       this.env.log.ok(`App ${chalk.green(app.id)} connected to ${chalk.bold(association.repository.html_url)}`);
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 403) {
@@ -435,4 +467,110 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
 
     return Number(repoId);
   }
+
+  async selectGithubBranches(repoId: number, linkedBranches: string[] = [], availableBranches: GithubBranch[] = []): Promise<string[]> {
+
+    // If the array is empty this is the first time this was called so we should explain the process
+    // else see if they need to add more branches
+    if (linkedBranches.length === 0) {
+      this.env.log.nl();
+      this.env.log.info(chalk.bold(`By default Ionic Pro links only to the ${chalk.green('master')} branch.`));
+      this.env.log.info(
+        `${chalk.bold('If you\'d like to link to another branch or multiple branches you\'ll need to select each branch to connect to.')}\n` +
+        `If you're not familiar with on working with branches in GitHub you can read about them here:\n\n` +
+        chalk.cyan(`https://guides.github.com/introduction/flow/ \n\n`)
+      );
+
+      const choice = await this.env.prompt({
+        type: 'list',
+        name: 'githubMultipleBranches',
+        message: 'Which would you like to do?',
+        choices: [
+          {
+            name: `Link to ${chalk.green('master')} branch only`,
+            value: CHOICE_MASTER_ONLY,
+          },
+          {
+            name: `Link to specific branches`,
+            value: CHOICE_SPECIFIC_BRANCHES,
+          },
+          {
+            name: `Link to all branches`,
+            value: CHOICE_ALL_BRANCHES,
+          },
+        ],
+      });
+
+      switch (choice) {
+        case CHOICE_MASTER_ONLY:
+          return ['master'];
+        case CHOICE_SPECIFIC_BRANCHES:
+          // fall through and begin prompting to choose branches
+          break;
+        case CHOICE_ALL_BRANCHES:
+          return ['*'];
+        default:
+          throw new FatalException('Aborting. No branch choice specified.');
+      }
+    } else {
+      const confirm = await this.env.prompt({
+        type: 'confirm',
+        name: 'confirm',
+        message: `Would you like to link additional branches?`,
+      });
+
+      if (!confirm) {
+        return linkedBranches;
+      }
+    }
+
+    // If no available branches were passed in look for some
+    if (availableBranches.length === 0) {
+      const user = await this.env.session.getUser();
+      const userClient = await this.getUserClient();
+      const paginator = userClient.paginateGithubBranches(user.id, repoId);
+      this.env.tasks.next('Looking for available branches');
+      try {
+        for (const r of paginator) {
+          const res = await r;
+          availableBranches.push(...res.data);
+
+          this.env.tasks.updateMsg(`Looking up the available branches on your Github repository: ${chalk.bold(String(availableBranches.length))} found`);
+        }
+      } catch (e) {
+        this.env.tasks.fail();
+        throw e;
+      }
+      this.env.tasks.end();
+    }
+
+    // filter out already chosen branches from available list
+    availableBranches = availableBranches.filter(branch => !linkedBranches.includes(branch.name));
+    const choices = availableBranches.map(branch => ({
+      name: branch.name,
+      value: branch.name,
+    }));
+
+    // NOTE: the ~ is not a valid branch char so this will never conflict with existing branches
+    const CHOICE_DONE_LINKING = '~done';
+    // let them back out if they change there mind and have selected at least 1 branch
+    if (linkedBranches.length > 0) {
+      choices.push({name: 'Done linking branches', value: CHOICE_DONE_LINKING});
+    }
+
+    const selectedBranch = await this.env.prompt({
+      type: 'list',
+      name: 'githubBranches',
+      message: 'Which Github repository would you like to link?',
+      choices: choices,
+    });
+
+    if (selectedBranch === CHOICE_DONE_LINKING) {
+      return linkedBranches;
+    }
+
+    linkedBranches.push(selectedBranch);
+    return this.selectGithubBranches(repoId, linkedBranches, availableBranches);
+  }
+
 }
