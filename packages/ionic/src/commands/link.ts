@@ -291,7 +291,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     });
 
     if (!confirm) {
-      throw new FatalException('Aborting.');
+      throw new FatalException('Repo Must exist on GitHub in order to link.');
     }
   }
 
@@ -555,7 +555,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     const CHOICE_DONE_LINKING = '~done';
     // let them back out if they change there mind and have selected at least 1 branch
     if (linkedBranches.length > 0) {
-      choices.push({name: 'Done linking branches', value: CHOICE_DONE_LINKING});
+      choices.push({name: chalk.bold('Done linking branches'), value: CHOICE_DONE_LINKING});
     }
 
     const selectedBranch = await this.env.prompt({
