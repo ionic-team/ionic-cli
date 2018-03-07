@@ -561,7 +561,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     const selectedBranch = await this.env.prompt({
       type: 'list',
       name: 'githubBranches',
-      message: 'Which GitHub repository would you like to link?',
+      message: 'Which branch would you like to link?',
       choices: choices,
     });
 
