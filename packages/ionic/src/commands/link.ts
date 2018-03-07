@@ -221,7 +221,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       message: 'Which git host would you like to use?',
       choices: [
         {
-          name: 'Github',
+          name: 'GitHub',
           value: CHOICE_GITHUB,
         },
         {
@@ -304,8 +304,8 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
 
     this.env.log.nl();
     this.env.log.info(
-      `Github OAuth setup required.\n` +
-      `To continue, we need you to authorize Ionic Pro with your Github account. ` +
+      `GitHub OAuth setup required.\n` +
+      `To continue, we need you to authorize Ionic Pro with your GitHub account. ` +
       `A browser will open and prompt you to complete the authorization request. ` +
       `When finished, please return to the CLI to continue linking your app.`
     );
@@ -360,7 +360,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
             await appClient.deleteAssociation(app.id);
             return true;
           } else if (e.response.status === 404) {
-            debug(`DELETE ${app.id} Github association not found`);
+            debug(`DELETE ${app.id} GitHub association not found`);
             return true;
           }
         }
@@ -430,7 +430,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     const user = await this.env.session.getUser();
     const userClient = await this.getUserClient();
 
-    this.env.tasks.next('Looking up your Github repositories');
+    this.env.tasks.next('Looking up your GitHub repositories');
 
     const paginator = userClient.paginateGithubRepositories(user.id);
     const repos: GithubRepo[] = [];
@@ -440,7 +440,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         const res = await r;
         repos.push(...res.data);
 
-        this.env.tasks.updateMsg(`Looking up your Github repositories: ${chalk.bold(String(repos.length))} found`);
+        this.env.tasks.updateMsg(`Looking up your GitHub repositories: ${chalk.bold(String(repos.length))} found`);
       }
     } catch (e) {
       this.env.tasks.fail();
@@ -458,7 +458,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     const repoId = await this.env.prompt({
       type: 'list',
       name: 'githubRepo',
-      message: 'Which Github repository would you like to link?',
+      message: 'Which GitHub repository would you like to link?',
       choices: repos.map(repo => ({
         name: this.formatRepoName(repo.full_name),
         value: String(repo.id),
@@ -535,7 +535,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
           const res = await r;
           availableBranches.push(...res.data);
 
-          this.env.tasks.updateMsg(`Looking up the available branches on your Github repository: ${chalk.bold(String(availableBranches.length))} found`);
+          this.env.tasks.updateMsg(`Looking up the available branches on your GitHub repository: ${chalk.bold(String(availableBranches.length))} found`);
         }
       } catch (e) {
         this.env.tasks.fail();
@@ -561,7 +561,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     const selectedBranch = await this.env.prompt({
       type: 'list',
       name: 'githubBranches',
-      message: 'Which Github repository would you like to link?',
+      message: 'Which GitHub repository would you like to link?',
       choices: choices,
     });
 
