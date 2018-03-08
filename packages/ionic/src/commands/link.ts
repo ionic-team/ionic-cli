@@ -20,7 +20,6 @@ const CHOICE_GITHUB = 'github';
 
 const CHOICE_MASTER_ONLY = 'master';
 const CHOICE_SPECIFIC_BRANCHES = 'specific';
-const CHOICE_ALL_BRANCHES = 'all';
 
 export class LinkCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -491,10 +490,6 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
           name: `Link to specific branches`,
           value: CHOICE_SPECIFIC_BRANCHES,
         },
-        {
-          name: `Link to all branches`,
-          value: CHOICE_ALL_BRANCHES,
-        },
       ],
     });
 
@@ -504,8 +499,6 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       case CHOICE_SPECIFIC_BRANCHES:
         // fall through and begin prompting to choose branches
         break;
-      case CHOICE_ALL_BRANCHES:
-        return ['*'];
       default:
         throw new FatalException('Aborting. No branch choice specified.');
     }
