@@ -245,7 +245,16 @@ export interface Login {
 export interface User {
   id: number;
   email: string;
-  oauths?: string[];
+  oauth_identities?: OAuthIdentity;
+}
+
+export type OAuthIdentity = {
+  [A in AssociationType]?: OAuthIdentityDetails;
+};
+
+export interface OAuthIdentityDetails {
+  id: number;
+  username: string;
 }
 
 export interface Snapshot {

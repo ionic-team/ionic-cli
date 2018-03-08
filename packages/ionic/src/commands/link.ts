@@ -255,9 +255,9 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     const { id } = await this.env.session.getUser();
 
     const userClient = await this.getUserClient();
-    const user = await userClient.load(id, { fields: ['oauths'] });
+    const user = await userClient.load(id, { fields: ['oauth_identities'] });
 
-    if (!user.oauths || !user.oauths.includes('github')) {
+    if (!user.oauth_identities || !user.oauth_identities.github) {
       await this.oAuthProcess(id);
     }
 
