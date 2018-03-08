@@ -210,8 +210,8 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
 
     this.env.log.info(
       `Ionic Pro uses a git-based workflow to manage app updates.\n` +
-      `You will be prompted to set up the git host and repository for this new app. See the docs${chalk.cyan('[1]')} for more information.\n\n` +
-      `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/pro/basics/git/')}`
+      `You will be prompted to set up the git host and repository for this new app. See the docs${chalk.bold('[1]')} for more information.\n\n` +
+      `${chalk.bold('[1]')}: ${chalk.cyan('https://ionicframework.com/docs/pro/basics/git/')}`
     );
 
     const service = await this.env.prompt({
@@ -231,6 +231,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       ],
     });
 
+    let githubUrl: string | undefined;
     if (service === CHOICE_IONIC) {
       const config = await this.env.config.load();
 
@@ -242,16 +243,34 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       await this.env.runCommand(['git', 'remote']);
     } else {
       if (service === CHOICE_GITHUB) {
-        await this.linkGithub(app);
+        githubUrl = await this.linkGithub(app);
       }
 
       await this.env.runCommand(['config', 'set', 'app_id', `"${app.id}"`, '--json']);
     }
 
     this.env.log.ok(`Project linked with app ${chalk.green(app.id)}!`);
+    if (service === CHOICE_GITHUB) {
+      this.env.log.info(
+        `Here are some additional links that can help you with you first push to GitHub:\n` +
+        `${chalk.bold('Adding GitHub as a remote')}:\n\t${chalk.cyan('https://help.github.com/articles/adding-a-remote/')}\n\n` +
+        `${chalk.bold('Pushing to a remote')}:\n\t${chalk.cyan('https://help.github.com/articles/pushing-to-a-remote/')}\n\n` +
+        `${chalk.bold('Working with branches')}:\n\t${chalk.cyan('https://guides.github.com/introduction/flow/')}\n\n` +
+        `${chalk.bold('More comfortable with a GUI? Try GitHub Desktop!')}\n\t${chalk.cyan('https://desktop.github.com/')}`
+      );
+
+      if (githubUrl) {
+        this.env.log.info(
+          `You can now push to one of your branches on GitHub to trigger a build in Ionic Pro!\n` +
+          `If you haven't added GitHub as your origin you can do so by running:\n\n` +
+          `${chalk.green('git remote add origin ' + githubUrl)}\n\n` +
+          `You can find additional links above to help if you're having issues.`
+        );
+      }
+    }
   }
 
-  async linkGithub(app: App) {
+  async linkGithub(app: App): Promise<string | undefined> {
     const { id } = await this.env.session.getUser();
 
     const userClient = await this.getUserClient();
@@ -265,7 +284,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       await this.confirmGithubRepoExists();
       const repoId = await this.selectGithubRepo();
       const branches = await this.selectGithubBranches(repoId);
-      await this.connectGithub(app, repoId, branches);
+      return this.connectGithub(app, repoId, branches);
     }
   }
 
@@ -371,12 +390,13 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     return true;
   }
 
-  async connectGithub(app: App, repoId: number, branches: string[]) {
+  async connectGithub(app: App, repoId: number, branches: string[]): Promise<string | undefined> {
     const appClient = await this.getAppClient();
 
     try {
       const association = await appClient.createAssociation(app.id, { repoId, type: 'github', branches });
       this.env.log.ok(`App ${chalk.green(app.id)} connected to ${chalk.bold(association.repository.html_url)}`);
+      return association.repository.html_url;
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 403) {
         throw new FatalException(e.response.body.error.message);
@@ -483,7 +503,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       message: 'Which would you like to do?',
       choices: [
         {
-          name: `Link to ${chalk.green('master')} branch only`,
+          name: `Link to master branch only`,
           value: CHOICE_MASTER_ONLY,
         },
         {

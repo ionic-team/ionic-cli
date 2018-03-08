@@ -253,8 +253,9 @@ export type OAuthIdentity = {
 };
 
 export interface OAuthIdentityDetails {
-  id: number;
   username: string;
+  name: string;
+  html_url: string;
 }
 
 export interface Snapshot {
