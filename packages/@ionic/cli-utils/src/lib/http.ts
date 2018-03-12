@@ -1,6 +1,7 @@
 import * as util from 'util';
 
 import chalk from 'chalk';
+import * as lodash from 'lodash';
 import * as superagentType from 'superagent';
 
 import {
@@ -35,6 +36,22 @@ export async function createRawRequest(method: string, url: string): Promise<{ r
   const req = superagent(method, url);
 
   return { req };
+}
+
+export abstract class ResourceClient {
+  protected applyModifiers(req: superagentType.Request, modifiers?: ResourceClientRequestModifiers) {
+    if (!modifiers) {
+      return;
+    }
+
+    if (modifiers.fields) {
+      req.query({ fields: modifiers.fields });
+    }
+  }
+
+  protected applyAuthentication(req: superagentType.Request, token: string) {
+    req.set('Authorization', `Bearer ${token}`);
+  }
 }
 
 export async function createRequest(config: IConfig, method: string, url: string): Promise<{ req: superagentType.SuperAgentRequest; }> {
@@ -196,6 +213,84 @@ export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
         return res;
       })(),
     };
+  }
+
+  [Symbol.iterator](): this {
+    return this;
+  }
+}
+
+export class TokenPaginator<T extends Response<object[]>> implements IPaginator<T, TokenPaginatorState> {
+  protected client: IClient;
+  protected reqgen: PaginatorRequestGenerator;
+  protected guard: PaginatorGuard<T>;
+  protected max?: number;
+
+  readonly state: TokenPaginatorState;
+
+  constructor({ client, reqgen, guard, state, max }: PaginatorDeps<T, TokenPaginatorState>) {
+    const defaultState = { done: false, loaded: 0 };
+
+    this.client = client;
+    this.reqgen = reqgen;
+    this.guard = guard;
+    this.max = max;
+
+    if (!state) {
+      state = { ...defaultState };
+    }
+
+    this.state = lodash.assign({}, state, defaultState);
+  }
+
+  next(): IteratorResult<Promise<T>> {
+    if (this.state.done) {
+      return { done: true } as IteratorResult<Promise<T>>; // TODO: why can't I exclude value?
+    }
+
+    return {
+      done: false,
+      value: (async () => {
+        const { req } = await this.reqgen();
+
+        if (this.state.page_token) {
+          req.query({ page_token: this.state.page_token });
+        }
+
+        const res = await this.client.do(req);
+
+        if (!this.isPageTokenResponseMeta(res.meta)) {
+          throw createFatalAPIFormat(req, res);
+        }
+
+        const nextPageToken = res.meta.next_page_token;
+
+        if (!this.guard(res)) {
+          throw createFatalAPIFormat(req, res);
+        }
+
+        this.state.loaded += res.data.length;
+
+        if (
+          res.data.length === 0 || // no resources in this page, we're done
+          (typeof this.max === 'number' && this.state.loaded >= this.max) || // met or exceeded maximum requested
+          !nextPageToken // no next page token, must be done
+        ) {
+          this.state.done = true;
+        }
+
+        this.state.page_token = nextPageToken;
+
+        return res;
+      })(),
+    };
+  }
+
+  isPageTokenResponseMeta(m: APIResponseMeta): m is APIResponsePageTokenMeta {
+    const meta = <APIResponsePageTokenMeta>m;
+    return meta
+      && (!meta.prev_page_token || typeof meta.prev_page_token === 'string')
+      && (!meta.next_page_token || typeof meta.next_page_token === 'string');
   }
 
   [Symbol.iterator](): this {

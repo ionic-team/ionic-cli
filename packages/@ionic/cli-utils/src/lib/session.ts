@@ -150,6 +150,19 @@ export class ProSession extends BaseSession implements ISession {
     }
   }
 
+  async getUser(): Promise<{ id: number; }> {
+    const c = await this.config.load();
+
+    if (!c.user.id) {
+      throw new SessionException(
+        `Oops, sorry! You'll need to log in:\n    ${chalk.green('ionic login')}\n\n` +
+        `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`
+      );
+    }
+
+    return { id: Number(c.user.id) };
+  }
+
   async getAppUserToken(app_id?: string): Promise<string> {
     return this.getUserToken();
   }

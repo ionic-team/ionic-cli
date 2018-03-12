@@ -130,11 +130,84 @@ export interface Response<T> extends APIResponseSuccess {
   data: T;
 }
 
+export interface Org {
+  name: string;
+}
+
+export interface GithubRepo {
+  full_name: string;
+  id: number;
+}
+
+export interface GithubBranch {
+  name: string;
+}
+
+export interface AppAssociation {
+  repository: GithubRepoAssociation;
+}
+
+export interface RepoAssociation {
+  html_url: string;
+  clone_url: string;
+  full_name: string;
+}
+
+export interface GithubRepoAssociation extends RepoAssociation {
+    type: 'github';
+    id: number;
+}
+
+export type AssociationType = 'github';
+
 export interface AppDetails {
   id: string;
   name: string;
   slug: string;
+  org: null | Org;
   repo_url?: string;
+  association?: null | AppAssociation;
+}
+
+export interface ResourceClientLoad<T extends object> {
+  load(id: string | number, modifiers: ResourceClientRequestModifiers): Promise<T>;
+}
+
+export interface ResourceClientDelete {
+  delete(id: string | number): Promise<void>;
+}
+
+export interface ResourceClientCreate<T extends object, U extends object> {
+  create(details: U): Promise<T>;
+}
+
+export interface ResourceClientPaginate<T extends object> {
+  paginate(args?: Partial<PaginateArgs<Response<T[]>>>): IPaginator<Response<T[]>, PaginatorState>;
+}
+
+export interface ResourceClientRequestModifiers {
+  fields?: string[];
+}
+
+export interface Login {
+  user: User;
+  token: string;
+}
+
+export interface User {
+  id: number;
+  email: string;
+  oauth_identities?: OAuthIdentity;
+}
+
+export type OAuthIdentity = {
+  [A in AssociationType]?: OAuthIdentityDetails;
+};
+
+export interface OAuthIdentityDetails {
+  username: string;
+  name: string;
+  html_url: string;
 }
 
 export interface AuthToken {
@@ -386,6 +459,11 @@ export interface APIResponseMeta {
   request_id: string;
 }
 
+export interface APIResponsePageTokenMeta extends APIResponseMeta {
+  prev_page_token?: string;
+  next_page_token?: string;
+}
+
 export type APIResponseData = Object | Object[] | string;
 
 export interface APIResponseErrorDetails {
@@ -418,10 +496,39 @@ export interface IClient {
 
   make(method: HttpMethod, path: string): Promise<{ req: superagentType.SuperAgentRequest; }>;
   do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess>;
-  paginate<T extends Response<Object[]>>(reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>, guard: (res: APIResponseSuccess) => res is T): Promise<IPaginator<T>>;
+  paginate<T extends Response<object[]>>(args: PaginateArgs<T>): IPaginator<T>;
 }
 
-export interface IPaginator<T extends Response<Object[]>> extends IterableIterator<Promise<T>> {}
+export type PaginateArgs<T extends Response<object[]>> = Pick<PaginatorDeps<T>, 'reqgen' | 'guard' | 'state' | 'max'>;
+
+export interface IPaginator<T extends Response<object[]>, S = PaginatorState> extends IterableIterator<Promise<T>> {
+  readonly state: S;
+}
+
+export type PaginatorRequestGenerator = () => Promise<{ req: superagentType.SuperAgentRequest; }>;
+export type PaginatorGuard<T extends Response<object[]>> = (res: APIResponseSuccess) => res is T;
+
+export interface PaginatorState {
+  done: boolean;
+  loaded: number;
+}
+
+export interface PagePaginatorState extends PaginatorState {
+  page: number;
+  page_size?: number;
+}
+
+export interface TokenPaginatorState extends PaginatorState {
+  page_token?: string;
+}
+
+export interface PaginatorDeps<T extends Response<object[]>, S = PaginatorState> {
+  readonly client: IClient;
+  readonly reqgen: PaginatorRequestGenerator;
+  readonly guard: PaginatorGuard<T>;
+  readonly state?: Partial<S>;
+  readonly max?: number;
+}
 
 export interface EnvironmentHookArgs {
   env: IonicEnvironment;

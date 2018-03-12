@@ -41,6 +41,7 @@ import { Shell } from './lib/shell';
 import { createPromptModule } from './lib/prompts';
 
 export * from './definitions';
+export * from './guards';
 
 export { BACKEND_LEGACY, BACKEND_PRO, KNOWN_BACKENDS } from './lib/backends';
 

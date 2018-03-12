@@ -1,5 +1,7 @@
 import {
+  AppAssociation,
   AppDetails,
+  AssociationType,
   IApp,
   IClient,
   IPaginator,
@@ -7,7 +9,7 @@ import {
 } from '../definitions';
 
 import { createFatalAPIFormat } from './http';
-import { isAppResponse, isAppsResponse } from '../guards';
+import { isAppResponse, isAppsResponse, isAppAssociationResponse } from '../guards';
 
 export class App implements IApp {
   constructor(public token: string, protected client: IClient) {}
@@ -46,4 +48,35 @@ export class App implements IApp {
 
     return res.data;
   }
+
+  async createAssociation(id: string, association: { repoId: number; type: AssociationType; branches: string[] }): Promise<AppAssociation> {
+    const { req } = await this.client.make('POST', `/apps/${id}/repository`);
+
+    req
+      .set('Authorization', `Bearer ${this.token}`)
+    .send({
+      repository_id: association.repoId,
+      type: association.type,
+      branches: association.branches,
+    });
+
+    const res = await this.client.do(req);
+
+    if (!isAppAssociationResponse(res)) {
+      throw createFatalAPIFormat(req, res);
+    }
+
+    return res.data;
+  }
+
+  async deleteAssociation(id: string): Promise<void> {
+    const { req } = await this.client.make('DELETE', `/apps/${id}/repository`);
+
+    req
+      .set('Authorization', `Bearer ${this.token}`)
+      .send({});
+
+    await req;
+  }
+
 }
