@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.20.0"></a>
+# [3.20.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.19.1...ionic@3.20.0) (2018-03-13)
+
+
+### Bug Fixes
+
+* **link:** if there are no branches default to master branch ([5227d4f](https://github.com/ionic-team/ionic-cli/commit/5227d4f))
+* **link:** show clone_url for git remote url ([dec6d4b](https://github.com/ionic-team/ionic-cli/commit/dec6d4b))
+
+
+### Features
+
+* **start:** if the app is on pro show next steps reflecting whether it is on GitHub or not ([def323a](https://github.com/ionic-team/ionic-cli/commit/def323a))
+
+
+
+
 <a name="3.19.1"></a>
 ## [3.19.1](https://github.com/ionic-team/ionic-cli/compare/ionic@3.19.0...ionic@3.19.1) (2018-01-17)
 
