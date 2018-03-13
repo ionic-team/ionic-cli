@@ -528,14 +528,28 @@ export class StartCommand extends Command implements CommandPreRun {
     const { prettyPath } = await import('@ionic/cli-utils/lib/utils/format');
 
     const config = await this.env.config.load();
+    const project = await this.env.project.load();
+
+    let app;
+    if (project.app_id) {
+      const { App } = await import('@ionic/cli-utils/lib/app');
+      const token = await this.env.session.getUserToken();
+      const appLoader = new App(token, this.env.client);
+      app = await appLoader.load(project.app_id);
+    }
 
     this.env.log.msg(`${chalk.bold('Next Steps')}:\n`);
     this.env.log.msg(`* Go to your newly created project: ${chalk.green(`cd ${prettyPath(projectDir)}`)}`);
     this.env.log.msg(`* Get Ionic DevApp for easy device testing: ${chalk.bold('https://bit.ly/ionic-dev-app')}`);
 
     if (config.backend === BACKEND_PRO && linkConfirmed) {
-      this.env.log.msg(`* Finish setting up Ionic Pro Error Monitoring: ${chalk.bold('https://ionicframework.com/docs/pro/monitoring/#getting-started')}\n`);
-      this.env.log.msg(`* Finally, push your code to Ionic Pro to perform real-time updates, and more: ${chalk.green('git push ionic master')}`);
+        this.env.log.msg(`* Finish setting up Ionic Pro Error Monitoring: ${chalk.bold('https://ionicframework.com/docs/pro/monitoring/#getting-started')}\n`);
+      if (app && app.association) {
+        this.env.log.msg(`* Make sure you've added your git host as the origin remote: ${chalk.green('git remote add origin ' + app.association.repository.clone_url)}`);
+        this.env.log.msg(`* Finally, push your code to perform real-time updates, and more: ${chalk.green('git push')}`);
+      } else {
+        this.env.log.msg(`* Finally, push your code to Ionic Pro to perform real-time updates, and more: ${chalk.green('git push ionic master')}`);
+      }
     }
 
     this.env.log.nl();
