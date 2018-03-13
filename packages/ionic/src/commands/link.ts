@@ -547,6 +547,11 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       checked: branch.name === 'master',
     }));
 
+    if (choices.length === 0) {
+      this.env.log.warn('No branches found for the repository...linking to master branch.');
+      return ['master'];
+    }
+
     const selectedBranches = await this.env.prompt({
       type: 'checkbox',
       name: 'githubBranches',
