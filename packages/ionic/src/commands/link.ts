@@ -402,7 +402,7 @@ export class LinkCommand extends Command implements CommandPreRun {
     try {
       const association = await appClient.createAssociation(app.id, { repoId, type: 'github', branches });
       this.env.log.ok(`App ${chalk.green(app.id)} connected to ${chalk.bold(association.repository.html_url)}`);
-      return association.repository.html_url;
+      return association.repository.clone_url;
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 403) {
         throw new FatalException(e.response.body.error.message);
