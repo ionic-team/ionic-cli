@@ -7,6 +7,10 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<a name="3.20.0"></a>
+### 3.20.0 (2018-03-13)
+* Added Ionic Pro GitHub integation ability to link Pro users and apps to GitHub
+
 <a name="3.19.1"></a>
 ### 3.19.1 (2018-01-27)
 
