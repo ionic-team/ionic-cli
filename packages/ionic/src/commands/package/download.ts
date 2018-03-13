@@ -43,7 +43,7 @@ export class PackageDownloadCommand extends Command {
 
     let [ id ] = inputs;
     let { destination } = options;
-    const destDir = path.resolve(destination || this.env.project.directory);
+    const destDir = path.resolve(String(destination) || this.env.project.directory);
     let buildId = isNaN(Number(id)) ? undefined : Number(id);
 
     const token = await this.env.session.getAppUserToken();

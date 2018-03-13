@@ -1,18 +1,14 @@
 import * as os from 'os';
 import * as path from 'path';
 
-import { IonicEnvironment } from '../definitions';
-
 import { ERROR_FILE_NOT_FOUND, fsReadFile, fsStat } from '@ionic/cli-framework/utils/fs';
 
 export const ERROR_SSH_MISSING_PRIVKEY = 'SSH_MISSING_PRIVKEY';
 export const ERROR_SSH_INVALID_PUBKEY = 'SSH_INVALID_PUBKEY';
 export const ERROR_SSH_INVALID_PRIVKEY = 'SSH_INVALID_PRIVKEY';
 
-export async function getGeneratedPrivateKeyPath(env: IonicEnvironment): Promise<string> {
-  const config = await env.config.load();
-  const id = config.user.id ? config.user.id : 'anonymous';
-  return path.resolve(os.homedir(), '.ssh', 'ionic', id);
+export async function getGeneratedPrivateKeyPath(userId = 0): Promise<string> {
+  return path.resolve(os.homedir(), '.ssh', 'ionic', String(userId));
 }
 
 export async function parsePublicKeyFile(pubkeyPath: string): Promise<[string, string, string, string]> {

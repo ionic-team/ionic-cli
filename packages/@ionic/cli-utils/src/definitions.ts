@@ -370,6 +370,7 @@ export interface ISession {
   login(email: string, password: string): Promise<void>;
   logout(): Promise<void>;
   isLoggedIn(): Promise<boolean>;
+  getUser(): Promise<{ id: number; }>;
   getUserToken(): Promise<string>;
   getAppUserToken(app_id?: string): Promise<string>;
 }
@@ -428,7 +429,7 @@ export interface ConfigFile {
     setup?: boolean;
   };
   user: {
-    id?: string;
+    id?: number;
     email?: string;
   };
   tokens: {

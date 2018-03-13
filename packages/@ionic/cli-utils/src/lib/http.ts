@@ -8,10 +8,19 @@ import {
   APIResponse,
   APIResponseError,
   APIResponseSuccess,
+  APIResponseMeta,
+  APIResponsePageTokenMeta,
   HttpMethod,
   IClient,
   IConfig,
   IPaginator,
+  PagePaginatorState,
+  PaginateArgs,
+  PaginatorGuard,
+  PaginatorDeps,
+  PaginatorRequestGenerator,
+  ResourceClientRequestModifiers,
+  TokenPaginatorState,
   Response,
   SuperAgentError,
 } from '../definitions';
@@ -168,20 +177,33 @@ export class Client implements IClient {
     return r;
   }
 
-  async paginate<T extends Response<Object[]>>(reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>, guard: (res: APIResponseSuccess) => res is T): Promise<Paginator<T>> {
-    return new Paginator<T>(this, reqgen, guard);
+  paginate<T extends Response<object[]>>(args: PaginateArgs<T>): IPaginator<T> {
+    return new Paginator<T>({ client: this, ...args });
   }
 }
 
 export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
-  protected state?: { page: number; pageSize: number; };
   protected done = false;
+  readonly state: PagePaginatorState;
+  protected client: IClient;
+  protected reqgen: PaginatorRequestGenerator;
+  protected guard: PaginatorGuard<T>;
+  protected max?: number;
 
-  constructor(
-    protected client: IClient,
-    protected reqgen: () => Promise<{ req: superagentType.SuperAgentRequest; }>,
-    protected guard: (res: APIResponseSuccess) => res is T,
-  ) {}
+  constructor({ client, reqgen, guard, state, max }: PaginatorDeps<T, PagePaginatorState>) {
+    const defaultState = { page: 1, done: false, loaded: 0 };
+
+    this.client = client;
+    this.reqgen = reqgen;
+    this.guard = guard;
+    this.max = max;
+
+    if (!state) {
+      state = { ...defaultState };
+    }
+
+    this.state = lodash.assign({}, state, defaultState);
+  }
 
   next(): IteratorResult<Promise<T>> {
     if (this.done) {
@@ -193,19 +215,22 @@ export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
       value: (async () => {
         const { req } = await this.reqgen();
 
-        if (!this.state) {
-          this.state = { page: 1, pageSize: 100 };
-        }
-
-        req.query({ 'page': this.state.page, 'page_size': this.state.pageSize });
+        req.query(lodash.pick(this.state, ['page', 'page_size']));
 
         const res = await this.client.do(req);
+
         if (!this.guard(res)) {
           throw createFatalAPIFormat(req, res);
         }
 
-        if (res.data.length === 0 || res.data.length < this.state.pageSize) {
-          this.done = true;
+        this.state.loaded += res.data.length;
+
+        if (
+          res.data.length === 0 || // no resources in this page, we're done
+          (typeof this.max === 'number' && this.state.loaded >= this.max) || // met or exceeded maximum requested
+          (typeof this.state.page_size === 'number' && res.data.length < this.state.page_size) // number of resources less than page size, so nothing on next page
+        ) {
+          this.state.done = true;
         }
 
         this.state.page++;

@@ -17,7 +17,6 @@
     "lint": "tslint --config ../../tslint.js --project tsconfig.json --type-check",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
-    "test": "jest",
     "prepublishOnly": "npm run build"
   },
   "files": [
@@ -53,20 +52,5 @@
   },
   "devDependencies": {
     "@types/opn": "^5.1.0"
-  },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfigFile": "tsconfig.json"
-      }
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "transform": {
-      ".(ts)": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
-    },
-    "testRegex": "/__tests__/.*\\.(ts|js)$"
   }
 }

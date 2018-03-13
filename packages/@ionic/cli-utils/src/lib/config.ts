@@ -183,6 +183,10 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.user = {};
     }
 
+    if (typeof results.user.id === 'string') {
+      results.user.id = Number(results.user.id);
+    }
+
     if (!results.tokens) {
       results.tokens = {};
     }

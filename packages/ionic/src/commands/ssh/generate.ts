@@ -66,7 +66,8 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
 
     const { bits, annotation } = options;
 
-    const keyPath = inputs[0] ? expandPath(String(inputs[0])) : await getGeneratedPrivateKeyPath(this.env);
+    const config = await this.env.config.load();
+    const keyPath = inputs[0] ? expandPath(String(inputs[0])) : await getGeneratedPrivateKeyPath(config.user.id);
     const keyPathDir = path.dirname(keyPath);
     const pubkeyPath = `${keyPath}.pub`;
 

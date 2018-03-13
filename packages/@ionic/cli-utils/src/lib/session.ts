@@ -10,7 +10,7 @@ import {
 
 import { isAuthTokensResponse, isLegacyLoginResponse, isProLoginResponse, isSuperAgentError } from '../guards';
 
-import { SessionException } from './errors';
+import { FatalException, SessionException } from './errors';
 import { createFatalAPIFormat } from './http';
 
 export class BaseSession {
@@ -32,6 +32,10 @@ export class BaseSession {
     c.tokens.appUser = {};
     delete c.tokens.user;
     c.git.setup = false;
+  }
+
+  async getUser(): Promise<{ id: number; }> {
+    throw new FatalException('Invalid operation for Cloud session.');
   }
 
   async getUserToken(): Promise<string> {
@@ -63,11 +67,11 @@ export class CloudSession extends BaseSession implements ISession {
       const { token, user_id } = res.data;
       const c = await this.config.load();
 
-      if (c.user.id !== user_id) { // User changed
+      if (c.user.id !== Number(user_id)) { // User changed
         await this.logout();
       }
 
-      c.user.id = user_id;
+      c.user.id = Number(user_id);
       c.user.email = email;
       c.tokens.user = token;
     } catch (e) {
@@ -88,14 +92,14 @@ export class CloudSession extends BaseSession implements ISession {
 
     if (!c.tokens.appUser[app_id]) {
       const token = await this.getUserToken();
-      const paginator = await this.client.paginate(
-        async () => {
+      const paginator = await this.client.paginate({
+        reqgen: async () => {
           const { req } = await this.client.make('GET', '/auth/tokens');
           req.set('Authorization', `Bearer ${token}`).query({ 'page_size': 100, type: 'app-user' });
           return { req };
         },
-        isAuthTokensResponse
-      );
+        guard: isAuthTokensResponse,
+      });
 
       for (let r of paginator) {
         const res = await r;
@@ -132,7 +136,7 @@ export class ProSession extends BaseSession implements ISession {
       const { token, user } = res.data;
       const c = await this.config.load();
 
-      const user_id = String(user.id);
+      const user_id = user.id;
 
       if (c.user.id !== user_id) { // User changed
         await this.logout();

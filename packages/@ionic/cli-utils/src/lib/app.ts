@@ -27,14 +27,14 @@ export class App implements IApp {
   }
 
   async paginate(): Promise<IPaginator<Response<AppDetails[]>>> {
-    return this.client.paginate(
-      async () => {
+    return this.client.paginate({
+      reqgen: async () => {
         const { req } = await this.client.make('GET', '/apps');
         req.set('Authorization', `Bearer ${this.token}`);
         return { req };
       },
-      isAppsResponse,
-    );
+      guard: isAppsResponse,
+    });
   }
 
   async create({ name }: { name: string; }) {

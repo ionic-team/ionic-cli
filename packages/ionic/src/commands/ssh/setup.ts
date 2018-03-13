@@ -77,7 +77,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
 
     if (setupChoice === CHOICE_AUTOMATIC) {
       const sshconfigPath = getConfigPath();
-      const keyPath = await getGeneratedPrivateKeyPath(this.env);
+      const keyPath = await getGeneratedPrivateKeyPath(config.user.id);
       const pubkeyPath = `${keyPath}.pub`;
 
       const [ pubkeyExists, keyExists ] = await Promise.all([pathExists(keyPath), pathExists(pubkeyPath)]);
