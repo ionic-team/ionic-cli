@@ -216,7 +216,7 @@ export class LinkCommand extends Command implements CommandPreRun {
     this.env.log.nl();
 
     this.env.log.info(
-      `Ionic Pro uses a git-based workflow to manage app updates.\n` +
+      `${chalk.bold(`Ionic Pro uses a git-based workflow to manage app updates.`)}\n` +
       `You will be prompted to set up the git host and repository for this new app. See the docs${chalk.bold('[1]')} for more information.\n\n` +
       `${chalk.bold('[1]')}: ${chalk.cyan('https://ionicframework.com/docs/pro/basics/git/')}`
     );
@@ -268,7 +268,7 @@ export class LinkCommand extends Command implements CommandPreRun {
 
       if (githubUrl) {
         this.env.log.info(
-          `You can now push to one of your branches on GitHub to trigger a build in Ionic Pro!\n` +
+          `${chalk.bold('You can now push to one of your branches on GitHub to trigger a build in Ionic Pro!')}\n` +
           `If you haven't added GitHub as your origin you can do so by running:\n\n` +
           `${chalk.green('git remote add origin ' + githubUrl)}\n\n` +
           `You can find additional links above to help if you're having issues.`
@@ -305,7 +305,7 @@ export class LinkCommand extends Command implements CommandPreRun {
       `${chalk.bold('If the repository does not exist please create one now before continuing.')}\n` +
       `If you're not familiar with Git you can learn how to set it up with GitHub here:\n\n` +
       chalk.cyan(`https://help.github.com/articles/set-up-git/ \n\n`) +
-      `You can find documenation on how to create a repository on GitHub and push to it here:\n\n` +
+      `You can find documentation on how to create a repository on GitHub and push to it here:\n\n` +
       chalk.cyan(`https://help.github.com/articles/create-a-repo/`)
     );
 
@@ -329,7 +329,7 @@ export class LinkCommand extends Command implements CommandPreRun {
 
     this.env.log.nl();
     this.env.log.info(
-      `GitHub OAuth setup required.\n` +
+      `${chalk.bold('GitHub OAuth setup required.')}\n` +
       `To continue, we need you to authorize Ionic Pro with your GitHub account. ` +
       `A browser will open and prompt you to complete the authorization request. ` +
       `When finished, please return to the CLI to continue linking your app.`
