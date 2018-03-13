@@ -88,6 +88,10 @@ from the breaking changes listed below, upgrading to CLI v4 should be seamless.
 * Ionic Lab has been rebuilt using [StencilJS](https://stenciljs.com) and now
   works for any Ionic Framework version.
 
+<a name="3.20.0"></a>
+### 3.20.0 (2018-03-13)
+* Added Ionic Pro GitHub integation ability to link Pro users and apps to GitHub
+
 <a name="3.19.1"></a>
 ### 3.19.1 (2018-01-17)
 
