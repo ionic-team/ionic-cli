@@ -183,7 +183,6 @@ export class Client implements IClient {
 }
 
 export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
-  protected done = false;
   readonly state: PagePaginatorState;
   protected client: IClient;
   protected reqgen: PaginatorRequestGenerator;
@@ -206,7 +205,7 @@ export class Paginator<T extends Response<Object[]>> implements IPaginator<T> {
   }
 
   next(): IteratorResult<Promise<T>> {
-    if (this.done) {
+    if (this.state.done) {
       return { done: true } as IteratorResult<Promise<T>>; // TODO: why can't I exclude value?
     }
 
