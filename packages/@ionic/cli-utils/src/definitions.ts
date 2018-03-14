@@ -627,6 +627,16 @@ export interface LabServeDetails {
   };
 }
 
+export interface DevAppDetails {
+  channel?: string;
+  port: number;
+  commPort: number;
+  interfaces: {
+    address: string;
+    broadcast: string;
+  }[];
+}
+
 export interface ServeDetails {
   custom: boolean;
   protocol: string;

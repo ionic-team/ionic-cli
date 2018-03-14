@@ -12,19 +12,7 @@ import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
-import {
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandMetadataOption,
-  IonicEnvironment,
-  LabServeDetails,
-  NetworkInterface,
-  ProjectType,
-  ServeDetails,
-  ServeOptions,
-} from '../definitions';
-
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IonicEnvironment, LabServeDetails, NetworkInterface, ProjectType, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 import { OptionGroup, PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
@@ -41,6 +29,7 @@ export const DEFAULT_DEV_LOGGER_PORT = 53703;
 export const DEFAULT_LIVERELOAD_PORT = 35729;
 export const DEFAULT_SERVER_PORT = 8100;
 export const DEFAULT_LAB_PORT = 8200;
+export const DEFAULT_DEVAPP_COMM_PORT = 53233;
 
 export const BIND_ALL_ADDRESS = '0.0.0.0';
 export const LOCAL_ADDRESSES = ['localhost', '127.0.0.1'];
@@ -80,16 +69,9 @@ export const COMMON_SERVE_COMMAND_OPTIONS: CommandMetadataOption[] = [
   },
 ];
 
-export interface DevAppDetails {
-  channel?: string;
-  port?: number;
-  interfaces: {
-    address: string;
-    broadcast: string;
-  }[];
-}
-
 export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, ServeDetails> {
+  protected devAppConnectionMade = false;
+
   constructor(protected env: IonicEnvironment) {
     super();
   }
@@ -153,7 +135,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     };
   }
 
-  async checkDevApp(options: T) {
+  async displayDevAppMessage(options: T) {
     const pkg = await this.env.project.loadPackageJson();
 
     // If this is regular `ionic serve`, we warn the dev about unsupported
@@ -174,72 +156,14 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async run(options: T): Promise<ServeDetails> {
-    const { promptToInstallPkg } = await import('./utils/npm');
-    const { findClosestOpenPort } = await import('./utils/network');
+    await this.runBeforeHook(options);
 
-    const before = new ServeBeforeHook(this.env);
-
-    try {
-      await before.run({ name: before.name, serve: options });
-    } catch (e) {
-      if (e instanceof BaseError) {
-        throw new FatalException(e.message);
-      }
-
-      throw e;
-    }
-
-    await this.checkDevApp(options);
-
-    const devAppDetails = await this.gatherDevAppDetails(options);
     const details = await this.serveProject(options);
-
-    let labDetails: LabServeDetails | undefined;
-
-    if (options.lab) {
-      labDetails = {
-        protocol: options.ssl ? 'https' : 'http',
-        address: options.labHost,
-        port: await findClosestOpenPort(options.labPort, '0.0.0.0'),
-      };
-
-      if (options.ssl) {
-        const project = await this.env.project.load();
-
-        if (project.ssl && project.ssl.key && project.ssl.cert) {
-          labDetails.ssl = { key: project.ssl.key, cert: project.ssl.cert };
-        } else {
-          throw new FatalException(
-            `Both ${chalk.green('ssl.key')} and ${chalk.green('ssl.cert')} config entries must be set.\n` +
-            `See ${chalk.green('ionic serve --help')} for details on using your own SSL key and certificate for Ionic Lab and the dev server.`
-          );
-        }
-      }
-
-      try {
-        await this.runLab(`${details.protocol}://localhost:${details.port}`, labDetails);
-      } catch (e) {
-        if (e.code === 'ENOENT') {
-          const pkg = '@ionic/lab';
-          this.env.log.nl();
-          this.env.log.warn(
-            `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
-            `This package is required for Ionic Lab as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#4.0.0')}`
-          );
-
-          const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });
-
-          if (!installed) {
-            throw new FatalException(`${chalk.green(pkg)} is required for Ionic Lab to work properly.`);
-          }
-
-          await this.runLab(`${details.protocol}://localhost:${details.port}`, labDetails);
-        }
-      }
-    }
+    const devAppDetails = await this.gatherDevAppDetails(options, details);
+    const labDetails = options.lab ? await this.runLab(options, details) : undefined;
 
     if (devAppDetails) {
-      const devAppName = await this.publishDevApp(options, { port: details.port, ...devAppDetails });
+      const devAppName = await this.publishDevApp(options, devAppDetails);
       devAppDetails.channel = devAppName;
     }
 
@@ -271,6 +195,28 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       this.env.log.nl();
     }
 
+    this.scheduleAfterHook(options, details);
+
+    this.env.keepopen = true;
+
+    return details;
+  }
+
+  async runBeforeHook(options: T) {
+    const before = new ServeBeforeHook(this.env);
+
+    try {
+      await before.run({ name: before.name, serve: options });
+    } catch (e) {
+      if (e instanceof BaseError) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
+  }
+
+  scheduleAfterHook(options: T, details: ServeDetails) {
     onBeforeExit(async () => {
       const after = new ServeAfterHook(this.env);
 
@@ -284,13 +230,11 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
         throw e;
       }
     });
-
-    this.env.keepopen = true;
-
-    return details;
   }
 
-  async gatherDevAppDetails(options: T): Promise<DevAppDetails | undefined> {
+  async gatherDevAppDetails(options: T, details: ServeDetails): Promise<DevAppDetails | undefined> {
+    const { findClosestOpenPort } = await import('./utils/network');
+
     if (options.devapp) {
       const { getSuitableNetworkInterfaces } = await import('./utils/network');
       const { computeBroadcastAddress } = await import('./devapp');
@@ -308,19 +252,44 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
           broadcast: computeBroadcastAddress(i.address, i.netmask),
         }));
 
-      return { interfaces };
+      return {
+        port: details.port,
+        commPort: await findClosestOpenPort(DEFAULT_DEVAPP_COMM_PORT, '0.0.0.0'),
+        interfaces,
+      };
     }
   }
 
-  async publishDevApp(options: T, details: DevAppDetails & { port: number; }): Promise<string | undefined> {
+  async publishDevApp(options: T, details: DevAppDetails): Promise<string | undefined> {
     if (options.devapp) {
-      const { createPublisher } = await import('./devapp');
-      const publisher = await createPublisher(this.env, details.port);
+      const { createCommServer, createPublisher } = await import('./devapp');
+
+      const project = await this.env.project.load();
+      const publisher = await createPublisher(project.name, details.port, details.commPort);
+      const comm = await createCommServer(publisher.id, details.commPort);
+
       publisher.interfaces = details.interfaces;
+
+      comm.on('error', (err: Error) => {
+        debug(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
+      });
+
+      comm.on('connect', async (data: any) => {
+        if (!this.devAppConnectionMade) {
+          this.devAppConnectionMade = true;
+          await this.displayDevAppMessage(options);
+        }
+      });
 
       publisher.on('error', (err: Error) => {
         debug(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
       });
+
+      try {
+        await comm.start();
+      } catch (e) {
+        this.env.log.error(`Could not create DevApp comm server: ${String(e.stack ? e.stack : e)}`);
+      }
 
       try {
         await publisher.start();
@@ -347,7 +316,54 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     return new Set(plugins);
   }
 
-  async runLab(url: string, details: LabServeDetails) {
+  async runLab(options: T, details: ServeDetails): Promise<LabServeDetails> {
+    const { promptToInstallPkg } = await import('./utils/npm');
+    const { findClosestOpenPort } = await import('./utils/network');
+
+    const labDetails: LabServeDetails = {
+      protocol: options.ssl ? 'https' : 'http',
+      address: options.labHost,
+      port: await findClosestOpenPort(options.labPort, '0.0.0.0'),
+    };
+
+    if (options.ssl) {
+      const project = await this.env.project.load();
+
+      if (project.ssl && project.ssl.key && project.ssl.cert) {
+        labDetails.ssl = { key: project.ssl.key, cert: project.ssl.cert };
+      } else {
+        throw new FatalException(
+          `Both ${chalk.green('ssl.key')} and ${chalk.green('ssl.cert')} config entries must be set.\n` +
+          `See ${chalk.green('ionic serve --help')} for details on using your own SSL key and certificate for Ionic Lab and the dev server.`
+        );
+      }
+    }
+
+    try {
+      await this.runLabServer(`${details.protocol}://localhost:${details.port}`, labDetails);
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        const pkg = '@ionic/lab';
+        this.env.log.nl();
+        this.env.log.warn(
+          `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
+          `This package is required for Ionic Lab as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#4.0.0')}`
+        );
+
+        const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });
+
+        if (!installed) {
+          throw new FatalException(`${chalk.green(pkg)} is required for Ionic Lab to work properly.`);
+        }
+
+        await this.runLabServer(`${details.protocol}://localhost:${details.port}`, labDetails);
+      }
+    }
+
+    return labDetails;
+  }
+
+  async runLabServer(url: string, details: LabServeDetails) {
     const project = await this.env.project.load();
     const pkg = await this.env.project.loadPackageJson();
 

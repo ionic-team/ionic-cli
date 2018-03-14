@@ -2,7 +2,10 @@ import * as os from 'os';
 import * as dgram from 'dgram';
 import * as events from 'events';
 
+import * as Debug from 'debug';
 import { Netmask } from 'netmask';
+
+const debug = Debug('ionic:discover:publisher');
 
 const PREFIX = 'ION_DP';
 const PORT = 41234;
@@ -12,25 +15,26 @@ export interface Interface {
   broadcast: string;
 }
 
-export interface IPublisher {
-  emit(event: 'error', err: Error): boolean;
+export interface IPublisherEventEmitter {
   on(event: 'error', listener: (err: Error) => void): this;
 }
 
-export class Publisher extends events.EventEmitter implements IPublisher {
-  id: string;
-  path = '/';
-  running = false;
-  interval = 2000;
+export class Publisher extends events.EventEmitter implements IPublisherEventEmitter {
+  readonly id: string;
+  readonly path = '/';
 
-  timer?: NodeJS.Timer;
-  client?: dgram.Socket;
+  running = false;
   interfaces?: Interface[];
+
+  protected timer?: NodeJS.Timer;
+  protected interval = 2000;
+  protected client?: dgram.Socket;
 
   constructor(
     public namespace: string,
     public name: string,
-    public port: number
+    public port: number,
+    public commPort?: number
   ) {
     super();
 
@@ -63,6 +67,7 @@ export class Publisher extends events.EventEmitter implements IPublisher {
         client.setBroadcast(true);
         this.timer = setInterval(() => this.sayHello(), this.interval);
         this.sayHello();
+        debug('Publisher starting');
         resolve();
       });
 
@@ -88,7 +93,7 @@ export class Publisher extends events.EventEmitter implements IPublisher {
     }
   }
 
-  buildMessage(ip: string): string {
+  protected buildMessage(ip: string): string {
     const now = Date.now();
     const message = {
       t: now,
@@ -98,17 +103,18 @@ export class Publisher extends events.EventEmitter implements IPublisher {
       host: os.hostname(),
       ip: ip,
       port: this.port,
+      commPort: this.commPort,
       path: this.path,
     };
 
     return PREFIX + JSON.stringify(message);
   }
 
-  getInterfaces(): Interface[] {
+  protected getInterfaces(): Interface[] {
     return prepareInterfaces(os.networkInterfaces());
   }
 
-  private sayHello() {
+  protected sayHello() {
     if (!this.interfaces) {
       throw new Error('No network interfaces set--was the service started?');
     }
@@ -119,7 +125,10 @@ export class Publisher extends events.EventEmitter implements IPublisher {
 
     try {
       for (const iface of this.interfaces) {
-        const message = new Buffer(this.buildMessage(iface.address));
+        const serialized = this.buildMessage(iface.address);
+        const message = new Buffer(serialized);
+
+        debug(`Broadcasting %O to ${iface.broadcast}`, serialized);
 
         this.client.send(message, 0, message.length, PORT, iface.broadcast, err => {
           if (err) {
