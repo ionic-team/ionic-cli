@@ -7,14 +7,31 @@ the CHANGELOG files within CLI packages. For specific commit-level changes, see
 
 ## Versions
 
+<!--
+<a name="4.x.0"></a>
+### 4.x.0 (PENDING)
+
+#### :rocket: Enhancements
+
+* Support for :sparkles: **Ionic Angular v4** :sparkles:
+* Ionic Angular v4 generators: page, component, directive, enum, guard,
+  interface, class, module, pipe, service. Use `ionic g -h` for more info.
+* `--ssl`/`-s` option added to `ionic serve` for Ionic Angular v4 projects. This
+  will generate a self-signed certificate unless the `ssl.key` and `ssl.cert`
+  project config settings are set. See `ionic serve --help`.
+-->
+
 <a name="4.0.0"></a>
 ### 4.0.0 (PENDING)
 
 #### Upgrading from CLI v3
 
-The focus for Ionic CLI v4 has been to support **Ionic Angular v4** while
-maintaining prime support for **Ionic Angular v2/v3** *and* **Ionic 1**. Aside
-from the breaking changes listed below, upgrading to CLI v4 should be seamless.
+Aside from a few edge cases listed below, upgrading to CLI v4 should be
+seamless.
+
+**Ionic 1**: For Ionic 1 projects, a new toolkit has been introduced to slim
+down the main CLI package. All functionality is still supported, but the
+`@ionic/v1-util` toolkit needs to be installed.
 
 #### :boom: Breaking Changes
 
@@ -50,13 +67,6 @@ from the breaking changes listed below, upgrading to CLI v4 should be seamless.
 
 #### :rocket: Enhancements
 
-* Support for :sparkles: **Ionic Angular v4** :sparkles:
-* Ionic Angular v4 generators: page, component, directive, enum, guard,
-  interface, class, module, pipe, service. Use `ionic g -h` for more info.
-* `--ssl`/`-s` option added to `ionic serve` for Ionic Angular v4 projects. This
-  will generate a self-signed certificate unless the `ssl.key` and `ssl.cert`
-  project config settings are set. See `ionic serve --help`.
-* `ionic link` now supports linking Github repos to your Ionic Pro app.
 * `ionic s` is now an alias for `ionic serve`.
 * New `ionic config unset` command for deleting config values.
 * If `ionic:build` or `ionic:serve` npm scripts are defined in your
@@ -90,6 +100,7 @@ from the breaking changes listed below, upgrading to CLI v4 should be seamless.
 
 <a name="3.20.0"></a>
 ### 3.20.0 (2018-03-13)
+
 * Added Ionic Pro GitHub integation ability to link Pro users and apps to GitHub
 
 <a name="3.19.1"></a>
