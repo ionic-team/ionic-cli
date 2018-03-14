@@ -298,7 +298,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       `${chalk.bold('If the repository does not exist please create one now before continuing.')}\n` +
       `If you're not familiar with Git you can learn how to set it up with GitHub here:\n\n` +
       chalk.cyan(`https://help.github.com/articles/set-up-git/ \n\n`) +
-      `You can find documenation on how to create a repository on GitHub and push to it here:\n\n` +
+      `You can find documentation on how to create a repository on GitHub and push to it here:\n\n` +
       chalk.cyan(`https://help.github.com/articles/create-a-repo/`)
     );
 
