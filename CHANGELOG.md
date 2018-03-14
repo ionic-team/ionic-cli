@@ -74,6 +74,7 @@ down the main CLI package. All functionality is still supported, but the
   of the default for your project type. See [the
   docs](https://ionicframework.com/docs/cli/configuring.html#building-and-serving-your-app)
   for details.
+* Connections from DevApp are now shown in the terminal.
 * New JS hook system. See [the
   docs](https://ionicframework.com/docs/cli/configuring.html#hooks).
 * New `serve:after` hook. See [the

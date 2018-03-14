@@ -279,6 +279,8 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
           this.devAppConnectionMade = true;
           await this.displayDevAppMessage(options);
         }
+
+        this.env.log.info(`DevApp connection established from ${chalk.bold(data.email)}`);
       });
 
       publisher.on('error', (err: Error) => {
