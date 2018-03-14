@@ -2,6 +2,9 @@
 
 'use strict';
 
+// IMPORTANT: This file uses ES5 syntax to avoid syntax errors in older Node
+// versions (mostly 0.12). See https://node.green for syntax support.
+
 process.title = 'ionic';
 process.on('unhandledRejection', function(r) { console.error(r); });
 
@@ -10,8 +13,8 @@ var evt = new events.EventEmitter();
 
 var cli;
 
-process.on('message', msg => {
-  evt.once('ready', () => {
+process.on('message', function(msg) {
+  evt.once('ready', function() {
     cli.receive(msg);
   });
 });
@@ -19,7 +22,7 @@ process.on('message', msg => {
 var semver = require('semver');
 
 if (semver.lt(process.version, 'v6.4.0')) {
-  console.log('ERR: Your Node.js version is ' + process.version + '. Please update to the latest Node 8 LTS.');
+  console.error('ERR: Your Node.js version is ' + process.version + '. Please update to the latest Node 8 LTS.');
   process.exit(1);
 }
 
