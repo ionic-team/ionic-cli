@@ -7,7 +7,7 @@ import { App, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPre
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
-const debug = Debug('ionic:commands:link');
+const debug = Debug('ionic:cli:commands:link');
 
 const CHOICE_CREATE_NEW_APP = 'createNewApp';
 const CHOICE_NEVERMIND = 'nevermind';
