@@ -113,13 +113,14 @@ async function formatHeader(env: IonicEnvironment) {
   |_|\\___/|_| |_|_|\\___|  CLI ${prefix}${version}${suffix}\n`;
 }
 
-async function formatUsage(env: IonicEnvironment, ns: INamespace) {
+async function compileNamespacePath(ns: INamespace, name = ''): Promise<string> {
   const metadata = await ns.getMetadata();
-  let name = metadata.name;
+  name = metadata.name + (name ? ` ${name}` : '');
+  return ns.parent ? compileNamespacePath(ns.parent, name) : name;
+}
 
-  if (ns.parent) {
-    name = `ionic ${name}`; // TODO: recurse back ns chain
-  }
+async function formatUsage(env: IonicEnvironment, ns: INamespace) {
+  const name = await compileNamespacePath(ns);
 
   const options = ['--help', '--verbose', '--quiet', '--no-interactive', '--no-color', '--confirm'];
   const usageLines = [
@@ -164,8 +165,8 @@ function formatCommandHeader(metadata: CommandMetadata, fullName: string) {
 }
 
 async function getListOfCommandDetails(commands: HydratedCommandMetadata[]) {
-  const wow = commands.map(cmd => cmd.path.map(([p]) => p).join(' '));
-  const fillStringArray = generateFillSpaceStringList(wow, HELP_DOTS_WIDTH, chalk.dim('.'));
+  const fullCmd = commands.map(cmd => cmd.path.map(([p]) => p).join(' '));
+  const fillStringArray = generateFillSpaceStringList(fullCmd, HELP_DOTS_WIDTH, chalk.dim('.'));
 
   return commands.map((cmd, index) => {
     const description = (formatGroupDecorations(COMMAND_DECORATIONS, cmd.groups)) + cmd.description + `${cmd.aliases.length > 0 ? chalk.dim(' (alias' + (cmd.aliases.length === 1 ? '' : 'es') + ': ') + cmd.aliases.map(a => chalk.green(a)).join(', ') + chalk.dim(')') : ''}`;
