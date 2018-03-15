@@ -59,6 +59,7 @@ async function getLeek({ config, version }: { config: IConfig; version: string; 
 
     if (!c.tokens.telemetry) {
       c.tokens.telemetry = generateUUID();
+      debug(`setting telemetry token to ${c.tokens.telemetry}`);
     }
 
     _gaTracker = new Leek({
@@ -85,7 +86,7 @@ export async function sendCommand({ cli, config, client, getInfo, session, proje
       try {
         await leek.track({ name, message });
       } catch (e) {
-        debug('leek track error', e);
+        debug(`leek track error: ${e.stack ? e.stack : e}`);
       }
     })(),
     (async () => {
@@ -178,8 +179,10 @@ export async function sendCommand({ cli, config, client, getInfo, session, proje
       try {
         await client.do(req);
       } catch (e) {
-        debug('metric send error', e);
+        debug(`metric send error: ${e.stack ? e.stack : e}`);
       }
     })(),
   ]);
+
+  await config.save();
 }

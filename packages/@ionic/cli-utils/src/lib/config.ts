@@ -136,11 +136,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
     }
 
     if (!results.state.lastCommand) {
-      results.state.lastCommand = results.lastCommand ? results.lastCommand : new Date().toISOString();
-    }
-
-    if (!results.created) {
-      results.created = new Date().toISOString();
+      results.state.lastCommand = new Date().toISOString();
     }
 
     if (!results.addresses) {
@@ -164,13 +160,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
     }
 
     if (typeof results.telemetry === 'undefined') {
-      if (results.cliFlags && typeof results.cliFlags.enableTelemetry !== 'undefined') {
-        results.telemetry = results.cliFlags.enableTelemetry;
-      } else if (results.cliFlags && typeof results.cliFlags.telemetry !== 'undefined') {
-        results.telemetry = results.cliFlags.telemetry;
-      } else {
-        results.telemetry = true;
-      }
+      results.telemetry = true;
     }
 
     if (typeof results.npmClient === 'undefined') {
