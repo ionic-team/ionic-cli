@@ -1,4 +1,6 @@
-import { CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import chalk from 'chalk';
+
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class LogoutCommand extends Command {
@@ -6,8 +8,12 @@ export class LogoutCommand extends Command {
     return {
       name: 'logout',
       type: 'global',
-      description: '',
-      groups: [CommandGroup.Hidden],
+      description: 'Logout of Ionic Pro',
+      longDescription: `
+Remove the Ionic Pro user token from the CLI config.
+
+If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
+      `,
     };
   }
 

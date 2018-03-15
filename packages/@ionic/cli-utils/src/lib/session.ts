@@ -136,7 +136,7 @@ export async function promptToLogin(env: IonicEnvironment): Promise<void> {
   const { validators } = await import('@ionic/cli-framework');
 
   env.log.msg(
-    `Log into your Ionic account\n` +
+    `Log into your Ionic Pro account\n` +
     `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`
   );
 

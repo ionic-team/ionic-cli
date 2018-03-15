@@ -88,7 +88,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     const isLoggedIn = await this.env.session.isLoggedIn();
 
     if (!isLoggedIn) {
-      this.env.log.warn(`You need to be logged into your Ionic account in order to run ${chalk.green(`ionic cordova resources`)}.\n`);
+      this.env.log.warn(`You need to be logged into your Ionic Pro account in order to run ${chalk.green(`ionic cordova resources`)}.\n`);
       await promptToLogin(this.env);
     }
   }

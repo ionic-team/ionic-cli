@@ -9,13 +9,13 @@ export class LoginCommand extends Command implements CommandPreRun {
     return {
       name: 'login',
       type: 'global',
-      description: 'Login with your Ionic ID',
+      description: 'Login to Ionic Pro',
       longDescription: `
-Authenticate with Ionic servers and retrieve a user token, which is stored in the CLI config.
+Authenticate with Ionic Pro and retrieve a user token, which is stored in the CLI config.
 
 Alternatively, set the ${chalk.green('IONIC_TOKEN')} environment variable and the CLI will automatically authenticate you. (You can also use ${chalk.green('IONIC_EMAIL')} and ${chalk.green('IONIC_PASSWORD')}.)
 
-If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
+If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
       `,
       exampleCommands: ['', 'john@example.com', 'hello@example.com secret'],
       inputs: [
@@ -59,7 +59,7 @@ If you need to create an Ionic account, use ${chalk.green('ionic signup')}.
       this.env.log.warn(`You are already logged in${config.user.email ? ' as ' + chalk.bold(config.user.email) : ''}! ${this.env.flags.interactive ? extra : ''}`);
     } else {
       this.env.log.msg(
-        `Log into your Ionic account\n` +
+        `Log into your Ionic Pro account\n` +
         `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`
       );
     }
