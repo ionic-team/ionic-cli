@@ -132,6 +132,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
   async ensureCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const schematics = await this.getSchematics();
 
+    if (schematics.length === 0) {
+      throw new FatalException(`No suitable schematics found.`);
+    }
+
     if (options['list']) {
       const columnHeaders = ['name', 'alias', 'description', 'collection'];
       this.env.log.rawmsg(columnar(schematics.map(({ type, description, collection, aliases }) => [chalk.green(type), aliases.map(a => chalk.green(a)).join(', '), description, chalk.green(collection)]), { columnHeaders }));
@@ -203,16 +207,22 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
 
   private async getSchematics(): Promise<Schematic[]> {
     if (!this.schematics) {
-      const { SchematicEngine } = await import('@angular-devkit/schematics');
-      const { NodeModulesEngineHost } = await import('@angular-devkit/schematics/tools');
+      try {
+        const { SchematicEngine } = await import('@angular-devkit/schematics');
+        const { NodeModulesEngineHost } = await import('@angular-devkit/schematics/tools');
 
-      const engineHost = new NodeModulesEngineHost();
-      const engine = new SchematicEngine(engineHost);
+        const engineHost = new NodeModulesEngineHost();
+        const engine = new SchematicEngine(engineHost);
 
-      this.schematics = [
-        ...extractSchematicsFromCollection(engine.createCollection(IONIC_SCHEMATICS_PACKAGE)),
-        ...extractSchematicsFromCollection(engine.createCollection(ANGULAR_SCHEMATICS_PACKAGE)),
-      ];
+        this.schematics = [
+          ...extractSchematicsFromCollection(engine.createCollection(IONIC_SCHEMATICS_PACKAGE)),
+          ...extractSchematicsFromCollection(engine.createCollection(ANGULAR_SCHEMATICS_PACKAGE)),
+        ];
+      } catch (e) {
+        this.env.log.warn(`Could not load schematics for ${chalk.green('ionic generate')}. Use ${chalk.green('--verbose')} to debug.`);
+        debug(`Error while loading schematics: ${e.stack ? e.stack : e}`);
+        this.schematics = [];
+      }
     }
 
     return this.schematics;
