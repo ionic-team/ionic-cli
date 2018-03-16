@@ -133,7 +133,7 @@ describe('@ionic/cli-framework', () => {
       it('should format a command appropriately', async () => {
         const myns = new MyNamespace();
         const location = await myns.locate(['foo', 'bar']);
-        const formatter = new CommandHelpFormatter({ location });
+        const formatter = new CommandHelpFormatter({ location, command: location.obj });
         const result = await formatter.format();
 
         expect(stripAnsi(result)).toEqual(`
@@ -171,7 +171,7 @@ describe('@ionic/cli-framework', () => {
       it('should format a command appropriately', async () => {
         const myns = new MyNamespace();
         const location = await myns.locate([]);
-        const formatter = new NamespaceHelpFormatter({ location });
+        const formatter = new NamespaceHelpFormatter({ location, namespace: location.obj });
         const result = await formatter.format();
 
         expect(stripAnsi(result)).toEqual(`

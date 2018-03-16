@@ -87,30 +87,58 @@ class FooCommand extends Command {
 
 describe('@ionic/cli-framework', () => {
 
+  const spy = jest.spyOn(module.exports, 'superspy');
+
+  beforeEach(() => {
+    spy.mockReset();
+  });
+
   describe('lib/executor', () => {
 
     describe('Executor', () => {
 
-      it('should execute run function of found bar command', async () => {
-        const namespace = new MyNamespace();
-        const executor = new Executor({ namespace });
-        const spy = jest.spyOn(module.exports, 'superspy');
-        await executor.execute(['foo', 'bar', 'a', 'b', '--', 'c'], {});
-        expect(spy.mock.calls.length).toEqual(2);
-        const [ [ validateId, validateArgs ], [ runId, runArgs ] ] = spy.mock.calls;
-        expect(validateId).toEqual('bar:validate');
-        expect(validateArgs[0]).toEqual(['a', 'b']);
-        expect(runId).toEqual('bar:run');
-        expect(runArgs[0]).toEqual(['a', 'b']);
-        delete runArgs[1]._;
-        expect(runArgs[1]).toEqual({ '--': ['c'] });
-        expect(runArgs[2].location.obj).toBeInstanceOf(BarCommand);
-        const runPath = runArgs[2].location.path.map(([n]) => n);
-        const runPathObjs = runArgs[2].location.path.map(([, o]) => o);
-        expect(runPath).toEqual(['my', 'foo', 'bar']);
-        expect(runPathObjs[0]).toBeInstanceOf(MyNamespace);
-        expect(runPathObjs[1]).toBeInstanceOf(FooNamespace);
-        expect(runPathObjs[2]).toBeInstanceOf(BarCommand);
+      describe('execute', () => {
+
+        it('should call run function of found bar command', async () => {
+          const namespace = new MyNamespace();
+          const executor = new Executor({ namespace });
+          await executor.execute(['foo', 'bar', 'a', 'b', '--', 'c'], {});
+          expect(spy.mock.calls.length).toEqual(2);
+          const [ [ validateId, validateArgs ], [ runId, runArgs ] ] = spy.mock.calls;
+          expect(validateId).toEqual('bar:validate');
+          expect(validateArgs[0]).toEqual(['a', 'b']);
+          expect(runId).toEqual('bar:run');
+          expect(runArgs[0]).toEqual(['a', 'b']);
+          delete runArgs[1]._;
+          expect(runArgs[1]).toEqual({ '--': ['c'] });
+          expect(runArgs[2].location.obj).toBeInstanceOf(BarCommand);
+          const runPath = runArgs[2].location.path.map(([n]) => n);
+          const runPathObjs = runArgs[2].location.path.map(([, o]) => o);
+          expect(runPath).toEqual(['my', 'foo', 'bar']);
+          expect(runPathObjs[0]).toBeInstanceOf(MyNamespace);
+          expect(runPathObjs[1]).toBeInstanceOf(FooNamespace);
+          expect(runPathObjs[2]).toBeInstanceOf(BarCommand);
+        });
+
+      });
+
+      describe('run', () => {
+
+        it('should call run function of bar command', async () => {
+          const namespace = new MyNamespace();
+          const executor = new Executor({ namespace });
+          const location = await namespace.locate(['foo', 'bar']);
+          await executor.run(location.obj, []);
+          expect(spy.mock.calls.length).toEqual(2);
+          const [ [ validateId, validateArgs ], [ runId, runArgs ] ] = spy.mock.calls;
+          expect(validateId).toEqual('bar:validate');
+          expect(validateArgs[0]).toEqual([]);
+          expect(runId).toEqual('bar:run');
+          expect(runArgs[0]).toEqual([]);
+          delete runArgs[1]._;
+          expect(runArgs[1]).toEqual({ '--': [] });
+        });
+
       });
 
     });
