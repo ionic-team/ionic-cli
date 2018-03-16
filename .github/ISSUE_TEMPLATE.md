@@ -1,14 +1,10 @@
-<!-- *** PLEASE READ ***
+<!-- 🚨 PLEASE READ 🚨
 
-For support questions, use one of these channels:
-    https://forum.ionicframework.com/
-    https://ionicworldwide.herokuapp.com/
+This issue tracker is for bug reports and feature requests for the Ionic CLI.
 
-For build related issues, use the ionic-app-scripts repo:
-    https://github.com/ionic-team/ionic-app-scripts
+- For support questions, see our support page: https://ionicframework.com/support
+- For feature requests, feel free to delete this template and just describe the feature.
 
-For feature requests, you can wipe out this issue template and just describe
-the feature.
 -->
 
 **Description:**
@@ -18,15 +14,11 @@ the feature.
 
 **Steps to Reproduce:**
 <!--
-If applicable, the best way to illustrate the the bug is with an example repo
-with a series of commands that results in the issue.
+If applicable, the best way to illustrate the bug is with an example repo.
+Otherwise, please describe in detail how to replicate the issue.
 -->
 
-Example repo: <!-- repo url here, or "N/A" -->
 
-1.
-2.
-3.
 
 **Output:**
 <!--
@@ -34,11 +26,17 @@ If applicable, please post the full output of the command that errored.
 Remember to run commands with the --verbose flag for debug statements.
 -->
 
+
+
 **My `ionic info`:**
 <!--
 Post the output of running `ionic info` (within your project, if applicable)
 below. `ionic info` is a CLI command that prints out environment information.
 -->
+
+```
+<paste here>
+```
 
 
 **Other Information:**
