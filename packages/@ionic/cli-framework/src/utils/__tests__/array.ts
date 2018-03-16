@@ -1,4 +1,4 @@
-import { conform, filter, reduce } from '../array';
+import { conform, filter, reduce, map } from '../array';
 
 describe('@ionic/cli-framework', () => {
 
@@ -44,6 +44,87 @@ describe('@ionic/cli-framework', () => {
       it('should do nothing to an array of strings', () => {
         const result = conform(['foo', 'bar', 'baz']);
         expect(result).toEqual(['foo', 'bar', 'baz']);
+      });
+
+    });
+
+    describe('filter', () => {
+
+      it('should return new empty array', async () => {
+        const initial = [];
+        const result = await filter(initial, async () => true);
+        expect(result).not.toBe(initial);
+        expect(result).toEqual([]);
+      });
+
+      it('should return new array', async () => {
+        const initial = [1, 2, 3];
+        const result = await filter(initial, async () => true);
+        expect(result).not.toBe(initial);
+        expect(result).toEqual([1, 2, 3]);
+      });
+
+      it('should filter out everything', async () => {
+        const initial = [1, 2, 3];
+        const result = await filter(initial, async () => false);
+        expect(result).toEqual([]);
+      });
+
+      it('should filter out conditionally', async () => {
+        const initial = [1, 2, 3];
+        const result = await filter(initial, async v => v % 2 === 0);
+        expect(result).toEqual([2]);
+      });
+
+      it('should filter out conditionally using index', async () => {
+        const initial = [1, 2, 3];
+        const result = await filter(initial, async (v, i) => i % 2 === 0);
+        expect(result).toEqual([1, 3]);
+      });
+
+      it('should pass array into callback with each iteration', async () => {
+        const initial = [1, 2, 3];
+        const result = await filter(initial, async (v, i, arr) => { expect(arr).toBe(initial); });
+        expect(result).toEqual([]);
+      });
+
+    });
+
+    describe('map', () => {
+
+      it('should return new empty array', async () => {
+        const initial = [];
+        const result = await map(initial, async () => {});
+        expect(result).not.toBe(initial);
+        expect(result).toEqual([]);
+      });
+
+      it('should return new array', async () => {
+        const initial = [1, 2, 3];
+        const result = await map(initial, async () => 0);
+        expect(result).not.toBe(initial);
+        expect(result).toEqual([0, 0, 0]);
+      });
+
+      it('should map using current value', async () => {
+        const result = await map([1, 2, 3], async v => v + 1);
+        expect(result).toEqual([2, 3, 4]);
+      });
+
+      it('should map to different data type', async () => {
+        const result = await map([1, 2, 3], async () => '');
+        expect(result).toEqual(['', '', '']);
+      });
+
+      it('should map using current index', async () => {
+        const result = await map([1, 2, 3], async (v, i) => String.fromCharCode(i + 65 + 32));
+        expect(result).toEqual(['a', 'b', 'c']);
+      });
+
+      it('should pass array into callback with each iteration', async () => {
+        const initial = [1, 2, 3];
+        const result = await map(initial, async (v, i, arr) => { expect(arr).toBe(initial); return v; });
+        expect(result).toEqual([1, 2, 3]);
       });
 
     });
@@ -94,45 +175,9 @@ describe('@ionic/cli-framework', () => {
         expect(result).toEqual(['call: 1', 'call: 2', 'call: 3']);
       });
 
-    });
-
-    describe('filter', () => {
-
-      it('should return new empty array', async () => {
-        const initial = [];
-        const result = await filter(initial, async () => true);
-        expect(result).not.toBe(initial);
-        expect(result).toEqual([]);
-      });
-
-      it('should return new array', async () => {
-        const initial = [1, 2, 3];
-        const result = await filter(initial, async () => true);
-        expect(result).not.toBe(initial);
-        expect(result).toEqual([1, 2, 3]);
-      });
-
-      it('should filter out everything', async () => {
-        const initial = [1, 2, 3];
-        const result = await filter(initial, async () => false);
-        expect(result).toEqual([]);
-      });
-
-      it('should filter out conditionally', async () => {
-        const initial = [1, 2, 3];
-        const result = await filter(initial, async v => v % 2 === 0);
-        expect(result).toEqual([2]);
-      });
-
-      it('should filter out conditionally using index', async () => {
-        const initial = [1, 2, 3];
-        const result = await filter(initial, async (v, i) => i % 2 === 0);
-        expect(result).toEqual([1, 3]);
-      });
-
       it('should pass array into callback with each iteration', async () => {
         const initial = [1, 2, 3];
-        const result = await filter(initial, async (v, i, arr) => { expect(arr).toBe(initial); });
+        const result = await reduce(initial, async (acc, v, i, arr) => { expect(arr).toBe(initial); return acc; }, []);
         expect(result).toEqual([]);
       });
 

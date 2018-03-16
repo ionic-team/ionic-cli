@@ -9,6 +9,7 @@ export function conform<T>(t?: T | T[]): T[] {
 
   return t;
 }
+
 export async function filter<T>(array: T[], callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<boolean>): Promise<T[]>;
 export async function filter<T>(array: ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<boolean>): Promise<T[]>;
 export async function filter<T>(array: T[] | ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<boolean>): Promise<T[]> {
@@ -18,6 +19,18 @@ export async function filter<T>(array: T[] | ReadonlyArray<T>, callback: (curren
     if (await callback(v, i, arr)) {
       acc.push(v);
     }
+
+    return acc;
+  }, initial);
+}
+
+export async function map<T, U>(array: T[], callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<U[]>;
+export async function map<T, U>(array: ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<U[]>;
+export async function map<T, U>(array: T[] | ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<U[]> {
+  const initial: U[] = [];
+
+  return reduce(array, async (acc, v, i, arr) => {
+    acc.push(await callback(v, i, arr));
 
     return acc;
   }, initial);
