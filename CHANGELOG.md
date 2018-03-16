@@ -31,7 +31,7 @@ seamless.
 
 **Ionic 1**: For Ionic 1 projects, a new toolkit has been introduced to slim
 down the main CLI package. All functionality is still supported, but the
-`@ionic/v1-util` toolkit needs to be installed.
+`@ionic/v1-toolkit` package needs to be installed.
 
 #### :boom: Breaking Changes
 
@@ -40,7 +40,7 @@ down the main CLI package. All functionality is still supported, but the
   [Ionic Pro](https://ionicframework.com/pro/) will be a major focus for the CLI
   going forward. :ok_hand:
 * Ionic 1 build/serve functionality has been moved into the
-  [`@ionic/v1-util`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-util)
+  [`@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-toolkit)
   package, which will need to be installed in your Ionic 1 project(s). The file
   watcher, [chokidar](https://github.com/paulmillr/chokidar), has been updated
   to 2.0.0, which will require those using `watchPatterns` to [always use
@@ -52,7 +52,7 @@ down the main CLI package. All functionality is still supported, but the
   package, which will need to be installed (globally or locally) for Lab to
   work.
 * The gulp integration has been removed from the CLI and put into the
-  [`@ionic/v1-util`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-util)
+  [`@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-toolkit)
   package, which is only for Ionic v1 apps.
 * The `conference` starter template has been removed from `ionic start`. For
   creating functional apps (as opposed to starting new apps from starter

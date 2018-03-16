@@ -49,7 +49,7 @@ Each `packages/*` folder represents a package on npm.
   with the [Ionic DevApp](https://ionicframework.com/docs/pro/devapp/).
 * `packages/@ionic/schematics-angular`: Ionic Angular v4+ schematics for `ionic
   generate`.
-* `packages/@ionic/v1-util`: Utility CLI for Ionic v1 Apps, used by `ionic
+* `packages/@ionic/v1-toolkit`: Utility CLI for Ionic v1 Apps, used by `ionic
   serve`.
 * `packages/@ionic/lab`: Utility CLI for Ionic Lab, used by `ionic serve`.
 

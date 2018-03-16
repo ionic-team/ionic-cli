@@ -170,7 +170,7 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
         throw e;
       }
 
-      const pkg = '@ionic/v1-util';
+      const pkg = '@ionic/v1-toolkit';
       this.env.log.nl();
       this.env.log.warn(
         `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +

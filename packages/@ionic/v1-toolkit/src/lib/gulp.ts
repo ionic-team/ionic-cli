@@ -11,7 +11,7 @@ import * as gulpType from 'gulp';
 
 import { timestamp } from './log';
 
-const debug = Debug('ionic:v1-util:lib:gulp');
+const debug = Debug('ionic:v1-toolkit:lib:gulp');
 
 let _gulpInst: typeof gulpType;
 
