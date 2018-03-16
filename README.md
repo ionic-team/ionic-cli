@@ -13,7 +13,7 @@ We have several branches for CLI versions:
 * [`3.x`](https://github.com/ionic-team/ionic-cli/tree/3.x) (stable): `npm
   install -g ionic` *(recommended)*
 * [`2.x`](https://github.com/ionic-team/ionic-cli/tree/2.x) (legacy): `npm
-  install -g ionic@2`
+  install -g ionic@legacy`
 
 :book: **Documentation**:
 [https://ionicframework.com/docs/cli/][ionic-cli-docs]
