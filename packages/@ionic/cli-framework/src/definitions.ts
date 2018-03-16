@@ -1,4 +1,22 @@
 import * as minimistType from 'minimist';
+import { Chalk } from 'chalk';
+
+export interface Colors {
+  /**
+   * Used to mark text as important. Comparable to HTML's <strong>.
+   */
+  strong: Chalk;
+
+  /**
+   * Used to mark text as less important.
+   */
+  weak: Chalk;
+
+  /**
+   * Used to mark text as input such as commands, inputs, options, etc.
+   */
+  input: Chalk;
+}
 
 export type ParsedArg = string | boolean | null | undefined | string[];
 export type Validator = (input?: string, key?: string) => true | string;
@@ -87,22 +105,30 @@ export interface INamespace<C extends ICommand<C, N, M, I, O>, N extends INamesp
   getCommands(): Promise<ICommandMap<C, N, M, I, O>>;
 
   locate(argv: string[]): Promise<NamespaceLocateResult<C, N, M, I, O>>;
-  getCommandMetadataList(): Promise<(M & HydratedCommandMetadata<C, N, M, I, O>)[]>;
+  getCommandMetadataList(): Promise<ReadonlyArray<M & HydratedCommandMetadata<C, N, M, I, O>>>;
 }
 
 export type CommandPathItem<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = [string, C | N];
 
 export interface NamespaceLocateResult<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
-  obj: C | N;
-  args: string[];
-  path: CommandPathItem<C, N, M, I, O>[];
+  readonly obj: C | N;
+  readonly args: ReadonlyArray<string>;
+  readonly path: ReadonlyArray<CommandPathItem<C, N, M, I, O>>;
+}
+
+export interface NamespaceLocateResultantCommand<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends NamespaceLocateResult<C, N, M, I, O> {
+  readonly obj: C;
+}
+
+export interface NamespaceLocateResultantNamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends NamespaceLocateResult<C, N, M, I, O> {
+  readonly obj: N;
 }
 
 export interface HydratedCommandMetadata<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
-  command: C;
-  namespace: N;
-  path: CommandPathItem<C, N, M, I, O>[];
-  aliases: string[];
+  readonly command: C;
+  readonly namespace: N;
+  readonly path: ReadonlyArray<CommandPathItem<C, N, M, I, O>>;
+  readonly aliases: ReadonlyArray<string>;
 }
 
 export interface NamespaceMetadata extends Metadata {}

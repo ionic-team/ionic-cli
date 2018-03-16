@@ -92,8 +92,8 @@ describe('@ionic/cli-framework', () => {
     describe('Executor', () => {
 
       it('should execute run function of found bar command', async () => {
-        const ns = new MyNamespace();
-        const executor = new Executor(ns);
+        const namespace = new MyNamespace();
+        const executor = new Executor({ namespace });
         const spy = jest.spyOn(module.exports, 'superspy');
         await executor.execute(['foo', 'bar', 'a', 'b', '--', 'c'], {});
         expect(spy.mock.calls.length).toEqual(2);

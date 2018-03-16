@@ -18,8 +18,8 @@ export class IonicV1Namespace extends Namespace {
   }
 }
 
-const ns = new IonicV1Namespace();
+const namespace = new IonicV1Namespace();
 
-export async function run(pargv: string[], env: { [key: string]: string; }) {
-  await execute(ns, pargv, env);
+export async function run(argv: string[], env: { [key: string]: string; }) {
+  await execute({ namespace, argv, env });
 }

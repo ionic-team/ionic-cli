@@ -133,8 +133,8 @@ class LabNamespace extends Namespace {
   }
 }
 
-const ns = new LabNamespace();
+const namespace = new LabNamespace();
 
-export async function run(pargv: string[], env: { [k: string]: string; }) {
-  await execute(ns, pargv, env);
+export async function run(argv: string[], env: { [k: string]: string; }) {
+  await execute({ namespace, argv, env });
 }
