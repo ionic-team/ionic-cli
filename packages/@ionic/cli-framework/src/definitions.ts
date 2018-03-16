@@ -75,7 +75,7 @@ export interface CommandMetadata<I = CommandMetadataInput, O = CommandMetadataOp
 }
 
 export interface CommandInstanceInfo<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
-  location: NamespaceLocateResult<C, N, M, I, O>;
+  location?: NamespaceLocateResult<C, N, M, I, O>;
 }
 
 export interface ICommand<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
@@ -114,14 +114,6 @@ export interface NamespaceLocateResult<C extends ICommand<C, N, M, I, O>, N exte
   readonly obj: C | N;
   readonly args: ReadonlyArray<string>;
   readonly path: ReadonlyArray<CommandPathItem<C, N, M, I, O>>;
-}
-
-export interface NamespaceLocateResultantCommand<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends NamespaceLocateResult<C, N, M, I, O> {
-  readonly obj: C;
-}
-
-export interface NamespaceLocateResultantNamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends NamespaceLocateResult<C, N, M, I, O> {
-  readonly obj: N;
 }
 
 export interface HydratedCommandMetadata<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {

@@ -1,15 +1,4 @@
-import {
-  Colors,
-  CommandMetadata,
-  CommandMetadataInput,
-  CommandMetadataOption,
-  HydratedCommandMetadata,
-  ICommand,
-  INamespace,
-  NamespaceLocateResultantCommand,
-  NamespaceLocateResultantNamespace,
-  NamespaceMetadata,
-} from '../definitions';
+import { Colors, CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
 
 import { filter } from '../utils/array';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '../utils/format';
@@ -30,22 +19,23 @@ export abstract class HelpFormatter {
 }
 
 export interface NamespaceHelpFormatterDeps<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
-  readonly location: NamespaceLocateResultantNamespace<C, N, M, I, O>;
+  readonly location: NamespaceLocateResult<C, N, M, I, O>;
+  readonly namespace: N;
   readonly colors?: Colors;
 }
 
 export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends HelpFormatter {
-  protected readonly location: NamespaceLocateResultantNamespace<C, N, M, I, O>;
+  protected readonly location: NamespaceLocateResult<C, N, M, I, O>;
   protected readonly namespace: N;
   protected readonly dotswidth: number = DEFAULT_DOTS_WIDTH;
 
   protected _metadata: NamespaceMetadata;
   protected _fullName: string;
 
-  constructor({ location, colors }: NamespaceHelpFormatterDeps<C, N, M, I, O>) {
+  constructor({ location, namespace, colors }: NamespaceHelpFormatterDeps<C, N, M, I, O>) {
     super({ colors });
     this.location = location;
-    this.namespace = location.obj;
+    this.namespace = namespace;
   }
 
   filterCommandCallback?(cmd: M & HydratedCommandMetadata<C, N, M, I, O>): Promise<boolean>;
@@ -161,7 +151,7 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
     const formattedCommands = await Promise.all(commands.map(async (cmd, index) => {
       const description = (await this.formatBeforeCommandDescription(cmd)) + cmd.description + (await this.formatAfterCommandDescription(cmd));
       const wrappedDescription = wordWrap(description, { indentation: this.dotswidth + 6 });
-      return `${input(cmd.path.map(p => p[0]).join(' '))} ${fillStringArray[index]} ${wrappedDescription}`;
+      return `${input(cmd.path.map(p => p[0]).join(' '))}${wrappedDescription ? ' ' + fillStringArray[index] + ' ' + wrappedDescription : ''}`;
     }));
 
     return formattedCommands;
@@ -191,7 +181,7 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
     const formattedNamespaces = await Promise.all(entries.map(async ([name, { meta, cmds }], i) => {
       const subcommands = cmds.map(c => input(c.name)).join(', ');
       const wrappedDescription = wordWrap(`${await this.formatBeforeNamespaceDescription(meta)}${descriptions.get(name)} ${weak('(subcommands:')} ${subcommands}${weak(')')}`, { indentation: this.dotswidth + 6 });
-      return `${input(name + ' <subcommand>')} ${fillStringArray[i]} ${wrappedDescription}`;
+      return `${input(name + ' <subcommand>')}${wrappedDescription ? ' ' + fillStringArray[i] + ' ' + wrappedDescription : ''}`;
     }));
 
     return formattedNamespaces;
@@ -221,22 +211,23 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
 }
 
 export interface CommandHelpFormatterDeps<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
-  readonly location: NamespaceLocateResultantCommand<C, N, M, I, O>;
+  readonly location: NamespaceLocateResult<C, N, M, I, O>;
+  readonly command: C;
   readonly colors?: Colors;
 }
 
 export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends HelpFormatter {
-  protected readonly location: NamespaceLocateResultantCommand<C, N, M, I, O>;
+  protected readonly location: NamespaceLocateResult<C, N, M, I, O>;
   protected readonly command: C;
   protected readonly dotswidth: number = DEFAULT_DOTS_WIDTH;
 
   protected _metadata: M;
   protected _fullName: string;
 
-  constructor({ location, colors }: CommandHelpFormatterDeps<C, N, M, I, O>) {
+  constructor({ location, command, colors }: CommandHelpFormatterDeps<C, N, M, I, O>) {
     super({ colors });
     this.location = location;
-    this.command = location.obj;
+    this.command = command;
   }
 
   async getCommandMetadata(): Promise<M> {

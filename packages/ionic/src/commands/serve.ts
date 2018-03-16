@@ -125,7 +125,8 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
-    const [ alias ] = lodash.last(runinfo.location.path) || [undefined];
+    const lastpath = runinfo.location ? lodash.last(runinfo.location.path) : undefined;
+    const alias = lastpath ? lastpath[0] : undefined;
 
     if (alias === 'lab') {
       options['lab'] = true;

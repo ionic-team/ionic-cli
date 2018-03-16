@@ -29,8 +29,7 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise
   const location = await env.namespace.locate(inputs);
 
   if (isCommand(location.obj)) {
-    // TODO: obj is readonly, why do I need to narrow its type for future use?
-    const formatter = new CommandHelpFormatter({ location: { ...location, obj: location.obj } });
+    const formatter = new CommandHelpFormatter({ location, command: location.obj });
     env.log.rawmsg(await formatter.format());
   } else {
     if (location.args.length > 0) {
@@ -49,8 +48,8 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise
     const formatter = new NamespaceHelpFormatter({
       inProject: env.project.directory ? true : false,
       version: prefix + version + suffix,
-      // TODO: obj is readonly, why do I need to narrow its type for future use?
-      location: { ...location, obj: location.obj },
+      location,
+      namespace: location.obj,
     });
 
     env.log.rawmsg(await formatter.format());
