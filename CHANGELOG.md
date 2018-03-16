@@ -96,6 +96,14 @@ down the main CLI package. All functionality is still supported, but the
 
 #### :house: Internal
 
+* A huge amount of code refactoring has been accomplished to prepare the CLI for
+  a scalable, flexible future. Changes in behavior and help output based upon
+  environment and config are now trivially accomplished.
+* The [CLI
+  Framework](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/cli-framework),
+  a (currently) internal framework for building general-purpose command-line
+  programs, has had many features added to support the utility CLIs such as
+  `ionic-lab` and `ionic-v1`.
 * Ionic Lab has been rebuilt using [StencilJS](https://stenciljs.com) and now
   works for any Ionic Framework version.
 
