@@ -3,17 +3,7 @@ import chalk from 'chalk';
 import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '@ionic/cli-framework/utils/format';
 
-import {
-  CommandMetadata,
-  CommandMetadataInput,
-  CommandMetadataOption,
-  HydratedCommandMetadata,
-  INamespace,
-  IonicEnvironment,
-  NamespaceLocateResult,
-  NamespaceMetadata,
-} from '../definitions';
-
+import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace, IonicEnvironment, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
 import { CommandGroup, NamespaceGroup, OptionGroup } from '../constants';
 import { isCommand } from '../guards';
 
@@ -34,48 +24,66 @@ const NAMESPACE_DECORATIONS: Decoration[] = [
 export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise<void> {
   // If there are no inputs then show global command details.
   if (inputs.length === 0) {
-    return env.log.rawmsg(await formatNamespaceHelp(env, env.namespace, ''));
-  }
+    const isLoggedIn = await env.session.isLoggedIn();
 
-  const location = await env.namespace.locate(inputs);
+    const now = new Date();
+    const prefix = isLoggedIn ? chalk.blue('PRO') + ' ' : '';
+    const version = env.plugins.ionic.meta.pkg.version;
+    const suffix = now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
 
-  if (!isCommand(location.obj) && location.args.length > 0) {
-    env.log.error(
-      `Unable to find command: ${chalk.green(inputs.join(' '))}` +
-      (env.project.directory ? '' : '\nYou may need to be in an Ionic project directory.')
+    env.log.rawmsg(
+      (await formatHeader(`${prefix}${version}${suffix}`)) +
+      (await formatNamespaceHelp(env.namespace, ''))
     );
+  } else {
+    const location = await env.namespace.locate(inputs);
+
+    if (!isCommand(location.obj) && location.args.length > 0) {
+      env.log.error(
+        `Unable to find command: ${chalk.green(inputs.join(' '))}` +
+        (env.project.directory ? '' : '\nYou may need to be in an Ionic project directory.')
+      );
+    }
+
+    const fullName = location.path.map(([p]) => p).join(' ');
+
+    env.log.rawmsg(await formatHelp(location, fullName));
   }
-
-  const fullName = location.path.map(([p]) => p).join(' ');
-
-  env.log.rawmsg(await formatHelp(env, location, fullName));
 }
 
-async function formatHelp(env: IonicEnvironment, location: NamespaceLocateResult, fullName: string) {
+async function formatHelp(location: NamespaceLocateResult, fullName: string) {
   // If the command is located on the global namespace then show its help
   if (!isCommand(location.obj)) {
-    return formatNamespaceHelp(env, location.obj, fullName);
+    return formatNamespaceHelp(location.obj, fullName);
   }
 
   const command = location.obj;
 
-  return formatCommandHelp(env, await command.getMetadata({ location }), fullName);
+  return formatCommandHelp(command, await command.getMetadata({ location }), fullName);
 }
 
-async function formatNamespaceHelp(env: IonicEnvironment, ns: INamespace, fullName: string) {
-  const cmdMetadataList = await ns.getCommandMetadataList();
+function isCommandHidden(cmd: CommandMetadata, ns: NamespaceMetadata) {
+  return (cmd.groups && cmd.groups.includes(CommandGroup.Hidden)) || (ns.groups && ns.groups.includes(NamespaceGroup.Hidden));
+}
+
+async function formatNamespaceHelp(ns: INamespace, fullName: string) {
+  type CommandNamespacePairing = [HydratedCommandMetadata, NamespaceMetadata];
+  const mappedPromises: Promise<CommandNamespacePairing>[] = (await ns.getCommandMetadataList()).map(async (cmd): Promise<CommandNamespacePairing> => [cmd, await cmd.namespace.getMetadata()]);
+  const filteredMetadata = (await Promise.all(mappedPromises))
+    .filter(([cmd, ns]) => !isCommandHidden(cmd, ns))
+    .map(([cmd]) => cmd);
+
   const formatList = (details: string[]) => details.map(hd => `    ${hd}\n`).join('');
 
-  const globalCmds = await getCommandDetails(ns, cmdMetadataList.filter(cmd => cmd.type === 'global'));
-  const projectCmds = await getCommandDetails(ns, cmdMetadataList.filter(cmd => cmd.type === 'project'));
+  const globalCmds = await getCommandDetails(ns, filteredMetadata.filter(cmd => cmd.type === 'global'));
+  const projectCmds = await getCommandDetails(ns, filteredMetadata.filter(cmd => cmd.type === 'project'));
 
-  return `${await formatNamespaceHeader(env, ns, cmdMetadataList, fullName)}
+  return `${await formatNamespaceHeader(ns, filteredMetadata, fullName)}\n\n  ${chalk.bold('Usage')}:
 
-  ${chalk.bold('Usage')}:
-
-${await formatUsage(env, ns)}
+${await formatUsage(ns)}
 ` + (globalCmds.length > 0 ? `  ${chalk.bold('Global Commands')}:\n\n${formatList(globalCmds)}\n` : '')
-  + (projectCmds.length > 0 ? `  ${chalk.bold('Project Commands')}:\n\n${env.project.directory ? formatList(projectCmds) : '    You are not in a project directory.\n'}\n` : '');
+  + (projectCmds.length > 0 ? `  ${chalk.bold('Project Commands')}:\n\n${formatList(projectCmds)}\n` : '');
+  // + (projectCmds.length > 0 ? `  ${chalk.bold('Project Commands')}:\n\n${env.project.directory ? formatList(projectCmds) : '    You are not in a project directory.\n'}\n` : '');
 }
 
 function formatGroupDecorations(decorations: Decoration[], groups?: MetadataGroup[]): string {
@@ -87,30 +95,19 @@ function formatGroupDecorations(decorations: Decoration[], groups?: MetadataGrou
   return prepends.length ? prepends.join(' ') + ' ' : '';
 }
 
-async function formatNamespaceHeader(env: IonicEnvironment, ns: INamespace, cmdMetadataList: HydratedCommandMetadata[], fullName: string) {
-  if (!ns.parent) {
-    return formatHeader(env);
-  }
-
+async function formatNamespaceHeader(ns: INamespace, cmdMetadataList: HydratedCommandMetadata[], fullName: string) {
   const metadata = await ns.getMetadata();
 
   return `
   ${chalk.bold.green(fullName)} ${chalk.bold('-')} ${formatGroupDecorations(NAMESPACE_DECORATIONS, metadata.groups)}${chalk.bold(metadata.description)}${formatLongDescription(metadata.longDescription)}`;
 }
 
-async function formatHeader(env: IonicEnvironment) {
-  const isLoggedIn = await env.session.isLoggedIn();
-
-  const now = new Date();
-  const prefix = isLoggedIn ? chalk.blue('PRO') + ' ' : '';
-  const version = env.plugins.ionic.meta.pkg.version;
-  const suffix = now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
-
+async function formatHeader(version: string) {
   return `   _             _
   (_) ___  _ __ (_) ___
   | |/ _ \\| '_ \\| |/ __|
   | | (_) | | | | | (__
-  |_|\\___/|_| |_|_|\\___|  CLI ${prefix}${version}${suffix}\n`;
+  |_|\\___/|_| |_|_|\\___|  CLI ${version}\n`;
 }
 
 async function compileNamespacePath(ns: INamespace, name = ''): Promise<string> {
@@ -119,7 +116,7 @@ async function compileNamespacePath(ns: INamespace, name = ''): Promise<string> 
   return ns.parent ? compileNamespacePath(ns.parent, name) : name;
 }
 
-async function formatUsage(env: IonicEnvironment, ns: INamespace) {
+async function formatUsage(ns: INamespace) {
   const name = await compileNamespacePath(ns);
 
   const options = ['--help', '--verbose', '--quiet', '--no-interactive', '--no-color', '--confirm'];
@@ -131,8 +128,6 @@ async function formatUsage(env: IonicEnvironment, ns: INamespace) {
 }
 
 async function getCommandDetails(ns: INamespace, commands: HydratedCommandMetadata[]): Promise<string[]> {
-  commands = commands.filter(cmd => !cmd.groups || !cmd.groups.includes(CommandGroup.Hidden));
-
   const [ cmdDetails, nsDetails ] = await Promise.all([
     getListOfCommandDetails(commands.filter(cmd => cmd.namespace === ns)),
     getListOfNamespaceDetails(commands.filter(cmd => cmd.namespace !== ns)),
@@ -143,25 +138,24 @@ async function getCommandDetails(ns: INamespace, commands: HydratedCommandMetada
   return details;
 }
 
-async function formatCommandHelp(env: IonicEnvironment, metadata: CommandMetadata, fullName: string) {
-  const isHidden = metadata.groups && metadata.groups.includes(CommandGroup.Hidden);
-
-  if (isHidden) {
-    env.log.warn(`${chalk.green(fullName)} is a hidden command. These docs may not be helpful.`);
-  }
-
-  return formatCommandHeader(metadata, fullName) +
-    (await formatCommandUsage(env, metadata, fullName)) +
+async function formatCommandHelp(command: ICommand, metadata: CommandMetadata, fullName: string) {
+  return (
+    (await formatCommandHeader(command, metadata, fullName)) +
+    (await formatCommandUsage(metadata, fullName)) +
     (await formatCommandInputs(metadata.inputs)) +
     (await formatCommandOptions(metadata.options)) +
-    (await formatCommandExamples(metadata.exampleCommands, fullName));
+    (await formatCommandExamples(metadata.exampleCommands, fullName))
+  );
 }
 
-function formatCommandHeader(metadata: CommandMetadata, fullName: string) {
+async function formatCommandHeader(command: ICommand, metadata: CommandMetadata, fullName: string) {
+  const nsmeta = await command.namespace.getMetadata();
   const wrappedDescription = wordWrap(metadata.description, { indentation: fullName.length + 5 });
   const subtitle = (formatGroupDecorations(COMMAND_DECORATIONS, metadata.groups)) + wrappedDescription;
 
-  return `\n  ${chalk.bold(chalk.green(fullName) + (subtitle ? ` - ${subtitle}` : ''))}${formatLongDescription(metadata.longDescription)}\n`;
+  return `\n  ${chalk.bold(chalk.green(fullName) + (subtitle ? ` - ${subtitle}` : ''))}` +
+    ((await isCommandHidden(metadata, nsmeta)) ? `\n\n    ${chalk.yellow.bold('This is a hidden command. These docs may not be helpful.')}` : '') +
+    `${formatLongDescription(metadata.longDescription)}\n`;
 }
 
 async function getListOfCommandDetails(commands: HydratedCommandMetadata[]) {
@@ -180,18 +174,16 @@ async function getListOfNamespaceDetails(commands: HydratedCommandMetadata[]) {
   const grouped = new Map<string, { meta: NamespaceMetadata; cmds: HydratedCommandMetadata[]; }>();
 
   await Promise.all(commands.map(async cmd => {
-    if (!cmd.groups || !cmd.groups.includes(CommandGroup.Hidden)) {
-      const nsmeta = await cmd.namespace.getMetadata();
-      descriptions.set(nsmeta.name, nsmeta.description);
-      let entry = grouped.get(nsmeta.name);
+    const nsmeta = await cmd.namespace.getMetadata();
+    descriptions.set(nsmeta.name, nsmeta.description);
+    let entry = grouped.get(nsmeta.name);
 
-      if (!entry) {
-        entry = { meta: nsmeta, cmds: [] };
-        grouped.set(nsmeta.name, entry);
-      }
-
-      entry.cmds.push(cmd);
+    if (!entry) {
+      entry = { meta: nsmeta, cmds: [] };
+      grouped.set(nsmeta.name, entry);
     }
+
+    entry.cmds.push(cmd);
   }));
 
   const entries = [...grouped.entries()];
@@ -204,9 +196,9 @@ async function getListOfNamespaceDetails(commands: HydratedCommandMetadata[]) {
   });
 }
 
-async function formatCommandUsage(env: IonicEnvironment, metadata: CommandMetadata, fullName: string) {
+async function formatCommandUsage(metadata: CommandMetadata, fullName: string) {
   const formatInput = (input: CommandMetadataInput) => {
-    if (!env.flags.interactive && input.validators && input.validators.includes(validators.required)) {
+    if (input.validators && input.validators.includes(validators.required)) {
       return '<' + input.name + '>';
     }
 
