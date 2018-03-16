@@ -159,6 +159,10 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.tokens = {};
     }
 
+    if (!results.features) {
+      results.features = {};
+    }
+
     if (typeof results.telemetry === 'undefined') {
       results.telemetry = true;
     }

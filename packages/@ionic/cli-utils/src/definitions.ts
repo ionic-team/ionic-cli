@@ -396,6 +396,8 @@ export interface ITelemetry {
 
 export type NpmClient = 'yarn' | 'npm';
 
+export type Features = 'ssl-commands';
+
 export interface ConfigFile {
   state: {
     lastCommand: string;
@@ -421,6 +423,7 @@ export interface ConfigFile {
     user?: string;
     telemetry?: string;
   };
+  features: { [F in Features]?: boolean; };
   telemetry: boolean;
   interactive?: boolean;
   npmClient: NpmClient;
