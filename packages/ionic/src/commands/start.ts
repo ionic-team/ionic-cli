@@ -9,7 +9,7 @@ import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
 import { isValidURL } from '@ionic/cli-framework/utils/string';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, ResolvedStarterTemplate, StarterManifest, getProject } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, ResolvedStarterTemplate, StarterManifest, StarterTemplate, getProject } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { prettyProjectName } from '@ionic/cli-utils/lib/project';
@@ -21,7 +21,7 @@ export class StartCommand extends Command implements CommandPreRun {
   canRemoveExisting?: boolean;
 
   async getMetadata(): Promise<CommandMetadata> {
-    const { STARTER_TEMPLATES } = await import('@ionic/cli-utils/lib/start');
+    const starterTemplates = await this.getStarterTemplates();
 
     return {
       name: 'start',
@@ -67,7 +67,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         },
         {
           name: 'type',
-          description: `Type of project to start (e.g. ${lodash.uniq(STARTER_TEMPLATES.map(t => t.type)).map(type => chalk.green(type)).join(', ')})`,
+          description: `Type of project to start (e.g. ${lodash.uniq(starterTemplates.map(t => t.type)).map(type => chalk.green(type)).join(', ')})`,
           type: String,
         },
         {
@@ -121,14 +121,22 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     };
   }
 
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async getStarterTemplates(): Promise<StarterTemplate[]> {
     const { STARTER_TEMPLATES } = await import('@ionic/cli-utils/lib/start');
+    const config = await this.env.config.load();
+
+    return STARTER_TEMPLATES.filter(({ type }) => type !== 'angular' || config.features['project-angular']);
+  }
+
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
+    const starterTemplates = await this.getStarterTemplates();
+    const config = await this.env.config.load();
 
     // If the action is list then lets just end here.
     if (options['list']) {
       const columnHeaders = ['name', 'project type', 'description'];
-      this.env.log.rawmsg(columnar(STARTER_TEMPLATES.map(({ name, type, description }) => [chalk.green(name), chalk.bold(type), description || '']), { columnHeaders }));
+      this.env.log.rawmsg(columnar(starterTemplates.map(({ name, type, description }) => [chalk.green(name), chalk.bold(type), description || '']), { columnHeaders }));
       throw new FatalException('', 0);
     }
 
@@ -224,7 +232,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     const clonedApp = isValidURL(inputs[1]);
 
     if (!clonedApp && !options['type']) {
-      const recommendedType = 'angular';
+      const recommendedType = config.features['project-angular'] ? 'angular' : 'ionic-angular';
 
       if (this.env.flags.interactive) {
         this.env.log.info(
@@ -239,7 +247,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         name: 'template',
         message: 'Project type:',
         choices: () => {
-          const projectTypes = lodash.uniq(STARTER_TEMPLATES.map(t => t.type));
+          const projectTypes = lodash.uniq(starterTemplates.map(t => t.type));
           const cols = columnar(projectTypes.map(type => [`${chalk.green(type)}${type === recommendedType ? ' (recommended)' : ''}`, prettyProjectName(type)])).split('\n');
 
           return cols.map((col, i) => ({
@@ -266,14 +274,14 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         name: 'template',
         message: 'Starter template:',
         choices: () => {
-          const starterTemplates = STARTER_TEMPLATES.filter(st => st.type === options['type']);
-          const cols = columnar(starterTemplates.map(({ name, description }) => [chalk.green(name), description || ''])).split('\n');
+          const starterTemplateList = starterTemplates.filter(st => st.type === options['type']);
+          const cols = columnar(starterTemplateList.map(({ name, description }) => [chalk.green(name), description || ''])).split('\n');
 
           return cols.map((col, i) => {
             return {
               name: col,
-              short: starterTemplates[i].name,
-              value: starterTemplates[i].name,
+              short: starterTemplateList[i].name,
+              value: starterTemplateList[i].name,
             };
           });
         },
@@ -447,8 +455,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   }
 
   async findStarterTemplate(template: string, type: string, tag: string): Promise<ResolvedStarterTemplate> {
-    const { STARTER_BASE_URL, STARTER_TEMPLATES, getStarterList } = await import('@ionic/cli-utils/lib/start');
-    const starterTemplate = STARTER_TEMPLATES.find(t => t.type === type && t.name === template);
+    const { STARTER_BASE_URL, getStarterList } = await import('@ionic/cli-utils/lib/start');
+    const starterTemplates = await this.getStarterTemplates();
+    const starterTemplate = starterTemplates.find(t => t.type === type && t.name === template);
 
     if (starterTemplate) {
       return {

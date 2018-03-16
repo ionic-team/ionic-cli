@@ -396,7 +396,7 @@ export interface ITelemetry {
 
 export type NpmClient = 'yarn' | 'npm';
 
-export type Features = 'ssl-commands';
+export type Features = 'project-angular' | 'ssl-commands';
 
 export interface ConfigFile {
   state: {
