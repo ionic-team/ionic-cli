@@ -28,7 +28,7 @@ describe('@ionic/cli-utils', () => {
         }));
 
         const bootstrap = require('../bootstrap');
-        expect(bootstrap.detectLocalCLI()).rejects.toEqual('VERSION_TOO_OLD');
+        await expect(bootstrap.detectLocalCLI()).rejects.toEqual('VERSION_TOO_OLD');
       });
 
       it('should not detect local cli if not installed in project', async () => {
@@ -38,7 +38,7 @@ describe('@ionic/cli-utils', () => {
         }));
 
         const bootstrap = require('../bootstrap');
-        expect(bootstrap.detectLocalCLI()).rejects.toEqual('LOCAL_CLI_NOT_FOUND');
+        await expect(bootstrap.detectLocalCLI()).rejects.toEqual('LOCAL_CLI_NOT_FOUND');
       });
 
     });
