@@ -6,6 +6,13 @@ import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedC
 import { CommandGroup, NamespaceGroup, OptionGroup } from '../constants';
 import { isCommand } from '../guards';
 
+const IONIC_LOGO = String.raw`
+   _             _
+  (_) ___  _ __ (_) ___
+  | |/ _ \| '_ \| |/ __|
+  | | (_) | | | | | (__
+  |_|\___/|_| |_|_|\___|`;
+
 type Decoration = [number, string];
 
 const COMMAND_DECORATIONS: Decoration[] = [
@@ -62,13 +69,7 @@ class NamespaceHelpFormatter extends BaseNamespaceHelpFormatter<ICommand, INames
   }
 
   async formatIonicHeader(): Promise<string> {
-    return (
-      `   _             _\n` +
-      `  (_) ___  _ __ (_) ___\n` +
-      `  | |/ _ \\| '_ \\| |/ __|\n` +
-      `  | | (_) | | | | | (__\n` +
-      `  |_|\\___/|_| |_|_|\\___|  CLI ${this.version}\n\n`
-    );
+    return IONIC_LOGO + `  CLI ${this.version}\n\n`;
   }
 
   async formatBeforeNamespaceDescription(meta: NamespaceMetadata): Promise<string> {
