@@ -46,21 +46,29 @@ export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise
     const version = env.plugins.ionic.meta.pkg.version;
     const suffix = now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
 
-    // TODO: obj is readonly, why do I need to narrow its type for future use?
-    const formatter = new NamespaceHelpFormatter({ version: prefix + version + suffix, location: { ...location, obj: location.obj } });
+    const formatter = new NamespaceHelpFormatter({
+      inProject: env.project.directory ? true : false,
+      version: prefix + version + suffix,
+      // TODO: obj is readonly, why do I need to narrow its type for future use?
+      location: { ...location, obj: location.obj },
+    });
+
     env.log.rawmsg(await formatter.format());
   }
 }
 
 interface NamespaceHelpFormatterDeps extends BaseNamespaceHelpFormatterDeps<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
+  readonly inProject: boolean;
   readonly version: string;
 }
 
 class NamespaceHelpFormatter extends BaseNamespaceHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
+  protected readonly inProject: boolean;
   protected readonly version: string;
 
-  constructor({ version, ...rest }: NamespaceHelpFormatterDeps) {
+  constructor({ version, inProject, ...rest }: NamespaceHelpFormatterDeps) {
     super(rest);
+    this.inProject = inProject;
     this.version = version;
   }
 
@@ -85,13 +93,14 @@ class NamespaceHelpFormatter extends BaseNamespaceHelpFormatter<ICommand, INames
   }
 
   async formatCommands() {
+    const { strong } = this.colors;
     const commands = await this.namespace.getCommandMetadataList();
     const globalCmds = commands.filter(cmd => cmd.type === 'global');
     const projectCmds = commands.filter(cmd => cmd.type === 'project');
 
     return (
       (await this.formatCommandGroup('Global Commands', globalCmds)) +
-      (await this.formatCommandGroup('Project Commands', projectCmds))
+      (this.inProject ? await this.formatCommandGroup('Project Commands', projectCmds) : `\n  ${strong('Project Commands')}:\n\n    You are not in a project directory.\n`)
     );
   }
 
