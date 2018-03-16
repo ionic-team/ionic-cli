@@ -95,9 +95,9 @@ class NamespaceHelpFormatter extends BaseNamespaceHelpFormatter<ICommand, INames
     );
   }
 
-  filterCommandCallback(cmd: HydratedCommandMetadata): boolean {
-    // TODO: load namespace metadata and filter out commands if namespace is hidden
-    return !cmd.groups || !cmd.groups.includes(CommandGroup.Hidden);
+  async filterCommandCallback(cmd: HydratedCommandMetadata): Promise<boolean> {
+    const ns = await cmd.namespace.getMetadata();
+    return (!cmd.groups || !cmd.groups.includes(CommandGroup.Hidden)) && (!ns.groups || !ns.groups.includes(NamespaceGroup.Hidden));
   }
 }
 

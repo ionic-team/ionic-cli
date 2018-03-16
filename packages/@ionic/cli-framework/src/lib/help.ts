@@ -11,8 +11,10 @@ import {
   NamespaceMetadata,
 } from '../definitions';
 
-import { DEFAULT_COLORS } from './colors';
+import { filter } from '../utils/array';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '../utils/format';
+
+import { DEFAULT_COLORS } from './colors';
 import { validators } from './validators';
 
 const DEFAULT_DOTS_WIDTH = 25;
@@ -45,6 +47,8 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
     this.location = location;
     this.namespace = location.obj;
   }
+
+  filterCommandCallback?(cmd: M & HydratedCommandMetadata<C, N, M, I, O>): Promise<boolean>;
 
   async getNamespaceMetadata(): Promise<NamespaceMetadata> {
     if (!this._metadata) {
@@ -103,10 +107,6 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
     return [];
   }
 
-  filterCommandCallback(cmd: M & HydratedCommandMetadata<C, N, M, I, O>): boolean {
-    return true;
-  }
-
   async formatUsage(): Promise<string> {
     const { strong, weak, input } = this.colors;
     const fullName = await this.getNamespaceFullName();
@@ -131,11 +131,12 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
   async formatCommandGroup(title: string, commands: ReadonlyArray<M & HydratedCommandMetadata<C, N, M, I, O>>): Promise<string> {
     const { strong } = this.colors;
 
-    commands = commands.filter(cmd => this.filterCommandCallback(cmd));
+    const filterCallback = this.filterCommandCallback;
+    const filteredCommands = filterCallback ? await filter(commands, async cmd => filterCallback(cmd)) : commands;
 
     const [ cmdDetails, nsDetails ] = await Promise.all([
-      this.getListOfCommandDetails(commands.filter(cmd => cmd.namespace === this.namespace)),
-      this.getListOfNamespaceDetails(commands.filter(cmd => cmd.namespace !== this.namespace)),
+      this.getListOfCommandDetails(filteredCommands.filter(cmd => cmd.namespace === this.namespace)),
+      this.getListOfNamespaceDetails(filteredCommands.filter(cmd => cmd.namespace !== this.namespace)),
     ]);
 
     const details = [...cmdDetails, ...nsDetails];
