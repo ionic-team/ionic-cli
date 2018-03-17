@@ -2,26 +2,55 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
-import { generateRootPlugin } from 'ionic';
-import { Command } from '@ionic/cli-framework';
+import { Command, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-framework';
 import { copyDirectory, fsMkdirp, fsReadDir, fsStat, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { generateIonicEnvironment } from '@ionic/cli-utils';
+
+import { IonicEnvironment, generateIonicEnvironment } from '@ionic/cli-utils';
+import { generateRootPlugin } from 'ionic';
 
 import { formatCommandDoc, generateFullName, getCommandList } from './pages/commands';
 
 export class DocsCommand extends Command {
-  async getMetadata() {
+  async getMetadata(): Promise<CommandMetadata> {
     return {
       name: 'docs',
       description: '',
+      options: [
+        {
+          name: 'new',
+          description: `Generate docs for the new ${chalk.bold('ionic-docs')} repo`,
+          type: Boolean,
+        },
+      ],
     };
   }
 
-  async run() {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions) {
+    const newDocs = options['new'] ? true : false;
+
     const plugin = await generateRootPlugin();
     const env = await generateIonicEnvironment(plugin, process.argv.slice(2), process.env);
 
+    if (newDocs) {
+      await this.generateNewDocs(env);
+    } else {
+      await this.generateOldDocs(env);
+    }
+
+    env.close();
+
+    process.stdout.write(`${chalk.green('Done.')}\n`);
+  }
+
+  async generateNewDocs(env: IonicEnvironment) {
+    // const commands = await getCommandList(env);
+
+    // for (const command of commands) {
+    // }
+  }
+
+  async generateOldDocs(env: IonicEnvironment) {
     const mdPath = path.resolve(__dirname, '..', '..', '..', '..', '..', 'docs');
     const pagesDir = path.resolve(__dirname, 'pages');
     const pages = (await fsReadDir(pagesDir)).filter(f => path.extname(f) === '.js').map(f => path.resolve(pagesDir, f)); // dist/docs/pages/*.js
@@ -48,10 +77,6 @@ export class DocsCommand extends Command {
 
     await Promise.all(commandPromises);
     await this.copyToIonicSite();
-
-    env.close();
-
-    process.stdout.write(`${chalk.green('Done.')}\n`);
   }
 
   async copyToIonicSite() {
