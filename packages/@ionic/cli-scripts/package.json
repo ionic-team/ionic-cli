@@ -1,6 +1,9 @@
 {
   "name": "@ionic/cli-scripts",
   "version": "0.3.7",
+  "bin": {
+    "ionic-cli-scripts": "./bin/ionic-cli-scripts"
+  },
   "scripts": {
     "clean": "rimraf dist",
     "lint": "tslint --config tslint.js --project tsconfig.json",
