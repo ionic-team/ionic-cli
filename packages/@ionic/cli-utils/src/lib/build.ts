@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { BaseError } from '@ionic/cli-framework/lib/errors';
 
-import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, IonicEnvironment, ProjectType } from '../definitions';
+import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, IConfig, IProject, IShell, IonicEnvironment, ProjectType } from '../definitions';
 import { PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Runner } from './runner';
@@ -14,25 +14,38 @@ import * as angularBuildLibType from './project/angular/build';
 
 export const BUILD_SCRIPT = 'ionic:build';
 
+export interface BuildRunnerDeps {
+  readonly config: IConfig;
+  readonly project: IProject;
+  readonly shell: IShell;
+}
+
 export abstract class BuildRunner<T extends BuildOptions<any>> extends Runner<T, void> {
-  constructor(protected env: IonicEnvironment) {
+  protected readonly config: IConfig;
+  protected readonly project: IProject;
+  protected readonly shell: IShell;
+
+  constructor({ config, project, shell }: BuildRunnerDeps) {
     super();
+    this.config = config;
+    this.project = project;
+    this.shell = shell;
   }
 
-  static async createFromProjectType(env: IonicEnvironment, type: 'angular'): Promise<angularBuildLibType.BuildRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type: 'ionic-angular'): Promise<ionicAngularBuildLibType.BuildRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type: 'ionic1'): Promise<ionic1BuildLibType.BuildRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<BuildRunner<BuildOptions<any>>>;
-  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<BuildRunner<BuildOptions<any>>> {
+  static async createFromProjectType(deps: BuildRunnerDeps, type: 'angular'): Promise<angularBuildLibType.BuildRunner>;
+  static async createFromProjectType(deps: BuildRunnerDeps, type: 'ionic-angular'): Promise<ionicAngularBuildLibType.BuildRunner>;
+  static async createFromProjectType(deps: BuildRunnerDeps, type: 'ionic1'): Promise<ionic1BuildLibType.BuildRunner>;
+  static async createFromProjectType(deps: BuildRunnerDeps, type?: ProjectType): Promise<BuildRunner<BuildOptions<any>>>;
+  static async createFromProjectType(deps: BuildRunnerDeps, type?: ProjectType): Promise<BuildRunner<BuildOptions<any>>> {
     if (type === 'angular') {
       const { BuildRunner } = await import('./project/angular/build');
-      return new BuildRunner(env);
+      return new BuildRunner(deps);
     } else if (type === 'ionic-angular') {
       const { BuildRunner } = await import('./project/ionic-angular/build');
-      return new BuildRunner(env);
+      return new BuildRunner(deps);
     } else if (type === 'ionic1') {
       const { BuildRunner } = await import('./project/ionic1/build');
-      return new BuildRunner(env);
+      return new BuildRunner(deps);
     } else {
       throw new RunnerNotFoundException(
         `Cannot perform build for ${type ? '' : 'unknown '}project type${type ? `: ${chalk.bold(type)}` : ''}.\n` +
@@ -55,7 +68,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> extends Runner<T,
   }
 
   async run(options: T): Promise<void> {
-    const before = new BuildBeforeHook(this.env);
+    const before = new BuildBeforeHook({ config: this.config, project: this.project, shell: this.shell });
 
     try {
       await before.run({ name: before.name, build: options });
@@ -69,7 +82,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> extends Runner<T,
 
     await this.buildProject(options);
 
-    const after = new BuildAfterHook(this.env);
+    const after = new BuildAfterHook({ config: this.config, project: this.project, shell: this.shell });
 
     try {
       await after.run({ name: after.name, build: options });

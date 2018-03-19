@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
 import { COMMON_CORDOVA_BUILD_COMMAND_OPTIONS, CordovaCommand } from './base';
@@ -33,8 +33,8 @@ Like running ${chalk.green('cordova compile')} directly, but provides friendly c
     };
   }
 
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    await this.preRunChecks();
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
+    await this.preRunChecks(runinfo);
 
     if (!inputs[0]) {
       const platform = await this.env.prompt({

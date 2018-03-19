@@ -4,30 +4,23 @@ import * as path from 'path';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import { isCI } from 'ci-info';
-import { parseArgs } from '@ionic/cli-framework';
+
+import { PackageJson, parseArgs } from '@ionic/cli-framework';
 import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
+import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
 import * as inquirerType from 'inquirer';
 
-import {
-  IProject,
-  InfoItem,
-  IonicEnvironment,
-  LogLevel,
-  LogPrefix,
-  RootPlugin,
-} from './definitions';
-
+import { CLIMeta, IProject, InfoItem, IonicEnvironment, LogLevel, LogPrefix } from './definitions';
 import { PROJECT_FILE, PROJECT_FILE_LEGACY } from './constants';
 import { BaseProject, OutsideProject, ProjectDeps } from './lib/project';
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
 import { Client } from './lib/http';
 import { Environment } from './lib/environment';
+import { PROXY_ENVIRONMENT_VARIABLES } from './lib/utils/http';
 import { Logger } from './lib/utils/logger';
 import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
-import { readPackageJsonFileOfResolvedModule } from './lib/utils/npm';
-import { Telemetry } from './lib/telemetry';
 import { ProSession } from './lib/session';
 import { Shell } from './lib/shell';
 import { createPromptModule } from './lib/prompts';
@@ -36,8 +29,13 @@ export * from './definitions';
 export * from './constants';
 export * from './guards';
 
+const PACKAGE_ROOT_PATH = path.dirname(__filename);
+const PACKAGE_JSON_PATH = path.resolve(PACKAGE_ROOT_PATH, 'package.json');
+
 const name = '@ionic/cli-utils';
 const debug = Debug('ionic:cli-utils');
+
+let _pkg: PackageJson | undefined;
 
 export async function getProject(projectDir: string | undefined, deps: ProjectDeps): Promise<IProject> {
   if (!projectDir) {
@@ -53,7 +51,15 @@ export async function getProject(projectDir: string | undefined, deps: ProjectDe
   return BaseProject.createFromProjectType(projectDir, PROJECT_FILE, deps, type);
 }
 
-export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string[], env: { [key: string]: string }): Promise<IonicEnvironment> {
+async function loadPackageJson(): Promise<PackageJson> {
+  if (!_pkg) {
+    _pkg = await readPackageJsonFile(PACKAGE_JSON_PATH);
+  }
+
+  return _pkg;
+}
+
+export async function generateIonicEnvironment(meta: CLIMeta, pargv: string[], env: { [key: string]: string; }): Promise<IonicEnvironment> {
   const cwd = process.cwd();
   const argv = parseArgs(pargv, { boolean: true, string: '_' });
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
@@ -96,20 +102,10 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   }
 
   const projectDir = await findBaseDirectory(cwd, PROJECT_FILE);
-
-  env['IONIC_PROJECT_DIR'] = projectDir || '';
-  env['IONIC_PROJECT_FILE'] = PROJECT_FILE;
-
-  const meta = {
-    cwd,
-    local: env['IONIC_CLI_LOCAL'] ? true : false,
-    binPath: env['IONIC_CLI_BIN'],
-    libPath: env['IONIC_CLI_LIB'],
-  };
+  const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map(e => [e, env[e]]).filter(([e, v]) => !!v);
 
   const getInfo = async () => {
-    const packageJson = await readPackageJsonFileOfResolvedModule(__filename);
-    const version = packageJson.version || '';
+    const pkg = await loadPackageJson();
     const osName = await import('os-name');
     const os = osName();
     const node = process.version;
@@ -117,13 +113,14 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     const npm = await shell.cmdinfo('npm', ['-v']);
 
     const info: InfoItem[] = [
-      { type: 'cli-packages', key: name, value: version, path: path.dirname(__filename) },
-      { type: 'cli-packages', key: 'ionic', flair: 'Ionic CLI', value: plugin.meta.pkg.version, path: path.dirname(path.dirname(plugin.meta.filePath)) },
+      { type: 'cli-packages', key: name, value: pkg.version, path: PACKAGE_ROOT_PATH },
+      { type: 'cli-packages', key: 'ionic', flair: 'Ionic CLI', value: meta.version, path: path.dirname(path.dirname(meta.libPath)) },
       { type: 'system', key: 'NodeJS', value: node },
       { type: 'system', key: 'npm', value: npm || 'not installed' },
       { type: 'system', key: 'OS', value: os },
     ];
 
+    info.push(...proxyVars.map(([e, v]): InfoItem => ({ type: 'environment', key: e, value: v })));
     info.push(...(await project.getInfo()));
 
     return info;
@@ -133,7 +130,6 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
   const project = await getProject(projectDir, { config, log, shell, tasks });
   const client = new Client(config);
   const session = new ProSession({ config, client, project });
-  const telemetry = new Telemetry({ config, client, getInfo, meta, session, cli: plugin, project });
 
   await config.prepare();
 
@@ -141,25 +137,16 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
     bottomBar,
     client,
     config,
-    env,
     flags,
     getInfo,
     log,
     meta,
-    namespace: plugin.namespace,
-    plugins: {
-      ionic: plugin,
-    },
     prompt: await createPromptModule({ confirm: flags.confirm, interactive: flags.interactive, log, config }),
     project,
     session,
     shell,
     tasks,
-    telemetry,
   });
-
-  // TODO: proper DI
-  ienv.namespace.env = ienv;
 
   ienv.open();
 
@@ -173,6 +160,24 @@ export async function generateIonicEnvironment(plugin: RootPlugin, pargv: string
 
   if (typeof argv['yarn'] === 'boolean') {
     log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} was removed in CLI 4.0. Use ${chalk.green(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);
+  }
+
+  if (proxyVars.length > 0) {
+    const [ , proxyVar ] = proxyVars[0];
+
+    try {
+      require.resolve('superagent-proxy');
+    } catch (e) {
+      if (e.code !== 'MODULE_NOT_FOUND') {
+        throw e;
+      }
+
+      log.warn(
+        `Missing ${chalk.bold('superagent-proxy')} package.\n` +
+        `Detected ${chalk.green(proxyVar)} in environment, but missing proxy package: ${chalk.bold('superagent-proxy')}. Please install it to proxy CLI requests.\n\n` +
+        `See the CLI documentation on proxies: ${chalk.bold('https://ionicframework.com/docs/cli/configuring.html#using-a-proxy')}`
+      );
+    }
   }
 
   if (!projectDir) {

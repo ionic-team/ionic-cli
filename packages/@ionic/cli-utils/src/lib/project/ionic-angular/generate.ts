@@ -2,10 +2,9 @@ import chalk from 'chalk';
 
 import { contains, unparseArgs, validators } from '@ionic/cli-framework';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularGenerateOptions, IonicEnvironment } from '../../../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularGenerateOptions } from '../../../definitions';
 import { importAppScripts } from './app-scripts';
 import { GenerateRunner as BaseGenerateRunner } from '../../generate';
-import { FatalException } from '../../errors';
 
 const GENERATOR_TYPES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
 
@@ -59,7 +58,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
 
   async ensureCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!inputs[0]) {
-      const generatorType = await this.env.prompt({
+      const generatorType = await this.prompt({
         type: 'list',
         name: 'generatorType',
         message: 'What would you like to generate:',
@@ -70,7 +69,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
     }
 
     if (!inputs[1]) {
-      const generatorName = await this.env.prompt({
+      const generatorName = await this.prompt({
         type: 'input',
         name: 'generatorName',
         message: 'What should the name be?',
@@ -78,10 +77,6 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
       });
 
       inputs[1] = generatorName;
-    }
-
-    if (!this.env.flags.interactive && inputs[0] === 'tabs') {
-      throw new FatalException(`Cannot generate tabs without prompts. Run without ${chalk.green('--no-interactive')}.`);
     }
   }
 
@@ -96,11 +91,11 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
   }
 
   async run(options: IonicAngularGenerateOptions) {
-    const AppScripts = await importAppScripts(this.env);
+    const AppScripts = await importAppScripts(this.project.directory);
 
     const appScriptsArgs = unparseArgs({ _: [], module: options.module, constants: options.constants }, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
     AppScripts.setProcessArgs(['node', 'appscripts'].concat(appScriptsArgs));
-    AppScripts.setCwd(this.env.project.directory);
+    AppScripts.setCwd(this.project.directory);
 
     const context = AppScripts.generateContext();
 
@@ -109,15 +104,15 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
         await AppScripts.processPageRequest(context, options.name, options);
         break;
       case 'component':
-        const componentData = await getModules(context, 'component');
+        const componentData = await this.getModules(context, 'component');
         await AppScripts.processComponentRequest(context, options.name, componentData);
         break;
       case 'directive':
-        const directiveData = await getModules(context, 'directive');
+        const directiveData = await this.getModules(context, 'directive');
         await AppScripts.processDirectiveRequest(context, options.name, directiveData);
         break;
       case 'pipe':
-        const pipeData = await getModules(context, 'pipe');
+        const pipeData = await this.getModules(context, 'pipe');
         await AppScripts.processPipeRequest(context, options.name, pipeData);
         break;
       case 'provider':
@@ -125,45 +120,45 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
         await AppScripts.processProviderRequest(context, options.name, providerData);
         break;
       case 'tabs':
-        const tabsData = await tabsPrompt(this.env);
+        const tabsData = await this.tabsPrompt();
         await AppScripts.processTabsRequest(context, options.name, tabsData, options);
         break;
     }
 
-    this.env.log.ok(`Generated a ${chalk.bold(options.type)}${options.type === 'tabs' ? ' page' : ''} named ${chalk.bold(options.name)}!`);
+    this.log.ok(`Generated a ${chalk.bold(options.type)}${options.type === 'tabs' ? ' page' : ''} named ${chalk.bold(options.name)}!`);
   }
-}
 
-async function getModules(context: any, kind: string) {
-  switch (kind) {
-    case 'component':
-      return context.componentsNgModulePath ? context.componentsNgModulePath : context.appNgModulePath;
-    case 'pipe':
-      return context.pipesNgModulePath ? context.pipesNgModulePath : context.appNgModulePath;
-    case 'directive':
-      return context.directivesNgModulePath ? context.directivesNgModulePath : context.appNgModulePath;
-  }
-}
+  async tabsPrompt() {
+    const tabNames = [];
 
-export async function tabsPrompt(env: IonicEnvironment) {
-  const tabNames = [];
-
-  const howMany = await env.prompt({
-    type: 'input',
-    name: 'howMany',
-    message: 'How many tabs?',
-    validate: v => validators.numeric(v),
-  });
-
-  for (let i = 0; i < parseInt(howMany, 10); i++) {
-    const tabName = await env.prompt({
+    const howMany = await this.prompt({
       type: 'input',
-      name: 'tabName',
-      message: 'Name of this tab:',
+      name: 'howMany',
+      message: 'How many tabs?',
+      validate: v => validators.numeric(v),
     });
 
-    tabNames.push(tabName);
+    for (let i = 0; i < parseInt(howMany, 10); i++) {
+      const tabName = await this.prompt({
+        type: 'input',
+        name: 'tabName',
+        message: 'Name of this tab:',
+      });
+
+      tabNames.push(tabName);
+    }
+
+    return tabNames;
   }
 
-  return tabNames;
+  async getModules(context: any, kind: string) {
+    switch (kind) {
+      case 'component':
+        return context.componentsNgModulePath ? context.componentsNgModulePath : context.appNgModulePath;
+      case 'pipe':
+        return context.pipesNgModulePath ? context.pipesNgModulePath : context.appNgModulePath;
+      case 'directive':
+        return context.directivesNgModulePath ? context.directivesNgModulePath : context.appNgModulePath;
+    }
+  }
 }

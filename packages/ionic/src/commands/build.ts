@@ -1,9 +1,10 @@
 import chalk from 'chalk';
 
-import { BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
+import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { BuildRunner } from '@ionic/cli-utils/lib/build';
 import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
+import { runCommand } from '@ionic/cli-utils/lib/executor';
 
 export class BuildCommand extends Command implements CommandPreRun {
   protected runner?: BuildRunner<BuildOptions<any>>;
@@ -57,7 +58,7 @@ export class BuildCommand extends Command implements CommandPreRun {
     }
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const [ platform ] = inputs;
 
     const project = await this.env.project.load();
@@ -72,7 +73,7 @@ export class BuildCommand extends Command implements CommandPreRun {
         cordovaPrepareArgs.push(platform);
       }
 
-      await this.env.runCommand(cordovaPrepareArgs);
+      await runCommand(runinfo, cordovaPrepareArgs);
     }
   }
 }

@@ -113,13 +113,14 @@ export class Project extends BaseProject {
   }
 
   async getV1UtilVersion(): Promise<string | undefined> {
-    const pkgPath = resolve('@ionic/v1-toolkit/package', { paths: compileNodeModulesPaths(this.directory) });
+    const pkgName = '@ionic/v1-toolkit';
 
     try {
+      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
       const pkg = await readPackageJsonFile(pkgPath);
       return pkg.version;
     } catch (e) {
-      this.log.error(`Error with ${chalk.bold(prettyPath(pkgPath))} file: ${e}`);
+      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
     }
   }
 

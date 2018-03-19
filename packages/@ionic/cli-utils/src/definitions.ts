@@ -391,7 +391,6 @@ export interface IShell {
 
 export interface ITelemetry {
   sendCommand(command: string, args: string[]): Promise<void>;
-  resetToken(): Promise<void>;
 }
 
 export type NpmClient = 'yarn' | 'npm';
@@ -710,6 +709,12 @@ export interface PromptModule {
   (question: CheckboxPromptQuestion): Promise<string[]>;
 }
 
+export interface CLIMeta {
+  binPath: string;
+  libPath: string;
+  version: string;
+}
+
 export interface IonicEnvironment {
   readonly flags: IonicEnvironmentFlags;
   readonly client: IClient;
@@ -718,18 +723,14 @@ export interface IonicEnvironment {
   readonly prompt: PromptModule;
   readonly meta: CLIMeta;
   project: IProject; // project config (ionic.config.json)
-  readonly plugins: IonicEnvironmentPlugins;
   session: ISession;
   readonly shell: IShell;
   readonly tasks: ITaskChain;
-  readonly telemetry: ITelemetry;
-  readonly namespace: IRootNamespace;
   keepopen: boolean;
 
   open(): void;
   close(): void;
   getInfo(): Promise<InfoItem[]>;
-  runCommand(pargv: string[], opts?: { showExecution?: boolean; }): Promise<void>;
 }
 
 export interface IonicEnvironmentFlags {
@@ -737,42 +738,7 @@ export interface IonicEnvironmentFlags {
   confirm: boolean;
 }
 
-export interface CLIMeta {
-  cwd: string;
-  local: boolean; // CLI running in local mode?
-  binPath: string;
-  libPath: string;
-}
-
-export interface IonicEnvironmentPlugins {
-  ionic: RootPlugin;
-  [key: string]: Plugin;
-}
-
 export type DistTag = 'testing' | 'canary' | 'latest';
-
-export interface PluginMeta {
-  distTag: DistTag;
-  filePath: string;
-  pkg: framework.PackageJson;
-}
-
-export interface Plugin {
-  getInfo?(): Promise<InfoItem[]>;
-
-  /**
-   * @deprecated
-   */
-  version?: string;
-}
-
-export interface LoadedPlugin extends Plugin {
-  meta: PluginMeta;
-}
-
-export interface RootPlugin extends LoadedPlugin {
-  namespace: IRootNamespace;
-}
 
 export interface ICommand extends framework.ICommand<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption> {
   env: IonicEnvironment;
@@ -786,10 +752,6 @@ export interface CommandPreRun extends ICommand {
 
 export interface INamespace extends framework.INamespace<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption> {
   env: IonicEnvironment;
-}
-
-export interface IRootNamespace extends INamespace {
-  runCommand(pargv: string[], env: { [key: string]: string; }): Promise<void>;
 }
 
 export interface ImageResource {

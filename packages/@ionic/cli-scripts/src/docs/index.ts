@@ -1,99 +1,59 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
+// import * as lodash from 'lodash';
+// import stripAnsi = require('strip-ansi');
 
 import { Command, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-framework';
-import { copyDirectory, fsMkdirp, fsReadDir, fsStat, fsWriteFile } from '@ionic/cli-framework/utils/fs';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { fsMkdirp, removeDirectory } from '@ionic/cli-framework/utils/fs';
 
-import { IonicEnvironment, generateIonicEnvironment } from '@ionic/cli-utils';
-import { generateRootPlugin } from 'ionic';
+// import { ProjectType } from '@ionic/cli-utils';
+// import { BaseProject } from '@ionic/cli-utils/lib/project';
+// import { generateRootPlugin } from 'ionic';
 
-import { formatCommandDoc, generateFullName, getCommandList } from './pages/commands';
+// import { ansi2md, links2md } from './utils';
 
 export class DocsCommand extends Command {
+  stagingPath = path.resolve(__dirname, '..', '..', '..', '..', '..', 'docs');
+
   async getMetadata(): Promise<CommandMetadata> {
     return {
       name: 'docs',
       description: '',
-      options: [
-        {
-          name: 'new',
-          description: `Generate docs for the new ${chalk.bold('ionic-docs')} repo`,
-          type: Boolean,
-        },
-      ],
     };
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions) {
-    const newDocs = options['new'] ? true : false;
+    await removeDirectory(this.stagingPath);
+    await fsMkdirp(this.stagingPath);
 
-    const plugin = await generateRootPlugin();
-    const env = await generateIonicEnvironment(plugin, process.argv.slice(2), process.env);
+    // const projectTypes: ProjectType[] = ['angular'];
 
-    if (newDocs) {
-      await this.generateNewDocs(env);
-    } else {
-      await this.generateOldDocs(env);
-    }
+    // for (const projectType of projectTypes) {
+    //   const project = await BaseProject.createFromProjectType(projectType);
+    //   const commands = await this.getCommandList(env);
 
-    env.close();
+    //   for (const command of commands) {
+    //     const commandPath = ['ionic', ...command.path.map(([p]) => p)];
+    //     const fullName = commandPath.join(' ');
+
+    //     const commandJson = {
+    //       ...lodash.pick(command, ['type', 'exampleCommands', 'aliases']),
+    //       name: fullName,
+    //       summary: command.description,
+    //       description: command.longDescription ? stripAnsi(links2md(ansi2md(command.longDescription))) : '',
+    //     };
+
+    //     console.log(commandJson);
+    //     return;
+    //   }
+    // }
 
     process.stdout.write(`${chalk.green('Done.')}\n`);
   }
 
-  async generateNewDocs(env: IonicEnvironment) {
-    // const commands = await getCommandList(env);
-
-    // for (const command of commands) {
-    // }
-  }
-
-  async generateOldDocs(env: IonicEnvironment) {
-    const mdPath = path.resolve(__dirname, '..', '..', '..', '..', '..', 'docs');
-    const pagesDir = path.resolve(__dirname, 'pages');
-    const pages = (await fsReadDir(pagesDir)).filter(f => path.extname(f) === '.js').map(f => path.resolve(pagesDir, f)); // dist/docs/pages/*.js
-
-    await fsMkdirp(mdPath);
-
-    for (const p of pages) {
-      const name = path.basename(p).slice(0, -path.extname(p).length);
-      const render = require(p).default;
-      const pageMdPath = path.resolve(mdPath, `${name}.md`);
-      const renderedPage = await render(env);
-      await fsWriteFile(pageMdPath, renderedPage, { encoding: 'utf8' });
-    }
-
-    const commands = await getCommandList(env);
-    const commandPromises = commands.map(async cmd => {
-      const fullName = await generateFullName(cmd);
-      const cmdPath = path.resolve(__dirname, '..', '..', '..', '..', '..', 'docs', ...fullName.split(' '), 'index.md');
-      const cmdDoc = await formatCommandDoc(env, cmd);
-
-      await fsMkdirp(path.dirname(cmdPath));
-      await fsWriteFile(cmdPath, cmdDoc, { encoding: 'utf8' });
-    });
-
-    await Promise.all(commandPromises);
-    await this.copyToIonicSite();
-  }
-
-  async copyToIonicSite() {
-    const ionicSitePath = path.resolve(__dirname, '..', '..', '..', '..', '..', '..', 'ionic-site');
-
-    const dirData = await fsStat(ionicSitePath);
-    if (!dirData.size) {
-      // ionic-site not present
-      process.stderr.write(`${chalk.red('ERROR: ionic-site repo not found')}\n`);
-      return;
-    }
-
-    const srcDir = path.resolve(__dirname, '..', '..', '..', '..', '..', 'docs');
-    const destDir = path.resolve(ionicSitePath, 'content', 'docs', 'cli');
-
-    await copyDirectory(srcDir, destDir);
-
-    process.stdout.write(`${chalk.green(`Docs written to ${chalk.bold(prettyPath(destDir))}.`)}\n`);
-  }
+  // private async getCommandList(env: IonicEnvironment) {
+  //   const commands = await env.namespace.getCommandMetadataList()
+  //   return commands.filter(cmd => !cmd.groups || !cmd.groups.includes(CommandGroup.Hidden));
+  // }
 }

@@ -1,6 +1,6 @@
 import * as lodash from 'lodash';
 
-import { Colors, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace, NamespaceLocateResult } from '../definitions';
+import { Colors, CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, IExecutor, INamespace, NamespaceLocateResult } from '../definitions';
 import { isCommand } from '../guards';
 
 import { DEFAULT_COLORS } from './colors';
@@ -9,20 +9,28 @@ import { CommandHelpFormatter, NamespaceHelpFormatter } from './help';
 import { metadataToParseArgsOptions, parseArgs, stripOptions } from './options';
 import { isNamespace } from '../guards';
 
-export class BaseExecutorDeps<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+export abstract class AbstractExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> implements IExecutor<C, N, M, I, O> {
+  abstract readonly namespace: N;
+
+  abstract execute(argv: string[], env: { [key: string]: string; }): Promise<void>;
+  abstract run(command: C, cmdargs: string[], runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;
+}
+
+export interface BaseExecutorDeps<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   readonly namespace: N;
   readonly colors?: Colors;
   readonly stdout?: NodeJS.WriteStream;
   readonly stderr?: NodeJS.WriteStream;
 }
 
-export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends AbstractExecutor<C, N, M, I, O> {
   readonly colors: Colors;
   readonly namespace: N;
   readonly stdout: NodeJS.WriteStream;
   readonly stderr: NodeJS.WriteStream;
 
   constructor({ namespace, stdout, stderr, colors }: BaseExecutorDeps<C, N, M, I, O>) {
+    super();
     this.namespace = namespace;
     this.colors = colors ? colors : DEFAULT_COLORS;
     this.stdout = stdout ? stdout : process.stdout;
@@ -39,17 +47,17 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
       const cmd = location.obj;
       const cmdargs = lodash.drop(argv, location.path.length - 1);
 
-      await this.run(cmd, cmdargs, { location, env });
+      await this.run(cmd, cmdargs, { location, env, executor: this });
     }
   }
 
-  async run(command: C, cmdargs: string[], options?: { location?: NamespaceLocateResult<C, N, M, I, O>; env?: { [key: string]: string; }; }): Promise<void> {
+  async run(command: C, cmdargs: string[], runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void> {
     const metadata = await command.getMetadata();
     const cmdoptions = parseArgs(cmdargs, metadataToParseArgsOptions(metadata));
     const cmdinputs = cmdoptions._;
 
     await command.validate(cmdinputs);
-    await command.run(cmdinputs, cmdoptions, options);
+    await command.run(cmdinputs, cmdoptions, runinfo);
   }
 
   async formatHelp(location: NamespaceLocateResult<C, N, M, I, O>): Promise<string> {

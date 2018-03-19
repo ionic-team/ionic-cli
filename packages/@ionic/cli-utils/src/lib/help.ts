@@ -2,9 +2,8 @@ import chalk from 'chalk';
 
 import { CommandHelpFormatter as BaseCommandHelpFormatter, MetadataGroup, NamespaceHelpFormatter as BaseNamespaceHelpFormatter, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps } from '@ionic/cli-framework';
 
-import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace, IonicEnvironment, NamespaceMetadata } from '../definitions';
+import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace, NamespaceMetadata } from '../definitions';
 import { CommandGroup, NamespaceGroup, OptionGroup } from '../constants';
-import { isCommand } from '../guards';
 
 const IONIC_LOGO = String.raw`
    _             _
@@ -25,43 +24,12 @@ const NAMESPACE_DECORATIONS: Decoration[] = [
   [NamespaceGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
 ];
 
-export async function showHelp(env: IonicEnvironment, inputs: string[]): Promise<void> {
-  const location = await env.namespace.locate(inputs);
-
-  if (isCommand(location.obj)) {
-    const formatter = new CommandHelpFormatter({ location, command: location.obj });
-    env.log.rawmsg(await formatter.format());
-  } else {
-    if (location.args.length > 0) {
-      env.log.error(
-        `Unable to find command: ${chalk.green(inputs.join(' '))}` +
-        (env.project.directory ? '' : '\nYou may need to be in an Ionic project directory.')
-      );
-    }
-
-    const isLoggedIn = await env.session.isLoggedIn();
-    const now = new Date();
-    const prefix = isLoggedIn ? chalk.blue('PRO') + ' ' : '';
-    const version = env.plugins.ionic.meta.pkg.version;
-    const suffix = now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
-
-    const formatter = new NamespaceHelpFormatter({
-      inProject: env.project.directory ? true : false,
-      version: prefix + version + suffix,
-      location,
-      namespace: location.obj,
-    });
-
-    env.log.rawmsg(await formatter.format());
-  }
-}
-
-interface NamespaceHelpFormatterDeps extends BaseNamespaceHelpFormatterDeps<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
+export interface NamespaceHelpFormatterDeps extends BaseNamespaceHelpFormatterDeps<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
   readonly inProject: boolean;
   readonly version: string;
 }
 
-class NamespaceHelpFormatter extends BaseNamespaceHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
+export class NamespaceHelpFormatter extends BaseNamespaceHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
   protected readonly inProject: boolean;
   protected readonly version: string;
 
@@ -109,7 +77,7 @@ class NamespaceHelpFormatter extends BaseNamespaceHelpFormatter<ICommand, INames
   }
 }
 
-class CommandHelpFormatter extends BaseCommandHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
+export class CommandHelpFormatter extends BaseCommandHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
   async formatBeforeOptionDescription(opt: CommandMetadataOption): Promise<string> {
     const { weak } = this.colors;
 

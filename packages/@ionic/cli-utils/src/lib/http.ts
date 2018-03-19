@@ -2,14 +2,12 @@ import * as util from 'util';
 
 import chalk from 'chalk';
 import * as lodash from 'lodash';
-import { conform } from '@ionic/cli-framework/utils/array';
 
 import * as superagentType from 'superagent';
 
-import { APIResponse, APIResponseMeta, APIResponsePageTokenMeta, APIResponseSuccess, CreateRequestOptions, HttpMethod, IClient, IConfig, IPaginator, PagePaginatorState, PaginateArgs, PaginatorDeps, PaginatorGuard, PaginatorRequestGenerator, ResourceClientRequestModifiers, Response, SuperAgentError, TokenPaginatorState } from '../definitions';
+import { APIResponse, APIResponseMeta, APIResponsePageTokenMeta, APIResponseSuccess, HttpMethod, IClient, IConfig, IPaginator, PagePaginatorState, PaginateArgs, PaginatorDeps, PaginatorGuard, PaginatorRequestGenerator, ResourceClientRequestModifiers, Response, SuperAgentError, TokenPaginatorState } from '../definitions';
 import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
-import { getGlobalProxy } from './utils/http';
-import { fsReadFile } from '@ionic/cli-framework/utils/fs';
+import { createRequest } from './utils/http';
 import { FatalException } from './errors';
 
 const FORMAT_ERROR_BODY_MAX_LENGTH = 1000;
@@ -17,97 +15,6 @@ export const CONTENT_TYPE_JSON = 'application/json';
 
 export const ERROR_UNKNOWN_CONTENT_TYPE = 'UNKNOWN_CONTENT_TYPE';
 export const ERROR_UNKNOWN_RESPONSE_FORMAT = 'UNKNOWN_RESPONSE_FORMAT';
-
-let CAS: string[] | undefined;
-let CERTS: string[] | undefined;
-let KEYS: string[] | undefined;
-
-export async function createRequest(method: HttpMethod, url: string, opts?: CreateRequestOptions): Promise<{ req: superagentType.SuperAgentRequest; }> {
-  const superagent = await import('superagent');
-  const [ proxy, proxyVar ] = getGlobalProxy();
-
-  const req = superagent(method, url);
-
-  if (proxy && proxyVar) {
-    try {
-      const superagentProxy = await import('superagent-proxy');
-      superagentProxy(superagent);
-    } catch (e) {
-      if (e.code !== 'MODULE_NOT_FOUND') {
-        throw e;
-      }
-    }
-
-    if (req.proxy) {
-      req.proxy(proxy);
-    }
-  }
-
-  if (opts && opts.ssl) {
-    if (!CAS) {
-      CAS = await Promise.all(conform(opts.ssl.cafile).map(p => fsReadFile(p, { encoding: 'utf8' })));
-    }
-
-    if (!CERTS) {
-      CERTS = await Promise.all(conform(opts.ssl.certfile).map(p => fsReadFile(p, { encoding: 'utf8' })));
-    }
-
-    if (!KEYS) {
-      KEYS = await Promise.all(conform(opts.ssl.keyfile).map(p => fsReadFile(p, { encoding: 'utf8' })));
-    }
-
-    if (CAS.length > 0) {
-      req.ca(CAS);
-    }
-
-    if (CERTS.length > 0) {
-      req.cert(CERTS);
-    }
-
-    if (KEYS.length > 0) {
-      req.key(KEYS);
-    }
-  }
-
-  return { req };
-}
-
-export async function download(url: string, ws: NodeJS.WritableStream, opts?: { progress?: (loaded: number, total: number) => void; } & CreateRequestOptions) {
-  const { req } = await createRequest('GET', url, opts);
-
-  const progressFn = opts ? opts.progress : undefined;
-
-  return new Promise<void>((resolve, reject) => {
-    req
-      .on('response', res => {
-        if (res.statusCode !== 200) {
-          reject(new Error(
-            `Encountered bad status code (${res.statusCode}) for ${url}\n` +
-            `This could mean the server is experiencing difficulties right now--please try again later.`
-          ));
-        }
-
-        if (progressFn) {
-          let loaded = 0;
-          const total = Number(res.headers['content-length']);
-          res.on('data', chunk => {
-            loaded += chunk.length;
-            progressFn(loaded, total);
-          });
-        }
-      })
-      .on('error', err => {
-        if (err.code === 'ECONNABORTED') {
-          reject(new Error(`Timeout of ${err.timeout}ms reached for ${url}`));
-        } else {
-          reject(err);
-        }
-      })
-      .on('end', resolve);
-
-    req.pipe(ws);
-  });
-}
 
 export class Client implements IClient {
   constructor(public config: IConfig) {}

@@ -1,10 +1,10 @@
 import { compileNodeModulesPaths, resolve } from '@ionic/cli-framework/utils/npm';
 
-import { CommandMetadataOption, IonicEnvironment } from '../../../definitions';
+import { CommandMetadataOption } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
 
-export async function importAppScripts(env: IonicEnvironment): Promise<any> {
-  const appScriptsPath = resolve('@ionic/app-scripts', { paths: compileNodeModulesPaths(env.project.directory) });
+export async function importAppScripts(projectDir: string): Promise<any> {
+  const appScriptsPath = resolve('@ionic/app-scripts', { paths: compileNodeModulesPaths(projectDir) });
 
   return require(appScriptsPath);
 }

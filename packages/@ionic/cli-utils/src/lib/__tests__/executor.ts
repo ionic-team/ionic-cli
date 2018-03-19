@@ -1,8 +1,8 @@
-import { metadataToCmdOptsEnv } from '../index';
+import { metadataToCmdOptsEnv } from '../executor';
 
 describe('@ionic/cli-utils', () => {
 
-  describe('commands', () => {
+  describe('lib/executor', () => {
 
     describe('metadataToCmdOptsEnv', () => {
 

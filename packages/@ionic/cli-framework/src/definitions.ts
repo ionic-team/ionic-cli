@@ -75,14 +75,16 @@ export interface CommandMetadata<I = CommandMetadataInput, O = CommandMetadataOp
 }
 
 export interface CommandInstanceInfo<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
-  location?: NamespaceLocateResult<C, N, M, I, O>;
+  location: NamespaceLocateResult<C, N, M, I, O>;
+  env: { [key: string]: string; };
+  executor: IExecutor<C, N, M, I, O>;
 }
 
 export interface ICommand<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   namespace: N;
 
-  getMetadata(runinfo?: CommandInstanceInfo<C, N, M, I, O>): Promise<M>;
-  run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo?: CommandInstanceInfo<C, N, M, I, O>): Promise<void>;
+  getMetadata(runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<M>;
+  run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;
   validate(argv: CommandLineInputs): Promise<void>;
 }
 
@@ -125,11 +127,19 @@ export interface HydratedCommandMetadata<C extends ICommand<C, N, M, I, O>, N ex
 
 export interface NamespaceMetadata extends Metadata {}
 
+export interface IExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+  readonly namespace: N;
+
+  execute(argv: string[], env: { [key: string]: string; }): Promise<void>;
+  run(command: C, cmdargs: string[], runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;
+}
+
 export interface PackageJson {
   name: string;
   version: string;
   main?: string;
   description?: string;
+  bin?: { [key: string]: string; };
   scripts?: { [key: string]: string; };
   dependencies?: { [key: string]: string; };
   devDependencies?: { [key: string]: string; };

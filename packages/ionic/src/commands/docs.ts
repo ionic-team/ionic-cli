@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, OptionGroup, isSuperAgentError } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
+import { createRequest } from '@ionic/cli-utils/lib/utils/http';
 import { BROWSERS } from '@ionic/cli-utils/lib/serve';
 
 export class DocsCommand extends Command {
@@ -23,7 +24,6 @@ export class DocsCommand extends Command {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const opn = await import('opn');
-    const { createRequest } = await import('@ionic/cli-utils/lib/http');
 
     const browser = options['browser'] ? String(options['browser']) : undefined;
     const config = await this.env.config.load();

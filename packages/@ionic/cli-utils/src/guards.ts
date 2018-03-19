@@ -17,7 +17,6 @@ import {
   LogLevel,
   Login,
   Org,
-  Plugin,
   Response,
   SSHKey,
   SecurityProfile,
@@ -71,10 +70,6 @@ export function isAngularCLIJson(o: object): o is AngularCLIJson {
 export function isExitCodeException(e: Error): e is ExitCodeException {
   const err = <any>e;
   return err && typeof err.exitCode === 'number' && err.exitCode >= 0 && err.exitCode <= 255;
-}
-
-export function isPlugin(p: any): p is Plugin {
-  return p && (typeof p.getInfo === 'undefined' || typeof p.getInfo === 'function');
 }
 
 export function isSuperAgentError(e: Error): e is SuperAgentError {

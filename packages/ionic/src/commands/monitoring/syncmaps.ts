@@ -101,7 +101,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
   }
 
   async uploadSourcemap(res: APIResponseSuccess, file: string) {
-    const { createRequest } = await import('@ionic/cli-utils/lib/http');
+    const { createRequest } = await import('@ionic/cli-utils/lib/utils/http');
 
     const r = <any>res;
 

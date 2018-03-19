@@ -9,7 +9,7 @@ import {
 import { IConfig, StarterList, StarterManifest, StarterTemplate } from '../definitions';
 import { isStarterManifest } from '../guards';
 import { emoji } from './utils/emoji';
-import { createRequest } from './http';
+import { createRequest } from './utils/http';
 
 export const STARTER_BASE_URL = 'https://d2ql0qc7j8u4b2.cloudfront.net';
 

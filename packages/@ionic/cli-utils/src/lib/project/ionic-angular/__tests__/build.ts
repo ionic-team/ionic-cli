@@ -18,13 +18,13 @@ describe('@ionic/cli-utils', () => {
         };
 
         it('should transform defaults', async () => {
-          const runner = new BuildRunner();
+          const runner = new BuildRunner({});
           const result = await runner.generateAppScriptsArgs({ '--': [] });
           expect(result).toEqual([]);
         });
 
         it('should transform options', async () => {
-          const runner = new BuildRunner();
+          const runner = new BuildRunner({});
           const result = await runner.generateAppScriptsArgs(options);
           expect(result).toEqual(['--prod', '--aot', '--minifyjs', '--minifycss', '--optimizejs', '--generateSourceMap', 'false']);
         });

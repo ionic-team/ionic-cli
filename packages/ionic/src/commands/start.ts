@@ -9,9 +9,10 @@ import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
 import { isValidURL } from '@ionic/cli-framework/utils/string';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, ResolvedStarterTemplate, StarterManifest, StarterTemplate, getProject } from '@ionic/cli-utils';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, ResolvedStarterTemplate, StarterManifest, StarterTemplate, getProject } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { runCommand } from '@ionic/cli-utils/lib/executor';
 import { prettyProjectName } from '@ionic/cli-utils/lib/project';
 import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
 
@@ -291,7 +292,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
     const { getIonicDevAppText, getIonicProText } = await import('@ionic/cli-utils/lib/start');
     const config = await this.env.config.load();
@@ -355,7 +356,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       }
 
       if (options['cordova']) {
-        await this.env.runCommand(['integrations', 'enable', 'cordova', '--quiet']);
+        await runCommand(runinfo, ['integrations', 'enable', 'cordova', '--quiet']);
       }
 
       await this.env.project.personalize({ appName: name, bundleId, displayName });
@@ -367,7 +368,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
       this.env.log.rawmsg(await getIonicDevAppText());
 
-      const [ installer, ...installerArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'install' });
+      const [ installer, ...installerArgs ] = await pkgManagerArgs(npmClient, { command: 'install' });
       await this.env.shell.run(installer, installerArgs, { ...shellOptions, stdio: 'inherit' });
     }
 
@@ -392,7 +393,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       }
 
       if (linkConfirmed) {
-        const [ installer, ...installerArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'install', pkg: '@ionic/pro' });
+        const [ installer, ...installerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg: '@ionic/pro' });
         await this.env.shell.run(installer, installerArgs, shellOptions);
 
         const cmdArgs = ['link'];
@@ -401,7 +402,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           cmdArgs.push(proAppId);
         }
 
-        await this.env.runCommand(cmdArgs);
+        await runCommand(runinfo, cmdArgs);
       }
 
       const manifestPath = path.resolve(projectDir, 'ionic.starter.json');
@@ -519,7 +520,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   }
 
   async downloadStarterTemplate(projectDir: string, starterTemplate: ResolvedStarterTemplate) {
-    const { download } = await import('@ionic/cli-utils/lib/http');
+    const { download } = await import('@ionic/cli-utils/lib/utils/http');
     const { createTarExtraction } = await import('@ionic/cli-utils/lib/utils/archive');
 
     const task = this.env.tasks.next(`Downloading and extracting ${chalk.green(starterTemplate.name.toString())} starter`);

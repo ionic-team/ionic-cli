@@ -2,23 +2,59 @@ import * as path from 'path';
 import * as util from 'util';
 
 import chalk from 'chalk';
+import * as Debug from 'debug';
 
-import { BaseError, InputValidationError, stripOptions } from '@ionic/cli-framework';
-import { IPCMessage, IonicEnvironment, RootPlugin, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
-import { mapLegacyCommand, modifyArguments } from '@ionic/cli-utils/lib/init';
+import { BaseError, InputValidationError, PackageJson, stripOptions } from '@ionic/cli-framework';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
+import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+
+import { CLIMeta, IPCMessage, IonicEnvironment, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
+import { Executor } from '@ionic/cli-utils/lib/executor';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { mapLegacyCommand, modifyArguments } from '@ionic/cli-utils/lib/init';
 
 import { IonicNamespace } from './commands';
 
-export const namespace = new IonicNamespace(undefined, <any>undefined); // TODO: see `generateIonicEnvironment`
+const debug = Debug('ionic:cli');
 
-export async function generateRootPlugin(): Promise<RootPlugin> {
-  const { getPluginMeta } = await import('@ionic/cli-utils/lib/plugins');
+const PACKAGE_ROOT_PATH = path.dirname(path.dirname(__filename));
+const PACKAGE_JSON_PATH = path.resolve(PACKAGE_ROOT_PATH, 'package.json');
+
+let _pkg: PackageJson | undefined;
+let _executor: Executor | undefined;
+
+async function loadPackageJson(): Promise<PackageJson> {
+  if (!_pkg) {
+    _pkg = await readPackageJsonFile(PACKAGE_JSON_PATH);
+  }
+
+  return _pkg;
+}
+
+export async function loadMeta(): Promise<CLIMeta> {
+  const pkg = await loadPackageJson();
+
+  if (!pkg.bin || !pkg.bin.ionic) {
+    throw new Error(`Missing "${chalk.bold('bin.ionic')}" in Ionic CLI package.json`);
+  }
+
+  if (!pkg.main) {
+    throw new Error(`Missing "${chalk.bold('main')}" in Ionic CLI package.json`);
+  }
 
   return {
-    namespace,
-    meta: await getPluginMeta(__filename),
+    binPath: path.resolve(PACKAGE_ROOT_PATH, pkg.bin.ionic),
+    libPath: path.resolve(PACKAGE_ROOT_PATH, pkg.main),
+    version: pkg.version,
   };
+}
+
+function getExecutor(): Executor {
+  if (!_executor) {
+    throw new FatalException(`Executor not initialized.`);
+  }
+
+  return _executor;
 }
 
 export async function run(pargv: string[], env: { [k: string]: string; }) {
@@ -27,27 +63,25 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
   let ienv: IonicEnvironment;
 
   pargv = modifyArguments(pargv);
-  env['IONIC_CLI_LIB'] = __filename;
 
-  const plugin = await generateRootPlugin();
+  const meta = await loadMeta();
 
   try {
-    ienv = await generateIonicEnvironment(plugin, pargv, env);
+    ienv = await generateIonicEnvironment(meta, pargv, env);
   } catch (e) {
     process.stderr.write(`${e.message ? e.message : (e.stack ? e.stack : e)}\n`);
     process.exitCode = 1;
     return;
   }
 
-  // `generateIonicEnvironment` enables debug output with --verbose flag
-  const Debug = await import('debug');
-  const debug = Debug('ionic:cli');
+  const namespace = new IonicNamespace(undefined, ienv);
+  _executor = new Executor({ namespace });
 
   if (pargv[0] !== '_') {
     try {
       const config = await ienv.config.load();
 
-      debug(util.inspect(ienv.meta, { breakLength: Infinity, colors: chalk.enabled }));
+      debug(util.inspect(meta, { breakLength: Infinity, colors: chalk.enabled }));
 
       if (env['IONIC_TOKEN']) {
         const wasLoggedIn = await ienv.session.isLoggedIn();
@@ -90,7 +124,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
             ienv.log.msg('Installing dependencies may take several minutes!');
             const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
             const { npmClient } = config;
-            const [ installer, ...installerArgs ] = await pkgManagerArgs({ npmClient, shell: ienv.shell }, { command: 'install' });
+            const [ installer, ...installerArgs ] = await pkgManagerArgs(npmClient, { command: 'install' });
             await ienv.shell.run(installer, installerArgs, {});
           }
         }
@@ -107,28 +141,14 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
           `    ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`
         );
       } else {
-        const { loadPlugins } = await import ('@ionic/cli-utils/lib/plugins');
-
-        try {
-          await loadPlugins(ienv);
-        } catch (e) {
-          if (e.fatal) {
-            throw e;
-          }
-
-          ienv.log.error(chalk.red.bold('Error occurred while loading plugins. CLI functionality may be limited.'));
-          debug(chalk.red(chalk.bold('Plugin error: ') + (e.stack ? e.stack : e)));
-        }
-
-        await namespace.runCommand(pargv, env);
+        await _executor.execute(pargv, env);
         config.state.lastCommand = now.toISOString();
       }
 
       if (ienv.flags.interactive) {
         const updateNotifier = await import('update-notifier');
-        updateNotifier({ pkg: plugin.meta.pkg }).notify({ isGlobal: !ienv.meta.local });
+        updateNotifier({ pkg: await loadPackageJson() }).notify({ isGlobal: true });
       }
-
     } catch (e) {
       err = e;
     }
@@ -183,11 +203,19 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
 }
 
 export async function receive(msg: IPCMessage) {
-  const env = namespace.env;
+  const executor = getExecutor();
+  const env = executor.namespace.env;
 
   if (msg.type === 'telemetry') {
     const { sendCommand } = await import('@ionic/cli-utils/lib/telemetry');
 
-    await sendCommand({ cli: env.plugins.ionic, getInfo: env.getInfo, meta: env.meta, client: env.client, config: env.config, project: env.project, session: env.session }, msg.data.command, msg.data.args);
+    await sendCommand({
+      getInfo: env.getInfo,
+      client: env.client,
+      config: env.config,
+      meta: env.meta,
+      project: env.project,
+      session: env.session,
+    }, msg.data.command, msg.data.args);
   }
 }

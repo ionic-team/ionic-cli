@@ -1,14 +1,14 @@
 import * as path from 'path';
 import chalk from 'chalk';
 
+import { conform } from '@ionic/cli-framework/utils/array';
 import { fsMkdir, pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { CommandMetadataOption, IShellRunOptions, OptionGroup } from '@ionic/cli-utils';
-
+import { CommandInstanceInfo, CommandMetadataOption, IShellRunOptions, OptionGroup, PROJECT_FILE } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { checkCordova } from '@ionic/cli-utils/lib/integrations/cordova/utils';
+import { runCommand } from '@ionic/cli-utils/lib/executor';
 
 export const COMMON_CORDOVA_BUILD_COMMAND_OPTIONS: CommandMetadataOption[] = [
   {
@@ -63,10 +63,47 @@ export const CORDOVA_BUILD_EXAMPLE_COMMANDS = [
 ];
 
 export abstract class CordovaCommand extends Command {
-  async preRunChecks() {
+  async checkCordova(runinfo: CommandInstanceInfo) {
+    const { ADD_CORDOVA_ENGINE_HOOK, REMOVE_CORDOVA_ENGINE_HOOK, HOOKS_PKG, locateHook } = await import('@ionic/cli-utils/lib/hooks');
+
+    const project = await this.env.project.load();
+
+    if (project.integrations.cordova && project.integrations.cordova.enabled === false) {
+      return;
+    }
+
+    // TODO: better way?
+    let hooksNeedInstalling = false;
+
+    if (this.env.project.type === 'angular') {
+      const allowedByConfig = !project.integrations.cordova || project.integrations.cordova.setupEngineHooks !== false;
+
+      const hooksFound = (
+        locateHook(this.env.project.directory, conform(project.hooks['build:before']), ADD_CORDOVA_ENGINE_HOOK) >= 0 &&
+        locateHook(this.env.project.directory, conform(project.hooks['build:after']), REMOVE_CORDOVA_ENGINE_HOOK) >= 0 &&
+        locateHook(this.env.project.directory, conform(project.hooks['serve:before']), ADD_CORDOVA_ENGINE_HOOK) >= 0 &&
+        locateHook(this.env.project.directory, conform(project.hooks['serve:after']), REMOVE_CORDOVA_ENGINE_HOOK) >= 0
+      );
+
+      hooksNeedInstalling = allowedByConfig && !hooksFound;
+
+      if (hooksNeedInstalling) {
+        this.env.log.info(
+          `Cordova engine hooks not found in existing Cordova integration. Re-enabling integration.\n` +
+          `This process will make sure the ${chalk.bold(HOOKS_PKG)} package is installed and that the hooks are defined in ${chalk.bold(PROJECT_FILE)}. To disable this process, run: ${chalk.green('ionic config set integrations.cordova.setupEngineHooks false')}`
+        );
+      }
+    }
+
+    if (!project.integrations.cordova || hooksNeedInstalling) {
+      await runCommand(runinfo, ['integrations', 'enable', 'cordova']);
+    }
+  }
+
+  async preRunChecks(runinfo: CommandInstanceInfo) {
     const { ConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
 
-    await checkCordova(this.env);
+    await this.checkCordova(runinfo);
 
     // Check for www folder
     if (this.env.project.directory) {
@@ -95,7 +132,7 @@ export abstract class CordovaCommand extends Command {
       await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, ...options });
     } catch (e) {
       if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
-        const cdvInstallArgs = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'install', pkg: 'cordova', global: true });
+        const cdvInstallArgs = await pkgManagerArgs(npmClient, { command: 'install', pkg: 'cordova', global: true });
         throw new FatalException(
           `The Cordova CLI was not found on your PATH. Please install Cordova globally:\n` +
           `${chalk.green(cdvInstallArgs.join(' '))}\n`

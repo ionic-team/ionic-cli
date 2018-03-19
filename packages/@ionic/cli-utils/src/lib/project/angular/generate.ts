@@ -138,12 +138,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
 
     if (options['list']) {
       const columnHeaders = ['name', 'alias', 'description', 'collection'];
-      this.env.log.rawmsg(columnar(schematics.map(({ type, description, collection, aliases }) => [chalk.green(type), aliases.map(a => chalk.green(a)).join(', '), description, chalk.green(collection)]), { columnHeaders }));
+      this.log.rawmsg(columnar(schematics.map(({ type, description, collection, aliases }) => [chalk.green(type), aliases.map(a => chalk.green(a)).join(', '), description, chalk.green(collection)]), { columnHeaders }));
       throw new FatalException('', 0);
     }
 
     if (!inputs[0]) {
-      const type = await this.env.prompt({
+      const type = await this.prompt({
         type: 'list',
         name: 'type',
         message: 'What would you like to generate:',
@@ -154,7 +154,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
     }
 
     if (!inputs[1]) {
-      const name = await this.env.prompt({
+      const name = await this.prompt({
         type: 'input',
         name: 'name',
         message: 'What should the name be?',
@@ -201,7 +201,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
     }
 
     if (!options.dryRun) {
-      this.env.log.ok(`Generated ${chalk.green(type)}!`);
+      this.log.ok(`Generated ${chalk.green(type)}!`);
     }
   }
 
@@ -219,7 +219,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
           ...extractSchematicsFromCollection(engine.createCollection(ANGULAR_SCHEMATICS_PACKAGE)),
         ];
       } catch (e) {
-        this.env.log.warn(`Could not load schematics for ${chalk.green('ionic generate')}. Use ${chalk.green('--verbose')} to debug.`);
+        this.log.warn(`Could not load schematics for ${chalk.green('ionic generate')}. Use ${chalk.green('--verbose')} to debug.`);
         debug(`Error while loading schematics: ${e.stack ? e.stack : e}`);
         this.schematics = [];
       }
@@ -234,9 +234,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
     }
 
     const ngArgs = unparseArgs({ _: ['generate', schematic.type, name], ...options }, {});
-    const shellOptions = { cwd: this.env.project.directory };
+    const shellOptions = { cwd: this.project.directory };
 
-    const p = await this.env.shell.spawn('ng', ngArgs, shellOptions);
+    const p = await this.shell.spawn('ng', ngArgs, shellOptions);
 
     return new Promise<void>((resolve, reject) => {
       let errorsEncountered = false;
@@ -259,7 +259,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
 
       onBeforeExit(async () => p.kill());
 
-      const log = this.env.log.clone({ wrap: false });
+      const log = this.log.clone({ wrap: false });
       const ws = log.createWriteStream();
 
       const stdoutStream = through2(function(chunk, env, callback) {

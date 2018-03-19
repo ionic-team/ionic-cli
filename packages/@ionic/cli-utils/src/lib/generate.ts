@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions, IonicEnvironment, ProjectType } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions, IConfig, ILogger, IProject, IShell, IonicEnvironment, ProjectType, PromptModule } from '../definitions';
 
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Runner } from './runner';
@@ -9,9 +9,28 @@ import { prettyProjectName } from './project';
 import * as angularGenerateLibType from './project/angular/generate';
 import * as ionicAngularGenerateLibType from './project/ionic-angular/generate';
 
+export interface GenerateRunnerDeps {
+  readonly config: IConfig;
+  readonly log: ILogger;
+  readonly project: IProject;
+  readonly prompt: PromptModule;
+  readonly shell: IShell;
+}
+
 export abstract class GenerateRunner<T extends GenerateOptions> extends Runner<T, void> {
-  constructor(protected env: IonicEnvironment) {
+  protected readonly config: IConfig;
+  protected readonly log: ILogger;
+  protected readonly project: IProject;
+  protected readonly prompt: PromptModule;
+  protected readonly shell: IShell;
+
+  constructor({ config, log, project, prompt, shell }: GenerateRunnerDeps) {
     super();
+    this.config = config;
+    this.log = log;
+    this.project = project;
+    this.prompt = prompt;
+    this.shell = shell;
   }
 
   static async createFromProjectType(env: IonicEnvironment, type: 'angular'): Promise<angularGenerateLibType.GenerateRunner>;

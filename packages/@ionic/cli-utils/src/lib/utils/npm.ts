@@ -1,35 +1,8 @@
-import * as path from 'path';
-
-import chalk from 'chalk';
-
-import { DistTag, IShell, IShellRunOptions, IonicEnvironment, NpmClient } from '../../definitions';
-
 import { PackageJson } from '@ionic/cli-framework';
-import { ERROR_FILE_NOT_FOUND } from '@ionic/cli-framework/utils/fs';
-import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-/**
- * To be used with a module path resolved from require.resolve().
- */
-export async function readPackageJsonFileOfResolvedModule(resolvedModule: string): Promise<PackageJson> {
-  const p = path.dirname(path.dirname(resolvedModule)); // "main": <folder>/index.js
+import { runcmd } from './shell';
 
-  try {
-    return await readPackageJsonFile(path.resolve(p, 'package.json'));
-  } catch (e) {
-    if (e !== ERROR_FILE_NOT_FOUND) {
-      throw e;
-    }
-
-    const p = path.dirname(resolvedModule); // "main": index.js
-    return readPackageJsonFile(path.resolve(p, 'package.json'));
-  }
-}
-
-export interface PkgManagerDeps {
-  npmClient: NpmClient;
-  shell: IShell;
-}
+import { NpmClient } from '../../definitions';
 
 interface PkgManagerVocabulary {
   // commands
@@ -48,9 +21,9 @@ interface PkgManagerVocabulary {
   nonInteractive: string;
 }
 
-export type PkgManagerCommand = 'dedupe' | 'rebuild' | 'install' | 'uninstall' | 'run';
+export type PkgManagerCommand = 'dedupe' | 'rebuild' | 'install' | 'uninstall' | 'run' | 'info';
 
-export interface PkgManagerOptions extends IShellRunOptions {
+export interface PkgManagerOptions {
   command: PkgManagerCommand;
   pkg?: string;
   script?: string;
@@ -59,6 +32,7 @@ export interface PkgManagerOptions extends IShellRunOptions {
   save?: boolean;
   saveDev?: boolean;
   saveExact?: boolean;
+  json?: boolean;
 }
 
 /**
@@ -68,7 +42,7 @@ export interface PkgManagerOptions extends IShellRunOptions {
  *
  * @return Promise<args> If the args is an empty array, it means the pkg manager doesn't have that command.
  */
-export async function pkgManagerArgs({ npmClient = 'npm', shell }: PkgManagerDeps, options: PkgManagerOptions): Promise<string[]> {
+export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOptions): Promise<string[]> {
   let vocab: PkgManagerVocabulary;
 
   const cmd = options.command;
@@ -179,43 +153,23 @@ export async function pkgManagerArgs({ npmClient = 'npm', shell }: PkgManagerDep
     }
   }
 
+  if (options.json) {
+    installerArgs.push('--json');
+  }
+
   return [npmClient, ...installerArgs];
 }
 
 /**
- * TODO: switch this to use `package-json` module?
- *
- * @return Promise<latest version or `undefined`>
+ * @return Promise<package.json on registry or `undefined`>
  */
-export async function pkgLatestVersion(name: string, distTag: DistTag = 'latest'): Promise<string | undefined> {
-  const packageJson = await import('package-json');
+export async function pkgFromRegistry(npmClient: NpmClient, options: Partial<PkgManagerOptions>): Promise<PackageJson | undefined> {
+  const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'info', json: true, ...options });
 
-  try {
-    const pkg = await packageJson(name, { version: distTag });
-    const { version } = <PackageJson>pkg; // TODO
-    return typeof version === 'string' ? version : undefined;
-  } catch (e) {
-    // ignore
+  const result = await runcmd(manager, managerArgs);
+
+  if (result) {
+    const json = JSON.parse(result);
+    return manager === 'yarn' ? json.data : json;
   }
-}
-
-export async function promptToInstallPkg(env: IonicEnvironment, options: Partial<PkgManagerOptions> & { pkg: string }): Promise<boolean> {
-  const config = await env.config.load();
-  const { npmClient } = config;
-  const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: env.shell }, { command: 'install', ...options });
-
-  const confirm = await env.prompt({
-    name: 'confirm',
-    message: `Install ${chalk.green(options.pkg)}?`,
-    type: 'confirm',
-  });
-
-  if (!confirm) {
-    env.log.warn(`Not installing--here's how to install it manually: ${chalk.green(`${manager} ${managerArgs.join(' ')}`)}`);
-    return false;
-  }
-
-  await env.shell.run(manager, managerArgs, { cwd: env.project.directory });
-
-  return true;
 }

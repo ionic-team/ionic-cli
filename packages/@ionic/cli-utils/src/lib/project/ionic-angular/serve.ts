@@ -98,8 +98,6 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
   }
 
   private async serveCommandWrapper(options: IonicAngularServeOptions): Promise<ServeCmdDetails> {
-    const { promptToInstallPkg } = await import('../../utils/npm');
-
     try {
       return await this.servecmd(options);
     } catch (e) {
@@ -108,32 +106,26 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
       }
 
       const pkg = '@ionic/app-scripts';
-      this.env.log.nl();
-      this.env.log.warn(
+      this.log.nl();
+
+      throw new FatalException(
+        `${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.\n` +
         `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
         `This package is required for ${chalk.green('ionic serve')} in ${prettyProjectName('angular')} projects.`
       );
-
-      const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });
-
-      if (!installed) {
-        throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.`);
-      }
-
-      return this.servecmd(options);
     }
   }
 
   private async servecmd(options: IonicAngularServeOptions): Promise<ServeCmdDetails> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
-    const config = await this.env.config.load();
-    const pkg = await this.env.project.loadPackageJson();
+    const config = await this.config.load();
+    const pkg = await this.project.loadPackageJson();
     const { npmClient } = config;
 
     let program = DEFAULT_PROGRAM;
     let args = await this.serveOptionsToAppScriptsArgs(options);
-    const shellOptions = { cwd: this.env.project.directory };
+    const shellOptions = { cwd: this.project.directory };
 
     debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
 
@@ -143,7 +135,7 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
         args = ['serve', ...args];
       } else {
         debug(`Invoking ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
-        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
+        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(npmClient, { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
         program = pkgManager;
         args = pkgArgs;
       }
@@ -151,7 +143,7 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
       args = ['serve', ...args];
     }
 
-    const p = await this.env.shell.spawn(program, args, shellOptions);
+    const p = await this.shell.spawn(program, args, shellOptions);
 
     return new Promise<ServeCmdDetails>((resolve, reject) => {
       p.on('error', (err: NodeJS.ErrnoException) => {
@@ -164,7 +156,7 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
 
       onBeforeExit(async () => p.kill());
 
-      const log = this.env.log.clone({ prefix: chalk.dim(`[${program === DEFAULT_PROGRAM ? 'app-scripts' : program}]`), wrap: false });
+      const log = this.log.clone({ prefix: chalk.dim(`[${program === DEFAULT_PROGRAM ? 'app-scripts' : program}]`), wrap: false });
       const ws = log.createWriteStream();
 
       if (program === DEFAULT_PROGRAM) {

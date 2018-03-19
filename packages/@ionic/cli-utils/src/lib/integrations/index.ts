@@ -107,7 +107,7 @@ export abstract class BaseIntegration implements IIntegration {
     const onFileCreate = opts && opts.onFileCreate ? opts.onFileCreate : lodash.noop;
     const conflictHandler = opts && opts.conflictHandler ? opts.conflictHandler : async () => false;
 
-    const { download } = await import('../http');
+    const { download } = await import('../utils/http');
     const { createTarExtraction } = await import('../utils/archive');
 
     const task = this.tasks.next(`Downloading integration ${chalk.green(this.name)}`);

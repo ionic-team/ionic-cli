@@ -2,7 +2,6 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { IAilmentRegistry, InfoItem, ProjectType } from '../../../definitions';
@@ -52,24 +51,26 @@ export class Project extends BaseProject {
   }
 
   async getFrameworkVersion(): Promise<string | undefined> {
-    const pkgPath = resolve('ionic-angular/package', { paths: compileNodeModulesPaths(this.directory) });
+    const pkgName = 'ionic-angular';
 
     try {
+      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
       const pkg = await readPackageJsonFile(pkgPath);
       return pkg.version;
     } catch (e) {
-      this.log.error(`Error with ${chalk.bold(prettyPath(pkgPath))} file: ${e}`);
+      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
     }
   }
 
   async getAppScriptsVersion(): Promise<string | undefined> {
-    const pkgPath = resolve('@ionic/app-scripts/package', { paths: compileNodeModulesPaths(this.directory) });
+    const pkgName = '@ionic/app-scripts';
 
     try {
+      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
       const pkg = await readPackageJsonFile(pkgPath);
       return pkg.version;
     } catch (e) {
-      this.log.error(`Error with ${chalk.bold(prettyPath(pkgPath))} file: ${e}`);
+      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
     }
   }
 }

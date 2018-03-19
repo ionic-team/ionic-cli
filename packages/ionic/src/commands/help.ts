@@ -1,4 +1,6 @@
-import { CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import chalk from 'chalk';
+
+import { CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata, isCommand } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class HelpCommand extends Command {
@@ -19,8 +21,34 @@ export class HelpCommand extends Command {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { showHelp } = await import('@ionic/cli-utils/lib/help');
+    const { CommandHelpFormatter, NamespaceHelpFormatter } = await import('@ionic/cli-utils/lib/help');
+    const location = await this.namespace.locate(inputs);
 
-    await showHelp(this.env, inputs);
+    if (isCommand(location.obj)) {
+      const formatter = new CommandHelpFormatter({ location, command: location.obj });
+      this.env.log.rawmsg(await formatter.format());
+    } else {
+      if (location.args.length > 0) {
+        this.env.log.error(
+          `Unable to find command: ${chalk.green(inputs.join(' '))}` +
+          (this.env.project.directory ? '' : '\nYou may need to be in an Ionic project directory.')
+        );
+      }
+
+      const isLoggedIn = await this.env.session.isLoggedIn();
+      const now = new Date();
+      const prefix = isLoggedIn ? chalk.blue('PRO') + ' ' : '';
+      const version = this.env.meta.version;
+      const suffix = now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
+
+      const formatter = new NamespaceHelpFormatter({
+        inProject: this.env.project.directory ? true : false,
+        version: prefix + version + suffix,
+        location,
+        namespace: location.obj,
+      });
+
+      this.env.log.rawmsg(await formatter.format());
+    }
   }
 }

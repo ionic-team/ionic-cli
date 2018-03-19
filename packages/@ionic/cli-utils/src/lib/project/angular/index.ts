@@ -81,35 +81,38 @@ export class Project extends BaseProject {
   }
 
   async getFrameworkVersion() {
-    const pkgPath = resolve('@ionic/angular/package', { paths: compileNodeModulesPaths(this.directory) });
+    const pkgName = '@ionic/angular';
 
     try {
+      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
       const pkg = await readPackageJsonFile(pkgPath);
       return pkg.version;
     } catch (e) {
-      this.log.error(`Error with ${chalk.bold(prettyPath(pkgPath))} file: ${e}`);
+      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
     }
   }
 
   async getCoreVersion() {
-    const pkgPath = resolve('@ionic/core/package', { paths: compileNodeModulesPaths(this.directory) });
+    const pkgName = '@ionic/core';
 
     try {
+      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
       const pkg = await readPackageJsonFile(pkgPath);
       return pkg.version;
     } catch (e) {
-      this.log.error(`Error with ${chalk.bold(prettyPath(pkgPath))} file: ${e}`);
+      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
     }
   }
 
   async getAngularCLIVersion() {
-    const pkgPath = resolve('@angular/cli/package', { paths: compileNodeModulesPaths(this.directory) });
+    const pkgName = '@angular/cli';
 
     try {
+      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
       const pkg = await readPackageJsonFile(pkgPath);
       return pkg.version;
     } catch (e) {
-      this.log.error(`Error with ${chalk.bold(prettyPath(pkgPath))} file: ${e}`);
+      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
     }
   }
 }

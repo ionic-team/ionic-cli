@@ -1,10 +1,4 @@
-import * as lodash from 'lodash';
-import chalk from 'chalk';
-
-import { metadataToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
-import { CommandMetadata, CommandMetadataOption, PROJECT_FILE, isCommand } from '@ionic/cli-utils';
 import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 export class IonicNamespace extends Namespace {
   async getMetadata() {
@@ -50,62 +44,4 @@ export class IonicNamespace extends Namespace {
       ['s', 'serve'],
     ]);
   }
-
-  async runCommand(argv: string[], env: { [key: string]: string; }): Promise<void> {
-    const pargs = stripOptions(argv, {});
-
-    const location = await this.locate(pargs);
-
-    if (!isCommand(location.obj)) {
-      const { showHelp } = await import('@ionic/cli-utils/lib/help');
-      await this.env.telemetry.sendCommand('ionic help', pargs);
-      return showHelp(this.env, pargs);
-    }
-
-    const command = location.obj;
-    const metadata = await command.getMetadata();
-    const fullNameParts = location.path.map(([p]) => p);
-
-    if (metadata.options) {
-      const optMap = metadataToCmdOptsEnv(metadata, fullNameParts.slice(1));
-
-      // TODO: changes opt by reference, which is probably bad
-      for (const [ opt, envvar ] of optMap.entries()) {
-        const envdefault = env[envvar];
-
-        if (typeof envdefault !== 'undefined') {
-          opt.default = opt.type === Boolean ? (envdefault && envdefault !== '0' ? true : false) : envdefault;
-        }
-      }
-    }
-
-    const minimistOpts = metadataToParseArgsOptions(metadata);
-    const options = parseArgs(lodash.drop(argv, location.path.length - 1), minimistOpts);
-    const inputs = options._;
-
-    if (!this.env.project.directory && metadata.type === 'project') {
-      throw new FatalException(
-        `Sorry! ${chalk.green(fullNameParts.join(' '))} can only be run in an Ionic project directory.\n` +
-        `If this is a project you'd like to integrate with Ionic, create an ${chalk.bold(PROJECT_FILE)} file.`
-      );
-    }
-
-    await command.execute(inputs, options, { location });
-  }
-}
-
-export function metadataToCmdOptsEnv(metadata: CommandMetadata, cmdNameParts: string[]): Map<CommandMetadataOption, string> {
-  const optMap = new Map<CommandMetadataOption, string>();
-
-  if (!metadata.options) {
-    return optMap;
-  }
-
-  const prefix = `IONIC_CMDOPTS_${cmdNameParts.map(s => s.toUpperCase()).join('_')}`;
-
-  for (const option of metadata.options) {
-    optMap.set(option, `${prefix}_${option.name.toUpperCase().split('-').join('_')}`);
-  }
-
-  return optMap;
 }

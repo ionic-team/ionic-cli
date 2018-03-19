@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isExitCodeException } from '@ionic/cli-utils';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isExitCodeException } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
@@ -24,8 +24,8 @@ Like running ${chalk.green('cordova requirements')} directly, but provides frien
     };
   }
 
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    await this.preRunChecks();
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
+    await this.preRunChecks(runinfo);
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

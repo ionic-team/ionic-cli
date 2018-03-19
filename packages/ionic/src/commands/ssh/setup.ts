@@ -3,8 +3,9 @@ import chalk from 'chalk';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { runCommand } from '@ionic/cli-utils/lib/executor';
 
 import { SSHBaseCommand } from './base';
 
@@ -21,7 +22,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
     await this.checkForOpenSSH();
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const { getGeneratedPrivateKeyPath } = await import('@ionic/cli-utils/lib/ssh');
     const { getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
@@ -109,12 +110,12 @@ export class SSHSetupCommand extends SSHBaseCommand {
           `You can generate a new one by deleting it.`
         );
       } else {
-        await this.env.runCommand(['ssh', 'generate', keyPath]);
+        await runCommand(runinfo, ['ssh', 'generate', keyPath]);
       }
 
-      await this.env.runCommand(['ssh', 'add', pubkeyPath, '--use']);
+      await runCommand(runinfo, ['ssh', 'add', pubkeyPath, '--use']);
     } else if (setupChoice === CHOICE_MANUAL) {
-      await this.env.runCommand(['ssh', 'add']);
+      await runCommand(runinfo, ['ssh', 'add']);
     }
 
     if (setupChoice === CHOICE_SKIP) {

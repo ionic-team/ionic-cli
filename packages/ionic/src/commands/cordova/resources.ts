@@ -7,6 +7,7 @@ import { cacheFileChecksum, pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
 import {
+  CommandInstanceInfo,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
@@ -80,8 +81,8 @@ This command uses Ionic servers, so we require you to be logged into your free I
     };
   }
 
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    await this.preRunChecks();
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
+    await this.preRunChecks(runinfo);
 
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
 

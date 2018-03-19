@@ -77,7 +77,7 @@ export class Integration extends BaseIntegration {
       if (!exists()) {
         const config = await this.config.load();
         const { npmClient } = config;
-        const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'install', pkg: HOOKS_PKG });
+        const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg: HOOKS_PKG });
 
         await this.shell.run(manager, managerArgs, { cwd: this.project.directory });
       }

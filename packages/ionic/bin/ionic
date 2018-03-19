@@ -41,7 +41,6 @@ var pargv = process.argv.slice(2);
 bootstrap.detectLocalCLI()
   .then(function(localPath) {
     cli = require(localPath);
-    process.env.IONIC_CLI_LOCAL = localPath;
     process.env.IONIC_CLI_BIN = __filename;
     return cli.run(pargv, process.env);
   }, function(err) {
@@ -53,6 +52,7 @@ bootstrap.detectLocalCLI()
 
     process.env.IONIC_CLI_LOCAL_ERROR = err;
     process.env.IONIC_CLI_BIN = __filename;
+
     return cli.run(pargv, process.env);
   })
   .then(function() {

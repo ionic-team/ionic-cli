@@ -3,7 +3,7 @@ import * as semver from 'semver';
 
 import { IAilmentRegistry } from '../../../definitions';
 import { Ailment, AilmentDeps, AutomaticallyTreatableAilmentDeps } from '../../doctor/ailments';
-import { pkgLatestVersion, pkgManagerArgs } from '../../utils/npm';
+import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 
 import { Project as AngularProject } from './';
 
@@ -45,9 +45,13 @@ class IonicForAngularUpdateAvailable extends AngularAilment {
   latestVersion?: string;
 
   async getVersionPair(): Promise<[string, string]> {
+    const config = await this.config.load();
+    const { npmClient } = config;
+
     if (!this.currentVersion || !this.latestVersion) {
       this.currentVersion = await this.project.getFrameworkVersion();
-      this.latestVersion = await pkgLatestVersion('@ionic/angular');
+      const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/angular' });
+      this.latestVersion = pkg ? pkg.version : undefined;
     }
 
     if (!this.currentVersion || !this.latestVersion) {
@@ -77,7 +81,7 @@ class IonicForAngularUpdateAvailable extends AngularAilment {
     const config = await this.config.load();
     const { npmClient } = config;
     const [ , latestVersion ] = await this.getVersionPair();
-    const args = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'install', pkg: `@ionic/angular@${latestVersion ? latestVersion : 'latest'}` });
+    const args = await pkgManagerArgs(npmClient, { command: 'install', pkg: `@ionic/angular@${latestVersion ? latestVersion : 'latest'}` });
 
     return [
       { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for each upgrade's instructions` },
@@ -93,9 +97,13 @@ class IonicForAngularMajorUpdateAvailable extends AngularAilment {
   latestVersion?: string;
 
   async getVersionPair(): Promise<[string, string]> {
+    const config = await this.config.load();
+    const { npmClient } = config;
+
     if (!this.currentVersion || !this.latestVersion) {
       this.currentVersion = await this.project.getFrameworkVersion();
-      this.latestVersion = await pkgLatestVersion('@ionic/angular');
+      const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/angular' });
+      this.latestVersion = pkg ? pkg.version : undefined;
     }
 
     if (!this.currentVersion || !this.latestVersion) {

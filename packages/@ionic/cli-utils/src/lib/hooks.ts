@@ -18,9 +18,9 @@ export const ADD_CORDOVA_ENGINE_HOOK = path.join('node_modules', HOOKS_PKG, 'add
 export const REMOVE_CORDOVA_ENGINE_HOOK = path.join('node_modules', HOOKS_PKG, 'remove-cordova-engine.js');
 
 export interface HookDeps {
-  config: IConfig;
-  project: IProject;
-  shell: IShell;
+  readonly config: IConfig;
+  readonly project: IProject;
+  readonly shell: IShell;
 }
 
 export abstract class Hook {
@@ -58,7 +58,7 @@ export abstract class Hook {
 
     if (pkg.scripts && pkg.scripts[this.script]) {
       debug(`Invoking ${chalk.cyan(this.script)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'run', script: this.script });
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(npmClient, { command: 'run', script: this.script });
       await this.shell.run(pkgManager, pkgArgs, {});
     }
 

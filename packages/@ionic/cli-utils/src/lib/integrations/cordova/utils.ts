@@ -1,10 +1,7 @@
-import chalk from 'chalk';
-
 import { OptionFilters, filterCommandLineOptions, filterCommandLineOptionsByGroup, unparseArgs } from '@ionic/cli-framework';
-import { conform } from '@ionic/cli-framework/utils/array';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IonicEnvironment } from '../../../definitions';
-import { OptionGroup, PROJECT_FILE } from '../../../constants';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption } from '../../../definitions';
+import { OptionGroup } from '../../../constants';
 
 /**
  * Filter and gather arguments from command line to be passed to Cordova
@@ -55,41 +52,4 @@ export function generateBuildOptions(metadata: CommandMetadata, inputs: CommandL
     engine: 'cordova',
     platform,
   };
-}
-
-export async function checkCordova(env: IonicEnvironment) {
-  const { ADD_CORDOVA_ENGINE_HOOK, REMOVE_CORDOVA_ENGINE_HOOK, HOOKS_PKG, locateHook } = await import('../../hooks');
-
-  const project = await env.project.load();
-
-  if (project.integrations.cordova && project.integrations.cordova.enabled === false) {
-    return;
-  }
-
-  // TODO: better way?
-  let hooksNeedInstalling = false;
-
-  if (env.project.type === 'angular') {
-    const allowedByConfig = !project.integrations.cordova || project.integrations.cordova.setupEngineHooks !== false;
-
-    const hooksFound = (
-      locateHook(env.project.directory, conform(project.hooks['build:before']), ADD_CORDOVA_ENGINE_HOOK) >= 0 &&
-      locateHook(env.project.directory, conform(project.hooks['build:after']), REMOVE_CORDOVA_ENGINE_HOOK) >= 0 &&
-      locateHook(env.project.directory, conform(project.hooks['serve:before']), ADD_CORDOVA_ENGINE_HOOK) >= 0 &&
-      locateHook(env.project.directory, conform(project.hooks['serve:after']), REMOVE_CORDOVA_ENGINE_HOOK) >= 0
-    );
-
-    hooksNeedInstalling = allowedByConfig && !hooksFound;
-
-    if (hooksNeedInstalling) {
-      env.log.info(
-        `Cordova engine hooks not found in existing Cordova integration. Re-enabling integration.\n` +
-        `This process will make sure the ${chalk.bold(HOOKS_PKG)} package is installed and that the hooks are defined in ${chalk.bold(PROJECT_FILE)}. To disable this process, run: ${chalk.green('ionic config set integrations.cordova.setupEngineHooks false')}`
-      );
-    }
-  }
-
-  if (!project.integrations.cordova || hooksNeedInstalling) {
-    await env.runCommand(['integrations', 'enable', 'cordova']);
-  }
 }

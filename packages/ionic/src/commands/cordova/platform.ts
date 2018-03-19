@@ -3,8 +3,9 @@ import chalk from 'chalk';
 import * as lodash from 'lodash';
 
 import { contains, separateArgv, validate, validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { runCommand } from '@ionic/cli-utils/lib/executor';
 
 import { CordovaCommand } from './base';
 
@@ -39,8 +40,8 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
     };
   }
 
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    await this.preRunChecks();
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
+    await this.preRunChecks(runinfo);
 
     if (options['r'] || options['noresources']) {
       options['resources'] = false;
@@ -71,7 +72,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
     validate(inputs[1], 'platform', [validators.required]);
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const { getPlatforms } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
     const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/integrations/cordova/utils');
 
@@ -103,7 +104,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
     const isLoggedIn = await this.env.session.isLoggedIn();
 
     if (isLoggedIn && action === 'add' && options['resources'] && ['ios', 'android'].includes(platformName)) {
-      await this.env.runCommand(['cordova', 'resources', platformName, '--force']);
+      await runCommand(runinfo, ['cordova', 'resources', platformName, '--force']);
     }
 
     this.env.tasks.end();

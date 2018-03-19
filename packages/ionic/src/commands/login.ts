@@ -1,8 +1,10 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
+import { runCommand } from '@ionic/cli-utils/lib/executor';
+import { generateUUID } from '@ionic/cli-utils/lib/utils/uuid';
 
 export class LoginCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -99,13 +101,15 @@ If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
     }
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const [ email, password ] = inputs;
+
+    const config = await this.env.config.load();
 
     if (await this.env.session.isLoggedIn()) {
       this.env.log.msg('Logging you out.');
-      await this.env.runCommand(['logout']);
-      await this.env.telemetry.resetToken();
+      await runCommand(runinfo, ['logout']);
+      config.tokens.telemetry = generateUUID();
     }
 
     await this.env.session.login(email, password);

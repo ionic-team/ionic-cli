@@ -12,7 +12,7 @@ import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IonicEnvironment, LabServeDetails, NetworkInterface, ProjectType, ServeDetails, ServeOptions } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, NetworkInterface, ProjectType, PromptModule, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 import { OptionGroup, PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
@@ -69,27 +69,45 @@ export const COMMON_SERVE_COMMAND_OPTIONS: CommandMetadataOption[] = [
   },
 ];
 
+export interface ServeRunnerDeps {
+  readonly config: IConfig;
+  readonly log: ILogger;
+  readonly project: IProject;
+  readonly prompt: PromptModule;
+  readonly shell: IShell;
+}
+
 export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, ServeDetails> {
+  protected readonly config: IConfig;
+  protected readonly log: ILogger;
+  protected readonly project: IProject;
+  protected readonly prompt: PromptModule;
+  protected readonly shell: IShell;
+
   protected devAppConnectionMade = false;
 
-  constructor(protected env: IonicEnvironment) {
+  constructor({ config, log, project, shell }: ServeRunnerDeps) {
     super();
+    this.config = config;
+    this.log = log;
+    this.project = project;
+    this.shell = shell;
   }
 
-  static async createFromProjectType(env: IonicEnvironment, type: 'ionic1'): Promise<ionic1ServeLibType.ServeRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type: 'ionic-angular'): Promise<ionicAngularServeLibType.ServeRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type: 'angular'): Promise<angularServeLibType.ServeRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<ServeRunner<any>>;
-  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<ServeRunner<any>> {
+  static async createFromProjectType(deps: ServeRunnerDeps, type: 'ionic1'): Promise<ionic1ServeLibType.ServeRunner>;
+  static async createFromProjectType(deps: ServeRunnerDeps, type: 'ionic-angular'): Promise<ionicAngularServeLibType.ServeRunner>;
+  static async createFromProjectType(deps: ServeRunnerDeps, type: 'angular'): Promise<angularServeLibType.ServeRunner>;
+  static async createFromProjectType(deps: ServeRunnerDeps, type?: ProjectType): Promise<ServeRunner<any>>;
+  static async createFromProjectType(deps: ServeRunnerDeps, type?: ProjectType): Promise<ServeRunner<any>> {
     if (type === 'ionic1') {
       const { ServeRunner } = await import('./project/ionic1/serve');
-      return new ServeRunner(env);
+      return new ServeRunner(deps);
     } else if (type === 'ionic-angular') {
       const { ServeRunner } = await import('./project/ionic-angular/serve');
-      return new ServeRunner(env);
+      return new ServeRunner(deps);
     } else if (type === 'angular') {
       const { ServeRunner } = await import('./project/angular/serve');
-      return new ServeRunner(env);
+      return new ServeRunner(deps);
     } else {
       throw new RunnerNotFoundException(
         `Cannot perform serve for ${type ? '' : 'unknown '}project type${type ? `: ${chalk.bold(type)}` : ''}.\n` +
@@ -136,7 +154,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async displayDevAppMessage(options: T) {
-    const pkg = await this.env.project.loadPackageJson();
+    const pkg = await this.project.loadPackageJson();
 
     // If this is regular `ionic serve`, we warn the dev about unsupported
     // plugins in the devapp.
@@ -146,7 +164,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       const packageCordovaPluginsDiff = packageCordovaPlugins.filter(p => !plugins.has(p));
 
       if (packageCordovaPluginsDiff.length > 0) {
-        this.env.log.warn(
+        this.log.warn(
           'Detected unsupported Cordova plugins with Ionic DevApp:\n' +
           `${packageCordovaPluginsDiff.map(p => `- ${chalk.bold(p)}`).join('\n')}\n\n` +
           `App may not function as expected in Ionic DevApp and Ionic View.`
@@ -171,15 +189,15 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     const fmtExternalAddress = (address: string) => `${details.protocol}://${address}:${details.port}`;
     const labAddress = labDetails ? `${labDetails.protocol}://${labDetails.address}:${labDetails.port}` : undefined;
 
-    this.env.log.nl();
-    this.env.log.ok(
+    this.log.nl();
+    this.log.ok(
       `Development server running!\n` +
       (labAddress ? `Lab: ${chalk.bold(labAddress)}\n` : '') +
       `Local: ${chalk.bold(localAddress)}\n` +
       (details.externalNetworkInterfaces.length > 0 ? `External: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}\n` : '') +
       (devAppDetails && devAppDetails.channel ? `DevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '')
     );
-    this.env.log.nl();
+    this.log.nl();
 
     if (options.open) {
       const openAddress = labAddress ? labAddress : localAddress;
@@ -191,19 +209,17 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       const opn = await import('opn');
       opn(openURL, { app: options.browser, wait: false });
 
-      this.env.log.info(`Browser window opened to ${chalk.bold(openURL)}!`);
-      this.env.log.nl();
+      this.log.info(`Browser window opened to ${chalk.bold(openURL)}!`);
+      this.log.nl();
     }
 
     this.scheduleAfterHook(options, details);
-
-    this.env.keepopen = true;
 
     return details;
   }
 
   async runBeforeHook(options: T) {
-    const before = new ServeBeforeHook(this.env);
+    const before = new ServeBeforeHook({ config: this.config, project: this.project, shell: this.shell });
 
     try {
       await before.run({ name: before.name, serve: options });
@@ -218,7 +234,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
 
   scheduleAfterHook(options: T, details: ServeDetails) {
     onBeforeExit(async () => {
-      const after = new ServeAfterHook(this.env);
+      const after = new ServeAfterHook({ config: this.config, project: this.project, shell: this.shell });
 
       try {
         await after.run({ name: after.name, serve: lodash.assign({}, options, details) });
@@ -264,7 +280,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     if (options.devapp) {
       const { createCommServer, createPublisher } = await import('./devapp');
 
-      const project = await this.env.project.load();
+      const project = await this.project.load();
       const publisher = await createPublisher(project.name, details.port, details.commPort);
       const comm = await createCommServer(publisher.id, details.commPort);
 
@@ -280,7 +296,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
           await this.displayDevAppMessage(options);
         }
 
-        this.env.log.info(`DevApp connection established from ${chalk.bold(data.email)}`);
+        this.log.info(`DevApp connection established from ${chalk.bold(data.email)}`);
       });
 
       publisher.on('error', (err: Error) => {
@@ -290,13 +306,13 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       try {
         await comm.start();
       } catch (e) {
-        this.env.log.error(`Could not create DevApp comm server: ${String(e.stack ? e.stack : e)}`);
+        this.log.error(`Could not create DevApp comm server: ${String(e.stack ? e.stack : e)}`);
       }
 
       try {
         await publisher.start();
       } catch (e) {
-        this.env.log.error(`Could not publish DevApp service: ${String(e.stack ? e.stack : e)}`);
+        this.log.error(`Could not publish DevApp service: ${String(e.stack ? e.stack : e)}`);
       }
 
       return publisher.name;
@@ -319,7 +335,6 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async runLab(options: T, details: ServeDetails): Promise<LabServeDetails> {
-    const { promptToInstallPkg } = await import('./utils/npm');
     const { findClosestOpenPort } = await import('./utils/network');
 
     const labDetails: LabServeDetails = {
@@ -329,7 +344,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     };
 
     if (options.ssl) {
-      const project = await this.env.project.load();
+      const project = await this.project.load();
 
       if (project.ssl && project.ssl.key && project.ssl.cert) {
         labDetails.ssl = { key: project.ssl.key, cert: project.ssl.cert };
@@ -346,19 +361,13 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     } catch (e) {
       if (e.code === 'ENOENT') {
         const pkg = '@ionic/lab';
-        this.env.log.nl();
-        this.env.log.warn(
+        this.log.nl();
+
+        throw new FatalException(
+          `${chalk.green(pkg)} is required for Ionic Lab to work properly.\n` +
           `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
           `This package is required for Ionic Lab as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#4.0.0')}`
         );
-
-        const installed = await promptToInstallPkg(this.env, { pkg, saveDev: true });
-
-        if (!installed) {
-          throw new FatalException(`${chalk.green(pkg)} is required for Ionic Lab to work properly.`);
-        }
-
-        await this.runLabServer(`${details.protocol}://localhost:${details.port}`, labDetails);
       }
     }
 
@@ -366,8 +375,8 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async runLabServer(url: string, details: LabServeDetails) {
-    const project = await this.env.project.load();
-    const pkg = await this.env.project.loadPackageJson();
+    const project = await this.project.load();
+    const pkg = await this.project.loadPackageJson();
 
     const labArgs = [url, '--host', details.address, '--port', String(details.port)];
     const nameArgs = project.name ? ['--app-name', project.name] : [];
@@ -377,7 +386,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       labArgs.push('--ssl', '--ssl-key', details.ssl.key, '--ssl-cert', details.ssl.cert);
     }
 
-    const p = await this.env.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.env.project.directory });
+    const p = await this.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.project.directory });
 
     return new Promise<void>((resolve, reject) => {
       p.on('error', err => {
@@ -386,7 +395,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
 
       onBeforeExit(async () => p.kill());
 
-      const log = this.env.log.clone({ prefix: chalk.dim('[lab]'), wrap: false });
+      const log = this.log.clone({ prefix: chalk.dim('[lab]'), wrap: false });
       const ws = log.createWriteStream();
 
       const stdoutFilter = through2(function(chunk, enc, callback) {
@@ -426,13 +435,13 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
         chosenIP = availableInterfaces[0].address;
       } else if (availableInterfaces.length > 1) {
         if (options.externalAddressRequired) {
-          this.env.log.warn(
+          this.log.warn(
             'Multiple network interfaces detected!\n' +
             'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n\n' +
             `You may also use the ${chalk.green('--address')} option to skip this prompt.`
           );
 
-          const promptedIp = await this.env.prompt({
+          const promptedIp = await this.prompt({
             type: 'list',
             name: 'promptedIp',
             message: 'Please select which IP to use:',
@@ -464,6 +473,8 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
     const runner = await ServeRunner.createFromProjectType(env, env.project.type);
     const opts = runner.createOptionsFromCommandLine(inputs, options);
     const details = await runner.run(opts);
+
+    env.keepopen = true;
 
     return details;
   } catch (e) {

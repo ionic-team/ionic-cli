@@ -10,7 +10,7 @@ import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cl
 import { IAilmentRegistry } from '../../../definitions';
 import { AppClient } from '../../app';
 import { getIonicRemote, isRepoInitialized } from '../../git';
-import { pkgLatestVersion, pkgManagerArgs } from '../../utils/npm';
+import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 import { getPlatforms } from '../../integrations/cordova/project';
 import { ConfigXml } from '../../integrations/cordova/config';
 
@@ -49,7 +49,7 @@ class NpmInstalledLocally extends AutomaticallyTreatableAilment {
   async getTreatmentSteps() {
     const config = await this.config.load();
     const { npmClient } = config;
-    const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'uninstall', pkg: 'npm' });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'uninstall', pkg: 'npm' });
 
     return [
       {
@@ -79,7 +79,7 @@ class IonicCLIInstalledLocally extends AutomaticallyTreatableAilment {
   async getTreatmentSteps() {
     const config = await this.config.load();
     const { npmClient } = config;
-    const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'uninstall', pkg: 'ionic' });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'uninstall', pkg: 'ionic' });
 
     return [
       {
@@ -110,7 +110,7 @@ class IonicCLIPluginProxyInstalledLocally extends AutomaticallyTreatableAilment 
   async getTreatmentSteps() {
     const config = await this.config.load();
     const { npmClient } = config;
-    const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'uninstall', pkg: '@ionic/cli-plugin-proxy' });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'uninstall', pkg: '@ionic/cli-plugin-proxy' });
 
     return [
       {
@@ -227,6 +227,9 @@ class IonicNativeUpdateAvailable extends AutomaticallyTreatableAilment {
   latestVersion?: string;
 
   async getVersionPair(): Promise<[string, string]> {
+    const config = await this.config.load();
+    const { npmClient } = config;
+
     if (!this.currentVersion || !this.latestVersion) {
       try {
         const pkgPath = resolve('@ionic-native/core/package', { paths: compileNodeModulesPaths(this.project.directory) });
@@ -235,7 +238,8 @@ class IonicNativeUpdateAvailable extends AutomaticallyTreatableAilment {
         // Not installed
       }
 
-      this.latestVersion = await pkgLatestVersion('@ionic-native/core');
+      const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic-native/core' });
+      this.latestVersion = pkg ? pkg.version : undefined;
     }
 
     if (!this.currentVersion || !this.latestVersion) {
@@ -270,7 +274,7 @@ class IonicNativeUpdateAvailable extends AutomaticallyTreatableAilment {
     const modules = await fsReadDir(modulePath);
 
     return Promise.all(modules.filter(m => m).map(async m => {
-      const [ manager, ...managerArgs ] = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'install', pkg: `@ionic-native/${m}@${latestVersion ? latestVersion : 'latest'}` });
+      const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg: `@ionic-native/${m}@${latestVersion ? latestVersion : 'latest'}` });
 
       return {
         name: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
@@ -288,6 +292,9 @@ class IonicNativeMajorUpdateAvailable extends Ailment {
   latestVersion?: string;
 
   async getVersionPair(): Promise<[string, string]> {
+    const config = await this.config.load();
+    const { npmClient } = config;
+
     if (!this.currentVersion || !this.latestVersion) {
       try {
         const pkgPath = resolve('@ionic-native/core/package', { paths: compileNodeModulesPaths(this.project.directory) });
@@ -296,7 +303,8 @@ class IonicNativeMajorUpdateAvailable extends Ailment {
         // Not installed
       }
 
-      this.latestVersion = await pkgLatestVersion('@ionic-native/core');
+      const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic-native/core' });
+      this.latestVersion = pkg ? pkg.version : undefined;
     }
 
     if (!this.currentVersion || !this.latestVersion) {
@@ -326,7 +334,7 @@ class IonicNativeMajorUpdateAvailable extends Ailment {
     const config = await this.config.load();
     const { npmClient } = config;
     const [ , latestVersion ] = await this.getVersionPair();
-    const args = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'install', pkg: `@ionic-native/core@${latestVersion ? latestVersion : 'latest'}` });
+    const args = await pkgManagerArgs(npmClient, { command: 'install', pkg: `@ionic-native/core@${latestVersion ? latestVersion : 'latest'}` });
 
     return [
       { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-native/releases')}, looking for breaking changes` },
@@ -353,7 +361,7 @@ class IonicNativeOldVersionInstalled extends Ailment {
   async getTreatmentSteps() {
     const config = await this.config.load();
     const { npmClient } = config;
-    const args = await pkgManagerArgs({ npmClient, shell: this.shell }, { command: 'uninstall', pkg: 'ionic-native' });
+    const args = await pkgManagerArgs(npmClient, { command: 'uninstall', pkg: 'ionic-native' });
 
     return [
       { name: `Run ${chalk.green(args.join(' '))}` },

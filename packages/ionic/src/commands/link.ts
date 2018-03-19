@@ -3,9 +3,10 @@ import * as Debug from 'debug';
 
 import { validators } from '@ionic/cli-framework';
 
-import { App, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GithubBranch, GithubRepo, OptionGroup, PROJECT_FILE, isSuperAgentError } from '@ionic/cli-utils';
+import { App, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GithubBranch, GithubRepo, OptionGroup, PROJECT_FILE, isSuperAgentError } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { runCommand } from '@ionic/cli-utils/lib/executor';
 
 const debug = Debug('ionic:cli:commands:link');
 
@@ -75,7 +76,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     }
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
 
     let [ appId ] = inputs;
@@ -160,10 +161,10 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         });
       }
 
-      appId = await this.createApp({ name });
+      appId = await this.createApp({ name }, runinfo);
     } else {
       const app = await this.lookUpApp(appId);
-      await this.linkApp(app);
+      await this.linkApp(app, runinfo);
     }
 
     await Promise.all([this.env.config.save(), this.env.project.save()]);
@@ -192,16 +193,16 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     return app;
   }
 
-  async createApp({ name }: { name: string; }): Promise<string> {
+  async createApp({ name }: { name: string; }, runinfo: CommandInstanceInfo): Promise<string> {
     const appClient = await this.getAppClient();
     const app = await appClient.create({ name });
 
-    await this.linkApp(app);
+    await this.linkApp(app, runinfo);
 
     return app.id;
   }
 
-  async linkApp(app: App) {
+  async linkApp(app: App, runinfo: CommandInstanceInfo) {
     // TODO: load connections
 
     // TODO: check for git availability before this
@@ -236,17 +237,17 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       const config = await this.env.config.load();
 
       if (!config.git.setup) {
-        await this.env.runCommand(['ssh', 'setup']);
+        await runCommand(runinfo, ['ssh', 'setup']);
       }
 
-      await this.env.runCommand(['config', 'set', 'app_id', `"${app.id}"`, '--json']);
-      await this.env.runCommand(['git', 'remote']);
+      await runCommand(runinfo, ['config', 'set', 'app_id', `"${app.id}"`, '--json']);
+      await runCommand(runinfo, ['git', 'remote']);
     } else {
       if (service === CHOICE_GITHUB) {
         githubUrl = await this.linkGithub(app);
       }
 
-      await this.env.runCommand(['config', 'set', 'app_id', `"${app.id}"`, '--json']);
+      await runCommand(runinfo, ['config', 'set', 'app_id', `"${app.id}"`, '--json']);
     }
 
     this.env.log.ok(`Project linked with app ${chalk.green(app.id)}!`);

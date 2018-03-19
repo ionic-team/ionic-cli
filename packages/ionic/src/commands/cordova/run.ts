@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
 import {
+  CommandInstanceInfo,
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata,
@@ -128,8 +129,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
     };
   }
 
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    await this.preRunChecks();
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
+    await this.preRunChecks(runinfo);
 
     if (options['noproxy']) {
       this.env.log.warn(`The ${chalk.green('--noproxy')} option has been deprecated. Please use ${chalk.green('--no-proxy')}.`);

@@ -16,8 +16,9 @@ import {
   SourceImage,
 } from '../../../definitions';
 
+import { createRequest } from '../../utils/http';
 import { FatalException } from '../../errors';
-import { createRequest, formatResponseError } from '../../http';
+import { formatResponseError } from '../../http';
 import { ConfigXml } from './config';
 
 const debug = Debug('ionic:cli-utils:lib:integrations:cordova:resources');

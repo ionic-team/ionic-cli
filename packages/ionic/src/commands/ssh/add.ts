@@ -8,8 +8,9 @@ import { validators } from '@ionic/cli-framework';
 import { ERROR_FILE_NOT_FOUND, pathAccessible, pathExists } from '@ionic/cli-framework/utils/fs';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isSuperAgentError } from '@ionic/cli-utils';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isSuperAgentError } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { runCommand } from '@ionic/cli-utils/lib/executor';
 
 import { SSHBaseCommand } from './base';
 
@@ -52,7 +53,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
     }
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const { ERROR_SSH_INVALID_PUBKEY, SSHKeyClient, parsePublicKeyFile } = await import('@ionic/cli-utils/lib/ssh');
 
     const pubkeyPath = expandPath(inputs[0]);
@@ -109,7 +110,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
         const keyExists = await pathExists(keyPath);
 
         if (keyExists) {
-          await this.env.runCommand(['ssh', 'use', prettyPath(keyPath)]);
+          await runCommand(runinfo, ['ssh', 'use', prettyPath(keyPath)]);
         } else {
           this.env.log.error(
             `SSH key does not exist: ${chalk.bold(prettyPath(keyPath))}.\n` +

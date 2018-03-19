@@ -89,21 +89,21 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
   async buildProject(options: AngularBuildOptions): Promise<void> {
     const { pkgManagerArgs } = await import('../../utils/npm');
-    const config = await this.env.config.load();
+    const config = await this.config.load();
     const { npmClient } = config;
-    const pkg = await this.env.project.loadPackageJson();
+    const pkg = await this.project.loadPackageJson();
 
     const args = await this.buildOptionsToNgArgs(options);
-    const shellOptions = { cwd: this.env.project.directory };
+    const shellOptions = { cwd: this.project.directory };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs({ npmClient, shell: this.env.shell }, { command: 'run', script: BUILD_SCRIPT });
-      await this.env.shell.run(pkgManager, pkgArgs, shellOptions);
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(npmClient, { command: 'run', script: BUILD_SCRIPT });
+      await this.shell.run(pkgManager, pkgArgs, shellOptions);
     } else {
-      await this.env.shell.run('ng', ['build', ...args], shellOptions);
+      await this.shell.run('ng', ['build', ...args], shellOptions);
     }
   }
 }
