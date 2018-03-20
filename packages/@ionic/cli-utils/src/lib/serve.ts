@@ -191,13 +191,12 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
 
     this.log.nl();
     this.log.ok(
-      `Development server running!\n` +
-      (labAddress ? `Lab: ${chalk.bold(labAddress)}\n` : '') +
-      `Local: ${chalk.bold(localAddress)}\n` +
-      (details.externalNetworkInterfaces.length > 0 ? `External: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}\n` : '') +
-      (devAppDetails && devAppDetails.channel ? `DevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '')
+      `Development server running!` +
+      (labAddress ? `\nLab: ${chalk.bold(labAddress)}` : '') +
+      `\nLocal: ${chalk.bold(localAddress)}` +
+      (details.externalNetworkInterfaces.length > 0 ? `\nExternal: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}` : '') +
+      (devAppDetails && devAppDetails.channel ? `\nDevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '')
     );
-    this.log.nl();
 
     if (options.open) {
       const openAddress = labAddress ? labAddress : localAddress;
