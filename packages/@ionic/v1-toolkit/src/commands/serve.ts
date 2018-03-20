@@ -6,6 +6,7 @@ import { str2num } from '@ionic/cli-framework/utils/string';
 
 import { hasTask, runTask } from '../lib/gulp';
 import { runServer } from '../lib/serve';
+import { timestamp } from '../lib/log';
 
 export class ServeCommand extends Command {
   async getMetadata() {
@@ -85,10 +86,10 @@ export class ServeCommand extends Command {
       await runTask('ionic:serve:before');
     }
 
-    process.stdout.write(`Serving directory ${chalk.bold(wwwDir)}\n`);
+    process.stdout.write(`${timestamp()} Serving directory ${chalk.bold(wwwDir)}\n`);
 
     await runServer({ host, port, lr, consolelogs, devPort, lrPort, wwwDir, watchPatterns, proxies });
 
-    process.stdout.write(`Dev server running at ${chalk.bold(url)}\n`);
+    process.stdout.write(`${timestamp()} Dev server running at ${chalk.bold(url)}\n`);
   }
 }

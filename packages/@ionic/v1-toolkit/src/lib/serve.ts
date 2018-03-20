@@ -64,7 +64,7 @@ export async function runServer(options: ServeOptions): Promise<ServeOptions> {
   });
 
   watcher.on('error', (err: Error) => {
-    process.stderr.write(`${err.toString()}\n`);
+    process.stderr.write(`${timestamp()} Error in file watcher: ${err.stack ? err.stack : err}\n`);
   });
 
   return options;
@@ -104,7 +104,7 @@ async function createHttpServer(options: ServeOptions): Promise<express.Applicat
 
   for (const proxy of options.proxies) {
     attachProxy(app, { ...DEFAULT_PROXY_CONFIG, ...proxy });
-    process.stdout.write(`Proxy created ${chalk.bold(proxy.mount)} => ${proxy.target ? chalk.bold(proxy.target) : '<no target>'}\n`);
+    process.stdout.write(`${timestamp()} Proxy created ${chalk.bold(proxy.mount)} => ${proxy.target ? chalk.bold(proxy.target) : '<no target>'}\n`);
   }
 
   app.get(`/${DEV_SERVER_PREFIX}/dev-server.js`, await createDevServerHandler(options));
