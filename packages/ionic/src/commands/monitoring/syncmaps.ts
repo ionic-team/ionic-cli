@@ -1,23 +1,38 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
+import * as Debug from 'debug';
 
-import { APIResponseSuccess } from '@ionic/cli-utils/definitions';
-
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, isSuperAgentError } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
 import { fsReadFile, pathExists, readDir } from '@ionic/cli-framework/utils/fs';
+import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
+import { APIResponseSuccess, CommandLineInputs, CommandLineOptions, CommandMetadata, isSuperAgentError } from '@ionic/cli-utils';
+import { Command } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
+
+const debug = Debug('ionic:cli:commands:monitoring:syncmaps');
+
+const SOURCEMAP_DIRECTORY = '.sourcemaps';
 
 export class MonitoringSyncSourcemapsCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
     return {
       name: 'syncmaps',
       type: 'project',
-      description: 'Sync Source Maps to Ionic Pro Error Monitoring service',
+      description: 'Build & upload sourcemaps to Ionic Pro Monitoring service',
+      longDescription: `
+By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcemap files within ${chalk.bold(SOURCEMAP_DIRECTORY)}. To optionally perform a production build before uploading sourcemaps, specify the ${chalk.green('--build')} flag.
+      `,
       inputs: [
         {
           name: 'snapshot_id',
-          description: `An Ionic Pro snapshot id to associate these sourcemaps with.`,
+          description: `Specify a Snapshot ID to associate the uploaded sourcemaps with`,
+        },
+      ],
+      options: [
+        {
+          name: 'build',
+          description: 'Invoke a production Ionic build',
+          type: Boolean,
         },
       ],
     };
@@ -28,45 +43,65 @@ export class MonitoringSyncSourcemapsCommand extends Command {
     const appId = await this.env.project.loadAppId();
 
     const [ snapshotId ] = inputs;
+    const doBuild = options.build ? true : false;
 
     const { ConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
     const conf = await ConfigXml.load(this.env.project.directory);
     const cordovaInfo = conf.getProjectInfo();
 
     const appVersion = cordovaInfo.version;
-    const commitHash = await this.env.shell.output('git', ['rev-parse', 'HEAD'], { cwd: this.env.project.directory });
+    const commitHash = (await this.env.shell.output('git', ['rev-parse', 'HEAD'], { cwd: this.env.project.directory })).trim();
+    debug(`Commit hash: ${chalk.bold(commitHash)}`);
 
-    const sourcemapsDir = path.join(this.env.project.directory, '.sourcemaps');
-
+    const sourcemapsDir = path.resolve(this.env.project.directory, SOURCEMAP_DIRECTORY);
     let sourcemapsExist = await pathExists(sourcemapsDir);
 
-    if (!sourcemapsExist) {
-      this.env.log.msg('No sourcemaps found, doing build...');
-      await this.doProdBuild();
-      sourcemapsExist = await pathExists(sourcemapsDir);
-      if (!sourcemapsExist) {
-        this.env.log.error('Unable to sync sourcemaps. Make sure you have @ionic/app-scripts version 2.1.4 or greater.');
-        return;
-      }
-    } else {
-      const doNewBuild = await this.env.prompt({
-        type: 'confirm',
-        name: 'isProd',
-        message: 'Do build before syncing?',
-      });
-      doNewBuild && await this.doProdBuild();
+    if (doBuild || !sourcemapsExist) {
+      const { build } = await import('@ionic/cli-utils/lib/build');
+      await build(this.env, [], { _: [], prod: true });
     }
 
-    this.env.log.msg(`Syncing SourceMaps for app version ${chalk.green(appVersion)} of ${chalk.green(cordovaInfo.id)} (snapshot: ${snapshotId})- App ID ${appId}`);
-    readDir(sourcemapsDir).then(files => {
-      const maps = files.filter(f => f.indexOf('.js.map') >= 0);
-      Promise.all(maps.map(f => this.syncSourcemap(path.join(sourcemapsDir, f), snapshotId, appVersion, commitHash, appId, token)));
-    });
+    sourcemapsExist = await pathExists(sourcemapsDir);
+
+    if (sourcemapsExist) {
+      this.env.log.msg(`Using existing sourcemaps in ${chalk.bold(prettyPath(sourcemapsDir))}`);
+    } else { // TODO: this is hard-coded for ionic-angular, make it work for all project types
+      throw new FatalException(
+        `Cannot find directory: ${chalk.bold(prettyPath(sourcemapsDir))}.\n` +
+        `Make sure you have the latest ${chalk.bold('@ionic/app-scripts')}. Then, re-run this command.`
+      );
+    }
+
+    let count = 0;
+    this.env.tasks.next('Syncing sourcemaps');
+
+    const sourcemapFiles = (await readDir(sourcemapsDir)).filter(f => f.endsWith('.js.map'));
+    debug(`Found ${sourcemapFiles.length} sourcemap files: ${sourcemapFiles.map(f => chalk.bold(f)).join(', ')}`);
+
+    await Promise.all(sourcemapFiles.map(async f => {
+      await this.syncSourcemap(path.resolve(sourcemapsDir, f), snapshotId, appVersion, commitHash, appId, token);
+      count += 1;
+      this.env.tasks.updateMsg(`Syncing sourcemaps: ${chalk.bold(`${count} / ${sourcemapFiles.length}`)}`);
+    }));
+
+    this.env.tasks.updateMsg(`Syncing sourcemaps: ${chalk.bold(`${sourcemapFiles.length} / ${sourcemapFiles.length}`)}`);
+    this.env.tasks.end();
+
+    const details = columnar([
+      ['App ID', chalk.bold(appId)],
+      ['App Version', chalk.bold(appVersion)],
+      ['Bundle ID', chalk.bold(cordovaInfo.id)],
+      ['Snapshot ID', snapshotId ? chalk.bold(snapshotId) : chalk.dim('not set')],
+    ], { vsep: ':' });
+
+    this.env.log.ok(
+      `Sourcemaps synced!\n` +
+      details + '\n\n' +
+      `See the Error Monitoring docs for usage information and next steps: ${chalk.bold('https://ionicframework.com/docs/pro/monitoring')}`
+    );
   }
 
   async syncSourcemap(file: string, snapshotId: string, appVersion: string, commitHash: string, appId: string, token: string): Promise<void> {
-    const { createFatalAPIFormat } = await import('@ionic/cli-utils/lib/http');
-
     const { req } = await this.env.client.make('POST', `/monitoring/${appId}/sourcemaps`);
 
     req
@@ -79,12 +114,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
       });
 
     try {
-      this.env.log.msg(`Syncing ${chalk.green(file)}`);
       const res = await this.env.client.do(req);
-
-      if (res.meta.status !== 201) {
-        throw createFatalAPIFormat(req, res);
-      }
 
       return this.uploadSourcemap(res, file);
     } catch (e) {
@@ -100,51 +130,25 @@ export class MonitoringSyncSourcemapsCommand extends Command {
     }
   }
 
-  async uploadSourcemap(res: APIResponseSuccess, file: string) {
+  async uploadSourcemap(sourcemap: APIResponseSuccess, file: string) {
     const { createRequest } = await import('@ionic/cli-utils/lib/utils/http');
 
-    const r = <any>res;
+    const sm = <any>sourcemap;
 
     const fileData = await fsReadFile(file, { encoding: 'utf8' });
-    const sourcemapPost = r.data.sourcemap_post;
-
-    // this.env.log.info('Doing this thing');
-    this.env.log.msg(await this.env.config.getAPIUrl());
+    const sourcemapPost = sm.data.sourcemap_post;
 
     const c = await this.env.config.load();
     const { req } = await createRequest('POST', sourcemapPost.url, c);
 
     req
-      .buffer()
       .field(sourcemapPost.fields)
-      .field('file', fileData)
-      // .on('progress', (event: any) => {
-      // })
-      .end((err, res) => {
-        if (err) {
-          this.env.log.error('Unable to upload sourcemap');
-          this.env.log.error(err);
-          return Promise.reject(err);
-        }
-        if (res.status !== 204) {
-          return Promise.reject(new Error(`Unexpected status code from AWS: ${res.status}`));
-        }
+      .field('file', fileData);
 
-        this.env.log.ok('Uploaded sourcemap');
-        this.env.log.msg('See the Error Monitoring docs for usage information and next steps: https://ionicframework.com/docs/pro/monitoring/');
+    const res = await req;
 
-        Promise.resolve();
-      });
-  }
-
-  async doProdBuild() {
-    const isProd = await this.env.prompt({
-      type: 'confirm',
-      name: 'isProd',
-      message: 'Do full prod build?',
-    });
-
-    const { build } = await import('@ionic/cli-utils/lib/build');
-    return build(this.env, [], { _: [], prod: isProd });
+    if (res.status !== 204) {
+      throw new FatalException(`Unexpected status code from AWS: ${res.status}`);
+    }
   }
 }

@@ -8,8 +8,8 @@ export interface SecurityClientDeps {
 }
 
 export class SecurityClient extends ResourceClient implements ResourceClientLoad<SecurityProfile> {
-  protected client: IClient;
-  protected token: string;
+  protected readonly client: IClient;
+  protected readonly token: string;
 
   constructor({ client, token }: SecurityClientDeps) {
     super();
