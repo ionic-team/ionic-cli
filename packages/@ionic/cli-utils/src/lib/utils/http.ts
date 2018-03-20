@@ -59,6 +59,8 @@ export async function createRequest(method: HttpMethod, url: string, opts?: Crea
 
   const req = superagent(method, url);
 
+  req.redirects(25);
+
   if (proxy && proxyVar) {
     await installProxy(superagent, proxy, proxyVar);
 
