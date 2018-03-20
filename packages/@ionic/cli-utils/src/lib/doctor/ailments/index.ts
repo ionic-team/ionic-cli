@@ -20,7 +20,6 @@ export * from './base';
 export function registerAilments(registry: IAilmentRegistry, deps: AutomaticallyTreatableAilmentDeps) {
   registry.register(new NpmInstalledLocally(deps));
   registry.register(new IonicCLIInstalledLocally(deps));
-  registry.register(new IonicCLIPluginProxyInstalledLocally(deps));
   registry.register(new GitNotUsed(deps));
   registry.register(new GitConfigInvalid(deps));
   registry.register(new IonicNativeUpdateAvailable(deps));
@@ -80,37 +79,6 @@ class IonicCLIInstalledLocally extends AutomaticallyTreatableAilment {
     const config = await this.config.load();
     const { npmClient } = config;
     const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'uninstall', pkg: 'ionic' });
-
-    return [
-      {
-        name: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
-        treat: async () => {
-          await this.shell.run(manager, managerArgs, {});
-        },
-      },
-    ];
-  }
-}
-
-class IonicCLIPluginProxyInstalledLocally extends AutomaticallyTreatableAilment {
-  id = 'ionic-cli-plugin-proxy-installed-locally-without-local-cli';
-
-  async getMessage() {
-    return (
-      `${chalk.bold('@ionic/cli-plugin-proxy')} is installed locally.\n` +
-      `The plugin for proxying CLI requests, ${chalk.bold('@ionic/cli-plugin-proxy')}, was detected in your project, but no local CLI installation was found. You can safely remove it if you're using the CLI globally.\n`
-    ).trim();
-  }
-
-  async detected() {
-    const cliExists = !(lodash.attempt(() => resolve('ionic', { paths: compileNodeModulesPaths(this.project.directory) })) instanceof Error);
-    return !cliExists && !(lodash.attempt(() => resolve('@ionic/cli-plugin-proxy', { paths: compileNodeModulesPaths(this.project.directory) })) instanceof Error);
-  }
-
-  async getTreatmentSteps() {
-    const config = await this.config.load();
-    const { npmClient } = config;
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'uninstall', pkg: '@ionic/cli-plugin-proxy' });
 
     return [
       {
