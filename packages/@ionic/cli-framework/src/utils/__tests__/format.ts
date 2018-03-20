@@ -233,7 +233,7 @@ describe('@ionic/cli-framework', () => {
       });
 
       it('should work for multiple rows', async () => {
-        const result = columnar([['cat', 'dog'], ['spongebob', 'squarepants'], ['hey', 'arnold']], { columnHeaders: ['col1', 'col2'] });
+        const result = columnar([['cat', 'dog'], ['spongebob', 'squarepants'], ['hey', 'arnold']], { headers: ['col1', 'col2'] });
         expect(stripAnsi(result)).toEqual(`
 col1      | col2
 -----------------------
@@ -244,7 +244,7 @@ hey       | arnold
       });
 
       it('should size rows correctly when cells are longer', async () => {
-        const result = columnar([['foo', 'bar', 'baz']], { columnHeaders: ['a', 'b', 'c'] });
+        const result = columnar([['foo', 'bar', 'baz']], { headers: ['a', 'b', 'c'] });
         expect(stripAnsi(result)).toEqual(`
 a   | b   | c
 ---------------
@@ -253,7 +253,7 @@ foo | bar | baz
       });
 
       it('should size rows correctly when headers are longer', async () => {
-        const result = columnar([['a', 'b', 'c']], { columnHeaders: ['foo', 'bar', 'baz'] });
+        const result = columnar([['a', 'b', 'c']], { headers: ['foo', 'bar', 'baz'] });
         expect(stripAnsi(result)).toEqual(`
 foo | bar | baz
 ---------------
@@ -262,7 +262,7 @@ a   | b   | c
       });
 
       it('should work with custom separators', async () => {
-        const result = columnar([['foo', 'bar', 'baz']], { hsep: '=', vsep: '/\\', columnHeaders: ['a', 'b', 'c'] });
+        const result = columnar([['foo', 'bar', 'baz']], { hsep: '=', vsep: '/\\', headers: ['a', 'b', 'c'] });
         expect(stripAnsi(result)).toEqual(`
 a   /\\ b   /\\ c
 =================

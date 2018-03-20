@@ -136,8 +136,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     // If the action is list then lets just end here.
     if (options['list']) {
-      const columnHeaders = ['name', 'project type', 'description'];
-      this.env.log.rawmsg(columnar(starterTemplates.map(({ name, type, description }) => [chalk.green(name), chalk.bold(type), description || '']), { columnHeaders }));
+      const headers = ['name', 'project type', 'description'];
+      this.env.log.rawmsg(columnar(starterTemplates.map(({ name, type, description }) => [chalk.green(name), chalk.bold(type), description || '']), { headers }));
       throw new FatalException('', 0);
     }
 

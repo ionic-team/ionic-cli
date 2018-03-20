@@ -79,7 +79,7 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
       });
 
       const table = columnar(keysMatrix, {
-        columnHeaders: ['fingerprint', 'name', 'annotation'],
+        headers: ['fingerprint', 'name', 'annotation'],
       });
 
       if (foundActiveKey) {

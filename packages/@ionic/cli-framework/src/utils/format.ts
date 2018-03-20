@@ -62,7 +62,7 @@ export function generateFillSpaceStringList(list: string[], optimalLength = 1, f
   return list.map(item => sliceAnsi(fullLengthString, 0, fullLength - stringWidth(item)));
 }
 
-export function columnar(rows: string[][], options: { hsep?: string, vsep?: string, columnHeaders?: string[] } = {}): string {
+export function columnar(rows: string[][], options: { hsep?: string, vsep?: string, headers?: string[] } = {}): string {
   if (!options.hsep) {
     options.hsep = chalk.dim('-');
   }
@@ -71,15 +71,15 @@ export function columnar(rows: string[][], options: { hsep?: string, vsep?: stri
     options.vsep = chalk.dim('|');
   }
 
-  const includeHeaders = options.columnHeaders ? true : false;
+  const includeHeaders = options.headers ? true : false;
 
   if (!rows[0]) {
     return '';
   }
 
-  const columnCount = options.columnHeaders ? options.columnHeaders.length : rows[0].length;
-  const columns = options.columnHeaders ?
-    options.columnHeaders.map(header => [chalk.bold(header)]) :
+  const columnCount = options.headers ? options.headers.length : rows[0].length;
+  const columns = options.headers ?
+    options.headers.map(header => [chalk.bold(header)]) :
     rows[0].map(() => []);
 
   for (const row of rows) {
