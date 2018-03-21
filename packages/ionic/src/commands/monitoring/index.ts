@@ -4,7 +4,7 @@ export class MonitoringNamespace extends Namespace {
   async getMetadata() {
     return {
       name: 'monitoring',
-      description: 'Commands relating to Ionic Pro error monitoring',
+      summary: 'Commands relating to Ionic Pro error monitoring',
     };
   }
 

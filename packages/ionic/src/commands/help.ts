@@ -8,12 +8,12 @@ export class HelpCommand extends Command {
     return {
       name: 'help',
       type: 'global',
-      description: 'Provides help for a certain command',
+      summary: 'Provides help for a certain command',
       exampleCommands: ['start'],
       inputs: [
         {
           name: 'command',
-          description: 'The command you desire help with',
+          summary: 'The command you desire help with',
         },
       ],
       groups: [CommandGroup.Hidden],

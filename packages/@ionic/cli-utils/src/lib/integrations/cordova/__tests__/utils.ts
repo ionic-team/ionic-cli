@@ -5,40 +5,33 @@ describe('@ionic/cli-utils', () => {
 
   const metadata = {
     name: 'build',
-    description: '',
     inputs: [
       {
         name: 'platform',
-        description: ''
       }
     ],
     options: [
       {
         name: 'boolopt',
-        description: '',
         type: Boolean,
         default: false,
       },
       {
         name: 'cdvopt1',
-        description: '',
         groups: [OptionGroup.Cordova],
       },
       {
         name: 'cdvopt2',
-        description: '',
         type: Boolean,
         groups: [OptionGroup.Cordova],
       },
       {
         name: 'prod',
-        description: '',
         type: Boolean,
         groups: [OptionGroup.AppScripts],
       },
       {
         name: 'optimizejs',
-        description: '',
         type: Boolean,
         groups: [OptionGroup.AppScripts],
       },

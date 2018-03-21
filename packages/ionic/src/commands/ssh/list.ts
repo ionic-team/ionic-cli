@@ -11,11 +11,11 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
     return {
       name: 'list',
       type: 'global',
-      description: 'List your SSH public keys on Ionic',
+      summary: 'List your SSH public keys on Ionic',
       options: [
         {
           name: 'json',
-          description: 'Output SSH keys in JSON',
+          summary: 'Output SSH keys in JSON',
           type: Boolean,
         },
       ],

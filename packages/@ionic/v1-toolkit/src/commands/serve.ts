@@ -12,55 +12,55 @@ export class ServeCommand extends Command {
   async getMetadata() {
     return {
       name: 'serve',
-      description: '',
+      summary: '',
       inputs: [
         {
           name: 'dir',
-          description: 'The www directory to server',
+          summary: 'The www directory to server',
           validators: [validators.required],
         },
       ],
       options: [
         {
           name: 'host',
-          description: 'Host of HTTP server',
+          summary: 'Host of HTTP server',
           default: 'localhost',
         },
         {
           name: 'port',
-          description: 'Port of HTTP server',
+          summary: 'Port of HTTP server',
           default: '8100',
         },
         {
           name: 'dev-port',
-          description: 'Port of WebSocket dev server',
+          summary: 'Port of WebSocket dev server',
           default: '53703',
         },
         {
           name: 'lr-port',
-          description: 'Port of WebSocket live-reload server',
+          summary: 'Port of WebSocket live-reload server',
           default: '35729',
         },
         {
           name: 'lr',
-          description: 'Enable live-reload',
+          summary: 'Enable live-reload',
           type: Boolean,
           default: true,
         },
         {
           name: 'consolelogs',
-          description: 'Enable console logs to terminal',
+          summary: 'Enable console logs to terminal',
           type: Boolean,
           aliases: ['c'],
         },
         {
           name: 'watch',
-          description: 'Watch file, directory, or glob pattern relative to cwd',
+          summary: 'Watch file, directory, or glob pattern relative to cwd',
           aliases: ['w'],
         },
         {
           name: 'proxy',
-          description: 'Proxy configuration',
+          summary: 'Proxy configuration',
           aliases: ['p'],
         },
       ],

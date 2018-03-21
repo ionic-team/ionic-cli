@@ -28,7 +28,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
 
     let groups: MetadataGroup[] = [CommandGroup.Hidden];
 
-    let longDescription = this.env.project.type
+    let description = this.env.project.type
       ? chalk.red(`Generators are not supported in this project type (${chalk.bold(prettyProjectName(this.env.project.type))}).`)
       : chalk.red('Generators help is available within an Ionic project directory.');
 
@@ -38,7 +38,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
       groups = libmetadata.groups || [];
       inputs.push(...libmetadata.inputs || []);
       options.push(...libmetadata.options || []);
-      longDescription = (libmetadata.longDescription || '').trim();
+      description = (libmetadata.description || '').trim();
       exampleCommands.push(...libmetadata.exampleCommands || []);
     } catch (e) {
       if (!(e instanceof RunnerNotFoundException)) {
@@ -49,8 +49,8 @@ export class GenerateCommand extends Command implements CommandPreRun {
     return {
       name: 'generate',
       type: 'project',
-      description: 'Automatically create framework components',
-      longDescription,
+      summary: 'Automatically create framework components',
+      description,
       inputs,
       options,
       groups,

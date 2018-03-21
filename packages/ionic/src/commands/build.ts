@@ -20,13 +20,13 @@ export class BuildCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
     const options: CommandMetadataOption[] = [];
     const exampleCommands = [''];
-    let longDescription = `${chalk.green('ionic build')} will perform an Ionic build, which compiles web assets and prepares them for deployment.`;
+    let description = `${chalk.green('ionic build')} will perform an Ionic build, which compiles web assets and prepares them for deployment.`;
 
     try {
       const runner = await this.getRunner();
       const libmetadata = await runner.getCommandMetadata();
       options.push(...libmetadata.options || []);
-      longDescription += libmetadata.longDescription ? `\n\n${libmetadata.longDescription.trim()}` : '';
+      description += libmetadata.description ? `\n\n${libmetadata.description.trim()}` : '';
       exampleCommands.push(...libmetadata.exampleCommands || []);
     } catch (e) {
       if (!(e instanceof RunnerNotFoundException)) {
@@ -35,13 +35,13 @@ export class BuildCommand extends Command implements CommandPreRun {
     }
 
     // TODO: only do this for apps w/ cordova integration
-    longDescription += `\n\n${`For Ionic/Cordova apps, the Ionic CLI will run ${chalk.green('cordova prepare')}, which copies the built web assets into the Cordova platforms that you've installed. For full details, see ${chalk.green('ionic cordova prepare --help')}.`}`;
+    description += `\n\n${`For Ionic/Cordova apps, the Ionic CLI will run ${chalk.green('cordova prepare')}, which copies the built web assets into the Cordova platforms that you've installed. For full details, see ${chalk.green('ionic cordova prepare --help')}.`}`;
 
     return {
       name: 'build',
       type: 'project',
-      description: 'Build web assets and prepare your app for any platform targets',
-      longDescription,
+      summary: 'Build web assets and prepare your app for any platform targets',
+      description,
       exampleCommands,
       options,
     };

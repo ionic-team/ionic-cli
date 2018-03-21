@@ -42,26 +42,26 @@ export const SERVE_SCRIPT = 'ionic:serve';
 export const COMMON_SERVE_COMMAND_OPTIONS: CommandMetadataOption[] = [
   {
     name: 'address',
-    description: 'Use specific address for the dev server',
+    summary: 'Use specific address for the dev server',
     default: BIND_ALL_ADDRESS,
     groups: [OptionGroup.Advanced],
   },
   {
     name: 'port',
-    description: 'Use specific port for HTTP',
+    summary: 'Use specific port for HTTP',
     default: DEFAULT_SERVER_PORT.toString(),
     aliases: ['p'],
     groups: [OptionGroup.Advanced],
   },
   {
     name: 'livereload',
-    description: 'Do not spin up dev server--just serve files',
+    summary: 'Do not spin up dev server--just serve files',
     type: Boolean,
     default: true,
   },
   {
     name: 'proxy',
-    description: 'Do not add proxies',
+    summary: 'Do not add proxies',
     type: Boolean,
     default: true,
     groups: [OptionGroup.Advanced],

@@ -9,7 +9,7 @@ export class GitRemoteCommand extends Command {
     return {
       name: 'remote',
       type: 'project',
-      description: 'Adds/updates the Ionic git remote to your local Ionic app repository',
+      summary: 'Adds/updates the Ionic git remote to your local Ionic app repository',
     };
   }
 

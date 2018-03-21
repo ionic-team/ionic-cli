@@ -97,7 +97,7 @@ export class CommandHelpFormatter extends BaseCommandHelpFormatter<ICommand, INa
     );
   }
 
-  filterOptionCallback(opt: CommandMetadataOption): boolean {
+  async filterOptionCallback(opt: CommandMetadataOption): Promise<boolean> {
     return !opt.groups || !opt.groups.includes(OptionGroup.Hidden);
   }
 }

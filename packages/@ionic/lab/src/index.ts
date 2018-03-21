@@ -23,45 +23,45 @@ class DefaultCommand extends Command {
   async getMetadata() {
     return {
       name: 'default',
-      description: '',
+      summary: '',
       inputs: [
         {
           name: 'url',
-          description: 'The URL of the livereload server to use with lab',
+          summary: 'The URL of the livereload server to use with lab',
           validators: [validators.required, validators.url],
         },
       ],
       options: [
         {
           name: 'host',
-          description: 'HTTP host of Ionic Lab',
+          summary: 'HTTP host of Ionic Lab',
           default: 'localhost',
         },
         {
           name: 'port',
-          description: 'HTTP port of Ionic Lab',
+          summary: 'HTTP port of Ionic Lab',
           default: '8200',
         },
         {
           name: 'ssl',
-          description: 'Host Ionic Lab with HTTPS',
+          summary: 'Host Ionic Lab with HTTPS',
           type: Boolean,
         },
         {
           name: 'ssl-key',
-          description: 'Path to SSL key',
+          summary: 'Path to SSL key',
         },
         {
           name: 'ssl-cert',
-          description: 'Path to SSL certificate',
+          summary: 'Path to SSL certificate',
         },
         {
           name: 'app-name',
-          description: 'App name to show in bottom left corner',
+          summary: 'App name to show in bottom left corner',
         },
         {
           name: 'app-version',
-          description: 'App version to show in bottom left corner',
+          summary: 'App version to show in bottom left corner',
         },
       ],
     };
@@ -124,7 +124,7 @@ class LabNamespace extends Namespace {
   async getMetadata() {
     return {
       name: 'ionic-lab',
-      description: '',
+      summary: '',
     };
   }
 

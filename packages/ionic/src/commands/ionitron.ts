@@ -6,11 +6,11 @@ export class IonitronCommand extends Command {
     return {
       name: 'ionitron',
       type: 'global',
-      description: 'Print random ionitron messages',
+      summary: 'Print random ionitron messages',
       options: [
         {
           name: 'es',
-          description: 'Print in spanish',
+          summary: 'Print in spanish',
           type: Boolean,
         },
       ],

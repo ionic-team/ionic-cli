@@ -10,11 +10,11 @@ export class DoctorCheckCommand extends Command {
     return {
       name: 'check',
       type: 'project',
-      description: 'Check the health of your Ionic project',
+      summary: 'Check the health of your Ionic project',
       inputs: [
         {
           name: 'id',
-          description: 'The issue identifier',
+          summary: 'The issue identifier',
         },
       ],
     };

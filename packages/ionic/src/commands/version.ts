@@ -6,7 +6,7 @@ export class VersionCommand extends Command {
     return {
       name: 'version',
       type: 'global',
-      description: 'Returns the current CLI version',
+      summary: 'Returns the current CLI version',
       groups: [CommandGroup.Hidden],
     };
   }

@@ -19,18 +19,18 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
     return {
       name: 'add',
       type: 'global',
-      description: 'Add an SSH public key to Ionic',
+      summary: 'Add an SSH public key to Ionic',
       inputs: [
         {
           name: 'pubkey-path',
-          description: 'Location of public key file to add to Ionic',
+          summary: 'Location of public key file to add to Ionic',
           validators: [validators.required],
         },
       ],
       options: [
         {
           name: 'use',
-          description: 'Use the newly added key as your default SSH key for Ionic',
+          summary: 'Use the newly added key as your default SSH key for Ionic',
           type: Boolean,
         },
       ],

@@ -12,8 +12,8 @@ export class GenerateRunner extends BaseGenerateRunner<IonicAngularGenerateOptio
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       groups: [],
-      description: `Generate pipes, components, pages, directives, providers, and tabs`,
-      longDescription: `
+      summary: `Generate pipes, components, pages, directives, providers, and tabs`,
+      description: `
 Automatically create components for your Ionic app.
 
 The given ${chalk.green('name')} is normalized into an appropriate naming convention. For example, ${chalk.green('ionic generate page neat')} creates a page by the name of ${chalk.green('NeatPage')} in ${chalk.green('src/pages/neat/')}.
@@ -30,25 +30,25 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
       inputs: [
         {
           name: 'type',
-          description: `The type of generator (e.g. ${GENERATOR_TYPES.map(t => chalk.green(t)).join(', ')})`,
+          summary: `The type of generator (e.g. ${GENERATOR_TYPES.map(t => chalk.green(t)).join(', ')})`,
           validators: [validators.required, contains(GENERATOR_TYPES, {})],
         },
         {
           name: 'name',
-          description: 'The name of the component being generated',
+          summary: 'The name of the component being generated',
           validators: [validators.required],
         },
       ],
       options: [
         {
           name: 'module',
-          description: 'Do not generate an NgModule for the component',
+          summary: 'Do not generate an NgModule for the component',
           type: Boolean,
           default: true,
         },
         {
           name: 'constants',
-          description: 'Generate a page constant file for lazy-loaded pages',
+          summary: 'Generate a page constant file for lazy-loaded pages',
           type: Boolean,
           default: false,
         },

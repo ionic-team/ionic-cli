@@ -6,7 +6,7 @@ export class SignupCommand extends Command {
     return {
       name: 'signup',
       type: 'global',
-      description: 'Create an account for Ionic Pro',
+      summary: 'Create an account for Ionic Pro',
     };
   }
 

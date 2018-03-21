@@ -17,31 +17,31 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
     return {
       name: 'generate',
       type: 'global',
-      description: 'Generates a private and public SSH key pair',
+      summary: 'Generates a private and public SSH key pair',
       inputs: [
         {
           name: 'key-path',
-          description: 'Destination of private key file',
+          summary: 'Destination of private key file',
         },
       ],
       options: [
         {
           name: 'type',
-          description: `The type of key to generate: ${SSH_KEY_TYPES.map(v => chalk.green(v)).join(', ')}`,
+          summary: `The type of key to generate: ${SSH_KEY_TYPES.map(v => chalk.green(v)).join(', ')}`,
           default: 'rsa',
           aliases: ['t'],
           groups: [OptionGroup.Advanced],
         },
         {
           name: 'bits',
-          description: 'Number of bits in the key',
+          summary: 'Number of bits in the key',
           aliases: ['b'],
           default: '2048',
           groups: [OptionGroup.Advanced],
         },
         {
           name: 'annotation',
-          description: 'Annotation (comment) in public key. Your Ionic email address will be used',
+          summary: 'Annotation (comment) in public key. Your Ionic email address will be used',
           aliases: ['C'],
           groups: [OptionGroup.Advanced],
         },

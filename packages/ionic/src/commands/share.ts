@@ -9,7 +9,7 @@ export class ShareCommand extends Command {
     return {
       name: 'share',
       type: 'global',
-      description: '',
+      summary: '',
       groups: [CommandGroup.Hidden],
     };
   }

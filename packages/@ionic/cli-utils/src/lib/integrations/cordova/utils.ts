@@ -16,7 +16,7 @@ export function filterArgumentsForCordova(metadata: CommandMetadata, options: Co
   const globalCordovaOpts: CommandMetadataOption[] = [
     {
       name: 'verbose',
-      description: '',
+      summary: '',
       type: Boolean,
       groups: [OptionGroup.Cordova],
     },

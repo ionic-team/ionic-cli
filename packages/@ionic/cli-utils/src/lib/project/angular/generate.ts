@@ -66,8 +66,8 @@ export class GenerateRunner extends BaseGenerateRunner<AngularGenerateOptions> {
 
     return {
       groups: [],
-      description: `Generate Angular classes such as pages, components, directives, services, etc.`,
-      longDescription: `
+      summary: `Generate Angular classes such as pages, components, directives, services, etc.`,
+      description: `
 Automatically create components for your Ionic app.
 
 This command uses the Angular CLI to generate components.
@@ -97,31 +97,31 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
       inputs: [
         {
           name: 'type',
-          description: `The type of generator (e.g. ${schematics.slice(0, 4).map(t => chalk.green(t.type)).join(', ')}; use ${chalk.green('--list')} to see all)`,
+          summary: `The type of generator (e.g. ${schematics.slice(0, 4).map(t => chalk.green(t.type)).join(', ')}; use ${chalk.green('--list')} to see all)`,
           validators: [validators.required, contains(schematicNamesAndAliases, {})],
         },
         {
           name: 'name',
-          description: 'The name of the component being generated',
+          summary: 'The name of the component being generated',
           validators: [validators.required],
         },
       ],
       options: [
         {
           name: 'list',
-          description: 'List available generators',
+          summary: 'List available generators',
           type: Boolean,
           aliases: ['l'],
         },
         {
           name: 'dry-run',
-          description: 'Run generate without making any file changes',
+          summary: 'Run generate without making any file changes',
           type: Boolean,
           aliases: ['d'],
         },
         {
           name: 'force',
-          description: 'Force overwriting of files',
+          summary: 'Force overwriting of files',
           type: Boolean,
           aliases: ['f'],
         },

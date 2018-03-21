@@ -18,20 +18,20 @@ export class MonitoringSyncSourcemapsCommand extends Command {
     return {
       name: 'syncmaps',
       type: 'project',
-      description: 'Build & upload sourcemaps to Ionic Pro Monitoring service',
-      longDescription: `
+      summary: 'Build & upload sourcemaps to Ionic Pro Monitoring service',
+      description: `
 By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcemap files within ${chalk.bold(SOURCEMAP_DIRECTORY)}. To optionally perform a production build before uploading sourcemaps, specify the ${chalk.green('--build')} flag.
       `,
       inputs: [
         {
           name: 'snapshot_id',
-          description: `Specify a Snapshot ID to associate the uploaded sourcemaps with`,
+          summary: `Specify a Snapshot ID to associate the uploaded sourcemaps with`,
         },
       ],
       options: [
         {
           name: 'build',
-          description: 'Invoke a production Ionic build',
+          summary: 'Invoke a production Ionic build',
           type: Boolean,
         },
       ],

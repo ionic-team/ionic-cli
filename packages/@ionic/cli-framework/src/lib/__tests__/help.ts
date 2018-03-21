@@ -14,7 +14,7 @@ class MyNamespace extends Namespace {
   async getMetadata() {
     return {
       name: 'my',
-      description: 'the my namespace',
+      summary: 'the my namespace',
     };
   }
 
@@ -36,7 +36,7 @@ class NamespaceWithDefault extends Namespace {
   async getMetadata() {
     return {
       name: 'defns',
-      description: 'the defns namespace',
+      summary: 'the defns namespace',
     };
   }
 
@@ -51,8 +51,8 @@ class FooNamespace extends Namespace {
   async getMetadata() {
     return {
       name: 'foo',
-      description: 'the foo namespace',
-      longDescription: 'my long description',
+      summary: 'the foo namespace',
+      description: 'my description',
     };
   }
 
@@ -69,7 +69,7 @@ class DefaultCommand extends Command {
   async getMetadata() {
     return {
       name: 'def',
-      description: 'the default command',
+      summary: 'the default command',
     };
   }
 
@@ -81,15 +81,15 @@ class BarCommand extends Command {
   async getMetadata() {
     return {
       name: 'bar',
-      description: 'the bar command',
-      longDescription: 'my long description',
+      summary: 'the bar command',
+      description: 'my description',
       inputs: [
-        { name: 'input1', description: 'input1 description' },
-        { name: 'input2', description: 'input2 description' },
+        { name: 'input1', summary: 'input1 summary' },
+        { name: 'input2', summary: 'input2 summary' },
       ],
       options: [
-        { name: 'opt1', description: 'opt1 description' },
-        { name: 'opt2', description: 'opt2 description' },
+        { name: 'opt1', summary: 'opt1 summary' },
+        { name: 'opt2', summary: 'opt2 summary' },
       ],
       exampleCommands: ['', 'input1 input2', '--opt1 --opt2'],
     };
@@ -103,7 +103,7 @@ class BazCommand extends Command {
   async getMetadata() {
     return {
       name: 'baz',
-      description: 'the baz command',
+      summary: 'the baz command',
     };
   }
 
@@ -116,7 +116,7 @@ class FooCommand extends Command {
     return {
       name: 'foo',
       type: 'global',
-      description: 'the foo command',
+      summary: 'the foo command',
     };
   }
 
@@ -139,7 +139,7 @@ describe('@ionic/cli-framework', () => {
         expect(stripAnsi(result)).toEqual(`
   my foo bar - the bar command
 
-    my long description
+    my description
 
   Usage:
 
@@ -147,13 +147,13 @@ describe('@ionic/cli-framework', () => {
 
   Inputs:
 
-    input1 ................... input1 description
-    input2 ................... input2 description
+    input1 ................... input1 summary
+    input2 ................... input2 summary
 
   Options:
 
-    --opt1 ................... opt1 description
-    --opt2 ................... opt2 description
+    --opt1 ................... opt1 summary
+    --opt2 ................... opt2 summary
 
   Examples:
 

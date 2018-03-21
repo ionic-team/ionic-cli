@@ -11,14 +11,14 @@ export class RequirementsCommand extends CordovaCommand implements CommandPreRun
     return {
       name: 'requirements',
       type: 'project',
-      description: 'Checks and print out all the requirements for platforms',
-      longDescription: `
+      summary: 'Checks and print out all the requirements for platforms',
+      description: `
 Like running ${chalk.green('cordova requirements')} directly, but provides friendly checks.
       `,
       inputs: [
         {
           name: 'platform',
-          description: `The platform for which you would like to gather requirements (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform for which you would like to gather requirements (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
         },
       ],
     };

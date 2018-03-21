@@ -14,25 +14,25 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
     return {
       name: 'platform',
       type: 'project',
-      description: 'Manage Cordova platform targets',
-      longDescription: `
+      summary: 'Manage Cordova platform targets',
+      description: `
 Like running ${chalk.green('cordova platform')} directly, but adds default Ionic icons and splash screen resources (during ${chalk.green('add')}) and provides friendly checks.
       `,
       exampleCommands: ['', 'add ios', 'add android', 'rm ios'],
       inputs: [
         {
           name: 'action',
-          description: `${chalk.green('add')}, ${chalk.green('remove')}, or ${chalk.green('update')} a platform; ${chalk.green('ls')}, ${chalk.green('check')}, or ${chalk.green('save')} all project platforms`,
+          summary: `${chalk.green('add')}, ${chalk.green('remove')}, or ${chalk.green('update')} a platform; ${chalk.green('ls')}, ${chalk.green('check')}, or ${chalk.green('save')} all project platforms`,
         },
         {
           name: 'platform',
-          description: `The platform that you would like to add (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform that you would like to add (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
         },
       ],
       options: [
         {
           name: 'resources',
-          description: `Do not pregenerate icons and splash screen resources (corresponds to ${chalk.green('add')})`,
+          summary: `Do not pregenerate icons and splash screen resources (corresponds to ${chalk.green('add')})`,
           type: Boolean,
           default: true,
         },

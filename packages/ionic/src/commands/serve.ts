@@ -33,61 +33,61 @@ export class ServeCommand extends Command implements CommandPreRun {
       ...COMMON_SERVE_COMMAND_OPTIONS,
       {
         name: 'lab-host',
-        description: 'Use specific address for Ionic Lab server',
+        summary: 'Use specific address for Ionic Lab server',
         default: 'localhost',
         groups: [OptionGroup.Advanced],
       },
       {
         name: 'lab-port',
-        description: 'Use specific port for Ionic Lab server',
+        summary: 'Use specific port for Ionic Lab server',
         default: DEFAULT_LAB_PORT.toString(),
         groups: [OptionGroup.Advanced],
       },
       {
         name: 'devapp',
-        description: 'Do not publish DevApp service',
+        summary: 'Do not publish DevApp service',
         type: Boolean,
         default: true,
         groups: [OptionGroup.Advanced],
       },
       {
         name: 'open',
-        description: 'Do not open a browser window',
+        summary: 'Do not open a browser window',
         type: Boolean,
         default: true,
         // TODO: Adding 'b' to aliases here has some weird behavior with minimist.
       },
       {
         name: 'local',
-        description: 'Disable external network usage',
+        summary: 'Disable external network usage',
         type: Boolean,
       },
       {
         name: 'browser',
-        description: `Specifies the browser to use (${BROWSERS.map(b => chalk.green(b)).join(', ')})`,
+        summary: `Specifies the browser to use (${BROWSERS.map(b => chalk.green(b)).join(', ')})`,
         aliases: ['w'],
         groups: [OptionGroup.Advanced],
       },
       {
         name: 'browseroption',
-        description: `Specifies a path to open to (${chalk.green('/#/tab/dash')})`,
+        summary: `Specifies a path to open to (${chalk.green('/#/tab/dash')})`,
         aliases: ['o'],
         groups: [OptionGroup.Advanced],
       },
       {
         name: 'lab',
-        description: 'Test your apps on multiple platform types in the browser',
+        summary: 'Test your apps on multiple platform types in the browser',
         type: Boolean,
         aliases: ['l'],
       },
       {
         name: 'platform',
-        description: `Start serve with a specific platform (${['android', 'ios'].map(t => chalk.green(t)).join(', ')})`,
+        summary: `Start serve with a specific platform (${['android', 'ios'].map(t => chalk.green(t)).join(', ')})`,
         aliases: ['t'],
       },
       {
         name: 'auth',
-        description: 'HTTP Basic Auth password to secure the server on your local network',
+        summary: 'HTTP Basic Auth password to secure the server on your local network',
         type: String,
         groups: [OptionGroup.Hidden],
       },
@@ -95,7 +95,7 @@ export class ServeCommand extends Command implements CommandPreRun {
 
     const exampleCommands = ['', '-c', '--local', '--lab'];
 
-    let longDescription = `
+    let description = `
 Easily spin up a development server which launches in your browser. It watches for changes in your source files and automatically reloads with the updated build.
 
 By default, ${chalk.green('ionic serve')} boots up a development server on all network interfaces and prints the external address(es) on which your app is being served. It also broadcasts your app to the Ionic DevApp on your network. To disable the DevApp and bind to ${chalk.green('localhost')}, use ${chalk.green('--local')}.
@@ -106,7 +106,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
       const runner = await this.getRunner();
       const libmetadata = await runner.getCommandMetadata();
       options.push(...libmetadata.options || []);
-      longDescription += `\n\n${(libmetadata.longDescription || '').trim()}`;
+      description += `\n\n${(libmetadata.description || '').trim()}`;
       exampleCommands.push(...libmetadata.exampleCommands || []);
     } catch (e) {
       if (!(e instanceof RunnerNotFoundException)) {
@@ -117,8 +117,8 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
     return {
       name: 'serve',
       type: 'project',
-      description: 'Start a local dev server for app dev/testing',
-      longDescription,
+      summary: 'Start a local dev server for app dev/testing',
+      description,
       exampleCommands,
       options,
     };
@@ -171,8 +171,8 @@ export class LabCommand extends ServeCommand {
 
     return {
       ...metadata,
-      description: 'Start Ionic Lab for multi-platform dev/testing',
-      longDescription: `
+      summary: 'Start Ionic Lab for multi-platform dev/testing',
+      description: `
 Start an instance of ${chalk.bold('Ionic Lab')}, a tool for developing Ionic apps for multiple platforms at once side-by-side.
 
 ${chalk.green('ionic lab')} is just a convenient shortcut for ${chalk.green('ionic serve --lab')}.`,

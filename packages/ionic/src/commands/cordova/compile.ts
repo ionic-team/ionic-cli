@@ -11,8 +11,8 @@ export class CompileCommand extends CordovaCommand implements CommandPreRun {
     return {
       name: 'compile',
       type: 'project',
-      description: 'Compile native platform code',
-      longDescription: `
+      summary: 'Compile native platform code',
+      description: `
 Like running ${chalk.green('cordova compile')} directly, but provides friendly checks.
       `,
       exampleCommands: [
@@ -23,7 +23,7 @@ Like running ${chalk.green('cordova compile')} directly, but provides friendly c
       inputs: [
         {
           name: 'platform',
-          description: `The platform to compile (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform to compile (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
           validators: [validators.required],
         },
       ],

@@ -9,7 +9,7 @@ export class EmulateCommand extends RunCommand {
     return {
       ...metadata,
       name: 'emulate',
-      description: 'Emulate an Ionic project on a simulator/emulator',
+      summary: 'Emulate an Ionic project on a simulator/emulator',
     };
   }
 }

@@ -12,8 +12,8 @@ export class ConfigGetCommand extends Command {
     return {
       name: 'get',
       type: 'global',
-      description: 'Print config values',
-      longDescription: `
+      summary: 'Print config values',
+      description: `
 By default, this command prints properties in your project's ${chalk.bold(PROJECT_FILE)} file.
 
 For ${chalk.green('--global')} config, the CLI prints properties in the global CLI config file (${chalk.bold('~/.ionic/config.json')}).
@@ -29,19 +29,19 @@ This command attempts to sanitize config output for known sensitive fields, such
       inputs: [
         {
           name: 'property',
-          description: 'The property name you wish to get',
+          summary: 'The property name you wish to get',
         },
       ],
       options: [
         {
           name: 'global',
-          description: 'Use global CLI config',
+          summary: 'Use global CLI config',
           type: Boolean,
           aliases: ['g'],
         },
         {
           name: 'json',
-          description: 'Output config values in JSON',
+          summary: 'Output config values in JSON',
           type: Boolean,
         },
       ],

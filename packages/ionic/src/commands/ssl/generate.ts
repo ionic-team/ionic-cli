@@ -37,9 +37,9 @@ export class SSLGenerateCommand extends SSLBaseCommand implements CommandPreRun 
     return {
       name: 'generate',
       type: 'global',
-      description: 'Generates an SSL key & certificate',
+      summary: 'Generates an SSL key & certificate',
       // TODO: document how to add trusted certs
-      longDescription: `
+      description: `
 Uses OpenSSL to create a self-signed certificate for ${chalk.bold('localhost')} (by default).
 
 After the certificate is generated, you will still need to add it to your system or browser as a trusted certificate.
@@ -49,47 +49,47 @@ The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert
       options: [
         {
           name: 'key-path',
-          description: 'Destination of private key file',
+          summary: 'Destination of private key file',
           default: prettyPath(path.resolve(this.getDefaultPath(), 'key.pem')),
         },
         {
           name: 'cert-path',
-          description: 'Destination of certificate file',
+          summary: 'Destination of certificate file',
           default: prettyPath(path.resolve(this.getDefaultPath(), 'cert.pem')),
         },
         {
           name: 'country-name',
-          description: 'The country name (C) of the SSL certificate',
+          summary: 'The country name (C) of the SSL certificate',
           default: DEFAULT_COUNTRY_NAME,
           groups: [OptionGroup.Advanced],
         },
         {
           name: 'state-or-province-name',
-          description: 'The state or province name (ST) of the SSL certificate',
+          summary: 'The state or province name (ST) of the SSL certificate',
           default: DEFAULT_STATE_OR_PROVINCE_NAME,
           groups: [OptionGroup.Advanced],
         },
         {
           name: 'locality-name',
-          description: 'The locality name (L) of the SSL certificate',
+          summary: 'The locality name (L) of the SSL certificate',
           default: DEFAULT_LOCALITY_NAME,
           groups: [OptionGroup.Advanced],
         },
         {
           name: 'organization-name',
-          description: 'The organization name (O) of the SSL certificate',
+          summary: 'The organization name (O) of the SSL certificate',
           default: DEFAULT_ORGANIZATION_NAME,
           groups: [OptionGroup.Advanced],
         },
         {
           name: 'common-name',
-          description: 'The common name (CN) of the SSL certificate',
+          summary: 'The common name (CN) of the SSL certificate',
           default: DEFAULT_COMMON_NAME,
           groups: [OptionGroup.Advanced],
         },
         {
           name: 'bits',
-          description: 'Number of bits in the key',
+          summary: 'Number of bits in the key',
           aliases: ['b'],
           default: DEFAULT_BITS,
           groups: [OptionGroup.Advanced],

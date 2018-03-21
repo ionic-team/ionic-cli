@@ -12,8 +12,8 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
     return {
       name: 'prepare',
       type: 'project',
-      description: 'Copies assets to Cordova platforms, preparing them for native builds',
-      longDescription: `
+      summary: 'Copies assets to Cordova platforms, preparing them for native builds',
+      description: `
 ${chalk.green('ionic cordova prepare')} will do the following:
 - Copy the ${chalk.bold('www/')} directory into your Cordova platforms.
 - Transform ${chalk.bold('config.xml')} into platform-specific manifest files.
@@ -26,13 +26,13 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
       inputs: [
         {
           name: 'platform',
-          description: `The platform you would like to prepare (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform you would like to prepare (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
         },
       ],
       options: [
         {
           name: 'build',
-          description: 'Do not invoke an Ionic build',
+          summary: 'Do not invoke an Ionic build',
           type: Boolean,
           default: true,
         },

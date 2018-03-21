@@ -27,8 +27,8 @@ export class StartCommand extends Command implements CommandPreRun {
     return {
       name: 'start',
       type: 'global',
-      description: 'Create a new project',
-      longDescription: `
+      summary: 'Create a new project',
+      description: `
 This command creates a working Ionic app. It installs dependencies for you and sets up your project.
 
 ${chalk.green('ionic start')} will create a new app from ${chalk.green('template')}. You can list all templates with the ${chalk.green('--list')} option. For more information on starter templates, see the CLI documentation${chalk.cyan('[1]')}.
@@ -50,71 +50,71 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       inputs: [
         {
           name: 'name',
-          description: 'The name of your project directory',
+          summary: 'The name of your project directory',
           validators: [validators.required],
         },
         {
           name: 'template',
-          description: `The starter template to use (e.g. ${['blank', 'tabs'].map(t => chalk.green(t)).join(', ')}; use ${chalk.green('--list')} to see all)`,
+          summary: `The starter template to use (e.g. ${['blank', 'tabs'].map(t => chalk.green(t)).join(', ')}; use ${chalk.green('--list')} to see all)`,
           validators: [validators.required],
         },
       ],
       options: [
         {
           name: 'list',
-          description: 'List available starter templates',
+          summary: 'List available starter templates',
           type: Boolean,
           aliases: ['l'],
         },
         {
           name: 'type',
-          description: `Type of project to start (e.g. ${lodash.uniq(starterTemplates.map(t => t.type)).map(type => chalk.green(type)).join(', ')})`,
+          summary: `Type of project to start (e.g. ${lodash.uniq(starterTemplates.map(t => t.type)).map(type => chalk.green(type)).join(', ')})`,
           type: String,
         },
         {
           name: 'display-name',
-          description: 'Human-friendly name (use quotes around the name)',
+          summary: 'Human-friendly name (use quotes around the name)',
           type: String,
           aliases: ['n'],
         },
         {
           name: 'cordova',
-          description: 'Include Cordova integration',
+          summary: 'Include Cordova integration',
           type: Boolean,
         },
         {
           name: 'deps',
-          description: 'Do not install npm/yarn dependencies',
+          summary: 'Do not install npm/yarn dependencies',
           type: Boolean,
           default: true,
           groups: [OptionGroup.Advanced],
         },
         {
           name: 'git',
-          description: 'Do not initialize a git repo',
+          summary: 'Do not initialize a git repo',
           type: Boolean,
           default: true,
           groups: [OptionGroup.Advanced],
         },
         {
           name: 'link',
-          description: 'Do not ask to connect the app with the Ionic Dashboard',
+          summary: 'Do not ask to connect the app with the Ionic Dashboard',
           type: Boolean,
           default: true,
           groups: [OptionGroup.Advanced],
         },
         {
           name: 'pro-id',
-          description: 'Specify an app ID from the Ionic Dashboard to link',
+          summary: 'Specify an app ID from the Ionic Dashboard to link',
         },
         {
           name: 'bundle-id',
-          description: 'Specify the bundle ID/application ID for your app (reverse-DNS notation)',
+          summary: 'Specify the bundle ID/application ID for your app (reverse-DNS notation)',
           groups: [OptionGroup.Advanced],
         },
         {
           name: 'tag',
-          description: `Specify a tag to use for the starters (e.g. ${['latest', 'testing', 'next'].map(t => chalk.green(t)).join(', ')})`,
+          summary: `Specify a tag to use for the starters (e.g. ${['latest', 'testing', 'next'].map(t => chalk.green(t)).join(', ')})`,
           default: 'latest',
           groups: [OptionGroup.Hidden],
         },

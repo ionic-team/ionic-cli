@@ -10,11 +10,11 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
     return {
       name: 'delete',
       type: 'global',
-      description: 'Delete an SSH public key from Ionic',
+      summary: 'Delete an SSH public key from Ionic',
       inputs: [
         {
           name: 'key-id',
-          description: 'The ID of the public key to delete',
+          summary: 'The ID of the public key to delete',
           validators: [validators.required],
         },
       ],

@@ -9,7 +9,7 @@ export class DoctorIgnoreCommand extends Command implements CommandPreRun {
     return {
       name: 'ignore',
       type: 'project',
-      description: 'Ignore a particular issue',
+      summary: 'Ignore a particular issue',
       exampleCommands: [
         '',
         'git-not-used',
@@ -17,7 +17,7 @@ export class DoctorIgnoreCommand extends Command implements CommandPreRun {
       inputs: [
         {
           name: 'id',
-          description: 'The issue identifier',
+          summary: 'The issue identifier',
           validators: [validators.required],
         },
       ],

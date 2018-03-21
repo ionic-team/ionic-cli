@@ -31,8 +31,8 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
     return {
       name: 'resources',
       type: 'project',
-      description: 'Automatically create icon and splash screen resources',
-      longDescription: `
+      summary: 'Automatically create icon and splash screen resources',
+      description: `
 Ionic can automatically generate perfectly sized icons and splash screens from source images (${chalk.bold('.png')}, ${chalk.bold('.psd')}, or ${chalk.bold('.ai')}) for your Cordova platforms.
 
 The source image for icons should ideally be at least ${chalk.bold('1024×1024px')} and located at ${chalk.bold('resources/icon.png')}. The source image for splash screens should ideally be at least ${chalk.bold('2732×2732px')} and located at ${chalk.bold('resources/splash.png')}. If you used ${chalk.green('ionic start')}, there should already be default Ionic resources in the ${chalk.bold('resources/')} directory, which you can overwrite.
@@ -55,25 +55,25 @@ This command uses Ionic servers, so we require you to be logged into your free I
       inputs: [
         {
           name: 'platform',
-          description: `The platform for which you would like to generate resources (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform for which you would like to generate resources (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
         },
       ],
       options: [
         {
           name: 'force',
-          description: 'Force regeneration of resources',
+          summary: 'Force regeneration of resources',
           type: Boolean,
           aliases: ['f'],
         },
         {
           name: 'icon',
-          description: 'Generate icon resources',
+          summary: 'Generate icon resources',
           type: Boolean,
           aliases: ['i'],
         },
         {
           name: 'splash',
-          description: 'Generate splash screen resources',
+          summary: 'Generate splash screen resources',
           type: Boolean,
           aliases: ['s'],
         },

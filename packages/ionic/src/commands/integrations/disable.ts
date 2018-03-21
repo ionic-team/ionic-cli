@@ -12,11 +12,11 @@ export class IntegrationsDisableCommand extends Command {
     return {
       name: 'disable',
       type: 'project',
-      description: 'Disable an integration',
+      summary: 'Disable an integration',
       inputs: [
         {
           name: 'name',
-          description: `The integration to disable (${INTEGRATION_NAMES.map(i => chalk.green(i)).join(', ')})`,
+          summary: `The integration to disable (${INTEGRATION_NAMES.map(i => chalk.green(i)).join(', ')})`,
           validators: [validators.required, contains(INTEGRATION_NAMES, {})],
         },
       ],

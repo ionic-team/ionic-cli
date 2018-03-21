@@ -31,7 +31,7 @@ export type CommandOptionType = StringConstructor | BooleanConstructor;
 
 export interface CommandMetadataInput {
   name: string;
-  description: string;
+  summary: string;
   validators?: Validator[];
   private?: boolean;
 }
@@ -40,7 +40,7 @@ export type MetadataGroup = string | number | symbol;
 
 export interface CommandMetadataOption {
   name: string;
-  description: string;
+  summary: string;
   type?: CommandOptionType;
   default?: ParsedArg;
   aliases?: string[];
@@ -62,8 +62,8 @@ export interface HydratedParseArgsOptions extends minimistType.Opts {
 
 export interface Metadata {
   name: string;
-  description: string;
-  longDescription?: string;
+  summary: string;
+  description?: string;
   groups?: MetadataGroup[];
 }
 
@@ -107,7 +107,7 @@ export interface INamespace<C extends ICommand<C, N, M, I, O>, N extends INamesp
   getCommands(): Promise<ICommandMap<C, N, M, I, O>>;
 
   locate(argv: string[]): Promise<NamespaceLocateResult<C, N, M, I, O>>;
-  getCommandMetadataList(): Promise<ReadonlyArray<M & HydratedCommandMetadata<C, N, M, I, O>>>;
+  getCommandMetadataList(): Promise<ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>>;
 }
 
 export type CommandPathItem<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = [string, C | N];
@@ -118,12 +118,12 @@ export interface NamespaceLocateResult<C extends ICommand<C, N, M, I, O>, N exte
   readonly path: ReadonlyArray<CommandPathItem<C, N, M, I, O>>;
 }
 
-export interface HydratedCommandMetadata<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+export type HydratedCommandMetadata<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = M & {
   readonly command: C;
   readonly namespace: N;
   readonly path: ReadonlyArray<CommandPathItem<C, N, M, I, O>>;
   readonly aliases: ReadonlyArray<string>;
-}
+};
 
 export interface NamespaceMetadata extends Metadata {}
 

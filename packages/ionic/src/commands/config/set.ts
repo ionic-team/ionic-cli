@@ -13,8 +13,8 @@ export class ConfigSetCommand extends Command {
     return {
       name: 'set',
       type: 'global',
-      description: 'Set config values',
-      longDescription: `
+      summary: 'Set config values',
+      description: `
 By default, this command sets JSON properties in your project's ${chalk.bold(PROJECT_FILE)} file.
 
 For ${chalk.green('--global')} config, the CLI sets properties in the global CLI config file (${chalk.bold('~/.ionic/config.json')}).
@@ -28,30 +28,30 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
       inputs: [
         {
           name: 'property',
-          description: 'The property name you wish to set',
+          summary: 'The property name you wish to set',
           validators: [validators.required],
         },
         {
           name: 'value',
-          description: 'The new value of the given property',
+          summary: 'The new value of the given property',
           validators: [validators.required],
         },
       ],
       options: [
         {
           name: 'global',
-          description: 'Use global CLI config',
+          summary: 'Use global CLI config',
           type: Boolean,
           aliases: ['g'],
         },
         {
           name: 'json',
-          description: `Always interpret ${chalk.green('value')} as JSON`,
+          summary: `Always interpret ${chalk.green('value')} as JSON`,
           type: Boolean,
         },
         {
           name: 'force',
-          description: 'Always overwrite existing values',
+          summary: 'Always overwrite existing values',
           type: Boolean,
           groups: [OptionGroup.Advanced],
         },

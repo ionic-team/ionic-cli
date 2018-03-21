@@ -14,9 +14,9 @@ export class SSLNamespace extends Namespace {
 
     return {
       name: 'ssl',
-      description: 'Commands for managing SSL keys & certificates',
+      summary: 'Commands for managing SSL keys & certificates',
       groups,
-      longDescription: `
+      description: `
 These commands make it easy to generate SSL certificates for using HTTPS with ${chalk.green('ionic serve')}, etc.
       `,
     };

@@ -4,7 +4,7 @@ export class GitNamespace extends Namespace {
   async getMetadata() {
     return {
       name: 'git',
-      description: 'Commands relating to git',
+      summary: 'Commands relating to git',
     };
   }
 

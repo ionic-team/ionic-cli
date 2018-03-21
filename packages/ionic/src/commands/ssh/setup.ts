@@ -14,7 +14,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
     return {
       name: 'setup',
       type: 'global',
-      description: 'Setup your Ionic SSH keys automatically',
+      summary: 'Setup your Ionic SSH keys automatically',
     };
   }
 

@@ -38,7 +38,29 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
     this.namespace = namespace;
   }
 
-  filterCommandCallback?(cmd: M & HydratedCommandMetadata<C, N, M, I, O>): Promise<boolean>;
+  /**
+   * Given command metadata, decide whether to keep or discard the command that
+   * the metadata represents.
+   *
+   * @param meta: The metadata of the command.
+   * @return `true` to keep, `false` to discard
+   */
+  filterCommandCallback?(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<boolean>;
+
+  /**
+   * Insert text that appears before a commands's summary.
+   *
+   * @param meta: The metadata of the command.
+   */
+  formatBeforeCommandSummary?(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<string>;
+
+  /**
+   * Insert text that appears before a namespace's summary.
+   *
+   * @param meta The metadata of the namespace.
+   * @param commands An array of the metadata of the namespace's commands.
+   */
+  formatBeforeNamespaceSummary?(meta: NamespaceMetadata, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string>;
 
   async getNamespaceMetadata(): Promise<NamespaceMetadata> {
     if (!this._metadata) {
@@ -60,37 +82,36 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
     const { strong, input } = this.colors;
     const fullName = await this.getNamespaceFullName();
 
+    const summary = await this.formatSummary();
     const description = await this.formatDescription();
-    const longDescription = await this.formatLongDescription();
 
     return (
-      `\n  ${strong(`${input(fullName)}${description}`)}` +
-      (longDescription ? `\n\n    ${longDescription}` : '') + '\n'
+      `\n  ${strong(`${input(fullName)}${summary}`)}` +
+      (description ? `\n\n    ${description}` : '') + '\n'
     );
   }
 
-  async formatDescription(): Promise<string> {
+  async formatSummary(): Promise<string> {
     const fullName = await this.getNamespaceFullName();
     const metadata = await this.getNamespaceMetadata();
-    const wrappedDescription = wordWrap(metadata.description, { indentation: fullName.length + 5 });
     const subtitle = await this.formatSubtitle();
-    const description = (subtitle ? subtitle + ' ' : '') + wrappedDescription;
+    const summary = (subtitle ? subtitle + ' ' : '') + wordWrap(metadata.summary, { indentation: fullName.length + 5 });
 
-    return description ? ` - ${description}` : '';
+    return summary ? ` - ${summary}` : '';
   }
 
   async formatSubtitle(): Promise<string> {
     return '';
   }
 
-  async formatLongDescription(): Promise<string> {
+  async formatDescription(): Promise<string> {
     const metadata = await this.getNamespaceMetadata();
 
-    if (!metadata.longDescription) {
+    if (!metadata.description) {
       return '';
     }
 
-    return wordWrap(metadata.longDescription.trim(), { indentation: 4 });
+    return wordWrap(metadata.description.trim(), { indentation: 4 });
   }
 
   async getExtraOptions(): Promise<string[]> {
@@ -118,7 +139,7 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
     return this.formatCommandGroup('Commands', commands);
   }
 
-  async formatCommandGroup(title: string, commands: ReadonlyArray<M & HydratedCommandMetadata<C, N, M, I, O>>): Promise<string> {
+  async formatCommandGroup(title: string, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string> {
     const { strong } = this.colors;
 
     const filterCallback = this.filterCommandCallback;
@@ -143,61 +164,80 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
     );
   }
 
-  async getListOfCommandDetails(commands: ReadonlyArray<M & HydratedCommandMetadata<C, N, M, I, O>>): Promise<string[]> {
+  async getListOfCommandDetails(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string[]> {
     const { weak, input } = this.colors;
     const fullCmd = commands.map(cmd => cmd.path.map(([p]) => p).join(' '));
     const fillStringArray = generateFillSpaceStringList(fullCmd, this.dotswidth, weak('.'));
 
     const formattedCommands = await Promise.all(commands.map(async (cmd, index) => {
-      const description = (await this.formatBeforeCommandDescription(cmd)) + cmd.description + (await this.formatAfterCommandDescription(cmd));
-      const wrappedDescription = wordWrap(description, { indentation: this.dotswidth + 6 });
-      return `${input(cmd.path.map(p => p[0]).join(' '))}${wrappedDescription ? ' ' + fillStringArray[index] + ' ' + wrappedDescription : ''}`;
+      const summary = (
+        (this.formatBeforeCommandSummary ? await this.formatBeforeCommandSummary(cmd) : '') +
+        cmd.summary +
+        (await this.formatAfterCommandSummary(cmd))
+      );
+
+      const wrappedSummary = wordWrap(summary, { indentation: this.dotswidth + 6 });
+      return `${input(cmd.path.map(p => p[0]).join(' '))}${wrappedSummary ? ' ' + fillStringArray[index] + ' ' + wrappedSummary : ''}`;
     }));
 
     return formattedCommands;
   }
 
-  async getListOfNamespaceDetails(commands: ReadonlyArray<M & HydratedCommandMetadata<C, N, M, I, O>>): Promise<string[]> {
+  async getListOfNamespaceDetails(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string[]> {
     const { weak, input } = this.colors;
-    const descriptions = new Map<string, string>();
-    const grouped = new Map<string, { meta: NamespaceMetadata; cmds: (M & HydratedCommandMetadata<C, N, M, I, O>)[]; }>();
+    const summaries = new Map<string, string>();
+    const grouped = new Map<string, { meta: NamespaceMetadata; commands: HydratedCommandMetadata<C, N, M, I, O>[]; }>();
 
     await Promise.all(commands.map(async cmd => {
       const nsmeta = await cmd.namespace.getMetadata();
-      descriptions.set(nsmeta.name, nsmeta.description);
+      summaries.set(nsmeta.name, nsmeta.summary);
       let entry = grouped.get(nsmeta.name);
 
       if (!entry) {
-        entry = { meta: nsmeta, cmds: [] };
+        entry = { meta: nsmeta, commands: [] };
         grouped.set(nsmeta.name, entry);
       }
 
-      entry.cmds.push(cmd);
+      entry.commands.push(cmd);
     }));
 
     const entries = [...grouped.entries()];
     const fillStringArray = generateFillSpaceStringList(entries.map(([name]) => name + ' <subcommand>'), this.dotswidth, weak('.'));
 
-    const formattedNamespaces = await Promise.all(entries.map(async ([name, { meta, cmds }], i) => {
-      const subcommands = cmds.map(c => input(c.name)).join(', ');
-      const wrappedDescription = wordWrap(`${await this.formatBeforeNamespaceDescription(meta)}${descriptions.get(name)} ${weak('(subcommands:')} ${subcommands}${weak(')')}`, { indentation: this.dotswidth + 6 });
-      return `${input(name + ' <subcommand>')}${wrappedDescription ? ' ' + fillStringArray[i] + ' ' + wrappedDescription : ''}`;
+    const formattedNamespaces = await Promise.all(entries.map(async ([name, { meta, commands }], i) => {
+      const summary = (
+        (this.formatBeforeNamespaceSummary ? await this.formatBeforeNamespaceSummary(meta, commands) : '') +
+        summaries.get(name) +
+        (await this.formatAfterNamespaceSummary(meta, commands))
+      );
+
+      const wrappedSummary = wordWrap(summary, { indentation: this.dotswidth + 6 });
+
+      return `${input(name + ' <subcommand>')}${wrappedSummary ? ' ' + fillStringArray[i] + ' ' + wrappedSummary : ''}`;
     }));
 
     return formattedNamespaces;
   }
 
-  async formatBeforeNamespaceDescription(meta: NamespaceMetadata): Promise<string> {
-    return '';
-  }
-
-  async formatBeforeCommandDescription(cmd: M & HydratedCommandMetadata<C, N, M, I, O>): Promise<string> {
-    return '';
-  }
-
-  async formatAfterCommandDescription(cmd: M & HydratedCommandMetadata<C, N, M, I, O>): Promise<string> {
+  /**
+   * Insert text that appears after a commands's summary.
+   *
+   * @param meta: The metadata of the command.
+   */
+  async formatAfterCommandSummary(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<string> {
     const { weak, input } = this.colors;
-    return `${cmd.aliases.length > 0 ? weak(' (alias' + (cmd.aliases.length === 1 ? '' : 'es') + ': ') + cmd.aliases.map(a => input(a)).join(', ') + weak(')') : ''}`;
+    return `${meta.aliases.length > 0 ? weak(' (alias' + (meta.aliases.length === 1 ? '' : 'es') + ': ') + meta.aliases.map(a => input(a)).join(', ') + weak(')') : ''}`;
+  }
+
+  /**
+   * Insert text that appears after a namespace's summary.
+   *
+   * @param meta The metadata of the namespace.
+   * @param commands An array of the metadata of the namespace's commands.
+   */
+  async formatAfterNamespaceSummary(meta: NamespaceMetadata, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>) {
+    const { weak, input } = this.colors;
+    return ` ${weak('(subcommands:')} ${commands.map(c => input(c.name)).join(', ')}${weak(')')}`;
   }
 
   async format(): Promise<string> {
@@ -230,6 +270,14 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
     this.command = command;
   }
 
+  /**
+   * Given an option definition from command metadata, decide whether to keep
+   * or discard it.
+   *
+   * @return `true` to keep, `false` to discard
+   */
+  filterOptionCallback?(option: O): Promise<boolean>;
+
   async getCommandMetadata(): Promise<M> {
     if (!this._metadata) {
       this._metadata = await this.command.getMetadata({ location: this.location });
@@ -246,45 +294,40 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
     return this._fullName;
   }
 
-  filterOptionCallback(options: O): boolean {
-    return true;
-  }
-
   async formatHeader(): Promise<string> {
     const { strong, input } = this.colors;
     const fullName = await this.getCommandFullName();
 
+    const summary = await this.formatSummary();
     const description = await this.formatDescription();
-    const longDescription = await this.formatLongDescription();
 
     return (
-      `\n  ${strong(`${input(fullName)}${description}`)}` +
-      (longDescription ? `\n\n    ${longDescription}` : '') + '\n'
+      `\n  ${strong(`${input(fullName)}${summary}`)}` +
+      (description ? `\n\n    ${description}` : '') + '\n'
     );
   }
 
-  async formatDescription(): Promise<string> {
+  async formatSummary(): Promise<string> {
     const fullName = await this.getCommandFullName();
     const metadata = await this.getCommandMetadata();
-    const wrappedDescription = wordWrap(metadata.description, { indentation: fullName.length + 5 });
     const subtitle = await this.formatSubtitle();
-    const description = (subtitle ? subtitle + ' ' : '') + wrappedDescription;
+    const summary = (subtitle ? subtitle + ' ' : '') + wordWrap(metadata.summary, { indentation: fullName.length + 5 });
 
-    return description ? ` - ${description}` : '';
+    return summary ? ` - ${summary}` : '';
   }
 
   async formatSubtitle(): Promise<string> {
     return '';
   }
 
-  async formatLongDescription(): Promise<string> {
+  async formatDescription(): Promise<string> {
     const metadata = await this.getCommandMetadata();
 
-    if (!metadata.longDescription) {
+    if (!metadata.description) {
       return '';
     }
 
-    return wordWrap(metadata.longDescription.trim(), { indentation: 4 });
+    return wordWrap(metadata.description.trim(), { indentation: 4 });
   }
 
   async formatInlineInput(input: I): Promise<string> {
@@ -300,12 +343,14 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
     const fullName = await this.getCommandFullName();
     const metadata = await this.getCommandMetadata();
 
-    const options = metadata.options ? metadata.options.filter(opt => this.filterOptionCallback(opt)) : [];
+    const filterCallback = this.filterOptionCallback;
+    const options = metadata.options ? metadata.options : [];
+    const filteredOptions = filterCallback ? await filter(options, async opt => filterCallback(opt)) : options;
     const formattedInputs = metadata.inputs ? await Promise.all(metadata.inputs.map(async input => this.formatInlineInput(input))) : [];
 
     return (
       `\n  ${strong('Usage')}:` +
-      `\n\n    ${weak('$')} ${input(fullName + (formattedInputs ? ' ' + formattedInputs.join(' ') : ''))}${options.length > 0 ? ' ' + input('[options]') : ''}\n`
+      `\n\n    ${weak('$')} ${input(fullName + (formattedInputs ? ' ' + formattedInputs.join(' ') : ''))}${filteredOptions.length > 0 ? ' ' + input('[options]') : ''}\n`
     );
   }
 
@@ -320,11 +365,11 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
 
     const fillStrings = generateFillSpaceStringList(inputs.map(input => input.name), this.dotswidth, weak('.'));
 
-    const inputLineFn = ({ name, description}: I, index: number) => {
+    const inputLineFn = ({ name, summary }: I, index: number) => {
       const optionList = input(`${name}`);
-      const wrappedDescription = wordWrap(description, { indentation: this.dotswidth + 6 });
+      const wrappedSummary = wordWrap(summary, { indentation: this.dotswidth + 6 });
 
-      return `${optionList} ${fillStrings[index]} ${wrappedDescription}`;
+      return `${optionList} ${fillStrings[index]} ${wrappedSummary}`;
     };
 
     return (
@@ -345,9 +390,9 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
     const optionListLength = stringWidth(optionList);
     const fullLength = optionListLength > this.dotswidth ? optionListLength + 1 : this.dotswidth;
     const fullDescription = (
-      (await this.formatBeforeOptionDescription(opt)) +
-      opt.description +
-      (await this.formatAfterOptionDescription(opt))
+      (await this.formatBeforeOptionSummary(opt)) +
+      opt.summary +
+      (await this.formatAfterOptionSummary(opt))
     );
 
     const wrappedDescription = wordWrap(fullDescription, { indentation: this.dotswidth + 6 });
@@ -355,11 +400,11 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
     return `${optionList} ${weak('.').repeat(fullLength - optionListLength)} ${wrappedDescription}`;
   }
 
-  async formatBeforeOptionDescription(opt: O): Promise<string> {
+  async formatBeforeOptionSummary(opt: O): Promise<string> {
     return '';
   }
 
-  async formatAfterOptionDescription(opt: O): Promise<string> {
+  async formatAfterOptionSummary(opt: O): Promise<string> {
     return this.formatOptionDefault(opt);
   }
 
@@ -383,13 +428,14 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
   async formatOptionsGroup(title: string, options: O[]): Promise<string> {
     const { strong } = this.colors;
 
-    options = options.filter(opt => this.filterOptionCallback(opt));
+    const filterCallback = this.filterOptionCallback;
+    const filteredOptions = filterCallback ? await filter(options, async opt => filterCallback(opt)) : options;
 
-    if (options.length === 0) {
+    if (filteredOptions.length === 0) {
       return '';
     }
 
-    const formattedOptions = await Promise.all(options.map(async option => this.formatOptionLine(option)));
+    const formattedOptions = await Promise.all(filteredOptions.map(async option => this.formatOptionLine(option)));
 
     return (
       `\n  ${strong(title)}:` +

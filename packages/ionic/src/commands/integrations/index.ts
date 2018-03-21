@@ -4,8 +4,8 @@ export class IntegrationsNamespace extends Namespace {
   async getMetadata() {
     return {
       name: 'integrations',
-      description: 'Add or disable various integrations in your app',
-      longDescription: 'Integrations, such as Cordova, can easily be enabled or disabled in your app with these commands.',
+      summary: 'Add or disable various integrations in your app',
+      description: 'Integrations, such as Cordova, can easily be enabled or disabled in your app with these commands.',
     };
   }
 

@@ -10,11 +10,11 @@ export class DocsCommand extends Command {
     return {
       name: 'docs',
       type: 'global',
-      description: 'Open the Ionic documentation website',
+      summary: 'Open the Ionic documentation website',
       options: [
         {
           name: 'browser',
-          description: `Specifies the browser to use (${BROWSERS.map(b => chalk.green(b)).join(', ')})`,
+          summary: `Specifies the browser to use (${BROWSERS.map(b => chalk.green(b)).join(', ')})`,
           aliases: ['w'],
           groups: [OptionGroup.Advanced],
         },

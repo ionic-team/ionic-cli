@@ -11,7 +11,7 @@ export class StateCommand extends Command {
     return {
       name: 'state',
       type: 'global',
-      description: '',
+      summary: '',
       groups: [CommandGroup.Hidden],
     };
   }

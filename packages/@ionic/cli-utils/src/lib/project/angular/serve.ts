@@ -29,7 +29,7 @@ export class ServeRunner extends BaseServeRunner<AngularServeOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       exampleCommands: ['-- --extract-css=true'],
-      longDescription: `
+      description: `
 ${chalk.green('ionic serve')} uses the Angular CLI. Common Angular CLI options such as ${chalk.green('--target')} and ${chalk.green('--environment')} are mixed in with Ionic CLI options. Use ${chalk.green('ng serve --help')} to list all options. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
 
 For serving your app with HTTPS, use the ${chalk.green('--ssl')} option. You can provide your own SSL key and certificate with the ${chalk.green('ionic config set ssl.key <path>')} and ${chalk.green('ionic config set ssl.cert <path>')} commands.
@@ -41,32 +41,32 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       options: [
         {
           name: 'ssl',
-          description: 'Use HTTPS for the dev server',
+          summary: 'Use HTTPS for the dev server',
           aliases: ['s'],
           type: Boolean,
         },
         {
           name: 'dev',
-          description: `Sets the build target to ${chalk.green('development')}`,
+          summary: `Sets the build target to ${chalk.green('development')}`,
           type: Boolean,
           hint: 'ng',
         },
         {
           name: 'prod',
-          description: `Sets the build target to ${chalk.green('production')}`,
+          summary: `Sets the build target to ${chalk.green('production')}`,
           type: Boolean,
           hint: 'ng',
         },
         {
           name: 'target',
-          description: 'Set the build target to a custom value',
+          summary: 'Set the build target to a custom value',
           aliases: ['t'],
           groups: [OptionGroup.Advanced],
           hint: 'ng',
         },
         {
           name: 'environment',
-          description: 'Set the build environment to a custom value',
+          summary: 'Set the build environment to a custom value',
           aliases: ['e'],
           groups: [OptionGroup.Advanced],
           hint: 'ng',

@@ -12,8 +12,8 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
     return {
       name: 'build',
       type: 'project',
-      description: 'Build (prepare + compile) an Ionic project for a given platform',
-      longDescription: `
+      summary: 'Build (prepare + compile) an Ionic project for a given platform',
+      description: `
 Like running ${chalk.green('cordova build')} directly, but also builds web assets with configuration from ${chalk.green('ionic build')} and provides friendly checks.
 
 To pass additional options to the Cordova CLI, use the ${chalk.green('--')} separator after the Ionic CLI arguments.
@@ -27,7 +27,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/gu
       inputs: [
         {
           name: 'platform',
-          description: `The platform to build (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform to build (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
           validators: [validators.required],
         },
       ],
@@ -35,7 +35,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/gu
         // Build Options
         {
           name: 'build',
-          description: 'Do not invoke an Ionic build',
+          summary: 'Do not invoke an Ionic build',
           type: Boolean,
           default: true,
         },

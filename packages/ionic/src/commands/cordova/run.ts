@@ -34,62 +34,62 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
     const options: CommandMetadataOption[] = [
       {
         name: 'list',
-        description: 'List all available Cordova targets',
+        summary: 'List all available Cordova targets',
         type: Boolean,
         groups: [OptionGroup.Cordova],
       },
       // Build Options
       {
         name: 'build',
-        description: 'Do not invoke Ionic build/serve',
+        summary: 'Do not invoke Ionic build/serve',
         type: Boolean,
         default: true,
       },
       ...COMMON_SERVE_COMMAND_OPTIONS.map(o => o.name === 'livereload' ? {
         name: 'livereload',
-        description: 'Spin up dev server to live-reload www files',
+        summary: 'Spin up dev server to live-reload www files',
         type: Boolean,
         aliases: ['l'],
       } : o),
       // Cordova Options
       {
         name: 'debug',
-        description: 'Mark as a debug build',
+        summary: 'Mark as a debug build',
         type: Boolean,
         groups: [OptionGroup.Cordova],
         hint: 'cordova',
       },
       {
         name: 'release',
-        description: 'Mark as a release build',
+        summary: 'Mark as a release build',
         type: Boolean,
         groups: [OptionGroup.Cordova],
         hint: 'cordova',
       },
       {
         name: 'device',
-        description: 'Deploy build to a device',
+        summary: 'Deploy build to a device',
         type: Boolean,
         groups: [OptionGroup.Cordova],
         hint: 'cordova',
       },
       {
         name: 'emulator',
-        description: 'Deploy build to an emulator',
+        summary: 'Deploy build to an emulator',
         type: Boolean,
         groups: [OptionGroup.Cordova],
         hint: 'cordova',
       },
       {
         name: 'cordova-target',
-        description: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
+        summary: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
         type: String,
         groups: [OptionGroup.Advanced, OptionGroup.Cordova],
         hint: 'cordova',
       },
       {
         name: 'buildConfig',
-        description: 'Use the specified build configuration',
+        summary: 'Use the specified build configuration',
         groups: [OptionGroup.Advanced, OptionGroup.Cordova],
         hint: 'cordova',
       },
@@ -108,8 +108,8 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
     return {
       name: 'run',
       type: 'project',
-      description: 'Run an Ionic project on a connected device',
-      longDescription: `
+      summary: 'Run an Ionic project on a connected device',
+      description: `
 Like running ${chalk.green('cordova run')} or ${chalk.green('cordova emulate')} directly, but also uses the dev server from ${chalk.green('ionic serve')} for livereload functionality.
 
 For Android and iOS, you can setup Remote Debugging on your device with browser development tools using these docs${chalk.cyan('[1]')}.
@@ -122,7 +122,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       inputs: [
         {
           name: 'platform',
-          description: `The platform to run (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform to run (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
         },
       ],
       options,

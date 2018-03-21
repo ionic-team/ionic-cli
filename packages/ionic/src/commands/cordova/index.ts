@@ -6,8 +6,8 @@ export class CordovaNamespace extends Namespace {
   async getMetadata() {
     return {
       name: 'cordova',
-      description: 'Cordova functionality',
-      longDescription: `
+      summary: 'Cordova functionality',
+      description: `
 These commands integrate with Apache Cordova, which brings native functionality to your app. Aside from ${chalk.green('ionic cordova resources')}, these commands all wrap the Cordova CLI.
 
 Cordova Reference documentation:

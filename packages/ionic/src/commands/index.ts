@@ -4,7 +4,7 @@ export class IonicNamespace extends Namespace {
   async getMetadata() {
     return {
       name: 'ionic',
-      description: '',
+      summary: '',
     };
   }
 

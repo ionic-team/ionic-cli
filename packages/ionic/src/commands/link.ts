@@ -27,8 +27,8 @@ export class LinkCommand extends Command implements CommandPreRun {
     return {
       name: 'link',
       type: 'project',
-      description: 'Connect your local app to Ionic Pro',
-      longDescription: `
+      summary: 'Connect your local app to Ionic Pro',
+      description: `
 If you have an app on Ionic Pro, you can link it to this local Ionic project with this command.
 
 Excluding the ${chalk.green('app_id')} argument looks up your apps on Ionic Pro and prompts you to select one.
@@ -39,23 +39,23 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       inputs: [
         {
           name: 'app_id',
-          description: `The ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
+          summary: `The ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
         },
       ],
       options: [
         {
           name: 'name',
-          description: 'The app name to use during the linking of a new app',
+          summary: 'The app name to use during the linking of a new app',
         },
         {
           name: 'create',
-          description: 'Create a new app on Ionic Pro and link it with this local Ionic project',
+          summary: 'Create a new app on Ionic Pro and link it with this local Ionic project',
           type: Boolean,
           groups: [OptionGroup.Hidden],
         },
         {
           name: 'pro-id',
-          description: 'Specify an app ID from the Ionic Pro to link',
+          summary: 'Specify an app ID from the Ionic Pro to link',
           groups: [OptionGroup.Hidden],
         },
       ],

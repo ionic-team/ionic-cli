@@ -14,11 +14,11 @@ export class SSHUseCommand extends SSHBaseCommand {
     return {
       name: 'use',
       type: 'global',
-      description: 'Set your active Ionic SSH key',
+      summary: 'Set your active Ionic SSH key',
       inputs: [
         {
           name: 'key-path',
-          description: 'Location of private key file to use',
+          summary: 'Location of private key file to use',
           validators: [validators.required],
         },
       ],

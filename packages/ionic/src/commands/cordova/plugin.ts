@@ -12,31 +12,31 @@ export class PluginCommand extends CordovaCommand implements CommandPreRun {
     return {
       name: 'plugin',
       type: 'project',
-      description: 'Manage Cordova plugins',
-      longDescription: `
+      summary: 'Manage Cordova plugins',
+      description: `
 Like running ${chalk.green('cordova plugin')} directly, but provides friendly checks.
       `,
       exampleCommands: ['', 'add cordova-plugin-inappbrowser@latest', 'add phonegap-plugin-push --variable SENDER_ID=XXXXX', 'rm cordova-plugin-camera'],
       inputs: [
         {
           name: 'action',
-          description: `${chalk.green('add')} or ${chalk.green('remove')} a plugin; ${chalk.green('ls')} or ${chalk.green('save')} all project plugins`,
+          summary: `${chalk.green('add')} or ${chalk.green('remove')} a plugin; ${chalk.green('ls')} or ${chalk.green('save')} all project plugins`,
         },
         {
           name: 'plugin',
-          description: `The name of the plugin (corresponds to ${chalk.green('add')} and ${chalk.green('remove')})`,
+          summary: `The name of the plugin (corresponds to ${chalk.green('add')} and ${chalk.green('remove')})`,
         },
       ],
       options: [
         {
           name: 'force',
-          description: `Force overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
+          summary: `Force overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
           type: Boolean,
           groups: [OptionGroup.Advanced, OptionGroup.Cordova],
         },
         {
           name: 'variable',
-          description: 'Specify plugin variables',
+          summary: 'Specify plugin variables',
           groups: [OptionGroup.Cordova],
         },
       ],

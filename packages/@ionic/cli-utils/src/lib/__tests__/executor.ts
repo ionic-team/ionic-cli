@@ -11,11 +11,9 @@ describe('@ionic/cli-utils', () => {
         options: [
           {
             name: 'baz',
-            description: '',
           },
           {
             name: 'opt-with-dashes',
-            description: '',
           },
         ],
       };

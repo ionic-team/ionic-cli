@@ -13,8 +13,8 @@ export class ConfigUnsetCommand extends Command {
     return {
       name: 'unset',
       type: 'global',
-      description: 'Delete config values',
-      longDescription: `
+      summary: 'Delete config values',
+      description: `
 By default, this command deletes properties in your project's ${chalk.bold(PROJECT_FILE)} file.
 
 For ${chalk.green('--global')} config, the CLI deletes properties in the global CLI config file (${chalk.bold('~/.ionic/config.json')}).
@@ -24,14 +24,14 @@ For nested properties, separate nest levels with dots. For example, the property
       inputs: [
         {
           name: 'property',
-          description: 'The property name you wish to delete',
+          summary: 'The property name you wish to delete',
           validators: [validators.required],
         },
       ],
       options: [
         {
           name: 'global',
-          description: 'Use global CLI config',
+          summary: 'Use global CLI config',
           type: Boolean,
           aliases: ['g'],
         },

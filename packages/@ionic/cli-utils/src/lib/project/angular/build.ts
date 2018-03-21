@@ -14,33 +14,33 @@ export class BuildRunner extends BaseBuildRunner<AngularBuildOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       exampleCommands: ['--prod', '-- --extract-css=true'],
-      longDescription: `
+      description: `
 ${chalk.green('ionic build')} uses the Angular CLI. Use ${chalk.green('ng build --help')} to list all Angular CLI options for building your app. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the ${chalk.green('ng')} CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/build#ng-build')}`,
       options: [
         {
           name: 'dev',
-          description: `Sets the build target to ${chalk.green('development')}`,
+          summary: `Sets the build target to ${chalk.green('development')}`,
           type: Boolean,
           hint: 'ng',
         },
         {
           name: 'prod',
-          description: `Sets the build target to ${chalk.green('production')}`,
+          summary: `Sets the build target to ${chalk.green('production')}`,
           type: Boolean,
           hint: 'ng',
         },
         {
           name: 'target',
-          description: 'Set the build target to a custom value',
+          summary: 'Set the build target to a custom value',
           aliases: ['t'],
           groups: [OptionGroup.Advanced],
           hint: 'ng',
         },
         {
           name: 'environment',
-          description: 'Set the build environment to a custom value',
+          summary: 'Set the build environment to a custom value',
           aliases: ['e'],
           groups: [OptionGroup.Advanced],
           hint: 'ng',

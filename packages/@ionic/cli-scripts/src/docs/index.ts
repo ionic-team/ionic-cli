@@ -19,7 +19,7 @@ export class DocsCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
     return {
       name: 'docs',
-      description: '',
+      summary: '',
     };
   }
 

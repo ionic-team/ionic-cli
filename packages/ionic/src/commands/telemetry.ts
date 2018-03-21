@@ -9,12 +9,12 @@ export class TelemetryCommand extends Command {
     return {
       name: 'telemetry',
       type: 'global',
-      description: 'Opt in and out of telemetry',
+      summary: 'Opt in and out of telemetry',
       groups: [CommandGroup.Hidden],
       inputs: [
         {
           name: 'status',
-          description: `${chalk.green('on')} or ${chalk.green('off')}`,
+          summary: `${chalk.green('on')} or ${chalk.green('off')}`,
         },
       ],
     };

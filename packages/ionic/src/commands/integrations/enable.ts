@@ -14,18 +14,18 @@ export class IntegrationsEnableCommand extends Command {
     return {
       name: 'enable',
       type: 'project',
-      description: 'Add various integrations to your app',
+      summary: 'Add various integrations to your app',
       inputs: [
         {
           name: 'name',
-          description: `The integration to enable (${INTEGRATION_NAMES.map(i => chalk.green(i)).join(', ')})`,
+          summary: `The integration to enable (${INTEGRATION_NAMES.map(i => chalk.green(i)).join(', ')})`,
           validators: [validators.required, contains(INTEGRATION_NAMES, {})],
         },
       ],
       options: [
         {
           name: 'quiet',
-          description: 'Do not log file operations',
+          summary: 'Do not log file operations',
           type: Boolean,
         },
       ],

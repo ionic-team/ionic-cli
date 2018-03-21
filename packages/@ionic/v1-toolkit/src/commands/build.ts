@@ -6,7 +6,7 @@ export class BuildCommand extends Command {
   async getMetadata() {
     return {
       name: 'build',
-      description: '',
+      summary: '',
     };
   }
 

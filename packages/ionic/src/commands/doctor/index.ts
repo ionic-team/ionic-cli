@@ -4,7 +4,7 @@ export class DoctorNamespace extends Namespace {
   async getMetadata() {
     return {
       name: 'doctor',
-      description: 'Commands for checking the health of your Ionic project',
+      summary: 'Commands for checking the health of your Ionic project',
     };
   }
 

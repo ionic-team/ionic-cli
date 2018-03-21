@@ -13,7 +13,7 @@ export class InfoCommand extends Command {
     return {
       name: 'info',
       type: 'global',
-      description: 'Print system/environment info',
+      summary: 'Print system/environment info',
     };
   }
 

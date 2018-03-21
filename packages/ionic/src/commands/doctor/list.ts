@@ -8,7 +8,7 @@ export class DoctorListCommand extends Command {
     return {
       name: 'list',
       type: 'project',
-      description: 'List all issue identifiers',
+      summary: 'List all issue identifiers',
     };
   }
 

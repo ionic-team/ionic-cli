@@ -9,16 +9,16 @@ export class GitCloneCommand extends Command {
     return {
       name: 'clone',
       type: 'global',
-      description: 'Clones an Ionic app git repository to your computer',
+      summary: 'Clones an Ionic app git repository to your computer',
       inputs: [
         {
           name: 'app-id',
-          description: 'The App ID of the Ionic app to clone',
+          summary: 'The App ID of the Ionic app to clone',
           validators: [validators.required],
         },
         {
           name: 'path',
-          description: 'The destination directory of the cloned app',
+          summary: 'The destination directory of the cloned app',
         },
       ],
       groups: [CommandGroup.Hidden], // TODO: make part of start?

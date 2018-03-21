@@ -6,7 +6,7 @@ class CLIScriptsNamespace extends Namespace {
   async getMetadata() {
     return {
       name: 'ionic-cli-scripts',
-      description: '',
+      summary: '',
     };
   }
 

@@ -82,29 +82,24 @@ describe('@ionic/cli-framework', () => {
       inputs: [
         {
           name: 'input1',
-          description: '',
         },
         {
           name: 'input2',
-          description: '',
         },
       ],
       options: [
         {
           name: 'foo',
-          description: '',
           aliases: ['f'],
           groups: ['a'],
         },
         {
           name: 'bar',
-          description: '',
           default: 'soup',
           groups: ['b'],
         },
         {
           name: 'flag1',
-          description: '',
           type: Boolean,
         },
       ],

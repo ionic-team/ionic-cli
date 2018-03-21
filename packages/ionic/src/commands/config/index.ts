@@ -7,8 +7,8 @@ export class ConfigNamespace extends Namespace {
   async getMetadata() {
     return {
       name: 'config',
-      description: 'Manage CLI and project config values',
-      longDescription: `
+      summary: 'Manage CLI and project config values',
+      description: `
 These commands are used to programmatically read, write, and delete CLI and project config values.
 
 By default, these commands use your project's ${chalk.bold(PROJECT_FILE)} file.
