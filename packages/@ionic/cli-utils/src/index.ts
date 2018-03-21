@@ -11,7 +11,7 @@ import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
 import * as inquirerType from 'inquirer';
 
-import { CLIMeta, IProject, InfoItem, IonicEnvironment, LogLevel, LogPrefix } from './definitions';
+import { IProject, InfoItem, IonicContext, IonicEnvironment, LogLevel, LogPrefix } from './definitions';
 import { PROJECT_FILE, PROJECT_FILE_LEGACY } from './constants';
 import { BaseProject, OutsideProject, ProjectDeps } from './lib/project';
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
@@ -59,8 +59,7 @@ async function loadPackageJson(): Promise<PackageJson> {
   return _pkg;
 }
 
-export async function generateIonicEnvironment(meta: CLIMeta, pargv: string[], env: { [key: string]: string; }): Promise<IonicEnvironment> {
-  const cwd = process.cwd();
+export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[], env: { [key: string]: string; }): Promise<IonicEnvironment> {
   const argv = parseArgs(pargv, { boolean: true, string: '_' });
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
   const flags = gatherFlags(argv);
@@ -101,7 +100,7 @@ export async function generateIonicEnvironment(meta: CLIMeta, pargv: string[], e
     tasks = new TaskChain({ log });
   }
 
-  const projectDir = await findBaseDirectory(cwd, PROJECT_FILE);
+  const projectDir = await findBaseDirectory(ctx.execPath, PROJECT_FILE);
   const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map(e => [e, env[e]]).filter(([e, v]) => !!v);
 
   const getInfo = async () => {
@@ -114,7 +113,7 @@ export async function generateIonicEnvironment(meta: CLIMeta, pargv: string[], e
 
     const info: InfoItem[] = [
       { type: 'cli-packages', key: name, value: pkg.version, path: PACKAGE_ROOT_PATH },
-      { type: 'cli-packages', key: 'ionic', flair: 'Ionic CLI', value: meta.version, path: path.dirname(path.dirname(meta.libPath)) },
+      { type: 'cli-packages', key: 'ionic', flair: 'Ionic CLI', value: ctx.version, path: path.dirname(path.dirname(ctx.libPath)) },
       { type: 'system', key: 'NodeJS', value: node },
       { type: 'system', key: 'npm', value: npm || 'not installed' },
       { type: 'system', key: 'OS', value: os },
@@ -140,7 +139,7 @@ export async function generateIonicEnvironment(meta: CLIMeta, pargv: string[], e
     flags,
     getInfo,
     log,
-    meta,
+    ctx,
     prompt: await createPromptModule({ confirm: flags.confirm, interactive: flags.interactive, log, config }),
     project,
     session,
@@ -181,7 +180,7 @@ export async function generateIonicEnvironment(meta: CLIMeta, pargv: string[], e
   }
 
   if (!projectDir) {
-    const foundDir = await findBaseDirectory(cwd, PROJECT_FILE_LEGACY);
+    const foundDir = await findBaseDirectory(ctx.execPath, PROJECT_FILE_LEGACY);
 
     if (foundDir) {
       log.warn(`${chalk.bold(PROJECT_FILE_LEGACY)} file found in ${chalk.bold(foundDir)}--please rename it to ${chalk.bold(PROJECT_FILE)}, or your project directory will not be detected!`);

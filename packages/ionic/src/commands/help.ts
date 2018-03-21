@@ -38,7 +38,7 @@ export class HelpCommand extends Command {
       const isLoggedIn = await this.env.session.isLoggedIn();
       const now = new Date();
       const prefix = isLoggedIn ? chalk.blue('PRO') + ' ' : '';
-      const version = this.env.meta.version;
+      const version = this.env.ctx.version;
       const suffix = now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
 
       const formatter = new NamespaceHelpFormatter({

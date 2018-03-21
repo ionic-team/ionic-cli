@@ -8,9 +8,8 @@ import { BaseError, InputValidationError, PackageJson, stripOptions } from '@ion
 import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-import { CLIMeta, IPCMessage, IonicEnvironment, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
+import { IPCMessage, IonicContext, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
 import { Executor } from '@ionic/cli-utils/lib/executor';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { mapLegacyCommand, modifyArguments } from '@ionic/cli-utils/lib/init';
 
 import { IonicNamespace } from './commands';
@@ -31,7 +30,7 @@ async function loadPackageJson(): Promise<PackageJson> {
   return _pkg;
 }
 
-export async function loadMeta(): Promise<CLIMeta> {
+export async function generateContext(): Promise<IonicContext> {
   const pkg = await loadPackageJson();
 
   if (!pkg.bin || !pkg.bin.ionic) {
@@ -45,13 +44,15 @@ export async function loadMeta(): Promise<CLIMeta> {
   return {
     binPath: path.resolve(PACKAGE_ROOT_PATH, pkg.bin.ionic),
     libPath: path.resolve(PACKAGE_ROOT_PATH, pkg.main),
+    execPath: process.cwd(),
     version: pkg.version,
   };
 }
 
-function getExecutor(): Executor {
+export async function loadExecutor(ctx: IonicContext, pargv: string[], env: { [k: string]: string; }): Promise<Executor> {
   if (!_executor) {
-    throw new FatalException(`Executor not initialized.`);
+    const namespace = new IonicNamespace(undefined, await generateIonicEnvironment(ctx, pargv, env));
+    _executor = new Executor({ namespace });
   }
 
   return _executor;
@@ -60,28 +61,25 @@ function getExecutor(): Executor {
 export async function run(pargv: string[], env: { [k: string]: string; }) {
   const now = new Date();
   let err: any;
-  let ienv: IonicEnvironment;
+  let executor: Executor;
 
   pargv = modifyArguments(pargv);
 
-  const meta = await loadMeta();
-
   try {
-    ienv = await generateIonicEnvironment(meta, pargv, env);
+    executor = await loadExecutor(await generateContext(), pargv, env);
   } catch (e) {
     process.stderr.write(`${e.message ? e.message : (e.stack ? e.stack : e)}\n`);
     process.exitCode = 1;
     return;
   }
 
-  const namespace = new IonicNamespace(undefined, ienv);
-  _executor = new Executor({ namespace });
+  const ienv = executor.namespace.env;
 
   if (pargv[0] !== '_') {
     try {
       const config = await ienv.config.load();
 
-      debug(util.inspect(meta, { breakLength: Infinity, colors: chalk.enabled }));
+      debug(util.inspect(ienv.ctx, { breakLength: Infinity, colors: chalk.enabled }));
 
       if (env['IONIC_TOKEN']) {
         const wasLoggedIn = await ienv.session.isLoggedIn();
@@ -141,7 +139,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
           `    ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`
         );
       } else {
-        await _executor.execute(pargv, env);
+        await executor.execute(pargv, env);
         config.state.lastCommand = now.toISOString();
       }
 
@@ -203,8 +201,11 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
 }
 
 export async function receive(msg: IPCMessage) {
-  const executor = getExecutor();
-  const env = executor.namespace.env;
+  if (!_executor) {
+    throw new Error('Executor not initialized.');
+  }
+
+  const env = _executor.namespace.env;
 
   if (msg.type === 'telemetry') {
     const { sendCommand } = await import('@ionic/cli-utils/lib/telemetry');
@@ -213,7 +214,7 @@ export async function receive(msg: IPCMessage) {
       getInfo: env.getInfo,
       client: env.client,
       config: env.config,
-      meta: env.meta,
+      ctx: env.ctx,
       project: env.project,
       session: env.session,
     }, msg.data.command, msg.data.args);

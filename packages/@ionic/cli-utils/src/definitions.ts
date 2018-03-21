@@ -709,10 +709,11 @@ export interface PromptModule {
   (question: CheckboxPromptQuestion): Promise<string[]>;
 }
 
-export interface CLIMeta {
-  binPath: string;
-  libPath: string;
-  version: string;
+export interface IonicContext {
+  readonly binPath: string;
+  readonly libPath: string;
+  readonly execPath: string;
+  readonly version: string;
 }
 
 export interface IonicEnvironment {
@@ -721,7 +722,7 @@ export interface IonicEnvironment {
   readonly config: IConfig; // CLI global config (~/.ionic/config.json)
   readonly log: ILogger;
   readonly prompt: PromptModule;
-  readonly meta: CLIMeta;
+  readonly ctx: IonicContext;
   project: IProject; // project config (ionic.config.json)
   session: ISession;
   readonly shell: IShell;

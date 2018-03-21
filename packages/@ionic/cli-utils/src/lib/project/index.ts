@@ -8,22 +8,7 @@ import { ERROR_FILE_INVALID_JSON, fsReadJsonFile, fsWriteJsonFile } from '@ionic
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 
-import {
-  IAilmentRegistry,
-  IConfig,
-  IIntegration,
-  ILogger,
-  IProject,
-  IShell,
-  ITaskChain,
-  InfoItem,
-  IntegrationName,
-  PackageJson,
-  ProjectFile,
-  ProjectPersonalizationDetails,
-  ProjectType,
-} from '../../definitions';
-
+import { IAilmentRegistry, IConfig, IIntegration, ILogger, IProject, IShell, ITaskChain, InfoItem, IntegrationName, PackageJson, ProjectFile, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
 import { BaseConfig } from '../config';
 import { FatalException } from '../errors';

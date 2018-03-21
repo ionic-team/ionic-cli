@@ -1,19 +1,6 @@
 import * as inquirerType from 'inquirer';
 
-import {
-  CLIMeta,
-  IClient,
-  IConfig,
-  ILogger,
-  IProject,
-  ISession,
-  IShell,
-  ITaskChain,
-  InfoItem,
-  IonicEnvironment,
-  IonicEnvironmentFlags,
-  PromptModule,
-} from '../definitions';
+import { IClient, IConfig, ILogger, IProject, ISession, IShell, ITaskChain, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags, PromptModule } from '../definitions';
 
 export class Environment implements IonicEnvironment {
   readonly flags: IonicEnvironmentFlags;
@@ -26,7 +13,7 @@ export class Environment implements IonicEnvironment {
   session: ISession;
   readonly shell: IShell;
   readonly tasks: ITaskChain;
-  readonly meta: CLIMeta;
+  readonly ctx: IonicContext;
   keepopen = false;
 
   private bottomBar?: inquirerType.ui.BottomBar;
@@ -38,7 +25,7 @@ export class Environment implements IonicEnvironment {
     flags,
     getInfo,
     log,
-    meta,
+    ctx,
     project,
     prompt,
     session,
@@ -51,7 +38,7 @@ export class Environment implements IonicEnvironment {
     flags: IonicEnvironmentFlags;
     getInfo: () => Promise<InfoItem[]>;
     log: ILogger;
-    meta: CLIMeta,
+    ctx: IonicContext,
     project: IProject; // project config (ionic.config.json)
     prompt: PromptModule;
     session: ISession;
@@ -64,7 +51,7 @@ export class Environment implements IonicEnvironment {
     this.flags = flags;
     this.getInfo = getInfo;
     this.log = log;
-    this.meta = meta;
+    this.ctx = ctx;
     this.project = project;
     this.prompt = prompt;
     this.session = session;

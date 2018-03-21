@@ -57,7 +57,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
         const path = await generateCommandPath(cmd);
 
         const { Telemetry } = await import('./telemetry');
-        const telemetry = new Telemetry({ client: this.env.client, config: this.env.config, getInfo: this.env.getInfo, meta: this.env.meta, project: this.env.project, session: this.env.session });
+        const telemetry = new Telemetry({ client: this.env.client, config: this.env.config, getInfo: this.env.getInfo, ctx: this.env.ctx, project: this.env.project, session: this.env.session });
 
         await telemetry.sendCommand(path.map(([p]) => p).join(' '), cmdInputs);
       }

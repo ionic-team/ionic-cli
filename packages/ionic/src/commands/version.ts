@@ -13,6 +13,6 @@ export class VersionCommand extends Command {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     // can't use logger--see https://github.com/ionic-team/ionic-cli/issues/2507
-    process.stdout.write(this.env.meta.version + '\n');
+    process.stdout.write(this.env.ctx.version + '\n');
   }
 }

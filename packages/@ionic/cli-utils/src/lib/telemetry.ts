@@ -1,7 +1,7 @@
 import * as leekType from 'leek';
 import * as Debug from 'debug';
 
-import { CLIMeta, IClient, IConfig, IProject, ISession, ITelemetry, InfoItem } from '../definitions';
+import { IClient, IConfig, IProject, ISession, ITelemetry, InfoItem, IonicContext } from '../definitions';
 import { generateUUID } from './utils/uuid';
 import { sendMessage } from './helper';
 
@@ -13,7 +13,7 @@ export interface TelemetryDeps {
   readonly client: IClient;
   readonly config: IConfig;
   readonly getInfo: () => Promise<InfoItem[]>;
-  readonly meta: CLIMeta;
+  readonly ctx: IonicContext;
   readonly project: IProject;
   readonly session: ISession;
 }
@@ -22,15 +22,15 @@ export class Telemetry implements ITelemetry {
   protected readonly client: IClient;
   protected readonly config: IConfig;
   protected readonly getInfo: () => Promise<InfoItem[]>;
-  protected readonly meta: CLIMeta;
+  protected readonly ctx: IonicContext;
   protected readonly project: IProject;
   protected readonly session: ISession;
 
-  constructor({ config, client, getInfo, meta, project, session }: TelemetryDeps) {
+  constructor({ config, client, getInfo, ctx, project, session }: TelemetryDeps) {
     this.client = client;
     this.config = config;
     this.getInfo = getInfo;
-    this.meta = meta;
+    this.ctx = ctx;
     this.project = project;
     this.session = session;
   }
@@ -39,7 +39,7 @@ export class Telemetry implements ITelemetry {
     const config = await this.config.load();
 
     if (config.telemetry) {
-      await sendMessage({ config: this.config, meta: this.meta }, { type: 'telemetry', data: { command, args } });
+      await sendMessage({ config: this.config, ctx: this.ctx }, { type: 'telemetry', data: { command, args } });
     }
   }
 }
@@ -66,7 +66,7 @@ async function getLeek({ config, version }: { config: IConfig; version: string; 
   return _gaTracker;
 }
 
-export async function sendCommand({ config, client, getInfo, meta, session, project }: TelemetryDeps, command: string, args: string[]) {
+export async function sendCommand({ config, client, getInfo, ctx, session, project }: TelemetryDeps, command: string, args: string[]) {
   const messageList: string[] = [];
   const name = 'command execution';
   const prettyArgs = args.map(a => a.includes(' ') ? `"${a}"` : a);
@@ -74,7 +74,7 @@ export async function sendCommand({ config, client, getInfo, meta, session, proj
 
   await Promise.all([
     (async () => {
-      const leek = await getLeek({ config, version: meta.version });
+      const leek = await getLeek({ config, version: ctx.version });
       try {
         await leek.track({ name, message });
       } catch (e) {
@@ -103,7 +103,7 @@ export async function sendCommand({ config, client, getInfo, meta, session, proj
         'value': {
           'command': command,
           'arguments': prettyArgs.join(' '),
-          'version': meta.version,
+          'version': ctx.version,
           'node_version': process.version,
           'app_id': appId,
           'backend': 'pro', // TODO: is this necessary?
