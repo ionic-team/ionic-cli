@@ -24,6 +24,15 @@ const NAMESPACE_DECORATIONS: Decoration[] = [
   [NamespaceGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
 ];
 
+export async function isCommandHidden(cmd: HydratedCommandMetadata): Promise<boolean> {
+  const ns = await cmd.namespace.getMetadata();
+  return (!cmd.groups || !cmd.groups.includes(CommandGroup.Hidden)) && (!ns.groups || !ns.groups.includes(NamespaceGroup.Hidden));
+}
+
+export async function isOptionHidden(opt: CommandMetadataOption): Promise<boolean> {
+  return !opt.groups || !opt.groups.includes(OptionGroup.Hidden);
+}
+
 export interface NamespaceHelpFormatterDeps extends BaseNamespaceHelpFormatterDeps<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
   readonly inProject: boolean;
   readonly version: string;
@@ -72,8 +81,7 @@ export class NamespaceHelpFormatter extends BaseNamespaceHelpFormatter<ICommand,
   }
 
   async filterCommandCallback(cmd: HydratedCommandMetadata): Promise<boolean> {
-    const ns = await cmd.namespace.getMetadata();
-    return (!cmd.groups || !cmd.groups.includes(CommandGroup.Hidden)) && (!ns.groups || !ns.groups.includes(NamespaceGroup.Hidden));
+    return isCommandHidden(cmd);
   }
 }
 
@@ -98,7 +106,7 @@ export class CommandHelpFormatter extends BaseCommandHelpFormatter<ICommand, INa
   }
 
   async filterOptionCallback(opt: CommandMetadataOption): Promise<boolean> {
-    return !opt.groups || !opt.groups.includes(OptionGroup.Hidden);
+    return isOptionHidden(opt);
   }
 }
 
