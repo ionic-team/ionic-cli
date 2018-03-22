@@ -9,7 +9,8 @@
     "lint": "tslint --config tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w",
-    "test": "jest"
+    "test": "jest",
+    "prepublishOnly": "npm run build"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
