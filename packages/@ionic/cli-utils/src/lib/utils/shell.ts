@@ -4,6 +4,8 @@ import * as split2 from 'split2';
 
 import * as crossSpawnType from 'cross-spawn';
 
+import { createProcessEnv } from '@ionic/cli-framework/utils/process';
+
 import { ShellException } from '../errors';
 
 export interface RunCmdOptions extends crossSpawnType.SpawnOptions {
@@ -25,11 +27,9 @@ export async function runcmd(command: string, args?: string[], options: RunCmdOp
 
   const PATH = typeof options.env.PATH === 'string' ? options.env.PATH : process.env.PATH;
 
-  options.env = {
-    ...process.env,
-    ...options.env,
+  options.env = createProcessEnv(process.env, options.env, {
     PATH: PATH.split(path.delimiter).map(expandTildePath).join(path.delimiter),
-  };
+  });
 
   const p = await spawncmd(command, args, options);
 

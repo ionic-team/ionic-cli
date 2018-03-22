@@ -147,12 +147,14 @@ export class Shell implements IShell {
   }
 
   protected prepareSpawnOptions(options: IShellSpawnOptions) {
-    if (!options.env) {
-      options.env = createProcessEnv(process.env);
-    }
-
-    options.env.PATH = this.supplementPATH(process.env.PATH);
-    options.env.FORCE_COLOR = chalk.enabled ? '1' : '0';
+    // Create a `process.env`-type object from all key/values of `process.env`,
+    // then `options.env`, then add several key/values. PATH is supplemented
+    // with the `node_modules\.bin` folder in the project directory so that we
+    // can run binaries inside a project.
+    options.env = createProcessEnv(process.env, options.env, {
+      PATH: this.supplementPATH(process.env.PATH),
+      FORCE_COLOR: chalk.enabled ? '1' : '0',
+    });
   }
 
   protected supplementPATH(p: string) {
