@@ -3,6 +3,8 @@
 
 # Ionic CLI
 
+:wave: :point_right: *Please test :sparkles: **CLI 4** :sparkles: release candidates:* `npm i -g ionic@rc` :heart:
+
 The Ionic command line interface (CLI) is your go-to tool for developing
 [Ionic][ionic-homepage] apps.
 
