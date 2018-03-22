@@ -8,13 +8,5 @@
     "bootstrap": {
       "hoist": true
     }
-  },
-  "changelog": {
-    "repo": "ionic-team/ionic-cli",
-    "labels": {
-      "fix": "Bug fix",
-      "feat": "New Feature"
-    },
-    "cacheDir": ".changelog"
   }
 }

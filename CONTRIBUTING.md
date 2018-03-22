@@ -35,30 +35,34 @@ first PR to the Ionic CLI. :heart_eyes:
 
 #### Structure
 
-Our CLI is organized into a monorepo. Common tools, such as Typescript and jest,
+Our CLI is organized into a monorepo. Common tools, such as TypeScript and Jest,
 are installed in the base directory while package dependencies are each
 installed in their respective `packages/**/node_modules` directories.
 
 Each `packages/*` folder represents a package on npm.
 
-* `packages/ionic`: Ionic CLI executable.
-* `packages/@ionic/cli-utils`: Ionic CLI library and utilities.
-* `packages/@ionic/cli-plugin-*`: Ionic CLI plugins.
-* `packages/@ionic/cli-framework`: Framework for command-line programs.
-* `packages/@ionic/discover`: Service discovery library used for `ionic serve`
-  with the [Ionic DevApp](https://ionicframework.com/docs/pro/devapp/).
-* `packages/@ionic/schematics-angular`: Ionic Angular v4+ schematics for `ionic
-  generate`.
-* `packages/@ionic/v1-toolkit`: Utility CLI for Ionic v1 Apps, used by `ionic
-  serve`.
-* `packages/@ionic/lab`: Utility CLI for Ionic Lab, used by `ionic serve`.
+* [`packages/ionic`](https://github.com/ionic-team/ionic-cli/tree/master/packages/ionic):
+  Ionic CLI executable.
+* [`packages/@ionic/cli-utils`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/cli-utils):
+  Ionic CLI library and utilities.
+* [`packages/@ionic/cli-framework`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/cli-framework):
+  Framework for command-line programs.
+* [`packages/@ionic/discover`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/discover):
+  Service discovery library used for `ionic serve` with the [Ionic
+  DevApp](https://ionicframework.com/docs/pro/devapp/).
+* [`packages/@ionic/schematics-angular`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/schematics-angular):
+  Ionic Angular v4+ schematics for `ionic generate`.
+* [`packages/@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/v1-toolkit):
+  Utility CLI for Ionic v1 Apps, used by `ionic serve`.
+* [`packages/@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/lab):
+  Utility CLI for Ionic Lab, used by `ionic serve`.
 
 #### Toolset
 
 * npm 5 is required.
 * Node 8+ is required.
-* Our codebase is written in [Typescript](https://www.typescriptlang.org/). If
-  you're unfamiliar with Typescript, we recommend using [VS
+* Our codebase is written in [TypeScript](https://www.typescriptlang.org/). If
+  you're unfamiliar with TypeScript, we recommend using [VS
   Code](https://code.visualstudio.com/) and finding a tutorial to familiarize
   yourself with basic concepts.
 * Our test suite uses [Jest](https://facebook.github.io/jest/).
@@ -71,8 +75,8 @@ Each `packages/*` folder represents a package on npm.
    together)
 1. Optionally `npm run link` to make `ionic` and other bin files point to your
    dev CLI.
-1. `npm run watch` will spin up Typescript watch scripts for all packages.
-1. Typescript source files are in `packages/**/src`.
+1. `npm run watch` will spin up TypeScript watch scripts for all packages.
+1. TypeScript source files are in `packages/**/src`.
 1. Good luck! :muscle: Please open an issue if you have questions or something
    is unclear.
 
@@ -96,10 +100,12 @@ $ npm install -g ionic
 
 TODO: Be helpful about where to look for commands, utilities, etc.
 
-##### Publishing Notes
+##### Publishing Steps
 
-Cancel any watch scripts before proceeding.
+1. Cancel any watch scripts.
+1. Write notable changes in the package(s)'s `CHANGELOG.md` file(s).
+1. For...
 
-* **testing releases**: `npm run publish:testing`
-* **canary releases**: `npm run publish:canary`
-* **stable releases**: `npm run publish`
+    * ...testing releases: `npm run publish:testing`
+    * ...canary releases: `npm run publish:canary`
+    * ...stable releases: `npm run publish`
