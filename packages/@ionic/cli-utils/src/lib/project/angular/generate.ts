@@ -208,8 +208,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
   private async getSchematics(): Promise<Schematic[]> {
     if (!this.schematics) {
       try {
-        const { SchematicEngine } = await import('@angular-devkit/schematics');
-        const { NodeModulesEngineHost } = await import('@angular-devkit/schematics/tools');
+        const { SchematicEngine } = await import( process.cwd() + '/node_modules/@angular-devkit/schematics');
+        const { NodeModulesEngineHost } = await import( process.cwd() + '/node_modules/@angular-devkit/schematics/tools');
 
         const engineHost = new NodeModulesEngineHost();
         const engine = new SchematicEngine(engineHost);
