@@ -8,6 +8,7 @@ import { contains, unparseArgs, validators } from '@ionic/cli-framework';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
+import { importNgSchematics, importNgSchematicsTools } from './app-scripts';
 import * as schematicsToolsLibType from '@angular-devkit/schematics/tools';
 
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
@@ -208,8 +209,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
   private async getSchematics(): Promise<Schematic[]> {
     if (!this.schematics) {
       try {
-        const { SchematicEngine } = await import('@angular-devkit/schematics');
-        const { NodeModulesEngineHost } = await import('@angular-devkit/schematics/tools');
+
+        const { SchematicEngine } = await importNgSchematics(this.project.directory);
+        const { NodeModulesEngineHost } = await importNgSchematicsTools(this.project.directory);
 
         const engineHost = new NodeModulesEngineHost();
         const engine = new SchematicEngine(engineHost);
