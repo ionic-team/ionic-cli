@@ -12,7 +12,7 @@ import { AppClient } from '../../app';
 import { getIonicRemote, isRepoInitialized } from '../../git';
 import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 import { getPlatforms } from '../../integrations/cordova/project';
-import { ConfigXml } from '../../integrations/cordova/config';
+import { loadConfigXml } from '../../integrations/cordova/config';
 
 import { Ailment, AutomaticallyTreatableAilment, AutomaticallyTreatableAilmentDeps } from './base';
 export * from './base';
@@ -357,7 +357,7 @@ class UnsavedCordovaPlatforms extends Ailment {
     }
 
     const platforms = await getPlatforms(this.project.directory);
-    const conf = await ConfigXml.load(this.project.directory);
+    const conf = await loadConfigXml({ project: this.project });
     const engines = conf.getPlatformEngines();
     const engineNames = new Set([...engines.map(e => e.name)]);
 
@@ -392,7 +392,7 @@ class DefaultCordovaBundleIdUsed extends Ailment {
       return false;
     }
 
-    const conf = await ConfigXml.load(this.project.directory);
+    const conf = await loadConfigXml({ project: this.project });
 
     return conf.getBundleId() === 'io.ionic.starter';
   }

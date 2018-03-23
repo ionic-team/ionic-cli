@@ -1,9 +1,15 @@
 import * as path from 'path';
 
+import chalk from 'chalk';
 import * as et from 'elementtree';
-
-import { ResourcesPlatform } from '../../../definitions';
+import * as Debug from 'debug';
 import { fsReadFile, fsWriteFile } from '@ionic/cli-framework/utils/fs';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+
+import { IProject, ResourcesPlatform } from '../../../definitions';
+import { FatalException } from '../../errors';
+
+const debug = Debug('ionic:cli-utils:lib:integrations:cordova:config');
 
 export interface PlatformEngine {
   name: string;
@@ -12,42 +18,42 @@ export interface PlatformEngine {
 }
 
 export class ConfigXml {
-  protected _filePath?: string;
   protected _doc?: et.ElementTree;
   protected saving = false;
 
+  constructor(public filePath: string) {}
+
   get doc() {
     if (!this._doc) {
-      throw new Error('No doc loaded. Call load() properly.');
+      throw new Error('No doc loaded.');
     }
 
     return this._doc;
   }
 
-  get filePath() {
-    if (!this._filePath) {
-      throw new Error('No file path given. Call load() properly.');
+  static async load(filePath: string): Promise<ConfigXml> {
+    if (!filePath) {
+      throw new Error('Must supply file path.');
     }
 
-    return this._filePath;
+    const conf = new ConfigXml(filePath);
+    await conf.reload();
+
+    return conf;
   }
 
-  static async load(projectDir: string): Promise<ConfigXml> {
-    if (!projectDir) {
-      throw new Error('Must supply project directory.');
-    }
-
-    const conf = new ConfigXml();
-    conf._filePath = path.join(projectDir, 'config.xml');
-    const configFileContents = await fsReadFile(conf.filePath, { encoding: 'utf8' });
+  async reload(): Promise<void> {
+    const configFileContents = await fsReadFile(this.filePath, { encoding: 'utf8' });
 
     if (!configFileContents) {
       throw new Error(`Cannot load empty config.xml file.`);
     }
 
-    conf._doc = et.parse(configFileContents);
-
-    return conf;
+    try {
+      this._doc = et.parse(configFileContents);
+    } catch (e) {
+      throw new Error(`Cannot parse config.xml file: ${e.stack ? e.stack : e}`);
+    }
   }
 
   async save(): Promise<void> {
@@ -265,5 +271,16 @@ export class ConfigXml {
     const spec = engine.get('spec');
 
     return { name: name ? name : '', spec: spec ? spec : '', ...engine.attrib };
+  }
+}
+
+export async function loadConfigXml({ project }: { project: IProject }): Promise<ConfigXml> {
+  const filePath = path.resolve(project.directory, 'config.xml');
+  debug(`Using config.xml: ${filePath}`);
+
+  try {
+    return await ConfigXml.load(filePath);
+  } catch (e) {
+    throw new FatalException(`Cannot load ${chalk.bold(prettyPath(filePath))}: ${e.stack ? e.stack : e}`);
   }
 }

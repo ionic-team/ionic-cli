@@ -174,9 +174,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
+    const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
 
-    const conf = await ConfigXml.load(this.env.project.directory);
+    const conf = await loadConfigXml({ project: this.env.project });
 
     onBeforeExit(async () => {
       conf.resetContentSrc();
