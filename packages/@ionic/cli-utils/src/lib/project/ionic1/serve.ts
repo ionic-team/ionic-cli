@@ -114,7 +114,6 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
 
   async serveProject(options: Ionic1ServeOptions): Promise<ServeDetails> {
     const { isHostConnectable } = await import('../../utils/network');
-
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
     const { port, livereloadPort, notificationPort } = await this.findOpenPorts(options.address, options);
 
@@ -122,19 +121,9 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
     options.livereloadPort = livereloadPort;
     options.notificationPort = notificationPort;
 
-    const details = [
-      `address: ${chalk.bold(options.address)}`,
-      `port: ${chalk.bold(String(port))}`,
-      `dev server port: ${chalk.bold(String(notificationPort))}`,
-    ];
-
-    if (options.livereload) {
-      details.push(`livereload port: ${chalk.bold(String(livereloadPort))}`);
-    }
-
     const { program } = await this.serveCommandWrapper(options);
 
-    debug('waiting for connectivity with ionic-v1 (%dms timeout)', IONIC_V1_SERVE_CONNECTIVITY_TIMEOUT);
+    debug(`waiting for connectivity with ${program} (${IONIC_V1_SERVE_CONNECTIVITY_TIMEOUT}ms timeout)`);
     await isHostConnectable('localhost', port, IONIC_V1_SERVE_CONNECTIVITY_TIMEOUT);
 
     return {

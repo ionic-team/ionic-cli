@@ -20,6 +20,12 @@ export const DEFAULT_PROGRAM = 'ionic-app-scripts';
 export const DEFAULT_SERVE_SCRIPT_VALUE = `${DEFAULT_PROGRAM} serve`;
 const APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 
+interface Ports {
+  port: number;
+  livereloadPort: number;
+  notificationPort: number;
+}
+
 interface ServeCmdDetails {
   program: string;
 }
@@ -75,15 +81,17 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
   }
 
   async serveProject(options: IonicAngularServeOptions): Promise<ServeDetails> {
-    const { findClosestOpenPort, isHostConnectable } = await import('../../utils/network');
+    const { isHostConnectable } = await import('../../utils/network');
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
+    const { port, livereloadPort, notificationPort } = await this.findOpenPorts(options.address, options);
 
-    const port = await findClosestOpenPort(options.port, '0.0.0.0');
     options.port = port;
+    options.livereloadPort = livereloadPort;
+    options.notificationPort = notificationPort;
 
     const { program } = await this.serveCommandWrapper(options);
 
-    debug('waiting for connectivity with app-scripts (%dms timeout)', APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT);
+    debug(`waiting for connectivity with ${program} (${APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT}ms timeout)`);
     await isHostConnectable('localhost', port, APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT);
 
     return {
@@ -201,5 +209,40 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
     };
 
     return [...unparseArgs(args, { useEquals: false }), ...options['--']];
+  }
+
+  private async findOpenPorts(address: string, ports: Ports): Promise<Ports> {
+    const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort } = await import('../../utils/network');
+
+    try {
+      const [ port, livereloadPort, notificationPort ] = await Promise.all([
+        findClosestOpenPort(ports.port, '0.0.0.0'),
+        findClosestOpenPort(ports.livereloadPort, '0.0.0.0'),
+        findClosestOpenPort(ports.notificationPort, '0.0.0.0'),
+      ]);
+
+      if (ports.port !== port) {
+        debug(`Port ${chalk.bold(String(ports.port))} taken, using ${chalk.bold(String(port))}.`);
+        ports.port = port;
+      }
+
+      if (ports.livereloadPort !== livereloadPort) {
+        debug(`Port ${chalk.bold(String(ports.livereloadPort))} taken, using ${chalk.bold(String(livereloadPort))}.`);
+        ports.livereloadPort = livereloadPort;
+      }
+
+      if (ports.notificationPort !== notificationPort) {
+        debug(`Port ${chalk.bold(String(ports.notificationPort))} taken, using ${chalk.bold(String(notificationPort))}.`);
+        ports.notificationPort = notificationPort;
+      }
+
+      return { port, livereloadPort, notificationPort };
+    } catch (e) {
+      if (e !== ERROR_NETWORK_ADDRESS_NOT_AVAIL) {
+        throw e;
+      }
+
+      throw new FatalException(`${chalk.green(address)} is not available--cannot bind.`);
+    }
   }
 }
