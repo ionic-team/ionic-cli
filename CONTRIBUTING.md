@@ -79,6 +79,7 @@ Each `packages/*` folder represents a package on npm.
 1. TypeScript source files are in `packages/**/src`.
 1. Good luck! :muscle: Please open an issue if you have questions or something
    is unclear.
+1. If node-sass error occurs, you should add permission `npm`. ex) `sudo chown -R $(whoami) ~/.npm`
 
 #### Running Dev CLI
 
