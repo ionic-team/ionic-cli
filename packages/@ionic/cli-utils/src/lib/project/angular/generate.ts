@@ -8,12 +8,10 @@ import { contains, unparseArgs, validators } from '@ionic/cli-framework';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
-import { importNgSchematics, importNgSchematicsTools } from './app-scripts';
-import * as schematicsToolsLibType from '@angular-devkit/schematics/tools';
-
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { GenerateRunner as BaseGenerateRunner } from '../../generate';
 import { FatalException } from '../../errors';
+import { AngularDevKitSchematicsToolsType, importNgSchematics, importNgSchematicsTools } from './angular-devkit';
 
 const ANGULAR_SCHEMATICS_PACKAGE = '@schematics/angular';
 const IONIC_SCHEMATICS_PACKAGE = '@ionic/schematics-angular';
@@ -39,7 +37,7 @@ function generateAliasMap(schematics: Schematic[]): Map<string, string> {
   return new Map(lodash.flatten(schematics.map(s => [...s.aliases.map<[string, string]>(a => [a, s.type])])));
 }
 
-function extractSchematicsFromCollection(collection: schematicsToolsLibType.FileSystemCollection): Schematic[] {
+function extractSchematicsFromCollection(collection: AngularDevKitSchematicsToolsType.FileSystemCollection): Schematic[] {
   return lodash.toPairs(collection.description.schematics)
     .filter(([ k, v ]) => !ANGULAR_SCHEMATICS_BLACKLIST.includes(k))
     .map<Schematic>(([ type, v ]) => ({ type, description: v.description, collection: collection.description.name, aliases: v.aliases || [] }));

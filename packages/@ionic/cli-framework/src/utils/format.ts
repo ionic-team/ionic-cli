@@ -3,13 +3,12 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import sliceAnsi = require('slice-ansi');
-import stringWidthModule = require('string-width');
-import stripAnsiModule = require('strip-ansi');
+import stringWidth = require('string-width');
+import stripAnsi = require('strip-ansi');
 import untildify = require('untildify');
 import wrapAnsi = require('wrap-ansi');
 
-export const stringWidth = stringWidthModule;
-export const stripAnsi = stripAnsiModule;
+export { stringWidth, stripAnsi };
 
 const MIN_TTY_WIDTH = 80;
 const MAX_TTY_WIDTH = 120;
