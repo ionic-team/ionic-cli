@@ -109,7 +109,7 @@ const processExitHandler = beforeExitHandlerWrapper('process.exit');
  * Asynchronous `process.exit()`, for running functions registered with
  * `onBeforeExit`.
  */
-export async function processExit(exitCode = 1) {
+export async function processExit(exitCode = 0) {
   process.exitCode = exitCode;
   await processExitHandler();
 }
