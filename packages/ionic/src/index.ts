@@ -7,6 +7,7 @@ import * as Debug from 'debug';
 import { BaseError, InputValidationError, PackageJson, stripOptions } from '@ionic/cli-framework';
 import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+import { processExit } from '@ionic/cli-framework/utils/process';
 
 import { IPCMessage, IonicContext, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
 import { Executor } from '@ionic/cli-utils/lib/executor';
@@ -177,8 +178,6 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
         chalk.red(String(err.stack ? err.stack : err))
       );
     } else if (isExitCodeException(err)) {
-      process.exitCode = err.exitCode;
-
       if (err.message) {
         if (err.exitCode > 0) {
           ienv.log.error(err.message);
@@ -186,6 +185,8 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
           ienv.log.msg(err.message);
         }
       }
+
+      await processExit(err.exitCode);
     } else if (err instanceof BaseError) {
       ienv.log.error(err.message);
     } else {
