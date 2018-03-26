@@ -41,6 +41,7 @@
     "@types/rimraf": "^2.0.2",
     "@types/strip-ansi": "^3.0.0",
     "@types/untildify": "^3.0.0",
+    "@types/wrap-ansi": "^3.0.0",
     "jest": "^22.4.2",
     "jest-cli": "^22.4.2",
     "ts-jest": "^22.4.1",

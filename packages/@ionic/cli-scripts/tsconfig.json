@@ -9,7 +9,6 @@
     "../../../types/slice-ansi.d.ts",
     "../../../types/string-width.d.ts",
     "../../../types/superagent.d.ts",
-    "../../../types/wrap-ansi.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

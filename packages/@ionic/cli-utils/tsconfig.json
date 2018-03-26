@@ -15,7 +15,6 @@
     "../../../types/superagent-proxy.d.ts",
     "../../../types/superagent.d.ts",
     "../../../types/tiny-lr.d.ts",
-    "../../../types/wrap-ansi.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

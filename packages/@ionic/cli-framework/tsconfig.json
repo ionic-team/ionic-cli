@@ -6,7 +6,6 @@
   "include": [
     "../../../types/string-width.d.ts",
     "../../../types/slice-ansi.d.ts",
-    "../../../types/wrap-ansi.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [
