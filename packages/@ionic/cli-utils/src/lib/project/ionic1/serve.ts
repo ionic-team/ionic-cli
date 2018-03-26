@@ -158,13 +158,19 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
       }
 
       const pkg = '@ionic/v1-toolkit';
-      this.log.nl();
+      const requiredMsg = `This package is required for ${chalk.green('ionic serve')} as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md#4.0.0')}`;
 
-      throw new FatalException(
-        `${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.\n` +
-        `Looks like ${chalk.green(pkg)} isn't installed in this project.\n\n` +
-        `This package is required for ${chalk.green('ionic serve')} as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#4.0.0')}`
-      );
+      this.log.nl();
+      this.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
+
+      const installed = await this.promptToInstallPkg(pkg);
+
+      if (!installed) {
+        this.log.nl();
+        throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.\n` + requiredMsg);
+      }
+
+      return this.servecmd(cmdopts);
     }
   }
 
