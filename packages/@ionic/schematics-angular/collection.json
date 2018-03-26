@@ -5,6 +5,12 @@
       "factory": "./page",
       "description": "Create an Ionic page",
       "schema": "./page/schema.json"
+    },
+    "ion-component": {
+      "aliases": ["ic"],
+      "factory": "./ion-components",
+      "description": "Create an Ionic Default Component",
+      "schema": "./ion-components/schema.json"
     }
   }
 }
