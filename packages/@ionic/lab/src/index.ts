@@ -19,6 +19,8 @@ import {
 
 import { fsReadFile } from '@ionic/cli-framework/utils/fs';
 
+const WWW_DIRECTORY = path.join(__dirname, '..', 'www');
+
 class DefaultCommand extends Command {
   async getMetadata() {
     return {
@@ -77,7 +79,7 @@ class DefaultCommand extends Command {
 
     const app = express();
 
-    app.use('/', express.static(path.join(__dirname, '..', 'www')));
+    app.use('/', express.static(WWW_DIRECTORY));
 
     app.get('/api/app', (req, res) => {
       res.json({ url, name, version });

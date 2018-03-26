@@ -14,7 +14,7 @@ import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, NetworkInterface, ProjectType, PromptModule, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
-import { OptionGroup, PROJECT_FILE } from '../constants';
+import { ASSETS_DIRECTORY, OptionGroup, PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Runner } from './runner';
 import { Hook } from './hooks';
@@ -319,7 +319,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async getSupportedDevAppPlugins(): Promise<Set<string>> {
-    const p = path.resolve(__dirname, '..', 'assets', 'devapp', 'plugins.json');
+    const p = path.resolve(ASSETS_DIRECTORY, 'devapp', 'plugins.json');
     const plugins = await fsReadJsonFile(p);
 
     if (!Array.isArray(plugins)) {
