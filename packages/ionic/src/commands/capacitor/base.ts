@@ -15,15 +15,18 @@ export abstract class CapacitorCommand extends Command {
     }
   }
 
-  async preRunChecks(_runinfo: CommandInstanceInfo) {
-
+  async preRunChecks(runinfo: CommandInstanceInfo) {
+    runinfo;
   }
 
   async runCapacitor(argList: string[], { fatalOnNotFound = false, truncateErrorOutput = 5000, ...options }: IShellRunOptions = {}): Promise<void> {
     const { ERROR_SHELL_COMMAND_NOT_FOUND } = await import('@ionic/cli-utils/lib/shell');
     try {
+      this.env.close();
       await this.env.shell.run('npx', ['capacitor'].concat(argList), { fatalOnNotFound, truncateErrorOutput, stdio: 'inherit', ...options });
+      this.env.open();
     } catch (e) {
+      this.env.open();
       if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
         throw new FatalException(
           `Unable to run npx, the new command execution system in NPM.

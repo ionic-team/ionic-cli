@@ -23,8 +23,9 @@ Learn more about Capacitor:
       ['init', async () => { const { InitCommand } = await import('./init'); return new InitCommand(this, this.env); }],
       ['add', async () => { const { AddCommand } = await import('./add'); return new AddCommand(this, this.env); }],
       ['copy', async () => { const { CopyCommand } = await import('./copy'); return new CopyCommand(this, this.env); }],
-      //['sync', async () => { const { SyncCommand } = await import('./sync'); return new SyncCommand(this, this.env); }],
-      //['update', async () => { const { UpdateCommand } = await import('./update'); return new UpdateCommand(this, this.env); }]
+      ['open', async () => { const { OpenCommand } = await import('./open'); return new OpenCommand(this, this.env); }],
+      ['sync', async () => { const { SyncCommand } = await import('./sync'); return new SyncCommand(this, this.env); }],
+      ['update', async () => { const { UpdateCommand } = await import('./update'); return new UpdateCommand(this, this.env); }]
     ]);
   }
 }

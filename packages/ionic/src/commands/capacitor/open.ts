@@ -4,18 +4,18 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 
 import { CapacitorCommand } from './base';
 
-export class CopyCommand extends CapacitorCommand implements CommandPreRun {
+export class OpenCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
     return {
-      name: 'copy',
+      name: 'open',
       type: 'project',
-      summary: 'Copies web assets to each Capacitor native platform',
+      summary: 'Opens the IDE for the specified Capacitor native platform project',
       description: `
-${chalk.green('ionic capacitor copy')} will do the following:
-- Copy the ${chalk.bold('www/')} directory into your native platforms.
+${chalk.green('ionic capacitor open')} will do the following:
+- Open the IDE with your current native project for that specific platform. This means Xcode for iOS, and Android Studio for Android
       `,
       exampleCommands: [],
-      inputs: []
+      inputs: [],
     };
   }
 
@@ -24,6 +24,7 @@ ${chalk.green('ionic capacitor copy')} will do the following:
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    await this.runCapacitor(['copy']);
+    const [ platform ] = inputs;
+    await this.runCapacitor(['open', platform]);
   }
 }

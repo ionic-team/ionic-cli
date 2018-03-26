@@ -4,18 +4,19 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 
 import { CapacitorCommand } from './base';
 
-export class CopyCommand extends CapacitorCommand implements CommandPreRun {
+export class UpdateCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
     return {
-      name: 'copy',
+      name: 'update',
       type: 'project',
-      summary: 'Copies web assets to each Capacitor native platform',
+      summary: 'Updates each Capacitor native platform, and installs any Capacitor/Cordova plugins found',
       description: `
-${chalk.green('ionic capacitor copy')} will do the following:
-- Copy the ${chalk.bold('www/')} directory into your native platforms.
+${chalk.green('ionic capacitor update')} will do the following:
+- Update each Capacitor native project, such as any dependencies that need updating.
+- Install any discovered Capacitor or Cordova plugins.
       `,
       exampleCommands: [],
-      inputs: []
+      inputs: [],
     };
   }
 
@@ -24,6 +25,7 @@ ${chalk.green('ionic capacitor copy')} will do the following:
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    await this.runCapacitor(['copy']);
+    const [ platform ] = inputs;
+    await this.runCapacitor(['update', platform]);
   }
 }
