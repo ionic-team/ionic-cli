@@ -25,6 +25,10 @@ ${chalk.green('ionic capacitor open')} will do the following:
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ platform ] = inputs;
-    await this.runCapacitor(['open', platform]);
+    const args = [ 'open' ];
+    if (platform) {
+      args.push(platform);
+    }
+    await this.runCapacitor(args);
   }
 }

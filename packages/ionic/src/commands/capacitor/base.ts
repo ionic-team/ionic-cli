@@ -23,7 +23,7 @@ export abstract class CapacitorCommand extends Command {
     const { ERROR_SHELL_COMMAND_NOT_FOUND } = await import('@ionic/cli-utils/lib/shell');
     try {
       this.env.close();
-      await this.env.shell.run('npx', ['capacitor'].concat(argList), { fatalOnNotFound, truncateErrorOutput, stdio: 'inherit', ...options });
+      await this.env.shell.run('capacitor', argList, { fatalOnNotFound, truncateErrorOutput, stdio: 'inherit', ...options });
       this.env.open();
     } catch (e) {
       this.env.open();
