@@ -32,7 +32,7 @@
     "styleext": {
       "type": "string",
       "description": "The file extension of the style file for the page",
-      "default": "css"
+      "default": "scss"
     },
     "spec": {
       "type": "boolean",
