@@ -364,7 +364,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
 
         throw new FatalException(
           `${chalk.green(pkg)} is required for Ionic Lab to work properly.\n` +
-          `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
+          `Looks like ${chalk.green(pkg)} isn't installed in this project.\n\n` +
           `This package is required for Ionic Lab as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#4.0.0')}`
         );
       }

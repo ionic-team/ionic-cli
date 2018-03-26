@@ -118,7 +118,7 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
 
       throw new FatalException(
         `${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.\n` +
-        `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
+        `Looks like ${chalk.green(pkg)} isn't installed in this project.\n\n` +
         `This package is required for ${chalk.green('ionic serve')} in ${prettyProjectName('angular')} projects.`
       );
     }
