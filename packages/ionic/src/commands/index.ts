@@ -12,6 +12,7 @@ export class IonicNamespace extends Namespace {
     return new NamespaceMap([
       ['config', async () => { const { ConfigNamespace } = await import('./config/index'); return new ConfigNamespace(this, this.env); }],
       ['cordova', async () => { const { CordovaNamespace } = await import('./cordova/index'); return new CordovaNamespace(this, this.env); }],
+      ['capacitor', async () => { const { CapacitorNamespace } = await import('./capacitor/index'); return new CapacitorNamespace(this, this.env); }],
       ['git', async () => { const { GitNamespace } = await import('./git/index'); return new GitNamespace(this, this.env); }],
       ['ssl', async () => { const { SSLNamespace } = await import('./ssl/index'); return new SSLNamespace(this, this.env); }],
       ['ssh', async () => { const { SSHNamespace } = await import('./ssh/index'); return new SSHNamespace(this, this.env); }],

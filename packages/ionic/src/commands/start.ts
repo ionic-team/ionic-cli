@@ -43,6 +43,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         'myApp',
         'myApp blank',
         'myApp tabs --cordova',
+        'myApp tabs --capacitor',
         'myApp blank --type=ionic1',
         'myApp super --type=ionic-angular',
         'myConferenceApp https://github.com/ionic-team/ionic-conference-app',
@@ -80,6 +81,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         {
           name: 'cordova',
           summary: 'Include Cordova integration',
+          type: Boolean,
+        },
+        {
+          name: 'capacitor',
+          summary: 'Include Capacitor integration',
           type: Boolean,
         },
         {
@@ -342,7 +348,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     const shellOptions = { cwd: projectDir, stdio: ['inherit', 'ignore', 'ignore'] };
 
     if (!clonedApp) {
-      if (!options['cordova']) {
+      if (!options['cordova'] && !options['capacitor']) {
         const confirm = await this.env.prompt({
           type: 'confirm',
           name: 'confirm',
@@ -357,6 +363,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
       if (options['cordova']) {
         await runCommand(runinfo, ['integrations', 'enable', 'cordova', '--quiet']);
+      }
+
+      if (options['capacitor']) {
+        await runCommand(runinfo, ['integrations', 'enable', 'capacitor', '--quiet']);
       }
 
       await this.env.project.personalize({ appName: name, bundleId, displayName });

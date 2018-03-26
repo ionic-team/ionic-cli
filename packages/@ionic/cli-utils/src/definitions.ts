@@ -143,8 +143,12 @@ export interface ProjectCordovaIntegration extends ProjectIntegration {
   setupEngineHooks?: boolean;
 }
 
+export interface ProjectCapacitorIntegration extends ProjectIntegration {
+}
+
 export interface ProjectIntegrations {
   cordova?: ProjectCordovaIntegration;
+  capacitor?: ProjectCapacitorIntegration;
 }
 
 export interface ProjectFile {

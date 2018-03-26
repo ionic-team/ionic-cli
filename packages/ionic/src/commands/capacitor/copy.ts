@@ -1,0 +1,30 @@
+import chalk from 'chalk';
+
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+//import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
+
+import { CapacitorCommand } from './base';
+
+export class CopyCommand extends CapacitorCommand implements CommandPreRun {
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'copy',
+      type: 'project',
+      summary: 'Copies web assets to native platforms',
+      description: `
+${chalk.green('ionic capacitor copy')} will do the following:
+- Copy the ${chalk.bold('www/')} directory into your native platforms.
+      `,
+      exampleCommands: [],
+      inputs: []
+    };
+  }
+
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
+    await this.preRunChecks(runinfo);
+  }
+
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    await this.runCapacitor(['copy']);
+  }
+}
