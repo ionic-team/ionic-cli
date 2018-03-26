@@ -45,8 +45,8 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     const [ snapshotId ] = inputs;
     const doBuild = options.build ? true : false;
 
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
-    const conf = await ConfigXml.load(this.env.project.directory);
+    const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
+    const conf = await loadConfigXml({ project: this.env.project });
     const cordovaInfo = conf.getProjectInfo();
 
     const appVersion = cordovaInfo.version;

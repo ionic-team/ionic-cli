@@ -95,7 +95,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
+    const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
     const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
 
     const {
@@ -112,7 +112,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     const [ platform ] = inputs;
     const { force } = options;
 
-    let conf = await ConfigXml.load(this.env.project.directory);
+    const conf = await loadConfigXml({ project: this.env.project });
 
     // if no resource filters are passed as arguments assume to use all.
     let resourceTypes = AVAILABLE_RESOURCE_TYPES.filter((type, index, array) => options[type]);
@@ -135,7 +135,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
       if (confirm) {
         await installPlatform(this.env, platform);
-        conf = await ConfigXml.load(this.env.project.directory);
+        await conf.reload();
         platforms = await getPlatforms(this.env.project.directory);
         debug(`platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
       } else {

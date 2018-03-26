@@ -101,7 +101,7 @@ export abstract class CordovaCommand extends Command {
   }
 
   async preRunChecks(runinfo: CommandInstanceInfo) {
-    const { ConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
+    const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
 
     await this.checkCordova(runinfo);
 
@@ -117,7 +117,7 @@ export abstract class CordovaCommand extends Command {
       }
     }
 
-    const conf = await ConfigXml.load(this.env.project.directory);
+    const conf = await loadConfigXml({ project: this.env.project });
     conf.resetContentSrc();
     await conf.save();
   }
