@@ -54,12 +54,12 @@ export async function runServer(options: ServeOptions): Promise<ServeOptions> {
   watcher.on('change', (filePath: string) => {
     process.stdout.write(`${timestamp()} ${chalk.bold(filePath)} changed\n`);
 
-    if (reloadfn) {
-      reloadfn([filePath]);
-    }
-
     if (path.extname(filePath) === '.scss') {
       runTask('sass');
+    } else {
+      if (reloadfn) {
+        reloadfn([filePath]);
+      }
     }
   });
 
