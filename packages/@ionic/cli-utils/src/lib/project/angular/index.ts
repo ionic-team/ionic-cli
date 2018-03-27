@@ -23,12 +23,14 @@ export class Project extends BaseProject {
     const [
       ionicAngularVersion,
       ionicCoreVersion,
+      ionicSchematicsAngularVersion,
       angularCLIVersion,
       angularDevKitCoreVersion,
       angularDevKitSchematicsVersion,
     ] = await Promise.all([
       this.getFrameworkVersion(),
       this.getCoreVersion(),
+      this.getIonicSchematicsAngularVersion(),
       this.getAngularCLIVersion(),
       this.getAngularDevKitCoreVersion(),
       this.getAngularDevKitCoreVersion(),
@@ -38,6 +40,7 @@ export class Project extends BaseProject {
       ...(await super.getInfo()),
       { type: 'local-packages', key: 'Ionic Framework', value: ionicAngularVersion ? `@ionic/angular ${ionicAngularVersion}` : 'not installed' },
       { type: 'local-packages', key: '@ionic/core', value: ionicCoreVersion ? ionicCoreVersion : 'not installed' },
+      { type: 'local-packages', key: '@ionic/schematics-angular', value: ionicSchematicsAngularVersion ? ionicSchematicsAngularVersion : 'not installed' },
       { type: 'local-packages', key: '@angular/cli', value: angularCLIVersion ? angularCLIVersion : 'not installed' },
       { type: 'local-packages', key: '@angular-devkit/core', value: angularDevKitCoreVersion ? angularDevKitCoreVersion : 'not installed' },
       { type: 'local-packages', key: '@angular-devkit/schematics', value: angularDevKitSchematicsVersion ? angularDevKitSchematicsVersion : 'not installed' },
@@ -136,6 +139,18 @@ export class Project extends BaseProject {
 
   async getAngularDevKitSchematicsVersion() {
     const pkgName = '@angular-devkit/schematics';
+
+    try {
+      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
+      const pkg = await readPackageJsonFile(pkgPath);
+      return pkg.version;
+    } catch (e) {
+      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
+    }
+  }
+
+  async getIonicSchematicsAngularVersion() {
+    const pkgName = '@ionic/schematics-angular';
 
     try {
       const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
