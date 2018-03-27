@@ -17,6 +17,12 @@
 <a name="4.0.0"></a>
 ### 4.0.0 (PENDING)
 
+This release does **not** have full support for **Ionic Angular 4**. See the
+[Ionic Framework repo](https://github.com/ionic-team/ionic) for updates. Want to
+help test _the tooling_ for **Ionic Angular 4**? Opt-in to the new project type
+and help us test: [#3019
+:heart_eyes:](https://github.com/ionic-team/ionic-cli/issues/3019)
+
 #### Upgrading from CLI v3
 
 Aside from a few edge cases listed below, upgrading to CLI v4 should be
@@ -55,8 +61,7 @@ down the main CLI package. All functionality is still supported, but the
 * The `--target` option for Cordova has been renamed to `--cordova-target` to
   disambiguate from the Angular CLI's `--target` option.
 * The `ionic:watch:before` hook has been renamed to `ionic:serve:before`, but
-  behaves the same. See the [hook
-  documentation](https://ionicframework.com/docs/cli/configuring.html#hooks).
+  behaves the same.
 
 #### :rocket: Enhancements
 
@@ -64,14 +69,7 @@ down the main CLI package. All functionality is still supported, but the
 * New `ionic config unset` command for deleting config values.
 * If `ionic:build` or `ionic:serve` npm scripts are defined in your
   `package.json`, the Ionic CLI will use them for the Ionic build/serve instead
-  of the default for your project type. See [the
-  docs](https://ionicframework.com/docs/cli/configuring.html#building-and-serving-your-app)
-  for details.
-* Connections from DevApp are now shown in the terminal.
-* New JS hook system. See [the
-  docs](https://ionicframework.com/docs/cli/configuring.html#hooks).
-* New `serve:after` hook. See [the
-  docs](https://ionicframework.com/docs/cli/configuring.html#hooks).
+  of the default for your project type.
 * Automatic login via `IONIC_TOKEN` environment variable
   [#2410](https://github.com/ionic-team/ionic-cli/issues/2410)
 * `--no-color` flag for turning off CLI colors
@@ -79,7 +77,7 @@ down the main CLI package. All functionality is still supported, but the
   [#2930](https://github.com/ionic-team/ionic-cli/pull/2930)
 * Chain `--verbose` flag to Cordova for `ionic cordova` commands
   [#2919](https://github.com/ionic-team/ionic-cli/issues/2919)
-* Partial monorepo support. See the discussion in
+* Better monorepo support. See the discussion in
   [#2232](https://github.com/ionic-team/ionic-cli/issues/2232).
 
 #### :bug: Bug Fixes
