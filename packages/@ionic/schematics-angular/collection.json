@@ -8,9 +8,10 @@
     },
     "ion-component": {
       "aliases": ["ic"],
-      "factory": "./ion-components",
+      "factory": "./components",
       "description": "Create an Ionic Default Component",
-      "schema": "./ion-components/schema.json"
+      "schema": "./components/schema.json",
+      "hidden": true
     }
   }
 }

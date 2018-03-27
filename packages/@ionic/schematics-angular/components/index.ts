@@ -62,6 +62,11 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
 }
 
 export default function (options: ComponentOptions): Rule {
+  // change install directory
+  if (options.path) {
+    options.path = options.path.replace('app/ion-components', 'app/components') ;
+  }
+
   const { sourceDir } = options;
 
   if (!sourceDir) {

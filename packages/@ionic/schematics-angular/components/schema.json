@@ -7,7 +7,7 @@
     "path": {
       "type": "string",
       "format": "path",
-      "description": "The path to create the page",
+      "description": "The path to create the component",
       "default": "app",
       "visible": false
     },
@@ -27,11 +27,11 @@
     },
     "name": {
       "type": "string",
-      "description": "The name of the page"
+      "description": "The name of the component"
     },
     "styleext": {
       "type": "string",
-      "description": "The file extension of the style file for the page",
+      "description": "The file extension of the style file for the component",
       "default": "scss"
     },
     "spec": {
