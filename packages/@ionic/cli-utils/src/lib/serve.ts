@@ -18,6 +18,7 @@ import { ASSETS_DIRECTORY, OptionGroup, PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Runner } from './runner';
 import { Hook } from './hooks';
+import { PkgManagerOptions } from './utils/npm';
 
 import * as ionic1ServeLibType from './project/ionic1/serve';
 import * as ionicAngularServeLibType from './project/ionic-angular/serve';
@@ -367,7 +368,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
         this.log.nl();
         this.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
 
-        const installed = await this.promptToInstallPkg(pkg);
+        const installed = await this.promptToInstallPkg({ pkg, saveDev: true });
 
         if (!installed) {
           throw new FatalException(`${chalk.green(pkg)} is required for Ionic Lab to work properly.\n` + requiredMsg);
@@ -421,15 +422,15 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     });
   }
 
-  async promptToInstallPkg(pkg: string): Promise<boolean> {
+  async promptToInstallPkg(options: Partial<PkgManagerOptions> & { pkg: string; }): Promise<boolean> {
     const { pkgManagerArgs } = await import('./utils/npm');
     const config = await this.config.load();
     const { npmClient } = config;
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', ...options });
 
     const confirm = await this.prompt({
       name: 'confirm',
-      message: `Install ${chalk.green(pkg)}?`,
+      message: `Install ${chalk.green(options.pkg)}?`,
       type: 'confirm',
     });
 

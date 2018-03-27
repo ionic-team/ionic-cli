@@ -163,7 +163,7 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
       this.log.nl();
       this.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
 
-      const installed = await this.promptToInstallPkg(pkg);
+      const installed = await this.promptToInstallPkg({ pkg, saveDev: true });
 
       if (!installed) {
         this.log.nl();
