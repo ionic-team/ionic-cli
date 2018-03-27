@@ -16,6 +16,7 @@ class MyNamespace extends Namespace {
     return new NamespaceMap([
       ['foo', async () => new FooNamespace(this)],
       ['defns', async () => new NamespaceWithDefault(this)],
+      ['f', 'foo'],
     ]);
   }
 }
@@ -78,57 +79,6 @@ describe('@ionic/cli-framework', () => {
 
   describe('lib/command', () => {
 
-    describe('CommandMap', () => {
-
-      describe('getAliases', () => {
-
-        it('should get empty alias map for empty command map', () => {
-          const cmdmap = new CommandMap([]);
-          const aliasmap = cmdmap.getAliases();
-          expect(aliasmap.size).toEqual(0);
-        });
-
-        it('should get empty alias map for command map with no aliases', () => {
-          const cmdmap = new CommandMap([['foo', () => {}], ['bar', () => {}]]);
-          const aliasmap = cmdmap.getAliases();
-          expect(aliasmap.size).toEqual(0);
-        });
-
-        it('should get alias map for command map with aliases', () => {
-          const cmdmap = new CommandMap([['foo', async () => new FooCommand()], ['f', 'foo'], ['fo', 'foo']]);
-          const aliasmap = cmdmap.getAliases();
-          expect(aliasmap.size).toEqual(1);
-          expect(aliasmap.get('foo')).toEqual(['f', 'fo']);
-        });
-
-        it('should get alias map for command map without resolved command', () => {
-          const cmdmap = new CommandMap([['f', 'foo'], ['fo', 'foo']]);
-          const aliasmap = cmdmap.getAliases();
-          expect(aliasmap.size).toEqual(1);
-          expect(aliasmap.get('foo')).toEqual(['f', 'fo']);
-        });
-
-      });
-
-      describe('resolveAliases', () => {
-
-        it('should return undefined for unknown command', () => {
-          const cmdmap = new CommandMap([]);
-          expect(cmdmap.resolveAliases('bar')).toBeUndefined();
-        });
-
-        it('should return command when immediately found', async () => {
-          const cmd = new FooCommand();
-          const cmdmap = new CommandMap([['foo', async () => cmd]]);
-          const result = cmdmap.resolveAliases('foo');
-          expect(result).toBeDefined();
-          expect(await result()).toBe(cmd);
-        });
-
-      });
-
-    });
-
     describe('Namespace', () => {
 
       describe('parent and namespace', () => {
@@ -138,9 +88,11 @@ describe('@ionic/cli-framework', () => {
             const namespaces = await ns.getNamespaces();
 
             for (let [ , nsgetter ] of namespaces.entries()) {
-              const namespace = await nsgetter();
-              expect(namespace.parent).toBe(ns);
-              await testNamespace(namespace);
+              if (typeof nsgetter !== 'string' && typeof nsgetter !== 'symbol') {
+                const namespace = await nsgetter();
+                expect(namespace.parent).toBe(ns);
+                await testNamespace(namespace);
+              }
             }
           };
 
@@ -161,9 +113,11 @@ describe('@ionic/cli-framework', () => {
             }
 
             for (let [ , nsgetter ] of namespaces.entries()) {
-              const namespace = await nsgetter();
-              expect(namespace.parent).toBe(ns);
-              await testNamespace(namespace);
+              if (typeof nsgetter !== 'string' && typeof nsgetter !== 'symbol') {
+                const namespace = await nsgetter();
+                expect(namespace.parent).toBe(ns);
+                await testNamespace(namespace);
+              }
             }
           };
 
@@ -252,6 +206,21 @@ describe('@ionic/cli-framework', () => {
           expect(ns1[0]).toEqual('my');
           expect(ns1[1]).toBe(ns);
           expect(ns2[0]).toEqual('foo');
+          expect(ns2[1]).toBeInstanceOf(FooNamespace);
+          expect(cmd3[0]).toEqual('b');
+          expect(cmd3[1]).toBeInstanceOf(BarCommand);
+        });
+
+        it('should locate bar command in foo namespace by aliases', async () => {
+          const ns = new MyNamespace();
+          const { args, obj, path } = await ns.locate(['f', 'b', 'arg1']);
+          expect(args).toEqual(['arg1']);
+          expect(obj).toBeInstanceOf(BarCommand);
+          expect(path.length).toEqual(3);
+          const [ ns1, ns2, cmd3 ] = path;
+          expect(ns1[0]).toEqual('my');
+          expect(ns1[1]).toBe(ns);
+          expect(ns2[0]).toEqual('f');
           expect(ns2[1]).toBeInstanceOf(FooNamespace);
           expect(cmd3[0]).toEqual('b');
           expect(cmd3[1]).toBeInstanceOf(BarCommand);

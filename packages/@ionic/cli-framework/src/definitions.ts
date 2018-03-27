@@ -1,6 +1,8 @@
 import * as minimistType from 'minimist';
 import { Chalk } from 'chalk';
 
+import { AliasedMap } from './utils/object';
+
 export interface Colors {
   /**
    * Used to mark text as important. Comparable to HTML's <strong>.
@@ -65,11 +67,11 @@ export interface Metadata {
   summary: string;
   description?: string;
   groups?: MetadataGroup[];
+  aliases?: string[];
 }
 
 export interface CommandMetadata<I = CommandMetadataInput, O = CommandMetadataOption> extends Metadata {
   exampleCommands?: string[];
-  aliases?: string[];
   inputs?: I[];
   options?: O[];
 }
@@ -88,16 +90,10 @@ export interface ICommand<C extends ICommand<C, N, M, I, O>, N extends INamespac
   validate(argv: CommandLineInputs): Promise<void>;
 }
 
-export type CommandMapKey = string | symbol;
 export type CommandMapGetter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = () => Promise<C>;
 export type NamespaceMapGetter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = () => Promise<N>;
-
-export interface ICommandMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<CommandMapKey, string | CommandMapGetter<C, N, M, I, O>> {
-  getAliases(): Map<CommandMapKey, CommandMapKey[]>;
-  resolveAliases(cmd: string): CommandMapGetter<C, N, M, I, O> | undefined;
-}
-
-export interface INamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Map<string, NamespaceMapGetter<C, N, M, I, O>> {}
+export type ICommandMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = AliasedMap<string, CommandMapGetter<C, N, M, I, O>>;
+export type INamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = AliasedMap<string, NamespaceMapGetter<C, N, M, I, O>>;
 
 export interface INamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   parent: N | undefined;

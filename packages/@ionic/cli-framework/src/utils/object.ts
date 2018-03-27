@@ -19,3 +19,32 @@ export const CaseInsensitiveProxyHandler: ProxyHandler<any> = {
 };
 
 const conformPropertyKey = (prop: PropertyKey) => typeof prop === 'string' ? prop.toLowerCase() : prop;
+
+export type AliasedMapKey = string | symbol;
+
+export class AliasedMap<K, V> extends Map<AliasedMapKey | K, AliasedMapKey | V> {
+  getAliases(): Map<AliasedMapKey, AliasedMapKey[]> {
+    const aliasmap = new Map<AliasedMapKey, AliasedMapKey[]>();
+
+    // TODO: waiting for https://github.com/Microsoft/TypeScript/issues/18562
+    const aliases = <[AliasedMapKey, AliasedMapKey][]>[...this.entries()].filter(([, v]) => typeof v === 'string' || typeof v === 'symbol');
+
+    aliases.forEach(([alias, cmd]) => {
+      const cmdaliases = aliasmap.get(cmd) || [];
+      cmdaliases.push(alias);
+      aliasmap.set(cmd, cmdaliases);
+    });
+
+    return aliasmap;
+  }
+
+  resolveAliases(key: AliasedMapKey | K): V | undefined {
+    const r = this.get(key);
+
+    if (typeof r !== 'string' && typeof r !== 'symbol') {
+      return r;
+    }
+
+    return this.resolveAliases(r);
+  }
+}

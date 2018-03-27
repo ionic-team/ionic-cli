@@ -1,4 +1,4 @@
-import { createCaseInsensitiveObject } from '../object';
+import { AliasedMap, createCaseInsensitiveObject } from '../object';
 
 describe('@ionic/cli-framework', () => {
 
@@ -63,6 +63,58 @@ describe('@ionic/cli-framework', () => {
         o['GOOD key'] = 'val1';
         o['good KEY'] = 'val2';
         expect({ ...o }).toEqual({ 'good key': 'val2' });
+      });
+
+    });
+
+    describe('AliasedMap', () => {
+
+      class MyAliasedMap extends AliasedMap<string, { foo: string; }> {}
+
+      describe('getAliases', () => {
+
+        it('should get empty alias map for empty command map', () => {
+          const m = new MyAliasedMap([]);
+          const aliasmap = m.getAliases();
+          expect(aliasmap.size).toEqual(0);
+        });
+
+        it('should get empty alias map for command map with no aliases', () => {
+          const m = new MyAliasedMap([['foo', { foo: 'bar' }], ['bar', { foo: 'bar' }]]);
+          const aliasmap = m.getAliases();
+          expect(aliasmap.size).toEqual(0);
+        });
+
+        it('should get alias map for command map with aliases', () => {
+          const m = new MyAliasedMap([['foo', { foo: 'bar' }], ['f', 'foo'], ['fo', 'foo']]);
+          const aliasmap = m.getAliases();
+          expect(aliasmap.size).toEqual(1);
+          expect(aliasmap.get('foo')).toEqual(['f', 'fo']);
+        });
+
+        it('should get alias map for command map without resolved command', () => {
+          const m = new MyAliasedMap([['f', 'foo'], ['fo', 'foo']]);
+          const aliasmap = m.getAliases();
+          expect(aliasmap.size).toEqual(1);
+          expect(aliasmap.get('foo')).toEqual(['f', 'fo']);
+        });
+
+      });
+
+      describe('resolveAliases', () => {
+
+        it('should return undefined for unknown command', () => {
+          const m = new MyAliasedMap([]);
+          expect(m.resolveAliases('bar')).toBeUndefined();
+        });
+
+        it('should return command when immediately found', async () => {
+          const obj = { foo: 'bar' };
+          const m = new MyAliasedMap([['foo', obj]]);
+          const result = m.resolveAliases('foo');
+          expect(result).toBe(obj);
+        });
+
       });
 
     });
