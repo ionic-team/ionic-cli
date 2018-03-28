@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-    selector: '<%= kebabCase(name) %>-page',
+    selector: 'app-page-<%= kebabCase(name) %>',
     templateUrl: './<%= kebabCase(name) %>.page.html',
     styleUrls: ['./<%= kebabCase(name) %>.page.<%= styleext %>'],
 })
