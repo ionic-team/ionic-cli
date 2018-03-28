@@ -5,9 +5,9 @@
 
 :wave: :point_right: *Please test :sparkles: **CLI 4** :sparkles: release candidates:* `npm i -g ionic@rc` :heart:
 
-& If you found Issues, Please let us know. 
-About Ionic Angular 4 => [issues/3019](https://github.com/ionic-team/ionic-cli/issues/3019)
-Other CLI 4 Issue => Please create New Issue.
+If you find issues, please let us know:
+* **Tooling for Ionic Angular 4**: See [#3019](https://github.com/ionic-team/ionic-cli/issues/3019)
+* **Other CLI 4 Issues**: Please create new issue
 
 ---
 
