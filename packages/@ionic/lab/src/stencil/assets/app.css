@@ -97,7 +97,7 @@ main {
   color: var(--font-color);
   display: flex;
   flex: 1;
-  overflow: auto;
+  overflow: hidden;
 }
 
 footer {

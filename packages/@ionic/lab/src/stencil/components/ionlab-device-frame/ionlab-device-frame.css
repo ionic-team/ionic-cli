@@ -1,10 +1,7 @@
 ionlab-device-frame {
-  display: inline-block;
+  display: block;
   margin: 0 20px;
   vertical-align: middle;
-
-  --frame-width: 375px;
-  --frame-height: 667px;
 }
 
 ionlab-device-frame h2 {
