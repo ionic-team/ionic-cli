@@ -1,0 +1,93 @@
+ionlab-device-frame {
+  display: inline-block;
+  margin: 0 20px;
+  vertical-align: middle;
+
+  --frame-width: 375px;
+  --frame-height: 667px;
+}
+
+ionlab-device-frame h2 {
+  font-size: var(--font-size-base);
+  margin: 1em 0;
+  vertical-align: middle;
+  text-align: left;
+  font-weight: var(--font-weight-bold);
+  vertical-align: top;
+  color: #727a87;
+}
+
+ionlab-device-frame h2 .icon {
+  display: inline-block;
+  margin-right: 7px;
+  font-size: var(--font-size-lg);
+}
+
+ionlab-device-frame .frame-container {
+  position: relative;
+  width: var(--frame-width);
+  height: var(--frame-height);
+  border-radius: 3px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08), 0 0px 6px rgba(0,0,0,.1);
+  overflow: hidden;
+}
+
+ionlab-device-frame .frame-container .statusbar {
+  position: absolute;
+  top: 0;
+  width: var(--frame-width);
+  height: 20px;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 3px 3px 0 0;
+}
+
+ionlab-device-frame .frame-container sk-fading-circle,
+ionlab-device-frame .frame-container .load-error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+ionlab-device-frame .frame-container .load-error {
+  background: var(--section-bg);
+  padding: 10px 20px;
+}
+
+ionlab-device-frame .frame-container .load-error p {
+  margin: 0;
+}
+
+ionlab-device-frame .frame-container iframe {
+  background: #000;
+  border: none;
+  width: 100%;
+  height: 100%;
+}
+
+#device-ios .frame-container .statusbar {
+  background-image: url('./assets/ios-statusbar.png');
+}
+
+#device-android .frame-container iframe {
+  margin-top: 20px;
+  height: calc(var(--frame-height) - 20px);
+}
+
+#device-android .frame-container .statusbar {
+  background-image: url('./assets/android-statusbar.png');
+}
+
+#device-windows .frame-container iframe {
+  margin-top: 20px;
+  height: calc(var(--frame-height) - 20px);
+}
+
+#device-windows .frame-container .statusbar {
+  background-image: url('./assets/wp-statusbar.png');
+  background-color: #fff;
+}

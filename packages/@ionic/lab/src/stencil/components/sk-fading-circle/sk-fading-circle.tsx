@@ -2,7 +2,7 @@ import { Component } from '@stencil/core';
 
 @Component({
   tag: 'sk-fading-circle',
-  styleUrl: 'sk-fading-circle.scss',
+  styleUrl: 'sk-fading-circle.css',
 })
 export class SpinKitFadingCircle {
   render() {

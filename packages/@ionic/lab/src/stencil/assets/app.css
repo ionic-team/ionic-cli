@@ -1,7 +1,3 @@
-@import '../../../assets/_fonts';
-@import '../../../assets/_variables';
-@import '../../../assets/_reboot';
-
 html,
 body {
   height: 100%;
@@ -21,12 +17,12 @@ h6 {
 }
 
 a {
-  color: $font-color;
+  color: var(--font-color);
+}
 
-  &:hover {
-    text-decoration: none;
-    color: $font-color;
-  }
+a:hover {
+  text-decoration: none;
+  color: var(--font-color);
 }
 
 ionlab-app {
@@ -36,20 +32,20 @@ ionlab-app {
 }
 
 header {
-  background: $section-bg;
+  background: var(--section-bg);
   height: 50px;
   line-height: 50px;
-  font-size: $font-size-sm;
+  font-size: var(--font-size-sm);
   font-weight: bold;
-  color: $icon-color;
+  color: var(--icon-color);
+}
 
-  .icon {
-    display: inline-block;
-    vertical-align: middle;
-    margin-top: -3px;
-    font-size: 22px;
-    color: $icon-color;
-  }
+header .icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: -3px;
+  font-size: 22px;
+  color: var(--icon-color);
 }
 
 .icon {
@@ -59,7 +55,7 @@ header {
 #logo {
   display: inline-block;
   vertical-align: middle;
-  background: url('./assets/lab-logo.png');
+  background: url('lab-logo.png');
   background-size: 100%;
   background-repeat: no-repeat;
   margin-top: -2px;
@@ -70,35 +66,35 @@ header {
 
 #header-left {
   float: left;
+}
 
-  .menu-icon {
-    margin-left: 13px;
-  }
+#header-left .menu-icon {
+  margin-left: 13px;
 }
 
 #header-right {
   float: right;
+}
 
-  button {
-    display: inline-block;
-    height: 100%;
-    background: none;
-    border: none;
-    outline: none;
-    margin: 0;
-    padding: 0 10px;
-    cursor: pointer;
-    color: $icon-color;
-    font-weight: bold;
-  }
+#header-right button {
+  display: inline-block;
+  height: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  margin: 0;
+  padding: 0 10px;
+  cursor: pointer;
+  color: var(--icon-color);
+  font-weight: bold;
+}
 
-  .fullscreen-icon {
-    margin-left: 5px;
-  }
+#header-right .fullscreen-icon {
+  margin-left: 5px;
 }
 
 main {
-  color: $font-color;
+  color: var(--font-color);
   display: flex;
   flex: 1;
   overflow: auto;
@@ -107,9 +103,9 @@ main {
 footer {
   width: 100%;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
-  background: $section-bg;
-  font-size: $font-size-sm;
-  color: $font-color;
+  background: var(--section-bg);
+  font-size: var(--font-size-sm);
+  color: var(--font-color);
 }
 
 #footer-left {
@@ -120,11 +116,11 @@ footer {
 #footer-right {
   float: right;
   padding: 14px 15px 14px 5px;
+}
 
-  a {
-    font-family: $font-family-medium;
-    margin-left: 10px;
-  }
+#footer-right a {
+  font-family: var(--font-family-medium);
+  margin-left: 10px;
 }
 
 #error-box {
@@ -132,7 +128,7 @@ footer {
   align-self: center;
   justify-content: center;
   text-align: center;
-  background: $section-bg;
+  background: var(--section-bg);
   padding: 25px;
   margin: 100px 0;
 }

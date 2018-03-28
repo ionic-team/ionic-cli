@@ -2,7 +2,7 @@ import { Component, Event, EventEmitter, Prop } from '@stencil/core';
 
 @Component({
   tag: 'ionlab-sidebar',
-  styleUrl: 'ionlab-sidebar.scss',
+  styleUrl: 'ionlab-sidebar.css',
 })
 export class Sidebar {
   @Prop() visible: boolean;

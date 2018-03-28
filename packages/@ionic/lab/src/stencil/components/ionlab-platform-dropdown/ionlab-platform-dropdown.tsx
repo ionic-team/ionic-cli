@@ -4,7 +4,7 @@ import { AVAILABLE_PLATFORMS, platformPrettyName } from '../../utils';
 
 @Component({
   tag: 'ionlab-platform-dropdown',
-  styleUrl: 'ionlab-platform-dropdown.scss',
+  styleUrl: 'ionlab-platform-dropdown.css',
 })
 export class PlatformDropdown {
   @Prop() activePlatforms: string[];

@@ -4,7 +4,7 @@ import { PLATFORM_IOS, platformIoniconClass, platformPrettyName } from '../../ut
 
 @Component({
   tag: 'ionlab-preview',
-  styleUrl: 'ionlab-preview.scss',
+  styleUrl: 'ionlab-preview.css',
 })
 export class Preview {
   @Prop() activeDevices: string[];

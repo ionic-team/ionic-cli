@@ -1,0 +1,35 @@
+:root {
+  --font-family-sans-serif: 'AvenirNextLTPro-Regular', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+  --font-family-base: var(--font-family-sans-serif);
+  --font-family-medium: 'AvenirNextLTPro-Medium', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+
+  --font-size-base: 1rem;
+  --font-size-lg: calc(var(--font-size-base) * 1.25);
+  --font-size-sm: calc(var(--font-size-base) * .875);
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-bold: 700;
+
+  --font-weight-base: var(--font-weight-normal);
+  --line-height-base: 1.5;
+
+  --body-bg: #242a31;
+  --body-color: #fff;
+
+  --headings-margin-bottom: 1rem;
+  --paragraph-margin-bottom: 1rem;
+
+  --link-color: #00f;
+  --link-decoration: none;
+  /*
+  --link-hover-color: darken($link-color, 15%);
+  */
+  --link-hover-color: var(--link-color);
+  --link-hover-decoration: underline;
+
+  --icon-color: #858d9b;
+  --main-bg: var(--body-bg);
+  --section-bg: #151a21;
+  --font-color: #a2a9b4;
+}
