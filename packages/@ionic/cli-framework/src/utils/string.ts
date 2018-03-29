@@ -1,3 +1,5 @@
+import * as lodash from 'lodash';
+
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const URL_REGEX = /^[\S]+:[\S]+$/;
 
@@ -45,4 +47,18 @@ export function str2num(value: any, defaultValue = -1): number {
   }
 
   return result;
+}
+
+export interface SlugifyOptions {
+  separator?: string;
+}
+
+/**
+ * Create a slug out of an input string.
+ *
+ * Whitespace is trimmed, everything is lowercased, some international
+ * characters are converted, then dasherized.
+ */
+export function slugify(input: string, { separator = '-' }: SlugifyOptions = {}): string {
+  return lodash.words(lodash.deburr(input.trim())).map(w => w.toLowerCase().replace(/[^A-z0-9]/g, '')).join(separator);
 }

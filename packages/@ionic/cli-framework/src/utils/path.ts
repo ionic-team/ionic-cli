@@ -20,6 +20,8 @@ export function tmpfilepath(prefix?: string): string {
  * one directory at a time, always ending in the root directory.
  *
  * For example, `'/some/dir'` => `['/some/dir', '/some', '/']`
+ *
+ * @param filePath Absolute system base path.
  */
 export function compilePaths(filePath: string): string[] {
   filePath = path.normalize(filePath);
