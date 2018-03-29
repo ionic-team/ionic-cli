@@ -2,8 +2,6 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
-
 import { IAilmentRegistry, InfoItem, ProjectType } from '../../../definitions';
 
 import { BaseProject } from '../';
@@ -15,7 +13,7 @@ export class Project extends BaseProject {
   type: ProjectType = 'ionic-angular';
 
   async getInfo(): Promise<InfoItem[]> {
-    const [ ionicAngularVersion, appScriptsVersion ] = await Promise.all([this.getFrameworkVersion(), this.getAppScriptsVersion()]);
+    const [ ionicAngularVersion, appScriptsVersion ] = await Promise.all([this.getPackageVersion('ionic-angular'), this.getPackageVersion('@ionic/app-scripts')]);
 
     return [
       ...(await super.getInfo()),
@@ -50,27 +48,4 @@ export class Project extends BaseProject {
     return false;
   }
 
-  async getFrameworkVersion(): Promise<string | undefined> {
-    const pkgName = 'ionic-angular';
-
-    try {
-      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
-      const pkg = await readPackageJsonFile(pkgPath);
-      return pkg.version;
-    } catch (e) {
-      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
-    }
-  }
-
-  async getAppScriptsVersion(): Promise<string | undefined> {
-    const pkgName = '@ionic/app-scripts';
-
-    try {
-      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
-      const pkg = await readPackageJsonFile(pkgPath);
-      return pkg.version;
-    } catch (e) {
-      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
-    }
-  }
 }

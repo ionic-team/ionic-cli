@@ -6,7 +6,6 @@ import * as lodash from 'lodash';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
-import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { IAilmentRegistry, InfoItem, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
 
@@ -87,15 +86,5 @@ export class Project extends BaseProject {
     registerAilments(registry, { ...deps, project: this });
 
     return registry;
-  }
-
-  async getPackageVersion(pkgName: string) {
-    try {
-      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
-      const pkg = await readPackageJsonFile(pkgPath);
-      return pkg.version;
-    } catch (e) {
-      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
-    }
   }
 }
