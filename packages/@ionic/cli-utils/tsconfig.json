@@ -4,7 +4,6 @@
     "outDir": "./"
   },
   "include": [
-    "../../../types/ci-info.d.ts",
     "../../../types/cross-spawn.d.ts",
     "../../../types/elementtree.d.ts",
     "../../../types/leek.d.ts",

@@ -20,6 +20,11 @@ export interface Colors {
   input: Chalk;
 }
 
+export interface TerminalInfo {
+  tty: boolean;
+  ci: boolean;
+}
+
 export type ParsedArg = string | boolean | null | undefined | string[];
 export type Validator = (input?: string, key?: string) => true | string;
 

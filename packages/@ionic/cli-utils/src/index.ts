@@ -3,11 +3,11 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import { isCI } from 'ci-info';
 
 import { PackageJson, parseArgs } from '@ionic/cli-framework';
 import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+import { getTerminalInfo } from '@ionic/cli-framework/utils/terminal';
 
 import * as inquirerType from 'inquirer';
 
@@ -73,8 +73,10 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   let prefix: LogPrefix = '';
 
   const configData = await config.load();
+  const terminalInfo = getTerminalInfo();
+  debug('Terminal info: %o', terminalInfo);
 
-  if (isCI || configData.interactive === false) {
+  if (configData.interactive === false || !terminalInfo.tty || terminalInfo.ci) {
     flags.interactive = false;
   }
 
