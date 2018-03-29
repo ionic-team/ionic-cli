@@ -49,7 +49,7 @@ class IonicForAngularUpdateAvailable extends AngularAilment {
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      this.currentVersion = await this.project.getFrameworkVersion();
+      this.currentVersion = await this.project.getPackageVersion('@ionic/angular');
       const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/angular' });
       this.latestVersion = pkg ? pkg.version : undefined;
     }
@@ -101,7 +101,7 @@ class IonicForAngularMajorUpdateAvailable extends AngularAilment {
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      this.currentVersion = await this.project.getFrameworkVersion();
+      this.currentVersion = await this.project.getPackageVersion('@ionic/angular');
       const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/angular' });
       this.latestVersion = pkg ? pkg.version : undefined;
     }
