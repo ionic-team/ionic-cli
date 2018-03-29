@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as util from 'util';
 
 import chalk from 'chalk';
 import * as Debug from 'debug';
@@ -107,8 +106,7 @@ export abstract class Hook {
       return module.default;
     }
 
-    const inspection = util.inspect(module, { colors: chalk.enabled });
-    debug(`Could not load hook function ${chalk.bold(p)}: ${inspection} not a function`);
+    debug(`Could not load hook function ${chalk.bold(p)}: %o not a function`, module);
   }
 }
 

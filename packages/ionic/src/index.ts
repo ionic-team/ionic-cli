@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as util from 'util';
 
 import chalk from 'chalk';
 import * as Debug from 'debug';
@@ -80,7 +79,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     try {
       const config = await ienv.config.load();
 
-      debug(util.inspect(ienv.ctx, { breakLength: Infinity, colors: chalk.enabled }));
+      debug('Context: %o', ienv.ctx);
 
       if (env['IONIC_TOKEN']) {
         const wasLoggedIn = await ienv.session.isLoggedIn();

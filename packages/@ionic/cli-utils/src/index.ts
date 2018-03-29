@@ -1,4 +1,3 @@
-import * as util from 'util';
 import * as path from 'path';
 
 import chalk from 'chalk';
@@ -157,7 +156,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     }
   }
 
-  debug(`CLI flags: ${util.inspect(flags, { breakLength: Infinity, colors: chalk.enabled })}`);
+  debug('CLI flags: %o', flags);
 
   if (typeof argv['yarn'] === 'boolean') {
     log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} was removed in CLI 4.0. Use ${chalk.green(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);
