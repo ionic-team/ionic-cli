@@ -12,7 +12,3 @@ export async function importNgSchematicsTools(projectDir: string): Promise<typeo
   const p = resolve('@angular-devkit/schematics/tools', { paths: compileNodeModulesPaths(projectDir) });
   return require(p);
 }
-
-export {
-  AngularDevKitSchematicsToolsType,
-};

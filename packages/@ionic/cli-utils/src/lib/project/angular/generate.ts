@@ -4,6 +4,8 @@ import * as lodash from 'lodash';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
+import * as AngularDevKitSchematicsToolsType from '@angular-devkit/schematics/tools';
+
 import { contains, unparseArgs, validators } from '@ionic/cli-framework';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
@@ -11,7 +13,7 @@ import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { GenerateRunner as BaseGenerateRunner } from '../../generate';
 import { FatalException } from '../../errors';
-import { AngularDevKitSchematicsToolsType, importNgSchematics, importNgSchematicsTools } from './angular-devkit';
+import { importNgSchematics, importNgSchematicsTools } from './angular-devkit';
 
 const ANGULAR_SCHEMATICS_PACKAGE = '@schematics/angular';
 const IONIC_SCHEMATICS_PACKAGE = '@ionic/schematics-angular';
