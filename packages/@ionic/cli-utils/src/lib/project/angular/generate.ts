@@ -4,6 +4,7 @@ import * as lodash from 'lodash';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
+import * as AngularDevKitSchematicsType from '@angular-devkit/schematics';
 import * as AngularDevKitSchematicsToolsType from '@angular-devkit/schematics/tools';
 
 import { contains, unparseArgs, validators } from '@ionic/cli-framework';
@@ -20,8 +21,15 @@ const IONIC_SCHEMATICS_PACKAGE = '@ionic/schematics-angular';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:generate');
 
-const ANGULAR_SCHEMATICS_BLACKLIST = ['application', 'appShell', 'universal'];
-const ANGULAR_SCHEMATICS_SIMPLE = ['class', 'interface', 'module', 'enum'];
+const ANGULAR_SCHEMATICS_STANDARD: ReadonlyArray<string> = ['class', 'interface', 'module', 'enum'];
+const ANGULAR_SCHEMATICS_ANGULAR: ReadonlyArray<string> = ['component', 'directive', 'guard', 'module', 'pipe', 'service'];
+const ANGULAR_SCHEMATICS: ReadonlyArray<string> = [...ANGULAR_SCHEMATICS_ANGULAR, ...ANGULAR_SCHEMATICS_STANDARD];
+const IONIC_SCHEMATICS: ReadonlyArray<string> = ['page'];
+const SCHEMATICS: ReadonlyArray<string> = [...IONIC_SCHEMATICS, ...ANGULAR_SCHEMATICS];
+
+const SCHEMATIC_PROPERTIES_BLACKLIST: ReadonlySet<string> = new Set(['name', 'path', 'appRoot', 'sourceDir']);
+
+type AngularSchematicEngine = AngularDevKitSchematicsType.SchematicEngine<AngularDevKitSchematicsToolsType.FileSystemCollectionDescription, AngularDevKitSchematicsToolsType.FileSystemSchematicDescription>;
 
 function pluralizeGeneratorType(type: string): string {
   const suffix = type === 'class' ? 'es' : 's';
@@ -35,18 +43,25 @@ interface Schematic {
   aliases: string[];
 }
 
+interface SchematicProperty {
+  name: string;
+  description: string;
+  type: string;
+  alias?: string;
+}
+
 function generateAliasMap(schematics: Schematic[]): Map<string, string> {
   return new Map(lodash.flatten(schematics.map(s => [...s.aliases.map<[string, string]>(a => [a, s.type])])));
 }
 
 function extractSchematicsFromCollection(collection: AngularDevKitSchematicsToolsType.FileSystemCollection): Schematic[] {
   return lodash.toPairs(collection.description.schematics)
-    .filter(([ k, v ]) => !ANGULAR_SCHEMATICS_BLACKLIST.includes(k))
+    .filter(([ k, v ]) => SCHEMATICS.includes(k))
     .map<Schematic>(([ type, v ]) => ({ type, description: v.description, collection: collection.description.name, aliases: v.aliases || [] }));
 }
 
 export function buildPathForGeneratorType(type: string, name: string): string {
-  if (ANGULAR_SCHEMATICS_SIMPLE.includes(type)) {
+  if (ANGULAR_SCHEMATICS_STANDARD.includes(type)) {
     return name;
   }
 
@@ -59,6 +74,7 @@ export function buildPathForGeneratorType(type: string, name: string): string {
 
 export class GenerateRunner extends BaseGenerateRunner<AngularGenerateOptions> {
   private schematics?: Schematic[];
+  private schematicEngine?: AngularSchematicEngine;
 
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     const schematics = await this.getSchematics();
@@ -77,7 +93,7 @@ This command uses the Angular CLI to generate components.
  - For a detailed list of options for each generator, use ${chalk.green('ng generate <type> --help')}.
  - For ${schematics.filter(s => s.collection === IONIC_SCHEMATICS_PACKAGE).map(t => chalk.green(t.type)).join(', ')} types, use ${chalk.green('ng generate <type> --help --collection @ionic/schematics-angular')}.
 
-${chalk.green('ionic generate')} is more opinionated than ${chalk.green('ng generate')}. Aside from simpler generator types (${ANGULAR_SCHEMATICS_SIMPLE.map(t => chalk.green(pluralizeGeneratorType(t))).join(', ')}), generated files are placed in ${chalk.bold('src/app/<type>/<name>/')}. See the CLI documentation${chalk.cyan('[1]')} for an overview of recommended project structure.
+${chalk.green('ionic generate')} is more opinionated than ${chalk.green('ng generate')}. Aside from simpler generator types (${ANGULAR_SCHEMATICS_STANDARD.map(t => chalk.green(pluralizeGeneratorType(t))).join(', ')}), generated files are placed in ${chalk.bold('src/app/<type>/<name>/')}. See the CLI documentation${chalk.cyan('[1]')} for an overview of recommended project structure.
 
 Remember, you can use slashes in ${chalk.green('name')} to nest components deeper, but you must specify the full path within ${chalk.bold('src/app/')}. For example, specify a name of ${chalk.green('pages/tabs-page/tab1')} to generate page files at ${chalk.bold('src/app/pages/tabs-page/tab1/')}.
 
@@ -138,8 +154,20 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
     }
 
     if (options['list']) {
-      const headers = ['name', 'alias', 'description', 'collection'];
-      this.log.rawmsg(columnar(schematics.map(({ type, description, collection, aliases }) => [chalk.green(type), aliases.map(a => chalk.green(a)).join(', '), description, chalk.green(collection)]), { headers }));
+      const headers = ['name', 'alias', 'collection', 'properties'];
+      const columns = await Promise.all(schematics.map(async ({ type, collection, aliases }) => {
+        const properties = await this.getPropertiesOfSchematic(collection, type);
+
+        return [
+          chalk.green(type),
+          aliases.map(a => chalk.green(a)).join(', '),
+          chalk.green(collection),
+          properties.map(p => chalk.green(`--${p.name}`)).join(', '),
+        ];
+      }));
+
+      this.log.rawmsg(columnar(columns, { headers }));
+
       throw new FatalException('', 0);
     }
 
@@ -206,28 +234,66 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
     }
   }
 
-  private async getSchematics(): Promise<Schematic[]> {
-    if (!this.schematics) {
+  private async getSchematicEngine(): Promise<AngularSchematicEngine | undefined> {
+    if (!this.schematicEngine) {
       try {
-
         const { SchematicEngine } = await importNgSchematics(this.project.directory);
         const { NodeModulesEngineHost } = await importNgSchematicsTools(this.project.directory);
 
         const engineHost = new NodeModulesEngineHost();
-        const engine = new SchematicEngine(engineHost);
-
-        this.schematics = [
-          ...extractSchematicsFromCollection(engine.createCollection(IONIC_SCHEMATICS_PACKAGE)),
-          ...extractSchematicsFromCollection(engine.createCollection(ANGULAR_SCHEMATICS_PACKAGE)),
-        ];
+        this.schematicEngine = new SchematicEngine(engineHost);
       } catch (e) {
-        this.log.warn(`Could not load schematics for ${chalk.green('ionic generate')}. Use ${chalk.green('--verbose')} to debug.`);
-        debug(`Error while loading schematics: ${e.stack ? e.stack : e}`);
+        this.log.warn(`Could not load schematic engine for ${chalk.green('ionic generate')}. Use ${chalk.green('--verbose')} to debug.`);
+        debug(`Error while loading schematic engine: ${e.stack ? e.stack : e}`);
+      }
+    }
+
+    return this.schematicEngine;
+  }
+
+  private async getSchematics(): Promise<Schematic[]> {
+    if (!this.schematics) {
+      const engine = await this.getSchematicEngine();
+
+      if (!engine) {
         this.schematics = [];
+      } else {
+        try {
+          this.schematics = [
+            ...extractSchematicsFromCollection(engine.createCollection(IONIC_SCHEMATICS_PACKAGE)),
+            ...extractSchematicsFromCollection(engine.createCollection(ANGULAR_SCHEMATICS_PACKAGE)),
+          ];
+        } catch (e) {
+          this.log.warn(`Could not load schematics for ${chalk.green('ionic generate')}. Use ${chalk.green('--verbose')} to debug.`);
+          debug(`Error while loading schematics: ${e.stack ? e.stack : e}`);
+          this.schematics = [];
+        }
       }
     }
 
     return this.schematics;
+  }
+
+  private async getPropertiesOfSchematic(collection: string, type: string): Promise<SchematicProperty[]> {
+    const engine = await this.getSchematicEngine();
+
+    try {
+      if (engine) {
+        const schematic = engine.createCollection(collection).createSchematic(type);
+        const propertySchema = lodash.get(schematic, 'description.schemaJson.properties', {});
+
+        if (propertySchema && typeof propertySchema === 'object') {
+          return lodash.toPairs(propertySchema)
+            .filter(([ k, v ]) => !SCHEMATIC_PROPERTIES_BLACKLIST.has(k))
+            .map(([ name, v ]) => ({ name, ...(<SchematicProperty>v) }));
+        }
+      }
+    } catch (e) {
+      this.log.warn(`Could not load properties of schematic for ${chalk.green('ionic generate')}. Use ${chalk.green('--verbose')} to debug.`);
+      debug(`Error while loading propertie of schematic: ${e.stack ? e.stack : e}`);
+    }
+
+    return [];
   }
 
   private async generateComponent(schematic: Schematic, name: string, options: { [key: string]: string | boolean; }) {
