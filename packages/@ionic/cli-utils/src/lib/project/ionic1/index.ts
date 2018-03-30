@@ -6,7 +6,6 @@ import * as lodash from 'lodash';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { ERROR_FILE_INVALID_JSON, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
-import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { InfoItem, ProjectType } from '../../../definitions';
 import { FatalException } from '../../errors';
@@ -42,7 +41,7 @@ export class Project extends BaseProject {
   protected bowerJsonFile?: BowerJson;
 
   async getInfo(): Promise<InfoItem[]> {
-    const [ ionic1Version, v1ToolkitVersion ] = await Promise.all([this.getFrameworkVersion(), this.getV1UtilVersion()]);
+    const [ ionic1Version, v1ToolkitVersion ] = await Promise.all([this.getFrameworkVersion(), this.getPackageVersion('@ionic/v1-toolkit')]);
 
     return [
       ...(await super.getInfo()),
@@ -81,6 +80,7 @@ export class Project extends BaseProject {
     return path.resolve(this.directory, 'www');
   }
 
+  // this method search not only package.json
   async getFrameworkVersion(): Promise<string | undefined> {
     const ionicVersionFilePath = path.resolve(this.directory, 'www', 'lib', 'ionic', 'version.json'); // TODO
     const bowerJsonPath = path.resolve(this.directory, 'bower.json');
@@ -109,18 +109,6 @@ export class Project extends BaseProject {
       }
     } catch (e) {
       this.log.error(`Error with ${chalk.bold(prettyPath(bowerJsonPath))} file: ${e}`);
-    }
-  }
-
-  async getV1UtilVersion(): Promise<string | undefined> {
-    const pkgName = '@ionic/v1-toolkit';
-
-    try {
-      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
-      const pkg = await readPackageJsonFile(pkgPath);
-      return pkg.version;
-    } catch (e) {
-      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
     }
   }
 

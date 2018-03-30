@@ -6,7 +6,6 @@ import * as lodash from 'lodash';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
-import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { IAilmentRegistry, InfoItem, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
 
@@ -28,12 +27,12 @@ export class Project extends BaseProject {
       angularDevKitCoreVersion,
       angularDevKitSchematicsVersion,
     ] = await Promise.all([
-      this.getFrameworkVersion(),
-      this.getCoreVersion(),
-      this.getIonicSchematicsAngularVersion(),
-      this.getAngularCLIVersion(),
-      this.getAngularDevKitCoreVersion(),
-      this.getAngularDevKitCoreVersion(),
+      this.getPackageVersion('@ionic/angular'),
+      this.getPackageVersion('@ionic/core'),
+      this.getPackageVersion('@ionic/schematics-angular'),
+      this.getPackageVersion('@angular/cli'),
+      this.getPackageVersion('@angular-devkit/core'),
+      this.getPackageVersion('@angular-devkit/schematics'),
     ]);
 
     return [
@@ -87,77 +86,5 @@ export class Project extends BaseProject {
     registerAilments(registry, { ...deps, project: this });
 
     return registry;
-  }
-
-  async getFrameworkVersion() {
-    const pkgName = '@ionic/angular';
-
-    try {
-      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
-      const pkg = await readPackageJsonFile(pkgPath);
-      return pkg.version;
-    } catch (e) {
-      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
-    }
-  }
-
-  async getCoreVersion() {
-    const pkgName = '@ionic/core';
-
-    try {
-      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
-      const pkg = await readPackageJsonFile(pkgPath);
-      return pkg.version;
-    } catch (e) {
-      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
-    }
-  }
-
-  async getAngularCLIVersion() {
-    const pkgName = '@angular/cli';
-
-    try {
-      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
-      const pkg = await readPackageJsonFile(pkgPath);
-      return pkg.version;
-    } catch (e) {
-      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
-    }
-  }
-
-  async getAngularDevKitCoreVersion() {
-    const pkgName = '@angular-devkit/core';
-
-    try {
-      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
-      const pkg = await readPackageJsonFile(pkgPath);
-      return pkg.version;
-    } catch (e) {
-      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
-    }
-  }
-
-  async getAngularDevKitSchematicsVersion() {
-    const pkgName = '@angular-devkit/schematics';
-
-    try {
-      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
-      const pkg = await readPackageJsonFile(pkgPath);
-      return pkg.version;
-    } catch (e) {
-      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
-    }
-  }
-
-  async getIonicSchematicsAngularVersion() {
-    const pkgName = '@ionic/schematics-angular';
-
-    try {
-      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
-      const pkg = await readPackageJsonFile(pkgPath);
-      return pkg.version;
-    } catch (e) {
-      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
-    }
   }
 }

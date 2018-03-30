@@ -6,7 +6,7 @@ import * as lodash from 'lodash';
 
 import { ERROR_FILE_INVALID_JSON, fsReadJsonFile, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
-import { ERROR_INVALID_PACKAGE_JSON, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { IAilmentRegistry, IConfig, IIntegration, ILogger, IProject, IShell, ITaskChain, InfoItem, IntegrationName, PackageJson, ProjectFile, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
@@ -251,6 +251,16 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     registerAilments(registry, deps);
 
     return registry;
+  }
+
+  async getPackageVersion(pkgName: string) {
+    try {
+      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
+      const pkg = await readPackageJsonFile(pkgPath);
+      return pkg.version;
+    } catch (e) {
+      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
+    }
   }
 }
 
