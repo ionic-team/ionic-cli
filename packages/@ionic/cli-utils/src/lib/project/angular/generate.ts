@@ -222,6 +222,17 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
     debug(`${options.type} resolved to ${type}`);
     debug(`${options.name} normalized to ${name}`);
 
+    if (schematic.collection === IONIC_SCHEMATICS_PACKAGE) {
+      const properties = await this.getPropertiesOfSchematic(schematic.collection, schematic.type);
+
+      if (!options.prefix && !options.p && properties.find(p => p.name === 'prefix')) {
+        // TODO: The Angular Schematics know about the prefix defined in
+        // `.angular-cli.json`, but the Ionic Schematics don't. This should be
+        // reconciled at some point.
+        options.prefix = 'app';
+      }
+    }
+
     try {
       await this.generateComponent(schematic, name, lodash.omit(options, 'type', 'name'));
     } catch (e) {

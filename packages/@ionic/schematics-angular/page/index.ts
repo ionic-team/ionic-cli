@@ -61,6 +61,16 @@ function addDeclarationToNgModule(options: PageOptions): Rule {
   };
 }
 
+function buildSelector(options: PageOptions) {
+  let selector = kebabCase(options.name);
+
+  if (options.prefix) {
+    selector = `${options.prefix}-${selector}`;
+  }
+
+  return selector;
+}
+
 export default function (options: PageOptions): Rule {
   const { sourceDir } = options;
 
@@ -74,6 +84,7 @@ export default function (options: PageOptions): Rule {
 
   return (host, context) => {
     options.module = findModuleFromOptions(host, options);
+    options.selector = options.selector ? options.selector : buildSelector(options);
 
     const templateSource = apply(url('./files'), [
       options.spec ? noop() : filter(p => !p.endsWith('.spec.ts')),

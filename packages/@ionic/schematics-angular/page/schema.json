@@ -29,6 +29,12 @@
       "type": "string",
       "description": "The name of the page"
     },
+    "prefix": {
+      "type": "string",
+      "format": "html-selector",
+      "description": "The prefix to apply to generated selectors.",
+      "alias": "p"
+    },
     "styleext": {
       "type": "string",
       "description": "The file extension of the style file for the page",
@@ -43,6 +49,11 @@
       "type": "boolean",
       "description": "Flag to indicate if a dir is created.",
       "default": false
+    },
+    "selector": {
+      "type": "string",
+      "format": "html-selector",
+      "description": "The selector to use for the page."
     },
     "module":  {
       "type": "string",

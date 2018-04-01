@@ -3,8 +3,10 @@ export interface Schema {
   sourceDir?: string;
   appRoot?: string;
   name: string;
+  prefix?: string;
   styleext?: string;
   spec?: boolean;
   flat?: boolean;
+  selector?: string;
   module?: string;
 }
