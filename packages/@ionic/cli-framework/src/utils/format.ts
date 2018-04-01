@@ -45,7 +45,13 @@ export function indent(n = 4): string {
   return ' '.repeat(n);
 }
 
-export function wordWrap(msg: string, { width = TTY_WIDTH, indentation = 0, append = '' }: { width?: number; indentation?: number; append?: string; }) {
+export interface WordWrapOptions {
+  width?: number;
+  indentation?: number;
+  append?: string;
+}
+
+export function wordWrap(msg: string, { width = TTY_WIDTH, indentation = 0, append = '' }: WordWrapOptions) {
   return wrapAnsi(msg, width - indentation - append.length, { trim: false }).split('\n').join(`${append}\n${indent(indentation)}`);
 }
 
@@ -61,30 +67,35 @@ export function generateFillSpaceStringList(list: string[], optimalLength = 1, f
   return list.map(item => sliceAnsi(fullLengthString, 0, fullLength - stringWidth(item)));
 }
 
-export function columnar(rows: string[][], options: { hsep?: string, vsep?: string, headers?: string[] } = {}): string {
-  if (!options.hsep) {
-    options.hsep = chalk.dim('-');
-  }
+export interface ColumnarOptions {
+  hsep?: string;
+  vsep?: string;
+  headers?: string[];
+}
 
-  if (!options.vsep) {
-    options.vsep = chalk.dim('|');
-  }
-
-  const includeHeaders = options.headers ? true : false;
+export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk.dim('|'), headers }: ColumnarOptions): string {
+  const includeHeaders = headers ? true : false;
 
   if (!rows[0]) {
     return '';
   }
 
-  const columnCount = options.headers ? options.headers.length : rows[0].length;
-  const columns = options.headers ?
-    options.headers.map(header => [chalk.bold(header)]) :
+  const columnCount = headers ? headers.length : rows[0].length;
+  const columns = headers ?
+    headers.map(header => [chalk.bold(header)]) :
     rows[0].map(() => []);
 
   for (const row of rows) {
+    let highestLineCount = 0;
+    const splitRows = row.map(cell => {
+      const lines = cell.split('\n');
+      highestLineCount = Math.max(highestLineCount, lines.length);
+      return lines;
+    });
+
     for (const i in row) {
       if (columns[i]) {
-        columns[i].push(row[i]);
+        columns[i].push(...splitRows[i], ...Array(highestLineCount - splitRows[i].length).fill(''));
       }
     }
   }
@@ -92,7 +103,7 @@ export function columnar(rows: string[][], options: { hsep?: string, vsep?: stri
   const paddedColumns = columns.map((col, i) => {
     if (i < columnCount - 1) {
       const spaceCol = generateFillSpaceStringList(col);
-      return col.map((cell, i) => `${cell}${spaceCol[i]}${options.vsep} `);
+      return col.map((cell, i) => `${cell}${spaceCol[i]}${vsep} `);
     } else {
       return col;
     }
@@ -108,7 +119,7 @@ export function columnar(rows: string[][], options: { hsep?: string, vsep?: stri
   });
 
   if (includeHeaders) {
-    singleColumn.splice(1, 0, options.hsep.repeat(longestRowLength));
+    singleColumn.splice(1, 0, hsep.repeat(longestRowLength));
   }
 
   return singleColumn.join('\n');
