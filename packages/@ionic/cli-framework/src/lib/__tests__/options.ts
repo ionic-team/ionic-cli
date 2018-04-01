@@ -153,9 +153,19 @@ describe('@ionic/cli-framework', () => {
         expect(result).toEqual(['foo', 'bar', '--wow']);
       });
 
+      it('should parse out single-letter boolean option from minimist result', () => {
+        const result = unparseArgs({ _: ['foo', 'bar'], w: true }, {});
+        expect(result).toEqual(['foo', 'bar', '-w']);
+      });
+
       it('should parse out string option from minimist result', () => {
         const result = unparseArgs({ _: [], cat: 'meow' }, {});
         expect(result).toEqual(['--cat=meow']);
+      });
+
+      it('should parse out single-letter string option from minimist result', () => {
+        const result = unparseArgs({ _: [], c: 'meow' }, {});
+        expect(result).toEqual(['-c=meow']);
       });
 
       it('should parse out option list from minimist result', () => {

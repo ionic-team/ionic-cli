@@ -174,11 +174,11 @@ export interface UnparseArgsOptions {
 /**
  * The opposite of `parseArgs()`. This function takes parsed args and converts
  * them back into an argv array of arguments and options.
+ *
+ * Based on dargs, by sindresorhus
+ * @see https://github.com/sindresorhus/dargs/blob/master/license
  */
 export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, useEquals = true, ignoreFalse = true, allowCamelCase }: UnparseArgsOptions): string[] {
-  // Based on dargs, by sindresorhus
-  // @see https://github.com/sindresorhus/dargs/blob/master/license
-
   const args = [...parsedArgs['_'] || []];
   const separatedArgs = parsedArgs['--'];
 
@@ -186,9 +186,11 @@ export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, 
     useEquals = true;
   }
 
+  const dashKey = (k: string) => (k.length === 1 ? '-' : '--') + k;
+
   const pushPairs = (...pairs: [string, string | undefined][]) => {
     for (const [ k, val ] of pairs) {
-      const key = '--' + (allowCamelCase ? k : k.replace(/[A-Z]/g, '-$&').toLowerCase());
+      const key = dashKey(allowCamelCase ? k : k.replace(/[A-Z]/g, '-$&').toLowerCase());
 
       if (useEquals) {
         args.push(key + (val ? `=${useDoubleQuotes && val.includes(' ') ? `"${val}"` : val}` : ''));
