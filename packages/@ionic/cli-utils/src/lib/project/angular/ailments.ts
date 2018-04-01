@@ -8,8 +8,77 @@ import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 import { Project as AngularProject } from './';
 
 export function registerAilments(registry: IAilmentRegistry, deps: AutomaticallyTreatableAngularAilmentDeps) {
-  // TODO: @ionic/core update available
-  // TODO: Angular CLI update available
+  // for @ionic/angular
+  registry.register(new UpdateAvailable(deps, {
+    id: 'ionic-for-angular-update-available',
+    pkgName: '@ionic/angular',
+    treatmentVisitURL: ['https://github.com/ionic-team/ionic/releases'],
+  }));
+  registry.register(new MajorUpdateAvailable(deps, {
+    id: 'ionic-for-angular-major-update-available',
+    pkgName: '@ionic/angular',
+    treatmentVisitURL: ['https://blog.ionicframework.com', 'https://github.com/ionic-team/ionic/releases'],
+  }));
+
+  // @ionic/core
+  registry.register(new UpdateAvailable(deps, {
+    id: 'ionic-core-update-available',
+    pkgName: '@ionic/core',
+    treatmentVisitURL: ['https://github.com/ionic-team/ionic/releases'],
+  }));
+  registry.register(new MajorUpdateAvailable(deps, {
+    id: 'ionic-core-major-update-available',
+    pkgName: '@ionic/core',
+    treatmentVisitURL: ['https://blog.ionicframework.com', 'https://github.com/ionic-team/ionic/releases'],
+  }));
+
+  // @ionic/schematics-angular
+  registry.register(new UpdateAvailable(deps, {
+    id: 'ionic-schematics-angular-update-available',
+    pkgName: '@ionic/schematics-angular',
+    treatmentVisitURL: ['https://github.com/ionic-team/ionic/releases'],
+  }));
+  registry.register(new MajorUpdateAvailable(deps, {
+    id: 'ionic-schematics-angular-major-update-available',
+    pkgName: '@ionic/schematics-angular',
+    treatmentVisitURL: ['https://blog.ionicframework.com', 'https://github.com/ionic-team/ionic/releases'],
+  }));
+
+  // @angular/cli
+  registry.register(new UpdateAvailable(deps, {
+    id: 'angular-cli-update-available',
+    pkgName: '@angular/cli',
+    treatmentVisitURL: ['https://github.com/angular/angular-cli/releases'],
+  }));
+  registry.register(new MajorUpdateAvailable(deps, {
+    id: 'angular-cli-major-update-available',
+    pkgName: '@angular/cli',
+    treatmentVisitURL: ['https://blog.angular.io', 'https://github.com/angular/angular-cli/releases'],
+  }));
+
+  // @angular-devkit/core
+  registry.register(new UpdateAvailable(deps, {
+    id: 'angular-devkit-core-update-available',
+    pkgName: '@angular-devkit/core',
+    treatmentVisitURL: ['https://github.com/angular/devkit/releases'],
+  }));
+  registry.register(new MajorUpdateAvailable(deps, {
+    id: 'angular-devkit-core-major-update-available',
+    pkgName: '@angular-devkit/core',
+    treatmentVisitURL: ['https://blog.angular.io', 'https://github.com/angular/devkit/releases'],
+  }));
+
+  // @angular-devkit/schematics
+  registry.register(new UpdateAvailable(deps, {
+    id: 'angular-devkit-schematics-update-available',
+    pkgName: '@angular-devkit/schematics',
+    treatmentVisitURL: ['https://github.com/angular/devkit/releases'],
+  }));
+  registry.register(new MajorUpdateAvailable(deps, {
+    id: 'angular-devkit-schematics-major-update-available',
+    pkgName: '@angular-devkit/schematics',
+    treatmentVisitURL: ['https://blog.angular.io', 'https://github.com/angular/devkit/releases'],
+  }));
 }
 
 interface AngularAilmentDeps extends AilmentDeps {
