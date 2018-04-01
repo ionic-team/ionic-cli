@@ -8,7 +8,7 @@ import * as AngularDevKitSchematicsType from '@angular-devkit/schematics';
 import * as AngularDevKitSchematicsToolsType from '@angular-devkit/schematics/tools';
 
 import { contains, unparseArgs, validators } from '@ionic/cli-framework';
-import { columnar } from '@ionic/cli-framework/utils/format';
+import { TTY_WIDTH, columnar, wordWrap } from '@ionic/cli-framework/utils/format';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
@@ -162,7 +162,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
           chalk.green(type),
           aliases.map(a => chalk.green(a)).join(', '),
           chalk.green(collection),
-          properties.map(p => chalk.green(`--${p.name}`)).join(', '),
+          wordWrap(properties.map(p => chalk.green(`--${lodash.kebabCase(p.name)}`)).join(', '), { width: TTY_WIDTH - 40 }),
         ];
       }));
 
