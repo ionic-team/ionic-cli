@@ -8,9 +8,6 @@ import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 import { Project as AngularProject } from './';
 
 export function registerAilments(registry: IAilmentRegistry, deps: AutomaticallyTreatableAngularAilmentDeps) {
-  registry.register(new IonicForAngularUpdateAvailable(deps));
-  registry.register(new IonicForAngularMajorUpdateAvailable(deps));
-
   // TODO: @ionic/core update available
   // TODO: Angular CLI update available
 }
@@ -23,11 +20,44 @@ export interface AutomaticallyTreatableAngularAilmentDeps extends AutomaticallyT
   project: AngularProject;
 }
 
+export interface AilmentParams {
+  id: string;
+  pkgName: string;
+  treatmentVisitURL: string[];
+}
+
 abstract class AngularAilment extends Ailment {
   protected readonly project: AngularProject;
+  protected readonly pkgParams: AilmentParams;
+  currentVersion?: string;
+  latestVersion?: string;
 
-  constructor(deps: AngularAilmentDeps) {
+  constructor(deps: AngularAilmentDeps, pkgParams: AilmentParams) {
     super(deps);
+    this.pkgParams = pkgParams;
+
+    let boldTreatmentVisitURL: string[] = [];
+    this.pkgParams.treatmentVisitURL.forEach((url: string) => {
+      boldTreatmentVisitURL = boldTreatmentVisitURL.concat(chalk.bold(url));
+    });
+    this.pkgParams.treatmentVisitURL = boldTreatmentVisitURL;
+  }
+
+  async getVersionPair(): Promise<[string, string]> {
+    const config = await this.config.load();
+    const { npmClient } = config;
+
+    if (!this.currentVersion || !this.latestVersion) {
+      this.currentVersion = await this.project.getPackageVersion(this.pkgParams.pkgName);
+      const pkg = await pkgFromRegistry(npmClient, { pkg: this.pkgParams.pkgName });
+      this.latestVersion = pkg ? pkg.version : undefined;
+    }
+
+    if (!this.currentVersion || !this.latestVersion) {
+      return ['0.0.0', '0.0.0'];
+    }
+
+    return [ this.currentVersion, this.latestVersion ];
   }
 }
 
@@ -39,34 +69,15 @@ abstract class AngularAilment extends Ailment {
 //   }
 // }
 
-class IonicForAngularUpdateAvailable extends AngularAilment {
-  id = 'ionic-for-angular-update-available';
-  currentVersion?: string;
-  latestVersion?: string;
-
-  async getVersionPair(): Promise<[string, string]> {
-    const config = await this.config.load();
-    const { npmClient } = config;
-
-    if (!this.currentVersion || !this.latestVersion) {
-      this.currentVersion = await this.project.getPackageVersion('@ionic/angular');
-      const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/angular' });
-      this.latestVersion = pkg ? pkg.version : undefined;
-    }
-
-    if (!this.currentVersion || !this.latestVersion) {
-      return ['0.0.0', '0.0.0'];
-    }
-
-    return [ this.currentVersion, this.latestVersion ];
-  }
+class UpdateAvailable extends AngularAilment {
+  id = this.pkgParams.id;
 
   async getMessage() {
     const [ currentVersion, latestVersion ] = await this.getVersionPair();
 
     return (
-      `Update available for ${chalk.bold('@ionic/angular')}.\n` +
-      `An update is available for ${chalk.bold('@ionic/angular')} (${chalk.cyan(currentVersion)} => ${chalk.cyan(latestVersion)}).\n`
+      `Update available for ${chalk.bold(this.pkgParams.pkgName)}.\n` +
+      `An update is available for ${chalk.bold(this.pkgParams.pkgName)} (${chalk.cyan(currentVersion)} => ${chalk.cyan(latestVersion)}).\n`
     ).trim();
   }
 
@@ -81,44 +92,27 @@ class IonicForAngularUpdateAvailable extends AngularAilment {
     const config = await this.config.load();
     const { npmClient } = config;
     const [ , latestVersion ] = await this.getVersionPair();
-    const args = await pkgManagerArgs(npmClient, { command: 'install', pkg: `@ionic/angular@${latestVersion ? latestVersion : 'latest'}` });
+    const args = await pkgManagerArgs(npmClient, { command: 'install', pkg: this.pkgParams.pkgName + `@${latestVersion ? latestVersion : 'latest'}` });
 
     return [
-      { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for each upgrade's instructions` },
+      { name: `Visit ${this.pkgParams.treatmentVisitURL.join(' and ')} for each upgrade's instructions` },
       { name: `If no instructions, run: ${chalk.green(args.join(' '))}` },
       { name: `Watch for npm warnings about peer dependencies--they may need manual updating` },
     ];
   }
 }
 
-class IonicForAngularMajorUpdateAvailable extends AngularAilment {
-  id = 'ionic-for-angular-major-update-available';
+class MajorUpdateAvailable extends AngularAilment {
+  id = this.pkgParams.id;
   currentVersion?: string;
   latestVersion?: string;
-
-  async getVersionPair(): Promise<[string, string]> {
-    const config = await this.config.load();
-    const { npmClient } = config;
-
-    if (!this.currentVersion || !this.latestVersion) {
-      this.currentVersion = await this.project.getPackageVersion('@ionic/angular');
-      const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/angular' });
-      this.latestVersion = pkg ? pkg.version : undefined;
-    }
-
-    if (!this.currentVersion || !this.latestVersion) {
-      return ['0.0.0', '0.0.0'];
-    }
-
-    return [ this.currentVersion, this.latestVersion ];
-  }
 
   async getMessage() {
     const [ currentVersion, latestVersion ] = await this.getVersionPair();
 
     return (
-      `Major update available for ${chalk.bold('@ionic/angular')}.\n` +
-      `A major update is available for ${chalk.bold('@ionic/angular')} (${chalk.cyan(currentVersion)} => ${chalk.cyan(latestVersion)}).\n`
+      `Major update available for ${chalk.bold(this.pkgParams.pkgName)}.\n` +
+      `A major update is available for ${chalk.bold(this.pkgParams.pkgName)} (${chalk.cyan(currentVersion)} => ${chalk.cyan(latestVersion)}).\n`
     ).trim();
   }
 
@@ -131,7 +125,7 @@ class IonicForAngularMajorUpdateAvailable extends AngularAilment {
 
   async getTreatmentSteps() {
     return [
-      { name: `Visit ${chalk.bold('https://blog.ionicframework.com')} and ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for upgrade instructions` },
+      { name: `Visit ${this.pkgParams.treatmentVisitURL.join(' and ')} for upgrade instructions` },
     ];
   }
 }
