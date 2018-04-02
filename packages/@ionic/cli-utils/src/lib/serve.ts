@@ -334,7 +334,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     const labDetails: LabServeDetails = {
       protocol: options.ssl ? 'https' : 'http',
       address: options.labHost,
-      port: await findClosestOpenPort(options.labPort, '0.0.0.0'),
+      port: await findClosestOpenPort(options.labPort, options.labHost),
     };
 
     if (options.ssl) {
