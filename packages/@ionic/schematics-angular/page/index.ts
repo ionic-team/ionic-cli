@@ -15,13 +15,13 @@ import {
   url,
 } from '@angular-devkit/schematics';
 
-import { addDeclarationToModule } from '../utils/angular/ast-utils';
+import { addDeclarationToModule, addEntryComponentsToModule } from '../utils/angular/ast-utils';
 import { InsertChange } from '../utils/angular/change';
 import { buildRelativePath, findModuleFromOptions } from '../utils/angular/find-module';
 
 import { Schema as PageOptions } from './schema';
 
-function addDeclarationToNgModule(options: PageOptions): Rule {
+function addPageToNgModule(utils: 'Declaration'|'EntryComponents', options: PageOptions): Rule {
   const { module } = options;
 
   if (!module) {
@@ -46,16 +46,26 @@ function addDeclarationToNgModule(options: PageOptions): Rule {
 
     const relativePath = buildRelativePath(module, pagePath);
     const classifiedName = `${upperFirst(camelCase(options.name))}Page`;
-    const declarationChanges = addDeclarationToModule(source, module, classifiedName, relativePath);
-    const declarationRecorder = host.beginUpdate(module);
 
-    for (const change of declarationChanges) {
-      if (change instanceof InsertChange) {
-        declarationRecorder.insertLeft(change.pos, change.toAdd);
-      }
+    let addNgModuleMethod: Function;
+    if (utils === 'Declaration') {
+        addNgModuleMethod = addDeclarationToModule;
+    } else if (utils === 'EntryComponents') {
+        addNgModuleMethod = addEntryComponentsToModule;
+    } else {
+        throw new SchematicsException('add module method is not found.');
     }
 
-    host.commitUpdate(declarationRecorder);
+    const Changes = addNgModuleMethod(source, module, classifiedName, relativePath);
+    const Recorder = host.beginUpdate(module);
+
+    for (const change of Changes) {
+        if (change instanceof InsertChange) {
+            Recorder.insertLeft(change.pos, change.toAdd);
+        }
+    }
+
+    host.commitUpdate(Recorder);
 
     return host;
   };
@@ -100,7 +110,8 @@ export default function (options: PageOptions): Rule {
 
     return chain([
       branchAndMerge(chain([
-        addDeclarationToNgModule(options),
+        addPageToNgModule('Declaration', options),
+        addPageToNgModule('EntryComponents', options),
         mergeWith(templateSource),
       ])),
     ])(host, context);

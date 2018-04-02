@@ -388,6 +388,17 @@ export function addDeclarationToModule(source: ts.SourceFile,
 }
 
 /**
+ * Custom function to insert a entryComponents (page)
+ * into NgModule declarations. It also imports the component.
+ */
+export function addEntryComponentsToModule(source: ts.SourceFile,
+                                       modulePath: string, classifiedName: string,
+                                       importPath: string): Change[] {
+    return addSymbolToNgModuleMetadata(
+        source, modulePath, 'entryComponents', classifiedName, importPath);
+}
+
+/**
  * Custom function to insert an NgModule into NgModule imports. It also imports the module.
  */
 export function addImportToModule(source: ts.SourceFile,
