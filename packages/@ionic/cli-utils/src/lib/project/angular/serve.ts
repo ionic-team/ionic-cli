@@ -9,6 +9,7 @@ import * as split2 from 'split2';
 import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { pathAccessible } from '@ionic/cli-framework/utils/fs';
+import { findClosestOpenPort, isHostConnectable } from '@ionic/cli-framework/utils/network';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
@@ -97,13 +98,9 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   }
 
   async serveProject(options: AngularServeOptions): Promise<ServeDetails> {
-    const { findClosestOpenPort, isHostConnectable } = await import('../../utils/network');
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
 
-    debug('finding closest port to %d', options.port);
-    const ngPort = await findClosestOpenPort(options.port, '0.0.0.0');
-    options.port = ngPort;
-
+    const ngPort = options.port = await findClosestOpenPort(options.port, '0.0.0.0');
     const { program } = await this.serveCommandWrapper(options);
 
     debug('waiting for connectivity with ng serve (%dms timeout)', NG_SERVE_CONNECTIVITY_TIMEOUT);

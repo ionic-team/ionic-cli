@@ -7,12 +7,14 @@ import * as lodash from 'lodash';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
+import { NetworkInterface } from '@ionic/cli-framework';
 import { BaseError } from '@ionic/cli-framework/lib/errors';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
+import { findClosestOpenPort, getExternalIPv4Interfaces } from '@ionic/cli-framework/utils/network';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, NetworkInterface, ProjectType, PromptModule, ServeDetails, ServeOptions } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, ProjectType, PromptModule, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 import { ASSETS_DIRECTORY, OptionGroup, PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
@@ -250,30 +252,23 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async gatherDevAppDetails(options: T, details: ServeDetails): Promise<DevAppDetails | undefined> {
-    const { findClosestOpenPort } = await import('./utils/network');
-
     if (options.devapp) {
-      const { getSuitableNetworkInterfaces } = await import('./utils/network');
       const { computeBroadcastAddress } = await import('./devapp');
-
-      const availableInterfaces = getSuitableNetworkInterfaces();
 
       // TODO: There is no accurate/reliable/realistic way to identify a WiFi
       // network uniquely in NodeJS. But this is where we could detect new
       // networks and prompt the dev if they want to "trust" it (allow binding to
       // 0.0.0.0 and broadcasting).
 
-      const interfaces = availableInterfaces
-        .map(i => ({
-          ...i,
-          broadcast: computeBroadcastAddress(i.address, i.netmask),
-        }));
+      const interfaces = getExternalIPv4Interfaces()
+        .map(i => ({ ...i, broadcast: computeBroadcastAddress(i.address, i.netmask) }));
 
-      return {
-        port: details.port,
-        commPort: await findClosestOpenPort(DEFAULT_DEVAPP_COMM_PORT, '0.0.0.0'),
-        interfaces,
-      };
+      const { port } = details;
+
+      // the comm server always binds to 0.0.0.0 to target every possible interface
+      const commPort = await findClosestOpenPort(DEFAULT_DEVAPP_COMM_PORT, '0.0.0.0');
+
+      return { port, commPort, interfaces };
     }
   }
 
@@ -336,8 +331,6 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async runLab(options: T, details: ServeDetails): Promise<LabServeDetails> {
-    const { findClosestOpenPort } = await import('./utils/network');
-
     const labDetails: LabServeDetails = {
       protocol: options.ssl ? 'https' : 'http',
       address: options.labHost,
@@ -445,13 +438,11 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async selectExternalIP(options: T): Promise<[string, NetworkInterface[]]> {
-    const { getSuitableNetworkInterfaces } = await import('./utils/network');
-
     let availableInterfaces: NetworkInterface[] = [];
     let chosenIP = options.address;
 
     if (options.address === BIND_ALL_ADDRESS) {
-      availableInterfaces = getSuitableNetworkInterfaces();
+      availableInterfaces = getExternalIPv4Interfaces();
 
       if (availableInterfaces.length === 0) {
         if (options.externalAddressRequired) {
@@ -475,7 +466,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
             name: 'promptedIp',
             message: 'Please select which IP to use:',
             choices: availableInterfaces.map(i => ({
-              name: `${i.address} ${chalk.dim(`(${i.deviceName})`)}`,
+              name: `${i.address} ${chalk.dim(`(${i.device})`)}`,
               value: i.address,
             })),
           });

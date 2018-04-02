@@ -1,7 +1,11 @@
+import * as os from 'os';
+
 import * as minimistType from 'minimist';
 import { Chalk } from 'chalk';
 
 import { AliasedMap } from './utils/object';
+
+export type NetworkInterface = { device: string; } & os.NetworkInterfaceInfo;
 
 export interface Colors {
   /**

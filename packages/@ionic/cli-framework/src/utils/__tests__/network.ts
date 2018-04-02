@@ -1,11 +1,11 @@
 import * as osSpy from 'os';
-import { getSuitableNetworkInterfaces } from '../network';
+import { getExternalIPv4Interfaces } from '../network';
 
-describe('@ionic/cli-utils', () => {
+describe('@ionic/cli-framework', () => {
 
-  describe('lib/utils/network', () => {
+  describe('utils/network', () => {
 
-    describe('getSuitableNetworkInterfaces', () => {
+    describe('getExternalIPv4Interfaces', () => {
 
       const networkInterfaces1 = {};
 
@@ -30,21 +30,21 @@ describe('@ionic/cli-utils', () => {
 
       it('should return empty array if no network interfaces', () => {
         spyOn(osSpy, 'networkInterfaces').and.callFake(() => networkInterfaces1);
-        const result = getSuitableNetworkInterfaces();
+        const result = getExternalIPv4Interfaces();
         expect(result).toEqual([]);
       });
 
       it('should return empty array if unsuitable network interfaces found', () => {
         spyOn(osSpy, 'networkInterfaces').and.callFake(() => networkInterfaces2);
-        const result = getSuitableNetworkInterfaces();
+        const result = getExternalIPv4Interfaces();
         expect(result).toEqual([]);
       });
 
       it('should find the suitable network interface', () => {
         spyOn(osSpy, 'networkInterfaces').and.callFake(() => networkInterfaces3);
-        const result = getSuitableNetworkInterfaces();
+        const result = getExternalIPv4Interfaces();
         expect(result.length).toEqual(1);
-        expect(result[0].deviceName).toEqual('eth0');
+        expect(result[0].device).toEqual('eth0');
       });
 
     });

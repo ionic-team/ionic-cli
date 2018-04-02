@@ -9,6 +9,7 @@ import * as proxyMiddlewareType from 'http-proxy-middleware'; // tslint:disable-
 
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
+import { isHostConnectable } from '@ionic/cli-framework/utils/network';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1ServeOptions, ProjectFileProxy, ServeDetails } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
@@ -108,7 +109,6 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
   }
 
   async serveProject(options: Ionic1ServeOptions): Promise<ServeDetails> {
-    const { isHostConnectable } = await import('../../utils/network');
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
     const { port, livereloadPort, notificationPort } = await findOpenIonicPorts(options.address, options);
 

@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as os from 'os';
 
 import * as crossSpawnType from 'cross-spawn';
 import * as inquirerType from 'inquirer';
@@ -645,7 +644,7 @@ export interface ServeDetails {
   localAddress: string;
   externalAddress: string;
   port: number;
-  externalNetworkInterfaces: NetworkInterface[];
+  externalNetworkInterfaces: framework.NetworkInterface[];
   externallyAccessible: boolean;
 }
 
@@ -835,8 +834,6 @@ export interface StarterTemplate {
 export interface ResolvedStarterTemplate extends StarterTemplate {
   archive: string;
 }
-
-export type NetworkInterface = { deviceName: string; } & os.NetworkInterfaceInfo;
 
 export interface IPCMessage {
   type: 'telemetry';

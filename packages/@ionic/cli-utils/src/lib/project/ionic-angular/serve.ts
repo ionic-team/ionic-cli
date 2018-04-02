@@ -6,6 +6,7 @@ import * as split2 from 'split2';
 import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
+import { isHostConnectable } from '@ionic/cli-framework/utils/network';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularServeOptions, ServeDetails } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
@@ -76,7 +77,6 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
   }
 
   async serveProject(options: IonicAngularServeOptions): Promise<ServeDetails> {
-    const { isHostConnectable } = await import('../../utils/network');
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
     const { port, livereloadPort, notificationPort } = await findOpenIonicPorts(options.address, options);
 

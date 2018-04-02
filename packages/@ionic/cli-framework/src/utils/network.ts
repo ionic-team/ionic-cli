@@ -1,20 +1,20 @@
 import * as os from 'os';
 import * as net from 'net';
 
-import { NetworkInterface } from '../../definitions';
+import { NetworkInterface } from '../definitions';
 
 export const ERROR_NETWORK_ADDRESS_NOT_AVAIL = 'NETWORK_ADDRESS_NOT_AVAIL';
 
-export function getSuitableNetworkInterfaces(): NetworkInterface[] {
+export function getExternalIPv4Interfaces(): NetworkInterface[] {
   const networkInterfaces = os.networkInterfaces();
   const devices: NetworkInterface[] = [];
 
-  for (const deviceName of Object.keys(networkInterfaces)) {
-    const networkInterface = networkInterfaces[deviceName];
+  for (const device of Object.keys(networkInterfaces)) {
+    const networkInterface = networkInterfaces[device];
 
     for (const networkAddress of networkInterface) {
       if (!networkAddress.internal && networkAddress.family === 'IPv4') {
-        devices.push({ deviceName, ...networkAddress });
+        devices.push({ device, ...networkAddress });
       }
     }
   }
@@ -35,8 +35,6 @@ export async function findClosestOpenPort(port: number, host?: string): Promise<
 }
 
 export async function isPortAvailable(port: number, host?: string): Promise<boolean> {
-  const net = await import('net');
-
   return new Promise<boolean>((resolve, reject) => {
     const tester = net.createServer()
       .once('error', (err: any) => {

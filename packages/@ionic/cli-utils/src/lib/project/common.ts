@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
+import { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort } from '@ionic/cli-framework/utils/network';
 
 import { FatalException } from '../errors';
 
@@ -18,8 +19,6 @@ export interface Ports {
  * "dev logger" server.
  */
 export async function findOpenIonicPorts(address: string, ports: Ports): Promise<Ports> {
-  const { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort } = await import('../utils/network');
-
   try {
     const [ port, livereloadPort, notificationPort ] = await Promise.all([
       findClosestOpenPort(ports.port, '0.0.0.0'),
