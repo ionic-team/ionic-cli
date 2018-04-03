@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-scripts",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "bin": {
     "ionic-cli-scripts": "./bin/ionic-cli-scripts"
   },
@@ -15,13 +15,13 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "@ionic/cli-framework": "1.0.0-rc.1",
-    "@ionic/cli-utils": "2.0.0-rc.1",
+    "@ionic/cli-framework": "1.0.0-rc.2",
+    "@ionic/cli-utils": "2.0.0-rc.2",
     "ansi-styles": "^3.2.0",
     "ascii-tree": "^0.3.0",
     "chalk": "^2.3.0",
     "escape-string-regexp": "^1.0.5",
-    "ionic": "4.0.0-rc.1",
+    "ionic": "4.0.0-rc.2",
     "strip-ansi": "^4.0.0",
     "tslib": "^1.9.0"
   },
