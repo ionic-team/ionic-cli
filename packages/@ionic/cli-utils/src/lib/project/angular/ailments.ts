@@ -20,18 +20,6 @@ export function registerAilments(registry: IAilmentRegistry, deps: Automatically
     treatmentVisitURL: ['https://blog.ionicframework.com', 'https://github.com/ionic-team/ionic/releases'],
   }));
 
-  // @ionic/core
-  registry.register(new UpdateAvailable(deps, {
-    id: 'ionic-core-update-available',
-    pkgName: '@ionic/core',
-    treatmentVisitURL: ['https://github.com/ionic-team/ionic/releases'],
-  }));
-  registry.register(new MajorUpdateAvailable(deps, {
-    id: 'ionic-core-major-update-available',
-    pkgName: '@ionic/core',
-    treatmentVisitURL: ['https://blog.ionicframework.com', 'https://github.com/ionic-team/ionic/releases'],
-  }));
-
   // @ionic/schematics-angular
   registry.register(new UpdateAvailable(deps, {
     id: 'ionic-schematics-angular-update-available',
@@ -104,12 +92,7 @@ abstract class AngularAilment extends Ailment {
   constructor(deps: AngularAilmentDeps, pkgParams: AilmentParams) {
     super(deps);
     this.pkgParams = pkgParams;
-
-    let boldTreatmentVisitURL: string[] = [];
-    this.pkgParams.treatmentVisitURL.forEach((url: string) => {
-      boldTreatmentVisitURL = boldTreatmentVisitURL.concat(chalk.bold(url));
-    });
-    this.pkgParams.treatmentVisitURL = boldTreatmentVisitURL;
+    this.pkgParams.treatmentVisitURL = this.pkgParams.treatmentVisitURL.map(url => chalk.bold(url));
   }
 
   async getVersionPair(): Promise<[string, string]> {
