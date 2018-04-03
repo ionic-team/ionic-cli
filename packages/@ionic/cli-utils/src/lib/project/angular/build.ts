@@ -84,6 +84,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       args['target'] = options.target;
     }
 
+    // TODO: This is pretty hacky. Is there a better solution?
+    if (options.engine === 'cordova' && options.platform === 'android') {
+      if (!args['base-href'] && !options['--'].find(o => o.startsWith('--base-href'))) {
+        args['base-href'] = 'file:///android_asset/www/';
+      }
+    }
+
     return [...unparseArgs(args, {}), ...options['--']];
   }
 
