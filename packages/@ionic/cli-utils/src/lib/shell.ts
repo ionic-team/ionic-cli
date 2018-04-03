@@ -71,7 +71,12 @@ export class Shell implements IShell {
         err = `${chalk.bold('(truncated)')} ... ` + err.substring(err.length - truncateErrorOutput);
       }
 
-      const publicErrorMsg = `An error occurred while running ${chalk.green(truncatedCmd)} (exit code ${e.exitCode})\n`;
+      const publicErrorMsg = (
+        `An error occurred while running subprocess ${chalk.green(command)}.\n` +
+        `${chalk.green(truncatedCmd)} exited with exit code ${e.exitCode}.\n\n` +
+        `Re-running this command with the ${chalk.green('--verbose')} flag may provide more information.`
+      );
+
       const privateErrorMsg = `Subprocess (${chalk.green(command)}) encountered an error (exit code ${e.exitCode}).`;
 
       if (fatalOnError) {
