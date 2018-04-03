@@ -73,6 +73,10 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
     const filteredInputs = inputs.map((input, i) => metadata.inputs && (metadata.inputs[i] && metadata.inputs[i].private) ? '*****' : input);
     const filteredOptions = Object.keys(options)
       .filter(optionName => {
+        if (optionName === '_') {
+          return false;
+        }
+
         const metadataOption = metadata.options && metadata.options.find(o => {
           return o.name === optionName || (typeof o.aliases !== 'undefined' && o.aliases.includes(optionName));
         });
