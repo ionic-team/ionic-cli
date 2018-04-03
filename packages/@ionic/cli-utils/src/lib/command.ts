@@ -42,6 +42,8 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
 
     const telemetryPromise = (async () => {
       if (config.telemetry !== false) {
+        const { Telemetry } = await import('./telemetry');
+
         let cmdInputs: CommandLineInputs = [];
         const metadata = await this.getMetadata();
 
@@ -55,8 +57,6 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
 
         const cmd: ICommand = this;
         const path = await generateCommandPath(cmd);
-
-        const { Telemetry } = await import('./telemetry');
         const telemetry = new Telemetry({ client: this.env.client, config: this.env.config, getInfo: this.env.getInfo, ctx: this.env.ctx, project: this.env.project, session: this.env.session });
 
         await telemetry.sendCommand(path.map(([p]) => p).join(' '), cmdInputs);
@@ -70,7 +70,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
     const initialOptions: CommandLineOptions = { _: [] };
 
     const metadata = await this.getMetadata();
-    const filteredInputs = inputs.filter((input, i) => !metadata.inputs || (metadata.inputs[i] && !metadata.inputs[i].private));
+    const filteredInputs = inputs.map((input, i) => metadata.inputs && (metadata.inputs[i] && metadata.inputs[i].private) ? '*****' : input);
     const filteredOptions = Object.keys(options)
       .filter(optionName => {
         const metadataOption = metadata.options && metadata.options.find(o => {

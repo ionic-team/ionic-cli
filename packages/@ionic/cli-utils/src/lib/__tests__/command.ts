@@ -29,6 +29,9 @@ describe('@ionic/cli-utils', () => {
               name: 'arg3',
               private: true,
             },
+            {
+              name: 'arg4',
+            },
           ],
           options: [
             {
@@ -91,8 +94,8 @@ describe('@ionic/cli-utils', () => {
 
       it('should exclude private arguments and options', async () => {
         const bar = new BarCommand();
-        const results = await bar.getCleanInputsForTelemetry(['a', 'b', 'c'], { opt4: 'private!' });
-        expect(results).toEqual(['a', 'b']);
+        const results = await bar.getCleanInputsForTelemetry(['a', 'b', 'c', 'd'], { opt1: true, opt4: 'private!' });
+        expect(results).toEqual(['a', 'b', '*****', 'd', '--opt1']);
       });
 
       it('should exclude aliases', async () => {
