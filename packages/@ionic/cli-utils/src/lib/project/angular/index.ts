@@ -21,14 +21,12 @@ export class Project extends BaseProject {
   async getInfo(): Promise<InfoItem[]> {
     const [
       ionicAngularVersion,
-      ionicCoreVersion,
       ionicSchematicsAngularVersion,
       angularCLIVersion,
       angularDevKitCoreVersion,
       angularDevKitSchematicsVersion,
     ] = await Promise.all([
       this.getPackageVersion('@ionic/angular'),
-      this.getPackageVersion('@ionic/core'),
       this.getPackageVersion('@ionic/schematics-angular'),
       this.getPackageVersion('@angular/cli'),
       this.getPackageVersion('@angular-devkit/core'),
@@ -38,7 +36,6 @@ export class Project extends BaseProject {
     return [
       ...(await super.getInfo()),
       { type: 'local-packages', key: 'Ionic Framework', value: ionicAngularVersion ? `@ionic/angular ${ionicAngularVersion}` : 'not installed' },
-      { type: 'local-packages', key: '@ionic/core', value: ionicCoreVersion ? ionicCoreVersion : 'not installed' },
       { type: 'local-packages', key: '@ionic/schematics-angular', value: ionicSchematicsAngularVersion ? ionicSchematicsAngularVersion : 'not installed' },
       { type: 'local-packages', key: '@angular/cli', value: angularCLIVersion ? angularCLIVersion : 'not installed' },
       { type: 'local-packages', key: '@angular-devkit/core', value: angularDevKitCoreVersion ? angularDevKitCoreVersion : 'not installed' },
