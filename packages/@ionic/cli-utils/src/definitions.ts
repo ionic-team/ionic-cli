@@ -401,6 +401,7 @@ export interface ConfigFile {
     gitPort?: number;
   };
   ssl?: SSLConfig;
+  proxy?: string;
   git: {
     setup?: boolean;
   };
@@ -426,6 +427,7 @@ export interface SSLConfig {
 
 export interface CreateRequestOptions {
   ssl?: SSLConfig;
+  proxy?: string;
 }
 
 export interface IBaseConfig<T extends { [key: string]: any }> {

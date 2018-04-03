@@ -107,7 +107,7 @@ export abstract class BaseIntegration implements IIntegration {
     const onFileCreate = opts && opts.onFileCreate ? opts.onFileCreate : lodash.noop;
     const conflictHandler = opts && opts.conflictHandler ? opts.conflictHandler : async () => false;
 
-    const { download } = await import('../utils/http');
+    const { createRequest, download } = await import('../utils/http');
     const { createTarExtraction } = await import('../utils/archive');
 
     const task = this.tasks.next(`Downloading integration ${chalk.green(this.name)}`);
@@ -123,10 +123,8 @@ export abstract class BaseIntegration implements IIntegration {
 
     const ws = await createTarExtraction({ cwd: tmpdir });
     const c = await this.config.load();
-    await download(this.archiveUrl, ws, {
-      progress: (loaded, total) => task.progress(loaded, total),
-      ssl: c.ssl,
-    });
+    const { req } = await createRequest('GET', this.archiveUrl, c);
+    await download(req, ws, { progress: (loaded, total) => task.progress(loaded, total) });
     this.tasks.end();
 
     const contents = await readDir(tmpdir);

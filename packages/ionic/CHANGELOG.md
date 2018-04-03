@@ -87,6 +87,8 @@ down the main CLI package. All functionality is still supported, but the
   [#2919](https://github.com/ionic-team/ionic-cli/issues/2919)
 * Better monorepo support. See the discussion in
   [#2232](https://github.com/ionic-team/ionic-cli/issues/2232).
+* No need for `@ionic/cli-plugin-proxy`. Proxy support is now built-in. Use
+  existing environment variables or use `ionic config set -g proxy <url>`.
 
 #### :bug: Bug Fixes
 

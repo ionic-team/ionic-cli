@@ -560,17 +560,15 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   }
 
   async downloadStarterTemplate(projectDir: string, starterTemplate: ResolvedStarterTemplate) {
-    const { download } = await import('@ionic/cli-utils/lib/utils/http');
+    const { createRequest, download } = await import('@ionic/cli-utils/lib/utils/http');
     const { createTarExtraction } = await import('@ionic/cli-utils/lib/utils/archive');
 
     const task = this.env.tasks.next(`Downloading and extracting ${chalk.green(starterTemplate.name.toString())} starter`);
     const config = await this.env.config.load();
     const ws = await createTarExtraction({ cwd: projectDir, strip: starterTemplate.strip ? 1 : 0 });
 
-    await download(starterTemplate.archive, ws, {
-      progress: (loaded, total) => task.progress(loaded, total),
-      ssl: config.ssl,
-    });
+    const { req } = await createRequest('GET', starterTemplate.archive, config);
+    await download(req, ws, { progress: (loaded, total) => task.progress(loaded, total) });
 
     this.env.tasks.end();
   }

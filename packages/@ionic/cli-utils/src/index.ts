@@ -162,24 +162,5 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} was removed in CLI 4.0. Use ${chalk.green(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);
   }
 
-  if (proxyVars.length > 0) {
-    const [ , proxyVar ] = proxyVars[0];
-
-    try {
-      require.resolve('superagent-proxy');
-    } catch (e) {
-      if (e.code !== 'MODULE_NOT_FOUND') {
-        throw e;
-      }
-
-      log.warn(
-        `Missing ${chalk.bold('superagent-proxy')} package.\n` +
-        `Detected ${chalk.green(proxyVar)} in environment, but missing proxy package: ${chalk.bold('superagent-proxy')}. Please install it to proxy CLI requests.\n\n` +
-        `See the CLI documentation on proxies: ${chalk.bold('https://ionicframework.com/docs/cli/configuring.html#using-a-proxy')}`
-      );
-    }
-  }
-  }
-
   return ienv;
 }
