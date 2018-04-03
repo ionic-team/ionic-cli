@@ -32,7 +32,6 @@ export interface ProjectDeps {
 
 export abstract class BaseProject extends BaseConfig<ProjectFile> implements IProject {
   type?: ProjectType;
-  directory: string;
 
   protected readonly config: IConfig;
   protected readonly log: ILogger;

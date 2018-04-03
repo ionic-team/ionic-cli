@@ -8,7 +8,7 @@
     "clean": "rimraf '*/index.{js,d.ts}'",
     "lint": "tslint --config tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
-    "watch": "tsc -w",
+    "watch": "tsc -w --preserveWatchOutput",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -21,10 +21,11 @@
   ],
   "schematics": "./collection.json",
   "dependencies": {
-    "@angular-devkit/core": "~0.4.2",
-    "@angular-devkit/schematics": "~0.4.2",
+    "@angular-devkit/core": "0.4.8",
+    "@angular-devkit/schematics": "0.4.8",
     "lodash": "^4.17.5",
-    "typescript": "~2.6.2"
+    "tslib": "^1.9.0",
+    "typescript": "~2.8.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.104",

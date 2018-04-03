@@ -33,6 +33,7 @@ abstract class IonicAngularAilment extends Ailment {
 
   constructor(deps: IonicAngularAilmentDeps) {
     super(deps);
+    this.project = deps.project;
   }
 }
 
@@ -41,6 +42,7 @@ abstract class AutomaticallyTreatableIonicAngularAilment extends AutomaticallyTr
 
   constructor(deps: AutomaticallyTreatableIonicAngularAilmentDeps) {
     super(deps);
+    this.project = deps.project;
   }
 }
 

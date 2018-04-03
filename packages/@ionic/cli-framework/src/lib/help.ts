@@ -29,8 +29,8 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
   protected readonly namespace: N;
   protected readonly dotswidth: number = DEFAULT_DOTS_WIDTH;
 
-  protected _metadata: NamespaceMetadata;
-  protected _fullName: string;
+  protected _metadata?: NamespaceMetadata;
+  protected _fullName?: string;
 
   constructor({ location, namespace, colors }: NamespaceHelpFormatterDeps<C, N, M, I, O>) {
     super({ colors });
@@ -261,8 +261,8 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
   protected readonly command: C;
   protected readonly dotswidth: number = DEFAULT_DOTS_WIDTH;
 
-  protected _metadata: M;
-  protected _fullName: string;
+  protected _metadata?: M;
+  protected _fullName?: string;
 
   constructor({ location, command, colors }: CommandHelpFormatterDeps<C, N, M, I, O>) {
     super({ colors });

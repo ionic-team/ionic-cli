@@ -10,7 +10,7 @@
     "clean": "rimraf index.* bootstrap.* constants.* definitions.* guards.* lib commands",
     "lint": "tslint --config tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
-    "watch": "tsc -w",
+    "watch": "tsc -w --preserveWatchOutput",
     "test": "jest",
     "prepublishOnly": "npm run build"
   },
@@ -59,8 +59,8 @@
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "@angular-devkit/core": "^0.3.1",
-    "@angular-devkit/schematics": "^0.3.1",
+    "@angular-devkit/core": "0.4.8",
+    "@angular-devkit/schematics": "0.4.8",
     "@types/clean-css": "^3.4.30",
     "@types/debug": "0.0.30",
     "@types/diff": "^3.2.2",
@@ -81,7 +81,7 @@
     "superagent-proxy": "^1.0.3",
     "ts-jest": "^22.4.1",
     "tslint": "^5.9.1",
-    "typescript": "~2.6.2"
+    "typescript": "~2.8.1"
   },
   "jest": {
     "globals": {

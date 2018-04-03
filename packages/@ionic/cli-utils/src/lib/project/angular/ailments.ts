@@ -91,6 +91,7 @@ abstract class AngularAilment extends Ailment {
 
   constructor(deps: AngularAilmentDeps, pkgParams: AilmentParams) {
     super(deps);
+    this.project = deps.project;
     this.pkgParams = pkgParams;
     this.pkgParams.treatmentVisitURL = this.pkgParams.treatmentVisitURL.map(url => chalk.bold(url));
   }

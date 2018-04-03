@@ -8,7 +8,7 @@
     "clean": "rimraf dist",
     "lint": "tslint --config tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
-    "watch": "tsc -w",
+    "watch": "tsc -w --preserveWatchOutput",
     "test": "jest",
     "prepublishOnly": "npm run build"
   },
@@ -35,7 +35,7 @@
     "rimraf": "^2.6.2",
     "ts-jest": "^22.4.1",
     "tslint": "^5.9.1",
-    "typescript": "~2.6.2"
+    "typescript": "~2.8.1"
   },
   "jest": {
     "globals": {
