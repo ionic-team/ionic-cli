@@ -102,13 +102,13 @@ export class Integration extends BaseIntegration {
     }
   }
 
-  async personalize({ appName, bundleId }: ProjectPersonalizationDetails) {
+  async personalize({ name, packageId }: ProjectPersonalizationDetails) {
     const { loadConfigXml } = await import('./config');
     const conf = await loadConfigXml({ project: this.project });
-    conf.setName(appName);
+    conf.setName(name);
 
-    if (bundleId) {
-      conf.setBundleId(bundleId);
+    if (packageId) {
+      conf.setBundleId(packageId);
     }
 
     await conf.save();

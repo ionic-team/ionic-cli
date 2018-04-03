@@ -173,7 +173,7 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
     const config = await this.config.load();
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
     const { npmClient } = config;
     const workingDir = this.project.directory;
 

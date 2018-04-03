@@ -36,7 +36,8 @@ export async function createPromptModule({ interactive, confirm, log, config }: 
       return '';
     }
 
-    const result = (await inquirerPromptModule(question))[question.name];
+    const prompt = inquirerPromptModule(question);
+    const result = (await prompt)[question.name];
 
     if (typeof result !== 'string' && typeof result !== 'boolean' && !Array.isArray(result)) {
       return String(result);

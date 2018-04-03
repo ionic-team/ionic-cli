@@ -158,7 +158,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async displayDevAppMessage(options: T) {
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
 
     // If this is regular `ionic serve`, we warn the dev about unsupported
     // plugins in the devapp.
@@ -376,7 +376,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
 
   async runLabServer(url: string, details: LabServeDetails): Promise<void> {
     const project = await this.project.load();
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
 
     const labArgs = [url, '--host', details.address, '--port', String(details.port)];
     const nameArgs = project.name ? ['--app-name', project.name] : [];

@@ -31,15 +31,15 @@ export class LinkCommand extends Command implements CommandPreRun {
       description: `
 If you have an app on Ionic Pro, you can link it to this local Ionic project with this command.
 
-Excluding the ${chalk.green('app_id')} argument looks up your apps on Ionic Pro and prompts you to select one.
+Excluding the ${chalk.green('pro-id')} argument looks up your apps on Ionic Pro and prompts you to select one.
 
-This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PROJECT_FILE)} for other commands to read.
+This command simply sets the ${chalk.bold('pro_id')} property in ${chalk.bold(PROJECT_FILE)} for other commands to read.
       `,
       exampleCommands: ['', 'a1b2c3d4'],
       inputs: [
         {
-          name: 'app_id',
-          summary: `The ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
+          name: 'pro-id',
+          summary: `The Pro ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
         },
       ],
       options: [
@@ -66,7 +66,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     const { create } = options;
 
     if (inputs[0] && create) {
-      throw new FatalException(`Sorry--cannot use both ${chalk.green('app_id')} and ${chalk.green('--create')}. You must either link an existing app or create a new one.`);
+      throw new FatalException(`Sorry--cannot use both ${chalk.green('pro-id')} and ${chalk.green('--create')}. You must either link an existing app or create a new one.`);
     }
 
     const proAppId = <string>options['pro-id'] || '';
@@ -79,25 +79,25 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
 
-    let [ appId ] = inputs;
+    let proId: string | undefined = inputs[0];
     let { create } = options;
 
-    const project = await this.env.project.load();
+    const p = await this.env.project.load();
 
-    if (project.app_id) {
-      if (project.app_id === appId) {
-        this.env.log.msg(`Already linked with app ${chalk.green(appId)}.`);
+    if (p.pro_id) {
+      if (p.pro_id === proId) {
+        this.env.log.msg(`Already linked with app ${chalk.green(proId)}.`);
         return;
       }
 
-      const msg = appId ?
-        `Are you sure you want to link it to ${chalk.green(appId)} instead?` :
+      const msg = proId ?
+        `Are you sure you want to link it to ${chalk.green(proId)} instead?` :
         `Would you like to run link again?`;
 
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `App ID ${chalk.green(project.app_id)} is already set up with this app. ${msg}`,
+        message: `Pro ID ${chalk.green(p.pro_id)} is already set up with this app. ${msg}`,
       });
 
       if (!confirm) {
@@ -110,10 +110,10 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       await promptToLogin(this.env);
     }
 
-    if (!appId && !create) {
+    if (!proId && !create) {
       const choices = [
         {
-          name: `Link ${project.app_id ? 'a different' : 'an existing'} app on Ionic Pro`,
+          name: `Link ${p.pro_id ? 'a different' : 'an existing'} app on Ionic Pro`,
           value: CHOICE_LINK_EXISTING_APP,
         },
         {
@@ -122,9 +122,9 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         },
       ];
 
-      if (project.app_id) {
+      if (p.pro_id) {
         choices.unshift({
-          name: `Relink ${chalk.green(project.app_id)}`,
+          name: `Relink ${chalk.green(p.pro_id)}`,
           value: CHOICE_RELINK,
         });
       }
@@ -138,14 +138,18 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
 
       if (result === CHOICE_CREATE_NEW_APP) {
         create = true;
+        proId = undefined;
       } else if (result === CHOICE_LINK_EXISTING_APP) {
-        appId = await this.chooseApp();
+        const choice = await this.chooseApp();
 
-        if (appId === CHOICE_NEVERMIND) {
-          this.env.log.msg('Not linking app.');
+        if (choice === CHOICE_NEVERMIND) {
+          this.env.log.info('Not linking app.');
+          proId = undefined;
+        } else {
+          proId = choice;
         }
       } else if (result === CHOICE_RELINK) {
-        appId = project.app_id;
+        proId = p.pro_id;
       }
     }
 
@@ -161,9 +165,9 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         });
       }
 
-      appId = await this.createApp({ name }, runinfo);
-    } else {
-      const app = await this.lookUpApp(appId);
+      proId = await this.createApp({ name }, runinfo);
+    } else if (proId) {
+      const app = await this.lookUpApp(proId);
       await this.linkApp(app, runinfo);
     }
 
@@ -182,11 +186,11 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     return new UserClient({ token, client: this.env.client });
   }
 
-  async lookUpApp(appId: string): Promise<App> {
-    this.env.tasks.next(`Looking up app ${chalk.green(appId)}`);
+  async lookUpApp(proId: string): Promise<App> {
+    this.env.tasks.next(`Looking up app ${chalk.green(proId)}`);
 
     const appClient = await this.getAppClient();
-    const app = await appClient.load(appId); // Make sure the user has access to the app
+    const app = await appClient.load(proId); // Make sure the user has access to the app
 
     this.env.tasks.end();
 
@@ -240,14 +244,14 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         await runCommand(runinfo, ['ssh', 'setup']);
       }
 
-      await runCommand(runinfo, ['config', 'set', 'app_id', `"${app.id}"`, '--json']);
+      await runCommand(runinfo, ['config', 'set', 'pro_id', `"${app.id}"`, '--json']);
       await runCommand(runinfo, ['git', 'remote']);
     } else {
       if (service === CHOICE_GITHUB) {
         githubUrl = await this.linkGithub(app);
       }
 
-      await runCommand(runinfo, ['config', 'set', 'app_id', `"${app.id}"`, '--json']);
+      await runCommand(runinfo, ['config', 'set', 'pro_id', `"${app.id}"`, '--json']);
     }
 
     this.env.log.ok(`Project linked with app ${chalk.green(app.id)}!`);

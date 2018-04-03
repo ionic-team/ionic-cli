@@ -42,7 +42,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
     const { pkgManagerArgs } = await import('../../utils/npm');
     const config = await this.config.load();
     const { npmClient } = config;
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
 
     let program = DEFAULT_PROGRAM;
     let args = this.generateAppScriptsArgs(options);

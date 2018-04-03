@@ -91,7 +91,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const { pkgManagerArgs } = await import('../../utils/npm');
     const config = await this.config.load();
     const { npmClient } = config;
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
 
     const args = await this.buildOptionsToNgArgs(options);
     const shellOptions = { cwd: this.project.directory };

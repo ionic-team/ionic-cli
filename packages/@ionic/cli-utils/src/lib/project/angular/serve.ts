@@ -140,7 +140,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const { pkgManagerArgs } = await import('../../utils/npm');
 
     const config = await this.config.load();
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
     const { npmClient } = config;
 
     let program = DEFAULT_PROGRAM;

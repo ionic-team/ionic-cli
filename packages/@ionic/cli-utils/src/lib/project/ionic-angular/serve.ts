@@ -123,7 +123,7 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
     const config = await this.config.load();
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
     const { npmClient } = config;
 
     let program = DEFAULT_PROGRAM;

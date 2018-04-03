@@ -18,9 +18,9 @@ export class GitRemoteCommand extends Command {
     const { addIonicRemote, getIonicRemote, initializeRepo, isRepoInitialized, setIonicRemote } = await import('@ionic/cli-utils/lib/git');
 
     const token = await this.env.session.getUserToken();
-    const appId = await this.env.project.loadAppId();
+    const proId = await this.env.project.requireProId();
     const appClient = new AppClient({ token, client: this.env.client });
-    const app = await appClient.load(appId);
+    const app = await appClient.load(proId);
 
     if (!app.repo_url) {
       throw new FatalException(`Missing ${chalk.bold('repo_url')} property in app.`);

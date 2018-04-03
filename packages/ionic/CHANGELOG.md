@@ -58,10 +58,18 @@ down the main CLI package. All functionality is still supported, but the
   templates), please use the repository URL. For example, to create the
   conference app, use `ionic start <name>
   https://github.com/ionic-team/ionic-conference-app`.
+* The `--display-name` option for `ionic start` has been removed. The `name`
+  argument is now used as the display name and slugified for directory name,
+  package name, etc. To provide a custom slug, use `--project-id`.
 * The `--target` option for Cordova has been renamed to `--cordova-target` to
   disambiguate from the Angular CLI's `--target` option.
-* The `ionic:watch:before` hook has been renamed to `ionic:serve:before`, but
-  behaves the same.
+* The `app_id` property in `ionic.config.json` has been renamed to `pro_id` and
+  is now optional (see
+  [#3038](https://github.com/ionic-team/ionic-cli/issues/3038)). The CLI
+  automatically detects this and changes it, but this notice is here if your
+  build scripts rely on the setting.
+* The `ionic:watch:before` npm script hook has been renamed to
+  `ionic:serve:before`, but behaves the same.
 
 #### :rocket: Enhancements
 

@@ -7,7 +7,8 @@ import * as lodash from 'lodash';
 import { validators } from '@ionic/cli-framework';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
-import { isValidURL } from '@ionic/cli-framework/utils/string';
+import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
+import { isValidPackageName } from '@ionic/cli-framework/utils/npm';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup, ResolvedStarterTemplate, StarterManifest, StarterTemplate, getProject } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
@@ -18,8 +19,20 @@ import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
 
 const debug = Debug('ionic:cli:commands:start');
 
+interface NewAppSchema {
+  name: string;
+  type: string;
+  template: string;
+  projectId: string;
+  projectDir: string;
+  packageId?: string;
+  proId?: string;
+}
+
 export class StartCommand extends Command implements CommandPreRun {
-  canRemoveExisting?: boolean;
+  private canRemoveExisting = false;
+
+  private schema?: NewAppSchema;
 
   async getMetadata(): Promise<CommandMetadata> {
     const starterTemplates = await this.getStarterTemplates();
@@ -31,9 +44,11 @@ export class StartCommand extends Command implements CommandPreRun {
       description: `
 This command creates a working Ionic app. It installs dependencies for you and sets up your project.
 
-${chalk.green('ionic start')} will create a new app from ${chalk.green('template')}. You can list all templates with the ${chalk.green('--list')} option. For more information on starter templates, see the CLI documentation${chalk.cyan('[1]')}.
+Running ${chalk.green('ionic start')} without any arguments will prompt you for information about your new project.
 
-You can also specify a git repository URL for ${chalk.green('template')} and the existing project will be cloned.
+The first argument is your app's ${chalk.green('name')}. Don't worry--you can always change this later. The ${chalk.green('--project-id')} is generated from ${chalk.green('name')} unless explicitly specified.
+
+The second argument is the ${chalk.green('template')} from which to generate your app. You can list all templates with the ${chalk.green('--list')} option. For more information on starter templates, see the CLI documentation${chalk.cyan('[1]')}. You can also specify a git repository URL for ${chalk.green('template')}, in which case the existing project will be cloned.
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}
       `,
@@ -42,15 +57,16 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         '--list',
         'myApp',
         'myApp blank',
-        'myApp tabs --cordova',
         'myApp blank --type=ionic1',
         'myApp super --type=ionic-angular',
-        'myConferenceApp https://github.com/ionic-team/ionic-conference-app',
+        'cordovaApp tabs --cordova',
+        '"My App" blank',
+        '"Conference App" https://github.com/ionic-team/ionic-conference-app',
       ],
       inputs: [
         {
           name: 'name',
-          summary: 'The name of your project directory',
+          summary: `The name of your new project (e.g. ${chalk.green('myApp')}, ${chalk.green('"My App"')})`,
           validators: [validators.required],
         },
         {
@@ -72,15 +88,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           type: String,
         },
         {
-          name: 'display-name',
-          summary: 'Human-friendly name (use quotes around the name)',
-          type: String,
-          aliases: ['n'],
-        },
-        {
           name: 'cordova',
           summary: 'Include Cordova integration',
           type: Boolean,
+        },
+        {
+          name: 'pro-id',
+          summary: 'Specify an Ionic Pro ID to link',
         },
         {
           name: 'deps',
@@ -98,17 +112,18 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         },
         {
           name: 'link',
-          summary: 'Do not ask to connect the app with the Ionic Dashboard',
+          summary: 'Do not ask to connect the app to Ionic Pro',
           type: Boolean,
           default: true,
           groups: [OptionGroup.Advanced],
         },
         {
-          name: 'pro-id',
-          summary: 'Specify an app ID from the Ionic Dashboard to link',
+          name: 'project-id',
+          summary: 'Specify a slug for your app (used for the directory name and npm/yarn package name)',
+          groups: [OptionGroup.Advanced],
         },
         {
-          name: 'bundle-id',
+          name: 'package-id',
           summary: 'Specify the bundle ID/application ID for your app (reverse-DNS notation)',
           groups: [OptionGroup.Advanced],
         },
@@ -120,13 +135,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         },
       ],
     };
-  }
-
-  async getStarterTemplates(): Promise<StarterTemplate[]> {
-    const { STARTER_TEMPLATES } = await import('@ionic/cli-utils/lib/start');
-    const config = await this.env.config.load();
-
-    return STARTER_TEMPLATES.filter(({ type }) => type !== 'angular' || config.features['project-angular']);
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
@@ -159,7 +167,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       options['link'] = true;
     }
 
-    const proAppId = options['pro-id'] ? String(options['pro-id']) : undefined;
+    const proId = options['pro-id'] ? String(options['pro-id']) : undefined;
 
     if (this.env.project.directory) {
       const confirm = await this.env.prompt({
@@ -170,7 +178,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       });
 
       if (!confirm) {
-        this.env.log.msg('Not starting project within existing project.');
+        this.env.log.info('Not starting project within existing project.');
         throw new FatalException();
       }
     }
@@ -186,34 +194,42 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
 
     if (options['app-name']) {
-      this.env.log.warn(`The ${chalk.green('--app-name')} option has been deprecated, please use ${chalk.green('--display-name')}.`);
-      options['display-name'] = options['app-name'];
+      this.env.log.warn(`The ${chalk.green('--app-name')} option has been removed. Use the ${chalk.green('name')} argument with double quotes: e.g. ${chalk.green('ionic start "My App"')}`);
+    }
+
+    if (options['display-name']) {
+      this.env.log.warn(`The ${chalk.green('--display-name')} option has been removed. Use the ${chalk.green('name')} argument with double quotes: e.g. ${chalk.green('ionic start "My App"')}`);
     }
 
     if (options['bundle-id']) {
-      this.env.log.msg(`${chalk.green('--bundle-id')} detected, using ${chalk.green('--cordova')}`);
-      options['cordova'] = true;
+      this.env.log.warn(`The ${chalk.green('--bundle-id')} option has been deprecated. Please use ${chalk.green('--package-id')}.`);
+      options['package-id'] = options['bundle-id'];
     }
 
-    if (proAppId) {
+    if (proId) {
       if (!(await this.env.session.isLoggedIn())) {
         await promptToLogin(this.env);
       }
     }
 
     if (!inputs[0]) {
-      if (proAppId) {
+      if (proId) {
         const { AppClient } = await import('@ionic/cli-utils/lib/app');
         const token = await this.env.session.getUserToken();
         const appClient = new AppClient({ token, client: this.env.client });
-        const app = await appClient.load(proAppId);
-        this.env.log.msg(`Using ${chalk.bold(app.slug)} for ${chalk.green('name')}.`);
-        inputs[0] = app.slug;
+        this.env.tasks.next(`Looking up app ${chalk.green(proId)}`);
+        const app = await appClient.load(proId);
+        // TODO: can ask to clone via repo_url
+        this.env.tasks.end();
+        this.env.log.info(`Using ${chalk.bold(app.name)} for ${chalk.green('name')} and ${chalk.bold(app.slug)} for ${chalk.green('--project-id')}.`);
+        inputs[0] = app.name;
+        options['project-id'] = app.slug;
       } else {
         if (this.env.flags.interactive) {
-          this.env.log.info(
-            `Every great app needs a name! ${emoji('😍', '')}\n` +
-            `We will use this name for the project's folder name and package name. You can change this at any time. To bypass this prompt next time, supply ${chalk.green('name')}, the first argument to ${chalk.green('ionic start')}.`
+          this.env.log.nl();
+          this.env.log.msg(
+            `${chalk.bold(`Every great app needs a name! ${emoji('😍', '')}`)}\n\n` +
+            `You can change this at any time. To bypass this prompt next time, supply ${chalk.green('name')}, the first argument to ${chalk.green('ionic start')}.\n\n`
           );
         }
 
@@ -228,18 +244,27 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       }
     }
 
-    const projectDir = path.resolve(inputs[0]);
-    await this.checkForExisting(inputs[0], projectDir);
+    const projectId = options['project-id'] ? String(options['project-id']) : slugify(inputs[0]);
+    await this.validateProjectId(projectId);
+
+    if (!options['project-id']) {
+      this.env.log.info(`Using ${chalk.bold(projectId)} for ${chalk.green('--project-id')}.`);
+    }
+
+    const projectDir = path.resolve(projectId);
+    await this.checkForExisting(projectDir);
+
     const clonedApp = isValidURL(inputs[1]);
 
     if (!clonedApp && !options['type']) {
       const recommendedType = config.features['project-angular'] ? 'angular' : 'ionic-angular';
 
       if (this.env.flags.interactive) {
-        this.env.log.info(
-          `What type of project would you like to create?\n` +
+        this.env.log.nl();
+        this.env.log.msg(
+          `${chalk.bold('What type of project would you like to create?')}\n\n` +
           `We recommend ${chalk.green(recommendedType)}. To learn more about project types, see the CLI documentation${chalk.cyan('[1]')}. To bypass this prompt next time, supply the ${chalk.green('--type')} option.\n\n` +
-          `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}`
+          `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}\n\n`
         );
       }
 
@@ -264,9 +289,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     if (!inputs[1]) {
       if (this.env.flags.interactive) {
-        this.env.log.info(
-          `Let's pick the perfect starter template! ${emoji('💪', '')}\n` +
-          `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${chalk.green('template')}, the second argument to ${chalk.green('ionic start')}.`
+        this.env.log.nl();
+        this.env.log.msg(
+          `${chalk.bold(`Let's pick the perfect starter template! ${emoji('💪', '')}`)}\n\n` +
+          `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${chalk.green('template')}, the second argument to ${chalk.green('ionic start')}.\n\n`
         );
       }
 
@@ -290,6 +316,16 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
       inputs[1] = template;
     }
+
+    this.schema = {
+      name: inputs[0],
+      type: String(options['type']),
+      template: inputs[1],
+      projectId,
+      projectDir,
+      packageId: options['package-id'] ? String(options['package-id']) : undefined,
+      proId,
+    };
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
@@ -298,26 +334,24 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     const config = await this.env.config.load();
     const { npmClient } = config;
 
-    const [ name, template ] = inputs;
-    const displayName = options['display-name'] ? String(options['display-name']) : name;
-    const proAppId = options['pro-id'] ? String(options['pro-id']) : undefined;
-    const bundleId = options['bundle-id'] ? String(options['bundle-id']) : undefined;
+    if (!this.schema) {
+      throw new FatalException(`Invalid information: cannot create app.`);
+    }
+
+    const { name, template, projectId, projectDir, packageId, proId } = this.schema;
+
     const tag = options['tag'] ? String(options['tag']) : 'latest';
     const clonedApp = isValidURL(template);
-    let linkConfirmed = typeof proAppId === 'string';
+    let linkConfirmed = typeof proId === 'string';
 
     const gitIntegration = options['git'] ? await this.isGitSetup() : false;
 
-    if (proAppId && !gitIntegration) {
+    if (proId && !gitIntegration) {
       throw new FatalException(
         `Git CLI not found on your PATH. It must be installed to connect this app to Ionic.\n` +
         `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`
       );
     }
-
-    const projectDir = path.resolve(name);
-
-    await this.validateName(name);
 
     this.env.tasks.next(`Preparing directory ${chalk.green(prettyPath(projectDir))}`);
 
@@ -359,7 +393,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         await runCommand(runinfo, ['integrations', 'enable', 'cordova', '--quiet']);
       }
 
-      await this.env.project.personalize({ appName: name, bundleId, displayName });
+      await this.env.project.personalize({ name, projectId, packageId });
       this.env.log.nl();
     }
 
@@ -398,8 +432,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
         const cmdArgs = ['link'];
 
-        if (proAppId) {
-          cmdArgs.push(proAppId);
+        if (proId) {
+          cmdArgs.push(proId);
         }
 
         await runCommand(runinfo, cmdArgs);
@@ -424,7 +458,14 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     this.env.log.nl();
 
-    await this.showNextSteps(projectDir, linkConfirmed);
+    await this.showNextSteps(projectDir, clonedApp, linkConfirmed);
+  }
+
+  async getStarterTemplates(): Promise<StarterTemplate[]> {
+    const { STARTER_TEMPLATES } = await import('@ionic/cli-utils/lib/start');
+    const config = await this.env.config.load();
+
+    return STARTER_TEMPLATES.filter(({ type }) => type !== 'angular' || config.features['project-angular']);
   }
 
   async isGitSetup(): Promise<boolean> {
@@ -433,14 +474,14 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     return Boolean(cmdInstalled);
   }
 
-  async checkForExisting(projectName: string, projectDir: string) {
-    const projectExists = await pathExists(projectName);
+  async checkForExisting(projectDir: string) {
+    const projectExists = await pathExists(projectDir);
 
     if (projectExists) {
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `The directory ${chalk.green(projectName)}/ exists. Would you like to overwrite the directory with this new project?`,
+        message: `The directory ${chalk.green(prettyPath(projectDir))} exists. Would you like to overwrite the directory with this new project?`,
         default: false,
       });
 
@@ -485,18 +526,17 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
   }
 
-  async validateName(name: string) {
-    const { isValidPackageName } = await import('@ionic/cli-framework/utils/npm');
+  async validateProjectId(projectId: string) {
     const { isProjectNameValid } = await import('@ionic/cli-utils/lib/start');
 
-    if (!isProjectNameValid(name)) {
-      throw new FatalException(`Please name your Ionic project something meaningful other than ${chalk.green(name)}`);
+    if (!isProjectNameValid(projectId)) {
+      throw new FatalException(`Please name your Ionic project something meaningful other than ${chalk.green(projectId)}`);
     }
 
-    if (!isValidPackageName(name) || name !== path.basename(name)) {
+    if (!isValidPackageName(projectId) || projectId !== path.basename(projectId)) {
       throw new FatalException(
-        `${chalk.green(name)} is not a valid package or directory name.\n` +
-        `Please choose a different name. Alphanumeric characters are always safe for app names. You can use the ${chalk.green('--display-name')} option for the human-friendly name.`
+        `${chalk.green(projectId)} is not a valid package or directory name.\n` +
+        `Please choose a different ${chalk.green('--project-id')}. Alphanumeric characters are always safe.`
       );
     }
   }
@@ -535,9 +575,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     this.env.tasks.end();
   }
 
-  async showNextSteps(projectDir: string, linkConfirmed: boolean) {
+  async showNextSteps(projectDir: string, clonedApp: boolean, linkConfirmed: boolean) {
     const steps = [
-      `Go to your newly created project: ${chalk.green(`cd ${prettyPath(projectDir)}`)}`,
+      `Go to your ${clonedApp ? 'cloned' : 'newly created'} project: ${chalk.green(`cd ${prettyPath(projectDir)}`)}`,
       `Get Ionic DevApp for easy device testing: ${chalk.bold('https://bit.ly/ionic-dev-app')}`,
     ];
 

@@ -83,14 +83,13 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
     })(),
     (async () => {
       const c = await config.load();
+      const p = project.directory ? await project.load() : undefined;
       const now = new Date().toISOString();
 
-      let appId: string | undefined;
-
-      const p = project.directory ? await project.load() : undefined;
+      let proId: string | undefined;
 
       if (p) {
-        appId = p.app_id;
+        proId = p.pro_id;
       }
 
       const { req } = await client.make('POST', '/events/metrics');
@@ -105,7 +104,7 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
           'arguments': prettyArgs.join(' '),
           'version': ctx.version,
           'node_version': process.version,
-          'app_id': appId,
+          'app_id': proId,
           'backend': 'pro', // TODO: is this necessary?
         },
       };

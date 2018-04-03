@@ -140,7 +140,7 @@ export class Shell implements IShell {
 
     try {
       const out = await runcmd(cmd, args, opts);
-      return out.split('\n').join(' ');
+      return out.split('\n').join(' ').trim();
     } catch (e) {
       // no command info at this point
     }

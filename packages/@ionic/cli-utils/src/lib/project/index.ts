@@ -138,24 +138,24 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
 
   abstract detected(): Promise<boolean>;
 
-  async loadAppId(): Promise<string> {
+  async requireProId(): Promise<string> {
     const p = await this.load();
 
-    if (!p.app_id) {
+    if (!p.pro_id) {
       throw new FatalException(
-        `Your project file (${chalk.bold(prettyPath(this.filePath))}) does not contain '${chalk.bold('app_id')}'. ` +
+        `Your project file (${chalk.bold(prettyPath(this.filePath))}) does not contain '${chalk.bold('pro_id')}'. ` +
         `Run ${chalk.green('ionic link')}.`
       );
     }
 
-    return p.app_id;
+    return p.pro_id;
   }
 
   get packageJsonPath() {
     return path.resolve(this.directory, 'package.json');
   }
 
-  async loadPackageJson(): Promise<PackageJson> {
+  async requirePackageJson(): Promise<PackageJson> {
     if (!this.packageJsonFile) {
       try {
         this.packageJsonFile = await readPackageJsonFile(this.packageJsonPath);
@@ -180,8 +180,8 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       results.name = '';
     }
 
-    if (!results.app_id) {
-      results.app_id = '';
+    if (results.app_id) {
+      results.pro_id = results.app_id;
     }
 
     if (!results.integrations) {
@@ -196,6 +196,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       results.type = this.type;
     }
 
+    delete results.app_id;
     delete results.integrations.gulp;
     delete results.gulp;
     delete results.projectTypeId;
@@ -208,7 +209,6 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   is(j: any): j is ProjectFile {
     return j
       && typeof j.name === 'string'
-      && typeof j.app_id === 'string'
       && typeof j.integrations === 'object'
       && typeof j.hooks === 'object';
   }
@@ -226,15 +226,15 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   }
 
   async personalize(details: ProjectPersonalizationDetails) {
-    const { appName, displayName, description, version } = details;
+    const { name, projectId, description, version } = details;
 
     const project = await this.load();
-    project.name = displayName ? displayName : appName;
+    project.name = name;
     await this.save();
 
-    const pkg = await this.loadPackageJson();
+    const pkg = await this.requirePackageJson();
 
-    pkg.name = appName;
+    pkg.name = projectId;
     pkg.version = version ? version : '0.0.1';
     pkg.description = description ? description : 'An Ionic project';
 
@@ -298,8 +298,8 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
   }
 
   async getSourceDir(): Promise<never> { throw this._createError(); }
-  async loadAppId(): Promise<never> { throw this._createError(); }
-  async loadPackageJson(): Promise<never> { throw this._createError(); }
+  async requireProId(): Promise<never> { throw this._createError(); }
+  async requirePackageJson(): Promise<never> { throw this._createError(); }
   async provideDefaults(): Promise<never> { throw this._createError(); }
   async personalize(): Promise<never> { throw this._createError(); }
   async refreshIntegrations(): Promise<never> { throw this._createError(); }

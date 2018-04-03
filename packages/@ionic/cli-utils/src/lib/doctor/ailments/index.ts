@@ -136,12 +136,11 @@ class GitConfigInvalid extends Ailment {
   id = 'git-config-invalid';
 
   async getMessage() {
-    const project = await this.project.load();
-    const appId = project.app_id;
+    const proId = await this.project.requireProId();
 
     return (
-      `App linked to ${chalk.bold(appId)} with invalid git configuration.\n` +
-      `This app is linked to an app on Ionic (${chalk.bold(appId)}), but the git configuration is not valid.\n`
+      `App linked to ${chalk.bold(proId)} with invalid git configuration.\n` +
+      `This app is linked to an app on Ionic (${chalk.bold(proId)}), but the git configuration is not valid.\n`
     ).trim();
   }
 
@@ -152,10 +151,10 @@ class GitConfigInvalid extends Ailment {
       return false;
     }
 
-    const project = await this.project.load();
-    const appId = project.app_id;
+    const p = await this.project.load();
+    const proId = p.pro_id;
 
-    if (!appId) {
+    if (!proId) {
       return false;
     }
 
@@ -171,7 +170,7 @@ class GitConfigInvalid extends Ailment {
 
     const token = await this.session.getUserToken();
     const appClient = new AppClient({ token, client: this.client });
-    const app = await appClient.load(appId);
+    const app = await appClient.load(proId);
 
     if (app.repo_url !== remote) {
       return true;

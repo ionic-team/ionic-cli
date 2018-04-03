@@ -254,7 +254,7 @@ class IonicAngularPackageJsonHasDefaultIonicBuildCommand extends IonicAngularAil
   }
 
   async detected() {
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
 
     if (pkg.scripts && pkg.scripts[BUILD_SCRIPT] === DEFAULT_BUILD_SCRIPT_VALUE) {
       return true;
@@ -284,7 +284,7 @@ class IonicAngularPackageJsonHasDefaultIonicServeCommand extends IonicAngularAil
   }
 
   async detected() {
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
 
     if (pkg.scripts && pkg.scripts[SERVE_SCRIPT] === DEFAULT_SERVE_SCRIPT_VALUE) {
       return true;

@@ -48,7 +48,7 @@ export class Project extends BaseProject {
 
   async detected() {
     try {
-      const pkg = await this.loadPackageJson();
+      const pkg = await this.requirePackageJson();
       const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
 
       if (typeof deps['@ionic/angular'] === 'string') {
@@ -65,12 +65,12 @@ export class Project extends BaseProject {
   async personalize(details: ProjectPersonalizationDetails) {
     await super.personalize(details);
 
-    const { appName, displayName } = details;
+    const { name } = details;
     const angularJsonPath = path.resolve(this.directory, ANGULAR_CLI_FILE);
 
     try {
       const angularJson = await readAngularCLIJsonFile(angularJsonPath);
-      angularJson.project.name = displayName ? displayName : appName;
+      angularJson.project.name = name;
 
       await fsWriteJsonFile(angularJsonPath, angularJson, { encoding: 'utf8' });
     } catch (e) {

@@ -49,7 +49,7 @@ export abstract class Hook {
     }
 
     const project = await this.project.load();
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
     const config = await this.config.load();
     const { npmClient } = config;
 

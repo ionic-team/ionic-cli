@@ -40,7 +40,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const token = await this.env.session.getUserToken();
-    const appId = await this.env.project.loadAppId();
+    const proId = await this.env.project.requireProId();
 
     const [ snapshotId ] = inputs;
     const doBuild = options.build ? true : false;
@@ -79,7 +79,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     debug(`Found ${sourcemapFiles.length} sourcemap files: ${sourcemapFiles.map(f => chalk.bold(f)).join(', ')}`);
 
     await Promise.all(sourcemapFiles.map(async f => {
-      await this.syncSourcemap(path.resolve(sourcemapsDir, f), snapshotId, appVersion, commitHash, appId, token);
+      await this.syncSourcemap(path.resolve(sourcemapsDir, f), snapshotId, appVersion, commitHash, proId, token);
       count += 1;
       this.env.tasks.updateMsg(`Syncing sourcemaps: ${chalk.bold(`${count} / ${sourcemapFiles.length}`)}`);
     }));
@@ -88,8 +88,8 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     this.env.tasks.end();
 
     const details = columnar([
-      ['App ID', chalk.bold(appId)],
-      ['App Version', chalk.bold(appVersion)],
+      ['Pro ID', chalk.bold(proId)],
+      ['Version', chalk.bold(appVersion)],
       ['Bundle ID', chalk.bold(cordovaInfo.id)],
       ['Snapshot ID', snapshotId ? chalk.bold(snapshotId) : chalk.dim('not set')],
     ], { vsep: ':' });
@@ -101,8 +101,8 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     );
   }
 
-  async syncSourcemap(file: string, snapshotId: string, appVersion: string, commitHash: string, appId: string, token: string): Promise<void> {
-    const { req } = await this.env.client.make('POST', `/monitoring/${appId}/sourcemaps`);
+  async syncSourcemap(file: string, snapshotId: string, appVersion: string, commitHash: string, proId: string, token: string): Promise<void> {
+    const { req } = await this.env.client.make('POST', `/monitoring/${proId}/sourcemaps`);
 
     req
       .set('Authorization', `Bearer ${token}`)

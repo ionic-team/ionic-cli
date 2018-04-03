@@ -148,7 +148,8 @@ export interface ProjectIntegrations {
 
 export interface ProjectFile {
   name: string;
-  app_id: string;
+  pro_id?: string;
+
   readonly integrations: ProjectIntegrations;
   readonly hooks: Record<HookName, string | string[] | undefined>;
 
@@ -157,19 +158,9 @@ export interface ProjectFile {
     cert?: string;
   };
 
-  /**
-   * @deprecated
-   */
+  // Ionic 1 only
   watchPatterns?: string[];
-
-  /**
-   * @deprecated
-   */
   proxies?: ProjectFileProxy[];
-
-  /**
-   * @deprecated
-   */
   documentRoot?: string;
 }
 
@@ -295,9 +286,9 @@ export interface IConfig extends IBaseConfig<ConfigFile> {
 }
 
 export interface ProjectPersonalizationDetails {
-  appName: string;
-  displayName?: string;
-  bundleId?: string;
+  name: string;
+  projectId: string;
+  packageId?: string;
   version?: string;
   description?: string;
 }
@@ -310,8 +301,8 @@ export interface IProject extends IBaseConfig<ProjectFile> {
   getSourceDir(): Promise<string>;
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
-  loadAppId(): Promise<string>;
-  loadPackageJson(): Promise<framework.PackageJson>;
+  requireProId(): Promise<string>;
+  requirePackageJson(): Promise<framework.PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
   getAilmentRegistry(env: IonicEnvironment): Promise<IAilmentRegistry>;
 }
