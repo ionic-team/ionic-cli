@@ -11,7 +11,7 @@ import { getTerminalInfo } from '@ionic/cli-framework/utils/terminal';
 import * as inquirerType from 'inquirer';
 
 import { IProject, InfoItem, IonicContext, IonicEnvironment, LogLevel, LogPrefix } from './definitions';
-import { PROJECT_FILE, PROJECT_FILE_LEGACY } from './constants';
+import { PROJECT_FILE } from './constants';
 import { BaseProject, OutsideProject, ProjectDeps } from './lib/project';
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
@@ -179,13 +179,6 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
       );
     }
   }
-
-  if (!projectDir) {
-    const foundDir = await findBaseDirectory(ctx.execPath, PROJECT_FILE_LEGACY);
-
-    if (foundDir) {
-      log.warn(`${chalk.bold(PROJECT_FILE_LEGACY)} file found in ${chalk.bold(foundDir)}--please rename it to ${chalk.bold(PROJECT_FILE)}, or your project directory will not be detected!`);
-    }
   }
 
   return ienv;
