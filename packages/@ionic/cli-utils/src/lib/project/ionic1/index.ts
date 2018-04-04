@@ -82,7 +82,7 @@ export class Project extends BaseProject {
 
   // this method search not only package.json
   async getFrameworkVersion(): Promise<string | undefined> {
-    const ionicVersionFilePath = path.resolve(this.directory, 'www', 'lib', 'ionic', 'version.json'); // TODO
+    const ionicVersionFilePath = path.resolve(await this.getDistDir(), 'lib', 'ionic', 'version.json'); // TODO
     const bowerJsonPath = path.resolve(this.directory, 'bower.json');
 
     try {

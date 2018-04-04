@@ -138,12 +138,8 @@ export interface ProjectIntegration {
   enabled?: boolean;
 }
 
-export interface ProjectCordovaIntegration extends ProjectIntegration {
-  setupEngineHooks?: boolean;
-}
-
 export interface ProjectIntegrations {
-  cordova?: ProjectCordovaIntegration;
+  cordova?: ProjectIntegration;
 }
 
 export interface ProjectFile {
@@ -298,6 +294,7 @@ export interface IProject extends IBaseConfig<ProjectFile> {
 
   getDocsUrl(): Promise<string>;
   getSourceDir(): Promise<string>;
+  getDistDir(): Promise<string>;
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
   createIntegration(name: IntegrationName): Promise<IIntegration>;
@@ -667,10 +664,13 @@ export interface IAilmentRegistry {
   get(id: string): void;
 }
 
-export interface AngularCLIJson {
+export interface AngularConfig {
   project: {
     name: string;
   };
+  apps: {
+    assets: any[];
+  }[];
 }
 
 export interface PromptQuestion extends inquirerType.Question {

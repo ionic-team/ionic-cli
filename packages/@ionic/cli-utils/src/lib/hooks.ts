@@ -12,10 +12,6 @@ import { HookException } from './errors';
 
 const debug = Debug('ionic:cli-utils:lib:hooks');
 
-export const HOOKS_PKG = '@ionic/cli-hooks';
-export const ADD_CORDOVA_ENGINE_HOOK = path.join('node_modules', HOOKS_PKG, 'add-cordova-engine.js');
-export const REMOVE_CORDOVA_ENGINE_HOOK = path.join('node_modules', HOOKS_PKG, 'remove-cordova-engine.js');
-
 export interface HookDeps {
   readonly config: IConfig;
   readonly project: IProject;

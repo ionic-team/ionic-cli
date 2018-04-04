@@ -1,16 +1,10 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "declaration": false,
-    "outDir": "./",
-    "paths": {
-      "parse5": ["../../../node_modules/parse5/lib/index.d.ts"]
-    }
+    "outDir": "./"
   },
   "include": [
-    "../../../types/cross-spawn.d.ts",
-    "../../../types/superagent.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

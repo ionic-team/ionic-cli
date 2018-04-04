@@ -190,33 +190,16 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       && typeof j.hooks === 'object';
   }
 
-  async createIntegration(name: IntegrationName): Promise<IIntegration> {
-    return BaseIntegration.createFromName({
-      config: this.config,
-      project: this,
-      shell: this.shell,
-      tasks: this.tasks,
-    }, name);
-  }
-
-  protected async getIntegrations(): Promise<IIntegration[]> {
-    const p = await this.load();
-    const projectIntegrations = <IntegrationName[]>Object.keys(p.integrations); // TODO
-
-    const integrationNames = projectIntegrations.filter(n => {
-      const c = p.integrations[n];
-      return c && c.enabled !== false;
-    });
-
-    return Promise.all(integrationNames.map(async name => this.createIntegration(name)));
-  }
-
   async getDocsUrl(): Promise<string> {
     return 'https://ionicframework.com/docs';
   }
 
   async getSourceDir(): Promise<string> {
     return path.resolve(this.directory, 'src');
+  }
+
+  async getDistDir(): Promise<string> {
+    return path.resolve(this.directory, 'www');
   }
 
   async getInfo(): Promise<InfoItem[]> {
@@ -265,6 +248,27 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
     }
   }
+
+  async createIntegration(name: IntegrationName): Promise<IIntegration> {
+    return BaseIntegration.createFromName({
+      config: this.config,
+      project: this,
+      shell: this.shell,
+      tasks: this.tasks,
+    }, name);
+  }
+
+  protected async getIntegrations(): Promise<IIntegration[]> {
+    const p = await this.load();
+    const projectIntegrations = <IntegrationName[]>Object.keys(p.integrations); // TODO
+
+    const integrationNames = projectIntegrations.filter(n => {
+      const c = p.integrations[n];
+      return c && c.enabled !== false;
+    });
+
+    return Promise.all(integrationNames.map(async name => this.createIntegration(name)));
+  }
 }
 
 /**
@@ -299,13 +303,14 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
     return [];
   }
 
-  async createIntegration(): Promise<never> { throw this._createError(); }
   async getSourceDir(): Promise<never> { throw this._createError(); }
+  async getDistDir(): Promise<never> { throw this._createError(); }
   async requireProId(): Promise<never> { throw this._createError(); }
   async requirePackageJson(): Promise<never> { throw this._createError(); }
   async provideDefaults(): Promise<never> { throw this._createError(); }
   async personalize(): Promise<never> { throw this._createError(); }
   async getAilmentRegistry(): Promise<never> { throw this._createError(); }
+  async createIntegration(): Promise<never> { throw this._createError(); }
 }
 
 export function prettyProjectName(type?: string): string {

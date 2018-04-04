@@ -67,11 +67,11 @@ export abstract class BuildRunner<T extends BuildOptions<any>> extends Runner<T,
     return { '--': separatedArgs ? separatedArgs : [], engine, platform };
   }
 
-  async run(options: T): Promise<void> {
-    const before = new BuildBeforeHook({ config: this.config, project: this.project, shell: this.shell });
+  async beforeBuild(options: T): Promise<void> {
+    const hook = new BuildBeforeHook({ config: this.config, project: this.project, shell: this.shell });
 
     try {
-      await before.run({ name: before.name, build: options });
+      await hook.run({ name: hook.name, build: options });
     } catch (e) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
@@ -79,13 +79,19 @@ export abstract class BuildRunner<T extends BuildOptions<any>> extends Runner<T,
 
       throw e;
     }
+  }
 
+  async run(options: T): Promise<void> {
+    await this.beforeBuild(options);
     await this.buildProject(options);
+    await this.afterBuild(options);
+  }
 
-    const after = new BuildAfterHook({ config: this.config, project: this.project, shell: this.shell });
+  async afterBuild(options: T): Promise<void> {
+    const hook = new BuildAfterHook({ config: this.config, project: this.project, shell: this.shell });
 
     try {
-      await after.run({ name: after.name, build: options });
+      await hook.run({ name: hook.name, build: options });
     } catch (e) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);

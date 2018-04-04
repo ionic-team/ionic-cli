@@ -177,8 +177,22 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     }
   }
 
+  async beforeServe(options: T) {
+    const hook = new ServeBeforeHook({ config: this.config, project: this.project, shell: this.shell });
+
+    try {
+      await hook.run({ name: hook.name, serve: options });
+    } catch (e) {
+      if (e instanceof BaseError) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
+  }
+
   async run(options: T): Promise<ServeDetails> {
-    await this.runBeforeHook(options);
+    await this.beforeServe(options);
 
     const details = await this.serveProject(options);
     const devAppDetails = await this.gatherDevAppDetails(options, details);
@@ -216,16 +230,16 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       this.log.nl();
     }
 
-    this.scheduleAfterHook(options, details);
+    this.scheduleAfterServe(options, details);
 
     return details;
   }
 
-  async runBeforeHook(options: T) {
-    const before = new ServeBeforeHook({ config: this.config, project: this.project, shell: this.shell });
+  async afterServe(options: T, details: ServeDetails) {
+    const hook = new ServeAfterHook({ config: this.config, project: this.project, shell: this.shell });
 
     try {
-      await before.run({ name: before.name, serve: options });
+      await hook.run({ name: hook.name, serve: lodash.assign({}, options, details) });
     } catch (e) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
@@ -235,20 +249,8 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     }
   }
 
-  scheduleAfterHook(options: T, details: ServeDetails) {
-    onBeforeExit(async () => {
-      const after = new ServeAfterHook({ config: this.config, project: this.project, shell: this.shell });
-
-      try {
-        await after.run({ name: after.name, serve: lodash.assign({}, options, details) });
-      } catch (e) {
-        if (e instanceof BaseError) {
-          throw new FatalException(e.message);
-        }
-
-        throw e;
-      }
-    });
+  scheduleAfterServe(options: T, details: ServeDetails) {
+    onBeforeExit(async () => this.afterServe(options, details));
   }
 
   async gatherDevAppDetails(options: T, details: ServeDetails): Promise<DevAppDetails | undefined> {

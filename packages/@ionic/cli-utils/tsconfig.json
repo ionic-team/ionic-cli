@@ -1,7 +1,11 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./"
+    "baseUrl": ".",
+    "outDir": "./",
+    "paths": {
+      "parse5": ["../../../node_modules/parse5/lib/index.d.ts"]
+    }
   },
   "include": [
     "../../../types/cross-spawn.d.ts",

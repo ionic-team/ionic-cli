@@ -10,7 +10,7 @@ import { fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 import { IAilmentRegistry, InfoItem, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
 
 import { BaseProject } from '../';
-import { ANGULAR_CLI_FILE, readAngularCLIJsonFile } from './utils';
+import { ANGULAR_CONFIG_FILE, readAngularConfigFile } from './utils';
 import * as doctorLibType from '../../doctor';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular');
@@ -63,10 +63,10 @@ export class Project extends BaseProject {
     await super.personalize(details);
 
     const { name } = details;
-    const angularJsonPath = path.resolve(this.directory, ANGULAR_CLI_FILE);
+    const angularJsonPath = path.resolve(this.directory, ANGULAR_CONFIG_FILE);
 
     try {
-      const angularJson = await readAngularCLIJsonFile(angularJsonPath);
+      const angularJson = await readAngularConfigFile(angularJsonPath);
       angularJson.project.name = name;
 
       await fsWriteJsonFile(angularJsonPath, angularJson, { encoding: 'utf8' });

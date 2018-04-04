@@ -15,6 +15,7 @@ import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMeta
 import { OptionGroup } from '../../../constants';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
 import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
+import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './utils';
 
 const DEFAULT_PROGRAM = 'ng';
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
@@ -97,6 +98,16 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     };
   }
 
+  async beforeServe(options: AngularServeOptions): Promise<void> {
+    await super.beforeServe(options);
+
+    const p = await this.project.load();
+
+    if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
+      await addCordovaEngineForAngular(this.project, options.platform);
+    }
+  }
+
   async serveProject(options: AngularServeOptions): Promise<ServeDetails> {
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
 
@@ -115,6 +126,16 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       port: ngPort,
       externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
     };
+  }
+
+  async afterServe(options: AngularServeOptions, details: ServeDetails): Promise<void> {
+    const p = await this.project.load();
+
+    if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
+      await removeCordovaEngineForAngular(this.project, options.platform);
+    }
+
+    await super.afterServe(options, details);
   }
 
   private async serveCommandWrapper(options: AngularServeOptions): Promise<ServeCmdDetails> {

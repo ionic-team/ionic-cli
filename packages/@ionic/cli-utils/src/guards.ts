@@ -2,7 +2,7 @@ import {
   APIResponse,
   APIResponseError,
   APIResponseSuccess,
-  AngularCLIJson,
+  AngularConfig,
   App,
   AppAssociation,
   CommandPreRun,
@@ -60,8 +60,8 @@ export function isCordovaPackageJson(o: object): o is CordovaPackageJson {
     typeof obj.cordova.plugins === 'object';
 }
 
-export function isAngularCLIJson(o: object): o is AngularCLIJson {
-  const obj = <AngularCLIJson>o;
+export function isAngularConfig(o: object): o is AngularConfig {
+  const obj = <AngularConfig>o;
   return obj &&
     typeof obj.project === 'object' &&
     typeof obj.project.name === 'string';

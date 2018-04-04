@@ -1,17 +1,11 @@
 {
   "name": "@ionic/cli-hooks",
+  "private": true,
   "version": "1.0.0-rc.2",
   "description": "Useful hook scripts for Ionic apps",
   "homepage": "https://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (https://ionic.io)",
   "license": "MIT",
-  "scripts": {
-    "clean": "rimraf add-cordova-engine.* remove-cordova-engine.* utils",
-    "lint": "tslint --config tslint.js --project tsconfig.json",
-    "build": "npm run clean && tsc",
-    "watch": "tsc -w --preserveWatchOutput",
-    "prepublishOnly": "npm run build"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ionic-team/ionic-cli.git"
