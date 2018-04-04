@@ -21,8 +21,8 @@
   ],
   "schematics": "./collection.json",
   "dependencies": {
-    "@angular-devkit/core": "0.4.8",
-    "@angular-devkit/schematics": "0.4.8",
+    "@angular-devkit/core": "0.3.2",
+    "@angular-devkit/schematics": "0.3.2",
     "lodash": "^4.17.5",
     "tslib": "^1.9.0",
     "typescript": "~2.8.1"
