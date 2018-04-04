@@ -296,11 +296,11 @@ export interface ProjectPersonalizationDetails {
 export interface IProject extends IBaseConfig<ProjectFile> {
   type?: ProjectType;
 
-  refreshIntegrations(): Promise<void>;
   getDocsUrl(): Promise<string>;
   getSourceDir(): Promise<string>;
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
+  createIntegration(name: IntegrationName): Promise<IIntegration>;
   requireProId(): Promise<string>;
   requirePackageJson(): Promise<framework.PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
@@ -313,14 +313,13 @@ export interface IIntegrationAddOptions {
 }
 
 export interface IIntegration {
-  name: IntegrationName;
-  archiveUrl?: string;
+  readonly name: IntegrationName;
+  readonly summary: string;
+  readonly archiveUrl?: string;
 
   add(opts?: IIntegrationAddOptions): Promise<void>;
   enable(): Promise<void>;
   disable(): Promise<void>;
-
-  getConfig(): Promise<ProjectIntegration | undefined>;
   getInfo(): Promise<InfoItem[]>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
 }

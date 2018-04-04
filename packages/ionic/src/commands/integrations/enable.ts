@@ -7,7 +7,7 @@ import { BaseError } from '@ionic/cli-framework/lib/errors';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, isIntegrationName } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { BaseIntegration, INTEGRATION_NAMES } from '@ionic/cli-utils/lib/integrations';
+import { INTEGRATION_NAMES } from '@ionic/cli-utils/lib/integrations';
 
 export class IntegrationsEnableCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
@@ -18,7 +18,7 @@ export class IntegrationsEnableCommand extends Command {
       inputs: [
         {
           name: 'name',
-          summary: `The integration to enable (${INTEGRATION_NAMES.map(i => chalk.green(i)).join(', ')})`,
+          summary: `The integration to enable (e.g. ${INTEGRATION_NAMES.map(i => chalk.green(i)).join(', ')})`,
           validators: [validators.required, contains(INTEGRATION_NAMES, {})],
         },
       ],
@@ -40,8 +40,9 @@ export class IntegrationsEnableCommand extends Command {
       throw new FatalException(`Don't know about ${chalk.green(name)} integration!`);
     }
 
-    const integration = await BaseIntegration.createFromName(this.env, name);
-    const integrationConfig = await integration.getConfig();
+    const p = await this.env.project.load();
+    const integration = await this.env.project.createIntegration(name);
+    const integrationConfig = p.integrations[name];
 
     try {
       if (integrationConfig) {
@@ -50,6 +51,7 @@ export class IntegrationsEnableCommand extends Command {
         // We still need to run this whenever this command is run to make sure
         // everything is good with the integration.
         await integration.enable();
+        delete integrationConfig.enabled;
 
         if (wasEnabled) {
           this.env.log.info(`Integration ${chalk.green(integration.name)} enabled.`);
@@ -79,6 +81,7 @@ export class IntegrationsEnableCommand extends Command {
           },
         });
 
+        p.integrations[name] = {};
         this.env.log.ok(`Integration ${chalk.green(integration.name)} added!`);
       }
     } catch (e) {

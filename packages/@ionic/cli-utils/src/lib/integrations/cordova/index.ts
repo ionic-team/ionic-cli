@@ -5,8 +5,9 @@ import { BaseIntegration } from '../';
 import { ADD_CORDOVA_ENGINE_HOOK, HOOKS_PKG, REMOVE_CORDOVA_ENGINE_HOOK, addHook, removeHook } from '../../hooks';
 
 export class Integration extends BaseIntegration {
-  name: IntegrationName = 'cordova';
-  archiveUrl = 'https://d2ql0qc7j8u4b2.cloudfront.net/integration-cordova.tar.gz';
+  readonly name: IntegrationName = 'cordova';
+  readonly summary = 'Target native iOS and Android with Apache Cordova';
+  readonly archiveUrl = 'https://d2ql0qc7j8u4b2.cloudfront.net/integration-cordova.tar.gz';
 
   async getInfo(): Promise<InfoItem[]> {
     const { getAndroidSdkToolsVersion } = await import('./android');

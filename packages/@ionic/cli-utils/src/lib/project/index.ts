@@ -38,7 +38,6 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   protected readonly shell: IShell;
   protected readonly tasks: ITaskChain;
 
-  protected integrations: IIntegration[] = [];
   protected packageJsonFile?: PackageJson;
 
   constructor(dir: string, file: string, { config, log, shell, tasks }: ProjectDeps) {
@@ -111,28 +110,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       throw new FatalException(`Bad project type: ${chalk.bold(type)}`); // TODO?
     }
 
-    await project.refreshIntegrations();
-
     return project;
-  }
-
-  async refreshIntegrations() {
-    const p = await this.load();
-    const projectIntegrations = <IntegrationName[]>Object.keys(p.integrations); // TODO
-
-    const integrationNames = projectIntegrations.filter(n => {
-      const i = p.integrations[n];
-      return i && i.enabled !== false;
-    });
-
-    this.integrations = await Promise.all(
-      integrationNames.map(async name => BaseIntegration.createFromName({
-        config: this.config,
-        project: this,
-        shell: this.shell,
-        tasks: this.tasks,
-      }, name))
-    );
   }
 
   abstract detected(): Promise<boolean>;
@@ -212,6 +190,27 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       && typeof j.hooks === 'object';
   }
 
+  async createIntegration(name: IntegrationName): Promise<IIntegration> {
+    return BaseIntegration.createFromName({
+      config: this.config,
+      project: this,
+      shell: this.shell,
+      tasks: this.tasks,
+    }, name);
+  }
+
+  protected async getIntegrations(): Promise<IIntegration[]> {
+    const p = await this.load();
+    const projectIntegrations = <IntegrationName[]>Object.keys(p.integrations); // TODO
+
+    const integrationNames = projectIntegrations.filter(n => {
+      const c = p.integrations[n];
+      return c && c.enabled !== false;
+    });
+
+    return Promise.all(integrationNames.map(async name => this.createIntegration(name)));
+  }
+
   async getDocsUrl(): Promise<string> {
     return 'https://ionicframework.com/docs';
   }
@@ -221,10 +220,13 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   }
 
   async getInfo(): Promise<InfoItem[]> {
-    return lodash.flatten(await Promise.all(this.integrations.map(async i => i.getInfo())));
+    const integrations = await this.getIntegrations();
+    const integrationInfo = lodash.flatten(await Promise.all(integrations.map(async i => i.getInfo())));
+
+    return integrationInfo;
   }
 
-  async personalize(details: ProjectPersonalizationDetails) {
+  async personalize(details: ProjectPersonalizationDetails): Promise<void> {
     const { name, projectId, description, version } = details;
 
     const project = await this.load();
@@ -239,7 +241,9 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
 
     await fsWriteJsonFile(this.packageJsonPath, pkg, { encoding: 'utf8' });
 
-    await Promise.all(this.integrations.map(async i => i.personalize(details)));
+    const integrations = await this.getIntegrations();
+
+    await Promise.all(integrations.map(async i => i.personalize(details)));
   }
 
   async getAilmentRegistry(deps: doctorLibType.AutomaticallyTreatableAilmentDeps): Promise<IAilmentRegistry> {
@@ -271,7 +275,6 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
  */
 export class OutsideProject extends BaseConfig<never> implements IProject {
   type = undefined;
-  integrations = [];
 
   is(j: any): j is never {
     return false;
@@ -296,12 +299,12 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
     return [];
   }
 
+  async createIntegration(): Promise<never> { throw this._createError(); }
   async getSourceDir(): Promise<never> { throw this._createError(); }
   async requireProId(): Promise<never> { throw this._createError(); }
   async requirePackageJson(): Promise<never> { throw this._createError(); }
   async provideDefaults(): Promise<never> { throw this._createError(); }
   async personalize(): Promise<never> { throw this._createError(); }
-  async refreshIntegrations(): Promise<never> { throw this._createError(); }
   async getAilmentRegistry(): Promise<never> { throw this._createError(); }
 }
 

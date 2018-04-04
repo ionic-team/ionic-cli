@@ -7,19 +7,7 @@ import * as lodash from 'lodash';
 
 import { copyDirectory, fsMkdirp, fsStat, pathExists, readDir, removeDirectory } from '@ionic/cli-framework/utils/fs';
 
-import {
-  IConfig,
-  IIntegration,
-  IIntegrationAddOptions,
-  IProject,
-  IShell,
-  ITaskChain,
-  InfoItem,
-  IntegrationName,
-  ProjectIntegration,
-  ProjectPersonalizationDetails,
-} from '../../definitions';
-
+import { IConfig, IIntegration, IIntegrationAddOptions, IProject, IShell, ITaskChain, InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../definitions';
 import { IntegrationNotFoundException } from '../errors';
 
 import * as cordovaLibType from './cordova';
@@ -45,8 +33,9 @@ export abstract class BaseIntegration implements IIntegration {
   protected readonly shell: IShell;
   protected readonly tasks: ITaskChain;
 
-  abstract name: IntegrationName;
-  abstract archiveUrl?: string;
+  abstract readonly name: IntegrationName;
+  abstract readonly summary: string;
+  abstract readonly archiveUrl?: string;
 
   constructor({ config, project, shell, tasks }: IntegrationDeps) {
     this.config = config;
@@ -65,38 +54,20 @@ export abstract class BaseIntegration implements IIntegration {
     throw new IntegrationNotFoundException(`Bad integration name: ${chalk.bold(name)}`); // TODO?
   }
 
-  abstract getInfo(): Promise<InfoItem[]>;
-
-  async getConfig(): Promise<ProjectIntegration | undefined> {
-    const p = await this.project.load();
-    return p.integrations[this.name];
+  async getInfo(): Promise<InfoItem[]> {
+    return [];
   }
 
   async enable(): Promise<void> {
-    const project = await this.project.load();
-    const integrationConfig = (await this.getConfig()) || {};
-
-    if (integrationConfig.enabled === false) {
-      integrationConfig.enabled = true;
-    }
-
-    project.integrations[this.name] = integrationConfig;
-
-    await this.project.refreshIntegrations();
+    // optionally overwritten by subclasses
   }
 
   async disable(): Promise<void> {
-    const project = await this.project.load();
-    const integrationConfig = (await this.getConfig()) || {};
-
-    integrationConfig.enabled = false;
-    project.integrations[this.name] = integrationConfig;
-
-    await this.project.refreshIntegrations();
+    // optionally overwritten by subclasses
   }
 
   async personalize(details: ProjectPersonalizationDetails) {
-    // overwritten by subclasses
+    // optionally overwritten by subclasses
   }
 
   async add(opts?: IIntegrationAddOptions): Promise<void> {
