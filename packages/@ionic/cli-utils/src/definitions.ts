@@ -147,7 +147,7 @@ export interface ProjectFile {
   pro_id?: string;
 
   readonly integrations: ProjectIntegrations;
-  readonly hooks: Record<HookName, string | string[] | undefined>;
+  readonly hooks?: Record<HookName, string | string[] | undefined>;
 
   ssl?: {
     key?: string;

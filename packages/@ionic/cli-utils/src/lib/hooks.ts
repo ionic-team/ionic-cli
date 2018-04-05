@@ -57,7 +57,7 @@ export abstract class Hook {
       await this.shell.run(pkgManager, pkgArgs, {});
     }
 
-    const hooks = conform(project.hooks[this.name]);
+    const hooks = project.hooks ? conform(project.hooks[this.name]) : [];
 
     for (const h of hooks) {
       const p = path.resolve(this.project.directory, h);

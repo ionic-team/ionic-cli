@@ -165,10 +165,6 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       results.integrations = {};
     }
 
-    if (!results.hooks) {
-      results.hooks = {};
-    }
-
     if (!results.type) {
       results.type = this.type;
     }
@@ -186,8 +182,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   is(j: any): j is ProjectFile {
     return j
       && typeof j.name === 'string'
-      && typeof j.integrations === 'object'
-      && typeof j.hooks === 'object';
+      && typeof j.integrations === 'object';
   }
 
   async getDocsUrl(): Promise<string> {
