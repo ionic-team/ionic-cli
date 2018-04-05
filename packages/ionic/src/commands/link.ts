@@ -40,7 +40,7 @@ Ultimately, this command sets the ${chalk.bold('pro_id')} property in ${chalk.bo
 If you are having issues linking, please get in touch with our Support${chalk.cyan('[2]')}.
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/pro/basics/git')}
-${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support')}
+${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')}
       `,
       exampleCommands: ['', 'a1b2c3d4'],
       inputs: [
