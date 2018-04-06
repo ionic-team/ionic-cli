@@ -222,7 +222,6 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       _: [],
       host: options.address,
       port: String(options.port),
-      progress: 'false',
       target: options.target,
       environment: options.environment,
       ssl: options.ssl ? 'true' : undefined,
