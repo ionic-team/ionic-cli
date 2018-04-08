@@ -34,8 +34,17 @@ export class BuildCommand extends Command implements CommandPreRun {
       }
     }
 
-    // TODO: only do this for apps w/ cordova integration
-    description += `\n\n${`For Ionic/Cordova apps, the Ionic CLI will run ${chalk.green('cordova prepare')}, which copies the built web assets into the Cordova platforms that you've installed. For full details, see ${chalk.green('ionic cordova prepare --help')}.`}`;
+    options.push(...COMMON_BUILD_COMMAND_OPTIONS);
+
+    const project = await this.env.project.load();
+
+    if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
+      description += (
+        `\n\n` +
+        `The Ionic CLI will run ${chalk.green('cordova prepare')} after builds if Cordova is the chosen engine (${chalk.green('--engine=cordova')}). ` +
+        `This will copy the built web assets into the Cordova platforms that you've installed. For full details, see ${chalk.green('ionic cordova prepare --help')}.`
+      );
+    }
 
     return {
       name: 'build',
@@ -66,7 +75,7 @@ export class BuildCommand extends Command implements CommandPreRun {
     const { build } = await import('@ionic/cli-utils/lib/build');
     await build(this.env, inputs, options);
 
-    if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
+    if (options['engine'] === 'cordova' && project.integrations.cordova && project.integrations.cordova.enabled !== false) {
       const cordovaPrepareArgs = ['cordova', 'prepare', '--no-build'];
 
       if (platform) {

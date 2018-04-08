@@ -70,6 +70,8 @@ down the main CLI package. All functionality is still supported, but the
   build scripts rely on the setting.
 * The `ionic:watch:before` npm script hook has been renamed to
   `ionic:serve:before`, but behaves the same.
+* `ionic build` will now only run `cordova prepare` if `--engine=cordova` is
+  specified.
 
 #### :rocket: Enhancements
 
