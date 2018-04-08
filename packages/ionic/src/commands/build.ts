@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { BuildRunner } from '@ionic/cli-utils/lib/build';
+import { BuildRunner, COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
 import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
 

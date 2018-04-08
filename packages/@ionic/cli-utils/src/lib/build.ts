@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { BaseError } from '@ionic/cli-framework/lib/errors';
 
-import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, IConfig, IProject, IShell, IonicEnvironment, ProjectType } from '../definitions';
+import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, IProject, IShell, IonicEnvironment, ProjectType } from '../definitions';
 import { PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Runner } from './runner';
@@ -13,6 +13,18 @@ import * as ionicAngularBuildLibType from './project/ionic-angular/build';
 import * as angularBuildLibType from './project/angular/build';
 
 export const BUILD_SCRIPT = 'ionic:build';
+
+export const COMMON_BUILD_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+  {
+    name: 'engine',
+    summary: `Target engine (e.g. ${['browser', 'cordova'].map(e => chalk.green(e)).join(', ')})`,
+    default: 'browser',
+  },
+  {
+    name: 'platform',
+    summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => chalk.green(e)).join(', ')})`,
+  },
+];
 
 export interface BuildRunnerDeps {
   readonly config: IConfig;
