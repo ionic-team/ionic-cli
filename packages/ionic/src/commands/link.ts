@@ -77,7 +77,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
       throw new FatalException(`Sorry--cannot use both ${chalk.green('pro-id')} and ${chalk.green('--create')}. You must either link an existing app or create a new one.`);
     }
 
-    const proAppId = <string>options['pro-id'] || '';
+    const proAppId = options['pro-id'] ? String(options['pro-id']) : undefined;
 
     if (proAppId) {
       inputs[0] = proAppId;
@@ -148,13 +148,41 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
         create = true;
         proId = undefined;
       } else if (result === CHOICE_LINK_EXISTING_APP) {
-        const choice = await this.chooseApp();
+        this.env.tasks.next(`Looking up your apps`);
+        const apps: App[] = [];
 
-        if (choice === CHOICE_NEVERMIND) {
-          this.env.log.info('Not linking app.');
+        const appClient = await this.getAppClient();
+        const paginator = appClient.paginate();
+
+        for (const r of paginator) {
+          const res = await r;
+          apps.push(...res.data);
+        }
+
+        this.env.tasks.end();
+
+        if (apps.length === 0) {
+          const confirm = await this.env.prompt({
+            type: 'confirm',
+            name: 'confirm',
+            message: `No apps found. Would you like to create a new app on Ionic Pro?`,
+          });
+
+          if (!confirm) {
+            throw new FatalException(`Cannot link without an app selected.`);
+          }
+
+          create = true;
           proId = undefined;
         } else {
-          proId = choice;
+          const choice = await this.chooseApp(apps);
+
+          if (choice === CHOICE_NEVERMIND) {
+            this.env.log.info('Not linking app.');
+            proId = undefined;
+          } else {
+            proId = choice;
+          }
         }
       } else if (result === CHOICE_RELINK) {
         proId = p.pro_id;
@@ -422,21 +450,8 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     return `${chalk.dim(`${org} /`)} ${name}`;
   }
 
-  async chooseApp(): Promise<string> {
+  async chooseApp(apps: App[]): Promise<string> {
     const { formatName } = await import('@ionic/cli-utils/lib/app');
-
-    this.env.tasks.next(`Looking up your apps`);
-    const apps: App[] = [];
-
-    const appClient = await this.getAppClient();
-    const paginator = appClient.paginate();
-
-    for (const r of paginator) {
-      const res = await r;
-      apps.push(...res.data);
-    }
-
-    this.env.tasks.end();
 
     const neverMindChoice = {
       name: 'Nevermind',
@@ -559,7 +574,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     }));
 
     if (choices.length === 0) {
-      this.env.log.warn('No branches found for the repository...linking to master branch.');
+      this.env.log.warn(`No branches found for the repository. Linking to ${chalk.green('master')} branch.`);
       return ['master'];
     }
 
