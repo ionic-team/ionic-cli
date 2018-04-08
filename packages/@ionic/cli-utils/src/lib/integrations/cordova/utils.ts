@@ -1,14 +1,13 @@
 import * as path from 'path';
 
-import * as parse5 from 'parse5';
 import { OptionFilters, filterCommandLineOptions, filterCommandLineOptionsByGroup, unparseArgs } from '@ionic/cli-framework';
 import { fsReadFile, fsUnlink, fsWriteFile, pathExists } from '@ionic/cli-framework/utils/fs';
+
+import * as parse5Type from 'parse5';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
 import { findElementByAttribute, findElementByTag, findElementsByTag } from '../../utils/html';
-
-const ta = parse5.treeAdapters.default;
 
 /**
  * Filter and gather arguments from command line to be passed to Cordova
@@ -62,6 +61,8 @@ export function generateBuildOptions(metadata: CommandMetadata, inputs: CommandL
 }
 
 export async function addCordovaEngine(dir: string): Promise<void> {
+  const parse5 = await import('parse5');
+
   const indexPath = path.resolve(dir, 'index.html');
   const origIndexPath = path.resolve(dir, 'index.html.orig');
 
@@ -70,9 +71,9 @@ export async function addCordovaEngine(dir: string): Promise<void> {
   }
 
   const indexContents = await fsReadFile(indexPath, { encoding: 'utf8' });
-  const index = parse5.parse(indexContents) as parse5.AST.Default.Document;
+  const index = parse5.parse(indexContents) as parse5Type.AST.Default.Document;
 
-  insertCordovaScript(index);
+  await insertCordovaScript(index);
 
   const serialized = parse5.serialize(index);
 
@@ -90,8 +91,11 @@ export async function removeCordovaEngine(dir: string): Promise<void> {
   await fsUnlink(origIndexPath);
 }
 
-function insertCordovaScript(doc: parse5.AST.Default.Document): void {
-  const rootNode = findElementByTag(doc.childNodes as parse5.AST.Default.Element[], 'html');
+async function insertCordovaScript(doc: parse5Type.AST.Default.Document): Promise<void> {
+  const parse5 = await import('parse5');
+
+  const ta = parse5.treeAdapters.default;
+  const rootNode = findElementByTag(doc.childNodes as parse5Type.AST.Default.Element[], 'html');
 
   if (!rootNode) {
     throw new Error('No root node in HTML file');
@@ -99,15 +103,15 @@ function insertCordovaScript(doc: parse5.AST.Default.Document): void {
 
   const namespaceURI = rootNode.namespaceURI;
 
-  const headNode = findElementByTag(rootNode.childNodes as parse5.AST.Default.Element[], 'head');
-  const bodyNode = findElementByTag(rootNode.childNodes as parse5.AST.Default.Element[], 'body');
+  const headNode = findElementByTag(rootNode.childNodes as parse5Type.AST.Default.Element[], 'head');
+  const bodyNode = findElementByTag(rootNode.childNodes as parse5Type.AST.Default.Element[], 'body');
 
   if (!headNode || !bodyNode) {
     throw new Error('No head or body node in HTML file');
   }
 
   const cdvattr = { name: 'src', value: 'cordova.js' };
-  const scriptNodes = findElementsByTag([...headNode.childNodes, ...bodyNode.childNodes] as parse5.AST.Default.Element[], 'script');
+  const scriptNodes = findElementsByTag([...headNode.childNodes, ...bodyNode.childNodes] as parse5Type.AST.Default.Element[], 'script');
   const scriptNode = findElementByAttribute(scriptNodes, cdvattr);
 
   if (!scriptNode) {
