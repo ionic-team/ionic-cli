@@ -55,12 +55,22 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
   formatBeforeCommandSummary?(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<string>;
 
   /**
-   * Insert text that appears before a namespace's summary.
+   * Insert text before summaries of listed subnamespaces.
    *
    * @param meta The metadata of the namespace.
    * @param commands An array of the metadata of the namespace's commands.
    */
   formatBeforeNamespaceSummary?(meta: NamespaceMetadata, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string>;
+
+  /**
+   * Insert text before the namespace's summary.
+   */
+  formatBeforeSummary?(): Promise<string>;
+
+  /**
+   * Insert text after the namespace's summary.
+   */
+  formatAfterSummary?(): Promise<string>;
 
   async getNamespaceMetadata(): Promise<NamespaceMetadata> {
     if (!this._metadata) {
@@ -94,14 +104,15 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
   async formatSummary(): Promise<string> {
     const fullName = await this.getNamespaceFullName();
     const metadata = await this.getNamespaceMetadata();
-    const subtitle = await this.formatSubtitle();
-    const summary = (subtitle ? subtitle + ' ' : '') + wordWrap(metadata.summary, { indentation: fullName.length + 5 });
+    const summary = (
+      (this.formatBeforeSummary ? await this.formatBeforeSummary() : '') +
+      metadata.summary +
+      (this.formatAfterSummary ? await this.formatAfterSummary() : '')
+    );
 
-    return summary ? ` - ${summary}` : '';
-  }
+    const wrappedSummary = wordWrap(summary, { indentation: fullName.length + 5 });
 
-  async formatSubtitle(): Promise<string> {
-    return '';
+    return wrappedSummary ? ` - ${wrappedSummary}` : '';
   }
 
   async formatDescription(): Promise<string> {
@@ -278,6 +289,23 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
    */
   filterOptionCallback?(option: O): Promise<boolean>;
 
+  /**
+   * Insert text that appears before an option's summary.
+   *
+   * @param opt The metadata of the option.
+   */
+  formatBeforeOptionSummary?(opt: O): Promise<string>;
+
+  /**
+   * Insert text before the command's summary.
+   */
+  formatBeforeSummary?(): Promise<string>;
+
+  /**
+   * Insert text after the command's summary.
+   */
+  formatAfterSummary?(): Promise<string>;
+
   async getCommandMetadata(): Promise<M> {
     if (!this._metadata) {
       this._metadata = await this.command.getMetadata({ location: this.location });
@@ -310,14 +338,16 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
   async formatSummary(): Promise<string> {
     const fullName = await this.getCommandFullName();
     const metadata = await this.getCommandMetadata();
-    const subtitle = await this.formatSubtitle();
-    const summary = (subtitle ? subtitle + ' ' : '') + wordWrap(metadata.summary, { indentation: fullName.length + 5 });
 
-    return summary ? ` - ${summary}` : '';
-  }
+    const summary = (
+      (this.formatBeforeSummary ? await this.formatBeforeSummary() : '') +
+      metadata.summary +
+      (this.formatAfterSummary ? await this.formatAfterSummary() : '')
+    );
 
-  async formatSubtitle(): Promise<string> {
-    return '';
+    const wrappedSummary = wordWrap(summary, { indentation: fullName.length + 5 });
+
+    return wrappedSummary ? ` - ${wrappedSummary}` : '';
   }
 
   async formatDescription(): Promise<string> {
@@ -390,7 +420,7 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
     const optionListLength = stringWidth(optionList);
     const fullLength = optionListLength > this.dotswidth ? optionListLength + 1 : this.dotswidth;
     const fullDescription = (
-      (await this.formatBeforeOptionSummary(opt)) +
+      (this.formatBeforeOptionSummary ? await this.formatBeforeOptionSummary(opt) : '') +
       opt.summary +
       (await this.formatAfterOptionSummary(opt))
     );
@@ -398,10 +428,6 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
     const wrappedDescription = wordWrap(fullDescription, { indentation: this.dotswidth + 6 });
 
     return `${optionList} ${weak('.').repeat(fullLength - optionListLength)} ${wrappedDescription}`;
-  }
-
-  async formatBeforeOptionSummary(opt: O): Promise<string> {
-    return '';
   }
 
   async formatAfterOptionSummary(opt: O): Promise<string> {
