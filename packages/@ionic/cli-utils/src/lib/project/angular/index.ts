@@ -1,16 +1,10 @@
-import * as path from 'path';
-
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
-
-import { IAilmentRegistry, InfoItem, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
+import { IAilmentRegistry, InfoItem, ProjectType } from '../../../definitions';
 
 import { BaseProject } from '../';
-import { ANGULAR_CONFIG_FILE, readAngularConfigFile } from './utils';
 import * as doctorLibType from '../../doctor';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular');
@@ -57,22 +51,6 @@ export class Project extends BaseProject {
     }
 
     return false;
-  }
-
-  async personalize(details: ProjectPersonalizationDetails) {
-    await super.personalize(details);
-
-    const { name } = details;
-    const angularJsonPath = path.resolve(this.directory, ANGULAR_CONFIG_FILE);
-
-    try {
-      const angularJson = await readAngularConfigFile(angularJsonPath);
-      angularJson.project.name = name;
-
-      await fsWriteJsonFile(angularJsonPath, angularJson, { encoding: 'utf8' });
-    } catch (e) {
-      this.log.error(`Error with ${chalk.bold(prettyPath(angularJsonPath))} file: ${e}`);
-    }
   }
 
   async getAilmentRegistry(deps: doctorLibType.AutomaticallyTreatableAilmentDeps): Promise<IAilmentRegistry> {

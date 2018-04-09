@@ -62,9 +62,7 @@ export function isCordovaPackageJson(o: object): o is CordovaPackageJson {
 
 export function isAngularConfig(o: object): o is AngularConfig {
   const obj = <AngularConfig>o;
-  return obj &&
-    typeof obj.project === 'object' &&
-    typeof obj.project.name === 'string';
+  return obj && typeof obj.projects === 'object';
 }
 
 export function isExitCodeException(e: Error): e is ExitCodeException {

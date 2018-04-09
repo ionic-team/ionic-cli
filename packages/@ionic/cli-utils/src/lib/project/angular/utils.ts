@@ -1,15 +1,17 @@
 import * as path from 'path';
 
+import chalk from 'chalk';
 import * as Debug from 'debug';
 import { fsReadJsonFile, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 
 import { AngularConfig, IProject } from '../../../definitions';
 import { isAngularConfig } from '../../../guards';
+import { FatalException } from '../../errors';
 import { addCordovaEngine, removeCordovaEngine } from '../../integrations/cordova/utils';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:utils');
 
-export const ANGULAR_CONFIG_FILE = '.angular-cli.json';
+export const ANGULAR_CONFIG_FILE = 'angular.json';
 export const ERROR_INVALID_ANGULAR_CLI_JSON = 'INVALID_ANGULAR_CLI_JSON';
 
 export async function readAngularConfigFile(p: string): Promise<AngularConfig> {
@@ -28,9 +30,16 @@ export async function addCordovaEngineForAngular(project: IProject, platform: st
   const platformWWW = path.resolve(project.directory, 'platforms', platform, 'platform_www');
   const angularJsonPath = path.resolve(project.directory, ANGULAR_CONFIG_FILE);
   const angularJson = await readAngularConfigFile(angularJsonPath);
-  const app = angularJson.apps[0];
+  const app = angularJson.projects.app;
+
+  if (!app) {
+    throw new FatalException(`${chalk.bold('projects.app')} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot add assets.`);
+  }
+
+  const buildOptions = app.architect.build.options;
+
   const cordovaAssets = { glob: '**/*', input: platformWWW, output: './' };
-  app.assets.push(cordovaAssets);
+  buildOptions.assets.push(cordovaAssets);
   debug('Adding Cordova assets to %s: %o', ANGULAR_CONFIG_FILE, cordovaAssets);
   await fsWriteFile(angularJsonPath, JSON.stringify(angularJson, undefined, 2) + '\n', { encoding: 'utf8' });
   debug('Inserting Cordova HTML within %s', srcDir);
@@ -41,8 +50,15 @@ export async function removeCordovaEngineForAngular(project: IProject, platform:
   debug('Removing Cordova engine for platform: %s', platform);
   const angularJsonPath = path.resolve(project.directory, ANGULAR_CONFIG_FILE);
   const angularJson = await readAngularConfigFile(angularJsonPath);
-  const app = angularJson.apps[0];
-  app.assets = app.assets.filter((asset: any) => !asset.input || !asset.input.endsWith('platform_www'));
+  const app = angularJson.projects.app;
+
+  if (!app) {
+    throw new FatalException(`${chalk.bold('projects.app')} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot remove assets.`);
+  }
+
+  const buildOptions = app.architect.build.options;
+
+  buildOptions.assets = buildOptions.assets.filter((asset: any) => !asset.input || !asset.input.endsWith('platform_www'));
   await fsWriteFile(angularJsonPath, JSON.stringify(angularJson, undefined, 2) + '\n', { encoding: 'utf8' });
   await removeCordovaEngine(await project.getSourceDir());
 }

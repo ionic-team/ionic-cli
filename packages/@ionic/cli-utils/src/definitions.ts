@@ -665,12 +665,12 @@ export interface IAilmentRegistry {
 }
 
 export interface AngularConfig {
-  project: {
-    name: string;
+  projects: {
+    [key: string]: {
+      root: string;
+      architect: any;
+    } | undefined;
   };
-  apps: {
-    assets: any[];
-  }[];
 }
 
 export interface PromptQuestion extends inquirerType.Question {
