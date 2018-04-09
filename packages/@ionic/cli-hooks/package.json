@@ -1,7 +1,7 @@
 {
   "name": "@ionic/cli-hooks",
   "private": true,
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.4",
   "description": "Useful hook scripts for Ionic apps",
   "homepage": "https://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (https://ionic.io)",
@@ -18,7 +18,7 @@
     "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "@ionic/cli-utils": "2.0.0-rc.3",
+    "@ionic/cli-utils": "2.0.0-rc.4",
     "@types/node": "^6.0.101",
     "jest": "^22.4.2",
     "jest-cli": "^22.4.2",
