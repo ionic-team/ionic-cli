@@ -229,7 +229,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           this.env.log.nl();
           this.env.log.msg(
             `${chalk.bold(`Every great app needs a name! ${emoji('😍', '')}`)}\n\n` +
-            `You can change this at any time. To bypass this prompt next time, supply ${chalk.green('name')}, the first argument to ${chalk.green('ionic start')}.\n\n`
+            `Please enter the full name of your app. You can change this at any time. To bypass this prompt next time, supply ${chalk.green('name')}, the first argument to ${chalk.green('ionic start')}.\n\n`
           );
         }
 
@@ -244,11 +244,26 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       }
     }
 
-    const projectId = options['project-id'] ? String(options['project-id']) : slugify(inputs[0]);
+    let projectId = options['project-id'] ? String(options['project-id']) : slugify(inputs[0]);
     await this.validateProjectId(projectId);
 
     if (!options['project-id']) {
-      this.env.log.info(`Using ${chalk.bold(projectId)} for ${chalk.green('--project-id')}.`);
+      if (this.env.flags.interactive) {
+        this.env.log.nl();
+        this.env.log.msg(
+          `${chalk.bold(`Give your app a Project ID`)}\n\n` +
+          `The Project ID will be used as a machine-friendly version of your app name. It is used for the directory name of your new project, package name, etc. To bypass this prompt next time, supply the ${chalk.green('--project-id')} option.\n\n` +
+          `Press [ENTER] to use the generated default.\n\n`
+        );
+      }
+
+      projectId = await this.env.prompt({
+        type: 'input',
+        name: 'project-id',
+        message: 'Project ID:',
+        default: projectId,
+        validate: v => validators.slug(v),
+      });
     }
 
     const projectDir = path.resolve(projectId);
@@ -533,12 +548,16 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       throw new FatalException(`Please name your Ionic project something meaningful other than ${chalk.green(projectId)}`);
     }
 
-    if (!isValidPackageName(projectId) || projectId !== path.basename(projectId)) {
+    if (!this.isValidProjectId(projectId)) {
       throw new FatalException(
         `${chalk.green(projectId)} is not a valid package or directory name.\n` +
         `Please choose a different ${chalk.green('--project-id')}. Alphanumeric characters are always safe.`
       );
     }
+  }
+
+  isValidProjectId(projectId: string): boolean {
+    return isValidPackageName(projectId) && projectId === path.basename(projectId);
   }
 
   async loadManifest(manifestPath: string): Promise<StarterManifest | undefined> {

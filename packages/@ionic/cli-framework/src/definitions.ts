@@ -155,6 +155,7 @@ export interface Validators {
   email: Validator;
   numeric: Validator;
   url: Validator;
+  slug: Validator;
 }
 
 export interface ValidationError {
