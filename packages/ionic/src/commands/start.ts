@@ -247,7 +247,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     let projectId = options['project-id'] ? String(options['project-id']) : slugify(inputs[0]);
     await this.validateProjectId(projectId);
 
-    if (!options['project-id']) {
+    if (!options['project-id'] && projectId !== inputs[0]) {
       if (this.env.flags.interactive) {
         this.env.log.nl();
         this.env.log.msg(
