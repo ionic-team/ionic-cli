@@ -4,7 +4,6 @@ import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOption
 import { Command } from '@ionic/cli-utils/lib/command';
 import { BuildRunner, COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
 import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
-import { runCommand } from '@ionic/cli-utils/lib/executor';
 
 export class BuildCommand extends Command implements CommandPreRun {
   protected runner?: BuildRunner<BuildOptions<any>>;
@@ -36,16 +35,6 @@ export class BuildCommand extends Command implements CommandPreRun {
 
     options.push(...COMMON_BUILD_COMMAND_OPTIONS);
 
-    const project = await this.env.project.load();
-
-    if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
-      description += (
-        `\n\n` +
-        `The Ionic CLI will run ${chalk.green('cordova prepare')} after builds if Cordova is the chosen engine (${chalk.green('--engine=cordova')}). ` +
-        `This will copy the built web assets into the Cordova platforms that you've installed. For full details, see ${chalk.green('ionic cordova prepare --help')}.`
-      );
-    }
-
     return {
       name: 'build',
       type: 'project',
@@ -68,21 +57,7 @@ export class BuildCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
-    const [ platform ] = inputs;
-
-    const project = await this.env.project.load();
-
     const { build } = await import('@ionic/cli-utils/lib/build');
     await build(this.env, inputs, options);
-
-    if (options['engine'] === 'cordova' && project.integrations.cordova && project.integrations.cordova.enabled !== false) {
-      const cordovaPrepareArgs = ['cordova', 'prepare', '--no-build'];
-
-      if (platform) {
-        cordovaPrepareArgs.push(platform);
-      }
-
-      await runCommand(runinfo, cordovaPrepareArgs);
-    }
   }
 }
