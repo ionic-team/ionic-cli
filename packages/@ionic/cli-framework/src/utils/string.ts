@@ -60,5 +60,11 @@ export interface SlugifyOptions {
  * characters are converted, then dasherized.
  */
 export function slugify(input: string, { separator = '-' }: SlugifyOptions = {}): string {
+  const validSlugRegex = /^[a-z0-9-]+$/;
+
+  if (input.match(validSlugRegex)) {
+    return input;
+  }
+
   return lodash.words(lodash.deburr(input.trim())).map(w => w.toLowerCase().replace(/[^A-z0-9]/g, '')).join(separator);
 }
