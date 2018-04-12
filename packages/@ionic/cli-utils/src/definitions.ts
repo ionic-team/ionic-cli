@@ -820,7 +820,6 @@ export interface StarterTemplate {
   type: ProjectType;
   id: string;
   description?: string;
-  strip?: boolean;
 }
 
 export interface ResolvedStarterTemplate extends StarterTemplate {

@@ -55,7 +55,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     try {
       projectFile = await fsReadJsonFile(projectFilePath);
     } catch (e) {
-      // ignore
+      debug('Attempted to load project config %s but got error: %O', projectFilePath, e);
     }
 
     if (projectFile && projectFile.type && PROJECT_TYPES.includes(projectFile.type)) {

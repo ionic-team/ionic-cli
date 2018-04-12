@@ -79,7 +79,7 @@ export abstract class BaseIntegration implements IIntegration {
     const conflictHandler = opts && opts.conflictHandler ? opts.conflictHandler : async () => false;
 
     const { createRequest, download } = await import('../utils/http');
-    const { createTarExtraction } = await import('../utils/archive');
+    const { tar } = await import('../utils/archive');
 
     const task = this.tasks.next(`Downloading integration ${chalk.green(this.name)}`);
     const tmpdir = path.resolve(os.tmpdir(), `ionic-integration-${this.name}`);
@@ -92,7 +92,7 @@ export abstract class BaseIntegration implements IIntegration {
 
     await fsMkdirp(tmpdir, 0o777);
 
-    const ws = await createTarExtraction({ cwd: tmpdir });
+    const ws = tar.extract({ cwd: tmpdir });
     const c = await this.config.load();
     const { req } = await createRequest('GET', this.archiveUrl, c);
     await download(req, ws, { progress: (loaded, total) => task.progress(loaded, total) });

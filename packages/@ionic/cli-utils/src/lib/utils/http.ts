@@ -56,6 +56,12 @@ export async function createRequest(method: HttpMethod, url: string, { proxy, ss
   return { req };
 }
 
+/**
+ * Initiate a request, downloading the contents to a writable stream.
+ *
+ * @param req The request to download to the writable stream.
+ * @param ws Must be a dedicated writable stream that calls the 'close' event.
+ */
 export async function download(req: superagentType.SuperAgentRequest, ws: NodeJS.WritableStream, { progress }: { progress?: (loaded: number, total: number) => void; }): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     req
@@ -82,8 +88,9 @@ export async function download(req: superagentType.SuperAgentRequest, ws: NodeJS
         } else {
           reject(err);
         }
-      })
-      .on('end', resolve);
+      });
+
+    ws.on('close', resolve);
 
     req.pipe(ws);
   });
