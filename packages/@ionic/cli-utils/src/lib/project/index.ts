@@ -281,7 +281,7 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
 
   private _createError() {
     return new FatalException(
-      `Attempted to load an Ionic project outside a detected project directory.` +
+      `Attempted to load an Ionic project outside a detected project directory.\n` +
       `Would you mind reporting this issue? ${chalk.bold('https://github.com/ionic-team/ionic-cli/issues/')}`
     );
   }
