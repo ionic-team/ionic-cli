@@ -47,16 +47,6 @@ describe('@ionic/cli-framework', () => {
         expect(response).toEqual('foo');
       });
 
-      it('should not change slugified input of lowercase alphanumeric characters', () => {
-        const response = slugify('foo5');
-        expect(response).toEqual('foo5');
-      });
-
-      it('should not change slugified input of lowercase alphanumeric characters with hyphens', () => {
-        const response = slugify('foo5-abc123');
-        expect(response).toEqual('foo5-abc123');
-      });
-
       it('should trim whitespace', () => {
         const response = slugify(' foo ');
         expect(response).toEqual('foo');

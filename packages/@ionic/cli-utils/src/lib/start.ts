@@ -13,10 +13,6 @@ import { createRequest } from './utils/http';
 
 export const STARTER_BASE_URL = 'https://d2ql0qc7j8u4b2.cloudfront.net';
 
-export function isProjectNameValid(name: string): boolean {
-  return name !== '.';
-}
-
 export async function readStarterManifest(p: string): Promise<StarterManifest> {
   try {
     const manifest = await fsReadJsonFile(p);

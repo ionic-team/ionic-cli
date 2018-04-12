@@ -244,26 +244,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       }
     }
 
-    let projectId = options['project-id'] ? String(options['project-id']) : slugify(inputs[0]);
-    await this.validateProjectId(projectId);
+    let projectId = options['project-id'] ? String(options['project-id']) : undefined;
 
-    if (!options['project-id'] && projectId !== inputs[0]) {
-      if (this.env.flags.interactive) {
-        this.env.log.nl();
-        this.env.log.msg(
-          `${chalk.bold(`Give your app a Project ID`)}\n\n` +
-          `The Project ID will be used as a machine-friendly version of your app name. It is used for the directory name of your new project, package name, etc. To bypass this prompt next time, supply the ${chalk.green('--project-id')} option.\n\n` +
-          `Press [ENTER] to use the generated default.\n\n`
-        );
-      }
-
-      projectId = await this.env.prompt({
-        type: 'input',
-        name: 'project-id',
-        message: 'Project ID:',
-        default: projectId,
-        validate: v => validators.slug(v),
-      });
+    if (projectId) {
+      await this.validateProjectId(projectId);
+    } else {
+      projectId = options['project-id'] = this.isValidProjectId(inputs[0]) ? inputs[0] : slugify(inputs[0]);
     }
 
     const projectDir = path.resolve(projectId);
@@ -542,12 +528,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   }
 
   async validateProjectId(projectId: string) {
-    const { isProjectNameValid } = await import('@ionic/cli-utils/lib/start');
-
-    if (!isProjectNameValid(projectId)) {
-      throw new FatalException(`Please name your Ionic project something meaningful other than ${chalk.green(projectId)}`);
-    }
-
     if (!this.isValidProjectId(projectId)) {
       throw new FatalException(
         `${chalk.green(projectId)} is not a valid package or directory name.\n` +
@@ -557,7 +537,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   }
 
   isValidProjectId(projectId: string): boolean {
-    return isValidPackageName(projectId) && projectId === path.basename(projectId);
+    return projectId !== '.' && isValidPackageName(projectId) && projectId === path.basename(projectId);
   }
 
   async loadManifest(manifestPath: string): Promise<StarterManifest | undefined> {
