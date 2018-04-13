@@ -308,11 +308,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
   }
 
   private async generateComponent(schematic: Schematic, name: string, options: { [key: string]: string | boolean; }) {
+    let { type } = schematic;
+
     if (schematic.collection !== ANGULAR_SCHEMATICS_PACKAGE) {
-      options.collection = schematic.collection;
+      type = `${schematic.collection}:${type}`;
     }
 
-    const ngArgs = unparseArgs({ _: ['generate', schematic.type, name], ...options }, {});
+    const ngArgs = unparseArgs({ _: ['generate', type, name], ...options }, {});
     const shellOptions = { cwd: this.project.directory };
 
     const p = await this.shell.spawn('ng', ngArgs, shellOptions);

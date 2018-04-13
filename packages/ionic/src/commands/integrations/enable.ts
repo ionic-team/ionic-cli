@@ -76,7 +76,7 @@ export class IntegrationsEnableCommand extends Command {
           },
           onFileCreate: f => {
             if (!quiet) {
-              this.env.log.msg(`  ${chalk.green('create')} ${f}`);
+              this.env.log.msg(`${chalk.green('CREATE')} ${f}`);
             }
           },
         });
