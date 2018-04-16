@@ -99,6 +99,7 @@ jobs:
       - image: circleci/node:8
     <<: *base
   deploy:
+    <<: *defaults
     docker:
       - image: circleci/node:8
     steps:
