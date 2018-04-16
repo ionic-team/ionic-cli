@@ -17,11 +17,13 @@ type Decoration = [number, string];
 const COMMAND_DECORATIONS: Decoration[] = [
   [CommandGroup.Beta, chalk.red.bold('(beta)')],
   [CommandGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
+  [CommandGroup.Experimental, chalk.red.bold('(experimental)')],
 ];
 
 const NAMESPACE_DECORATIONS: Decoration[] = [
   [NamespaceGroup.Beta, chalk.red.bold('(beta)')],
   [NamespaceGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
+  [NamespaceGroup.Experimental, chalk.red.bold('(experimental)')],
 ];
 
 export async function isCommandHidden(cmd: HydratedCommandMetadata): Promise<boolean> {
