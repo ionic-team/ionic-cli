@@ -21,6 +21,7 @@
   "dependencies": {
     "chalk": "^2.3.0",
     "debug": "^3.1.0",
+    "klaw": "^2.1.1",
     "lodash": "^4.17.5",
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",
@@ -34,6 +35,7 @@
   },
   "devDependencies": {
     "@types/debug": "0.0.30",
+    "@types/klaw": "^2.1.1",
     "@types/lodash": "^4.14.104",
     "@types/minimist": "^1.2.0",
     "@types/ncp": "^2.0.1",
