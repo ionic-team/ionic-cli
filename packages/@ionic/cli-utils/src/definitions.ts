@@ -357,10 +357,10 @@ export interface IShellSpawnOptions extends crossSpawnType.SpawnOptions {
 
 export interface IShellOutputOptions extends IShellSpawnOptions {
   fatalOnError?: boolean;
+  showError?: boolean;
 }
 
 export interface IShellRunOptions extends IShellOutputOptions {
-  showError?: boolean;
   fatalOnNotFound?: boolean;
   truncateErrorOutput?: number;
   logOptions?: IShellRunLogOptions;

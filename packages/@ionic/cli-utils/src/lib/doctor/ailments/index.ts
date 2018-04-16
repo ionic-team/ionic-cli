@@ -113,9 +113,13 @@ class GitNotUsed extends Ailment {
     }
 
     const [ revListCount, status ] = await Promise.all([
-      this.shell.run('git', ['rev-list', '--count', 'HEAD'], { showCommand: false }),
-      this.shell.run('git', ['status', '--porcelain'], { showCommand: false }),
+      this.shell.output('git', ['rev-list', '--count', 'HEAD'], { fatalOnError: false, showCommand: false, showError: false }),
+      this.shell.output('git', ['status', '--porcelain'], { fatalOnError: false, showCommand: false, showError: false }),
     ]);
+
+    if (!revListCount || !status) {
+      return true;
+    }
 
     const commitCount = Number(revListCount);
     const changes = Boolean(status);
@@ -452,7 +456,7 @@ class CordovaPlatformsCommitted extends Ailment {
       return false;
     }
 
-    const files = (await this.shell.output('git', ['ls-tree', '--name-only', 'HEAD'], { showCommand: false })).split('\n');
+    const files = (await this.shell.output('git', ['ls-tree', '--name-only', 'HEAD'], { fatalOnError: false, showCommand: false, showError: false })).split('\n');
 
     return files.includes('platforms'); // TODO
   }

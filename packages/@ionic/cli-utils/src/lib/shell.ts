@@ -95,7 +95,7 @@ export class Shell implements IShell {
     }
   }
 
-  async output(command: string, args: string[], { fatalOnError = true, showCommand = false, ...crossSpawnOptions }: IShellOutputOptions): Promise<string> {
+  async output(command: string, args: string[], { fatalOnError = true, showError = true, showCommand = false, ...crossSpawnOptions }: IShellOutputOptions): Promise<string> {
     const fullCmd = prettyCommand(command, args);
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
 
@@ -119,7 +119,9 @@ export class Shell implements IShell {
       if (fatalOnError) {
         throw new FatalException(errorMsg, e.exitCode);
       } else {
-        this.log.error(errorMsg);
+        if (showError) {
+          this.log.error(errorMsg);
+        }
       }
 
       return '';
