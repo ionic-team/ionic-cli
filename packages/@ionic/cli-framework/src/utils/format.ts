@@ -73,6 +73,20 @@ export interface ColumnarOptions {
   headers?: string[];
 }
 
+/**
+ * Basic CLI table generator with support for ANSI colors.
+ *
+ * @param rows 2-dimensional matrix containing cells. An array of columns,
+ *             which are arrays of cells.
+ * @param options.vsep The vertical separator character, default is
+ *                     `chalk.dim('|')`. Supply an empty string to hide
+ *                     the separator altogether.
+ * @param options.hsep The horizontal separator character, default is
+ *                     `chalk.dim('-')`. This is used under the headers,
+ *                     if supplied. Supply an empty string to hide the
+ *                     separator altogether.
+ * @param options.headers An array of header cells.
+ */
 export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk.dim('|'), headers }: ColumnarOptions): string {
   const includeHeaders = headers ? true : false;
 
@@ -103,7 +117,7 @@ export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk
   const paddedColumns = columns.map((col, i) => {
     if (i < columnCount - 1) {
       const spaceCol = generateFillSpaceStringList(col);
-      return col.map((cell, i) => `${cell}${spaceCol[i]}${vsep} `);
+      return col.map((cell, i) => `${cell}${spaceCol[i]}${vsep === '' ? '' : `${vsep} `}`);
     } else {
       return col;
     }
@@ -118,7 +132,7 @@ export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk
     });
   });
 
-  if (includeHeaders) {
+  if (includeHeaders && hsep !== '') {
     singleColumn.splice(1, 0, hsep.repeat(longestRowLength));
   }
 

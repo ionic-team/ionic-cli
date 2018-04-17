@@ -280,6 +280,15 @@ mr   | spongebob | squarepants
         `.trim());
       });
 
+      it('should separate columns and rows with only one space with empty string separators', async () => {
+        const result = columnar([['a', 'b', 'c'], ['1', '2', '3']], { vsep: '', hsep: '', headers: ['x', 'x', 'x'] });
+        expect(stripAnsi(result)).toEqual(`
+x x x
+a b c
+1 2 3
+        `.trim());
+      });
+
     });
 
   });
