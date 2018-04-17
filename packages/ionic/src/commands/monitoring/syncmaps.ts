@@ -90,7 +90,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     const details = columnar([
       ['Pro ID', chalk.bold(proId)],
       ['Version', chalk.bold(appVersion)],
-      ['Bundle ID', chalk.bold(cordovaInfo.id)],
+      ['Package ID', chalk.bold(cordovaInfo.id)],
       ['Snapshot ID', snapshotId ? chalk.bold(snapshotId) : chalk.dim('not set')],
     ], { vsep: ':' });
 

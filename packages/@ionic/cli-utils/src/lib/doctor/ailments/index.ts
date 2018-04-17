@@ -384,8 +384,8 @@ class DefaultCordovaBundleIdUsed extends Ailment {
 
   async getMessage() {
     return (
-      `Bundle ID unchanged in ${chalk.bold('config.xml')}.\n` +
-      `The "bundle identifier" is a unique ID (usually written in reverse DNS notation, such as ${chalk.bold('com.mycompany.MyApp')}) that Cordova uses when compiling the native build of your app. When your app is submitted to the App Store or Play Store, the bundle ID can't be changed. This issue was detected because this app's bundle ID is ${chalk.green('"io.ionic.starter"')}, which is the default bundle ID provided after running ${chalk.green('ionic start')}.`
+      `Package ID unchanged in ${chalk.bold('config.xml')}.\n` +
+      `The Package Identifier (AKA "Bundle ID" for iOS and "Application ID" for Android) is a unique ID (usually written in reverse DNS notation, such as ${chalk.bold('com.mycompany.MyApp')}) that Cordova uses when compiling the native build of your app. When your app is submitted to the App Store or Play Store, the Package ID can't be changed. This issue was detected because this app's Package ID is ${chalk.green('"io.ionic.starter"')}, which is the default Package ID provided after running ${chalk.green('ionic start')}.`
     ).trim();
   }
 
