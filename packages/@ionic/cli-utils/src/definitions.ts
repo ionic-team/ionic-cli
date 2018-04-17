@@ -640,20 +640,20 @@ export interface ServeDetails {
 export interface IAilment {
   id: string;
   getMessage(): Promise<string>;
-  getTreatmentSteps(): Promise<TreatmentStep[]>;
   detected(): Promise<boolean>;
+  getTreatmentSteps(): Promise<PatientTreatmentStep[]>;
 }
 
-export interface IAutomaticallyTreatableAilment extends IAilment {
-  treat(): Promise<boolean>;
-  getTreatmentSteps(): Promise<AutomaticTreatmentStep[]>;
+export interface TreatableAilment extends IAilment {
+  treatable: true;
+  getTreatmentSteps(): Promise<DoctorTreatmentStep[]>;
 }
 
-export interface TreatmentStep {
-  name: string;
+export interface PatientTreatmentStep {
+  message: string;
 }
 
-export interface AutomaticTreatmentStep extends TreatmentStep {
+export interface DoctorTreatmentStep extends PatientTreatmentStep {
   treat(): Promise<void>;
 }
 

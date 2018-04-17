@@ -2,12 +2,12 @@ import chalk from 'chalk';
 import * as semver from 'semver';
 
 import { IAilmentRegistry } from '../../../definitions';
-import { Ailment, AilmentDeps, AutomaticallyTreatableAilmentDeps } from '../../doctor/ailments';
+import { Ailment, AilmentDeps } from '../../doctor/ailments';
 import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 
 import { Project as AngularProject } from './';
 
-export function registerAilments(registry: IAilmentRegistry, deps: AutomaticallyTreatableAngularAilmentDeps) {
+export function registerAilments(registry: IAilmentRegistry, deps: AngularAilmentDeps) {
   // for @ionic/angular
   registry.register(new UpdateAvailable(deps, {
     id: 'ionic-for-angular-update-available',
@@ -69,12 +69,8 @@ export function registerAilments(registry: IAilmentRegistry, deps: Automatically
   }));
 }
 
-interface AngularAilmentDeps extends AilmentDeps {
-  project: AngularProject;
-}
-
-export interface AutomaticallyTreatableAngularAilmentDeps extends AutomaticallyTreatableAilmentDeps {
-  project: AngularProject;
+export interface AngularAilmentDeps extends AilmentDeps {
+  readonly project: AngularProject;
 }
 
 export interface AilmentParams {
@@ -114,16 +110,8 @@ abstract class AngularAilment extends Ailment {
   }
 }
 
-// abstract class AutomaticallyTreatableAngularAilment extends AutomaticallyTreatableAilment {
-//   protected readonly project: AngularProject;
-
-//   constructor(deps: AutomaticallyTreatableAngularAilmentDeps) {
-//     super(deps);
-//   }
-// }
-
 class UpdateAvailable extends AngularAilment {
-  id = this.pkgParams.id;
+  readonly id = this.pkgParams.id;
 
   async getMessage() {
     const [ currentVersion, latestVersion ] = await this.getVersionPair();
@@ -148,15 +136,15 @@ class UpdateAvailable extends AngularAilment {
     const args = await pkgManagerArgs(npmClient, { command: 'install', pkg: this.pkgParams.pkgName + `@${latestVersion ? latestVersion : 'latest'}` });
 
     return [
-      { name: `Visit ${this.pkgParams.treatmentVisitURL.join(' and ')} for each upgrade's instructions` },
-      { name: `If no instructions, run: ${chalk.green(args.join(' '))}` },
-      { name: `Watch for npm warnings about peer dependencies--they may need manual updating` },
+      { message: `Visit ${this.pkgParams.treatmentVisitURL.join(' and ')} for each upgrade's instructions` },
+      { message: `If no instructions, run: ${chalk.green(args.join(' '))}` },
+      { message: `Watch for npm warnings about peer dependencies--they may need manual updating` },
     ];
   }
 }
 
 class MajorUpdateAvailable extends AngularAilment {
-  id = this.pkgParams.id;
+  readonly id = this.pkgParams.id;
   currentVersion?: string;
   latestVersion?: string;
 
@@ -178,7 +166,7 @@ class MajorUpdateAvailable extends AngularAilment {
 
   async getTreatmentSteps() {
     return [
-      { name: `Visit ${this.pkgParams.treatmentVisitURL.join(' and ')} for upgrade instructions` },
+      { message: `Visit ${this.pkgParams.treatmentVisitURL.join(' and ')} for upgrade instructions` },
     ];
   }
 }

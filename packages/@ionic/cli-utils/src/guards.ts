@@ -7,11 +7,11 @@ import {
   AppAssociation,
   CommandPreRun,
   CordovaPackageJson,
+  DoctorTreatmentStep,
   ExitCodeException,
   GithubBranch,
   GithubRepo,
   GithubRepoAssociation,
-  IAutomaticallyTreatableAilment,
   ICommand,
   IntegrationName,
   LogLevel,
@@ -23,6 +23,7 @@ import {
   Snapshot,
   StarterManifest,
   SuperAgentError,
+  TreatableAilment,
   User,
 } from './definitions';
 
@@ -286,8 +287,14 @@ export function isSecurityProfileResponse(r: APIResponse): r is Response<Securit
   return isAPIResponseSuccess(res) && isSecurityProfile(res.data);
 }
 
-export function isAutomaticallyTreatableAilment(ailment: any): ailment is IAutomaticallyTreatableAilment {
-  return ailment && typeof ailment.treat === 'function';
+export function isTreatableAilment(a: object): a is TreatableAilment {
+  const ailment = <TreatableAilment>a;
+  return ailment && ailment.treatable && typeof ailment.getTreatmentSteps === 'function';
+}
+
+export function isDoctorTreatmentStep(s: object): s is DoctorTreatmentStep {
+  const step = <DoctorTreatmentStep>s;
+  return step && typeof step.treat === 'function';
 }
 
 export function isIntegrationName(name: string): name is IntegrationName {

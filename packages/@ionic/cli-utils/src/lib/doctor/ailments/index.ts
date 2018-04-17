@@ -7,17 +7,19 @@ import * as lodash from 'lodash';
 import { fsReadDir, fsReadFile } from '@ionic/cli-framework/utils/fs';
 import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
-import { IAilmentRegistry } from '../../../definitions';
+import { IAilmentRegistry, TreatableAilment } from '../../../definitions';
 import { AppClient } from '../../app';
 import { getIonicRemote, isRepoInitialized } from '../../git';
 import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 import { getPlatforms } from '../../integrations/cordova/project';
 import { loadConfigXml } from '../../integrations/cordova/config';
 
-import { Ailment, AutomaticallyTreatableAilment, AutomaticallyTreatableAilmentDeps } from './base';
-export * from './base';
+import { Ailment, AilmentDeps } from './base';
 
-export function registerAilments(registry: IAilmentRegistry, deps: AutomaticallyTreatableAilmentDeps) {
+export * from './base';
+export * from './utils';
+
+export function registerAilments(registry: IAilmentRegistry, deps: AilmentDeps) {
   registry.register(new NpmInstalledLocally(deps));
   registry.register(new IonicCLIInstalledLocally(deps));
   registry.register(new GitNotUsed(deps));
@@ -31,8 +33,9 @@ export function registerAilments(registry: IAilmentRegistry, deps: Automatically
   registry.register(new CordovaPlatformsCommitted(deps));
 }
 
-class NpmInstalledLocally extends AutomaticallyTreatableAilment {
-  id = 'npm-installed-locally';
+class NpmInstalledLocally extends Ailment implements TreatableAilment {
+  readonly id = 'npm-installed-locally';
+  readonly treatable = true;
 
   async getMessage() {
     return (
@@ -52,7 +55,7 @@ class NpmInstalledLocally extends AutomaticallyTreatableAilment {
 
     return [
       {
-        name: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
+        message: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
         treat: async () => {
           await this.shell.run(manager, managerArgs, {});
         },
@@ -61,8 +64,9 @@ class NpmInstalledLocally extends AutomaticallyTreatableAilment {
   }
 }
 
-class IonicCLIInstalledLocally extends AutomaticallyTreatableAilment {
-  id = 'ionic-installed-locally';
+class IonicCLIInstalledLocally extends Ailment implements TreatableAilment {
+  readonly id = 'ionic-installed-locally';
+  readonly treatable = true;
 
   async getMessage() {
     return (
@@ -82,7 +86,7 @@ class IonicCLIInstalledLocally extends AutomaticallyTreatableAilment {
 
     return [
       {
-        name: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
+        message: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
         treat: async () => {
           await this.shell.run(manager, managerArgs, {});
         },
@@ -92,7 +96,7 @@ class IonicCLIInstalledLocally extends AutomaticallyTreatableAilment {
 }
 
 class GitNotUsed extends Ailment {
-  id = 'git-not-used';
+  readonly id = 'git-not-used';
 
   async getMessage() {
     return (
@@ -129,15 +133,15 @@ class GitNotUsed extends Ailment {
 
   async getTreatmentSteps() {
     return [
-      { name: `Download git if you don't have it installed: ${chalk.bold('https://git-scm.com/downloads')}` },
-      { name: `Learn the basics if you're unfamiliar with git: ${chalk.bold('https://try.github.io')}` },
-      { name: `Make your first commit and start tracking code changes! 😍` },
+      { message: `Download git if you don't have it installed: ${chalk.bold('https://git-scm.com/downloads')}` },
+      { message: `Learn the basics if you're unfamiliar with git: ${chalk.bold('https://try.github.io')}` },
+      { message: `Make your first commit and start tracking code changes! 😍` },
     ];
   }
 }
 
 class GitConfigInvalid extends Ailment {
-  id = 'git-config-invalid';
+  readonly id = 'git-config-invalid';
 
   async getMessage() {
     const proId = await this.project.requireProId();
@@ -184,16 +188,15 @@ class GitConfigInvalid extends Ailment {
   }
 
   async getTreatmentSteps() {
-    const args = ['git', 'remote'];
-
     return [
-      { name: `Run: ${chalk.green('ionic ' + args.join(' '))}` },
+      { message: `Run: ${chalk.green('ionic git remote')}` },
     ];
   }
 }
 
-class IonicNativeUpdateAvailable extends AutomaticallyTreatableAilment {
-  id = 'ionic-native-update-available';
+class IonicNativeUpdateAvailable extends Ailment implements TreatableAilment {
+  readonly id = 'ionic-native-update-available';
+  readonly treatable = true;
   currentVersion?: string;
   latestVersion?: string;
 
@@ -248,7 +251,7 @@ class IonicNativeUpdateAvailable extends AutomaticallyTreatableAilment {
       const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg: `@ionic-native/${m}@${latestVersion ? latestVersion : 'latest'}` });
 
       return {
-        name: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
+        message: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
         treat: async () => {
           await this.shell.run(manager, managerArgs, {});
         },
@@ -258,7 +261,7 @@ class IonicNativeUpdateAvailable extends AutomaticallyTreatableAilment {
 }
 
 class IonicNativeMajorUpdateAvailable extends Ailment {
-  id = 'ionic-native-major-update-available';
+  readonly id = 'ionic-native-major-update-available';
   currentVersion?: string;
   latestVersion?: string;
 
@@ -308,15 +311,15 @@ class IonicNativeMajorUpdateAvailable extends Ailment {
     const args = await pkgManagerArgs(npmClient, { command: 'install', pkg: `@ionic-native/core@${latestVersion ? latestVersion : 'latest'}` });
 
     return [
-      { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-native/releases')}, looking for breaking changes` },
-      { name: `Update each ${chalk.bold('@ionic-native/')} package. For example, ${chalk.green(args.join(' '))}` },
-      { name: `Update your app according to the breaking changes, if any` },
+      { message: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-native/releases')}, looking for breaking changes` },
+      { message: `Update each ${chalk.bold('@ionic-native/')} package. For example, ${chalk.green(args.join(' '))}` },
+      { message: `Update your app according to the breaking changes, if any` },
     ];
   }
 }
 
 class IonicNativeOldVersionInstalled extends Ailment {
-  id = 'ionic-native-old-version-installed';
+  readonly id = 'ionic-native-old-version-installed';
 
   async getMessage() {
     return (
@@ -335,14 +338,14 @@ class IonicNativeOldVersionInstalled extends Ailment {
     const args = await pkgManagerArgs(npmClient, { command: 'uninstall', pkg: 'ionic-native' });
 
     return [
-      { name: `Run ${chalk.green(args.join(' '))}` },
-      { name: `Refer to ${chalk.bold('https://ionicframework.com/docs/native')} for installation & usage instructions` },
+      { message: `Run ${chalk.green(args.join(' '))}` },
+      { message: `Refer to ${chalk.bold('https://ionicframework.com/docs/native')} for installation & usage instructions` },
     ];
   }
 }
 
 class UnsavedCordovaPlatforms extends Ailment {
-  id = 'unsaved-cordova-platforms';
+  readonly id = 'unsaved-cordova-platforms';
 
   async getMessage() {
     return (
@@ -370,16 +373,14 @@ class UnsavedCordovaPlatforms extends Ailment {
   }
 
   async getTreatmentSteps() {
-    const args = ['cordova', 'platform', 'save'];
-
     return [
-      { name: `Run: ${chalk.green('ionic ' + args.join(' '))}` },
+      { message: `Run: ${chalk.green('ionic cordova platform save')}` },
     ];
   }
 }
 
 class DefaultCordovaBundleIdUsed extends Ailment {
-  id = 'default-cordova-bundle-id-used';
+  readonly id = 'default-cordova-bundle-id-used';
 
   async getMessage() {
     return (
@@ -402,13 +403,13 @@ class DefaultCordovaBundleIdUsed extends Ailment {
 
   async getTreatmentSteps() {
     return [
-      { name: `Change the ${chalk.bold('id')} attribute of ${chalk.bold('<widget>')} (root element) to something other than ${chalk.green('"io.ionic.starter"')}` },
+      { message: `Change the ${chalk.bold('id')} attribute of ${chalk.bold('<widget>')} (root element) to something other than ${chalk.green('"io.ionic.starter"')}` },
     ];
   }
 }
 
 class ViewportFitNotSet extends Ailment {
-  id = 'viewport-fit-not-set';
+  readonly id = 'viewport-fit-not-set';
 
   async getMessage() {
     return (
@@ -425,13 +426,13 @@ class ViewportFitNotSet extends Ailment {
 
   async getTreatmentSteps() {
     return [
-      { name: `Add ${chalk.bold('viewport-fit=cover')} to the ${chalk.bold('<meta name="viewport">')} tag in your ${chalk.bold('index.html')} file` },
+      { message: `Add ${chalk.bold('viewport-fit=cover')} to the ${chalk.bold('<meta name="viewport">')} tag in your ${chalk.bold('index.html')} file` },
     ];
   }
 }
 
 class CordovaPlatformsCommitted extends Ailment {
-  id = 'cordova-platforms-committed';
+  readonly id = 'cordova-platforms-committed';
 
   async getMessage() {
     return (
@@ -463,9 +464,9 @@ class CordovaPlatformsCommitted extends Ailment {
 
   async getTreatmentSteps() {
     return [
-      { name: `Remove ${chalk.bold('platforms/')} from source control: ${chalk.green('git rm -rf platforms/')} and ${chalk.green('git commit')}` },
-      { name: `Make sure the ${chalk.bold('platforms/')} directory has been removed: ${chalk.green('rm -rf platforms/')}` },
-      { name: `Allow Cordova to repopulate your platforms: ${chalk.green('ionic cordova prepare')}` },
+      { message: `Remove ${chalk.bold('platforms/')} from source control: ${chalk.green('git rm -rf platforms/')} and ${chalk.green('git commit')}` },
+      { message: `Make sure the ${chalk.bold('platforms/')} directory has been removed: ${chalk.green('rm -rf platforms/')}` },
+      { message: `Allow Cordova to repopulate your platforms: ${chalk.green('ionic cordova prepare')}` },
     ];
   }
 }

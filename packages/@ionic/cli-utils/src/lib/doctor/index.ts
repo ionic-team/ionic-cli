@@ -1,13 +1,17 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { IAilment, IonicEnvironment } from '../../definitions';
-import { isAutomaticallyTreatableAilment, isExitCodeException } from '../../guards';
-import { ERROR_AILMENT_IGNORED, ERROR_AILMENT_SKIPPED } from './ailments';
+import { IAilment, IonicEnvironment, TreatableAilment } from '../../definitions';
+import { isExitCodeException, isTreatableAilment } from '../../guards';
+
+import { formatAilmentMessage } from './ailments';
 
 export * from './ailments';
 
 const debug = Debug('ionic:cli-utils:lib:doctor');
+
+export const ERROR_AILMENT_IGNORED = 'AILMENT_IGNORED';
+export const ERROR_AILMENT_SKIPPED = 'AILMENT_SKIPPED';
 
 export async function treatAilments(env: IonicEnvironment) {
   const registry = await env.project.getAilmentRegistry(env);
@@ -59,7 +63,7 @@ export async function treatAilments(env: IonicEnvironment) {
     for (const ailment of detectedAilments) {
       const treated = await treatAilment(env, ailment);
 
-      if (isAutomaticallyTreatableAilment(ailment)) {
+      if (isTreatableAilment(ailment)) {
         if (treated) {
           treatedAilmentCount++;
         }
@@ -90,9 +94,9 @@ export async function detectAndTreatAilment(env: IonicEnvironment, ailment: IAil
 }
 
 async function treatAilment(env: IonicEnvironment, ailment: IAilment): Promise<boolean> {
-  if (isAutomaticallyTreatableAilment(ailment)) {
+  if (isTreatableAilment(ailment)) {
     try {
-      const treated = await ailment.treat();
+      const treated = await _treatAilment(env, ailment);
       return treated;
     } catch (e) {
       if (e !== ERROR_AILMENT_SKIPPED && e !== ERROR_AILMENT_IGNORED) {
@@ -104,12 +108,60 @@ async function treatAilment(env: IonicEnvironment, ailment: IAilment): Promise<b
       }
     }
   } else {
-    const treatmentSteps = await ailment.getTreatmentSteps();
-    const stepOutput = treatmentSteps.length > 0 ? `\n\nTo fix, take the following step(s):\n\n${treatmentSteps.map((step, i) => `    ${i + 1}) ${step.name}`).join('\n')}` : '';
-    env.log.warn(
-      `${await ailment.getMessage()} ${stepOutput}\n\n` +
-      `Ignore this issue with: ${chalk.green(`ionic doctor ignore ${ailment.id}`)}`
-    );
+    env.log.warn(await formatAilmentMessage(ailment));
+  }
+
+  return false;
+}
+
+async function _treatAilment(env: IonicEnvironment, ailment: TreatableAilment) {
+  const config = await env.config.load();
+  const treatmentSteps = await ailment.getTreatmentSteps();
+  env.log.warn(await formatAilmentMessage(ailment));
+
+  const CHOICE_YES = 'yes';
+  const CHOICE_NO = 'no';
+  const CHOICE_IGNORE = 'ignore';
+
+  const choice = await env.prompt({
+    type: 'list',
+    name: 'choice',
+    message: `Fix automatically?`,
+    choices: [
+      {
+        name: 'Yes',
+        value: CHOICE_YES,
+      },
+      {
+        name: 'No',
+        value: CHOICE_NO,
+      },
+      {
+        name: 'Ignore forever',
+        value: CHOICE_IGNORE,
+      },
+    ],
+  });
+
+  if (choice === CHOICE_YES) {
+    for (const i in treatmentSteps) {
+      const step = treatmentSteps[i];
+
+      try {
+        await step.treat();
+      } catch (e) {
+        if (!isExitCodeException(e) || e.exitCode > 0) {
+          throw e;
+        }
+      }
+    }
+
+    return true;
+  } else if (choice === CHOICE_NO) {
+    throw ERROR_AILMENT_SKIPPED;
+  } else if (choice === CHOICE_IGNORE) {
+    config.state.doctor.ignored.push(ailment.id);
+    throw ERROR_AILMENT_IGNORED;
   }
 
   return false;

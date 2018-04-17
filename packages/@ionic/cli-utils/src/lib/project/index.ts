@@ -224,7 +224,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     await Promise.all(integrations.map(async i => i.personalize(details)));
   }
 
-  async getAilmentRegistry(deps: doctorLibType.AutomaticallyTreatableAilmentDeps): Promise<IAilmentRegistry> {
+  async getAilmentRegistry(deps: doctorLibType.AilmentDeps): Promise<IAilmentRegistry> {
     const { AilmentRegistry, registerAilments } = await import('../doctor/ailments');
 
     const registry = new AilmentRegistry();

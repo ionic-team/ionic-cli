@@ -22,7 +22,7 @@ export class Project extends BaseProject {
     ];
   }
 
-  async getAilmentRegistry(deps: doctorLibType.AutomaticallyTreatableAilmentDeps): Promise<IAilmentRegistry> {
+  async getAilmentRegistry(deps: doctorLibType.AilmentDeps): Promise<IAilmentRegistry> {
     const { registerAilments } = await import('./ailments');
 
     const registry = await super.getAilmentRegistry(deps);
