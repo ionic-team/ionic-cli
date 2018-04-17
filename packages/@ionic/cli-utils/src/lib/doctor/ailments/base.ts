@@ -1,4 +1,4 @@
-import { IAilment, IAilmentRegistry, IClient, IConfig, ILogger, IProject, ISession, IShell, PatientTreatmentStep } from '../../../definitions';
+import { DoctorAilmentId, IAilment, IAilmentRegistry, IClient, IConfig, ILogger, IProject, ISession, IShell, PatientTreatmentStep } from '../../../definitions';
 
 export interface AilmentDeps {
   client: IClient;
@@ -26,7 +26,7 @@ export abstract class Ailment implements IAilment {
     this.session = session;
   }
 
-  abstract id: string;
+  abstract readonly id: DoctorAilmentId;
   abstract async getMessage(): Promise<string>;
   abstract async detected(): Promise<boolean>;
   abstract async getTreatmentSteps(): Promise<PatientTreatmentStep[]>;
@@ -43,7 +43,7 @@ export class AilmentRegistry implements IAilmentRegistry {
     return this._ailments;
   }
 
-  get(id: string) {
+  get(id: string): IAilment | undefined {
     return this._ailments.find(a => a.id === id);
   }
 }

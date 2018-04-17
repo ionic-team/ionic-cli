@@ -381,14 +381,46 @@ export interface ITelemetry {
 
 export type NpmClient = 'yarn' | 'npm';
 
-export type Features = 'project-angular' | 'ssl-commands';
+export type FeatureId = 'project-angular' | 'ssl-commands';
+
+export type DoctorAilmentId = (
+  // Base
+  'npm-installed-locally' |
+  'ionic-installed-locally' |
+  'git-not-used' |
+  'git-config-invalid' |
+  'ionic-native-update-available' |
+  'ionic-native-major-update-available' |
+  'ionic-native-old-version-installed' |
+  'unsaved-cordova-platforms' |
+  'default-cordova-bundle-id-used' |
+  'viewport-fit-not-set' |
+  'cordova-platforms-committed' |
+
+  // angular
+  'ionic-for-angular-update-available' |
+  'ionic-for-angular-major-update-available' |
+  'ionic-schematics-angular-update-available' |
+  'ionic-schematics-angular-major-update-available' |
+  'angular-cli-update-available' |
+  'angular-cli-major-update-available' |
+  'angular-devkit-core-update-available' |
+  'angular-devkit-core-major-update-available' |
+  'angular-devkit-schematics-update-available' |
+  'angular-devkit-schematics-major-update-available' |
+
+  // ionic-angular
+  'ionic-angular-update-available' |
+  'ionic-angular-major-update-available' |
+  'app-scripts-update-available' |
+  'app-scripts-major-update-available' |
+  'ionic-angular-package-json-has-default-ionic-build-command' |
+  'ionic-angular-package-json-has-default-ionic-serve-command'
+);
 
 export interface ConfigFile {
   state: {
     lastCommand: string;
-    doctor: {
-      ignored: string[];
-    };
   };
   addresses: {
     dashUrl?: string;
@@ -409,7 +441,14 @@ export interface ConfigFile {
     user?: string;
     telemetry?: string;
   };
-  features: { [F in Features]?: boolean; };
+  doctor: {
+    issues: {
+      [I in DoctorAilmentId]?: {
+        ignored?: boolean;
+      };
+    };
+  };
+  features: { [I in FeatureId]?: boolean; };
   telemetry: boolean;
   interactive?: boolean;
   npmClient: NpmClient;
@@ -638,7 +677,7 @@ export interface ServeDetails {
 }
 
 export interface IAilment {
-  id: string;
+  id: DoctorAilmentId;
   getMessage(): Promise<string>;
   detected(): Promise<boolean>;
   getTreatmentSteps(): Promise<PatientTreatmentStep[]>;
@@ -661,7 +700,7 @@ export interface IAilmentRegistry {
   ailments: IAilment[];
 
   register(ailment: IAilment): void;
-  get(id: string): void;
+  get(id: string): IAilment | undefined;
 }
 
 export interface AngularConfig {

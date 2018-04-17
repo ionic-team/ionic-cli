@@ -72,6 +72,10 @@ down the main CLI package. All functionality is still supported, but the
   `ionic:serve:before`, but behaves the same.
 * `ionic build` will no longer run `cordova prepare` (run `ionic cordova prepare
   [platform]`, which performs an Ionic build beforehand).
+* `ionic doctor check` will now _only_ print issues and exit with exit code 1 if
+  issues are found. Use `ionic doctor treat` to attempt automatic fixes.
+* `ionic doctor ignore` has been removed in favor of `ionic config set -g
+  doctor.issues.<issue>.ignored true`).
 
 #### :rocket: Enhancements
 

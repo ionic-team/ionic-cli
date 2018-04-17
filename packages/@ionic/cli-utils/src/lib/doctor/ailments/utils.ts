@@ -1,23 +1,28 @@
 import chalk from 'chalk';
 
-import { DoctorTreatmentStep, IAilment, PatientTreatmentStep } from '../../../definitions';
-import { isDoctorTreatmentStep } from '../../../guards';
+import { IAilment } from '../../../definitions';
+import { isTreatableAilment } from '../../../guards';
 
 export async function formatAilmentMessage(ailment: IAilment): Promise<string> {
+  const treatable = isTreatableAilment(ailment);
+
   return (
     `${await ailment.getMessage()}\n` +
-    `${formatSteps(await ailment.getTreatmentSteps())}\n\n` +
-    `Ignore this issue with: ${chalk.green(`ionic doctor ignore ${ailment.id}`)}`
+    `${await formatAilmentSteps(ailment)}\n\n` +
+    `${chalk.dim('$')} ${chalk.green(`ionic config set -g doctor.issues.${ailment.id}.ignored true`)} ${chalk.dim('(ignore this issue in the future)')}\n` +
+    `${treatable ? `${chalk.dim('$')} ${chalk.green(`ionic doctor treat ${ailment.id}`)} ${chalk.dim('(attempt to fix this issue)')}\n` : ''}`
   );
 }
 
-export function formatSteps(steps: (DoctorTreatmentStep | PatientTreatmentStep)[]): string {
+async function formatAilmentSteps(ailment: IAilment): Promise<string> {
+  const steps = await ailment.getTreatmentSteps();
+
   if (steps.length === 0) {
     return '';
   }
 
-  const treatable = isDoctorTreatmentStep(steps[0]);
+  const treatable = isTreatableAilment(ailment);
   const msg = treatable ? `To fix, the following step(s) need to be taken:` : `To fix, take the following step(s):`;
 
-  return `\n${msg}\n\n${steps.map((step, i) => `    ${i + 1}) ${step.message}`).join('\n')}`;
+  return `\n${msg}\n\n${steps.map((step, i) => ` ${chalk.dim(String(i + 1) + ')')} ${step.message}`).join('\n')}`;
 }

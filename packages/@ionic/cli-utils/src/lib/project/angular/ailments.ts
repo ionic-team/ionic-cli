@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import * as semver from 'semver';
 
-import { IAilmentRegistry } from '../../../definitions';
+import { DoctorAilmentId, IAilmentRegistry } from '../../../definitions';
 import { Ailment, AilmentDeps } from '../../doctor/ailments';
 import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 
@@ -74,8 +74,8 @@ export interface AngularAilmentDeps extends AilmentDeps {
 }
 
 export interface AilmentParams {
-  id: string;
-  pkgName: string;
+  readonly id: DoctorAilmentId;
+  readonly pkgName: string;
   treatmentVisitURL: string[];
 }
 
