@@ -12,7 +12,7 @@ These commands help automate your SSH configuration for Ionic Pro. As an alterna
 
 To begin, run ${chalk.green('ionic ssh setup')}, which lets you use existing keys or generate new ones just for Ionic.
 
-${chalk.cyan('[1]')}: ${chalk.bold('https://dashboard.ionicjs.com/settings/ssh-keys')}
+${chalk.cyan('[1]')}: ${chalk.bold('https://dashboard.ionicframework.com/settings/ssh-keys')}
       `,
     };
   }

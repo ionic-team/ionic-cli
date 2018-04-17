@@ -218,7 +218,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       return config.addresses.dashUrl;
     }
 
-    return 'https://dashboard.ionicjs.com';
+    return 'https://dashboard.ionicframework.com';
   }
 
   async getGitHost(): Promise<string> {
