@@ -4,7 +4,6 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { BaseError, InputValidationError, PackageJson, stripOptions } from '@ionic/cli-framework';
-import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 import { processExit } from '@ionic/cli-framework/utils/process';
 
@@ -108,31 +107,11 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
         }
       }
 
-      if (ienv.project.directory) {
-        const nodeModulesExists = await pathExists(path.join(ienv.project.directory, 'node_modules'));
-
-        if (!nodeModulesExists) {
-          const confirm = await ienv.prompt({
-            type: 'confirm',
-            name: 'confirm',
-            message: `Looks like a fresh checkout! No ${chalk.green('./node_modules')} directory found. Would you like to install project dependencies?`,
-          });
-
-          if (confirm) {
-            ienv.log.msg('Installing dependencies may take several minutes!');
-            const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
-            const { npmClient } = config;
-            const [ installer, ...installerArgs ] = await pkgManagerArgs(npmClient, { command: 'install' });
-            await ienv.shell.run(installer, installerArgs, {});
-          }
-        }
-      }
-
       const parsedArgs = stripOptions(pargv, { includeSeparated: false });
-
-      // If an legacy command is being executed inform the user that there is a new command available
       const foundCommand = mapLegacyCommand(parsedArgs[0]);
 
+      // If an legacy command is being executed inform the user that there is a
+      // new command available
       if (foundCommand) {
         ienv.log.msg(
           `The ${chalk.green(parsedArgs[0])} command has been renamed. To find out more, run:\n\n` +
