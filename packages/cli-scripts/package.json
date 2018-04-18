@@ -1,6 +1,7 @@
 {
-  "name": "@ionic/cli-scripts",
-  "version": "1.0.0-rc.4",
+  "private": true,
+  "name": "cli-scripts",
+  "version": "0.0.0",
   "bin": {
     "ionic-cli-scripts": "./bin/ionic-cli-scripts"
   },
@@ -48,7 +49,7 @@
       "js"
     ],
     "transform": {
-      ".(ts)": "<rootDir>/../../../node_modules/ts-jest/preprocessor.js"
+      ".(ts)": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "/__tests__/.*\\.(ts|js)$"
   }

@@ -16,7 +16,7 @@ import { generateContext, loadExecutor } from 'ionic';
 import { ansi2md, links2md } from './utils';
 
 const PROJECTS_DIRECTORY = path.resolve(__dirname, '..', '..', 'projects');
-const STAGING_DIRECTORY = path.resolve(__dirname, '..', '..', '..', '..', '..', 'docs');
+const STAGING_DIRECTORY = path.resolve(__dirname, '..', '..', '..', '..', 'docs');
 
 interface CommandOptionJson {
   name: string;

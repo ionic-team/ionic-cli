@@ -7,11 +7,11 @@ aliases:
         - dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/cli-framework/package.json" }}
         - dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/cli-hooks/package.json" }}
         - dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/cli-utils/package.json" }}
-        - dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/cli-scripts/package.json" }}
         - dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/discover/package.json" }}
         - dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/lab/package.json" }}
         - dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/schematics-angular/package.json" }}
         - dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/v1-toolkit/package.json" }}
+        - dependency-cache-{{ .Branch }}-{{ checksum "packages/cli-scripts/package.json" }}
         - dependency-cache-{{ .Branch }}-{{ checksum "packages/ionic/package.json" }}
 
   - &save-cache
@@ -34,11 +34,6 @@ aliases:
       paths:
         - packages/@ionic/cli-utils/node_modules
 
-  - &save-cache-cli-scripts
-      key: dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/cli-scripts/package.json" }}
-      paths:
-        - packages/@ionic/cli-scripts/node_modules
-
   - &save-cache-discover
       key: dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/discover/package.json" }}
       paths:
@@ -59,6 +54,11 @@ aliases:
       paths:
         - packages/@ionic/v1-toolkit/node_modules
 
+  - &save-cache-cli-scripts
+      key: dependency-cache-{{ .Branch }}-{{ checksum "packages/cli-scripts/package.json" }}
+      paths:
+        - packages/cli-scripts/node_modules
+
   - &save-cache-ionic
       key: dependency-cache-{{ .Branch }}-{{ checksum "packages/ionic/package.json" }}
       paths:
@@ -78,11 +78,11 @@ base: &base
     - save_cache: *save-cache-cli-framework
     - save_cache: *save-cache-cli-hooks
     - save_cache: *save-cache-cli-utils
-    - save_cache: *save-cache-cli-scripts
     - save_cache: *save-cache-discover
     - save_cache: *save-cache-lab
     - save_cache: *save-cache-schematics-angular
     - save_cache: *save-cache-v1-toolkit
+    - save_cache: *save-cache-cli-scripts
     - save_cache: *save-cache-ionic
     - run: npm run lint
     - run: npm run test

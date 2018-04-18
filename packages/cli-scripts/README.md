@@ -1,4 +1,4 @@
-# @ionic/cli-scripts
+# Ionic CLI Scripts
 
 These are mostly internal scripts to manage CLI development.
 

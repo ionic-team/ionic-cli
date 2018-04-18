@@ -1,6 +1,6 @@
 import { links2md } from '../utils';
 
-describe('@ionic/cli-scripts', () => {
+describe('cli-scripts', () => {
 
   describe('docs/utils', () => {
 
