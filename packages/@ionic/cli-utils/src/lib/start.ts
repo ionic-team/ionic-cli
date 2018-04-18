@@ -72,6 +72,12 @@ export async function getStarterList(config: IConfig, tag = 'latest'): Promise<S
 
 export const STARTER_TEMPLATES: StarterTemplate[] = [
   {
+    name: 'tabs',
+    type: 'angular',
+    description: 'A starting project with a simple tabbed interface',
+    id: 'angular-official-tabs',
+  },
+  {
     name: 'blank',
     type: 'angular',
     description: 'A blank starter project',
