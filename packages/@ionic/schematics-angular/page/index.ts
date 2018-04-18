@@ -24,7 +24,7 @@ import { validateHtmlSelector, validateName } from '@schematics/angular/utility/
 
 import { Schema as PageOptions } from './schema';
 
-function addEntryComponentsToModule(source: any, modulePath: string, classifiedName: string, importPath: string): Change[] {
+function addEntryComponentsToModule(source: any, modulePath: string, classifiedName: string, importPath: string | null): Change[] {
   return addSymbolToNgModuleMetadata(source, modulePath, 'entryComponents', classifiedName, importPath);
 }
 
@@ -56,7 +56,7 @@ function addPageToNgModule(options: PageOptions): Rule {
 
     const Changes = [
       ...addDeclarationToModule(source, module, classifiedName, relativePath),
-      ...addEntryComponentsToModule(source, module, classifiedName, relativePath),
+      ...addEntryComponentsToModule(source, module, classifiedName, null), // tslint:disable-line:no-null-keyword
     ];
 
     const Recorder = host.beginUpdate(module);
