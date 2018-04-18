@@ -59,6 +59,8 @@ async function loadPackageJson(): Promise<PackageJson> {
 }
 
 export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[], env: { [key: string]: string; }): Promise<IonicEnvironment> {
+  process.chdir(ctx.execPath);
+
   const argv = parseArgs(pargv, { boolean: true, string: '_' });
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
   const flags = gatherFlags(argv);
