@@ -148,8 +148,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
-    const starterTemplates = await this.getStarterTemplates();
+
     const config = await this.env.config.load();
+    const starterTemplates = await this.getStarterTemplates();
+    const cloned = isValidURL(inputs[1]);
 
     // If the action is list then lets just end here.
     if (options['list']) {
@@ -169,11 +171,25 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
 
     if (options['pro-id']) {
-      if (options['link'] === false) {
-        this.env.log.warn(`The ${chalk.green('--no-link')} option has no effect with ${chalk.green('--pro-id')}.`);
+      if (!options['link']) {
+        this.env.log.warn(`The ${chalk.green('--no-link')} option has no effect with ${chalk.green('--pro-id')}. App must be linked.`);
       }
 
       options['link'] = true;
+
+      if (!options['git']) {
+        this.env.log.warn(`The ${chalk.green('--no-git')} option has no effect with ${chalk.green('--pro-id')}. Git must be used.`);
+      }
+
+      options['git'] = true;
+    }
+
+    if (cloned) {
+      if (!options['git']) {
+        this.env.log.warn(`The ${chalk.green('--no-git')} option has no effect when cloning apps. Git must be used.`);
+      }
+
+      options['git'] = true;
     }
 
     const proId = options['pro-id'] ? String(options['pro-id']) : undefined;
@@ -261,7 +277,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       projectId = options['project-id'] = this.isValidProjectId(inputs[0]) ? inputs[0] : slugify(inputs[0]);
     }
 
-    const cloned = isValidURL(inputs[1]);
     const projectDir = path.resolve(projectId);
     const packageId = options['package-id'] ? String(options['package-id']) : undefined;
     await this.checkForExisting(projectDir);
@@ -365,13 +380,26 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     const tag = options['tag'] ? String(options['tag']) : 'latest';
     let linkConfirmed = typeof proId === 'string';
 
-    const gitIntegration = options['git'] ? await isGitInstalled(this.env) : false;
+    const gitDesired = options['git'] ? true : false;
+    const gitInstalled = await isGitInstalled(this.env);
+    const gitIntegration = gitDesired ? gitInstalled : false;
 
-    if (proId && !gitIntegration) {
-      throw new FatalException(
-        `Git CLI not found on your PATH. It must be installed to connect this app to Ionic.\n` +
-        `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`
-      );
+    if (!gitInstalled) {
+      const installationDocs = `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`;
+
+      if (proId) {
+        throw new FatalException(
+          `Git CLI not found on your PATH.\n` +
+          `Git must be installed to connect this app to Ionic. ${installationDocs}`
+        );
+      }
+
+      if (this.schema.cloned) {
+        throw new FatalException(
+          `Git CLI not found on your PATH.\n` +
+          `Git must be installed to clone apps with ${chalk.green('ionic start')}. ${installationDocs}`
+        );
+      }
     }
 
     this.env.tasks.next(`Preparing directory ${chalk.green(prettyPath(projectDir))}`);
