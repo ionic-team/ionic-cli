@@ -100,6 +100,8 @@ down the main CLI package. All functionality is still supported, but the
 
 * Respect `--nosave` flag for `ionic cordova platform` and `ionic cordova
   plugin` [#2946](https://github.com/ionic-team/ionic-cli/issues/2946)
+* Interactivity is now disabled when not in a TTY. See
+  [#3047](https://github.com/ionic-team/ionic-cli/issues/3047).
 
 #### :house: Internal
 
