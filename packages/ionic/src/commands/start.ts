@@ -19,20 +19,29 @@ import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
 
 const debug = Debug('ionic:cli:commands:start');
 
-interface NewAppSchema {
-  name: string;
-  type: string;
-  template: string;
+interface CommonAppSchema {
   projectId: string;
   projectDir: string;
   packageId?: string;
   proId?: string;
 }
 
+interface NewAppSchema extends CommonAppSchema {
+  cloned: false;
+  name: string;
+  type: string;
+  template: string;
+}
+
+interface ClonedAppSchema extends CommonAppSchema {
+  cloned: true;
+  url: string;
+}
+
 export class StartCommand extends Command implements CommandPreRun {
   private canRemoveExisting = false;
 
-  private schema?: NewAppSchema;
+  private schema?: NewAppSchema | ClonedAppSchema;
 
   async getMetadata(): Promise<CommandMetadata> {
     const starterTemplates = await this.getStarterTemplates();
@@ -252,100 +261,111 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       projectId = options['project-id'] = this.isValidProjectId(inputs[0]) ? inputs[0] : slugify(inputs[0]);
     }
 
+    const cloned = isValidURL(inputs[1]);
     const projectDir = path.resolve(projectId);
+    const packageId = options['package-id'] ? String(options['package-id']) : undefined;
     await this.checkForExisting(projectDir);
 
-    const clonedApp = isValidURL(inputs[1]);
+    if (cloned) {
+      this.schema = {
+        cloned,
+        url: inputs[1],
+        projectId,
+        projectDir,
+      };
+    } else {
+      if (!options['type']) {
+        const recommendedType = config.features['project-angular'] ? 'angular' : 'ionic-angular';
 
-    if (!clonedApp && !options['type']) {
-      const recommendedType = config.features['project-angular'] ? 'angular' : 'ionic-angular';
+        if (this.env.flags.interactive) {
+          this.env.log.nl();
+          this.env.log.msg(
+            `${chalk.bold('What type of project would you like to create?')}\n\n` +
+            `We recommend ${chalk.green(recommendedType)}. To learn more about project types, see the CLI documentation${chalk.cyan('[1]')}. To bypass this prompt next time, supply the ${chalk.green('--type')} option.\n\n` +
+            `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}\n\n`
+          );
+        }
 
-      if (this.env.flags.interactive) {
-        this.env.log.nl();
-        this.env.log.msg(
-          `${chalk.bold('What type of project would you like to create?')}\n\n` +
-          `We recommend ${chalk.green(recommendedType)}. To learn more about project types, see the CLI documentation${chalk.cyan('[1]')}. To bypass this prompt next time, supply the ${chalk.green('--type')} option.\n\n` +
-          `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}\n\n`
-        );
-      }
+        const type = await this.env.prompt({
+          type: 'list',
+          name: 'template',
+          message: 'Project type:',
+          choices: () => {
+            const projectTypes = lodash.uniq(starterTemplates.map(t => t.type));
+            const cols = columnar(projectTypes.map(type => [`${chalk.green(type)}${type === recommendedType ? ' (recommended)' : ''}`, prettyProjectName(type)]), {}).split('\n');
 
-      const type = await this.env.prompt({
-        type: 'list',
-        name: 'template',
-        message: 'Project type:',
-        choices: () => {
-          const projectTypes = lodash.uniq(starterTemplates.map(t => t.type));
-          const cols = columnar(projectTypes.map(type => [`${chalk.green(type)}${type === recommendedType ? ' (recommended)' : ''}`, prettyProjectName(type)]), {}).split('\n');
-
-          return cols.map((col, i) => ({
-            name: col,
-            short: projectTypes[i],
-            value: projectTypes[i],
-          }));
-        },
-      });
-
-      options['type'] = type;
-    }
-
-    if (!inputs[1]) {
-      if (this.env.flags.interactive) {
-        this.env.log.nl();
-        this.env.log.msg(
-          `${chalk.bold(`Let's pick the perfect starter template! ${emoji('💪', '')}`)}\n\n` +
-          `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${chalk.green('template')}, the second argument to ${chalk.green('ionic start')}.\n\n`
-        );
-      }
-
-      const template = await this.env.prompt({
-        type: 'list',
-        name: 'template',
-        message: 'Starter template:',
-        choices: () => {
-          const starterTemplateList = starterTemplates.filter(st => st.type === options['type']);
-          const cols = columnar(starterTemplateList.map(({ name, description }) => [chalk.green(name), description || '']), {}).split('\n');
-
-          return cols.map((col, i) => {
-            return {
+            return cols.map((col, i) => ({
               name: col,
-              short: starterTemplateList[i].name,
-              value: starterTemplateList[i].name,
-            };
-          });
-        },
-      });
+              short: projectTypes[i],
+              value: projectTypes[i],
+            }));
+          },
+        });
 
-      inputs[1] = template;
+        options['type'] = type;
+      }
+
+      if (!inputs[1]) {
+        if (this.env.flags.interactive) {
+          this.env.log.nl();
+          this.env.log.msg(
+            `${chalk.bold(`Let's pick the perfect starter template! ${emoji('💪', '')}`)}\n\n` +
+            `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${chalk.green('template')}, the second argument to ${chalk.green('ionic start')}.\n\n`
+          );
+        }
+
+        const template = await this.env.prompt({
+          type: 'list',
+          name: 'template',
+          message: 'Starter template:',
+          choices: () => {
+            const starterTemplateList = starterTemplates.filter(st => st.type === options['type']);
+            const cols = columnar(starterTemplateList.map(({ name, description }) => [chalk.green(name), description || '']), {}).split('\n');
+
+            return cols.map((col, i) => {
+              return {
+                name: col,
+                short: starterTemplateList[i].name,
+                value: starterTemplateList[i].name,
+              };
+            });
+          },
+        });
+
+        inputs[1] = template;
+      }
+
+      this.schema = {
+        cloned,
+        name: inputs[0],
+        type: String(options['type']),
+        template: inputs[1],
+        projectId,
+        projectDir,
+        packageId,
+        proId,
+      };
     }
-
-    this.schema = {
-      name: inputs[0],
-      type: String(options['type']),
-      template: inputs[1],
-      projectId,
-      projectDir,
-      packageId: options['package-id'] ? String(options['package-id']) : undefined,
-      proId,
-    };
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
+    const { isGitInstalled } = await import('@ionic/cli-utils/lib/git');
     const { getIonicDevAppText, getIonicProText } = await import('@ionic/cli-utils/lib/start');
+
     const config = await this.env.config.load();
     const { npmClient } = config;
 
     if (!this.schema) {
-      throw new FatalException(`Invalid information: cannot create app.`);
+      throw new FatalException(`Invalid information: cannot start app.`);
     }
 
-    const { name, template, projectId, projectDir, packageId, proId } = this.schema;
+    const { projectId, projectDir, packageId, proId } = this.schema;
 
     const tag = options['tag'] ? String(options['tag']) : 'latest';
-    const clonedApp = isValidURL(template);
     let linkConfirmed = typeof proId === 'string';
 
-    const gitIntegration = options['git'] ? await this.isGitSetup() : false;
+    const gitIntegration = options['git'] ? await isGitInstalled(this.env) : false;
 
     if (proId && !gitIntegration) {
       throw new FatalException(
@@ -362,10 +382,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     await fsMkdir(projectDir, 0o777);
 
-    if (clonedApp) {
-      await this.env.shell.run('git', ['clone', template, name, '--progress'], {});
+    this.env.tasks.end();
+
+    if (this.schema.cloned) {
+      await this.env.shell.run('git', ['clone', this.schema.url, projectDir, '--progress'], { stdio: 'inherit' });
     } else {
-      const starterTemplate = await this.findStarterTemplate(template, String(options['type']), tag);
+      const starterTemplate = await this.findStarterTemplate(this.schema.template, String(options['type']), tag);
       await this.downloadStarterTemplate(projectDir, starterTemplate);
     }
 
@@ -376,7 +398,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     const shellOptions = { cwd: projectDir, stdio: ['inherit', 'ignore', 'ignore'] };
 
-    if (!clonedApp) {
+    if (!this.schema.cloned) {
       if (!options['cordova']) {
         const confirm = await this.env.prompt({
           type: 'confirm',
@@ -394,7 +416,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         await runCommand(runinfo, ['integrations', 'enable', 'cordova', '--quiet']);
       }
 
-      await this.env.project.personalize({ name, projectId, packageId });
+      await this.env.project.personalize({ name: this.schema.name, projectId, packageId });
       this.env.log.nl();
     }
 
@@ -407,7 +429,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       await this.env.shell.run(installer, installerArgs, { ...shellOptions, stdio: 'inherit' });
     }
 
-    if (!clonedApp) {
+    if (!this.schema.cloned) {
       if (gitIntegration) {
         await this.env.shell.run('git', ['init'], shellOptions); // TODO: use initializeRepo()?
       }
@@ -459,7 +481,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     this.env.log.nl();
 
-    await this.showNextSteps(projectDir, clonedApp, linkConfirmed);
+    await this.showNextSteps(projectDir, this.schema.cloned, linkConfirmed);
   }
 
   async getStarterTemplates(): Promise<StarterTemplate[]> {
@@ -467,12 +489,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     const config = await this.env.config.load();
 
     return STARTER_TEMPLATES.filter(({ type }) => type !== 'angular' || config.features['project-angular']);
-  }
-
-  async isGitSetup(): Promise<boolean> {
-    const cmdInstalled = await this.env.shell.cmdinfo('git', ['--version']);
-
-    return Boolean(cmdInstalled);
   }
 
   async checkForExisting(projectDir: string) {
@@ -573,9 +589,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     this.env.tasks.end();
   }
 
-  async showNextSteps(projectDir: string, clonedApp: boolean, linkConfirmed: boolean) {
+  async showNextSteps(projectDir: string, cloned: boolean, linkConfirmed: boolean) {
     const steps = [
-      `Go to your ${clonedApp ? 'cloned' : 'newly created'} project: ${chalk.green(`cd ${prettyPath(projectDir)}`)}`,
+      `Go to your ${cloned ? 'cloned' : 'newly created'} project: ${chalk.green(`cd ${prettyPath(projectDir)}`)}`,
       `Get Ionic DevApp for easy device testing: ${chalk.bold('https://bit.ly/ionic-dev-app')}`,
     ];
 

@@ -8,6 +8,10 @@ export interface GitUtilDeps {
   shell: IShell;
 }
 
+export async function isGitInstalled({ shell }: GitUtilDeps): Promise<boolean> {
+  return Boolean(await shell.cmdinfo('git', ['--version']));
+}
+
 export async function isRepoInitialized(dir: string): Promise<boolean> {
   return pathExists(path.join(dir, '.git'));
 }
