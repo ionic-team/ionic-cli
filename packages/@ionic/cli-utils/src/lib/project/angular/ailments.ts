@@ -81,13 +81,21 @@ export interface AilmentParams {
 
 abstract class AngularAilment extends Ailment {
   protected readonly project: AngularProject;
+
+  constructor(deps: AngularAilmentDeps) {
+    super(deps);
+    this.project = deps.project;
+  }
+}
+
+class UpdateAvailable extends AngularAilment {
   protected readonly pkgParams: AilmentParams;
+  readonly id = this.pkgParams.id;
   currentVersion?: string;
   latestVersion?: string;
 
   constructor(deps: AngularAilmentDeps, pkgParams: AilmentParams) {
     super(deps);
-    this.project = deps.project;
     this.pkgParams = pkgParams;
     this.pkgParams.treatmentVisitURL = this.pkgParams.treatmentVisitURL.map(url => chalk.bold(url));
   }
@@ -108,10 +116,6 @@ abstract class AngularAilment extends Ailment {
 
     return [ this.currentVersion, this.latestVersion ];
   }
-}
-
-class UpdateAvailable extends AngularAilment {
-  readonly id = this.pkgParams.id;
 
   async getMessage() {
     const [ currentVersion, latestVersion ] = await this.getVersionPair();
@@ -143,7 +147,7 @@ class UpdateAvailable extends AngularAilment {
   }
 }
 
-class MajorUpdateAvailable extends AngularAilment {
+class MajorUpdateAvailable extends UpdateAvailable {
   readonly id = this.pkgParams.id;
   currentVersion?: string;
   latestVersion?: string;
