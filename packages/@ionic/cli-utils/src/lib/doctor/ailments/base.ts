@@ -1,6 +1,6 @@
 import * as Debug from 'debug';
 import { IDebugger } from 'debug';
-import { DoctorAilmentId, IAilment, IAilmentRegistry, IClient, IConfig, ILogger, IProject, ISession, IShell, PatientTreatmentStep } from '../../../definitions';
+import { DoctorAilmentId, IAilment, IAilmentRegistry, IClient, IConfig, ILogger, IProject, ISession, IShell, PatientTreatmentStep, ProjectType } from '../../../definitions';
 
 export interface AilmentDeps {
   client: IClient;
@@ -20,6 +20,9 @@ export abstract class Ailment implements IAilment {
   protected readonly session: ISession;
   private _debug?: IDebugger;
 
+  abstract readonly id: DoctorAilmentId;
+  readonly projects?: ProjectType[] = undefined;
+
   constructor({ client, config, log, project, shell, session }: AilmentDeps) {
     this.client = client;
     this.config = config;
@@ -37,7 +40,6 @@ export abstract class Ailment implements IAilment {
     return this._debug;
   }
 
-  abstract readonly id: DoctorAilmentId;
   abstract async getMessage(): Promise<string>;
   abstract async detected(): Promise<boolean>;
   abstract async getTreatmentSteps(): Promise<PatientTreatmentStep[]>;

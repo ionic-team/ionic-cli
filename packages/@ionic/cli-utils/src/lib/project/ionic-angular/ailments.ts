@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import * as semver from 'semver';
 
-import { IAilmentRegistry, TreatableAilment } from '../../../definitions';
+import { IAilmentRegistry, ProjectType, TreatableAilment } from '../../../definitions';
 import { Ailment, AilmentDeps } from '../../doctor/ailments';
 import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 import { BUILD_SCRIPT } from '../../build';
@@ -25,6 +25,7 @@ export interface IonicAngularAilmentDeps extends AilmentDeps {
 }
 
 abstract class IonicAngularAilment extends Ailment {
+  readonly projects: ProjectType[] = ['ionic-angular'];
   protected readonly project: IonicAngularProject;
 
   constructor(deps: IonicAngularAilmentDeps) {

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import * as semver from 'semver';
 
-import { DoctorAilmentId, IAilmentRegistry } from '../../../definitions';
+import { DoctorAilmentId, IAilmentRegistry, ProjectType } from '../../../definitions';
 import { Ailment, AilmentDeps } from '../../doctor/ailments';
 import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 
@@ -80,6 +80,7 @@ export interface AilmentParams {
 }
 
 abstract class AngularAilment extends Ailment {
+  readonly projects: ProjectType[] = ['angular'];
   protected readonly project: AngularProject;
 
   constructor(deps: AngularAilmentDeps) {

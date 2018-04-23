@@ -40,12 +40,13 @@ You can flip whether an issue is ignored or not by using ${chalk.green('ionic co
 
       return [
         chalk.green(ailment.id),
+        ailment.projects ? ailment.projects.map(t => chalk.bold(t)).join(', ') : 'all',
         meta.join(', '),
       ];
     }));
 
     rows.sort((row1, row2) => strcmp(row1[0], row2[0]));
 
-    this.env.log.rawmsg(columnar(rows, { headers: ['id', 'meta'] }));
+    this.env.log.rawmsg(columnar(rows, { headers: ['id', 'affected projects', 'meta'] }));
   }
 }
