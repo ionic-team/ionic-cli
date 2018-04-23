@@ -121,7 +121,9 @@ class GitNotUsed extends Ailment {
       this.shell.output('git', ['status', '--porcelain'], { fatalOnError: false, showCommand: false, showError: false }),
     ]);
 
-    if (!revListCount || !status) {
+    this.debug('rev-list count: %s, status: %s', revListCount.trim(), status);
+
+    if (!revListCount) {
       return true;
     }
 

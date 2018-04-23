@@ -1,3 +1,5 @@
+import * as Debug from 'debug';
+import { IDebugger } from 'debug';
 import { DoctorAilmentId, IAilment, IAilmentRegistry, IClient, IConfig, ILogger, IProject, ISession, IShell, PatientTreatmentStep } from '../../../definitions';
 
 export interface AilmentDeps {
@@ -16,6 +18,7 @@ export abstract class Ailment implements IAilment {
   protected readonly project: IProject;
   protected readonly shell: IShell;
   protected readonly session: ISession;
+  private _debug?: IDebugger;
 
   constructor({ client, config, log, project, shell, session }: AilmentDeps) {
     this.client = client;
@@ -24,6 +27,14 @@ export abstract class Ailment implements IAilment {
     this.project = project;
     this.shell = shell;
     this.session = session;
+  }
+
+  get debug() {
+    if (!this._debug) {
+      this._debug = Debug(`ionic:cli-utils:lib:doctor:ailments:${this.id}`);
+    }
+
+    return this._debug;
   }
 
   abstract readonly id: DoctorAilmentId;
