@@ -1,6 +1,8 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
+import { concurrentFilter } from '@ionic/cli-framework/utils/array';
+
 import { IAilment, IAilmentRegistry, TreatableAilment, isTreatableAilment } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
@@ -30,12 +32,23 @@ export abstract class DoctorCommand extends Command {
 
     this.env.tasks.next('Detecting issues');
 
-    const ailments = await Promise.all(registry.ailments.map(async (ailment): Promise<[IAilment, boolean]> => {
+    const ailments = registry.ailments.filter(ailment => {
+      const issueConfig = config.doctor.issues[ailment.id];
+
+      if (issueConfig && issueConfig.ignored === true) {
+        debug('Issue %s ignored by config', ailment.id);
+        return false;
+      }
+
+      return true;
+    });
+
+    const detectedAilments = await concurrentFilter(ailments, async (ailment): Promise<boolean> => {
       let detected = false;
 
       try {
-        debug(`Detecting ${chalk.bold(ailment.id)}`);
         detected = await ailment.detected();
+        debug('Detected %s: %s', ailment.id, detected);
       } catch (e) {
         this.env.log.error(
           `Error while checking ${chalk.bold(ailment.id)}:\n` +
@@ -44,26 +57,12 @@ export abstract class DoctorCommand extends Command {
       }
 
       count++;
-      this.env.tasks.updateMsg(`Detecting issues: ${chalk.bold(`${count} / ${registry.ailments.length}`)} complete`);
+      this.env.tasks.updateMsg(`Detecting issues: ${chalk.bold(`${count} / ${ailments.length}`)} complete`);
 
-      return [ ailment, detected ];
-    }));
+      return detected;
+    });
 
-    this.env.tasks.updateMsg(`Detecting issues: ${chalk.bold(`${registry.ailments.length} / ${registry.ailments.length}`)} complete`);
-
-    const detectedAilments = ailments
-      .filter(([ , detected ]) => detected)
-      .map(([ ailment ]) => ailment)
-      .filter(ailment => {
-        const issueConfig = config.doctor.issues[ailment.id];
-
-        if (issueConfig && issueConfig.ignored === true) {
-          return false;
-        }
-
-        return true;
-      });
-
+    this.env.tasks.updateMsg(`Detecting issues: ${chalk.bold(`${ailments.length} / ${ailments.length}`)} complete`);
     this.env.tasks.end();
 
     return detectedAilments;

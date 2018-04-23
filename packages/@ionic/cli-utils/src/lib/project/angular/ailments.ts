@@ -88,9 +88,8 @@ abstract class AngularAilment extends Ailment {
   }
 }
 
-class UpdateAvailable extends AngularAilment {
+abstract class UpdateAvailableBase extends AngularAilment {
   protected readonly pkgParams: AilmentParams;
-  readonly id = this.pkgParams.id;
   currentVersion?: string;
   latestVersion?: string;
 
@@ -116,6 +115,10 @@ class UpdateAvailable extends AngularAilment {
 
     return [ this.currentVersion, this.latestVersion ];
   }
+}
+
+class UpdateAvailable extends UpdateAvailableBase {
+  readonly id = this.pkgParams.id;
 
   async getMessage() {
     const [ currentVersion, latestVersion ] = await this.getVersionPair();
@@ -147,10 +150,8 @@ class UpdateAvailable extends AngularAilment {
   }
 }
 
-class MajorUpdateAvailable extends UpdateAvailable {
+class MajorUpdateAvailable extends UpdateAvailableBase {
   readonly id = this.pkgParams.id;
-  currentVersion?: string;
-  latestVersion?: string;
 
   async getMessage() {
     const [ currentVersion, latestVersion ] = await this.getVersionPair();
