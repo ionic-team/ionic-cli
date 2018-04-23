@@ -13,7 +13,10 @@ export class DoctorListCommand extends Command {
       type: 'project',
       summary: 'List all issues and their identifiers',
       description: `
-If an issue is marked as ${chalk.bold('treatable')}, then ${chalk.green('ionic doctor treat')} can attempt to fix it. Issues marked as ${chalk.bold('ignored')} will not be detected in either ${chalk.green('ionic doctor check')} or ${chalk.green('ionic doctor treat')}.
+Issues can have various tags:
+- ${chalk.bold('treatable')}: ${chalk.green('ionic doctor treat')} can attempt to fix the issue
+- ${chalk.bold('ignored')}: configured not to be detected in ${chalk.green('ionic doctor check')} or ${chalk.green('ionic doctor treat')}
+- ${chalk.bold('explicit-detection')}: issue is only detected explicitly with ${chalk.green('ionic doctor check <issue-id>')}
 
 You can flip whether an issue is ignored or not by using ${chalk.green('ionic config set -g doctor.issues.<issue-id>.ignored true/false')}, where ${chalk.green('<issue-id>')} matches an ID listed with this command.
       `,
@@ -28,25 +31,29 @@ You can flip whether an issue is ignored or not by using ${chalk.green('ionic co
       const issueConfig = config.doctor.issues[ailment.id];
       const ignored = issueConfig && issueConfig.ignored;
 
-      const meta: string[] = [];
+      const tags: string[] = [];
 
       if (ignored) {
-        meta.push(chalk.red('ignored'));
+        tags.push('ignored');
       }
 
       if (isTreatableAilment(ailment)) {
-        meta.push('treatable');
+        tags.push('treatable');
+      }
+
+      if (!ailment.implicit) {
+        tags.push('explicit-detection');
       }
 
       return [
         chalk.green(ailment.id),
         ailment.projects ? ailment.projects.map(t => chalk.bold(t)).join(', ') : 'all',
-        meta.join(', '),
+        tags.map(t => chalk.bold(t)).join(', '),
       ];
     }));
 
     rows.sort((row1, row2) => strcmp(row1[0], row2[0]));
 
-    this.env.log.rawmsg(columnar(rows, { headers: ['id', 'affected projects', 'meta'] }));
+    this.env.log.rawmsg(columnar(rows, { headers: ['id', 'affected projects', 'tags'] }));
   }
 }

@@ -40,6 +40,11 @@ export abstract class DoctorCommand extends Command {
         return false;
       }
 
+      if (!ailment.implicit) {
+        debug('Issue %s will not be implicitly detected', ailment.id);
+        return false;
+      }
+
       return true;
     });
 

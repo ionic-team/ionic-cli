@@ -677,6 +677,7 @@ export interface ServeDetails {
 }
 
 export interface IAilment {
+  implicit: boolean;
   projects?: ProjectType[];
   id: DoctorAilmentId;
   getMessage(): Promise<string>;

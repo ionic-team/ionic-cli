@@ -22,6 +22,7 @@ export abstract class Ailment implements IAilment {
 
   abstract readonly id: DoctorAilmentId;
   readonly projects?: ProjectType[] = undefined;
+  readonly implicit: boolean = true;
 
   constructor({ client, config, log, project, shell, session }: AilmentDeps) {
     this.client = client;
