@@ -88,7 +88,7 @@ wrongRepo:
 
         Thank you for using Ionic!
     - label: "ionitron: ionic-site"
-      repo: ionic-native
+      repo: ionic-site
       message: >
         Thanks for the issue! We use this issue tracker exclusively for bug
         reports and feature requests for the Ionic CLI. It appears that this
