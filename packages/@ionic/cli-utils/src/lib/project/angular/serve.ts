@@ -225,9 +225,6 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       target: options.target,
       environment: options.environment,
       ssl: options.ssl ? 'true' : undefined,
-
-      // Added so Cordova doesn't complain about www directory missing.
-      deleteOutputPath: options.engine === 'cordova' ? 'false' : undefined,
     };
 
     if (options.ssl) {
