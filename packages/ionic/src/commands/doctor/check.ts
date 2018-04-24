@@ -83,6 +83,10 @@ Optionally supply the ${chalk.green('id')} argument to check a single issue. Use
   async checkAilment(ailment: IAilment) {
     const { formatAilmentMessage } = await import('@ionic/cli-utils/lib/doctor');
 
-    this.env.log.warn(await formatAilmentMessage(ailment));
+    if (await ailment.detected()) {
+      this.env.log.warn(await formatAilmentMessage(ailment));
+    } else {
+      this.env.log.ok(`${chalk.green(ailment.id)} was not detected.`);
+    }
   }
 }
