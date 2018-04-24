@@ -11,7 +11,7 @@ import { DEFAULT_SERVE_SCRIPT_VALUE } from './serve';
 
 import { Project as IonicAngularProject } from './';
 
-export function registerAilments(registry: IAilmentRegistry, deps: IonicAngularAilmentDeps) {
+export async function registerAilments(registry: IAilmentRegistry, deps: IonicAngularAilmentDeps): Promise<void> {
   registry.register(new IonicAngularUpdateAvailable(deps));
   registry.register(new IonicAngularMajorUpdateAvailable(deps));
   registry.register(new AppScriptsUpdateAvailable(deps));

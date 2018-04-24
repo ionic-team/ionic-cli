@@ -58,7 +58,7 @@ export class Project extends BaseProject {
 
     const registry = await super.getAilmentRegistry(deps);
 
-    registerAilments(registry, { ...deps, project: this });
+    await registerAilments(registry, { ...deps, project: this });
 
     return registry;
   }

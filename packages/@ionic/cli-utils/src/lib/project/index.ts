@@ -229,7 +229,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
 
     const registry = new AilmentRegistry();
 
-    registerAilments(registry, deps);
+    await registerAilments(registry, deps);
 
     return registry;
   }

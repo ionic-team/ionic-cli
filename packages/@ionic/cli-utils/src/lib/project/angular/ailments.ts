@@ -6,8 +6,9 @@ import { Ailment, AilmentDeps } from '../../doctor/ailments';
 import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 
 import { Project as AngularProject } from './';
+import { Diagnosis, compileMessage, diagnose } from './ionic-angular-v3-v4-migration';
 
-export function registerAilments(registry: IAilmentRegistry, deps: AngularAilmentDeps) {
+export async function registerAilments(registry: IAilmentRegistry, deps: AngularAilmentDeps): Promise<void> {
   // for @ionic/angular
   registry.register(new UpdateAvailable(deps, {
     id: 'ionic-for-angular-update-available',
@@ -67,6 +68,12 @@ export function registerAilments(registry: IAilmentRegistry, deps: AngularAilmen
     pkgName: '@angular-devkit/schematics',
     treatmentVisitURL: ['https://blog.angular.io', 'https://github.com/angular/devkit/releases'],
   }));
+
+  const config = await deps.config.load();
+
+  if (config.features['ionic-angular-v3-v4-migration']) {
+    registry.register(new IonicAngularMigration(deps));
+  }
 }
 
 export interface AngularAilmentDeps extends AilmentDeps {
@@ -174,5 +181,34 @@ class MajorUpdateAvailable extends UpdateAvailableBase {
     return [
       { message: `Visit ${this.pkgParams.treatmentVisitURL.join(' and ')} for upgrade instructions` },
     ];
+  }
+}
+
+class IonicAngularMigration extends AngularAilment {
+  readonly id = 'ionic-angular-v3-v4-migration';
+  readonly implicit = false;
+  private _diagnosis?: Diagnosis;
+
+  async getDiagnosis() {
+    if (!this._diagnosis) {
+      const srcDir = await this.project.getSourceDir();
+      this._diagnosis = await diagnose(srcDir);
+    }
+
+    return this._diagnosis;
+  }
+
+  async getMessage() {
+    const diagnosis = await this.getDiagnosis();
+    return compileMessage(diagnosis);
+  }
+
+  async detected() {
+    const diagnosis = await this.getDiagnosis();
+    return diagnosis.affected;
+  }
+
+  async getTreatmentSteps() {
+    return [];
   }
 }

@@ -19,7 +19,7 @@ import { Ailment, AilmentDeps } from './base';
 export * from './base';
 export * from './utils';
 
-export function registerAilments(registry: IAilmentRegistry, deps: AilmentDeps) {
+export async function registerAilments(registry: IAilmentRegistry, deps: AilmentDeps): Promise<void> {
   registry.register(new NpmInstalledLocally(deps));
   registry.register(new IonicCLIInstalledLocally(deps));
   registry.register(new GitNotUsed(deps));
