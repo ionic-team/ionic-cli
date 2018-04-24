@@ -77,6 +77,16 @@ wrongRepo:
 
 
         Thank you for using Ionic!
+    - label: "ionitron: ionic-native"
+      repo: ionic-native
+      message: >
+        Thanks for the issue! We use this issue tracker exclusively for bug
+        reports and feature requests for the Ionic CLI. It appears that this
+        issue is associated with Ionic Native. I am moving this issue to the
+        Ionic Native repository. Please track this issue over there.
+
+
+        Thank you for using Ionic!
   close: true
   lock: true
   dryRun: false
