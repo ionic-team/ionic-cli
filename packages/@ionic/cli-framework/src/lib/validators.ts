@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { ValidationError, Validator, Validators } from '../definitions';
 import { InputValidationError } from './errors';
-import { isValidEmail, isValidURL } from '../utils/string';
+import { isValidEmail, isValidURL, slugify } from '../utils/string';
 
 export function validate(input: string, key: string, validators: Validator[]) {
   const errors: ValidationError[] = [];
@@ -60,6 +60,17 @@ export const validators: Validators = {
         return `${chalk.green(key)} must be numeric.`;
       } else {
         return 'Must be numeric.';
+      }
+    }
+
+    return true;
+  },
+  slug(input?: string, key?: string) {
+    if (!input || slugify(input) !== input) {
+      if (key) {
+        return `${chalk.green(key)} is an invalid slug (machine name).`;
+      } else {
+        return 'Invalid slug (machine name).';
       }
     }
 

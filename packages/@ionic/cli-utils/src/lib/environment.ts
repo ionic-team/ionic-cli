@@ -1,6 +1,10 @@
+import * as Debug from 'debug';
+
 import * as inquirerType from 'inquirer';
 
 import { IClient, IConfig, ILogger, IProject, ISession, IShell, ITaskChain, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags, PromptModule } from '../definitions';
+
+const debug = Debug('ionic:cli-utils:lib:environment');
 
 export class Environment implements IonicEnvironment {
   readonly flags: IonicEnvironmentFlags;
@@ -79,6 +83,8 @@ export class Environment implements IonicEnvironment {
 
     this.log.outstream = typeof this.bottomBar === 'undefined' ? process.stdout : this.bottomBar.log;
     this.log.errstream = typeof this.bottomBar === 'undefined' ? process.stderr : this.bottomBar.log;
+
+    debug('Environment open.');
   }
 
   close() {
@@ -95,6 +101,8 @@ export class Environment implements IonicEnvironment {
         this.log.outstream = process.stdout;
         this.log.errstream = process.stderr;
       }
+
+      debug('Environment closed.');
     }
   }
 }

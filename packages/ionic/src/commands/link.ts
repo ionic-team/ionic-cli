@@ -31,21 +31,29 @@ export class LinkCommand extends Command implements CommandPreRun {
       description: `
 If you have an app on Ionic Pro, you can link it to this local Ionic project with this command.
 
-Excluding the ${chalk.green('app_id')} argument looks up your apps on Ionic Pro and prompts you to select one.
+Excluding the ${chalk.green('pro-id')} argument looks up your apps on Ionic Pro and prompts you to select one.
 
-This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PROJECT_FILE)} for other commands to read.
+Ionic Pro uses a git-based workflow to manage app updates. During the linking process, you may select ${chalk.bold('GitHub')} (recommended) or ${chalk.bold('Ionic Pro')} as a git host. See our documentation${chalk.cyan('[1]')} for more information.
+
+Ultimately, this command sets the ${chalk.bold('pro_id')} property in ${chalk.bold(PROJECT_FILE)}, which marks this app as linked.
+
+If you are having issues linking, please get in touch with our Support${chalk.cyan('[2]')}.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/pro/basics/git')}
+${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')}
       `,
       exampleCommands: ['', 'a1b2c3d4'],
       inputs: [
         {
-          name: 'app_id',
-          summary: `The ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
+          name: 'pro-id',
+          summary: `The Ionic Pro ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
         },
       ],
       options: [
         {
           name: 'name',
           summary: 'The app name to use during the linking of a new app',
+          groups: [OptionGroup.Hidden],
         },
         {
           name: 'create',
@@ -66,10 +74,10 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     const { create } = options;
 
     if (inputs[0] && create) {
-      throw new FatalException(`Sorry--cannot use both ${chalk.green('app_id')} and ${chalk.green('--create')}. You must either link an existing app or create a new one.`);
+      throw new FatalException(`Sorry--cannot use both ${chalk.green('pro-id')} and ${chalk.green('--create')}. You must either link an existing app or create a new one.`);
     }
 
-    const proAppId = <string>options['pro-id'] || '';
+    const proAppId = options['pro-id'] ? String(options['pro-id']) : undefined;
 
     if (proAppId) {
       inputs[0] = proAppId;
@@ -79,25 +87,25 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
 
-    let [ appId ] = inputs;
+    let proId: string | undefined = inputs[0];
     let { create } = options;
 
-    const project = await this.env.project.load();
+    const p = await this.env.project.load();
 
-    if (project.app_id) {
-      if (project.app_id === appId) {
-        this.env.log.msg(`Already linked with app ${chalk.green(appId)}.`);
+    if (p.pro_id) {
+      if (p.pro_id === proId) {
+        this.env.log.msg(`Already linked with app ${chalk.green(proId)}.`);
         return;
       }
 
-      const msg = appId ?
-        `Are you sure you want to link it to ${chalk.green(appId)} instead?` :
+      const msg = proId ?
+        `Are you sure you want to link it to ${chalk.green(proId)} instead?` :
         `Would you like to run link again?`;
 
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `App ID ${chalk.green(project.app_id)} is already set up with this app. ${msg}`,
+        message: `Pro ID ${chalk.green(p.pro_id)} is already set up with this app. ${msg}`,
       });
 
       if (!confirm) {
@@ -110,10 +118,10 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
       await promptToLogin(this.env);
     }
 
-    if (!appId && !create) {
+    if (!proId && !create) {
       const choices = [
         {
-          name: `Link ${project.app_id ? 'a different' : 'an existing'} app on Ionic Pro`,
+          name: `Link ${p.pro_id ? 'a different' : 'an existing'} app on Ionic Pro`,
           value: CHOICE_LINK_EXISTING_APP,
         },
         {
@@ -122,9 +130,9 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         },
       ];
 
-      if (project.app_id) {
+      if (p.pro_id) {
         choices.unshift({
-          name: `Relink ${chalk.green(project.app_id)}`,
+          name: `Relink ${chalk.green(p.pro_id)}`,
           value: CHOICE_RELINK,
         });
       }
@@ -138,14 +146,46 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
 
       if (result === CHOICE_CREATE_NEW_APP) {
         create = true;
+        proId = undefined;
       } else if (result === CHOICE_LINK_EXISTING_APP) {
-        appId = await this.chooseApp();
+        this.env.tasks.next(`Looking up your apps`);
+        const apps: App[] = [];
 
-        if (appId === CHOICE_NEVERMIND) {
-          this.env.log.msg('Not linking app.');
+        const appClient = await this.getAppClient();
+        const paginator = appClient.paginate();
+
+        for (const r of paginator) {
+          const res = await r;
+          apps.push(...res.data);
+        }
+
+        this.env.tasks.end();
+
+        if (apps.length === 0) {
+          const confirm = await this.env.prompt({
+            type: 'confirm',
+            name: 'confirm',
+            message: `No apps found. Would you like to create a new app on Ionic Pro?`,
+          });
+
+          if (!confirm) {
+            throw new FatalException(`Cannot link without an app selected.`);
+          }
+
+          create = true;
+          proId = undefined;
+        } else {
+          const choice = await this.chooseApp(apps);
+
+          if (choice === CHOICE_NEVERMIND) {
+            this.env.log.info('Not linking app.');
+            proId = undefined;
+          } else {
+            proId = choice;
+          }
         }
       } else if (result === CHOICE_RELINK) {
-        appId = project.app_id;
+        proId = p.pro_id;
       }
     }
 
@@ -161,9 +201,9 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         });
       }
 
-      appId = await this.createApp({ name }, runinfo);
-    } else {
-      const app = await this.lookUpApp(appId);
+      proId = await this.createApp({ name }, runinfo);
+    } else if (proId) {
+      const app = await this.lookUpApp(proId);
       await this.linkApp(app, runinfo);
     }
 
@@ -182,11 +222,11 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     return new UserClient({ token, client: this.env.client });
   }
 
-  async lookUpApp(appId: string): Promise<App> {
-    this.env.tasks.next(`Looking up app ${chalk.green(appId)}`);
+  async lookUpApp(proId: string): Promise<App> {
+    this.env.tasks.next(`Looking up app ${chalk.green(proId)}`);
 
     const appClient = await this.getAppClient();
-    const app = await appClient.load(appId); // Make sure the user has access to the app
+    const app = await appClient.load(proId); // Make sure the user has access to the app
 
     this.env.tasks.end();
 
@@ -211,8 +251,8 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
 
     this.env.log.info(
       `Ionic Pro uses a git-based workflow to manage app updates.\n` +
-      `You will be prompted to set up the git host and repository for this new app. See the docs${chalk.bold('[1]')} for more information.\n\n` +
-      `${chalk.bold('[1]')}: ${chalk.cyan('https://ionicframework.com/docs/pro/basics/git/')}`
+      `You will be prompted to set up the git host and repository for this new app. See the docs${chalk.cyan('[1]')} for more information.\n\n` +
+      `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/pro/basics/git/')}`
     );
 
     const service = await this.env.prompt({
@@ -240,24 +280,24 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
         await runCommand(runinfo, ['ssh', 'setup']);
       }
 
-      await runCommand(runinfo, ['config', 'set', 'app_id', `"${app.id}"`, '--json']);
+      await runCommand(runinfo, ['config', 'set', 'pro_id', `"${app.id}"`, '--json']);
       await runCommand(runinfo, ['git', 'remote']);
     } else {
       if (service === CHOICE_GITHUB) {
         githubUrl = await this.linkGithub(app);
       }
 
-      await runCommand(runinfo, ['config', 'set', 'app_id', `"${app.id}"`, '--json']);
+      await runCommand(runinfo, ['config', 'set', 'pro_id', `"${app.id}"`, '--json']);
     }
 
     this.env.log.ok(`Project linked with app ${chalk.green(app.id)}!`);
     if (service === CHOICE_GITHUB) {
       this.env.log.info(
         `Here are some additional links that can help you with you first push to GitHub:\n` +
-        `${chalk.bold('Adding GitHub as a remote')}:\n\t${chalk.cyan('https://help.github.com/articles/adding-a-remote/')}\n\n` +
-        `${chalk.bold('Pushing to a remote')}:\n\t${chalk.cyan('https://help.github.com/articles/pushing-to-a-remote/')}\n\n` +
-        `${chalk.bold('Working with branches')}:\n\t${chalk.cyan('https://guides.github.com/introduction/flow/')}\n\n` +
-        `${chalk.bold('More comfortable with a GUI? Try GitHub Desktop!')}\n\t${chalk.cyan('https://desktop.github.com/')}`
+        `${chalk.bold('Adding GitHub as a remote')}:\n\t${chalk.bold('https://help.github.com/articles/adding-a-remote/')}\n\n` +
+        `${chalk.bold('Pushing to a remote')}:\n\t${chalk.bold('https://help.github.com/articles/pushing-to-a-remote/')}\n\n` +
+        `${chalk.bold('Working with branches')}:\n\t${chalk.bold('https://guides.github.com/introduction/flow/')}\n\n` +
+        `${chalk.bold('More comfortable with a GUI? Try GitHub Desktop!')}\n\t${chalk.bold('https://desktop.github.com/')}`
       );
 
       if (githubUrl) {
@@ -290,7 +330,6 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
   }
 
   async confirmGithubRepoExists() {
-
     let confirm = false;
 
     this.env.log.nl();
@@ -298,9 +337,9 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     this.env.log.info(
       `${chalk.bold('If the repository does not exist please create one now before continuing.')}\n` +
       `If you're not familiar with Git you can learn how to set it up with GitHub here:\n\n` +
-      chalk.cyan(`https://help.github.com/articles/set-up-git/ \n\n`) +
+      chalk.bold(`https://help.github.com/articles/set-up-git/ \n\n`) +
       `You can find documentation on how to create a repository on GitHub and push to it here:\n\n` +
-      chalk.cyan(`https://help.github.com/articles/create-a-repo/`)
+      chalk.bold(`https://help.github.com/articles/create-a-repo/`)
     );
 
     confirm = await this.env.prompt({
@@ -310,7 +349,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     });
 
     if (!confirm) {
-      throw new FatalException('Repo Must exist on GitHub in order to link.');
+      throw new FatalException(`Repo must exist on GitHub in order to link. Please create the repo and run ${chalk.green('ionic link')} again.`);
     }
   }
 
@@ -336,7 +375,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     });
 
     if (!confirm) {
-      throw new FatalException('Aborting.');
+      throw new FatalException(`GitHub OAuth setup is required to link to GitHub repository. Please run ${chalk.green('ionic link')} again when ready.`);
     }
 
     const url = await userClient.oAuthGithubLogin(userId);
@@ -349,7 +388,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     });
 
     if (!confirm) {
-      throw new FatalException('Aborting.');
+      throw new FatalException(`GitHub OAuth setup is required to link to GitHub repository. Please run ${chalk.green('ionic link')} again when ready.`);
     }
   }
 
@@ -411,21 +450,8 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     return `${chalk.dim(`${org} /`)} ${name}`;
   }
 
-  async chooseApp(): Promise<string> {
+  async chooseApp(apps: App[]): Promise<string> {
     const { formatName } = await import('@ionic/cli-utils/lib/app');
-
-    this.env.tasks.next(`Looking up your apps`);
-    const apps: App[] = [];
-
-    const appClient = await this.getAppClient();
-    const paginator = appClient.paginate();
-
-    for (const r of paginator) {
-      const res = await r;
-      apps.push(...res.data);
-    }
-
-    this.env.tasks.end();
 
     const neverMindChoice = {
       name: 'Nevermind',
@@ -489,13 +515,12 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
   }
 
   async selectGithubBranches(repoId: number): Promise<string[]> {
-
     this.env.log.nl();
     this.env.log.info(chalk.bold(`By default Ionic Pro links only to the ${chalk.green('master')} branch.`));
     this.env.log.info(
       `${chalk.bold('If you\'d like to link to another branch or multiple branches you\'ll need to select each branch to connect to.')}\n` +
       `If you're not familiar with on working with branches in GitHub you can read about them here:\n\n` +
-      chalk.cyan(`https://guides.github.com/introduction/flow/ \n\n`)
+      chalk.bold(`https://guides.github.com/introduction/flow/ \n\n`)
     );
 
     const choice = await this.env.prompt({
@@ -549,7 +574,7 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
     }));
 
     if (choices.length === 0) {
-      this.env.log.warn('No branches found for the repository...linking to master branch.');
+      this.env.log.warn(`No branches found for the repository. Linking to ${chalk.green('master')} branch.`);
       return ['master'];
     }
 
@@ -563,5 +588,4 @@ This command simply sets the ${chalk.bold('app_id')} property in ${chalk.bold(PR
 
     return selectedBranches;
   }
-
 }

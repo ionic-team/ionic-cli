@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { BaseError } from '@ionic/cli-framework/lib/errors';
 
-import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, IConfig, IProject, IShell, IonicEnvironment, ProjectType } from '../definitions';
+import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironment, ProjectType } from '../definitions';
 import { PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Runner } from './runner';
@@ -14,20 +14,35 @@ import * as angularBuildLibType from './project/angular/build';
 
 export const BUILD_SCRIPT = 'ionic:build';
 
+export const COMMON_BUILD_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+  {
+    name: 'engine',
+    summary: `Target engine (e.g. ${['browser', 'cordova'].map(e => chalk.green(e)).join(', ')})`,
+    default: 'browser',
+  },
+  {
+    name: 'platform',
+    summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => chalk.green(e)).join(', ')})`,
+  },
+];
+
 export interface BuildRunnerDeps {
   readonly config: IConfig;
+  readonly log: ILogger;
   readonly project: IProject;
   readonly shell: IShell;
 }
 
 export abstract class BuildRunner<T extends BuildOptions<any>> extends Runner<T, void> {
   protected readonly config: IConfig;
+  protected readonly log: ILogger;
   protected readonly project: IProject;
   protected readonly shell: IShell;
 
-  constructor({ config, project, shell }: BuildRunnerDeps) {
+  constructor({ config, log, project, shell }: BuildRunnerDeps) {
     super();
     this.config = config;
+    this.log = log;
     this.project = project;
     this.shell = shell;
   }
@@ -67,11 +82,11 @@ export abstract class BuildRunner<T extends BuildOptions<any>> extends Runner<T,
     return { '--': separatedArgs ? separatedArgs : [], engine, platform };
   }
 
-  async run(options: T): Promise<void> {
-    const before = new BuildBeforeHook({ config: this.config, project: this.project, shell: this.shell });
+  async beforeBuild(options: T): Promise<void> {
+    const hook = new BuildBeforeHook({ config: this.config, project: this.project, shell: this.shell });
 
     try {
-      await before.run({ name: before.name, build: options });
+      await hook.run({ name: hook.name, build: options });
     } catch (e) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
@@ -79,13 +94,23 @@ export abstract class BuildRunner<T extends BuildOptions<any>> extends Runner<T,
 
       throw e;
     }
+  }
 
+  async run(options: T): Promise<void> {
+    if (options.engine === 'cordova' && !options.platform) {
+      this.log.warn(`Cordova engine chosen without a target platform. This could cause issues. Please use the ${chalk.green('--platform')} option.`);
+    }
+
+    await this.beforeBuild(options);
     await this.buildProject(options);
+    await this.afterBuild(options);
+  }
 
-    const after = new BuildAfterHook({ config: this.config, project: this.project, shell: this.shell });
+  async afterBuild(options: T): Promise<void> {
+    const hook = new BuildAfterHook({ config: this.config, project: this.project, shell: this.shell });
 
     try {
-      await after.run({ name: after.name, build: options });
+      await hook.run({ name: hook.name, build: options });
     } catch (e) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);

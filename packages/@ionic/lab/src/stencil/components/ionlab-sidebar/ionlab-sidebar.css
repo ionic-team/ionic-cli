@@ -1,0 +1,34 @@
+ionlab-sidebar {
+  position: relative;
+  z-index: 1;
+  background-color: var(--section-bg);
+  height: 100%;
+  width: 300px;
+  overflow: auto;
+  padding: 15px;
+}
+
+ionlab-sidebar.hidden {
+  display: none;
+}
+
+ionlab-sidebar h3 {
+  color: #fff;
+}
+
+ionlab-sidebar h3 .icon {
+  float: right;
+  font-size: 24px;
+  color: var(--font-color);
+  margin-top: -5px;
+}
+
+ionlab-sidebar .menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+ionlab-sidebar .menu li {
+  margin: 10px 0;
+}

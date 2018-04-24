@@ -2,7 +2,7 @@ import {
   APIResponse,
   APIResponseError,
   APIResponseSuccess,
-  AngularCLIJson,
+  AngularConfig,
   App,
   AppAssociation,
   CommandPreRun,
@@ -11,7 +11,6 @@ import {
   GithubBranch,
   GithubRepo,
   GithubRepoAssociation,
-  IAutomaticallyTreatableAilment,
   ICommand,
   IntegrationName,
   LogLevel,
@@ -23,6 +22,7 @@ import {
   Snapshot,
   StarterManifest,
   SuperAgentError,
+  TreatableAilment,
   User,
 } from './definitions';
 
@@ -60,11 +60,9 @@ export function isCordovaPackageJson(o: object): o is CordovaPackageJson {
     typeof obj.cordova.plugins === 'object';
 }
 
-export function isAngularCLIJson(o: object): o is AngularCLIJson {
-  const obj = <AngularCLIJson>o;
-  return obj &&
-    typeof obj.project === 'object' &&
-    typeof obj.project.name === 'string';
+export function isAngularConfig(o: object): o is AngularConfig {
+  const obj = <AngularConfig>o;
+  return obj && typeof obj.projects === 'object';
 }
 
 export function isExitCodeException(e: Error): e is ExitCodeException {
@@ -288,8 +286,9 @@ export function isSecurityProfileResponse(r: APIResponse): r is Response<Securit
   return isAPIResponseSuccess(res) && isSecurityProfile(res.data);
 }
 
-export function isAutomaticallyTreatableAilment(ailment: any): ailment is IAutomaticallyTreatableAilment {
-  return ailment && typeof ailment.treat === 'function';
+export function isTreatableAilment(a: object): a is TreatableAilment {
+  const ailment = <TreatableAilment>a;
+  return ailment && ailment.treatable && typeof ailment.getTreatmentSteps === 'function';
 }
 
 export function isIntegrationName(name: string): name is IntegrationName {

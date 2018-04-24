@@ -7,17 +7,20 @@ import * as lodash from 'lodash';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
+import { NetworkInterface } from '@ionic/cli-framework';
 import { BaseError } from '@ionic/cli-framework/lib/errors';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
+import { findClosestOpenPort, getExternalIPv4Interfaces } from '@ionic/cli-framework/utils/network';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, NetworkInterface, ProjectType, PromptModule, ServeDetails, ServeOptions } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, ProjectType, PromptModule, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
-import { OptionGroup, PROJECT_FILE } from '../constants';
+import { ASSETS_DIRECTORY, OptionGroup, PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Runner } from './runner';
 import { Hook } from './hooks';
+import { PkgManagerOptions } from './utils/npm';
 
 import * as ionic1ServeLibType from './project/ionic1/serve';
 import * as ionicAngularServeLibType from './project/ionic-angular/serve';
@@ -39,7 +42,7 @@ export const BROWSERS = ['safari', 'firefox', process.platform === 'win32' ? 'ch
 // npm script name
 export const SERVE_SCRIPT = 'ionic:serve';
 
-export const COMMON_SERVE_COMMAND_OPTIONS: CommandMetadataOption[] = [
+export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
   {
     name: 'address',
     summary: 'Use specific address for the dev server',
@@ -86,11 +89,12 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
 
   protected devAppConnectionMade = false;
 
-  constructor({ config, log, project, shell }: ServeRunnerDeps) {
+  constructor({ config, log, project, prompt, shell }: ServeRunnerDeps) {
     super();
     this.config = config;
     this.log = log;
     this.project = project;
+    this.prompt = prompt;
     this.shell = shell;
   }
 
@@ -154,7 +158,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async displayDevAppMessage(options: T) {
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
 
     // If this is regular `ionic serve`, we warn the dev about unsupported
     // plugins in the devapp.
@@ -173,8 +177,22 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     }
   }
 
+  async beforeServe(options: T) {
+    const hook = new ServeBeforeHook({ config: this.config, project: this.project, shell: this.shell });
+
+    try {
+      await hook.run({ name: hook.name, serve: options });
+    } catch (e) {
+      if (e instanceof BaseError) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
+  }
+
   async run(options: T): Promise<ServeDetails> {
-    await this.runBeforeHook(options);
+    await this.beforeServe(options);
 
     const details = await this.serveProject(options);
     const devAppDetails = await this.gatherDevAppDetails(options, details);
@@ -212,16 +230,16 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       this.log.nl();
     }
 
-    this.scheduleAfterHook(options, details);
+    this.scheduleAfterServe(options, details);
 
     return details;
   }
 
-  async runBeforeHook(options: T) {
-    const before = new ServeBeforeHook({ config: this.config, project: this.project, shell: this.shell });
+  async afterServe(options: T, details: ServeDetails) {
+    const hook = new ServeAfterHook({ config: this.config, project: this.project, shell: this.shell });
 
     try {
-      await before.run({ name: before.name, serve: options });
+      await hook.run({ name: hook.name, serve: lodash.assign({}, options, details) });
     } catch (e) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
@@ -231,47 +249,28 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     }
   }
 
-  scheduleAfterHook(options: T, details: ServeDetails) {
-    onBeforeExit(async () => {
-      const after = new ServeAfterHook({ config: this.config, project: this.project, shell: this.shell });
-
-      try {
-        await after.run({ name: after.name, serve: lodash.assign({}, options, details) });
-      } catch (e) {
-        if (e instanceof BaseError) {
-          throw new FatalException(e.message);
-        }
-
-        throw e;
-      }
-    });
+  scheduleAfterServe(options: T, details: ServeDetails) {
+    onBeforeExit(async () => this.afterServe(options, details));
   }
 
   async gatherDevAppDetails(options: T, details: ServeDetails): Promise<DevAppDetails | undefined> {
-    const { findClosestOpenPort } = await import('./utils/network');
-
     if (options.devapp) {
-      const { getSuitableNetworkInterfaces } = await import('./utils/network');
       const { computeBroadcastAddress } = await import('./devapp');
-
-      const availableInterfaces = getSuitableNetworkInterfaces();
 
       // TODO: There is no accurate/reliable/realistic way to identify a WiFi
       // network uniquely in NodeJS. But this is where we could detect new
       // networks and prompt the dev if they want to "trust" it (allow binding to
       // 0.0.0.0 and broadcasting).
 
-      const interfaces = availableInterfaces
-        .map(i => ({
-          ...i,
-          broadcast: computeBroadcastAddress(i.address, i.netmask),
-        }));
+      const interfaces = getExternalIPv4Interfaces()
+        .map(i => ({ ...i, broadcast: computeBroadcastAddress(i.address, i.netmask) }));
 
-      return {
-        port: details.port,
-        commPort: await findClosestOpenPort(DEFAULT_DEVAPP_COMM_PORT, '0.0.0.0'),
-        interfaces,
-      };
+      const { port } = details;
+
+      // the comm server always binds to 0.0.0.0 to target every possible interface
+      const commPort = await findClosestOpenPort(DEFAULT_DEVAPP_COMM_PORT, '0.0.0.0');
+
+      return { port, commPort, interfaces };
     }
   }
 
@@ -319,7 +318,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async getSupportedDevAppPlugins(): Promise<Set<string>> {
-    const p = path.resolve(__dirname, '..', 'assets', 'devapp', 'plugins.json');
+    const p = path.resolve(ASSETS_DIRECTORY, 'devapp', 'plugins.json');
     const plugins = await fsReadJsonFile(p);
 
     if (!Array.isArray(plugins)) {
@@ -334,12 +333,10 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
   }
 
   async runLab(options: T, details: ServeDetails): Promise<LabServeDetails> {
-    const { findClosestOpenPort } = await import('./utils/network');
-
     const labDetails: LabServeDetails = {
       protocol: options.ssl ? 'https' : 'http',
       address: options.labHost,
-      port: await findClosestOpenPort(options.labPort, '0.0.0.0'),
+      port: await findClosestOpenPort(options.labPort, options.labHost),
     };
 
     if (options.ssl) {
@@ -355,27 +352,33 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       }
     }
 
+    const appUrl = `${details.protocol}://localhost:${details.port}`;
+
     try {
-      await this.runLabServer(`${details.protocol}://localhost:${details.port}`, labDetails);
+      await this.runLabServer(appUrl, labDetails);
     } catch (e) {
       if (e.code === 'ENOENT') {
         const pkg = '@ionic/lab';
+        const requiredMsg = `This package is required for Ionic Lab as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md#4.0.0')}`;
         this.log.nl();
+        this.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
 
-        throw new FatalException(
-          `${chalk.green(pkg)} is required for Ionic Lab to work properly.\n` +
-          `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
-          `This package is required for Ionic Lab as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#4.0.0')}`
-        );
+        const installed = await this.promptToInstallPkg({ pkg, saveDev: true });
+
+        if (!installed) {
+          throw new FatalException(`${chalk.green(pkg)} is required for Ionic Lab to work properly.\n` + requiredMsg);
+        }
+
+        await this.runLabServer(appUrl, labDetails);
       }
     }
 
     return labDetails;
   }
 
-  async runLabServer(url: string, details: LabServeDetails) {
+  async runLabServer(url: string, details: LabServeDetails): Promise<void> {
     const project = await this.project.load();
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
 
     const labArgs = [url, '--host', details.address, '--port', String(details.port)];
     const nameArgs = project.name ? ['--app-name', project.name] : [];
@@ -414,14 +417,34 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     });
   }
 
-  async selectExternalIP(options: T): Promise<[string, NetworkInterface[]]> {
-    const { getSuitableNetworkInterfaces } = await import('./utils/network');
+  async promptToInstallPkg(options: Partial<PkgManagerOptions> & { pkg: string; }): Promise<boolean> {
+    const { pkgManagerArgs } = await import('./utils/npm');
+    const config = await this.config.load();
+    const { npmClient } = config;
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', ...options });
 
+    const confirm = await this.prompt({
+      name: 'confirm',
+      message: `Install ${chalk.green(options.pkg)}?`,
+      type: 'confirm',
+    });
+
+    if (!confirm) {
+      this.log.warn(`Not installing--here's how to install manually: ${chalk.green(`${manager} ${managerArgs.join(' ')}`)}`);
+      return false;
+    }
+
+    await this.shell.run(manager, managerArgs, { cwd: this.project.directory });
+
+    return true;
+  }
+
+  async selectExternalIP(options: T): Promise<[string, NetworkInterface[]]> {
     let availableInterfaces: NetworkInterface[] = [];
     let chosenIP = options.address;
 
     if (options.address === BIND_ALL_ADDRESS) {
-      availableInterfaces = getSuitableNetworkInterfaces();
+      availableInterfaces = getExternalIPv4Interfaces();
 
       if (availableInterfaces.length === 0) {
         if (options.externalAddressRequired) {
@@ -445,7 +468,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
             name: 'promptedIp',
             message: 'Please select which IP to use:',
             choices: availableInterfaces.map(i => ({
-              name: `${i.address} ${chalk.dim(`(${i.deviceName})`)}`,
+              name: `${i.address} ${chalk.dim(`(${i.device})`)}`,
               value: i.address,
             })),
           });

@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import * as semver from 'semver';
 
-import { IAilmentRegistry } from '../../../definitions';
-import { Ailment, AilmentDeps, AutomaticallyTreatableAilment, AutomaticallyTreatableAilmentDeps } from '../../doctor/ailments';
+import { IAilmentRegistry, ProjectType, TreatableAilment } from '../../../definitions';
+import { Ailment, AilmentDeps } from '../../doctor/ailments';
 import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 import { BUILD_SCRIPT } from '../../build';
 import { SERVE_SCRIPT } from '../../serve';
@@ -11,7 +11,7 @@ import { DEFAULT_SERVE_SCRIPT_VALUE } from './serve';
 
 import { Project as IonicAngularProject } from './';
 
-export function registerAilments(registry: IAilmentRegistry, deps: AutomaticallyTreatableIonicAngularAilmentDeps) {
+export async function registerAilments(registry: IAilmentRegistry, deps: IonicAngularAilmentDeps): Promise<void> {
   registry.register(new IonicAngularUpdateAvailable(deps));
   registry.register(new IonicAngularMajorUpdateAvailable(deps));
   registry.register(new AppScriptsUpdateAvailable(deps));
@@ -20,32 +20,22 @@ export function registerAilments(registry: IAilmentRegistry, deps: Automatically
   registry.register(new IonicAngularPackageJsonHasDefaultIonicServeCommand(deps));
 }
 
-interface IonicAngularAilmentDeps extends AilmentDeps {
-  project: IonicAngularProject;
-}
-
-export interface AutomaticallyTreatableIonicAngularAilmentDeps extends AutomaticallyTreatableAilmentDeps {
-  project: IonicAngularProject;
+export interface IonicAngularAilmentDeps extends AilmentDeps {
+  readonly project: IonicAngularProject;
 }
 
 abstract class IonicAngularAilment extends Ailment {
+  readonly projects: ProjectType[] = ['ionic-angular'];
   protected readonly project: IonicAngularProject;
 
   constructor(deps: IonicAngularAilmentDeps) {
     super(deps);
-  }
-}
-
-abstract class AutomaticallyTreatableIonicAngularAilment extends AutomaticallyTreatableAilment {
-  protected readonly project: IonicAngularProject;
-
-  constructor(deps: AutomaticallyTreatableIonicAngularAilmentDeps) {
-    super(deps);
+    this.project = deps.project;
   }
 }
 
 class IonicAngularUpdateAvailable extends IonicAngularAilment {
-  id = 'ionic-angular-update-available';
+  readonly id = 'ionic-angular-update-available';
   currentVersion?: string;
   latestVersion?: string;
 
@@ -54,7 +44,7 @@ class IonicAngularUpdateAvailable extends IonicAngularAilment {
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      this.currentVersion = await this.project.getFrameworkVersion();
+      this.currentVersion = await this.project.getPackageVersion('ionic-angular');
       const pkg = await pkgFromRegistry(npmClient, { pkg: 'ionic-angular' });
       this.latestVersion = pkg ? pkg.version : undefined;
     }
@@ -89,15 +79,15 @@ class IonicAngularUpdateAvailable extends IonicAngularAilment {
     const args = await pkgManagerArgs(npmClient, { command: 'install', pkg: `ionic-angular@${latestVersion ? latestVersion : 'latest'}` });
 
     return [
-      { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for each upgrade's instructions` },
-      { name: `If no instructions, run: ${chalk.green(args.join(' '))}` },
-      { name: `Watch for npm warnings about peer dependencies--they may need manual updating` },
+      { message: `Visit ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for each upgrade's instructions` },
+      { message: `If no instructions, run: ${chalk.green(args.join(' '))}` },
+      { message: `Watch for npm warnings about peer dependencies--they may need manual updating` },
     ];
   }
 }
 
 class IonicAngularMajorUpdateAvailable extends IonicAngularAilment {
-  id = 'ionic-angular-major-update-available';
+  readonly id = 'ionic-angular-major-update-available';
   currentVersion?: string;
   latestVersion?: string;
 
@@ -106,7 +96,7 @@ class IonicAngularMajorUpdateAvailable extends IonicAngularAilment {
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      this.currentVersion = await this.project.getFrameworkVersion();
+      this.currentVersion = await this.project.getPackageVersion('ionic-angular');
       const pkg = await pkgFromRegistry(npmClient, { pkg: 'ionic-angular' });
       this.latestVersion = pkg ? pkg.version : undefined;
     }
@@ -136,13 +126,14 @@ class IonicAngularMajorUpdateAvailable extends IonicAngularAilment {
 
   async getTreatmentSteps() {
     return [
-      { name: `Visit ${chalk.bold('https://blog.ionicframework.com')} and ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for upgrade instructions` },
+      { message: `Visit ${chalk.bold('https://blog.ionicframework.com')} and ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for upgrade instructions` },
     ];
   }
 }
 
-class AppScriptsUpdateAvailable extends AutomaticallyTreatableIonicAngularAilment {
-  id = 'app-scripts-update-available';
+class AppScriptsUpdateAvailable extends IonicAngularAilment implements TreatableAilment {
+  readonly id = 'app-scripts-update-available';
+  readonly treatable = true;
   currentVersion?: string;
   latestVersion?: string;
 
@@ -151,7 +142,7 @@ class AppScriptsUpdateAvailable extends AutomaticallyTreatableIonicAngularAilmen
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      this.currentVersion = await this.project.getAppScriptsVersion();
+      this.currentVersion = await this.project.getPackageVersion('@ionic/app-scripts');
       const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/app-scripts' });
       this.latestVersion = pkg ? pkg.version : undefined;
     }
@@ -187,7 +178,7 @@ class AppScriptsUpdateAvailable extends AutomaticallyTreatableIonicAngularAilmen
 
     return [
       {
-        name: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
+        message: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
         treat: async () => {
           await this.shell.run(manager, managerArgs, {});
         },
@@ -197,7 +188,7 @@ class AppScriptsUpdateAvailable extends AutomaticallyTreatableIonicAngularAilmen
 }
 
 class AppScriptsMajorUpdateAvailable extends IonicAngularAilment {
-  id = 'app-scripts-major-update-available';
+  readonly id = 'app-scripts-major-update-available';
   currentVersion?: string;
   latestVersion?: string;
 
@@ -206,7 +197,7 @@ class AppScriptsMajorUpdateAvailable extends IonicAngularAilment {
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      this.currentVersion = await this.project.getAppScriptsVersion();
+      this.currentVersion = await this.project.getPackageVersion('@ionic/app-scripts');
       const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/app-scripts' });
       this.latestVersion = pkg ? pkg.version : undefined;
     }
@@ -236,13 +227,13 @@ class AppScriptsMajorUpdateAvailable extends IonicAngularAilment {
 
   async getTreatmentSteps() {
     return [
-      { name: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-app-scripts/releases')} for upgrade instructions` },
+      { message: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-app-scripts/releases')} for upgrade instructions` },
     ];
   }
 }
 
 class IonicAngularPackageJsonHasDefaultIonicBuildCommand extends IonicAngularAilment {
-  id = 'ionic-angular-package-json-has-default-ionic-build-command';
+  readonly id = 'ionic-angular-package-json-has-default-ionic-build-command';
   currentVersion?: string;
   latestVersion?: string;
 
@@ -254,7 +245,7 @@ class IonicAngularPackageJsonHasDefaultIonicBuildCommand extends IonicAngularAil
   }
 
   async detected() {
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
 
     if (pkg.scripts && pkg.scripts[BUILD_SCRIPT] === DEFAULT_BUILD_SCRIPT_VALUE) {
       return true;
@@ -265,14 +256,14 @@ class IonicAngularPackageJsonHasDefaultIonicBuildCommand extends IonicAngularAil
 
   async getTreatmentSteps() {
     return [
-      { name: `Remove the ${chalk.bold(BUILD_SCRIPT)} npm script from ${chalk.bold('package.json')}` },
-      { name: `Continue using ${chalk.green('ionic build')} normally` },
+      { message: `Remove the ${chalk.bold(BUILD_SCRIPT)} npm script from ${chalk.bold('package.json')}` },
+      { message: `Continue using ${chalk.green('ionic build')} normally` },
     ];
   }
 }
 
 class IonicAngularPackageJsonHasDefaultIonicServeCommand extends IonicAngularAilment {
-  id = 'ionic-angular-package-json-has-default-ionic-serve-command';
+  readonly id = 'ionic-angular-package-json-has-default-ionic-serve-command';
   currentVersion?: string;
   latestVersion?: string;
 
@@ -284,7 +275,7 @@ class IonicAngularPackageJsonHasDefaultIonicServeCommand extends IonicAngularAil
   }
 
   async detected() {
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
 
     if (pkg.scripts && pkg.scripts[SERVE_SCRIPT] === DEFAULT_SERVE_SCRIPT_VALUE) {
       return true;
@@ -295,8 +286,8 @@ class IonicAngularPackageJsonHasDefaultIonicServeCommand extends IonicAngularAil
 
   async getTreatmentSteps() {
     return [
-      { name: `Remove the ${chalk.bold(SERVE_SCRIPT)} npm script from ${chalk.bold('package.json')}` },
-      { name: `Continue using ${chalk.green('ionic serve')} normally` },
+      { message: `Remove the ${chalk.bold(SERVE_SCRIPT)} npm script from ${chalk.bold('package.json')}` },
+      { message: `Continue using ${chalk.green('ionic serve')} normally` },
     ];
   }
 }

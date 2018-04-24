@@ -30,15 +30,37 @@ export const fsReadFile = promisify<string, string, FSReadFileOptions>(fs.readFi
 export const fsWriteFile = promisify<void, string, any, FSWriteFileOptions>(fs.writeFile);
 export const fsReadDir = promisify<string[], string>(fs.readdir);
 
-export async function readDir(filePath: string): Promise<string[]> {
-  try {
-    return await fsReadDir(filePath);
-  } catch (e) {
-    if (e.code === 'ENOENT') {
+/**
+ * Error-less, promisified `fs.readdir` with an option to recurse into
+ * subdirectories.
+ *
+ * This function will not throw errors. If there is an issue with the
+ * directory, an empty array is returned.
+ *
+ * @param dir The path to the directory to read.
+ * @param options.recursive If true, compile an array of all files in all
+ *                          subdirectories.
+ */
+export async function readDir(dir: string, options?: { recursive?: boolean; }): Promise<string[]> {
+  options = options ? options : {};
+
+  if (options.recursive) {
+    const klaw = await import('klaw');
+
+    return new Promise<string[]>((resolve, reject) => {
+      const items: string[] = [];
+
+      klaw(dir)
+        .on('error', err => { /* ignore */ })
+        .on('data', item => items.push(item.path))
+        .on('end', () => resolve(items));
+    });
+  } else {
+    try {
+      return await fsReadDir(dir);
+    } catch (e) {
       return [];
     }
-
-    throw e;
   }
 }
 

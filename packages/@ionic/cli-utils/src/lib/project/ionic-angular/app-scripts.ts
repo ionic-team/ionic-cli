@@ -1,12 +1,21 @@
+import * as Debug from 'debug';
+
 import { compileNodeModulesPaths, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { CommandMetadataOption } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
 
-export async function importAppScripts(projectDir: string): Promise<any> {
-  const appScriptsPath = resolve('@ionic/app-scripts', { paths: compileNodeModulesPaths(projectDir) });
+const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:app-scripts');
 
-  return require(appScriptsPath);
+export async function importAppScripts(projectDir: string): Promise<any> {
+  const pkg = '@ionic/app-scripts';
+
+  debug('Importing %s', pkg);
+  const p = resolve(pkg, { paths: compileNodeModulesPaths(projectDir) });
+  const m = require(p);
+  debug('fin');
+
+  return m;
 }
 
 export const APP_SCRIPTS_OPTIONS: CommandMetadataOption[] = [

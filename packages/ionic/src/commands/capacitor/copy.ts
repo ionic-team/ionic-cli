@@ -15,7 +15,7 @@ ${chalk.green('ionic capacitor copy')} will do the following:
 - Copy the ${chalk.bold('www/')} directory into your native platforms.
       `,
       exampleCommands: [],
-      inputs: []
+      inputs: [],
     };
   }
 

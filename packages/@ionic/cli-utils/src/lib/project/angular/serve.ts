@@ -9,11 +9,13 @@ import * as split2 from 'split2';
 import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { pathAccessible } from '@ionic/cli-framework/utils/fs';
+import { findClosestOpenPort, isHostConnectable } from '@ionic/cli-framework/utils/network';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
 import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
+import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './utils';
 
 const DEFAULT_PROGRAM = 'ng';
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
@@ -96,14 +98,20 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     };
   }
 
+  async beforeServe(options: AngularServeOptions): Promise<void> {
+    await super.beforeServe(options);
+
+    const p = await this.project.load();
+
+    if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
+      await addCordovaEngineForAngular(this.project, options.platform);
+    }
+  }
+
   async serveProject(options: AngularServeOptions): Promise<ServeDetails> {
-    const { findClosestOpenPort, isHostConnectable } = await import('../../utils/network');
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
 
-    debug('finding closest port to %d', options.port);
-    const ngPort = await findClosestOpenPort(options.port, '0.0.0.0');
-    options.port = ngPort;
-
+    const ngPort = options.port = await findClosestOpenPort(options.port, '0.0.0.0');
     const { program } = await this.serveCommandWrapper(options);
 
     debug('waiting for connectivity with ng serve (%dms timeout)', NG_SERVE_CONNECTIVITY_TIMEOUT);
@@ -120,6 +128,16 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     };
   }
 
+  async afterServe(options: AngularServeOptions, details: ServeDetails): Promise<void> {
+    const p = await this.project.load();
+
+    if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
+      await removeCordovaEngineForAngular(this.project, options.platform);
+    }
+
+    await super.afterServe(options, details);
+  }
+
   private async serveCommandWrapper(options: AngularServeOptions): Promise<ServeCmdDetails> {
     try {
       return await this.servecmd(options);
@@ -133,8 +151,8 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
       throw new FatalException(
         `${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.\n` +
-        `Looks like ${chalk.green(pkg)} isn't installed in this project.\n` +
-        `This package is required for ${chalk.green('ionic serve')} as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/CHANGELOG.md#4.0.0')}`
+        `Looks like ${chalk.green(pkg)} isn't installed in this project.\n\n` +
+        `This package is required for ${chalk.green('ionic serve')} as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md#4.0.0')}`
       );
     }
   }
@@ -143,7 +161,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const { pkgManagerArgs } = await import('../../utils/npm');
 
     const config = await this.config.load();
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
     const { npmClient } = config;
 
     let program = DEFAULT_PROGRAM;
@@ -204,13 +222,9 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       _: [],
       host: options.address,
       port: String(options.port),
-      progress: 'false',
       target: options.target,
       environment: options.environment,
       ssl: options.ssl ? 'true' : undefined,
-
-      // Added so Cordova doesn't complain about www directory missing.
-      deleteOutputPath: options.engine === 'cordova' ? 'false' : undefined,
     };
 
     if (options.ssl) {

@@ -1,18 +1,17 @@
-import * as util from 'util';
 import * as path from 'path';
 
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import { isCI } from 'ci-info';
 
 import { PackageJson, parseArgs } from '@ionic/cli-framework';
 import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+import { getTerminalInfo } from '@ionic/cli-framework/utils/terminal';
 
 import * as inquirerType from 'inquirer';
 
 import { IProject, InfoItem, IonicContext, IonicEnvironment, LogLevel, LogPrefix } from './definitions';
-import { PROJECT_FILE, PROJECT_FILE_LEGACY } from './constants';
+import { PROJECT_FILE } from './constants';
 import { BaseProject, OutsideProject, ProjectDeps } from './lib/project';
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
@@ -60,6 +59,8 @@ async function loadPackageJson(): Promise<PackageJson> {
 }
 
 export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[], env: { [key: string]: string; }): Promise<IonicEnvironment> {
+  process.chdir(ctx.execPath);
+
   const argv = parseArgs(pargv, { boolean: true, string: '_' });
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
   const flags = gatherFlags(argv);
@@ -73,8 +74,10 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   let prefix: LogPrefix = '';
 
   const configData = await config.load();
+  const terminalInfo = getTerminalInfo();
+  debug('Terminal info: %o', terminalInfo);
 
-  if (isCI || configData.interactive === false) {
+  if (configData.interactive === false || !terminalInfo.tty || terminalInfo.ci) {
     flags.interactive = false;
   }
 
@@ -155,36 +158,10 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     }
   }
 
-  debug(`CLI flags: ${util.inspect(flags, { breakLength: Infinity, colors: chalk.enabled })}`);
+  debug('CLI flags: %o', flags);
 
   if (typeof argv['yarn'] === 'boolean') {
     log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} was removed in CLI 4.0. Use ${chalk.green(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);
-  }
-
-  if (proxyVars.length > 0) {
-    const [ , proxyVar ] = proxyVars[0];
-
-    try {
-      require.resolve('superagent-proxy');
-    } catch (e) {
-      if (e.code !== 'MODULE_NOT_FOUND') {
-        throw e;
-      }
-
-      log.warn(
-        `Missing ${chalk.bold('superagent-proxy')} package.\n` +
-        `Detected ${chalk.green(proxyVar)} in environment, but missing proxy package: ${chalk.bold('superagent-proxy')}. Please install it to proxy CLI requests.\n\n` +
-        `See the CLI documentation on proxies: ${chalk.bold('https://ionicframework.com/docs/cli/configuring.html#using-a-proxy')}`
-      );
-    }
-  }
-
-  if (!projectDir) {
-    const foundDir = await findBaseDirectory(ctx.execPath, PROJECT_FILE_LEGACY);
-
-    if (foundDir) {
-      log.warn(`${chalk.bold(PROJECT_FILE_LEGACY)} file found in ${chalk.bold(foundDir)}--please rename it to ${chalk.bold(PROJECT_FILE)}, or your project directory will not be detected!`);
-    }
   }
 
   return ienv;

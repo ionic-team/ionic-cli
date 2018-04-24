@@ -71,7 +71,12 @@ export class Shell implements IShell {
         err = `${chalk.bold('(truncated)')} ... ` + err.substring(err.length - truncateErrorOutput);
       }
 
-      const publicErrorMsg = `An error occurred while running ${chalk.green(truncatedCmd)} (exit code ${e.exitCode})\n`;
+      const publicErrorMsg = (
+        `An error occurred while running subprocess ${chalk.green(command)}.\n` +
+        `${chalk.green(truncatedCmd)} exited with exit code ${e.exitCode}.\n\n` +
+        `Re-running this command with the ${chalk.green('--verbose')} flag may provide more information.`
+      );
+
       const privateErrorMsg = `Subprocess (${chalk.green(command)}) encountered an error (exit code ${e.exitCode}).`;
 
       if (fatalOnError) {
@@ -90,7 +95,7 @@ export class Shell implements IShell {
     }
   }
 
-  async output(command: string, args: string[], { fatalOnError = true, showCommand = false, ...crossSpawnOptions }: IShellOutputOptions): Promise<string> {
+  async output(command: string, args: string[], { fatalOnError = true, showError = true, showCommand = false, ...crossSpawnOptions }: IShellOutputOptions): Promise<string> {
     const fullCmd = prettyCommand(command, args);
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
 
@@ -114,7 +119,9 @@ export class Shell implements IShell {
       if (fatalOnError) {
         throw new FatalException(errorMsg, e.exitCode);
       } else {
-        this.log.error(errorMsg);
+        if (showError) {
+          this.log.error(errorMsg);
+        }
       }
 
       return '';
@@ -140,7 +147,7 @@ export class Shell implements IShell {
 
     try {
       const out = await runcmd(cmd, args, opts);
-      return out.split('\n').join(' ');
+      return out.split('\n').join(' ').trim();
     } catch (e) {
       // no command info at this point
     }

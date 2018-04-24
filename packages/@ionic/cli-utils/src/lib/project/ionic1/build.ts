@@ -25,7 +25,7 @@ export class BuildRunner extends BaseBuildRunner<Ionic1BuildOptions> {
     const { pkgManagerArgs } = await import('../../utils/npm');
     const config = await this.config.load();
     const { npmClient } = config;
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
     const shellOptions = { cwd: this.project.directory };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);

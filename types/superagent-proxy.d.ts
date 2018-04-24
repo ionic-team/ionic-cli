@@ -1,7 +1,5 @@
 declare module "superagent-proxy" {
-  import superagent = require('superagent');
-
-  namespace superagentProxy {}
+  import * as superagent from 'superagent';
 
   function superagentProxy(s: typeof superagent): void;
 

@@ -17,11 +17,13 @@ type Decoration = [number, string];
 const COMMAND_DECORATIONS: Decoration[] = [
   [CommandGroup.Beta, chalk.red.bold('(beta)')],
   [CommandGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
+  [CommandGroup.Experimental, chalk.red.bold('(experimental)')],
 ];
 
 const NAMESPACE_DECORATIONS: Decoration[] = [
   [NamespaceGroup.Beta, chalk.red.bold('(beta)')],
   [NamespaceGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
+  [NamespaceGroup.Experimental, chalk.red.bold('(experimental)')],
 ];
 
 export async function isCommandHidden(cmd: HydratedCommandMetadata): Promise<boolean> {
@@ -56,11 +58,16 @@ export class NamespaceHelpFormatter extends BaseNamespaceHelpFormatter<ICommand,
     return IONIC_LOGO + `  CLI ${this.version}\n\n`;
   }
 
-  async formatBeforeNamespaceDescription(meta: NamespaceMetadata): Promise<string> {
+  async formatBeforeNamespaceSummary(meta: NamespaceMetadata): Promise<string> {
     return formatGroupDecorations(NAMESPACE_DECORATIONS, meta.groups);
   }
 
-  async formatBeforeCommandDescription(cmd: HydratedCommandMetadata): Promise<string> {
+  async formatBeforeSummary(): Promise<string> {
+    const metadata = await this.getNamespaceMetadata();
+    return formatGroupDecorations(NAMESPACE_DECORATIONS, metadata.groups);
+  }
+
+  async formatBeforeCommandSummary(cmd: HydratedCommandMetadata): Promise<string> {
     return formatGroupDecorations(COMMAND_DECORATIONS, cmd.groups);
   }
 
@@ -86,12 +93,6 @@ export class NamespaceHelpFormatter extends BaseNamespaceHelpFormatter<ICommand,
 }
 
 export class CommandHelpFormatter extends BaseCommandHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
-  async formatBeforeOptionDescription(opt: CommandMetadataOption): Promise<string> {
-    const { weak } = this.colors;
-
-    return opt.hint ? `${weak(`[${opt.hint}]`)} ` : '';
-  }
-
   async formatOptions(): Promise<string> {
     const metadata = await this.getCommandMetadata();
     const options = metadata.options ? metadata.options : [];
@@ -107,6 +108,17 @@ export class CommandHelpFormatter extends BaseCommandHelpFormatter<ICommand, INa
 
   async filterOptionCallback(opt: CommandMetadataOption): Promise<boolean> {
     return isOptionHidden(opt);
+  }
+
+  async formatBeforeSummary(): Promise<string> {
+    const metadata = await this.getCommandMetadata();
+    return formatGroupDecorations(COMMAND_DECORATIONS, metadata.groups);
+  }
+
+  async formatBeforeOptionSummary(opt: CommandMetadataOption): Promise<string> {
+    const { weak } = this.colors;
+
+    return opt.hint ? `${weak(`[${opt.hint}]`)} ` : '';
   }
 }
 

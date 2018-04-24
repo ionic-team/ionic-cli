@@ -5,8 +5,8 @@ import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 
 import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
-
 import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
+import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './utils';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:build');
 
@@ -84,14 +84,31 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       args['target'] = options.target;
     }
 
+    // TODO: This is pretty hacky. Is there a better solution?
+    if (options.engine === 'cordova' && options.platform === 'android') {
+      if (!args['base-href'] && !options['--'].find(o => o.startsWith('--base-href'))) {
+        args['base-href'] = 'file:///android_asset/www/';
+      }
+    }
+
     return [...unparseArgs(args, {}), ...options['--']];
+  }
+
+  async beforeBuild(options: AngularBuildOptions): Promise<void> {
+    await super.beforeBuild(options);
+
+    const p = await this.project.load();
+
+    if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
+      await addCordovaEngineForAngular(this.project, options.platform);
+    }
   }
 
   async buildProject(options: AngularBuildOptions): Promise<void> {
     const { pkgManagerArgs } = await import('../../utils/npm');
     const config = await this.config.load();
     const { npmClient } = config;
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
 
     const args = await this.buildOptionsToNgArgs(options);
     const shellOptions = { cwd: this.project.directory };
@@ -105,5 +122,15 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     } else {
       await this.shell.run('ng', ['build', ...args], shellOptions);
     }
+  }
+
+  async afterBuild(options: AngularBuildOptions): Promise<void> {
+    const p = await this.project.load();
+
+    if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
+      await removeCordovaEngineForAngular(this.project, options.platform);
+    }
+
+    await super.afterBuild(options);
   }
 }

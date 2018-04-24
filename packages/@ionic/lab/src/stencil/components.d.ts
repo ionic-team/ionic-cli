@@ -4,187 +4,231 @@
  * and imports for stencil collections that might be configured in your stencil.config.js file
  */
 
-
-import {
-  App as IonlabApp
-} from './components/ionlab-app/ionlab-app';
+import '@stencil/core';
 
 declare global {
-  interface HTMLIonlabAppElement extends IonlabApp, HTMLElement {
+  namespace JSX {
+    interface Element {}
+    export interface IntrinsicElements {}
   }
+  namespace JSXElements {}
+
+  interface HTMLStencilElement extends HTMLElement {
+    componentOnReady(): Promise<this>;
+    componentOnReady(done: (ele?: this) => void): void;
+
+    forceUpdate(): void;
+  }
+
+  interface HTMLAttributes {}
+}
+
+
+declare global {
+
+  namespace StencilComponents {
+    interface IonlabApp {
+
+    }
+  }
+
+  interface HTMLIonlabAppElement extends StencilComponents.IonlabApp, HTMLStencilElement {}
+
   var HTMLIonlabAppElement: {
     prototype: HTMLIonlabAppElement;
     new (): HTMLIonlabAppElement;
   };
   interface HTMLElementTagNameMap {
-    "ionlab-app": HTMLIonlabAppElement;
+    'ionlab-app': HTMLIonlabAppElement;
   }
   interface ElementTagNameMap {
-    "ionlab-app": HTMLIonlabAppElement;
+    'ionlab-app': HTMLIonlabAppElement;
   }
   namespace JSX {
     interface IntrinsicElements {
-      "ionlab-app": JSXElements.IonlabAppAttributes;
+      'ionlab-app': JSXElements.IonlabAppAttributes;
     }
   }
   namespace JSXElements {
     export interface IonlabAppAttributes extends HTMLAttributes {
-      
+
     }
   }
 }
 
 
-import {
-  DeviceFrame as IonlabDeviceFrame
-} from './components/ionlab-device-frame/ionlab-device-frame';
-
 declare global {
-  interface HTMLIonlabDeviceFrameElement extends IonlabDeviceFrame, HTMLElement {
+
+  namespace StencilComponents {
+    interface IonlabDeviceFrame {
+      'icon': string;
+      'platform': string;
+      'platformName': string;
+      'url': string;
+    }
   }
+
+  interface HTMLIonlabDeviceFrameElement extends StencilComponents.IonlabDeviceFrame, HTMLStencilElement {}
+
   var HTMLIonlabDeviceFrameElement: {
     prototype: HTMLIonlabDeviceFrameElement;
     new (): HTMLIonlabDeviceFrameElement;
   };
   interface HTMLElementTagNameMap {
-    "ionlab-device-frame": HTMLIonlabDeviceFrameElement;
+    'ionlab-device-frame': HTMLIonlabDeviceFrameElement;
   }
   interface ElementTagNameMap {
-    "ionlab-device-frame": HTMLIonlabDeviceFrameElement;
+    'ionlab-device-frame': HTMLIonlabDeviceFrameElement;
   }
   namespace JSX {
     interface IntrinsicElements {
-      "ionlab-device-frame": JSXElements.IonlabDeviceFrameAttributes;
+      'ionlab-device-frame': JSXElements.IonlabDeviceFrameAttributes;
     }
   }
   namespace JSXElements {
     export interface IonlabDeviceFrameAttributes extends HTMLAttributes {
-      icon?: string;
-      platform?: string;
-      platformName?: string;
-      url?: string;
+      'icon'?: string;
+      'platform'?: string;
+      'platformName'?: string;
+      'url'?: string;
     }
   }
 }
 
 
-import {
-  PlatformDropdown as IonlabPlatformDropdown
-} from './components/ionlab-platform-dropdown/ionlab-platform-dropdown';
-
 declare global {
-  interface HTMLIonlabPlatformDropdownElement extends IonlabPlatformDropdown, HTMLElement {
+
+  namespace StencilComponents {
+    interface IonlabPlatformDropdown {
+      'activePlatforms': string[];
+    }
   }
+
+  interface HTMLIonlabPlatformDropdownElement extends StencilComponents.IonlabPlatformDropdown, HTMLStencilElement {}
+
   var HTMLIonlabPlatformDropdownElement: {
     prototype: HTMLIonlabPlatformDropdownElement;
     new (): HTMLIonlabPlatformDropdownElement;
   };
   interface HTMLElementTagNameMap {
-    "ionlab-platform-dropdown": HTMLIonlabPlatformDropdownElement;
+    'ionlab-platform-dropdown': HTMLIonlabPlatformDropdownElement;
   }
   interface ElementTagNameMap {
-    "ionlab-platform-dropdown": HTMLIonlabPlatformDropdownElement;
+    'ionlab-platform-dropdown': HTMLIonlabPlatformDropdownElement;
   }
   namespace JSX {
     interface IntrinsicElements {
-      "ionlab-platform-dropdown": JSXElements.IonlabPlatformDropdownAttributes;
+      'ionlab-platform-dropdown': JSXElements.IonlabPlatformDropdownAttributes;
     }
   }
   namespace JSXElements {
     export interface IonlabPlatformDropdownAttributes extends HTMLAttributes {
-      activePlatforms?: string[];
+      'activePlatforms'?: string[];
+      'onIonlabPlatformToggled'?: (event: CustomEvent) => void;
     }
   }
 }
 
 
-import {
-  Preview as IonlabPreview
-} from './components/ionlab-preview/ionlab-preview';
-
 declare global {
-  interface HTMLIonlabPreviewElement extends IonlabPreview, HTMLElement {
+
+  namespace StencilComponents {
+    interface IonlabPreview {
+      'activeDevices': string[];
+      'url': string;
+    }
   }
+
+  interface HTMLIonlabPreviewElement extends StencilComponents.IonlabPreview, HTMLStencilElement {}
+
   var HTMLIonlabPreviewElement: {
     prototype: HTMLIonlabPreviewElement;
     new (): HTMLIonlabPreviewElement;
   };
   interface HTMLElementTagNameMap {
-    "ionlab-preview": HTMLIonlabPreviewElement;
+    'ionlab-preview': HTMLIonlabPreviewElement;
   }
   interface ElementTagNameMap {
-    "ionlab-preview": HTMLIonlabPreviewElement;
+    'ionlab-preview': HTMLIonlabPreviewElement;
   }
   namespace JSX {
     interface IntrinsicElements {
-      "ionlab-preview": JSXElements.IonlabPreviewAttributes;
+      'ionlab-preview': JSXElements.IonlabPreviewAttributes;
     }
   }
   namespace JSXElements {
     export interface IonlabPreviewAttributes extends HTMLAttributes {
-      activeDevices?: string[];
-      url?: string;
+      'activeDevices'?: string[];
+      'url'?: string;
     }
   }
 }
 
 
-import {
-  Sidebar as IonlabSidebar
-} from './components/ionlab-sidebar/ionlab-sidebar';
-
 declare global {
-  interface HTMLIonlabSidebarElement extends IonlabSidebar, HTMLElement {
+
+  namespace StencilComponents {
+    interface IonlabSidebar {
+      'visible': boolean;
+    }
   }
+
+  interface HTMLIonlabSidebarElement extends StencilComponents.IonlabSidebar, HTMLStencilElement {}
+
   var HTMLIonlabSidebarElement: {
     prototype: HTMLIonlabSidebarElement;
     new (): HTMLIonlabSidebarElement;
   };
   interface HTMLElementTagNameMap {
-    "ionlab-sidebar": HTMLIonlabSidebarElement;
+    'ionlab-sidebar': HTMLIonlabSidebarElement;
   }
   interface ElementTagNameMap {
-    "ionlab-sidebar": HTMLIonlabSidebarElement;
+    'ionlab-sidebar': HTMLIonlabSidebarElement;
   }
   namespace JSX {
     interface IntrinsicElements {
-      "ionlab-sidebar": JSXElements.IonlabSidebarAttributes;
+      'ionlab-sidebar': JSXElements.IonlabSidebarAttributes;
     }
   }
   namespace JSXElements {
     export interface IonlabSidebarAttributes extends HTMLAttributes {
-      visible?: boolean;
+      'onIonlabSidebarCloseClicked'?: (event: CustomEvent) => void;
+      'visible'?: boolean;
     }
   }
 }
 
 
-import {
-  SpinKitFadingCircle as SkFadingCircle
-} from './components/sk-fading-circle/sk-fading-circle';
-
 declare global {
-  interface HTMLSkFadingCircleElement extends SkFadingCircle, HTMLElement {
+
+  namespace StencilComponents {
+    interface SkFadingCircle {
+
+    }
   }
+
+  interface HTMLSkFadingCircleElement extends StencilComponents.SkFadingCircle, HTMLStencilElement {}
+
   var HTMLSkFadingCircleElement: {
     prototype: HTMLSkFadingCircleElement;
     new (): HTMLSkFadingCircleElement;
   };
   interface HTMLElementTagNameMap {
-    "sk-fading-circle": HTMLSkFadingCircleElement;
+    'sk-fading-circle': HTMLSkFadingCircleElement;
   }
   interface ElementTagNameMap {
-    "sk-fading-circle": HTMLSkFadingCircleElement;
+    'sk-fading-circle': HTMLSkFadingCircleElement;
   }
   namespace JSX {
     interface IntrinsicElements {
-      "sk-fading-circle": JSXElements.SkFadingCircleAttributes;
+      'sk-fading-circle': JSXElements.SkFadingCircleAttributes;
     }
   }
   namespace JSXElements {
     export interface SkFadingCircleAttributes extends HTMLAttributes {
-      
+
     }
   }
 }
 
+declare global { namespace JSX { interface StencilJSX {} } }

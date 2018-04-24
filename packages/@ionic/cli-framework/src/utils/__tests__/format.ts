@@ -223,12 +223,12 @@ describe('@ionic/cli-framework', () => {
       const { columnar } = require('../format');
 
       it('should generate empty string from empty matrix', async () => {
-        const result = columnar([]);
+        const result = columnar([], {});
         expect(result).toEqual('');
       });
 
       it('should work without column headers', async () => {
-        const result = columnar([['a', 'b', 'c']]);
+        const result = columnar([['a', 'b', 'c']], {});
         expect(stripAnsi(result)).toEqual('a | b | c');
       });
 
@@ -267,6 +267,25 @@ a   | b   | c
 a   /\\ b   /\\ c
 =================
 foo /\\ bar /\\ baz
+        `.trim());
+      });
+
+      it('should have appropriate spacing for cells with newlines', async () => {
+        const result = columnar([['mr\n& mr', 'cat', 'dog,\nthe third'], ['mr', 'spongebob', 'squarepants'], ['', 'the', 'brain']], {});
+        expect(stripAnsi(result)).toEqual(`
+mr   | cat       | dog,
+& mr |           | the third
+mr   | spongebob | squarepants
+     | the       | brain
+        `.trim());
+      });
+
+      it('should separate columns and rows with only one space with empty string separators', async () => {
+        const result = columnar([['a', 'b', 'c'], ['1', '2', '3']], { vsep: '', hsep: '', headers: ['x', 'x', 'x'] });
+        expect(stripAnsi(result)).toEqual(`
+x x x
+a b c
+1 2 3
         `.trim());
       });
 

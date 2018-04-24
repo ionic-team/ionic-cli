@@ -127,14 +127,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.state = {};
     }
 
-    if (!results.state.doctor) {
-      results.state.doctor = {};
-    }
-
-    if (typeof results.state.doctor.ignored === 'undefined') {
-      results.state.doctor.ignored = [];
-    }
-
     if (!results.state.lastCommand) {
       results.state.lastCommand = new Date().toISOString();
     }
@@ -171,6 +163,21 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       results.npmClient = results.yarn ? 'yarn' : 'npm';
     }
 
+    if (!results.doctor) {
+      results.doctor = {};
+    }
+
+    if (!results.doctor.issues) {
+      results.doctor.issues = {};
+    }
+
+    if (results.state.doctor && results.state.doctor.ignored) {
+      for (const issue of results.state.doctor.ignored) {
+        results.doctor.issues[issue] = { ignored: true };
+      }
+    }
+
+    delete results.state.doctor;
     delete results.created;
     delete results.daemon;
     delete results.version;
@@ -194,11 +201,13 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       && typeof j.addresses === 'object'
       && typeof j.state === 'object'
       && typeof j.state.lastCommand === 'string'
-      && typeof j.state.doctor === 'object'
       && typeof j.user === 'object'
       && typeof j.tokens === 'object'
       && typeof j.telemetry === 'boolean'
-      && typeof j.npmClient === 'string';
+      && typeof j.npmClient === 'string'
+      && typeof j.features === 'object'
+      && typeof j.doctor === 'object'
+      && typeof j.doctor.issues === 'object';
   }
 
   async getAPIUrl(): Promise<string> {
@@ -218,7 +227,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
       return config.addresses.dashUrl;
     }
 
-    return 'https://dashboard.ionicjs.com';
+    return 'https://dashboard.ionicframework.com';
   }
 
   async getGitHost(): Promise<string> {

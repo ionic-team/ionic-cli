@@ -1,12 +1,11 @@
 import * as path from 'path';
-import * as util from 'util';
 
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { BaseError, InputValidationError, PackageJson, stripOptions } from '@ionic/cli-framework';
-import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+import { processExit } from '@ionic/cli-framework/utils/process';
 
 import { IPCMessage, IonicContext, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
 import { Executor } from '@ionic/cli-utils/lib/executor';
@@ -79,7 +78,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     try {
       const config = await ienv.config.load();
 
-      debug(util.inspect(ienv.ctx, { breakLength: Infinity, colors: chalk.enabled }));
+      debug('Context: %o', ienv.ctx);
 
       if (env['IONIC_TOKEN']) {
         const wasLoggedIn = await ienv.session.isLoggedIn();
@@ -108,31 +107,11 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
         }
       }
 
-      if (ienv.project.directory) {
-        const nodeModulesExists = await pathExists(path.join(ienv.project.directory, 'node_modules'));
-
-        if (!nodeModulesExists) {
-          const confirm = await ienv.prompt({
-            type: 'confirm',
-            name: 'confirm',
-            message: `Looks like a fresh checkout! No ${chalk.green('./node_modules')} directory found. Would you like to install project dependencies?`,
-          });
-
-          if (confirm) {
-            ienv.log.msg('Installing dependencies may take several minutes!');
-            const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
-            const { npmClient } = config;
-            const [ installer, ...installerArgs ] = await pkgManagerArgs(npmClient, { command: 'install' });
-            await ienv.shell.run(installer, installerArgs, {});
-          }
-        }
-      }
-
       const parsedArgs = stripOptions(pargv, { includeSeparated: false });
-
-      // If an legacy command is being executed inform the user that there is a new command available
       const foundCommand = mapLegacyCommand(parsedArgs[0]);
 
+      // If an legacy command is being executed inform the user that there is a
+      // new command available
       if (foundCommand) {
         ienv.log.msg(
           `The ${chalk.green(parsedArgs[0])} command has been renamed. To find out more, run:\n\n` +
@@ -177,8 +156,6 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
         chalk.red(String(err.stack ? err.stack : err))
       );
     } else if (isExitCodeException(err)) {
-      process.exitCode = err.exitCode;
-
       if (err.message) {
         if (err.exitCode > 0) {
           ienv.log.error(err.message);
@@ -186,6 +163,8 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
           ienv.log.msg(err.message);
         }
       }
+
+      await processExit(err.exitCode);
     } else if (err instanceof BaseError) {
       ienv.log.error(err.message);
     } else {

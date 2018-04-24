@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as util from 'util';
 
 import chalk from 'chalk';
 import * as Debug from 'debug';
@@ -45,7 +44,7 @@ export async function loadGulp(): Promise<typeof gulpType> {
       );
     }
 
-    debug(`Loaded gulp tasks: ${util.inspect(_gulpInst.tasks, { colors: chalk.enabled })}`);
+    debug('Loaded gulp tasks: %o', _gulpInst.tasks);
   }
 
   return _gulpInst;

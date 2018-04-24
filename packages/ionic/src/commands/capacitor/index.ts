@@ -14,7 +14,7 @@ These commands integrate with Capacitor, Ionic's new native layer project which 
 Learn more about Capacitor:
 - Main documentation: ${chalk.bold('https://capacitor.ionicframework.com/')}
       `,
-      groups: [NamespaceGroup.Beta]
+      groups: [NamespaceGroup.Beta],
     };
   }
 
@@ -25,7 +25,7 @@ Learn more about Capacitor:
       ['copy', async () => { const { CopyCommand } = await import('./copy'); return new CopyCommand(this, this.env); }],
       ['open', async () => { const { OpenCommand } = await import('./open'); return new OpenCommand(this, this.env); }],
       ['sync', async () => { const { SyncCommand } = await import('./sync'); return new SyncCommand(this, this.env); }],
-      ['update', async () => { const { UpdateCommand } = await import('./update'); return new UpdateCommand(this, this.env); }]
+      ['update', async () => { const { UpdateCommand } = await import('./update'); return new UpdateCommand(this, this.env); }],
     ]);
   }
 }

@@ -1,0 +1,19 @@
+ionlab-preview {
+  text-align: center;
+  flex: 1;
+  overflow: scroll;
+
+  --frame-width: 375px;
+  --frame-height: 667px;
+}
+
+ionlab-preview > div {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  vertical-align: middle;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 60px;
+  min-height: 100%;
+}

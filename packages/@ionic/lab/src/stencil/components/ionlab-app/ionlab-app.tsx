@@ -4,7 +4,6 @@ import { PLATFORM_IOS, PLATFORM_ANDROID } from '../../utils';
 
 @Component({
   tag: 'ionlab-app',
-  styleUrl: 'ionlab-app.scss',
 })
 export class App {
   @State() sidebarVisible: boolean = true;

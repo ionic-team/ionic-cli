@@ -281,6 +281,13 @@ export async function loadConfigXml({ project }: { project: IProject }): Promise
   try {
     return await ConfigXml.load(filePath);
   } catch (e) {
-    throw new FatalException(`Cannot load ${chalk.bold(prettyPath(filePath))}: ${e.stack ? e.stack : e}`);
+    const msg = e.code === 'ENOENT'
+      ? `Cordova ${chalk.bold('config.xml')} file not found.\n\nYou can re-add the Cordova integration with the following command: ${chalk.green('ionic integrations enable cordova --add')}`
+      : chalk.red(e.stack ? e.stack : e);
+
+    throw new FatalException(
+      `Cannot load ${chalk.bold(prettyPath(filePath))}\n` +
+      `${msg}`
+    );
   }
 }

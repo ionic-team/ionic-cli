@@ -26,8 +26,3 @@ the file name within this package.
 See [CLI Hook
 documentation](https://ionicframework.com/docs/cli/configuring.html#hooks) for
 details.
-
-## List
-
-* `node_modules/@ionic/cli-hooks/add-cordova-engine.js`: Before a build, insert `cordova.js` script tag into your `index.html` file if it does not already exist.
-* `node_modules/@ionic/cli-hooks/remove-cordova-engine.js`: After a build, restore the original `index.html` file.

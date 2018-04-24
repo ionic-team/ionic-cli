@@ -1,12 +1,10 @@
-import { compileNodeModulesPaths, resolve } from '@ionic/cli-framework/utils/npm';
-
 import { InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../../definitions';
 import { BaseIntegration } from '../';
-import { ADD_CORDOVA_ENGINE_HOOK, HOOKS_PKG, REMOVE_CORDOVA_ENGINE_HOOK, addHook, removeHook } from '../../hooks';
 
 export class Integration extends BaseIntegration {
-  name: IntegrationName = 'cordova';
-  archiveUrl = 'https://d2ql0qc7j8u4b2.cloudfront.net/integration-cordova.tar.gz';
+  readonly name: IntegrationName = 'cordova';
+  readonly summary = 'Target native iOS and Android with Apache Cordova';
+  readonly archiveUrl = 'https://d2ql0qc7j8u4b2.cloudfront.net/integration-cordova.tar.gz';
 
   async getInfo(): Promise<InfoItem[]> {
     const { getAndroidSdkToolsVersion } = await import('./android');
@@ -55,60 +53,13 @@ export class Integration extends BaseIntegration {
     return info;
   }
 
-  async enable() {
-    const { pkgManagerArgs } = await import('../../utils/npm');
-
-    await super.enable();
-
-    if (this.project.type === 'angular') { // TODO: better way?
-      const project = await this.project.load();
-
-      const exists = () => {
-        try {
-          resolve(HOOKS_PKG, { paths: compileNodeModulesPaths(this.project.directory) });
-          return true;
-        } catch (e) {
-          // ignore
-        }
-
-        return false;
-      };
-
-      if (!exists()) {
-        const config = await this.config.load();
-        const { npmClient } = config;
-        const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg: HOOKS_PKG });
-
-        await this.shell.run(manager, managerArgs, { cwd: this.project.directory });
-      }
-
-      project.hooks['build:before'] = addHook(this.project.directory, project.hooks['build:before'], ADD_CORDOVA_ENGINE_HOOK);
-      project.hooks['build:after'] = addHook(this.project.directory, project.hooks['build:after'], REMOVE_CORDOVA_ENGINE_HOOK);
-      project.hooks['serve:before'] = addHook(this.project.directory, project.hooks['serve:before'], ADD_CORDOVA_ENGINE_HOOK);
-      project.hooks['serve:after'] = addHook(this.project.directory, project.hooks['serve:after'], REMOVE_CORDOVA_ENGINE_HOOK);
-    }
-  }
-
-  async disable() {
-    await super.disable();
-
-    if (this.project.type === 'angular') {
-      const project = await this.project.load();
-
-      project.hooks['build:before'] = removeHook(this.project.directory, project.hooks['build:before'], ADD_CORDOVA_ENGINE_HOOK);
-      project.hooks['build:after'] = removeHook(this.project.directory, project.hooks['build:after'], REMOVE_CORDOVA_ENGINE_HOOK);
-      project.hooks['serve:before'] = removeHook(this.project.directory, project.hooks['serve:before'], ADD_CORDOVA_ENGINE_HOOK);
-      project.hooks['serve:after'] = removeHook(this.project.directory, project.hooks['serve:after'], REMOVE_CORDOVA_ENGINE_HOOK);
-    }
-  }
-
-  async personalize({ appName, bundleId }: ProjectPersonalizationDetails) {
+  async personalize({ name, packageId }: ProjectPersonalizationDetails) {
     const { loadConfigXml } = await import('./config');
     const conf = await loadConfigXml({ project: this.project });
-    conf.setName(appName);
+    conf.setName(name);
 
-    if (bundleId) {
-      conf.setBundleId(bundleId);
+    if (packageId) {
+      conf.setBundleId(packageId);
     }
 
     await conf.save();

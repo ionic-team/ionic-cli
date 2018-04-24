@@ -1,6 +1,7 @@
 {
   "extends": "../../../tsconfig.base.json",
   "include": [
+    "../../../types/rxjs-custom.d.ts",
     "**/*.ts"
   ],
   "exclude": [

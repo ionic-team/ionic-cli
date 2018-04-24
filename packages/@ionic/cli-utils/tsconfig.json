@@ -1,21 +1,24 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./"
+    "baseUrl": ".",
+    "outDir": "./",
+    "paths": {
+      "parse5": ["../../../node_modules/parse5/lib/index.d.ts"]
+    }
   },
   "include": [
-    "../../../types/ci-info.d.ts",
     "../../../types/cross-spawn.d.ts",
     "../../../types/elementtree.d.ts",
     "../../../types/leek.d.ts",
     "../../../types/os-name.d.ts",
+    "../../../types/rxjs-custom.d.ts",
     "../../../types/slice-ansi.d.ts",
     "../../../types/ssh-config.d.ts",
     "../../../types/string-width.d.ts",
     "../../../types/superagent-proxy.d.ts",
     "../../../types/superagent.d.ts",
     "../../../types/tiny-lr.d.ts",
-    "../../../types/wrap-ansi.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

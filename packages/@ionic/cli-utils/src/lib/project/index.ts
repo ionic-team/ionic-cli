@@ -6,7 +6,7 @@ import * as lodash from 'lodash';
 
 import { ERROR_FILE_INVALID_JSON, fsReadJsonFile, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
-import { ERROR_INVALID_PACKAGE_JSON, readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { IAilmentRegistry, IConfig, IIntegration, ILogger, IProject, IShell, ITaskChain, InfoItem, IntegrationName, PackageJson, ProjectFile, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
@@ -32,14 +32,12 @@ export interface ProjectDeps {
 
 export abstract class BaseProject extends BaseConfig<ProjectFile> implements IProject {
   type?: ProjectType;
-  directory: string;
 
   protected readonly config: IConfig;
   protected readonly log: ILogger;
   protected readonly shell: IShell;
   protected readonly tasks: ITaskChain;
 
-  protected integrations: IIntegration[] = [];
   protected packageJsonFile?: PackageJson;
 
   constructor(dir: string, file: string, { config, log, shell, tasks }: ProjectDeps) {
@@ -57,7 +55,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     try {
       projectFile = await fsReadJsonFile(projectFilePath);
     } catch (e) {
-      // ignore
+      debug('Attempted to load project config %s but got error: %O', projectFilePath, e);
     }
 
     if (projectFile && projectFile.type && PROJECT_TYPES.includes(projectFile.type)) {
@@ -112,50 +110,29 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       throw new FatalException(`Bad project type: ${chalk.bold(type)}`); // TODO?
     }
 
-    await project.refreshIntegrations();
-
     return project;
-  }
-
-  async refreshIntegrations() {
-    const p = await this.load();
-    const projectIntegrations = <IntegrationName[]>Object.keys(p.integrations); // TODO
-
-    const integrationNames = projectIntegrations.filter(n => {
-      const i = p.integrations[n];
-      return i && i.enabled !== false;
-    });
-
-    this.integrations = await Promise.all(
-      integrationNames.map(async name => BaseIntegration.createFromName({
-        config: this.config,
-        project: this,
-        shell: this.shell,
-        tasks: this.tasks,
-      }, name))
-    );
   }
 
   abstract detected(): Promise<boolean>;
 
-  async loadAppId(): Promise<string> {
+  async requireProId(): Promise<string> {
     const p = await this.load();
 
-    if (!p.app_id) {
+    if (!p.pro_id) {
       throw new FatalException(
-        `Your project file (${chalk.bold(prettyPath(this.filePath))}) does not contain '${chalk.bold('app_id')}'. ` +
+        `Your project file (${chalk.bold(prettyPath(this.filePath))}) does not contain '${chalk.bold('pro_id')}'. ` +
         `Run ${chalk.green('ionic link')}.`
       );
     }
 
-    return p.app_id;
+    return p.pro_id;
   }
 
   get packageJsonPath() {
     return path.resolve(this.directory, 'package.json');
   }
 
-  async loadPackageJson(): Promise<PackageJson> {
+  async requirePackageJson(): Promise<PackageJson> {
     if (!this.packageJsonFile) {
       try {
         this.packageJsonFile = await readPackageJsonFile(this.packageJsonPath);
@@ -180,22 +157,19 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
       results.name = '';
     }
 
-    if (!results.app_id) {
-      results.app_id = '';
+    if (results.app_id) {
+      results.pro_id = results.app_id;
     }
 
     if (!results.integrations) {
       results.integrations = {};
     }
 
-    if (!results.hooks) {
-      results.hooks = {};
-    }
-
     if (!results.type) {
       results.type = this.type;
     }
 
+    delete results.app_id;
     delete results.integrations.gulp;
     delete results.gulp;
     delete results.projectTypeId;
@@ -208,9 +182,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   is(j: any): j is ProjectFile {
     return j
       && typeof j.name === 'string'
-      && typeof j.app_id === 'string'
-      && typeof j.integrations === 'object'
-      && typeof j.hooks === 'object';
+      && typeof j.integrations === 'object';
   }
 
   async getDocsUrl(): Promise<string> {
@@ -221,36 +193,76 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     return path.resolve(this.directory, 'src');
   }
 
-  async getInfo(): Promise<InfoItem[]> {
-    return lodash.flatten(await Promise.all(this.integrations.map(async i => i.getInfo())));
+  async getDistDir(): Promise<string> {
+    return path.resolve(this.directory, 'www');
   }
 
-  async personalize(details: ProjectPersonalizationDetails) {
-    const { appName, displayName, description, version } = details;
+  async getInfo(): Promise<InfoItem[]> {
+    const integrations = await this.getIntegrations();
+    const integrationInfo = lodash.flatten(await Promise.all(integrations.map(async i => i.getInfo())));
+
+    return integrationInfo;
+  }
+
+  async personalize(details: ProjectPersonalizationDetails): Promise<void> {
+    const { name, projectId, description, version } = details;
 
     const project = await this.load();
-    project.name = displayName ? displayName : appName;
+    project.name = name;
     await this.save();
 
-    const pkg = await this.loadPackageJson();
+    const pkg = await this.requirePackageJson();
 
-    pkg.name = appName;
+    pkg.name = projectId;
     pkg.version = version ? version : '0.0.1';
     pkg.description = description ? description : 'An Ionic project';
 
     await fsWriteJsonFile(this.packageJsonPath, pkg, { encoding: 'utf8' });
 
-    await Promise.all(this.integrations.map(async i => i.personalize(details)));
+    const integrations = await this.getIntegrations();
+
+    await Promise.all(integrations.map(async i => i.personalize(details)));
   }
 
-  async getAilmentRegistry(deps: doctorLibType.AutomaticallyTreatableAilmentDeps): Promise<IAilmentRegistry> {
+  async getAilmentRegistry(deps: doctorLibType.AilmentDeps): Promise<IAilmentRegistry> {
     const { AilmentRegistry, registerAilments } = await import('../doctor/ailments');
 
     const registry = new AilmentRegistry();
 
-    registerAilments(registry, deps);
+    await registerAilments(registry, deps);
 
     return registry;
+  }
+
+  async getPackageVersion(pkgName: string) {
+    try {
+      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
+      const pkg = await readPackageJsonFile(pkgPath);
+      return pkg.version;
+    } catch (e) {
+      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
+    }
+  }
+
+  async createIntegration(name: IntegrationName): Promise<IIntegration> {
+    return BaseIntegration.createFromName({
+      config: this.config,
+      project: this,
+      shell: this.shell,
+      tasks: this.tasks,
+    }, name);
+  }
+
+  protected async getIntegrations(): Promise<IIntegration[]> {
+    const p = await this.load();
+    const projectIntegrations = <IntegrationName[]>Object.keys(p.integrations); // TODO
+
+    const integrationNames = projectIntegrations.filter(n => {
+      const c = p.integrations[n];
+      return c && c.enabled !== false;
+    });
+
+    return Promise.all(integrationNames.map(async name => this.createIntegration(name)));
   }
 }
 
@@ -262,7 +274,6 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
  */
 export class OutsideProject extends BaseConfig<never> implements IProject {
   type = undefined;
-  integrations = [];
 
   is(j: any): j is never {
     return false;
@@ -270,7 +281,7 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
 
   private _createError() {
     return new FatalException(
-      `Attempted to load an Ionic project outside a detected project directory.` +
+      `Attempted to load an Ionic project outside a detected project directory.\n` +
       `Would you mind reporting this issue? ${chalk.bold('https://github.com/ionic-team/ionic-cli/issues/')}`
     );
   }
@@ -288,12 +299,13 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
   }
 
   async getSourceDir(): Promise<never> { throw this._createError(); }
-  async loadAppId(): Promise<never> { throw this._createError(); }
-  async loadPackageJson(): Promise<never> { throw this._createError(); }
+  async getDistDir(): Promise<never> { throw this._createError(); }
+  async requireProId(): Promise<never> { throw this._createError(); }
+  async requirePackageJson(): Promise<never> { throw this._createError(); }
   async provideDefaults(): Promise<never> { throw this._createError(); }
   async personalize(): Promise<never> { throw this._createError(); }
-  async refreshIntegrations(): Promise<never> { throw this._createError(); }
   async getAilmentRegistry(): Promise<never> { throw this._createError(); }
+  async createIntegration(): Promise<never> { throw this._createError(); }
 }
 
 export function prettyProjectName(type?: string): string {

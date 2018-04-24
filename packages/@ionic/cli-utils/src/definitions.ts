@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as os from 'os';
 
 import * as crossSpawnType from 'cross-spawn';
 import * as inquirerType from 'inquirer';
@@ -139,42 +138,26 @@ export interface ProjectIntegration {
   enabled?: boolean;
 }
 
-export interface ProjectCordovaIntegration extends ProjectIntegration {
-  setupEngineHooks?: boolean;
-}
-
-export interface ProjectCapacitorIntegration extends ProjectIntegration {
-}
-
 export interface ProjectIntegrations {
-  cordova?: ProjectCordovaIntegration;
-  capacitor?: ProjectCapacitorIntegration;
+  cordova?: ProjectIntegration;
+  capacitor?: ProjectIntegration;
 }
 
 export interface ProjectFile {
   name: string;
-  app_id: string;
+  pro_id?: string;
+
   readonly integrations: ProjectIntegrations;
-  readonly hooks: Record<HookName, string | string[] | undefined>;
+  readonly hooks?: Record<HookName, string | string[] | undefined>;
 
   ssl?: {
     key?: string;
     cert?: string;
   };
 
-  /**
-   * @deprecated
-   */
+  // Ionic 1 only
   watchPatterns?: string[];
-
-  /**
-   * @deprecated
-   */
   proxies?: ProjectFileProxy[];
-
-  /**
-   * @deprecated
-   */
   documentRoot?: string;
 }
 
@@ -300,9 +283,9 @@ export interface IConfig extends IBaseConfig<ConfigFile> {
 }
 
 export interface ProjectPersonalizationDetails {
-  appName: string;
-  displayName?: string;
-  bundleId?: string;
+  name: string;
+  projectId: string;
+  packageId?: string;
   version?: string;
   description?: string;
 }
@@ -310,13 +293,14 @@ export interface ProjectPersonalizationDetails {
 export interface IProject extends IBaseConfig<ProjectFile> {
   type?: ProjectType;
 
-  refreshIntegrations(): Promise<void>;
   getDocsUrl(): Promise<string>;
   getSourceDir(): Promise<string>;
+  getDistDir(): Promise<string>;
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
-  loadAppId(): Promise<string>;
-  loadPackageJson(): Promise<framework.PackageJson>;
+  createIntegration(name: IntegrationName): Promise<IIntegration>;
+  requireProId(): Promise<string>;
+  requirePackageJson(): Promise<framework.PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
   getAilmentRegistry(env: IonicEnvironment): Promise<IAilmentRegistry>;
 }
@@ -327,14 +311,13 @@ export interface IIntegrationAddOptions {
 }
 
 export interface IIntegration {
-  name: IntegrationName;
-  archiveUrl?: string;
+  readonly name: IntegrationName;
+  readonly summary: string;
+  readonly archiveUrl?: string;
 
   add(opts?: IIntegrationAddOptions): Promise<void>;
   enable(): Promise<void>;
   disable(): Promise<void>;
-
-  getConfig(): Promise<ProjectIntegration | undefined>;
   getInfo(): Promise<InfoItem[]>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
 }
@@ -375,10 +358,10 @@ export interface IShellSpawnOptions extends crossSpawnType.SpawnOptions {
 
 export interface IShellOutputOptions extends IShellSpawnOptions {
   fatalOnError?: boolean;
+  showError?: boolean;
 }
 
 export interface IShellRunOptions extends IShellOutputOptions {
-  showError?: boolean;
   fatalOnNotFound?: boolean;
   truncateErrorOutput?: number;
   logOptions?: IShellRunLogOptions;
@@ -399,14 +382,47 @@ export interface ITelemetry {
 
 export type NpmClient = 'yarn' | 'npm';
 
-export type Features = 'project-angular' | 'ssl-commands';
+export type FeatureId = 'project-angular' | 'ssl-commands' | 'ionic-angular-v3-v4-migration';
+
+export type DoctorAilmentId = (
+  // Base
+  'npm-installed-locally' |
+  'ionic-installed-locally' |
+  'git-not-used' |
+  'git-config-invalid' |
+  'ionic-native-update-available' |
+  'ionic-native-major-update-available' |
+  'ionic-native-old-version-installed' |
+  'unsaved-cordova-platforms' |
+  'default-cordova-bundle-id-used' |
+  'viewport-fit-not-set' |
+  'cordova-platforms-committed' |
+
+  // angular
+  'ionic-for-angular-update-available' |
+  'ionic-for-angular-major-update-available' |
+  'ionic-schematics-angular-update-available' |
+  'ionic-schematics-angular-major-update-available' |
+  'angular-cli-update-available' |
+  'angular-cli-major-update-available' |
+  'angular-devkit-core-update-available' |
+  'angular-devkit-core-major-update-available' |
+  'angular-devkit-schematics-update-available' |
+  'angular-devkit-schematics-major-update-available' |
+  'ionic-angular-v3-v4-migration' |
+
+  // ionic-angular
+  'ionic-angular-update-available' |
+  'ionic-angular-major-update-available' |
+  'app-scripts-update-available' |
+  'app-scripts-major-update-available' |
+  'ionic-angular-package-json-has-default-ionic-build-command' |
+  'ionic-angular-package-json-has-default-ionic-serve-command'
+);
 
 export interface ConfigFile {
   state: {
     lastCommand: string;
-    doctor: {
-      ignored: string[];
-    };
   };
   addresses: {
     dashUrl?: string;
@@ -415,6 +431,7 @@ export interface ConfigFile {
     gitPort?: number;
   };
   ssl?: SSLConfig;
+  proxy?: string;
   git: {
     setup?: boolean;
   };
@@ -426,7 +443,14 @@ export interface ConfigFile {
     user?: string;
     telemetry?: string;
   };
-  features: { [F in Features]?: boolean; };
+  doctor: {
+    issues: {
+      [I in DoctorAilmentId]?: {
+        ignored?: boolean;
+      };
+    };
+  };
+  features: { [I in FeatureId]?: boolean; };
   telemetry: boolean;
   interactive?: boolean;
   npmClient: NpmClient;
@@ -440,6 +464,7 @@ export interface SSLConfig {
 
 export interface CreateRequestOptions {
   ssl?: SSLConfig;
+  proxy?: string;
 }
 
 export interface IBaseConfig<T extends { [key: string]: any }> {
@@ -649,27 +674,29 @@ export interface ServeDetails {
   localAddress: string;
   externalAddress: string;
   port: number;
-  externalNetworkInterfaces: NetworkInterface[];
+  externalNetworkInterfaces: framework.NetworkInterface[];
   externallyAccessible: boolean;
 }
 
 export interface IAilment {
-  id: string;
+  implicit: boolean;
+  projects?: ProjectType[];
+  id: DoctorAilmentId;
   getMessage(): Promise<string>;
-  getTreatmentSteps(): Promise<TreatmentStep[]>;
   detected(): Promise<boolean>;
+  getTreatmentSteps(): Promise<PatientTreatmentStep[]>;
 }
 
-export interface IAutomaticallyTreatableAilment extends IAilment {
-  treat(): Promise<boolean>;
-  getTreatmentSteps(): Promise<AutomaticTreatmentStep[]>;
+export interface TreatableAilment extends IAilment {
+  treatable: true;
+  getTreatmentSteps(): Promise<DoctorTreatmentStep[]>;
 }
 
-export interface TreatmentStep {
-  name: string;
+export interface PatientTreatmentStep {
+  message: string;
 }
 
-export interface AutomaticTreatmentStep extends TreatmentStep {
+export interface DoctorTreatmentStep extends PatientTreatmentStep {
   treat(): Promise<void>;
 }
 
@@ -677,12 +704,15 @@ export interface IAilmentRegistry {
   ailments: IAilment[];
 
   register(ailment: IAilment): void;
-  get(id: string): void;
+  get(id: string): IAilment | undefined;
 }
 
-export interface AngularCLIJson {
-  project: {
-    name: string;
+export interface AngularConfig {
+  projects: {
+    [key: string]: {
+      root: string;
+      architect: any;
+    } | undefined;
   };
 }
 
@@ -833,14 +863,11 @@ export interface StarterTemplate {
   type: ProjectType;
   id: string;
   description?: string;
-  strip?: boolean;
 }
 
 export interface ResolvedStarterTemplate extends StarterTemplate {
   archive: string;
 }
-
-export type NetworkInterface = { deviceName: string; } & os.NetworkInterfaceInfo;
 
 export interface IPCMessage {
   type: 'telemetry';

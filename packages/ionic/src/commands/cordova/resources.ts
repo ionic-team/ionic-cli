@@ -1,5 +1,3 @@
-import * as util from 'util';
-
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
@@ -255,7 +253,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       return response;
     }));
 
-    debug(`${chalk.cyan('uploadSourceImages')} completed: responses=${util.inspect(imageUploadResponses, { colors: chalk.enabled })}`);
+    debug(`${chalk.cyan('uploadSourceImages')} completed: responses=%o`, imageUploadResponses);
 
     srcImagesAvailable = srcImagesAvailable.map((img, index) => {
       return {
@@ -266,7 +264,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       };
     });
 
-    debug(`srcImagesAvailable=${util.inspect(srcImagesAvailable, { colors: chalk.enabled })}`);
+    debug('srcImagesAvailable=%o', srcImagesAvailable);
 
     // If any images are asking to be generated but are not of the correct size
     // inform the user and continue on.
@@ -279,7 +277,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       return !resourceSourceImage.vector && (img.width > resourceSourceImage.width || img.height > resourceSourceImage.height);
     });
 
-    debug(`imagesTooLargeForSource=${util.inspect(imagesTooLargeForSource, { colors: chalk.enabled })}`);
+    debug('imagesTooLargeForSource=%o', imagesTooLargeForSource);
 
     // Remove all images too large for transformations
     imgResources = imgResources.filter(img => {
@@ -306,7 +304,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
     const generateImageResponses = await Promise.all(transforms);
     this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
-    debug(`${chalk.cyan('generateResourceImage')} completed: responses=${util.inspect(generateImageResponses.map(p => prettyPath(p)), { colors: chalk.enabled })}`);
+    debug(`${chalk.cyan('generateResourceImage')} completed: responses=%o`, generateImageResponses.map(p => prettyPath(p)));
 
     await Promise.all(srcImagesAvailable.map(async img => {
       await cacheFileChecksum(img.path, img.imageId);

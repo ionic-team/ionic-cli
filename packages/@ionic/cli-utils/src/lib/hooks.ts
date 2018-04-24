@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as util from 'util';
 
 import chalk from 'chalk';
 import * as Debug from 'debug';
@@ -12,10 +11,6 @@ import { PROJECT_FILE } from '../constants';
 import { HookException } from './errors';
 
 const debug = Debug('ionic:cli-utils:lib:hooks');
-
-export const HOOKS_PKG = '@ionic/cli-hooks';
-export const ADD_CORDOVA_ENGINE_HOOK = path.join('node_modules', HOOKS_PKG, 'add-cordova-engine.js');
-export const REMOVE_CORDOVA_ENGINE_HOOK = path.join('node_modules', HOOKS_PKG, 'remove-cordova-engine.js');
 
 export interface HookDeps {
   readonly config: IConfig;
@@ -50,7 +45,7 @@ export abstract class Hook {
     }
 
     const project = await this.project.load();
-    const pkg = await this.project.loadPackageJson();
+    const pkg = await this.project.requirePackageJson();
     const config = await this.config.load();
     const { npmClient } = config;
 
@@ -62,7 +57,7 @@ export abstract class Hook {
       await this.shell.run(pkgManager, pkgArgs, {});
     }
 
-    const hooks = conform(project.hooks[this.name]);
+    const hooks = project.hooks ? conform(project.hooks[this.name]) : [];
 
     for (const h of hooks) {
       const p = path.resolve(this.project.directory, h);
@@ -107,8 +102,7 @@ export abstract class Hook {
       return module.default;
     }
 
-    const inspection = util.inspect(module, { colors: chalk.enabled });
-    debug(`Could not load hook function ${chalk.bold(p)}: ${inspection} not a function`);
+    debug(`Could not load hook function ${chalk.bold(p)}: %o not a function`, module);
   }
 }
 

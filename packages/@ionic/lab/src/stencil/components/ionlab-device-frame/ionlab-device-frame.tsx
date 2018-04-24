@@ -2,7 +2,7 @@ import { Component, Prop, State } from '@stencil/core';
 
 @Component({
   tag: 'ionlab-device-frame',
-  styleUrl: 'ionlab-device-frame.scss',
+  styleUrl: 'ionlab-device-frame.css',
 })
 export class DeviceFrame {
   @Prop() platform: string;

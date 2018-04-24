@@ -1,6 +1,6 @@
 {
   "name": "@ionic/lab",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0-rc.5",
   "description": "Ionic Lab utility for developing Ionic apps, used by Ionic CLI",
   "bin": {
     "ionic-lab": "./bin/ionic-lab"
@@ -34,17 +34,17 @@
     "build.tsc": "npm run clean.tsc && tsc",
     "watch": "npm run watch.tsc",
     "watch.stencil": "npm run clean.stencil && concurrently \"stencil build --dev --watch\" \"stencil-dev-server --address localhost --httpPort 8900 --no-open\"",
-    "watch.tsc": "tsc -w",
+    "watch.tsc": "tsc -w --preserveWatchOutput",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@ionic/cli-framework": "1.0.0-rc.0",
+    "@ionic/cli-framework": "1.0.0-rc.5",
     "chalk": "^2.3.0",
     "express": "^4.16.2",
     "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "@stencil/core": "^0.1.6",
+    "@stencil/core": "^0.7.9",
     "@stencil/dev-server": "0.0.18",
     "@types/express": "^4.11.0",
     "@types/node": "^6.0.101",
@@ -54,7 +54,7 @@
     "rimraf": "^2.6.2",
     "ts-jest": "^22.4.1",
     "tslint": "^5.9.1",
-    "typescript": "~2.6.2"
+    "typescript": "~2.8.1"
   },
   "jest": {
     "globals": {

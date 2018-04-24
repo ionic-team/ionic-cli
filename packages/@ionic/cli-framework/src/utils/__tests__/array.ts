@@ -1,4 +1,4 @@
-import { conform, filter, reduce, map } from '../array';
+import { concurrentFilter, conform, filter, reduce, map } from '../array';
 
 describe('@ionic/cli-framework', () => {
 
@@ -44,6 +44,36 @@ describe('@ionic/cli-framework', () => {
       it('should do nothing to an array of strings', () => {
         const result = conform(['foo', 'bar', 'baz']);
         expect(result).toEqual(['foo', 'bar', 'baz']);
+      });
+
+    });
+
+    describe('concurrentFilter', () => {
+
+      it('should return new empty array', async () => {
+        const initial = [];
+        const result = await concurrentFilter(initial, async () => true);
+        expect(result).not.toBe(initial);
+        expect(result).toEqual([]);
+      });
+
+      it('should return new array', async () => {
+        const initial = [1, 2, 3];
+        const result = await concurrentFilter(initial, async () => true);
+        expect(result).not.toBe(initial);
+        expect(result).toEqual([1, 2, 3]);
+      });
+
+      it('should filter out everything', async () => {
+        const initial = [1, 2, 3];
+        const result = await concurrentFilter(initial, async () => false);
+        expect(result).toEqual([]);
+      });
+
+      it('should filter out conditionally', async () => {
+        const initial = [1, 2, 3];
+        const result = await concurrentFilter(initial, async v => v % 2 === 0);
+        expect(result).toEqual([2]);
       });
 
     });

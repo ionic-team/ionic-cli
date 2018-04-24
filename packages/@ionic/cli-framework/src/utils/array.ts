@@ -10,9 +10,18 @@ export function conform<T>(t?: T | T[]): T[] {
   return t;
 }
 
+export async function concurrentFilter<T>(array: T[], callback: (currentValue: T) => Promise<boolean>): Promise<T[]> {
+  const mapper = async (v: T): Promise<[T, boolean]> => [v, await callback(v)];
+  const mapped = await Promise.all(array.map(mapper));
+
+  return mapped
+    .filter(([ , f ]) => f)
+    .map(([ v ]) => v);
+}
+
 export async function filter<T>(array: T[], callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<boolean>): Promise<T[]>;
-export async function filter<T>(array: ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<boolean>): Promise<T[]>;
-export async function filter<T>(array: T[] | ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<boolean>): Promise<T[]> {
+export async function filter<T>(array: ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<boolean>): Promise<ReadonlyArray<T>>;
+export async function filter<T>(array: T[] | ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<boolean>): Promise<T[] | ReadonlyArray<T>> {
   const initial: T[] = [];
 
   return reduce(array, async (acc, v, i, arr) => {
@@ -25,8 +34,8 @@ export async function filter<T>(array: T[] | ReadonlyArray<T>, callback: (curren
 }
 
 export async function map<T, U>(array: T[], callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<U[]>;
-export async function map<T, U>(array: ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<U[]>;
-export async function map<T, U>(array: T[] | ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<U[]> {
+export async function map<T, U>(array: ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<ReadonlyArray<U>>;
+export async function map<T, U>(array: T[] | ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<U[] | ReadonlyArray<U>> {
   const initial: U[] = [];
 
   return reduce(array, async (acc, v, i, arr) => {

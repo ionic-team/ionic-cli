@@ -4,7 +4,7 @@ import { PLATFORM_IOS, platformIoniconClass, platformPrettyName } from '../../ut
 
 @Component({
   tag: 'ionlab-preview',
-  styleUrl: 'ionlab-preview.scss',
+  styleUrl: 'ionlab-preview.css',
 })
 export class Preview {
   @Prop() activeDevices: string[];
@@ -25,12 +25,17 @@ export class Preview {
   }
 
   render() {
-    return this.activeDevices.map(device => {
-      return <ionlab-device-frame
-              platform={ device }
-              platformName={ platformPrettyName(device) }
-              url={ this.platformUrl(device) }
-              icon={ platformIoniconClass(device) } />;
-    });
+    return (
+      <div>
+        {
+          this.activeDevices.map(device => <ionlab-device-frame
+            platform={ device }
+            platformName={ platformPrettyName(device) }
+            url={ this.platformUrl(device) }
+            icon={ platformIoniconClass(device) } />
+          )
+        }
+      </div>
+    );
   }
 }

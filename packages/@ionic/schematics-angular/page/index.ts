@@ -15,13 +15,20 @@ import {
   url,
 } from '@angular-devkit/schematics';
 
-import { addDeclarationToModule } from '../utils/angular/ast-utils';
-import { InsertChange } from '../utils/angular/change';
-import { buildRelativePath, findModuleFromOptions } from '../utils/angular/find-module';
+import { addDeclarationToModule, addSymbolToNgModuleMetadata } from '@schematics/angular/utility/ast-utils';
+import { Change, InsertChange } from '@schematics/angular/utility/change';
+import { getWorkspace } from '@schematics/angular/utility/config';
+import { buildRelativePath, findModuleFromOptions } from '@schematics/angular/utility/find-module';
+import { parseName } from '@schematics/angular/utility/parse-name';
+import { validateHtmlSelector, validateName } from '@schematics/angular/utility/validation';
 
 import { Schema as PageOptions } from './schema';
 
-function addDeclarationToNgModule(options: PageOptions): Rule {
+function addEntryComponentsToModule(source: any, modulePath: string, classifiedName: string, importPath: string | null): Change[] {
+  return addSymbolToNgModuleMetadata(source, modulePath, 'entryComponents', classifiedName, importPath);
+}
+
+function addPageToNgModule(options: PageOptions): Rule {
   const { module } = options;
 
   if (!module) {
@@ -39,41 +46,66 @@ function addDeclarationToNgModule(options: PageOptions): Rule {
     const source = ts.createSourceFile(module, sourceText, ts.ScriptTarget.Latest, true);
 
     const pagePath = (
-      `/${options.sourceDir}/${options.path}/` +
+      `/${options.path}/` +
       (options.flat ? '' : `${kebabCase(options.name)}/`) +
       `${kebabCase(options.name)}.page`
     );
 
     const relativePath = buildRelativePath(module, pagePath);
     const classifiedName = `${upperFirst(camelCase(options.name))}Page`;
-    const declarationChanges = addDeclarationToModule(source, module, classifiedName, relativePath);
-    const declarationRecorder = host.beginUpdate(module);
 
-    for (const change of declarationChanges) {
+    const Changes = [
+      ...addDeclarationToModule(source, module, classifiedName, relativePath),
+      ...addEntryComponentsToModule(source, module, classifiedName, null), // tslint:disable-line:no-null-keyword
+    ];
+
+    const Recorder = host.beginUpdate(module);
+
+    for (const change of Changes) {
       if (change instanceof InsertChange) {
-        declarationRecorder.insertLeft(change.pos, change.toAdd);
+        Recorder.insertLeft(change.pos, change.toAdd);
       }
     }
 
-    host.commitUpdate(declarationRecorder);
+    host.commitUpdate(Recorder);
 
     return host;
   };
 }
 
+function buildSelector(options: PageOptions) {
+  let selector = kebabCase(options.name);
+
+  if (options.prefix) {
+    selector = `${options.prefix}-${selector}`;
+  }
+
+  return selector;
+}
+
 export default function (options: PageOptions): Rule {
-  const { sourceDir } = options;
-
-  if (!sourceDir) {
-    throw new SchematicsException('sourceDir option is required.');
-  }
-
-  if (!options.path) {
-    throw new SchematicsException('path option is required.');
-  }
-
   return (host, context) => {
+    const workspace = getWorkspace(host);
+
+    if (!options.project) {
+      options.project = Object.keys(workspace.projects)[0];
+    }
+
+    const project = workspace.projects[options.project];
+
+    if (options.path === undefined) {
+      options.path = `/${project.root}/src/app`;
+    }
+
     options.module = findModuleFromOptions(host, options);
+
+    const parsedPath = parseName(options.path, options.name);
+    options.name = parsedPath.name;
+    options.path = parsedPath.path;
+    options.selector = options.selector ? options.selector : buildSelector(options);
+
+    validateName(options.name);
+    validateHtmlSelector(options.selector);
 
     const templateSource = apply(url('./files'), [
       options.spec ? noop() : filter(p => !p.endsWith('.spec.ts')),
@@ -84,12 +116,12 @@ export default function (options: PageOptions): Rule {
         'if-flat': (s: string) => options.flat ? '' : s,
         ...options,
       }),
-      move(sourceDir),
+      move(parsedPath.path),
     ]);
 
     return chain([
       branchAndMerge(chain([
-        addDeclarationToNgModule(options),
+        addPageToNgModule(options),
         mergeWith(templateSource),
       ])),
     ])(host, context);

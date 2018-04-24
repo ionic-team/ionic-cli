@@ -1,7 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./dist"
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "paths": {
+      "parse5": ["../../node_modules/parse5/lib/index.d.ts"]
+    }
   },
   "include": [
     "../../types/cross-spawn.d.ts",
@@ -10,7 +14,6 @@
     "../../types/string-width.d.ts",
     "../../types/ssh-config.d.ts",
     "../../types/superagent.d.ts",
-    "../../types/wrap-ansi.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

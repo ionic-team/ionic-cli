@@ -12,10 +12,10 @@ export class InitCommand extends CapacitorCommand implements CommandPreRun {
       summary: 'Initializes Capacitor in your Ionic project',
       description: `
 ${chalk.green('ionic capacitor init')} will do the following:
-- Prompt for 
+- Prompt for
       `,
       exampleCommands: [],
-      inputs: []
+      inputs: [],
     };
   }
 

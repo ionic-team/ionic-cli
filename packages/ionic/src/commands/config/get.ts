@@ -45,7 +45,7 @@ This command attempts to sanitize config output for known sensitive fields, such
           type: Boolean,
         },
       ],
-      exampleCommands: ['', 'app_id', '--global user.email', '-g yarn'],
+      exampleCommands: ['', 'pro_id', '--global user.email', '-g yarn'],
     };
   }
 

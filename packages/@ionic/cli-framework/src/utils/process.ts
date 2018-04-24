@@ -94,9 +94,22 @@ const beforeExitHandlerWrapper = (signal: string) => lodash.once(async () => {
     await fn();
   }
 
+  debug(`onBeforeExit handler: exiting (exit code ${process.exitCode ? process.exitCode : 0})`);
+
   process.exit();
 });
 
 for (const signal of BEFORE_EXIT_SIGNALS) {
   process.on(signal, beforeExitHandlerWrapper(signal));
+}
+
+const processExitHandler = beforeExitHandlerWrapper('process.exit');
+
+/**
+ * Asynchronous `process.exit()`, for running functions registered with
+ * `onBeforeExit`.
+ */
+export async function processExit(exitCode = 0) {
+  process.exitCode = exitCode;
+  await processExitHandler();
 }

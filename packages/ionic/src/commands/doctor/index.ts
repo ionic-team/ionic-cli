@@ -11,9 +11,12 @@ export class DoctorNamespace extends Namespace {
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
       ['check', async () => { const { DoctorCheckCommand } = await import('./check'); return new DoctorCheckCommand(this, this.env); }],
-      ['ignore', async () => { const { DoctorIgnoreCommand } = await import('./ignore'); return new DoctorIgnoreCommand(this, this.env); }],
+      ['treat', async () => { const { DoctorTreatCommand } = await import('./treat'); return new DoctorTreatCommand(this, this.env); }],
       ['list', async () => { const { DoctorListCommand } = await import('./list'); return new DoctorListCommand(this, this.env); }],
       ['ls', 'list'],
+      ['checkup', 'check'],
+      ['validate', 'check'],
+      ['fix', 'treat'],
     ]);
   }
 }

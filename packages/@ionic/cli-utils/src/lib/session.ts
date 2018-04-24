@@ -6,7 +6,7 @@ import { isLoginResponse, isSuperAgentError } from '../guards';
 import { FatalException, SessionException } from './errors';
 import { formatResponseError } from './http';
 
-export class SessionDeps {
+export interface SessionDeps {
   readonly config: IConfig;
   readonly client: IClient;
   readonly project?: IProject;

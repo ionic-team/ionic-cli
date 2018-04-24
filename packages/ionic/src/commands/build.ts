@@ -2,9 +2,8 @@ import chalk from 'chalk';
 
 import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { BuildRunner } from '@ionic/cli-utils/lib/build';
+import { BuildRunner, COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
 import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
-import { runCommand } from '@ionic/cli-utils/lib/executor';
 
 export class BuildCommand extends Command implements CommandPreRun {
   protected runner?: BuildRunner<BuildOptions<any>>;
@@ -34,8 +33,7 @@ export class BuildCommand extends Command implements CommandPreRun {
       }
     }
 
-    // TODO: only do this for apps w/ cordova integration
-    description += `\n\n${`For Ionic/Cordova apps, the Ionic CLI will run ${chalk.green('cordova prepare')}, which copies the built web assets into the Cordova platforms that you've installed. For full details, see ${chalk.green('ionic cordova prepare --help')}.`}`;
+    options.push(...COMMON_BUILD_COMMAND_OPTIONS);
 
     return {
       name: 'build',
@@ -59,21 +57,7 @@ export class BuildCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
-    const [ platform ] = inputs;
-
-    const project = await this.env.project.load();
-
     const { build } = await import('@ionic/cli-utils/lib/build');
     await build(this.env, inputs, options);
-
-    if (project.integrations.cordova && project.integrations.cordova.enabled !== false) {
-      const cordovaPrepareArgs = ['cordova', 'prepare', '--no-build'];
-
-      if (platform) {
-        cordovaPrepareArgs.push(platform);
-      }
-
-      await runCommand(runinfo, cordovaPrepareArgs);
-    }
   }
 }
