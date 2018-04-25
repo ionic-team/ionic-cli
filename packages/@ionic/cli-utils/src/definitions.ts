@@ -140,6 +140,7 @@ export interface ProjectIntegration {
 
 export interface ProjectIntegrations {
   cordova?: ProjectIntegration;
+  capacitor?: ProjectIntegration;
 }
 
 export interface ProjectFile {
