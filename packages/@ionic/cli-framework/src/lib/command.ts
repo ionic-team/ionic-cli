@@ -143,7 +143,7 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
         }
 
         const command = await cmdgetter();
-        const commandAliases = commandAliasesInNamespace.get(k) || [];
+        const commandAliases = (commandAliasesInNamespace.get(k) || []).filter((a): a is string => typeof a === 'string');
         const commandMetadata = await command.getMetadata();
         const commandPath = [...path];
 

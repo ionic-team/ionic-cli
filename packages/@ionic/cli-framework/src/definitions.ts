@@ -76,7 +76,6 @@ export interface Metadata {
   summary: string;
   description?: string;
   groups?: MetadataGroup[];
-  aliases?: string[];
 }
 
 export interface CommandMetadata<I = CommandMetadataInput, O = CommandMetadataOption> extends Metadata {
@@ -131,6 +130,10 @@ export type HydratedCommandMetadata<C extends ICommand<C, N, M, I, O>, N extends
 };
 
 export interface NamespaceMetadata extends Metadata {}
+
+export interface HydratedNamespaceMetadata extends NamespaceMetadata {
+  aliases: string[];
+}
 
 export interface IExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   readonly namespace: N;
