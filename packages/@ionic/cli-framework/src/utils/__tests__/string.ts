@@ -1,4 +1,4 @@
-import { isValidURL, slugify } from '../string';
+import { isValidURL, enforceLF, slugify } from '../string';
 
 describe('@ionic/cli-framework', () => {
 
@@ -35,111 +35,140 @@ describe('@ionic/cli-framework', () => {
       });
     });
 
+    describe('enforceLF', () => {
+
+      it('should convert empty string to newline', () => {
+        const result = enforceLF('');
+        expect(result).toBe('\n');
+      });
+
+      it('should do nothing to a single newline', () => {
+        const result = enforceLF('\n');
+        expect(result).toBe('\n');
+      });
+
+      it('should add newline to text without newline', () => {
+        const result = enforceLF('some text');
+        expect(result).toBe('some text\n');
+      });
+
+      it('should do nothing to multiline text with newline at end', () => {
+        const result = enforceLF('some text\nsome more\n');
+        expect(result).toBe('some text\nsome more\n');
+      });
+
+      it('should add newline to multiline text without newline at end', () => {
+        const result = enforceLF('some text\nsome more');
+        expect(result).toBe('some text\nsome more\n');
+      });
+
+    });
+
     describe('slugify', () => {
 
       it('should pass back the empty string', () => {
-        const response = slugify('');
-        expect(response).toEqual('');
+        const result = slugify('');
+        expect(result).toEqual('');
       });
 
       it('should not change slugified input', () => {
-        const response = slugify('foo');
-        expect(response).toEqual('foo');
+        const result = slugify('foo');
+        expect(result).toEqual('foo');
       });
 
       it('should trim whitespace', () => {
-        const response = slugify(' foo ');
-        expect(response).toEqual('foo');
+        const result = slugify(' foo ');
+        expect(result).toEqual('foo');
       });
 
       it('should lowercase input', () => {
-        const response = slugify('FOO');
-        expect(response).toEqual('foo');
+        const result = slugify('FOO');
+        expect(result).toEqual('foo');
       });
 
       it('should convert input to kebab case by default', () => {
-        const response = slugify('foo bar   baz');
-        expect(response).toEqual('foo-bar-baz');
+        const result = slugify('foo bar   baz');
+        expect(result).toEqual('foo-bar-baz');
       });
 
       it('should convert input to snake case with underscore separator', () => {
-        const response = slugify('foo bar   baz', { separator: '_' });
-        expect(response).toEqual('foo_bar_baz');
+        const result = slugify('foo bar   baz', { separator: '_' });
+        expect(result).toEqual('foo_bar_baz');
       });
 
       it('should strip out invalid characters', () => {
-        const response = slugify('~ ` ! @ # $ % ^ & * ( ) - = + [ { } ] \' \\ | / > < . , ; : "');
-        expect(response).toEqual('');
+        const result = slugify('~ ` ! @ # $ % ^ & * ( ) - = + [ { } ] \' \\ | / > < . , ; : "');
+        expect(result).toEqual('');
       });
 
       it('should convert inferred words to kebab case', () => {
-        const response = slugify('MyCoolApp');
-        expect(response).toEqual('my-cool-app');
+        const result = slugify('MyCoolApp');
+        expect(result).toEqual('my-cool-app');
       });
 
       it('should trim whitespace', () => {
-        const response = slugify(' foo ');
-        expect(response).toEqual('foo');
+        const result = slugify(' foo ');
+        expect(result).toEqual('foo');
       });
 
       it('should strip out apostrophes', () => {
-        const response = slugify(' foo\'s bar ');
-        expect(response).toEqual('foos-bar');
+        const result = slugify(' foo\'s bar ');
+        expect(result).toEqual('foos-bar');
       });
 
       it('should convert ÀÁÂÃÄÅ and àáâãäå characters', () => {
-        const response = slugify('ÀÁÂÃÄÅ àáâãäå');
-        expect(response).toEqual('a'.repeat(6) + '-' + 'a'.repeat(6));
+        const result = slugify('ÀÁÂÃÄÅ àáâãäå');
+        expect(result).toEqual('a'.repeat(6) + '-' + 'a'.repeat(6));
       });
 
       it('should convert Ææ characters', () => {
-        const response = slugify('Ææ');
-        expect(response).toEqual('ae'.repeat(2));
+        const result = slugify('Ææ');
+        expect(result).toEqual('ae'.repeat(2));
       });
 
       it('should convert Çç characters', () => {
-        const response = slugify('Çç');
-        expect(response).toEqual('cc');
+        const result = slugify('Çç');
+        expect(result).toEqual('cc');
       });
 
       it('should convert ÈÉÊË and èéêë characters', () => {
-        const response = slugify('ÈÉÊË èéêë');
-        expect(response).toEqual('e'.repeat(4) + '-' + 'e'.repeat(4));
+        const result = slugify('ÈÉÊË èéêë');
+        expect(result).toEqual('e'.repeat(4) + '-' + 'e'.repeat(4));
       });
 
       it('should convert ÌÍÎÏ and ìíîï characters', () => {
-        const response = slugify('ÌÍÎÏ ìíîï');
-        expect(response).toEqual('i'.repeat(4) + '-' + 'i'.repeat(4));
+        const result = slugify('ÌÍÎÏ ìíîï');
+        expect(result).toEqual('i'.repeat(4) + '-' + 'i'.repeat(4));
       });
 
       it('should convert Ññ characters', () => {
-        const response = slugify('Ññ');
-        expect(response).toEqual('n'.repeat(2));
+        const result = slugify('Ññ');
+        expect(result).toEqual('n'.repeat(2));
       });
 
       it('should convert ÒÓÔÕÖØ and òóôõöø characters', () => {
-        const response = slugify('ÒÓÔÕÖØ òóôõöø');
-        expect(response).toEqual('o'.repeat(6) + '-' + 'o'.repeat(6));
+        const result = slugify('ÒÓÔÕÖØ òóôõöø');
+        expect(result).toEqual('o'.repeat(6) + '-' + 'o'.repeat(6));
       });
 
       it('should convert ÙÚÛÜ, ùúûü characters', () => {
-        const response = slugify('ÙÚÛÜ ùúûü');
-        expect(response).toEqual('u'.repeat(4) + '-' + 'u'.repeat(4));
+        const result = slugify('ÙÚÛÜ ùúûü');
+        expect(result).toEqual('u'.repeat(4) + '-' + 'u'.repeat(4));
       });
 
       it('should convert Þþ characters', () => {
-        const response = slugify('Þþ');
-        expect(response).toEqual('th'.repeat(2));
+        const result = slugify('Þþ');
+        expect(result).toEqual('th'.repeat(2));
       });
 
       it('should convert Ýýÿ characters', () => {
-        const response = slugify('Ýýÿ');
-        expect(response).toEqual('y'.repeat(3));
+        const result = slugify('Ýýÿ');
+        expect(result).toEqual('y'.repeat(3));
       });
 
       it('should convert ß characters', () => {
-        const response = slugify('ß');
-        expect(response).toEqual('ss');
+        const result = slugify('ß');
+        expect(result).toEqual('ss');
       });
 
     });

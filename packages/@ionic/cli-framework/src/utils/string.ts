@@ -19,6 +19,10 @@ export function isValidURL(url?: any): boolean {
   return URL_REGEX.test(url);
 }
 
+export function enforceLF(str: string): string {
+  return str.match(/[\r\n]$/) ? str : str + '\n';
+}
+
 export function strcmp(a: string | undefined, b: string | undefined): number {
   if (!a) {
     a = '';
