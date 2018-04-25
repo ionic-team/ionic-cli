@@ -1,4 +1,4 @@
-import { Colors, CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
+import { Colors, CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
 
 import { filter } from '../utils/array';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '../utils/format';
@@ -60,7 +60,7 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
    * @param meta The metadata of the namespace.
    * @param commands An array of the metadata of the namespace's commands.
    */
-  formatBeforeNamespaceSummary?(meta: NamespaceMetadata, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string>;
+  formatBeforeNamespaceSummary?(meta: HydratedNamespaceMetadata, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string>;
 
   /**
    * Insert text before the namespace's summary.
@@ -197,15 +197,22 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
   async getListOfNamespaceDetails(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string[]> {
     const { weak, input } = this.colors;
     const summaries = new Map<string, string>();
-    const grouped = new Map<string, { meta: NamespaceMetadata; commands: HydratedCommandMetadata<C, N, M, I, O>[]; }>();
+    const grouped = new Map<string, { meta: HydratedNamespaceMetadata; commands: HydratedCommandMetadata<C, N, M, I, O>[]; }>();
 
     await Promise.all(commands.map(async cmd => {
       const nsmeta = await cmd.namespace.getMetadata();
+      const aliases: string[] = [];
+
+      if (cmd.namespace.parent) {
+        const siblings = await cmd.namespace.parent.getNamespaces();
+        aliases.push(...(siblings.getAliases().get(nsmeta.name) || []).filter((a): a is string => typeof a === 'string'));
+      }
+
       summaries.set(nsmeta.name, nsmeta.summary);
       let entry = grouped.get(nsmeta.name);
 
       if (!entry) {
-        entry = { meta: nsmeta, commands: [] };
+        entry = { meta: { ...nsmeta, aliases }, commands: [] };
         grouped.set(nsmeta.name, entry);
       }
 
@@ -237,7 +244,10 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
    */
   async formatAfterCommandSummary(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<string> {
     const { weak, input } = this.colors;
-    return `${meta.aliases.length > 0 ? weak(' (alias' + (meta.aliases.length === 1 ? '' : 'es') + ': ') + meta.aliases.map(a => input(a)).join(', ') + weak(')') : ''}`;
+
+    const aliases = meta.aliases.length > 0 ? weak('(alias' + (meta.aliases.length === 1 ? '' : 'es') + ': ') + meta.aliases.map(a => input(a)).join(', ') + weak(')') : '';
+
+    return aliases ? ` ${aliases}` : '';
   }
 
   /**
@@ -246,9 +256,13 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
    * @param meta The metadata of the namespace.
    * @param commands An array of the metadata of the namespace's commands.
    */
-  async formatAfterNamespaceSummary(meta: NamespaceMetadata, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>) {
+  async formatAfterNamespaceSummary(meta: HydratedNamespaceMetadata, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>) {
     const { weak, input } = this.colors;
-    return ` ${weak('(subcommands:')} ${commands.map(c => input(c.name)).join(', ')}${weak(')')}`;
+
+    const subcommands = commands.length > 0 ? `${weak('(subcommands:')} ${commands.map(c => input(c.name)).join(', ')}${weak(')')}` : '';
+    const aliases = meta.aliases.length > 0 ? `${weak('(alias' + (meta.aliases.length === 1 ? '' : 'es') + ': ') + meta.aliases.map(a => input(a)).join(', ') + weak(')')}` : '';
+
+    return `${subcommands ? ` ${subcommands}` : ''}${aliases ? ` ${aliases}` : ''}`;
   }
 
   async format(): Promise<string> {

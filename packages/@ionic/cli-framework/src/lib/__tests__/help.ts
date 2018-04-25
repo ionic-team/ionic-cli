@@ -22,6 +22,7 @@ class MyNamespace extends Namespace {
     return new NamespaceMap([
       ['foo', async () => new FooNamespace(this)],
       ['defns', async () => new NamespaceWithDefault(this)],
+      ['f', 'foo'],
     ]);
   }
 
@@ -61,6 +62,8 @@ class FooNamespace extends Namespace {
       ['bar', async () => new BarCommand(this)],
       ['baz', async () => new BazCommand(this)],
       ['b', 'bar'],
+      ['b1', 'baz'],
+      ['b2', 'baz'],
     ]);
   }
 }
@@ -168,7 +171,7 @@ describe('@ionic/cli-framework', () => {
 
     describe('NamespaceHelpFormatter', () => {
 
-      it('should format a command appropriately', async () => {
+      it('should format a namespace appropriately', async () => {
         const myns = new MyNamespace();
         const location = await myns.locate([]);
         const formatter = new NamespaceHelpFormatter({ location, namespace: location.obj });
@@ -185,7 +188,30 @@ describe('@ionic/cli-framework', () => {
 
     bar ...................... the bar command
     defns <subcommand> ....... the defns namespace (subcommands: def)
-    foo <subcommand> ......... the foo namespace (subcommands: bar, baz)
+    foo <subcommand> ......... the foo namespace (subcommands: bar, baz) (alias: f)
+
+`);
+      });
+
+      it('should format a subnamespace appropriately', async () => {
+        const myns = new MyNamespace();
+        const location = await myns.locate(['foo']);
+        const formatter = new NamespaceHelpFormatter({ location, namespace: location.obj });
+        const result = await formatter.format();
+
+        expect(stripAnsi(result)).toEqual(`
+  my foo - the foo namespace
+
+    my description
+
+  Usage:
+
+    $ my foo <command> [<args>] [--help] [options]
+
+  Commands:
+
+    bar ...................... the bar command (alias: b)
+    baz ...................... the baz command (aliases: b1, b2)
 
 `);
       });
