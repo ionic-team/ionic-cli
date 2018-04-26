@@ -13,6 +13,16 @@ closeAndLock:
 
 
         Thank you for using Ionic!
+    - label: "ionitron: pro"
+      message: >
+        Thanks for the issue! This issue appears to be related to our
+        commercial products. We use this issue tracker exclusively for bug
+        reports and feature requests. Please [open a support
+        ticket](https://ionicframework.com/support/request) and we'll be happy
+        to assist you.
+
+
+        Thank you for using Ionic!
     - label: "ionitron: missing template"
       message: >
         Thanks for the issue! It appears that you have not filled out the
