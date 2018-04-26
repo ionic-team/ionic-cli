@@ -1,5 +1,9 @@
 import { Writable } from 'stream';
-import { DEFAULT_OUTPUT, LOGGER_OUTPUTS, Logger, LoggerOutput } from '../logger';
+
+import stripAnsi = require('strip-ansi');
+import { wordWrap } from '../../utils/format';
+
+import { DEFAULT_OUTPUT, LOGGER_OUTPUTS, Logger, LoggerOutput, createTaggedFormatter } from '../logger';
 
 describe('@ionic/cli-framework', () => {
 
@@ -45,26 +49,6 @@ describe('@ionic/cli-framework', () => {
           expect(spy).toHaveBeenCalledWith('\n'.repeat(5));
         });
 
-        it('should log with weights equal', () => {
-          output.weight = 10;
-          logger.weight = 10;
-          logger.nl();
-          expect(spy).toHaveBeenCalledWith('\n');
-        });
-
-        it('should not log with logger weight set', () => {
-          logger.weight = 10;
-          logger.nl();
-          expect(spy).not.toHaveBeenCalled();
-        });
-
-        it('should log with weights adjusted', () => {
-          output.weight = 10;
-          logger.weight = 20;
-          logger.nl();
-          expect(spy).toHaveBeenCalledWith('\n');
-        });
-
       });
 
       describe('log', () => {
@@ -78,10 +62,21 @@ describe('@ionic/cli-framework', () => {
           logger = new Logger({ output });
         });
 
-
         it('should log for defaults', () => {
           logger.log('hi');
           expect(spy).toHaveBeenCalledWith('hi\n');
+        });
+
+        it('should log with formatter', () => {
+          logger = new Logger({ output, formatter: (msg: string) => msg.split('').reverse().join('') });
+          logger.log('hello world!');
+          expect(spy).toHaveBeenCalledWith('!dlrow olleh\n');
+        });
+
+        it('should not log with formatter if not wanted', () => {
+          logger = new Logger({ output, formatter: (msg: string) => msg.split('').reverse().join('') });
+          logger.log('hello world!', undefined, false);
+          expect(spy).toHaveBeenCalledWith('hello world!\n');
         });
 
         it('should log with weights equal', () => {
@@ -253,6 +248,40 @@ describe('@ionic/cli-framework', () => {
           expect(result).toBe(DEFAULT_OUTPUT);
         });
 
+      });
+
+    });
+
+    describe('createTaggedFormatter', () => {
+
+      const logger = new Logger();
+      const output = logger.output;
+
+      it('should not tag non-leveled outputs', () => {
+        const format = createTaggedFormatter();
+        const result = format('hi', { logger, output });
+        expect(result).toEqual('hi');
+      });
+
+      it('should tag leveled outputs', () => {
+        const format = createTaggedFormatter();
+        const result = format('hi', { logger, output, level: 'info' });
+        expect(stripAnsi(result)).toEqual('[INFO] hi');
+      });
+
+      it('should not wrap by default', () => {
+        const format = createTaggedFormatter();
+        const msg = 'A '.repeat(1000);
+        const result = format(msg, { logger, output, level: 'info' });
+        expect(stripAnsi(result)).toEqual(`[INFO] ${msg}`);
+      });
+
+      it('should wrap words', () => {
+        const wordWrapOpts = { width: 50 };
+        const format = createTaggedFormatter({ wrap: wordWrapOpts });
+        const msg = 'A '.repeat(1000);
+        const result = format(msg, { logger, output, level: 'info' });
+        expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 7, ...wordWrapOpts })}`);
       });
 
     });

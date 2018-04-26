@@ -1,11 +1,16 @@
+import * as util from 'util';
 import { Writable } from 'stream';
 
 import { Chalk } from 'chalk';
+import * as lodash from 'lodash';
 
+import { Colors } from '../definitions';
 import { DEFAULT_COLORS, LOGGER_OUTPUT_COLORS } from './colors';
+import { WordWrapOptions, stringWidth, wordWrap } from '../utils/format';
 import { enforceLF } from '../utils/string';
 
 export type LoggerLevel = 'debug' | 'info' | 'warn' | 'error';
+export type LoggerFormatter = (msg: string, context: { logger: Logger; output: LoggerOutput; level?: LoggerLevel }) => string;
 
 export class LoggerOutput {
   constructor(
@@ -51,22 +56,23 @@ export interface LoggerOptions {
   readonly output?: LoggerOutput;
   readonly outputs?: LoggerOutputs;
   readonly colors?: Colors;
+  readonly formatter?: LoggerFormatter;
 }
 
 export class Logger {
   weight: number;
+  formatter?: LoggerFormatter;
 
   readonly output: LoggerOutput;
   readonly outputs: LoggerOutputs;
   readonly colors: Colors;
-  readonly levels: ReadonlySet<LoggerLevel>;
 
-  constructor({ weight = Infinity, output = DEFAULT_OUTPUT, outputs = LOGGER_OUTPUTS, colors = DEFAULT_COLORS }: LoggerOptions = {}) {
+  constructor({ weight = Infinity, output = DEFAULT_OUTPUT, outputs = LOGGER_OUTPUTS, colors = DEFAULT_COLORS, formatter }: LoggerOptions = {}) {
     this.weight = weight;
     this.output = output;
     this.outputs = outputs;
     this.colors = colors;
-    this.levels = new Set(<LoggerLevel[]>Object.keys(outputs));
+    this.formatter = formatter;
   }
 
   /**
@@ -121,13 +127,7 @@ export class Logger {
    * @param level The logger level. If omitted, the default output is used.
    */
   nl(num = 1, level?: LoggerLevel): void {
-    const output = this.findOutput(level);
-
-    if (output.weight > this.weight) {
-      return;
-    }
-
-    output.stream.write(enforceLF('\n'.repeat(num)));
+    this.log('\n'.repeat(num), level, false);
   }
 
   /**
@@ -135,12 +135,22 @@ export class Logger {
    *
    * @param msg The string to log.
    * @param level The logger level. If omitted, the default output is used.
+   * @param format Run this log message through the formatter.
    */
-  log(msg: string, level?: LoggerLevel): void {
+  log(msg: string, level?: LoggerLevel, format = true): void {
     const output = this.findOutput(level);
 
     if (output.weight > this.weight) {
       return;
+    }
+
+    // If the logger is used to quickly print something, let's pretty-print it
+    // into a string.
+    msg = util.format(msg);
+
+    if (format) {
+      const formatter: LoggerFormatter = this.formatter ? this.formatter : lodash.identity;
+      msg = formatter(msg, { logger: this, output, level });
     }
 
     output.stream.write(enforceLF(msg));
@@ -193,4 +203,25 @@ export class Logger {
 
     return this.output;
   }
+}
+
+export type LoggerFormatters = { [F in 'tagged']: LoggerFormatter; };
+
+export const LOGGER_FORMATTERS: LoggerFormatters = {
+  tagged: createTaggedFormatter(),
+};
+
+export function createTaggedFormatter({ wrap }: { wrap?: WordWrapOptions; } = {}): LoggerFormatter {
+  return (msg, { logger, output, level }) => {
+    const { weak } = logger.colors;
+    const c: (s: string) => string = output.color ? output.color : lodash.identity;
+    const tag = level ? `${weak('[')}${c(level.toUpperCase())}${weak(']')}` : '';
+
+    if (wrap) {
+      const indentation = stringWidth(tag) + 1;
+      msg = wordWrap(msg, { indentation, ...wrap });
+    }
+
+    return `${tag ? `${tag} ` : ''}${msg}`;
+  };
 }
