@@ -22,6 +22,26 @@ export interface Colors {
    * Used to mark text as input such as commands, inputs, options, etc.
    */
   input: Chalk;
+
+  /**
+   * Debug-level text.
+   */
+  debug: Chalk;
+
+  /**
+   * Informational-level text.
+   */
+  info: Chalk;
+
+  /**
+   * Warning-level text.
+   */
+  warn: Chalk;
+
+  /**
+   * Error-level text.
+   */
+  error: Chalk;
 }
 
 export interface TerminalInfo {
