@@ -1,5 +1,5 @@
 import { Writable } from 'stream';
-import { DEFAULT_OUTPUT, DEFAULT_LOGGER_OUTPUTS, Logger, LoggerOutput } from '../logger';
+import { DEFAULT_OUTPUT, LOGGER_OUTPUTS, Logger, LoggerOutput } from '../logger';
 
 describe('@ionic/cli-framework', () => {
 
@@ -70,7 +70,7 @@ describe('@ionic/cli-framework', () => {
         beforeEach(() => {
           stream = new class extends Writable { _write() {} }();
           spy = jest.spyOn(stream, 'write');
-          logger = new Logger({ outputs: { debug: new LoggerOutput(stream, DEFAULT_LOGGER_OUTPUTS.debug.weight) } });
+          logger = new Logger({ outputs: { debug: new LoggerOutput(stream, LOGGER_OUTPUTS.debug.weight) } });
         });
 
         it('should write the message', () => {
@@ -93,7 +93,7 @@ describe('@ionic/cli-framework', () => {
         beforeEach(() => {
           stream = new class extends Writable { _write() {} }();
           spy = jest.spyOn(stream, 'write');
-          logger = new Logger({ outputs: { info: new LoggerOutput(stream, DEFAULT_LOGGER_OUTPUTS.info.weight) } });
+          logger = new Logger({ outputs: { info: new LoggerOutput(stream, LOGGER_OUTPUTS.info.weight) } });
         });
 
         it('should write the message', () => {
@@ -116,7 +116,7 @@ describe('@ionic/cli-framework', () => {
         beforeEach(() => {
           stream = new class extends Writable { _write() {} }();
           spy = jest.spyOn(stream, 'write');
-          logger = new Logger({ outputs: { warn: new LoggerOutput(stream, DEFAULT_LOGGER_OUTPUTS.warn.weight) } });
+          logger = new Logger({ outputs: { warn: new LoggerOutput(stream, LOGGER_OUTPUTS.warn.weight) } });
         });
 
         it('should write the message', () => {
@@ -139,7 +139,7 @@ describe('@ionic/cli-framework', () => {
         beforeEach(() => {
           stream = new class extends Writable { _write() {} }();
           spy = jest.spyOn(stream, 'write');
-          logger = new Logger({ outputs: { error: new LoggerOutput(stream, DEFAULT_LOGGER_OUTPUTS.error.weight) } });
+          logger = new Logger({ outputs: { error: new LoggerOutput(stream, LOGGER_OUTPUTS.error.weight) } });
         });
 
         it('should write the message', () => {
@@ -199,9 +199,9 @@ describe('@ionic/cli-framework', () => {
 
         it('should find correct logger outputs for default instantiation', () => {
           const logger = new Logger();
-          expect(logger.findOutput('info')).toBe(DEFAULT_LOGGER_OUTPUTS.info);
-          expect(logger.findOutput('warn')).toBe(DEFAULT_LOGGER_OUTPUTS.warn);
-          expect(logger.findOutput('error')).toBe(DEFAULT_LOGGER_OUTPUTS.error);
+          expect(logger.findOutput('info')).toBe(LOGGER_OUTPUTS.info);
+          expect(logger.findOutput('warn')).toBe(LOGGER_OUTPUTS.warn);
+          expect(logger.findOutput('error')).toBe(LOGGER_OUTPUTS.error);
         });
 
         it('should default to msg logger output for unknown level in default instantiation', () => {

@@ -2,7 +2,7 @@ import { Writable } from 'stream';
 
 import { Chalk } from 'chalk';
 
-import { DEFAULT_COLORS } from './colors';
+import { DEFAULT_COLORS, LOGGER_OUTPUT_COLORS } from './colors';
 import { enforceLF } from '../utils/string';
 
 export type LoggerLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -33,11 +33,11 @@ export type LoggerOutputs = { [L in LoggerLevel]?: LoggerOutput; };
 
 export const DEFAULT_OUTPUT = new LoggerOutput(process.stdout);
 
-export const DEFAULT_LOGGER_OUTPUTS: LoggerOutputs = {
-  debug: new LoggerOutput(process.stderr, 10, DEFAULT_COLORS.debug),
-  info: new LoggerOutput(process.stdout, 20, DEFAULT_COLORS.info),
-  warn: new LoggerOutput(process.stderr, 30, DEFAULT_COLORS.warn),
-  error: new LoggerOutput(process.stderr, 40, DEFAULT_COLORS.error),
+export const LOGGER_OUTPUTS: LoggerOutputs = {
+  debug: new LoggerOutput(process.stderr, 10, LOGGER_OUTPUT_COLORS.debug),
+  info: new LoggerOutput(process.stdout, 20, LOGGER_OUTPUT_COLORS.info),
+  warn: new LoggerOutput(process.stderr, 30, LOGGER_OUTPUT_COLORS.warn),
+  error: new LoggerOutput(process.stderr, 40, LOGGER_OUTPUT_COLORS.error),
 };
 
 export interface LoggerOptions {
@@ -50,18 +50,22 @@ export interface LoggerOptions {
   readonly weight?: number;
   readonly output?: LoggerOutput;
   readonly outputs?: LoggerOutputs;
+  readonly colors?: Colors;
 }
 
 export class Logger {
   weight: number;
+
   readonly output: LoggerOutput;
   readonly outputs: LoggerOutputs;
+  readonly colors: Colors;
   readonly levels: ReadonlySet<LoggerLevel>;
 
-  constructor({ weight = Infinity, output = DEFAULT_OUTPUT, outputs = DEFAULT_LOGGER_OUTPUTS }: LoggerOptions = {}) {
+  constructor({ weight = Infinity, output = DEFAULT_OUTPUT, outputs = LOGGER_OUTPUTS, colors = DEFAULT_COLORS }: LoggerOptions = {}) {
     this.weight = weight;
     this.output = output;
     this.outputs = outputs;
+    this.colors = colors;
     this.levels = new Set(<LoggerLevel[]>Object.keys(outputs));
   }
 
