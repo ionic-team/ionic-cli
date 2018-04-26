@@ -211,17 +211,23 @@ export const LOGGER_FORMATTERS: LoggerFormatters = {
   tagged: createTaggedFormatter(),
 };
 
-export function createTaggedFormatter({ wrap }: { wrap?: WordWrapOptions; } = {}): LoggerFormatter {
+export interface CreateTaggedFormatterOptions {
+  title?: boolean;
+  wrap?: WordWrapOptions;
+}
+
+export function createTaggedFormatter({ title, wrap }: CreateTaggedFormatterOptions = {}): LoggerFormatter {
   return (msg, { logger, output, level }) => {
-    const { weak } = logger.colors;
+    const { strong, weak } = logger.colors;
     const c: (s: string) => string = output.color ? output.color : lodash.identity;
     const tag = level ? `${weak('[')}${c(level.toUpperCase())}${weak(']')}` : '';
+    const indentation = stringWidth(tag);
+    const [ firstLine, ...lines ] = msg.split('\n');
+    const first = title && lines.length > 0 ? `${strong(firstLine)}\n` : firstLine;
 
-    if (wrap) {
-      const indentation = stringWidth(tag) + 1;
-      msg = wordWrap(msg, { indentation, ...wrap });
-    }
-
-    return `${tag ? `${tag} ` : ''}${msg}`;
+    return (
+      (tag ? `${tag} ` : '') +
+      (wrap ? wordWrap([first, ...lines].join('\n'), { indentation, ...wrap }) : [first, ...lines.map(l => `${' '.repeat(indentation)} ${l}`)].join('\n'))
+    );
   };
 }

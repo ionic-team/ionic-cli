@@ -276,12 +276,38 @@ describe('@ionic/cli-framework', () => {
         expect(stripAnsi(result)).toEqual(`[INFO] ${msg}`);
       });
 
-      it('should wrap words', () => {
+      it('should wrap words if wanted', () => {
         const wordWrapOpts = { width: 50 };
         const format = createTaggedFormatter({ wrap: wordWrapOpts });
         const msg = 'A '.repeat(1000);
         const result = format(msg, { logger, output, level: 'info' });
-        expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 7, ...wordWrapOpts })}`);
+        expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 6, ...wordWrapOpts })}`);
+      });
+
+      it('should not add title by default', () => {
+        const format = createTaggedFormatter();
+        const result = format(`Hello!\nThis is a message.\nHere's another.`, { logger, output, level: 'info' });
+        expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n       This is a message.\n       Here's another.`);
+      });
+
+      it('should not add title for single line', () => {
+        const format = createTaggedFormatter({ title: true });
+        const result = format(`Hello!`, { logger, output, level: 'info' });
+        expect(stripAnsi(result)).toEqual(`[INFO] Hello!`);
+      });
+
+      it('should add title if wanted', () => {
+        const format = createTaggedFormatter({ title: true });
+        const result = format(`Hello!\nThis is a message.\nHere's another.`, { logger, output, level: 'info' });
+        expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n\n       This is a message.\n       Here's another.`);
+      });
+
+      it('should work with wrap and title', () => {
+        const wordWrapOpts = { width: 50 };
+        const format = createTaggedFormatter({ title: true, wrap: wordWrapOpts });
+        const msg = 'A '.repeat(1000);
+        const result = format(msg, { logger, output, level: 'info' });
+        expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 6, ...wordWrapOpts })}`);
       });
 
     });
