@@ -4,8 +4,7 @@ import { Writable } from 'stream';
 import { Chalk } from 'chalk';
 import * as lodash from 'lodash';
 
-import { Colors } from '../definitions';
-import { DEFAULT_COLORS, LOGGER_OUTPUT_COLORS } from './colors';
+import { Colors, DEFAULT_COLORS, LOGGER_OUTPUT_COLORS } from './colors';
 import { WordWrapOptions, stringWidth, wordWrap } from '../utils/format';
 import { enforceLF } from '../utils/string';
 

@@ -1,9 +1,9 @@
-import { Colors, CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
+import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
 
 import { filter } from '../utils/array';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '../utils/format';
 
-import { DEFAULT_COLORS } from './colors';
+import { Colors, DEFAULT_COLORS } from './colors';
 import { validators } from './validators';
 
 const DEFAULT_DOTS_WIDTH = 25;

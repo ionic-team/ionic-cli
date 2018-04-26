@@ -1,28 +1,10 @@
 import * as os from 'os';
 
 import * as minimistType from 'minimist';
-import { Chalk } from 'chalk';
 
 import { AliasedMap } from './utils/object';
 
 export type NetworkInterface = { device: string; } & os.NetworkInterfaceInfo;
-
-export interface Colors {
-  /**
-   * Used to mark text as important. Comparable to HTML's <strong>.
-   */
-  strong: Chalk;
-
-  /**
-   * Used to mark text as less important.
-   */
-  weak: Chalk;
-
-  /**
-   * Used to mark text as input such as commands, inputs, options, etc.
-   */
-  input: Chalk;
-}
 
 export interface TerminalInfo {
   tty: boolean;

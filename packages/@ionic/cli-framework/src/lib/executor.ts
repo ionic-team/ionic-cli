@@ -1,9 +1,9 @@
 import * as lodash from 'lodash';
 
-import { Colors, CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, IExecutor, INamespace, NamespaceLocateResult } from '../definitions';
+import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, IExecutor, INamespace, NamespaceLocateResult } from '../definitions';
 import { isCommand } from '../guards';
 
-import { DEFAULT_COLORS } from './colors';
+import { Colors, DEFAULT_COLORS } from './colors';
 import { Command, Namespace } from './command';
 import { CommandHelpFormatter, NamespaceHelpFormatter } from './help';
 import { metadataToParseArgsOptions, parseArgs, stripOptions } from './options';
