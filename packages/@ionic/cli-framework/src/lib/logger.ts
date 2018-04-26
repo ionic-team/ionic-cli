@@ -17,7 +17,7 @@ export class LoggerOutput {
     /**
      * Output is written to this stream.
      */
-    public stream: NodeJS.WritableStream,
+    public stream: NodeJS.WritableStream = process.stdout,
 
     /**
      * Assign a weight to this output.
@@ -36,7 +36,7 @@ export class LoggerOutput {
 
 export type LoggerOutputs = { [L in LoggerLevel]?: LoggerOutput; };
 
-export const DEFAULT_OUTPUT = new LoggerOutput(process.stdout);
+export const DEFAULT_OUTPUT = new LoggerOutput();
 
 export const LOGGER_OUTPUTS: LoggerOutputs = {
   debug: new LoggerOutput(process.stderr, 10, LOGGER_OUTPUT_COLORS.debug),
@@ -73,6 +73,16 @@ export class Logger {
     this.outputs = outputs;
     this.colors = colors;
     this.formatter = formatter;
+  }
+
+  /**
+   * Clone this logger, optionally overriding logger options.
+   *
+   * @param opts Logger options to override from this logger.
+   */
+  clone(opts: Partial<LoggerOptions> = {}): Logger {
+    const { weight, output, outputs, colors, formatter } = this;
+    return new Logger({ weight, output, outputs, colors, formatter, ...opts });
   }
 
   /**

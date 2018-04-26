@@ -11,6 +11,37 @@ describe('@ionic/cli-framework', () => {
 
     describe('Logger', () => {
 
+      describe('clone', () => {
+
+        it('should clone the base set of options', () => {
+          const logger1 = new Logger();
+          const logger2 = logger1.clone();
+          expect(logger1.weight).toBe(logger2.weight);
+          expect(logger1.output).toBe(logger2.output);
+          expect(logger1.outputs).toBe(logger2.outputs);
+          expect(logger1.colors).toBe(logger2.colors);
+          expect(logger1.formatter).toBe(logger2.formatter);
+        });
+
+        it('should clone the set of option overrides', () => {
+          const logger1 = new Logger();
+          const weight = 15;
+          const output = new LoggerOutput();
+          const outputs = {};
+          const formatter = () => {};
+          const logger2 = logger1.clone({ weight, output, outputs, formatter });
+          expect(logger2.weight).not.toBe(logger1.weight);
+          expect(logger2.weight).toBe(weight);
+          expect(logger2.output).not.toBe(logger1.output);
+          expect(logger2.output).toBe(output);
+          expect(logger2.outputs).not.toBe(logger1.outputs);
+          expect(logger2.outputs).toBe(outputs);
+          expect(logger2.formatter).not.toBe(logger1.formatter);
+          expect(logger2.formatter).toBe(formatter);
+        });
+
+      });
+
       describe('raw', () => {
 
         let stream, spy, logger;
