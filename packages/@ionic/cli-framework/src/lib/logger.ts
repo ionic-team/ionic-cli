@@ -115,6 +115,22 @@ export class Logger {
   }
 
   /**
+   * Log newlines using a logger output found via `level`.
+   *
+   * @param num The number of newlines to log.
+   * @param level The logger level. If omitted, the default output is used.
+   */
+  nl(num = 1, level?: LoggerLevel): void {
+    const output = this.findOutput(level);
+
+    if (output.weight > this.weight) {
+      return;
+    }
+
+    output.stream.write(enforceLF('\n'.repeat(num)));
+  }
+
+  /**
    * Log a message using a logger output found via `level`.
    *
    * @param msg The string to log.

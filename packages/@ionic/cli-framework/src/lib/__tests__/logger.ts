@@ -24,6 +24,49 @@ describe('@ionic/cli-framework', () => {
 
       });
 
+      describe('nl', () => {
+
+        let stream, spy, logger, output;
+
+        beforeEach(() => {
+          stream = new class extends Writable { _write() {} }();
+          spy = jest.spyOn(stream, 'write');
+          output = new LoggerOutput(stream);
+          logger = new Logger({ output });
+        });
+
+        it('should log for defaults', () => {
+          logger.nl();
+          expect(spy).toHaveBeenCalledWith('\n');
+        });
+
+        it('should log multiple newlines', () => {
+          logger.nl(5);
+          expect(spy).toHaveBeenCalledWith('\n'.repeat(5));
+        });
+
+        it('should log with weights equal', () => {
+          output.weight = 10;
+          logger.weight = 10;
+          logger.nl();
+          expect(spy).toHaveBeenCalledWith('\n');
+        });
+
+        it('should not log with logger weight set', () => {
+          logger.weight = 10;
+          logger.nl();
+          expect(spy).not.toHaveBeenCalled();
+        });
+
+        it('should log with weights adjusted', () => {
+          output.weight = 10;
+          logger.weight = 20;
+          logger.nl();
+          expect(spy).toHaveBeenCalledWith('\n');
+        });
+
+      });
+
       describe('log', () => {
 
         let stream, spy, logger, output;
