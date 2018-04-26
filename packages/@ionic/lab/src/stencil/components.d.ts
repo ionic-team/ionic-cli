@@ -25,9 +25,15 @@ declare global {
 
 
 declare global {
-  interface HTMLIonlabAppElement extends HTMLStencilElement {
 
+  namespace StencilComponents {
+    interface IonlabApp {
+
+    }
   }
+
+  interface HTMLIonlabAppElement extends StencilComponents.IonlabApp, HTMLStencilElement {}
+
   var HTMLIonlabAppElement: {
     prototype: HTMLIonlabAppElement;
     new (): HTMLIonlabAppElement;
@@ -52,12 +58,18 @@ declare global {
 
 
 declare global {
-  interface HTMLIonlabDeviceFrameElement extends HTMLStencilElement {
-    'icon': string;
-    'platform': string;
-    'platformName': string;
-    'url': string;
+
+  namespace StencilComponents {
+    interface IonlabDeviceFrame {
+      'icon': string;
+      'platform': string;
+      'platformName': string;
+      'url': string;
+    }
   }
+
+  interface HTMLIonlabDeviceFrameElement extends StencilComponents.IonlabDeviceFrame, HTMLStencilElement {}
+
   var HTMLIonlabDeviceFrameElement: {
     prototype: HTMLIonlabDeviceFrameElement;
     new (): HTMLIonlabDeviceFrameElement;
@@ -85,9 +97,15 @@ declare global {
 
 
 declare global {
-  interface HTMLIonlabPlatformDropdownElement extends HTMLStencilElement {
-    'activePlatforms': string[];
+
+  namespace StencilComponents {
+    interface IonlabPlatformDropdown {
+      'activePlatforms': string[];
+    }
   }
+
+  interface HTMLIonlabPlatformDropdownElement extends StencilComponents.IonlabPlatformDropdown, HTMLStencilElement {}
+
   var HTMLIonlabPlatformDropdownElement: {
     prototype: HTMLIonlabPlatformDropdownElement;
     new (): HTMLIonlabPlatformDropdownElement;
@@ -113,10 +131,16 @@ declare global {
 
 
 declare global {
-  interface HTMLIonlabPreviewElement extends HTMLStencilElement {
-    'activeDevices': string[];
-    'url': string;
+
+  namespace StencilComponents {
+    interface IonlabPreview {
+      'activeDevices': string[];
+      'url': string;
+    }
   }
+
+  interface HTMLIonlabPreviewElement extends StencilComponents.IonlabPreview, HTMLStencilElement {}
+
   var HTMLIonlabPreviewElement: {
     prototype: HTMLIonlabPreviewElement;
     new (): HTMLIonlabPreviewElement;
@@ -142,9 +166,15 @@ declare global {
 
 
 declare global {
-  interface HTMLIonlabSidebarElement extends HTMLStencilElement {
-    'visible': boolean;
+
+  namespace StencilComponents {
+    interface IonlabSidebar {
+      'visible': boolean;
+    }
   }
+
+  interface HTMLIonlabSidebarElement extends StencilComponents.IonlabSidebar, HTMLStencilElement {}
+
   var HTMLIonlabSidebarElement: {
     prototype: HTMLIonlabSidebarElement;
     new (): HTMLIonlabSidebarElement;
@@ -170,9 +200,15 @@ declare global {
 
 
 declare global {
-  interface HTMLSkFadingCircleElement extends HTMLStencilElement {
 
+  namespace StencilComponents {
+    interface SkFadingCircle {
+
+    }
   }
+
+  interface HTMLSkFadingCircleElement extends StencilComponents.SkFadingCircle, HTMLStencilElement {}
+
   var HTMLSkFadingCircleElement: {
     prototype: HTMLSkFadingCircleElement;
     new (): HTMLSkFadingCircleElement;
