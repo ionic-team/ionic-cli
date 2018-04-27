@@ -4,7 +4,7 @@ import * as Debug from 'debug';
 import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 
 import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
-import { OptionGroup } from '../../../constants';
+import { CommandGroup, OptionGroup } from '../../../constants';
 import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
 import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './utils';
 
@@ -13,6 +13,7 @@ const debug = Debug('ionic:cli-utils:lib:project:angular:build');
 export class BuildRunner extends BaseBuildRunner<AngularBuildOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
+      groups: [CommandGroup.Experimental],
       exampleCommands: ['--prod', '-- --extract-css=true'],
       description: `
 ${chalk.green('ionic build')} uses the Angular CLI. Use ${chalk.green('ng build --help')} to list all Angular CLI options for building your app. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the ${chalk.green('ng')} CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.

@@ -1,18 +1,8 @@
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import {
-  CommandGroup,
-  CommandInstanceInfo,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandMetadataOption,
-  CommandPreRun,
-  OptionGroup,
-  ServeOptions,
-} from '@ionic/cli-utils';
-
+import { MetadataGroup } from '@ionic/cli-framework';
+import { CommandGroup, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, OptionGroup, ServeOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT, ServeRunner } from '@ionic/cli-utils/lib/serve';
 import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
@@ -29,6 +19,8 @@ export class ServeCommand extends Command implements CommandPreRun {
   }
 
   async getMetadata(): Promise<CommandMetadata> {
+    let groups: MetadataGroup[] = [];
+
     const options: CommandMetadataOption[] = [
       ...COMMON_SERVE_COMMAND_OPTIONS,
       {
@@ -105,6 +97,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
     try {
       const runner = await this.getRunner();
       const libmetadata = await runner.getCommandMetadata();
+      groups = libmetadata.groups || [];
       options.push(...libmetadata.options || []);
       description += `\n\n${(libmetadata.description || '').trim()}`;
       exampleCommands.push(...libmetadata.exampleCommands || []);
@@ -119,6 +112,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
       type: 'project',
       summary: 'Start a local dev server for app dev/testing',
       description,
+      groups,
       exampleCommands,
       options,
     };

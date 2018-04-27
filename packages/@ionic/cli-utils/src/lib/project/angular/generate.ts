@@ -12,6 +12,7 @@ import { TTY_WIDTH, columnar, wordWrap } from '@ionic/cli-framework/utils/format
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
+import { CommandGroup } from '../../../constants';
 import { GenerateRunner as BaseGenerateRunner } from '../../generate';
 import { FatalException } from '../../errors';
 import { importNgSchematics, importNgSchematicsTools } from './angular-devkit';
@@ -81,7 +82,7 @@ export class GenerateRunner extends BaseGenerateRunner<AngularGenerateOptions> {
     const schematicNamesAndAliases = [...schematicNames, ...lodash.flatten(schematics.map(s => s.aliases))];
 
     return {
-      groups: [],
+      groups: [CommandGroup.Experimental],
       summary: `Generate Angular classes such as pages, components, directives, services, etc.`,
       description: `
 Automatically create components for your Ionic app.

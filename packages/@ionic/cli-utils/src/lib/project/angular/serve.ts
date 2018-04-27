@@ -12,7 +12,7 @@ import { pathAccessible } from '@ionic/cli-framework/utils/fs';
 import { findClosestOpenPort, isHostConnectable } from '@ionic/cli-framework/utils/network';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
-import { OptionGroup } from '../../../constants';
+import { CommandGroup, OptionGroup } from '../../../constants';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
 import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
 import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './utils';
@@ -30,6 +30,7 @@ interface ServeCmdDetails {
 export class ServeRunner extends BaseServeRunner<AngularServeOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
+      groups: [CommandGroup.Experimental],
       exampleCommands: ['-- --extract-css=true'],
       description: `
 ${chalk.green('ionic serve')} uses the Angular CLI. Common Angular CLI options such as ${chalk.green('--target')} and ${chalk.green('--environment')} are mixed in with Ionic CLI options. Use ${chalk.green('ng serve --help')} to list all options. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
