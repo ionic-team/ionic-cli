@@ -22,8 +22,7 @@ const IONIC_SCHEMATICS_PACKAGE = '@ionic/schematics-angular';
 const debug = Debug('ionic:cli-utils:lib:project:angular:generate');
 
 const ANGULAR_SCHEMATICS_STANDARD: ReadonlyArray<string> = ['class', 'interface', 'module', 'enum'];
-const ANGULAR_SCHEMATICS_ANGULAR: ReadonlyArray<string> = ['component', 'directive', 'guard', 'module', 'pipe', 'service'];
-const ANGULAR_SCHEMATICS: ReadonlyArray<string> = [...ANGULAR_SCHEMATICS_ANGULAR, ...ANGULAR_SCHEMATICS_STANDARD];
+const ANGULAR_SCHEMATICS: ReadonlyArray<string> = ['component', 'service', 'module', 'class', 'directive', 'guard', 'pipe', 'interface', 'enum'];
 const IONIC_SCHEMATICS: ReadonlyArray<string> = ['page'];
 const SCHEMATICS: ReadonlyArray<string> = [...IONIC_SCHEMATICS, ...ANGULAR_SCHEMATICS];
 
@@ -274,6 +273,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
             ...extractSchematicsFromCollection(engine.createCollection(IONIC_SCHEMATICS_PACKAGE)),
             ...extractSchematicsFromCollection(engine.createCollection(ANGULAR_SCHEMATICS_PACKAGE)),
           ];
+
+          this.schematics.sort((a, b) => SCHEMATICS.indexOf(a.type) - SCHEMATICS.indexOf(b.type));
         } catch (e) {
           this.log.warn(`Could not load schematics for ${chalk.green('ionic generate')}. Use ${chalk.green('--verbose')} to debug.`);
           debug(`Error while loading schematics: ${e.stack ? e.stack : e}`);
