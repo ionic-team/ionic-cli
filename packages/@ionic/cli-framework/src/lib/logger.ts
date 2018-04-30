@@ -11,6 +11,7 @@ export interface LogRecord {
   msg: string;
   logger: Logger;
   level?: LoggerLevelWeight;
+  format?: boolean;
 }
 
 export type LoggerLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
@@ -76,14 +77,17 @@ export class StreamHandler implements LoggerHandler {
       return;
     }
 
-    const msg = this.formatter ? this.formatter(record) : record.msg;
+    const msg = this.formatter && record.format !== false ? this.formatter(record) : record.msg;
     this.stream.write(enforceLF(msg));
   }
 }
 
+export const stdoutLogRecordFilter = (record: LogRecord) => !record.level || record.level === LOGGER_LEVELS.INFO;
+export const stderrLogRecordFilter = (record: LogRecord) => !!record.level && record.level !== LOGGER_LEVELS.INFO;
+
 export const DEFAULT_LOGGER_HANDLERS: ReadonlySet<LoggerHandler> = new Set([
-  new StreamHandler({ stream: process.stdout, filter: record => !record.level || record.level === LOGGER_LEVELS.INFO }),
-  new StreamHandler({ stream: process.stderr, filter: record => !!record.level && record.level !== LOGGER_LEVELS.INFO }),
+  new StreamHandler({ stream: process.stdout, filter: stdoutLogRecordFilter }),
+  new StreamHandler({ stream: process.stderr, filter: stderrLogRecordFilter }),
 ]);
 
 export interface LoggerOptions {
@@ -92,7 +96,7 @@ export interface LoggerOptions {
 }
 
 export class Logger {
-  readonly handlers: Set<LoggerHandler>;
+  handlers: Set<LoggerHandler>;
   level: LoggerLevelWeight;
 
   constructor({ level = LOGGER_LEVELS.INFO, handlers = new Set(DEFAULT_LOGGER_HANDLERS) }: LoggerOptions = {}) {
@@ -172,7 +176,7 @@ export class Logger {
    * @param level The logger level. If omitted, the default output is used.
    */
   nl(num = 1, level?: LoggerLevelWeight): void {
-    this.log(this.createRecord('\n'.repeat(num), level));
+    this.log({ format: false, ...this.createRecord('\n'.repeat(num), level) });
   }
 
   /**
@@ -201,9 +205,9 @@ export class Logger {
 }
 
 export interface CreateTaggedFormatterOptions {
-  prefix?: string;
+  prefix?: string | (() => string);
   titleize?: boolean;
-  wrap?: WordWrapOptions;
+  wrap?: boolean | WordWrapOptions;
   colors?: Colors;
 }
 
@@ -216,6 +220,8 @@ export function createTaggedFormatter({ colors = DEFAULT_COLORS, prefix = '', ti
     const levelName = getLoggerLevelName(level);
     const levelColor = getLoggerLevelColor(colors, level);
 
+    prefix = typeof prefix === 'function' ? prefix() : prefix;
+
     const tag = (
       (prefix ? `${prefix}` : '') +
       (levelName ? `${weak('[')}${levelColor ? levelColor(levelName) : levelName}${weak(']')}` : '')
@@ -226,7 +232,10 @@ export function createTaggedFormatter({ colors = DEFAULT_COLORS, prefix = '', ti
 
     return (
       (tag ? `${tag} ` : '') +
-      (wrap ? wordWrap([title, ...lines].join('\n'), { indentation, ...wrap }) : [title, ...lines.map(l => `${' '.repeat(indentation)} ${l}`)].join('\n'))
+      (wrap
+        ? wordWrap([title, ...lines].join('\n'), { indentation, ...(typeof wrap === 'object' ? wrap : {}) })
+        : [title, ...lines.map(l => `${' '.repeat(indentation)} ${l}`)].join('\n')
+      )
     );
   };
 }
