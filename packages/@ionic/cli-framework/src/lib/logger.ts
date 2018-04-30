@@ -231,10 +231,10 @@ export function createTaggedFormatter({ colors = DEFAULT_COLORS, prefix = '', ti
 
     const tag = (
       (prefix ? `${prefix}` : '') +
-      (levelName ? `${weak('[')}${chalk.bold.bgBlack(levelColor ? levelColor(levelName) : levelName)}${weak(']')}` : '')
+      (levelName ? `${weak('[')}${chalk.bgBlack(strong(levelColor ? levelColor(levelName) : levelName))}${weak(']')}` : '')
     );
 
-    const title = titleize && lines.length > 0 ? `${strong(firstLine)}\n` : firstLine;
+    const title = titleize && lines.length > 0 ? `${strong(levelColor ? levelColor(firstLine) : firstLine)}\n` : firstLine;
     const indentation = stringWidth(tag) + 1;
 
     return (
