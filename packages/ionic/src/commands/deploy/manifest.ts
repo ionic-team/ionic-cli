@@ -2,11 +2,11 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { CommandGroup, CommandMetadata } from '@ionic/cli-utils';
+import { map } from '@ionic/cli-framework/utils/array';
+import { fsStat, readDir } from '@ionic/cli-framework/utils/fs';
+import { CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { fsReadFile, fsWriteFile } from '@ionic/cli-framework/utils/fs';
-
-import * as klaw from 'klaw';
+import { fsWriteFile } from '@ionic/cli-framework/utils/fs';
 
 interface DeployManifestItem {
   href: string;
@@ -22,38 +22,44 @@ export class DeployManifestCommand extends Command {
       name: 'manifest',
       type: 'project',
       summary: 'Generates a manifest file for the deploy service from a built app directory',
-      groups: [CommandGroup.Hidden], // TODO: make part of start?
     };
   }
 
   async run(): Promise<void> {
     const manifest = await this.getFilesAndSizesAndHashesForGlobPattern();
-    await fsWriteFile(path.resolve(this.buildDir, 'pro-manifest.json'), JSON.stringify(manifest), { encoding: 'utf8' });
+    await fsWriteFile(path.resolve(this.buildDir, 'pro-manifest.json'), JSON.stringify(manifest, undefined, 2), { encoding: 'utf8' });
   }
 
   private async getFilesAndSizesAndHashesForGlobPattern(): Promise<DeployManifestItem[]> {
-    const items: Promise<DeployManifestItem>[] = [];
+    const contents = await readDir(this.buildDir, { recursive: true });
+    const stats = await map(contents, async (f): Promise<[string, fs.Stats]> => [f, await fsStat(f)]);
+    const files = stats.filter(([ , stat ]) => !stat.isDirectory());
 
-    return new Promise<DeployManifestItem[]>((resolve, reject) => {
-      klaw(this.buildDir)
-        .on('data', item => {
-          if (item.stats.isFile()) {
-            items.push(this.getFileAndSizeAndHashForFile(item.path, item.stats));
-          }
-        })
-        .on('error', err => reject(err))
-        .on('end', async () => resolve(await Promise.all(items)));
-    });
+    const items = await Promise.all(files.map(([f, stat]) => this.getFileAndSizeAndHashForFile(f, stat)));
+
+    return items;
   }
 
   private async getFileAndSizeAndHashForFile(file: string, stat: fs.Stats): Promise<DeployManifestItem> {
-    const buffer: any = await fsReadFile(file, {encoding: (undefined as any)});
+    const buffer = await this.readFile(file);
 
     return {
       href: path.relative(this.buildDir, file),
       size: stat.size,
       integrity: this.getIntegrity(buffer),
     };
+  }
+
+  private async readFile(file: string): Promise<Buffer> {
+    return new Promise<Buffer>((resolve, reject) => {
+      fs.readFile(file, (err, buffer) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(buffer);
+      });
+    });
   }
 
   private getIntegrity(data: Buffer) {
