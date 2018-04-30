@@ -1,10 +1,18 @@
 import chalk from 'chalk';
 
+import { MetadataGroup } from '@ionic/cli-framework';
 import { NamespaceGroup } from '@ionic/cli-utils';
 import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class CapacitorNamespace extends Namespace {
   async getMetadata() {
+    const groups: MetadataGroup[] = [NamespaceGroup.Beta];
+    const config = await this.env.config.load();
+
+    if (!config.features['capacitor-commands']) {
+      groups.push(NamespaceGroup.Hidden);
+    }
+
     return {
       name: 'capacitor',
       summary: 'Capacitor functionality',
@@ -14,7 +22,7 @@ These commands integrate with Capacitor, Ionic's new native layer project which 
 Learn more about Capacitor:
 - Main documentation: ${chalk.bold('https://capacitor.ionicframework.com/')}
       `,
-      groups: [NamespaceGroup.Beta],
+      groups,
     };
   }
 

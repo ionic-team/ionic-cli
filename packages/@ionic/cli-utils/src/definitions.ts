@@ -353,7 +353,7 @@ export interface ITelemetry {
 
 export type NpmClient = 'yarn' | 'npm';
 
-export type FeatureId = 'project-angular' | 'ssl-commands' | 'ionic-angular-v3-v4-migration';
+export type FeatureId = 'project-angular' | 'capacitor-commands' | 'ssl-commands' | 'ionic-angular-v3-v4-migration';
 
 export type DoctorAilmentId = (
   // Base
