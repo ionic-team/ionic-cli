@@ -25,7 +25,7 @@ import {
   User,
 } from './definitions';
 
-export const INTEGRATION_NAMES: IntegrationName[] = ['cordova'];
+export const INTEGRATION_NAMES: IntegrationName[] = ['capacitor', 'cordova'];
 
 export function isCommand(c: object): c is ICommand {
   const cmd = <ICommand>c;

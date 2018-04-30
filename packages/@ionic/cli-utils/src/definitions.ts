@@ -106,7 +106,7 @@ export type HookContext = BaseHookContext & HookInput;
 
 export type HookFn = (ctx: HookContext) => Promise<void>;
 
-export type IntegrationName = 'cordova';
+export type IntegrationName = 'capacitor' | 'cordova';
 
 export interface ProjectIntegration {
   enabled?: boolean;
@@ -114,6 +114,7 @@ export interface ProjectIntegration {
 
 export interface ProjectIntegrations {
   cordova?: ProjectIntegration;
+  capacitor?: ProjectIntegration;
 }
 
 export interface ProjectFile {
