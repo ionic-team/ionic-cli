@@ -14,6 +14,7 @@ import { findClosestOpenPort, isHostConnectable } from '@ionic/cli-framework/uti
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
 import { CommandGroup, OptionGroup } from '../../../constants';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
+import { createFormatter } from '../../utils/logger';
 import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
 import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './utils';
 
@@ -193,7 +194,8 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
       onBeforeExit(async () => p.kill());
 
-      const log = this.log.clone({ prefix: chalk.dim(`[${program}]`), wrap: false });
+      const log = this.log.clone();
+      log.setFormatter(createFormatter({ prefix: chalk.dim(`[${program}]`), wrap: false }));
       const ws = log.createWriteStream();
 
       if (program === DEFAULT_PROGRAM) {

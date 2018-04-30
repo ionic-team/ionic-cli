@@ -21,6 +21,7 @@ import { FatalException, RunnerException, RunnerNotFoundException } from './erro
 import { Runner } from './runner';
 import { Hook } from './hooks';
 import { PkgManagerOptions } from './utils/npm';
+import { createFormatter } from './utils/logger';
 
 import * as ionic1ServeLibType from './project/ionic1/serve';
 import * as ionicAngularServeLibType from './project/ionic-angular/serve';
@@ -397,7 +398,8 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
 
       onBeforeExit(async () => p.kill());
 
-      const log = this.log.clone({ prefix: chalk.dim('[lab]'), wrap: false });
+      const log = this.log.clone();
+      log.setFormatter(createFormatter({ prefix: chalk.dim('[lab]'), wrap: false }));
       const ws = log.createWriteStream();
 
       const stdoutFilter = through2(function(chunk, enc, callback) {

@@ -15,6 +15,7 @@ import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandM
 import { CommandGroup } from '../../../constants';
 import { GenerateRunner as BaseGenerateRunner } from '../../generate';
 import { FatalException } from '../../errors';
+import { createFormatter } from '../../utils/logger';
 import { importNgSchematics, importNgSchematicsTools } from './angular-devkit';
 
 const ANGULAR_SCHEMATICS_PACKAGE = '@schematics/angular';
@@ -342,7 +343,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
 
       onBeforeExit(async () => p.kill());
 
-      const log = this.log.clone({ wrap: false });
+      const log = this.log.clone();
+      log.setFormatter(createFormatter({ wrap: false }));
       const ws = log.createWriteStream();
 
       const stdoutStream = through2(function(chunk, env, callback) {

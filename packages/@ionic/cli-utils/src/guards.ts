@@ -13,7 +13,6 @@ import {
   GithubRepoAssociation,
   ICommand,
   IntegrationName,
-  LogLevel,
   Login,
   Org,
   Response,
@@ -26,7 +25,6 @@ import {
   User,
 } from './definitions';
 
-export const LOG_LEVELS: LogLevel[] = ['info', 'msg', 'ok', 'warn', 'error', 'announce'];
 export const INTEGRATION_NAMES: IntegrationName[] = ['cordova'];
 
 export function isCommand(c: object): c is ICommand {
@@ -37,11 +35,6 @@ export function isCommand(c: object): c is ICommand {
 export function isCommandPreRun(c: ICommand): c is CommandPreRun {
   const cmd = <CommandPreRun>c;
   return cmd && typeof cmd.preRun === 'function';
-}
-
-export function isLogLevel(l: string): l is LogLevel {
-  const loglevel = <LogLevel>l;
-  return LOG_LEVELS.includes(loglevel);
 }
 
 export function isStarterManifest(o: object): o is StarterManifest {

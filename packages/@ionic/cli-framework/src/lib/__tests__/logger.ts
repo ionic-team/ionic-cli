@@ -255,13 +255,13 @@ describe('@ionic/cli-framework', () => {
         const format = createTaggedFormatter({ wrap: wordWrapOpts });
         const msg = 'A '.repeat(1000);
         const result = format({ msg, logger, output, level: LOGGER_LEVELS.INFO });
-        expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 6, ...wordWrapOpts })}`);
+        expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 7, ...wordWrapOpts })}`);
       });
 
       it('should not titleize by default', () => {
         const format = createTaggedFormatter();
         const result = format({ msg: `Hello!\nThis is a message.\nHere's another.`, logger, output, level: LOGGER_LEVELS.INFO });
-        expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n       This is a message.\n       Here's another.`);
+        expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n        This is a message.\n        Here's another.`);
       });
 
       it('should not titleize for single line', () => {
@@ -273,7 +273,7 @@ describe('@ionic/cli-framework', () => {
       it('should titleize if wanted', () => {
         const format = createTaggedFormatter({ titleize: true });
         const result = format({ msg: `Hello!\nThis is a message.\nHere's another.`, logger, output, level: LOGGER_LEVELS.INFO });
-        expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n\n       This is a message.\n       Here's another.`);
+        expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n\n        This is a message.\n        Here's another.`);
       });
 
       it('should work with wrap and titleize', () => {
@@ -281,7 +281,7 @@ describe('@ionic/cli-framework', () => {
         const format = createTaggedFormatter({ titleize: true, wrap: wordWrapOpts });
         const msg = 'A '.repeat(1000);
         const result = format({ msg, logger, output, level: LOGGER_LEVELS.INFO });
-        expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 6, ...wordWrapOpts })}`);
+        expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 7, ...wordWrapOpts })}`);
       });
 
       it('should prefix single line without level', () => {

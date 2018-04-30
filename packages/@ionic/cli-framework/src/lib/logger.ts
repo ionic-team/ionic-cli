@@ -1,6 +1,7 @@
 import * as util from 'util';
 import { Writable } from 'stream';
 
+import chalk from 'chalk';
 import { Chalk } from 'chalk';
 
 import { Colors, DEFAULT_COLORS } from './colors';
@@ -202,6 +203,12 @@ export class Logger {
       }
     }();
   }
+
+  setFormatter(formatter: LoggerFormatter): void {
+    for (const handler of this.handlers) {
+      handler.formatter = formatter;
+    }
+  }
 }
 
 export interface CreateTaggedFormatterOptions {
@@ -224,11 +231,11 @@ export function createTaggedFormatter({ colors = DEFAULT_COLORS, prefix = '', ti
 
     const tag = (
       (prefix ? `${prefix}` : '') +
-      (levelName ? `${weak('[')}${levelColor ? levelColor(levelName) : levelName}${weak(']')}` : '')
+      (levelName ? `${weak('[')}${chalk.bold.bgBlack(levelColor ? levelColor(levelName) : levelName)}${weak(']')}` : '')
     );
 
     const title = titleize && lines.length > 0 ? `${strong(firstLine)}\n` : firstLine;
-    const indentation = stringWidth(tag);
+    const indentation = stringWidth(tag) + 1;
 
     return (
       (tag ? `${tag} ` : '') +

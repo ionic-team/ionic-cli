@@ -32,6 +32,6 @@ export class IntegrationsListCommand extends Command {
       return chalk.dim('not added');
     };
 
-    this.env.log.msg(columnar(integrations.map(i => [chalk.bold(i.name), i.summary, status(i.name)]), { headers: ['name', 'summary', 'status'] }));
+    this.env.log.rawmsg(columnar(integrations.map(i => [chalk.bold(i.name), i.summary, status(i.name)]), { headers: ['name', 'summary', 'status'] }));
   }
 }

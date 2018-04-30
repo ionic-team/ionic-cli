@@ -104,11 +104,13 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
 
     this.env.log.nl();
 
-    this.env.log.ok(
-      'A new pair of SSH keys has been generated!\n' +
+    this.env.log.rawmsg(
       `Private Key (${chalk.bold(prettyPath(keyPath))}): Keep this safe!\n` +
-      `Public Key (${chalk.bold(prettyPath(pubkeyPath))}): Give this to all your friends!\n`
+      `Public Key (${chalk.bold(prettyPath(pubkeyPath))}): Give this to all your friends!\n\n`
     );
+
+    this.env.log.ok('A new pair of SSH keys has been generated!');
+    this.env.log.nl();
 
     this.env.log.msg(
       `${chalk.bold('Next steps:')}\n` +

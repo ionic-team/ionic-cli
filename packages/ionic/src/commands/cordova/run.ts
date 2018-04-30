@@ -203,6 +203,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       }
     }
 
-    await this.runCordova(filterArgumentsForCordova(metadata, options), { logOptions: { prefix: chalk.dim('[cordova]'), wrap: false } });
+    // TODO
+    // await this.runCordova(filterArgumentsForCordova(metadata, options), { logOptions: { prefix: chalk.dim('[cordova]'), wrap: false } });
+    await this.runCordova(filterArgumentsForCordova(metadata, options));
   }
 }

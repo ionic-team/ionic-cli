@@ -19,37 +19,11 @@ export interface SuperAgentError extends Error {
 }
 
 export type LogFn = (msg: string) => void;
-export type LogLevel = 'info' | 'msg' | 'ok' | 'warn' | 'error' | 'announce';
-export type LogPrefix = string | (() => string);
 
-export interface LoggerOptions {
-  level?: LogLevel;
-  prefix?: string | (() => string);
-  outstream?: NodeJS.WritableStream;
-  errstream?: NodeJS.WritableStream;
-  wrap?: boolean;
-}
-
-export interface ILogger {
-  readonly level: LogLevel;
-  readonly prefix: LogPrefix;
-  outstream: NodeJS.WritableStream;
-  errstream: NodeJS.WritableStream;
-  readonly wrap: boolean;
-
-  // log functions
-  info: LogFn;
+export interface ILogger extends framework.Logger {
   ok: LogFn;
-  warn: LogFn;
-  error: LogFn;
-  announce: LogFn;
   msg: LogFn;
   rawmsg: LogFn;
-  nl(num?: number): void;
-
-  createWriteStream(): NodeJS.WritableStream;
-  clone(opts?: Partial<LoggerOptions>): ILogger;
-  shouldLog(level: LogLevel): boolean;
 }
 
 export interface ITask {
@@ -363,10 +337,7 @@ export interface IShellOutputOptions extends IShellSpawnOptions {
 export interface IShellRunOptions extends IShellOutputOptions {
   fatalOnNotFound?: boolean;
   truncateErrorOutput?: number;
-  logOptions?: IShellRunLogOptions;
 }
-
-export type IShellRunLogOptions = Partial<LoggerOptions> & { stdoutTransform?: NodeJS.ReadWriteStream; stderrTransform?: NodeJS.ReadWriteStream };
 
 export interface IShell {
   run(command: string, args: string[], options: IShellRunOptions): Promise<void>;

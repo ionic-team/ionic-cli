@@ -2,6 +2,8 @@ import chalk from 'chalk';
 import * as inquirerType from 'inquirer';
 import ui = inquirerType.ui;
 
+import { LOGGER_LEVELS } from '@ionic/cli-framework';
+
 import { ILogger, ITask, ITaskChain } from '../../definitions';
 
 const isWindows = process.platform === 'win32';
@@ -60,7 +62,7 @@ class Task implements ITask {
     if (this.running) {
       this.end();
 
-      if (this.log.shouldLog('info')) {
+      if (this.log.level >= LOGGER_LEVELS.INFO) {
         this.log.msg(`${chalk.green(ICON_SUCCESS)} ${this.msg} - done!`);
       }
     }
@@ -72,7 +74,7 @@ class Task implements ITask {
     if (this.running) {
       this.end();
 
-      if (this.log.shouldLog('info')) {
+      if (this.log.level >= LOGGER_LEVELS.INFO) {
         this.log.msg(`${chalk.red(ICON_FAILURE)} ${this.msg} - failed!`);
       }
     }
@@ -169,7 +171,7 @@ class InteractiveTask extends Task {
   }
 
   tick(): this {
-    if (this.log.shouldLog('info')) {
+    if (this.log.level >= LOGGER_LEVELS.INFO) {
       this.bottomBar.updateBottomBar(this.format());
     }
 
@@ -192,7 +194,7 @@ class InteractiveTask extends Task {
   clear(): this {
     clearInterval(this.intervalId);
 
-    if (this.log.shouldLog('info')) {
+    if (this.log.level >= LOGGER_LEVELS.INFO) {
       this.bottomBar.updateBottomBar('');
     }
 
@@ -205,7 +207,6 @@ class InteractiveTask extends Task {
 
     return this;
   }
-
 }
 
 export class InteractiveTaskChain extends TaskChain {
@@ -219,5 +220,4 @@ export class InteractiveTaskChain extends TaskChain {
   next(msg: string): ITask {
     return this._next(new InteractiveTask({ msg, log: this.log, bottomBar: this.bottomBar }));
   }
-
 }

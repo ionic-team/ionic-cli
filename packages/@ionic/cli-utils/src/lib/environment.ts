@@ -4,6 +4,8 @@ import * as inquirerType from 'inquirer';
 
 import { IClient, IConfig, ILogger, IProject, ISession, IShell, ITaskChain, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags, PromptModule } from '../definitions';
 
+import { createHandlers, createInteractiveHandlers } from './utils/logger';
+
 const debug = Debug('ionic:cli-utils:lib:environment');
 
 export class Environment implements IonicEnvironment {
@@ -81,8 +83,7 @@ export class Environment implements IonicEnvironment {
       }
     }
 
-    this.log.outstream = typeof this.bottomBar === 'undefined' ? process.stdout : this.bottomBar.log;
-    this.log.errstream = typeof this.bottomBar === 'undefined' ? process.stderr : this.bottomBar.log;
+    this.log.handlers = this.bottomBar ? createInteractiveHandlers(this.bottomBar) : createHandlers();
 
     debug('Environment open.');
   }
@@ -98,8 +99,7 @@ export class Environment implements IonicEnvironment {
       if (this.bottomBar) {
         this.bottomBar.close();
         this.bottomBar = undefined;
-        this.log.outstream = process.stdout;
-        this.log.errstream = process.stderr;
+        this.log.handlers = createHandlers();
       }
 
       debug('Environment closed.');

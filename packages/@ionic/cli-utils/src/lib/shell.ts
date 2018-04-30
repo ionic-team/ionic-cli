@@ -4,6 +4,7 @@ import chalk from 'chalk';
 
 import * as crossSpawnType from 'cross-spawn';
 
+import { LOGGER_LEVELS } from '@ionic/cli-framework';
 import { createProcessEnv } from '@ionic/cli-framework/utils/process';
 
 import { ILogger, IShell, IShellOutputOptions, IShellRunOptions, IShellSpawnOptions, ITaskChain } from '../definitions';
@@ -30,15 +31,13 @@ export class Shell implements IShell {
     this.projectDir = projectDir;
   }
 
-  async run(command: string, args: string[], { showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, logOptions, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<void> {
+  async run(command: string, args: string[], { showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<void> {
     const fullCmd = prettyCommand(command, args);
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
     const options: RunCmdOptions = { ...crossSpawnOptions };
 
-    const log = this.log.clone(logOptions);
-
     if (showCommand) {
-      const ws = log.createWriteStream();
+      const ws = this.log.createWriteStream();
 
       options.stdoutPipe = ws;
       options.stderrPipe = ws;
@@ -46,7 +45,7 @@ export class Shell implements IShell {
 
     this.prepareSpawnOptions(options);
 
-    if (showCommand && this.log.shouldLog('info')) {
+    if (showCommand && this.log.level >= LOGGER_LEVELS.INFO) {
       this.log.rawmsg(`> ${chalk.green(fullCmd)}`);
     }
 
@@ -99,7 +98,7 @@ export class Shell implements IShell {
     const fullCmd = prettyCommand(command, args);
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
 
-    if (showCommand && this.log.shouldLog('info')) {
+    if (showCommand && this.log.level >= LOGGER_LEVELS.INFO) {
       this.log.rawmsg(`> ${chalk.green(fullCmd)}`);
     }
 
@@ -134,7 +133,7 @@ export class Shell implements IShell {
 
     const p = await spawncmd(command, args, crossSpawnOptions);
 
-    if (showCommand && this.log.shouldLog('info')) {
+    if (showCommand && this.log.level >= LOGGER_LEVELS.INFO) {
       this.log.rawmsg(`> ${chalk.green(fullCmd)}`);
     }
 

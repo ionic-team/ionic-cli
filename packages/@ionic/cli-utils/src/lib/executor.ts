@@ -71,7 +71,7 @@ export async function runCommand(runinfo: CommandInstanceInfo, argv: string[]) {
   const { env, executor } = runinfo;
 
   const metadata = await executor.namespace.getMetadata();
-  executor.namespace.env.log.rawmsg(`> ${chalk.green([metadata.name, ...argv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
+  executor.namespace.env.log.msg(`> ${chalk.green([metadata.name, ...argv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
 
   await executor.execute(argv, env);
 }

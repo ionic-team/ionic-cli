@@ -3,14 +3,14 @@ import * as path from 'path';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { PackageJson, parseArgs } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, PackageJson, parseArgs } from '@ionic/cli-framework';
 import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 import { getTerminalInfo } from '@ionic/cli-framework/utils/terminal';
 
 import * as inquirerType from 'inquirer';
 
-import { IProject, InfoItem, IonicContext, IonicEnvironment, LogLevel, LogPrefix } from './definitions';
+import { IProject, InfoItem, IonicContext, IonicEnvironment } from './definitions';
 import { PROJECT_FILE } from './constants';
 import { BaseProject, OutsideProject, ProjectDeps } from './lib/project';
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
@@ -18,7 +18,7 @@ import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './li
 import { Client } from './lib/http';
 import { Environment } from './lib/environment';
 import { PROXY_ENVIRONMENT_VARIABLES } from './lib/utils/http';
-import { Logger } from './lib/utils/logger';
+import { Logger, createHandlers, createInteractiveHandlers } from './lib/utils/logger';
 import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
 import { ProSession } from './lib/session';
 import { Shell } from './lib/shell';
@@ -65,13 +65,8 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
   const flags = gatherFlags(argv);
 
-  let outstream: NodeJS.WritableStream;
-  let errstream: NodeJS.WritableStream;
   let tasks: TaskChain;
   let bottomBar: inquirerType.ui.BottomBar | undefined;
-  let log: Logger;
-  let level: LogLevel = 'info';
-  let prefix: LogPrefix = '';
 
   const configData = await config.load();
   const terminalInfo = getTerminalInfo();
@@ -81,25 +76,18 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     flags.interactive = false;
   }
 
-  if (argv['quiet']) {
-    level = 'warn';
-  }
-
-  if (argv['log-timestamps']) {
-    prefix = () => `${chalk.dim('[' + new Date().toISOString() + ']')}`;
-  }
+  const log = new Logger({
+    level: argv['quiet'] ? LOGGER_LEVELS.WARN : LOGGER_LEVELS.INFO,
+    handlers: new Set(),
+  });
 
   if (flags.interactive) {
     const inquirer = await import('inquirer');
     bottomBar = new inquirer.ui.BottomBar();
-    outstream = bottomBar.log;
-    errstream = bottomBar.log;
-    log = new Logger({ level, prefix, outstream, errstream });
+    log.handlers = createInteractiveHandlers(bottomBar);
     tasks = new InteractiveTaskChain({ log, bottomBar });
   } else {
-    outstream = process.stdout;
-    errstream = process.stderr;
-    log = new Logger({ level, prefix, outstream, errstream });
+    log.handlers = createHandlers();
     tasks = new TaskChain({ log });
   }
 

@@ -253,7 +253,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         if (this.env.flags.interactive) {
           this.env.log.nl();
           this.env.log.msg(
-            `${chalk.bold(`Every great app needs a name! ${emoji('😍', '')}`)}\n\n` +
+            `${chalk.bold(`Every great app needs a name! ${emoji('😍', '')}`)}\n` +
             `Please enter the full name of your app. You can change this at any time. To bypass this prompt next time, supply ${chalk.green('name')}, the first argument to ${chalk.green('ionic start')}.\n\n`
           );
         }
@@ -295,7 +295,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         if (this.env.flags.interactive) {
           this.env.log.nl();
           this.env.log.msg(
-            `${chalk.bold('What type of project would you like to create?')}\n\n` +
+            `${chalk.bold('What type of project would you like to create?')}\n` +
             `We recommend ${chalk.green(recommendedType)}. To learn more about project types, see the CLI documentation${chalk.cyan('[1]')}. To bypass this prompt next time, supply the ${chalk.green('--type')} option.\n\n` +
             `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}\n\n`
           );
@@ -324,7 +324,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         if (this.env.flags.interactive) {
           this.env.log.nl();
           this.env.log.msg(
-            `${chalk.bold(`Let's pick the perfect starter template! ${emoji('💪', '')}`)}\n\n` +
+            `${chalk.bold(`Let's pick the perfect starter template! ${emoji('💪', '')}`)}\n` +
             `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${chalk.green('template')}, the second argument to ${chalk.green('ionic start')}.\n\n`
           );
         }

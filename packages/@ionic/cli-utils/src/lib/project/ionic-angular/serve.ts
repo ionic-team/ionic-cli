@@ -11,6 +11,7 @@ import { isHostConnectable } from '@ionic/cli-framework/utils/network';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularServeOptions, ServeDetails } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
+import { createFormatter } from '../../utils/logger';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
 import { prettyProjectName } from '../';
 import { APP_SCRIPTS_OPTIONS } from './app-scripts';
@@ -159,7 +160,8 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
 
       onBeforeExit(async () => p.kill());
 
-      const log = this.log.clone({ prefix: chalk.dim(`[${program === DEFAULT_PROGRAM ? 'app-scripts' : program}]`), wrap: false });
+      const log = this.log.clone();
+      log.setFormatter(createFormatter({ prefix: chalk.dim(`[${program === DEFAULT_PROGRAM ? 'app-scripts' : program}]`), wrap: false }));
       const ws = log.createWriteStream();
 
       if (program === DEFAULT_PROGRAM) {
