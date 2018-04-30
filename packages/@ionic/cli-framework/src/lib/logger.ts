@@ -2,76 +2,102 @@ import * as util from 'util';
 import { Writable } from 'stream';
 
 import { Chalk } from 'chalk';
-import * as lodash from 'lodash';
 
-import { Colors, DEFAULT_COLORS, LOGGER_OUTPUT_COLORS } from './colors';
+import { Colors, DEFAULT_COLORS } from './colors';
 import { WordWrapOptions, stringWidth, wordWrap } from '../utils/format';
 import { enforceLF } from '../utils/string';
 
-export type LoggerLevel = 'debug' | 'info' | 'warn' | 'error';
-export type LoggerFormatter = (msg: string, context: { logger: Logger; output: LoggerOutput; level?: LoggerLevel }) => string;
-
-export class LoggerOutput {
-  constructor(
-    /**
-     * Output is written to this stream.
-     */
-    public stream: NodeJS.WritableStream = process.stdout,
-
-    /**
-     * Assign a weight to this output.
-     *
-     * If a logger output has a lower weight than the logger to which they're
-     * attached, the output is not used.
-     */
-    public weight = Infinity,
-
-    /**
-     * Assign a color to be associated with this output.
-     */
-    public color?: Chalk
-  ) {}
+export interface LogRecord {
+  msg: string;
+  logger: Logger;
+  level?: LoggerLevelWeight;
 }
 
-export type LoggerOutputs = { [L in LoggerLevel]?: LoggerOutput; };
+export type LoggerLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
+export type LoggerLevelWeight = number;
+export type LoggerFormatter = (record: LogRecord) => string;
 
-export const DEFAULT_OUTPUT = new LoggerOutput();
+export const LOGGER_LEVELS: { readonly [L in LoggerLevel]: LoggerLevelWeight; } = Object.freeze({
+  DEBUG: 10,
+  INFO: 20,
+  WARN: 30,
+  ERROR: 40,
+});
 
-export const LOGGER_OUTPUTS: LoggerOutputs = {
-  debug: new LoggerOutput(process.stderr, 10, LOGGER_OUTPUT_COLORS.debug),
-  info: new LoggerOutput(process.stdout, 20, LOGGER_OUTPUT_COLORS.info),
-  warn: new LoggerOutput(process.stderr, 30, LOGGER_OUTPUT_COLORS.warn),
-  error: new LoggerOutput(process.stderr, 40, LOGGER_OUTPUT_COLORS.error),
-};
+export const LOGGER_LEVEL_NAMES: ReadonlyMap<LoggerLevelWeight, LoggerLevel> = new Map<LoggerLevelWeight, LoggerLevel>([
+  [LOGGER_LEVELS.DEBUG, 'DEBUG'],
+  [LOGGER_LEVELS.INFO, 'INFO'],
+  [LOGGER_LEVELS.WARN, 'WARN'],
+  [LOGGER_LEVELS.ERROR, 'ERROR'],
+]);
 
-export interface LoggerOptions {
-  /**
-   * Assign a weight to this logger.
-   *
-   * If a logger has a lower weight than the logger output it's about to use,
-   * it will not log.
-   */
-  readonly weight?: number;
-  readonly output?: LoggerOutput;
-  readonly outputs?: LoggerOutputs;
-  readonly colors?: Colors;
+export function getLoggerLevelName(level?: LoggerLevelWeight): LoggerLevel | undefined {
+  if (level) {
+    const levelName = LOGGER_LEVEL_NAMES.get(level);
+
+    if (levelName) {
+      return levelName;
+    }
+  }
+}
+
+export function getLoggerLevelColor(colors: Colors, level?: LoggerLevelWeight): Chalk | undefined {
+  const levelName = getLoggerLevelName(level);
+
+  if (levelName) {
+    return colors.log[levelName];
+  }
+}
+
+export interface LoggerHandler {
+  formatter?: LoggerFormatter;
+  handle(record: LogRecord): void;
+}
+
+export interface StreamHandlerOptions {
+  readonly stream: NodeJS.WritableStream;
+  readonly filter?: (record: LogRecord) => boolean;
   readonly formatter?: LoggerFormatter;
 }
 
-export class Logger {
-  weight: number;
+export class StreamHandler implements LoggerHandler {
+  readonly stream: NodeJS.WritableStream;
+  readonly filter?: (record: LogRecord) => boolean;
   formatter?: LoggerFormatter;
 
-  readonly output: LoggerOutput;
-  readonly outputs: LoggerOutputs;
-  readonly colors: Colors;
-
-  constructor({ weight = Infinity, output = DEFAULT_OUTPUT, outputs = LOGGER_OUTPUTS, colors = DEFAULT_COLORS, formatter }: LoggerOptions = {}) {
-    this.weight = weight;
-    this.output = output;
-    this.outputs = outputs;
-    this.colors = colors;
+  constructor({ stream, filter, formatter }: StreamHandlerOptions) {
+    this.stream = stream;
+    this.filter = filter;
     this.formatter = formatter;
+  }
+
+  handle(record: LogRecord): void {
+    if (this.filter && !this.filter(record)) {
+      return;
+    }
+
+    const msg = this.formatter ? this.formatter(record) : record.msg;
+    this.stream.write(enforceLF(msg));
+  }
+}
+
+export const DEFAULT_LOGGER_HANDLERS: ReadonlySet<LoggerHandler> = new Set([
+  new StreamHandler({ stream: process.stdout, filter: record => !record.level || record.level === LOGGER_LEVELS.INFO }),
+  new StreamHandler({ stream: process.stderr, filter: record => !!record.level && record.level !== LOGGER_LEVELS.INFO }),
+]);
+
+export interface LoggerOptions {
+  readonly handlers?: Set<LoggerHandler>;
+  readonly level?: LoggerLevelWeight;
+}
+
+export class Logger {
+  readonly handlers: Set<LoggerHandler>;
+  level: LoggerLevelWeight;
+
+  constructor({ level = LOGGER_LEVELS.INFO, handlers = new Set(DEFAULT_LOGGER_HANDLERS) }: LoggerOptions = {}) {
+    this.level = level;
+    this.handlers = handlers;
   }
 
   /**
@@ -80,53 +106,63 @@ export class Logger {
    * @param opts Logger options to override from this logger.
    */
   clone(opts: Partial<LoggerOptions> = {}): Logger {
-    const { weight, output, outputs, colors, formatter } = this;
-    return new Logger({ weight, output, outputs, colors, formatter, ...opts });
+    const { level, handlers } = this;
+    return new Logger({ level, handlers, ...opts });
   }
 
   /**
-   * Write a string as-is directly to the default logger output.
+   * Log a message as-is.
    *
    * @param msg The string to log.
    */
-  raw(msg: string): void {
-    this.output.stream.write(msg);
+  msg(msg: string): void {
+    this.log(this.createRecord(msg));
   }
 
   /**
-   * Log a message using the `debug` logger output.
+   * Log a message using the `debug` logger level.
    *
    * @param msg The string to log.
    */
   debug(msg: string): void {
-    this.log(msg, 'debug');
+    this.log(this.createRecord(msg, LOGGER_LEVELS.DEBUG));
   }
 
   /**
-   * Log a message using the `info` logger output.
+   * Log a message using the `info` logger level.
    *
    * @param msg The string to log.
    */
   info(msg: string): void {
-    this.log(msg, 'info');
+    this.log(this.createRecord(msg, LOGGER_LEVELS.INFO));
   }
 
   /**
-   * Log a message using the `warn` logger output.
+   * Log a message using the `warn` logger level.
    *
    * @param msg The string to log.
    */
   warn(msg: string): void {
-    this.log(msg, 'warn');
+    this.log(this.createRecord(msg, LOGGER_LEVELS.WARN));
   }
 
   /**
-   * Log a message using the `error` logger output.
+   * Log a message using the `error` logger level.
    *
    * @param msg The string to log.
    */
   error(msg: string): void {
-    this.log(msg, 'error');
+    this.log(this.createRecord(msg, LOGGER_LEVELS.ERROR));
+  }
+
+  createRecord(msg: string, level?: LoggerLevelWeight): LogRecord {
+    return {
+      // If the logger is used to quickly print something, let's pretty-print
+      // it into a string.
+      msg: util.format(msg),
+      level,
+      logger: this,
+    };
   }
 
   /**
@@ -135,108 +171,62 @@ export class Logger {
    * @param num The number of newlines to log.
    * @param level The logger level. If omitted, the default output is used.
    */
-  nl(num = 1, level?: LoggerLevel): void {
-    this.log('\n'.repeat(num), level, false);
+  nl(num = 1, level?: LoggerLevelWeight): void {
+    this.log(this.createRecord('\n'.repeat(num), level));
   }
 
   /**
-   * Log a message using a logger output found via `level`.
-   *
-   * @param msg The string to log.
-   * @param level The logger level. If omitted, the default output is used.
-   * @param format Run this log message through the formatter.
+   * Log a record using a logger output found via `level`.
    */
-  log(msg: string, level?: LoggerLevel, format = true): void {
-    const output = this.findOutput(level);
-
-    if (output.weight > this.weight) {
+  log(record: LogRecord): void {
+    if (typeof record.level === 'number' && this.level > record.level) {
       return;
     }
 
-    // If the logger is used to quickly print something, let's pretty-print it
-    // into a string.
-    msg = util.format(msg);
-
-    if (format) {
-      const formatter: LoggerFormatter = this.formatter ? this.formatter : lodash.identity;
-      msg = formatter(msg, { logger: this, output, level });
+    for (const handler of this.handlers) {
+      handler.handle(record);
     }
-
-    output.stream.write(enforceLF(msg));
   }
 
-  /**
-   * Create a NodeJS writable stream at the given `level`.
-   *
-   * @param level The logger level. If omitted, the default output is used.
-   */
-  createWriteStream(level?: LoggerLevel): NodeJS.WritableStream {
+  createWriteStream(level?: LoggerLevelWeight): NodeJS.WritableStream {
     const self = this;
 
     return new class extends Writable {
       _write(chunk: any, encoding: string, callback: Function) {
-        self.log(chunk.toString(), level);
+        self.log(self.createRecord(chunk.toString(), level));
         callback();
       }
     }();
   }
-
-  /**
-   * Return `true` if the logger has output for a given `level`, `false`
-   * otherwise.
-   *
-   * @param level The logger level. If omitted, this method returns `true`
-   *              because the logger has a default output.
-   */
-  hasOutput(level?: LoggerLevel): boolean {
-    if (!level) {
-      return true;
-    }
-
-    return typeof this.outputs[level] !== 'undefined';
-  }
-
-  /**
-   * Find a logger output with the given `level`.
-   *
-   * @param level The logger level. If omitted, the default output is returned.
-   */
-  findOutput(level?: LoggerLevel): LoggerOutput {
-    if (level) {
-      const output = this.outputs[level];
-
-      if (output) {
-        return output;
-      }
-    }
-
-    return this.output;
-  }
 }
-
-export type LoggerFormatters = { [F in 'tagged']: LoggerFormatter; };
-
-export const LOGGER_FORMATTERS: LoggerFormatters = {
-  tagged: createTaggedFormatter(),
-};
 
 export interface CreateTaggedFormatterOptions {
-  title?: boolean;
+  prefix?: string;
+  titleize?: boolean;
   wrap?: WordWrapOptions;
+  colors?: Colors;
 }
 
-export function createTaggedFormatter({ title, wrap }: CreateTaggedFormatterOptions = {}): LoggerFormatter {
-  return (msg, { logger, output, level }) => {
-    const { strong, weak } = logger.colors;
-    const c: (s: string) => string = output.color ? output.color : lodash.identity;
-    const tag = level ? `${weak('[')}${c(level.toUpperCase())}${weak(']')}` : '';
-    const indentation = stringWidth(tag);
+export function createTaggedFormatter({ colors = DEFAULT_COLORS, prefix = '', titleize, wrap }: CreateTaggedFormatterOptions = {}): LoggerFormatter {
+  return ({ logger, msg, level }) => {
+    const { strong, weak } = colors;
+
     const [ firstLine, ...lines ] = msg.split('\n');
-    const first = title && lines.length > 0 ? `${strong(firstLine)}\n` : firstLine;
+
+    const levelName = getLoggerLevelName(level);
+    const levelColor = getLoggerLevelColor(colors, level);
+
+    const tag = (
+      (prefix ? `${prefix}` : '') +
+      (levelName ? `${weak('[')}${levelColor ? levelColor(levelName) : levelName}${weak(']')}` : '')
+    );
+
+    const title = titleize && lines.length > 0 ? `${strong(firstLine)}\n` : firstLine;
+    const indentation = stringWidth(tag);
 
     return (
       (tag ? `${tag} ` : '') +
-      (wrap ? wordWrap([first, ...lines].join('\n'), { indentation, ...wrap }) : [first, ...lines.map(l => `${' '.repeat(indentation)} ${l}`)].join('\n'))
+      (wrap ? wordWrap([title, ...lines].join('\n'), { indentation, ...wrap }) : [title, ...lines.map(l => `${' '.repeat(indentation)} ${l}`)].join('\n'))
     );
   };
 }

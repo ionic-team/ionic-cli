@@ -3,7 +3,7 @@ import { Writable } from 'stream';
 import stripAnsi = require('strip-ansi');
 import { wordWrap } from '../../utils/format';
 
-import { DEFAULT_OUTPUT, LOGGER_OUTPUTS, Logger, LoggerOutput, createTaggedFormatter } from '../logger';
+import { DEFAULT_OUTPUT, LOGGER_LEVELS, LOGGER_OUTPUTS, Logger, StreamHandler, createTaggedFormatter } from '../logger';
 
 describe('@ionic/cli-framework', () => {
 
@@ -16,58 +16,48 @@ describe('@ionic/cli-framework', () => {
         it('should clone the base set of options', () => {
           const logger1 = new Logger();
           const logger2 = logger1.clone();
-          expect(logger1.weight).toBe(logger2.weight);
-          expect(logger1.output).toBe(logger2.output);
-          expect(logger1.outputs).toBe(logger2.outputs);
-          expect(logger1.colors).toBe(logger2.colors);
-          expect(logger1.formatter).toBe(logger2.formatter);
+          expect(logger1.level).toBe(logger2.level);
+          expect(logger1.handlers).toBe(logger2.handlers);
         });
 
         it('should clone the set of option overrides', () => {
           const logger1 = new Logger();
-          const weight = 15;
-          const output = new LoggerOutput();
-          const outputs = {};
-          const formatter = () => {};
-          const logger2 = logger1.clone({ weight, output, outputs, formatter });
-          expect(logger2.weight).not.toBe(logger1.weight);
-          expect(logger2.weight).toBe(weight);
-          expect(logger2.output).not.toBe(logger1.output);
-          expect(logger2.output).toBe(output);
-          expect(logger2.outputs).not.toBe(logger1.outputs);
-          expect(logger2.outputs).toBe(outputs);
-          expect(logger2.formatter).not.toBe(logger1.formatter);
-          expect(logger2.formatter).toBe(formatter);
+          const level = 15;
+          const handlers = new Set();
+          const logger2 = logger1.clone({ level, handlers });
+          expect(logger2.level).not.toBe(logger1.level);
+          expect(logger2.level).toBe(level);
+          expect(logger2.handlers).not.toBe(logger1.handlers);
+          expect(logger2.handlers).toBe(handlers);
         });
 
       });
 
-      describe('raw', () => {
+      describe('msg', () => {
 
         let stream, spy, logger;
 
         beforeEach(() => {
           stream = new class extends Writable { _write() {} }();
           spy = jest.spyOn(stream, 'write');
-          logger = new Logger({ output: new LoggerOutput(stream) });
+          logger = new Logger({ handlers: new Set([new StreamHandler({ stream })]) });
         });
 
         it('should write the message directly', () => {
-          logger.raw('hi');
-          expect(spy).toHaveBeenCalledWith('hi');
+          logger.msg('hi');
+          expect(spy).toHaveBeenCalledWith('hi\n');
         });
 
       });
 
       describe('nl', () => {
 
-        let stream, spy, logger, output;
+        let stream, spy, logger;
 
         beforeEach(() => {
           stream = new class extends Writable { _write() {} }();
           spy = jest.spyOn(stream, 'write');
-          output = new LoggerOutput(stream);
-          logger = new Logger({ output });
+          logger = new Logger({ handlers: new Set([new StreamHandler({ stream })]) });
         });
 
         it('should log for defaults', () => {
@@ -84,85 +74,79 @@ describe('@ionic/cli-framework', () => {
 
       describe('log', () => {
 
-        let stream, spy, logger, output;
+        let stream, spy, logger, handler;
 
         beforeEach(() => {
           stream = new class extends Writable { _write() {} }();
           spy = jest.spyOn(stream, 'write');
-          output = new LoggerOutput(stream);
-          logger = new Logger({ output });
+          handler = new StreamHandler({ stream });
+          logger = new Logger({ handlers: new Set([handler]) });
         });
 
         it('should log for defaults', () => {
-          logger.log('hi');
+          logger.log({ logger, msg: 'hi' });
           expect(spy).toHaveBeenCalledWith('hi\n');
         });
 
         it('should log with formatter', () => {
-          logger = new Logger({ output, formatter: (msg: string) => msg.split('').reverse().join('') });
-          logger.log('hello world!');
+          logger = new Logger({ handlers: new Set([new StreamHandler({ stream, formatter: record => record.msg.split('').reverse().join('') })]) });
+          logger.log({ logger, msg: 'hello world!' });
           expect(spy).toHaveBeenCalledWith('!dlrow olleh\n');
         });
 
-        it('should not log with formatter if not wanted', () => {
-          logger = new Logger({ output, formatter: (msg: string) => msg.split('').reverse().join('') });
-          logger.log('hello world!', undefined, false);
-          expect(spy).toHaveBeenCalledWith('hello world!\n');
-        });
-
-        it('should log with weights equal', () => {
-          output.weight = 10;
-          logger.weight = 10;
-          logger.log('hi');
+        it('should log with levels equal', () => {
+          logger.level = 20;
+          logger.log({ logger, msg: 'hi', level: 20 });
           expect(spy).toHaveBeenCalledWith('hi\n');
         });
 
-        it('should not log with logger weight set', () => {
-          logger.weight = 10;
-          logger.log('hi');
-          expect(spy).not.toHaveBeenCalled();
+        it('should log with record level not set', () => {
+          logger.level = 10;
+          logger.log({ logger, msg: 'hi' });
+          expect(spy).toHaveBeenCalledWith('hi\n');
         });
 
-        it('should log with weights adjusted', () => {
-          output.weight = 10;
-          logger.weight = 20;
-          logger.log('hi');
-          expect(spy).toHaveBeenCalledWith('hi\n');
+        it('should not log when logger level exceeds record level', () => {
+          logger.level = 20;
+          logger.log({ logger, msg: 'hi', level: 10 });
+          expect(spy).not.toHaveBeenCalledWith();
         });
 
       });
 
       describe('debug', () => {
 
-        let stream, spy, logger;
+        let stream, spy, logger, handler;
 
         beforeEach(() => {
           stream = new class extends Writable { _write() {} }();
           spy = jest.spyOn(stream, 'write');
-          logger = new Logger({ outputs: { debug: new LoggerOutput(stream, LOGGER_OUTPUTS.debug.weight) } });
+          handler = new StreamHandler({ stream });
+          logger = new Logger({ handlers: new Set([handler]) });
         });
 
-        it('should write the message', () => {
-          logger.debug('hi');
-          expect(spy).toHaveBeenCalledWith('hi\n');
-        });
-
-        it('should not write the message for a lower weight', () => {
-          logger.weight = 0;
+        it('should not log debug messages by default', () => {
           logger.debug('hi');
           expect(spy).not.toHaveBeenCalled();
+        });
+
+        it('should log debug messages with adjusted level', () => {
+          logger.level = 0;
+          logger.debug('hi');
+          expect(spy).toHaveBeenCalledWith('hi\n');
         });
 
       });
 
       describe('info', () => {
 
-        let stream, spy, logger;
+        let stream, spy, logger, handler;
 
         beforeEach(() => {
           stream = new class extends Writable { _write() {} }();
           spy = jest.spyOn(stream, 'write');
-          logger = new Logger({ outputs: { info: new LoggerOutput(stream, LOGGER_OUTPUTS.info.weight) } });
+          handler = new StreamHandler({ stream });
+          logger = new Logger({ handlers: new Set([handler]) });
         });
 
         it('should write the message', () => {
@@ -170,8 +154,8 @@ describe('@ionic/cli-framework', () => {
           expect(spy).toHaveBeenCalledWith('hi\n');
         });
 
-        it('should not write the message for a lower weight', () => {
-          logger.weight = 10;
+        it('should not write the message at a higher level', () => {
+          logger.level = 30;
           logger.info('hi');
           expect(spy).not.toHaveBeenCalled();
         });
@@ -180,12 +164,13 @@ describe('@ionic/cli-framework', () => {
 
       describe('warn', () => {
 
-        let stream, spy, logger;
+        let stream, spy, logger, handler;
 
         beforeEach(() => {
           stream = new class extends Writable { _write() {} }();
           spy = jest.spyOn(stream, 'write');
-          logger = new Logger({ outputs: { warn: new LoggerOutput(stream, LOGGER_OUTPUTS.warn.weight) } });
+          handler = new StreamHandler({ stream });
+          logger = new Logger({ handlers: new Set([handler]) });
         });
 
         it('should write the message', () => {
@@ -193,8 +178,8 @@ describe('@ionic/cli-framework', () => {
           expect(spy).toHaveBeenCalledWith('hi\n');
         });
 
-        it('should not write the message for a lower weight', () => {
-          logger.weight = 20;
+        it('should not write the message at a higher level', () => {
+          logger.level = 40;
           logger.warn('hi');
           expect(spy).not.toHaveBeenCalled();
         });
@@ -203,12 +188,13 @@ describe('@ionic/cli-framework', () => {
 
       describe('error', () => {
 
-        let stream, spy, logger;
+        let stream, spy, logger, handler;
 
         beforeEach(() => {
           stream = new class extends Writable { _write() {} }();
           spy = jest.spyOn(stream, 'write');
-          logger = new Logger({ outputs: { error: new LoggerOutput(stream, LOGGER_OUTPUTS.error.weight) } });
+          handler = new StreamHandler({ stream });
+          logger = new Logger({ handlers: new Set([handler]) });
         });
 
         it('should write the message', () => {
@@ -216,8 +202,8 @@ describe('@ionic/cli-framework', () => {
           expect(spy).toHaveBeenCalledWith('hi\n');
         });
 
-        it('should not write the message for a lower weight', () => {
-          logger.weight = 30;
+        it('should not write the message at a higher level', () => {
+          logger.level = 50;
           logger.error('hi');
           expect(spy).not.toHaveBeenCalled();
         });
@@ -229,54 +215,11 @@ describe('@ionic/cli-framework', () => {
         it('should create a writable stream', () => {
           const stream = new class extends Writable { _write() {} }();
           const spy = jest.spyOn(stream, 'write');
-          const logger = new Logger({ output: new LoggerOutput(stream) });
+          const handler = new StreamHandler({ stream });
+          const logger = new Logger({ handlers: new Set([handler]) });
           const ws = logger.createWriteStream();
           ws.write('hi');
           expect(spy).toHaveBeenCalledWith('hi\n');
-        });
-
-      });
-
-      describe('hasOutput', () => {
-
-        it('should have output when level is excluded', () => {
-          const logger = new Logger();
-          expect(logger.hasOutput()).toBe(true);
-        });
-
-        it('should have output for known levels', () => {
-          const logger = new Logger();
-          expect(logger.hasOutput('info')).toBe(true);
-          expect(logger.hasOutput('warn')).toBe(true);
-          expect(logger.hasOutput('error')).toBe(true);
-        });
-
-        it('should not have output for unknown levels', () => {
-          const logger = new Logger();
-          expect(logger.hasOutput('unknown')).toBe(false);
-        });
-
-      });
-
-      describe('findOutput', () => {
-
-        it('should find msg logger output for default instantiation', () => {
-          const logger = new Logger();
-          const output = logger.findOutput();
-          expect(output).toBe(DEFAULT_OUTPUT);
-        });
-
-        it('should find correct logger outputs for default instantiation', () => {
-          const logger = new Logger();
-          expect(logger.findOutput('info')).toBe(LOGGER_OUTPUTS.info);
-          expect(logger.findOutput('warn')).toBe(LOGGER_OUTPUTS.warn);
-          expect(logger.findOutput('error')).toBe(LOGGER_OUTPUTS.error);
-        });
-
-        it('should default to msg logger output for unknown level in default instantiation', () => {
-          const logger = new Logger();
-          const result = logger.findOutput('unknown');
-          expect(result).toBe(DEFAULT_OUTPUT);
         });
 
       });
@@ -290,20 +233,20 @@ describe('@ionic/cli-framework', () => {
 
       it('should not tag non-leveled outputs', () => {
         const format = createTaggedFormatter();
-        const result = format('hi', { logger, output });
+        const result = format({ msg: 'hi', logger, output });
         expect(result).toEqual('hi');
       });
 
       it('should tag leveled outputs', () => {
         const format = createTaggedFormatter();
-        const result = format('hi', { logger, output, level: 'info' });
+        const result = format({ msg: 'hi', logger, output, level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual('[INFO] hi');
       });
 
       it('should not wrap by default', () => {
         const format = createTaggedFormatter();
         const msg = 'A '.repeat(1000);
-        const result = format(msg, { logger, output, level: 'info' });
+        const result = format({ msg, logger, output, level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual(`[INFO] ${msg}`);
       });
 
@@ -311,34 +254,41 @@ describe('@ionic/cli-framework', () => {
         const wordWrapOpts = { width: 50 };
         const format = createTaggedFormatter({ wrap: wordWrapOpts });
         const msg = 'A '.repeat(1000);
-        const result = format(msg, { logger, output, level: 'info' });
+        const result = format({ msg, logger, output, level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 6, ...wordWrapOpts })}`);
       });
 
-      it('should not add title by default', () => {
+      it('should not titleize by default', () => {
         const format = createTaggedFormatter();
-        const result = format(`Hello!\nThis is a message.\nHere's another.`, { logger, output, level: 'info' });
+        const result = format({ msg: `Hello!\nThis is a message.\nHere's another.`, logger, output, level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n       This is a message.\n       Here's another.`);
       });
 
-      it('should not add title for single line', () => {
-        const format = createTaggedFormatter({ title: true });
-        const result = format(`Hello!`, { logger, output, level: 'info' });
+      it('should not titleize for single line', () => {
+        const format = createTaggedFormatter({ titleize: true });
+        const result = format({ msg: 'Hello!', logger, output, level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual(`[INFO] Hello!`);
       });
 
-      it('should add title if wanted', () => {
-        const format = createTaggedFormatter({ title: true });
-        const result = format(`Hello!\nThis is a message.\nHere's another.`, { logger, output, level: 'info' });
+      it('should titleize if wanted', () => {
+        const format = createTaggedFormatter({ titleize: true });
+        const result = format({ msg: `Hello!\nThis is a message.\nHere's another.`, logger, output, level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n\n       This is a message.\n       Here's another.`);
       });
 
-      it('should work with wrap and title', () => {
+      it('should work with wrap and titleize', () => {
         const wordWrapOpts = { width: 50 };
-        const format = createTaggedFormatter({ title: true, wrap: wordWrapOpts });
+        const format = createTaggedFormatter({ titleize: true, wrap: wordWrapOpts });
         const msg = 'A '.repeat(1000);
-        const result = format(msg, { logger, output, level: 'info' });
+        const result = format({ msg, logger, output, level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 6, ...wordWrapOpts })}`);
+      });
+
+      it('should prefix single line without level', () => {
+        const now = new Date().toISOString();
+        const format = createTaggedFormatter({ prefix: `[${now}]` });
+        const result = format({ msg: 'hello world!', logger, output });
+        expect(stripAnsi(result)).toEqual(`[${now}] hello world!`);
       });
 
     });
