@@ -13,12 +13,18 @@ export class Project extends BaseProject {
   type: ProjectType = 'ionic-angular';
 
   async getInfo(): Promise<InfoItem[]> {
-    const [ ionicAngularVersion, appScriptsVersion ] = await Promise.all([this.getPackageVersion('ionic-angular'), this.getPackageVersion('@ionic/app-scripts')]);
+    const [
+      ionicAngularPkg,
+      appScriptsPkg,
+    ] = await Promise.all([
+      this.getPackageJson('ionic-angular'),
+      this.getPackageJson('@ionic/app-scripts'),
+    ]);
 
     return [
       ...(await super.getInfo()),
-      { type: 'local-packages', key: 'Ionic Framework', value: ionicAngularVersion ? `ionic-angular ${ionicAngularVersion}` : 'not installed' },
-      { type: 'local-packages', key: '@ionic/app-scripts', value: appScriptsVersion ? appScriptsVersion : 'not installed' },
+      { type: 'local-packages', key: 'Ionic Framework', value: ionicAngularPkg ? `ionic-angular ${ionicAngularPkg.version}` : 'not installed' },
+      { type: 'local-packages', key: '@ionic/app-scripts', value: appScriptsPkg ? appScriptsPkg.version : 'not installed' },
     ];
   }
 

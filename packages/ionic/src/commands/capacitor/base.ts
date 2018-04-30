@@ -19,7 +19,7 @@ export abstract class CapacitorCommand extends Command {
   }
 
   async preRunChecks(runinfo: CommandInstanceInfo) {
-    // nothing yet
+    await this.checkCapacitor(runinfo);
   }
 
   async runCapacitor(argList: string[]): Promise<void> {
@@ -36,6 +36,7 @@ export abstract class CapacitorCommand extends Command {
         const requiredMsg = `The Capacitor CLI is required for Capacitor projects.`;
         this.env.log.nl();
         this.env.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
+        this.env.log.nl();
 
         const installed = await this.promptToInstallCapacitor();
 

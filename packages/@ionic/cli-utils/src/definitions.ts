@@ -274,6 +274,7 @@ export interface IProject extends IBaseConfig<ProjectFile> {
   detected(): Promise<boolean>;
   createIntegration(name: IntegrationName): Promise<IIntegration>;
   requireProId(): Promise<string>;
+  getPackageJson(pkgName?: string): Promise<framework.PackageJson | undefined>;
   requirePackageJson(): Promise<framework.PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
   getAilmentRegistry(env: IonicEnvironment): Promise<IAilmentRegistry>;

@@ -112,9 +112,10 @@ abstract class UpdateAvailableBase extends AngularAilment {
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      this.currentVersion = await this.project.getPackageVersion(this.pkgParams.pkgName);
-      const pkg = await pkgFromRegistry(npmClient, { pkg: this.pkgParams.pkgName });
-      this.latestVersion = pkg ? pkg.version : undefined;
+      const currentPkg = await this.project.getPackageJson(this.pkgParams.pkgName);
+      const latestPkg = await pkgFromRegistry(npmClient, { pkg: this.pkgParams.pkgName });
+      this.currentVersion = currentPkg ? currentPkg.version : undefined;
+      this.latestVersion = latestPkg ? latestPkg.version : undefined;
     }
 
     if (!this.currentVersion || !this.latestVersion) {

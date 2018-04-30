@@ -14,26 +14,26 @@ export class Project extends BaseProject {
 
   async getInfo(): Promise<InfoItem[]> {
     const [
-      ionicAngularVersion,
-      ionicSchematicsAngularVersion,
-      angularCLIVersion,
-      angularDevKitCoreVersion,
-      angularDevKitSchematicsVersion,
+      ionicAngularPkg,
+      ionicSchematicsAngularPkg,
+      angularCLIPkg,
+      angularDevKitCorePkg,
+      angularDevKitSchematicsPkg,
     ] = await Promise.all([
-      this.getPackageVersion('@ionic/angular'),
-      this.getPackageVersion('@ionic/schematics-angular'),
-      this.getPackageVersion('@angular/cli'),
-      this.getPackageVersion('@angular-devkit/core'),
-      this.getPackageVersion('@angular-devkit/schematics'),
+      this.getPackageJson('@ionic/angular'),
+      this.getPackageJson('@ionic/schematics-angular'),
+      this.getPackageJson('@angular/cli'),
+      this.getPackageJson('@angular-devkit/core'),
+      this.getPackageJson('@angular-devkit/schematics'),
     ]);
 
     return [
       ...(await super.getInfo()),
-      { type: 'local-packages', key: 'Ionic Framework', value: ionicAngularVersion ? `@ionic/angular ${ionicAngularVersion}` : 'not installed' },
-      { type: 'local-packages', key: '@ionic/schematics-angular', value: ionicSchematicsAngularVersion ? ionicSchematicsAngularVersion : 'not installed' },
-      { type: 'local-packages', key: '@angular/cli', value: angularCLIVersion ? angularCLIVersion : 'not installed' },
-      { type: 'local-packages', key: '@angular-devkit/core', value: angularDevKitCoreVersion ? angularDevKitCoreVersion : 'not installed' },
-      { type: 'local-packages', key: '@angular-devkit/schematics', value: angularDevKitSchematicsVersion ? angularDevKitSchematicsVersion : 'not installed' },
+      { type: 'local-packages', key: 'Ionic Framework', value: ionicAngularPkg ? `@ionic/angular ${ionicAngularPkg.version}` : 'not installed' },
+      { type: 'local-packages', key: '@ionic/schematics-angular', value: ionicSchematicsAngularPkg ? ionicSchematicsAngularPkg.version : 'not installed' },
+      { type: 'local-packages', key: '@angular/cli', value: angularCLIPkg ? angularCLIPkg.version : 'not installed' },
+      { type: 'local-packages', key: '@angular-devkit/core', value: angularDevKitCorePkg ? angularDevKitCorePkg.version : 'not installed' },
+      { type: 'local-packages', key: '@angular-devkit/schematics', value: angularDevKitSchematicsPkg ? angularDevKitSchematicsPkg.version : 'not installed' },
     ];
   }
 

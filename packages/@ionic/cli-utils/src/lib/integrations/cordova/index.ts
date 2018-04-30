@@ -25,12 +25,10 @@ export class Integration extends BaseIntegration {
       getAndroidSdkToolsVersion(),
     ]);
 
-    const info: InfoItem[] = [];
-
-    info.push(
+    const info: InfoItem[] = [
       { type: 'global-packages', key: 'cordova', flair: 'Cordova CLI', value: cordovaVersion || 'not installed' },
-      { type: 'local-packages', key: 'Cordova Platforms', value: cordovaPlatforms || 'none' }
-    );
+      { type: 'local-packages', key: 'Cordova Platforms', value: cordovaPlatforms || 'none' },
+    ];
 
     if (xcode) {
       info.push({ type: 'system', key: 'Xcode', value: xcode });

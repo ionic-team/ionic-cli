@@ -38,8 +38,6 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   protected readonly shell: IShell;
   protected readonly tasks: ITaskChain;
 
-  protected packageJsonFile?: PackageJson;
-
   constructor(dir: string, file: string, { config, log, shell, tasks }: ProjectDeps) {
     super(dir, file);
     this.config = config;
@@ -132,22 +130,28 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     return path.resolve(this.directory, 'package.json');
   }
 
-  async requirePackageJson(): Promise<PackageJson> {
-    if (!this.packageJsonFile) {
-      try {
-        this.packageJsonFile = await readPackageJsonFile(this.packageJsonPath);
-      } catch (e) {
-        if (e === ERROR_FILE_INVALID_JSON) {
-          throw new FatalException(`Could not parse ${chalk.bold('package.json')}. Is it a valid JSON file?`);
-        } else if (e === ERROR_INVALID_PACKAGE_JSON) {
-          throw new FatalException(`The ${chalk.bold('package.json')} file seems malformed.`);
-        }
-
-        throw e; // Probably file not found
-      }
+  async getPackageJson(pkgName?: string): Promise<PackageJson | undefined> {
+    try {
+      const pkgPath = pkgName ? resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
+      return await readPackageJsonFile(pkgPath);
+    } catch (e) {
+      this.log.error(`Error loading ${chalk.bold(pkgName ? pkgName : `project's`)} ${chalk.bold('package.json')}: ${e}`);
     }
+  }
 
-    return this.packageJsonFile;
+  async requirePackageJson(pkgName?: string): Promise<PackageJson> {
+    try {
+      const pkgPath = pkgName ? resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
+      return await readPackageJsonFile(pkgPath);
+    } catch (e) {
+      if (e === ERROR_FILE_INVALID_JSON) {
+        throw new FatalException(`Could not parse ${chalk.bold(pkgName ? pkgName : `project's`)} ${chalk.bold('package.json')}. Is it a valid JSON file?`);
+      } else if (e === ERROR_INVALID_PACKAGE_JSON) {
+        throw new FatalException(`The ${chalk.bold(pkgName ? pkgName : `project's`)} ${chalk.bold('package.json')} file seems malformed.`);
+      }
+
+      throw e; // Probably file not found
+    }
   }
 
   async provideDefaults(o: any): Promise<any> {
@@ -234,16 +238,6 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     return registry;
   }
 
-  async getPackageVersion(pkgName: string) {
-    try {
-      const pkgPath = resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) });
-      const pkg = await readPackageJsonFile(pkgPath);
-      return pkg.version;
-    } catch (e) {
-      this.log.error(`Error loading ${chalk.bold(pkgName)} package: ${e}`);
-    }
-  }
-
   async createIntegration(name: IntegrationName): Promise<IIntegration> {
     return BaseIntegration.createFromName({
       config: this.config,
@@ -302,6 +296,7 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
   async getDistDir(): Promise<never> { throw this._createError(); }
   async requireProId(): Promise<never> { throw this._createError(); }
   async requirePackageJson(): Promise<never> { throw this._createError(); }
+  async getPackageJson(): Promise<never> { throw this._createError(); }
   async provideDefaults(): Promise<never> { throw this._createError(); }
   async personalize(): Promise<never> { throw this._createError(); }
   async getAilmentRegistry(): Promise<never> { throw this._createError(); }

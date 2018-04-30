@@ -44,9 +44,10 @@ class IonicAngularUpdateAvailable extends IonicAngularAilment {
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      this.currentVersion = await this.project.getPackageVersion('ionic-angular');
-      const pkg = await pkgFromRegistry(npmClient, { pkg: 'ionic-angular' });
-      this.latestVersion = pkg ? pkg.version : undefined;
+      const currentPkg = await this.project.getPackageJson('ionic-angular');
+      const latestPkg = await pkgFromRegistry(npmClient, { pkg: 'ionic-angular' });
+      this.currentVersion = currentPkg ? currentPkg.version : undefined;
+      this.latestVersion = latestPkg ? latestPkg.version : undefined;
     }
 
     if (!this.currentVersion || !this.latestVersion) {
@@ -96,9 +97,10 @@ class IonicAngularMajorUpdateAvailable extends IonicAngularAilment {
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      this.currentVersion = await this.project.getPackageVersion('ionic-angular');
-      const pkg = await pkgFromRegistry(npmClient, { pkg: 'ionic-angular' });
-      this.latestVersion = pkg ? pkg.version : undefined;
+      const currentPkg = await this.project.getPackageJson('ionic-angular');
+      const latestPkg = await pkgFromRegistry(npmClient, { pkg: 'ionic-angular' });
+      this.currentVersion = currentPkg ? currentPkg.version : undefined;
+      this.latestVersion = latestPkg ? latestPkg.version : undefined;
     }
 
     if (!this.currentVersion || !this.latestVersion) {
@@ -142,9 +144,10 @@ class AppScriptsUpdateAvailable extends IonicAngularAilment implements Treatable
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      this.currentVersion = await this.project.getPackageVersion('@ionic/app-scripts');
-      const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/app-scripts' });
-      this.latestVersion = pkg ? pkg.version : undefined;
+      const currentPkg = await this.project.getPackageJson('@ionic/app-scripts');
+      const latestPkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/app-scripts' });
+      this.currentVersion = currentPkg ? currentPkg.version : undefined;
+      this.latestVersion = latestPkg ? latestPkg.version : undefined;
     }
 
     if (!this.currentVersion || !this.latestVersion) {
@@ -197,9 +200,10 @@ class AppScriptsMajorUpdateAvailable extends IonicAngularAilment {
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      this.currentVersion = await this.project.getPackageVersion('@ionic/app-scripts');
-      const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/app-scripts' });
-      this.latestVersion = pkg ? pkg.version : undefined;
+      const currentPkg = await this.project.getPackageJson('@ionic/app-scripts');
+      const latestPkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/app-scripts' });
+      this.currentVersion = currentPkg ? currentPkg.version : undefined;
+      this.latestVersion = latestPkg ? latestPkg.version : undefined;
     }
 
     if (!this.currentVersion || !this.latestVersion) {

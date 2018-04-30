@@ -41,12 +41,18 @@ export class Project extends BaseProject {
   protected bowerJsonFile?: BowerJson;
 
   async getInfo(): Promise<InfoItem[]> {
-    const [ ionic1Version, v1ToolkitVersion ] = await Promise.all([this.getFrameworkVersion(), this.getPackageVersion('@ionic/v1-toolkit')]);
+    const [
+      ionic1Version,
+      v1ToolkitPkg,
+    ] = await Promise.all([
+      this.getFrameworkVersion(),
+      this.getPackageJson('@ionic/v1-toolkit'),
+    ]);
 
     return [
       ...(await super.getInfo()),
       { type: 'local-packages', key: 'Ionic Framework', value: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown' },
-      { type: 'local-packages', key: '@ionic/v1-toolkit', value: v1ToolkitVersion ? v1ToolkitVersion : 'not installed' },
+      { type: 'local-packages', key: '@ionic/v1-toolkit', value: v1ToolkitPkg ? v1ToolkitPkg.version : 'not installed' },
     ];
   }
 
