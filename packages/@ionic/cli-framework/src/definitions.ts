@@ -58,6 +58,7 @@ export interface Metadata {
   summary: string;
   description?: string;
   groups?: MetadataGroup[];
+  aliases?: string[];
 }
 
 export interface CommandMetadata<I = CommandMetadataInput, O = CommandMetadataOption> extends Metadata {

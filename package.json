@@ -23,5 +23,8 @@
     "husky": "^0.14.3",
     "lerna": "^2.9.1",
     "tslint-ionic-rules": "latest"
+  },
+  "dependencies": {
+    "npm": "^5.8.0"
   }
 }
