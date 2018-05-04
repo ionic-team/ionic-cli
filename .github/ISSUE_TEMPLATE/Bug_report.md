@@ -1,11 +1,8 @@
-<!-- 🚨 PLEASE READ 🚨
+---
+name: Bug report
+about: Create a report to help us improve
 
-This issue tracker is for bug reports and feature requests for the Ionic CLI.
-
-- For support questions, see our support page: https://ionicframework.com/support
-- For feature requests, feel free to delete this template and just describe the feature.
-
--->
+---
 
 **Description:**
 <!-- Please describe the problem you're having. -->
