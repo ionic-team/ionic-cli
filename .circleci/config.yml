@@ -92,13 +92,17 @@ base: &base
           - "*"
 
 jobs:
-  node6:
+  node-6:
     docker:
       - image: circleci/node:6
     <<: *base
-  node8:
+  node-8:
     docker:
       - image: circleci/node:8
+    <<: *base
+  node-latest:
+    docker:
+      - image: circleci/node:latest
     <<: *base
   deploy:
     <<: *defaults
@@ -114,10 +118,11 @@ workflows:
   version: 2
   build:
     jobs:
-      - node6
-      - node8
+      - node-6
+      - node-8
+      - node-latest
       # - deploy:
-      #     requires: [node6, node8]
+      #     requires: [node-6, node-8, node-latest]
       #     filters:
       #       branches:
       #         only: master
