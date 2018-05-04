@@ -45,7 +45,7 @@
   "license": "MIT",
   "dependencies": {
     "@ionic/cli-framework": "1.0.0-rc.5",
-    "@ionic/cli-utils": "2.0.0-rc.5",
+    "@ionic/cli-utils": "2.0.0-testing.70319022",
     "chalk": "^2.3.0",
     "debug": "^3.1.0",
     "lodash": "^4.17.5",
