@@ -209,13 +209,14 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
     const labAddress = labDetails ? `${labDetails.protocol}://${labDetails.address}:${labDetails.port}` : undefined;
 
     this.log.nl();
-    this.log.ok(
+    this.log.info(
       `Development server running!` +
       (labAddress ? `\nLab: ${chalk.bold(labAddress)}` : '') +
       `\nLocal: ${chalk.bold(localAddress)}` +
       (details.externalNetworkInterfaces.length > 0 ? `\nExternal: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}` : '') +
       (devAppDetails && devAppDetails.channel ? `\nDevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '')
     );
+    this.log.nl();
 
     if (options.open) {
       const openAddress = labAddress ? labAddress : localAddress;
