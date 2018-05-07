@@ -1,9 +1,13 @@
 import * as ts from 'typescript';
 import { camelCase, kebabCase, upperFirst } from 'lodash';
 
+import { Path, join, normalize } from '@angular-devkit/core';
+
 import {
+  DirEntry,
   Rule,
   SchematicsException,
+  Tree,
   apply,
   branchAndMerge,
   chain,
@@ -15,20 +19,67 @@ import {
   url,
 } from '@angular-devkit/schematics';
 
-import { addDeclarationToModule, addSymbolToNgModuleMetadata } from '@schematics/angular/utility/ast-utils';
+import { findNodes } from '@schematics/angular/utility/ast-utils';
 import { Change, InsertChange } from '@schematics/angular/utility/change';
 import { getWorkspace } from '@schematics/angular/utility/config';
-import { buildRelativePath, findModuleFromOptions } from '@schematics/angular/utility/find-module';
+import { ModuleOptions, buildRelativePath } from '@schematics/angular/utility/find-module';
 import { parseName } from '@schematics/angular/utility/parse-name';
 import { validateHtmlSelector, validateName } from '@schematics/angular/utility/validation';
 
 import { Schema as PageOptions } from './schema';
 
-function addEntryComponentsToModule(source: any, modulePath: string, classifiedName: string, importPath: string | null): Change[] {
-  return addSymbolToNgModuleMetadata(source, modulePath, 'entryComponents', classifiedName, importPath);
+function findRoutingModuleFromOptions(host: Tree, options: ModuleOptions): Path | undefined {
+  if (options.hasOwnProperty('skipImport') && options.skipImport) {
+    return undefined;
+  }
+
+  if (!options.module) {
+    const pathToCheck = (options.path || '')
+                      + (options.flat ? '' : '/' + kebabCase(options.name));
+
+    return normalize(findRoutingModule(host, pathToCheck));
+  } else {
+    const modulePath = normalize(
+      '/' + (options.path) + '/' + options.module);
+    const moduleBaseName = normalize(modulePath).split('/').pop();
+
+    if (host.exists(modulePath)) {
+      return normalize(modulePath);
+    } else if (host.exists(modulePath + '.ts')) {
+      return normalize(modulePath + '.ts');
+    } else if (host.exists(modulePath + '.module.ts')) {
+      return normalize(modulePath + '.module.ts');
+    } else if (host.exists(modulePath + '/' + moduleBaseName + '.module.ts')) {
+      return normalize(modulePath + '/' + moduleBaseName + '.module.ts');
+    } else {
+      throw new Error('Specified module does not exist');
+    }
+  }
 }
 
-function addPageToNgModule(options: PageOptions): Rule {
+function findRoutingModule(host: Tree, generateDir: string): Path {
+  let dir: DirEntry | null = host.getDir('/' + generateDir);
+
+  const routingModuleRe = /-routing\.module\.ts/;
+
+  while (dir) {
+    const matches = dir.subfiles.filter(p => routingModuleRe.test(p));
+
+    if (matches.length === 1) {
+      return join(dir.path, matches[0]);
+    } else if (matches.length > 1) {
+      throw new Error('More than one module matches. Use skip-import option to skip importing '
+        + 'the component into the closest module.');
+    }
+
+    dir = dir.parent;
+  }
+
+  throw new Error('Could not find an NgModule. Use the skip-import '
+    + 'option to skip importing in NgModule.');
+}
+
+function addRouteToNgModule(options: PageOptions): Rule {
   const { module } = options;
 
   if (!module) {
@@ -48,29 +99,55 @@ function addPageToNgModule(options: PageOptions): Rule {
     const pagePath = (
       `/${options.path}/` +
       (options.flat ? '' : `${kebabCase(options.name)}/`) +
-      `${kebabCase(options.name)}.page`
+      `${kebabCase(options.name)}.module`
     );
 
     const relativePath = buildRelativePath(module, pagePath);
-    const classifiedName = `${upperFirst(camelCase(options.name))}Page`;
+    const routePath = options.name;
+    const routeLoadChildren = `${relativePath}#${upperFirst(camelCase(options.name))}PageModule`;
+    const changes = addRouteToRoutesArray(source, module, routePath, routeLoadChildren);
+    const recorder = host.beginUpdate(module);
 
-    const Changes = [
-      ...addDeclarationToModule(source, module, classifiedName, relativePath),
-      ...addEntryComponentsToModule(source, module, classifiedName, null), // tslint:disable-line:no-null-keyword
-    ];
-
-    const Recorder = host.beginUpdate(module);
-
-    for (const change of Changes) {
+    for (const change of changes) {
       if (change instanceof InsertChange) {
-        Recorder.insertLeft(change.pos, change.toAdd);
+        recorder.insertLeft(change.pos, change.toAdd);
       }
     }
 
-    host.commitUpdate(Recorder);
+    host.commitUpdate(recorder);
 
     return host;
   };
+}
+
+function addRouteToRoutesArray(source: ts.SourceFile, ngModulePath: string, routePath: string, routeLoadChildren: string): Change[] {
+  const keywords = findNodes(source, ts.SyntaxKind.VariableStatement);
+
+  for (const keyword of keywords) {
+    if (ts.isVariableStatement(keyword)) {
+      const [ declaration ] = keyword.declarationList.declarations;
+
+      if (ts.isVariableDeclaration(declaration) && declaration.initializer && declaration.name.getText() === 'routes') {
+        const node = declaration.initializer.getChildAt(1);
+        const lastRouteNode = node.getLastToken();
+
+        const changes: Change[] = [];
+        let trailingCommaFound = false;
+
+        if (lastRouteNode.kind === ts.SyntaxKind.CommaToken) {
+          trailingCommaFound = true;
+        } else {
+          changes.push(new InsertChange(ngModulePath, lastRouteNode.getEnd(), ','));
+        }
+
+        changes.push(new InsertChange(ngModulePath, lastRouteNode.getEnd() + 1, `  {\n    path: '${routePath}', loadChildren: '${routeLoadChildren}'\n  }${trailingCommaFound ? ',' : ''}\n`));
+
+        return changes;
+      }
+    }
+  }
+
+  return [];
 }
 
 function buildSelector(options: PageOptions) {
@@ -97,7 +174,7 @@ export default function (options: PageOptions): Rule {
       options.path = `/${project.root}/src/app`;
     }
 
-    options.module = findModuleFromOptions(host, options);
+    options.module = findRoutingModuleFromOptions(host, options);
 
     const parsedPath = parseName(options.path, options.name);
     options.name = parsedPath.name;
@@ -121,7 +198,7 @@ export default function (options: PageOptions): Rule {
 
     return chain([
       branchAndMerge(chain([
-        addPageToNgModule(options),
+        addRouteToNgModule(options),
         mergeWith(templateSource),
       ])),
     ])(host, context);
