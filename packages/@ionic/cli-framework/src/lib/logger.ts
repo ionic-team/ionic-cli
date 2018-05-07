@@ -53,6 +53,7 @@ export function getLoggerLevelColor(colors: Colors, level?: LoggerLevelWeight): 
 
 export interface LoggerHandler {
   formatter?: LoggerFormatter;
+  clone(): LoggerHandler;
   handle(record: LogRecord): void;
 }
 
@@ -71,6 +72,11 @@ export class StreamHandler implements LoggerHandler {
     this.stream = stream;
     this.filter = filter;
     this.formatter = formatter;
+  }
+
+  clone(opts?: Partial<StreamHandlerOptions>): StreamHandler {
+    const { stream, filter, formatter } = this;
+    return new StreamHandler({ stream, filter, formatter, ...opts });
   }
 
   handle(record: LogRecord): void {
@@ -112,7 +118,7 @@ export class Logger {
    */
   clone(opts: Partial<LoggerOptions> = {}): Logger {
     const { level, handlers } = this;
-    return new Logger({ level, handlers, ...opts });
+    return new Logger({ level, handlers: new Set([...handlers].map(handler => handler.clone())), ...opts });
   }
 
   /**
