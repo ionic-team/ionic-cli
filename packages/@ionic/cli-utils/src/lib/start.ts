@@ -84,6 +84,12 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     id: 'angular-official-blank',
   },
   {
+    name: 'sidemenu',
+    type: 'angular',
+    description: 'A starting project with a side menu with navigation in the content area',
+    id: 'angular-official-sidemenu',
+  },
+  {
     name: 'tabs',
     type: 'ionic-angular',
     description: 'A starting project with a simple tabbed interface',
