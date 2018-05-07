@@ -26,7 +26,7 @@ export interface Colors {
 
 export const DEFAULT_LOGGER_COLORS: LoggerColors = Object.freeze({
   DEBUG: chalk.magenta,
-  INFO: chalk.gray,
+  INFO: chalk.white,
   WARN: chalk.yellow,
   ERROR: chalk.red,
 });
