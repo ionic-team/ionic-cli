@@ -16,8 +16,13 @@ describe('@ionic/cli-framework', () => {
         it('should clone the base set of options', () => {
           const logger1 = new Logger();
           const logger2 = logger1.clone();
-          expect(logger1.level).toBe(logger2.level);
-          expect(logger1.handlers).toBe(logger2.handlers);
+          expect(logger1.level).toEqual(logger2.level);
+          expect(logger1.handlers).not.toBe(logger2.handlers);
+          expect(logger2.handlers.size).toEqual(2);
+
+          for (const handler of logger2.handlers) {
+            expect(handler).toBeInstanceOf(StreamHandler);
+          }
         });
 
         it('should clone the set of option overrides', () => {
@@ -25,9 +30,9 @@ describe('@ionic/cli-framework', () => {
           const level = 15;
           const handlers = new Set();
           const logger2 = logger1.clone({ level, handlers });
-          expect(logger2.level).not.toBe(logger1.level);
-          expect(logger2.level).toBe(level);
-          expect(logger2.handlers).not.toBe(logger1.handlers);
+          expect(logger2.level).not.toEqual(logger1.level);
+          expect(logger2.level).toEqual(level);
+          expect(logger2.handlers).not.toEqual(logger1.handlers);
           expect(logger2.handlers).toBe(handlers);
         });
 
