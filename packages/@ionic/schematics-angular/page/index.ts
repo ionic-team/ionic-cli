@@ -103,7 +103,8 @@ function addRouteToNgModule(options: PageOptions): Rule {
     );
 
     const relativePath = buildRelativePath(module, pagePath);
-    const routePath = options.name;
+
+    const routePath = options.routePath ? options.routePath : options.name;
     const routeLoadChildren = `${relativePath}#${upperFirst(camelCase(options.name))}PageModule`;
     const changes = addRouteToRoutesArray(source, module, routePath, routeLoadChildren);
     const recorder = host.beginUpdate(module);
@@ -140,7 +141,7 @@ function addRouteToRoutesArray(source: ts.SourceFile, ngModulePath: string, rout
           changes.push(new InsertChange(ngModulePath, lastRouteNode.getEnd(), ','));
         }
 
-        changes.push(new InsertChange(ngModulePath, lastRouteNode.getEnd() + 1, `  {\n    path: '${routePath}', loadChildren: '${routeLoadChildren}'\n  }${trailingCommaFound ? ',' : ''}\n`));
+        changes.push(new InsertChange(ngModulePath, lastRouteNode.getEnd() + 1, `  { path: '${routePath}', loadChildren: '${routeLoadChildren}'  }${trailingCommaFound ? ',' : ''}\n`));
 
         return changes;
       }

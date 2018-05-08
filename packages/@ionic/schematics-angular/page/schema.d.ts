@@ -8,4 +8,5 @@ export interface Schema {
   flat?: boolean;
   selector?: string;
   module?: string;
+  routePath?: string;
 }

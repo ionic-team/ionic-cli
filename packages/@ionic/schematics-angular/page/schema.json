@@ -53,6 +53,12 @@
       "type": "string",
       "description": "Allows specification of the declaring module",
       "alias": "m"
+    },
+    "routePath": {
+      "type": "string",
+      "description": "path the route should be",
+      "default": ""
+
     }
   },
   "required": []
