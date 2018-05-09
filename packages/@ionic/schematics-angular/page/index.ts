@@ -141,7 +141,7 @@ function addRouteToRoutesArray(source: ts.SourceFile, ngModulePath: string, rout
           changes.push(new InsertChange(ngModulePath, lastRouteNode.getEnd(), ','));
         }
 
-        changes.push(new InsertChange(ngModulePath, lastRouteNode.getEnd() + 1, `  { path: '${routePath}', loadChildren: '${routeLoadChildren}'  }${trailingCommaFound ? ',' : ''}\n`));
+        changes.push(new InsertChange(ngModulePath, lastRouteNode.getEnd() + 1, `  { path: '${routePath}', loadChildren: '${routeLoadChildren}' }${trailingCommaFound ? ',' : ''}\n`));
 
         return changes;
       }
