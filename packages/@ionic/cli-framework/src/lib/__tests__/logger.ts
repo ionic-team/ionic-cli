@@ -242,6 +242,18 @@ describe('@ionic/cli-framework', () => {
         expect(result).toEqual('hi');
       });
 
+      it('should log multi-line message properly for non-leveled outputs', () => {
+        const format = createTaggedFormatter({ wrap: false });
+        const result = format({ msg: 'hello world!\nThis is a message.', logger, output });
+        expect(result).toEqual('hello world!\nThis is a message.');
+      });
+
+      it('should log multi-line message properly for wrapped, non-leveled outputs', () => {
+        const format = createTaggedFormatter({ wrap: true });
+        const result = format({ msg: 'hello world!\nThis is a message.', logger, output });
+        expect(result).toEqual('hello world!\nThis is a message.');
+      });
+
       it('should tag leveled outputs', () => {
         const format = createTaggedFormatter();
         const result = format({ msg: 'hi', logger, output, level: LOGGER_LEVELS.INFO });
@@ -266,7 +278,7 @@ describe('@ionic/cli-framework', () => {
       it('should not titleize by default', () => {
         const format = createTaggedFormatter();
         const result = format({ msg: `Hello!\nThis is a message.\nHere's another.`, logger, output, level: LOGGER_LEVELS.INFO });
-        expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n        This is a message.\n        Here's another.`);
+        expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n       This is a message.\n       Here's another.`);
       });
 
       it('should not titleize for single line', () => {
@@ -278,7 +290,7 @@ describe('@ionic/cli-framework', () => {
       it('should titleize if wanted', () => {
         const format = createTaggedFormatter({ titleize: true });
         const result = format({ msg: `Hello!\nThis is a message.\nHere's another.`, logger, output, level: LOGGER_LEVELS.INFO });
-        expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n\n        This is a message.\n        Here's another.`);
+        expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n\n       This is a message.\n       Here's another.`);
       });
 
       it('should work with wrap and titleize', () => {

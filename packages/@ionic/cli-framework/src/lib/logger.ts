@@ -241,13 +241,13 @@ export function createTaggedFormatter({ colors = DEFAULT_COLORS, prefix = '', ti
     );
 
     const title = titleize && lines.length > 0 ? `${strong(levelColor ? levelColor(firstLine) : firstLine)}\n` : firstLine;
-    const indentation = stringWidth(tag) + 1;
+    const indentation = tag ? stringWidth(tag) + 1 : 0;
 
     return (
       (tag ? `${tag} ` : '') +
       (wrap
         ? wordWrap([title, ...lines].join('\n'), { indentation, ...(typeof wrap === 'object' ? wrap : {}) })
-        : [title, ...lines.map(l => `${' '.repeat(indentation)} ${l}`)].join('\n')
+        : [title, ...lines.map(l => ' '.repeat(indentation) + l)].join('\n')
       )
     );
   };
