@@ -3,10 +3,21 @@
 <a name="4.0.0"></a>
 ### 4.0.0 (PENDING)
 
-This release offers opt-in support for **Ionic Angular 4**. Please be aware that
-[the framework](https://github.com/ionic-team/ionic/tree/master/angular) is in
+This release offers opt-in support for :sparkles: **Ionic Angular 4**
+:sparkles:. Please be aware that [the
+framework](https://github.com/ionic-team/ionic/tree/master/angular) is still in
 early alpha. Opt-in to the new project type and help us test: [#3019
 :heart_eyes:](https://github.com/ionic-team/ionic-cli/issues/3019)
+
+This release also offers opt-in support for
+[Capacitor](https://capacitor.ionicframework.com/), which is in alpha. Opt-in to
+the new Capacitor commands and help us test:
+[#3129 :muscle:](https://github.com/ionic-team/ionic-cli/issues/3129)
+
+:memo: The [CLI documentation](https://ionicframework.com/docs/cli/) website is
+out-of-date in some places with this new release. We're working on a brand new
+docs website, but using `--help` provides the most recent and useful
+documentation.
 
 #### :lollipop: Upgrading from CLI v3
 
@@ -32,15 +43,15 @@ down the main CLI package. All functionality is still supported, but the
   [#3038](https://github.com/ionic-team/ionic-cli/issues/3038)). The CLI
   automatically detects this and changes it, but this notice is here if your
   build scripts rely on the setting.
-* `ionic build` will no longer run `cordova prepare` (run `ionic cordova prepare
-  [platform]`, which performs an Ionic build beforehand).
+* `ionic build` will no longer run `cordova prepare`. Instead, run `ionic
+  cordova prepare [platform]`, which performs an Ionic build beforehand.
 * Ionic Lab has been moved into the
   [`@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/lab)
   package, which will need to be installed for Lab to work.
 * The `conference` starter template has been removed from `ionic start`. For
-  creating functional apps (as opposed to starting new apps from starter
-  templates), please use the repository URL. For example, to create the
-  conference app, use `ionic start <name>
+  cloning existing apps (as opposed to starting new apps from starter
+  templates), please use the app's repository URL. For example, to create the
+  conference app, use `ionic start "Conference App"
   https://github.com/ionic-team/ionic-conference-app`.
 * The `--display-name` option for `ionic start` has been removed. The `name`
   argument is now used as the display name and slugified for directory name,
