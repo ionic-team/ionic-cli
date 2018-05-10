@@ -39,7 +39,7 @@
     "@types/lodash": "^4.14.104",
     "@types/minimist": "^1.2.0",
     "@types/ncp": "^2.0.1",
-    "@types/node": "^6.0.101",
+    "@types/node": "^10.0.6",
     "@types/rimraf": "^2.0.2",
     "@types/strip-ansi": "^3.0.0",
     "@types/untildify": "^3.0.0",
