@@ -37,7 +37,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ionic/cli-framework": "1.0.0-rc.6",
+    "@ionic/cli-framework": "1.0.0-testing.70319022",
     "@ionic/discover": "1.0.0-rc.6",
     "chalk": "^2.3.0",
     "cross-spawn": "^6.0.3",
