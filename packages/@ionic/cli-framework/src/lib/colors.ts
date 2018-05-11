@@ -21,6 +21,16 @@ export interface Colors {
    */
   input: Chalk;
 
+  /**
+   * Used to mark text as successful.
+   */
+  success: Chalk;
+
+  /**
+   * Used to mark text as failed.
+   */
+  failure: Chalk;
+
   log: LoggerColors;
 }
 
@@ -35,5 +45,7 @@ export const DEFAULT_COLORS: Colors = Object.freeze({
   strong: chalk.bold,
   weak: chalk.dim,
   input: chalk.green,
+  success: chalk.green,
+  failure: chalk.red,
   log: DEFAULT_LOGGER_COLORS,
 });
