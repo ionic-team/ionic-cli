@@ -23,7 +23,7 @@
   "dependencies": {
     "@angular-devkit/core": "0.6.0",
     "@angular-devkit/schematics": "0.6.0",
-    "@schematics/angular": "0.6.0",
+    "@schematics/angular": "0.6.1",
     "lodash": "^4.17.5",
     "tslib": "^1.9.0",
     "typescript": ">=2.6.2 <2.8"
