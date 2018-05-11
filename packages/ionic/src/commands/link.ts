@@ -476,7 +476,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     const user = await this.env.session.getUser();
     const userClient = await this.getUserClient();
 
-    this.env.tasks.next('Looking up your GitHub repositories');
+    const task = this.env.tasks.next('Looking up your GitHub repositories');
 
     const paginator = userClient.paginateGithubRepositories(user.id);
     const repos: GithubRepo[] = [];
@@ -486,7 +486,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
         const res = await r;
         repos.push(...res.data);
 
-        this.env.tasks.updateMsg(`Looking up your GitHub repositories: ${chalk.bold(String(repos.length))} found`);
+        task.msg = `Looking up your GitHub repositories: ${chalk.bold(String(repos.length))} found`;
       }
     } catch (e) {
       this.env.tasks.fail();
@@ -552,14 +552,14 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     const user = await this.env.session.getUser();
     const userClient = await this.getUserClient();
     const paginator = userClient.paginateGithubBranches(user.id, repoId);
-    this.env.tasks.next('Looking for available branches');
+    const task = this.env.tasks.next('Looking for available branches');
     const availableBranches: GithubBranch[] = [];
     try {
       for (const r of paginator) {
         const res = await r;
         availableBranches.push(...res.data);
 
-        this.env.tasks.updateMsg(`Looking up the available branches on your GitHub repository: ${chalk.bold(String(availableBranches.length))} found`);
+        task.msg = `Looking up the available branches on your GitHub repository: ${chalk.bold(String(availableBranches.length))} found`;
       }
     } catch (e) {
       this.env.tasks.fail();

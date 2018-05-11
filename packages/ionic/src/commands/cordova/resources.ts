@@ -242,14 +242,14 @@ This command uses Ionic servers, so we require you to be logged into your free I
       }
     }
 
-    this.env.tasks.next(`Uploading source images to prepare for transformations`);
+    const uploadTask = this.env.tasks.next(`Uploading source images to prepare for transformations`);
 
     let count = 0;
     // Upload images to service to prepare for resource transformations
     const imageUploadResponses = await Promise.all(srcImagesAvailable.map(async srcImage => {
       const response = await uploadSourceImage(this.env, srcImage);
       count += 1;
-      this.env.tasks.updateMsg(`Uploading source images to prepare for transformations: ${chalk.bold(`${count} / ${srcImagesAvailable.length}`)} complete`);
+      uploadTask.msg = `Uploading source images to prepare for transformations: ${chalk.bold(`${count} / ${srcImagesAvailable.length}`)} complete`;
       return response;
     }));
 
@@ -292,18 +292,18 @@ This command uses Ionic servers, so we require you to be logged into your free I
     }
 
     // Call the transform service and output images to appropriate destination
-    this.env.tasks.next(`Generating platform resources`);
+    const generateTask = this.env.tasks.next(`Generating platform resources`);
     count = 0;
 
     const transforms = imgResources.map(async img => {
       const response = await transformResourceImage(this.env, img);
       count += 1;
-      this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`);
+      generateTask.msg = `Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`;
       return response;
     });
 
     const generateImageResponses = await Promise.all(transforms);
-    this.env.tasks.updateMsg(`Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`);
+    generateTask.msg = `Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`;
     debug(`${chalk.cyan('generateResourceImage')} completed: responses=%o`, generateImageResponses.map(p => prettyPath(p)));
 
     await Promise.all(srcImagesAvailable.map(async img => {

@@ -169,33 +169,33 @@ describe('@ionic/cli-framework', () => {
       });
 
       it('should set current task upon first next', () => {
-        expect(chain.currentTask).toBeUndefined();
+        expect(chain.current).toBeUndefined();
         const msg = 'hello world!';
         const task = chain.next(msg);
         expect(task.msg).toEqual(msg);
         expect(task.running).toEqual(true);
-        expect(chain.currentTask).toBe(task);
+        expect(chain.current).toBe(task);
       });
 
       it('should remove current task when complete', () => {
-        expect(chain.currentTask).toBeUndefined();
+        expect(chain.current).toBeUndefined();
         const task = chain.next('hello world!');
         const spy = jest.fn();
         task.on('success', spy);
-        expect(chain.currentTask).toBe(task);
+        expect(chain.current).toBe(task);
         chain.end();
-        expect(chain.currentTask).toBeUndefined();
+        expect(chain.current).toBeUndefined();
         expect(spy).toHaveBeenCalledTimes(1);
       });
 
       it('should fail current task', () => {
-        expect(chain.currentTask).toBeUndefined();
+        expect(chain.current).toBeUndefined();
         const task = chain.next('hello world!');
         const spy = jest.fn();
         task.on('failure', spy);
-        expect(chain.currentTask).toBe(task);
+        expect(chain.current).toBe(task);
         chain.fail();
-        expect(chain.currentTask).toBe(task);
+        expect(chain.current).toBe(task);
         expect(spy).toHaveBeenCalledTimes(1);
       });
 
@@ -222,16 +222,6 @@ describe('@ionic/cli-framework', () => {
         expect(clearSpy1).toHaveBeenCalledTimes(1);
         expect(failureSpy2).toHaveBeenCalledTimes(1);
         expect(clearSpy2).toHaveBeenCalledTimes(1);
-      });
-
-      it('should update msg of current task', () => {
-        const msg = 'hello world!';
-        const task = chain.next(msg);
-        const spy = jest.fn();
-        task.on('tick', spy);
-        expect(task.msg).toEqual(msg);
-        chain.updateMsg('new message');
-        expect(spy).toHaveBeenCalledTimes(1);
       });
 
     });

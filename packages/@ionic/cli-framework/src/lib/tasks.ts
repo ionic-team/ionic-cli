@@ -108,7 +108,7 @@ export interface TaskChainOptions {
 }
 
 export class TaskChain {
-  protected currentTask?: Task;
+  protected current?: Task;
   protected tasks: Task[];
   protected taskOptions: Partial<TaskOptions>;
 
@@ -126,38 +126,30 @@ export class TaskChain {
   }
 
   nextTask(task: Task): Task {
-    if (this.currentTask) {
-      this.currentTask.succeed();
+    if (this.current) {
+      this.current.succeed();
     }
 
     this.tasks.push(task);
-    this.currentTask = task;
+    this.current = task;
 
     task.start();
 
     return task;
   }
 
-  updateMsg(msg: string): this {
-    if (this.currentTask) {
-      this.currentTask.msg = msg;
-    }
-
-    return this;
-  }
-
   end(): this {
-    if (this.currentTask) {
-      this.currentTask.succeed();
-      this.currentTask = undefined;
+    if (this.current) {
+      this.current.succeed();
+      this.current = undefined;
     }
 
     return this;
   }
 
   fail(): this {
-    if (this.currentTask) {
-      this.currentTask.fail();
+    if (this.current) {
+      this.current.fail();
     }
 
     return this;
