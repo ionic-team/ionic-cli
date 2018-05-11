@@ -67,7 +67,7 @@
     "@types/debug": "0.0.30",
     "@types/diff": "^3.2.2",
     "@types/http-proxy-middleware": "^0.17.2",
-    "@types/inquirer": "0.0.36",
+    "@types/inquirer": "0.0.41",
     "@types/lodash": "^4.14.104",
     "@types/node": "^6.0.101",
     "@types/opn": "^5.1.0",
