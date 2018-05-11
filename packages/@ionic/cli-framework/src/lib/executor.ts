@@ -41,7 +41,7 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
     const parsedArgs = stripOptions(argv, { includeSeparated: false });
     const location = await this.namespace.locate(parsedArgs);
 
-    if (argv.includes('--help') || isNamespace(location.obj)) {
+    if (argv.find(arg => arg === '--help' || arg === '-?') || isNamespace(location.obj)) {
       this.stdout.write(await this.formatHelp(location));
     } else {
       const cmd = location.obj;
