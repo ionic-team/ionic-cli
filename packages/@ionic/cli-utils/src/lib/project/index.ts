@@ -193,8 +193,8 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     return 'https://ionicframework.com/docs';
   }
 
-  async getSourceDir(): Promise<string> {
-    return path.resolve(this.directory, 'src');
+  async getSourceDir(relativeRoot = ''): Promise<string> {
+    return path.resolve(this.directory, relativeRoot, 'src');
   }
 
   async getDistDir(): Promise<string> {

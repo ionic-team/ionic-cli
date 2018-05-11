@@ -83,6 +83,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const baseOptions = super.createOptionsFromCommandLine(inputs, options);
     let target = options['target'] ? String(options['target']) : undefined;
     const environment = options['environment'] ? String(options['environment']) : undefined;
+    const project = options['project'] ? String(options['project']) : undefined;
 
     if (!target) {
       if (options['dev']) {
@@ -97,6 +98,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       ssl: options['ssl'] ? true : false,
       target,
       environment,
+      project,
     };
   }
 
@@ -106,7 +108,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const p = await this.project.load();
 
     if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await addCordovaEngineForAngular(this.project, options.platform);
+      await addCordovaEngineForAngular(this.project, options.platform, options.project);
     }
   }
 
@@ -134,7 +136,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const p = await this.project.load();
 
     if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await removeCordovaEngineForAngular(this.project, options.platform);
+      await removeCordovaEngineForAngular(this.project, options.platform, options.project);
     }
 
     await super.afterServe(options, details);

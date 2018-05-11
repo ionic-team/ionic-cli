@@ -1,10 +1,9 @@
+import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import chalk from 'chalk';
 import * as Debug from 'debug';
-
-import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { CommandGroup, OptionGroup } from '../../../constants';
 
 import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
-import { CommandGroup, OptionGroup } from '../../../constants';
 import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
 import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './utils';
 
@@ -54,6 +53,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
     let target = options['target'] ? String(options['target']) : undefined;
     const environment = options['environment'] ? String(options['environment']) : undefined;
+    const project = options['project'] ? String(options['project']) : undefined;
 
     if (!target) {
       if (options['dev']) {
@@ -68,6 +68,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       type: 'angular',
       target,
       environment,
+      project,
     };
   }
 
@@ -75,6 +76,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const args: ParsedArgs = {
       _: [],
       environment: options.environment,
+      project: options.project,
+      'output-path': 'www',
     };
 
     if (options.target === 'development') {
@@ -96,12 +99,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   }
 
   async beforeBuild(options: AngularBuildOptions): Promise<void> {
+
     await super.beforeBuild(options);
 
     const p = await this.project.load();
 
     if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await addCordovaEngineForAngular(this.project, options.platform);
+      await addCordovaEngineForAngular(this.project, options.platform, options.project);
     }
   }
 
@@ -129,7 +133,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const p = await this.project.load();
 
     if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await removeCordovaEngineForAngular(this.project, options.platform);
+      await removeCordovaEngineForAngular(this.project, options.platform, options.project);
     }
 
     await super.afterBuild(options);

@@ -268,7 +268,7 @@ export interface IProject extends IBaseConfig<ProjectFile> {
   type?: ProjectType;
 
   getDocsUrl(): Promise<string>;
-  getSourceDir(): Promise<string>;
+  getSourceDir(relativeRoot?: string): Promise<string>;
   getDistDir(): Promise<string>;
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
@@ -548,6 +548,7 @@ export interface BuildOptions<T extends ProjectType> extends BaseBuildOptions {
 export interface AngularBuildOptions extends BuildOptions<'angular'> {
   target?: string;
   environment?: string;
+  project?: string;
 }
 
 export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> {
@@ -603,6 +604,7 @@ export interface ServeOptions {
 export interface AngularServeOptions extends ServeOptions {
   target?: string;
   environment?: string;
+  project?: string;
 }
 
 export interface IonicAngularServeOptions extends ServeOptions {
@@ -680,6 +682,7 @@ export interface IAilmentRegistry {
 }
 
 export interface AngularConfig {
+  defaultProject: string;
   projects: {
     [key: string]: {
       root: string;

@@ -24,19 +24,19 @@ export async function readAngularConfigFile(p: string): Promise<AngularConfig> {
   return angularJson;
 }
 
-export async function addCordovaEngineForAngular(project: IProject, platform: string): Promise<void> {
+export async function addCordovaEngineForAngular(project: IProject, platform: string, appName = 'app'): Promise<void> {
   debug('Adding Cordova engine for platform: %s', platform);
-  const srcDir = await project.getSourceDir();
   const platformWWW = path.resolve(project.directory, 'platforms', platform, 'platform_www');
   const angularJsonPath = path.resolve(project.directory, ANGULAR_CONFIG_FILE);
   const angularJson = await readAngularConfigFile(angularJsonPath);
-  const app = angularJson.projects.app;
+  const angularApp = angularJson.projects[angularJson.defaultProject || appName];
 
-  if (!app) {
-    throw new FatalException(`${chalk.bold('projects.app')} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot add assets.`);
+  if (!angularApp) {
+    throw new FatalException(`${chalk.bold(`projects.${angularJson.defaultProject || appName}`)} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot add assets.`);
   }
 
-  const buildOptions = app.architect.build.options;
+  const srcDir = await project.getSourceDir(angularApp.root);
+  const buildOptions = angularApp.architect.build.options;
 
   const cordovaAssets = { glob: '**/*', input: platformWWW, output: './' };
   buildOptions.assets.push(cordovaAssets);
@@ -46,19 +46,20 @@ export async function addCordovaEngineForAngular(project: IProject, platform: st
   await addCordovaEngine(srcDir);
 }
 
-export async function removeCordovaEngineForAngular(project: IProject, platform: string): Promise<void> {
+export async function removeCordovaEngineForAngular(project: IProject, platform: string, appName = 'app'): Promise<void> {
   debug('Removing Cordova engine for platform: %s', platform);
   const angularJsonPath = path.resolve(project.directory, ANGULAR_CONFIG_FILE);
   const angularJson = await readAngularConfigFile(angularJsonPath);
-  const app = angularJson.projects.app;
+  const angularApp = angularJson.projects[angularJson.defaultProject || appName];
 
-  if (!app) {
-    throw new FatalException(`${chalk.bold('projects.app')} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot remove assets.`);
+  if (!angularApp) {
+    throw new FatalException(`${chalk.bold(`projects.${angularJson.defaultProject || appName}`)} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot remove assets.`);
   }
 
-  const buildOptions = app.architect.build.options;
+  const srcDir = await project.getSourceDir(angularApp.root);
+  const buildOptions = angularApp.architect.build.options;
 
   buildOptions.assets = buildOptions.assets.filter((asset: any) => !asset.input || !asset.input.endsWith('platform_www'));
   await fsWriteFile(angularJsonPath, JSON.stringify(angularJson, undefined, 2) + '\n', { encoding: 'utf8' });
-  await removeCordovaEngine(await project.getSourceDir());
+  await removeCordovaEngine(srcDir);
 }

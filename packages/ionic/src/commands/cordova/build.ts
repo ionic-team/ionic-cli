@@ -4,6 +4,7 @@ import { validators } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
+import { ANGULAR_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/project/angular';
 
 import { COMMON_CORDOVA_BUILD_COMMAND_OPTIONS, CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 
@@ -41,6 +42,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/gu
         },
         ...APP_SCRIPTS_OPTIONS,
         ...COMMON_CORDOVA_BUILD_COMMAND_OPTIONS,
+        ...ANGULAR_BUILD_COMMAND_OPTIONS,
       ],
     };
   }

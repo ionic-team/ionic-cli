@@ -4,6 +4,7 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
+import { ANGULAR_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/project/angular';
 
 import { CordovaCommand } from './base';
 
@@ -37,6 +38,7 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
           default: true,
         },
         ...APP_SCRIPTS_OPTIONS,
+        ...ANGULAR_BUILD_COMMAND_OPTIONS,
       ],
     };
   }

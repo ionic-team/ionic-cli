@@ -16,6 +16,7 @@ import {
 import { FatalException, RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, ServeRunner } from '@ionic/cli-utils/lib/serve';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
+import { ANGULAR_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/project/angular';
 
 import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 
@@ -93,6 +94,8 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         groups: [OptionGroup.Advanced, OptionGroup.Cordova],
         hint: 'cordova',
       },
+      // Angular build options
+      ...ANGULAR_BUILD_COMMAND_OPTIONS,
     ];
 
     try {
