@@ -1,8 +1,9 @@
 import * as Debug from 'debug';
 
 import * as inquirerType from 'inquirer';
+import { TaskChain } from '@ionic/cli-framework';
 
-import { IClient, IConfig, ILogger, IProject, ISession, IShell, ITaskChain, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags, PromptModule } from '../definitions';
+import { IClient, IConfig, ILogger, IProject, ISession, IShell, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags, PromptModule } from '../definitions';
 
 import { createHandlers, createInteractiveHandlers } from './utils/logger';
 
@@ -18,7 +19,7 @@ export class Environment implements IonicEnvironment {
   project: IProject; // project config (ionic.config.json)
   session: ISession;
   readonly shell: IShell;
-  readonly tasks: ITaskChain;
+  readonly tasks: TaskChain;
   readonly ctx: IonicContext;
   keepopen = false;
 
@@ -49,7 +50,7 @@ export class Environment implements IonicEnvironment {
     prompt: PromptModule;
     session: ISession;
     shell: IShell;
-    tasks: ITaskChain;
+    tasks: TaskChain;
   }) {
     this.bottomBar = bottomBar;
     this.client = client;

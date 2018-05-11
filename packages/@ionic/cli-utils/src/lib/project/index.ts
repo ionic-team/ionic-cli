@@ -4,11 +4,12 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
+import { TaskChain } from '@ionic/cli-framework';
 import { ERROR_FILE_INVALID_JSON, fsReadJsonFile, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
-import { IAilmentRegistry, IConfig, IIntegration, ILogger, IProject, IShell, ITaskChain, InfoItem, IntegrationName, PackageJson, ProjectFile, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
+import { IAilmentRegistry, IConfig, IIntegration, ILogger, IProject, IShell, InfoItem, IntegrationName, PackageJson, ProjectFile, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
 import { BaseConfig } from '../config';
 import { FatalException } from '../errors';
@@ -27,7 +28,7 @@ export interface ProjectDeps {
   config: IConfig;
   log: ILogger;
   shell: IShell;
-  tasks: ITaskChain;
+  tasks: TaskChain;
 }
 
 export abstract class BaseProject extends BaseConfig<ProjectFile> implements IProject {
@@ -36,7 +37,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
   protected readonly config: IConfig;
   protected readonly log: ILogger;
   protected readonly shell: IShell;
-  protected readonly tasks: ITaskChain;
+  protected readonly tasks: TaskChain;
 
   constructor(dir: string, file: string, { config, log, shell, tasks }: ProjectDeps) {
     super(dir, file);

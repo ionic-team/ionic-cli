@@ -5,9 +5,10 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
+import { TaskChain } from '@ionic/cli-framework';
 import { copyDirectory, fsMkdirp, fsStat, pathExists, readDir, removeDirectory } from '@ionic/cli-framework/utils/fs';
 
-import { IConfig, IIntegration, IIntegrationAddOptions, IProject, IShell, ITaskChain, InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../definitions';
+import { IConfig, IIntegration, IIntegrationAddOptions, IProject, IShell, InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../definitions';
 import { IntegrationNotFoundException } from '../errors';
 
 import * as capacitorLibType from './capacitor';
@@ -25,14 +26,14 @@ export interface IntegrationDeps {
   config: IConfig;
   shell: IShell;
   project: IProject;
-  tasks: ITaskChain;
+  tasks: TaskChain;
 }
 
 export abstract class BaseIntegration implements IIntegration {
   protected readonly config: IConfig;
   protected readonly project: IProject;
   protected readonly shell: IShell;
-  protected readonly tasks: ITaskChain;
+  protected readonly tasks: TaskChain;
 
   abstract readonly name: IntegrationName;
   abstract readonly summary: string;

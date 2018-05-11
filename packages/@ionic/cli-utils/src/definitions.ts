@@ -26,27 +26,6 @@ export interface ILogger extends framework.Logger {
   rawmsg: LogFn;
 }
 
-export interface ITask {
-  msg: string;
-  running: boolean;
-  progressRatio: number;
-
-  start(): this;
-  progress(prog: number, total: number): this;
-  clear(): this;
-  succeed(): this;
-  fail(): this;
-  end(): this;
-}
-
-export interface ITaskChain {
-  next(msg: string): ITask;
-  updateMsg(msg: string): this;
-  end(): this;
-  fail(): this;
-  cleanup(): this;
-}
-
 export interface StarterManifest {
   name: string;
   baseref: string;
@@ -736,7 +715,7 @@ export interface IonicEnvironment {
   project: IProject; // project config (ionic.config.json)
   session: ISession;
   readonly shell: IShell;
-  readonly tasks: ITaskChain;
+  readonly tasks: framework.TaskChain;
   keepopen: boolean;
 
   open(): void;
