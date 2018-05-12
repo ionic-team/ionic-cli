@@ -73,7 +73,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     }
 
     let count = 0;
-    this.env.tasks.next('Syncing sourcemaps');
+    const syncTask = this.env.tasks.next('Syncing sourcemaps');
 
     const sourcemapFiles = (await readDir(sourcemapsDir)).filter(f => f.endsWith('.js.map'));
     debug(`Found ${sourcemapFiles.length} sourcemap files: ${sourcemapFiles.map(f => chalk.bold(f)).join(', ')}`);
@@ -81,10 +81,10 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     await Promise.all(sourcemapFiles.map(async f => {
       await this.syncSourcemap(path.resolve(sourcemapsDir, f), snapshotId, appVersion, commitHash, proId, token);
       count += 1;
-      this.env.tasks.updateMsg(`Syncing sourcemaps: ${chalk.bold(`${count} / ${sourcemapFiles.length}`)}`);
+      syncTask.msg = `Syncing sourcemaps: ${chalk.bold(`${count} / ${sourcemapFiles.length}`)}`;
     }));
 
-    this.env.tasks.updateMsg(`Syncing sourcemaps: ${chalk.bold(`${sourcemapFiles.length} / ${sourcemapFiles.length}`)}`);
+    syncTask.msg = `Syncing sourcemaps: ${chalk.bold(`${sourcemapFiles.length} / ${sourcemapFiles.length}`)}`;
     this.env.tasks.end();
 
     const details = columnar([
