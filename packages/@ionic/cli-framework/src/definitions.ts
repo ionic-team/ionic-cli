@@ -6,11 +6,6 @@ import { AliasedMap } from './utils/object';
 
 export type NetworkInterface = { device: string; } & os.NetworkInterfaceInfo;
 
-export interface TerminalInfo {
-  tty: boolean;
-  ci: boolean;
-}
-
 export type ParsedArg = string | boolean | null | undefined | string[];
 export type Validator = (input?: string, key?: string) => true | string;
 
