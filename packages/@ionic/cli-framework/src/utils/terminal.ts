@@ -19,6 +19,6 @@ export interface TerminalInfo {
 }
 
 export const TERMINAL_INFO: TerminalInfo = Object.freeze({
-  tty: process.stdout.isTTY ? true : false,
+  tty: Boolean(process.stdin.isTTY && process.stdout.isTTY && process.stderr.isTTY),
   ci: CI_ENVIRONMENT_VARIABLES_DETECTED.length > 0,
 });
