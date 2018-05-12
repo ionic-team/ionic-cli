@@ -1,9 +1,9 @@
 {
-  "name": "@ionic/v1-toolkit",
-  "version": "1.0.0-rc.6",
-  "description": "Utility CLI for Ionic 1.x apps, used by Ionic CLI",
+  "name": "@ionic/ng-toolkit",
+  "version": "0.0.1",
+  "description": "Utility CLI for Ionic Angular v4+ apps, used by Ionic CLI",
   "bin": {
-    "ionic-v1": "./bin/ionic-v1"
+    "ionic-ng": "./bin/ionic-ng"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,6 @@
   "author": "Ionic Team <hi@ionic.io> (https://ionic.io)",
   "license": "MIT",
   "files": [
-    "assets/",
     "bin/",
     "dist/",
     "LICENSE",
@@ -29,49 +28,22 @@
     "lint": "tslint --config tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
-    "test": "jest",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
+    "@angular-devkit/core": "0.6.0",
+    "@angular-devkit/schematics": "0.6.0",
     "@ionic/cli-framework": "1.0.0-rc.6",
+    "@ionic/schematics-angular": "1.0.0-rc.6",
     "chalk": "^2.3.0",
-    "chokidar": "^2.0.0",
     "debug": "^3.1.0",
-    "express": "^4.16.2",
-    "gulp": "^3.9.1",
-    "http-proxy-middleware": "^0.18.0",
-    "tiny-lr": "^1.1.0",
-    "tslib": "^1.9.0",
-    "ws": "^5.1.1"
+    "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "@types/chokidar": "^1.7.4",
     "@types/debug": "0.0.30",
-    "@types/express": "^4.11.0",
-    "@types/gulp": "^3.8.36",
-    "@types/http-proxy-middleware": "^0.17.2",
     "@types/node": "^6.0.101",
-    "@types/ws": "^4.0.2",
-    "jest": "^22.4.2",
-    "jest-cli": "^22.4.2",
     "rimraf": "^2.6.2",
-    "ts-jest": "^22.4.1",
     "tslint": "^5.9.1",
     "typescript": "~2.8.1"
-  },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfigFile": "tsconfig.json"
-      }
-    },
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "transform": {
-      ".(ts)": "<rootDir>/../../../node_modules/ts-jest/preprocessor.js"
-    },
-    "testRegex": "/__tests__/.*\\.(ts|js)$"
   }
 }

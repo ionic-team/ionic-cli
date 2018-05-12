@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+'use strict';
+
+process.title = 'ionic-ng';
+process.on('unhandledRejection', function(r) { console.error(r); });
+
+var semver = require('semver');
+
+if (semver.lt(process.version, 'v6.4.0')) {
+  console.log('ERR: Your Node.js version is ' + process.version + '. Please update to the latest Node 8 LTS.');
+  process.exit(1);
+}
+
+var cli = require('../');
+cli.run(process.argv.slice(2), process.env);
