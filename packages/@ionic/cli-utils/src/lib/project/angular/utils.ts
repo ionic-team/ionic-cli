@@ -24,15 +24,15 @@ export async function readAngularConfigFile(p: string): Promise<AngularConfig> {
   return angularJson;
 }
 
-export async function addCordovaEngineForAngular(project: IProject, platform: string, appName = 'app'): Promise<void> {
+export async function addCordovaEngineForAngular(project: IProject, platform: string, appName?: string): Promise<void> {
   debug('Adding Cordova engine for platform: %s', platform);
   const platformWWW = path.resolve(project.directory, 'platforms', platform, 'platform_www');
   const angularJsonPath = path.resolve(project.directory, ANGULAR_CONFIG_FILE);
   const angularJson = await readAngularConfigFile(angularJsonPath);
-  const angularApp = angularJson.projects[angularJson.defaultProject || appName];
+  const angularApp = angularJson.projects[appName || angularJson.defaultProject];
 
   if (!angularApp) {
-    throw new FatalException(`${chalk.bold(`projects.${angularJson.defaultProject || appName}`)} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot add assets.`);
+    throw new FatalException(`${chalk.bold(`projects.${appName || angularJson.defaultProject}`)} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot add assets.`);
   }
 
   const srcDir = await project.getSourceDir(angularApp.root);
@@ -46,14 +46,14 @@ export async function addCordovaEngineForAngular(project: IProject, platform: st
   await addCordovaEngine(srcDir);
 }
 
-export async function removeCordovaEngineForAngular(project: IProject, platform: string, appName = 'app'): Promise<void> {
+export async function removeCordovaEngineForAngular(project: IProject, platform: string, appName?: string): Promise<void> {
   debug('Removing Cordova engine for platform: %s', platform);
   const angularJsonPath = path.resolve(project.directory, ANGULAR_CONFIG_FILE);
   const angularJson = await readAngularConfigFile(angularJsonPath);
-  const angularApp = angularJson.projects[angularJson.defaultProject || appName];
+  const angularApp = angularJson.projects[appName || angularJson.defaultProject];
 
   if (!angularApp) {
-    throw new FatalException(`${chalk.bold(`projects.${angularJson.defaultProject || appName}`)} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot remove assets.`);
+    throw new FatalException(`${chalk.bold(`projects.${appName || angularJson.defaultProject}`)} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot remove assets.`);
   }
 
   const srcDir = await project.getSourceDir(angularApp.root);

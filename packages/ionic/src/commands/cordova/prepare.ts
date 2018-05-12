@@ -4,12 +4,26 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
-import { ANGULAR_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/project/angular';
+import { CommandMetadataOption } from '@ionic/cli-framework/definitions';
+import { NG_BUILD_OPTIONS } from '@ionic/cli-utils/lib/project/angular/build';
 
 import { CordovaCommand } from './base';
 
 export class PrepareCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
+    let additionalOptions: CommandMetadataOption[] = [];
+    switch (this.env.project.type) {
+      case 'angular': {
+        additionalOptions = NG_BUILD_OPTIONS;
+        break;
+      }
+      case 'ionic-angular': {
+        additionalOptions = APP_SCRIPTS_OPTIONS;
+        break;
+      }
+      default:
+    }
+
     return {
       name: 'prepare',
       type: 'project',
@@ -37,8 +51,7 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
           type: Boolean,
           default: true,
         },
-        ...APP_SCRIPTS_OPTIONS,
-        ...ANGULAR_BUILD_COMMAND_OPTIONS,
+        ...additionalOptions,
       ],
     };
   }

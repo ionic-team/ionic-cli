@@ -546,9 +546,44 @@ export interface BuildOptions<T extends ProjectType> extends BaseBuildOptions {
 }
 
 export interface AngularBuildOptions extends BuildOptions<'angular'> {
-  target?: string;
-  environment?: string;
-  project?: string;
+  'prod'?: boolean;
+  'project'?: string;
+  'configuration'?: string;
+  'main'?: string;
+  'polyfills'?: string;
+  'ts-config'?: string;
+  'optimization'?: string;
+  'output-path'?: string;
+  'aot'?: boolean;
+  'source-map'?: boolean;
+  'eval-source-map'?: boolean;
+  'vendor-chunk'?: boolean;
+  'common-chunk'?: boolean;
+  'base-href'?: string;
+  'deploy-url'?: string;
+  'verbose'?: boolean;
+  'progress'?: boolean;
+  'i18n-file'?: string;
+  'i18n-format'?: string;
+  'i18n-locale'?: string;
+  'i18n-missing-translation'?: string;
+  'extract-css'?: boolean;
+  'watch'?: boolean;
+  'output-hashing'?: string;
+  'poll'?: boolean;
+  'delete-output-path'?: boolean;
+  'preserve-symlinks'?: boolean;
+  'extract-licenses'?: boolean;
+  'show-circular-dependencies'?: boolean;
+  'build-optimizer'?: boolean;
+  'named-chunks'?: boolean;
+  'subresource-integrity'?: boolean;
+  'service-worker'?: boolean;
+  'ngsw-config-path'?: string;
+  'skip-app-shell'?: boolean;
+  'index'?: string;
+  'stats-json'?: boolean;
+  'fork-type-checker'?: boolean;
 }
 
 export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> {
@@ -602,9 +637,36 @@ export interface ServeOptions {
 }
 
 export interface AngularServeOptions extends ServeOptions {
-  target?: string;
-  environment?: string;
-  project?: string;
+  'project'?: string;
+  'prod'?: string;
+  'configuration'?: string;
+  'browser-target'?: string;
+  'ssl-key'?: string;
+  'ssl-cert'?: string;
+  'open': boolean;
+  'public-host'?: string;
+  'serve-path'?: string;
+  'disable-host-check'?: boolean;
+  'hmr'?: boolean;
+  'hmr-warning'?: boolean;
+  'serve-path-default-warning'?: boolean;
+  'optimization'?: string;
+  'aot'?: boolean;
+  'source-map'?: boolean;
+  'eval-source-map'?: boolean;
+  'vendor-chunk'?: boolean;
+  'common-chunk'?: boolean;
+  'base-href'?: string;
+  'deploy-url'?: string;
+  'verbose'?: boolean;
+  'progress'?: boolean;
+  'watch'?: boolean;
+  // Managed by Ionic dev server
+  'live-reload'?: boolean;
+  'port': number;
+  'host'?: string;
+  'proxy-config'?: string;
+  'ssl': boolean;
 }
 
 export interface IonicAngularServeOptions extends ServeOptions {

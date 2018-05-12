@@ -22,6 +22,190 @@ const DEFAULT_PROGRAM = 'ng';
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 const NG_AUTODETECTED_PROXY_FILES = ['proxy.conf.json', 'proxy.conf.js', 'proxy.config.json', 'proxy.config.js'];
 
+// Setting all types to `String` so that they can be filtered when not provided.
+// Is there a way to have Boolean types without them defaulting to false?
+const NG_SERVE_OPTIONS = [
+  {
+    name: 'ssl',
+    summary: 'Use HTTPS for the dev server',
+    groups: [OptionGroup.Advanced],
+    type: String,
+    hint: 'ng',
+  },
+  {
+    name: 'browser-target',
+    summary: 'Target to serve',
+    groups: [OptionGroup.Advanced],
+    type: String,
+    hint: 'ng',
+  },
+  {
+    name: 'hmr',
+    summary: 'Enable hot module replacement',
+    aliases: ['s'],
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'hmr-warning',
+    summary: 'Show a warning when the --hmr option is enabled',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'optimization',
+    summary: 'Defines the optimization level of the build',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'aot',
+    summary: 'Build using Ahead of Time compilation',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'source-map',
+    summary: 'Output sourcemaps',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'eval-source-map',
+    summary: 'Output in-file eval sourcemaps',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'vendor-chunk',
+    summary: 'Use a separate bundle containing only vendor libraries',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'common-chunk',
+    summary: 'Use a separate bundle containing code used across multiple bundles',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'base-href',
+    summary: 'Use a separate bundle containing code used across multiple bundles',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'deploy-url',
+    summary: 'Use a separate bundle containing code used across multiple bundles',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'progress',
+    summary: 'Use a separate bundle containing code used across multiple bundles',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'prod',
+    summary: `Flag to set configuration to ${chalk.green('prod')}`,
+    type: String,
+    hint: 'ng',
+  },
+  {
+    name: 'project',
+    summary: 'Specify the Angular project to be built from angular.json',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'configuration',
+    aliases: ['c'],
+    summary: 'Specify the Angular workspace to be built from angular.json',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'public-host',
+    summary: 'Specify the URL that the browser client will use',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'disable-host-check',
+    summary: 'Don\'t verify connected clients are part of allowed hosts',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'serve-path-default-warning',
+    summary: 'Show a warning when deploy-url/base-href use unsupported serve path values',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  // These angular CLI options either conflict with or are managed by Ionic.
+  // Adding an `ng` prefix here to prevent collisions.
+  {
+    name: 'ng-ssl-key',
+    summary: 'SSL key to use for serving HTTPS',
+    type: String,
+    groups: [OptionGroup.Hidden],
+    hint: 'ng',
+  },
+  {
+    name: 'ng-ssl-cert',
+    summary: 'SSL certificate to use for serving HTTPS',
+    type: String,
+    groups: [OptionGroup.Hidden],
+    hint: 'ng',
+  },
+  {
+    name: 'ng-live-reload',
+    summary: 'Whether to reload the page on change, using live-reload',
+    type: String,
+    groups: [OptionGroup.Hidden],
+    hint: 'ng',
+  },
+  {
+    name: 'ng-port',
+    summary: 'Port to listen on',
+    type: String,
+    groups: [OptionGroup.Hidden],
+    hint: 'ng',
+  },
+  {
+    name: 'ng-proxy-config',
+    summary: 'Proxy configuration file',
+    type: String,
+    groups: [OptionGroup.Hidden],
+    hint: 'ng',
+  },
+  {
+    name: 'ng-open',
+    aliases: ['ng-o'],
+    summary: 'Opens the url in default browser',
+    type: String,
+    groups: [OptionGroup.Hidden],
+    hint: 'ng',
+  },
+];
+
 const debug = Debug('ionic:cli-utils:lib:project:angular:serve');
 
 interface ServeCmdDetails {
@@ -40,65 +224,25 @@ For serving your app with HTTPS, use the ${chalk.green('--ssl')} option. You can
 
 If a ${chalk.bold('proxy.config.json')} or ${chalk.bold('proxy.config.js')} file is detected in your project, the Angular CLI's ${chalk.green('--proxy-config')} option is automatically specified. You can use ${chalk.green('--no-proxy')} to disable this behavior. See the Angular CLI proxy documentation${chalk.cyan('[2]')} for more information.
 
-${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/build#ng-build')}
+${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/serve')}
 ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/stories-proxy#proxy-to-backend')}`,
-      options: [
-        {
-          name: 'ssl',
-          summary: 'Use HTTPS for the dev server',
-          aliases: ['s'],
-          type: Boolean,
-        },
-        {
-          name: 'dev',
-          summary: `Sets the build target to ${chalk.green('development')}`,
-          type: Boolean,
-          hint: 'ng',
-        },
-        {
-          name: 'prod',
-          summary: `Sets the build target to ${chalk.green('production')}`,
-          type: Boolean,
-          hint: 'ng',
-        },
-        {
-          name: 'target',
-          summary: 'Set the build target to a custom value',
-          aliases: ['t'],
-          groups: [OptionGroup.Advanced],
-          hint: 'ng',
-        },
-        {
-          name: 'environment',
-          summary: 'Set the build environment to a custom value',
-          aliases: ['e'],
-          groups: [OptionGroup.Advanced],
-          hint: 'ng',
-        },
-      ],
+      options: NG_SERVE_OPTIONS,
     };
   }
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularServeOptions {
     const baseOptions = super.createOptionsFromCommandLine(inputs, options);
-    let target = options['target'] ? String(options['target']) : undefined;
-    const environment = options['environment'] ? String(options['environment']) : undefined;
-    const project = options['project'] ? String(options['project']) : undefined;
+    const ngOptions = NG_SERVE_OPTIONS
+      .filter(option => options[option.name] !== null && options[option.name] !== undefined)
+      .reduce((accum, option) => {
+        accum[option.name] = option.type.call(option.type, options[option.name]);
 
-    if (!target) {
-      if (options['dev']) {
-        target = 'development';
-      } else if (options['prod']) {
-        target = 'production';
-      }
-    }
+        return accum;
+      }, {} as any);
 
     return {
       ...baseOptions,
-      ssl: options['ssl'] ? true : false,
-      target,
-      environment,
-      project,
+      ...ngOptions,
     };
   }
 
@@ -223,12 +367,20 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   }
 
   async serveOptionsToNgArgs(options: AngularServeOptions): Promise<string[]> {
+    const ngOptions = NG_SERVE_OPTIONS
+      .map(option => option.name as keyof AngularServeOptions)
+      .filter(option => options[option])
+      .reduce((accum, option) => {
+        accum[option] = options[option];
+
+        return accum;
+      }, {} as any);
+
     const args: ParsedArgs = {
       _: [],
+      ...ngOptions,
       host: options.address,
       port: String(options.port),
-      target: options.target,
-      environment: options.environment,
       ssl: options.ssl ? 'true' : undefined,
     };
 

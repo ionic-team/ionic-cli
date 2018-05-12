@@ -132,6 +132,7 @@ class BuildAfterHook extends Hook {
 export async function build(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
   try {
     const runner = await BuildRunner.createFromProjectType(env, env.project.type);
+
     const opts = runner.createOptionsFromCommandLine(inputs, options);
     await runner.run(opts);
   } catch (e) {

@@ -1,23 +1,13 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
-import { OptionGroup } from '../../../constants';
-
-import { CommandMetadataOption, IAilmentRegistry, InfoItem, ProjectType } from '../../../definitions';
 
 import { BaseProject } from '../';
+
+import { IAilmentRegistry, InfoItem, ProjectType } from '../../../definitions';
 import * as doctorLibType from '../../doctor';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular');
-
-export const ANGULAR_BUILD_COMMAND_OPTIONS: CommandMetadataOption[] = [
-  {
-    name: 'project',
-    summary: 'Specify the Angular project to be built from angular.json',
-    type: String,
-    groups: [OptionGroup.Advanced],
-  },
-];
 
 export class Project extends BaseProject {
   type: ProjectType = 'angular';
