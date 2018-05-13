@@ -142,6 +142,10 @@ export async function createPromptModule({ interactive, onFallback }: CreateProm
     const prompt = promptModule({ ...promptQuestion, name });
     const result = (await prompt)[name];
 
+    if (typeof result === 'undefined' || result === null) {
+      return '';
+    }
+
     if (typeof result !== 'string' && typeof result !== 'boolean' && !Array.isArray(result)) {
       return String(result);
     }
