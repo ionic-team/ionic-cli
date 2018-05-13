@@ -22,14 +22,14 @@ const DEFAULT_PROGRAM = 'ng';
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 const NG_AUTODETECTED_PROXY_FILES = ['proxy.conf.json', 'proxy.conf.js', 'proxy.config.json', 'proxy.config.js'];
 
-// Setting all types to `String` so that they can be filtered when not provided.
-// Is there a way to have Boolean types without them defaulting to false?
+// tslint:disable no-null-keyword
 const NG_SERVE_OPTIONS = [
   {
     name: 'ssl',
     summary: 'Use HTTPS for the dev server',
     groups: [OptionGroup.Advanced],
-    type: String,
+    type: Boolean,
+    default: null,
     hint: 'ng',
   },
   {
@@ -42,15 +42,16 @@ const NG_SERVE_OPTIONS = [
   {
     name: 'hmr',
     summary: 'Enable hot module replacement',
-    aliases: ['s'],
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'hmr-warning',
     summary: 'Show a warning when the --hmr option is enabled',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
@@ -64,7 +65,8 @@ const NG_SERVE_OPTIONS = [
   {
     name: 'aot',
     summary: 'Build using Ahead of Time compilation',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
@@ -78,21 +80,24 @@ const NG_SERVE_OPTIONS = [
   {
     name: 'eval-source-map',
     summary: 'Output in-file eval sourcemaps',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'vendor-chunk',
     summary: 'Use a separate bundle containing only vendor libraries',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'common-chunk',
     summary: 'Use a separate bundle containing code used across multiple bundles',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
@@ -113,14 +118,16 @@ const NG_SERVE_OPTIONS = [
   {
     name: 'progress',
     summary: 'Use a separate bundle containing code used across multiple bundles',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'prod',
     summary: `Flag to set configuration to ${chalk.green('prod')}`,
-    type: String,
+    type: Boolean,
+    default: null,
     hint: 'ng',
   },
   {
@@ -148,7 +155,8 @@ const NG_SERVE_OPTIONS = [
   {
     name: 'disable-host-check',
     summary: 'Don\'t verify connected clients are part of allowed hosts',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
@@ -178,7 +186,8 @@ const NG_SERVE_OPTIONS = [
   {
     name: 'ng-live-reload',
     summary: 'Whether to reload the page on change, using live-reload',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Hidden],
     hint: 'ng',
   },
@@ -200,11 +209,13 @@ const NG_SERVE_OPTIONS = [
     name: 'ng-open',
     aliases: ['ng-o'],
     summary: 'Opens the url in default browser',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Hidden],
     hint: 'ng',
   },
 ];
+// tslint:enable no-null-keyword
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:serve');
 
@@ -235,7 +246,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const ngOptions = NG_SERVE_OPTIONS
       .filter(option => options[option.name] !== null && options[option.name] !== undefined)
       .reduce((accum, option) => {
-        accum[option.name] = option.type.call(option.type, options[option.name]);
+        accum[option.name] = options[option.name];
 
         return accum;
       }, {} as any);
@@ -369,9 +380,9 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   async serveOptionsToNgArgs(options: AngularServeOptions): Promise<string[]> {
     const ngOptions = NG_SERVE_OPTIONS
       .map(option => option.name as keyof AngularServeOptions)
-      .filter(option => options[option])
+      .filter(option => options[option] !== null && options[option] !== undefined)
       .reduce((accum, option) => {
-        accum[option] = options[option];
+        accum[option] = String(options[option]);
 
         return accum;
       }, {} as any);

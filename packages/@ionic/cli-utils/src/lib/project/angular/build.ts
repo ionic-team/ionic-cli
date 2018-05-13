@@ -9,13 +9,13 @@ import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './uti
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:build');
 
-// Setting all types to `String` so that they can be filtered when not provided.
-// Is there a way to have Boolean types without them defaulting to false?
+// tslint:disable no-null-keyword
 export const NG_BUILD_OPTIONS = [
   {
     name: 'prod',
     summary: `Flag to set configuration to ${chalk.green('prod')}`,
-    type: String,
+    type: Boolean,
+    default: null,
     hint: 'ng',
   },
   {
@@ -62,35 +62,40 @@ export const NG_BUILD_OPTIONS = [
   {
     name: 'aot',
     summary: 'Build using Ahead of Time compilation',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'source-map',
     summary: 'Output sourcemaps.',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'eval-source-map',
     summary: 'Output in-file eval sourcemaps',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'vendor-chunk',
     summary: 'Use a separate bundle containing only vendor libraries',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'common-chunk',
     summary: 'Use a separate bundle containing code used across multiple bundles',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
@@ -111,7 +116,8 @@ export const NG_BUILD_OPTIONS = [
   {
     name: 'progress',
     summary: 'Log progress to the console while building',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
@@ -146,14 +152,16 @@ export const NG_BUILD_OPTIONS = [
   {
     name: 'extract-css',
     summary: 'Extract css from global styles onto css files instead of js ones',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'watch',
     summary: 'Run build when files change',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
@@ -174,56 +182,64 @@ export const NG_BUILD_OPTIONS = [
   {
     name: 'delete-output-path',
     summary: 'Delete the output path before building',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'preserve-symlinks',
     summary: 'Do not use the real path when resolving modules',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'extract-licenses',
     summary: 'Extract all licenses in a separate file, in the case of production builds only',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'show-circular-dependencies',
     summary: 'Show circular dependency warnings on builds',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'build-optimizer',
     summary: `Enables @angular-devkit/build-optimizer optimizations when using the ${chalk.green('aot')} option`,
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'named-chunks',
     summary: 'Use file name for lazy loaded chunks',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'subresource-integrity',
     summary: 'Enables the use of subresource integrity validation',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'service-worker',
     summary: 'Generates a service worker config for production builds',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
@@ -237,7 +253,8 @@ export const NG_BUILD_OPTIONS = [
   {
     name: 'skip-app-shell',
     summary: 'Flag to prevent building an app shell',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
@@ -251,14 +268,16 @@ export const NG_BUILD_OPTIONS = [
   {
     name: 'stats-json',
     summary: `Generates a ${chalk.green('stats.json')} file which can be analyzed using tools such as: #webpack-bundle-analyzer or https: //webpack.github.io/analyse`,
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
   {
     name: 'fork-type-checker',
     summary: 'Run the TypeScript type checker in a forked process',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
@@ -274,11 +293,13 @@ export const NG_BUILD_OPTIONS = [
   {
     name: 'ng-verbose',
     summary: 'Adds more details to output logging',
-    type: String,
+    type: Boolean,
+    default: null,
     groups: [OptionGroup.Advanced],
     hint: 'ng',
   },
 ];
+// tslint:enable no-null-keyword
 
 export class BuildRunner extends BaseBuildRunner<AngularBuildOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
@@ -298,7 +319,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const ngOptions = NG_BUILD_OPTIONS
       .filter(option => options[option.name] !== null && options[option.name] !== undefined)
       .reduce((accum, option) => {
-        accum[option.name] = option.type.call(option.type, options[option.name]);
+        accum[option.name] = options[option.name];
 
         return accum;
       }, {} as any);
@@ -313,7 +334,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   async buildOptionsToNgArgs(options: AngularBuildOptions): Promise<string[]> {
 
     const ngOptions = NG_BUILD_OPTIONS
-      .filter(option => option.name)
       .map(option => option.name as keyof AngularBuildOptions)
       .filter(option => options[option] !== null && options[option] !== undefined)
       .reduce((accum, option) => {
