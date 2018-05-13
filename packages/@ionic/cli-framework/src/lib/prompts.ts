@@ -1,15 +1,14 @@
 import * as Debug from 'debug';
 import * as inquirer from 'inquirer'; // type import
-import { Inquirer, Question, objects as InquirerObjects } from 'inquirer'; // type import
 
-import { Logger, LoggerOptions, StreamHandler, StreamHandlerOptions } from './logger';
+import { OutputStrategy, RedrawLine } from '../definitions';
 import { TERMINAL_INFO } from '../utils/terminal';
 
 const debug = Debug('ionic:cli-framework:lib:prompts');
 
-let _inquirer: Inquirer | undefined;
+let _inquirer: inquirer.Inquirer | undefined;
 
-export interface PromptQuestionBase extends Question {
+export interface PromptQuestionBase extends inquirer.Question {
   /**
    * The prompt type for this question.
    *    - 'confirm': Y/n
@@ -67,18 +66,17 @@ export interface PromptQuestionOther extends PromptQuestionBase {
 export type PromptQuestion = PromptQuestionConfirm | PromptQuestionCheckbox | PromptQuestionOther;
 
 export interface PromptModule {
+  readonly output: OutputStrategy & RedrawLine;
+
   (question: PromptQuestionConfirm): Promise<PromptValueConfirm>;
   (question: PromptQuestionCheckbox): Promise<PromptValueCheckbox>;
   (question: PromptQuestionOther): Promise<PromptValueOther>;
 
   open(): void;
   close(): void;
-  createLogger(options?: Partial<LoggerOptions>): Logger;
-  createLoggerHandlers(options?: Partial<StreamHandlerOptions>): Set<StreamHandler>;
-  updatePromptBar(message: string): void;
 }
 
-async function loadInquirer(): Promise<Inquirer> {
+async function loadInquirer(): Promise<inquirer.Inquirer> {
   if (!_inquirer) {
     _inquirer = await import('inquirer');
   }
@@ -111,9 +109,9 @@ export interface CreatePromptModuleOptions {
  *                           a 'fallback'.
  */
 export async function createPromptModule({ interactive, onFallback }: CreatePromptModuleOptions = {}): Promise<PromptModule> {
-  const inq = await loadInquirer();
-  const promptModule = inq.createPromptModule();
-  let bottomBar: inquirer.ui.BottomBar | undefined;
+  const { createPromptModule: createInquirerPromptModule, ui: { BottomBar } } = await loadInquirer();
+  const promptModule = createInquirerPromptModule();
+  const manager = new BottomBarManager({ BottomBar });
 
   async function createPrompter(question: PromptQuestionConfirm): Promise<PromptValueConfirm>;
   async function createPrompter(question: PromptQuestionCheckbox): Promise<PromptValueCheckbox>;
@@ -162,68 +160,79 @@ export async function createPromptModule({ interactive, onFallback }: CreateProm
     return result;
   }
 
-  function getBottomBar(): inquirer.ui.BottomBar {
-    if (!bottomBar) {
-      bottomBar = new inq.ui.BottomBar();
-
-      try {
-        // the mute() call appears to be necessary, otherwise when answering
-        // inquirer prompts upon pressing enter, a copy of the prompt is
-        // printed to the screen and looks gross
-        (<any>bottomBar).rl.output.mute();
-      } catch (e) {
-        debug('Error while muting bottomBar output: %o', e);
-      }
-    }
-
-    return bottomBar;
-  }
-
-  function open() {
-    getBottomBar();
-  }
-
-  function close() {
-    if (bottomBar) {
-      // instantiating inquirer.ui.BottomBar hangs, so when close() is called,
-      // close BottomBar streams
-      bottomBar.close();
-      bottomBar = undefined;
-    }
-  }
-
-  function createLogger(options: Partial<LoggerOptions> = {}): Logger {
-    return new Logger({ ...options, handlers: createLoggerHandlers() });
-  }
-
-  function createLoggerHandlers(options: Partial<StreamHandlerOptions> = {}): Set<StreamHandler> {
-    const bottomBar = getBottomBar();
-
-    return new Set([
-      new StreamHandler({ ...options, stream: bottomBar.log }),
-    ]);
-  }
-
-  function updatePromptBar(message: string) {
-    const bottomBar = getBottomBar();
-    bottomBar.updateBottomBar(message);
-  }
-
   Object.defineProperties(createPrompter, {
-    open: { value: open },
-    close: { value: close },
-    createLogger: { value: createLogger },
-    createLoggerHandlers: { value: createLoggerHandlers },
-    updatePromptBar: { value: updatePromptBar },
+    open: { value: () => manager.open() },
+    close: { value: () => manager.close() },
+    output: { value: manager },
   });
 
   return <any>createPrompter;
 }
 
-export function createPromptChoiceSeparator(): InquirerObjects.Separator {
+export function createPromptChoiceSeparator(): inquirer.objects.Separator {
   if (!_inquirer) {
     throw new Error(`Prompt module not initialized. Call 'createPromptModule' first.`);
   }
 
   return new _inquirer.Separator();
+}
+
+interface BottomBarManagerOptions {
+  readonly BottomBar: typeof inquirer.ui.BottomBar;
+  readonly input?: NodeJS.ReadableStream;
+  readonly output?: NodeJS.WritableStream;
+}
+
+class BottomBarManager implements OutputStrategy, RedrawLine {
+  protected bottomBar?: inquirer.ui.BottomBar;
+
+  protected readonly BottomBar: typeof inquirer.ui.BottomBar;
+  protected readonly rawinput: NodeJS.ReadableStream;
+  protected readonly rawoutput: NodeJS.WritableStream;
+
+  constructor({ BottomBar, input = process.stdin, output = process.stdout }: BottomBarManagerOptions) {
+    this.BottomBar = BottomBar;
+    this.rawinput = input;
+    this.rawoutput = output;
+  }
+
+  get stream(): NodeJS.WritableStream {
+    const bottomBar = this.get();
+    return bottomBar.log;
+  }
+
+  redrawLine(msg = ''): void {
+    const bottomBar = this.get();
+    bottomBar.updateBottomBar(msg);
+  }
+
+  get(): typeof inquirer.ui.BottomBar {
+    if (!this.bottomBar) {
+      this.bottomBar = new this.BottomBar(<any>{ input: this.rawinput, output: this.rawoutput });
+
+      try {
+        // the mute() call appears to be necessary, otherwise when answering
+        // inquirer prompts upon pressing enter, a copy of the prompt is
+        // printed to the screen and looks gross
+        (<any>this.bottomBar).rl.output.mute();
+      } catch (e) {
+        debug('Error while muting bottomBar output: %o', e);
+      }
+    }
+
+    return this.bottomBar;
+  }
+
+  open(): void {
+    this.get();
+  }
+
+  close(): void {
+    if (this.bottomBar) {
+      // instantiating inquirer.ui.BottomBar hangs, so when close() is called,
+      // close BottomBar streams
+      this.bottomBar.close();
+      this.bottomBar = undefined;
+    }
+  }
 }

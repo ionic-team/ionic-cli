@@ -144,3 +144,11 @@ export interface ValidationError {
   message: string;
   validator: Validator;
 }
+
+export interface OutputStrategy {
+  readonly stream: NodeJS.WritableStream;
+}
+
+export interface RedrawLine {
+  redrawLine(msg?: string): void;
+}

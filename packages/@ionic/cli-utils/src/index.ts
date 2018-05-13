@@ -3,7 +3,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { LOGGER_LEVELS, PackageJson, createPromptModule, parseArgs } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, PackageJson, createPromptModule, createTaskChainWithOutput, parseArgs } from '@ionic/cli-framework';
 import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
@@ -17,7 +17,6 @@ import { Client } from './lib/http';
 import { Environment } from './lib/environment';
 import { PROXY_ENVIRONMENT_VARIABLES } from './lib/utils/http';
 import { Logger } from './lib/utils/logger';
-import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
 import { ProSession } from './lib/session';
 import { Shell } from './lib/shell';
 import { createOnFallback } from './lib/prompts';
@@ -76,7 +75,11 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   });
 
   const prompt = await createPromptModule({ interactive: flags.interactive, onFallback: createOnFallback({ ...flags, log }) });
-  const tasks = flags.interactive ? new InteractiveTaskChain({ log, prompt }) : new TaskChain({ log });
+  const tasks = createTaskChainWithOutput(
+    flags.interactive
+      ? { output: prompt.output }
+      : { output: { stream: log.createWriteStream(LOGGER_LEVELS.INFO, false) } }
+  );
 
   const projectDir = await findBaseDirectory(ctx.execPath, PROJECT_FILE);
   const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map(e => [e, env[e]]).filter(([e, v]) => !!v);

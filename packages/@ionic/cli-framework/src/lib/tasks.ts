@@ -1,8 +1,31 @@
 import { EventEmitter } from 'events';
 
+import { OutputStrategy } from '../definitions';
+import { isRedrawLine } from '../guards';
+import { Colors, DEFAULT_COLORS } from './colors';
+
+const isWindows = process.platform === 'win32';
+
+export const ICON_SUCCESS = isWindows ? '√' : '✔';
+export const ICON_FAILURE = isWindows ? '×' : '✖';
+
+const SPINNER_FRAMES = isWindows ?
+  ['-', '\\', '|', '/'] :
+  ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+
+export class Spinner {
+  i = 0;
+
+  constructor(public frames: string[] = SPINNER_FRAMES) {}
+
+  frame(): string {
+    return this.frames[this.i = ++this.i % this.frames.length];
+  }
+}
+
 export interface TaskOptions {
-  msg?: string;
-  tickInterval?: number;
+  readonly msg?: string;
+  readonly tickInterval?: number;
 }
 
 export interface Task extends EventEmitter {
@@ -103,16 +126,26 @@ export class Task extends EventEmitter {
   }
 }
 
-export interface TaskChainOptions {
-  taskOptions?: Partial<TaskOptions>;
+export interface TaskChain extends EventEmitter {
+  on(name: 'end', handler: (lastTask?: Task) => void): this;
+  on(name: 'failure', handler: (failedTask?: Task) => void): this;
+  on(name: 'next', handler: (task: Task) => void): this;
+  emit(name: 'end', lastTask?: Task): boolean;
+  emit(name: 'failure', failedTask?: Task): boolean;
+  emit(name: 'next', task: Task): boolean;
 }
 
-export class TaskChain {
+export interface TaskChainOptions {
+  readonly taskOptions?: Partial<TaskOptions>;
+}
+
+export class TaskChain extends EventEmitter {
   protected current?: Task;
-  protected tasks: Task[];
-  protected taskOptions: Partial<TaskOptions>;
+  protected readonly tasks: Task[];
+  protected readonly taskOptions: Partial<TaskOptions>;
 
   constructor({ taskOptions = {} }: TaskChainOptions = {}) {
+    super();
     this.tasks = [];
     this.taskOptions = taskOptions;
   }
@@ -135,22 +168,32 @@ export class TaskChain {
 
     task.start();
 
+    this.emit('next', task);
+
     return task;
   }
 
   end(): this {
-    if (this.current) {
-      this.current.succeed();
-      this.current = undefined;
+    const task = this.current;
+
+    if (task) {
+      task.succeed();
     }
+
+    this.current = undefined;
+    this.emit('end', task);
 
     return this;
   }
 
   fail(): this {
-    if (this.current) {
-      this.current.fail();
+    const task = this.current;
+
+    if (task) {
+      task.fail();
     }
+
+    this.emit('failure', task);
 
     return this;
   }
@@ -166,4 +209,41 @@ export class TaskChain {
 
     return this;
   }
+}
+
+export interface CreateTaskChainOptions {
+  readonly output: OutputStrategy;
+  readonly colors?: Colors;
+}
+
+export function createTaskChainWithOutput({ output, colors = DEFAULT_COLORS }: CreateTaskChainOptions): TaskChain {
+  const { failure, strong, success } = colors;
+  const chain = new TaskChain({ taskOptions: { tickInterval: 50 } });
+
+  chain.on('next', task => {
+    task.on('success', () => {
+      output.stream.write(`${success(ICON_SUCCESS)} ${task.msg} - done!`);
+    });
+
+    task.on('failure', () => {
+      output.stream.write(`${failure(ICON_FAILURE)} ${task.msg} - failed!`);
+    });
+
+    if (isRedrawLine(output)) {
+      const spinner = new Spinner();
+
+      task.on('tick', () => {
+        const progress = task.progressRatio ? (task.progressRatio * 100).toFixed(2) : '';
+        const frame = spinner.frame();
+
+        output.redrawLine(`${strong(frame)} ${task.msg}${progress ? ' (' + strong(String(progress) + '%') + ')' : ''} `);
+      });
+
+      task.on('clear', () => {
+        output.redrawLine('');
+      });
+    }
+  });
+
+  return chain;
 }

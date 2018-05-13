@@ -1,6 +1,6 @@
 import * as Debug from 'debug';
 
-import { DEFAULT_LOGGER_HANDLERS, PromptModule, TaskChain } from '@ionic/cli-framework';
+import { DEFAULT_LOGGER_HANDLERS, PromptModule, StreamHandler, TaskChain } from '@ionic/cli-framework';
 
 import { IClient, IConfig, ILogger, IProject, ISession, IShell, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags } from '../definitions';
 
@@ -67,7 +67,7 @@ export class Environment implements IonicEnvironment {
 
     const formatter = createFormatter();
     this.log.handlers = this.flags.interactive
-      ? this.prompt.createLoggerHandlers({ formatter })
+      ? new Set([new StreamHandler({ stream: this.prompt.output.stream, formatter })])
       : new Set([...DEFAULT_LOGGER_HANDLERS].map(handler => handler.clone({ formatter })));
 
     debug('Environment open.');

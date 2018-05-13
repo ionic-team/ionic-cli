@@ -161,11 +161,19 @@ describe('@ionic/cli-framework', () => {
 
     describe('TaskChain', () => {
 
-      let chain, createTaskSpy;
+      let chain, createTaskSpy, handlers;
 
       beforeEach(() => {
         chain = new TaskChain();
         createTaskSpy = jest.spyOn(chain, 'createTask');
+        handlers = {
+          end: jest.fn(),
+          failure: jest.fn(),
+          next: jest.fn(),
+        };
+        chain.on('end', handlers.end);
+        chain.on('failure', handlers.failure);
+        chain.on('next', handlers.next);
       });
 
       it('should set current task upon first next', () => {
@@ -222,6 +230,46 @@ describe('@ionic/cli-framework', () => {
         expect(clearSpy1).toHaveBeenCalledTimes(1);
         expect(failureSpy2).toHaveBeenCalledTimes(1);
         expect(clearSpy2).toHaveBeenCalledTimes(1);
+      });
+
+      it('should call end event with no task for task-list chain', () => {
+        expect(handlers.end).not.toHaveBeenCalled();
+        chain.end();
+        expect(handlers.end).toHaveBeenCalledTimes(1);
+        expect(handlers.end).toHaveBeenCalledWith(undefined);
+      });
+
+      it('should call end event with a task', () => {
+        const task = chain.next('hello world!');
+        expect(handlers.end).not.toHaveBeenCalled();
+        chain.end();
+        expect(handlers.end).toHaveBeenCalledTimes(1);
+        expect(handlers.end).toHaveBeenCalledWith(task);
+      });
+
+      it('should call failure event with no task for task-list chain', () => {
+        expect(handlers.failure).not.toHaveBeenCalled();
+        chain.fail();
+        expect(handlers.failure).toHaveBeenCalledTimes(1);
+        expect(handlers.failure).toHaveBeenCalledWith(undefined);
+      });
+
+      it('should call failure event with a task', () => {
+        const task = chain.next('hello world!');
+        expect(handlers.failure).not.toHaveBeenCalled();
+        chain.fail();
+        expect(handlers.failure).toHaveBeenCalledTimes(1);
+        expect(handlers.failure).toHaveBeenCalledWith(task);
+      });
+
+      it('should call next event', () => {
+        expect(handlers.next).not.toHaveBeenCalled();
+        const task1 = chain.next('hello world!');
+        expect(handlers.next).toHaveBeenCalledTimes(1);
+        expect(handlers.next).toHaveBeenCalledWith(task1);
+        const task2 = chain.next('hello world!');
+        expect(handlers.next).toHaveBeenCalledTimes(2);
+        expect(handlers.next).toHaveBeenCalledWith(task2);
       });
 
     });

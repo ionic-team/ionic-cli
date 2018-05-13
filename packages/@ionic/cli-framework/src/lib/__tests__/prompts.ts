@@ -6,7 +6,6 @@ describe('@ionic/cli-framework', () => {
 
       const mockMute = jest.fn();
       const mockClose = jest.fn();
-      const mockUpdateBottomBar = jest.fn();
       const mockLogStream = {};
 
       function setupPromptMocks({ value, tty }: { value: string; tty: boolean; }) {
@@ -14,11 +13,10 @@ describe('@ionic/cli-framework', () => {
         const mockCreatePromptModule = () => async (question) => ({ [question.name]: value });
         mockMute.mockReset();
         mockClose.mockReset();
-        mockUpdateBottomBar.mockReset();
         jest.resetModules();
         jest.mock('../../utils/terminal', () => ({ TERMINAL_INFO: { tty: mocktty } }));
         jest.mock('inquirer', () => ({
-          ui: { BottomBar: class { close = mockClose, log = mockLogStream, rl = { output: { mute: mockMute } }, updateBottomBar = mockUpdateBottomBar } },
+          ui: { BottomBar: class { close = mockClose, log = mockLogStream, rl = { output: { mute: mockMute } } } },
           createPromptModule: mockCreatePromptModule,
         }));
 
@@ -235,41 +233,13 @@ describe('@ionic/cli-framework', () => {
 
       });
 
-      describe('createLogger', () => {
+      describe('output', () => {
 
-        it('should create a logger', async () => {
+        it('should get output stream from prompt module', async () => {
           const prompts = setupPromptMocks({ tty: true });
           const prompt = await prompts.createPromptModule();
-          const logger = prompt.createLogger();
-          expect(logger.handlers.size).toEqual(1);
-          const handler = logger.handlers.values().next().value;
-          expect(handler.stream).toBe(mockLogStream);
-        });
-
-      });
-
-      describe('createLoggerHandlers', () => {
-
-        it('should create logger handlers', async () => {
-          const prompts = setupPromptMocks({ tty: true });
-          const prompt = await prompts.createPromptModule();
-          const handlers = prompt.createLoggerHandlers();
-          expect(handlers.size).toEqual(1);
-          const handler = handlers.values().next().value;
-          expect(handler.stream).toBe(mockLogStream);
-        });
-
-      });
-
-      describe('createLoggerHandlers', () => {
-
-        it('should update the bottom bar', async () => {
-          const msg = 'hello world!';
-          const prompts = setupPromptMocks({ tty: true });
-          const prompt = await prompts.createPromptModule();
-          prompt.updatePromptBar(msg);
-          expect(mockUpdateBottomBar).toHaveBeenCalledTimes(1);
-          expect(mockUpdateBottomBar).toHaveBeenCalledWith(msg);
+          expect(prompt.output).toBeDefined();
+          expect(prompt.output.stream).toBe(mockLogStream);
         });
 
       });

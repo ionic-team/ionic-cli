@@ -170,13 +170,14 @@ export class Logger {
     this.log(this.createRecord(msg, LOGGER_LEVELS.ERROR));
   }
 
-  createRecord(msg: string, level?: LoggerLevelWeight): LogRecord {
+  createRecord(msg: string, level?: LoggerLevelWeight, format?: boolean): LogRecord {
     return {
       // If the logger is used to quickly print something, let's pretty-print
       // it into a string.
       msg: util.format(msg),
       level,
       logger: this,
+      format,
     };
   }
 
@@ -203,12 +204,12 @@ export class Logger {
     }
   }
 
-  createWriteStream(level?: LoggerLevelWeight): NodeJS.WritableStream {
+  createWriteStream(level?: LoggerLevelWeight, format?: boolean): NodeJS.WritableStream {
     const self = this;
 
     return new class extends Writable {
       _write(chunk: any, encoding: string, callback: Function) {
-        self.log(self.createRecord(chunk.toString(), level));
+        self.log(self.createRecord(chunk.toString(), level, format));
         callback();
       }
     }();

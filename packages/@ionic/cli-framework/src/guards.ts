@@ -1,4 +1,4 @@
-import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace, PackageJson } from './definitions';
+import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace, PackageJson, RedrawLine } from './definitions';
 
 export function isNamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(obj: any): obj is N {
   return obj &&
@@ -16,4 +16,8 @@ export function isCommand<C extends ICommand<C, N, M, I, O>, N extends INamespac
 
 export function isPackageJson(obj: any): obj is PackageJson {
   return obj && typeof obj.name === 'string';
+}
+
+export function isRedrawLine(obj: any): obj is RedrawLine {
+  return obj && typeof obj.redrawLine === 'function';
 }
