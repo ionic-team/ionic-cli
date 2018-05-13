@@ -1,11 +1,10 @@
 import * as Debug from 'debug';
 
-import * as inquirerType from 'inquirer';
-import { PromptModule, TaskChain } from '@ionic/cli-framework';
+import { DEFAULT_LOGGER_HANDLERS, PromptModule, TaskChain } from '@ionic/cli-framework';
 
 import { IClient, IConfig, ILogger, IProject, ISession, IShell, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags } from '../definitions';
 
-import { createHandlers, createInteractiveHandlers } from './utils/logger';
+import { createFormatter } from './utils/logger';
 
 const debug = Debug('ionic:cli-utils:lib:environment');
 
@@ -23,10 +22,7 @@ export class Environment implements IonicEnvironment {
   readonly ctx: IonicContext;
   keepopen = false;
 
-  private bottomBar?: inquirerType.ui.BottomBar;
-
   constructor({
-    bottomBar,
     client,
     config,
     flags,
@@ -39,7 +35,6 @@ export class Environment implements IonicEnvironment {
     shell,
     tasks,
   }: {
-    bottomBar?: inquirerType.ui.BottomBar;
     client: IClient;
     config: IConfig; // CLI global config (~/.ionic/config.json)
     flags: IonicEnvironmentFlags;
@@ -52,7 +47,6 @@ export class Environment implements IonicEnvironment {
     shell: IShell;
     tasks: TaskChain;
   }) {
-    this.bottomBar = bottomBar;
     this.client = client;
     this.config = config;
     this.flags = flags;
@@ -68,23 +62,13 @@ export class Environment implements IonicEnvironment {
 
   open() {
     if (this.flags.interactive) {
-      if (!this.bottomBar) {
-        const inquirer = require('inquirer');
-        this.bottomBar = new inquirer.ui.BottomBar();
-      }
-
-      try {
-        // the mute() call appears to be necessary, otherwise when answering
-        // inquirer prompts upon pressing enter, a copy of the prompt is
-        // printed to the screen and looks gross
-        const bottomBarHack = <any>this.bottomBar;
-        bottomBarHack.rl.output.mute();
-      } catch (e) {
-        process.stderr.write(`EXCEPTION DURING BOTTOMBAR OUTPUT MUTE: ${e}\n`);
-      }
+      this.prompt.open();
     }
 
-    this.log.handlers = this.bottomBar ? createInteractiveHandlers(this.bottomBar) : createHandlers();
+    const formatter = createFormatter();
+    this.log.handlers = this.flags.interactive
+      ? this.prompt.createLoggerHandlers({ formatter })
+      : new Set([...DEFAULT_LOGGER_HANDLERS].map(handler => handler.clone({ formatter })));
 
     debug('Environment open.');
   }
@@ -93,15 +77,9 @@ export class Environment implements IonicEnvironment {
     if (!this.keepopen) {
       this.tasks.cleanup();
 
-      // instantiating inquirer.ui.BottomBar hangs, so when close() is called,
-      // we close BottomBar streams and replace the log stream with stdout.
-      // This means inquirer shouldn't be used after command execution finishes
-      // (which could happen during long-running processes like serve).
-      if (this.bottomBar) {
-        this.bottomBar.close();
-        this.bottomBar = undefined;
-        this.log.handlers = createHandlers();
-      }
+      this.prompt.close();
+      const formatter = createFormatter();
+      this.log.handlers = new Set([...DEFAULT_LOGGER_HANDLERS].map(handler => handler.clone({ formatter })));
 
       debug('Environment closed.');
     }

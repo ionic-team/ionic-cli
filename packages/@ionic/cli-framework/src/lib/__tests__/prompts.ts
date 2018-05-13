@@ -4,12 +4,24 @@ describe('@ionic/cli-framework', () => {
 
     describe('createPromptModule', () => {
 
+      const mockMute = jest.fn();
+      const mockClose = jest.fn();
+      const mockUpdateBottomBar = jest.fn();
+      const mockLogStream = {};
+
       function setupPromptMocks({ value, tty }: { value: string; tty: boolean; }) {
         const mocktty = tty;
         const mockCreatePromptModule = () => async (question) => ({ [question.name]: value });
+        mockMute.mockReset();
+        mockClose.mockReset();
+        mockUpdateBottomBar.mockReset();
         jest.resetModules();
         jest.mock('../../utils/terminal', () => ({ TERMINAL_INFO: { tty: mocktty } }));
-        jest.mock('inquirer', () => ({ createPromptModule: mockCreatePromptModule }));
+        jest.mock('inquirer', () => ({
+          ui: { BottomBar: class { close = mockClose, log = mockLogStream, rl = { output: { mute: mockMute } }, updateBottomBar = mockUpdateBottomBar } },
+          createPromptModule: mockCreatePromptModule,
+        }));
+
         return require('../prompts');
       }
 
@@ -173,6 +185,93 @@ describe('@ionic/cli-framework', () => {
         expect(result).toEqual('foo');
         expect(onFallbackSpy).toHaveBeenCalledTimes(1);
         expect(onFallbackSpy).toHaveBeenCalledWith(question);
+      });
+
+      describe('open', () => {
+
+        it('should call mute', async () => {
+          const prompts = setupPromptMocks({ tty: true });
+          const prompt = await prompts.createPromptModule();
+          prompt.open();
+          expect(mockMute).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call mute once if opened multiple times', async () => {
+          const prompts = setupPromptMocks({ tty: true });
+          const prompt = await prompts.createPromptModule();
+          prompt.open();
+          prompt.open();
+          prompt.open();
+          expect(mockMute).toHaveBeenCalledTimes(1);
+        });
+
+      });
+
+      describe('close', () => {
+
+        it('should not close bottomBar if not opened', async () => {
+          const prompts = setupPromptMocks({ tty: true });
+          const prompt = await prompts.createPromptModule();
+          prompt.close();
+          expect(mockClose).not.toHaveBeenCalled();
+        });
+
+        it('should close bottomBar if opened', async () => {
+          const prompts = setupPromptMocks({ tty: true });
+          const prompt = await prompts.createPromptModule();
+          prompt.open();
+          prompt.close();
+          expect(mockClose).toHaveBeenCalledTimes(1);
+        });
+
+        it('should close bottomBar once if closed multiple times', async () => {
+          const prompts = setupPromptMocks({ tty: true });
+          const prompt = await prompts.createPromptModule();
+          prompt.open();
+          prompt.close();
+          prompt.close();
+          expect(mockClose).toHaveBeenCalledTimes(1);
+        });
+
+      });
+
+      describe('createLogger', () => {
+
+        it('should create a logger', async () => {
+          const prompts = setupPromptMocks({ tty: true });
+          const prompt = await prompts.createPromptModule();
+          const logger = prompt.createLogger();
+          expect(logger.handlers.size).toEqual(1);
+          const handler = logger.handlers.values().next().value;
+          expect(handler.stream).toBe(mockLogStream);
+        });
+
+      });
+
+      describe('createLoggerHandlers', () => {
+
+        it('should create logger handlers', async () => {
+          const prompts = setupPromptMocks({ tty: true });
+          const prompt = await prompts.createPromptModule();
+          const handlers = prompt.createLoggerHandlers();
+          expect(handlers.size).toEqual(1);
+          const handler = handlers.values().next().value;
+          expect(handler.stream).toBe(mockLogStream);
+        });
+
+      });
+
+      describe('createLoggerHandlers', () => {
+
+        it('should update the bottom bar', async () => {
+          const msg = 'hello world!';
+          const prompts = setupPromptMocks({ tty: true });
+          const prompt = await prompts.createPromptModule();
+          prompt.updatePromptBar(msg);
+          expect(mockUpdateBottomBar).toHaveBeenCalledTimes(1);
+          expect(mockUpdateBottomBar).toHaveBeenCalledWith(msg);
+        });
+
       });
 
     });

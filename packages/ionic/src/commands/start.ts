@@ -286,7 +286,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     const projectDir = path.resolve(projectId);
     const packageId = options['package-id'] ? String(options['package-id']) : undefined;
-    await this.checkForExisting(projectDir);
+
+    if (projectId) {
+      await this.checkForExisting(projectDir);
+    }
 
     if (cloned) {
       this.schema = {
@@ -461,7 +464,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     if (options['deps']) {
       this.env.log.msg('Installing dependencies may take several minutes.');
-
       this.env.log.rawmsg(await getIonicDevAppText());
 
       const [ installer, ...installerArgs ] = await pkgManagerArgs(npmClient, { command: 'install' });

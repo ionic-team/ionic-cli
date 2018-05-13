@@ -1,13 +1,15 @@
 import * as Debug from 'debug';
-import * as inquirerType from 'inquirer';
+import * as inquirer from 'inquirer'; // type import
+import { Inquirer, Question, objects as InquirerObjects } from 'inquirer'; // type import
 
+import { Logger, LoggerOptions, StreamHandler, StreamHandlerOptions } from './logger';
 import { TERMINAL_INFO } from '../utils/terminal';
 
 const debug = Debug('ionic:cli-framework:lib:prompts');
 
-let _inquirer: inquirerType.Inquirer | undefined;
+let _inquirer: Inquirer | undefined;
 
-export interface PromptQuestionBase extends inquirerType.Question {
+export interface PromptQuestionBase extends Question {
   /**
    * The prompt type for this question.
    *    - 'confirm': Y/n
@@ -68,9 +70,15 @@ export interface PromptModule {
   (question: PromptQuestionConfirm): Promise<PromptValueConfirm>;
   (question: PromptQuestionCheckbox): Promise<PromptValueCheckbox>;
   (question: PromptQuestionOther): Promise<PromptValueOther>;
+
+  open(): void;
+  close(): void;
+  createLogger(options?: Partial<LoggerOptions>): Logger;
+  createLoggerHandlers(options?: Partial<StreamHandlerOptions>): Set<StreamHandler>;
+  updatePromptBar(message: string): void;
 }
 
-async function loadInquirer(): Promise<inquirerType.Inquirer> {
+async function loadInquirer(): Promise<Inquirer> {
   if (!_inquirer) {
     _inquirer = await import('inquirer');
   }
@@ -103,8 +111,9 @@ export interface CreatePromptModuleOptions {
  *                           a 'fallback'.
  */
 export async function createPromptModule({ interactive, onFallback }: CreatePromptModuleOptions = {}): Promise<PromptModule> {
-  const inquirer = await loadInquirer();
-  const promptModule = inquirer.createPromptModule();
+  const inq = await loadInquirer();
+  const promptModule = inq.createPromptModule();
+  let bottomBar: inquirer.ui.BottomBar | undefined;
 
   async function createPrompter(question: PromptQuestionConfirm): Promise<PromptValueConfirm>;
   async function createPrompter(question: PromptQuestionCheckbox): Promise<PromptValueCheckbox>;
@@ -153,10 +162,65 @@ export async function createPromptModule({ interactive, onFallback }: CreateProm
     return result;
   }
 
-  return createPrompter;
+  function getBottomBar(): inquirer.ui.BottomBar {
+    if (!bottomBar) {
+      bottomBar = new inq.ui.BottomBar();
+
+      try {
+        // the mute() call appears to be necessary, otherwise when answering
+        // inquirer prompts upon pressing enter, a copy of the prompt is
+        // printed to the screen and looks gross
+        (<any>bottomBar).rl.output.mute();
+      } catch (e) {
+        debug('Error while muting bottomBar output: %o', e);
+      }
+    }
+
+    return bottomBar;
+  }
+
+  function open() {
+    getBottomBar();
+  }
+
+  function close() {
+    if (bottomBar) {
+      // instantiating inquirer.ui.BottomBar hangs, so when close() is called,
+      // close BottomBar streams
+      bottomBar.close();
+      bottomBar = undefined;
+    }
+  }
+
+  function createLogger(options: Partial<LoggerOptions> = {}): Logger {
+    return new Logger({ ...options, handlers: createLoggerHandlers() });
+  }
+
+  function createLoggerHandlers(options: Partial<StreamHandlerOptions> = {}): Set<StreamHandler> {
+    const bottomBar = getBottomBar();
+
+    return new Set([
+      new StreamHandler({ ...options, stream: bottomBar.log }),
+    ]);
+  }
+
+  function updatePromptBar(message: string) {
+    const bottomBar = getBottomBar();
+    bottomBar.updateBottomBar(message);
+  }
+
+  Object.defineProperties(createPrompter, {
+    open: { value: open },
+    close: { value: close },
+    createLogger: { value: createLogger },
+    createLoggerHandlers: { value: createLoggerHandlers },
+    updatePromptBar: { value: updatePromptBar },
+  });
+
+  return <any>createPrompter;
 }
 
-export function createPromptChoiceSeparator() {
+export function createPromptChoiceSeparator(): InquirerObjects.Separator {
   if (!_inquirer) {
     throw new Error(`Prompt module not initialized. Call 'createPromptModule' first.`);
   }

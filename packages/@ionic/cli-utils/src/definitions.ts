@@ -21,7 +21,6 @@ export type LogFn = (msg: string) => void;
 
 export interface ILogger extends framework.Logger {
   ok: LogFn;
-  msg: LogFn;
   rawmsg: LogFn;
 }
 

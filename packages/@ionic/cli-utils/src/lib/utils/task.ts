@@ -1,8 +1,6 @@
 import chalk from 'chalk';
-import * as inquirerType from 'inquirer';
-import ui = inquirerType.ui;
 
-import { LOGGER_LEVELS, Task, TaskChain as BaseTaskChain, TaskOptions } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, PromptModule, Task, TaskChain as BaseTaskChain, TaskOptions } from '@ionic/cli-framework';
 
 import { ILogger } from '../../definitions';
 
@@ -53,11 +51,11 @@ export class TaskChain extends BaseTaskChain {
 }
 
 export class InteractiveTaskChain extends TaskChain {
-  bottomBar: ui.BottomBar;
+  readonly prompt: PromptModule;
 
-  constructor({ log, bottomBar }: { log: ILogger; bottomBar: ui.BottomBar; }) {
+  constructor({ log, prompt }: { log: ILogger; prompt: PromptModule; }) {
     super({ log });
-    this.bottomBar = bottomBar;
+    this.prompt = prompt;
   }
 
   createTask(options: TaskOptions) {
@@ -69,13 +67,13 @@ export class InteractiveTaskChain extends TaskChain {
         const progress = task.progressRatio ? (task.progressRatio * 100).toFixed(2) : '';
         const frame = spinner.frame();
 
-        this.bottomBar.updateBottomBar(`${chalk.bold(frame)} ${task.msg}${progress ? ' (' + chalk.bold(String(progress) + '%') + ')' : ''} `);
+        this.prompt.updatePromptBar(`${chalk.bold(frame)} ${task.msg}${progress ? ' (' + chalk.bold(String(progress) + '%') + ')' : ''} `);
       }
     });
 
     task.on('clear', () => {
       if (this.log.level >= LOGGER_LEVELS.INFO) {
-        this.bottomBar.updateBottomBar('');
+        this.prompt.updatePromptBar('');
       }
     });
 

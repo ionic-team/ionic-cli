@@ -89,10 +89,10 @@ export class StreamHandler implements LoggerHandler {
   }
 }
 
-export const stdoutLogRecordFilter = (record: LogRecord) => !record.level || record.level === LOGGER_LEVELS.INFO;
-export const stderrLogRecordFilter = (record: LogRecord) => !!record.level && record.level !== LOGGER_LEVELS.INFO;
+const stdoutLogRecordFilter = (record: LogRecord) => !record.level || record.level === LOGGER_LEVELS.INFO;
+const stderrLogRecordFilter = (record: LogRecord) => !!record.level && record.level !== LOGGER_LEVELS.INFO;
 
-export const DEFAULT_LOGGER_HANDLERS: ReadonlySet<LoggerHandler> = new Set([
+export const DEFAULT_LOGGER_HANDLERS: ReadonlySet<StreamHandler> = new Set([
   new StreamHandler({ stream: process.stdout, filter: stdoutLogRecordFilter }),
   new StreamHandler({ stream: process.stderr, filter: stderrLogRecordFilter }),
 ]);
@@ -106,9 +106,13 @@ export class Logger {
   handlers: Set<LoggerHandler>;
   level: LoggerLevelWeight;
 
-  constructor({ level = LOGGER_LEVELS.INFO, handlers = new Set(DEFAULT_LOGGER_HANDLERS) }: LoggerOptions = {}) {
+  constructor({ level = LOGGER_LEVELS.INFO, handlers }: LoggerOptions = {}) {
     this.level = level;
-    this.handlers = handlers;
+    this.handlers = handlers ? handlers : Logger.cloneHandlers(DEFAULT_LOGGER_HANDLERS);
+  }
+
+  static cloneHandlers(handlers: ReadonlySet<LoggerHandler>): Set<LoggerHandler> {
+    return new Set([...handlers].map(handler => handler.clone()));
   }
 
   /**
@@ -118,7 +122,7 @@ export class Logger {
    */
   clone(opts: Partial<LoggerOptions> = {}): Logger {
     const { level, handlers } = this;
-    return new Logger({ level, handlers: new Set([...handlers].map(handler => handler.clone())), ...opts });
+    return new Logger({ level, handlers: Logger.cloneHandlers(handlers), ...opts });
   }
 
   /**

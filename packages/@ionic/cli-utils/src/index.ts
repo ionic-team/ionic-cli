@@ -8,8 +8,6 @@ import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
 
-import * as inquirerType from 'inquirer';
-
 import { IProject, InfoItem, IonicContext, IonicEnvironment } from './definitions';
 import { PROJECT_FILE } from './constants';
 import { BaseProject, OutsideProject, ProjectDeps } from './lib/project';
@@ -18,7 +16,7 @@ import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './li
 import { Client } from './lib/http';
 import { Environment } from './lib/environment';
 import { PROXY_ENVIRONMENT_VARIABLES } from './lib/utils/http';
-import { Logger, createHandlers, createInteractiveHandlers } from './lib/utils/logger';
+import { Logger } from './lib/utils/logger';
 import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
 import { ProSession } from './lib/session';
 import { Shell } from './lib/shell';
@@ -65,9 +63,6 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
   const flags = gatherFlags(argv);
 
-  let tasks: TaskChain;
-  let bottomBar: inquirerType.ui.BottomBar | undefined;
-
   const configData = await config.load();
   debug('Terminal info: %o', TERMINAL_INFO);
 
@@ -80,15 +75,8 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     handlers: new Set(),
   });
 
-  if (flags.interactive) {
-    const inquirer = await import('inquirer');
-    bottomBar = new inquirer.ui.BottomBar();
-    log.handlers = createInteractiveHandlers(bottomBar);
-    tasks = new InteractiveTaskChain({ log, bottomBar });
-  } else {
-    log.handlers = createHandlers();
-    tasks = new TaskChain({ log });
-  }
+  const prompt = await createPromptModule({ interactive: flags.interactive, onFallback: createOnFallback({ ...flags, log }) });
+  const tasks = flags.interactive ? new InteractiveTaskChain({ log, prompt }) : new TaskChain({ log });
 
   const projectDir = await findBaseDirectory(ctx.execPath, PROJECT_FILE);
   const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map(e => [e, env[e]]).filter(([e, v]) => !!v);
@@ -123,14 +111,13 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   await config.prepare();
 
   const ienv = new Environment({
-    bottomBar,
     client,
     config,
     flags,
     getInfo,
     log,
     ctx,
-    prompt: await createPromptModule({ interactive: flags.interactive, onFallback: createOnFallback({ ...flags, log }) }),
+    prompt,
     project,
     session,
     shell,
