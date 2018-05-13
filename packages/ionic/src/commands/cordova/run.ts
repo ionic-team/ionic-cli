@@ -122,12 +122,6 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         groups: [OptionGroup.Advanced, OptionGroup.Cordova],
         hint: 'cordova',
       },
-      ...COMMON_SERVE_COMMAND_OPTIONS.map(o => o.name === 'livereload' ? {
-        name: 'livereload',
-        summary: 'Spin up dev server to live-reload www files',
-        type: Boolean,
-        aliases: ['l'],
-      } : o),
     ];
 
     return {
@@ -156,6 +150,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     await this.preRunChecks(runinfo);
+
+    options['livereload'] = options['livereload'] !== undefined ? options['livereload'] : options['l'];
 
     if (options['noproxy']) {
       this.env.log.warn(`The ${chalk.green('--noproxy')} option has been deprecated. Please use ${chalk.green('--no-proxy')}.`);
@@ -202,6 +198,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
     const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
 
     const conf = await loadConfigXml({ project: this.env.project });
+
+    options['livereload'] = options['livereload'] !== undefined ? options['livereload'] : options['l'];
 
     onBeforeExit(async () => {
       conf.resetContentSrc();
