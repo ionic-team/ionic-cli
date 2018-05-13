@@ -1,7 +1,8 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
 import { generateUUID } from '@ionic/cli-utils/lib/utils/uuid';
@@ -34,20 +35,6 @@ If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
           private: true,
         },
       ],
-      options: [
-        {
-          name: 'email',
-          summary: '',
-          private: true,
-          groups: [OptionGroup.Hidden],
-        },
-        {
-          name: 'password',
-          summary: '',
-          private: true,
-          groups: [OptionGroup.Hidden],
-        },
-      ],
     };
   }
 
@@ -55,6 +42,13 @@ If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
     const [ email ] = inputs;
 
     const config = await this.env.config.load();
+
+    if (options['email'] || options['password']) {
+      throw new FatalException(
+        `${chalk.green('email')} and ${chalk.green('password')} are command arguments, not options. Please try this:\n` +
+        `${chalk.green('ionic login ' + (options['email'] ? options['email'] : email) + ' *****')}\n`
+      );
+    }
 
     if (await this.env.session.isLoggedIn()) {
       const extra = !inputs[0] || !inputs[1] ? 'Prompting for new credentials.' : 'Attempting login.';
@@ -66,14 +60,6 @@ If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
       );
     }
 
-    if (options['email'] || options['password']) {
-      const extra = this.env.flags.interactive ? 'You will be prompted to provide credentials. Alternatively, you can try this:' : 'Try this:';
-      this.env.log.warn(
-        `${chalk.green('email')} and ${chalk.green('password')} are command arguments, not options. ${extra}\n` +
-        `${chalk.green('ionic login ' + (options['email'] ? options['email'] : email) + ' *****')}\n`
-      );
-    }
-
     // TODO: combine with promptToLogin ?
 
     if (!inputs[0]) {
@@ -81,7 +67,6 @@ If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
         type: 'input',
         name: 'email',
         message: 'Email:',
-        default: options['email'],
         validate: v => validators.required(v) && validators.email(v),
       });
 

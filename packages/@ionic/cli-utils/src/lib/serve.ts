@@ -7,14 +7,14 @@ import * as lodash from 'lodash';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
-import { NetworkInterface } from '@ionic/cli-framework';
+import { NetworkInterface, PromptModule } from '@ionic/cli-framework';
 import { BaseError } from '@ionic/cli-framework/lib/errors';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { findClosestOpenPort, getExternalIPv4Interfaces } from '@ionic/cli-framework/utils/network';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, ProjectType, PromptModule, ServeDetails, ServeOptions } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, ProjectType, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 import { ASSETS_DIRECTORY, OptionGroup, PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';

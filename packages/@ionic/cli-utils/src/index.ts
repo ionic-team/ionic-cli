@@ -3,7 +3,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { LOGGER_LEVELS, PackageJson, parseArgs } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, PackageJson, createPromptModule, parseArgs } from '@ionic/cli-framework';
 import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
@@ -22,7 +22,7 @@ import { Logger, createHandlers, createInteractiveHandlers } from './lib/utils/l
 import { InteractiveTaskChain, TaskChain } from './lib/utils/task';
 import { ProSession } from './lib/session';
 import { Shell } from './lib/shell';
-import { createPromptModule } from './lib/prompts';
+import { createOnFallback } from './lib/prompts';
 
 export * from './definitions';
 export * from './constants';
@@ -130,7 +130,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     getInfo,
     log,
     ctx,
-    prompt: await createPromptModule({ confirm: flags.confirm, interactive: flags.interactive, log, config }),
+    prompt: await createPromptModule({ interactive: flags.interactive, onFallback: createOnFallback({ ...flags, log }) }),
     project,
     session,
     shell,

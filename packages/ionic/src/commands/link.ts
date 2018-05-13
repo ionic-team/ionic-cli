@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { validators } from '@ionic/cli-framework';
+import { createPromptChoiceSeparator, validators } from '@ionic/cli-framework';
 
 import { App, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GithubBranch, GithubRepo, OptionGroup, PROJECT_FILE, isSuperAgentError } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
@@ -454,8 +454,9 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     const { formatName } = await import('@ionic/cli-utils/lib/app');
 
     const neverMindChoice = {
-      name: 'Nevermind',
+      name: chalk.bold('Nevermind'),
       id: CHOICE_NEVERMIND,
+      value: CHOICE_NEVERMIND,
       org: null, // tslint:disable-line
     };
 
@@ -463,10 +464,10 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
       type: 'list',
       name: 'linkedApp',
       message: 'Which app would you like to link',
-      choices: [neverMindChoice, ...apps].map(app => ({
-        name: CHOICE_NEVERMIND === app.id ? chalk.bold(app.name) : `${formatName(app)} ${chalk.dim(`(${app.id})`)}`,
+      choices: [...apps.map(app => ({
+        name: `${formatName(app)} ${chalk.dim(`(${app.id})`)}`,
         value: app.id,
-      })),
+      })), createPromptChoiceSeparator(), neverMindChoice, createPromptChoiceSeparator()],
     });
 
     return linkedApp;

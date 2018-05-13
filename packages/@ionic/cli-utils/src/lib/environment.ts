@@ -1,9 +1,9 @@
 import * as Debug from 'debug';
 
 import * as inquirerType from 'inquirer';
-import { TaskChain } from '@ionic/cli-framework';
+import { PromptModule, TaskChain } from '@ionic/cli-framework';
 
-import { IClient, IConfig, ILogger, IProject, ISession, IShell, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags, PromptModule } from '../definitions';
+import { IClient, IConfig, ILogger, IProject, ISession, IShell, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags } from '../definitions';
 
 import { createHandlers, createInteractiveHandlers } from './utils/logger';
 

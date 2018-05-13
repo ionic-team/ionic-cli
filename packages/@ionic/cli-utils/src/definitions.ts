@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 
 import * as crossSpawnType from 'cross-spawn';
-import * as inquirerType from 'inquirer';
 import * as superagentType from 'superagent';
 
 import * as framework from '@ionic/cli-framework';
@@ -671,33 +670,6 @@ export interface AngularConfig {
   };
 }
 
-export interface PromptQuestion extends inquirerType.Question {
-  type: string; // type is required
-  message: string; // message is required
-  name: string; // name is required
-}
-
-export interface ConfirmPromptQuestion extends PromptQuestion {
-  type: 'confirm';
-  noninteractiveValue?: boolean;
-}
-
-export interface NonConfirmPromptQuestion extends PromptQuestion {
-  type: 'input' | 'password' | 'list';
-  noninteractiveValue?: string;
-}
-
-export interface CheckboxPromptQuestion extends PromptQuestion {
-  type: 'checkbox';
-  noninteractiveValue?: string;
-}
-
-export interface PromptModule {
-  (question: ConfirmPromptQuestion): Promise<boolean>;
-  (question: NonConfirmPromptQuestion): Promise<string>;
-  (question: CheckboxPromptQuestion): Promise<string[]>;
-}
-
 export interface IonicContext {
   readonly binPath: string;
   readonly libPath: string;
@@ -710,7 +682,7 @@ export interface IonicEnvironment {
   readonly client: IClient;
   readonly config: IConfig; // CLI global config (~/.ionic/config.json)
   readonly log: ILogger;
-  readonly prompt: PromptModule;
+  readonly prompt: framework.PromptModule;
   readonly ctx: IonicContext;
   project: IProject; // project config (ionic.config.json)
   session: ISession;

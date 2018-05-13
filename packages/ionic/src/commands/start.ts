@@ -480,7 +480,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           type: 'confirm',
           name: 'confirm',
           message: 'Install the free Ionic Pro SDK and connect your app?',
-          noninteractiveValue: false,
+          fallback: false,
+          default: true,
         });
 
         if (confirm) {

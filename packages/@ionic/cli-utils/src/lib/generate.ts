@@ -1,7 +1,8 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions, IConfig, ILogger, IProject, IShell, IonicEnvironment, ProjectType, PromptModule } from '../definitions';
+import { PromptModule } from '@ionic/cli-framework';
 
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions, IConfig, ILogger, IProject, IShell, IonicEnvironment, ProjectType } from '../definitions';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Runner } from './runner';
 import { prettyProjectName } from './project';
