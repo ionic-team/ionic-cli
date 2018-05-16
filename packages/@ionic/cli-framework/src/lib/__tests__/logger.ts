@@ -1,4 +1,5 @@
 import { Writable } from 'stream';
+import { WritableStreamBuffer } from '../../utils/streams';
 
 import stripAnsi = require('strip-ansi');
 import { wordWrap } from '../../utils/format';
@@ -40,177 +41,170 @@ describe('@ionic/cli-framework', () => {
 
       describe('msg', () => {
 
-        let stream, spy, logger;
+        let stream, logger;
 
         beforeEach(() => {
-          stream = new class extends Writable { _write() {} }();
-          spy = jest.spyOn(stream, 'write');
+          stream = new WritableStreamBuffer();
           logger = new Logger({ handlers: new Set([new StreamHandler({ stream })]) });
         });
 
         it('should write the message directly', () => {
           logger.msg('hi');
-          expect(spy).toHaveBeenCalledWith('hi\n');
+          expect(stream.consume().toString()).toEqual('hi\n');
         });
 
       });
 
       describe('nl', () => {
 
-        let stream, spy, logger;
+        let stream, logger;
 
         beforeEach(() => {
-          stream = new class extends Writable { _write() {} }();
-          spy = jest.spyOn(stream, 'write');
+          stream = new WritableStreamBuffer();
           logger = new Logger({ handlers: new Set([new StreamHandler({ stream })]) });
         });
 
         it('should log for defaults', () => {
           logger.nl();
-          expect(spy).toHaveBeenCalledWith('\n');
+          expect(stream.consume().toString()).toEqual('\n');
         });
 
         it('should log multiple newlines', () => {
           logger.nl(5);
-          expect(spy).toHaveBeenCalledWith('\n'.repeat(5));
+          expect(stream.consume().toString()).toEqual('\n'.repeat(5));
         });
 
       });
 
       describe('log', () => {
 
-        let stream, spy, logger, handler;
+        let stream, logger, handler;
 
         beforeEach(() => {
-          stream = new class extends Writable { _write() {} }();
-          spy = jest.spyOn(stream, 'write');
+          stream = new WritableStreamBuffer();
           handler = new StreamHandler({ stream });
           logger = new Logger({ handlers: new Set([handler]) });
         });
 
         it('should log for defaults', () => {
           logger.log({ logger, msg: 'hi' });
-          expect(spy).toHaveBeenCalledWith('hi\n');
+          expect(stream.consume().toString()).toEqual('hi\n');
         });
 
         it('should log with formatter', () => {
           logger = new Logger({ handlers: new Set([new StreamHandler({ stream, formatter: record => record.msg.split('').reverse().join('') })]) });
           logger.log({ logger, msg: 'hello world!' });
-          expect(spy).toHaveBeenCalledWith('!dlrow olleh\n');
+          expect(stream.consume().toString()).toEqual('!dlrow olleh\n');
         });
 
         it('should log with levels equal', () => {
           logger.level = 20;
           logger.log({ logger, msg: 'hi', level: 20 });
-          expect(spy).toHaveBeenCalledWith('hi\n');
+          expect(stream.consume().toString()).toEqual('hi\n');
         });
 
         it('should log with record level not set', () => {
           logger.level = 10;
           logger.log({ logger, msg: 'hi' });
-          expect(spy).toHaveBeenCalledWith('hi\n');
+          expect(stream.consume().toString()).toEqual('hi\n');
         });
 
         it('should not log when logger level exceeds record level', () => {
           logger.level = 20;
           logger.log({ logger, msg: 'hi', level: 10 });
-          expect(spy).not.toHaveBeenCalledWith();
+          expect(stream.consume().toString()).toEqual('');
         });
 
       });
 
       describe('debug', () => {
 
-        let stream, spy, logger, handler;
+        let stream, logger, handler;
 
         beforeEach(() => {
-          stream = new class extends Writable { _write() {} }();
-          spy = jest.spyOn(stream, 'write');
+          stream = new WritableStreamBuffer();
           handler = new StreamHandler({ stream });
           logger = new Logger({ handlers: new Set([handler]) });
         });
 
         it('should not log debug messages by default', () => {
           logger.debug('hi');
-          expect(spy).not.toHaveBeenCalled();
+          expect(stream.consume().toString()).toEqual('');
         });
 
         it('should log debug messages with adjusted level', () => {
           logger.level = 0;
           logger.debug('hi');
-          expect(spy).toHaveBeenCalledWith('hi\n');
+          expect(stream.consume().toString()).toEqual('hi\n');
         });
 
       });
 
       describe('info', () => {
 
-        let stream, spy, logger, handler;
+        let stream, logger, handler;
 
         beforeEach(() => {
-          stream = new class extends Writable { _write() {} }();
-          spy = jest.spyOn(stream, 'write');
+          stream = new WritableStreamBuffer();
           handler = new StreamHandler({ stream });
           logger = new Logger({ handlers: new Set([handler]) });
         });
 
         it('should write the message', () => {
           logger.info('hi');
-          expect(spy).toHaveBeenCalledWith('hi\n');
+          expect(stream.consume().toString()).toEqual('hi\n');
         });
 
         it('should not write the message at a higher level', () => {
           logger.level = 30;
           logger.info('hi');
-          expect(spy).not.toHaveBeenCalled();
+          expect(stream.consume().toString()).toEqual('');
         });
 
       });
 
       describe('warn', () => {
 
-        let stream, spy, logger, handler;
+        let stream, logger, handler;
 
         beforeEach(() => {
-          stream = new class extends Writable { _write() {} }();
-          spy = jest.spyOn(stream, 'write');
+          stream = new WritableStreamBuffer();
           handler = new StreamHandler({ stream });
           logger = new Logger({ handlers: new Set([handler]) });
         });
 
         it('should write the message', () => {
           logger.warn('hi');
-          expect(spy).toHaveBeenCalledWith('hi\n');
+          expect(stream.consume().toString()).toEqual('hi\n');
         });
 
         it('should not write the message at a higher level', () => {
           logger.level = 40;
           logger.warn('hi');
-          expect(spy).not.toHaveBeenCalled();
+          expect(stream.consume().toString()).toEqual('');
         });
 
       });
 
       describe('error', () => {
 
-        let stream, spy, logger, handler;
+        let stream, logger, handler;
 
         beforeEach(() => {
-          stream = new class extends Writable { _write() {} }();
-          spy = jest.spyOn(stream, 'write');
+          stream = new WritableStreamBuffer();
           handler = new StreamHandler({ stream });
           logger = new Logger({ handlers: new Set([handler]) });
         });
 
         it('should write the message', () => {
           logger.error('hi');
-          expect(spy).toHaveBeenCalledWith('hi\n');
+          expect(stream.consume().toString()).toEqual('hi\n');
         });
 
         it('should not write the message at a higher level', () => {
           logger.level = 50;
           logger.error('hi');
-          expect(spy).not.toHaveBeenCalled();
+          expect(stream.consume().toString()).toEqual('');
         });
 
       });
@@ -218,13 +212,12 @@ describe('@ionic/cli-framework', () => {
       describe('createWriteStream', () => {
 
         it('should create a writable stream', () => {
-          const stream = new class extends Writable { _write() {} }();
-          const spy = jest.spyOn(stream, 'write');
+          const stream = new WritableStreamBuffer();
           const handler = new StreamHandler({ stream });
           const logger = new Logger({ handlers: new Set([handler]) });
           const ws = logger.createWriteStream();
           ws.write('hi');
-          expect(spy).toHaveBeenCalledWith('hi\n');
+          expect(stream.consume().toString()).toEqual('hi\n');
         });
 
       });

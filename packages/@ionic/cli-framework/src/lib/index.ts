@@ -9,6 +9,7 @@ export * from './help';
 export * from './logger';
 export * from './options';
 export * from './prompts';
+export * from './shell';
 export * from './tasks';
 export * from './validators';
 

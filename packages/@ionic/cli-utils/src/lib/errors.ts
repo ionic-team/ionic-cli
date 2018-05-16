@@ -1,6 +1,10 @@
 import { BaseError } from '@ionic/cli-framework/lib/errors';
 
-export class FatalException extends BaseError {
+export class BaseException extends BaseError {
+  readonly name = 'Exception';
+}
+
+export class FatalException extends BaseException {
   fatal = true;
 
   constructor(public message = '', public exitCode = 1) {
@@ -8,24 +12,24 @@ export class FatalException extends BaseError {
   }
 }
 
-export class ShellException extends BaseError {
+export class ShellException extends BaseException {
   constructor(public message: string, public exitCode = 0) {
     super(message);
   }
 }
 
-export class ServeException extends BaseError {}
+export class ServeException extends BaseException {}
 
 export class ServeCommandNotFoundException extends ServeException {}
 
-export class SessionException extends BaseError {}
+export class SessionException extends BaseException {}
 
-export class RunnerException extends BaseError {}
+export class RunnerException extends BaseException {}
 
 export class RunnerNotFoundException extends RunnerException {}
 
-export class IntegrationException extends BaseError {}
+export class IntegrationException extends BaseException {}
 
 export class IntegrationNotFoundException extends IntegrationException {}
 
-export class HookException extends BaseError {}
+export class HookException extends BaseException {}
