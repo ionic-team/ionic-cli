@@ -15,7 +15,6 @@ export const NG_BUILD_OPTIONS = [
     name: 'prod',
     summary: `Flag to set configuration to ${chalk.green('prod')}`,
     type: Boolean,
-    default: null,
     hint: 'ng',
   },
   {
@@ -51,37 +50,30 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularBuildOptions {
     const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
-    const ngOptions = NG_BUILD_OPTIONS
-      .filter(option => options[option.name] !== null && options[option.name] !== undefined)
-      .reduce((accum, option) => {
-        accum[option.name] = options[option.name];
-
-        return accum;
-      }, {} as any);
+    const prod = options['prod'] ? Boolean(options['prod']) : undefined;
+    const project = options['project'] ? String(options['project']) : undefined;
+    const configuration = options['configuration'] ? String(options['configuration']) : undefined;
 
     return {
       ...baseOptions,
-      ...ngOptions,
+      prod,
+      project,
+      configuration,
       type: 'angular',
     };
   }
 
   async buildOptionsToNgArgs(options: AngularBuildOptions): Promise<string[]> {
-
-    const ngOptions = NG_BUILD_OPTIONS
-      .map(option => option.name as keyof AngularBuildOptions)
-      .filter(option => options[option] !== null && options[option] !== undefined)
-      .reduce((accum, option) => {
-        accum[option] = String(options[option]);
-
-        return accum;
-      }, {} as any);
-
     const args: ParsedArgs = {
       _: [],
-      ...ngOptions,
-      'output-path': 'www',
+      prod: options.prod,
+      project: options.project,
+      configuration: options.configuration,
     };
+
+    if (options.engine === 'cordova') {
+      args['output-path'] = 'www';
+    }
 
     // TODO: This is pretty hacky. Is there a better solution?
     if (options.engine === 'cordova' && options.platform === 'android') {

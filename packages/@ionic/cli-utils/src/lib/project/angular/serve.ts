@@ -81,17 +81,16 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularServeOptions {
     const baseOptions = super.createOptionsFromCommandLine(inputs, options);
-    const ngOptions = NG_SERVE_OPTIONS
-      .filter(option => options[option.name] !== null && options[option.name] !== undefined)
-      .reduce((accum, option) => {
-        accum[option.name] = options[option.name];
-
-        return accum;
-      }, {} as any);
+    const prod = options['prod'] ? Boolean(options['prod']) : undefined;
+    const project = options['project'] ? String(options['project']) : undefined;
+    const configuration = options['configuration'] ? String(options['configuration']) : undefined;
 
     return {
       ...baseOptions,
-      ...ngOptions,
+      ssl: options['ssl'] ? true : false,
+      prod,
+      project,
+      configuration,
     };
   }
 
@@ -216,18 +215,11 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   }
 
   async serveOptionsToNgArgs(options: AngularServeOptions): Promise<string[]> {
-    const ngOptions = NG_SERVE_OPTIONS
-      .map(option => option.name as keyof AngularServeOptions)
-      .filter(option => options[option] !== null && options[option] !== undefined)
-      .reduce((accum, option) => {
-        accum[option] = String(options[option]);
-
-        return accum;
-      }, {} as any);
-
     const args: ParsedArgs = {
       _: [],
-      ...ngOptions,
+      prod: options.prod,
+      project: options.project,
+      configuration: options.configuration,
       host: options.address,
       port: String(options.port),
       ssl: options.ssl ? 'true' : undefined,
