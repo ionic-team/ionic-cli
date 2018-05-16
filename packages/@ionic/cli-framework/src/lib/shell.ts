@@ -23,7 +23,7 @@ export class ShellCommand {
     this._options = options;
   }
 
-  protected get options(): SpawnOptions {
+  get options(): Readonly<SpawnOptions> {
     const opts = this._options;
 
     if (!opts.env) {
