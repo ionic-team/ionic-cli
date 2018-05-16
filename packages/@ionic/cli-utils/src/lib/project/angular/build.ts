@@ -1,14 +1,39 @@
+import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import chalk from 'chalk';
 import * as Debug from 'debug';
-
-import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { CommandGroup, OptionGroup } from '../../../constants';
 
 import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
-import { CommandGroup, OptionGroup } from '../../../constants';
 import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
 import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './utils';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:build');
+
+// tslint:disable no-null-keyword
+export const NG_BUILD_OPTIONS = [
+  {
+    name: 'prod',
+    summary: `Flag to set configuration to ${chalk.green('prod')}`,
+    type: Boolean,
+    hint: 'ng',
+  },
+  {
+    name: 'project',
+    summary: 'The name of the project',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'configuration',
+    aliases: ['c'],
+    summary: 'Specify the configuration to use.',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+];
+// tslint:enable no-null-keyword
 
 export class BuildRunner extends BaseBuildRunner<AngularBuildOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
@@ -18,71 +43,36 @@ export class BuildRunner extends BaseBuildRunner<AngularBuildOptions> {
       description: `
 ${chalk.green('ionic build')} uses the Angular CLI. Use ${chalk.green('ng build --help')} to list all Angular CLI options for building your app. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the ${chalk.green('ng')} CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
 
-${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/build#ng-build')}`,
-      options: [
-        {
-          name: 'dev',
-          summary: `Sets the build target to ${chalk.green('development')}`,
-          type: Boolean,
-          hint: 'ng',
-        },
-        {
-          name: 'prod',
-          summary: `Sets the build target to ${chalk.green('production')}`,
-          type: Boolean,
-          hint: 'ng',
-        },
-        {
-          name: 'target',
-          summary: 'Set the build target to a custom value',
-          aliases: ['t'],
-          groups: [OptionGroup.Advanced],
-          hint: 'ng',
-        },
-        {
-          name: 'environment',
-          summary: 'Set the build environment to a custom value',
-          aliases: ['e'],
-          groups: [OptionGroup.Advanced],
-          hint: 'ng',
-        },
-      ],
+${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/build')}`,
+      options: NG_BUILD_OPTIONS,
     };
   }
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularBuildOptions {
     const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
-    let target = options['target'] ? String(options['target']) : undefined;
-    const environment = options['environment'] ? String(options['environment']) : undefined;
-
-    if (!target) {
-      if (options['dev']) {
-        target = 'development';
-      } else if (options['prod']) {
-        target = 'production';
-      }
-    }
+    const prod = options['prod'] ? Boolean(options['prod']) : undefined;
+    const project = options['project'] ? String(options['project']) : undefined;
+    const configuration = options['configuration'] ? String(options['configuration']) : undefined;
 
     return {
       ...baseOptions,
+      prod,
+      project,
+      configuration,
       type: 'angular',
-      target,
-      environment,
     };
   }
 
   async buildOptionsToNgArgs(options: AngularBuildOptions): Promise<string[]> {
     const args: ParsedArgs = {
       _: [],
-      environment: options.environment,
+      prod: options.prod,
+      project: options.project,
+      configuration: options.configuration,
     };
 
-    if (options.target === 'development') {
-      args['dev'] = true;
-    } else if (options.target === 'production') {
-      args['prod'] = true;
-    } else {
-      args['target'] = options.target;
+    if (options.engine === 'cordova') {
+      args['output-path'] = 'www';
     }
 
     // TODO: This is pretty hacky. Is there a better solution?
@@ -96,12 +86,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   }
 
   async beforeBuild(options: AngularBuildOptions): Promise<void> {
+
     await super.beforeBuild(options);
 
     const p = await this.project.load();
 
     if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await addCordovaEngineForAngular(this.project, options.platform);
+      await addCordovaEngineForAngular(this.project, options.platform, options.project);
     }
   }
 
@@ -129,7 +120,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const p = await this.project.load();
 
     if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await removeCordovaEngineForAngular(this.project, options.platform);
+      await removeCordovaEngineForAngular(this.project, options.platform, options.project);
     }
 
     await super.afterBuild(options);

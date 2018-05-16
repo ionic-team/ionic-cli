@@ -74,7 +74,7 @@ export function hydrateCommandMetadataOption<O extends CommandMetadataOption>(op
   return lodash.assign({}, option, {
     type,
     default: option.default ? option.default : typeDefaults.get(type),
-    aliases: option.aliases ? option.aliases : [],
+    aliases: Array.isArray(option.aliases) ? option.aliases : [],
   });
 }
 

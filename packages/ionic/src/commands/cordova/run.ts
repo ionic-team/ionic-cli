@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
 import {
+  BuildOptions,
   CommandInstanceInfo,
   CommandLineInputs,
   CommandLineOptions,
@@ -14,20 +15,54 @@ import {
 } from '@ionic/cli-utils';
 
 import { FatalException, RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
+import { BuildRunner, COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, ServeRunner } from '@ionic/cli-utils/lib/serve';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
 import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 
 export class RunCommand extends CordovaCommand implements CommandPreRun {
-  protected serveRunner?: ServeRunner<ServeOptions>;
+  protected runner?: ServeRunner<ServeOptions> | BuildRunner<BuildOptions<any>>;
 
-  async getRunner() {
-    if (!this.serveRunner) {
-      this.serveRunner = await ServeRunner.createFromProjectType(this.env, this.env.project.type);
+  async getRunner(livereload: boolean) {
+    if (!this.runner) {
+      this.runner = livereload
+        ? await ServeRunner.createFromProjectType(this.env, this.env.project.type)
+        : await BuildRunner.createFromProjectType(this.env, this.env.project.type);
     }
 
-    return this.serveRunner;
+    return this.runner;
+  }
+
+  async getExtendedMetadata({livereload}: {livereload: boolean}): Promise<CommandMetadata> {
+    const metadata = await this.getMetadata();
+    try {
+      const runner = await this.getRunner(livereload);
+      const libmetadata = await runner.getCommandMetadata();
+
+      if (metadata.options) {
+        if (livereload) {
+          metadata.options = metadata.options.concat(
+            COMMON_SERVE_COMMAND_OPTIONS.map(o => o.name === 'livereload' ? {
+              name: 'livereload',
+              summary: 'Spin up dev server to live-reload www files',
+              type: Boolean,
+              aliases: ['l'],
+            } : o)
+          );
+        } else {
+          metadata.options = metadata.options.concat(COMMON_BUILD_COMMAND_OPTIONS);
+        }
+
+        metadata.options = metadata.options.concat(libmetadata.options || []);
+      }
+    } catch (e) {
+      if (!(e instanceof RunnerNotFoundException)) {
+        throw e;
+      }
+    }
+
+    return metadata;
   }
 
   async getMetadata(): Promise<CommandMetadata> {
@@ -45,12 +80,6 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         type: Boolean,
         default: true,
       },
-      ...COMMON_SERVE_COMMAND_OPTIONS.map(o => o.name === 'livereload' ? {
-        name: 'livereload',
-        summary: 'Spin up dev server to live-reload www files',
-        type: Boolean,
-        aliases: ['l'],
-      } : o),
       // Cordova Options
       {
         name: 'debug',
@@ -95,16 +124,6 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       },
     ];
 
-    try {
-      const runner = await this.getRunner();
-      const libmetadata = await runner.getCommandMetadata();
-      options.push(...libmetadata.options || []);
-    } catch (e) {
-      if (!(e instanceof RunnerNotFoundException)) {
-        throw e;
-      }
-    }
-
     return {
       name: 'run',
       type: 'project',
@@ -132,6 +151,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     await this.preRunChecks(runinfo);
 
+    options['livereload'] = options['livereload'] !== undefined ? options['livereload'] : options['l'];
+
     if (options['noproxy']) {
       this.env.log.warn(`The ${chalk.green('--noproxy')} option has been deprecated. Please use ${chalk.green('--no-proxy')}.`);
       options['proxy'] = false;
@@ -146,7 +167,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       options['livereload'] = false;
     }
 
-    const metadata = await this.getMetadata();
+    const metadata = await this.getExtendedMetadata({livereload: !!options['livereload']});
 
     if (options['list']) {
       if (!options['device'] && !options['emulator']) {
@@ -178,12 +199,14 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
     const conf = await loadConfigXml({ project: this.env.project });
 
+    options['livereload'] = options['livereload'] !== undefined ? options['livereload'] : options['l'];
+
     onBeforeExit(async () => {
       conf.resetContentSrc();
       await conf.save();
     });
 
-    const metadata = await this.getMetadata();
+    const metadata = await this.getExtendedMetadata({livereload: !!options['livereload']});
 
     if (options['livereload']) {
       const { serve } = await import('@ionic/cli-utils/lib/serve');

@@ -22,6 +22,39 @@ const DEFAULT_PROGRAM = 'ng';
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 const NG_AUTODETECTED_PROXY_FILES = ['proxy.conf.json', 'proxy.conf.js', 'proxy.config.json', 'proxy.config.js'];
 
+// tslint:disable no-null-keyword
+const NG_SERVE_OPTIONS = [
+  {
+    name: 'ssl',
+    summary: 'Use HTTPS for the dev server',
+    type: Boolean,
+    default: null,
+  },
+  {
+    name: 'prod',
+    summary: `Flag to set configuration to ${chalk.green('prod')}`,
+    type: Boolean,
+    default: null,
+    hint: 'ng',
+  },
+  {
+    name: 'project',
+    summary: 'The name of the project',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+  {
+    name: 'configuration',
+    aliases: ['c'],
+    summary: 'Specify the configuration to use.',
+    type: String,
+    groups: [OptionGroup.Advanced],
+    hint: 'ng',
+  },
+];
+// tslint:enable no-null-keyword
+
 const debug = Debug('ionic:cli-utils:lib:project:angular:serve');
 
 interface ServeCmdDetails {
@@ -40,63 +73,24 @@ For serving your app with HTTPS, use the ${chalk.green('--ssl')} option. You can
 
 If a ${chalk.bold('proxy.config.json')} or ${chalk.bold('proxy.config.js')} file is detected in your project, the Angular CLI's ${chalk.green('--proxy-config')} option is automatically specified. You can use ${chalk.green('--no-proxy')} to disable this behavior. See the Angular CLI proxy documentation${chalk.cyan('[2]')} for more information.
 
-${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/build#ng-build')}
+${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/serve')}
 ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/stories-proxy#proxy-to-backend')}`,
-      options: [
-        {
-          name: 'ssl',
-          summary: 'Use HTTPS for the dev server',
-          aliases: ['s'],
-          type: Boolean,
-        },
-        {
-          name: 'dev',
-          summary: `Sets the build target to ${chalk.green('development')}`,
-          type: Boolean,
-          hint: 'ng',
-        },
-        {
-          name: 'prod',
-          summary: `Sets the build target to ${chalk.green('production')}`,
-          type: Boolean,
-          hint: 'ng',
-        },
-        {
-          name: 'target',
-          summary: 'Set the build target to a custom value',
-          aliases: ['t'],
-          groups: [OptionGroup.Advanced],
-          hint: 'ng',
-        },
-        {
-          name: 'environment',
-          summary: 'Set the build environment to a custom value',
-          aliases: ['e'],
-          groups: [OptionGroup.Advanced],
-          hint: 'ng',
-        },
-      ],
+      options: NG_SERVE_OPTIONS,
     };
   }
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularServeOptions {
     const baseOptions = super.createOptionsFromCommandLine(inputs, options);
-    let target = options['target'] ? String(options['target']) : undefined;
-    const environment = options['environment'] ? String(options['environment']) : undefined;
-
-    if (!target) {
-      if (options['dev']) {
-        target = 'development';
-      } else if (options['prod']) {
-        target = 'production';
-      }
-    }
+    const prod = options['prod'] ? Boolean(options['prod']) : undefined;
+    const project = options['project'] ? String(options['project']) : undefined;
+    const configuration = options['configuration'] ? String(options['configuration']) : undefined;
 
     return {
       ...baseOptions,
       ssl: options['ssl'] ? true : false,
-      target,
-      environment,
+      prod,
+      project,
+      configuration,
     };
   }
 
@@ -106,7 +100,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const p = await this.project.load();
 
     if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await addCordovaEngineForAngular(this.project, options.platform);
+      await addCordovaEngineForAngular(this.project, options.platform, options.project);
     }
   }
 
@@ -134,7 +128,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const p = await this.project.load();
 
     if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await removeCordovaEngineForAngular(this.project, options.platform);
+      await removeCordovaEngineForAngular(this.project, options.platform, options.project);
     }
 
     await super.afterServe(options, details);
@@ -223,10 +217,11 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   async serveOptionsToNgArgs(options: AngularServeOptions): Promise<string[]> {
     const args: ParsedArgs = {
       _: [],
+      prod: options.prod,
+      project: options.project,
+      configuration: options.configuration,
       host: options.address,
       port: String(options.port),
-      target: options.target,
-      environment: options.environment,
       ssl: options.ssl ? 'true' : undefined,
     };
 

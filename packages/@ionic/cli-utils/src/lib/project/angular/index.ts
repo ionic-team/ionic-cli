@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { IAilmentRegistry, InfoItem, ProjectType } from '../../../definitions';
-
 import { BaseProject } from '../';
+
+import { IAilmentRegistry, InfoItem, ProjectType } from '../../../definitions';
 import * as doctorLibType from '../../doctor';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular');
