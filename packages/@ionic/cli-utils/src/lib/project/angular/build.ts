@@ -9,7 +9,6 @@ import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './uti
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:build');
 
-// tslint:disable no-null-keyword
 export const NG_BUILD_OPTIONS = [
   {
     name: 'prod',
@@ -33,7 +32,6 @@ export const NG_BUILD_OPTIONS = [
     hint: 'ng',
   },
 ];
-// tslint:enable no-null-keyword
 
 export class BuildRunner extends BaseBuildRunner<AngularBuildOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {

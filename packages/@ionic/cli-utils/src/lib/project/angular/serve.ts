@@ -22,19 +22,16 @@ const DEFAULT_PROGRAM = 'ng';
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 const NG_AUTODETECTED_PROXY_FILES = ['proxy.conf.json', 'proxy.conf.js', 'proxy.config.json', 'proxy.config.js'];
 
-// tslint:disable no-null-keyword
 const NG_SERVE_OPTIONS = [
   {
     name: 'ssl',
     summary: 'Use HTTPS for the dev server',
     type: Boolean,
-    default: null,
   },
   {
     name: 'prod',
     summary: `Flag to set configuration to ${chalk.green('prod')}`,
     type: Boolean,
-    default: null,
     hint: 'ng',
   },
   {
@@ -53,7 +50,6 @@ const NG_SERVE_OPTIONS = [
     hint: 'ng',
   },
 ];
-// tslint:enable no-null-keyword
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:serve');
 
