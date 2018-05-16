@@ -7,7 +7,7 @@ import * as split2 from 'split2';
 import * as AngularDevKitSchematicsType from '@angular-devkit/schematics';
 import * as AngularDevKitSchematicsToolsType from '@angular-devkit/schematics/tools';
 
-import { contains, unparseArgs, validators } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, contains, unparseArgs, validators } from '@ionic/cli-framework';
 import { TTY_WIDTH, columnar, wordWrap } from '@ionic/cli-framework/utils/format';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
@@ -345,7 +345,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
 
       const log = this.log.clone();
       log.setFormatter(createFormatter({ wrap: false }));
-      const ws = log.createWriteStream();
+      const ws = log.createWriteStream(LOGGER_LEVELS.INFO, false);
 
       const stdoutStream = through2(function(chunk, env, callback) {
         const str = chunk.toString();

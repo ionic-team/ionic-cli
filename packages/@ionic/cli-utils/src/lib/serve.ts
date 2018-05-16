@@ -7,7 +7,7 @@ import * as lodash from 'lodash';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
-import { NetworkInterface, PromptModule } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, NetworkInterface, PromptModule } from '@ionic/cli-framework';
 import { BaseError } from '@ionic/cli-framework/lib/errors';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
@@ -401,7 +401,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
 
       const log = this.log.clone();
       log.setFormatter(createFormatter({ prefix: chalk.dim('[lab]'), wrap: false }));
-      const ws = log.createWriteStream();
+      const ws = log.createWriteStream(LOGGER_LEVELS.INFO, false);
 
       const stdoutFilter = through2(function(chunk, enc, callback) {
         const str = chunk.toString();

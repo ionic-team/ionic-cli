@@ -7,6 +7,7 @@ import * as through2 from 'through2';
 import * as split2 from 'split2';
 import * as proxyMiddlewareType from 'http-proxy-middleware'; // tslint:disable-line:no-implicit-dependencies
 
+import { LOGGER_LEVELS } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { isHostConnectable } from '@ionic/cli-framework/utils/network';
@@ -218,7 +219,7 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
 
       const log = this.log.clone();
       log.setFormatter(createFormatter({ prefix: chalk.dim(`[${program === DEFAULT_PROGRAM ? 'v1' : program}]`), wrap: false }));
-      const ws = log.createWriteStream();
+      const ws = log.createWriteStream(LOGGER_LEVELS.INFO, false);
 
       if (program === DEFAULT_PROGRAM) {
         const stdoutFilter = through2(function(chunk, enc, callback) {

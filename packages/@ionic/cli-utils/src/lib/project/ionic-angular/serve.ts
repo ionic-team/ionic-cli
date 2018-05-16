@@ -3,7 +3,7 @@ import * as Debug from 'debug';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
-import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { isHostConnectable } from '@ionic/cli-framework/utils/network';
@@ -162,7 +162,7 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
 
       const log = this.log.clone();
       log.setFormatter(createFormatter({ prefix: chalk.dim(`[${program === DEFAULT_PROGRAM ? 'app-scripts' : program}]`), wrap: false }));
-      const ws = log.createWriteStream();
+      const ws = log.createWriteStream(LOGGER_LEVELS.INFO, false);
 
       if (program === DEFAULT_PROGRAM) {
         const stdoutFilter = through2(function(chunk, enc, callback) {

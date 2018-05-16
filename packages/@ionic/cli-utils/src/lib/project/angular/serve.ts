@@ -6,7 +6,7 @@ import * as Debug from 'debug';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
-import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { pathAccessible } from '@ionic/cli-framework/utils/fs';
 import { findClosestOpenPort, isHostConnectable } from '@ionic/cli-framework/utils/network';
@@ -190,7 +190,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
       const log = this.log.clone();
       log.setFormatter(createFormatter({ prefix: chalk.dim(`[${program}]`), wrap: false }));
-      const ws = log.createWriteStream();
+      const ws = log.createWriteStream(LOGGER_LEVELS.INFO, false);
 
       if (program === DEFAULT_PROGRAM) {
         const stdoutFilter = through2(function(chunk, enc, callback) {

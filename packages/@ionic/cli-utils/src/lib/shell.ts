@@ -37,7 +37,7 @@ export class Shell implements IShell {
     const options: RunCmdOptions = { ...crossSpawnOptions };
 
     if (showCommand) {
-      const ws = this.log.createWriteStream();
+      const ws = this.log.createWriteStream(LOGGER_LEVELS.INFO, false);
 
       options.stdoutPipe = ws;
       options.stderrPipe = ws;
