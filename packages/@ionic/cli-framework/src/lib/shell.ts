@@ -31,7 +31,13 @@ export class ShellCommand {
     }
 
     const PATH = typeof opts.env.PATH === 'string' ? opts.env.PATH : process.env.PATH;
-    const env = createProcessEnv(opts.env || {}, { PATH: PATH.split(path.delimiter).map(expandTildePath).join(path.delimiter) });
+
+    const env = createProcessEnv(opts.env || {}, {
+      // Some people prefix path parts with tilde, e.g. `~/.bin`. The tilde is
+      // expanded here because it's a bash character and won't work with Node's
+      // `child_process` outside of a shell.
+      PATH: PATH.split(path.delimiter).map(expandTildePath).join(path.delimiter),
+    });
 
     return { ...opts, env };
   }
