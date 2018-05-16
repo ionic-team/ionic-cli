@@ -106,7 +106,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     return info;
   };
 
-  const shell = new Shell({ tasks, log, projectDir });
+  const shell = new Shell({ log, projectDir });
   const project = await getProject(projectDir, { config, log, shell, tasks });
   const client = new Client(config);
   const session = new ProSession({ config, client, project });

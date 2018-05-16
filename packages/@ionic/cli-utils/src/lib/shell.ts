@@ -4,7 +4,7 @@ import chalk from 'chalk';
 
 import * as crossSpawnType from 'cross-spawn';
 
-import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommand, ShellCommandError, TaskChain } from '@ionic/cli-framework';
+import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommand, ShellCommandError } from '@ionic/cli-framework';
 import { createProcessEnv } from '@ionic/cli-framework/utils/process';
 
 import { ILogger, IShell, IShellOutputOptions, IShellRunOptions, IShellSpawnOptions } from '../definitions';
@@ -13,18 +13,15 @@ import { FatalException } from './errors';
 import { RunCmdOptions, prettyCommand, runcmd } from './utils/shell';
 
 export interface ShellDeps {
-  tasks: TaskChain;
   log: ILogger;
   projectDir?: string;
 }
 
 export class Shell implements IShell {
-  protected tasks: TaskChain;
   protected log: ILogger;
   protected projectDir?: string;
 
-  constructor({ tasks, log, projectDir }: ShellDeps) {
-    this.tasks = tasks;
+  constructor({ log, projectDir }: ShellDeps) {
     this.log = log;
     this.projectDir = projectDir;
   }
