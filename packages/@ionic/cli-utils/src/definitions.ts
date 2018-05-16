@@ -523,9 +523,9 @@ export interface BuildOptions<T extends ProjectType> extends BaseBuildOptions {
 }
 
 export interface AngularBuildOptions extends BuildOptions<'angular'> {
-  'prod'?: boolean;
-  'project'?: string;
-  'configuration'?: string;
+  prod?: boolean;
+  project?: string;
+  configuration?: string;
 }
 
 export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> {
@@ -579,9 +579,9 @@ export interface ServeOptions {
 }
 
 export interface AngularServeOptions extends ServeOptions {
-  'prod'?: boolean;
-  'project'?: string;
-  'configuration'?: string;
+  prod?: boolean;
+  project?: string;
+  configuration?: string;
 }
 
 export interface IonicAngularServeOptions extends ServeOptions {
