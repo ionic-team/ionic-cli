@@ -1,6 +1,6 @@
 import * as fs from 'fs';
+import { ChildProcess, SpawnOptions } from 'child_process';
 
-import * as crossSpawnType from 'cross-spawn';
 import * as superagentType from 'superagent';
 
 import * as framework from '@ionic/cli-framework';
@@ -304,7 +304,7 @@ export interface ISession {
   getUserToken(): Promise<string>;
 }
 
-export interface IShellSpawnOptions extends crossSpawnType.SpawnOptions {
+export interface IShellSpawnOptions extends SpawnOptions {
   showCommand?: boolean;
 }
 
@@ -321,7 +321,7 @@ export interface IShellRunOptions extends IShellOutputOptions {
 export interface IShell {
   run(command: string, args: string[], options: IShellRunOptions): Promise<void>;
   output(command: string, args: string[], options: IShellOutputOptions): Promise<string>;
-  spawn(command: string, args: string[], options: IShellSpawnOptions): Promise<crossSpawnType.ChildProcess>;
+  spawn(command: string, args: string[], options: IShellSpawnOptions): Promise<ChildProcess>;
   cmdinfo(cmd: string, args?: string[]): Promise<string | undefined>;
 }
 

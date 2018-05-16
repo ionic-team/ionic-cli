@@ -1,6 +1,4 @@
-import { PackageJson } from '@ionic/cli-framework';
-
-import { runcmd } from './shell';
+import { PackageJson, ShellCommand } from '@ionic/cli-framework';
 
 import { NpmClient } from '../../definitions';
 
@@ -166,7 +164,8 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
 export async function pkgFromRegistry(npmClient: NpmClient, options: Partial<PkgManagerOptions>): Promise<PackageJson | undefined> {
   const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'info', json: true, ...options });
 
-  const result = await runcmd(manager, managerArgs);
+  const cmd = new ShellCommand(manager, managerArgs);
+  const result = await cmd.output();
 
   if (result) {
     const json = JSON.parse(result);

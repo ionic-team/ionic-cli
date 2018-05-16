@@ -1,16 +1,17 @@
 import * as path from 'path';
+import { ChildProcess } from 'child_process';
 
 import chalk from 'chalk';
 
-import * as crossSpawnType from 'cross-spawn';
+import * as split2 from 'split2';
 
 import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommand, ShellCommandError } from '@ionic/cli-framework';
 import { createProcessEnv } from '@ionic/cli-framework/utils/process';
+import { NullStream, combineStreams } from '@ionic/cli-framework/utils/streams';
 
 import { ILogger, IShell, IShellOutputOptions, IShellRunOptions, IShellSpawnOptions } from '../definitions';
 import { isExitCodeException } from '../guards';
 import { FatalException } from './errors';
-import { RunCmdOptions, prettyCommand, runcmd } from './utils/shell';
 
 export interface ShellDeps {
   log: ILogger;
@@ -27,25 +28,22 @@ export class Shell implements IShell {
   }
 
   async run(command: string, args: string[], { showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<void> {
-    const fullCmd = prettyCommand(command, args);
+    this.prepareSpawnOptions(crossSpawnOptions);
+    const cmd = new ShellCommand(command, args, crossSpawnOptions);
+
+    const fullCmd = cmd.bashify();
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
-    const options: RunCmdOptions = { ...crossSpawnOptions };
-
-    if (showCommand) {
-      const ws = this.log.createWriteStream(LOGGER_LEVELS.INFO, false);
-
-      options.stdoutPipe = ws;
-      options.stderrPipe = ws;
-    }
-
-    this.prepareSpawnOptions(options);
 
     if (showCommand && this.log.level >= LOGGER_LEVELS.INFO) {
       this.log.rawmsg(`> ${chalk.green(fullCmd)}`);
     }
 
+    const ws = showCommand ? this.log.createWriteStream(LOGGER_LEVELS.INFO, false) : new NullStream();
+    const outstream = combineStreams(split2(), ws);
+    const errstream = combineStreams(split2(), ws);
+
     try {
-      await runcmd(command, args, options);
+      await cmd.pipedOutput(outstream, errstream);
     } catch (e) {
       if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
         if (fatalOnNotFound) {
@@ -90,7 +88,9 @@ export class Shell implements IShell {
   }
 
   async output(command: string, args: string[], { fatalOnError = true, showError = true, showCommand = false, ...crossSpawnOptions }: IShellOutputOptions): Promise<string> {
-    const fullCmd = prettyCommand(command, args);
+    const cmd = new ShellCommand(command, args, crossSpawnOptions);
+
+    const fullCmd = cmd.bashify();
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
 
     if (showCommand && this.log.level >= LOGGER_LEVELS.INFO) {
@@ -98,7 +98,7 @@ export class Shell implements IShell {
     }
 
     try {
-      return await runcmd(command, args, crossSpawnOptions);
+      return await cmd.output();
     } catch (e) {
       if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
         throw new FatalException(`Command not found: ${chalk.green(command)}`, 127);
@@ -122,26 +122,27 @@ export class Shell implements IShell {
     }
   }
 
-  async spawn(command: string, args: string[], { showCommand = true, ...crossSpawnOptions }: IShellSpawnOptions): Promise<crossSpawnType.ChildProcess> {
-    const fullCmd = prettyCommand(command, args);
+  async spawn(command: string, args: string[], { showCommand = true, ...crossSpawnOptions }: IShellSpawnOptions): Promise<ChildProcess> {
     this.prepareSpawnOptions(crossSpawnOptions);
 
     const cmd = new ShellCommand(command, args, crossSpawnOptions);
     const p = cmd.spawn();
 
     if (showCommand && this.log.level >= LOGGER_LEVELS.INFO) {
-      this.log.rawmsg(`> ${chalk.green(fullCmd)}`);
+      this.log.rawmsg(`> ${chalk.green(cmd.bashify())}`);
     }
 
     return p;
   }
 
-  async cmdinfo(cmd: string, args: string[] = []): Promise<string | undefined> {
+  async cmdinfo(command: string, args: string[] = []): Promise<string | undefined> {
     const opts: IShellSpawnOptions = {};
     this.prepareSpawnOptions(opts);
 
+    const cmd = new ShellCommand(command, args, opts);
+
     try {
-      const out = await runcmd(cmd, args, opts);
+      const out = await cmd.output();
       return out.split('\n').join(' ').trim();
     } catch (e) {
       // no command info at this point
