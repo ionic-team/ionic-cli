@@ -230,7 +230,7 @@ export interface CreateTaggedFormatterOptions {
 }
 
 export function createTaggedFormatter({ colors = DEFAULT_COLORS, prefix = '', titleize, wrap }: CreateTaggedFormatterOptions = {}): LoggerFormatter {
-  return ({ logger, msg, level, format }) => {
+  return ({ msg, level, format }) => {
     if (format === false) {
       return msg;
     }
@@ -242,10 +242,8 @@ export function createTaggedFormatter({ colors = DEFAULT_COLORS, prefix = '', ti
     const levelName = getLoggerLevelName(level);
     const levelColor = getLoggerLevelColor(colors, level);
 
-    prefix = typeof prefix === 'function' ? prefix() : prefix;
-
     const tag = (
-      (prefix ? `${prefix}` : '') +
+      (typeof prefix === 'function' ? prefix() : prefix) +
       (levelName ? `${weak('[')}${chalk.bgBlack(strong(levelColor ? levelColor(levelName) : levelName))}${weak(']')}` : '')
     );
 
@@ -259,5 +257,15 @@ export function createTaggedFormatter({ colors = DEFAULT_COLORS, prefix = '', ti
         : [title, ...lines.map(l => ' '.repeat(indentation) + l)].join('\n')
       )
     );
+  };
+}
+
+export function createPrefixedFormatter(prefix: string | (() => string)): LoggerFormatter {
+  return ({ msg, format }) => {
+    if (format === false) {
+      return msg;
+    }
+
+    return `${typeof prefix === 'function' ? prefix() : prefix} ${msg}`;
   };
 }

@@ -4,7 +4,7 @@ import { WritableStreamBuffer } from '../../utils/streams';
 import stripAnsi = require('strip-ansi');
 import { wordWrap } from '../../utils/format';
 
-import { DEFAULT_OUTPUT, LOGGER_LEVELS, LOGGER_OUTPUTS, Logger, StreamHandler, createTaggedFormatter } from '../logger';
+import { DEFAULT_OUTPUT, LOGGER_LEVELS, LOGGER_OUTPUTS, Logger, StreamHandler, createPrefixedFormatter, createTaggedFormatter } from '../logger';
 
 describe('@ionic/cli-framework', () => {
 
@@ -226,79 +226,120 @@ describe('@ionic/cli-framework', () => {
 
     describe('createTaggedFormatter', () => {
 
-      const logger = new Logger();
-      const output = logger.output;
+      it('should not format if requested', () => {
+        const formatter = createTaggedFormatter();
+        const result = formatter({ msg: 'hi', level: LOGGER_LEVELS.INFO, format: false });
+        expect(result).toEqual('hi');
+      });
 
       it('should not tag non-leveled outputs', () => {
-        const format = createTaggedFormatter();
-        const result = format({ msg: 'hi', logger, output });
+        const formatter = createTaggedFormatter();
+        const result = formatter({ msg: 'hi' });
         expect(result).toEqual('hi');
       });
 
       it('should log multi-line message properly for non-leveled outputs', () => {
-        const format = createTaggedFormatter({ wrap: false });
-        const result = format({ msg: 'hello world!\nThis is a message.', logger, output });
+        const formatter = createTaggedFormatter({ wrap: false });
+        const result = formatter({ msg: 'hello world!\nThis is a message.' });
         expect(result).toEqual('hello world!\nThis is a message.');
       });
 
       it('should log multi-line message properly for wrapped, non-leveled outputs', () => {
-        const format = createTaggedFormatter({ wrap: true });
-        const result = format({ msg: 'hello world!\nThis is a message.', logger, output });
+        const formatter = createTaggedFormatter({ wrap: true });
+        const result = formatter({ msg: 'hello world!\nThis is a message.' });
         expect(result).toEqual('hello world!\nThis is a message.');
       });
 
       it('should tag leveled outputs', () => {
-        const format = createTaggedFormatter();
-        const result = format({ msg: 'hi', logger, output, level: LOGGER_LEVELS.INFO });
+        const formatter = createTaggedFormatter();
+        const result = formatter({ msg: 'hi', level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual('[INFO] hi');
       });
 
       it('should not wrap by default', () => {
-        const format = createTaggedFormatter();
+        const formatter = createTaggedFormatter();
         const msg = 'A '.repeat(1000);
-        const result = format({ msg, logger, output, level: LOGGER_LEVELS.INFO });
+        const result = formatter({ msg, level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual(`[INFO] ${msg}`);
       });
 
       it('should wrap words if wanted', () => {
         const wordWrapOpts = { width: 50 };
-        const format = createTaggedFormatter({ wrap: wordWrapOpts });
+        const formatter = createTaggedFormatter({ wrap: wordWrapOpts });
         const msg = 'A '.repeat(1000);
-        const result = format({ msg, logger, output, level: LOGGER_LEVELS.INFO });
+        const result = formatter({ msg, level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 7, ...wordWrapOpts })}`);
       });
 
       it('should not titleize by default', () => {
-        const format = createTaggedFormatter();
-        const result = format({ msg: `Hello!\nThis is a message.\nHere's another.`, logger, output, level: LOGGER_LEVELS.INFO });
+        const formatter = createTaggedFormatter();
+        const result = formatter({ msg: `Hello!\nThis is a message.\nHere's another.`, level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n       This is a message.\n       Here's another.`);
       });
 
       it('should not titleize for single line', () => {
-        const format = createTaggedFormatter({ titleize: true });
-        const result = format({ msg: 'Hello!', logger, output, level: LOGGER_LEVELS.INFO });
+        const formatter = createTaggedFormatter({ titleize: true });
+        const result = formatter({ msg: 'Hello!', level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual(`[INFO] Hello!`);
       });
 
       it('should titleize if wanted', () => {
-        const format = createTaggedFormatter({ titleize: true });
-        const result = format({ msg: `Hello!\nThis is a message.\nHere's another.`, logger, output, level: LOGGER_LEVELS.INFO });
+        const formatter = createTaggedFormatter({ titleize: true });
+        const result = formatter({ msg: `Hello!\nThis is a message.\nHere's another.`, level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n\n       This is a message.\n       Here's another.`);
       });
 
       it('should work with wrap and titleize', () => {
         const wordWrapOpts = { width: 50 };
-        const format = createTaggedFormatter({ titleize: true, wrap: wordWrapOpts });
+        const formatter = createTaggedFormatter({ titleize: true, wrap: wordWrapOpts });
         const msg = 'A '.repeat(1000);
-        const result = format({ msg, logger, output, level: LOGGER_LEVELS.INFO });
+        const result = formatter({ msg, level: LOGGER_LEVELS.INFO });
         expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 7, ...wordWrapOpts })}`);
       });
 
       it('should prefix single line without level', () => {
         const now = new Date().toISOString();
-        const format = createTaggedFormatter({ prefix: `[${now}]` });
-        const result = format({ msg: 'hello world!', logger, output });
-        expect(stripAnsi(result)).toEqual(`[${now}] hello world!`);
+        const formatter = createTaggedFormatter({ prefix: `[${now}]` });
+        const result = formatter({ msg: 'hello world!' });
+        expect(result).toEqual(`[${now}] hello world!`);
+      });
+
+      it('should prefix dynamically with a function', () => {
+        let count = 0;
+        const spy = jest.fn(() => `[${++count}]`);
+        const formatter = createTaggedFormatter({ prefix: spy });
+        const result1 = formatter({ msg: 'hello world!' });
+        const result2 = formatter({ msg: 'hello world!' });
+        expect(result1).toEqual('[1] hello world!');
+        expect(result2).toEqual('[2] hello world!');
+        expect(spy).toHaveBeenCalledTimes(2);
+      });
+
+    });
+
+    describe('createPrefixedFormatter', () => {
+
+      it('should not format if requested', () => {
+        const formatter = createPrefixedFormatter('[prefix]');
+        const result = formatter({ msg: 'hello world!', format: false });
+        expect(result).toEqual('hello world!');
+      });
+
+      it('should prefix message', () => {
+        const formatter = createPrefixedFormatter('[prefix]');
+        const result = formatter({ msg: 'hello world!' });
+        expect(result).toEqual('[prefix] hello world!');
+      });
+
+      it('should prefix dynamically with a function', () => {
+        let count = 0;
+        const spy = jest.fn(() => `[${++count}]`);
+        const formatter = createPrefixedFormatter(spy);
+        const result1 = formatter({ msg: 'hello world!' });
+        const result2 = formatter({ msg: 'hello world!' });
+        expect(result1).toEqual('[1] hello world!');
+        expect(result2).toEqual('[2] hello world!');
+        expect(spy).toHaveBeenCalledTimes(2);
       });
 
     });
