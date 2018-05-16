@@ -120,4 +120,13 @@ export class ShellCommand {
   spawn(): ChildProcess {
     return spawn(this.name, this.args, this.options);
   }
+
+  bashify(): string {
+    return (
+      `${this.name} ` +
+      (this.args.length > 0
+        ? this.args.map(arg => arg.includes(' ') ? `"${arg.replace(/\"/g, '\\"')}"` : arg).join(' ')
+        : '')
+    );
+  }
 }

@@ -98,6 +98,30 @@ describe('@ionic/cli-framework', () => {
         expect(cmd.options).toEqual({ env: { PATH: '/path/to/bin:/home/me/bin' } });
       });
 
+      it('should bashify command and args', async () => {
+        const name = 'cmd';
+        const args = ['foo', 'bar', 'baz'];
+        const cmd = new ShellCommand(name, args);
+        const result = cmd.bashify();
+        expect(result).toEqual('cmd foo bar baz');
+      });
+
+      it('should bashify command and args with spaces', async () => {
+        const name = 'cmd';
+        const args = ['foo bar baz'];
+        const cmd = new ShellCommand(name, args);
+        const result = cmd.bashify();
+        expect(result).toEqual('cmd "foo bar baz"');
+      });
+
+      it('should bashify command and args with spaces with double quotes inside', async () => {
+        const name = 'cmd';
+        const args = ['foo "bar" baz'];
+        const cmd = new ShellCommand(name, args);
+        const result = cmd.bashify();
+        expect(result).toEqual('cmd "foo \\"bar\\" baz"');
+      });
+
       it('should call spawn with correct args and return child process', async () => {
         const result = {};
         mockSpawn.mockImplementation(() => result);
