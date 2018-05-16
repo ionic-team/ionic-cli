@@ -5,6 +5,12 @@ const DEFAULT_CHUNK_SIZE = 4;
 const DEFAULT_ALLOC_SIZE = 32;
 const DEFAULT_GROW_SIZE = 16;
 
+export class NullStream extends Writable {
+  _write(chunk: any, encoding: string, callback: Function): void {
+    callback();
+  }
+}
+
 export interface ReadableStreamBufferOptions extends ReadableOptions {
   chunkSize?: number;
   allocSize?: number;

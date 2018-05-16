@@ -1,5 +1,5 @@
 import { PassThrough, Writable } from 'stream';
-import { ReadableStreamBuffer, WritableStreamBuffer, growBufferForAppendedData } from '../streams';
+import { NullStream, ReadableStreamBuffer, WritableStreamBuffer, combineStreams, growBufferForAppendedData } from '../streams';
 
 describe('@ionic/cli-framework', () => {
 
@@ -11,6 +11,30 @@ describe('@ionic/cli-framework', () => {
 
     afterEach(() => {
       jest.clearAllTimers();
+    });
+
+    describe('NullStream', () => {
+
+      it('should allow writes', () => {
+        const ns = new NullStream();
+        ns.write('hello world!');
+      });
+
+      it('should write nothing', done => {
+        const rsb = new ReadableStreamBuffer();
+        const ns = new NullStream();
+        const wsb = new WritableStreamBuffer();
+        const ws = combineStreams(ns, wsb);
+        const spy = jest.spyOn(wsb, 'write');
+        rsb.pipe(ws);
+        rsb.feed('hello world!');
+        rsb.stop();
+        ws.on('finish', () => {
+          expect(spy).not.toHaveBeenCalled();
+          done();
+        });
+      });
+
     });
 
     describe('ReadableStreamBuffer', () => {
