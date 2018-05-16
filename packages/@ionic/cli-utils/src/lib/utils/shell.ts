@@ -1,12 +1,10 @@
 import * as os from 'os';
-import * as path from 'path';
 import * as split2 from 'split2';
 
 import * as crossSpawnType from 'cross-spawn';
 
-import { createProcessEnv } from '@ionic/cli-framework/utils/process';
-
-import { ShellException } from '../errors';
+import { ShellCommand } from '@ionic/cli-framework';
+import { combineStreams } from '@ionic/cli-framework/utils/streams';
 
 export interface RunCmdOptions extends crossSpawnType.SpawnOptions {
   stdoutPipe?: NodeJS.WritableStream;
@@ -20,82 +18,19 @@ export function expandTildePath(p: string) {
   return p.replace(TILDE_PATH_REGEX, `${h}$1`);
 }
 
-export async function runcmd(command: string, args?: string[], options: RunCmdOptions = {}): Promise<string> {
-  if (!options.env) {
-    options.env = {};
+export async function runcmd(command: string, args: string[] = [], options: RunCmdOptions = {}): Promise<string> {
+  const cmd = new ShellCommand(command, args, options);
+
+  if (options.stdoutPipe && options.stderrPipe) {
+    const outstream = combineStreams(split2(), options.stdoutPipe);
+    const errstream = combineStreams(split2(), options.stderrPipe);
+
+    await cmd.pipedOutput(outstream, errstream);
+
+    return '';
   }
 
-  const PATH = typeof options.env.PATH === 'string' ? options.env.PATH : process.env.PATH;
-
-  options.env = createProcessEnv(process.env, options.env, {
-    PATH: PATH.split(path.delimiter).map(expandTildePath).join(path.delimiter),
-  });
-
-  const p = await spawncmd(command, args, options);
-
-  return new Promise<string>((resolve, reject) => {
-    const stdoutBufs: Buffer[] = [];
-    const stderrBufs: Buffer[] = [];
-    const dualBufs: Buffer[] = [];
-
-    if (p.stdout) {
-      if (options.stdoutPipe) {
-        p.stdout.pipe(split2()).pipe(options.stdoutPipe);
-      } else {
-        p.stdout.on('data', chunk => {
-          if (Buffer.isBuffer(chunk)) {
-            stdoutBufs.push(chunk);
-            dualBufs.push(chunk);
-          } else {
-            stdoutBufs.push(Buffer.from(chunk));
-            dualBufs.push(Buffer.from(chunk));
-          }
-        });
-      }
-    }
-
-    if (p.stderr) {
-      if (options.stderrPipe) {
-        p.stderr.pipe(split2()).pipe(options.stderrPipe);
-      } else {
-        p.stderr.on('data', chunk => {
-          if (Buffer.isBuffer(chunk)) {
-            stderrBufs.push(chunk);
-            dualBufs.push(chunk);
-          } else {
-            stderrBufs.push(Buffer.from(chunk));
-            dualBufs.push(Buffer.from(chunk));
-          }
-        });
-      }
-    }
-
-    p.on('error', err => {
-      reject(err);
-    });
-
-    p.on('close', code => {
-      if (code === 0) {
-        resolve(Buffer.concat(stdoutBufs).toString());
-      } else {
-        reject(new ShellException(Buffer.concat(dualBufs).toString(), code));
-      }
-    });
-  });
-}
-
-export async function spawncmd(command: string, args?: string[], options: crossSpawnType.SpawnOptions = {}): Promise<crossSpawnType.ChildProcess> {
-  const crossSpawn = await import('cross-spawn');
-  const p = crossSpawn.spawn(command, args, options);
-
-  return p;
-}
-
-export async function forkcmd(command: string, args?: string[], options: crossSpawnType.SpawnOptions = {}): Promise<crossSpawnType.ChildProcess> {
-  const cp = await import('child_process');
-  const p = cp.fork(command, args, options);
-
-  return p;
+  return cmd.output();
 }
 
 export function prettyCommand(command: string, args: string[]) {

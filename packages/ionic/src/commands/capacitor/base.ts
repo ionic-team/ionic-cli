@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 
+import { ERROR_SHELL_COMMAND_NOT_FOUND, ShellCommandError } from '@ionic/cli-framework';
 import { CommandInstanceInfo } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
@@ -23,15 +24,13 @@ export abstract class CapacitorCommand extends Command {
   }
 
   async runCapacitor(argList: string[]): Promise<void> {
-    const { ERROR_SHELL_COMMAND_NOT_FOUND } = await import('@ionic/cli-utils/lib/shell');
-
     try {
       this.env.close();
       await this._runCapacitor(argList);
       this.env.open();
     } catch (e) {
       this.env.open();
-      if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
+      if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
         const pkg = '@capacitor/cli';
         const requiredMsg = `The Capacitor CLI is required for Capacitor projects.`;
         this.env.log.nl();

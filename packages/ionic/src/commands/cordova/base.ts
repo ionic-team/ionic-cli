@@ -1,6 +1,7 @@
 import * as path from 'path';
 import chalk from 'chalk';
 
+import { ERROR_SHELL_COMMAND_NOT_FOUND, ShellCommandError } from '@ionic/cli-framework';
 import { fsMkdir, pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
@@ -97,7 +98,6 @@ export abstract class CordovaCommand extends Command {
   }
 
   async runCordova(argList: string[], { fatalOnNotFound = false, truncateErrorOutput = 5000, ...options }: IShellRunOptions = {}): Promise<void> {
-    const { ERROR_SHELL_COMMAND_NOT_FOUND } = await import('@ionic/cli-utils/lib/shell');
     const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
     const config = await this.env.config.load();
     const { npmClient } = config;
@@ -105,7 +105,7 @@ export abstract class CordovaCommand extends Command {
     try {
       await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, ...options });
     } catch (e) {
-      if (e === ERROR_SHELL_COMMAND_NOT_FOUND) {
+      if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
         const cdvInstallArgs = await pkgManagerArgs(npmClient, { command: 'install', pkg: 'cordova', global: true });
         throw new FatalException(
           `The Cordova CLI was not found on your PATH. Please install Cordova globally:\n` +

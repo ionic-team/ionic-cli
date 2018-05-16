@@ -12,12 +12,6 @@ export class FatalException extends BaseException {
   }
 }
 
-export class ShellException extends BaseException {
-  constructor(public message: string, public exitCode = 0) {
-    super(message);
-  }
-}
-
 export class ServeException extends BaseException {}
 
 export class ServeCommandNotFoundException extends ServeException {}

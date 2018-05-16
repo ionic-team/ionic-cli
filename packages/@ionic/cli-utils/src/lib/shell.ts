@@ -4,15 +4,13 @@ import chalk from 'chalk';
 
 import * as crossSpawnType from 'cross-spawn';
 
-import { LOGGER_LEVELS, TaskChain } from '@ionic/cli-framework';
+import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommand, ShellCommandError, TaskChain } from '@ionic/cli-framework';
 import { createProcessEnv } from '@ionic/cli-framework/utils/process';
 
 import { ILogger, IShell, IShellOutputOptions, IShellRunOptions, IShellSpawnOptions } from '../definitions';
 import { isExitCodeException } from '../guards';
 import { FatalException } from './errors';
-import { RunCmdOptions, prettyCommand, runcmd, spawncmd } from './utils/shell';
-
-export const ERROR_SHELL_COMMAND_NOT_FOUND = 'SHELL_COMMAND_NOT_FOUND';
+import { RunCmdOptions, prettyCommand, runcmd } from './utils/shell';
 
 export interface ShellDeps {
   tasks: TaskChain;
@@ -52,11 +50,11 @@ export class Shell implements IShell {
     try {
       await runcmd(command, args, options);
     } catch (e) {
-      if (e.code === 'ENOENT') {
+      if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
         if (fatalOnNotFound) {
           throw new FatalException(`Command not found: ${chalk.green(command)}`, 127);
         } else {
-          throw ERROR_SHELL_COMMAND_NOT_FOUND;
+          throw e;
         }
       }
 
@@ -105,7 +103,7 @@ export class Shell implements IShell {
     try {
       return await runcmd(command, args, crossSpawnOptions);
     } catch (e) {
-      if (e.code === 'ENOENT') {
+      if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
         throw new FatalException(`Command not found: ${chalk.green(command)}`, 127);
       }
 
@@ -131,7 +129,8 @@ export class Shell implements IShell {
     const fullCmd = prettyCommand(command, args);
     this.prepareSpawnOptions(crossSpawnOptions);
 
-    const p = await spawncmd(command, args, crossSpawnOptions);
+    const cmd = new ShellCommand(command, args, crossSpawnOptions);
+    const p = cmd.spawn();
 
     if (showCommand && this.log.level >= LOGGER_LEVELS.INFO) {
       this.log.rawmsg(`> ${chalk.green(fullCmd)}`);
