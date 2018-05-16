@@ -320,7 +320,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/projects
     const ngArgs = unparseArgs({ _: ['generate', type, name], ...options }, {});
     const shellOptions = { cwd: this.project.directory };
 
-    const p = await this.shell.spawn('ng', ngArgs, shellOptions);
+    const p = this.shell.spawn('ng', ngArgs, shellOptions);
 
     return new Promise<void>((resolve, reject) => {
       let errorsEncountered = false;

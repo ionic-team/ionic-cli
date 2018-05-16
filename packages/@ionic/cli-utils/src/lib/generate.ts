@@ -2,9 +2,8 @@ import chalk from 'chalk';
 
 import { PromptModule } from '@ionic/cli-framework';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions, IConfig, ILogger, IProject, IShell, IonicEnvironment, ProjectType } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions, IConfig, ILogger, IProject, IShell, IonicEnvironment, ProjectType, Runner } from '../definitions';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
-import { Runner } from './runner';
 import { prettyProjectName } from './project';
 
 import * as angularGenerateLibType from './project/angular/generate';
@@ -18,7 +17,7 @@ export interface GenerateRunnerDeps {
   readonly shell: IShell;
 }
 
-export abstract class GenerateRunner<T extends GenerateOptions> extends Runner<T, void> {
+export abstract class GenerateRunner<T extends GenerateOptions> implements Runner<T, void> {
   protected readonly config: IConfig;
   protected readonly log: ILogger;
   protected readonly project: IProject;
@@ -26,7 +25,6 @@ export abstract class GenerateRunner<T extends GenerateOptions> extends Runner<T
   protected readonly shell: IShell;
 
   constructor({ config, log, project, prompt, shell }: GenerateRunnerDeps) {
-    super();
     this.config = config;
     this.log = log;
     this.project = project;
@@ -59,6 +57,7 @@ export abstract class GenerateRunner<T extends GenerateOptions> extends Runner<T
 
   async ensureCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> { /* overwritten in subclasses */ }
   abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
+  abstract run(options: T): Promise<void>;
 }
 
 export async function generate(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

@@ -1,5 +1,7 @@
 import * as os from 'os';
 import * as path from 'path';
+import { ChildProcess } from 'child_process';
+import { EventEmitter } from 'events';
 
 import chalk from 'chalk';
 import * as Debug from 'debug';
@@ -7,21 +9,19 @@ import * as lodash from 'lodash';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
-import { LOGGER_LEVELS, NetworkInterface, PromptModule } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, NetworkInterface, PromptModule, createPrefixedFormatter } from '@ionic/cli-framework';
 import { BaseError } from '@ionic/cli-framework/lib/errors';
-import { onBeforeExit } from '@ionic/cli-framework/utils/process';
+import { onBeforeExit, processExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { findClosestOpenPort, getExternalIPv4Interfaces } from '@ionic/cli-framework/utils/network';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, ProjectType, ServeDetails, ServeOptions } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, ProjectType, Runner, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 import { ASSETS_DIRECTORY, OptionGroup, PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
-import { Runner } from './runner';
 import { Hook } from './hooks';
 import { PkgManagerOptions } from './utils/npm';
-import { createFormatter } from './utils/logger';
 
 import * as ionic1ServeLibType from './project/ionic1/serve';
 import * as ionicAngularServeLibType from './project/ionic-angular/serve';
@@ -81,7 +81,12 @@ export interface ServeRunnerDeps {
   readonly shell: IShell;
 }
 
-export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, ServeDetails> {
+export interface ServeRunner<T extends ServeOptions> {
+  on(event: 'cli-utility-spawn', handler: (cp: ChildProcess) => void): this;
+  emit(event: 'cli-utility-spawn', cp: ChildProcess): boolean;
+}
+
+export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter implements Runner<T, ServeDetails> {
   protected readonly config: IConfig;
   protected readonly log: ILogger;
   protected readonly project: IProject;
@@ -390,7 +395,8 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       labArgs.push('--ssl', '--ssl-key', details.ssl.key, '--ssl-cert', details.ssl.cert);
     }
 
-    const p = await this.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.project.directory });
+    const p = this.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.project.directory });
+    this.emit('cli-utility-spawn', p);
 
     return new Promise<void>((resolve, reject) => {
       p.on('error', err => {
@@ -400,8 +406,8 @@ export abstract class ServeRunner<T extends ServeOptions> extends Runner<T, Serv
       onBeforeExit(async () => p.kill());
 
       const log = this.log.clone();
-      log.setFormatter(createFormatter({ prefix: chalk.dim('[lab]'), wrap: false }));
-      const ws = log.createWriteStream(LOGGER_LEVELS.INFO, false);
+      log.setFormatter(createPrefixedFormatter(chalk.dim('[lab]')));
+      const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
 
       const stdoutFilter = through2(function(chunk, enc, callback) {
         const str = chunk.toString();
@@ -496,6 +502,17 @@ class ServeAfterHook extends Hook {
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
   try {
     const runner = await ServeRunner.createFromProjectType(env, env.project.type);
+
+    runner.on('cli-utility-spawn', cp => {
+      cp.on('close', code => {
+        env.log.error(
+          `A utility CLI has unexpectedly closed.\n` +
+          'The Ionic CLI will exit. Please check any output above for error details.'
+        );
+        processExit(1);
+      });
+    });
+
     const opts = runner.createOptionsFromCommandLine(inputs, options);
     const details = await runner.run(opts);
 

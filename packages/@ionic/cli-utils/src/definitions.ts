@@ -50,6 +50,10 @@ export interface ProjectFileProxy {
   rejectUnauthorized: boolean;
 }
 
+export interface Runner<T extends object, U> {
+  run(options: T): Promise<U>;
+}
+
 export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom';
 export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after';
 
@@ -314,6 +318,7 @@ export interface IShellOutputOptions extends IShellSpawnOptions {
 }
 
 export interface IShellRunOptions extends IShellOutputOptions {
+  stream?: NodeJS.WritableStream;
   fatalOnNotFound?: boolean;
   truncateErrorOutput?: number;
 }
@@ -321,7 +326,7 @@ export interface IShellRunOptions extends IShellOutputOptions {
 export interface IShell {
   run(command: string, args: string[], options: IShellRunOptions): Promise<void>;
   output(command: string, args: string[], options: IShellOutputOptions): Promise<string>;
-  spawn(command: string, args: string[], options: IShellSpawnOptions): Promise<ChildProcess>;
+  spawn(command: string, args: string[], options: IShellSpawnOptions): ChildProcess;
   cmdinfo(cmd: string, args?: string[]): Promise<string | undefined>;
 }
 

@@ -2,10 +2,9 @@ import chalk from 'chalk';
 
 import { BaseError } from '@ionic/cli-framework/lib/errors';
 
-import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironment, ProjectType } from '../definitions';
+import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironment, ProjectType, Runner } from '../definitions';
 import { PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
-import { Runner } from './runner';
 import { Hook } from './hooks';
 
 import * as ionic1BuildLibType from './project/ionic1/build';
@@ -33,14 +32,13 @@ export interface BuildRunnerDeps {
   readonly shell: IShell;
 }
 
-export abstract class BuildRunner<T extends BuildOptions<any>> extends Runner<T, void> {
+export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner<T, void> {
   protected readonly config: IConfig;
   protected readonly log: ILogger;
   protected readonly project: IProject;
   protected readonly shell: IShell;
 
   constructor({ config, log, project, shell }: BuildRunnerDeps) {
-    super();
     this.config = config;
     this.log = log;
     this.project = project;

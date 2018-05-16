@@ -27,7 +27,7 @@ export class Shell implements IShell {
     this.projectDir = projectDir;
   }
 
-  async run(command: string, args: string[], { showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<void> {
+  async run(command: string, args: string[], { stream, showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<void> {
     this.prepareSpawnOptions(crossSpawnOptions);
     const cmd = new ShellCommand(command, args, crossSpawnOptions);
 
@@ -38,7 +38,7 @@ export class Shell implements IShell {
       this.log.rawmsg(`> ${chalk.green(fullCmd)}`);
     }
 
-    const ws = showCommand ? this.log.createWriteStream(LOGGER_LEVELS.INFO, false) : new NullStream();
+    const ws = showCommand ? (stream ? stream : this.log.createWriteStream(LOGGER_LEVELS.INFO, false)) : new NullStream();
     const outstream = combineStreams(split2(), ws);
     const errstream = combineStreams(split2(), ws);
 
@@ -122,7 +122,7 @@ export class Shell implements IShell {
     }
   }
 
-  async spawn(command: string, args: string[], { showCommand = true, ...crossSpawnOptions }: IShellSpawnOptions): Promise<ChildProcess> {
+  spawn(command: string, args: string[], { showCommand = true, ...crossSpawnOptions }: IShellSpawnOptions): ChildProcess {
     this.prepareSpawnOptions(crossSpawnOptions);
 
     const cmd = new ShellCommand(command, args, crossSpawnOptions);

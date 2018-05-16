@@ -6,7 +6,7 @@ import * as Debug from 'debug';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
-import { LOGGER_LEVELS, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, ParsedArgs, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { pathAccessible } from '@ionic/cli-framework/utils/fs';
 import { findClosestOpenPort, isHostConnectable } from '@ionic/cli-framework/utils/network';
@@ -14,7 +14,6 @@ import { findClosestOpenPort, isHostConnectable } from '@ionic/cli-framework/uti
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
 import { CommandGroup, OptionGroup } from '../../../constants';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
-import { createFormatter } from '../../utils/logger';
 import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
 import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './utils';
 
@@ -171,7 +170,8 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       args = ['serve', ...args];
     }
 
-    const p = await this.shell.spawn(program, args, shellOptions);
+    const p = this.shell.spawn(program, args, shellOptions);
+    this.emit('cli-utility-spawn', p);
 
     return new Promise<ServeCmdDetails>((resolve, reject) => {
       p.on('error', (err: NodeJS.ErrnoException) => {
@@ -185,8 +185,8 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       onBeforeExit(async () => p.kill());
 
       const log = this.log.clone();
-      log.setFormatter(createFormatter({ prefix: chalk.dim(`[${program}]`), wrap: false }));
-      const ws = log.createWriteStream(LOGGER_LEVELS.INFO, false);
+      log.setFormatter(createPrefixedFormatter(chalk.dim(`[${program}]`)));
+      const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
 
       if (program === DEFAULT_PROGRAM) {
         const stdoutFilter = through2(function(chunk, enc, callback) {

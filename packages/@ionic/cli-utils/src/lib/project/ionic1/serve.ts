@@ -7,7 +7,7 @@ import * as through2 from 'through2';
 import * as split2 from 'split2';
 import * as proxyMiddlewareType from 'http-proxy-middleware'; // tslint:disable-line:no-implicit-dependencies
 
-import { LOGGER_LEVELS } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { isHostConnectable } from '@ionic/cli-framework/utils/network';
@@ -15,7 +15,6 @@ import { isHostConnectable } from '@ionic/cli-framework/utils/network';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1ServeOptions, ProjectFileProxy, ServeDetails } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
-import { createFormatter } from '../../utils/logger';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
 import { findOpenIonicPorts } from '../common';
 
@@ -204,7 +203,8 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
       args = [...v1utilArgs, ...args];
     }
 
-    const p = await this.shell.spawn(program, args, shellOptions);
+    const p = this.shell.spawn(program, args, shellOptions);
+    this.emit('cli-utility-spawn', p);
 
     return new Promise<ServeCmdDetails>((resolve, reject) => {
       p.on('error', (err: NodeJS.ErrnoException) => {
@@ -218,8 +218,8 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
       onBeforeExit(async () => p.kill());
 
       const log = this.log.clone();
-      log.setFormatter(createFormatter({ prefix: chalk.dim(`[${program === DEFAULT_PROGRAM ? 'v1' : program}]`), wrap: false }));
-      const ws = log.createWriteStream(LOGGER_LEVELS.INFO, false);
+      log.setFormatter(createPrefixedFormatter(chalk.dim(`[${program === DEFAULT_PROGRAM ? 'v1' : program}]`)));
+      const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
 
       if (program === DEFAULT_PROGRAM) {
         const stdoutFilter = through2(function(chunk, enc, callback) {

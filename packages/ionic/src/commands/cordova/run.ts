@@ -1,19 +1,9 @@
 import chalk from 'chalk';
 
+import { LOGGER_LEVELS, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
-import {
-  BuildOptions,
-  CommandInstanceInfo,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandMetadataOption,
-  CommandPreRun,
-  OptionGroup,
-  ServeOptions,
-} from '@ionic/cli-utils';
-
+import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, OptionGroup, ServeOptions } from '@ionic/cli-utils';
 import { FatalException, RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
 import { BuildRunner, COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, ServeRunner } from '@ionic/cli-utils/lib/serve';
@@ -219,15 +209,19 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
       conf.writeContentSrc(`${details.protocol || 'http'}://${details.externalAddress}:${details.port}`);
       await conf.save();
+
+      const log = this.env.log.clone();
+      log.setFormatter(createPrefixedFormatter(`${chalk.dim(`[cordova]`)} `));
+      const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
+
+      await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: ws });
     } else {
       if (options.build) {
         const { build } = await import('@ionic/cli-utils/lib/build');
         await build(this.env, inputs, generateBuildOptions(metadata, inputs, options));
       }
-    }
 
-    // TODO
-    // await this.runCordova(filterArgumentsForCordova(metadata, options), { logOptions: { prefix: chalk.dim('[cordova]'), wrap: false } });
-    await this.runCordova(filterArgumentsForCordova(metadata, options));
+      await this.runCordova(filterArgumentsForCordova(metadata, options));
+    }
   }
 }
