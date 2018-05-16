@@ -19,10 +19,11 @@ describe('@ionic/cli-utils', () => {
           expect(result).toEqual('/path/to/proj/src');
         });
 
-        it('should should set the src relative to the project root', async () => {
+        it('should should set the src root relative to the project root', async () => {
+          const sourceRoot = 'relative/path/to/src';
           const p = new Project('/path/to/proj', 'file', {});
-          const result = await p.getSourceDir('relative/path');
-          expect(result).toEqual('/path/to/proj/relative/path/src');
+          const result = await p.getSourceDir(sourceRoot);
+          expect(result).toEqual(`/path/to/proj/${sourceRoot}`);
         });
 
       });

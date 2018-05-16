@@ -57,10 +57,10 @@ describe('@ionic/cli-utils', () => {
           expect(result).toEqual({ ...defaults, address: 'localhost', devapp: false });
         });
 
-        it('should respect --project flag', () => {
+        it('should respect --project and --configuration flags', () => {
           const runner = new ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { project: 'app' });
-          expect(result).toEqual({ ...defaults, project: 'app' });
+          const result = runner.createOptionsFromCommandLine([], { project: 'app', configuration: 'production' });
+          expect(result).toEqual({ ...defaults, project: 'app', configuration: 'production' });
         });
 
         it('should pass on separated args', () => {

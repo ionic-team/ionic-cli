@@ -35,7 +35,7 @@ export async function addCordovaEngineForAngular(project: IProject, platform: st
     throw new FatalException(`${chalk.bold(`projects.${appName || angularJson.defaultProject}`)} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot add assets.`);
   }
 
-  const srcDir = await project.getSourceDir(angularApp.root);
+  const srcDir = await project.getSourceDir(angularApp.sourceRoot || path.resolve(angularApp.root, 'src'));
   const buildOptions = angularApp.architect.build.options;
 
   const cordovaAssets = { glob: '**/*', input: platformWWW, output: './' };
@@ -56,7 +56,7 @@ export async function removeCordovaEngineForAngular(project: IProject, platform:
     throw new FatalException(`${chalk.bold(`projects.${appName || angularJson.defaultProject}`)} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot remove assets.`);
   }
 
-  const srcDir = await project.getSourceDir(angularApp.root);
+  const srcDir = await project.getSourceDir(angularApp.sourceRoot || path.resolve(angularApp.root, 'src'));
   const buildOptions = angularApp.architect.build.options;
 
   buildOptions.assets = buildOptions.assets.filter((asset: any) => !asset.input || !asset.input.endsWith('platform_www'));

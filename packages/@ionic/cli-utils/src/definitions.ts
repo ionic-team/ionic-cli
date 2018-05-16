@@ -268,7 +268,7 @@ export interface IProject extends IBaseConfig<ProjectFile> {
   type?: ProjectType;
 
   getDocsUrl(): Promise<string>;
-  getSourceDir(relativeRoot?: string): Promise<string>;
+  getSourceDir(sourceRoot?: string): Promise<string>;
   getDistDir(): Promise<string>;
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
@@ -748,6 +748,7 @@ export interface AngularConfig {
   projects: {
     [key: string]: {
       root: string;
+      sourceRoot: string;
       architect: any;
     } | undefined;
   };
