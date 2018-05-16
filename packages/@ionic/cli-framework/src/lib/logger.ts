@@ -188,7 +188,7 @@ export class Logger {
    * @param level The logger level. If omitted, the default output is used.
    */
   nl(num = 1, level?: LoggerLevelWeight): void {
-    this.log({ format: false, ...this.createRecord('\n'.repeat(num), level) });
+    this.log({ ...this.createRecord('\n'.repeat(num), level), format: false });
   }
 
   /**
@@ -230,7 +230,11 @@ export interface CreateTaggedFormatterOptions {
 }
 
 export function createTaggedFormatter({ colors = DEFAULT_COLORS, prefix = '', titleize, wrap }: CreateTaggedFormatterOptions = {}): LoggerFormatter {
-  return ({ logger, msg, level }) => {
+  return ({ logger, msg, level, format }) => {
+    if (format === false) {
+      return msg;
+    }
+
     const { strong, weak } = colors;
 
     const [ firstLine, ...lines ] = msg.split('\n');

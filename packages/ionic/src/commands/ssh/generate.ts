@@ -74,7 +74,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
 
     if (!(await pathExists(keyPathDir))) {
       await fsMkdirp(keyPathDir, 0o700);
-      this.env.log.msg(`Created ${chalk.bold(prettyPath(keyPathDir))} directory for you.\n`);
+      this.env.log.msg(`Created ${chalk.bold(prettyPath(keyPathDir))} directory for you.`);
     }
 
     if (await pathExists(keyPath)) {

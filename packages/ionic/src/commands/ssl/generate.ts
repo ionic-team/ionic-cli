@@ -160,7 +160,7 @@ The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert
   private async ensureDirectory(p: string) {
     if (!(await pathExists(p))) {
       await fsMkdirp(p, 0o700);
-      this.env.log.msg(`Created ${chalk.bold(prettyPath(p))} directory for you.\n`);
+      this.env.log.msg(`Created ${chalk.bold(prettyPath(p))} directory for you.`);
     }
   }
 

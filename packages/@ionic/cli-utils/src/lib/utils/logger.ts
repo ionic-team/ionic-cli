@@ -6,11 +6,11 @@ import { ILogger } from '../../definitions';
 
 export class Logger extends BaseLogger implements ILogger {
   ok(msg: string): void {
-    this.log({ format: false, ...this.createRecord(`${chalk.dim('[')}${chalk.bold.green('OK')}${chalk.dim(']')} ${msg}`) });
+    this.log({ ...this.createRecord(`${chalk.dim('[')}${chalk.bold.green('OK')}${chalk.dim(']')} ${msg}`), format: false });
   }
 
   rawmsg(msg: string): void {
-    this.log({ format: false, ...this.createRecord(msg) });
+    this.log({ ...this.createRecord(msg), format: false });
   }
 }
 
