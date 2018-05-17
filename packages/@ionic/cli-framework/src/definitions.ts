@@ -1,6 +1,6 @@
 import * as os from 'os';
 
-import * as minimistType from 'minimist';
+import { Opts as ParseArgsOptions, ParsedArgs } from 'minimist';
 
 import { AliasedMap } from './utils/object';
 
@@ -11,7 +11,7 @@ export type Validator = (input?: string, key?: string) => true | string;
 
 export type CommandLineInputs = string[];
 
-export interface CommandLineOptions extends minimistType.ParsedArgs {
+export interface CommandLineOptions extends ParsedArgs {
   [arg: string]: ParsedArg;
 }
 
@@ -41,7 +41,9 @@ export interface HydratedCommandOption {
   aliases: string[];
 }
 
-export interface HydratedParseArgsOptions extends minimistType.Opts {
+export { ParseArgsOptions };
+
+export interface HydratedParseArgsOptions extends ParseArgsOptions {
   string: string[];
   boolean: string[];
   alias: { [key: string]: string[]; };

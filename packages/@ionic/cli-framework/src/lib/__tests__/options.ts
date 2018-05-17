@@ -208,6 +208,11 @@ describe('@ionic/cli-framework', () => {
         expect(result).toEqual(['foo', 'bar', '--cat="meow meow meow"', '--', '--', '--claws']);
       });
 
+      it('should account for aliases', () => {
+        const result = unparseArgs({ _: [], foo: 'foo', fo: 'foo', f: 'foo', bar: 'bar', b: 'bar', baz: 'baz' }, {}, { alias: { foo: ['f', 'fo'], bar: 'b' } });
+        expect(result).toEqual(['--foo=foo', '--bar=bar', '--baz=baz']);
+      });
+
     });
 
     describe('filterCommandLineOptions', () => {

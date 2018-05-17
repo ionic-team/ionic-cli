@@ -178,7 +178,7 @@ export interface UnparseArgsOptions {
  * Based on dargs, by sindresorhus
  * @see https://github.com/sindresorhus/dargs/blob/master/license
  */
-export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, useEquals = true, ignoreFalse = true, allowCamelCase }: UnparseArgsOptions): string[] {
+export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, useEquals = true, ignoreFalse = true, allowCamelCase }: UnparseArgsOptions = {}, parseArgsOptions?: minimist.Opts): string[] {
   const args = [...parsedArgs['_'] || []];
   const separatedArgs = parsedArgs['--'];
 
@@ -204,7 +204,18 @@ export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, 
     }
   };
 
-  const pairs = lodash.toPairs(parsedArgs).filter(([k]) => k !== '_' && k !== '--');
+  // Normalize the alias definitions from the options for `parseArgs`.
+  const aliasDef: { [key: string]: string[]; } = parseArgsOptions && parseArgsOptions.alias
+    ? lodash.mapValues(parseArgsOptions.alias, v => Array.isArray(v) ? v : [v])
+    : {};
+
+  // Construct a mapping of alias to original key name.
+  const aliases = new Map<string, string>(lodash.flatten(Object.keys(aliasDef).map(k => aliasDef[k].map((a): [string, string] => [a, k]))));
+
+  // Convert the parsed args to an array of 2-tuples of shape [key, value].
+  // Then, filter out the `_` (positional argument list) and `--` (separated
+  // args). Also filter out aliases whose original key is defined.
+  const pairs = lodash.toPairs(parsedArgs).filter(([k]) => k !== '_' && k !== '--' && !(aliases.get(k) && typeof parsedArgs[k] !== 'undefined'));
 
   for (const [ key, val ] of pairs) {
     if (val === true) {

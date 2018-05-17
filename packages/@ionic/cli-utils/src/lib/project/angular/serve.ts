@@ -245,7 +245,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       }
     }
 
-    return [...unparseArgs(args, {}), ...options['--']];
+    return [...unparseArgs(args), ...options['--']];
   }
 
   async detectProxyConfig(): Promise<string | undefined> {

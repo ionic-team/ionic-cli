@@ -80,7 +80,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       }
     }
 
-    return [...unparseArgs(args, {}), ...options['--']];
+    return [...unparseArgs(args), ...options['--']];
   }
 
   async beforeBuild(options: AngularBuildOptions): Promise<void> {
