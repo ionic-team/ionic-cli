@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import * as split2 from 'split2';
 
 import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommand, ShellCommandError } from '@ionic/cli-framework';
-import { createProcessEnv } from '@ionic/cli-framework/utils/process';
+import { createProcessEnv, onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { NullStream, combineStreams } from '@ionic/cli-framework/utils/streams';
 
 import { ILogger, IShell, IShellOutputOptions, IShellRunOptions, IShellSpawnOptions } from '../definitions';
@@ -27,7 +27,7 @@ export class Shell implements IShell {
     this.projectDir = projectDir;
   }
 
-  async run(command: string, args: string[], { stream, showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<void> {
+  async run(command: string, args: string[], { stream, killOnExit = true, showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<void> {
     this.prepareSpawnOptions(crossSpawnOptions);
     const cmd = new ShellCommand(command, args, crossSpawnOptions);
 
@@ -43,7 +43,13 @@ export class Shell implements IShell {
     const errstream = combineStreams(split2(), ws);
 
     try {
-      await cmd.pipedOutput(outstream, errstream);
+      const promise = cmd.pipedOutput(outstream, errstream);
+
+      if (killOnExit) {
+        onBeforeExit(async () => promise.p.kill());
+      }
+
+      await promise;
     } catch (e) {
       if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
         if (fatalOnNotFound) {

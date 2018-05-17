@@ -170,6 +170,17 @@ describe('@ionic/cli-framework', () => {
         await expect(p).rejects.toThrow('Non-zero exit from subprocess.');
       });
 
+      it('should have child process in pipedOutput() return value', async () => {
+        const cmd = new ShellCommand('cmd', []);
+        const mockSpawnStdout = new ReadableStreamBuffer();
+        const mockSpawnStderr = new ReadableStreamBuffer();
+        const cp = new class extends EventEmitter { stdout = mockSpawnStdout; stderr = mockSpawnStderr; };
+        mockSpawn.mockImplementation(() => cp);
+        const buf = new WritableStreamBuffer();
+        const p = cmd.pipedOutput(buf, buf);
+        expect(p.p).toBe(cp);
+      });
+
       it('should resolve stdout and stderr in combinedOutput()', async () => {
         const cmd = new ShellCommand('cmd', []);
         const mockSpawnStdout = new ReadableStreamBuffer();

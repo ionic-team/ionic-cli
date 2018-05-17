@@ -83,7 +83,7 @@ export class ShellCommand {
     return (await buf.closeAndConsume()).toString();
   }
 
-  async pipedOutput(stdout: NodeJS.WritableStream, stderr: NodeJS.WritableStream): Promise<void> {
+  pipedOutput(stdout: NodeJS.WritableStream, stderr: NodeJS.WritableStream): Promise<void> & { p: ChildProcess; } {
     const p = this.spawn();
 
     if (p.stdout) {
@@ -94,7 +94,7 @@ export class ShellCommand {
       p.stderr.pipe(stderr, { end: false });
     }
 
-    return new Promise<void>((resolve, reject) => {
+    const promise = new Promise<void>((resolve, reject) => {
       p.on('error', (error: NodeJS.ErrnoException) => {
         let err: ShellCommandError;
 
@@ -121,6 +121,12 @@ export class ShellCommand {
         }
       });
     });
+
+    Object.defineProperties(promise, {
+      p: { value: p },
+    });
+
+    return <any>promise;
   }
 
   spawn(): ChildProcess {

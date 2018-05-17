@@ -319,6 +319,7 @@ export interface IShellOutputOptions extends IShellSpawnOptions {
 
 export interface IShellRunOptions extends IShellOutputOptions {
   stream?: NodeJS.WritableStream;
+  killOnExit?: boolean;
   fatalOnNotFound?: boolean;
   truncateErrorOutput?: number;
 }
