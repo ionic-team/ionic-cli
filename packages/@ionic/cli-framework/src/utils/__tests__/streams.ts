@@ -133,15 +133,6 @@ describe('@ionic/cli-framework', () => {
         expect(result.toString()).toEqual('hello');
       });
 
-      it('should close and consume', async () => {
-        const wsb = new WritableStreamBuffer();
-        const msg = 'hello world!';
-        wsb.write(msg);
-        const result = await wsb.closeAndConsume();
-        expect(result.toString()).toEqual('hello world!');
-        expect(() => wsb.write('hi')).toThrow('write after end');
-      });
-
       it('should be writable after consume', () => {
         const wsb = new WritableStreamBuffer();
         const msg1 = 'hello world!';

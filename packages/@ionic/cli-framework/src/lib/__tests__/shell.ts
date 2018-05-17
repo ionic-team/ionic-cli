@@ -7,6 +7,8 @@ describe('@ionic/cli-framework', () => {
 
   describe('lib/shell', () => {
 
+    jest.setTimeout(300);
+
     describe('expandTildePath', () => {
 
       jest.resetModules();
@@ -151,8 +153,8 @@ describe('@ionic/cli-framework', () => {
         cp.emit('close', 0);
         await p;
         expect(mockSpawn).toHaveBeenCalledTimes(1);
-        expect((await stdoutMock.closeAndConsume()).toString()).toEqual('hello world!');
-        expect((await stderrMock.closeAndConsume()).toString()).toEqual('oh no!');
+        expect(stdoutMock.consume().toString()).toEqual('hello world!');
+        expect(stderrMock.consume().toString()).toEqual('oh no!');
       });
 
       it('should error for non-zero exit', async () => {

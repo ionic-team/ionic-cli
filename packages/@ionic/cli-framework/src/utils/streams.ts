@@ -130,10 +130,6 @@ export class WritableStreamBuffer extends Writable {
 
     return data;
   }
-
-  closeAndConsume(): Promise<Buffer> {
-    return new Promise<Buffer>(resolve => this.end(() => resolve(this.consume())));
-  }
 }
 
 export function growBufferForAppendedData(buf: Buffer, actualsize: number, appendsize: number): Buffer {

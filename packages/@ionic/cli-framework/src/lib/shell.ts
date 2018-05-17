@@ -48,11 +48,11 @@ export class ShellCommand {
     const combinedBuf = new WritableStreamBuffer();
 
     stdoutBuf.once('pipe', src => {
-      src.pipe(combinedBuf, { end: false });
+      src.pipe(combinedBuf);
     });
 
     stderrBuf.once('pipe', src => {
-      src.pipe(combinedBuf, { end: false });
+      src.pipe(combinedBuf);
     });
 
     try {
@@ -60,14 +60,14 @@ export class ShellCommand {
     } catch (e) {
       stdoutBuf.end();
       stderrBuf.end();
-      e.output = (await combinedBuf.closeAndConsume()).toString();
+      e.output = combinedBuf.consume().toString();
       throw e;
     }
 
     stderrBuf.end();
     combinedBuf.end();
 
-    return (await stdoutBuf.closeAndConsume()).toString();
+    return stdoutBuf.consume().toString();
   }
 
   async combinedOutput(): Promise<string> {
@@ -76,22 +76,22 @@ export class ShellCommand {
     try {
       await this.pipedOutput(buf, buf);
     } catch (e) {
-      e.output = (await buf.closeAndConsume()).toString();
+      e.output = buf.consume().toString();
       throw e;
     }
 
-    return (await buf.closeAndConsume()).toString();
+    return buf.consume().toString();
   }
 
   pipedOutput(stdout: NodeJS.WritableStream, stderr: NodeJS.WritableStream): Promise<void> & { p: ChildProcess; } {
     const p = this.spawn();
 
     if (p.stdout) {
-      p.stdout.pipe(stdout, { end: false });
+      p.stdout.pipe(stdout);
     }
 
     if (p.stderr) {
-      p.stderr.pipe(stderr, { end: false });
+      p.stderr.pipe(stderr);
     }
 
     const promise = new Promise<void>((resolve, reject) => {
