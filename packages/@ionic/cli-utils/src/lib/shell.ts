@@ -7,7 +7,7 @@ import * as split2 from 'split2';
 
 import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommand, ShellCommandError } from '@ionic/cli-framework';
 import { createProcessEnv, onBeforeExit } from '@ionic/cli-framework/utils/process';
-import { NullStream, combineStreams } from '@ionic/cli-framework/utils/streams';
+import { combineStreams } from '@ionic/cli-framework/utils/streams';
 
 import { ILogger, IShell, IShellOutputOptions, IShellRunOptions, IShellSpawnOptions } from '../definitions';
 import { isExitCodeException } from '../guards';
@@ -38,12 +38,18 @@ export class Shell implements IShell {
       this.log.rawmsg(`> ${chalk.green(fullCmd)}`);
     }
 
-    const ws = showCommand ? (stream ? stream : this.log.createWriteStream(LOGGER_LEVELS.INFO, false)) : new NullStream();
-    const outstream = combineStreams(split2(), ws);
-    const errstream = combineStreams(split2(), ws);
+    const ws = stream ? stream : this.log.createWriteStream(LOGGER_LEVELS.INFO, false);
 
     try {
-      const promise = cmd.pipedOutput(outstream, errstream);
+      const promise = cmd.run();
+
+      if (promise.p.stdout) {
+        promise.p.stdout.pipe(combineStreams(split2(), ws));
+      }
+
+      if (promise.p.stderr) {
+        promise.p.stderr.pipe(combineStreams(split2(), ws));
+      }
 
       if (killOnExit) {
         onBeforeExit(async () => promise.p.kill());

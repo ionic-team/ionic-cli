@@ -89,7 +89,7 @@ export class ReadableStreamBuffer extends Readable {
     }
 
     if (!done) {
-      setImmediate(() => this._send());
+      setTimeout(() => this._send(), 1);
     }
   }
 }

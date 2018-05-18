@@ -136,7 +136,7 @@ describe('@ionic/cli-framework', () => {
         expect(mockSpawn).toHaveBeenCalledWith(name, args, options);
       });
 
-      it('should pipe stdout and stderr in pipedOutput()', async () => {
+      it('should pipe stdout and stderr in run()', async () => {
         const cmd = new ShellCommand('cmd', []);
         const mockSpawnStdout = new ReadableStreamBuffer();
         const mockSpawnStderr = new ReadableStreamBuffer();
@@ -144,14 +144,16 @@ describe('@ionic/cli-framework', () => {
         mockSpawn.mockImplementation(() => cp);
         const stdoutMock = new WritableStreamBuffer();
         const stderrMock = new WritableStreamBuffer();
-        const p = cmd.pipedOutput(stdoutMock, stderrMock);
+        const promise = cmd.run();
+        promise.p.stdout.pipe(stdoutMock);
+        promise.p.stderr.pipe(stderrMock);
         mockSpawnStdout.feed('hello world!');
         mockSpawnStdout.stop();
         mockSpawnStderr.feed('oh no!');
         mockSpawnStderr.stop();
-        await Promise.all([promisifyEvent(mockSpawnStdout, 'end'), promisifyEvent(mockSpawnStderr, 'end')]);
+        await Promise.all([promisifyEvent(stdoutMock, 'finish'), promisifyEvent(stderrMock, 'finish')]);
         cp.emit('close', 0);
-        await p;
+        await promise;
         expect(mockSpawn).toHaveBeenCalledTimes(1);
         expect(stdoutMock.consume().toString()).toEqual('hello world!');
         expect(stderrMock.consume().toString()).toEqual('oh no!');
@@ -164,23 +166,25 @@ describe('@ionic/cli-framework', () => {
         const cp = new class extends EventEmitter { stdout = mockSpawnStdout; stderr = mockSpawnStderr; };
         mockSpawn.mockImplementation(() => cp);
         const buf = new WritableStreamBuffer();
-        const p = cmd.pipedOutput(buf, buf);
+        const promise = cmd.run();
+        promise.p.stdout.pipe(buf);
+        promise.p.stderr.pipe(buf);
         mockSpawnStdout.stop();
         mockSpawnStderr.stop();
-        await Promise.all([promisifyEvent(mockSpawnStdout, 'end'), promisifyEvent(mockSpawnStderr, 'end')]);
+        await promisifyEvent(buf, 'finish');
         cp.emit('close', 1);
-        await expect(p).rejects.toThrow('Non-zero exit from subprocess.');
+        await expect(promise).rejects.toThrow('Non-zero exit from subprocess.');
       });
 
-      it('should have child process in pipedOutput() return value', async () => {
+      it('should have child process in run() return value', async () => {
         const cmd = new ShellCommand('cmd', []);
         const mockSpawnStdout = new ReadableStreamBuffer();
         const mockSpawnStderr = new ReadableStreamBuffer();
         const cp = new class extends EventEmitter { stdout = mockSpawnStdout; stderr = mockSpawnStderr; };
         mockSpawn.mockImplementation(() => cp);
         const buf = new WritableStreamBuffer();
-        const p = cmd.pipedOutput(buf, buf);
-        expect(p.p).toBe(cp);
+        const promise = cmd.run(buf, buf);
+        expect(promise.p).toBe(cp);
       });
 
       it('should resolve stdout and stderr in combinedOutput()', async () => {
