@@ -8,7 +8,7 @@ import {
 
 import { stripAnsi } from '../../utils/format';
 import { DISABLED_COLORS } from '../colors';
-import { CommandHelpFormatter, NamespaceHelpFormatter } from '../help';
+import { CommandStringHelpFormatter, NamespaceStringHelpFormatter, NamespaceSchemaHelpFormatter } from '../help';
 
 class MyNamespace extends Namespace {
   async getMetadata() {
@@ -91,7 +91,7 @@ class BarCommand extends Command {
         { name: 'input2', summary: 'input2 summary' },
       ],
       options: [
-        { name: 'opt1', summary: 'opt1 summary' },
+        { name: 'opt1', summary: 'opt1 summary', aliases: ['o'] },
         { name: 'opt2', summary: 'opt2 summary' },
       ],
       exampleCommands: ['', 'input1 input2', '--opt1 --opt2'],
@@ -118,7 +118,6 @@ class FooCommand extends Command {
   async getMetadata() {
     return {
       name: 'foo',
-      type: 'global',
       summary: 'the foo command',
     };
   }
@@ -131,12 +130,12 @@ describe('@ionic/cli-framework', () => {
 
   describe('lib/help', () => {
 
-    describe('CommandHelpFormatter', () => {
+    describe('CommandStringHelpFormatter', () => {
 
       it('should format a command appropriately', async () => {
         const myns = new MyNamespace();
         const location = await myns.locate(['foo', 'bar']);
-        const formatter = new CommandHelpFormatter({ location, command: location.obj });
+        const formatter = new CommandStringHelpFormatter({ location, command: location.obj });
         const result = await formatter.format();
 
         expect(stripAnsi(result)).toEqual(`
@@ -155,7 +154,7 @@ describe('@ionic/cli-framework', () => {
 
   Options:
 
-    --opt1 ................... opt1 summary
+    --opt1, -o ............... opt1 summary
     --opt2 ................... opt2 summary
 
   Examples:
@@ -169,12 +168,12 @@ describe('@ionic/cli-framework', () => {
 
     });
 
-    describe('NamespaceHelpFormatter', () => {
+    describe('NamespaceStringHelpFormatter', () => {
 
       it('should format a namespace appropriately', async () => {
         const myns = new MyNamespace();
         const location = await myns.locate([]);
-        const formatter = new NamespaceHelpFormatter({ location, namespace: location.obj });
+        const formatter = new NamespaceStringHelpFormatter({ location, namespace: location.obj });
         const result = await formatter.format();
 
         expect(stripAnsi(result)).toEqual(`
@@ -196,7 +195,7 @@ describe('@ionic/cli-framework', () => {
       it('should format a subnamespace appropriately', async () => {
         const myns = new MyNamespace();
         const location = await myns.locate(['foo']);
-        const formatter = new NamespaceHelpFormatter({ location, namespace: location.obj });
+        const formatter = new NamespaceStringHelpFormatter({ location, namespace: location.obj });
         const result = await formatter.format();
 
         expect(stripAnsi(result)).toEqual(`
@@ -214,6 +213,115 @@ describe('@ionic/cli-framework', () => {
     baz ...................... the baz command (aliases: b1, b2)
 
 `);
+      });
+
+    });
+
+    describe('NamespaceSchemaHelpFormatter', () => {
+
+      it('should produce expected output for root namespace', async () => {
+        const expected = {
+          "name": "my",
+          "summary": "the my namespace",
+          "description": "",
+          "aliases": [],
+          "commands": [
+            {
+              "name": "my bar",
+              "namespace": [
+                "my"
+              ],
+              "summary": "the bar command",
+              "description": "my description",
+              "exampleCommands": [
+                "my bar ",
+                "my bar input1 input2",
+                "my bar --opt1 --opt2"
+              ],
+              "aliases": [],
+              "options": [
+                {
+                  "name": "opt1",
+                  "type": "string",
+                  "summary": "opt1 summary",
+                  "aliases": [
+                    "o"
+                  ]
+                },
+                {
+                  "name": "opt2",
+                  "type": "string",
+                  "summary": "opt2 summary",
+                  "aliases": []
+                }
+              ]
+            },
+            {
+              "name": "my foo bar",
+              "namespace": [
+                "my",
+                "foo"
+              ],
+              "summary": "the bar command",
+              "description": "my description",
+              "exampleCommands": [
+                "my foo bar ",
+                "my foo bar input1 input2",
+                "my foo bar --opt1 --opt2"
+              ],
+              "aliases": [
+                "my foo b"
+              ],
+              "options": [
+                {
+                  "name": "opt1",
+                  "type": "string",
+                  "summary": "opt1 summary",
+                  "aliases": [
+                    "o"
+                  ]
+                },
+                {
+                  "name": "opt2",
+                  "type": "string",
+                  "summary": "opt2 summary",
+                  "aliases": []
+                }
+              ]
+            },
+            {
+              "name": "my foo baz",
+              "namespace": [
+                "my",
+                "foo"
+              ],
+              "summary": "the baz command",
+              "description": "",
+              "exampleCommands": [],
+              "aliases": [
+                "my foo b1",
+                "my foo b2"
+              ],
+              "options": []
+            },
+            {
+              "name": "my defns",
+              "namespace": [
+                "my"
+              ],
+              "summary": "the default command",
+              "description": "",
+              "exampleCommands": [],
+              "aliases": [],
+              "options": []
+            }
+          ]
+        };
+        const myns = new MyNamespace();
+        const location = await myns.locate([]);
+        const formatter = new NamespaceSchemaHelpFormatter({ location, namespace: location.obj });
+        const result = await formatter.serialize();
+        expect(result).toEqual(expected);
       });
 
     });

@@ -16,16 +16,24 @@ export class HelpCommand extends Command {
           summary: 'The command you desire help with',
         },
       ],
+      options: [
+        {
+          name: 'json',
+          summary: 'Print help in JSON format',
+          type: Boolean,
+        },
+      ],
       groups: [CommandGroup.Hidden],
     };
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { CommandHelpFormatter, NamespaceHelpFormatter } = await import('@ionic/cli-utils/lib/help');
+    const { CommandSchemaHelpFormatter, CommandStringHelpFormatter, NamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter } = await import('@ionic/cli-utils/lib/help');
     const location = await this.namespace.locate(inputs);
 
     if (isCommand(location.obj)) {
-      const formatter = new CommandHelpFormatter({ location, command: location.obj });
+      const formatterOptions = { location, command: location.obj };
+      const formatter = options['json'] ? new CommandSchemaHelpFormatter(formatterOptions) : new CommandStringHelpFormatter(formatterOptions);
       this.env.log.rawmsg(await formatter.format());
     } else {
       if (location.args.length > 0) {
@@ -41,13 +49,14 @@ export class HelpCommand extends Command {
       const version = this.env.ctx.version;
       const suffix = now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
 
-      const formatter = new NamespaceHelpFormatter({
+      const formatterOptions = {
         inProject: this.env.project.directory ? true : false,
         version: prefix + version + suffix,
         location,
         namespace: location.obj,
-      });
+      };
 
+      const formatter = options['json'] ? new NamespaceSchemaHelpFormatter(formatterOptions) : new NamespaceStringHelpFormatter(formatterOptions);
       this.env.log.rawmsg(await formatter.format());
     }
   }

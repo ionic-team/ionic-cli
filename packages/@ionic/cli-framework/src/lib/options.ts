@@ -7,7 +7,7 @@ import {
   CommandMetadataInput,
   CommandMetadataOption,
   CommandOptionType,
-  HydratedCommandOption,
+  HydratedCommandMetadataOption,
   HydratedParseArgsOptions,
   MetadataGroup,
   ParsedArg,
@@ -25,7 +25,7 @@ export { ParsedArgs } from 'minimist';
  * behavior can be disabled by setting the `includeSeparated` option to
  * `false`.
  */
-export function stripOptions(pargv: string[], { includeSeparated = true }: { includeSeparated?: boolean; }): string[] {
+export function stripOptions(pargv: ReadonlyArray<string>, { includeSeparated = true }: { includeSeparated?: boolean; }): string[] {
   const r = /^\-/;
   const [ ownArgs, otherArgs ] = separateArgv(pargv);
   const filteredArgs = ownArgs.filter(arg => !r.test(arg));
@@ -48,7 +48,7 @@ export function stripOptions(pargv: string[], { includeSeparated = true }: { inc
  * For example, `['cmd', 'arg1', '--', 'arg2']` will be split into
  * `['cmd', 'arg1']` and `['arg2']`.
  */
-export function separateArgv(pargv: string[]): [string[], string[]] {
+export function separateArgv(pargv: ReadonlyArray<string>): [string[], string[]] {
   const ownArgs = [...pargv];
   const otherArgs: string[] = [];
   const sepIndex = pargv.indexOf('--');
@@ -68,7 +68,7 @@ const typeDefaults = new Map<CommandOptionType, ParsedArg>()
 /**
  * Takes a Minimist command option and normalizes its values.
  */
-export function hydrateCommandMetadataOption<O extends CommandMetadataOption>(option: O): O & HydratedCommandOption {
+export function hydrateCommandMetadataOption<O extends CommandMetadataOption>(option: O): HydratedCommandMetadataOption<O> {
   const type = option.type ? option.type : String;
 
   return lodash.assign({}, option, {

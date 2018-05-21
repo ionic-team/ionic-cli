@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { CommandHelpFormatter as BaseCommandHelpFormatter, MetadataGroup, NamespaceHelpFormatter as BaseNamespaceHelpFormatter, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps } from '@ionic/cli-framework';
+import { CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, MetadataGroup, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter } from '@ionic/cli-framework';
 
 import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace, NamespaceMetadata } from '../definitions';
 import { CommandGroup, NamespaceGroup, OptionGroup } from '../constants';
@@ -40,7 +40,7 @@ export interface NamespaceHelpFormatterDeps extends BaseNamespaceHelpFormatterDe
   readonly version: string;
 }
 
-export class NamespaceHelpFormatter extends BaseNamespaceHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
+export class NamespaceStringHelpFormatter extends BaseNamespaceStringHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
   protected readonly inProject: boolean;
   protected readonly version: string;
 
@@ -92,7 +92,7 @@ export class NamespaceHelpFormatter extends BaseNamespaceHelpFormatter<ICommand,
   }
 }
 
-export class CommandHelpFormatter extends BaseCommandHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
+export class CommandStringHelpFormatter extends BaseCommandStringHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
   async formatOptions(): Promise<string> {
     const metadata = await this.getCommandMetadata();
     const options = metadata.options ? metadata.options : [];
@@ -119,6 +119,40 @@ export class CommandHelpFormatter extends BaseCommandHelpFormatter<ICommand, INa
     const { weak } = this.colors;
 
     return opt.hint ? `${weak(`[${opt.hint}]`)} ` : '';
+  }
+}
+
+export class NamespaceSchemaHelpFormatter extends BaseNamespaceSchemaHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
+  async filterCommandCallback(cmd: HydratedCommandMetadata): Promise<boolean> {
+    return isCommandHidden(cmd);
+  }
+
+  async formatCommand(cmd: HydratedCommandMetadata): Promise<CommandHelpSchema> {
+    const { command } = cmd;
+
+    const formatter = new CommandSchemaHelpFormatter({
+      location: { path: [...cmd.path], obj: command, args: [] },
+      command,
+      metadata: cmd,
+    });
+
+    return { ...await formatter.serialize(), type: cmd.type };
+  }
+}
+
+export interface CommandHelpSchema extends BaseCommandHelpSchema {
+  type: string;
+}
+
+export class CommandSchemaHelpFormatter extends BaseCommandSchemaHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
+  async formatCommand(cmd: CommandMetadata | HydratedCommandMetadata): Promise<CommandHelpSchema> {
+    const formatted = await super.formatCommand(cmd);
+
+    return { ...formatted, type: cmd.type };
+  }
+
+  async filterOptionCallback(opt: CommandMetadataOption): Promise<boolean> {
+    return isOptionHidden(opt);
   }
 }
 

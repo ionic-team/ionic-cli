@@ -35,11 +35,7 @@ export interface CommandMetadataOption {
   groups?: MetadataGroup[];
 }
 
-export interface HydratedCommandOption {
-  type: CommandOptionType;
-  default: ParsedArg;
-  aliases: string[];
-}
+export type HydratedCommandMetadataOption<O extends CommandMetadataOption> = Readonly<Required<O>>;
 
 export { ParseArgsOptions };
 
@@ -55,7 +51,6 @@ export interface Metadata {
   summary: string;
   description?: string;
   groups?: MetadataGroup[];
-  aliases?: string[];
 }
 
 export interface CommandMetadata<I = CommandMetadataInput, O = CommandMetadataOption> extends Metadata {
@@ -86,12 +81,13 @@ export type INamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespac
 export interface INamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   parent: N | undefined;
 
+  locate(argv: string[]): Promise<NamespaceLocateResult<C, N, M, I, O>>;
   getMetadata(): Promise<NamespaceMetadata>;
   getNamespaces(): Promise<INamespaceMap<C, N, M, I, O>>;
-  getCommands(): Promise<ICommandMap<C, N, M, I, O>>;
 
-  locate(argv: string[]): Promise<NamespaceLocateResult<C, N, M, I, O>>;
+  getCommands(): Promise<ICommandMap<C, N, M, I, O>>;
   getCommandMetadataList(): Promise<ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>>;
+  groupCommandsByNamespace(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<ReadonlyArray<HydratedNamespaceMetadata<C, N, M, I, O> & { commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>; }>>;
 }
 
 export type CommandPathItem<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = [string, C | N];
@@ -111,8 +107,9 @@ export type HydratedCommandMetadata<C extends ICommand<C, N, M, I, O>, N extends
 
 export interface NamespaceMetadata extends Metadata {}
 
-export interface HydratedNamespaceMetadata extends NamespaceMetadata {
-  aliases: string[];
+export interface HydratedNamespaceMetadata<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Required<Readonly<NamespaceMetadata>> {
+  readonly namespace: N;
+  readonly aliases: ReadonlyArray<string>;
 }
 
 export interface IExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {

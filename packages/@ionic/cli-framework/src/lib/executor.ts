@@ -5,7 +5,7 @@ import { isCommand } from '../guards';
 
 import { Colors, DEFAULT_COLORS } from './colors';
 import { Command, Namespace } from './command';
-import { CommandHelpFormatter, NamespaceHelpFormatter } from './help';
+import { CommandSchemaHelpFormatter, CommandStringHelpFormatter, NamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter } from './help';
 import { metadataToParseArgsOptions, parseArgs, stripOptions } from './options';
 import { isNamespace } from '../guards';
 
@@ -37,12 +37,12 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
     this.stderr = stderr ? stderr : process.stderr;
   }
 
-  async execute(argv: string[], env: { [key: string]: string; }): Promise<void> {
+  async execute(argv: ReadonlyArray<string>, env: { [key: string]: string; }): Promise<void> {
     const parsedArgs = stripOptions(argv, { includeSeparated: false });
     const location = await this.namespace.locate(parsedArgs);
 
     if (argv.find(arg => arg === '--help' || arg === '-?') || isNamespace(location.obj)) {
-      this.stdout.write(await this.formatHelp(location));
+      this.stdout.write(await this.formatHelp(location, argv));
     } else {
       const cmd = location.obj;
       const cmdargs = lodash.drop(argv, location.path.length - 1);
@@ -60,12 +60,16 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
     await command.run(cmdinputs, cmdoptions, runinfo);
   }
 
-  async formatHelp(location: NamespaceLocateResult<C, N, M, I, O>): Promise<string> {
+  async formatHelp(location: NamespaceLocateResult<C, N, M, I, O>, argv: ReadonlyArray<string>): Promise<string> {
+    const cmdoptions = parseArgs([...argv]);
+
     if (isCommand(location.obj)) {
-      const formatter = new CommandHelpFormatter({ location, command: location.obj });
+      const options = { location, command: location.obj };
+      const formatter = cmdoptions['json'] ? new CommandSchemaHelpFormatter(options) : new CommandStringHelpFormatter(options);
       return formatter.format();
     } else {
-      const formatter = new NamespaceHelpFormatter({ location, namespace: location.obj });
+      const options = { location, namespace: location.obj };
+      const formatter = cmdoptions['json'] ? new NamespaceSchemaHelpFormatter(options) : new NamespaceStringHelpFormatter(options);
       return formatter.format();
     }
   }

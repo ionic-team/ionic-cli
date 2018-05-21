@@ -34,6 +34,8 @@ export async function filter<T>(array: T[] | ReadonlyArray<T>, callback: (curren
 }
 
 export async function map<T, U>(array: T[], callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<U[]>;
+export async function map<T, U>(array: T[], callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<ReadonlyArray<U>>;
+export async function map<T, U>(array: ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<U[]>;
 export async function map<T, U>(array: ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<ReadonlyArray<U>>;
 export async function map<T, U>(array: T[] | ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<U[] | ReadonlyArray<U>> {
   const initial: U[] = [];

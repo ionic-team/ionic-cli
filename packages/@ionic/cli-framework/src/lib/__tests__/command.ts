@@ -47,6 +47,12 @@ class FooNamespace extends Namespace {
   }
 }
 
+class EmptyNamespace extends Namespace {
+  async getMetadata() {
+    return { name: 'empty' };
+  }
+}
+
 class DefaultCommand extends Command {
   async getMetadata() {
     return { name: 'def', description: '' };
@@ -231,18 +237,18 @@ describe('@ionic/cli-framework', () => {
       describe('getCommandMetadataList', () => {
 
         it('should return empty array for empty namespace', async () => {
-          const ns = new Namespace();
+          const ns = new EmptyNamespace();
           const result = await ns.getCommandMetadataList();
           expect(result).toEqual([]);
         });
 
-        it('should have empty namespace path for default command', async () => {
+        it('should have namespace path without command path for default command', async () => {
           const ns = new NamespaceWithDefault();
           const result = await ns.getCommandMetadataList();
           expect(result.length).toEqual(1);
           expect(result[0].command).toBeInstanceOf(DefaultCommand);
           expect(result[0].namespace).toBe(ns);
-          expect(result[0].path).toEqual([]);
+          expect(result[0].path).toEqual([['defns', ns]]);
         });
 
         it('should have correct path for command', async () => {
@@ -252,14 +258,18 @@ describe('@ionic/cli-framework', () => {
           const [ barcmd, bazcmd ] = result;
           expect(barcmd.command).toBeInstanceOf(BarCommand);
           expect(barcmd.namespace).toBe(ns);
-          expect(barcmd.path.length).toEqual(1);
-          expect(barcmd.path[0][0]).toEqual('bar');
-          expect(barcmd.path[0][1]).toBeInstanceOf(BarCommand);
+          expect(barcmd.path.length).toEqual(2);
+          expect(barcmd.path[0][0]).toEqual('foo');
+          expect(barcmd.path[0][1]).toBe(ns);
+          expect(barcmd.path[1][0]).toEqual('bar');
+          expect(barcmd.path[1][1]).toBeInstanceOf(BarCommand);
           expect(bazcmd.command).toBeInstanceOf(BazCommand);
           expect(bazcmd.namespace).toBe(ns);
-          expect(bazcmd.path.length).toEqual(1);
-          expect(bazcmd.path[0][0]).toEqual('baz');
-          expect(bazcmd.path[0][1]).toBeInstanceOf(BazCommand);
+          expect(bazcmd.path.length).toEqual(2);
+          expect(bazcmd.path[0][0]).toEqual('foo');
+          expect(barcmd.path[0][1]).toBe(ns);
+          expect(bazcmd.path[1][0]).toEqual('baz');
+          expect(bazcmd.path[1][1]).toBeInstanceOf(BazCommand);
         });
 
         it('should have correct path for command in sub-namespace', async () => {
@@ -267,11 +277,13 @@ describe('@ionic/cli-framework', () => {
           const result = await ns.getCommandMetadataList();
           const bar = result.find(c => c.command instanceof BarCommand);
           expect(bar).toBeDefined();
-          expect(bar.path.length).toEqual(2);
-          expect(bar.path[0][0]).toEqual('foo');
-          expect(bar.path[0][1]).toBeInstanceOf(FooNamespace);
-          expect(bar.path[1][0]).toEqual('bar');
-          expect(bar.path[1][1]).toBeInstanceOf(BarCommand);
+          expect(bar.path.length).toEqual(3);
+          expect(bar.path[0][0]).toEqual('my');
+          expect(bar.path[0][1]).toBe(ns);
+          expect(bar.path[1][0]).toEqual('foo');
+          expect(bar.path[1][1]).toBeInstanceOf(FooNamespace);
+          expect(bar.path[2][0]).toEqual('bar');
+          expect(bar.path[2][1]).toBeInstanceOf(BarCommand);
         });
 
         it('should work', async () => {
@@ -284,7 +296,7 @@ describe('@ionic/cli-framework', () => {
           expect(baz).toBeDefined();
           const def = result.find(c => c.command instanceof DefaultCommand);
           expect(def).toBeDefined();
-          expect(bar.aliases).toEqual(['b']);
+          expect(bar.aliases).toEqual(['my foo b']);
           expect(def.aliases).toEqual([]);
           expect(baz.aliases).toEqual([]);
         });

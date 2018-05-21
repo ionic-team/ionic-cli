@@ -1,6 +1,6 @@
 import * as lodash from 'lodash';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMapGetter, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandPathItem, HydratedCommandMetadata, ICommand, ICommandMap, INamespace, INamespaceMap, NamespaceLocateResult, NamespaceMapGetter, NamespaceMetadata, ValidationError } from '../definitions';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMapGetter, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandPathItem, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, ICommandMap, INamespace, INamespaceMap, NamespaceLocateResult, NamespaceMapGetter, NamespaceMetadata, ValidationError } from '../definitions';
 import { strcmp } from '../utils/string';
 import { AliasedMap } from '../utils/object';
 import { InputValidationError } from './errors';
@@ -130,7 +130,7 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
    * Get all command metadata in a flat structure.
    */
   async getCommandMetadataList(): Promise<ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>> {
-    const _getCommandMetadataList = async (parent: N, path: CommandPathItem<C, N, M, I, O>[]) => {
+    const _getCommandMetadataList = async (parent: N, path: CommandPathItem<C, N, M, I, O>[]): Promise<HydratedCommandMetadata<C, N, M, I, O>[]> => {
       const commandsInNamespace = await parent.getCommands();
       const commandAliasesInNamespace = commandsInNamespace.getAliases();
       const commandList: HydratedCommandMetadata<C, N, M, I, O>[] = [];
@@ -143,7 +143,7 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
         }
 
         const command = await cmdgetter();
-        const commandAliases = (commandAliasesInNamespace.get(k) || []).filter((a): a is string => typeof a === 'string');
+        const commandAliases = (commandAliasesInNamespace.get(k) || []).filter((a): a is string => typeof a === 'string').map(a => [...path.map(([p]) => p), a].join(' '));
         const commandMetadata = await command.getMetadata();
         const commandPath = [...path];
 
@@ -180,13 +180,49 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
         }));
       }
 
-      return commandList.concat(namespacedCommandList);
+      return [...commandList, ...namespacedCommandList];
     };
+
+    const metadata = await this.getMetadata();
 
     // TODO: typescript complains about `this`. Calling this method on
     // BaseNamespace would be unsafe if the class weren't abstract. Typescript
     // bug? I may be wrong.
-    return _getCommandMetadataList(<any>this, []);
+    return _getCommandMetadataList(<any>this, [[metadata.name, <any>this]]);
+  }
+
+  async groupCommandsByNamespace(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<ReadonlyArray<HydratedNamespaceMetadata<C, N, M, I, O> & { commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>; }>> {
+    const summaries = new Map<string, string>();
+    const grouped = new Map<string, HydratedNamespaceMetadata<C, N, M, I, O> & { commands: HydratedCommandMetadata<C, N, M, I, O>[]; }>();
+
+    await Promise.all(commands.map(async cmd => {
+      const nsmeta = await cmd.namespace.getMetadata();
+      const aliases: string[] = [];
+
+      if (cmd.namespace.parent) {
+        const siblings = await cmd.namespace.parent.getNamespaces();
+        aliases.push(...(siblings.getAliases().get(nsmeta.name) || []).filter((a): a is string => typeof a === 'string'));
+      }
+
+      summaries.set(nsmeta.name, nsmeta.summary);
+      let entry = grouped.get(nsmeta.name);
+
+      if (!entry) {
+        entry = {
+          namespace: cmd.namespace,
+          commands: [],
+          aliases,
+          ...nsmeta,
+          description: nsmeta.description ? nsmeta.description : '',
+          groups: nsmeta.groups ? nsmeta.groups : [],
+        };
+        grouped.set(nsmeta.name, entry);
+      }
+
+      entry.commands.push(cmd);
+    }));
+
+    return [...grouped.values()];
   }
 }
 

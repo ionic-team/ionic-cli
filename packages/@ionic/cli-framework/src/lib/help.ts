@@ -1,6 +1,9 @@
-import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
+import * as lodash from 'lodash';
 
-import { filter } from '../utils/array';
+import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
+import { isHydratedCommandMetadata } from '../guards';
+
+import { filter, map } from '../utils/array';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '../utils/format';
 
 import { Colors, DEFAULT_COLORS } from './colors';
@@ -24,7 +27,7 @@ export interface NamespaceHelpFormatterDeps<C extends ICommand<C, N, M, I, O>, N
   readonly colors?: Colors;
 }
 
-export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends HelpFormatter {
+export abstract class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends HelpFormatter {
   protected readonly location: NamespaceLocateResult<C, N, M, I, O>;
   protected readonly namespace: N;
   protected readonly dotswidth: number = DEFAULT_DOTS_WIDTH;
@@ -47,31 +50,6 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
    */
   filterCommandCallback?(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<boolean>;
 
-  /**
-   * Insert text that appears before a commands's summary.
-   *
-   * @param meta: The metadata of the command.
-   */
-  formatBeforeCommandSummary?(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<string>;
-
-  /**
-   * Insert text before summaries of listed subnamespaces.
-   *
-   * @param meta The metadata of the namespace.
-   * @param commands An array of the metadata of the namespace's commands.
-   */
-  formatBeforeNamespaceSummary?(meta: HydratedNamespaceMetadata, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string>;
-
-  /**
-   * Insert text before the namespace's summary.
-   */
-  formatBeforeSummary?(): Promise<string>;
-
-  /**
-   * Insert text after the namespace's summary.
-   */
-  formatAfterSummary?(): Promise<string>;
-
   async getNamespaceMetadata(): Promise<NamespaceMetadata> {
     if (!this._metadata) {
       this._metadata = await this.namespace.getMetadata();
@@ -87,6 +65,33 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
 
     return this._fullName;
   }
+}
+
+export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends NamespaceHelpFormatter<C, N, M, I, O> {
+  /**
+   * Insert text that appears before a commands's summary.
+   *
+   * @param meta: The metadata of the command.
+   */
+  formatBeforeCommandSummary?(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<string>;
+
+  /**
+   * Insert text before summaries of listed subnamespaces.
+   *
+   * @param meta The metadata of the namespace.
+   * @param commands An array of the metadata of the namespace's commands.
+   */
+  formatBeforeNamespaceSummary?(meta: HydratedNamespaceMetadata<C, N, M, I, O>, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string>;
+
+  /**
+   * Insert text before the namespace's summary.
+   */
+  formatBeforeSummary?(): Promise<string>;
+
+  /**
+   * Insert text after the namespace's summary.
+   */
+  formatAfterSummary?(): Promise<string>;
 
   async formatHeader(): Promise<string> {
     const { strong, input } = this.colors;
@@ -177,7 +182,7 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
 
   async getListOfCommandDetails(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string[]> {
     const { weak, input } = this.colors;
-    const fullCmd = commands.map(cmd => cmd.path.map(([p]) => p).join(' '));
+    const fullCmd = commands.map(cmd => lodash.tail(cmd.path).map(([p]) => p).join(' '));
     const fillStringArray = generateFillSpaceStringList(fullCmd, this.dotswidth, weak('.'));
 
     const formattedCommands = await Promise.all(commands.map(async (cmd, index) => {
@@ -188,7 +193,7 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
       );
 
       const wrappedSummary = wordWrap(summary, { indentation: this.dotswidth + 6 });
-      return `${input(cmd.path.map(p => p[0]).join(' '))}${wrappedSummary ? ' ' + fillStringArray[index] + ' ' + wrappedSummary : ''}`;
+      return `${input(lodash.tail(cmd.path).map(([p]) => p).join(' '))}${wrappedSummary ? ' ' + fillStringArray[index] + ' ' + wrappedSummary : ''}`;
     }));
 
     return formattedCommands;
@@ -196,42 +201,20 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
 
   async getListOfNamespaceDetails(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string[]> {
     const { weak, input } = this.colors;
-    const summaries = new Map<string, string>();
-    const grouped = new Map<string, { meta: HydratedNamespaceMetadata; commands: HydratedCommandMetadata<C, N, M, I, O>[]; }>();
 
-    await Promise.all(commands.map(async cmd => {
-      const nsmeta = await cmd.namespace.getMetadata();
-      const aliases: string[] = [];
+    const namespaces = await this.namespace.groupCommandsByNamespace(commands);
+    const fillStringArray = generateFillSpaceStringList(namespaces.map(({ name }) => name + ' <subcommand>'), this.dotswidth, weak('.'));
 
-      if (cmd.namespace.parent) {
-        const siblings = await cmd.namespace.parent.getNamespaces();
-        aliases.push(...(siblings.getAliases().get(nsmeta.name) || []).filter((a): a is string => typeof a === 'string'));
-      }
-
-      summaries.set(nsmeta.name, nsmeta.summary);
-      let entry = grouped.get(nsmeta.name);
-
-      if (!entry) {
-        entry = { meta: { ...nsmeta, aliases }, commands: [] };
-        grouped.set(nsmeta.name, entry);
-      }
-
-      entry.commands.push(cmd);
-    }));
-
-    const entries = [...grouped.entries()];
-    const fillStringArray = generateFillSpaceStringList(entries.map(([name]) => name + ' <subcommand>'), this.dotswidth, weak('.'));
-
-    const formattedNamespaces = await Promise.all(entries.map(async ([name, { meta, commands }], i) => {
+    const formattedNamespaces = await Promise.all(namespaces.map(async (meta, i) => {
       const summary = (
-        (this.formatBeforeNamespaceSummary ? await this.formatBeforeNamespaceSummary(meta, commands) : '') +
-        summaries.get(name) +
-        (await this.formatAfterNamespaceSummary(meta, commands))
+        (this.formatBeforeNamespaceSummary ? await this.formatBeforeNamespaceSummary(meta, meta.commands) : '') +
+        meta.summary +
+        (await this.formatAfterNamespaceSummary(meta, meta.commands))
       );
 
       const wrappedSummary = wordWrap(summary, { indentation: this.dotswidth + 6 });
 
-      return `${input(name + ' <subcommand>')}${wrappedSummary ? ' ' + fillStringArray[i] + ' ' + wrappedSummary : ''}`;
+      return `${input(meta.name + ' <subcommand>')}${wrappedSummary ? ' ' + fillStringArray[i] + ' ' + wrappedSummary : ''}`;
     }));
 
     return formattedNamespaces;
@@ -245,9 +228,10 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
   async formatAfterCommandSummary(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<string> {
     const { weak, input } = this.colors;
 
-    const aliases = meta.aliases.length > 0 ? weak('(alias' + (meta.aliases.length === 1 ? '' : 'es') + ': ') + meta.aliases.map(a => input(a)).join(', ') + weak(')') : '';
+    const aliases = meta.aliases.map(alias => lodash.tail(alias.split(' ')).join(' '));
+    const formattedAliases = aliases.length > 0 ? weak('(alias' + (aliases.length === 1 ? '' : 'es') + ': ') + aliases.map(a => input(a)).join(', ') + weak(')') : '';
 
-    return aliases ? ` ${aliases}` : '';
+    return formattedAliases ? ` ${formattedAliases}` : '';
   }
 
   /**
@@ -256,13 +240,13 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
    * @param meta The metadata of the namespace.
    * @param commands An array of the metadata of the namespace's commands.
    */
-  async formatAfterNamespaceSummary(meta: HydratedNamespaceMetadata, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>) {
+  async formatAfterNamespaceSummary(meta: HydratedNamespaceMetadata<C, N, M, I, O>, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string> {
     const { weak, input } = this.colors;
 
-    const subcommands = commands.length > 0 ? `${weak('(subcommands:')} ${commands.map(c => input(c.name)).join(', ')}${weak(')')}` : '';
-    const aliases = meta.aliases.length > 0 ? `${weak('(alias' + (meta.aliases.length === 1 ? '' : 'es') + ': ') + meta.aliases.map(a => input(a)).join(', ') + weak(')')}` : '';
+    const formattedSubcommands = commands.length > 0 ? `${weak('(subcommands:')} ${commands.map(c => input(c.name)).join(', ')}${weak(')')}` : '';
+    const formattedAliases = meta.aliases.length > 0 ? `${weak('(alias' + (meta.aliases.length === 1 ? '' : 'es') + ': ') + meta.aliases.map(a => input(a)).join(', ') + weak(')')}` : '';
 
-    return `${subcommands ? ` ${subcommands}` : ''}${aliases ? ` ${aliases}` : ''}`;
+    return `${formattedSubcommands ? ` ${formattedSubcommands}` : ''}${formattedAliases ? ` ${formattedAliases}` : ''}`;
   }
 
   async format(): Promise<string> {
@@ -278,21 +262,29 @@ export class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends
 export interface CommandHelpFormatterDeps<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   readonly location: NamespaceLocateResult<C, N, M, I, O>;
   readonly command: C;
+
+  /**
+   * Provide extra context with hydrated command metadata. If not provided,
+   * `command.getMetadata()` is called.
+   */
+  readonly metadata?: HydratedCommandMetadata<C, N, M, I, O>;
   readonly colors?: Colors;
 }
 
-export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends HelpFormatter {
+export abstract class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends HelpFormatter {
   protected readonly location: NamespaceLocateResult<C, N, M, I, O>;
   protected readonly command: C;
   protected readonly dotswidth: number = DEFAULT_DOTS_WIDTH;
 
   protected _metadata?: M;
+  protected _hydratedMetadata?: HydratedCommandMetadata<C, N, M, I, O>;
   protected _fullName?: string;
 
-  constructor({ location, command, colors }: CommandHelpFormatterDeps<C, N, M, I, O>) {
+  constructor({ location, command, metadata, colors }: CommandHelpFormatterDeps<C, N, M, I, O>) {
     super({ colors });
     this.location = location;
     this.command = command;
+    this._hydratedMetadata = metadata;
   }
 
   /**
@@ -303,6 +295,28 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
    */
   filterOptionCallback?(option: O): Promise<boolean>;
 
+  async getCommandMetadata(): Promise<M | HydratedCommandMetadata<C, N, M, I, O>> {
+    if (this._hydratedMetadata) {
+      return this._hydratedMetadata;
+    }
+
+    if (!this._metadata) {
+      this._metadata = await this.command.getMetadata({ location: this.location });
+    }
+
+    return this._metadata;
+  }
+
+  async getCommandFullName(): Promise<string> {
+    if (!this._fullName) {
+      this._fullName = this.location.path.map(([p]) => p).join(' ');
+    }
+
+    return this._fullName;
+  }
+}
+
+export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends CommandHelpFormatter<C, N, M, I, O> {
   /**
    * Insert text that appears before an option's summary.
    *
@@ -319,22 +333,6 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
    * Insert text after the command's summary.
    */
   formatAfterSummary?(): Promise<string>;
-
-  async getCommandMetadata(): Promise<M> {
-    if (!this._metadata) {
-      this._metadata = await this.command.getMetadata({ location: this.location });
-    }
-
-    return this._metadata;
-  }
-
-  async getCommandFullName(): Promise<string> {
-    if (!this._fullName) {
-      this._fullName = this.location.path.map(([p]) => p).join(' ');
-    }
-
-    return this._fullName;
-  }
 
   async formatHeader(): Promise<string> {
     const { strong, input } = this.colors;
@@ -515,5 +513,110 @@ export class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends I
       (await this.formatExamples()) +
       '\n'
     );
+  }
+}
+
+export interface NamespaceHelpSchema {
+  readonly name: string;
+  readonly summary: string;
+  readonly description: string;
+  readonly commands: CommandHelpSchema[];
+  readonly aliases: ReadonlyArray<string>;
+}
+
+export class NamespaceSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends NamespaceHelpFormatter<C, N, M, I, O> {
+  async format(): Promise<string> {
+    return JSON.stringify(await this.serialize());
+  }
+
+  async serialize(): Promise<NamespaceHelpSchema> {
+    const metadata = await this.getNamespaceMetadata();
+    const commands = await this.namespace.getCommandMetadataList();
+
+    return {
+      name: metadata.name,
+      summary: metadata.summary,
+      description: metadata.description ? metadata.description : '',
+      commands: await this.formatCommandGroup(commands),
+      aliases: [],
+    };
+  }
+
+  async formatCommandGroup(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<CommandHelpSchema[]> {
+    const filterCallback = this.filterCommandCallback;
+    const filteredCommands = filterCallback ? await filter(commands, async cmd => filterCallback(cmd)) : commands;
+
+    return map(filteredCommands, async cmd => this.formatCommand(cmd));
+  }
+
+  async formatCommand(cmd: HydratedCommandMetadata<C, N, M, I, O>): Promise<CommandHelpSchema> {
+    const { command } = cmd;
+
+    const formatter = new CommandSchemaHelpFormatter({
+      location: { path: [...cmd.path], obj: command, args: [] },
+      command,
+      metadata: cmd,
+    });
+
+    return formatter.serialize();
+  }
+}
+
+export interface CommandHelpSchemaOption {
+  readonly name: string;
+  readonly summary: string;
+  readonly aliases: ReadonlyArray<string>;
+  readonly type: string;
+  readonly default?: any;
+}
+
+export interface CommandHelpSchema {
+  readonly name: string;
+  readonly namespace: ReadonlyArray<string>;
+  readonly summary: string;
+  readonly description: string;
+  readonly exampleCommands: ReadonlyArray<string>;
+  readonly aliases: ReadonlyArray<string>;
+  readonly options: ReadonlyArray<CommandHelpSchemaOption>;
+}
+
+export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends CommandHelpFormatter<C, N, M, I, O> {
+  async format(): Promise<string> {
+    return JSON.stringify(await this.serialize());
+  }
+
+  async serialize(): Promise<CommandHelpSchema> {
+    const metadata = await this.getCommandMetadata();
+
+    return this.formatCommand(metadata);
+  }
+
+  async formatOptions(options: ReadonlyArray<O>): Promise<ReadonlyArray<CommandHelpSchemaOption>> {
+    const filterCallback = this.filterOptionCallback;
+    const filteredOptions = filterCallback ? await filter(options, async opt => filterCallback(opt)) : options;
+
+    return Promise.all(filteredOptions.map(async opt => this.formatOption(opt)));
+  }
+
+  async formatOption(option: O): Promise<CommandHelpSchemaOption> {
+    const name = option.name;
+    const summary = option.summary ? option.summary.trim() : '';
+    const aliases = option.aliases ? option.aliases : [];
+    const type = option.type ? option.type.name.toLowerCase() : 'string';
+
+    return { name, type, summary, default: option.default, aliases };
+  }
+
+  async formatCommand(cmd: M | HydratedCommandMetadata<C, N, M, I, O>): Promise<CommandHelpSchema> {
+    const commandPath = this.location.path.map(([p]) => p);
+    const namespacePath = lodash.initial(commandPath);
+    const name = commandPath.join(' ');
+    const summary = cmd.summary ? cmd.summary.trim() : '';
+    const description = cmd.description ? cmd.description.trim() : '';
+    const exampleCommands = cmd.exampleCommands ? cmd.exampleCommands.map(c => `${name} ${c}`) : [];
+    const aliases = isHydratedCommandMetadata(cmd) ? cmd.aliases : [];
+    const options = cmd.options ? await this.formatOptions(cmd.options) : [];
+
+    return { name, namespace: namespacePath, summary, description, exampleCommands, aliases, options };
   }
 }

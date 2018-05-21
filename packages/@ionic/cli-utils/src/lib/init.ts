@@ -1,22 +1,17 @@
 import { parseArgs } from '@ionic/cli-framework';
 
-/**
- * Map legacy options to their new equivalent
- */
 export function modifyArguments(pargv: string[]): string[] {
   const modifiedArgArray: string[] = pargv.slice();
   const minimistArgv = parseArgs(pargv, { boolean: true, string: '_' });
 
-  if (pargv.length === 0) {
-    return ['help'];
-  }
+  if (minimistArgv._.length === 0 || minimistArgv['help'] || minimistArgv['h']) {
+    const extra = [...minimistArgv._];
 
-  if (minimistArgv['help'] || minimistArgv['h']) {
-    if (minimistArgv._.length > 0) {
-      return ['help', ...minimistArgv._];
-    } else {
-      return ['help'];
+    if (minimistArgv['json']) {
+      extra.push('--json');
     }
+
+    return ['help', ...extra];
   }
 
   if (minimistArgv._.length === 0 && (minimistArgv['version'] || minimistArgv['v'])) {
