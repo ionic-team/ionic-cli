@@ -4,6 +4,10 @@ export function modifyArguments(pargv: string[]): string[] {
   const modifiedArgArray: string[] = pargv.slice();
   const minimistArgv = parseArgs(pargv, { boolean: true, string: '_' });
 
+  if (minimistArgv._.length === 0 && (minimistArgv['version'] || minimistArgv['v'])) {
+    return ['version'];
+  }
+
   if (minimistArgv._.length === 0 || minimistArgv['help'] || minimistArgv['h']) {
     const extra = [...minimistArgv._];
 
@@ -12,10 +16,6 @@ export function modifyArguments(pargv: string[]): string[] {
     }
 
     return ['help', ...extra];
-  }
-
-  if (minimistArgv._.length === 0 && (minimistArgv['version'] || minimistArgv['v'])) {
-    return ['version'];
   }
 
   return modifiedArgArray;
