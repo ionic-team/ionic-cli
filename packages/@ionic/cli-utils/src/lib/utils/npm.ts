@@ -1,4 +1,5 @@
-import { PackageJson, ShellCommand } from '@ionic/cli-framework';
+import { PackageJson } from '@ionic/cli-framework';
+import { ShellCommand } from '@ionic/cli-framework/utils/shell';
 
 import { NpmClient } from '../../definitions';
 

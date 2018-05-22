@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
-import { PromiseUtil, promisifyEvent } from '../../utils/promise';
-import { ReadableStreamBuffer, WritableStreamBuffer } from '../../utils/streams';
+import { PromiseUtil, promisifyEvent } from '../promise';
+import { ReadableStreamBuffer, WritableStreamBuffer } from '../streams';
 
 describe('@ionic/cli-framework', () => {
 

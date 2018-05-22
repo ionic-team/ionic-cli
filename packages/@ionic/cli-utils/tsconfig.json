@@ -8,7 +8,6 @@
     }
   },
   "include": [
-    "../../../types/cross-spawn.d.ts",
     "../../../types/elementtree.d.ts",
     "../../../types/leek.d.ts",
     "../../../types/os-name.d.ts",

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { BaseError } from '@ionic/cli-framework/lib/errors';
+import { BaseError } from '@ionic/cli-framework';
 
 import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironment, ProjectType, Runner } from '../definitions';
 import { PROJECT_FILE } from '../constants';

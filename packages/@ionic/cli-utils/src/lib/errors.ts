@@ -1,4 +1,4 @@
-import { BaseError } from '@ionic/cli-framework/lib/errors';
+import { BaseError } from '@ionic/cli-framework';
 
 export class BaseException extends BaseError {
   readonly name = 'Exception';

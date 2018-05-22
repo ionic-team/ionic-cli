@@ -1,9 +1,10 @@
 import * as os from 'os';
 import * as path from 'path';
-import { ChildProcess, SpawnOptions } from 'child_process';
-import { spawn } from 'cross-spawn';
+import { ChildProcess, ForkOptions, SpawnOptions, fork as _fork } from 'child_process';
 
-import { ERROR_SHELL_COMMAND_NOT_FOUND, ERROR_SHELL_NON_ZERO_EXIT, ShellCommandError } from './errors';
+import * as crossSpawn from 'cross-spawn';
+
+import { ERROR_SHELL_COMMAND_NOT_FOUND, ERROR_SHELL_NON_ZERO_EXIT, ShellCommandError } from '../errors';
 import { createProcessEnv } from '../utils/process';
 import { WritableStreamBuffer } from '../utils/streams';
 
@@ -139,4 +140,12 @@ export class ShellCommand {
         : '')
     );
   }
+}
+
+export function spawn(command: string, args?: ReadonlyArray<string>, options?: SpawnOptions): ChildProcess {
+  return crossSpawn.spawn(command, args, options);
+}
+
+export function fork(modulePath: string, args: ReadonlyArray<string> = [], options: ForkOptions & Pick<SpawnOptions, 'stdio'> = {}): ChildProcess {
+  return _fork(modulePath, [...args], options);
 }

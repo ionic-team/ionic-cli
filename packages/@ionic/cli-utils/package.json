@@ -40,7 +40,6 @@
     "@ionic/cli-framework": "1.0.0-rc.6",
     "@ionic/discover": "1.0.0-rc.6",
     "chalk": "^2.3.0",
-    "cross-spawn": "^6.0.3",
     "debug": "^3.1.0",
     "diff": "^3.4.0",
     "elementtree": "^0.1.7",

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { ValidationError, Validator, Validators } from '../definitions';
-import { InputValidationError } from './errors';
+import { InputValidationError } from '../errors';
 import { isValidEmail, isValidURL, slugify } from '../utils/string';
 
 export function validate(input: string, key: string, validators: Validator[]) {

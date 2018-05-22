@@ -5,8 +5,9 @@ import chalk from 'chalk';
 
 import * as split2 from 'split2';
 
-import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommand, ShellCommandError } from '@ionic/cli-framework';
+import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommandError } from '@ionic/cli-framework';
 import { createProcessEnv, onBeforeExit } from '@ionic/cli-framework/utils/process';
+import { ShellCommand } from '@ionic/cli-framework/utils/shell';
 import { combineStreams } from '@ionic/cli-framework/utils/streams';
 
 import { ILogger, IShell, IShellOutputOptions, IShellRunOptions, IShellSpawnOptions } from '../definitions';

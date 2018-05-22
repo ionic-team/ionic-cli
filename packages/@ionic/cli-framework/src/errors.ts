@@ -1,12 +1,14 @@
 import * as util from 'util';
 import * as lodash from 'lodash';
 
-import { ValidationError } from '../definitions';
+import { ValidationError } from './definitions';
 
 export const ERROR_INPUT_VALIDATION = 'ERR_ICF_INPUT_VALIDATION';
 export const ERROR_COMMAND_NOT_FOUND = 'ERR_ICF_COMMAND_NOT_FOUND';
 export const ERROR_SHELL_NON_ZERO_EXIT = 'ERR_ICF_SHELL_NON_ZERO_EXIT';
 export const ERROR_SHELL_COMMAND_NOT_FOUND = 'ERR_ICF_SHELL_COMMAND_NOT_FOUND';
+export const ERROR_IPC_MODULE_INACCESSIBLE = 'ERR_ICF_IPC_MODULE_INACCESSIBLE';
+export const ERROR_IPC_UNKNOWN_PROCEDURE = 'ERR_ICF_IPC_UNKNOWN_PROCEDURE';
 
 export abstract class BaseError extends Error {
   abstract readonly name: string;
@@ -58,12 +60,8 @@ export class ShellCommandError extends BaseError {
   output?: string;
   exitCode?: number;
   signal?: string;
+}
 
-  constructor(message: string) {
-    super(message);
-  }
-
-  toString() {
-    return super.toString();
-  }
+export class IPCError extends BaseError {
+  readonly name = 'IPCError';
 }
