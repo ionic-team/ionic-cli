@@ -3,7 +3,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 import stripAnsi = require('strip-ansi');
 
-import { Command, CommandHelpSchemaOption, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-framework';
+import { Command, CommandHelpSchemaInput, CommandHelpSchemaOption, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-framework';
 import { fsMkdirp, fsWriteFile, removeDirectory } from '@ionic/cli-framework/utils/fs';
 import { strcmp } from '@ionic/cli-framework/utils/string';
 
@@ -59,7 +59,15 @@ export class DocsCommand extends Command {
       ...command,
       summary: stripAnsi(links2md(ansi2md(command.summary))).trim(),
       description: stripAnsi(links2md(ansi2md(command.description))).trim(),
+      inputs: await Promise.all(command.inputs.map(input => this.extractInput(input))),
       options: await Promise.all(command.options.map(opt => this.extractOption(opt))),
+    };
+  }
+
+  private async extractInput(input: CommandHelpSchemaInput): Promise<CommandHelpSchemaInput> {
+    return {
+      ...input,
+      summary: stripAnsi(links2md(ansi2md(input.summary))).trim(),
     };
   }
 
