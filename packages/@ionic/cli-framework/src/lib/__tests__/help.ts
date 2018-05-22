@@ -239,6 +239,18 @@ describe('@ionic/cli-framework', () => {
                 "my bar --opt1 --opt2"
               ],
               "aliases": [],
+              "inputs": [
+                {
+                  "name": "input1",
+                  "summary": "input1 summary",
+                  "required": false
+                },
+                {
+                  "name": "input2",
+                  "summary": "input2 summary",
+                  "required": false
+                }
+              ]
               "options": [
                 {
                   "name": "opt1",
@@ -272,6 +284,18 @@ describe('@ionic/cli-framework', () => {
               "aliases": [
                 "my foo b"
               ],
+              "inputs": [
+                {
+                  "name": "input1",
+                  "summary": "input1 summary",
+                  "required": false
+                },
+                {
+                  "name": "input2",
+                  "summary": "input2 summary",
+                  "required": false
+                }
+              ]
               "options": [
                 {
                   "name": "opt1",
@@ -302,6 +326,7 @@ describe('@ionic/cli-framework', () => {
                 "my foo b1",
                 "my foo b2"
               ],
+              "inputs": []
               "options": []
             },
             {
@@ -313,6 +338,7 @@ describe('@ionic/cli-framework', () => {
               "description": "",
               "exampleCommands": [],
               "aliases": [],
+              "inputs": []
               "options": []
             }
           ]

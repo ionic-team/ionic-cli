@@ -562,6 +562,12 @@ export class NamespaceSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
   }
 }
 
+export interface CommandHelpSchemaInput {
+  readonly name: string;
+  readonly summary: string;
+  readonly required: boolean;
+}
+
 export interface CommandHelpSchemaOption {
   readonly name: string;
   readonly summary: string;
@@ -577,6 +583,7 @@ export interface CommandHelpSchema {
   readonly description: string;
   readonly exampleCommands: ReadonlyArray<string>;
   readonly aliases: ReadonlyArray<string>;
+  readonly inputs: ReadonlyArray<CommandHelpSchemaInput>;
   readonly options: ReadonlyArray<CommandHelpSchemaOption>;
 }
 
@@ -589,6 +596,18 @@ export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     const metadata = await this.getCommandMetadata();
 
     return this.formatCommand(metadata);
+  }
+
+  async formatInputs(inputs: ReadonlyArray<I>): Promise<ReadonlyArray<CommandHelpSchemaInput>> {
+    return Promise.all(inputs.map(async input => this.formatInput(input)));
+  }
+
+  async formatInput(input: I): Promise<CommandHelpSchemaInput> {
+    const name = input.name;
+    const summary = input.summary;
+    const required = input.validators && input.validators.includes(validators.required) ? true : false;
+
+    return { name, summary, required };
   }
 
   async formatOptions(options: ReadonlyArray<O>): Promise<ReadonlyArray<CommandHelpSchemaOption>> {
@@ -615,8 +634,9 @@ export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     const description = cmd.description ? cmd.description.trim() : '';
     const exampleCommands = cmd.exampleCommands ? cmd.exampleCommands.map(c => `${name} ${c}`) : [];
     const aliases = isHydratedCommandMetadata(cmd) ? cmd.aliases : [];
+    const inputs = cmd.inputs ? await this.formatInputs(cmd.inputs) : [];
     const options = cmd.options ? await this.formatOptions(cmd.options) : [];
 
-    return { name, namespace: namespacePath, summary, description, exampleCommands, aliases, options };
+    return { name, namespace: namespacePath, summary, description, exampleCommands, aliases, inputs, options };
   }
 }
