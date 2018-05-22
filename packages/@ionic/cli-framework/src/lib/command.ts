@@ -81,8 +81,8 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
    *
    * @param argv The set of command-line arguments to use to locate.
    */
-  async locate(argv: string[]): Promise<NamespaceLocateResult<C, N, M, I, O>> {
-    const _locate = async (inputs: string[], parent: N, path: CommandPathItem<C, N, M, I, O>[]): Promise<NamespaceLocateResult<C, N, M, I, O>> => {
+  async locate(argv: ReadonlyArray<string>): Promise<NamespaceLocateResult<C, N, M, I, O>> {
+    const _locate = async (inputs: ReadonlyArray<string>, parent: N, path: CommandPathItem<C, N, M, I, O>[]): Promise<NamespaceLocateResult<C, N, M, I, O>> => {
       const [ key ] = inputs;
       const children = await parent.getNamespaces();
       const nsgetter = children.resolveAliases(key);

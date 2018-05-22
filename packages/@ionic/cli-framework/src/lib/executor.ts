@@ -12,8 +12,8 @@ import { isNamespace } from '../guards';
 export abstract class AbstractExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> implements IExecutor<C, N, M, I, O> {
   abstract readonly namespace: N;
 
-  abstract execute(argv: string[], env: { [key: string]: string; }): Promise<void>;
-  abstract run(command: C, cmdargs: string[], runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;
+  abstract execute(argv: ReadonlyArray<string>, env: { [key: string]: string; }): Promise<void>;
+  abstract run(command: C, cmdargs: ReadonlyArray<string>, runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;
 }
 
 export interface BaseExecutorDeps<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
@@ -37,6 +37,17 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
     this.stderr = stderr ? stderr : process.stderr;
   }
 
+  /**
+   * Locate and execute a command given an array of positional command
+   * arguments (argv) and a set of environment variables.
+   *
+   * If a command is not found, formatted help is automatically output for the
+   * right-most namespace found.
+   *
+   * @param argv Command arguments sliced to the root for the namespace of this
+   *             executor. Usually, this means `process.argv.slice(2)`.
+   * @param env Environment variables for this execution.
+   */
   async execute(argv: ReadonlyArray<string>, env: { [key: string]: string; }): Promise<void> {
     const parsedArgs = stripOptions(argv, { includeSeparated: false });
     const location = await this.namespace.locate(parsedArgs);
@@ -51,9 +62,9 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
     }
   }
 
-  async run(command: C, cmdargs: string[], runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void> {
+  async run(command: C, cmdargs: ReadonlyArray<string>, runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void> {
     const metadata = await command.getMetadata();
-    const cmdoptions = parseArgs(cmdargs, metadataToParseArgsOptions(metadata));
+    const cmdoptions = parseArgs([...cmdargs], metadataToParseArgsOptions(metadata));
     const cmdinputs = cmdoptions._;
 
     await command.validate(cmdinputs);
