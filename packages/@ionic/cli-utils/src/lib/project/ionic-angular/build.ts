@@ -4,15 +4,27 @@ import { unparseArgs } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularBuildOptions } from '../../../definitions';
 
-import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
+import { BUILD_SCRIPT, BuildRunner, BuildRunnerDeps } from '../../build';
 import { APP_SCRIPTS_OPTIONS } from './app-scripts';
+import { IonicAngularProject } from './';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:build');
 
 export const DEFAULT_PROGRAM = 'ionic-app-scripts';
 export const DEFAULT_BUILD_SCRIPT_VALUE = `${DEFAULT_PROGRAM} build`;
 
-export class BuildRunner extends BaseBuildRunner<IonicAngularBuildOptions> {
+export interface IonicAngularBuildRunnerDeps extends BuildRunnerDeps {
+  readonly project: IonicAngularProject;
+}
+
+export class IonicAngularBuildRunner extends BuildRunner<IonicAngularBuildOptions> {
+  protected readonly project: IonicAngularProject;
+
+  constructor(deps: IonicAngularBuildRunnerDeps) {
+    super(deps);
+    this.project = deps.project;
+  }
+
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       exampleCommands: ['--prod', '-- --generateSourceMap false'],

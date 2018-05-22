@@ -1,11 +1,12 @@
-import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import { CommandGroup, OptionGroup } from '../../../constants';
+import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 
+import { CommandGroup, OptionGroup } from '../../../constants';
 import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
-import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
+import { BUILD_SCRIPT, BuildRunner, BuildRunnerDeps } from '../../build';
 import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './utils';
+import { AngularProject } from './';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:build');
 
@@ -33,7 +34,18 @@ export const NG_BUILD_OPTIONS = [
   },
 ];
 
-export class BuildRunner extends BaseBuildRunner<AngularBuildOptions> {
+export interface AngularBuildRunnerDeps extends BuildRunnerDeps {
+  readonly project: AngularProject;
+}
+
+export class AngularBuildRunner extends BuildRunner<AngularBuildOptions> {
+  readonly project: AngularProject;
+
+  constructor(deps: AngularBuildRunnerDeps) {
+    super(deps);
+    this.project = deps.project;
+  }
+
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       groups: [CommandGroup.Experimental],

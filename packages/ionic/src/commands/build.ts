@@ -11,7 +11,7 @@ export class BuildCommand extends Command implements CommandPreRun {
 
   async getRunner() {
     if (!this.runner) {
-      this.runner = await BuildRunner.createFromProjectType(this.env, this.env.project.type);
+      this.runner = await BuildRunner.createFromProject(this.env, this.env.project);
     }
 
     return this.runner;

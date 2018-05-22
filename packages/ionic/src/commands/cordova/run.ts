@@ -17,8 +17,8 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
   async getRunner(livereload: boolean) {
     if (!this.runner) {
       this.runner = livereload
-        ? await ServeRunner.createFromProjectType(this.env, this.env.project.type)
-        : await BuildRunner.createFromProjectType(this.env, this.env.project.type);
+        ? await ServeRunner.createFromProject(this.env)
+        : await BuildRunner.createFromProject(this.env, this.env.project);
     }
 
     return this.runner;

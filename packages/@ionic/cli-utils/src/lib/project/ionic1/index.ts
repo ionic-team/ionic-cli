@@ -7,10 +7,10 @@ import * as lodash from 'lodash';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { ERROR_FILE_INVALID_JSON, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
-import { InfoItem, ProjectType } from '../../../definitions';
+import { InfoItem } from '../../../definitions';
 import { FatalException } from '../../errors';
 
-import { BaseProject } from '../';
+import { Project } from '../';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular');
 
@@ -36,8 +36,8 @@ async function readBowerJsonFile(p: string): Promise<BowerJson> {
   return bowerJson;
 }
 
-export class Project extends BaseProject {
-  type: ProjectType = 'ionic1';
+export class Ionic1Project extends Project {
+  readonly type: 'ionic1' = 'ionic1';
   protected bowerJsonFile?: BowerJson;
 
   async getInfo(): Promise<InfoItem[]> {

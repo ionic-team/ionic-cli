@@ -9,7 +9,7 @@ import { SERVE_SCRIPT } from '../../serve';
 import { DEFAULT_BUILD_SCRIPT_VALUE } from './build';
 import { DEFAULT_SERVE_SCRIPT_VALUE } from './serve';
 
-import { Project as IonicAngularProject } from './';
+import { IonicAngularProject } from './';
 
 export async function registerAilments(registry: IAilmentRegistry, deps: IonicAngularAilmentDeps): Promise<void> {
   registry.register(new IonicAngularUpdateAvailable(deps));

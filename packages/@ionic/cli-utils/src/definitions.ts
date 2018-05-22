@@ -246,7 +246,7 @@ export interface ProjectPersonalizationDetails {
 }
 
 export interface IProject extends IBaseConfig<ProjectFile> {
-  type?: ProjectType;
+  type: ProjectType | undefined;
 
   getDocsUrl(): Promise<string>;
   getSourceDir(sourceRoot?: string): Promise<string>;

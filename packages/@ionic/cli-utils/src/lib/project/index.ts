@@ -25,14 +25,14 @@ import * as customProjectLibType from './custom';
 const debug = Debug('ionic:cli-utils:lib:project');
 
 export interface ProjectDeps {
-  config: IConfig;
-  log: ILogger;
-  shell: IShell;
-  tasks: TaskChain;
+  readonly config: IConfig;
+  readonly log: ILogger;
+  readonly shell: IShell;
+  readonly tasks: TaskChain;
 }
 
-export abstract class BaseProject extends BaseConfig<ProjectFile> implements IProject {
-  type?: ProjectType;
+export abstract class Project extends BaseConfig<ProjectFile> implements IProject {
+  abstract readonly type: ProjectType;
 
   protected readonly config: IConfig;
   protected readonly log: ILogger;
@@ -63,7 +63,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     }
 
     for (const projectType of PROJECT_TYPES) {
-      const p = await BaseProject.createFromProjectType(projectDir, PROJECT_FILE, deps, projectType);
+      const p = await Project.createFromProjectType(projectDir, PROJECT_FILE, deps, projectType);
 
       if (await p.detected()) {
         debug(`Project type detected: ${chalk.bold(prettyProjectName(p.type))} ${p.type ? chalk.bold(`(${p.type})`) : ''}`);
@@ -85,26 +85,26 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
     );
   }
 
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'angular'): Promise<angularProjectLibType.Project>;
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'ionic-angular'): Promise<ionicAngularProjectLibType.Project>;
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'ionic1'): Promise<ionic1ProjectLibType.Project>;
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'custom'): Promise<customProjectLibType.Project>;
+  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'angular'): Promise<angularProjectLibType.AngularProject>;
+  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'ionic-angular'): Promise<ionicAngularProjectLibType.IonicAngularProject>;
+  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'ionic1'): Promise<ionic1ProjectLibType.Ionic1Project>;
+  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'custom'): Promise<customProjectLibType.CustomProject>;
   static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: ProjectType): Promise<IProject>;
   static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: ProjectType): Promise<IProject> {
     let project: IProject | undefined;
 
     if (type === 'angular') {
-      const { Project } = await import('./angular');
-      project = new Project(dir, file, deps);
+      const { AngularProject } = await import('./angular');
+      project = new AngularProject(dir, file, deps);
     } else if (type === 'ionic-angular') {
-      const { Project } = await import('./ionic-angular');
-      project = new Project(dir, file, deps);
+      const { IonicAngularProject } = await import('./ionic-angular');
+      project = new IonicAngularProject(dir, file, deps);
     } else if (type === 'ionic1') {
-      const { Project } = await import('./ionic1');
-      project = new Project(dir, file, deps);
+      const { Ionic1Project } = await import('./ionic1');
+      project = new Ionic1Project(dir, file, deps);
     } else if (type === 'custom') {
-      const { Project } = await import('./custom');
-      project = new Project(dir, file, deps);
+      const { CustomProject } = await import('./custom');
+      project = new CustomProject(dir, file, deps);
     } else {
       throw new FatalException(`Bad project type: ${chalk.bold(type)}`); // TODO?
     }
@@ -268,7 +268,7 @@ export abstract class BaseProject extends BaseConfig<ProjectFile> implements IPr
  * `env.project` undefined when outside a project.
  */
 export class OutsideProject extends BaseConfig<never> implements IProject {
-  type = undefined;
+  readonly type = undefined;
 
   is(j: any): j is never {
     return false;

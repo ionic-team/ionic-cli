@@ -1,9 +1,7 @@
-import { ProjectType } from '../../../definitions';
+import { Project } from '../';
 
-import { BaseProject } from '../';
-
-export class Project extends BaseProject {
-  type: ProjectType = 'custom';
+export class CustomProject extends Project {
+  readonly type: 'custom' = 'custom';
 
   /**
    * We can't detect custom project types. We don't know what they look like!

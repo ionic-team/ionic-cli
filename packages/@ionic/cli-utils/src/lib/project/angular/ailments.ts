@@ -5,7 +5,7 @@ import { DoctorAilmentId, IAilmentRegistry, ProjectType } from '../../../definit
 import { Ailment, AilmentDeps } from '../../doctor/ailments';
 import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 
-import { Project as AngularProject } from './';
+import { AngularProject } from './';
 import { Diagnosis, compileMessage, diagnose } from './ionic-angular-v3-v4-migration';
 
 export async function registerAilments(registry: IAilmentRegistry, deps: AngularAilmentDeps): Promise<void> {

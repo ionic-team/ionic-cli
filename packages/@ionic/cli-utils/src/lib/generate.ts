@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { PromptModule } from '@ionic/cli-framework';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions, IConfig, ILogger, IProject, IShell, IonicEnvironment, ProjectType, Runner } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions, IConfig, ILogger, IProject, IShell, IonicEnvironment, Runner } from '../definitions';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { prettyProjectName } from './project';
 
@@ -32,20 +32,20 @@ export abstract class GenerateRunner<T extends GenerateOptions> implements Runne
     this.shell = shell;
   }
 
-  static async createFromProjectType(env: IonicEnvironment, type: 'angular'): Promise<angularGenerateLibType.GenerateRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type: 'ionic-angular'): Promise<ionicAngularGenerateLibType.GenerateRunner>;
-  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<GenerateRunner<any>>;
-  static async createFromProjectType(env: IonicEnvironment, type?: ProjectType): Promise<GenerateRunner<any>> {
-    if (type === 'angular') {
+  static async createFromProject(env: IonicEnvironment): Promise<angularGenerateLibType.GenerateRunner>;
+  static async createFromProject(env: IonicEnvironment): Promise<ionicAngularGenerateLibType.GenerateRunner>;
+  static async createFromProject(env: IonicEnvironment): Promise<GenerateRunner<any>>;
+  static async createFromProject(env: IonicEnvironment): Promise<GenerateRunner<any>> {
+    if (env.project.type === 'angular') {
       const { GenerateRunner } = await import('./project/angular/generate');
       return new GenerateRunner(env);
-    } else if (type === 'ionic-angular') {
+    } else if (env.project.type === 'ionic-angular') {
       const { GenerateRunner } = await import('./project/ionic-angular/generate');
       return new GenerateRunner(env);
     } else {
       throw new RunnerNotFoundException(
         `Generators are not supported in this project type (${chalk.bold(prettyProjectName(env.project.type))}).` +
-        (type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to generate components for custom projects.\n\n` : '')
+        (env.project.type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to generate components for custom projects.\n\n` : '')
       );
     }
   }
@@ -62,7 +62,7 @@ export abstract class GenerateRunner<T extends GenerateOptions> implements Runne
 
 export async function generate(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
   try {
-    const runner = await GenerateRunner.createFromProjectType(env, env.project.type);
+    const runner = await GenerateRunner.createFromProject(env);
     const opts = runner.createOptionsFromCommandLine(inputs, options);
     await runner.run(opts);
   } catch (e) {

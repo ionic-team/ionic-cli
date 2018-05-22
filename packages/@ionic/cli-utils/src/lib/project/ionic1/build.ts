@@ -3,11 +3,23 @@ import * as Debug from 'debug';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1BuildOptions } from '../../../definitions';
 
-import { BUILD_SCRIPT, BuildRunner as BaseBuildRunner } from '../../build';
+import { BUILD_SCRIPT, BuildRunner, BuildRunnerDeps } from '../../build';
+import { Ionic1Project } from './';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic1:build');
 
-export class BuildRunner extends BaseBuildRunner<Ionic1BuildOptions> {
+export interface Ionic1BuildRunnerDeps extends BuildRunnerDeps {
+  readonly project: Ionic1Project;
+}
+
+export class Ionic1BuildRunner extends BuildRunner<Ionic1BuildOptions> {
+  protected readonly project: Ionic1Project;
+
+  constructor(deps: Ionic1BuildRunnerDeps) {
+    super(deps);
+    this.project = deps.project;
+  }
+
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {};
   }

@@ -8,9 +8,9 @@ import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
 
-import { IProject, InfoItem, IonicContext, IonicEnvironment } from './definitions';
 import { PROJECT_FILE } from './constants';
-import { BaseProject, OutsideProject, ProjectDeps } from './lib/project';
+import { IProject, InfoItem, IonicContext, IonicEnvironment } from './definitions';
+import { OutsideProject, Project, ProjectDeps } from './lib/project';
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
 import { Client } from './lib/http';
@@ -38,13 +38,13 @@ export async function getProject(projectDir: string | undefined, deps: ProjectDe
     return new OutsideProject('', PROJECT_FILE);
   }
 
-  const type = await BaseProject.determineType(projectDir, deps);
+  const type = await Project.determineType(projectDir, deps);
 
   if (!type) {
     return new OutsideProject('', PROJECT_FILE);
   }
 
-  return BaseProject.createFromProjectType(projectDir, PROJECT_FILE, deps, type);
+  return Project.createFromProjectType(projectDir, PROJECT_FILE, deps, type);
 }
 
 async function loadPackageJson(): Promise<PackageJson> {

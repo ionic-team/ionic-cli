@@ -16,7 +16,7 @@ import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { findClosestOpenPort, getExternalIPv4Interfaces } from '@ionic/cli-framework/utils/network';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, ProjectType, Runner, ServeDetails, ServeOptions } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, Runner, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 import { ASSETS_DIRECTORY, OptionGroup, PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
@@ -104,24 +104,24 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     this.shell = shell;
   }
 
-  static async createFromProjectType(deps: ServeRunnerDeps, type: 'ionic1'): Promise<ionic1ServeLibType.ServeRunner>;
-  static async createFromProjectType(deps: ServeRunnerDeps, type: 'ionic-angular'): Promise<ionicAngularServeLibType.ServeRunner>;
-  static async createFromProjectType(deps: ServeRunnerDeps, type: 'angular'): Promise<angularServeLibType.ServeRunner>;
-  static async createFromProjectType(deps: ServeRunnerDeps, type?: ProjectType): Promise<ServeRunner<any>>;
-  static async createFromProjectType(deps: ServeRunnerDeps, type?: ProjectType): Promise<ServeRunner<any>> {
-    if (type === 'ionic1') {
+  static async createFromProject(deps: ServeRunnerDeps): Promise<ionic1ServeLibType.ServeRunner>;
+  static async createFromProject(deps: ServeRunnerDeps): Promise<ionicAngularServeLibType.ServeRunner>;
+  static async createFromProject(deps: ServeRunnerDeps): Promise<angularServeLibType.ServeRunner>;
+  static async createFromProject(deps: ServeRunnerDeps): Promise<ServeRunner<any>>;
+  static async createFromProject(deps: ServeRunnerDeps): Promise<ServeRunner<any>> {
+    if (deps.project.type === 'ionic1') {
       const { ServeRunner } = await import('./project/ionic1/serve');
       return new ServeRunner(deps);
-    } else if (type === 'ionic-angular') {
+    } else if (deps.project.type === 'ionic-angular') {
       const { ServeRunner } = await import('./project/ionic-angular/serve');
       return new ServeRunner(deps);
-    } else if (type === 'angular') {
+    } else if (deps.project.type === 'angular') {
       const { ServeRunner } = await import('./project/angular/serve');
       return new ServeRunner(deps);
     } else {
       throw new RunnerNotFoundException(
-        `Cannot perform serve for ${type ? '' : 'unknown '}project type${type ? `: ${chalk.bold(type)}` : ''}.\n` +
-        (type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to serve custom projects.\n\n` : '') +
+        `Cannot perform serve for ${deps.project.type ? '' : 'unknown '}project type${deps.project.type ? `: ${chalk.bold(deps.project.type)}` : ''}.\n` +
+        (deps.project.type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to serve custom projects.\n\n` : '') +
         `If you'd like the CLI to try to detect your project type, you can unset the ${chalk.bold('type')} attribute in ${chalk.bold(PROJECT_FILE)}.`
       );
     }
@@ -501,7 +501,7 @@ class ServeAfterHook extends Hook {
 
 export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
   try {
-    const runner = await ServeRunner.createFromProjectType(env, env.project.type);
+    const runner = await ServeRunner.createFromProject(env);
 
     runner.on('cli-utility-spawn', cp => {
       cp.on('close', code => {

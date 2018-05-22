@@ -2,15 +2,15 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { IAilmentRegistry, InfoItem, ProjectType } from '../../../definitions';
+import { IAilmentRegistry, InfoItem } from '../../../definitions';
 
-import { BaseProject } from '../';
+import { Project } from '../';
 import * as doctorLibType from '../../doctor';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic-angular');
 
-export class Project extends BaseProject {
-  type: ProjectType = 'ionic-angular';
+export class IonicAngularProject extends Project {
+  readonly type: 'ionic-angular' = 'ionic-angular';
 
   async getInfo(): Promise<InfoItem[]> {
     const [

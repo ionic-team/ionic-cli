@@ -12,7 +12,7 @@ export class ServeCommand extends Command implements CommandPreRun {
 
   async getRunner() {
     if (!this.runner) {
-      this.runner = await ServeRunner.createFromProjectType(this.env, this.env.project.type);
+      this.runner = await ServeRunner.createFromProject(this.env);
     }
 
     return this.runner;

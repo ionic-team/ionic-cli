@@ -15,7 +15,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
   async getRunner() {
     if (!this.runner) {
       const { GenerateRunner } = await import('@ionic/cli-utils/lib/generate');
-      this.runner = await GenerateRunner.createFromProjectType(this.env, this.env.project.type);
+      this.runner = await GenerateRunner.createFromProject(this.env);
     }
 
     return this.runner;
