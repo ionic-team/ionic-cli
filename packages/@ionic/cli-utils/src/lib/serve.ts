@@ -9,8 +9,7 @@ import * as lodash from 'lodash';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
-import { LOGGER_LEVELS, NetworkInterface, PromptModule, createPrefixedFormatter } from '@ionic/cli-framework';
-import { BaseError } from '@ionic/cli-framework/lib/errors';
+import { BaseError, LOGGER_LEVELS, NetworkInterface, PromptModule, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit, processExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';

@@ -2,8 +2,7 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
-import { contains, validators } from '@ionic/cli-framework';
-import { BaseError } from '@ionic/cli-framework/lib/errors';
+import { BaseError, contains, validators } from '@ionic/cli-framework';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, isIntegrationName } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
