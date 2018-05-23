@@ -32,9 +32,6 @@ export function filterArgumentsForCordova(metadata: CommandMetadata, options: Co
 
   const results = filterCommandLineOptionsByGroup(m, options, OptionGroup.Cordova);
 
-  results['target'] = results['cordova-target'];
-  delete results['cordova-target'];
-
   const args = unparseArgs(results, { useEquals: false, allowCamelCase: true });
   const i = args.indexOf('--');
 

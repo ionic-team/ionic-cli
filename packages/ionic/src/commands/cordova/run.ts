@@ -100,7 +100,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         hint: 'cordova',
       },
       {
-        name: 'cordova-target',
+        name: 'target',
         summary: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
         type: String,
         groups: [OptionGroup.Advanced, OptionGroup.Cordova],

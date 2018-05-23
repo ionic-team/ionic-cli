@@ -56,8 +56,6 @@ down the main CLI package. All functionality is still supported, but the
 * The `--display-name` option for `ionic start` has been removed. The `name`
   argument is now used as the display name and slugified for directory name,
   package name, etc. To provide a custom slug, use `--project-id`.
-* The `--target` option for Cordova has been renamed to `--cordova-target` to
-  disambiguate from the Angular CLI's `--target` option.
 * The `ionic:watch:before` npm script hook has been renamed to
   `ionic:serve:before`, but behaves the same.
 * `ionic doctor check` will now _only_ print issues and exit with exit code 1 if
