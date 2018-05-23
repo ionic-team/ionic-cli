@@ -39,17 +39,6 @@ export interface CordovaPackageJson extends framework.PackageJson {
   };
 }
 
-export interface ProjectFileProxy {
-  path: string;
-  proxyUrl: string;
-  proxyNoAgent: boolean;
-
-  /**
-   * @deprecated
-   */
-  rejectUnauthorized: boolean;
-}
-
 export interface Runner<T extends object, U> {
   run(options: T): Promise<U>;
 }
@@ -109,11 +98,6 @@ export interface ProjectFile {
     key?: string;
     cert?: string;
   };
-
-  // Ionic 1 only
-  watchPatterns?: string[];
-  proxies?: ProjectFileProxy[];
-  documentRoot?: string;
 }
 
 export interface Response<T> extends APIResponseSuccess {

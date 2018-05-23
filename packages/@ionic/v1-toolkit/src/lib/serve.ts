@@ -6,6 +6,7 @@ import * as express from 'express';
 import * as proxyMiddleware from 'http-proxy-middleware';
 import { fsReadFile } from '@ionic/cli-framework/utils/fs';
 
+import { ConfigFileProxy } from './config';
 import { LiveReloadFunction, createLiveReloadServer } from './dev-server';
 import { runTask } from './gulp';
 import { timestamp } from './log';
@@ -18,6 +19,30 @@ import {
   injectLiveReloadScript,
 } from './dev-server';
 
+export const WATCH_PATTERNS = [
+  'scss/**/*',
+  'www/**/*',
+  '!www/lib/**/*',
+  '!www/**/*.map',
+];
+
+export function proxyConfigToMiddlewareConfig(proxy: ConfigFileProxy): proxyMiddleware.Config {
+  const config: proxyMiddleware.Config = {
+    pathRewrite: { [proxy.path]: '' },
+    target: proxy.proxyUrl,
+  };
+
+  if (proxy.proxyNoAgent) {
+    config.agent = <any>false; // TODO: type issue
+  }
+
+  if (proxy.rejectUnauthorized === false) {
+    config.secure = false;
+  }
+
+  return config;
+}
+
 export interface ProxyConfig extends proxyMiddleware.Config {
   mount: string;
 }
@@ -25,10 +50,10 @@ export interface ProxyConfig extends proxyMiddleware.Config {
 export interface ServeOptions {
   host: string;
   port: number;
-  lr: boolean;
+  livereload: boolean;
   consolelogs: boolean;
   devPort: number;
-  lrPort: number;
+  livereloadPort: number;
   wwwDir: string;
   watchPatterns: string[];
   proxies: ProxyConfig[];
@@ -43,8 +68,8 @@ const DEFAULT_PROXY_CONFIG: proxyMiddleware.Config = {
 export async function runServer(options: ServeOptions): Promise<ServeOptions> {
   let reloadfn: LiveReloadFunction | undefined;
 
-  if (options.lr) {
-    reloadfn = await createLiveReloadServer({ port: options.lrPort, wwwDir: options.wwwDir });
+  if (options.livereload) {
+    reloadfn = await createLiveReloadServer({ port: options.livereloadPort, wwwDir: options.wwwDir });
   }
 
   await createHttpServer(options);
@@ -86,8 +111,8 @@ async function createHttpServer(options: ServeOptions): Promise<express.Applicat
 
     indexHtml = injectDevServerScript(indexHtml);
 
-    if (options.lr) {
-      indexHtml = injectLiveReloadScript(indexHtml, options.lrPort);
+    if (options.livereload) {
+      indexHtml = injectLiveReloadScript(indexHtml, options.livereloadPort);
     }
 
     res.set('Content-Type', 'text/html');
@@ -97,7 +122,7 @@ async function createHttpServer(options: ServeOptions): Promise<express.Applicat
   app.get('/', serveIndex);
   app.use('/', express.static(options.wwwDir));
 
-  const livereloadUrl = `http://localhost:${options.lrPort}`;
+  const livereloadUrl = `http://localhost:${options.livereloadPort}`;
   const pathPrefix = `/${DEV_SERVER_PREFIX}/tiny-lr`;
 
   attachProxy(app, { ...DEFAULT_PROXY_CONFIG, mount: pathPrefix, target: livereloadUrl, pathRewrite: { [pathPrefix]: '' } });

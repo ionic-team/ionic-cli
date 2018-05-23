@@ -1,18 +1,14 @@
-import * as path from 'path';
-
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import * as lodash from 'lodash';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
-import * as proxyMiddlewareType from 'http-proxy-middleware'; // tslint:disable-line:no-implicit-dependencies
 
 import { LOGGER_LEVELS, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { isHostConnectable } from '@ionic/cli-framework/utils/network';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1ServeOptions, ProjectFileProxy, ServeDetails } from '../../../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1ServeOptions, ServeDetails } from '../../../definitions';
 import { OptionGroup } from '../../../constants';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
@@ -23,42 +19,8 @@ const IONIC_V1_SERVE_CONNECTIVITY_TIMEOUT = 5000; // ms
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic1');
 
-const WATCH_PATTERNS = [
-  'scss/**/*',
-  'www/**/*',
-  '!www/lib/**/*',
-  '!www/**/*.map',
-];
-
-interface ProxyConfig extends proxyMiddlewareType.Config {
-  mount: string;
-}
-
-interface ServeMetaOptions extends Ionic1ServeOptions {
-  wwwDir: string;
-  watchPatterns: string[];
-  proxies: ProxyConfig[];
-}
-
 interface ServeCmdDetails {
   program: string;
-}
-
-function proxyConfigToMiddlewareConfig(proxy: ProjectFileProxy): proxyMiddlewareType.Config {
-  const config: proxyMiddlewareType.Config = {
-    pathRewrite: { [proxy.path]: '' },
-    target: proxy.proxyUrl,
-  };
-
-  if (proxy.proxyNoAgent) {
-    config.agent = <any>false; // TODO: type issue
-  }
-
-  if (proxy.rejectUnauthorized === false) {
-    config.secure = false;
-  }
-
-  return config;
 }
 
 export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
@@ -134,20 +96,8 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
   }
 
   private async serveCommandWrapper(options: Ionic1ServeOptions): Promise<ServeCmdDetails> {
-    const project = await this.project.load();
-    const wwwDir = await this.project.getSourceDir();
-    const proxies = project.proxies && options.proxy ? project.proxies.map(p => ({ mount: p.path, ...proxyConfigToMiddlewareConfig(p) })) : [];
-
-    if (!project.watchPatterns || project.watchPatterns.length === 1 && project.watchPatterns[0] === 'scss/**/*') {
-      project.watchPatterns = WATCH_PATTERNS;
-    }
-
-    debug(`Watch patterns: ${project.watchPatterns.map(v => chalk.bold(v)).join(', ')}`);
-
-    const cmdopts = lodash.assign({ wwwDir, watchPatterns: project.watchPatterns, proxies }, options);
-
     try {
-      return await this.servecmd(cmdopts);
+      return await this.servecmd(options);
     } catch (e) {
       if (!(e instanceof ServeCommandNotFoundException)) {
         throw e;
@@ -166,25 +116,20 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
         throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.\n` + requiredMsg);
       }
 
-      return this.servecmd(cmdopts);
+      return this.servecmd(options);
     }
   }
 
-  private async servecmd(options: ServeMetaOptions): Promise<ServeCmdDetails> {
+  private async servecmd(options: Ionic1ServeOptions): Promise<ServeCmdDetails> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
     const config = await this.config.load();
     const pkg = await this.project.requirePackageJson();
     const { npmClient } = config;
-    const workingDir = this.project.directory;
-
-    const networkArgs = ['--host', options.address, '--port', String(options.port), '--lr-port', String(options.livereloadPort), '--dev-port', String(options.notificationPort)];
-    const watchPatternsArgs = lodash.flatten(options.watchPatterns.map(p => ['-w', p]));
-    const proxiesArgs = lodash.flatten(options.proxies.map(p => ['-p', JSON.stringify(p)]));
 
     let program = DEFAULT_PROGRAM;
-    let args = [...networkArgs, ...watchPatternsArgs, ...proxiesArgs];
-    const shellOptions = { cwd: workingDir };
+    let args = ['--host', options.address, '--port', String(options.port), '--lr-port', String(options.livereloadPort), '--dev-port', String(options.notificationPort)];
+    const shellOptions = { cwd: this.project.directory };
 
     debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
 
@@ -194,7 +139,7 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
       program = pkgManager;
       args = pkgArgs;
     } else {
-      const v1utilArgs = ['serve', path.relative(workingDir, options.wwwDir)];
+      const v1utilArgs = ['serve'];
 
       if (options.consolelogs) {
         v1utilArgs.push('-c');

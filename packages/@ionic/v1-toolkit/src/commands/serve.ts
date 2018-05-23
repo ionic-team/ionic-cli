@@ -1,11 +1,12 @@
 import * as path from 'path';
 import chalk from 'chalk';
 
-import { Command, CommandLineInputs, CommandLineOptions, validators } from '@ionic/cli-framework';
+import { Command, CommandLineInputs, CommandLineOptions } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
 
+import { Config } from '../lib/config';
 import { hasTask, runTask } from '../lib/gulp';
-import { runServer } from '../lib/serve';
+import { WATCH_PATTERNS, proxyConfigToMiddlewareConfig, runServer } from '../lib/serve';
 import { timestamp } from '../lib/log';
 
 export class ServeCommand extends Command {
@@ -13,13 +14,7 @@ export class ServeCommand extends Command {
     return {
       name: 'serve',
       summary: '',
-      inputs: [
-        {
-          name: 'dir',
-          summary: 'The www directory to server',
-          validators: [validators.required],
-        },
-      ],
+      inputs: [],
       options: [
         {
           name: 'host',
@@ -37,12 +32,12 @@ export class ServeCommand extends Command {
           default: '53703',
         },
         {
-          name: 'lr-port',
+          name: 'livereload-port',
           summary: 'Port of WebSocket live-reload server',
           default: '35729',
         },
         {
-          name: 'lr',
+          name: 'livereload',
           summary: 'Enable live-reload',
           type: Boolean,
           default: true,
@@ -53,42 +48,38 @@ export class ServeCommand extends Command {
           type: Boolean,
           aliases: ['c'],
         },
-        {
-          name: 'watch',
-          summary: 'Watch file, directory, or glob pattern relative to cwd',
-          aliases: ['w'],
-        },
-        {
-          name: 'proxy',
-          summary: 'Proxy configuration',
-          aliases: ['p'],
-        },
       ],
     };
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions) {
-    const wwwDir = path.resolve(inputs[0]);
     const host = String(options['host']);
     const port = str2num(options['port']);
     const devPort = str2num(options['dev-port']);
-    const lrPort = str2num(options['lr-port']);
-    const lr = options['lr'] ? true : false;
+    const livereload = options['livereload'] ? true : false;
+    const livereloadPort = str2num(options['livereload-port']);
     const consolelogs = options['consolelogs'] ? true : false;
-    const watch = options['watch'];
-    const proxy = options['proxy'];
 
-    const watchPatterns = Array.isArray(watch) ? watch : [String(watch)];
-    const proxies = Array.isArray(proxy) ? proxy : (proxy ? [JSON.parse(String(proxy))] : []);
     const url = `http://${host}:${port}`;
 
     if (await hasTask('ionic:serve:before')) {
       await runTask('ionic:serve:before');
     }
 
+    const config = new Config(path.resolve(process.cwd(), 'ionic.config.json'));
+
+    const c = config.c;
+    const wwwDir = c.documentRoot || 'www';
+    const proxies = c.proxies ? c.proxies.map(p => ({ mount: p.path, ...proxyConfigToMiddlewareConfig(p) })) : [];
+
+    if (!c.watchPatterns || c.watchPatterns.length === 1 && c.watchPatterns[0] === 'scss/**/*') {
+      config.set('watchPatterns', WATCH_PATTERNS);
+      c.watchPatterns = WATCH_PATTERNS;
+    }
+
     process.stdout.write(`${timestamp()} Serving directory ${chalk.bold(wwwDir)}\n`);
 
-    await runServer({ host, port, lr, consolelogs, devPort, lrPort, wwwDir, watchPatterns, proxies });
+    await runServer({ host, port, livereload, consolelogs, devPort, livereloadPort, wwwDir, watchPatterns: c.watchPatterns, proxies });
 
     process.stdout.write(`${timestamp()} Dev server running at ${chalk.bold(url)}\n`);
   }
