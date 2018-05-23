@@ -1,6 +1,7 @@
 import { Logger } from './logger';
 
 export * from './command';
+export * from './config';
 export * from './executor';
 export * from './help';
 export * from './logger';

@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import * as ncpType from 'ncp';
+import * as makeDir from 'make-dir';
+import * as wfa from 'write-file-atomic';
+import { Options as NCPOptions } from 'ncp'; // type import
 
 import { promisify } from './promise';
 import { compilePaths } from './path';
@@ -29,6 +31,11 @@ export const fsUnlink = promisify<void, string>(fs.unlink);
 export const fsReadFile = promisify<string, string, FSReadFileOptions>(fs.readFile);
 export const fsWriteFile = promisify<void, string, any, FSWriteFileOptions>(fs.writeFile);
 export const fsReadDir = promisify<string[], string>(fs.readdir);
+
+export const writeFileAtomic = promisify<void, string, string | Buffer, wfa.Options>(wfa);
+export const writeFileAtomicSync = wfa.sync;
+
+export { makeDir };
 
 /**
  * Error-less, promisified `fs.readdir` with an option to recurse into
@@ -177,7 +184,7 @@ export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: st
   });
 }
 
-export async function copyDirectory(source: string, destination: string, options: ncpType.Options = {}): Promise<void> {
+export async function copyDirectory(source: string, destination: string, options: NCPOptions = {}): Promise<void> {
   const ncp = await import('ncp');
 
   return new Promise<void>((resolve, reject) => {
