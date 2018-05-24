@@ -1,10 +1,10 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
-import * as chokidar from 'chokidar';
-import * as express from 'express';
-import * as proxyMiddleware from 'http-proxy-middleware';
 import { fsReadFile } from '@ionic/cli-framework/utils/fs';
+
+import * as express from 'express'; // type import
+import * as proxyMiddleware from 'http-proxy-middleware'; // type import
 
 import { ConfigFileProxy } from './config';
 import { LiveReloadFunction, createLiveReloadServer } from './dev-server';
@@ -74,6 +74,7 @@ export async function runServer(options: ServeOptions): Promise<ServeOptions> {
 
   await createHttpServer(options);
 
+  const chokidar = await import('chokidar');
   const watcher = chokidar.watch(options.watchPatterns);
 
   watcher.on('change', (filePath: string) => {
@@ -99,6 +100,7 @@ export async function runServer(options: ServeOptions): Promise<ServeOptions> {
  * Create HTTP server
  */
 async function createHttpServer(options: ServeOptions): Promise<express.Application> {
+  const express = await import('express');
   const app = express();
 
   /**
@@ -125,10 +127,10 @@ async function createHttpServer(options: ServeOptions): Promise<express.Applicat
   const livereloadUrl = `http://localhost:${options.livereloadPort}`;
   const pathPrefix = `/${DEV_SERVER_PREFIX}/tiny-lr`;
 
-  attachProxy(app, { ...DEFAULT_PROXY_CONFIG, mount: pathPrefix, target: livereloadUrl, pathRewrite: { [pathPrefix]: '' } });
+  await attachProxy(app, { ...DEFAULT_PROXY_CONFIG, mount: pathPrefix, target: livereloadUrl, pathRewrite: { [pathPrefix]: '' } });
 
   for (const proxy of options.proxies) {
-    attachProxy(app, { ...DEFAULT_PROXY_CONFIG, ...proxy });
+    await attachProxy(app, { ...DEFAULT_PROXY_CONFIG, ...proxy });
     process.stdout.write(`${timestamp()} Proxy created ${chalk.bold(proxy.mount)} => ${proxy.target ? chalk.bold(proxy.target) : '<no target>'}\n`);
   }
 
@@ -153,6 +155,7 @@ async function createHttpServer(options: ServeOptions): Promise<express.Applicat
   });
 }
 
-function attachProxy(app: express.Application, config: ProxyConfig) {
+async function attachProxy(app: express.Application, config: ProxyConfig) {
+  const proxyMiddleware = await import('http-proxy-middleware');
   app.use(config.mount, proxyMiddleware(config.mount, config));
 }
