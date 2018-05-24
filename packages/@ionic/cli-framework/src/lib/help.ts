@@ -573,7 +573,7 @@ export interface CommandHelpSchemaOption {
   readonly summary: string;
   readonly aliases: ReadonlyArray<string>;
   readonly type: string;
-  readonly default?: any;
+  readonly default?: string | boolean;
 }
 
 export interface CommandHelpSchema {

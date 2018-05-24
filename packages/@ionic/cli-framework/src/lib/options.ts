@@ -61,7 +61,7 @@ export function separateArgv(pargv: ReadonlyArray<string>): [string[], string[]]
   return [ ownArgs, otherArgs ];
 }
 
-const typeDefaults = new Map<CommandOptionType, ParsedArg>()
+const typeDefaults = new Map<CommandOptionType, null | string | boolean>()
   .set(String, null) // tslint:disable-line:no-null-keyword
   .set(Boolean, false);
 

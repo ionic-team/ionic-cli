@@ -30,7 +30,7 @@ export interface CommandMetadataOption {
   name: string;
   summary: string;
   type?: CommandOptionType;
-  default?: ParsedArg;
+  default?: string | boolean;
   aliases?: string[];
   groups?: MetadataGroup[];
 }
@@ -43,7 +43,7 @@ export interface HydratedParseArgsOptions extends ParseArgsOptions {
   string: string[];
   boolean: string[];
   alias: { [key: string]: string[]; };
-  default: { [key: string]: ParsedArg; };
+  default: { [key: string]: string | boolean; };
 }
 
 export interface Metadata {
