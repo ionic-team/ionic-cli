@@ -13,9 +13,10 @@ export const ERROR_IPC_UNKNOWN_PROCEDURE = 'ERR_ICF_IPC_UNKNOWN_PROCEDURE';
 export abstract class BaseError extends Error {
   abstract readonly name: string;
   message: string;
+  stack: string;
   code?: string;
   error?: Error;
-  stack: string;
+  exitCode?: number;
 
   constructor(message: string) {
     super(message);

@@ -3,6 +3,7 @@ import { EventEmitter } from 'events';
 import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, IExecutor, INamespace, NamespaceLocateResult } from '../definitions';
+import { BaseError, InputValidationError } from '../errors';
 import { isCommand, isNamespace } from '../guards';
 
 import { Colors, DEFAULT_COLORS } from './colors';
@@ -84,16 +85,40 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
       const cmd = location.obj;
       const cmdargs = lodash.drop(argv, location.path.length - 1);
 
-      await this.run(cmd, cmdargs, { location, env, executor: this });
+      try {
+        await this.run(cmd, cmdargs, { location, env, executor: this });
+      } catch (e) {
+        if (e instanceof BaseError) {
+          this.stderr.write(`Error: ${e.message}`);
+          process.exitCode = typeof e.exitCode === 'undefined' ? 1 : e.exitCode;
+          return;
+        }
+
+        throw e;
+      }
     }
   }
 
   async run(command: C, cmdargs: ReadonlyArray<string>, runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void> {
+    const { input } = this.colors;
     const metadata = await command.getMetadata();
     const cmdoptions = parseArgs([...cmdargs], metadataToParseArgsOptions(metadata));
     const cmdinputs = cmdoptions._;
 
-    await command.validate(cmdinputs);
+    try {
+      await command.validate(cmdinputs);
+    } catch (e) {
+      if (e instanceof InputValidationError) {
+        for (const err of e.errors) {
+          this.stderr.write(`${err.message}\n`);
+        }
+
+        this.stderr.write(`Use the ${input('--help')} flag for more details.\n`);
+      }
+
+      throw e;
+    }
+
     await command.run(cmdinputs, cmdoptions, runinfo);
   }
 
