@@ -31,7 +31,7 @@
     "@types/escape-string-regexp": "0.0.32",
     "@types/node": "^6.0.101",
     "@types/strip-ansi": "^3.0.0",
-    "jest": "^22.4.2",
+    "jest": "^23.0.0",
     "jest-cli": "^22.4.2",
     "rimraf": "^2.6.2",
     "ts-jest": "^22.4.1",
