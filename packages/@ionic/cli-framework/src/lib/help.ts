@@ -646,3 +646,15 @@ export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     return { name, namespace: namespacePath, summary, description, groups, exampleCommands, aliases, inputs, options };
   }
 }
+
+export function createCommandMetadataFromSchema(schema: CommandHelpSchema): Required<CommandMetadata> {
+  return {
+    name: schema.name,
+    summary: schema.summary,
+    description: schema.description,
+    groups: [...schema.groups],
+    exampleCommands: [...schema.exampleCommands],
+    inputs: [...schema.inputs],
+    options: schema.options.map(opt => ({ ...opt, type: opt.type === 'boolean' ? Boolean : String, groups: [...opt.groups], aliases: [...opt.aliases] })),
+  };
+}
