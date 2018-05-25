@@ -9,7 +9,7 @@ import { isCommand, isNamespace } from '../guards';
 import { Colors, DEFAULT_COLORS } from './colors';
 import { Command, Namespace } from './command';
 import { CommandHelpSchema, CommandSchemaHelpFormatter, CommandStringHelpFormatter, HelpFormatter, NamespaceHelpSchema, NamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter } from './help';
-import { metadataToParseArgsOptions, parseArgs, stripOptions } from './options';
+import { metadataOptionsToParseArgsOptions, parseArgs, stripOptions } from './options';
 import { RPC, RPCProcess } from '../utils/ipc'; // type import
 
 export type HelpRPC<S extends CommandHelpSchema | NamespaceHelpSchema> = RPC<'help', [ReadonlyArray<string>], S>;
@@ -102,7 +102,7 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
   async run(command: C, cmdargs: ReadonlyArray<string>, runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void> {
     const { input } = this.colors;
     const metadata = await command.getMetadata();
-    const cmdoptions = parseArgs([...cmdargs], metadataToParseArgsOptions(metadata));
+    const cmdoptions = parseArgs([...cmdargs], metadataOptionsToParseArgsOptions(metadata.options ? metadata.options : []));
     const cmdinputs = cmdoptions._;
 
     try {

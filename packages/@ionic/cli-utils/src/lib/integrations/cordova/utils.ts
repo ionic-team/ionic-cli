@@ -29,7 +29,7 @@ export function filterArgumentsForCordova(metadata: CommandMetadata, options: Co
 
   m.options.push(...globalCordovaOpts);
 
-  const results = filterCommandLineOptionsByGroup(m, options, 'cordova');
+  const results = filterCommandLineOptionsByGroup(m.options, options, 'cordova');
 
   const args = unparseArgs(results, { useEquals: false, allowCamelCase: true });
   const i = args.indexOf('--');
@@ -45,7 +45,7 @@ export function generateBuildOptions(metadata: CommandMetadata, inputs: CommandL
   const [ platform ] = inputs;
   const includesAppScriptsGroup = OptionFilters.includesGroups('app-scripts');
   const excludesCordovaGroup = OptionFilters.excludesGroups('cordova');
-  const results = filterCommandLineOptions(metadata, options, o => excludesCordovaGroup(o) || includesAppScriptsGroup(o));
+  const results = filterCommandLineOptions(metadata.options ? metadata.options : [], options, o => excludesCordovaGroup(o) || includesAppScriptsGroup(o));
 
   return {
     ...results,

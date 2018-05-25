@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { AbstractExecutor, metadataToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
+import { AbstractExecutor, metadataOptionsToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
 
 import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace } from '../definitions';
 import { PROJECT_FILE } from '../constants';
@@ -52,7 +52,7 @@ export class Executor extends AbstractExecutor<ICommand, INamespace, CommandMeta
       }
     }
 
-    const minimistOpts = metadataToParseArgsOptions(metadata);
+    const minimistOpts = metadataOptionsToParseArgsOptions(metadata.options ? metadata.options : []);
     const cmdoptions = parseArgs(cmdargs, minimistOpts);
     const cmdinputs = cmdoptions._;
 

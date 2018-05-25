@@ -1,7 +1,7 @@
 import * as minimist from 'minimist';
 import * as lodash from 'lodash';
 
-import { CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandOptionType, HydratedCommandMetadataOption, HydratedParseArgsOptions, ParsedArg } from '../definitions';
+import { CommandLineOptions, CommandMetadataOption, CommandOptionType, HydratedCommandMetadataOption, HydratedParseArgsOptions, ParsedArg } from '../definitions';
 
 export const parseArgs = minimist;
 export { ParsedArgs } from 'minimist';
@@ -90,7 +90,7 @@ export function hydrateCommandMetadataOption<O extends CommandMetadataOption>(op
   });
 }
 
-export function metadataToParseArgsOptions(metadata: CommandMetadata): HydratedParseArgsOptions {
+export function metadataOptionsToParseArgsOptions(commandOptions: ReadonlyArray<CommandMetadataOption>): HydratedParseArgsOptions {
   const options: HydratedParseArgsOptions = {
     string: ['_'],
     boolean: [],
@@ -99,11 +99,7 @@ export function metadataToParseArgsOptions(metadata: CommandMetadata): HydratedP
     '--': true,
   };
 
-  if (!metadata.options) {
-    return options;
-  }
-
-  for (const o of metadata.options) {
+  for (const o of commandOptions) {
     const opt = hydrateCommandMetadataOption(o);
 
     if (opt.type === String) {
@@ -134,26 +130,26 @@ export namespace OptionFilters {
 }
 
 /**
- * Given a command metadata object and an object of parsed options, match each
- * supplied option with its command metadata option definition and pass it,
- * along with its value, to a predicate function, which is used to return a
- * subset of the parsed options.
+ * Given an array of command metadata options and an object of parsed options,
+ * match each supplied option with its command metadata option definition and
+ * pass it, along with its value, to a predicate function, which is used to
+ * return a subset of the parsed options.
  *
  * Options which are unknown to the command metadata are always excluded.
  *
  * @param predicate If excluded, `() => true` is used.
  */
-export function filterCommandLineOptions<M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(metadata: M, parsedArgs: CommandLineOptions, predicate: OptionPredicate<O> = () => true): CommandLineOptions {
+export function filterCommandLineOptions<O extends CommandMetadataOption>(options: ReadonlyArray<O>, parsedArgs: CommandLineOptions, predicate: OptionPredicate<O> = () => true): CommandLineOptions {
   const initial: CommandLineOptions = { _: parsedArgs._ };
 
   if (parsedArgs['--']) {
     initial['--'] = parsedArgs['--'];
   }
 
-  const mapped = new Map(metadata.options ? [
-    ...metadata.options.map((o): [string, O] => [o.name, o]),
-    ...lodash.flatten(metadata.options.map(opt => opt.aliases ? opt.aliases.map((a): [string, O] => [a, opt]) : [])),
-  ] : []);
+  const mapped = new Map([
+    ...options.map((o): [string, O] => [o.name, o]),
+    ...lodash.flatten(options.map(opt => opt.aliases ? opt.aliases.map((a): [string, O] => [a, opt]) : [])),
+  ]);
 
   const pairs = Object.keys(parsedArgs)
     .map((k): [string, O | undefined, ParsedArg | undefined] => [k, mapped.get(k), parsedArgs[k]])
@@ -164,16 +160,16 @@ export function filterCommandLineOptions<M extends CommandMetadata<I, O>, I exte
 }
 
 /**
- * Given a command metadata object and an object of parsed options, return a
- * subset of the parsed options whose command metadata option definition
- * contains the supplied group(s).
+ * Given an array of command metadata options and an object of parsed options,
+ * return a subset of the parsed options whose command metadata option
+ * definition contains the supplied group(s).
  *
  * Options which are unknown to the command metadata are always excluded.
  *
  * @param groups One or more option groups.
  */
-export function filterCommandLineOptionsByGroup<M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(metadata: M, parsedArgs: CommandLineOptions, groups: string | string[]): CommandLineOptions {
-  return filterCommandLineOptions(metadata, parsedArgs, OptionFilters.includesGroups(groups));
+export function filterCommandLineOptionsByGroup<O extends CommandMetadataOption>(options: ReadonlyArray<O>, parsedArgs: CommandLineOptions, groups: string | string[]): CommandLineOptions {
+  return filterCommandLineOptions(options, parsedArgs, OptionFilters.includesGroups(groups));
 }
 
 export interface UnparseArgsOptions {

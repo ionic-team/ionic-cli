@@ -4,7 +4,7 @@ import {
   OptionFilters,
   filterCommandLineOptions,
   filterCommandLineOptionsByGroup,
-  metadataToParseArgsOptions,
+  metadataOptionsToParseArgsOptions,
   separateArgv,
   stripOptions,
   unparseArgs,
@@ -105,10 +105,10 @@ describe('@ionic/cli-framework', () => {
       ],
     };
 
-    describe('metadataToParseArgsOptions', () => {
+    describe('metadataOptionsToParseArgsOptions', () => {
 
       it('should transform metadata to minimist options', () => {
-        const result = metadataToParseArgsOptions(metadata1);
+        const result = metadataOptionsToParseArgsOptions(metadata1.options);
         expect(result).toEqual({
           string: ['_', 'foo', 'bar'],
           boolean: ['flag1'],
@@ -121,13 +121,13 @@ describe('@ionic/cli-framework', () => {
       describe('minimist arg parse', () => {
 
         it('should parse with empty argv', () => {
-          const opts = metadataToParseArgsOptions(metadata1);
+          const opts = metadataOptionsToParseArgsOptions(metadata1.options);
           const result = minimist([], opts);
           expect(result).toEqual({ _: [], foo: null, f: null, bar: 'soup', flag1: false, '--': [] });
         });
 
         it('should parse with comprehensive argv', () => {
-          const opts = metadataToParseArgsOptions(metadata1);
+          const opts = metadataOptionsToParseArgsOptions(metadata1.options);
           const result = minimist(['cat', '--foo', 'rabbit', 'dog', '--bar=salad', '--unknown', 'wow', '--flag1', 'extra', '--and-again'], opts);
           expect(result).toEqual({ _: ['cat', 'dog', 'extra'], foo: 'rabbit', f: 'rabbit', bar: 'salad', flag1: true, unknown: 'wow', 'and-again': true, '--': [] });
         });
@@ -233,64 +233,64 @@ describe('@ionic/cli-framework', () => {
     describe('filterCommandLineOptions', () => {
 
       it('should return empty object for empty input', () => {
-        const result = filterCommandLineOptions(metadata1, { _: [] });
+        const result = filterCommandLineOptions(metadata1.options, { _: [] });
         expect(result).toEqual({ _: [] });
       });
 
       it('should return args if supplied', () => {
-        const result = filterCommandLineOptions(metadata1, { _: ['a', 'b'] }, opt => true);
+        const result = filterCommandLineOptions(metadata1.options, { _: ['a', 'b'] }, opt => true);
         expect(result).toEqual({ _: ['a', 'b'] });
       });
 
       it('should include all known & supplied options using a true predicate', () => {
-        const result = filterCommandLineOptions(metadata1, { _: [], foo: 'hi', flag1: true }, opt => true);
+        const result = filterCommandLineOptions(metadata1.options, { _: [], foo: 'hi', flag1: true }, opt => true);
         expect(result).toEqual({ _: [], foo: 'hi', flag1: true });
       });
 
       it('should include all known & supplied options without a predicate', () => {
-        const result = filterCommandLineOptions(metadata1, { _: [], foo: 'hi', flag1: true });
+        const result = filterCommandLineOptions(metadata1.options, { _: [], foo: 'hi', flag1: true });
         expect(result).toEqual({ _: [], foo: 'hi', flag1: true });
       });
 
       it('should include options with aliases', () => {
-        const result = filterCommandLineOptions(metadata1, { _: [], f: 'hi', flag1: true });
+        const result = filterCommandLineOptions(metadata1.options, { _: [], f: 'hi', flag1: true });
         expect(result).toEqual({ _: [], foo: 'hi', flag1: true });
       });
 
       it('should return empty object for a false predicate', () => {
-        const result = filterCommandLineOptions(metadata1, { _: [] }, opt => false);
+        const result = filterCommandLineOptions(metadata1.options, { _: [] }, opt => false);
         expect(result).toEqual({ _: [] });
       });
 
       it('should exclude unknown options even with a true predicate', () => {
-        const result = filterCommandLineOptions(metadata1, { _: [], unknown: 'yep', bar: 'hi', flag1: true }, opt => true);
+        const result = filterCommandLineOptions(metadata1.options, { _: [], unknown: 'yep', bar: 'hi', flag1: true }, opt => true);
         expect(result).toEqual({ _: [], bar: 'hi', flag1: true });
       });
 
       it('should exclude options that do not match the predicate using opt', () => {
-        const result = filterCommandLineOptions(metadata1, { _: [], unknown: 'yep', foo: 'wow', bar: 'hi', flag1: true }, opt => opt.groups && opt.groups.includes('a'));
+        const result = filterCommandLineOptions(metadata1.options, { _: [], unknown: 'yep', foo: 'wow', bar: 'hi', flag1: true }, opt => opt.groups && opt.groups.includes('a'));
         expect(result).toEqual({ _: [], foo: 'wow' });
       });
 
       it('should exclude options that do not match the predicate using value', () => {
-        const result = filterCommandLineOptions(metadata1, { _: [], unknown: 'yep', foo: 'wow', bar: 'hi', flag1: true }, (opt, value) => value === 'hi');
+        const result = filterCommandLineOptions(metadata1.options, { _: [], unknown: 'yep', foo: 'wow', bar: 'hi', flag1: true }, (opt, value) => value === 'hi');
         expect(result).toEqual({ _: [], bar: 'hi' });
       });
 
       it('should include separated args from original parsed args', () => {
-        const result = filterCommandLineOptions(metadata1, { _: [], '--': 'some more --args' });
+        const result = filterCommandLineOptions(metadata1.options, { _: [], '--': 'some more --args' });
         expect(result).toEqual({ _: [], '--': 'some more --args' });
       });
 
       describe('OptionFilters.includesGroups', () => {
 
         it('should include single group', () => {
-          const result = filterCommandLineOptions(metadata1, { _: [], foo: 'wow', bar: 'nope', flag1: true }, OptionFilters.includesGroups('a'));
+          const result = filterCommandLineOptions(metadata1.options, { _: [], foo: 'wow', bar: 'nope', flag1: true }, OptionFilters.includesGroups('a'));
           expect(result).toEqual({ _: [], foo: 'wow' });
         });
 
         it('should include multiple groups', () => {
-          const result = filterCommandLineOptions(metadata1, { _: [], foo: 'wow', bar: 'nope', flag1: true }, OptionFilters.includesGroups(['a', 'b']));
+          const result = filterCommandLineOptions(metadata1.options, { _: [], foo: 'wow', bar: 'nope', flag1: true }, OptionFilters.includesGroups(['a', 'b']));
           expect(result).toEqual({ _: [], foo: 'wow', bar: 'nope' });
         });
 
@@ -299,12 +299,12 @@ describe('@ionic/cli-framework', () => {
       describe('OptionFilters.excludesGroups', () => {
 
         it('should exclude single groups', () => {
-          const result = filterCommandLineOptions(metadata1, { _: [], foo: 'wow', bar: 'nope', flag1: true }, OptionFilters.excludesGroups('a'));
+          const result = filterCommandLineOptions(metadata1.options, { _: [], foo: 'wow', bar: 'nope', flag1: true }, OptionFilters.excludesGroups('a'));
           expect(result).toEqual({ _: [], bar: 'nope', flag1: true });
         });
 
         it('should exclude multiple groups', () => {
-          const result = filterCommandLineOptions(metadata1, { _: [], foo: 'wow', bar: 'nope', flag1: true }, OptionFilters.excludesGroups(['a', 'b']));
+          const result = filterCommandLineOptions(metadata1.options, { _: [], foo: 'wow', bar: 'nope', flag1: true }, OptionFilters.excludesGroups(['a', 'b']));
           expect(result).toEqual({ _: [], flag1: true });
         });
 
@@ -315,12 +315,12 @@ describe('@ionic/cli-framework', () => {
     describe('filterCommandLineOptionsByGroup', () => {
 
       it('should exclude options not in group a', () => {
-        const result = filterCommandLineOptionsByGroup(metadata1, { _: [], unknown: 'yep', foo: 'wow', bar: 'hi', flag1: true }, 'a');
+        const result = filterCommandLineOptionsByGroup(metadata1.options, { _: [], unknown: 'yep', foo: 'wow', bar: 'hi', flag1: true }, 'a');
         expect(result).toEqual({ _: [], foo: 'wow' });
       });
 
       it('should exclude options not in group a or b', () => {
-        const result = filterCommandLineOptionsByGroup(metadata1, { _: [], unknown: 'yep', foo: 'wow', bar: 'hi', flag1: true }, ['a', 'b']);
+        const result = filterCommandLineOptionsByGroup(metadata1.options, { _: [], unknown: 'yep', foo: 'wow', bar: 'hi', flag1: true }, ['a', 'b']);
         expect(result).toEqual({ _: [], foo: 'wow', bar: 'hi' });
       });
 
