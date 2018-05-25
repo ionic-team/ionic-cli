@@ -47,7 +47,7 @@
     "@types/strip-ansi": "^3.0.0",
     "@types/untildify": "^3.0.0",
     "@types/wrap-ansi": "^3.0.0",
-    "jest": "^22.4.2",
+    "jest": "^23.0.0",
     "jest-cli": "^22.4.2",
     "ts-jest": "^22.4.1",
     "tslint": "^5.9.1",
