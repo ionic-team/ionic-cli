@@ -213,6 +213,21 @@ describe('@ionic/cli-framework', () => {
         expect(result).toEqual(['--foo=foo', '--bar=bar', '--baz=baz']);
       });
 
+      it('should filter out unknown options if requested', () => {
+        const result = unparseArgs({ _: [], foo: 'foo', flag1: true }, {}, { unknown: () => false });
+        expect(result).toEqual([]);
+      });
+
+      it('should keep known options', () => {
+        const result = unparseArgs({ _: [], foo: 'foo', bar: 'bar', flag1: true, flag2: true }, {}, { string: ['foo'], boolean: ['flag1'], unknown: () => false });
+        expect(result).toEqual(['--foo=foo', '--flag1']);
+      });
+
+      it('should keep known options by alias', () => {
+        const result = unparseArgs({ _: [], foo: 'foo', f: 'foo', bar: 'bar', flag1: true, flag2: true }, {}, { string: ['foo'], boolean: ['flag1'], alias: { foo: ['f'] }, unknown: () => false });
+        expect(result).toEqual(['--foo=foo', '--flag1']);
+      });
+
     });
 
     describe('filterCommandLineOptions', () => {

@@ -189,6 +189,17 @@ export interface UnparseArgsOptions {
  *
  * Based on dargs, by sindresorhus
  * @see https://github.com/sindresorhus/dargs/blob/master/license
+ *
+ * @param parsedArgs Inputs and options parsed by minimist.
+ * @param options.useDoubleQuotes For options with values, wrap the value in
+ *                                double quotes if it contains a space.
+ * @param options.useEquals Instead of separating an option and its value with
+ *                          a space, use an equals sign.
+ * @param options.ignoreFalse Optionally ignore flags that equate to false.
+ * @param options.allowCamelCase Optionally allow camel cased options instead
+ *                               of converting to kebab case.
+ * @param parseArgsOptions To provide more accuracy, specify the options that
+ *                         were used to parse the args in the first place.
  */
 export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, useEquals = true, ignoreFalse = true, allowCamelCase }: UnparseArgsOptions = {}, parseArgsOptions?: minimist.Opts): string[] {
   const args = [...parsedArgs['_'] || []];
@@ -224,29 +235,46 @@ export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, 
   // Construct a mapping of alias to original key name.
   const aliases = new Map<string, string>(lodash.flatten(Object.keys(aliasDef).map(k => aliasDef[k].map((a): [string, string] => [a, k]))));
 
+  const isKnown = (key: string) => {
+    if (!parseArgsOptions || !parseArgsOptions.unknown) {
+      return true;
+    }
+
+    if (
+      (typeof parseArgsOptions.string !== 'undefined' && (Array.isArray(parseArgsOptions.string) && parseArgsOptions.string.includes(key))) ||
+      (typeof parseArgsOptions.boolean !== 'undefined' && (Array.isArray(parseArgsOptions.boolean) && parseArgsOptions.boolean.includes(key))) ||
+      aliases.has(key)
+    ) {
+      return true;
+    }
+
+    return parseArgsOptions.unknown(key);
+  };
+
   // Convert the parsed args to an array of 2-tuples of shape [key, value].
-  // Then, filter out the `_` (positional argument list) and `--` (separated
-  // args). Also filter out aliases whose original key is defined.
-  const pairs = lodash.toPairs(parsedArgs).filter(([k]) => k !== '_' && k !== '--' && !(aliases.get(k) && typeof parsedArgs[k] !== 'undefined'));
+  // Then, filter out pairs which match any of the following criteria:
+  //  - `_` (positional argument list)
+  //  - `--` (separated args)
+  //  - Aliases whose original key is defined
+  //  - Options not known to the schema, according to
+  //    `parseArgsOptions.unknown` option.
+  const pairs = lodash.toPairs(parsedArgs).filter(([k]) =>
+    k !== '_' &&
+    k !== '--' &&
+    !(aliases.get(k) && typeof parsedArgs[k] !== 'undefined') &&
+    isKnown(k)
+  );
 
   for (const [ key, val ] of pairs) {
     if (val === true) {
       pushPairs([key, undefined]);
-    }
-
-    if (val === false && !ignoreFalse) {
+    } else if (val === false && !ignoreFalse) {
       pushPairs([`no-${key}`, undefined]);
-    }
-
-    if (typeof val === 'string') {
+    } else if (typeof val === 'string') {
       pushPairs([key, val]);
-    }
-
-    if (typeof val === 'number' && !Number.isNaN(val)) {
+    } else if (typeof val === 'number' && !Number.isNaN(val)) {
       pushPairs([key, val.toString()]);
-    }
-
-    if (Array.isArray(val)) {
+    } else if (Array.isArray(val)) {
       pushPairs(...val.map((v): [string, string] => [key, v]));
     }
   }
