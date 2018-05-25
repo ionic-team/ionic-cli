@@ -1,12 +1,11 @@
 import chalk from 'chalk';
 
-import { MetadataGroup } from '@ionic/cli-framework';
-import { NamespaceGroup } from '@ionic/cli-utils';
+import { NamespaceGroup } from '@ionic/cli-framework';
 import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class CordovaNamespace extends Namespace {
   async getMetadata() {
-    const groups: MetadataGroup[] = [];
+    const groups: string[] = [];
 
     if (this.env.project.type === 'angular') {
       groups.push(NamespaceGroup.Experimental);

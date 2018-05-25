@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { createPromptChoiceSeparator, validators } from '@ionic/cli-framework';
+import { OptionGroup, createPromptChoiceSeparator, validators } from '@ionic/cli-framework';
 
-import { App, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GithubBranch, GithubRepo, OptionGroup, PROJECT_FILE, isSuperAgentError } from '@ionic/cli-utils';
+import { App, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GithubBranch, GithubRepo, PROJECT_FILE, isSuperAgentError } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';

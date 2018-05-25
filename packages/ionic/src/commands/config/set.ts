@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { validators } from '@ionic/cli-framework';
+import { OptionGroup, validators } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, IBaseConfig, OptionGroup, PROJECT_FILE } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, IBaseConfig, PROJECT_FILE } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 

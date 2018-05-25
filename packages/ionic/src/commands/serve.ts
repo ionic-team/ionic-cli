@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { MetadataGroup } from '@ionic/cli-framework';
-import { CommandGroup, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, OptionGroup, ServeOptions } from '@ionic/cli-utils';
+import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, ServeOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT, ServeRunner } from '@ionic/cli-utils/lib/serve';
 import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
@@ -19,7 +19,7 @@ export class ServeCommand extends Command implements CommandPreRun {
   }
 
   async getMetadata(): Promise<CommandMetadata> {
-    let groups: MetadataGroup[] = [];
+    let groups: string[] = [];
 
     const options: CommandMetadataOption[] = [
       ...COMMON_SERVE_COMMAND_OPTIONS,

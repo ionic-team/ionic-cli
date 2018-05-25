@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { NamespaceGroup } from '@ionic/cli-utils';
+import { NamespaceGroup } from '@ionic/cli-framework';
 import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class SSLNamespace extends Namespace {

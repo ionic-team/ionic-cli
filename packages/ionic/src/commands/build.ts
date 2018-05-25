@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 
-import { MetadataGroup } from '@ionic/cli-framework';
 import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { BuildRunner, COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
@@ -21,7 +20,7 @@ export class BuildCommand extends Command implements CommandPreRun {
     const options: CommandMetadataOption[] = [];
     const exampleCommands = [''];
     let description = `${chalk.green('ionic build')} will perform an Ionic build, which compiles web assets and prepares them for deployment.`;
-    let groups: MetadataGroup[] = [];
+    let groups: string[] = [];
 
     try {
       const runner = await this.getRunner();

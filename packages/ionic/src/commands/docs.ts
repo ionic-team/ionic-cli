@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, OptionGroup, isSuperAgentError } from '@ionic/cli-utils';
+import { OptionGroup } from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, isSuperAgentError } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { createRequest } from '@ionic/cli-utils/lib/utils/http';
 import { BROWSERS } from '@ionic/cli-utils/lib/serve';

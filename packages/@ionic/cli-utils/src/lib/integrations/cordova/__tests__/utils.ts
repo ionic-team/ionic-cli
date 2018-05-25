@@ -1,4 +1,3 @@
-import { OptionGroup } from '../../../../constants';
 import { filterArgumentsForCordova, generateBuildOptions } from '../utils';
 
 describe('@ionic/cli-utils', () => {
@@ -18,22 +17,22 @@ describe('@ionic/cli-utils', () => {
       },
       {
         name: 'cdvopt1',
-        groups: [OptionGroup.Cordova],
+        groups: ['cordova'],
       },
       {
         name: 'cdvopt2',
         type: Boolean,
-        groups: [OptionGroup.Cordova],
+        groups: ['cordova'],
       },
       {
         name: 'prod',
         type: Boolean,
-        groups: [OptionGroup.AppScripts],
+        groups: ['app-scripts'],
       },
       {
         name: 'optimizejs',
         type: Boolean,
-        groups: [OptionGroup.AppScripts],
+        groups: ['app-scripts'],
       },
     ]
   };

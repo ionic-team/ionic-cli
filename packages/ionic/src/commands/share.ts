@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
-import { CommandGroup, CommandMetadata } from '@ionic/cli-utils';
+import { CommandGroup } from '@ionic/cli-framework';
+import { CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 

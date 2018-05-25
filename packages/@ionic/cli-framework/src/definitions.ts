@@ -24,15 +24,17 @@ export interface CommandMetadataInput {
   private?: boolean;
 }
 
-export type MetadataGroup = string | number | symbol;
-
-export interface CommandMetadataOption {
+export interface Metadata {
   name: string;
   summary: string;
+  description?: string;
+  groups?: string[];
+}
+
+export interface CommandMetadataOption extends Metadata {
   type?: CommandOptionType;
   default?: string | boolean;
   aliases?: string[];
-  groups?: MetadataGroup[];
 }
 
 export type HydratedCommandMetadataOption<O extends CommandMetadataOption> = Readonly<Required<O>>;
@@ -44,13 +46,6 @@ export interface HydratedParseArgsOptions extends ParseArgsOptions {
   boolean: string[];
   alias: { [key: string]: string[]; };
   default: { [key: string]: string | boolean; };
-}
-
-export interface Metadata {
-  name: string;
-  summary: string;
-  description?: string;
-  groups?: MetadataGroup[];
 }
 
 export interface CommandMetadata<I = CommandMetadataInput, O = CommandMetadataOption> extends Metadata {

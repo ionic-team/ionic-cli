@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-
-import { CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata, isCommand } from '@ionic/cli-utils';
+import { CommandGroup } from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, isCommand } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
 export class HelpCommand extends Command {

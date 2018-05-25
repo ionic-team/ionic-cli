@@ -1,8 +1,7 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import { ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { CommandGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 
-import { CommandGroup, OptionGroup } from '../../../constants';
 import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { BUILD_SCRIPT, BuildRunner, BuildRunnerDeps } from '../../build';
 import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './utils';

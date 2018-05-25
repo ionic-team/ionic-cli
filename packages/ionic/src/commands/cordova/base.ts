@@ -1,11 +1,11 @@
 import * as path from 'path';
 import chalk from 'chalk';
 
-import { ERROR_SHELL_COMMAND_NOT_FOUND, ShellCommandError } from '@ionic/cli-framework';
+import { ERROR_SHELL_COMMAND_NOT_FOUND, OptionGroup, ShellCommandError } from '@ionic/cli-framework';
 import { fsMkdir, pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
-import { CommandInstanceInfo, CommandMetadataOption, IShellRunOptions, OptionGroup } from '@ionic/cli-utils';
+import { CommandInstanceInfo, CommandMetadataOption, IShellRunOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
@@ -15,34 +15,34 @@ export const COMMON_CORDOVA_BUILD_COMMAND_OPTIONS: CommandMetadataOption[] = [
     name: 'debug',
     summary: 'Create a debug build',
     type: Boolean,
-    groups: [OptionGroup.Cordova],
+    groups: ['cordova'],
     hint: 'cordova',
   },
   {
     name: 'release',
     summary: 'Create a release build',
     type: Boolean,
-    groups: [OptionGroup.Cordova],
+    groups: ['cordova'],
     hint: 'cordova',
   },
   {
     name: 'device',
     summary: 'Create a build for a device',
     type: Boolean,
-    groups: [OptionGroup.Cordova],
+    groups: ['cordova'],
     hint: 'cordova',
   },
   {
     name: 'emulator',
     summary: 'Create a build for an emulator',
     type: Boolean,
-    groups: [OptionGroup.Cordova],
+    groups: ['cordova'],
     hint: 'cordova',
   },
   {
     name: 'buildConfig',
     summary: 'Use the specified build configuration',
-    groups: [OptionGroup.Advanced, OptionGroup.Cordova],
+    groups: [OptionGroup.Advanced, 'cordova'],
     hint: 'cordova',
   },
 ];

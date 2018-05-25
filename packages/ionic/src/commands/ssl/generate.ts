@@ -3,11 +3,12 @@ import * as path from 'path';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 
+import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsMkdirp, fsUnlink, fsWriteFile, pathExists } from '@ionic/cli-framework/utils/fs';
 import { tmpfilepath } from '@ionic/cli-framework/utils/path';
 
-import { CommandGroup, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { SSLBaseCommand } from './base';

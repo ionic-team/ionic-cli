@@ -1,12 +1,11 @@
 import chalk from 'chalk';
 
-import { MetadataGroup } from '@ionic/cli-framework';
-import { NamespaceGroup } from '@ionic/cli-utils';
+import { NamespaceGroup } from '@ionic/cli-framework';
 import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class CapacitorNamespace extends Namespace {
   async getMetadata() {
-    const groups: MetadataGroup[] = [NamespaceGroup.Beta];
+    const groups: string[] = [NamespaceGroup.Beta];
     const config = await this.env.config.load();
 
     if (!config.features['capacitor-commands']) {

@@ -3,13 +3,12 @@ import * as Debug from 'debug';
 import * as through2 from 'through2';
 import * as split2 from 'split2';
 
-import { LOGGER_LEVELS, ParsedArgs, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, OptionGroup, ParsedArgs, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { isHostConnectable } from '@ionic/cli-framework/utils/network';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularServeOptions, ServeDetails } from '../../../definitions';
-import { OptionGroup } from '../../../constants';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
 import { prettyProjectName } from '../';

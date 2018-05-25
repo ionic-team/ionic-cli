@@ -6,7 +6,6 @@ import { fsReadFile, fsUnlink, fsWriteFile, pathExists } from '@ionic/cli-framew
 import * as parse5Type from 'parse5';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption } from '../../../definitions';
-import { OptionGroup } from '../../../constants';
 import { findElementByAttribute, findElementByTag, findElementsByTag } from '../../utils/html';
 
 /**
@@ -24,13 +23,13 @@ export function filterArgumentsForCordova(metadata: CommandMetadata, options: Co
       name: 'verbose',
       summary: '',
       type: Boolean,
-      groups: [OptionGroup.Cordova],
+      groups: ['cordova'],
     },
   ];
 
   m.options.push(...globalCordovaOpts);
 
-  const results = filterCommandLineOptionsByGroup(m, options, OptionGroup.Cordova);
+  const results = filterCommandLineOptionsByGroup(m, options, 'cordova');
 
   const args = unparseArgs(results, { useEquals: false, allowCamelCase: true });
   const i = args.indexOf('--');
@@ -44,8 +43,8 @@ export function filterArgumentsForCordova(metadata: CommandMetadata, options: Co
 
 export function generateBuildOptions(metadata: CommandMetadata, inputs: CommandLineInputs, options: CommandLineOptions): CommandLineOptions {
   const [ platform ] = inputs;
-  const includesAppScriptsGroup = OptionFilters.includesGroups(OptionGroup.AppScripts);
-  const excludesCordovaGroup = OptionFilters.excludesGroups(OptionGroup.Cordova);
+  const includesAppScriptsGroup = OptionFilters.includesGroups('app-scripts');
+  const excludesCordovaGroup = OptionFilters.excludesGroups('cordova');
   const results = filterCommandLineOptions(metadata, options, o => excludesCordovaGroup(o) || includesAppScriptsGroup(o));
 
   return {

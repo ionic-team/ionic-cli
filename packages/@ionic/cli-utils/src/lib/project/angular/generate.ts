@@ -7,12 +7,11 @@ import * as split2 from 'split2';
 import * as AngularDevKitSchematicsType from '@angular-devkit/schematics';
 import * as AngularDevKitSchematicsToolsType from '@angular-devkit/schematics/tools';
 
-import { LOGGER_LEVELS, contains, unparseArgs, validators } from '@ionic/cli-framework';
+import { CommandGroup, LOGGER_LEVELS, contains, unparseArgs, validators } from '@ionic/cli-framework';
 import { TTY_WIDTH, columnar, wordWrap } from '@ionic/cli-framework/utils/format';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
-import { CommandGroup } from '../../../constants';
 import { GenerateRunner as BaseGenerateRunner } from '../../generate';
 import { FatalException } from '../../errors';
 import { createFormatter } from '../../utils/logger';

@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 
-import { LOGGER_LEVELS, createPrefixedFormatter } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
-import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, OptionGroup, ServeOptions } from '@ionic/cli-utils';
+import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, ServeOptions } from '@ionic/cli-utils';
 import { FatalException, RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
 import { BuildRunner, COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, ServeRunner } from '@ionic/cli-utils/lib/serve';
@@ -61,7 +61,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         name: 'list',
         summary: 'List all available Cordova targets',
         type: Boolean,
-        groups: [OptionGroup.Cordova],
+        groups: ['cordova'],
       },
       // Build Options
       {
@@ -75,41 +75,41 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         name: 'debug',
         summary: 'Mark as a debug build',
         type: Boolean,
-        groups: [OptionGroup.Cordova],
+        groups: ['cordova'],
         hint: 'cordova',
       },
       {
         name: 'release',
         summary: 'Mark as a release build',
         type: Boolean,
-        groups: [OptionGroup.Cordova],
+        groups: ['cordova'],
         hint: 'cordova',
       },
       {
         name: 'device',
         summary: 'Deploy build to a device',
         type: Boolean,
-        groups: [OptionGroup.Cordova],
+        groups: ['cordova'],
         hint: 'cordova',
       },
       {
         name: 'emulator',
         summary: 'Deploy build to an emulator',
         type: Boolean,
-        groups: [OptionGroup.Cordova],
+        groups: ['cordova'],
         hint: 'cordova',
       },
       {
         name: 'target',
         summary: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
         type: String,
-        groups: [OptionGroup.Advanced, OptionGroup.Cordova],
+        groups: [OptionGroup.Advanced, 'cordova'],
         hint: 'cordova',
       },
       {
         name: 'buildConfig',
         summary: 'Use the specified build configuration',
-        groups: [OptionGroup.Advanced, OptionGroup.Cordova],
+        groups: [OptionGroup.Advanced, 'cordova'],
         hint: 'cordova',
       },
     ];

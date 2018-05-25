@@ -1,8 +1,7 @@
 import chalk from 'chalk';
 
-import { MetadataGroup } from '@ionic/cli-framework';
+import { CommandGroup } from '@ionic/cli-framework';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandPreRun, GenerateOptions } from '@ionic/cli-utils';
-import { CommandGroup } from '@ionic/cli-utils/constants';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
 import { prettyProjectName } from '@ionic/cli-utils/lib/project';
@@ -26,7 +25,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
     const options: CommandMetadataOption[] = [];
     const exampleCommands = [''];
 
-    let groups: MetadataGroup[] = [CommandGroup.Hidden];
+    let groups: string[] = [CommandGroup.Hidden];
 
     let description = this.env.project.type
       ? chalk.red(`Generators are not supported in this project type (${chalk.bold(prettyProjectName(this.env.project.type))}).`)

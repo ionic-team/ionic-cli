@@ -1,20 +1,32 @@
 import * as minimist from 'minimist';
 import * as lodash from 'lodash';
 
-import {
-  CommandLineOptions,
-  CommandMetadata,
-  CommandMetadataInput,
-  CommandMetadataOption,
-  CommandOptionType,
-  HydratedCommandMetadataOption,
-  HydratedParseArgsOptions,
-  MetadataGroup,
-  ParsedArg,
-} from '../definitions';
+import { CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandOptionType, HydratedCommandMetadataOption, HydratedParseArgsOptions, ParsedArg } from '../definitions';
 
 export const parseArgs = minimist;
 export { ParsedArgs } from 'minimist';
+
+export enum CommandGroup {
+  Deprecated = 'deprecated',
+  Hidden = 'hidden',
+  Beta = 'beta',
+  Experimental = 'experimental',
+}
+
+export enum NamespaceGroup {
+  Deprecated = 'deprecated',
+  Hidden = 'hidden',
+  Beta = 'beta',
+  Experimental = 'experimental',
+}
+
+export enum OptionGroup {
+  Deprecated = 'deprecated',
+  Hidden = 'hidden',
+  Beta = 'beta',
+  Experimental = 'experimental',
+  Advanced = 'advanced',
+}
 
 /**
  * Remove options, which are any arguments that starts with a hyphen (-), from
@@ -110,12 +122,12 @@ export function metadataToParseArgsOptions(metadata: CommandMetadata): HydratedP
 export type OptionPredicate<O extends CommandMetadataOption> = (option: O, value?: ParsedArg) => boolean;
 
 export namespace OptionFilters {
-  export function includesGroups<O extends CommandMetadataOption>(groups: MetadataGroup | MetadataGroup[]): OptionPredicate<O> {
+  export function includesGroups<O extends CommandMetadataOption>(groups: string | string[]): OptionPredicate<O> {
     const g = Array.isArray(groups) ? groups : [groups];
     return (option: O) => typeof option.groups !== 'undefined' && lodash.intersection(option.groups, g).length > 0;
   }
 
-  export function excludesGroups<O extends CommandMetadataOption>(groups: MetadataGroup | MetadataGroup[]): OptionPredicate<O> {
+  export function excludesGroups<O extends CommandMetadataOption>(groups: string | string[]): OptionPredicate<O> {
     const g = Array.isArray(groups) ? groups : [groups];
     return (option: O) => typeof option.groups === 'undefined' || lodash.difference(option.groups, g).length > 0;
   }
@@ -160,7 +172,7 @@ export function filterCommandLineOptions<M extends CommandMetadata<I, O>, I exte
  *
  * @param groups One or more option groups.
  */
-export function filterCommandLineOptionsByGroup<M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(metadata: M, parsedArgs: CommandLineOptions, groups: MetadataGroup | MetadataGroup[]): CommandLineOptions {
+export function filterCommandLineOptionsByGroup<M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(metadata: M, parsedArgs: CommandLineOptions, groups: string | string[]): CommandLineOptions {
   return filterCommandLineOptions(metadata, parsedArgs, OptionFilters.includesGroups(groups));
 }
 

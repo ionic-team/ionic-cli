@@ -2,11 +2,11 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
-import { contains, validate } from '@ionic/cli-framework';
+import { OptionGroup, contains, validate } from '@ionic/cli-framework';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsMkdirp, fsUnlink, pathExists } from '@ionic/cli-framework/utils/fs';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, OptionGroup } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 
 import { SSHBaseCommand } from './base';
 

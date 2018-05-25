@@ -1,9 +1,8 @@
 import chalk from 'chalk';
 
-import { CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, MetadataGroup, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter } from '@ionic/cli-framework';
+import { CommandGroup, CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, NamespaceGroup, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, OptionGroup } from '@ionic/cli-framework';
 
 import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace, NamespaceMetadata } from '../definitions';
-import { CommandGroup, NamespaceGroup, OptionGroup } from '../constants';
 
 const IONIC_LOGO = String.raw`
    _             _
@@ -12,7 +11,7 @@ const IONIC_LOGO = String.raw`
   | | (_) | | | | | (__
   |_|\___/|_| |_|_|\___|`;
 
-type Decoration = [number, string];
+type Decoration = [string, string];
 
 const COMMAND_DECORATIONS: Decoration[] = [
   [CommandGroup.Beta, chalk.red.bold('(beta)')],
@@ -156,7 +155,7 @@ export class CommandSchemaHelpFormatter extends BaseCommandSchemaHelpFormatter<I
   }
 }
 
-function formatGroupDecorations(decorations: Decoration[], groups?: MetadataGroup[]): string {
+function formatGroupDecorations(decorations: Decoration[], groups?: string[]): string {
   if (!groups) {
     return '';
   }
