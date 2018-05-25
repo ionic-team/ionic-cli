@@ -520,6 +520,7 @@ export interface NamespaceHelpSchema {
   readonly name: string;
   readonly summary: string;
   readonly description: string;
+  readonly groups: ReadonlyArray<string>;
   readonly commands: CommandHelpSchema[];
   readonly aliases: ReadonlyArray<string>;
 }
@@ -537,6 +538,7 @@ export class NamespaceSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
       name: metadata.name,
       summary: metadata.summary,
       description: metadata.description ? metadata.description : '',
+      groups: metadata.groups ? metadata.groups : [],
       commands: await this.formatCommandGroup(commands),
       aliases: [],
     };
@@ -571,6 +573,7 @@ export interface CommandHelpSchemaInput {
 export interface CommandHelpSchemaOption {
   readonly name: string;
   readonly summary: string;
+  readonly groups: ReadonlyArray<string>;
   readonly aliases: ReadonlyArray<string>;
   readonly type: string;
   readonly default?: string | boolean;
@@ -581,6 +584,7 @@ export interface CommandHelpSchema {
   readonly namespace: ReadonlyArray<string>;
   readonly summary: string;
   readonly description: string;
+  readonly groups: ReadonlyArray<string>;
   readonly exampleCommands: ReadonlyArray<string>;
   readonly aliases: ReadonlyArray<string>;
   readonly inputs: ReadonlyArray<CommandHelpSchemaInput>;
@@ -620,10 +624,11 @@ export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
   async formatOption(option: O): Promise<CommandHelpSchemaOption> {
     const name = option.name;
     const summary = option.summary ? option.summary.trim() : '';
+    const groups = option.groups ? option.groups : [];
     const aliases = option.aliases ? option.aliases : [];
     const type = option.type ? option.type.name.toLowerCase() : 'string';
 
-    return { name, type, summary, default: option.default, aliases };
+    return { name, type, summary, default: option.default, groups, aliases };
   }
 
   async formatCommand(cmd: M | HydratedCommandMetadata<C, N, M, I, O>): Promise<CommandHelpSchema> {
@@ -632,11 +637,12 @@ export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     const name = commandPath.join(' ');
     const summary = cmd.summary ? cmd.summary.trim() : '';
     const description = cmd.description ? cmd.description.trim() : '';
+    const groups = cmd.groups ? cmd.groups : [];
     const exampleCommands = cmd.exampleCommands ? cmd.exampleCommands.map(c => `${name} ${c}`) : [];
     const aliases = isHydratedCommandMetadata(cmd) ? cmd.aliases : [];
     const inputs = cmd.inputs ? await this.formatInputs(cmd.inputs) : [];
     const options = cmd.options ? await this.formatOptions(cmd.options) : [];
 
-    return { name, namespace: namespacePath, summary, description, exampleCommands, aliases, inputs, options };
+    return { name, namespace: namespacePath, summary, description, groups, exampleCommands, aliases, inputs, options };
   }
 }

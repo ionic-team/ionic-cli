@@ -1,14 +1,8 @@
-import {
-  Command,
-  CommandMap,
-  CommandMapDefault,
-  Namespace,
-  NamespaceMap,
-} from '../command';
-
-import { stripAnsi } from '../../utils/format';
+import { Command, CommandMap, CommandMapDefault, Namespace, NamespaceMap } from '../command';
+import { CommandGroup, NamespaceGroup, OptionGroup } from '../options';
 import { DISABLED_COLORS } from '../colors';
 import { CommandStringHelpFormatter, NamespaceStringHelpFormatter, NamespaceSchemaHelpFormatter } from '../help';
+import { stripAnsi } from '../../utils/format';
 
 class MyNamespace extends Namespace {
   async getMetadata() {
@@ -38,6 +32,7 @@ class NamespaceWithDefault extends Namespace {
     return {
       name: 'defns',
       summary: 'the defns namespace',
+      groups: [NamespaceGroup.Beta],
     };
   }
 
@@ -73,6 +68,7 @@ class DefaultCommand extends Command {
     return {
       name: 'def',
       summary: 'the default command',
+      groups: [CommandGroup.Beta],
     };
   }
 
@@ -92,7 +88,7 @@ class BarCommand extends Command {
       ],
       options: [
         { name: 'opt1', summary: 'opt1 summary', aliases: ['o'] },
-        { name: 'opt2', summary: 'opt2 summary' },
+        { name: 'opt2', summary: 'opt2 summary', groups: [OptionGroup.Advanced] },
       ],
       exampleCommands: ['', 'input1 input2', '--opt1 --opt2'],
     };
@@ -224,6 +220,7 @@ describe('@ionic/cli-framework', () => {
           "name": "my",
           "summary": "the my namespace",
           "description": "",
+          "groups": [],
           "aliases": [],
           "commands": [
             {
@@ -233,6 +230,7 @@ describe('@ionic/cli-framework', () => {
               ],
               "summary": "the bar command",
               "description": "my description",
+              "groups": [],
               "exampleCommands": [
                 "my bar ",
                 "my bar input1 input2",
@@ -256,6 +254,7 @@ describe('@ionic/cli-framework', () => {
                   "name": "opt1",
                   "type": "string",
                   "summary": "opt1 summary",
+                  "groups": [],
                   "aliases": [
                     "o"
                   ]
@@ -264,7 +263,10 @@ describe('@ionic/cli-framework', () => {
                   "name": "opt2",
                   "type": "string",
                   "summary": "opt2 summary",
-                  "aliases": []
+                  "aliases": [],
+                  "groups": [
+                    "advanced"
+                  ],
                 }
               ]
             },
@@ -276,6 +278,7 @@ describe('@ionic/cli-framework', () => {
               ],
               "summary": "the bar command",
               "description": "my description",
+              "groups": [],
               "exampleCommands": [
                 "my foo bar ",
                 "my foo bar input1 input2",
@@ -301,6 +304,7 @@ describe('@ionic/cli-framework', () => {
                   "name": "opt1",
                   "type": "string",
                   "summary": "opt1 summary",
+                  "groups": [],
                   "aliases": [
                     "o"
                   ]
@@ -309,6 +313,9 @@ describe('@ionic/cli-framework', () => {
                   "name": "opt2",
                   "type": "string",
                   "summary": "opt2 summary",
+                  "groups": [
+                    "advanced"
+                  ],
                   "aliases": []
                 }
               ]
@@ -321,6 +328,7 @@ describe('@ionic/cli-framework', () => {
               ],
               "summary": "the baz command",
               "description": "",
+              "groups": [],
               "exampleCommands": [],
               "aliases": [
                 "my foo b1",
@@ -336,6 +344,9 @@ describe('@ionic/cli-framework', () => {
               ],
               "summary": "the default command",
               "description": "",
+              "groups": [
+                "beta"
+              ],
               "exampleCommands": [],
               "aliases": [],
               "inputs": []
