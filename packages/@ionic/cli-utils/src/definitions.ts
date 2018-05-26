@@ -664,14 +664,16 @@ export interface IAilmentRegistry {
   get(id: string): IAilment | undefined;
 }
 
+export interface AngularConfigProject {
+  root: string;
+  sourceRoot: string;
+  architect: any;
+}
+
 export interface AngularConfig {
   defaultProject: string;
   projects: {
-    [key: string]: {
-      root: string;
-      sourceRoot: string;
-      architect: any;
-    } | undefined;
+    [key: string]: AngularConfigProject | undefined;
   };
 }
 
