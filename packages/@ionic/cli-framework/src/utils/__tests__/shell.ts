@@ -1,7 +1,9 @@
 import { EventEmitter } from 'events';
+import { createProcessEnv } from '../process';
 
 import { PromiseUtil, promisifyEvent } from '../promise';
 import { ReadableStreamBuffer, WritableStreamBuffer } from '../streams';
+import * as path from 'path';
 
 describe('@ionic/cli-framework', () => {
 
@@ -63,6 +65,8 @@ describe('@ionic/cli-framework', () => {
       const mockCrossSpawn = { spawn: mockSpawn };
       jest.mock('cross-spawn', () => mockCrossSpawn);
       jest.mock('os', () => mock_os);
+      const mock_path_posix = path.posix;
+      jest.mock('path', () => mock_path_posix);
       const { ShellCommand } = require('../shell');
 
       beforeEach(() => {
@@ -79,25 +83,25 @@ describe('@ionic/cli-framework', () => {
 
       it('should provide default env option', async () => {
         const cmd = new ShellCommand('cmd', []);
-        expect(cmd.options).toEqual({ env: process.env });
+        expect(cmd.options).toEqual({ env: createProcessEnv(process.env) });
       });
 
       it('should provide only PATH with empty env', async () => {
         const PATH = process.env.PATH;
         const cmd = new ShellCommand('cmd', [], { env: {} });
-        expect(cmd.options).toEqual({ env: { PATH } });
+        expect(cmd.options).toEqual({ env: createProcessEnv({ PATH }) });
       });
 
       it('should not alter PATH if provided', async () => {
         const PATH = '/path/to/bin';
         const cmd = new ShellCommand('cmd', [], { env: { PATH } });
-        expect(cmd.options).toEqual({ env: { PATH } });
+        expect(cmd.options.env.PATH).toEqual(PATH);
       });
 
       it('should alter PATH with tildes if provided', async () => {
         const PATH = '/path/to/bin:~/bin';
         const cmd = new ShellCommand('cmd', [], { env: { PATH } });
-        expect(cmd.options).toEqual({ env: { PATH: '/path/to/bin:/home/me/bin' } });
+        expect(cmd.options.env.PATH).toEqual('/path/to/bin:/home/me/bin');
       });
 
       it('should bashify command and args', async () => {
@@ -131,9 +135,10 @@ describe('@ionic/cli-framework', () => {
         const args = ['foo', 'bar', 'baz'];
         const options = { env: { PATH: '' } };
         const cmd = new ShellCommand(name, args, options);
+        const expectedOptions = { env: createProcessEnv(options.env) };
         expect(cmd.spawn()).toBe(result);
         expect(mockSpawn).toHaveBeenCalledTimes(1);
-        expect(mockSpawn).toHaveBeenCalledWith(name, args, options);
+        expect(mockSpawn).toHaveBeenCalledWith(name, args, expectedOptions);
       });
 
       it('should pipe stdout and stderr in run()', async () => {

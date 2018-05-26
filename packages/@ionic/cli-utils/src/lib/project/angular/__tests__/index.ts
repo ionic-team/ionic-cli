@@ -1,4 +1,4 @@
-import * as path from "path"
+import * as path from 'path'
 import { AngularProject } from '../';
 
 describe('@ionic/cli-utils', () => {
@@ -24,7 +24,7 @@ describe('@ionic/cli-utils', () => {
           const sourceRoot = 'relative/path/to/src';
           const p = new AngularProject('/path/to/proj', 'file', {});
           const result = await p.getSourceDir(sourceRoot);
-          expect(result).toEqual(`/path/to/proj/${sourceRoot}`);
+          expect(result).toEqual(path.resolve(`/path/to/proj/${sourceRoot}`));
         });
 
       });

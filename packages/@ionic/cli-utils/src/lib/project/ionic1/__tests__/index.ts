@@ -1,4 +1,4 @@
-import * as path from "path"
+import * as path from 'path'
 import { Ionic1Project } from '../';
 
 describe('@ionic/cli-utils', () => {

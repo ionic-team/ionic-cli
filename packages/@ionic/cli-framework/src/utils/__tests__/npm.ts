@@ -1,4 +1,4 @@
-import * as path from "path"
+import * as path from 'path'
 import { compileNodeModulesPaths } from '../npm';
 
 describe('@ionic/cli-framework', () => {
