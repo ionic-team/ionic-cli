@@ -31,7 +31,7 @@ export function replaceBrowserTarget(config: {}, source: string, target: string)
     }
 
     if (value['browserTarget']) {
-      value['browserTarget'] = value['browserTarget'].replace(new RegExp(`^${source}`), target);
+      value['browserTarget'] = value['browserTarget'].replace(new RegExp(`^${source}:`), `${target}:`);
     }
   }
 
