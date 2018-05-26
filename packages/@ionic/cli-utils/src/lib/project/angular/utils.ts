@@ -7,7 +7,7 @@ import { fsReadJsonFile, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 import { AngularConfig, IProject } from '../../../definitions';
 import { isAngularConfig } from '../../../guards';
 import { FatalException } from '../../errors';
-import { cloneDeep, isArray, mergeWith } from 'lodash';
+import { cloneDeep, isArray, isPlainObject, mapValues, mergeWith } from 'lodash';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:utils');
 
@@ -24,6 +24,20 @@ export async function readAngularConfigFile(p: string): Promise<AngularConfig> {
   return angularJson;
 }
 
+export function replaceBrowserTarget(config: {}, source: string, target: string): any {
+  function recurse(value: any): any {
+    if (isPlainObject(value)) {
+      mapValues(value, recurse);
+    }
+
+    if (value['browserTarget']) {
+      value['browserTarget'] = value['browserTarget'].replace(new RegExp(`^${source}`), target);
+    }
+  }
+
+  return mapValues(config, recurse);
+}
+
 export function extendAngularConfig(config: AngularConfig, source: string, target: string, buildOptions: any): AngularConfig {
   if (config.projects[source]) {
     const app = config.projects[target] = cloneDeep(config.projects[source]);
@@ -33,11 +47,9 @@ export function extendAngularConfig(config: AngularConfig, source: string, targe
         if (isArray(objValue)) {
           return objValue.concat(srcValue);
         }
-
-        if ('browserTarget' in objValue) {
-          objValue['browserTarget'] = objValue['browserTarget'].replace(new RegExp(`^${source}`), target);
-        }
       });
+
+      replaceBrowserTarget(app.architect, source, target);
     }
   } else {
     throw new FatalException(`${chalk.bold(`projects.${source}`)} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot add assets.`);
