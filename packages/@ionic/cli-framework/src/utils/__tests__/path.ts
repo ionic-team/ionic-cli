@@ -1,25 +1,33 @@
 import * as path from 'path';
 
-import { compilePaths } from '../path';
-
 describe('@ionic/cli-framework', () => {
 
   describe('utils/path', () => {
 
     describe('compilePaths', () => {
 
-      it('should not accept a malformed path', () => {
-        expect(() => compilePaths('.')).toThrowError('. is not an absolute path');
-      });
+      describe('posix', () => {
 
-      it('should compile an array of paths working backwards from a base directory', () => {
-        const result = compilePaths('/some/dir');
-        expect(result).toEqual(['/some/dir', '/some', '/']);
-      });
+        const mock_path_posix = path.posix;
+        jest.resetModules();
+        jest.mock('path', () => mock_path_posix);
 
-      it('should work for the root directory', () => {
-        const result = compilePaths('/');
-        expect(result).toEqual(['/']);
+        const pathlib = require('../path');
+
+        it('should not accept a malformed path', () => {
+          expect(() => pathlib.compilePaths('.')).toThrowError('. is not an absolute path');
+        });
+
+        it('should compile an array of paths working backwards from a base directory', () => {
+          const result = pathlib.compilePaths('/some/dir');
+          expect(result).toEqual(['/some/dir', '/some', '/']);
+        });
+
+        it('should work for the root directory', () => {
+          const result = pathlib.compilePaths('/');
+          expect(result).toEqual(['/']);
+        });
+
       });
 
       describe('windows', () => {
