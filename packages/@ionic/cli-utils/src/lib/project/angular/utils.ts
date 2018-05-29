@@ -58,25 +58,11 @@ export function extendAngularConfig(config: AngularConfig, source: string, targe
   return config;
 }
 
-export function getCordovaJsPath(platform: string): string {
-  switch (platform) {
-    case 'android':
-      return 'node_modules/cordova-android/bin/templates/project/assets/www/cordova.js';
-    case 'ios':
-      return `node_modules/cordova-ios/cordovaLib/cordova.js`;
-    case 'windows':
-      return 'node_modules/cordova-windows/template/www/cordova.js';
-    case 'browser':
-    default:
-      return `node_modules/cordova-${platform}/cordova-lib/cordova.js`;
-  }
-}
-
 export async function addCordovaEngineForAngular(project: IProject, platform: string, appName?: string): Promise<void> {
   debug('Adding Cordova engine for platform: %s', platform);
   const platformWWW = path.resolve(project.directory, 'platforms', platform, 'platform_www');
   const cordovaAssets = [{ glob: '**/*', input: platformWWW, output: './' }];
-  const cordovaScripts = [{ input: getCordovaJsPath(platform), bundleName: 'cordova' }];
+  const cordovaScripts = [{ input: path.resolve(platformWWW, 'cordova.js'), bundleName: 'cordova' }];
   const angularJsonPath = path.resolve(project.directory, ANGULAR_CONFIG_FILE);
   const angularJson = await readAngularConfigFile(angularJsonPath);
   const angularProject = appName || angularJson.defaultProject;
