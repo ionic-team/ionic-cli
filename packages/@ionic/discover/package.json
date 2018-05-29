@@ -36,7 +36,7 @@
   "devDependencies": {
     "@types/debug": "0.0.30",
     "@types/netmask": "^1.0.30",
-    "@types/node": "^6.0.101",
+    "@types/node": "^9.6.18",
     "@types/ws": "^4.0.2",
     "jest": "^22.4.2",
     "jest-cli": "^22.4.2",
