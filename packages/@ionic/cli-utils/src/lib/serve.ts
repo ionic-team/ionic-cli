@@ -504,6 +504,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
 
     runner.on('cli-utility-spawn', cp => {
       cp.on('close', code => {
+        env.log.nl();
         env.log.error(
           `A utility CLI has unexpectedly closed.\n` +
           'The Ionic CLI will exit. Please check any output above for error details.'
