@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import { CommandGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { CommandGroup, OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 
 import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { BUILD_SCRIPT, BuildRunner, BuildRunnerDeps } from '../../build';
