@@ -22,7 +22,7 @@ describe('@ionic/cli-utils', () => {
           platform: 'ios',
           resType: 'splash',
           name: 'Default-568h@2x~iphone.png',
-          dest: '/path/to/proj/resources/ios/splash/Default-568h@2x~iphone.png',
+          dest: path.resolve('/path/to/proj/resources/ios/splash/Default-568h@2x~iphone.png'),
           width: 640,
           height: 1136,
           density: undefined,
@@ -76,8 +76,8 @@ describe('@ionic/cli-utils', () => {
         await resources.createImgDestinationDirectories(imgResources);
 
         expect(fsSpy.fsMkdirp.calls.count()).toEqual(2);
-        expect(fsSpy.fsMkdirp.calls.argsFor(0)).toEqual(['/resourcesDir/ios/splash']);
-        expect(fsSpy.fsMkdirp.calls.argsFor(1)).toEqual(['/resourcesDir/android/splash']);
+        expect(fsSpy.fsMkdirp.calls.argsFor(0)).toEqual([path.normalize('/resourcesDir/ios/splash')]);
+        expect(fsSpy.fsMkdirp.calls.argsFor(1)).toEqual([path.normalize('/resourcesDir/android/splash')]);
       });
     });
 
@@ -88,9 +88,9 @@ describe('@ionic/cli-utils', () => {
         await resources.getSourceImages('/path/to/proj', ['ios', 'android'], ['splash', 'icon']);
 
         expect(fsSpy.readDir.calls.count()).toEqual(3);
-        expect(fsSpy.readDir.calls.argsFor(0)).toEqual(['/path/to/proj/resources/ios']);
-        expect(fsSpy.readDir.calls.argsFor(1)).toEqual(['/path/to/proj/resources/android']);
-        expect(fsSpy.readDir.calls.argsFor(2)).toEqual(['/path/to/proj/resources']);
+        expect(fsSpy.readDir.calls.argsFor(0)).toEqual([path.resolve('/path/to/proj/resources/ios')]);
+        expect(fsSpy.readDir.calls.argsFor(1)).toEqual([path.resolve('/path/to/proj/resources/android')]);
+        expect(fsSpy.readDir.calls.argsFor(2)).toEqual([path.resolve('/path/to/proj/resources')]);
       });
 
       it('should find all sourceImages available and prioritize based on specificity', async () => {
@@ -98,18 +98,18 @@ describe('@ionic/cli-utils', () => {
         spyOn(fsSpy, 'cacheFileChecksum').and.callFake(() => {});
         spyOn(fsSpy, 'readDir').and.callFake(dir => {
           switch (dir) {
-            case '/path/to/proj/resources/ios':
+            case path.resolve('/path/to/proj/resources/ios'):
               return Promise.resolve([
                 'icon.png',
                 'splash.jpg',
                 'things.ai'
               ]);
-            case '/path/to/proj/resources/android':
+            case path.resolve('/path/to/proj/resources/android'):
               return Promise.resolve([
                 'icon.ai',
                 'splash.png'
               ]);
-            case '/path/to/proj/resources':
+            case path.resolve('/path/to/proj/resources'):
               return Promise.resolve([
                 'icon.png',
                 'splash.psd'
@@ -126,7 +126,7 @@ describe('@ionic/cli-utils', () => {
             imageId: 'FJDKLFJDKL',
             platform: 'ios',
             resType: 'icon',
-            path: '/path/to/proj/resources/ios/icon.png',
+            path: path.resolve('/path/to/proj/resources/ios/icon.png'),
             vector: false,
             width: 0
           },
@@ -136,7 +136,7 @@ describe('@ionic/cli-utils', () => {
             imageId: 'FJDKLFJDKL',
             platform: 'android',
             resType: 'icon',
-            path: '/path/to/proj/resources/android/icon.ai',
+            path: path.resolve('/path/to/proj/resources/android/icon.ai'),
             vector: false,
             width: 0
           },
@@ -146,7 +146,7 @@ describe('@ionic/cli-utils', () => {
             imageId: 'FJDKLFJDKL',
             platform: 'android',
             resType: 'splash',
-            path: '/path/to/proj/resources/android/splash.png',
+            path: path.resolve('/path/to/proj/resources/android/splash.png'),
             vector: false,
             width: 0
           },
@@ -156,7 +156,7 @@ describe('@ionic/cli-utils', () => {
             imageId: 'FJDKLFJDKL',
             platform: 'global',
             resType: 'icon',
-            path: '/path/to/proj/resources/icon.png',
+            path: path.resolve('/path/to/proj/resources/icon.png'),
             vector: false,
             width: 0
           },
@@ -166,7 +166,7 @@ describe('@ionic/cli-utils', () => {
             imageId: 'FJDKLFJDKL',
             platform: 'global',
             resType: 'splash',
-            path: '/path/to/proj/resources/splash.psd',
+            path: path.resolve('/path/to/proj/resources/splash.psd'),
             vector: false,
             width: 0
           }
@@ -183,7 +183,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.png',
           platform: 'ios',
           resType: 'icon',
-          path: '/path/to/proj/resources/ios/icon.png'
+          path: path.resolve('/path/to/proj/resources/ios/icon.png')
         },
         {
           width: 640,
@@ -192,7 +192,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.ai',
           platform: 'android',
           resType: 'icon',
-          path: '/path/to/proj/resources/android/icon.ai'
+          path: path.resolve('/path/to/proj/resources/android/icon.ai')
         },
         {
           width: 640,
@@ -201,7 +201,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.png',
           platform: 'android',
           resType: 'splash',
-          path: '/path/to/proj/resources/android/splash.png'
+          path: path.resolve('/path/to/proj/resources/android/splash.png')
         },
         {
           width: 640,
@@ -210,7 +210,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.png',
           platform: 'global',
           resType: 'icon',
-          path: '/path/to/proj/resources/icon.png'
+          path: path.resolve('/path/to/proj/resources/icon.png')
         },
         {
           width: 640,
@@ -219,7 +219,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.psd',
           platform: 'global',
           resType: 'splash',
-          path: '/path/to/proj/resources/splash.psd'
+          path: path.resolve('/path/to/proj/resources/splash.psd')
         }
       ];
 
@@ -246,7 +246,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.psd',
           platform: 'global',
           resType: 'splash',
-          path: '/path/to/proj/resources/splash.psd'
+          path: path.resolve('/path/to/proj/resources/splash.psd')
         });
       });
 
@@ -270,7 +270,7 @@ describe('@ionic/cli-utils', () => {
           ext: '.png',
           platform: 'ios',
           resType: 'icon',
-          path: '/path/to/proj/resources/ios/icon.png',
+          path: path.resolve('/path/to/proj/resources/ios/icon.png'),
           width: 640,
           height: 1136,
           vector: false
