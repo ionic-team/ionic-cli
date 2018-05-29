@@ -74,10 +74,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   }
 
   async buildOptionsToNgArgs(options: AngularBuildOptions): Promise<string[]> {
+    const project = `ionic-cordova-platform-${options.platform}`;
+
     const args: ParsedArgs = {
       _: [],
       prod: options.prod,
-      project: options.project,
+      project: project,
       configuration: options.configuration,
     };
 
@@ -119,7 +121,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
     if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(npmClient, { command: 'run', script: BUILD_SCRIPT });
+      const [pkgManager, ...pkgArgs] = await pkgManagerArgs(npmClient, { command: 'run', script: BUILD_SCRIPT });
       await this.shell.run(pkgManager, pkgArgs, shellOptions);
     } else {
       await this.shell.run('ng', ['build', ...args], shellOptions);
@@ -130,7 +132,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const p = await this.project.load();
 
     if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await removeCordovaEngineForAngular(this.project, options.platform, options.project);
+      await removeCordovaEngineForAngular(this.project, options.platform);
     }
 
     await super.afterBuild(options);

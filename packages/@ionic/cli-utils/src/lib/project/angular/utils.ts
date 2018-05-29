@@ -7,7 +7,7 @@ import { fsReadJsonFile, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 import { AngularConfig, IProject } from '../../../definitions';
 import { isAngularConfig } from '../../../guards';
 import { FatalException } from '../../errors';
-import { addCordovaEngine, removeCordovaEngine } from '../../integrations/cordova/utils';
+import { cloneDeep, isArray, isPlainObject, mapValues, mergeWith } from 'lodash';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:utils');
 
@@ -24,42 +24,82 @@ export async function readAngularConfigFile(p: string): Promise<AngularConfig> {
   return angularJson;
 }
 
+export function replaceBrowserTarget(config: {}, source: string, target: string): any {
+  function recurse(value: any): any {
+    if (isPlainObject(value)) {
+      mapValues(value, recurse);
+    }
+
+    if (value['browserTarget']) {
+      value['browserTarget'] = value['browserTarget'].replace(new RegExp(`^${source}:`), `${target}:`);
+    }
+  }
+
+  return mapValues(config, recurse);
+}
+
+export function extendAngularConfig(config: AngularConfig, source: string, target: string, buildOptions: any): AngularConfig {
+  if (config.projects[source]) {
+    const app = config.projects[target] = cloneDeep(config.projects[source]);
+
+    if (app) {
+      mergeWith(app.architect.build.options, buildOptions, (objValue, srcValue) => {
+        if (isArray(objValue)) {
+          return objValue.concat(srcValue);
+        }
+      });
+
+      replaceBrowserTarget(app.architect, source, target);
+    }
+  } else {
+    throw new FatalException(`${chalk.bold(`projects.${source}`)} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot add assets.`);
+  }
+
+  return config;
+}
+
+export function getCordovaJsPath(platform: string): string {
+  switch (platform) {
+    case 'android':
+      return 'node_modules/cordova-android/bin/templates/project/assets/www/cordova.js';
+    case 'ios':
+      return `node_modules/cordova-ios/cordovaLib/cordova.js`;
+    case 'windows':
+      return 'node_modules/cordova-windows/template/www/cordova.js';
+    case 'browser':
+    default:
+      return `node_modules/cordova-${platform}/cordova-lib/cordova.js`;
+  }
+}
+
 export async function addCordovaEngineForAngular(project: IProject, platform: string, appName?: string): Promise<void> {
   debug('Adding Cordova engine for platform: %s', platform);
   const platformWWW = path.resolve(project.directory, 'platforms', platform, 'platform_www');
+  const cordovaAssets = [{ glob: '**/*', input: platformWWW, output: './' }];
+  const cordovaScripts = [{ input: getCordovaJsPath(platform), bundleName: 'cordova' }];
   const angularJsonPath = path.resolve(project.directory, ANGULAR_CONFIG_FILE);
   const angularJson = await readAngularConfigFile(angularJsonPath);
-  const angularApp = angularJson.projects[appName || angularJson.defaultProject];
+  const angularProject = appName || angularJson.defaultProject;
+  const extendedProject = `ionic-cordova-platform-${platform}`;
 
-  if (!angularApp) {
-    throw new FatalException(`${chalk.bold(`projects.${appName || angularJson.defaultProject}`)} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot add assets.`);
-  }
+  extendAngularConfig(angularJson, angularProject, extendedProject, {
+    assets: cordovaAssets,
+    scripts: cordovaScripts,
+  });
 
-  const srcDir = await project.getSourceDir(angularApp.sourceRoot || path.resolve(angularApp.root, 'src'));
-  const buildOptions = angularApp.architect.build.options;
-
-  const cordovaAssets = { glob: '**/*', input: platformWWW, output: './' };
-  buildOptions.assets.push(cordovaAssets);
   debug('Adding Cordova assets to %s: %o', ANGULAR_CONFIG_FILE, cordovaAssets);
+  debug('Adding Cordova scripts to %s: %o', ANGULAR_CONFIG_FILE, cordovaScripts);
+
   await fsWriteFile(angularJsonPath, JSON.stringify(angularJson, undefined, 2) + '\n', { encoding: 'utf8' });
-  debug('Inserting Cordova HTML within %s', srcDir);
-  await addCordovaEngine(srcDir);
 }
 
-export async function removeCordovaEngineForAngular(project: IProject, platform: string, appName?: string): Promise<void> {
+export async function removeCordovaEngineForAngular(project: IProject, platform: string): Promise<void> {
   debug('Removing Cordova engine for platform: %s', platform);
   const angularJsonPath = path.resolve(project.directory, ANGULAR_CONFIG_FILE);
   const angularJson = await readAngularConfigFile(angularJsonPath);
-  const angularApp = angularJson.projects[appName || angularJson.defaultProject];
+  const extendedProject = `ionic-cordova-platform-${platform}`;
 
-  if (!angularApp) {
-    throw new FatalException(`${chalk.bold(`projects.${appName || angularJson.defaultProject}`)} key in ${chalk.bold(ANGULAR_CONFIG_FILE)} is undefined--cannot remove assets.`);
-  }
+  delete angularJson.projects[extendedProject];
 
-  const srcDir = await project.getSourceDir(angularApp.sourceRoot || path.resolve(angularApp.root, 'src'));
-  const buildOptions = angularApp.architect.build.options;
-
-  buildOptions.assets = buildOptions.assets.filter((asset: any) => !asset.input || !asset.input.endsWith('platform_www'));
   await fsWriteFile(angularJsonPath, JSON.stringify(angularJson, undefined, 2) + '\n', { encoding: 'utf8' });
-  await removeCordovaEngine(srcDir);
 }

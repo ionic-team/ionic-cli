@@ -123,7 +123,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const p = await this.project.load();
 
     if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await removeCordovaEngineForAngular(this.project, options.platform, options.project);
+      await removeCordovaEngineForAngular(this.project, options.platform);
     }
 
     await super.afterServe(options, details);
