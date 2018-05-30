@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.104",
-    "@types/node": "^6.0.101",
+    "@types/node": "^9.6.19",
     "jest": "^23.0.1",
     "jest-cli": "^23.0.1",
     "rimraf": "^2.6.2",
