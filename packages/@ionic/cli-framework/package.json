@@ -45,7 +45,7 @@
     "@types/make-dir": "^1.0.3",
     "@types/minimist": "^1.2.0",
     "@types/ncp": "^2.0.1",
-    "@types/node": "^6.0.101",
+    "@types/node": "^9.6.19",
     "@types/rimraf": "^2.0.2",
     "@types/strip-ansi": "^3.0.0",
     "@types/untildify": "^3.0.0",
