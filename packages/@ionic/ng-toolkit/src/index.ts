@@ -1,7 +1,5 @@
 import { CommandMap, Namespace, execute } from '@ionic/cli-framework';
 
-import { BuildCommand } from './commands';
-
 export class IonicNgNamespace extends Namespace {
   async getMetadata() {
     return {
@@ -11,9 +9,7 @@ export class IonicNgNamespace extends Namespace {
   }
 
   async getCommands(): Promise<CommandMap> {
-    return new CommandMap([
-      ['build', async () => new BuildCommand(this)],
-    ]);
+    return new CommandMap([]);
   }
 }
 

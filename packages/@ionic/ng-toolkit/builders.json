@@ -1,0 +1,9 @@
+{
+  "builders": {
+    "cordova": {
+      "class": "./src/cordova",
+      "schema": "./src/cordova/schema.json",
+      "description": "Integrate Cordova into an Ionic app."
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Cordova build for Ionic",
+  "description": "Options for Cordova build for Ionic.",
+  "type": "object",
+  "properties": {
+    "browserTarget": {
+      "type": "string",
+      "description": "Target to build."
+    }
+  }
+}

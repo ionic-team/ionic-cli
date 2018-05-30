@@ -1,18 +1,19 @@
 {
   "name": "@ionic/ng-toolkit",
   "version": "0.0.1",
-  "description": "Utility CLI for Ionic Angular v4+ apps, used by Ionic CLI",
+  "description": "Utilities for Ionic Angular v4+ apps, used by Ionic CLI",
   "bin": {
     "ionic-ng": "./bin/ionic-ng"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "builders": "builders.json",
   "homepage": "https://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (https://ionic.io)",
   "license": "MIT",
   "files": [
     "bin/",
-    "dist/",
+    "src/",
     "LICENSE",
     "README.md"
   ],
@@ -24,24 +25,29 @@
     "url": "https://github.com/ionic-team/ionic-cli/issues"
   },
   "scripts": {
-    "clean": "rimraf dist",
+    "clean": "rimraf 'src/**/*.js' 'src/**/!(schema).d.ts'",
     "lint": "tslint --config tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@angular-devkit/core": "0.6.0",
-    "@angular-devkit/schematics": "0.6.0",
+    "@angular-devkit/architect": "0.6.7",
+    "@angular-devkit/build-angular": "0.6.7",
+    "@angular-devkit/core": "0.6.7",
+    "@angular-devkit/schematics": "0.6.7",
     "@ionic/cli-framework": "1.0.0-rc.6",
     "@ionic/schematics-angular": "1.0.0-rc.6",
     "chalk": "^2.3.0",
     "debug": "^3.1.0",
-    "tslib": "^1.9.0"
+    "rxjs": "^6.2.0",
+    "tslib": "^1.9.0",
+    "webpack": "~4.6.0"
   },
   "devDependencies": {
     "@types/debug": "0.0.30",
     "@types/node": "^6.0.101",
+    "@types/webpack": "^4.4.0",
     "rimraf": "^2.6.2",
     "tslint": "^5.9.1",
     "typescript": "~2.8.1"
