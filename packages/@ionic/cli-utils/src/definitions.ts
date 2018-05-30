@@ -536,8 +536,6 @@ export interface GenerateOptions {
 }
 
 export interface AngularGenerateOptions extends GenerateOptions {
-  dryRun: boolean;
-  force: boolean;
   [key: string]: any; // TODO
 }
 
