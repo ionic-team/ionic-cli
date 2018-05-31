@@ -100,7 +100,7 @@ export interface ProjectFile {
   };
 }
 
-export interface Response<T> extends APIResponseSuccess {
+export interface Response<T extends object> extends APIResponseSuccess {
   data: T;
 }
 
