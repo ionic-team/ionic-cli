@@ -1,15 +1,16 @@
-// import * as fs from 'fs'; // type import
+import * as fs from 'fs'; // type import
 
 import { BuildEvent, Builder, BuilderConfiguration, BuilderContext } from '@angular-devkit/architect';
 // https://github.com/angular/devkit/issues/963
-// import { BrowserBuilder } from '@angular-devkit/build-angular/src/browser';
-// import { BrowserBuilderSchema, NormalizedBrowserBuilderSchema } from '@angular-devkit/build-angular/src/browser/schema';
 const { BrowserBuilder } = require('@angular-devkit/build-angular/src/browser'); // tslint:disable-line
-// import { Path, resolve, virtualFs } from '@angular-devkit/core';
+const { statsErrorsToString, statsToString, statsWarningsToString } = require('@angular-devkit/build-angular/src/angular-cli-files/utilities/stats'); // tslint:disable-line
+const { getWebpackStatsConfig } = require('@angular-devkit/build-angular/src/angular-cli-files/models/webpack-configs/utils'); // tslint:disable-line
+
+import { Path, resolve, virtualFs } from '@angular-devkit/core';
 
 import { Observable, of } from 'rxjs';
 import { concatMap, tap } from 'rxjs/operators';
-// import * as webpack from 'webpack';
+import * as webpack from 'webpack';
 
 import { CordovaBuilderSchema } from './schema';
 
@@ -17,38 +18,59 @@ export class CordovaBuilder implements Builder<CordovaBuilderSchema> {
   constructor(public context: BuilderContext) {}
 
   run(builderConfig: BuilderConfiguration<CordovaBuilderSchema>): Observable<BuildEvent> {
-    // const { root } = this.context.workspace;
-    // const projectRoot = resolve(root, builderConfig.root);
-    // const host = new virtualFs.AliasHost(this.context.host as virtualFs.Host<fs.Stats>);
-    const browserBuilder = new BrowserBuilder(this.context);
-    let browserOptions: /* BrowserBuilderSchema */any;
+    const { root } = this.context.workspace;
+    const projectRoot = resolve(root, builderConfig.root);
+    const host = new virtualFs.AliasHost(this.context.host as virtualFs.Host<fs.Stats>);
+    let browserConfig: /* BrowserBuilderSchema */any;
 
     return of(null).pipe(// tslint:disable-line:no-null-keyword
       concatMap(() => this._getBrowserConfig(builderConfig.options)),
-      tap(opts => browserOptions = opts),
-      concatMap(() => browserBuilder.run(browserOptions))
-      // concatMap(() => new Observable(obs => {
-      //   const webpackConfig = this.buildWebpackConfig(root, projectRoot, host, browserOptions);
-      //   const webpackCompiler = webpack(webpackConfig);
+      tap(config => browserConfig = config),
+      concatMap(() => new Observable(obs => {
+        const { options } = browserConfig;
 
-      //   webpackCompiler.run((err, stats) => {
-      //     if (err) {
-      //       return obs.error(err);
-      //     }
+        if (options.watch) {
+          throw new Error('The `--watch` option is not implemented for Cordova builds.');
+        }
 
-      //     obs.next({ success: !stats.hasErrors() });
-      //     obs.complete();
-      //   });
-      // }))
+        const webpackConfig = this.buildWebpackConfig(root, projectRoot, host, options);
+        const webpackCompiler = webpack(webpackConfig);
+
+        webpackCompiler.run((err, stats) => {
+          if (err) {
+            return obs.error(err);
+          }
+
+          const statsConfig = getWebpackStatsConfig(options.verbose);
+          const json = stats.toJson(statsConfig);
+
+          if (options.verbose) {
+            this.context.logger.info(stats.toString(statsConfig));
+          } else {
+            this.context.logger.info(statsToString(json, statsConfig));
+          }
+
+          if (stats.hasWarnings()) {
+            this.context.logger.warn(statsWarningsToString(json, statsConfig));
+          }
+
+          if (stats.hasErrors()) {
+            this.context.logger.error(statsErrorsToString(json, statsConfig));
+          }
+
+          obs.next({ success: !stats.hasErrors() });
+          obs.complete();
+        });
+      }))
     );
   }
 
-  // buildWebpackConfig(root: Path, projectRoot: Path, host: virtualFs.Host<fs.Stats>, browserOptions: /* BrowserBuilderSchema */any) {
-  //   const browserBuilder = new BrowserBuilder(this.context);
-  //   const webpackConfig = browserBuilder.buildWebpackConfig(root, projectRoot, host, browserOptions as /* NormalizedBrowserBuilderSchema */any);
+  buildWebpackConfig(root: Path, projectRoot: Path, host: virtualFs.Host<fs.Stats>, browserOptions: /* BrowserBuilderSchema */any) {
+    const browserBuilder = new BrowserBuilder(this.context);
+    const webpackConfig = browserBuilder.buildWebpackConfig(root, projectRoot, host, browserOptions as /* NormalizedBrowserBuilderSchema */any);
 
-  //   return webpackConfig;
-  // }
+    return webpackConfig;
+  }
 
   protected _getBrowserConfig(options: CordovaBuilderSchema): Observable</* BrowserBuilderSchema */any> {
     const { architect } = this.context;
