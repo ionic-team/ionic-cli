@@ -20,14 +20,23 @@ export class CordovaBuilder implements Builder<CordovaBuilderSchema> {
       concatMap(() => this._getBrowserConfig(builderConfig.options)),
       tap(config => browserConfig = config),
       tap(() => {
+        // We always need to output the build to `www` because it is a hard
+        // requirement of Cordova.
+        browserConfig.options.outputPath = 'www';
+
         const platformWWWPath = normalize(`platforms/${platform}/platform_www`);
 
+        // Add Cordova www assets that were generated whenever platform(s) and
+        // plugin(s) are added. This includes `cordova.js`,
+        // `cordova_plugins.js`, and all plugin JS.
         browserConfig.options.assets.push({
           glob: '**/*',
           input: getSystemPath(platformWWWPath),
           output: './',
         });
 
+        // Register `cordova.js` as a global script so it is included in
+        // `index.html`.
         browserConfig.options.scripts.push({
           input: getSystemPath(join(platformWWWPath, normalize('cordova.js'))),
           bundleName: 'cordova',
