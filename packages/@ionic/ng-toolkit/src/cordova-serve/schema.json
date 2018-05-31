@@ -1,0 +1,30 @@
+{
+  "title": "Cordova serve for Ionic",
+  "description": "Options for Cordova serve for Ionic.",
+  "type": "object",
+  "properties": {
+    "devServerTarget": {
+      "type": "string",
+      "description": "Target to serve."
+    },
+    "platform": {
+      "type": "string",
+      "description": "Cordova platform to use during serve."
+    },
+    "port": {
+      "type": "number",
+      "description": "Port to listen on.",
+      "default": 4200
+    },
+    "host": {
+      "type": "string",
+      "description": "Host to listen on.",
+      "default": "localhost"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "devServerTarget",
+    "platform"
+  ]
+}

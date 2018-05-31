@@ -1,9 +1,14 @@
 {
   "builders": {
-    "cordova": {
-      "class": "./src/cordova",
-      "schema": "./src/cordova/schema.json",
-      "description": "Integrate Cordova into an Ionic app."
+    "cordova-build": {
+      "class": "./src/cordova-build",
+      "schema": "./src/cordova-build/schema.json",
+      "description": "Perform a browser build with Cordova assets."
+    },
+    "cordova-serve": {
+      "class": "./src/cordova-serve",
+      "schema": "./src/cordova-serve/schema.json",
+      "description": "Run the dev-server with Cordova assets."
     }
   }
 }

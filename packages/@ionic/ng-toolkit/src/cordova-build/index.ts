@@ -5,14 +5,14 @@ import { BuildEvent, Builder, BuilderConfiguration, BuilderContext } from '@angu
 const { BrowserBuilder } = require('@angular-devkit/build-angular/src/browser'); // tslint:disable-line
 import { getSystemPath, join, normalize } from '@angular-devkit/core';
 
-import { CordovaBuilderSchema } from './schema';
+import { CordovaBuildBuilderSchema } from './schema';
 
-export class CordovaBuilder implements Builder<CordovaBuilderSchema> {
+export class CordovaBuildBuilder implements Builder<CordovaBuildBuilderSchema> {
   constructor(public context: BuilderContext) {}
 
-  run(builderConfig: BuilderConfiguration<CordovaBuilderSchema>): Observable<BuildEvent> {
+  run(builderConfig: BuilderConfiguration<CordovaBuildBuilderSchema>): Observable<BuildEvent> {
     let browserConfig: /* BrowserBuilderSchema */any;
-    const browserBuilder = new BrowserBuilder(this.context);
+    const browserBuilder = new BrowserBuilder(this.context); // TODO: shouldn't this use `architect.getBuilder()`?
 
     const { platform } = builderConfig.options;
 
@@ -46,7 +46,7 @@ export class CordovaBuilder implements Builder<CordovaBuilderSchema> {
     );
   }
 
-  protected _getBrowserConfig(options: CordovaBuilderSchema): Observable</* BrowserBuilderSchema */any> {
+  protected _getBrowserConfig(options: CordovaBuildBuilderSchema): Observable</* BrowserBuilderSchema */any> {
     const { architect } = this.context;
     const [ project, target, configuration ] = options.browserTarget.split(':');
     const browserTargetSpec = { project, target, configuration, overrides: {} };
@@ -58,4 +58,4 @@ export class CordovaBuilder implements Builder<CordovaBuilderSchema> {
   }
 }
 
-export default CordovaBuilder;
+export default CordovaBuildBuilder;
