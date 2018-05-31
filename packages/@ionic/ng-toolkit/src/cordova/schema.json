@@ -6,6 +6,15 @@
     "browserTarget": {
       "type": "string",
       "description": "Target to build."
+    },
+    "platform": {
+      "type": "string",
+      "description": "Cordova platform to use during build."
     }
-  }
+  },
+  "additionalProperties": false,
+  "required": [
+    "browserTarget",
+    "platform"
+  ]
 }
