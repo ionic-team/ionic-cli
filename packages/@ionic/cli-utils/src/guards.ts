@@ -2,7 +2,6 @@ import {
   APIResponse,
   APIResponseError,
   APIResponseSuccess,
-  AngularConfig,
   App,
   AppAssociation,
   CommandPreRun,
@@ -51,11 +50,6 @@ export function isCordovaPackageJson(o: object): o is CordovaPackageJson {
     typeof obj.cordova === 'object' &&
     typeof obj.cordova.platforms === 'object' &&
     typeof obj.cordova.plugins === 'object';
-}
-
-export function isAngularConfig(o: object): o is AngularConfig {
-  const obj = <AngularConfig>o;
-  return obj && typeof obj.projects === 'object';
 }
 
 export function isExitCodeException(e: Error): e is ExitCodeException {

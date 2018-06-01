@@ -1,6 +1,3 @@
-import * as fs from 'fs';
-import * as path from 'path';
-
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as through2 from 'through2';
@@ -8,24 +5,16 @@ import * as split2 from 'split2';
 
 import { CommandGroup, LOGGER_LEVELS, OptionGroup, ParsedArgs, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
-import { pathAccessible } from '@ionic/cli-framework/utils/fs';
 import { findClosestOpenPort, isHostConnectable } from '@ionic/cli-framework/utils/network';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
 import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
-import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './utils';
 
 const DEFAULT_PROGRAM = 'ng';
 const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
-const NG_AUTODETECTED_PROXY_FILES = ['proxy.conf.json', 'proxy.conf.js', 'proxy.config.json', 'proxy.config.js'];
 
 const NG_SERVE_OPTIONS = [
-  {
-    name: 'ssl',
-    summary: 'Use HTTPS for the dev server',
-    type: Boolean,
-  },
   {
     name: 'prod',
     summary: `Flag to set configuration to ${chalk.green('prod')}`,
@@ -37,6 +26,7 @@ const NG_SERVE_OPTIONS = [
     summary: 'The name of the project',
     type: String,
     groups: [OptionGroup.Advanced],
+    default: 'app',
     hint: 'ng',
   },
   {
@@ -59,16 +49,10 @@ export class ServeRunner extends BaseServeRunner<AngularServeOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       groups: [CommandGroup.Experimental],
-      exampleCommands: ['-- --extract-css=true'],
       description: `
-${chalk.green('ionic serve')} uses the Angular CLI. Common Angular CLI options such as ${chalk.green('--target')} and ${chalk.green('--environment')} are mixed in with Ionic CLI options. Use ${chalk.green('ng serve --help')} to list all options. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
+${chalk.green('ionic serve')} uses the Angular CLI. Use ${chalk.green('ng serve --help')} to list all Angular CLI options for serving your app. See the ${chalk.green('ng serve')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
 
-For serving your app with HTTPS, use the ${chalk.green('--ssl')} option. You can provide your own SSL key and certificate with the ${chalk.green('ionic config set ssl.key <path>')} and ${chalk.green('ionic config set ssl.cert <path>')} commands.
-
-If a ${chalk.bold('proxy.config.json')} or ${chalk.bold('proxy.config.js')} file is detected in your project, the Angular CLI's ${chalk.green('--proxy-config')} option is automatically specified. You can use ${chalk.green('--no-proxy')} to disable this behavior. See the Angular CLI proxy documentation${chalk.cyan('[2]')} for more information.
-
-${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/serve')}
-${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/stories-proxy#proxy-to-backend')}`,
+${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/serve')}`,
       options: NG_SERVE_OPTIONS,
     };
   }
@@ -76,26 +60,15 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularServeOptions {
     const baseOptions = super.createOptionsFromCommandLine(inputs, options);
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
-    const project = options['project'] ? String(options['project']) : undefined;
+    const project = options['project'] ? String(options['project']) : 'app';
     const configuration = options['configuration'] ? String(options['configuration']) : undefined;
 
     return {
       ...baseOptions,
-      ssl: options['ssl'] ? true : false,
       prod,
       project,
       configuration,
     };
-  }
-
-  async beforeServe(options: AngularServeOptions): Promise<void> {
-    await super.beforeServe(options);
-
-    const p = await this.project.load();
-
-    if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await addCordovaEngineForAngular(this.project, options.platform, options.project);
-    }
   }
 
   async serveProject(options: AngularServeOptions): Promise<ServeDetails> {
@@ -109,23 +82,13 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
     return {
       custom: program !== DEFAULT_PROGRAM,
-      protocol: options.ssl ? 'https' : 'http',
+      protocol: 'http',
       localAddress: 'localhost',
       externalAddress: externalIP,
       externalNetworkInterfaces: availableInterfaces,
       port: ngPort,
       externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
     };
-  }
-
-  async afterServe(options: AngularServeOptions, details: ServeDetails): Promise<void> {
-    const p = await this.project.load();
-
-    if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await removeCordovaEngineForAngular(this.project, options.platform);
-    }
-
-    await super.afterServe(options, details);
   }
 
   private async serveCommandWrapper(options: AngularServeOptions): Promise<ServeCmdDetails> {
@@ -155,7 +118,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const { npmClient } = config;
 
     let program = DEFAULT_PROGRAM;
-    let args = await this.serveOptionsToNgArgs(options);
+    let args = this.serveOptionsToNgArgs(options);
     const shellOptions = { cwd: this.project.directory };
 
     debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
@@ -166,7 +129,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       program = pkgManager;
       args = pkgArgs;
     } else {
-      args = ['serve', ...args];
+      args = [...this.buildArchitectCommand(options), ...args];
     }
 
     const p = this.shell.spawn(program, args, shellOptions);
@@ -209,52 +172,20 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     });
   }
 
-  async serveOptionsToNgArgs(options: AngularServeOptions): Promise<string[]> {
+  serveOptionsToNgArgs(options: AngularServeOptions): string[] {
     const args: ParsedArgs = {
       _: [],
-      prod: options.prod,
-      project: options.project,
-      configuration: options.configuration,
+      platform: options.engine === 'cordova' ? options.platform : undefined,
       host: options.address,
       port: String(options.port),
-      ssl: options.ssl ? 'true' : undefined,
     };
-
-    if (options.ssl) {
-      const project = await this.project.load();
-
-      if (project.ssl && project.ssl.key && project.ssl.cert) {
-        // unresolved paths--cwd of subprocess is project directory
-        args['ssl-key'] = project.ssl.key;
-        args['ssl-cert'] = project.ssl.cert;
-      } else {
-        throw new FatalException(
-          `Both ${chalk.green('ssl.key')} and ${chalk.green('ssl.cert')} config entries must be set.\n` +
-          `See ${chalk.green('ionic serve --help')} for details on using your own SSL key and certificate for the dev server.`
-        );
-      }
-    }
-
-    if (options.proxy) {
-      const proxyConfig = await this.detectProxyConfig();
-
-      if (proxyConfig) {
-        // unresolved path--cwd of subprocess is project directory
-        args.proxyConfig = proxyConfig;
-      }
-    }
 
     return [...unparseArgs(args), ...options['--']];
   }
 
-  async detectProxyConfig(): Promise<string | undefined> {
-    for (const f of NG_AUTODETECTED_PROXY_FILES) {
-      if (await pathAccessible(path.resolve(this.project.directory, f), fs.constants.R_OK)) {
-        debug(`Detected ${chalk.bold(f)} proxy file`);
-        return f;
-      }
-    }
+  buildArchitectCommand(options: AngularServeOptions): string[] {
+    const cmd = options.engine === 'cordova' ? 'ionic-cordova-serve' : 'serve';
 
-    debug(`None of the following proxy files found: ${NG_AUTODETECTED_PROXY_FILES.map(f => chalk.bold(f)).join(', ')}`);
+    return ['run', `${options.project}:${cmd}${options.configuration ? `:${options.configuration}` : ''}`];
   }
 }

@@ -646,19 +646,6 @@ export interface IAilmentRegistry {
   get(id: string): IAilment | undefined;
 }
 
-export interface AngularConfigProject {
-  root: string;
-  sourceRoot: string;
-  architect: any;
-}
-
-export interface AngularConfig {
-  defaultProject: string;
-  projects: {
-    [key: string]: AngularConfigProject | undefined;
-  };
-}
-
 export interface IonicContext {
   readonly binPath: string;
   readonly libPath: string;

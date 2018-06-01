@@ -4,7 +4,6 @@ import { CommandGroup, OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-f
 
 import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { BUILD_SCRIPT, BuildRunner, BuildRunnerDeps } from '../../build';
-import { addCordovaEngineForAngular, removeCordovaEngineForAngular } from './utils';
 import { AngularProject } from './';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:build');
@@ -21,6 +20,7 @@ export const NG_BUILD_OPTIONS = [
     summary: 'The name of the project',
     type: String,
     groups: [OptionGroup.Advanced],
+    default: 'app',
     hint: 'ng',
   },
   {
@@ -48,7 +48,7 @@ export class AngularBuildRunner extends BuildRunner<AngularBuildOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       groups: [CommandGroup.Experimental],
-      exampleCommands: ['--prod', '-- --extract-css=true'],
+      exampleCommands: ['--prod'],
       description: `
 ${chalk.green('ionic build')} uses the Angular CLI. Use ${chalk.green('ng build --help')} to list all Angular CLI options for building your app. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the ${chalk.green('ng')} CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
 
@@ -60,8 +60,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularBuildOptions {
     const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
-    const project = options['project'] ? String(options['project']) : undefined;
-    const configuration = options['configuration'] ? String(options['configuration']) : undefined;
+    const project = options['project'] ? String(options['project']) : 'app';
+    const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
 
     return {
       ...baseOptions,
@@ -72,32 +72,19 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     };
   }
 
-  async buildOptionsToNgArgs(options: AngularBuildOptions): Promise<string[]> {
-    const project = `ionic-cordova-platform-${options.platform}`;
-
+  buildOptionsToNgArgs(options: AngularBuildOptions): string[] {
     const args: ParsedArgs = {
       _: [],
-      prod: options.prod,
-      project: project,
-      configuration: options.configuration,
+      platform: options.engine === 'cordova' ? options.platform : undefined,
     };
-
-    if (options.engine === 'cordova') {
-      args['output-path'] = 'www';
-    }
 
     return [...unparseArgs(args), ...options['--']];
   }
 
-  async beforeBuild(options: AngularBuildOptions): Promise<void> {
+  buildArchitectCommand(options: AngularBuildOptions): string[] {
+    const cmd = options.engine === 'cordova' ? 'ionic-cordova-build' : 'build';
 
-    await super.beforeBuild(options);
-
-    const p = await this.project.load();
-
-    if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await addCordovaEngineForAngular(this.project, options.platform, options.project);
-    }
+    return ['run', `${options.project}:${cmd}${options.configuration ? `:${options.configuration}` : ''}`];
   }
 
   async buildProject(options: AngularBuildOptions): Promise<void> {
@@ -106,7 +93,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const { npmClient } = config;
     const pkg = await this.project.requirePackageJson();
 
-    const args = await this.buildOptionsToNgArgs(options);
+    const args = this.buildOptionsToNgArgs(options);
     const shellOptions = { cwd: this.project.directory };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
@@ -116,17 +103,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       const [pkgManager, ...pkgArgs] = await pkgManagerArgs(npmClient, { command: 'run', script: BUILD_SCRIPT });
       await this.shell.run(pkgManager, pkgArgs, shellOptions);
     } else {
-      await this.shell.run('ng', ['build', ...args], shellOptions);
+      await this.shell.run('ng', [...this.buildArchitectCommand(options), ...args], shellOptions);
     }
-  }
-
-  async afterBuild(options: AngularBuildOptions): Promise<void> {
-    const p = await this.project.load();
-
-    if (p.integrations.cordova && p.integrations.cordova.enabled !== false && options.engine === 'cordova' && options.platform) {
-      await removeCordovaEngineForAngular(this.project, options.platform);
-    }
-
-    await super.afterBuild(options);
   }
 }
