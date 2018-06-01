@@ -3,9 +3,13 @@
   "description": "Options for Cordova serve for Ionic.",
   "type": "object",
   "properties": {
+    "cordovaBuildTarget": {
+      "type": "string",
+      "description": "Target to use for build."
+    },
     "devServerTarget": {
       "type": "string",
-      "description": "Target to serve."
+      "description": "Target to use for serve."
     },
     "platform": {
       "type": "string",
@@ -24,6 +28,7 @@
   },
   "additionalProperties": false,
   "required": [
+    "cordovaBuildTarget",
     "devServerTarget",
     "platform"
   ]

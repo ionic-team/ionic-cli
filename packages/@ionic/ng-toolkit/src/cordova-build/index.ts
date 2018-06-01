@@ -7,43 +7,53 @@ import { getSystemPath, join, normalize } from '@angular-devkit/core';
 
 import { CordovaBuildBuilderSchema } from './schema';
 
+export { CordovaBuildBuilderSchema };
+
 export class CordovaBuildBuilder implements Builder<CordovaBuildBuilderSchema> {
   constructor(public context: BuilderContext) {}
 
   run(builderConfig: BuilderConfiguration<CordovaBuildBuilderSchema>): Observable<BuildEvent> {
-    let browserConfig: /* BrowserBuilderSchema */any;
     const browserBuilder = new BrowserBuilder(this.context); // TODO: shouldn't this use `architect.getBuilder()`?
 
-    const { platform } = builderConfig.options;
+    return this.buildBrowserConfig(builderConfig.options).pipe(
+      concatMap(browserConfig => browserBuilder.run(browserConfig))
+    );
+  }
+
+  buildBrowserConfig(options: CordovaBuildBuilderSchema): Observable</* BrowserBuilderSchema */any> {
+    let browserConfig: /* BrowserBuilderSchema */any;
 
     return of(null).pipe(// tslint:disable-line:no-null-keyword
-      concatMap(() => this._getBrowserConfig(builderConfig.options)),
+      concatMap(() => this._getBrowserConfig(options)),
       tap(config => browserConfig = config),
-      tap(() => {
-        // We always need to output the build to `www` because it is a hard
-        // requirement of Cordova.
-        browserConfig.options.outputPath = 'www';
-
-        const platformWWWPath = normalize(`platforms/${platform}/platform_www`);
-
-        // Add Cordova www assets that were generated whenever platform(s) and
-        // plugin(s) are added. This includes `cordova.js`,
-        // `cordova_plugins.js`, and all plugin JS.
-        browserConfig.options.assets.push({
-          glob: '**/*',
-          input: getSystemPath(platformWWWPath),
-          output: './',
-        });
-
-        // Register `cordova.js` as a global script so it is included in
-        // `index.html`.
-        browserConfig.options.scripts.push({
-          input: getSystemPath(join(platformWWWPath, normalize('cordova.js'))),
-          bundleName: 'cordova',
-        });
-      }),
-      concatMap(() => browserBuilder.run(browserConfig))
+      tap(() => this.prepareBrowserConfig(options, browserConfig.options)),
+      concatMap(() => of(browserConfig))
     );
+  }
+
+  // Mutates browserOptions
+  prepareBrowserConfig(options: CordovaBuildBuilderSchema, browserOptions: /* BrowserBuilderSchema */any) {
+    // We always need to output the build to `www` because it is a hard
+    // requirement of Cordova.
+    browserOptions.outputPath = 'www';
+
+    const platformWWWPath = normalize(`platforms/${options.platform}/platform_www`);
+
+    // Add Cordova www assets that were generated whenever platform(s) and
+    // plugin(s) are added. This includes `cordova.js`,
+    // `cordova_plugins.js`, and all plugin JS.
+    browserOptions.assets.push({
+      glob: '**/*',
+      input: getSystemPath(platformWWWPath),
+      output: './',
+    });
+
+    // Register `cordova.js` as a global script so it is included in
+    // `index.html`.
+    browserOptions.scripts.push({
+      input: getSystemPath(join(platformWWWPath, normalize('cordova.js'))),
+      bundleName: 'cordova',
+    });
   }
 
   protected _getBrowserConfig(options: CordovaBuildBuilderSchema): Observable</* BrowserBuilderSchema */any> {
