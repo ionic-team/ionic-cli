@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { ChildProcess, SpawnOptions } from 'child_process';
 
-import * as superagentType from 'superagent';
+import * as ζsuperagent from 'superagent';
 
 import * as framework from '@ionic/cli-framework';
 
@@ -14,7 +14,7 @@ export {
 } from '@ionic/cli-framework';
 
 export interface SuperAgentError extends Error {
-  response: superagentType.Response;
+  response: ζsuperagent.Response;
 }
 
 export type LogFn = (msg: string) => void;
@@ -458,8 +458,8 @@ export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' |
 export interface IClient {
   config: IConfig;
 
-  make(method: HttpMethod, path: string): Promise<{ req: superagentType.SuperAgentRequest; }>;
-  do(req: superagentType.SuperAgentRequest): Promise<APIResponseSuccess>;
+  make(method: HttpMethod, path: string): Promise<{ req: ζsuperagent.SuperAgentRequest; }>;
+  do(req: ζsuperagent.SuperAgentRequest): Promise<APIResponseSuccess>;
   paginate<T extends Response<object[]>>(args: PaginateArgs<T>): IPaginator<T>;
 }
 
@@ -469,7 +469,7 @@ export interface IPaginator<T extends Response<object[]>, S = PaginatorState> ex
   readonly state: S;
 }
 
-export type PaginatorRequestGenerator = () => Promise<{ req: superagentType.SuperAgentRequest; }>;
+export type PaginatorRequestGenerator = () => Promise<{ req: ζsuperagent.SuperAgentRequest; }>;
 export type PaginatorGuard<T extends Response<object[]>> = (res: APIResponseSuccess) => res is T;
 
 export interface PaginatorState {

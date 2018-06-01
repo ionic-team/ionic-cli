@@ -10,9 +10,9 @@ import { Colors, DEFAULT_COLORS } from './colors';
 import { Command, Namespace } from './command';
 import { CommandHelpSchema, CommandSchemaHelpFormatter, CommandStringHelpFormatter, HelpFormatter, NamespaceHelpSchema, NamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter } from './help';
 import { metadataOptionsToParseArgsOptions, parseArgs, stripOptions } from './options';
-import { RPC, RPCProcess } from '../utils/ipc'; // type import
+import * as ζipc from '../utils/ipc';
 
-export type HelpRPC<S extends CommandHelpSchema | NamespaceHelpSchema> = RPC<'help', [ReadonlyArray<string>], S>;
+export type HelpRPC<S extends CommandHelpSchema | NamespaceHelpSchema> = ζipc.RPC<'help', [ReadonlyArray<string>], S>;
 
 export interface ExecutorOperations {
   readonly RPC: string;
@@ -41,8 +41,8 @@ export interface BaseExecutorDeps<C extends ICommand<C, N, M, I, O>, N extends I
 }
 
 export interface BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends AbstractExecutor<C, N, M, I, O> {
-  on(event: 'operation-rpc', callback: (rpc: RPCProcess) => void): this;
-  emit(event: 'operation-rpc', rpc: RPCProcess): boolean;
+  on(event: 'operation-rpc', callback: (rpc: ζipc.RPCProcess) => void): this;
+  emit(event: 'operation-rpc', rpc: ζipc.RPCProcess): boolean;
 }
 
 export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends AbstractExecutor<C, N, M, I, O> {

@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import * as makeDir from 'make-dir';
 import * as wfa from 'write-file-atomic';
-import { Options as NCPOptions } from 'ncp'; // type import
+import * as ζncp from 'ncp';
 
 import { promisify } from './promise';
 import { compilePaths } from './path';
@@ -184,7 +184,7 @@ export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: st
   });
 }
 
-export async function copyDirectory(source: string, destination: string, options: NCPOptions = {}): Promise<void> {
+export async function copyDirectory(source: string, destination: string, options: ζncp.Options = {}): Promise<void> {
   const ncp = await import('ncp');
 
   return new Promise<void>((resolve, reject) => {

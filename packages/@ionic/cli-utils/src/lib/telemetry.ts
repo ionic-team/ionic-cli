@@ -1,5 +1,6 @@
-import * as leekType from 'leek';
 import * as Debug from 'debug';
+
+import * as ζleek from 'leek';
 
 import { IClient, IConfig, IProject, ISession, ITelemetry, InfoItem, IonicContext } from '../definitions';
 import { generateUUID } from './utils/uuid';
@@ -7,7 +8,7 @@ import { sendMessage } from './helper';
 
 const debug = Debug('ionic:cli-utils:lib:telemetry');
 const GA_CODE = 'UA-44023830-30';
-let _gaTracker: leekType | undefined;
+let _gaTracker: ζleek | undefined;
 
 export interface TelemetryDeps {
   readonly client: IClient;
@@ -44,7 +45,7 @@ export class Telemetry implements ITelemetry {
   }
 }
 
-async function getLeek({ config, version }: { config: IConfig; version: string; }): Promise<leekType> {
+async function getLeek({ config, version }: { config: IConfig; version: string; }): Promise<ζleek> {
   if (!_gaTracker) {
     const Leek = await import('leek');
     const c = await config.load();

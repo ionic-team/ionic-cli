@@ -1,14 +1,14 @@
 import * as Debug from 'debug';
-import * as inquirer from 'inquirer'; // type import
+import * as ζinquirer from 'inquirer';
 
 import { OutputStrategy, RedrawLine } from '../definitions';
 import { TERMINAL_INFO } from '../utils/terminal';
 
 const debug = Debug('ionic:cli-framework:lib:prompts');
 
-let _inquirer: inquirer.Inquirer | undefined;
+let _inquirer: ζinquirer.Inquirer | undefined;
 
-export interface PromptQuestionBase extends inquirer.Question {
+export interface PromptQuestionBase extends ζinquirer.Question {
   /**
    * The prompt type for this question.
    *    - 'confirm': Y/n
@@ -76,7 +76,7 @@ export interface PromptModule {
   close(): void;
 }
 
-async function loadInquirer(): Promise<inquirer.Inquirer> {
+async function loadInquirer(): Promise<ζinquirer.Inquirer> {
   if (!_inquirer) {
     _inquirer = await import('inquirer');
   }
@@ -169,7 +169,7 @@ export async function createPromptModule({ interactive, onFallback }: CreateProm
   return <any>createPrompter;
 }
 
-export function createPromptChoiceSeparator(): inquirer.objects.Separator {
+export function createPromptChoiceSeparator(): ζinquirer.objects.Separator {
   if (!_inquirer) {
     throw new Error(`Prompt module not initialized. Call 'createPromptModule' first.`);
   }
@@ -178,15 +178,15 @@ export function createPromptChoiceSeparator(): inquirer.objects.Separator {
 }
 
 interface BottomBarManagerOptions {
-  readonly BottomBar: typeof inquirer.ui.BottomBar;
+  readonly BottomBar: typeof ζinquirer.ui.BottomBar;
   readonly input?: NodeJS.ReadableStream;
   readonly output?: NodeJS.WritableStream;
 }
 
 class BottomBarManager implements OutputStrategy, RedrawLine {
-  protected bottomBar?: inquirer.ui.BottomBar;
+  protected bottomBar?: ζinquirer.ui.BottomBar;
 
-  protected readonly BottomBar: typeof inquirer.ui.BottomBar;
+  protected readonly BottomBar: typeof ζinquirer.ui.BottomBar;
   protected readonly rawinput: NodeJS.ReadableStream;
   protected readonly rawoutput: NodeJS.WritableStream;
 
@@ -206,7 +206,7 @@ class BottomBarManager implements OutputStrategy, RedrawLine {
     bottomBar.updateBottomBar(msg);
   }
 
-  get(): typeof inquirer.ui.BottomBar {
+  get(): typeof ζinquirer.ui.BottomBar {
     if (!this.bottomBar) {
       this.bottomBar = new this.BottomBar(<any>{ input: this.rawinput, output: this.rawoutput });
 

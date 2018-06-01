@@ -6,10 +6,10 @@ import { Command } from '@ionic/cli-utils/lib/command';
 import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
 import { prettyProjectName } from '@ionic/cli-utils/lib/project';
 
-import * as generateLibType from '@ionic/cli-utils/lib/generate';
+import * as ζgenerate from '@ionic/cli-utils/lib/generate';
 
 export class GenerateCommand extends Command implements CommandPreRun {
-  protected runner?: generateLibType.GenerateRunner<GenerateOptions>;
+  protected runner?: ζgenerate.GenerateRunner<GenerateOptions>;
 
   async getRunner() {
     if (!this.runner) {

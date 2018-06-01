@@ -5,7 +5,7 @@ import * as lodash from 'lodash';
 import { Project } from '../';
 
 import { IAilmentRegistry, InfoItem } from '../../../definitions';
-import * as doctorLibType from '../../doctor';
+import * as ζdoctor from '../../doctor';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular');
 
@@ -53,7 +53,7 @@ export class AngularProject extends Project {
     return false;
   }
 
-  async getAilmentRegistry(deps: doctorLibType.AilmentDeps): Promise<IAilmentRegistry> {
+  async getAilmentRegistry(deps: ζdoctor.AilmentDeps): Promise<IAilmentRegistry> {
     const { registerAilments } = await import('./ailments');
 
     const registry = await super.getAilmentRegistry(deps);

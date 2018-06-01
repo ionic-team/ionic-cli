@@ -15,12 +15,12 @@ import { BaseConfig } from '../config';
 import { FatalException } from '../errors';
 import { BaseIntegration } from '../integrations';
 
-import * as doctorLibType from '../doctor';
+import * as ζdoctor from '../doctor';
 
-import * as angularProjectLibType from './angular';
-import * as ionicAngularProjectLibType from './ionic-angular';
-import * as ionic1ProjectLibType from './ionic1';
-import * as customProjectLibType from './custom';
+import * as ζangular from './angular';
+import * as ζionicAngular from './ionic-angular';
+import * as ζionic1 from './ionic1';
+import * as ζcustom from './custom';
 
 const debug = Debug('ionic:cli-utils:lib:project');
 
@@ -85,10 +85,10 @@ export abstract class Project extends BaseConfig<ProjectFile> implements IProjec
     );
   }
 
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'angular'): Promise<angularProjectLibType.AngularProject>;
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'ionic-angular'): Promise<ionicAngularProjectLibType.IonicAngularProject>;
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'ionic1'): Promise<ionic1ProjectLibType.Ionic1Project>;
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'custom'): Promise<customProjectLibType.CustomProject>;
+  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'angular'): Promise<ζangular.AngularProject>;
+  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'ionic-angular'): Promise<ζionicAngular.IonicAngularProject>;
+  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'ionic1'): Promise<ζionic1.Ionic1Project>;
+  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'custom'): Promise<ζcustom.CustomProject>;
   static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: ProjectType): Promise<IProject>;
   static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: ProjectType): Promise<IProject> {
     let project: IProject | undefined;
@@ -229,7 +229,7 @@ export abstract class Project extends BaseConfig<ProjectFile> implements IProjec
     await Promise.all(integrations.map(async i => i.personalize(details)));
   }
 
-  async getAilmentRegistry(deps: doctorLibType.AilmentDeps): Promise<IAilmentRegistry> {
+  async getAilmentRegistry(deps: ζdoctor.AilmentDeps): Promise<IAilmentRegistry> {
     const { AilmentRegistry, registerAilments } = await import('../doctor/ailments');
 
     const registry = new AilmentRegistry();

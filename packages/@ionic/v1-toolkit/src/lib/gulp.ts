@@ -6,15 +6,15 @@ import * as Debug from 'debug';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { promisify } from '@ionic/cli-framework/utils/promise';
 
-import * as gulpType from 'gulp';
+import * as ζgulp from 'gulp';
 
 import { timestamp } from './log';
 
 const debug = Debug('ionic:v1-toolkit:lib:gulp');
 
-let _gulpInst: typeof gulpType;
+let _gulpInst: typeof ζgulp;
 
-export async function loadGulp(): Promise<typeof gulpType> {
+export async function loadGulp(): Promise<typeof ζgulp> {
   if (!_gulpInst) {
     const gulpFilePath = path.resolve('gulpfile.js');
     debug(`Using gulpfile: ${gulpFilePath}`);

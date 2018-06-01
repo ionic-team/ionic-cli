@@ -22,9 +22,9 @@ import { FatalException, RunnerException, RunnerNotFoundException } from './erro
 import { Hook } from './hooks';
 import { PkgManagerOptions } from './utils/npm';
 
-import * as ionic1ServeLibType from './project/ionic1/serve';
-import * as ionicAngularServeLibType from './project/ionic-angular/serve';
-import * as angularServeLibType from './project/angular/serve';
+import * as ζprojectAngularServe from './project/angular/serve';
+import * as ζprojectIonicAngularServe from './project/ionic-angular/serve';
+import * as ζprojectIonic1Serve from './project/ionic1/serve';
 
 const debug = Debug('ionic:cli-utils:lib:serve');
 
@@ -103,9 +103,9 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     this.shell = shell;
   }
 
-  static async createFromProject(deps: ServeRunnerDeps): Promise<ionic1ServeLibType.ServeRunner>;
-  static async createFromProject(deps: ServeRunnerDeps): Promise<ionicAngularServeLibType.ServeRunner>;
-  static async createFromProject(deps: ServeRunnerDeps): Promise<angularServeLibType.ServeRunner>;
+  static async createFromProject(deps: ServeRunnerDeps): Promise<ζprojectAngularServe.ServeRunner>;
+  static async createFromProject(deps: ServeRunnerDeps): Promise<ζprojectIonicAngularServe.ServeRunner>;
+  static async createFromProject(deps: ServeRunnerDeps): Promise<ζprojectIonic1Serve.ServeRunner>;
   static async createFromProject(deps: ServeRunnerDeps): Promise<ServeRunner<any>>;
   static async createFromProject(deps: ServeRunnerDeps): Promise<ServeRunner<any>> {
     if (deps.project.type === 'ionic1') {

@@ -6,8 +6,8 @@ import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { prettyProjectName } from './project';
 
-import * as angularGenerateLibType from './project/angular/generate';
-import * as ionicAngularGenerateLibType from './project/ionic-angular/generate';
+import * as ζangularProjectGenerate from './project/angular/generate';
+import * as ζionicAngularProjectGenerate from './project/ionic-angular/generate';
 
 export interface GenerateRunnerDeps {
   readonly config: IConfig;
@@ -32,8 +32,8 @@ export abstract class GenerateRunner<T extends GenerateOptions> implements Runne
     this.shell = shell;
   }
 
-  static async createFromProject(env: IonicEnvironment): Promise<angularGenerateLibType.GenerateRunner>;
-  static async createFromProject(env: IonicEnvironment): Promise<ionicAngularGenerateLibType.GenerateRunner>;
+  static async createFromProject(env: IonicEnvironment): Promise<ζangularProjectGenerate.GenerateRunner>;
+  static async createFromProject(env: IonicEnvironment): Promise<ζionicAngularProjectGenerate.GenerateRunner>;
   static async createFromProject(env: IonicEnvironment): Promise<GenerateRunner<any>>;
   static async createFromProject(env: IonicEnvironment): Promise<GenerateRunner<any>> {
     if (env.project.type === 'angular') {

@@ -7,13 +7,12 @@ import { PROJECT_FILE } from '../constants';
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Hook } from './hooks';
 
-import { AngularProject } from './project/angular'; // type import
-import { IonicAngularProject } from './project/ionic-angular'; // type import
-import { Ionic1Project } from './project/ionic1'; // type import
-
-import { AngularBuildRunner } from './project/angular/build'; // type import
-import { IonicAngularBuildRunner } from './project/ionic-angular/build'; // type import
-import { Ionic1BuildRunner } from './project/ionic1/build'; // type import
+import * as ζprojectAngular from './project/angular';
+import * as ζprojectAngularBuild from './project/angular/build';
+import * as ζprojectIonicAngular from './project/ionic-angular';
+import * as ζprojectIonicAngularBuild from './project/ionic-angular/build';
+import * as ζprojectIonic1 from './project/ionic1';
+import * as ζprojectIonic1Build from './project/ionic1/build';
 
 export const BUILD_SCRIPT = 'ionic:build';
 
@@ -48,22 +47,22 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
     this.shell = shell;
   }
 
-  static async createFromProject(deps: BuildRunnerDeps, project: AngularProject): Promise<AngularBuildRunner>;
-  static async createFromProject(deps: BuildRunnerDeps, project: IonicAngularProject): Promise<IonicAngularBuildRunner>;
-  static async createFromProject(deps: BuildRunnerDeps, project: Ionic1Project): Promise<Ionic1BuildRunner>;
+  static async createFromProject(deps: BuildRunnerDeps, project: ζprojectAngular.AngularProject): Promise<ζprojectAngularBuild.AngularBuildRunner>;
+  static async createFromProject(deps: BuildRunnerDeps, project: ζprojectIonicAngular.IonicAngularProject): Promise<ζprojectIonicAngularBuild.IonicAngularBuildRunner>;
+  static async createFromProject(deps: BuildRunnerDeps, project: ζprojectIonic1.Ionic1Project): Promise<ζprojectIonic1Build.Ionic1BuildRunner>;
   static async createFromProject(deps: BuildRunnerDeps, project: IProject): Promise<BuildRunner<any>>;
-  static async createFromProject(deps: BuildRunnerDeps, project: AngularProject | IonicAngularProject | Ionic1Project | IProject): Promise<BuildRunner<any>> {
+  static async createFromProject(deps: BuildRunnerDeps, project: ζprojectAngular.AngularProject | ζprojectIonicAngular.IonicAngularProject | ζprojectIonic1.Ionic1Project | IProject): Promise<BuildRunner<any>> {
     // TODO: fix casts
 
     if (project.type === 'angular') {
       const { AngularBuildRunner } = await import('./project/angular/build');
-      return new AngularBuildRunner({ ...deps, project: <AngularProject>project });
+      return new AngularBuildRunner({ ...deps, project: <ζprojectAngular.AngularProject>project });
     } else if (project.type === 'ionic-angular') {
       const { IonicAngularBuildRunner } = await import('./project/ionic-angular/build');
-      return new IonicAngularBuildRunner({ ...deps, project: <IonicAngularProject>project });
+      return new IonicAngularBuildRunner({ ...deps, project: <ζprojectIonicAngular.IonicAngularProject>project });
     } else if (project.type === 'ionic1') {
       const { Ionic1BuildRunner } = await import('./project/ionic1/build');
-      return new Ionic1BuildRunner({ ...deps, project: <Ionic1Project>project });
+      return new Ionic1BuildRunner({ ...deps, project: <ζprojectIonic1.Ionic1Project>project });
     } else {
       throw new RunnerNotFoundException(
         `Cannot perform build for ${project.type ? '' : 'unknown '}project type${project.type ? `: ${chalk.bold(project.type)}` : ''}.\n` +

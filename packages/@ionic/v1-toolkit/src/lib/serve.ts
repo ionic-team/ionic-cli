@@ -3,8 +3,8 @@ import * as path from 'path';
 import chalk from 'chalk';
 import { fsReadFile } from '@ionic/cli-framework/utils/fs';
 
-import * as express from 'express'; // type import
-import * as proxyMiddleware from 'http-proxy-middleware'; // type import
+import * as ζexpress from 'express';
+import * as ζproxyMiddleware from 'http-proxy-middleware';
 
 import { ConfigFileProxy } from './config';
 import { LiveReloadFunction, createLiveReloadServer } from './dev-server';
@@ -26,8 +26,8 @@ export const WATCH_PATTERNS = [
   '!www/**/*.map',
 ];
 
-export function proxyConfigToMiddlewareConfig(proxy: ConfigFileProxy): proxyMiddleware.Config {
-  const config: proxyMiddleware.Config = {
+export function proxyConfigToMiddlewareConfig(proxy: ConfigFileProxy): ζproxyMiddleware.Config {
+  const config: ζproxyMiddleware.Config = {
     pathRewrite: { [proxy.path]: '' },
     target: proxy.proxyUrl,
   };
@@ -43,7 +43,7 @@ export function proxyConfigToMiddlewareConfig(proxy: ConfigFileProxy): proxyMidd
   return config;
 }
 
-export interface ProxyConfig extends proxyMiddleware.Config {
+export interface ProxyConfig extends ζproxyMiddleware.Config {
   mount: string;
 }
 
@@ -59,7 +59,7 @@ export interface ServeOptions {
   proxies: ProxyConfig[];
 }
 
-const DEFAULT_PROXY_CONFIG: proxyMiddleware.Config = {
+const DEFAULT_PROXY_CONFIG: ζproxyMiddleware.Config = {
   changeOrigin: true,
   logLevel: 'warn',
   ws: true,
@@ -99,14 +99,14 @@ export async function runServer(options: ServeOptions): Promise<ServeOptions> {
 /**
  * Create HTTP server
  */
-async function createHttpServer(options: ServeOptions): Promise<express.Application> {
+async function createHttpServer(options: ServeOptions): Promise<ζexpress.Application> {
   const express = await import('express');
   const app = express();
 
   /**
    * http responder for /index.html base entrypoint
    */
-  const serveIndex = async (req: express.Request, res: express.Response) => {
+  const serveIndex = async (req: ζexpress.Request, res: ζexpress.Response) => {
     // respond with the index.html file
     const indexFileName = path.join(options.wwwDir, 'index.html');
     let indexHtml = await fsReadFile(indexFileName, { encoding: 'utf8' });
@@ -138,7 +138,7 @@ async function createHttpServer(options: ServeOptions): Promise<express.Applicat
 
   const wss = await createDevLoggerServer(options.devPort);
 
-  return new Promise<express.Application>((resolve, reject) => {
+  return new Promise<ζexpress.Application>((resolve, reject) => {
     const httpserv = app.listen(options.port, options.host);
 
     wss.on('error', err => {
@@ -155,7 +155,7 @@ async function createHttpServer(options: ServeOptions): Promise<express.Applicat
   });
 }
 
-async function attachProxy(app: express.Application, config: ProxyConfig) {
+async function attachProxy(app: ζexpress.Application, config: ProxyConfig) {
   const proxyMiddleware = await import('http-proxy-middleware');
   app.use(config.mount, proxyMiddleware(config.mount, config));
 }

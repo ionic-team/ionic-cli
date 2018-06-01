@@ -11,8 +11,8 @@ import { copyDirectory, fsMkdirp, fsStat, pathExists, readDir, removeDirectory }
 import { IConfig, IIntegration, IIntegrationAddOptions, IProject, IShell, InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../definitions';
 import { IntegrationNotFoundException } from '../errors';
 
-import * as capacitorLibType from './capacitor';
-import * as cordovaLibType from './cordova';
+import * as ζcapacitor from './capacitor';
+import * as ζcordova from './cordova';
 
 export { INTEGRATION_NAMES } from '../../guards';
 
@@ -46,8 +46,8 @@ export abstract class BaseIntegration implements IIntegration {
     this.tasks = tasks;
   }
 
-  static async createFromName(deps: IntegrationDeps, name: 'capacitor'): Promise<capacitorLibType.Integration>;
-  static async createFromName(deps: IntegrationDeps, name: 'cordova'): Promise<cordovaLibType.Integration>;
+  static async createFromName(deps: IntegrationDeps, name: 'capacitor'): Promise<ζcapacitor.Integration>;
+  static async createFromName(deps: IntegrationDeps, name: 'cordova'): Promise<ζcordova.Integration>;
   static async createFromName(deps: IntegrationDeps, name: IntegrationName): Promise<IIntegration>;
   static async createFromName(deps: IntegrationDeps, name: IntegrationName): Promise<IIntegration> {
     if (name === 'capacitor') {
