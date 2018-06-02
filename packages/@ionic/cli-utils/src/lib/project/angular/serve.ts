@@ -12,7 +12,6 @@ import { FatalException, ServeCommandNotFoundException } from '../../errors';
 import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
 
 const DEFAULT_PROGRAM = 'ng';
-const NG_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 
 const NG_SERVE_OPTIONS = [
   {
@@ -77,8 +76,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const ngPort = options.port = await findClosestOpenPort(options.port, '0.0.0.0');
     const { program } = await this.serveCommandWrapper(options);
 
-    debug('waiting for connectivity with ng serve (%dms timeout)', NG_SERVE_CONNECTIVITY_TIMEOUT);
-    await isHostConnectable('localhost', ngPort, NG_SERVE_CONNECTIVITY_TIMEOUT);
+    const interval = setInterval(() => {
+      this.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
+    }, 5000);
+
+    await isHostConnectable('localhost', ngPort);
+    clearInterval(interval);
 
     return {
       custom: program !== DEFAULT_PROGRAM,

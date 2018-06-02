@@ -14,7 +14,6 @@ import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOC
 import { findOpenIonicPorts } from '../common';
 
 export const DEFAULT_PROGRAM = 'ionic-v1';
-const IONIC_V1_SERVE_CONNECTIVITY_TIMEOUT = 5000; // ms
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic1');
 
@@ -80,8 +79,12 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
 
     const { program } = await this.serveCommandWrapper(options);
 
-    debug(`waiting for connectivity with ${program} (${IONIC_V1_SERVE_CONNECTIVITY_TIMEOUT}ms timeout)`);
-    await isHostConnectable('localhost', port, IONIC_V1_SERVE_CONNECTIVITY_TIMEOUT);
+    const interval = setInterval(() => {
+      this.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
+    }, 5000);
+
+    await isHostConnectable('localhost', port);
+    clearInterval(interval);
 
     return {
       custom: program !== DEFAULT_PROGRAM,

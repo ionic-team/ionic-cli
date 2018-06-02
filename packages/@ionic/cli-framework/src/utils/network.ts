@@ -1,7 +1,11 @@
 import * as os from 'os';
 import * as net from 'net';
 
+import * as Debug from 'debug';
+
 import { NetworkInterface } from '../definitions';
+
+const debug = Debug('ionic:cli-framework:utils:network');
 
 export const ERROR_NETWORK_ADDRESS_NOT_AVAIL = 'NETWORK_ADDRESS_NOT_AVAIL';
 
@@ -59,10 +63,18 @@ export async function isPortAvailable(port: number, host?: string): Promise<bool
   });
 }
 
-export async function isHostConnectable(host: string, port: number, timeout = 1000): Promise<boolean> {
-  let ms = 0;
-  const interval = 1000;
-
+/**
+ * Continuously attempt TCP connections.
+ *
+ * By default, this function will only ever resolve once a host is connectable.
+ * This behavior can be changed with the `timeout` option, which resolves with
+ * `false` if the timeout is reached.
+ *
+ * @param host The host to connect to.
+ * @param port The port to connect to.
+ * @param options.timeout Optionally define a timeout, in milliseconds.
+ */
+export async function isHostConnectable(host: string, port: number, { timeout }: { timeout?: number; } = {}): Promise<boolean> {
   const tryConnect = async () => {
     return new Promise<boolean>((resolve, reject) => {
       const sock = net.connect({ port, host });
@@ -79,17 +91,25 @@ export async function isHostConnectable(host: string, port: number, timeout = 10
   };
 
   return new Promise<boolean>(async resolve => {
-    setInterval(() => {
-      ms += interval;
+    let timer: NodeJS.Timer | undefined;
 
-      if (ms > timeout) {
+    if (timeout) {
+      timer = setTimeout(() => {
+        debug('Timeout of %dms reached while waiting for host connectivity', timeout);
         resolve(false);
-      }
-    }, interval);
+      }, timeout);
+
+      timer.unref();
+    }
 
     while (true) {
       try {
         await tryConnect();
+
+        if (timer) {
+          clearTimeout(timer);
+        }
+
         resolve(true);
         break;
       } catch (e) {

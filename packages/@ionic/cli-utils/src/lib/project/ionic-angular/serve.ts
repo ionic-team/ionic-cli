@@ -19,7 +19,6 @@ const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:serve');
 
 export const DEFAULT_PROGRAM = 'ionic-app-scripts';
 export const DEFAULT_SERVE_SCRIPT_VALUE = `${DEFAULT_PROGRAM} serve`;
-const APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT = 20000; // ms
 
 interface ServeCmdDetails {
   program: string;
@@ -85,8 +84,12 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
 
     const { program } = await this.serveCommandWrapper(options);
 
-    debug(`waiting for connectivity with ${program} (${APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT}ms timeout)`);
-    await isHostConnectable('localhost', port, APP_SCRIPTS_SERVE_CONNECTIVITY_TIMEOUT);
+    const interval = setInterval(() => {
+      this.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
+    }, 5000);
+
+    await isHostConnectable('localhost', port);
+    clearInterval(interval);
 
     return {
       custom: program !== DEFAULT_PROGRAM,
