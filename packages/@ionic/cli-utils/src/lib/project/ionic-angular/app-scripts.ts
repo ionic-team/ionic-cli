@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { OptionGroup } from '@ionic/cli-framework';
@@ -24,40 +25,40 @@ export const APP_SCRIPTS_OPTIONS: CommandMetadataOption[] = [
     summary: 'Build the application for production',
     type: Boolean,
     groups: ['app-scripts'],
-    hint: 'app-scripts',
+    hint: chalk.dim('[app-scripts]'),
   },
   {
     name: 'aot',
     summary: 'Perform ahead-of-time compilation for this build',
     type: Boolean,
     groups: [OptionGroup.Advanced, 'app-scripts'],
-    hint: 'app-scripts',
+    hint: chalk.dim('[app-scripts]'),
   },
   {
     name: 'minifyjs',
     summary: 'Minify JS for this build',
     type: Boolean,
     groups: [OptionGroup.Advanced, 'app-scripts'],
-    hint: 'app-scripts',
+    hint: chalk.dim('[app-scripts]'),
   },
   {
     name: 'minifycss',
     summary: 'Minify CSS for this build',
     type: Boolean,
     groups: [OptionGroup.Advanced, 'app-scripts'],
-    hint: 'app-scripts',
+    hint: chalk.dim('[app-scripts]'),
   },
   {
     name: 'optimizejs',
     summary: 'Perform JS optimizations for this build',
     type: Boolean,
     groups: [OptionGroup.Advanced, 'app-scripts'],
-    hint: 'app-scripts',
+    hint: chalk.dim('[app-scripts]'),
   },
   {
     name: 'env',
     summary: '',
     groups: [OptionGroup.Advanced, 'app-scripts'],
-    hint: 'app-scripts',
+    hint: chalk.dim('[app-scripts]'),
   },
 ];

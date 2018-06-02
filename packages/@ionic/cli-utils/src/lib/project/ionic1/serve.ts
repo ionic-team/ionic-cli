@@ -13,7 +13,7 @@ import { FatalException, ServeCommandNotFoundException } from '../../errors';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
 import { findOpenIonicPorts } from '../common';
 
-export const DEFAULT_PROGRAM = 'ionic-v1';
+const DEFAULT_PROGRAM = 'ionic-v1';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic1');
 
@@ -50,6 +50,14 @@ export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
           summary: 'Use specific port for dev server communication',
           default: DEFAULT_DEV_LOGGER_PORT.toString(),
           groups: [OptionGroup.Advanced],
+        },
+        {
+          name: 'proxy',
+          summary: 'Do not add proxies',
+          type: Boolean,
+          default: true,
+          groups: [OptionGroup.Advanced],
+          // TODO: Adding 'x' to aliases here has some weird behavior with minimist.
         },
       ],
     };

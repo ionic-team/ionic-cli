@@ -11,51 +11,73 @@ import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-util
 
 import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 
-export class RunCommand extends CordovaCommand implements CommandPreRun {
-  protected runner?: ServeRunner<ServeOptions> | BuildRunner<BuildOptions<any>>;
+const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+  {
+    name: 'debug',
+    summary: 'Mark as a debug build',
+    type: Boolean,
+    groups: ['cordova'],
+    hint: chalk.dim('[cordova]'),
+  },
+  {
+    name: 'release',
+    summary: 'Mark as a release build',
+    type: Boolean,
+    groups: ['cordova'],
+    hint: chalk.dim('[cordova]'),
+  },
+  {
+    name: 'device',
+    summary: 'Deploy build to a device',
+    type: Boolean,
+    groups: ['cordova'],
+    hint: chalk.dim('[cordova]'),
+  },
+  {
+    name: 'emulator',
+    summary: 'Deploy build to an emulator',
+    type: Boolean,
+    groups: ['cordova'],
+    hint: chalk.dim('[cordova]'),
+  },
+  {
+    name: 'target',
+    summary: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
+    type: String,
+    groups: [OptionGroup.Advanced, 'cordova'],
+    hint: chalk.dim('[cordova]'),
+  },
+  {
+    name: 'buildConfig',
+    summary: 'Use the specified build configuration',
+    groups: [OptionGroup.Advanced, 'cordova'],
+    hint: chalk.dim('[cordova]'),
+  },
+];
 
-  async getRunner(livereload: boolean) {
-    if (!this.runner) {
-      this.runner = livereload
-        ? await ServeRunner.createFromProject(this.env)
-        : await BuildRunner.createFromProject(this.env, this.env.project);
+export class RunCommand extends CordovaCommand implements CommandPreRun {
+  protected serveRunner?: ServeRunner<ServeOptions>;
+  protected buildRunner?: BuildRunner<BuildOptions<any>>;
+
+  async getServeRunner() {
+    if (!this.serveRunner) {
+      this.serveRunner = await ServeRunner.createFromProject(this.env);
     }
 
-    return this.runner;
+    return this.serveRunner;
   }
 
-  async getExtendedMetadata({livereload}: {livereload: boolean}): Promise<CommandMetadata> {
-    const metadata = await this.getMetadata();
-    try {
-      const runner = await this.getRunner(livereload);
-      const libmetadata = await runner.getCommandMetadata();
-
-      if (metadata.options) {
-        if (livereload) {
-          metadata.options = metadata.options.concat(
-            COMMON_SERVE_COMMAND_OPTIONS.map(o => o.name === 'livereload' ? {
-              name: 'livereload',
-              summary: 'Spin up dev server to live-reload www files',
-              type: Boolean,
-              aliases: ['l'],
-            } : o)
-          );
-        } else {
-          metadata.options = metadata.options.concat(COMMON_BUILD_COMMAND_OPTIONS);
-        }
-
-        metadata.options = metadata.options.concat(libmetadata.options || []);
-      }
-    } catch (e) {
-      if (!(e instanceof RunnerNotFoundException)) {
-        throw e;
-      }
+  async getBuildRunner() {
+    if (!this.buildRunner) {
+      this.buildRunner = await BuildRunner.createFromProject(this.env, this.env.project);
     }
 
-    return metadata;
+    return this.buildRunner;
   }
 
   async getMetadata(): Promise<CommandMetadata> {
+    let groups: string[] = [];
+    const exampleCommands = CORDOVA_BUILD_EXAMPLE_COMMANDS;
     const options: CommandMetadataOption[] = [
       {
         name: 'list',
@@ -70,56 +92,51 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         type: Boolean,
         default: true,
       },
-      // Cordova Options
+      ...COMMON_BUILD_COMMAND_OPTIONS.filter(o => !['engine', 'platform'].includes(o.name)),
+      // Serve Options
+      ...COMMON_SERVE_COMMAND_OPTIONS.filter(o => !['livereload'].includes(o.name)),
       {
-        name: 'debug',
-        summary: 'Mark as a debug build',
+        name: 'livereload',
+        summary: 'Spin up dev server to live-reload www files',
         type: Boolean,
-        groups: ['cordova'],
-        hint: 'cordova',
-      },
-      {
-        name: 'release',
-        summary: 'Mark as a release build',
-        type: Boolean,
-        groups: ['cordova'],
-        hint: 'cordova',
-      },
-      {
-        name: 'device',
-        summary: 'Deploy build to a device',
-        type: Boolean,
-        groups: ['cordova'],
-        hint: 'cordova',
-      },
-      {
-        name: 'emulator',
-        summary: 'Deploy build to an emulator',
-        type: Boolean,
-        groups: ['cordova'],
-        hint: 'cordova',
-      },
-      {
-        name: 'target',
-        summary: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
-        type: String,
-        groups: [OptionGroup.Advanced, 'cordova'],
-        hint: 'cordova',
-      },
-      {
-        name: 'buildConfig',
-        summary: 'Use the specified build configuration',
-        groups: [OptionGroup.Advanced, 'cordova'],
-        hint: 'cordova',
+        aliases: ['l'],
       },
     ];
+
+    try {
+      const runner = await this.getBuildRunner();
+      const libmetadata = await runner.getCommandMetadata();
+      groups = libmetadata.groups || [];
+      options.push(...libmetadata.options || []);
+      exampleCommands.push(...libmetadata.exampleCommands || []);
+    } catch (e) {
+      if (!(e instanceof RunnerNotFoundException)) {
+        throw e;
+      }
+    }
+
+    try {
+      const runner = await this.getServeRunner();
+      const libmetadata = await runner.getCommandMetadata();
+      const existingOpts = options.map(o => o.name);
+      groups = libmetadata.groups || [];
+      options.push(...(libmetadata.options || []).filter(o => !existingOpts.includes(o.name)).map(o => ({ ...o, hint: `${o.hint} ${chalk.dim('(--livereload)')}` })));
+      exampleCommands.push(...libmetadata.exampleCommands || []);
+    } catch (e) {
+      if (!(e instanceof RunnerNotFoundException)) {
+        throw e;
+      }
+    }
+
+    // Cordova Options
+    options.push(...CORDOVA_RUN_OPTIONS);
 
     return {
       name: 'run',
       type: 'project',
       summary: 'Run an Ionic project on a connected device',
       description: `
-Like running ${chalk.green('cordova run')} or ${chalk.green('cordova emulate')} directly, but also uses the dev server from ${chalk.green('ionic serve')} for livereload functionality.
+Like running ${chalk.green('cordova run')} or ${chalk.green('cordova emulate')} directly, but performs ${chalk.green('ionic build')} before deploying to the device or emulator. Optionally specify the ${chalk.green('--livereload')} option to use the dev server from ${chalk.green('ionic serve')} for livereload functionality.
 
 For Android and iOS, you can setup Remote Debugging on your device with browser development tools using these docs${chalk.cyan('[1]')}.
 
@@ -127,7 +144,7 @@ Just like with ${chalk.green('ionic cordova build')}, you can pass additional op
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-resources/developer-tips/')}
       `,
-      exampleCommands: CORDOVA_BUILD_EXAMPLE_COMMANDS,
+      exampleCommands,
       inputs: [
         {
           name: 'platform',
@@ -135,11 +152,14 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
         },
       ],
       options,
+      groups,
     };
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     await this.preRunChecks(runinfo);
+
+    const metadata = await this.getMetadata();
 
     options['livereload'] = options['livereload'] !== undefined ? options['livereload'] : options['l'];
 
@@ -156,8 +176,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       this.env.log.warn(`No livereload with ${chalk.green('--no-build')}.`);
       options['livereload'] = false;
     }
-
-    const metadata = await this.getExtendedMetadata({livereload: !!options['livereload']});
 
     if (options['list']) {
       if (!options['device'] && !options['emulator']) {
@@ -187,6 +205,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
 
+    const metadata = await this.getMetadata();
     const conf = await loadConfigXml({ project: this.env.project });
 
     options['livereload'] = options['livereload'] !== undefined ? options['livereload'] : options['l'];
@@ -195,8 +214,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       conf.resetContentSrc();
       await conf.save();
     });
-
-    const metadata = await this.getExtendedMetadata({livereload: !!options['livereload']});
 
     if (options['livereload']) {
       const { serve } = await import('@ionic/cli-utils/lib/serve');

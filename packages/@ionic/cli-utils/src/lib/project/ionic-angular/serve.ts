@@ -17,7 +17,7 @@ import { findOpenIonicPorts } from '../common';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:serve');
 
-export const DEFAULT_PROGRAM = 'ionic-app-scripts';
+const DEFAULT_PROGRAM = 'ionic-app-scripts';
 export const DEFAULT_SERVE_SCRIPT_VALUE = `${DEFAULT_PROGRAM} serve`;
 
 interface ServeCmdDetails {
@@ -53,6 +53,14 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
           summary: 'Use specific port for dev server communication',
           default: DEFAULT_DEV_LOGGER_PORT.toString(),
           groups: [OptionGroup.Advanced],
+        },
+        {
+          name: 'proxy',
+          summary: 'Do not add proxies',
+          type: Boolean,
+          default: true,
+          groups: [OptionGroup.Advanced],
+          // TODO: Adding 'x' to aliases here has some weird behavior with minimist.
         },
         ...APP_SCRIPTS_OPTIONS,
       ],

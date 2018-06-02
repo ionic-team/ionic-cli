@@ -18,7 +18,7 @@ const NG_SERVE_OPTIONS = [
     name: 'prod',
     summary: `Flag to set configuration to ${chalk.green('prod')}`,
     type: Boolean,
-    hint: 'ng',
+    hint: chalk.dim('[ng]'),
   },
   {
     name: 'project',
@@ -26,7 +26,7 @@ const NG_SERVE_OPTIONS = [
     type: String,
     groups: [OptionGroup.Advanced],
     default: 'app',
-    hint: 'ng',
+    hint: chalk.dim('[ng]'),
   },
   {
     name: 'configuration',
@@ -34,7 +34,7 @@ const NG_SERVE_OPTIONS = [
     summary: 'Specify the configuration to use.',
     type: String,
     groups: [OptionGroup.Advanced],
-    hint: 'ng',
+    hint: chalk.dim('[ng]'),
   },
 ];
 

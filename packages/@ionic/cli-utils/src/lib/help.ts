@@ -115,9 +115,7 @@ export class CommandStringHelpFormatter extends BaseCommandStringHelpFormatter<I
   }
 
   async formatBeforeOptionSummary(opt: CommandMetadataOption): Promise<string> {
-    const { weak } = this.colors;
-
-    return opt.hint ? `${weak(`[${opt.hint}]`)} ` : '';
+    return opt.hint ? `${opt.hint} ` : '';
   }
 }
 

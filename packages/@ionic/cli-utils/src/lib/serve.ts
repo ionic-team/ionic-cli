@@ -62,14 +62,6 @@ export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
     type: Boolean,
     default: true,
   },
-  {
-    name: 'proxy',
-    summary: 'Do not add proxies',
-    type: Boolean,
-    default: true,
-    groups: [OptionGroup.Advanced],
-    // TODO: Adding 'x' to aliases here has some weird behavior with minimist.
-  },
 ];
 
 export interface ServeRunnerDeps {
