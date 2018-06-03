@@ -12,6 +12,10 @@ export async function isGitInstalled({ shell }: GitUtilDeps): Promise<boolean> {
   return Boolean(await shell.cmdinfo('git', ['--version']));
 }
 
+export async function getTopLevel({ shell }: GitUtilDeps): Promise<string | undefined> {
+  return shell.cmdinfo('git', ['rev-parse', '--show-toplevel']);
+}
+
 export async function isRepoInitialized(dir: string): Promise<boolean> {
   return pathExists(path.join(dir, '.git'));
 }

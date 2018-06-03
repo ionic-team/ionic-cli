@@ -375,7 +375,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
-    const { isGitInstalled } = await import('@ionic/cli-utils/lib/git');
+    const { getTopLevel, isGitInstalled } = await import('@ionic/cli-utils/lib/git');
     const { getIonicDevAppText, getIonicProText } = await import('@ionic/cli-utils/lib/start');
 
     const config = await this.env.config.load();
@@ -392,7 +392,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     const gitDesired = options['git'] ? true : false;
     const gitInstalled = await isGitInstalled(this.env);
-    const gitIntegration = gitDesired ? gitInstalled : false;
+    const gitTopLevel = await getTopLevel(this.env);
+    const gitIntegration = gitDesired && gitInstalled && !gitTopLevel ? true : false;
 
     if (!gitInstalled) {
       const installationDocs = `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`;
@@ -410,6 +411,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           `Git must be installed to clone apps with ${chalk.green('ionic start')}. ${installationDocs}`
         );
       }
+    }
+
+    if (gitTopLevel && !this.schema.cloned) {
+      this.env.log.info(`Existing git project found (${chalk.bold(gitTopLevel)}). Git operations are disabled.`);
     }
 
     this.env.tasks.next(`Preparing directory ${chalk.green(prettyPath(projectDir))}`);
