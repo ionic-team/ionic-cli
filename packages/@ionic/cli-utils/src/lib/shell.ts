@@ -2,7 +2,7 @@ import * as path from 'path';
 import { ChildProcess } from 'child_process';
 
 import chalk from 'chalk';
-
+import * as Debug from 'debug';
 import * as split2 from 'split2';
 
 import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommandError } from '@ionic/cli-framework';
@@ -13,6 +13,8 @@ import { combineStreams } from '@ionic/cli-framework/utils/streams';
 import { ILogger, IShell, IShellOutputOptions, IShellRunOptions, IShellSpawnOptions } from '../definitions';
 import { isExitCodeException } from '../guards';
 import { FatalException } from './errors';
+
+const debug = Debug('ionic:cli-utils:lib:shell');
 
 export interface ShellDeps {
   log: ILogger;
@@ -45,11 +47,25 @@ export class Shell implements IShell {
       const promise = cmd.run();
 
       if (promise.p.stdout) {
-        promise.p.stdout.pipe(combineStreams(split2(), ws));
+        const stream = combineStreams(split2(), ws);
+
+        // TODO: https://github.com/angular/angular-cli/issues/10922
+        stream.on('error', (err: Error) => {
+          debug('Error in subprocess stdout pipe: %o', err);
+        });
+
+        promise.p.stdout.pipe(stream);
       }
 
       if (promise.p.stderr) {
-        promise.p.stderr.pipe(combineStreams(split2(), ws));
+        const stream = combineStreams(split2(), ws);
+
+        // TODO: https://github.com/angular/angular-cli/issues/10922
+        stream.on('error', (err: Error) => {
+          debug('Error in subprocess stderr pipe: %o', err);
+        });
+
+        promise.p.stderr.pipe(stream);
       }
 
       if (killOnExit) {
