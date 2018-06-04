@@ -216,12 +216,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
 
     if (options['v1'] || options['v2']) {
-      const type = options['v1'] ? 'ionic1' : 'ionic-angular';
-
       throw new FatalException(
-        `Sorry! The ${chalk.green('--v1')} and ${chalk.green('--v2')} flags have been removed.\n` +
-        `Use the ${chalk.green('--type')} option. (${chalk.green('ionic start --help')})\n\n` +
-        `For ${chalk.bold(prettyProjectName(type))} projects, try ${chalk.green('ionic start ' + (inputs.length > 0 ? inputs.join(' ') + ' ' : '') + '--type=' + type)}`
+        `The ${chalk.green('--v1')} and ${chalk.green('--v2')} flags have been removed.\n` +
+        `Use the ${chalk.green('--type')} option. (see ${chalk.green('ionic start --help')})`
       );
     }
 
@@ -446,7 +443,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         const confirm = await this.env.prompt({
           type: 'confirm',
           name: 'confirm',
-          message: 'Would you like to integrate your new app with Cordova to target native iOS and Android?',
+          message: 'Integrate your new app with Cordova to target native iOS and Android?',
           default: false,
         });
 
@@ -545,7 +542,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `The directory ${chalk.green(prettyPath(projectDir))} exists. Would you like to overwrite the directory with this new project?`,
+        message: `${chalk.green(prettyPath(projectDir))} exists. ${chalk.red('Overwrite?')}`,
         default: false,
       });
 
