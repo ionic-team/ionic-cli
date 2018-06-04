@@ -4,7 +4,7 @@ export const PLATFORM_WINDOWS = 'windows';
 
 export const AVAILABLE_PLATFORMS = [PLATFORM_IOS, PLATFORM_ANDROID, PLATFORM_WINDOWS];
 
-export function platformPrettyName(platform: string) {
+export function platformPrettyName(platform: string): string {
   if (platform === 'ios') {
     return 'iOS';
   } else if (platform === 'android') {
@@ -16,7 +16,7 @@ export function platformPrettyName(platform: string) {
   return 'Unknown';
 }
 
-export function platformIoniconClass(platform: string) {
+export function platformIoniconClass(platform: string): string {
   let key = platform;
 
   if (platform === 'ios') {
@@ -24,4 +24,12 @@ export function platformIoniconClass(platform: string) {
   }
 
   return `ion-social-${key}`;
+}
+
+export function platformMode(platform: string): string {
+  if (platform === 'android') {
+    return 'md';
+  }
+
+  return platform;
 }

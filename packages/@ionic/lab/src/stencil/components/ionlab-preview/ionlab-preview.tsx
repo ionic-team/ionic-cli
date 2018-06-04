@@ -1,6 +1,6 @@
 import { Component, Prop } from '@stencil/core';
 
-import { PLATFORM_IOS, platformIoniconClass, platformPrettyName } from '../../utils';
+import { PLATFORM_IOS, platformIoniconClass, platformMode, platformPrettyName } from '../../utils';
 
 @Component({
   tag: 'ionlab-preview',
@@ -15,10 +15,10 @@ export class Preview {
       return;
     }
 
-    const qp = { ionicplatform: platform };
+    const qp = { 'ionic:mode': platformMode(platform) };
 
     if (platform === PLATFORM_IOS) {
-      qp['ionicstatusbarpadding'] = 'true';
+      qp['ionic:statusbarPadding'] = 'true';
     }
 
     return `${this.url}?${Object.keys(qp).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(qp[k])}`).join('&')}`;
