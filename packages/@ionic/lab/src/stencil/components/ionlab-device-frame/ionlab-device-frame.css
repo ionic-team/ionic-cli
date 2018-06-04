@@ -67,7 +67,7 @@ ionlab-device-frame .frame-container iframe {
 }
 
 #device-ios .frame-container .statusbar {
-  background-image: url('./assets/ios-statusbar.png');
+  background-image: url('/assets/ios-statusbar.png');
 }
 
 #device-android .frame-container iframe {
@@ -76,7 +76,7 @@ ionlab-device-frame .frame-container iframe {
 }
 
 #device-android .frame-container .statusbar {
-  background-image: url('./assets/android-statusbar.png');
+  background-image: url('/assets/android-statusbar.png');
 }
 
 #device-windows .frame-container iframe {
@@ -85,6 +85,6 @@ ionlab-device-frame .frame-container iframe {
 }
 
 #device-windows .frame-container .statusbar {
-  background-image: url('./assets/wp-statusbar.png');
+  background-image: url('/assets/wp-statusbar.png');
   background-color: #fff;
 }
