@@ -2,6 +2,7 @@ import * as util from 'util';
 import { Writable } from 'stream';
 
 import chalk from 'chalk';
+import * as lodash from 'lodash';
 import { Chalk } from 'chalk';
 
 import { Colors, DEFAULT_COLORS } from './colors';
@@ -249,12 +250,13 @@ export function createTaggedFormatter({ colors = DEFAULT_COLORS, prefix = '', ti
 
     const title = titleize && lines.length > 0 ? `${strong(levelColor ? levelColor(firstLine) : firstLine)}\n` : firstLine;
     const indentation = tag ? stringWidth(tag) + 1 : 0;
+    const pulledLines = lodash.dropWhile(lines, l => l === '');
 
     return (
       (tag ? `${tag} ` : '') +
       (wrap
-        ? wordWrap([title, ...lines].join('\n'), { indentation, ...(typeof wrap === 'object' ? wrap : {}) })
-        : [title, ...lines.map(l => ' '.repeat(indentation) + l)].join('\n')
+        ? wordWrap([title, ...pulledLines].join('\n'), { indentation, ...(typeof wrap === 'object' ? wrap : {}) })
+        : [title, ...pulledLines.map(l => l ? ' '.repeat(indentation) + l : '')].join('\n')
       )
     );
   };

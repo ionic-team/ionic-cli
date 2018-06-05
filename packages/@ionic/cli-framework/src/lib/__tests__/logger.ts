@@ -283,6 +283,12 @@ describe('@ionic/cli-framework', () => {
         expect(stripAnsi(result)).toEqual(`[INFO] Hello!`);
       });
 
+      it('should titleize properly for double newline after first line', () => {
+        const formatter = createTaggedFormatter({ titleize: true });
+        const result = formatter({ msg: `Hello!\n\nThis is a message.\n\nHere's another.`, level: LOGGER_LEVELS.INFO });
+        expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n\n       This is a message.\n\n       Here's another.`);
+      });
+
       it('should titleize if wanted', () => {
         const formatter = createTaggedFormatter({ titleize: true });
         const result = formatter({ msg: `Hello!\nThis is a message.\nHere's another.`, level: LOGGER_LEVELS.INFO });
