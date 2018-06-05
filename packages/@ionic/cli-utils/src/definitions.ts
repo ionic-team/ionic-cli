@@ -493,8 +493,10 @@ export interface PaginatorDeps<T extends Response<object[]>, S = PaginatorState>
   readonly max?: number;
 }
 
+export type InfoItemGroup = 'system' | 'global-packages' | 'local-packages' | 'cli-packages' | 'environment';
+
 export interface InfoItem {
-  type: 'system' | 'global-packages' | 'local-packages' | 'cli-packages' | 'environment' | 'misc';
+  type: InfoItemGroup;
   key: string;
   value: string;
   flair?: string;
