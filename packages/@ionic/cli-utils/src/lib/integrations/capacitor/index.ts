@@ -32,7 +32,7 @@ export class Integration extends BaseIntegration {
 
   async getInfo(): Promise<InfoItem[]> {
     const [
-      capacitorCorePkg,
+      [ capacitorCorePkg, capacitorCorePkgPath ],
       capacitorCLIVersion,
     ] = await Promise.all([
       this.project.getPackageJson('@capacitor/core'),
@@ -40,8 +40,8 @@ export class Integration extends BaseIntegration {
     ]);
 
     const info: InfoItem[] = [
-      { type: 'local-packages', key: 'capacitor', flair: 'Capacitor CLI', value: capacitorCLIVersion || 'not installed' },
-      { type: 'local-packages', key: '@capacitor/core', value: capacitorCorePkg ? capacitorCorePkg.version : 'not installed' },
+      { group: 'capacitor', key: 'capacitor', flair: 'Capacitor CLI', value: capacitorCLIVersion || 'not installed' },
+      { group: 'capacitor', key: '@capacitor/core', value: capacitorCorePkg ? capacitorCorePkg.version : 'not installed', path: capacitorCorePkgPath },
     ];
 
     return info;

@@ -14,12 +14,12 @@ export class AngularProject extends Project {
 
   async getInfo(): Promise<InfoItem[]> {
     const [
-      ionicAngularPkg,
-      ionicSchematicsAngularPkg,
-      ionicNgToolkitPkg,
-      angularCLIPkg,
-      angularDevKitCorePkg,
-      angularDevKitSchematicsPkg,
+      [ ionicAngularPkg, ionicAngularPkgPath ],
+      [ ionicSchematicsAngularPkg, ionicSchematicsAngularPkgPath ],
+      [ ionicNgToolkitPkg, ionicNgToolkitPkgPath ],
+      [ angularCLIPkg, angularCLIPkgPath ],
+      [ angularDevKitCorePkg, angularDevKitCorePkgPath ],
+      [ angularDevKitSchematicsPkg, angularDevKitSchematicsPkgPath ],
     ] = await Promise.all([
       this.getPackageJson('@ionic/angular'),
       this.getPackageJson('@ionic/schematics-angular'),
@@ -31,12 +31,12 @@ export class AngularProject extends Project {
 
     return [
       ...(await super.getInfo()),
-      { type: 'local-packages', key: 'Ionic Framework', value: ionicAngularPkg ? `@ionic/angular ${ionicAngularPkg.version}` : 'not installed' },
-      { type: 'local-packages', key: '@ionic/ng-toolkit', value: ionicNgToolkitPkg ? ionicNgToolkitPkg.version : 'not installed' },
-      { type: 'local-packages', key: '@ionic/schematics-angular', value: ionicSchematicsAngularPkg ? ionicSchematicsAngularPkg.version : 'not installed' },
-      { type: 'local-packages', key: '@angular/cli', value: angularCLIPkg ? angularCLIPkg.version : 'not installed' },
-      { type: 'local-packages', key: '@angular-devkit/core', value: angularDevKitCorePkg ? angularDevKitCorePkg.version : 'not installed' },
-      { type: 'local-packages', key: '@angular-devkit/schematics', value: angularDevKitSchematicsPkg ? angularDevKitSchematicsPkg.version : 'not installed' },
+      { group: 'ionic', key: 'Ionic Framework', value: ionicAngularPkg ? `@ionic/angular ${ionicAngularPkg.version}` : 'not installed', path: ionicAngularPkgPath },
+      { group: 'ionic', key: '@ionic/ng-toolkit', value: ionicNgToolkitPkg ? ionicNgToolkitPkg.version : 'not installed', path: ionicNgToolkitPkgPath },
+      { group: 'ionic', key: '@ionic/schematics-angular', value: ionicSchematicsAngularPkg ? ionicSchematicsAngularPkg.version : 'not installed', path: ionicSchematicsAngularPkgPath },
+      { group: 'ionic', key: '@angular/cli', value: angularCLIPkg ? angularCLIPkg.version : 'not installed', path: angularCLIPkgPath },
+      { group: 'ionic', key: '@angular-devkit/core', value: angularDevKitCorePkg ? angularDevKitCorePkg.version : 'not installed', path: angularDevKitCorePkgPath },
+      { group: 'ionic', key: '@angular-devkit/schematics', value: angularDevKitSchematicsPkg ? angularDevKitSchematicsPkg.version : 'not installed', path: angularDevKitSchematicsPkgPath },
     ];
   }
 

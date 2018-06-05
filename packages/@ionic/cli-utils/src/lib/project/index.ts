@@ -131,13 +131,18 @@ export abstract class Project extends BaseConfig<ProjectFile> implements IProjec
     return path.resolve(this.directory, 'package.json');
   }
 
-  async getPackageJson(pkgName?: string): Promise<PackageJson | undefined> {
+  async getPackageJson(pkgName?: string): Promise<[PackageJson | undefined, string | undefined]> {
+    let pkg: PackageJson | undefined;
+    let pkgPath: string | undefined;
+
     try {
-      const pkgPath = pkgName ? resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
-      return await readPackageJsonFile(pkgPath);
+      pkgPath = pkgName ? resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
+      pkg = await readPackageJsonFile(pkgPath);
     } catch (e) {
       this.log.error(`Error loading ${chalk.bold(pkgName ? pkgName : `project's`)} ${chalk.bold('package.json')}: ${e}`);
     }
+
+    return [pkg, pkgPath ? path.dirname(pkgPath) : undefined];
   }
 
   async requirePackageJson(pkgName?: string): Promise<PackageJson> {

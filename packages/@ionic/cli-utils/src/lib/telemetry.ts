@@ -111,23 +111,21 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
       };
 
       const isLoggedIn = await session.isLoggedIn();
-      const v: InfoItem[] = [];
       const info = await getInfo();
-      const flattenedInfo = info.reduce((acc, currentValue) => acc.concat(currentValue), v);
 
       if (isLoggedIn) {
         const token = await session.getUserToken();
         req.set('Authorization', `Bearer ${token}`);
       }
 
-      const frameworkInfo = flattenedInfo.find(item => item.key === 'Ionic Framework');
-      const npmInfo = flattenedInfo.find(item => item.key === 'npm');
-      const osInfo = flattenedInfo.find(item => item.key === 'OS');
-      const xcodeInfo = flattenedInfo.find(item => item.key === 'Xcode');
-      const androidSdkInfo = flattenedInfo.find(item => item.key === 'Android SDK Tools');
-      const cordovaInfo = flattenedInfo.find(item => item.key === 'Cordova CLI');
-      const cordovaPlatformsInfo = flattenedInfo.find(item => item.key === 'Cordova Platforms');
-      const appScriptsInfo = flattenedInfo.find(item => item.key === '@ionic/app-scripts');
+      const frameworkInfo = info.find(item => item.key === 'Ionic Framework');
+      const npmInfo = info.find(item => item.key === 'npm');
+      const osInfo = info.find(item => item.key === 'OS');
+      const xcodeInfo = info.find(item => item.key === 'Xcode');
+      const androidSdkInfo = info.find(item => item.key === 'Android SDK Tools');
+      const cordovaInfo = info.find(item => item.key === 'Cordova CLI');
+      const cordovaPlatformsInfo = info.find(item => item.key === 'Cordova Platforms');
+      const appScriptsInfo = info.find(item => item.key === '@ionic/app-scripts');
 
       if (frameworkInfo) {
         metric['value']['framework'] = frameworkInfo.value;

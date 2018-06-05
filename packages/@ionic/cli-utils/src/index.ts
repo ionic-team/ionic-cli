@@ -3,9 +3,8 @@ import * as path from 'path';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { LOGGER_LEVELS, PackageJson, createPromptModule, createTaskChainWithOutput, parseArgs } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, createPromptModule, createTaskChainWithOutput, parseArgs } from '@ionic/cli-framework';
 import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
-import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
 
 import { PROJECT_FILE } from './constants';
@@ -25,13 +24,7 @@ export * from './definitions';
 export * from './constants';
 export * from './guards';
 
-const PACKAGE_ROOT_PATH = path.dirname(__filename);
-const PACKAGE_JSON_PATH = path.resolve(PACKAGE_ROOT_PATH, 'package.json');
-
-const name = '@ionic/cli-utils';
 const debug = Debug('ionic:cli-utils');
-
-let _pkg: PackageJson | undefined;
 
 export async function getProject(projectDir: string | undefined, deps: ProjectDeps): Promise<IProject> {
   if (!projectDir) {
@@ -45,14 +38,6 @@ export async function getProject(projectDir: string | undefined, deps: ProjectDe
   }
 
   return Project.createFromProjectType(projectDir, PROJECT_FILE, deps, type);
-}
-
-async function loadPackageJson(): Promise<PackageJson> {
-  if (!_pkg) {
-    _pkg = await readPackageJsonFile(PACKAGE_JSON_PATH);
-  }
-
-  return _pkg;
 }
 
 export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[], env: { [key: string]: string; }): Promise<IonicEnvironment> {
@@ -85,22 +70,19 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map(e => [e, env[e]]).filter(([e, v]) => !!v);
 
   const getInfo = async () => {
-    const pkg = await loadPackageJson();
     const osName = await import('os-name');
     const os = osName();
-    const node = process.version;
 
     const npm = await shell.cmdinfo('npm', ['-v']);
 
     const info: InfoItem[] = [
-      { type: 'cli-packages', key: name, value: pkg.version, path: PACKAGE_ROOT_PATH },
-      { type: 'cli-packages', key: 'ionic', flair: 'Ionic CLI', value: ctx.version, path: path.dirname(path.dirname(ctx.libPath)) },
-      { type: 'system', key: 'NodeJS', value: node },
-      { type: 'system', key: 'npm', value: npm || 'not installed' },
-      { type: 'system', key: 'OS', value: os },
+      { group: 'ionic', key: 'ionic', flair: 'Ionic CLI', value: ctx.version, path: path.dirname(path.dirname(ctx.libPath)) },
+      { group: 'system', key: 'NodeJS', value: process.version, path: process.execPath },
+      { group: 'system', key: 'npm', value: npm || 'not installed' },
+      { group: 'system', key: 'OS', value: os },
     ];
 
-    info.push(...proxyVars.map(([e, v]): InfoItem => ({ type: 'environment', key: e, value: v })));
+    info.push(...proxyVars.map(([e, v]): InfoItem => ({ group: 'environment', key: e, value: v })));
     info.push(...(await project.getInfo()));
 
     return info;

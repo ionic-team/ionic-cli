@@ -239,7 +239,7 @@ export interface IProject extends IBaseConfig<ProjectFile> {
   detected(): Promise<boolean>;
   createIntegration(name: IntegrationName): Promise<IIntegration>;
   requireProId(): Promise<string>;
-  getPackageJson(pkgName?: string): Promise<framework.PackageJson | undefined>;
+  getPackageJson(pkgName?: string): Promise<[framework.PackageJson | undefined, string | undefined]>;
   requirePackageJson(): Promise<framework.PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
   getAilmentRegistry(env: IonicEnvironment): Promise<IAilmentRegistry>;
@@ -493,10 +493,10 @@ export interface PaginatorDeps<T extends Response<object[]>, S = PaginatorState>
   readonly max?: number;
 }
 
-export type InfoItemGroup = 'system' | 'global-packages' | 'local-packages' | 'cli-packages' | 'environment';
+export type InfoItemGroup = 'ionic' | 'capacitor' | 'cordova' | 'system' | 'environment';
 
 export interface InfoItem {
-  type: InfoItemGroup;
+  group: InfoItemGroup;
   key: string;
   value: string;
   flair?: string;

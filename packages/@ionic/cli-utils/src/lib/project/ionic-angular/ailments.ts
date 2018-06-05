@@ -44,7 +44,7 @@ class IonicAngularUpdateAvailable extends IonicAngularAilment {
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      const currentPkg = await this.project.getPackageJson('ionic-angular');
+      const [ currentPkg ] = await this.project.getPackageJson('ionic-angular');
       const latestPkg = await pkgFromRegistry(npmClient, { pkg: 'ionic-angular' });
       this.currentVersion = currentPkg ? currentPkg.version : undefined;
       this.latestVersion = latestPkg ? latestPkg.version : undefined;
@@ -97,7 +97,7 @@ class IonicAngularMajorUpdateAvailable extends IonicAngularAilment {
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      const currentPkg = await this.project.getPackageJson('ionic-angular');
+      const [ currentPkg ] = await this.project.getPackageJson('ionic-angular');
       const latestPkg = await pkgFromRegistry(npmClient, { pkg: 'ionic-angular' });
       this.currentVersion = currentPkg ? currentPkg.version : undefined;
       this.latestVersion = latestPkg ? latestPkg.version : undefined;
@@ -144,7 +144,7 @@ class AppScriptsUpdateAvailable extends IonicAngularAilment implements Treatable
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      const currentPkg = await this.project.getPackageJson('@ionic/app-scripts');
+      const [ currentPkg ] = await this.project.getPackageJson('@ionic/app-scripts');
       const latestPkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/app-scripts' });
       this.currentVersion = currentPkg ? currentPkg.version : undefined;
       this.latestVersion = latestPkg ? latestPkg.version : undefined;
@@ -200,7 +200,7 @@ class AppScriptsMajorUpdateAvailable extends IonicAngularAilment {
     const { npmClient } = config;
 
     if (!this.currentVersion || !this.latestVersion) {
-      const currentPkg = await this.project.getPackageJson('@ionic/app-scripts');
+      const [ currentPkg ] = await this.project.getPackageJson('@ionic/app-scripts');
       const latestPkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/app-scripts' });
       this.currentVersion = currentPkg ? currentPkg.version : undefined;
       this.latestVersion = latestPkg ? latestPkg.version : undefined;

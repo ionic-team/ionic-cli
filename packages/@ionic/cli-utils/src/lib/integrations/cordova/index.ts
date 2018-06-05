@@ -26,27 +26,27 @@ export class Integration extends BaseIntegration {
     ]);
 
     const info: InfoItem[] = [
-      { type: 'global-packages', key: 'cordova', flair: 'Cordova CLI', value: cordovaVersion || 'not installed' },
-      { type: 'local-packages', key: 'Cordova Platforms', value: cordovaPlatforms || 'none' },
+      { group: 'cordova', key: 'cordova', flair: 'Cordova CLI', value: cordovaVersion || 'not installed' },
+      { group: 'cordova', key: 'Cordova Platforms', value: cordovaPlatforms || 'none' },
     ];
 
     if (xcode) {
-      info.push({ type: 'system', key: 'Xcode', value: xcode });
+      info.push({ group: 'system', key: 'Xcode', value: xcode });
     }
 
     if (iosDeploy) {
-      info.push({ type: 'system', key: 'ios-deploy', value: iosDeploy });
+      info.push({ group: 'system', key: 'ios-deploy', value: iosDeploy });
     }
 
     if (iosSim) {
-      info.push({ type: 'system', key: 'ios-sim', value: iosSim });
+      info.push({ group: 'system', key: 'ios-sim', value: iosSim });
     }
 
     if (androidSdkToolsVersion) {
-      info.push({ type: 'system', key: 'Android SDK Tools', value: androidSdkToolsVersion });
+      info.push({ group: 'system', key: 'Android SDK Tools', value: androidSdkToolsVersion });
     }
 
-    info.push({ type: 'environment', key: 'ANDROID_HOME', value: process.env.ANDROID_HOME || 'not set' });
+    info.push({ group: 'environment', key: 'ANDROID_HOME', value: process.env.ANDROID_HOME || 'not set' });
 
     return info;
   }

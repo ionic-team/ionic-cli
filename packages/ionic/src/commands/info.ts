@@ -32,11 +32,23 @@ export class InfoCommand extends Command {
       const task = this.env.tasks.next('Gathering environment info');
       const results = await this.env.getInfo();
 
-      const groups: InfoItemGroup[] = ['cli-packages', 'global-packages', 'local-packages', 'system', 'environment'];
-      const groupedInfo: Map<InfoItemGroup, InfoItem[]> = new Map(groups.map((group): [typeof group, InfoItem[]] => [group, results.filter(item => item.type === group)]));
+      const groups: InfoItemGroup[] = ['ionic', 'capacitor', 'cordova', 'system', 'environment'];
+      const groupedInfo: Map<InfoItemGroup, InfoItem[]> = new Map(groups.map((group): [typeof group, InfoItem[]] => [group, results.filter(item => item.group === group)]));
+
+      const sortInfo = (a: InfoItem, b: InfoItem): number => {
+        if (a.key[0] === '@' && b.key[0] !== '@') {
+          return 1;
+        }
+
+        if (a.key[0] !== '@' && b.key[0] === '@') {
+          return -1;
+        }
+
+        return strcmp(a.key.toLowerCase(), b.key.toLowerCase());
+      };
 
       const splitInfo = (ary: InfoItem[]) => ary
-        .sort((a, b) => strcmp(a.key.toLowerCase(), b.key.toLowerCase()))
+        .sort(sortInfo)
         .map((item): [string, string] => [`   ${item.key}${item.flair ? ' ' + chalk.dim('(' + item.flair + ')') : ''}`, chalk.dim(item.value)]);
 
       const format = (details: [string, string][]) => columnar(details, { vsep: ':' });
@@ -50,8 +62,10 @@ export class InfoCommand extends Command {
       this.env.log.nl();
 
       for (const [ group, info ] of groupedInfo.entries()) {
-        this.env.log.rawmsg(`${chalk.bold(lodash.startCase(group).toLowerCase())}\n\n`);
-        this.env.log.rawmsg(`${format(splitInfo(info))}\n\n`);
+        if (info.length > 0) {
+          this.env.log.rawmsg(`${chalk.bold(lodash.startCase(group))}\n\n`);
+          this.env.log.rawmsg(`${format(splitInfo(info))}\n\n`);
+        }
       }
     }
   }

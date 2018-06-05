@@ -14,8 +14,8 @@ export class IonicAngularProject extends Project {
 
   async getInfo(): Promise<InfoItem[]> {
     const [
-      ionicAngularPkg,
-      appScriptsPkg,
+      [ ionicAngularPkg ],
+      [ appScriptsPkg ],
     ] = await Promise.all([
       this.getPackageJson('ionic-angular'),
       this.getPackageJson('@ionic/app-scripts'),
@@ -23,8 +23,8 @@ export class IonicAngularProject extends Project {
 
     return [
       ...(await super.getInfo()),
-      { type: 'local-packages', key: 'Ionic Framework', value: ionicAngularPkg ? `ionic-angular ${ionicAngularPkg.version}` : 'not installed' },
-      { type: 'local-packages', key: '@ionic/app-scripts', value: appScriptsPkg ? appScriptsPkg.version : 'not installed' },
+      { group: 'ionic', key: 'Ionic Framework', value: ionicAngularPkg ? `ionic-angular ${ionicAngularPkg.version}` : 'not installed' },
+      { group: 'ionic', key: '@ionic/app-scripts', value: appScriptsPkg ? appScriptsPkg.version : 'not installed' },
     ];
   }
 
