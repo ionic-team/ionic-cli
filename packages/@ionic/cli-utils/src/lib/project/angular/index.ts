@@ -16,12 +16,14 @@ export class AngularProject extends Project {
     const [
       ionicAngularPkg,
       ionicSchematicsAngularPkg,
+      ionicNgToolkitPkg,
       angularCLIPkg,
       angularDevKitCorePkg,
       angularDevKitSchematicsPkg,
     ] = await Promise.all([
       this.getPackageJson('@ionic/angular'),
       this.getPackageJson('@ionic/schematics-angular'),
+      this.getPackageJson('@ionic/ng-toolkit'),
       this.getPackageJson('@angular/cli'),
       this.getPackageJson('@angular-devkit/core'),
       this.getPackageJson('@angular-devkit/schematics'),
@@ -30,6 +32,7 @@ export class AngularProject extends Project {
     return [
       ...(await super.getInfo()),
       { type: 'local-packages', key: 'Ionic Framework', value: ionicAngularPkg ? `@ionic/angular ${ionicAngularPkg.version}` : 'not installed' },
+      { type: 'local-packages', key: '@ionic/ng-toolkit', value: ionicNgToolkitPkg ? ionicNgToolkitPkg.version : 'not installed' },
       { type: 'local-packages', key: '@ionic/schematics-angular', value: ionicSchematicsAngularPkg ? ionicSchematicsAngularPkg.version : 'not installed' },
       { type: 'local-packages', key: '@angular/cli', value: angularCLIPkg ? angularCLIPkg.version : 'not installed' },
       { type: 'local-packages', key: '@angular-devkit/core', value: angularDevKitCorePkg ? angularDevKitCorePkg.version : 'not installed' },
