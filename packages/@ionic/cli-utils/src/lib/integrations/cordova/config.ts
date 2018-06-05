@@ -275,7 +275,12 @@ export class ConfigXml {
 }
 
 export async function loadConfigXml({ project }: { project: IProject }): Promise<ConfigXml> {
-  const filePath = path.resolve(project.directory, 'config.xml');
+  const config = await project.getIntegration('cordova');
+  const directory = path.resolve(project.directory, config.root);
+
+  process.chdir(directory);
+
+  const filePath = path.resolve(directory, 'config.xml');
   debug(`Using config.xml: ${filePath}`);
 
   try {

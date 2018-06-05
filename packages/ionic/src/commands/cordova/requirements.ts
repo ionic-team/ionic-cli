@@ -5,6 +5,7 @@ import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
 import { CordovaCommand } from './base';
+import * as path from "path";
 
 export class RequirementsCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -33,7 +34,9 @@ Like running ${chalk.green('cordova requirements')} directly, but provides frien
 
     const [ platform ] = inputs;
 
-    const platforms = await getPlatforms(this.env.project.directory);
+    const cordova = await this.env.project.getIntegration('cordova');
+    const cordovaRoot = path.resolve(this.env.project.directory, cordova.root);
+    const platforms = await getPlatforms(cordovaRoot);
 
     if (platform) {
       if (!platforms.includes(platform)) {

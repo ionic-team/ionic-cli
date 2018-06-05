@@ -8,6 +8,7 @@ import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
 
 import { CordovaCommand } from './base';
+import * as path from "path";
 
 export class PlatformCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -80,7 +81,9 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
 
     const metadata = await this.getMetadata();
 
-    const platforms = await getPlatforms(this.env.project.directory);
+    const cordova = await this.env.project.getIntegration('cordova');
+    const cordovaRoot = path.resolve(this.env.project.directory, cordova.root);
+    const platforms = await getPlatforms(cordovaRoot);
 
     if (action === 'add' && platforms.includes(platformName)) {
       this.env.log.msg(`Platform ${platformName} already exists.`);
@@ -96,7 +99,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
     if (action === 'add') {
       const { installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
       const [ , extraArgs ] = separateArgv(inputs);
-      await installPlatform(this.env, platformName, extraArgs);
+      await installPlatform(this.env, platformName, cordovaRoot, extraArgs);
     } else {
       await this.runCordova(cordovaArgs, {});
     }

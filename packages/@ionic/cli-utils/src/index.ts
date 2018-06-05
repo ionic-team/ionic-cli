@@ -19,6 +19,8 @@ import { ProSession } from './lib/session';
 import { Shell } from './lib/shell';
 import { PROXY_ENVIRONMENT_VARIABLES } from './lib/utils/http';
 import { Logger } from './lib/utils/logger';
+import { fsReadJsonFile } from "@ionic/cli-framework/utils/fs";
+import { FatalException } from "./lib/errors";
 
 export * from './definitions';
 export * from './constants';
@@ -26,25 +28,45 @@ export * from './guards';
 
 const debug = Debug('ionic:cli-utils');
 
-export async function getProject(projectDir: string | undefined, deps: ProjectDeps): Promise<IProject> {
-  if (!projectDir) {
-    return new OutsideProject('', PROJECT_FILE);
+export async function getProject(projectDir: string, projectName: string, deps: ProjectDeps): Promise<IProject> {
+  const projectFilePath = path.resolve(projectDir, PROJECT_FILE);
+  let projectFile: { [key: string]: any; } | undefined;
+  let projectConfig: any;
+
+  try {
+    projectFile = await fsReadJsonFile(projectFilePath);
+  } catch (e) {
+    debug('Attempted to load project config %s but got error: %O', projectFilePath, e);
   }
 
-  const type = await Project.determineType(projectDir, deps);
+  if (projectFile) {
+    projectName = projectName === 'default' ? projectFile.defaultProject : projectName;
+    projectConfig = projectFile.projects[projectName];
+
+    debug(`Project name: ${chalk.bold(projectName)}`);
+
+    if (!projectConfig) {
+      throw projectFile.defaultProject
+        ? new FatalException(`${chalk.bold(`projects.${projectName}`)} was not found in ${chalk.bold('ionic.json')}.`)
+        : new FatalException(`Please set a ${chalk.bold('defaultProject')} in ${chalk.bold('ionic.json')} or specify the project using ${chalk.bold('--project')}`);
+    }
+  }
+
+  const type = await Project.determineType(projectDir, projectName, projectConfig, deps);
 
   if (!type) {
-    return new OutsideProject('', PROJECT_FILE);
+    return new OutsideProject('', PROJECT_FILE, projectName);
   }
 
-  return Project.createFromProjectType(projectDir, PROJECT_FILE, deps, type);
+  return Project.createFromProjectType(projectDir, PROJECT_FILE, projectName, deps, type);
 }
 
 export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[], env: { [key: string]: string; }): Promise<IonicEnvironment> {
   process.chdir(ctx.execPath);
 
-  const argv = parseArgs(pargv, { boolean: true, string: '_' });
-  const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
+  const argv = parseArgs(pargv, { boolean: ['quiet', 'interactive', 'confirm'], string: ['_', 'project'] });
+  const projectName = argv['project'] || 'default';
+  const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE, projectName);
   const flags = gatherFlags(argv);
 
   const configData = await config.load();
@@ -69,6 +91,10 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const projectDir = await findBaseDirectory(ctx.execPath, PROJECT_FILE);
   const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map(e => [e, env[e]]).filter(([e, v]) => !!v);
 
+  if (!projectDir) {
+    throw new FatalException(`Could not find ${chalk.green(PROJECT_FILE)}`)
+  }
+
   const getInfo = async () => {
     const osName = await import('os-name');
     const os = osName();
@@ -89,7 +115,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   };
 
   const shell = new Shell({ log, projectDir });
-  const project = await getProject(projectDir, { config, log, shell, tasks });
+  const project = await getProject(projectDir, projectName, { config, log, shell, tasks });
   const client = new Client(config);
   const session = new ProSession({ config, client, project });
 

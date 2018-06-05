@@ -13,9 +13,9 @@ export async function getPlatforms(projectDir: string): Promise<string[]> {
   return dirContents.filter(f => f && f !== 'platforms.json' && !f.startsWith('.'));
 }
 
-export async function installPlatform(env: IonicEnvironment, platform: string, extraArgs: string[] = []): Promise<void> {
+export async function installPlatform(env: IonicEnvironment, platform: string, cwd = process.cwd(), extraArgs: string[] = []): Promise<void> {
   try {
-    await env.shell.run('cordova', ['platform', 'add', platform, '--save', ...extraArgs], { fatalOnError: false, showError: false });
+    await env.shell.run('cordova', ['platform', 'add', platform, '--save', ...extraArgs], { fatalOnError: false, showError: false, cwd });
   } catch (e) {
     const s = String(e);
 

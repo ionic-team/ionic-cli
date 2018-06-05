@@ -295,7 +295,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       const { createCommServer, createPublisher } = await import('./devapp');
 
       const project = await this.project.load();
-      const publisher = await createPublisher(project.name, details.port, details.commPort);
+      const publisher = await createPublisher(project.projects[this.project.name].name, details.port, details.commPort);
       const comm = await createCommServer(publisher.id, details.commPort);
 
       publisher.interfaces = details.interfaces;
@@ -357,9 +357,10 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
 
     if (options.ssl) {
       const project = await this.project.load();
+      const projectConfig = project.projects[this.project.name];
 
-      if (project.ssl && project.ssl.key && project.ssl.cert) {
-        labDetails.ssl = { key: project.ssl.key, cert: project.ssl.cert };
+      if (projectConfig.ssl && projectConfig.ssl.key && projectConfig.ssl.cert) {
+        labDetails.ssl = { key: projectConfig.ssl.key, cert: projectConfig.ssl.cert };
       } else {
         throw new FatalException(
           `Both ${chalk.green('ssl.key')} and ${chalk.green('ssl.cert')} config entries must be set.\n` +
@@ -394,10 +395,11 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
 
   async runLabServer(url: string, details: LabServeDetails): Promise<void> {
     const project = await this.project.load();
+    const projectConfig = project.projects[this.project.name];
     const pkg = await this.project.requirePackageJson();
 
     const labArgs = [url, '--host', details.address, '--port', String(details.port)];
-    const nameArgs = project.name ? ['--app-name', project.name] : [];
+    const nameArgs = projectConfig.name ? ['--app-name', projectConfig.name] : [];
     const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
 
     if (details.ssl) {

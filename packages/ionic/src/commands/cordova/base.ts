@@ -65,12 +65,13 @@ export const CORDOVA_BUILD_EXAMPLE_COMMANDS = [
 export abstract class CordovaCommand extends Command {
   async checkCordova(runinfo: CommandInstanceInfo) {
     const project = await this.env.project.load();
+    const projectConfig = project.projects[this.env.project.name];
 
-    if (project.integrations.cordova && project.integrations.cordova.enabled === false) {
+    if (projectConfig.integrations.cordova && projectConfig.integrations.cordova.enabled === false) {
       return;
     }
 
-    if (!project.integrations.cordova) {
+    if (!projectConfig.integrations.cordova) {
       await runCommand(runinfo, ['integrations', 'enable', 'cordova']);
     }
   }
@@ -78,11 +79,16 @@ export abstract class CordovaCommand extends Command {
   async preRunChecks(runinfo: CommandInstanceInfo) {
     const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
 
+    await this.env.project.load();
+
+    const cordova = await this.env.project.getIntegration('cordova');
+    const cordovaRoot = path.resolve(this.env.project.directory, cordova.root);
+
     await this.checkCordova(runinfo);
 
     // Check for www folder
     if (this.env.project.directory) {
-      const wwwPath = path.join(this.env.project.directory, 'www');
+      const wwwPath = path.join(cordovaRoot, 'www');
       const wwwExists = await pathExists(wwwPath); // TODO: hard-coded
 
       if (!wwwExists) {
@@ -125,10 +131,13 @@ export abstract class CordovaCommand extends Command {
   async checkForPlatformInstallation(runPlatform: string) {
     if (runPlatform) {
       const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
-      const platforms = await getPlatforms(this.env.project.directory);
+
+      const cordova = await this.env.project.getIntegration('cordova');
+      const cordovaRoot = path.resolve(this.env.project.directory, cordova.root);
+      const platforms = await getPlatforms(cordovaRoot);
 
       if (!platforms.includes(runPlatform)) {
-        await installPlatform(this.env, runPlatform);
+        await installPlatform(this.env, runPlatform, cordovaRoot);
       }
     }
   }

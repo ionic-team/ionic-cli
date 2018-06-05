@@ -79,7 +79,9 @@ export type HookFn = (ctx: HookContext) => Promise<void>;
 export type IntegrationName = 'capacitor' | 'cordova';
 
 export interface ProjectIntegration {
-  enabled?: boolean;
+  enabled: boolean;
+  root: string;
+  outputPath: string;
 }
 
 export interface ProjectIntegrations {
@@ -87,7 +89,7 @@ export interface ProjectIntegrations {
   capacitor?: ProjectIntegration;
 }
 
-export interface ProjectFile {
+export interface ProjectConfig {
   name: string;
   pro_id?: string;
 
@@ -98,6 +100,8 @@ export interface ProjectFile {
     key?: string;
     cert?: string;
   };
+
+  type: ProjectType
 }
 
 export interface Response<T extends object> extends APIResponseSuccess {
@@ -231,6 +235,7 @@ export interface ProjectPersonalizationDetails {
 
 export interface IProject extends IBaseConfig<ProjectFile> {
   type: ProjectType | undefined;
+  name: string;
 
   getDocsUrl(): Promise<string>;
   getSourceDir(sourceRoot?: string): Promise<string>;
@@ -238,6 +243,7 @@ export interface IProject extends IBaseConfig<ProjectFile> {
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
   createIntegration(name: IntegrationName): Promise<IIntegration>;
+  getIntegration(name: IntegrationName): Promise<ProjectIntegration>;
   requireProId(): Promise<string>;
   getPackageJson(pkgName?: string): Promise<[framework.PackageJson | undefined, string | undefined]>;
   requirePackageJson(): Promise<framework.PackageJson>;
@@ -772,4 +778,11 @@ export interface ResolvedStarterTemplate extends StarterTemplate {
 export interface IPCMessage {
   type: 'telemetry';
   data: { command: string; args: string[]; };
+}
+
+export interface ProjectFile {
+  defaultProject: string;
+  projects: {
+    [key: string]: ProjectConfig;
+  }
 }

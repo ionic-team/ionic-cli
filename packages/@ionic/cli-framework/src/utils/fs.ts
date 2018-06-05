@@ -250,3 +250,20 @@ export async function findBaseDirectory(dir: string, file: string): Promise<stri
     }
   }
 }
+
+/**
+ * Find the base directory based on the path given and a marker file to look for.
+ */
+export async function findProjectDirectory(dir: string, file: string): Promise<string | undefined> {
+  if (!dir || !file) {
+    return;
+  }
+
+  for (const d of compilePaths(dir)) {
+    const results = await fsReadDir(d);
+
+    if (results.includes(file)) {
+      return d;
+    }
+  }
+}

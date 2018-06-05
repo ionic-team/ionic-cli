@@ -21,7 +21,6 @@ export const NG_BUILD_OPTIONS = [
     summary: 'The name of the project',
     type: String,
     groups: [OptionGroup.Advanced],
-    default: 'app',
     hint: chalk.dim('[ng]'),
   },
   {
@@ -61,7 +60,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularBuildOptions {
     const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
-    const project = options['project'] ? String(options['project']) : 'app';
+    const project = this.project.name;
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
 
     return {

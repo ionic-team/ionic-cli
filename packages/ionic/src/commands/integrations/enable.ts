@@ -7,6 +7,7 @@ import { CommandLineInputs, CommandLineOptions, CommandMetadata, isIntegrationNa
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { INTEGRATION_NAMES } from '@ionic/cli-utils/lib/integrations';
+import { ProjectIntegration } from '@ionic/cli-utils/src/definitions';
 
 export class IntegrationsEnableCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
@@ -45,8 +46,9 @@ export class IntegrationsEnableCommand extends Command {
     }
 
     const p = await this.env.project.load();
+    const projectConfig = p.projects[this.env.project.name];
     const integration = await this.env.project.createIntegration(name);
-    const integrationConfig = p.integrations[name];
+    const integrationConfig = projectConfig.integrations[name];
 
     try {
       if (!integrationConfig || add) {
@@ -72,7 +74,7 @@ export class IntegrationsEnableCommand extends Command {
           },
         });
 
-        p.integrations[name] = {};
+        projectConfig.integrations[name] = {} as ProjectIntegration;
         this.env.log.ok(`Integration ${chalk.green(integration.name)} added!`);
       } else {
         const wasEnabled = integrationConfig.enabled !== false;

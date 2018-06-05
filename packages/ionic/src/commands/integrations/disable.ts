@@ -30,8 +30,9 @@ export class IntegrationsDisableCommand extends Command {
     }
 
     const p = await this.env.project.load();
+    const projectConfig = p.projects[this.env.project.name];
     const integration = await this.env.project.createIntegration(name);
-    const integrationConfig = p.integrations[name];
+    const integrationConfig = projectConfig.integrations[name];
 
     try {
       if (!integrationConfig || integrationConfig.enabled === false) {

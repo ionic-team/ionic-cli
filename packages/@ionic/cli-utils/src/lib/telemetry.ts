@@ -90,7 +90,7 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
       let proId: string | undefined;
 
       if (p) {
-        proId = p.pro_id;
+        proId = p.projects[project.name].pro_id;
       }
 
       const { req } = await client.make('POST', '/events/metrics');
