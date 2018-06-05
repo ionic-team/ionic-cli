@@ -65,7 +65,7 @@ export class InfoCommand extends Command {
 
       for (const [ group, info ] of groupedInfo.entries()) {
         if (info.length > 0) {
-          this.env.log.rawmsg(`${chalk.bold(lodash.startCase(group))}\n\n`);
+          this.env.log.rawmsg(`${chalk.bold(`${lodash.startCase(group)}:`)}\n\n`);
           this.env.log.rawmsg(`${format(splitInfo(info))}\n\n`);
         }
       }
