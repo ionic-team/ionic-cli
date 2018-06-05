@@ -47,15 +47,17 @@ export class InfoCommand extends Command {
         return strcmp(a.key.toLowerCase(), b.key.toLowerCase());
       };
 
+      const projectPath = this.env.project.directory;
+
       const splitInfo = (ary: InfoItem[]) => ary
         .sort(sortInfo)
-        .map((item): [string, string] => [`   ${item.key}${item.flair ? ' ' + chalk.dim('(' + item.flair + ')') : ''}`, chalk.dim(item.value)]);
+        .map((item): [string, string] => [`   ${item.key}${item.flair ? ' ' + chalk.dim('(' + item.flair + ')') : ''}`, chalk.dim(item.value) + (item.path && projectPath && !item.path.startsWith(projectPath) ? ` ${chalk.dim('(' + item.path + ')')}` : '')]);
 
       const format = (details: [string, string][]) => columnar(details, { vsep: ':' });
 
       task.end();
 
-      if (!this.env.project.directory) {
+      if (!projectPath) {
         this.env.log.warn('You are not in an Ionic project directory. Project context may be missing.');
       }
 
