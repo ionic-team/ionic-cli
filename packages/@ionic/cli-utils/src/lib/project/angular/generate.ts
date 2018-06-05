@@ -1,125 +1,26 @@
 import chalk from 'chalk';
-import * as Debug from 'debug';
-import * as lodash from 'lodash';
 
-import { CommandGroup, unparseArgs, validators } from '@ionic/cli-framework';
+import { CommandGroup } from '@ionic/cli-framework';
 
-import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
+import { CommandMetadata, GenerateOptions } from '../../../definitions';
 import { GenerateRunner as BaseGenerateRunner } from '../../generate';
 import { FatalException } from '../../errors';
 
-const IONIC_SCHEMATICS_PACKAGE = '@ionic/schematics-angular';
-const SCHEMATICS: ReadonlyArray<string> = ['page', 'component', 'service', 'module', 'class', 'directive', 'guard', 'pipe', 'interface', 'enum'];
+const description = `
+Use ${chalk.green('npx ng generate')} to generate framework components. See the documentation${chalk.cyan('[1]')} for details.
 
-const debug = Debug('ionic:cli-utils:lib:project:angular:generate');
+${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/building/scaffolding')}
+`;
 
-function pluralizeType(type: string): string {
-  const suffix = type === 'class' ? 'es' : 's';
-  return `${type}${suffix}`;
-}
-
-export class GenerateRunner extends BaseGenerateRunner<AngularGenerateOptions> {
+export class GenerateRunner extends BaseGenerateRunner<GenerateOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
-      groups: [CommandGroup.Experimental],
-      description: `
-This command uses the Angular CLI to generate ${['pages', 'components', 'directives', 'services'].map(c => chalk.green(c)).join(', ')}, etc.
-
- - List Angular schematics with ${chalk.green('npx ng g --help')}
- - List options for each schematic with ${chalk.green('npx ng g <schematic> --help')}
- - For the ${chalk.green('page')} schematic, use ${chalk.green('npx ng g @ionic/schematics-angular:page --help')}.
-
-We recommend prefixing ${chalk.green('name')} with a consistent, descriptive path within ${chalk.bold('src/app/')}, otherwise the app will quickly become cluttered. For example, for ${chalk.green('pages')}, try ${chalk.green('ionic g page pages/my-new-page')}.
-
-You can nest components deeper inside other components. For example, specify a name of ${chalk.green('pages/tabs-page/tab1')} to generate page files at ${chalk.bold('src/app/pages/tabs-page/tab1/')}.
-
-To test a generator before file modifications are made, use the ${chalk.green('--dry-run')} option.
-
-${chalk.green('ionic generate')} differs from ${chalk.green('ng generate')} in two ways:
-
- 1. If a subset of the required inputs are specified, ${chalk.green('ionic generate')} will prompt for ${chalk.green('type')} and ${chalk.green('name')}. The prompts will always prefix the specified ${chalk.green('name')} with a directory (e.g. ${chalk.green('login-page')} => ${chalk.green('pages/login-page')}).
- 2. If ${chalk.green('page')} is specified for ${chalk.green('type')}, it is translated to use the proper schematics collection. Otherwise the collection must be specified (e.g. ${chalk.green('npx ng g @ionic/schematics-angular:page <name>')}).
-      `,
-      exampleCommands: [
-        'page',
-        'page pages/contact',
-        'component pages/contact/form',
-        'component components/login-form --change-detection=OnPush',
-        'directive directives/ripple --skip-import',
-        'service services/api/user',
-      ],
-      inputs: [
-        {
-          name: 'type',
-          summary: `The type of generator (e.g. ${['page', 'component', 'directive', 'service'].map(c => chalk.green(c)).join(', ')})`,
-          validators: [validators.required],
-        },
-        {
-          name: 'name',
-          summary: 'The name of the component being generated',
-          validators: [validators.required],
-        },
-      ],
+      description,
+      groups: [CommandGroup.Hidden],
     };
   }
 
-  async ensureCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    if (!inputs[0]) {
-      const type = await this.prompt({
-        type: 'list',
-        name: 'type',
-        message: 'What would you like to generate:',
-        choices: SCHEMATICS,
-      });
-
-      inputs[0] = type;
-    }
-
-    if (!inputs[1]) {
-      const name = await this.prompt({
-        type: 'input',
-        name: 'name',
-        message: 'What should the name be?',
-        validate: v => validators.required(v),
-        filter: input => `${pluralizeType(inputs[0])}/${input}`,
-      });
-
-      inputs[1] = name;
-    }
-  }
-
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularGenerateOptions {
-    const baseOptions = super.createOptionsFromCommandLine(inputs, options);
-
-    return {
-      ...lodash.omit(options, '_', '--'),
-      ...baseOptions,
-    };
-  }
-
-  async run(options: AngularGenerateOptions) {
-    const { type, name } = options;
-
-    try {
-      await this.generateComponent(type, name, lodash.omit(options, 'type', 'name'));
-    } catch (e) {
-      debug(e);
-      throw new FatalException(`Could not generate ${chalk.green(type)}.`);
-    }
-
-    if (!options['dry-run']) {
-      this.log.ok(`Generated ${chalk.green(type)}!`);
-    }
-  }
-
-  private async generateComponent(type: string, name: string, options: { [key: string]: string | boolean; }) {
-    if (type === 'page' || type === 'pg') {
-      type = `${IONIC_SCHEMATICS_PACKAGE}:${type}`;
-    }
-
-    const ngArgs = unparseArgs({ _: ['generate', type, name], ...options }, {});
-    const shellOptions = { cwd: this.project.directory };
-
-    await this.shell.run('ng', ngArgs, shellOptions);
+  async run(options: GenerateOptions) {
+    throw new FatalException(description.trim());
   }
 }
