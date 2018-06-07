@@ -25,7 +25,7 @@ module.exports = {
 
     // https://github.com/ionic-team/tslint-ionic-rules/commit/065e3e9937104f6ec03e594adf762002616353df
     "no-conditional-assignment": true,
-    // "no-unnecessary-type-assertion": true,
+    "no-unnecessary-type-assertion": true,
     "prefer-for-of": true,
 
     // TODO: https://github.com/palantir/tslint/issues/3375

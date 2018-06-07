@@ -159,6 +159,5 @@ export async function promptToLogin(env: IonicEnvironment): Promise<void> {
 }
 
 function hasTokenAttribute(r: any): r is { token: string; } {
-  const res = <any>r;
-  return res && typeof res === 'object' && typeof res.token === 'string';
+  return r && typeof r === 'object' && typeof r.token === 'string';
 }

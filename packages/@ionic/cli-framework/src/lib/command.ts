@@ -50,7 +50,11 @@ export class BaseCommandMap<C extends ICommand<C, N, M, I, O>, N extends INamesp
 export class BaseNamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends AliasedMap<string, NamespaceMapGetter<C, N, M, I, O>> implements INamespaceMap<C, N, M, I, O> {}
 
 export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> implements INamespace<C, N, M, I, O> {
-  constructor(public parent: N | undefined = undefined) {}
+  parent: N | undefined;
+
+  constructor(parent?: N) {
+    this.parent = parent;
+  }
 
   abstract getMetadata(): Promise<NamespaceMetadata>;
 

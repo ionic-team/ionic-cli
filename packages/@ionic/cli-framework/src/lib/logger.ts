@@ -1,9 +1,8 @@
 import * as util from 'util';
 import { Writable } from 'stream';
 
-import chalk from 'chalk';
+import chalk, { Chalk } from 'chalk';
 import * as lodash from 'lodash';
-import { Chalk } from 'chalk';
 
 import { Colors, DEFAULT_COLORS } from './colors';
 import { WordWrapOptions, stringWidth, wordWrap } from '../utils/format';

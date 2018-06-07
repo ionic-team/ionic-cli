@@ -1,5 +1,4 @@
-import chalk from 'chalk';
-import { Chalk } from 'chalk';
+import chalk, { Chalk } from 'chalk';
 
 import { LoggerLevel } from './logger';
 

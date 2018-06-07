@@ -3,10 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { map } from '@ionic/cli-framework/utils/array';
-import { fsStat, readDir } from '@ionic/cli-framework/utils/fs';
+import { fsStat, fsWriteFile, readDir } from '@ionic/cli-framework/utils/fs';
 import { CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { fsWriteFile } from '@ionic/cli-framework/utils/fs';
 
 interface DeployManifestItem {
   href: string;

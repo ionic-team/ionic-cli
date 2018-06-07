@@ -7,17 +7,9 @@ import * as ζexpress from 'express';
 import * as ζproxyMiddleware from 'http-proxy-middleware';
 
 import { ConfigFileProxy } from './config';
-import { LiveReloadFunction, createLiveReloadServer } from './dev-server';
+import { DEV_SERVER_PREFIX, LiveReloadFunction, createDevLoggerServer, createDevServerHandler, createLiveReloadServer, injectDevServerScript, injectLiveReloadScript } from './dev-server';
 import { runTask } from './gulp';
 import { timestamp } from './log';
-
-import {
-  DEV_SERVER_PREFIX,
-  createDevLoggerServer,
-  createDevServerHandler,
-  injectDevServerScript,
-  injectLiveReloadScript,
-} from './dev-server';
 
 export const WATCH_PATTERNS = [
   'scss/**/*',

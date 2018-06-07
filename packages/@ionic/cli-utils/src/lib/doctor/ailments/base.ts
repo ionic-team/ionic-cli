@@ -1,5 +1,4 @@
 import * as Debug from 'debug';
-import { IDebugger } from 'debug';
 import { DoctorAilmentId, IAilment, IAilmentRegistry, IClient, IConfig, ILogger, IProject, ISession, IShell, PatientTreatmentStep, ProjectType } from '../../../definitions';
 
 export interface AilmentDeps {
@@ -18,7 +17,7 @@ export abstract class Ailment implements IAilment {
   protected readonly project: IProject;
   protected readonly shell: IShell;
   protected readonly session: ISession;
-  private _debug?: IDebugger;
+  private _debug?: Debug.IDebugger;
 
   abstract readonly id: DoctorAilmentId;
   readonly projects?: ProjectType[] = undefined;

@@ -464,10 +464,15 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
       type: 'list',
       name: 'linkedApp',
       message: 'Which app would you like to link',
-      choices: [...apps.map(app => ({
-        name: `${formatName(app)} ${chalk.dim(`(${app.id})`)}`,
-        value: app.id,
-      })), createPromptChoiceSeparator(), neverMindChoice, createPromptChoiceSeparator()],
+      choices: [
+        ...apps.map(app => ({
+          name: `${formatName(app)} ${chalk.dim(`(${app.id})`)}`,
+          value: app.id,
+        })),
+        createPromptChoiceSeparator(),
+        neverMindChoice,
+        createPromptChoiceSeparator(),
+      ],
     });
 
     return linkedApp;
