@@ -131,7 +131,7 @@ export async function getFileChecksum(filePath: string): Promise<string> {
     });
 
     hash.once('readable', () => {
-      const fullChecksum = (<Buffer>hash.read()).toString('hex');
+      const fullChecksum = (hash.read() as Buffer).toString('hex');
       resolve(fullChecksum);
     });
 
@@ -212,7 +212,7 @@ export function copyFile(fileName: string, target: string, mode = 0o666) {
     rs.on('error', reject);
     ws.on('error', reject);
 
-    ws.on('open', function() {
+    ws.on('open', () => {
       rs.pipe(ws);
     });
 

@@ -379,7 +379,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     }
 
     const url = await userClient.oAuthGithubLogin(userId);
-    opn(url, { wait: false });
+    await opn(url, { wait: false });
 
     confirm = await this.env.prompt({
       type: 'confirm',
@@ -588,7 +588,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
       type: 'checkbox',
       name: 'githubBranches',
       message: 'Which branch would you like to link?',
-      choices: choices,
+      choices,
       default: ['master'],
     });
 

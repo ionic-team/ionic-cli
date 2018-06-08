@@ -83,13 +83,13 @@ export function contains(values: (string | undefined)[], { caseSensitive = true 
     values = values.map(v => typeof v === 'string' ? v.toLowerCase() : v);
   }
 
-  return function(input?: string, key?: string): true | string {
+  return (input?: string, key?: string): true | string => {
     if (!caseSensitive && typeof input === 'string') {
       input = input.toLowerCase();
     }
 
     if (values.indexOf(input) === -1) {
-      const strValues = <string[]>values.filter(v => typeof v === 'string'); // TODO: typescript bug?
+      const strValues = values.filter(v => typeof v === 'string') as string[]; // TODO: typescript bug?
       const mustBe = (strValues.length !== values.length ? 'unset or one of' : 'one of') + ': ' + strValues.map(v => chalk.green(v)).join(', ');
       const fmtPretty = (v?: string) => typeof v === 'undefined' ? 'unset' : (v === '' ? 'empty' : chalk.green(v));
 

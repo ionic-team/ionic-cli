@@ -255,7 +255,7 @@ export abstract class Project extends BaseConfig<ProjectFile> implements IProjec
 
   protected async getIntegrations(): Promise<IIntegration[]> {
     const p = await this.load();
-    const projectIntegrations = <IntegrationName[]>Object.keys(p.integrations); // TODO
+    const projectIntegrations = Object.keys(p.integrations) as IntegrationName[]; // TODO
 
     const integrationNames = projectIntegrations.filter(n => {
       const c = p.integrations[n];

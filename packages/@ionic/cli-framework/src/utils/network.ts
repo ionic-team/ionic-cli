@@ -92,17 +92,19 @@ export async function isHostConnectable(host: string, port: number, { timeout }:
 
   return new Promise<boolean>(async resolve => {
     let timer: NodeJS.Timer | undefined;
+    let resolved = false;
 
     if (timeout) {
       timer = setTimeout(() => {
         debug('Timeout of %dms reached while waiting for host connectivity', timeout);
         resolve(false);
+        resolved = true;
       }, timeout);
 
       timer.unref();
     }
 
-    while (true) {
+    while (!resolved) {
       try {
         await tryConnect();
 
@@ -111,7 +113,7 @@ export async function isHostConnectable(host: string, port: number, { timeout }:
         }
 
         resolve(true);
-        break;
+        resolved = true;
       } catch (e) {
         // try again
       }

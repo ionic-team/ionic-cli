@@ -101,7 +101,7 @@ export class Publisher extends events.EventEmitter implements IPublisherEventEmi
       nspace: this.namespace,
       name: this.name,
       host: os.hostname(),
-      ip: ip,
+      ip,
       port: this.port,
       commPort: this.commPort,
       path: this.path,

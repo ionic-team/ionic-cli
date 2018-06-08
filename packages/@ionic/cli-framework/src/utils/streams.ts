@@ -6,7 +6,7 @@ const DEFAULT_ALLOC_SIZE = 32;
 const DEFAULT_GROW_SIZE = 16;
 
 export class NullStream extends Writable {
-  _write(chunk: any, encoding: string, callback: Function): void {
+  _write(chunk: any, encoding: string, callback: () => void): void {
     callback();
   }
 }
@@ -114,7 +114,7 @@ export class WritableStreamBuffer extends Writable {
     return this._size;
   }
 
-  _write(chunk: any, encoding: string, callback: Function): void {
+  _write(chunk: any, encoding: string, callback: () => void): void {
     this.buffer = growBufferForAppendedData(this.buffer, this._size, Math.ceil(chunk.length / this.growSize) * this.growSize);
     chunk.copy(this.buffer, this._size, 0);
     this._size += chunk.length;

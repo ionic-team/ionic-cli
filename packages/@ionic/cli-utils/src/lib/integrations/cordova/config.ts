@@ -220,7 +220,7 @@ export class ConfigXml {
           const attrs: { [key: string]: string } = {};
 
           for (const attr of imgType.nodeAttributes) {
-            let v = (<any>image)[attr]; // TODO
+            let v = (image as any)[attr]; // TODO
 
             if (attr === 'src') {
               v = imgPath;

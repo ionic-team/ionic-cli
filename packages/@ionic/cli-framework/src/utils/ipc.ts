@@ -47,7 +47,7 @@ export class RPCProcess {
       throw new IPCError('RPC process already started.');
     }
 
-    const p = <ChildProcess>proc;
+    const p = proc as ChildProcess;
 
     if (!p.send) {
       throw new IPCError('Cannot use proc: `send()` undefined.');

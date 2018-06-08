@@ -161,7 +161,7 @@ function buildSelector(options: PageOptions) {
   return selector;
 }
 
-export default function (options: PageOptions): Rule {
+export default function(options: PageOptions): Rule {
   return (host, context) => {
     const workspace = getWorkspace(host);
 

@@ -222,7 +222,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
         .join('');
 
       const opn = await import('opn');
-      opn(openURL, { app: options.browser, wait: false });
+      await opn(openURL, { app: options.browser, wait: false });
 
       this.log.info(`Browser window opened to ${chalk.bold(openURL)}!`);
       this.log.nl();
@@ -400,7 +400,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       log.setFormatter(createPrefixedFormatter(chalk.dim('[lab]')));
       const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
 
-      const stdoutFilter = through2(function(chunk, enc, callback) {
+      const stdoutFilter = through2((chunk, enc, callback) => {
         const str = chunk.toString();
 
         if (str.includes('Ionic Lab running')) {

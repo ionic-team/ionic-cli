@@ -43,7 +43,7 @@ export class DocsCommand extends Command {
       const projectJson = { type: projectType, ...formatted };
 
       // TODO: `serialize()` from base formatter isn't typed properly
-      projectJson.commands = await Promise.all(projectJson.commands.map(async cmd => this.extractCommand(<CommandHelpSchema>cmd)));
+      projectJson.commands = await Promise.all(projectJson.commands.map(async cmd => this.extractCommand(cmd as CommandHelpSchema)));
       projectJson.commands.sort((a, b) => strcmp(a.name, b.name));
 
       await fsWriteFile(path.resolve(STAGING_DIRECTORY, `${projectType}.json`), JSON.stringify(projectJson, undefined, 2), { encoding: 'utf8' });

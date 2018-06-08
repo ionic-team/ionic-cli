@@ -27,24 +27,24 @@ import {
 export const INTEGRATION_NAMES: IntegrationName[] = ['capacitor', 'cordova'];
 
 export function isCommand(c: object): c is ICommand {
-  const cmd = <ICommand>c;
+  const cmd = c as ICommand;
   return cmd && typeof cmd.run === 'function';
 }
 
 export function isCommandPreRun(c: ICommand): c is CommandPreRun {
-  const cmd = <CommandPreRun>c;
+  const cmd = c as CommandPreRun;
   return cmd && typeof cmd.preRun === 'function';
 }
 
 export function isStarterManifest(o: object): o is StarterManifest {
-  const obj = <StarterManifest>o;
+  const obj = o as StarterManifest;
   return obj &&
     typeof obj.name === 'string' &&
     typeof obj.baseref === 'string';
 }
 
 export function isCordovaPackageJson(o: object): o is CordovaPackageJson {
-  const obj = <CordovaPackageJson>o;
+  const obj = o as CordovaPackageJson;
   return obj &&
     typeof obj.name === 'string' &&
     typeof obj.cordova === 'object' &&
@@ -53,39 +53,39 @@ export function isCordovaPackageJson(o: object): o is CordovaPackageJson {
 }
 
 export function isExitCodeException(e: Error): e is ExitCodeException {
-  const err = <any>e;
+  const err = e as any;
   return err && typeof err.exitCode === 'number' && err.exitCode >= 0 && err.exitCode <= 255;
 }
 
 export function isSuperAgentError(e: Error): e is SuperAgentError {
-  const err = <SuperAgentError>e;
+  const err = e as SuperAgentError;
   return e && err.response && typeof err.response === 'object';
 }
 
 export function isAPIResponseSuccess(r: APIResponse): r is APIResponseSuccess {
-  const res = <APIResponseSuccess>r;
+  const res = r as APIResponseSuccess;
   return res && (typeof res.data === 'object' || typeof res.data === 'string');
 }
 
 export function isAPIResponseError(r: APIResponse): r is APIResponseError {
-  const res = <APIResponseError>r;
+  const res = r as APIResponseError;
   return res && typeof res.error === 'object';
 }
 
 export function isOrg(o: object): o is Org {
-  const org = <Org>o;
+  const org = o as Org;
   return org && typeof org.name === 'string';
 }
 
 export function isGithubRepo(r: object): r is GithubRepo {
-  const repo = <GithubRepo>r;
+  const repo = r as GithubRepo;
   return repo
     && typeof repo.full_name === 'string'
     && typeof repo.id === 'number';
 }
 
 export function isGithubBranch(r: object): r is GithubBranch {
-  const branch = <GithubBranch>r;
+  const branch = r as GithubBranch;
   return branch
     && typeof branch.name === 'string';
 }
@@ -115,7 +115,7 @@ export function isGithubBranchListResponse(r: APIResponse): r is Response<Github
 }
 
 export function isAppAssociation(a: object): a is AppAssociation {
-  const association = <AppAssociation>a;
+  const association = a as AppAssociation;
   return association
     && typeof association.repository === 'object'
     && typeof association.repository.html_url === 'string'
@@ -129,14 +129,14 @@ export function isAppAssociationResponse(r: APIResponse): r is Response<AppAssoc
 }
 
 export function isGithubRepoAssociation(a: object): a is GithubRepoAssociation {
-  const repo = <GithubRepoAssociation>a;
+  const repo = a as GithubRepoAssociation;
   return repo
     && repo.type === 'github'
     && typeof repo.id === 'number';
 }
 
 export function isApp(d: object): d is App {
-  const details = <App>d;
+  const details = d as App;
   return details
     && typeof details === 'object'
     && typeof details.id === 'string'
@@ -169,12 +169,12 @@ export interface OAuthLogin {
 }
 
 export function isOAuthLoginResponse(r: APIResponse): r is Response<OAuthLogin> {
-  const res = <Response<OAuthLogin>>r;
+  const res = r as Response<OAuthLogin>;
   return isAPIResponseSuccess(res) && typeof res.data === 'object' && typeof res.data.redirect_url === 'string';
 }
 
 export function isSnapshot(s: object): s is Snapshot {
-  const snapshot = <Snapshot>s;
+  const snapshot = s as Snapshot;
   return snapshot
     && typeof snapshot.id === 'string'
     && typeof snapshot.sha === 'string'
@@ -185,7 +185,7 @@ export function isSnapshot(s: object): s is Snapshot {
 }
 
 export function isSnapshotResponse(r: APIResponse): r is Response<Snapshot> {
-  const res = <Response<Snapshot>>r;
+  const res = r as Response<Snapshot>;
   return isAPIResponseSuccess(res) && isSnapshot(res.data);
 }
 
@@ -202,21 +202,21 @@ export function isSnapshotListResponse(r: APIResponse): r is Response<Snapshot[]
 }
 
 export function isLogin(l: object): l is Login {
-  const login = <Login>l;
+  const login = l as Login;
   return login
     && isUser(login.user)
     && typeof login.token === 'string';
 }
 
 export function isLoginResponse(r: APIResponse): r is Response<Login> {
-  const res = <APIResponseSuccess>r;
+  const res = r as APIResponseSuccess;
   return isAPIResponseSuccess(res)
     && typeof res.data === 'object'
     && isLogin(res.data);
 }
 
 export function isUser(u: object): u is User {
-  const user = <User>u;
+  const user = u as User;
   return user
     && typeof user.id === 'number'
     && typeof user.email === 'string';
@@ -229,7 +229,7 @@ export function isUserResponse(r: APIResponse): r is Response<User> {
 }
 
 export function isSSHKey(k: object): k is SSHKey {
-  const key = <SSHKey>k;
+  const key = k as SSHKey;
   return key
     && typeof key.id === 'string'
     && typeof key.pubkey === 'string'
@@ -259,7 +259,7 @@ export function isSSHKeyResponse(r: APIResponse): r is Response<SSHKey> {
 }
 
 export function isSecurityProfile(o: object): o is SecurityProfile {
-  const obj = <SecurityProfile>o;
+  const obj = o as SecurityProfile;
   return obj && typeof obj === 'object'
     && typeof obj.name === 'string'
     && typeof obj.tag === 'string'
@@ -269,16 +269,16 @@ export function isSecurityProfile(o: object): o is SecurityProfile {
 }
 
 export function isSecurityProfileResponse(r: APIResponse): r is Response<SecurityProfile> {
-  const res = <Response<SecurityProfile>>r;
+  const res = r as Response<SecurityProfile>;
   return isAPIResponseSuccess(res) && isSecurityProfile(res.data);
 }
 
 export function isTreatableAilment(a: object): a is TreatableAilment {
-  const ailment = <TreatableAilment>a;
+  const ailment = a as TreatableAilment;
   return ailment && ailment.treatable && typeof ailment.getTreatmentSteps === 'function';
 }
 
 export function isIntegrationName(name: string): name is IntegrationName {
-  const n = <IntegrationName>name;
+  const n = name as IntegrationName;
   return INTEGRATION_NAMES.includes(n);
 }

@@ -116,6 +116,6 @@ export class CommServer extends events.EventEmitter implements ICommServerEventE
 }
 
 function isPayload(payload: object): payload is Payload {
-  const p = <Payload>payload;
+  const p = payload as Payload;
   return typeof p.event === 'string';
 }

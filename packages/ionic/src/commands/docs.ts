@@ -36,7 +36,7 @@ export class DocsCommand extends Command {
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 404) {
         this.env.log.warn(`Docs not found for your specific version of Ionic. Directing you to docs homepage.`);
-        opn('https://ionicframework.com/docs', { app: browser, wait: false });
+        await opn('https://ionicframework.com/docs', { app: browser, wait: false });
         return;
       }
 

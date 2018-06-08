@@ -14,7 +14,7 @@ export class SignupCommand extends Command {
     const opn = await import('opn');
     const dashUrl = await this.env.config.getDashUrl();
 
-    opn(`${dashUrl}/signup?source=cli`, { wait: false });
+    await opn(`${dashUrl}/signup?source=cli`, { wait: false });
 
     this.env.log.ok('Launched signup form in your browser!');
   }

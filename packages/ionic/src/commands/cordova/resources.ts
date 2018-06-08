@@ -202,7 +202,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
             list.push(str);
           }
           return list;
-        }, <string[]>[])
+        }, [] as string[])
         .map(v => `- ${chalk.bold(v)}`)
         .join('\n');
 
@@ -328,19 +328,19 @@ This command uses Ionic servers, so we require you to be logged into your free I
           nodeAttributes: [],
         };
       }
-      rc[img.platform][img.resType].images.push(<ResourcesImageConfig>{
+      rc[img.platform][img.resType].images.push({
         name: img.name,
         width: img.width,
         height: img.height,
         density: img.density,
-      });
+      } as ResourcesImageConfig);
       rc[img.platform][img.resType].nodeName = img.nodeName;
       rc[img.platform][img.resType].nodeAttributes = img.nodeAttributes;
 
       return rc;
-    }, <ResourcesConfig>{});
+    }, {} as ResourcesConfig);
 
-    const platformList = <KnownPlatform[]>Object.keys(imageResourcesForConfig);
+    const platformList = Object.keys(imageResourcesForConfig) as KnownPlatform[];
     await addResourcesToConfigXml(conf, platformList, imageResourcesForConfig);
 
     this.env.tasks.end();

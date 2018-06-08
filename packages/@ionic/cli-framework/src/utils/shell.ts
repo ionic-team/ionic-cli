@@ -125,7 +125,7 @@ export class ShellCommand {
       p: { value: p },
     });
 
-    return <any>promise;
+    return promise as any;
   }
 
   spawn(): ChildProcess {

@@ -27,7 +27,7 @@ export class AliasedMap<K, V> extends Map<AliasedMapKey | K, AliasedMapKey | V> 
     const aliasmap = new Map<AliasedMapKey, AliasedMapKey[]>();
 
     // TODO: waiting for https://github.com/Microsoft/TypeScript/issues/18562
-    const aliases = <[AliasedMapKey, AliasedMapKey][]>[...this.entries()].filter(([, v]) => typeof v === 'string' || typeof v === 'symbol');
+    const aliases = [...this.entries()].filter(([, v]) => typeof v === 'string' || typeof v === 'symbol') as [AliasedMapKey, AliasedMapKey][];
 
     aliases.forEach(([alias, cmd]) => {
       const cmdaliases = aliasmap.get(cmd) || [];

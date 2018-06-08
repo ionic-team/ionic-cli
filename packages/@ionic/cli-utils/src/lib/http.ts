@@ -180,7 +180,7 @@ export class TokenPaginator<T extends Response<object[]>> implements IPaginator<
   }
 
   isPageTokenResponseMeta(m: APIResponseMeta): m is APIResponsePageTokenMeta {
-    const meta = <APIResponsePageTokenMeta>m;
+    const meta = m as APIResponsePageTokenMeta;
     return meta
       && (!meta.prev_page_token || typeof meta.prev_page_token === 'string')
       && (!meta.next_page_token || typeof meta.next_page_token === 'string');
@@ -216,7 +216,7 @@ export function transformAPIResponse(r: ζsuperagent.Response): APIResponse {
     throw ERROR_UNKNOWN_CONTENT_TYPE;
   }
 
-  const j = <APIResponse>r.body;
+  const j = r.body as APIResponse;
 
   if (!j.meta) {
     throw ERROR_UNKNOWN_RESPONSE_FORMAT;

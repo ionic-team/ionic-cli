@@ -208,7 +208,7 @@ export class Logger {
     const self = this;
 
     return new class extends Writable {
-      _write(chunk: any, encoding: string, callback: Function) {
+      _write(chunk: any, encoding: string, callback: () => void) {
         self.log(self.createRecord(chunk.toString(), level, format));
         callback();
       }

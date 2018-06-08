@@ -20,13 +20,13 @@ export class Integration extends BaseIntegration {
 
   async installCapacitorCore() {
     const { npmClient } = await this.config.load();
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg: '@capacitor/core'});
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg: '@capacitor/core' });
     await this.shell.run(manager, managerArgs, { cwd: this.project.directory });
   }
 
   async installCapacitorCLI() {
     const { npmClient } = await this.config.load();
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg: '@capacitor/cli'});
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg: '@capacitor/cli' });
     await this.shell.run(manager, managerArgs, { cwd: this.project.directory });
   }
 

@@ -166,7 +166,7 @@ export async function createPromptModule({ interactive, onFallback }: CreateProm
     output: { value: manager },
   });
 
-  return <any>createPrompter;
+  return createPrompter as any;
 }
 
 export function createPromptChoiceSeparator(): ζinquirer.objects.Separator {
@@ -208,13 +208,13 @@ class BottomBarManager implements OutputStrategy, RedrawLine {
 
   get(): typeof ζinquirer.ui.BottomBar {
     if (!this.bottomBar) {
-      this.bottomBar = new this.BottomBar(<any>{ input: this.rawinput, output: this.rawoutput });
+      this.bottomBar = new this.BottomBar({ input: this.rawinput, output: this.rawoutput } as any);
 
       try {
         // the mute() call appears to be necessary, otherwise when answering
         // inquirer prompts upon pressing enter, a copy of the prompt is
         // printed to the screen and looks gross
-        (<any>this.bottomBar).rl.output.mute();
+        (this.bottomBar as any).rl.output.mute();
       } catch (e) {
         debug('Error while muting bottomBar output: %o', e);
       }

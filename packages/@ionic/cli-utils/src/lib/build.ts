@@ -56,13 +56,13 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
 
     if (project.type === 'angular') {
       const { AngularBuildRunner } = await import('./project/angular/build');
-      return new AngularBuildRunner({ ...deps, project: <ζprojectAngular.AngularProject>project });
+      return new AngularBuildRunner({ ...deps, project: project as ζprojectAngular.AngularProject });
     } else if (project.type === 'ionic-angular') {
       const { IonicAngularBuildRunner } = await import('./project/ionic-angular/build');
-      return new IonicAngularBuildRunner({ ...deps, project: <ζprojectIonicAngular.IonicAngularProject>project });
+      return new IonicAngularBuildRunner({ ...deps, project: project as ζprojectIonicAngular.IonicAngularProject });
     } else if (project.type === 'ionic1') {
       const { Ionic1BuildRunner } = await import('./project/ionic1/build');
-      return new Ionic1BuildRunner({ ...deps, project: <ζprojectIonic1.Ionic1Project>project });
+      return new Ionic1BuildRunner({ ...deps, project: project as ζprojectIonic1.Ionic1Project });
     } else {
       throw new RunnerNotFoundException(
         `Cannot perform build for ${project.type ? '' : 'unknown '}project type${project.type ? `: ${chalk.bold(project.type)}` : ''}.\n` +

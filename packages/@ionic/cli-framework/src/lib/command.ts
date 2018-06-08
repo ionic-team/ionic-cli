@@ -127,7 +127,7 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
     // TODO: typescript complains about `this`. Calling this method on
     // BaseNamespace would be unsafe if the class weren't abstract. Typescript
     // bug? I may be wrong.
-    return _locate(argv, <any>this, [[metadata.name, <any>this]]);
+    return _locate(argv, this as any, [[metadata.name, this as any]]);
   }
 
   /**
@@ -192,7 +192,7 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
     // TODO: typescript complains about `this`. Calling this method on
     // BaseNamespace would be unsafe if the class weren't abstract. Typescript
     // bug? I may be wrong.
-    return _getCommandMetadataList(<any>this, [[metadata.name, <any>this]]);
+    return _getCommandMetadataList(this as any, [[metadata.name, this as any]]);
   }
 
   async groupCommandsByNamespace(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<ReadonlyArray<HydratedNamespaceMetadata<C, N, M, I, O> & { commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>; }>> {

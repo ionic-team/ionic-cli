@@ -25,7 +25,7 @@ export function proxyConfigToMiddlewareConfig(proxy: ConfigFileProxy): ζproxyMi
   };
 
   if (proxy.proxyNoAgent) {
-    config.agent = <any>false; // TODO: type issue
+    config.agent = false as any; // TODO: type issue
   }
 
   if (proxy.rejectUnauthorized === false) {
@@ -69,11 +69,11 @@ export async function runServer(options: ServeOptions): Promise<ServeOptions> {
   const chokidar = await import('chokidar');
   const watcher = chokidar.watch(options.watchPatterns);
 
-  watcher.on('change', (filePath: string) => {
+  watcher.on('change', async (filePath: string) => {
     process.stdout.write(`${timestamp()} ${chalk.bold(filePath)} changed\n`);
 
     if (path.extname(filePath) === '.scss') {
-      runTask('sass');
+      await runTask('sass');
     } else {
       if (reloadfn) {
         reloadfn([filePath]);

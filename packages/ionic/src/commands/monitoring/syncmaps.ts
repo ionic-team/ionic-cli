@@ -133,7 +133,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
   async uploadSourcemap(sourcemap: APIResponseSuccess, file: string) {
     const { createRequest } = await import('@ionic/cli-utils/lib/utils/http');
 
-    const sm = <any>sourcemap;
+    const sm = sourcemap as any;
 
     const fileData = await fsReadFile(file, { encoding: 'utf8' });
     const sourcemapPost = sm.data.sourcemap_post;
