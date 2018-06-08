@@ -128,6 +128,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
 
   abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
   abstract serveProject(options: T): Promise<ServeDetails>;
+  abstract modifyOpenURL(url: string, options: T): string;
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
     const separatedArgs = options['--'];
@@ -236,10 +237,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
 
     if (options.open) {
       const openAddress = labAddress ? labAddress : localAddress;
-      const openURL = [openAddress]
-        .concat(options.browserOption ? [options.browserOption] : [])
-        .concat(options.platform ? ['?ionicplatform=', options.platform] : [])
-        .join('');
+      const openURL = this.modifyOpenURL(openAddress, options);
 
       const opn = await import('opn');
       await opn(openURL, { app: options.browser, wait: false });

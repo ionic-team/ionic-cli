@@ -82,6 +82,10 @@ export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
     };
   }
 
+  modifyOpenURL(url: string, options: IonicAngularServeOptions): string {
+    return `${url}${options.browserOption ? options.browserOption : ''}${options.platform ? `?ionicplatform=${options.platform}` : ''}`;
+  }
+
   async serveProject(options: IonicAngularServeOptions): Promise<ServeDetails> {
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
     const { port, livereloadPort, notificationPort } = await findOpenIonicPorts(options.address, options);
