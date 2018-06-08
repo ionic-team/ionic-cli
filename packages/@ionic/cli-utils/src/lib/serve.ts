@@ -60,6 +60,16 @@ export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
     type: Boolean,
     default: true,
   },
+  {
+    name: 'engine',
+    summary: `Target engine (e.g. ${['browser', 'cordova'].map(e => chalk.green(e)).join(', ')})`,
+    groups: [OptionGroup.Advanced],
+  },
+  {
+    name: 'platform',
+    summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => chalk.green(e)).join(', ')})`,
+    groups: [OptionGroup.Advanced],
+  },
 ];
 
 export interface ServeRunnerDeps {
@@ -127,7 +137,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       options['devapp'] = false;
     }
 
-    const engine = options['engine'] ? String(options['engine']) : 'browser';
+    const engine = this.determineEngineFromCommandLine(options);
     const address = options['address'] ? String(options['address']) : BIND_ALL_ADDRESS;
     const labPort = str2num(options['lab-port'], DEFAULT_LAB_PORT);
     const port = str2num(options['port'], DEFAULT_SERVER_PORT);
@@ -150,6 +160,18 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
       ssl: false,
     };
+  }
+
+  determineEngineFromCommandLine(options: CommandLineOptions): string {
+    if (options['engine']) {
+      return String(options['engine']);
+    }
+
+    if (options['cordova']) {
+      return 'cordova';
+    }
+
+    return 'browser';
   }
 
   async displayDevAppMessage(options: T) {

@@ -73,11 +73,6 @@ export class ServeCommand extends Command implements CommandPreRun {
         aliases: ['l'],
       },
       {
-        name: 'platform',
-        summary: `Start serve with a specific platform (${['android', 'ios'].map(t => chalk.green(t)).join(', ')})`,
-        aliases: ['t'],
-      },
-      {
         name: 'auth',
         summary: 'HTTP Basic Auth password to secure the server on your local network',
         type: String,

@@ -1,4 +1,4 @@
-import { BaseError } from '@ionic/cli-framework';
+import { BaseError, OptionGroup } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
 import { PROJECT_FILE } from '../constants';
@@ -19,11 +19,12 @@ export const COMMON_BUILD_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
   {
     name: 'engine',
     summary: `Target engine (e.g. ${['browser', 'cordova'].map(e => chalk.green(e)).join(', ')})`,
-    default: 'browser',
+    groups: [OptionGroup.Advanced],
   },
   {
     name: 'platform',
     summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => chalk.green(e)).join(', ')})`,
+    groups: [OptionGroup.Advanced],
   },
 ];
 
@@ -78,9 +79,21 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
   createBaseOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): BaseBuildOptions {
     const separatedArgs = options['--'];
     const platform = options['platform'] ? String(options['platform']) : undefined;
-    const engine = options['engine'] ? String(options['engine']) : 'browser';
+    const engine = this.determineEngineFromCommandLine(options);
 
     return { '--': separatedArgs ? separatedArgs : [], engine, platform };
+  }
+
+  determineEngineFromCommandLine(options: CommandLineOptions): string {
+    if (options['engine']) {
+      return String(options['engine']);
+    }
+
+    if (options['cordova']) {
+      return 'cordova';
+    }
+
+    return 'browser';
   }
 
   async beforeBuild(options: T): Promise<void> {
