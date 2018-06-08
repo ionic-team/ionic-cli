@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { cacheFileChecksum, pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { cacheFileChecksum, pathExists } from '@ionic/cli-framework/utils/fs';
 
 import {
   CommandInstanceInfo,

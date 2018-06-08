@@ -2,8 +2,8 @@ import chalk from 'chalk';
 
 import { OptionGroup, contains, validate, validators } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
 import { CordovaCommand } from './base';
 

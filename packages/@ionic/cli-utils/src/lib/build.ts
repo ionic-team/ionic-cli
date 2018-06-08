@@ -1,12 +1,11 @@
+import { BaseError } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
-import { BaseError } from '@ionic/cli-framework';
-
-import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironment, Runner } from '../definitions';
 import { PROJECT_FILE } from '../constants';
+import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironment, Runner } from '../definitions';
+
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Hook } from './hooks';
-
 import * as ζprojectAngular from './project/angular';
 import * as ζprojectAngularBuild from './project/angular/build';
 import * as ζprojectIonicAngular from './project/ionic-angular';

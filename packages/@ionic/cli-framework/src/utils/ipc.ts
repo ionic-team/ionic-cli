@@ -1,9 +1,9 @@
-import * as fs from 'fs';
 import { ChildProcess } from 'child_process';
-
 import * as Debug from 'debug';
+import * as fs from 'fs';
 
 import { ERROR_IPC_UNKNOWN_PROCEDURE, IPCError } from '../errors';
+
 import { fork } from './shell';
 
 const debug = Debug('ionic:cli-framework:utils:ipc');

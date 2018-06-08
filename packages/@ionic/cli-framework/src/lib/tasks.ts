@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 
 import { OutputStrategy } from '../definitions';
 import { isRedrawLine } from '../guards';
+
 import { Colors, DEFAULT_COLORS } from './colors';
 
 const isWindows = process.platform === 'win32';

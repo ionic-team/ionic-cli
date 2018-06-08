@@ -1,11 +1,9 @@
-import * as fs from 'fs';
-import * as path from 'path';
-
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { fsMkdirp, getFileChecksums, readDir } from '@ionic/cli-framework/utils/fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
-
-import { fsMkdirp, getFileChecksums, readDir } from '@ionic/cli-framework/utils/fs';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
+import * as fs from 'fs';
+import * as path from 'path';
 
 import {
   ImageResource,
@@ -15,10 +13,10 @@ import {
   ResourcesConfig,
   SourceImage,
 } from '../../../definitions';
-
-import { createRequest } from '../../utils/http';
 import { FatalException } from '../../errors';
 import { formatResponseError } from '../../http';
+import { createRequest } from '../../utils/http';
+
 import { ConfigXml } from './config';
 
 const debug = Debug('ionic:cli-utils:lib:integrations:cordova:resources');

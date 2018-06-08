@@ -1,5 +1,5 @@
-import * as ts from 'typescript';
 import { camelCase, kebabCase, upperFirst } from 'lodash';
+import * as ts from 'typescript';
 
 import { Path, join, normalize } from '@angular-devkit/core';
 

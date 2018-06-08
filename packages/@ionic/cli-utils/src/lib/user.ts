@@ -1,5 +1,6 @@
 import { GithubBranch, GithubRepo, IClient, IPaginator, ResourceClientLoad, ResourceClientRequestModifiers, Response, TokenPaginatorState, User } from '../definitions';
 import { isGithubBranchListResponse, isGithubRepoListResponse, isOAuthLoginResponse, isUserResponse } from '../guards';
+
 import { ResourceClient, TokenPaginator, createFatalAPIFormat } from './http';
 
 export interface UserClientDeps {

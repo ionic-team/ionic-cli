@@ -1,7 +1,7 @@
 import * as path from 'path';
 
-import chalk from 'chalk';
 import { fsReadFile } from '@ionic/cli-framework/utils/fs';
+import chalk from 'chalk';
 
 import * as ζexpress from 'express';
 import * as ζproxyMiddleware from 'http-proxy-middleware';

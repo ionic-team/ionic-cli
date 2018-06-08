@@ -1,9 +1,9 @@
-import chalk from 'chalk';
 import { OptionGroup } from '@ionic/cli-framework';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, isSuperAgentError } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { createRequest } from '@ionic/cli-utils/lib/utils/http';
 import { BROWSERS } from '@ionic/cli-utils/lib/serve';
+import { createRequest } from '@ionic/cli-utils/lib/utils/http';
+import chalk from 'chalk';
 
 export class DocsCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {

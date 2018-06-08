@@ -2,8 +2,8 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1BuildOptions } from '../../../definitions';
-
 import { BUILD_SCRIPT, BuildRunner, BuildRunnerDeps } from '../../build';
+
 import { Ionic1Project } from './';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic1:build');

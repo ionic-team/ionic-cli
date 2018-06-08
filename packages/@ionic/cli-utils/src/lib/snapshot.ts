@@ -1,6 +1,6 @@
 import { IClient, IPaginator, PaginateArgs, ResourceClientLoad, ResourceClientPaginate, Response, Snapshot } from '../definitions';
-
 import { isSnapshotListResponse, isSnapshotResponse } from '../guards';
+
 import { ResourceClient, createFatalAPIFormat } from './http';
 
 export interface SnapshotClientDeps {

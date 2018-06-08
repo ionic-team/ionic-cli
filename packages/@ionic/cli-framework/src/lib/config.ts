@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import * as lodash from 'lodash';
+import * as path from 'path';
 
 import { makeDir, writeFileAtomicSync } from '../utils/fs';
 

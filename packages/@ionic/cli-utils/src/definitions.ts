@@ -1,5 +1,5 @@
-import * as fs from 'fs';
 import { ChildProcess, SpawnOptions } from 'child_process';
+import * as fs from 'fs';
 
 import * as ζsuperagent from 'superagent';
 

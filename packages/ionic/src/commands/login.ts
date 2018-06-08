@@ -2,8 +2,8 @@ import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { Command } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
 import { generateUUID } from '@ionic/cli-utils/lib/utils/uuid';
 

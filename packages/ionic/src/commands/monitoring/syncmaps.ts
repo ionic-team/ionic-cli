@@ -3,8 +3,8 @@ import * as path from 'path';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { fsReadFile, pathExists, readDir } from '@ionic/cli-framework/utils/fs';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
+import { fsReadFile, pathExists, readDir } from '@ionic/cli-framework/utils/fs';
 import { APIResponseSuccess, CommandLineInputs, CommandLineOptions, CommandMetadata, isSuperAgentError } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';

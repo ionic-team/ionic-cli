@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
 import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
 import { BuildRunner, COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
+import { Command } from '@ionic/cli-utils/lib/command';
 import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
 
 export class BuildCommand extends Command implements CommandPreRun {

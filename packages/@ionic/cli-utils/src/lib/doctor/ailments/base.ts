@@ -1,4 +1,5 @@
 import * as Debug from 'debug';
+
 import { DoctorAilmentId, IAilment, IAilmentRegistry, IClient, IConfig, ILogger, IProject, ISession, IShell, PatientTreatmentStep, ProjectType } from '../../../definitions';
 
 export interface AilmentDeps {

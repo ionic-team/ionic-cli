@@ -1,11 +1,12 @@
-import { Observable, of } from 'rxjs';
-import { concatMap, tap } from 'rxjs/operators';
 import { BuildEvent, Builder, BuilderConfiguration, BuilderContext } from '@angular-devkit/architect';
 // https://github.com/angular/devkit/issues/963
-const { BrowserBuilder } = require('@angular-devkit/build-angular/src/browser'); // tslint:disable-line
 import { getSystemPath, join, normalize } from '@angular-devkit/core';
+import { Observable, of } from 'rxjs';
+import { concatMap, tap } from 'rxjs/operators';
 
 import { CordovaBuildBuilderSchema } from './schema';
+
+const { BrowserBuilder } = require('@angular-devkit/build-angular/src/browser'); // tslint:disable-line
 
 export { CordovaBuildBuilderSchema };
 

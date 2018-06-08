@@ -1,30 +1,28 @@
-import * as os from 'os';
-import * as path from 'path';
-import { ChildProcess } from 'child_process';
-import { EventEmitter } from 'events';
-
-import chalk from 'chalk';
-import * as Debug from 'debug';
-import * as lodash from 'lodash';
-import * as through2 from 'through2';
-import * as split2 from 'split2';
-
 import { BaseError, LOGGER_LEVELS, NetworkInterface, OptionGroup, PromptModule, createPrefixedFormatter } from '@ionic/cli-framework';
-import { onBeforeExit, processExit } from '@ionic/cli-framework/utils/process';
-import { str2num } from '@ionic/cli-framework/utils/string';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { findClosestOpenPort, getExternalIPv4Interfaces } from '@ionic/cli-framework/utils/network';
+import { onBeforeExit, processExit } from '@ionic/cli-framework/utils/process';
+import { str2num } from '@ionic/cli-framework/utils/string';
+import chalk from 'chalk';
+import { ChildProcess } from 'child_process';
+import * as Debug from 'debug';
+import { EventEmitter } from 'events';
+import * as lodash from 'lodash';
+import * as os from 'os';
+import * as path from 'path';
+import * as split2 from 'split2';
+import * as through2 from 'through2';
 
+import { ASSETS_DIRECTORY, PROJECT_FILE } from '../constants';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, Runner, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
-import { ASSETS_DIRECTORY, PROJECT_FILE } from '../constants';
+
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Hook } from './hooks';
-import { PkgManagerOptions } from './utils/npm';
-
 import * as ζprojectAngularServe from './project/angular/serve';
 import * as ζprojectIonicAngularServe from './project/ionic-angular/serve';
 import * as ζprojectIonic1Serve from './project/ionic1/serve';
+import { PkgManagerOptions } from './utils/npm';
 
 const debug = Debug('ionic:cli-utils:lib:serve');
 
@@ -501,7 +499,7 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
           `A utility CLI has unexpectedly closed.\n` +
           'The Ionic CLI will exit. Please check any output above for error details.'
         );
-        processExit(1);
+        processExit(1); // tslint:disable-line:no-floating-promises
       });
     });
 

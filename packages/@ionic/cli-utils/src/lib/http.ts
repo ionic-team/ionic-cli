@@ -1,14 +1,13 @@
-import * as util from 'util';
-
 import chalk from 'chalk';
 import * as lodash from 'lodash';
-
 import * as ζsuperagent from 'superagent';
+import * as util from 'util';
 
 import { APIResponse, APIResponseMeta, APIResponsePageTokenMeta, APIResponseSuccess, HttpMethod, IClient, IConfig, IPaginator, PagePaginatorState, PaginateArgs, PaginatorDeps, PaginatorGuard, PaginatorRequestGenerator, ResourceClientRequestModifiers, Response, SuperAgentError, TokenPaginatorState } from '../definitions';
 import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
-import { createRequest } from './utils/http';
+
 import { FatalException } from './errors';
+import { createRequest } from './utils/http';
 
 const FORMAT_ERROR_BODY_MAX_LENGTH = 1000;
 export const CONTENT_TYPE_JSON = 'application/json';

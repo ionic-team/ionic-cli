@@ -1,6 +1,6 @@
+import { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort } from '@ionic/cli-framework/utils/network';
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort } from '@ionic/cli-framework/utils/network';
 
 import { FatalException } from '../errors';
 

@@ -1,13 +1,12 @@
-import * as path from 'path';
-
+import { conform } from '@ionic/cli-framework/utils/array';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
+import * as path from 'path';
 
-import { conform } from '@ionic/cli-framework/utils/array';
-
-import { HookFn, HookInput, HookName, IConfig, IProject, IShell } from '../definitions';
 import { PROJECT_FILE } from '../constants';
+import { HookFn, HookInput, HookName, IConfig, IProject, IShell } from '../definitions';
+
 import { HookException } from './errors';
 
 const debug = Debug('ionic:cli-utils:lib:hooks');

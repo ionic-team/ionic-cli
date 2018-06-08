@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
-import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { pathExists } from '@ionic/cli-framework/utils/fs';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';

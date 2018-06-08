@@ -1,10 +1,10 @@
+import { ERROR_FILE_NOT_FOUND, fsReadFile, fsStat } from '@ionic/cli-framework/utils/fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { ERROR_FILE_NOT_FOUND, fsReadFile, fsStat } from '@ionic/cli-framework/utils/fs';
-
 import { IClient, IPaginator, PaginateArgs, PaginatorState, ResourceClientCreate, ResourceClientDelete, ResourceClientLoad, ResourceClientPaginate, Response, SSHKey } from '../definitions';
 import { isSSHKeyListResponse, isSSHKeyResponse } from '../guards';
+
 import { ResourceClient, createFatalAPIFormat } from './http';
 
 export const ERROR_SSH_MISSING_PRIVKEY = 'SSH_MISSING_PRIVKEY';

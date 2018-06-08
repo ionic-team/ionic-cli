@@ -2,11 +2,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import * as makeDir from 'make-dir';
-import * as wfa from 'write-file-atomic';
 import * as ζncp from 'ncp';
+import * as wfa from 'write-file-atomic';
 
-import { promisify } from './promise';
 import { compilePaths } from './path';
+import { promisify } from './promise';
 
 export const ERROR_FILE_NOT_FOUND = 'FILE_NOT_FOUND';
 export const ERROR_FILE_INVALID_JSON = 'FILE_INVALID_JSON';

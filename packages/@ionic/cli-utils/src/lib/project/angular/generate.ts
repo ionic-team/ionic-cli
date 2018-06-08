@@ -3,8 +3,8 @@ import chalk from 'chalk';
 import { CommandGroup } from '@ionic/cli-framework';
 
 import { CommandMetadata, GenerateOptions } from '../../../definitions';
-import { GenerateRunner as BaseGenerateRunner } from '../../generate';
 import { FatalException } from '../../errors';
+import { GenerateRunner as BaseGenerateRunner } from '../../generate';
 
 const description = `
 Use ${chalk.green('npx ng generate')} to generate framework components. See the documentation${chalk.cyan('[1]')} for details.

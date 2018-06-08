@@ -1,6 +1,6 @@
-import * as os from 'os';
 import * as dgram from 'dgram';
 import * as events from 'events';
+import * as os from 'os';
 
 import * as Debug from 'debug';
 import { Netmask } from 'netmask';

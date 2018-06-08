@@ -1,3 +1,5 @@
+import { BaseCommandMap, BaseNamespace, BaseNamespaceMap } from '@ionic/cli-framework';
+
 import {
   CommandMetadata,
   CommandMetadataInput,
@@ -6,8 +8,6 @@ import {
   INamespace,
   IonicEnvironment,
 } from '../definitions';
-
-import { BaseCommandMap, BaseNamespace, BaseNamespaceMap } from '@ionic/cli-framework';
 
 export class CommandMap extends BaseCommandMap<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
 export class NamespaceMap extends BaseNamespaceMap<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}

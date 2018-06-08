@@ -1,11 +1,11 @@
+import { AbstractExecutor, metadataOptionsToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { AbstractExecutor, metadataOptionsToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
-
-import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace } from '../definitions';
 import { PROJECT_FILE } from '../constants';
+import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace } from '../definitions';
 import { isCommand } from '../guards';
+
 import { FatalException } from './errors';
 
 export interface ExecutorDeps {

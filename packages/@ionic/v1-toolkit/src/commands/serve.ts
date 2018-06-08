@@ -1,13 +1,13 @@
-import * as path from 'path';
 import chalk from 'chalk';
+import * as path from 'path';
 
 import { Command, CommandLineInputs, CommandLineOptions } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
 
 import { Config } from '../lib/config';
 import { hasTask, runTask } from '../lib/gulp';
-import { WATCH_PATTERNS, proxyConfigToMiddlewareConfig, runServer } from '../lib/serve';
 import { timestamp } from '../lib/log';
+import { WATCH_PATTERNS, proxyConfigToMiddlewareConfig, runServer } from '../lib/serve';
 
 export class ServeCommand extends Command {
   async getMetadata() {

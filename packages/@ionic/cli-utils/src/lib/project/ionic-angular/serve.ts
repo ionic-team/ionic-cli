@@ -1,19 +1,19 @@
-import chalk from 'chalk';
-import * as Debug from 'debug';
-import * as through2 from 'through2';
-import * as split2 from 'split2';
-
 import { LOGGER_LEVELS, OptionGroup, ParsedArgs, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
+import { isHostConnectable } from '@ionic/cli-framework/utils/network';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
-import { isHostConnectable } from '@ionic/cli-framework/utils/network';
+import chalk from 'chalk';
+import * as Debug from 'debug';
+import * as split2 from 'split2';
+import * as through2 from 'through2';
 
+import { prettyProjectName } from '../';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularServeOptions, ServeDetails } from '../../../definitions';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
-import { prettyProjectName } from '../';
-import { APP_SCRIPTS_OPTIONS } from './app-scripts';
 import { findOpenIonicPorts } from '../common';
+
+import { APP_SCRIPTS_OPTIONS } from './app-scripts';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:serve');
 

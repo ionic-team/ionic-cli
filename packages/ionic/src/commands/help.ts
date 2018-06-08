@@ -1,7 +1,7 @@
-import chalk from 'chalk';
 import { CommandGroup } from '@ionic/cli-framework';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, isCommand } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
+import chalk from 'chalk';
 
 export class HelpCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {

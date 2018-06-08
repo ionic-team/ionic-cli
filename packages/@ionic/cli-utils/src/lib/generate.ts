@@ -1,11 +1,10 @@
+import { PromptModule } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
-import { PromptModule } from '@ionic/cli-framework';
-
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions, IConfig, ILogger, IProject, IShell, IonicEnvironment, Runner } from '../definitions';
+
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { prettyProjectName } from './project';
-
 import * as ζangularProjectGenerate from './project/angular/generate';
 import * as ζionicAngularProjectGenerate from './project/ionic-angular/generate';
 

@@ -1,5 +1,5 @@
-import * as os from 'os';
 import * as net from 'net';
+import * as os from 'os';
 
 import * as Debug from 'debug';
 

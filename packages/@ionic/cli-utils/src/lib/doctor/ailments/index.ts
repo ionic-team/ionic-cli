@@ -1,8 +1,8 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
-import * as semver from 'semver';
 import * as lodash from 'lodash';
+import * as semver from 'semver';
 
 import { fsReadDir, fsReadFile } from '@ionic/cli-framework/utils/fs';
 import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
@@ -10,9 +10,9 @@ import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cl
 import { IAilmentRegistry, TreatableAilment } from '../../../definitions';
 import { AppClient } from '../../app';
 import { getIonicRemote, isRepoInitialized } from '../../git';
-import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
-import { getPlatforms } from '../../integrations/cordova/project';
 import { loadConfigXml } from '../../integrations/cordova/config';
+import { getPlatforms } from '../../integrations/cordova/project';
+import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 
 import { Ailment, AilmentDeps } from './base';
 

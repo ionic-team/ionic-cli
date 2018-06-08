@@ -2,14 +2,14 @@ import chalk from 'chalk';
 import * as semver from 'semver';
 
 import { IAilmentRegistry, ProjectType, TreatableAilment } from '../../../definitions';
-import { Ailment, AilmentDeps } from '../../doctor/ailments';
-import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 import { BUILD_SCRIPT } from '../../build';
+import { Ailment, AilmentDeps } from '../../doctor/ailments';
 import { SERVE_SCRIPT } from '../../serve';
-import { DEFAULT_BUILD_SCRIPT_VALUE } from './build';
-import { DEFAULT_SERVE_SCRIPT_VALUE } from './serve';
+import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 
 import { IonicAngularProject } from './';
+import { DEFAULT_BUILD_SCRIPT_VALUE } from './build';
+import { DEFAULT_SERVE_SCRIPT_VALUE } from './serve';
 
 export async function registerAilments(registry: IAilmentRegistry, deps: IonicAngularAilmentDeps): Promise<void> {
   registry.register(new IonicAngularUpdateAvailable(deps));

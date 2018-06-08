@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { App, AppAssociation, AssociationType, IClient, IPaginator, PaginateArgs, PaginatorState, ResourceClientCreate, ResourceClientLoad, ResourceClientPaginate, Response } from '../definitions';
 import { isAppAssociationResponse, isAppResponse, isAppsResponse } from '../guards';
+
 import { ResourceClient, createFatalAPIFormat } from './http';
 
 export function formatName(app: Pick<App, 'name' | 'org'>) {

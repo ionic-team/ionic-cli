@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
+import { CommandMetadataOption } from '@ionic/cli-framework/definitions';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
-import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
-import { CommandMetadataOption } from '@ionic/cli-framework/definitions';
 import { NG_BUILD_OPTIONS } from '@ionic/cli-utils/lib/project/angular/build';
+import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
 
 import { COMMON_CORDOVA_BUILD_COMMAND_OPTIONS, CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 

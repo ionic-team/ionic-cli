@@ -1,5 +1,5 @@
-import { InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../../definitions';
 import { BaseIntegration } from '../';
+import { InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../../definitions';
 
 export class Integration extends BaseIntegration {
   readonly name: IntegrationName = 'cordova';

@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import * as through2 from 'through2';
 import * as split2 from 'split2';
+import * as through2 from 'through2';
 
 import { CommandGroup, LOGGER_LEVELS, OptionGroup, ParsedArgs, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
-import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { findClosestOpenPort, isHostConnectable } from '@ionic/cli-framework/utils/network';
+import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';

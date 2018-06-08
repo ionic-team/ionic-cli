@@ -5,12 +5,12 @@ import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
 import { TaskChain } from '@ionic/cli-framework';
-import { ERROR_FILE_INVALID_JSON, fsReadJsonFile, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
+import { ERROR_FILE_INVALID_JSON, fsReadJsonFile, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
 
-import { IAilmentRegistry, IConfig, IIntegration, ILogger, IProject, IShell, InfoItem, IntegrationName, PackageJson, ProjectFile, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
+import { IAilmentRegistry, IConfig, IIntegration, ILogger, IProject, IShell, InfoItem, IntegrationName, PackageJson, ProjectFile, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { BaseConfig } from '../config';
 import { FatalException } from '../errors';
 import { BaseIntegration } from '../integrations';
@@ -18,9 +18,9 @@ import { BaseIntegration } from '../integrations';
 import * as ζdoctor from '../doctor';
 
 import * as ζangular from './angular';
+import * as ζcustom from './custom';
 import * as ζionicAngular from './ionic-angular';
 import * as ζionic1 from './ionic1';
-import * as ζcustom from './custom';
 
 const debug = Debug('ionic:cli-utils:lib:project');
 

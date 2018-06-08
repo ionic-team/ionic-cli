@@ -1,10 +1,10 @@
 import * as Debug from 'debug';
-
 import * as ζleek from 'leek';
 
 import { IClient, IConfig, IProject, ISession, ITelemetry, InfoItem, IonicContext } from '../definitions';
-import { generateUUID } from './utils/uuid';
+
 import { sendMessage } from './helper';
+import { generateUUID } from './utils/uuid';
 
 const debug = Debug('ionic:cli-utils:lib:telemetry');
 const GA_CODE = 'UA-44023830-30';

@@ -1,10 +1,10 @@
 import * as path from 'path';
 
-import chalk from 'chalk';
-import * as et from 'elementtree';
-import * as Debug from 'debug';
-import { fsReadFile, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { fsReadFile, fsWriteFile } from '@ionic/cli-framework/utils/fs';
+import chalk from 'chalk';
+import * as Debug from 'debug';
+import * as et from 'elementtree';
 
 import { IProject, ResourcesPlatform } from '../../../definitions';
 import { FatalException } from '../../errors';

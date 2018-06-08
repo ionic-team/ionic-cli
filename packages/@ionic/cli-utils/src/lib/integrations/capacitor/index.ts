@@ -1,5 +1,5 @@
-import { IIntegrationAddOptions, InfoItem, IntegrationName } from '../../../definitions';
 import { BaseIntegration } from '../';
+import { IIntegrationAddOptions, InfoItem, IntegrationName } from '../../../definitions';
 import { pkgManagerArgs } from '../../utils/npm';
 
 export class Integration extends BaseIntegration {

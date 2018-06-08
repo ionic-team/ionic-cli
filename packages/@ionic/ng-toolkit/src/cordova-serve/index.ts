@@ -1,13 +1,14 @@
-import * as ζfs from 'fs';
-
-import { Observable, of } from 'rxjs';
-import { concatMap, tap } from 'rxjs/operators';
 import { BuildEvent, Builder, BuilderConfiguration, BuilderContext, BuilderDescription } from '@angular-devkit/architect';
 import { Path, virtualFs } from '@angular-devkit/core';
-const { DevServerBuilder } = require('@angular-devkit/build-angular/src/dev-server'); // tslint:disable-line
+import * as ζfs from 'fs';
+import { Observable, of } from 'rxjs';
+import { concatMap, tap } from 'rxjs/operators';
 
 import { CordovaBuildBuilder } from '../cordova-build';
+
 import { CordovaServeBuilderSchema } from './schema';
+
+const { DevServerBuilder } = require('@angular-devkit/build-angular/src/dev-server'); // tslint:disable-line
 
 export class CordovaServeBuilder implements Builder<CordovaServeBuilderSchema> {
   constructor(public context: BuilderContext) {}

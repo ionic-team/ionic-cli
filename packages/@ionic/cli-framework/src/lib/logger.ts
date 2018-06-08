@@ -1,12 +1,12 @@
-import * as util from 'util';
-import { Writable } from 'stream';
-
 import chalk, { Chalk } from 'chalk';
 import * as lodash from 'lodash';
+import { Writable } from 'stream';
+import * as util from 'util';
 
-import { Colors, DEFAULT_COLORS } from './colors';
 import { WordWrapOptions, stringWidth, wordWrap } from '../utils/format';
 import { enforceLF } from '../utils/string';
+
+import { Colors, DEFAULT_COLORS } from './colors';
 
 export interface LogRecord {
   msg: string;

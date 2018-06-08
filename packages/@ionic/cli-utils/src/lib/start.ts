@@ -1,13 +1,9 @@
+import { ERROR_FILE_INVALID_JSON, ERROR_FILE_NOT_FOUND, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import chalk from 'chalk';
-
-import {
-  ERROR_FILE_INVALID_JSON,
-  ERROR_FILE_NOT_FOUND,
-  fsReadJsonFile,
-} from '@ionic/cli-framework/utils/fs';
 
 import { IConfig, StarterList, StarterManifest, StarterTemplate } from '../definitions';
 import { isStarterManifest } from '../guards';
+
 import { emoji } from './utils/emoji';
 import { createRequest } from './utils/http';
 

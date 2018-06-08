@@ -1,9 +1,10 @@
+import { CommandGroup, OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import { CommandGroup, OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 
 import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { BUILD_SCRIPT, BuildRunner, BuildRunnerDeps } from '../../build';
+
 import { AngularProject } from './';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:build');

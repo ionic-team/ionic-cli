@@ -1,10 +1,10 @@
+import { contains, unparseArgs, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
-import { contains, unparseArgs, validators } from '@ionic/cli-framework';
-
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularGenerateOptions } from '../../../definitions';
-import { importAppScripts } from './app-scripts';
 import { GenerateRunner as BaseGenerateRunner } from '../../generate';
+
+import { importAppScripts } from './app-scripts';
 
 const GENERATOR_TYPES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
 

@@ -1,12 +1,12 @@
+import { unparseArgs } from '@ionic/cli-framework';
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import { unparseArgs } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularBuildOptions } from '../../../definitions';
-
 import { BUILD_SCRIPT, BuildRunner, BuildRunnerDeps } from '../../build';
-import { APP_SCRIPTS_OPTIONS } from './app-scripts';
+
 import { IonicAngularProject } from './';
+import { APP_SCRIPTS_OPTIONS } from './app-scripts';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:build');
 

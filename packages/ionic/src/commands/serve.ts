@@ -4,8 +4,8 @@ import * as lodash from 'lodash';
 import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, ServeOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT, ServeRunner } from '@ionic/cli-utils/lib/serve';
 import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
+import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT, ServeRunner } from '@ionic/cli-utils/lib/serve';
 
 export class ServeCommand extends Command implements CommandPreRun {
   protected runner?: ServeRunner<ServeOptions>;

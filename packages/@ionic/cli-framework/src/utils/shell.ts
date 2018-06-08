@@ -1,6 +1,6 @@
+import { ChildProcess, ForkOptions, SpawnOptions, fork as _fork } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { ChildProcess, ForkOptions, SpawnOptions, fork as _fork } from 'child_process';
 
 import * as crossSpawn from 'cross-spawn';
 

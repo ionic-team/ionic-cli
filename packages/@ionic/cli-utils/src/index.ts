@@ -7,18 +7,18 @@ import { LOGGER_LEVELS, createPromptModule, createTaskChainWithOutput, parseArgs
 import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
 
+import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { PROJECT_FILE } from './constants';
 import { IProject, InfoItem, IonicContext, IonicEnvironment } from './definitions';
-import { OutsideProject, Project, ProjectDeps } from './lib/project';
-import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
-import { Client } from './lib/http';
 import { Environment } from './lib/environment';
-import { PROXY_ENVIRONMENT_VARIABLES } from './lib/utils/http';
-import { Logger } from './lib/utils/logger';
+import { Client } from './lib/http';
+import { OutsideProject, Project, ProjectDeps } from './lib/project';
+import { createOnFallback } from './lib/prompts';
 import { ProSession } from './lib/session';
 import { Shell } from './lib/shell';
-import { createOnFallback } from './lib/prompts';
+import { PROXY_ENVIRONMENT_VARIABLES } from './lib/utils/http';
+import { Logger } from './lib/utils/logger';
 
 export * from './definitions';
 export * from './constants';

@@ -1,16 +1,15 @@
 import { EventEmitter } from 'events';
-
 import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, IExecutor, INamespace, NamespaceLocateResult } from '../definitions';
 import { BaseError, InputValidationError } from '../errors';
 import { isCommand, isNamespace } from '../guards';
+import * as ζipc from '../utils/ipc';
 
 import { Colors, DEFAULT_COLORS } from './colors';
 import { Command, Namespace } from './command';
 import { CommandHelpSchema, CommandSchemaHelpFormatter, CommandStringHelpFormatter, HelpFormatter, NamespaceHelpSchema, NamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter } from './help';
 import { metadataOptionsToParseArgsOptions, parseArgs, stripOptions } from './options';
-import * as ζipc from '../utils/ipc';
 
 export type HelpRPC<S extends CommandHelpSchema | NamespaceHelpSchema> = ζipc.RPC<'help', [ReadonlyArray<string>], S>;
 

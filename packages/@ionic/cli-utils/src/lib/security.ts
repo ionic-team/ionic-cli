@@ -1,5 +1,6 @@
 import { IClient, ResourceClientLoad, SecurityProfile } from '../definitions';
 import { isSecurityProfileResponse } from '../guards';
+
 import { ResourceClient, createFatalAPIFormat } from './http';
 
 export interface SecurityClientDeps {
