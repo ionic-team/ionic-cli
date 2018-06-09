@@ -64,8 +64,7 @@ export const CORDOVA_BUILD_EXAMPLE_COMMANDS = [
 
 export abstract class CordovaCommand extends Command {
   async checkCordova(runinfo: CommandInstanceInfo) {
-    const project = await this.env.project.load();
-    const projectConfig = project.projects[this.env.project.name];
+    const projectConfig = await this.env.project.load();
 
     if (projectConfig.integrations.cordova && projectConfig.integrations.cordova.enabled === false) {
       return;

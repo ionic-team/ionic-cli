@@ -1,17 +1,20 @@
+
+import * as Debug from 'debug';
 import * as path from 'path';
 
 import chalk from 'chalk';
-import * as Debug from 'debug';
 
 import { LOGGER_LEVELS, createPromptModule, createTaskChainWithOutput, parseArgs } from '@ionic/cli-framework';
-import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
+import { findBaseDirectory, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
 
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { PROJECT_FILE } from './constants';
 import { IProject, InfoItem, IonicContext, IonicEnvironment } from './definitions';
+import { isMultiProjectConfig } from './guards';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
 import { Environment } from './lib/environment';
+import { FatalException } from './lib/errors';
 import { Client } from './lib/http';
 import { OutsideProject, Project, ProjectDeps } from './lib/project';
 import { createOnFallback } from './lib/prompts';
@@ -19,8 +22,6 @@ import { ProSession } from './lib/session';
 import { Shell } from './lib/shell';
 import { PROXY_ENVIRONMENT_VARIABLES } from './lib/utils/http';
 import { Logger } from './lib/utils/logger';
-import { fsReadJsonFile } from "@ionic/cli-framework/utils/fs";
-import { FatalException } from "./lib/errors";
 
 export * from './definitions';
 export * from './constants';
@@ -28,7 +29,7 @@ export * from './guards';
 
 const debug = Debug('ionic:cli-utils');
 
-export async function getProject(projectDir: string, projectName: string, deps: ProjectDeps): Promise<IProject> {
+export async function getProject(projectDir: string, projectName: string | undefined, deps: ProjectDeps): Promise<IProject> {
   const projectFilePath = path.resolve(projectDir, PROJECT_FILE);
   let projectFile: { [key: string]: any; } | undefined;
   let projectConfig: any;
@@ -40,15 +41,20 @@ export async function getProject(projectDir: string, projectName: string, deps: 
   }
 
   if (projectFile) {
-    projectName = projectName === 'default' ? projectFile.defaultProject : projectName;
-    projectConfig = projectFile.projects[projectName];
+    // Edge case where defaultProject is used with a single project
+    projectName = projectName || projectFile.defaultProject;
 
-    debug(`Project name: ${chalk.bold(projectName)}`);
+    if (isMultiProjectConfig(projectFile)) {
+      projectName = projectName || projectFile.defaultProject;
+      projectConfig = projectFile.projects[projectName];
 
-    if (!projectConfig) {
-      throw projectFile.defaultProject
-        ? new FatalException(`${chalk.bold(`projects.${projectName}`)} was not found in ${chalk.bold('ionic.json')}.`)
-        : new FatalException(`Please set a ${chalk.bold('defaultProject')} in ${chalk.bold('ionic.json')} or specify the project using ${chalk.bold('--project')}`);
+      debug(`Project name: ${chalk.bold(projectName)}`);
+
+      if (!projectConfig) {
+        throw projectName
+          ? new FatalException(`${chalk.red(`projects.${projectName}`)} was not found in ${chalk.red(PROJECT_FILE)}.`)
+          : new FatalException(`Please set a ${chalk.red('defaultProject')} in ${chalk.red(PROJECT_FILE)} or specify the project using ${chalk.green('--project')}`);
+      }
     }
   }
 
@@ -65,7 +71,8 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   process.chdir(ctx.execPath);
 
   const argv = parseArgs(pargv, { boolean: ['quiet', 'interactive', 'confirm'], string: ['_', 'project'] });
-  const projectName = argv['project'] || 'default';
+
+  const projectName = argv['project'] ? String(argv['project']) : undefined;
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE, projectName);
   const flags = gatherFlags(argv);
 
@@ -81,7 +88,10 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     handlers: new Set(),
   });
 
-  const prompt = await createPromptModule({ interactive: flags.interactive, onFallback: createOnFallback({ ...flags, log }) });
+  const prompt = await createPromptModule({
+    interactive: flags.interactive,
+    onFallback: createOnFallback({ ...flags, log }),
+  });
   const tasks = createTaskChainWithOutput(
     flags.interactive
       ? { output: prompt.output }
@@ -92,7 +102,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map(e => [e, env[e]]).filter(([e, v]) => !!v);
 
   if (!projectDir) {
-    throw new FatalException(`Could not find ${chalk.green(PROJECT_FILE)}`)
+    throw new FatalException(`Could not find ${chalk.green(PROJECT_FILE)}`);
   }
 
   const getInfo = async () => {
@@ -102,7 +112,13 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     const npm = await shell.cmdinfo('npm', ['-v']);
 
     const info: InfoItem[] = [
-      { group: 'ionic', key: 'ionic', flair: 'Ionic CLI', value: ctx.version, path: path.dirname(path.dirname(ctx.libPath)) },
+      {
+        group: 'ionic',
+        key: 'ionic',
+        flair: 'Ionic CLI',
+        value: ctx.version,
+        path: path.dirname(path.dirname(ctx.libPath)),
+      },
       { group: 'system', key: 'NodeJS', value: process.version, path: process.execPath },
       { group: 'system', key: 'npm', value: npm || 'not installed' },
       { group: 'system', key: 'OS', value: os },

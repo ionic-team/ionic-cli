@@ -1,14 +1,20 @@
 import chalk from 'chalk';
 
 import * as lodash from 'lodash';
+import * as path from 'path';
 
 import { contains, separateArgv, validate, validators } from '@ionic/cli-framework';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import {
+  CommandInstanceInfo,
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandMetadata,
+  CommandPreRun,
+} from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
 
 import { CordovaCommand } from './base';
-import * as path from "path";
 
 export class PlatformCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {

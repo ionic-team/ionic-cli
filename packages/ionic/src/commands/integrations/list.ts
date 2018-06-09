@@ -15,8 +15,7 @@ export class IntegrationsListCommand extends Command {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const p = await this.env.project.load();
-    const projectConfig = p.projects[this.env.project.name];
+    const projectConfig = await this.env.project.load();
     const integrations = await Promise.all(INTEGRATION_NAMES.map(async name => this.env.project.createIntegration(name)));
 
     const status = (name: IntegrationName) => {

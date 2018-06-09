@@ -8,8 +8,7 @@ export class Integration extends BaseIntegration {
   readonly archiveUrl = undefined;
 
   async add(options?: IIntegrationAddOptions): Promise<void> {
-    const project = await this.project.load();
-    const projectConfig = project.projects[this.project.name];
+    const projectConfig = await this.project.load();
 
     await this.installCapacitorCore();
     await this.installCapacitorCLI();

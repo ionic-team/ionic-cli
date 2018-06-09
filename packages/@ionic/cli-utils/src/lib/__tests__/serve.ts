@@ -24,6 +24,7 @@ describe('@ionic/cli-utils', () => {
           port: 8100,
           proxy: true,
           ssl: false,
+          project: undefined,
         };
 
         it('should provide defaults with no options', () => {
@@ -48,6 +49,12 @@ describe('@ionic/cli-utils', () => {
           const runner = new ServeRunner({});
           const result = runner.createOptionsFromCommandLine([], { local: true });
           expect(result).toEqual({ ...defaults, address: 'localhost', devapp: false });
+        });
+
+        it('should respect --project flag', () => {
+          const runner = new ServeRunner({});
+          const result = runner.createOptionsFromCommandLine([], { project: 'app' });
+          expect(result).toEqual({ ...defaults, project: 'app' });
         });
 
         it('should pass on separated args', () => {

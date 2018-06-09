@@ -79,9 +79,8 @@ export type HookFn = (ctx: HookContext) => Promise<void>;
 export type IntegrationName = 'capacitor' | 'cordova';
 
 export interface ProjectIntegration {
-  enabled: boolean;
+  enabled?: boolean;
   root: string;
-  outputPath: string;
 }
 
 export interface ProjectIntegrations {
@@ -101,7 +100,14 @@ export interface ProjectConfig {
     cert?: string;
   };
 
-  type: ProjectType
+  type: ProjectType;
+}
+
+export interface MultiProjectConfig {
+  defaultProject: string;
+  projects: {
+    [key: string]: ProjectConfig;
+  };
 }
 
 export interface Response<T extends object> extends APIResponseSuccess {
@@ -233,9 +239,9 @@ export interface ProjectPersonalizationDetails {
   description?: string;
 }
 
-export interface IProject extends IBaseConfig<ProjectFile> {
+export interface IProject extends IBaseConfig<ProjectConfig> {
   type: ProjectType | undefined;
-  name: string;
+  name: string | undefined;
 
   getDocsUrl(): Promise<string>;
   getSourceDir(sourceRoot?: string): Promise<string>;
@@ -512,6 +518,7 @@ export interface InfoItem {
 export interface BaseBuildOptions {
   engine: string; // browser, cordova, etc.
   platform?: string; // android, ios, etc.
+  project?: string;
   '--': string[];
 }
 
@@ -521,7 +528,6 @@ export interface BuildOptions<T extends ProjectType> extends BaseBuildOptions {
 
 export interface AngularBuildOptions extends BuildOptions<'angular'> {
   prod?: boolean;
-  project?: string;
   configuration?: string;
 }
 
@@ -562,6 +568,7 @@ export interface ServeOptions {
   browserOption?: string;
   devapp: boolean;
   platform?: string; // android, ios, etc.
+  project?: string;
   '--': string[];
 
   // Additional Options
@@ -571,7 +578,6 @@ export interface ServeOptions {
 
 export interface AngularServeOptions extends ServeOptions {
   prod?: boolean;
-  project?: string;
   configuration?: string;
 }
 
@@ -780,9 +786,4 @@ export interface IPCMessage {
   data: { command: string; args: string[]; };
 }
 
-export interface ProjectFile {
-  defaultProject: string;
-  projects: {
-    [key: string]: ProjectConfig;
-  }
-}
+export type ProjectFile = ProjectConfig | MultiProjectConfig;

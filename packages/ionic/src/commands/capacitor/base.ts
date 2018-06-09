@@ -8,8 +8,7 @@ import { runCommand } from '@ionic/cli-utils/lib/executor';
 
 export abstract class CapacitorCommand extends Command {
   async checkCapacitor(runinfo: CommandInstanceInfo) {
-    const project = await this.env.project.load();
-    const projectConfig = project.projects[this.env.project.name];
+    const projectConfig = await this.env.project.load();
 
     if (projectConfig.integrations.capacitor && projectConfig.integrations.capacitor.enabled === false) {
       return;

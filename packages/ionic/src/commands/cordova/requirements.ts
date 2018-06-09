@@ -1,11 +1,19 @@
 import chalk from 'chalk';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isExitCodeException } from '@ionic/cli-utils';
+import * as path from 'path';
+
+import {
+  CommandInstanceInfo,
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandMetadata,
+  CommandPreRun,
+  isExitCodeException,
+} from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
 import { CordovaCommand } from './base';
-import * as path from "path";
 
 export class RequirementsCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {

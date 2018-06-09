@@ -60,13 +60,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularBuildOptions {
     const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
-    const project = this.project.name;
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
 
     return {
       ...baseOptions,
       prod,
-      project,
       configuration,
       type: 'angular',
     };

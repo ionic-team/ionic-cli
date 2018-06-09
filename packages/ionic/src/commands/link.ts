@@ -90,11 +90,10 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     let proId: string | undefined = inputs[0];
     let { create } = options;
 
-    const p = await this.env.project.load();
-    const projectConfig = p.projects[this.env.project.name];
+    const projectConfig = await this.env.project.load();
 
     if (projectConfig.pro_id) {
-      if (projectConfig.pro_id === proId) {
+      if (proId && projectConfig.pro_id === proId) {
         this.env.log.msg(`Already linked with app ${chalk.green(proId)}.`);
         return;
       }
@@ -198,11 +197,13 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
           type: 'input',
           name: 'name',
           message: 'Please enter a name for your new app:',
-          validate: v => validators.required(v),
+          validate: (v: string) => validators.required(v),
         });
       }
 
-      proId = await this.createApp({ name }, runinfo);
+      if (name) {
+        proId = await this.createApp({ name }, runinfo);
+      }
     } else if (proId) {
       const app = await this.lookUpApp(proId);
       await this.linkApp(app, runinfo);

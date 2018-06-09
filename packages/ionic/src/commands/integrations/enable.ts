@@ -45,8 +45,7 @@ export class IntegrationsEnableCommand extends Command {
       throw new FatalException(`Don't know about ${chalk.green(name)} integration!`);
     }
 
-    const p = await this.env.project.load();
-    const projectConfig = p.projects[this.env.project.name];
+    const projectConfig = await this.env.project.load();
     const integration = await this.env.project.createIntegration(name);
     const integrationConfig = projectConfig.integrations[name];
 

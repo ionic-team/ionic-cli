@@ -161,8 +161,7 @@ class GitConfigInvalid extends Ailment {
       return false;
     }
 
-    const p = await this.project.load();
-    const projectConfig = p.projects[this.project.name];
+    const projectConfig = await this.project.load();
     const proId = projectConfig.pro_id;
 
     if (!proId) {
@@ -359,8 +358,7 @@ class UnsavedCordovaPlatforms extends Ailment {
   }
 
   async detected() {
-    const project = await this.project.load();
-    const projectConfig = project.projects[this.project.name];
+    const projectConfig = await this.project.load();
 
     if (!projectConfig.integrations.cordova) {
       return false;
@@ -395,8 +393,7 @@ class DefaultCordovaBundleIdUsed extends Ailment {
   }
 
   async detected() {
-    const project = await this.project.load();
-    const projectConfig = project.projects[this.project.name];
+    const projectConfig = await this.project.load();
 
     if (!projectConfig.integrations.cordova) {
       return false;

@@ -2,7 +2,20 @@ import { BaseError, OptionGroup } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
 import { PROJECT_FILE } from '../constants';
-import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironment, Runner } from '../definitions';
+import {
+  BaseBuildOptions,
+  BuildOptions,
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandMetadata,
+  CommandMetadataOption,
+  IConfig,
+  ILogger,
+  IProject,
+  IShell,
+  IonicEnvironment,
+  Runner,
+} from '../definitions';
 
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
 import { Hook } from './hooks';
@@ -25,6 +38,11 @@ export const COMMON_BUILD_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
     name: 'platform',
     summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => chalk.green(e)).join(', ')})`,
     groups: [OptionGroup.Advanced],
+  },
+  {
+    name: 'project',
+    summary: 'The name of the project',
+    groups: [OptionGroup.Experimental],
   },
 ];
 
@@ -80,8 +98,9 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
     const separatedArgs = options['--'];
     const platform = options['platform'] ? String(options['platform']) : undefined;
     const engine = this.determineEngineFromCommandLine(options);
+    const project = options['project'] ? String(options['project']) : undefined;
 
-    return { '--': separatedArgs ? separatedArgs : [], engine, platform };
+    return { '--': separatedArgs ? separatedArgs : [], engine, platform, project };
   }
 
   determineEngineFromCommandLine(options: CommandLineOptions): string {
@@ -146,6 +165,11 @@ class BuildAfterHook extends Hook {
 export async function build(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
   try {
     const runner = await BuildRunner.createFromProject(env, env.project);
+
+    if (env.project.name) {
+      options['project'] = env.project.name;
+    }
+
     const opts = runner.createOptionsFromCommandLine(inputs, options);
     await runner.run(opts);
   } catch (e) {

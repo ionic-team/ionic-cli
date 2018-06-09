@@ -43,8 +43,7 @@ export abstract class Hook {
       return; // TODO: will we need hooks outside a project?
     }
 
-    const project = await this.project.load();
-    const projectConfig = project.projects[this.project.name];
+    const projectConfig = await this.project.load();
     const pkg = await this.project.requirePackageJson();
     const config = await this.config.load();
     const { npmClient } = config;
