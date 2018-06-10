@@ -5,6 +5,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 
 import { LOGGER_LEVELS, createPromptModule, createTaskChainWithOutput, parseArgs } from '@ionic/cli-framework';
+import { logger } from '@ionic/cli-framework/lib';
 import { findBaseDirectory, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
 
@@ -14,7 +15,6 @@ import { IProject, InfoItem, IonicContext, IonicEnvironment } from './definition
 import { isMultiProjectConfig } from './guards';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
 import { Environment } from './lib/environment';
-import { FatalException } from './lib/errors';
 import { Client } from './lib/http';
 import { OutsideProject, Project, ProjectDeps } from './lib/project';
 import { createOnFallback } from './lib/prompts';
@@ -29,7 +29,11 @@ export * from './guards';
 
 const debug = Debug('ionic:cli-utils');
 
-export async function getProject(projectDir: string, projectName: string | undefined, deps: ProjectDeps): Promise<IProject> {
+export async function getProject(projectDir: string | undefined, projectName: string | undefined, deps: ProjectDeps): Promise<IProject> {
+  if (!projectDir) {
+    return new OutsideProject('', PROJECT_FILE, projectName);
+  }
+
   const projectFilePath = path.resolve(projectDir, PROJECT_FILE);
   let projectFile: { [key: string]: any; } | undefined;
   let projectConfig: any;
@@ -51,9 +55,10 @@ export async function getProject(projectDir: string, projectName: string | undef
       debug(`Project name: ${chalk.bold(projectName)}`);
 
       if (!projectConfig) {
-        throw projectName
-          ? new FatalException(`${chalk.red(`projects.${projectName}`)} was not found in ${chalk.red(PROJECT_FILE)}.`)
-          : new FatalException(`Please set a ${chalk.red('defaultProject')} in ${chalk.red(PROJECT_FILE)} or specify the project using ${chalk.green('--project')}`);
+        logger.warn(projectName
+          ? `${chalk.red(`projects.${projectName}`)} was not found in ${chalk.red(PROJECT_FILE)}.`
+          : `Please set a ${chalk.red('defaultProject')} in ${chalk.red(PROJECT_FILE)} or specify the project using ${chalk.green('--project')}`
+        );
       }
     }
   }
@@ -100,10 +105,6 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
 
   const projectDir = await findBaseDirectory(ctx.execPath, PROJECT_FILE);
   const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map(e => [e, env[e]]).filter(([e, v]) => !!v);
-
-  if (!projectDir) {
-    throw new FatalException(`Could not find ${chalk.green(PROJECT_FILE)}`);
-  }
 
   const getInfo = async () => {
     const osName = await import('os-name');

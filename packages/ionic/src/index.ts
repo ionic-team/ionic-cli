@@ -132,7 +132,10 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
   }
 
   try {
-    await Promise.all([ienv.config.save(), ienv.project.save()]);
+    // Prevent conflict with 'config' command
+    if (pargv[0] !== 'config') {
+      await Promise.all([ienv.config.save(), ienv.project.save()]);
+    }
   } catch (e) {
     ienv.log.error(String(e.stack ? e.stack : e));
   }
