@@ -25,7 +25,7 @@ export abstract class BaseConfig<T> implements IBaseConfig<T> {
   protected configFile?: T;
   protected originalConfigFile?: { [key: string]: any };
 
-  constructor(directory: string, readonly fileName: string, readonly name: string | undefined) {
+  constructor(directory: string, readonly fileName: string) {
     this.directory = directory ? path.resolve(directory) : ''; // TODO: better way to check if in project
     this.filePath = path.resolve(this.directory, fileName);
   }

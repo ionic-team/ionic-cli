@@ -17,13 +17,6 @@ export const NG_BUILD_OPTIONS = [
     hint: chalk.dim('[ng]'),
   },
   {
-    name: 'project',
-    summary: 'The name of the project',
-    type: String,
-    groups: [OptionGroup.Advanced],
-    hint: chalk.dim('[ng]'),
-  },
-  {
     name: 'configuration',
     aliases: ['c'],
     summary: 'Specify the configuration to use.',

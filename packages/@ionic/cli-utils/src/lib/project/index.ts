@@ -11,7 +11,6 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
-import { FatalError } from 'tslint/lib/error';
 
 import { ProjectConfig } from '../..';
 import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
@@ -58,8 +57,8 @@ export abstract class Project extends BaseConfig<ProjectConfig> implements IProj
   protected readonly shell: IShell;
   protected readonly tasks: TaskChain;
 
-  constructor(dir: string, file: string, name: string | undefined, { config, log, shell, tasks }: ProjectDeps) {
-    super(dir, file, name);
+  constructor(dir: string, file: string, readonly name: string | undefined, { config, log, shell, tasks }: ProjectDeps) {
+    super(dir, file);
     this.config = config;
     this.log = log;
     this.shell = shell;
@@ -118,7 +117,7 @@ export abstract class Project extends BaseConfig<ProjectConfig> implements IProj
 
       if (name === undefined) {
         // We need a defaultProject or --project flag set for angular projects.
-        throw new FatalException(`Please set a ${chalk.red('defaultProject')} in ${chalk.red(PROJECT_FILE)} or specify the project using ${chalk.green('--project')}`);
+        throw new FatalException(`Please set a ${chalk.green('defaultProject')} in ${chalk.bold(PROJECT_FILE)} or specify the project using ${chalk.green('--project')}`);
       }
 
       project = new AngularProject(dir, file, name, deps);
@@ -282,18 +281,18 @@ export abstract class Project extends BaseConfig<ProjectConfig> implements IProj
 
   async getIntegration(name: IntegrationName): Promise<ProjectIntegration> {
     if (!this.configFile) {
-      throw new FatalError(`Tried to get integration before loading config file`);
+      throw new FatalException(`Tried to get integration before loading config file`);
     }
 
     const integration = this.configFile.integrations[name];
 
     if (!integration) {
-      throw new FatalException(`Could not find ${chalk.red(name)} integration in the ${chalk.red(this.name ? this.name : 'default')} project.`);
+      throw new FatalException(`Could not find ${chalk.bold(name)} integration in the ${chalk.bold(this.name ? this.name : 'default')} project.`);
     }
 
     return {
-      enabled: integration.enabled === undefined ? false : integration.enabled,
-      root: integration.root === undefined ? path.resolve('.') : integration.root,
+      enabled: integration.enabled !== false,
+      root: integration.root === undefined ? this.directory : path.resolve(this.directory, integration.root),
     };
   }
 
@@ -353,6 +352,7 @@ export abstract class Project extends BaseConfig<ProjectConfig> implements IProj
  */
 export class OutsideProject extends BaseConfig<never> implements IProject {
   readonly type = undefined;
+  readonly name = undefined;
 
   is(j: any): j is never {
     return false;

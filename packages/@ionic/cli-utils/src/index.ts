@@ -5,7 +5,6 @@ import * as path from 'path';
 import chalk from 'chalk';
 
 import { LOGGER_LEVELS, createPromptModule, createTaskChainWithOutput, parseArgs } from '@ionic/cli-framework';
-import { logger } from '@ionic/cli-framework/lib';
 import { findBaseDirectory, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
 
@@ -31,7 +30,7 @@ const debug = Debug('ionic:cli-utils');
 
 export async function getProject(projectDir: string | undefined, projectName: string | undefined, deps: ProjectDeps): Promise<IProject> {
   if (!projectDir) {
-    return new OutsideProject('', PROJECT_FILE, projectName);
+    return new OutsideProject('', PROJECT_FILE);
   }
 
   const projectFilePath = path.resolve(projectDir, PROJECT_FILE);
@@ -55,9 +54,9 @@ export async function getProject(projectDir: string | undefined, projectName: st
       debug(`Project name: ${chalk.bold(projectName)}`);
 
       if (!projectConfig) {
-        logger.warn(projectName
-          ? `${chalk.red(`projects.${projectName}`)} was not found in ${chalk.red(PROJECT_FILE)}.`
-          : `Please set a ${chalk.red('defaultProject')} in ${chalk.red(PROJECT_FILE)} or specify the project using ${chalk.green('--project')}`
+        deps.log.warn(projectName
+          ? `${chalk.green(`projects.${projectName}`)} was not found in ${chalk.bold(PROJECT_FILE)}.`
+          : `Please set a ${chalk.green('defaultProject')} in ${chalk.bold(PROJECT_FILE)} or specify the project using ${chalk.green('--project')}`
         );
       }
     }
@@ -66,7 +65,7 @@ export async function getProject(projectDir: string | undefined, projectName: st
   const type = await Project.determineType(projectDir, projectName, projectConfig, deps);
 
   if (!type) {
-    return new OutsideProject('', PROJECT_FILE, projectName);
+    return new OutsideProject('', PROJECT_FILE);
   }
 
   return Project.createFromProjectType(projectDir, PROJECT_FILE, projectName, deps, type);
@@ -78,7 +77,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const argv = parseArgs(pargv, { boolean: ['quiet', 'interactive', 'confirm'], string: ['_', 'project'] });
 
   const projectName = argv['project'] ? String(argv['project']) : undefined;
-  const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE, projectName);
+  const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
   const flags = gatherFlags(argv);
 
   const configData = await config.load();

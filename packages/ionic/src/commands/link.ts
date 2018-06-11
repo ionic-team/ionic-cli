@@ -197,13 +197,11 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
           type: 'input',
           name: 'name',
           message: 'Please enter a name for your new app:',
-          validate: (v: string) => validators.required(v),
+          validate: v => validators.required(v),
         });
       }
 
-      if (name) {
-        proId = await this.createApp({ name }, runinfo);
-      }
+      proId = await this.createApp({ name }, runinfo);
     } else if (proId) {
       const app = await this.lookUpApp(proId);
       await this.linkApp(app, runinfo);

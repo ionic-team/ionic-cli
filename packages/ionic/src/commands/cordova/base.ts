@@ -81,13 +81,12 @@ export abstract class CordovaCommand extends Command {
     await this.env.project.load();
 
     const cordova = await this.env.project.getIntegration('cordova');
-    const cordovaRoot = path.resolve(this.env.project.directory, cordova.root);
 
     await this.checkCordova(runinfo);
 
     // Check for www folder
     if (this.env.project.directory) {
-      const wwwPath = path.join(cordovaRoot, 'www');
+      const wwwPath = path.join(cordova.root, 'www');
       const wwwExists = await pathExists(wwwPath); // TODO: hard-coded
 
       if (!wwwExists) {
@@ -106,9 +105,10 @@ export abstract class CordovaCommand extends Command {
     const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
     const config = await this.env.config.load();
     const { npmClient } = config;
+    const { root: cwd } = await this.env.project.getIntegration('cordova');
 
     try {
-      await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, ...options });
+      await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, cwd, ...options });
     } catch (e) {
       if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
         const cdvInstallArgs = await pkgManagerArgs(npmClient, { command: 'install', pkg: 'cordova', global: true });
@@ -132,11 +132,10 @@ export abstract class CordovaCommand extends Command {
       const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
 
       const cordova = await this.env.project.getIntegration('cordova');
-      const cordovaRoot = path.resolve(this.env.project.directory, cordova.root);
-      const platforms = await getPlatforms(cordovaRoot);
+      const platforms = await getPlatforms(cordova.root);
 
       if (!platforms.includes(runPlatform)) {
-        await installPlatform(this.env, runPlatform, cordovaRoot);
+        await installPlatform(this.env, runPlatform, cordova.root);
       }
     }
   }

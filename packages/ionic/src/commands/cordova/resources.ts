@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import * as path from 'path';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { cacheFileChecksum, pathExists } from '@ionic/cli-framework/utils/fs';
@@ -122,8 +121,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
     // check that at least one platform has been installed
     const integration = await this.env.project.getIntegration('cordova');
-    const cordovaRoot = path.resolve(this.env.project.directory, integration.root);
-    let platforms = await getPlatforms(cordovaRoot);
+    let platforms = await getPlatforms(integration.root);
     debug(`platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
 
     if (platform && !platforms.includes(platform)) {
@@ -135,9 +133,9 @@ This command uses Ionic servers, so we require you to be logged into your free I
       });
 
       if (confirm) {
-        await installPlatform(this.env, platform);
+        await installPlatform(this.env, platform, integration.root);
         await conf.reload();
-        platforms = await getPlatforms(cordovaRoot);
+        platforms = await getPlatforms(integration.root);
         debug(`platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
       } else {
         throw new FatalException(`Platform ${chalk.green(platform)} not installed.`);
@@ -157,7 +155,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     // Convert the resource structure to a flat array then filter the array so
     // that it only has img resources that we need. Finally add src path to the
     // items that remain.
-    let imgResources = getImageResources(cordovaRoot)
+    let imgResources = getImageResources(integration.root)
       .filter(img => orientation === 'default' || typeof img.orientation === 'undefined' || img.orientation === orientation)
       .filter(img => buildPlatforms.includes(img.platform))
       .filter(img => resourceTypes.includes(img.resType));
@@ -178,7 +176,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     let srcImagesAvailable: SourceImage[] = [];
 
     try {
-      srcImagesAvailable = await getSourceImages(cordovaRoot, buildPlatforms, resourceTypes);
+      srcImagesAvailable = await getSourceImages(integration.root, buildPlatforms, resourceTypes);
       debug(`${chalk.cyan('getSourceImages')} completed: (${srcImagesAvailable.map(v => chalk.bold(prettyPath(v.path))).join(', ')})`);
     } catch (e) {
       this.env.log.error(`Error in ${chalk.green('getSourceImages')}: ${e.stack ? e.stack : e}`);

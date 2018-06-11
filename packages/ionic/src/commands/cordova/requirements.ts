@@ -1,7 +1,5 @@
 import chalk from 'chalk';
 
-import * as path from 'path';
-
 import {
   CommandInstanceInfo,
   CommandLineInputs,
@@ -43,8 +41,7 @@ Like running ${chalk.green('cordova requirements')} directly, but provides frien
     const [ platform ] = inputs;
 
     const cordova = await this.env.project.getIntegration('cordova');
-    const cordovaRoot = path.resolve(this.env.project.directory, cordova.root);
-    const platforms = await getPlatforms(cordovaRoot);
+    const platforms = await getPlatforms(cordova.root);
 
     if (platform) {
       if (!platforms.includes(platform)) {
@@ -55,7 +52,7 @@ Like running ${chalk.green('cordova requirements')} directly, but provides frien
         });
 
         if (confirm) {
-          await installPlatform(this.env, platform);
+          await installPlatform(this.env, platform, cordova.root);
         } else {
           throw new FatalException(
             `Can't gather requirements for ${chalk.green(platform)} unless the platform is installed.\n` +

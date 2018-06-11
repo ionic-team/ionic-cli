@@ -7,8 +7,6 @@ import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-util
 import { NG_BUILD_OPTIONS } from '@ionic/cli-utils/lib/project/angular/build';
 import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
 
-import * as path from 'path';
-
 import { CordovaCommand } from './base';
 
 export class PrepareCommand extends CordovaCommand implements CommandPreRun {
@@ -68,8 +66,7 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
     const [ platform ] = inputs;
 
     const cordova = await this.env.project.getIntegration('cordova');
-    const cordovaRoot = path.resolve(this.env.project.directory, cordova.root);
-    const platforms = await getPlatforms(cordovaRoot);
+    const platforms = await getPlatforms(cordova.root);
 
     if (platform) {
       if (!platforms.includes(platform)) {
@@ -80,7 +77,7 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
         });
 
         if (confirm) {
-          await installPlatform(this.env, platform);
+          await installPlatform(this.env, platform, cordova.root);
         } else {
           throw new FatalException(
             `Can't prepare for ${chalk.green(platform)} unless the platform is installed.\n` +
