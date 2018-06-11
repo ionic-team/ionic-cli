@@ -358,13 +358,16 @@ class UnsavedCordovaPlatforms extends Ailment {
   }
 
   async detected() {
-    const projectConfig = await this.project.load();
+    await this.project.load();
+    let cordova;
 
-    if (!projectConfig.integrations.cordova) {
+    try {
+      cordova = await this.project.getIntegration('cordova');
+    } catch (e) {
       return false;
     }
 
-    const platforms = await getPlatforms(cordova.);
+    const platforms = await getPlatforms(cordova.root);
     const conf = await loadConfigXml({ project: this.project });
     const engines = conf.getPlatformEngines();
     const engineNames = new Set([...engines.map(e => e.name)]);

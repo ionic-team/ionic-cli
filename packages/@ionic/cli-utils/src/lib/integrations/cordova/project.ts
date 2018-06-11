@@ -21,7 +21,7 @@ export async function installPlatform(env: IonicEnvironment, platform: string, c
 
     if (s.match(/Platform [A-Za-z0-9-]+ already added/)) {
       env.log.warn(`Platform already added. Saving platforms to ${chalk.bold('config.xml')}.`);
-      await env.shell.run('cordova', ['platform', 'save'], {}, cwd);
+      await env.shell.run('cordova', ['platform', 'save'], { cwd });
     } else {
       throw new FatalException(s, typeof e.exitCode === 'undefined' ? 1 : e.exitCode);
     }
