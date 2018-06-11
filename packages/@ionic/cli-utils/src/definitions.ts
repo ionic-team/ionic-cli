@@ -104,7 +104,7 @@ export interface ProjectConfig {
 }
 
 export interface MultiProjectConfig {
-  defaultProject: string;
+  defaultProject: string | undefined;
   projects: {
     [key: string]: ProjectConfig | undefined;
   };

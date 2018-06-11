@@ -1,17 +1,14 @@
 
-import * as Debug from 'debug';
-import * as path from 'path';
-
-import chalk from 'chalk';
-
 import { LOGGER_LEVELS, createPromptModule, createTaskChainWithOutput, parseArgs } from '@ionic/cli-framework';
 import { findBaseDirectory, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
+import chalk from 'chalk';
+import * as Debug from 'debug';
+import * as path from 'path';
 
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { PROJECT_FILE } from './constants';
-import { IProject, InfoItem, IonicContext, IonicEnvironment } from './definitions';
-import { isMultiProjectConfig } from './guards';
+import { IProject, InfoItem, IonicContext, IonicEnvironment, ProjectType } from './definitions';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
 import { Environment } from './lib/environment';
 import { Client } from './lib/http';
@@ -35,7 +32,7 @@ export async function getProject(projectDir: string | undefined, projectName: st
 
   const projectFilePath = path.resolve(projectDir, PROJECT_FILE);
   let projectFile: { [key: string]: any; } | undefined;
-  let projectConfig: any;
+  let type: ProjectType | undefined;
 
   try {
     projectFile = await fsReadJsonFile(projectFilePath);
@@ -44,25 +41,11 @@ export async function getProject(projectDir: string | undefined, projectName: st
   }
 
   if (projectFile) {
-    // Edge case where defaultProject is used with a single project
+    type = await Project.determineType(projectDir, projectName, projectFile, deps);
     projectName = projectName || projectFile.defaultProject;
 
-    if (isMultiProjectConfig(projectFile)) {
-      projectName = projectName || projectFile.defaultProject;
-      projectConfig = projectFile.projects[projectName];
-
-      debug(`Project name: ${chalk.bold(projectName)}`);
-
-      if (!projectConfig) {
-        deps.log.warn(projectName
-          ? `${chalk.green(`projects.${projectName}`)} was not found in ${chalk.bold(PROJECT_FILE)}.`
-          : `Please set a ${chalk.green('defaultProject')} in ${chalk.bold(PROJECT_FILE)} or specify the project using ${chalk.green('--project')}`
-        );
-      }
-    }
+    debug(`Project name: ${chalk.bold(String(projectName))}`);
   }
-
-  const type = await Project.determineType(projectDir, projectName, projectConfig, deps);
 
   if (!type) {
     return new OutsideProject('', PROJECT_FILE);

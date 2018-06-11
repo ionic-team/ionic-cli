@@ -12,7 +12,7 @@ import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
 
-import { ProjectConfig } from '../..';
+import { MULTI_PROJECT_TYPES, ProjectConfig } from '../..';
 import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
 import {
   IAilmentRegistry,
@@ -24,7 +24,6 @@ import {
   InfoItem,
   IntegrationName,
   PackageJson,
-  ProjectFile,
   ProjectIntegration,
   ProjectPersonalizationDetails,
   ProjectType,
@@ -65,7 +64,7 @@ export abstract class Project extends BaseConfig<ProjectConfig> implements IProj
     this.tasks = tasks;
   }
 
-  static async determineType(projectDir: string, projectName: string | undefined, projectConfig: ProjectFile, deps: ProjectDeps): Promise<ProjectType | undefined> {
+  static async determineType(projectDir: string, projectName: string | undefined, projectConfig: { [key: string]: any; } | undefined, deps: ProjectDeps): Promise<ProjectType | undefined> {
     let type: ProjectType | undefined;
 
     if (isProjectConfig(projectConfig)) {
@@ -74,11 +73,21 @@ export abstract class Project extends BaseConfig<ProjectConfig> implements IProj
 
     if (isMultiProjectConfig(projectConfig)) {
       const name = projectName ? projectName : projectConfig.defaultProject;
+
+      if (!name) {
+        // We need a defaultProject or --project flag set for angular projects.
+        throw new FatalException(`Please set a ${chalk.green('defaultProject')} in ${chalk.bold(PROJECT_FILE)} or specify the project using ${chalk.green('--project')}`);
+      }
+
       const config = projectConfig.projects[name];
+
       if (config) {
         type = config.type;
       } else {
         throw new FatalException(`Project ${chalk.green(name)} could not be found in the workspace. Did you add it to ${chalk.bold(PROJECT_FILE)}?`);
+      }
+      if (!MULTI_PROJECT_TYPES.includes(type)) {
+        throw new FatalException(`Project type ${chalk.green(type)} is not supported in multi-app workspaces. Please set ${chalk.green(`projects.${name}.type`)} to one of: ${MULTI_PROJECT_TYPES.map(v => chalk.green(v)).join(', ')}`);
       }
     }
 
@@ -100,7 +109,7 @@ export abstract class Project extends BaseConfig<ProjectConfig> implements IProj
 
     // TODO: move some of this to the CLI docs
 
-    deps.log.error(
+    throw new FatalException(
       `Could not determine project type (project config: ${chalk.bold(prettyPath(path.resolve(projectDir, PROJECT_FILE)))}).\n` +
       `- ${wordWrap(`For ${chalk.bold(prettyProjectName('angular'))} projects, make sure ${chalk.green('@ionic/angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n` +
       `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic-angular'))} projects, make sure ${chalk.green('ionic-angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n` +
@@ -120,12 +129,6 @@ export abstract class Project extends BaseConfig<ProjectConfig> implements IProj
 
     if (type === 'angular') {
       const { AngularProject } = await import('./angular');
-
-      if (name === undefined) {
-        // We need a defaultProject or --project flag set for angular projects.
-        throw new FatalException(`Please set a ${chalk.green('defaultProject')} in ${chalk.bold(PROJECT_FILE)} or specify the project using ${chalk.green('--project')}`);
-      }
-
       project = new AngularProject(dir, file, name, deps);
     } else if (type === 'ionic-angular') {
       const { IonicAngularProject } = await import('./ionic-angular');
