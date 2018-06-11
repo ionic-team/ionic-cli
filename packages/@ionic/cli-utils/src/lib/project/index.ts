@@ -73,7 +73,13 @@ export abstract class Project extends BaseConfig<ProjectConfig> implements IProj
     }
 
     if (isMultiProjectConfig(projectConfig)) {
-      type = projectConfig.projects[projectName ? projectName : projectConfig.defaultProject].type;
+      const name = projectName ? projectName : projectConfig.defaultProject;
+      const config = projectConfig.projects[name];
+      if (config) {
+        type = config.type;
+      } else {
+        throw new FatalException(`Project ${chalk.green(name)} could not be found in the workspace. Did you add it to ${chalk.bold(PROJECT_FILE)}?`);
+      }
     }
 
     if (type && PROJECT_TYPES.includes(type)) {
@@ -300,7 +306,12 @@ export abstract class Project extends BaseConfig<ProjectConfig> implements IProj
     let config = await super.load(options);
 
     if (isMultiProjectConfig(config) && this.name) {
-      config = config.projects[this.name];
+      const projectConfig = config.projects[this.name];
+      if (projectConfig) {
+        config = projectConfig;
+      } else {
+        throw new FatalException(`Project ${chalk.green(this.name)} could not be found in the workspace. Did you add it to ${chalk.bold(PROJECT_FILE)}?`);
+      }
     }
 
     this.configFile = config;
@@ -318,7 +329,9 @@ export abstract class Project extends BaseConfig<ProjectConfig> implements IProj
         if (this.name && !lodash.isEqual(config, this.originalConfigFile.projects[this.name])) {
           const saveConfig = lodash.cloneDeep(this.originalConfigFile);
 
-          saveConfig.projects[this.name] = config;
+          if (saveConfig.projects[this.name]) {
+            saveConfig.projects[this.name] = config;
+          }
 
           await fsWriteJsonFile(this.filePath, saveConfig, { encoding: 'utf8' });
 
