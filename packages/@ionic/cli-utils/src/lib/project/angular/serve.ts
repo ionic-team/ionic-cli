@@ -123,7 +123,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const { npmClient } = config;
 
     let program = DEFAULT_PROGRAM;
-    let args = this.serveOptionsToNgArgs(options);
+    let args = await this.serveOptionsToNgArgs(options);
     const shellOptions = { cwd: this.project.directory };
 
     debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
@@ -177,13 +177,19 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     });
   }
 
-  serveOptionsToNgArgs(options: AngularServeOptions): string[] {
+  async serveOptionsToNgArgs(options: AngularServeOptions): Promise<string[]> {
     const args: ParsedArgs = {
       _: [],
       platform: options.engine === 'cordova' ? options.platform : undefined,
       host: options.address,
       port: String(options.port),
     };
+
+    if (options.engine === 'cordova') {
+      const integration = await this.project.getIntegration('cordova');
+      args.platform = options.platform;
+      args.cordovaBasePath = integration.root;
+    }
 
     return [...unparseArgs(args), ...options['--']];
   }

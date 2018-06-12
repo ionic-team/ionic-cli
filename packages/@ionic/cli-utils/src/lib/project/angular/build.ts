@@ -63,11 +63,16 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     };
   }
 
-  buildOptionsToNgArgs(options: AngularBuildOptions): string[] {
+  async buildOptionsToNgArgs(options: AngularBuildOptions): Promise<string[]> {
     const args: ParsedArgs = {
       _: [],
-      platform: options.engine === 'cordova' ? options.platform : undefined,
     };
+
+    if (options.engine === 'cordova') {
+      const integration = await this.project.getIntegration('cordova');
+      args.platform = options.platform;
+      args.cordovaBasePath = integration.root;
+    }
 
     return [...unparseArgs(args), ...options['--']];
   }
@@ -84,7 +89,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const { npmClient } = config;
     const pkg = await this.project.requirePackageJson();
 
-    const args = this.buildOptionsToNgArgs(options);
+    const args = await this.buildOptionsToNgArgs(options);
     const shellOptions = { cwd: this.project.directory };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);

@@ -36,9 +36,9 @@ export class CordovaBuildBuilder implements Builder<CordovaBuildBuilderSchema> {
   prepareBrowserConfig(options: CordovaBuildBuilderSchema, browserOptions: /* BrowserBuilderSchema */any) {
     // We always need to output the build to `www` because it is a hard
     // requirement of Cordova.
-    browserOptions.outputPath = 'www';
+    browserOptions.outputPath = normalize(`${options.cordovaBasePath}/www`);
 
-    const platformWWWPath = normalize(`platforms/${options.platform}/platform_www`);
+    const platformWWWPath = normalize(`${options.cordovaBasePath}/platforms/${options.platform}/platform_www`);
 
     // Add Cordova www assets that were generated whenever platform(s) and
     // plugin(s) are added. This includes `cordova.js`,

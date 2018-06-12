@@ -10,6 +10,11 @@
     "platform": {
       "type": "string",
       "description": "Cordova platform to use during build."
+    },
+    "cordovaBasePath": {
+      "type": "string",
+      "description": "Path to cordova directory",
+      "default": "."
     }
   },
   "additionalProperties": false,
