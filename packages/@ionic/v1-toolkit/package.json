@@ -51,7 +51,7 @@
     "@types/gulp": "^3.8.36",
     "@types/http-proxy-middleware": "^0.17.2",
     "@types/node": "^6.0.101",
-    "@types/ws": "^4.0.2",
+    "@types/ws": "^5.1.2",
     "jest": "^23.0.1",
     "jest-cli": "^23.0.1",
     "rimraf": "^2.6.2",

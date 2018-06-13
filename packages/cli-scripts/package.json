@@ -27,7 +27,7 @@
     "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "@types/ansi-styles": "^2.0.30",
+    "@types/ansi-styles": "^3.2.0",
     "@types/escape-string-regexp": "0.0.32",
     "@types/node": "^6.0.101",
     "@types/strip-ansi": "^3.0.0",
