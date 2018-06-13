@@ -15,7 +15,7 @@ export const ERROR_TIMEOUT_REACHED = 'TIMEOUT_REACHED';
  * This method creates an empty "`process.env`" object type that works for all
  * platforms.
  */
-export function createProcessEnv(...sources: { [key: string]: string; }[]): { [key: string]: string; } {
+export function createProcessEnv(...sources: { [key: string]: string | undefined; }[]): { [key: string]: string; } {
   return lodash.assign(process.platform === 'win32' ? createCaseInsensitiveObject() : {}, ...sources);
 }
 
