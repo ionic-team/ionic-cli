@@ -1,27 +1,42 @@
 import chalk from 'chalk';
 
-import { CommandMetadataOption } from '@ionic/cli-framework/definitions';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { CommandMetadataOption } from '@ionic/cli-framework';
+import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { BuildRunner } from '@ionic/cli-utils/lib/build';
+import { FatalException, RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
-import { NG_BUILD_OPTIONS } from '@ionic/cli-utils/lib/project/angular/build';
-import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
 
 import { CordovaCommand } from './base';
 
 export class PrepareCommand extends CordovaCommand implements CommandPreRun {
+  protected buildRunner?: BuildRunner<BuildOptions<any>>;
+
+  async getBuildRunner() {
+    if (!this.buildRunner) {
+      this.buildRunner = await BuildRunner.createFromProject(this.env, this.env.project);
+    }
+
+    return this.buildRunner;
+  }
+
   async getMetadata(): Promise<CommandMetadata> {
-    let additionalOptions: CommandMetadataOption[] = [];
-    switch (this.env.project.type) {
-      case 'angular': {
-        additionalOptions = NG_BUILD_OPTIONS;
-        break;
+    const options: CommandMetadataOption[] = [
+      {
+        name: 'build',
+        summary: 'Do not invoke an Ionic build',
+        type: Boolean,
+        default: true,
+      },
+    ];
+
+    try {
+      const runner = await this.getBuildRunner();
+      const libmetadata = await runner.getCommandMetadata();
+      options.push(...libmetadata.options || []);
+    } catch (e) {
+      if (!(e instanceof RunnerNotFoundException)) {
+        throw e;
       }
-      case 'ionic-angular': {
-        additionalOptions = APP_SCRIPTS_OPTIONS;
-        break;
-      }
-      default:
     }
 
     return {
@@ -41,18 +56,10 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
       inputs: [
         {
           name: 'platform',
-          summary: `The platform you would like to prepare (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform you would like to prepare (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
         },
       ],
-      options: [
-        {
-          name: 'build',
-          summary: 'Do not invoke an Ionic build',
-          type: Boolean,
-          default: true,
-        },
-        ...additionalOptions,
-      ],
+      options,
     };
   }
 

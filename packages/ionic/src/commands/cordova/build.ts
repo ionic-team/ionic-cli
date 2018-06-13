@@ -1,27 +1,44 @@
 import chalk from 'chalk';
 
-import { validators } from '@ionic/cli-framework';
-import { CommandMetadataOption } from '@ionic/cli-framework/definitions';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { CommandMetadataOption, validators } from '@ionic/cli-framework';
+import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { BuildRunner } from '@ionic/cli-utils/lib/build';
+import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
-import { NG_BUILD_OPTIONS } from '@ionic/cli-utils/lib/project/angular/build';
-import { APP_SCRIPTS_OPTIONS } from '@ionic/cli-utils/lib/project/ionic-angular/app-scripts';
 
 import { COMMON_CORDOVA_BUILD_COMMAND_OPTIONS, CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 
 export class BuildCommand extends CordovaCommand implements CommandPreRun {
+  protected buildRunner?: BuildRunner<BuildOptions<any>>;
+
+  async getBuildRunner() {
+    if (!this.buildRunner) {
+      this.buildRunner = await BuildRunner.createFromProject(this.env, this.env.project);
+    }
+
+    return this.buildRunner;
+  }
+
   async getMetadata(): Promise<CommandMetadata> {
-    let additionalOptions: CommandMetadataOption[] = [];
-    switch (this.env.project.type) {
-      case 'angular': {
-        additionalOptions = NG_BUILD_OPTIONS;
-        break;
+    const options: CommandMetadataOption[] = [
+      // Build Options
+      {
+        name: 'build',
+        summary: 'Do not invoke an Ionic build',
+        type: Boolean,
+        default: true,
+      },
+      ...COMMON_CORDOVA_BUILD_COMMAND_OPTIONS,
+    ];
+
+    try {
+      const runner = await this.getBuildRunner();
+      const libmetadata = await runner.getCommandMetadata();
+      options.push(...libmetadata.options || []);
+    } catch (e) {
+      if (!(e instanceof RunnerNotFoundException)) {
+        throw e;
       }
-      case 'ionic-angular': {
-        additionalOptions = APP_SCRIPTS_OPTIONS;
-        break;
-      }
-      default:
     }
 
     return {
@@ -46,17 +63,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/gu
           validators: [validators.required],
         },
       ],
-      options: [
-        // Build Options
-        {
-          name: 'build',
-          summary: 'Do not invoke an Ionic build',
-          type: Boolean,
-          default: true,
-        },
-        ...additionalOptions,
-        ...COMMON_CORDOVA_BUILD_COMMAND_OPTIONS,
-      ],
+      options,
     };
   }
 
