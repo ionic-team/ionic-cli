@@ -1,12 +1,13 @@
-import chalk from 'chalk';
-import * as lodash from 'lodash';
-
 import { OptionGroup, validators } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IBaseConfig, PROJECT_FILE } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import chalk from 'chalk';
+import * as lodash from 'lodash';
+import * as path from 'path';
+
+import { fsReadJsonFile, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 
 export class ConfigSetCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
@@ -72,7 +73,8 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
 
     const file: IBaseConfig<object> = global ? this.env.config : this.env.project;
 
-    const config = await file.load();
+    const config = await fsReadJsonFile(file.filePath);
+
     const oldValue = lodash.get(config, p);
 
     if (!v.match(/^\d+e\d+$/)) {
@@ -101,7 +103,8 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
     const valueChanged = oldValue !== newValue;
 
     lodash.set(config, p, newValue);
-    await file.save();
+
+    await fsWriteJsonFile(path.resolve(file.filePath), config, { encoding: 'utf8' });
 
     if (valueChanged) {
       this.env.log.ok(`${chalk.green(p)} set to ${chalk.green(JSON.stringify(v))} in ${chalk.bold(prettyPath(file.filePath))}!`);

@@ -1,21 +1,38 @@
-import * as path from 'path';
-
+import { TaskChain } from '@ionic/cli-framework';
+import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
+import { ERROR_FILE_INVALID_JSON, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
+import {
+  ERROR_INVALID_PACKAGE_JSON,
+  compileNodeModulesPaths,
+  readPackageJsonFile,
+  resolve,
+} from '@ionic/cli-framework/utils/npm';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
+import * as path from 'path';
 
-import { TaskChain } from '@ionic/cli-framework';
-import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
-import { ERROR_FILE_INVALID_JSON, fsReadJsonFile, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
-import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
-
+import { MULTI_PROJECT_TYPES, ProjectConfig } from '../..';
 import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
-import { IAilmentRegistry, IConfig, IIntegration, ILogger, IProject, IShell, InfoItem, IntegrationName, PackageJson, ProjectFile, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
+import {
+  IAilmentRegistry,
+  IConfig,
+  IIntegration,
+  ILogger,
+  IProject,
+  IShell,
+  InfoItem,
+  IntegrationName,
+  PackageJson,
+  ProjectIntegration,
+  ProjectPersonalizationDetails,
+  ProjectType,
+} from '../../definitions';
+import { isMultiProjectConfig, isProjectConfig } from '../../guards';
 import { BaseConfig } from '../config';
+import * as ζdoctor from '../doctor';
 import { FatalException } from '../errors';
 import { BaseIntegration } from '../integrations';
-
-import * as ζdoctor from '../doctor';
 
 import * as ζangular from './angular';
 import * as ζcustom from './custom';
@@ -31,7 +48,7 @@ export interface ProjectDeps {
   readonly tasks: TaskChain;
 }
 
-export abstract class Project extends BaseConfig<ProjectFile> implements IProject {
+export abstract class Project extends BaseConfig<ProjectConfig> implements IProject {
   abstract readonly type: ProjectType;
 
   protected readonly config: IConfig;
@@ -39,7 +56,7 @@ export abstract class Project extends BaseConfig<ProjectFile> implements IProjec
   protected readonly shell: IShell;
   protected readonly tasks: TaskChain;
 
-  constructor(dir: string, file: string, { config, log, shell, tasks }: ProjectDeps) {
+  constructor(dir: string, file: string, readonly name: string | undefined, { config, log, shell, tasks }: ProjectDeps) {
     super(dir, file);
     this.config = config;
     this.log = log;
@@ -47,23 +64,40 @@ export abstract class Project extends BaseConfig<ProjectFile> implements IProjec
     this.tasks = tasks;
   }
 
-  static async determineType(projectDir: string, deps: ProjectDeps): Promise<ProjectType | undefined> {
-    const projectFilePath = path.resolve(projectDir, PROJECT_FILE);
-    let projectFile: { [key: string]: any; } | undefined;
+  static async determineType(projectDir: string, projectName: string | undefined, projectConfig: { [key: string]: any; } | undefined, deps: ProjectDeps): Promise<ProjectType | undefined> {
+    let type: ProjectType | undefined;
 
-    try {
-      projectFile = await fsReadJsonFile(projectFilePath);
-    } catch (e) {
-      debug('Attempted to load project config %s but got error: %O', projectFilePath, e);
+    if (isProjectConfig(projectConfig)) {
+      type = projectConfig.type;
     }
 
-    if (projectFile && projectFile.type && PROJECT_TYPES.includes(projectFile.type)) {
-      debug(`Project type from config: ${chalk.bold(prettyProjectName(projectFile.type))} ${projectFile.type ? chalk.bold(`(${projectFile.type})`) : ''}`);
-      return projectFile.type;
+    if (isMultiProjectConfig(projectConfig)) {
+      const name = projectName ? projectName : projectConfig.defaultProject;
+
+      if (!name) {
+        // We need a defaultProject or --project flag set for angular projects.
+        throw new FatalException(`Please set a ${chalk.green('defaultProject')} in ${chalk.bold(PROJECT_FILE)} or specify the project using ${chalk.green('--project')}`);
+      }
+
+      const config = projectConfig.projects[name];
+
+      if (config) {
+        type = config.type;
+      } else {
+        throw new FatalException(`Project ${chalk.green(name)} could not be found in the workspace. Did you add it to ${chalk.bold(PROJECT_FILE)}?`);
+      }
+      if (!MULTI_PROJECT_TYPES.includes(type)) {
+        throw new FatalException(`Project type ${chalk.green(type)} is not supported in multi-app workspaces. Please set ${chalk.green(`projects.${name}.type`)} to one of: ${MULTI_PROJECT_TYPES.map(v => chalk.green(v)).join(', ')}`);
+      }
+    }
+
+    if (type && PROJECT_TYPES.includes(type)) {
+      debug(`Project type from config: ${chalk.bold(prettyProjectName(type))} ${type ? chalk.bold(`(${type})`) : ''}`);
+      return type;
     }
 
     for (const projectType of PROJECT_TYPES) {
-      const p = await Project.createFromProjectType(projectDir, PROJECT_FILE, deps, projectType);
+      const p = await Project.createFromProjectType(projectDir, PROJECT_FILE, projectName, deps, projectType);
 
       if (await p.detected()) {
         debug(`Project type detected: ${chalk.bold(prettyProjectName(p.type))} ${p.type ? chalk.bold(`(${p.type})`) : ''}`);
@@ -75,8 +109,8 @@ export abstract class Project extends BaseConfig<ProjectFile> implements IProjec
 
     // TODO: move some of this to the CLI docs
 
-    deps.log.error(
-      `Could not determine project type (project config: ${chalk.bold(prettyPath(projectFilePath))}).\n` +
+    throw new FatalException(
+      `Could not determine project type (project config: ${chalk.bold(prettyPath(path.resolve(projectDir, PROJECT_FILE)))}).\n` +
       `- ${wordWrap(`For ${chalk.bold(prettyProjectName('angular'))} projects, make sure ${chalk.green('@ionic/angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n` +
       `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic-angular'))} projects, make sure ${chalk.green('ionic-angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n` +
       `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic1'))} projects, make sure ${chalk.green('ionic')} is listed as a dependency in ${chalk.bold('bower.json')}.`, listWrapOptions)}\n\n` +
@@ -85,26 +119,26 @@ export abstract class Project extends BaseConfig<ProjectFile> implements IProjec
     );
   }
 
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'angular'): Promise<ζangular.AngularProject>;
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'ionic-angular'): Promise<ζionicAngular.IonicAngularProject>;
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'ionic1'): Promise<ζionic1.Ionic1Project>;
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: 'custom'): Promise<ζcustom.CustomProject>;
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: ProjectType): Promise<IProject>;
-  static async createFromProjectType(dir: string, file: string, deps: ProjectDeps, type: ProjectType): Promise<IProject> {
+  static async createFromProjectType(dir: string, file: string, name: string | undefined, deps: ProjectDeps, type: 'angular'): Promise<ζangular.AngularProject>;
+  static async createFromProjectType(dir: string, file: string, name: string | undefined, deps: ProjectDeps, type: 'ionic-angular'): Promise<ζionicAngular.IonicAngularProject>;
+  static async createFromProjectType(dir: string, file: string, name: string | undefined, deps: ProjectDeps, type: 'ionic1'): Promise<ζionic1.Ionic1Project>;
+  static async createFromProjectType(dir: string, file: string, name: string | undefined, deps: ProjectDeps, type: 'custom'): Promise<ζcustom.CustomProject>;
+  static async createFromProjectType(dir: string, file: string, name: string | undefined, deps: ProjectDeps, type: ProjectType): Promise<IProject>;
+  static async createFromProjectType(dir: string, file: string, name: string | undefined, deps: ProjectDeps, type: ProjectType): Promise<IProject> {
     let project: IProject | undefined;
 
     if (type === 'angular') {
       const { AngularProject } = await import('./angular');
-      project = new AngularProject(dir, file, deps);
+      project = new AngularProject(dir, file, name, deps);
     } else if (type === 'ionic-angular') {
       const { IonicAngularProject } = await import('./ionic-angular');
-      project = new IonicAngularProject(dir, file, deps);
+      project = new IonicAngularProject(dir, file, name, deps);
     } else if (type === 'ionic1') {
       const { Ionic1Project } = await import('./ionic1');
-      project = new Ionic1Project(dir, file, deps);
+      project = new Ionic1Project(dir, file, name, deps);
     } else if (type === 'custom') {
       const { CustomProject } = await import('./custom');
-      project = new CustomProject(dir, file, deps);
+      project = new CustomProject(dir, file, name, deps);
     } else {
       throw new FatalException(`Bad project type: ${chalk.bold(type)}`); // TODO?
     }
@@ -116,15 +150,16 @@ export abstract class Project extends BaseConfig<ProjectFile> implements IProjec
 
   async requireProId(): Promise<string> {
     const p = await this.load();
+    const proId = p.pro_id;
 
-    if (!p.pro_id) {
+    if (!proId) {
       throw new FatalException(
         `Your project file (${chalk.bold(prettyPath(this.filePath))}) does not contain '${chalk.bold('pro_id')}'. ` +
         `Run ${chalk.green('ionic link')}.`
       );
     }
 
-    return p.pro_id;
+    return proId;
   }
 
   get packageJsonPath() {
@@ -189,7 +224,7 @@ export abstract class Project extends BaseConfig<ProjectFile> implements IProjec
     return results;
   }
 
-  is(j: any): j is ProjectFile {
+  is(j: any): j is ProjectConfig {
     return j
       && typeof j.name === 'string'
       && typeof j.integrations === 'object';
@@ -253,6 +288,65 @@ export abstract class Project extends BaseConfig<ProjectFile> implements IProjec
     }, name);
   }
 
+  async getIntegration(name: IntegrationName): Promise<ProjectIntegration> {
+    if (!this.configFile) {
+      throw new FatalException(`Tried to get integration before loading config file`);
+    }
+
+    const integration = this.configFile.integrations[name];
+
+    if (!integration) {
+      throw new FatalException(`Could not find ${chalk.bold(name)} integration in the ${chalk.bold(this.name ? this.name : 'default')} project.`);
+    }
+
+    return {
+      enabled: integration.enabled !== false,
+      root: integration.root === undefined ? this.directory : path.resolve(this.directory, integration.root),
+    };
+  }
+
+  async load(options: { disk?: boolean; } = {}): Promise<ProjectConfig> {
+    let config = await super.load(options);
+
+    if (isMultiProjectConfig(config) && this.name) {
+      const projectConfig = config.projects[this.name];
+      if (projectConfig) {
+        config = projectConfig;
+      } else {
+        throw new FatalException(`Project ${chalk.green(this.name)} could not be found in the workspace. Did you add it to ${chalk.bold(PROJECT_FILE)}?`);
+      }
+    }
+
+    this.configFile = config;
+
+    return this.configFile;
+  }
+
+  async save(config?: ProjectConfig): Promise<void> {
+    if (!config) {
+      config = this.configFile;
+    }
+
+    if (config) {
+      if (isMultiProjectConfig(this.originalConfigFile)) {
+        if (this.name && !lodash.isEqual(config, this.originalConfigFile.projects[this.name])) {
+          const saveConfig = lodash.cloneDeep(this.originalConfigFile);
+
+          if (saveConfig.projects[this.name]) {
+            saveConfig.projects[this.name] = config;
+          }
+
+          await fsWriteJsonFile(this.filePath, saveConfig, { encoding: 'utf8' });
+
+          this.configFile = config;
+          this.originalConfigFile = saveConfig;
+        }
+      } else {
+        await super.save(config);
+      }
+    }
+  }
+
   protected async getIntegrations(): Promise<IIntegration[]> {
     const p = await this.load();
     const projectIntegrations = Object.keys(p.integrations) as IntegrationName[]; // TODO
@@ -274,6 +368,7 @@ export abstract class Project extends BaseConfig<ProjectFile> implements IProjec
  */
 export class OutsideProject extends BaseConfig<never> implements IProject {
   readonly type = undefined;
+  readonly name = undefined;
 
   is(j: any): j is never {
     return false;
@@ -307,6 +402,7 @@ export class OutsideProject extends BaseConfig<never> implements IProject {
   async personalize(): Promise<never> { throw this._createError(); }
   async getAilmentRegistry(): Promise<never> { throw this._createError(); }
   async createIntegration(): Promise<never> { throw this._createError(); }
+  async getIntegration(): Promise<never> { throw this._createError(); }
 }
 
 export function prettyProjectName(type?: string): string {

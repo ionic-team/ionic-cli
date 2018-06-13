@@ -64,13 +64,13 @@ export const CORDOVA_BUILD_EXAMPLE_COMMANDS = [
 
 export abstract class CordovaCommand extends Command {
   async checkCordova(runinfo: CommandInstanceInfo) {
-    const project = await this.env.project.load();
+    const projectConfig = await this.env.project.load();
 
-    if (project.integrations.cordova && project.integrations.cordova.enabled === false) {
+    if (projectConfig.integrations.cordova && projectConfig.integrations.cordova.enabled === false) {
       return;
     }
 
-    if (!project.integrations.cordova) {
+    if (!projectConfig.integrations.cordova) {
       await runCommand(runinfo, ['integrations', 'enable', 'cordova']);
     }
   }
@@ -78,11 +78,15 @@ export abstract class CordovaCommand extends Command {
   async preRunChecks(runinfo: CommandInstanceInfo) {
     const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
 
+    await this.env.project.load();
+
+    const cordova = await this.env.project.getIntegration('cordova');
+
     await this.checkCordova(runinfo);
 
     // Check for www folder
     if (this.env.project.directory) {
-      const wwwPath = path.join(this.env.project.directory, 'www');
+      const wwwPath = path.join(cordova.root, 'www');
       const wwwExists = await pathExists(wwwPath); // TODO: hard-coded
 
       if (!wwwExists) {
@@ -101,9 +105,10 @@ export abstract class CordovaCommand extends Command {
     const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
     const config = await this.env.config.load();
     const { npmClient } = config;
+    const { root: cwd } = await this.env.project.getIntegration('cordova');
 
     try {
-      await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, ...options });
+      await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, cwd, ...options });
     } catch (e) {
       if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
         const cdvInstallArgs = await pkgManagerArgs(npmClient, { command: 'install', pkg: 'cordova', global: true });
@@ -125,10 +130,12 @@ export abstract class CordovaCommand extends Command {
   async checkForPlatformInstallation(runPlatform: string) {
     if (runPlatform) {
       const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
-      const platforms = await getPlatforms(this.env.project.directory);
+
+      const cordova = await this.env.project.getIntegration('cordova');
+      const platforms = await getPlatforms(cordova.root);
 
       if (!platforms.includes(runPlatform)) {
-        await installPlatform(this.env, runPlatform);
+        await installPlatform(this.env, runPlatform, cordova.root);
       }
     }
   }

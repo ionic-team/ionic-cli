@@ -80,6 +80,7 @@ export type IntegrationName = 'capacitor' | 'cordova';
 
 export interface ProjectIntegration {
   enabled?: boolean;
+  root: string;
 }
 
 export interface ProjectIntegrations {
@@ -87,7 +88,7 @@ export interface ProjectIntegrations {
   capacitor?: ProjectIntegration;
 }
 
-export interface ProjectFile {
+export interface ProjectConfig {
   name: string;
   pro_id?: string;
 
@@ -97,6 +98,15 @@ export interface ProjectFile {
   ssl?: {
     key?: string;
     cert?: string;
+  };
+
+  type: ProjectType;
+}
+
+export interface MultiProjectConfig {
+  defaultProject: string | undefined;
+  projects: {
+    [key: string]: ProjectConfig | undefined;
   };
 }
 
@@ -229,8 +239,9 @@ export interface ProjectPersonalizationDetails {
   description?: string;
 }
 
-export interface IProject extends IBaseConfig<ProjectFile> {
+export interface IProject extends IBaseConfig<ProjectConfig> {
   type: ProjectType | undefined;
+  name: string | undefined;
 
   getDocsUrl(): Promise<string>;
   getSourceDir(sourceRoot?: string): Promise<string>;
@@ -238,6 +249,7 @@ export interface IProject extends IBaseConfig<ProjectFile> {
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
   createIntegration(name: IntegrationName): Promise<IIntegration>;
+  getIntegration(name: IntegrationName): Promise<ProjectIntegration>;
   requireProId(): Promise<string>;
   getPackageJson(pkgName?: string): Promise<[framework.PackageJson | undefined, string | undefined]>;
   requirePackageJson(): Promise<framework.PackageJson>;
@@ -506,6 +518,7 @@ export interface InfoItem {
 export interface BaseBuildOptions {
   engine: string; // browser, cordova, etc.
   platform?: string; // android, ios, etc.
+  project?: string;
   '--': string[];
 }
 
@@ -515,7 +528,6 @@ export interface BuildOptions<T extends ProjectType> extends BaseBuildOptions {
 
 export interface AngularBuildOptions extends BuildOptions<'angular'> {
   prod?: boolean;
-  project?: string;
   configuration?: string;
 }
 
@@ -556,6 +568,7 @@ export interface ServeOptions {
   browserOption?: string;
   devapp: boolean;
   platform?: string; // android, ios, etc.
+  project?: string;
   '--': string[];
 
   // Additional Options
@@ -565,7 +578,6 @@ export interface ServeOptions {
 
 export interface AngularServeOptions extends ServeOptions {
   prod?: boolean;
-  project?: string;
   configuration?: string;
 }
 
@@ -773,3 +785,5 @@ export interface IPCMessage {
   type: 'telemetry';
   data: { command: string; args: string[]; };
 }
+
+export type ProjectFile = ProjectConfig | MultiProjectConfig;

@@ -17,14 +17,6 @@ export const NG_BUILD_OPTIONS = [
     hint: chalk.dim('[ng]'),
   },
   {
-    name: 'project',
-    summary: 'The name of the project',
-    type: String,
-    groups: [OptionGroup.Advanced],
-    default: 'app',
-    hint: chalk.dim('[ng]'),
-  },
-  {
     name: 'configuration',
     aliases: ['c'],
     summary: 'Specify the configuration to use.',
@@ -61,23 +53,26 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularBuildOptions {
     const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
-    const project = options['project'] ? String(options['project']) : 'app';
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
 
     return {
       ...baseOptions,
       prod,
-      project,
       configuration,
       type: 'angular',
     };
   }
 
-  buildOptionsToNgArgs(options: AngularBuildOptions): string[] {
+  async buildOptionsToNgArgs(options: AngularBuildOptions): Promise<string[]> {
     const args: ParsedArgs = {
       _: [],
-      platform: options.engine === 'cordova' ? options.platform : undefined,
     };
+
+    if (options.engine === 'cordova') {
+      const integration = await this.project.getIntegration('cordova');
+      args.platform = options.platform;
+      args.cordovaBasePath = integration.root;
+    }
 
     return [...unparseArgs(args), ...options['--']];
   }
@@ -94,7 +89,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const { npmClient } = config;
     const pkg = await this.project.requirePackageJson();
 
-    const args = this.buildOptionsToNgArgs(options);
+    const args = await this.buildOptionsToNgArgs(options);
     const shellOptions = { cwd: this.project.directory };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);

@@ -28,6 +28,7 @@ describe('@ionic/cli-utils', () => {
           proxy: true,
           serverlogs: false,
           ssl: false,
+          project: undefined
         };
 
         it('should provide defaults with no options', () => {

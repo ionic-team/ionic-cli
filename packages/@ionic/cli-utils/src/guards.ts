@@ -13,7 +13,9 @@ import {
   ICommand,
   IntegrationName,
   Login,
+  MultiProjectConfig,
   Org,
+  ProjectConfig,
   Response,
   SSHKey,
   SecurityProfile,
@@ -281,4 +283,12 @@ export function isTreatableAilment(a: object): a is TreatableAilment {
 export function isIntegrationName(name: string): name is IntegrationName {
   const n = name as IntegrationName;
   return INTEGRATION_NAMES.includes(n);
+}
+
+export function isProjectConfig(configFile?: object): configFile is ProjectConfig {
+  return configFile !== undefined && !configFile.hasOwnProperty('projects');
+}
+
+export function isMultiProjectConfig(configFile?: object): configFile is MultiProjectConfig {
+  return configFile !== undefined && configFile.hasOwnProperty('projects');
 }

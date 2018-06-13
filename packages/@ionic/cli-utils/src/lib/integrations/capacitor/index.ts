@@ -8,12 +8,12 @@ export class Integration extends BaseIntegration {
   readonly archiveUrl = undefined;
 
   async add(options?: IIntegrationAddOptions): Promise<void> {
-    const project = await this.project.load();
+    const projectConfig = await this.project.load();
 
     await this.installCapacitorCore();
     await this.installCapacitorCLI();
 
-    await this.shell.run('capacitor', ['init', project.name, 'io.ionic.starter'], {});
+    await this.shell.run('capacitor', ['init', projectConfig.name, 'io.ionic.starter'], {});
 
     await super.add(options);
   }

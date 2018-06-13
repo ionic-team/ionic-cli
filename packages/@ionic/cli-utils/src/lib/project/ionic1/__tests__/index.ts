@@ -8,7 +8,7 @@ describe('@ionic/cli-utils', () => {
     describe('Ionic1Project', () => {
 
       it('should set directory attribute', async () => {
-        const p = new Ionic1Project('/path/to/proj', 'file', {});
+        const p = new Ionic1Project('/path/to/proj', 'file', undefined, {});
         expect(p.directory).toEqual(path.resolve('/path/to/proj'));
       });
 

@@ -1,15 +1,14 @@
-import * as path from 'path';
-
-import chalk from 'chalk';
-import * as Debug from 'debug';
 
 import { LOGGER_LEVELS, createPromptModule, createTaskChainWithOutput, parseArgs } from '@ionic/cli-framework';
-import { findBaseDirectory } from '@ionic/cli-framework/utils/fs';
+import { findBaseDirectory, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
+import chalk from 'chalk';
+import * as Debug from 'debug';
+import * as path from 'path';
 
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { PROJECT_FILE } from './constants';
-import { IProject, InfoItem, IonicContext, IonicEnvironment } from './definitions';
+import { IProject, InfoItem, IonicContext, IonicEnvironment, ProjectType } from './definitions';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
 import { Environment } from './lib/environment';
 import { Client } from './lib/http';
@@ -26,24 +25,41 @@ export * from './guards';
 
 const debug = Debug('ionic:cli-utils');
 
-export async function getProject(projectDir: string | undefined, deps: ProjectDeps): Promise<IProject> {
+export async function getProject(projectDir: string | undefined, projectName: string | undefined, deps: ProjectDeps): Promise<IProject> {
   if (!projectDir) {
     return new OutsideProject('', PROJECT_FILE);
   }
 
-  const type = await Project.determineType(projectDir, deps);
+  const projectFilePath = path.resolve(projectDir, PROJECT_FILE);
+  let projectFile: { [key: string]: any; } | undefined;
+  let type: ProjectType | undefined;
+
+  try {
+    projectFile = await fsReadJsonFile(projectFilePath);
+  } catch (e) {
+    debug('Attempted to load project config %s but got error: %O', projectFilePath, e);
+  }
+
+  if (projectFile) {
+    type = await Project.determineType(projectDir, projectName, projectFile, deps);
+    projectName = projectName || projectFile.defaultProject;
+
+    debug(`Project name: ${chalk.bold(String(projectName))}`);
+  }
 
   if (!type) {
     return new OutsideProject('', PROJECT_FILE);
   }
 
-  return Project.createFromProjectType(projectDir, PROJECT_FILE, deps, type);
+  return Project.createFromProjectType(projectDir, PROJECT_FILE, projectName, deps, type);
 }
 
 export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[], env: { [key: string]: string; }): Promise<IonicEnvironment> {
   process.chdir(ctx.execPath);
 
-  const argv = parseArgs(pargv, { boolean: true, string: '_' });
+  const argv = parseArgs(pargv, { boolean: ['quiet', 'interactive', 'confirm'], string: ['_', 'project'] });
+
+  const projectName = argv['project'] ? String(argv['project']) : undefined;
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
   const flags = gatherFlags(argv);
 
@@ -59,7 +75,10 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     handlers: new Set(),
   });
 
-  const prompt = await createPromptModule({ interactive: flags.interactive, onFallback: createOnFallback({ ...flags, log }) });
+  const prompt = await createPromptModule({
+    interactive: flags.interactive,
+    onFallback: createOnFallback({ ...flags, log }),
+  });
   const tasks = createTaskChainWithOutput(
     flags.interactive
       ? { output: prompt.output }
@@ -76,7 +95,13 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     const npm = await shell.cmdinfo('npm', ['-v']);
 
     const info: InfoItem[] = [
-      { group: 'ionic', key: 'ionic', flair: 'Ionic CLI', value: ctx.version, path: path.dirname(path.dirname(ctx.libPath)) },
+      {
+        group: 'ionic',
+        key: 'ionic',
+        flair: 'Ionic CLI',
+        value: ctx.version,
+        path: path.dirname(path.dirname(ctx.libPath)),
+      },
       { group: 'system', key: 'NodeJS', value: process.version, path: process.execPath },
       { group: 'system', key: 'npm', value: npm || 'not installed' },
       { group: 'system', key: 'OS', value: os },
@@ -89,7 +114,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   };
 
   const shell = new Shell({ log, projectDir });
-  const project = await getProject(projectDir, { config, log, shell, tasks });
+  const project = await getProject(projectDir, projectName, { config, log, shell, tasks });
   const client = new Client(config);
   const session = new ProSession({ config, client, project });
 

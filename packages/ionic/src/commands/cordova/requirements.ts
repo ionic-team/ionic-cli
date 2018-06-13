@@ -1,6 +1,13 @@
 import chalk from 'chalk';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isExitCodeException } from '@ionic/cli-utils';
+import {
+  CommandInstanceInfo,
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandMetadata,
+  CommandPreRun,
+  isExitCodeException,
+} from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
@@ -33,7 +40,8 @@ Like running ${chalk.green('cordova requirements')} directly, but provides frien
 
     const [ platform ] = inputs;
 
-    const platforms = await getPlatforms(this.env.project.directory);
+    const cordova = await this.env.project.getIntegration('cordova');
+    const platforms = await getPlatforms(cordova.root);
 
     if (platform) {
       if (!platforms.includes(platform)) {
@@ -44,7 +52,7 @@ Like running ${chalk.green('cordova requirements')} directly, but provides frien
         });
 
         if (confirm) {
-          await installPlatform(this.env, platform);
+          await installPlatform(this.env, platform, cordova.root);
         } else {
           throw new FatalException(
             `Can't gather requirements for ${chalk.green(platform)} unless the platform is installed.\n` +

@@ -6,25 +6,26 @@ import * as lodash from 'lodash';
 
 import { ParsedArgs } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { ERROR_FILE_INVALID_JSON, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
+import {
+  ERROR_FILE_INVALID_JSON,
+  fsMkdirp,
+  fsReadJsonFile,
+  fsStat,
+  fsWriteJsonFile,
+} from '@ionic/cli-framework/utils/fs';
 import { str2num } from '@ionic/cli-framework/utils/string';
 
-import {
-  ConfigFile,
-  IBaseConfig,
-  IConfig,
-  IonicEnvironment,
-} from '../definitions';
+import { ConfigFile, IBaseConfig, IConfig, IonicEnvironment } from '../definitions';
 
 import { FatalException } from './errors';
 
 export abstract class BaseConfig<T> implements IBaseConfig<T> {
-  directory: string;
-  filePath: string;
+  readonly directory: string;
+  readonly filePath: string;
   protected configFile?: T;
   protected originalConfigFile?: { [key: string]: any };
 
-  constructor(directory: string, public fileName: string) {
+  constructor(directory: string, readonly fileName: string) {
     this.directory = directory ? path.resolve(directory) : ''; // TODO: better way to check if in project
     this.filePath = path.resolve(this.directory, fileName);
   }

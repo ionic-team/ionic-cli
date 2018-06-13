@@ -3,7 +3,13 @@ import chalk from 'chalk';
 import * as lodash from 'lodash';
 
 import { contains, separateArgv, validate, validators } from '@ionic/cli-framework';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import {
+  CommandInstanceInfo,
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandMetadata,
+  CommandPreRun,
+} from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
 
@@ -80,7 +86,8 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
 
     const metadata = await this.getMetadata();
 
-    const platforms = await getPlatforms(this.env.project.directory);
+    const cordova = await this.env.project.getIntegration('cordova');
+    const platforms = await getPlatforms(cordova.root);
 
     if (action === 'add' && platforms.includes(platformName)) {
       this.env.log.msg(`Platform ${platformName} already exists.`);
@@ -96,7 +103,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
     if (action === 'add') {
       const { installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
       const [ , extraArgs ] = separateArgv(inputs);
-      await installPlatform(this.env, platformName, extraArgs);
+      await installPlatform(this.env, platformName, cordova.root, extraArgs);
     } else {
       await this.runCordova(cordovaArgs, {});
     }

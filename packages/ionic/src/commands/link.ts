@@ -90,10 +90,10 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     let proId: string | undefined = inputs[0];
     let { create } = options;
 
-    const p = await this.env.project.load();
+    const projectConfig = await this.env.project.load();
 
-    if (p.pro_id) {
-      if (p.pro_id === proId) {
+    if (projectConfig.pro_id) {
+      if (proId && projectConfig.pro_id === proId) {
         this.env.log.msg(`Already linked with app ${chalk.green(proId)}.`);
         return;
       }
@@ -105,7 +105,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `Pro ID ${chalk.green(p.pro_id)} is already set up with this app. ${msg}`,
+        message: `Pro ID ${chalk.green(projectConfig.pro_id)} is already set up with this app. ${msg}`,
       });
 
       if (!confirm) {
@@ -121,7 +121,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     if (!proId && !create) {
       const choices = [
         {
-          name: `Link ${p.pro_id ? 'a different' : 'an existing'} app on Ionic Pro`,
+          name: `Link ${projectConfig.pro_id ? 'a different' : 'an existing'} app on Ionic Pro`,
           value: CHOICE_LINK_EXISTING_APP,
         },
         {
@@ -130,9 +130,9 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
         },
       ];
 
-      if (p.pro_id) {
+      if (projectConfig.pro_id) {
         choices.unshift({
-          name: `Relink ${chalk.green(p.pro_id)}`,
+          name: `Relink ${chalk.green(projectConfig.pro_id)}`,
           value: CHOICE_RELINK,
         });
       }
@@ -185,7 +185,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
           }
         }
       } else if (result === CHOICE_RELINK) {
-        proId = p.pro_id;
+        proId = projectConfig.pro_id;
       }
     }
 

@@ -65,7 +65,8 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
 
     const [ platform ] = inputs;
 
-    const platforms = await getPlatforms(this.env.project.directory);
+    const cordova = await this.env.project.getIntegration('cordova');
+    const platforms = await getPlatforms(cordova.root);
 
     if (platform) {
       if (!platforms.includes(platform)) {
@@ -76,7 +77,7 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
         });
 
         if (confirm) {
-          await installPlatform(this.env, platform);
+          await installPlatform(this.env, platform, cordova.root);
         } else {
           throw new FatalException(
             `Can't prepare for ${chalk.green(platform)} unless the platform is installed.\n` +

@@ -1,11 +1,11 @@
-import * as util from 'util';
-
-import chalk from 'chalk';
-import * as lodash from 'lodash';
-
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, PROJECT_FILE } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import chalk from 'chalk';
+import * as lodash from 'lodash';
+import * as util from 'util';
+
+import { fsReadJsonFile } from '../../../../@ionic/cli-framework/utils/fs';
 
 export class ConfigGetCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
@@ -59,7 +59,7 @@ This command attempts to sanitize config output for known sensitive fields, such
 
     const file = global ? this.env.config : this.env.project;
 
-    const config = await file.load();
+    const config = await fsReadJsonFile(file.filePath);
     const v = lodash.cloneDeep(p ? lodash.get(config, p) : config);
 
     if (json) {

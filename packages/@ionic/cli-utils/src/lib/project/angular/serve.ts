@@ -21,14 +21,6 @@ const NG_SERVE_OPTIONS = [
     hint: chalk.dim('[ng]'),
   },
   {
-    name: 'project',
-    summary: 'The name of the project',
-    type: String,
-    groups: [OptionGroup.Advanced],
-    default: 'app',
-    hint: chalk.dim('[ng]'),
-  },
-  {
     name: 'configuration',
     aliases: ['c'],
     summary: 'Specify the configuration to use.',
@@ -59,13 +51,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularServeOptions {
     const baseOptions = super.createOptionsFromCommandLine(inputs, options);
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
-    const project = options['project'] ? String(options['project']) : 'app';
     const configuration = options['configuration'] ? String(options['configuration']) : undefined;
 
     return {
       ...baseOptions,
       prod,
-      project,
       configuration,
     };
   }
@@ -133,7 +123,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const { npmClient } = config;
 
     let program = DEFAULT_PROGRAM;
-    let args = this.serveOptionsToNgArgs(options);
+    let args = await this.serveOptionsToNgArgs(options);
     const shellOptions = { cwd: this.project.directory };
 
     debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
@@ -187,13 +177,19 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     });
   }
 
-  serveOptionsToNgArgs(options: AngularServeOptions): string[] {
+  async serveOptionsToNgArgs(options: AngularServeOptions): Promise<string[]> {
     const args: ParsedArgs = {
       _: [],
       platform: options.engine === 'cordova' ? options.platform : undefined,
       host: options.address,
       port: String(options.port),
     };
+
+    if (options.engine === 'cordova') {
+      const integration = await this.project.getIntegration('cordova');
+      args.platform = options.platform;
+      args.cordovaBasePath = integration.root;
+    }
 
     return [...unparseArgs(args), ...options['--']];
   }

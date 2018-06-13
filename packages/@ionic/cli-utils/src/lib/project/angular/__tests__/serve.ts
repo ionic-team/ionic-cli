@@ -1,4 +1,8 @@
 import { ServeRunner } from '../serve';
+import { ServeRunnerDeps } from '../../../../../lib/serve';
+import { CommandLineOptions } from '../../../../definitions';
+import { Project } from '../../../../../lib/project';
+import { AngularProject } from '../../../../../lib/project/angular';
 
 describe('@ionic/cli-utils', () => {
 
@@ -24,12 +28,14 @@ describe('@ionic/cli-utils', () => {
           port: 8100,
           proxy: true,
           ssl: false,
-          project: 'app'
+          project: undefined,
+          prod: undefined,
+          platform: undefined,
         };
 
         it('should provide defaults with no options', () => {
-          const runner = new ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], {});
+          const runner = new ServeRunner({} as ServeRunnerDeps);
+          const result = runner.createOptionsFromCommandLine([], {} as CommandLineOptions);
           expect(result).toEqual(defaults);
         });
 
@@ -67,6 +73,33 @@ describe('@ionic/cli-utils', () => {
           const runner = new ServeRunner({});
           const result = runner.createOptionsFromCommandLine([], { '--': ['foo', '--bar'] });
           expect(result).toEqual({ ...defaults, '--': ['foo', '--bar'] });
+        });
+
+      });
+
+      describe('serveOptionsToNgArgs', () => {
+
+        const defaults = {
+          '--': [],
+        };
+
+        it('should pass cordova options', async () => {
+          const root = 'fakeRoot';
+          const project = {
+            getIntegration: jest.fn(() => ({ root })),
+          };
+          const runner = new ServeRunner({ project });
+          const options = {
+            ...defaults,
+            engine: 'cordova',
+            platform: 'fakePlatform',
+          };
+
+          const result = await runner.serveOptionsToNgArgs(options);
+          expect(result).toEqual(jasmine.arrayContaining([
+            `--platform=${options.platform}`,
+            `--cordova-base-path=${root}`,
+          ]));
         });
 
       });

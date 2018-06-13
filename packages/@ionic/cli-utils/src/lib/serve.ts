@@ -1,4 +1,11 @@
-import { BaseError, LOGGER_LEVELS, NetworkInterface, OptionGroup, PromptModule, createPrefixedFormatter } from '@ionic/cli-framework';
+import {
+  BaseError,
+  LOGGER_LEVELS,
+  NetworkInterface,
+  OptionGroup,
+  PromptModule,
+  createPrefixedFormatter,
+} from '@ionic/cli-framework';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { findClosestOpenPort, getExternalIPv4Interfaces } from '@ionic/cli-framework/utils/network';
 import { onBeforeExit, processExit } from '@ionic/cli-framework/utils/process';
@@ -14,7 +21,22 @@ import * as split2 from 'split2';
 import * as through2 from 'through2';
 
 import { ASSETS_DIRECTORY, PROJECT_FILE } from '../constants';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, Runner, ServeDetails, ServeOptions } from '../definitions';
+import {
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandMetadata,
+  CommandMetadataOption,
+  DevAppDetails,
+  IConfig,
+  ILogger,
+  IProject,
+  IShell,
+  IonicEnvironment,
+  LabServeDetails,
+  Runner,
+  ServeDetails,
+  ServeOptions,
+} from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
@@ -69,6 +91,11 @@ export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
     name: 'platform',
     summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => chalk.green(e)).join(', ')})`,
     groups: [OptionGroup.Advanced],
+  },
+  {
+    name: 'project',
+    summary: 'The name of the project',
+    groups: [OptionGroup.Experimental],
   },
 ];
 
@@ -160,6 +187,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       port,
       proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
       ssl: false,
+      project: options['project'] ? String(options['project']) : undefined,
     };
   }
 
@@ -294,8 +322,8 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     if (options.devapp) {
       const { createCommServer, createPublisher } = await import('./devapp');
 
-      const project = await this.project.load();
-      const publisher = await createPublisher(project.name, details.port, details.commPort);
+      const projectConfig = await this.project.load();
+      const publisher = await createPublisher(projectConfig.name, details.port, details.commPort);
       const comm = await createCommServer(publisher.id, details.commPort);
 
       publisher.interfaces = details.interfaces;
@@ -356,10 +384,10 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     };
 
     if (options.ssl) {
-      const project = await this.project.load();
+      const projectConfig = await this.project.load();
 
-      if (project.ssl && project.ssl.key && project.ssl.cert) {
-        labDetails.ssl = { key: project.ssl.key, cert: project.ssl.cert };
+      if (projectConfig.ssl && projectConfig.ssl.key && projectConfig.ssl.cert) {
+        labDetails.ssl = { key: projectConfig.ssl.key, cert: projectConfig.ssl.cert };
       } else {
         throw new FatalException(
           `Both ${chalk.green('ssl.key')} and ${chalk.green('ssl.cert')} config entries must be set.\n` +
@@ -393,11 +421,11 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
   }
 
   async runLabServer(url: string, details: LabServeDetails): Promise<void> {
-    const project = await this.project.load();
+    const projectConfig = await this.project.load();
     const pkg = await this.project.requirePackageJson();
 
     const labArgs = [url, '--host', details.address, '--port', String(details.port)];
-    const nameArgs = project.name ? ['--app-name', project.name] : [];
+    const nameArgs = projectConfig.name ? ['--app-name', projectConfig.name] : [];
     const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
 
     if (details.ssl) {
@@ -522,6 +550,10 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
         processExit(1); // tslint:disable-line:no-floating-promises
       });
     });
+
+    if (env.project.name) {
+      options['project'] = env.project.name;
+    }
 
     const opts = runner.createOptionsFromCommandLine(inputs, options);
     const details = await runner.run(opts);
