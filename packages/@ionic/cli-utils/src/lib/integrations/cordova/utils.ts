@@ -46,6 +46,6 @@ export function generateBuildOptions(metadata: CommandMetadata, inputs: CommandL
     externalAddressRequired: true,
     nobrowser: true,
     engine: 'cordova',
-    platform,
+    platform: platform ? platform : (options['platform'] ? String(options['platform']) : undefined),
   };
 }
