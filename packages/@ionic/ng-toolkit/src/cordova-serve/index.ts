@@ -19,6 +19,10 @@ export class CordovaServeBuilder implements Builder<CordovaServeBuilderSchema> {
     const devServerTargetSpec = { project, target, configuration, overrides: { port, host } };
     const devServerBuilderConfig = this.context.architect.getBuilderConfiguration</* DevServerBuilderSchema */any>(devServerTargetSpec);
 
+    // TODO: architect doesn't use the defaults from schema
+    devServerBuilderConfig.options.watch = true;
+    devServerBuilderConfig.options.liveReload = true;
+
     let devServerDescription: BuilderDescription;
 
     return this.context.architect.getBuilderDescription(devServerBuilderConfig).pipe(
