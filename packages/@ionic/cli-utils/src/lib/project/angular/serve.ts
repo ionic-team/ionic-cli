@@ -180,7 +180,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   async serveOptionsToNgArgs(options: AngularServeOptions): Promise<string[]> {
     const args: ParsedArgs = {
       _: [],
-      platform: options.engine === 'cordova' ? options.platform : undefined,
       host: options.address,
       port: String(options.port),
     };
@@ -188,7 +187,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     if (options.engine === 'cordova') {
       const integration = await this.project.getIntegration('cordova');
       args.platform = options.platform;
-      args.cordovaBasePath = integration.root;
+
+      if (this.project.directory !== integration.root) {
+        args.cordovaBasePath = integration.root;
+      }
     }
 
     return [...unparseArgs(args), ...options['--']];
