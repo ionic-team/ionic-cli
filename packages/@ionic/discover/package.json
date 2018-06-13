@@ -37,7 +37,7 @@
     "@types/debug": "0.0.30",
     "@types/netmask": "^1.0.30",
     "@types/node": "^6.0.101",
-    "@types/ws": "^4.0.2",
+    "@types/ws": "^5.1.2",
     "jest": "^23.0.1",
     "jest-cli": "^23.0.1",
     "rimraf": "^2.6.2",
