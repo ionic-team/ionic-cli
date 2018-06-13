@@ -45,6 +45,8 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
       summary: 'Copies assets to Cordova platforms, preparing them for native builds',
       description: `
 ${chalk.green('ionic cordova prepare')} will do the following:
+
+- Perform an Ionic build, which compiles web assets to ${chalk.bold('www/')}.
 - Copy the ${chalk.bold('www/')} directory into your Cordova platforms.
 - Transform ${chalk.bold('config.xml')} into platform-specific manifest files.
 - Copy icons and splash screens from ${chalk.bold('resources/')} to into your Cordova platforms.
@@ -103,7 +105,18 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
 
     if (options.build) {
       const { build } = await import('@ionic/cli-utils/lib/build');
-      await build(this.env, inputs, generateBuildOptions(metadata, inputs, options));
+      const buildOptions = generateBuildOptions(metadata, inputs, options);
+
+      if (buildOptions['platform']) {
+        await build(this.env, inputs, buildOptions);
+      } else {
+        this.env.log.warn(
+          `Cannot perform Ionic build without ${chalk.green('platform')}. Falling back to just ${chalk.green('cordova prepare')}.\n` +
+          `Please supply a ${chalk.green('platform')} (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')}) so the Ionic CLI can build web assets. The ${chalk.green('--no-build')} option can be specified to hide this warning.`
+        );
+
+        this.env.log.nl();
+      }
     }
 
     await this.runCordova(filterArgumentsForCordova(metadata, options), {});

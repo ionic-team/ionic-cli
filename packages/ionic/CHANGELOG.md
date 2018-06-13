@@ -44,7 +44,7 @@ down the main CLI package. All functionality is still supported, but the
   automatically detects this and changes it, but this notice is here if your
   build scripts rely on the setting.
 * `ionic build` will no longer run `cordova prepare`. Instead, run `ionic
-  cordova prepare [platform]`, which performs an Ionic build beforehand.
+  cordova prepare <platform>`, which performs an Ionic build beforehand.
 * Ionic Lab has been moved into the
   [`@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/lab)
   package, which will need to be installed for Lab to work.
