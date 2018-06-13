@@ -1,8 +1,9 @@
+import { CommandGroup, CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, NamespaceGroup, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, OptionGroup, formatOptionName } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
-import { CommandGroup, CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, NamespaceGroup, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, OptionGroup } from '@ionic/cli-framework';
-
 import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace, NamespaceMetadata } from '../definitions';
+
+import { GLOBAL_OPTIONS } from './config';
 
 const IONIC_LOGO = String.raw`
    _             _
@@ -25,12 +26,12 @@ const NAMESPACE_DECORATIONS: Decoration[] = [
   [NamespaceGroup.Experimental, chalk.red.bold('(experimental)')],
 ];
 
-export async function isCommandHidden(cmd: HydratedCommandMetadata): Promise<boolean> {
+export async function isCommandVisible(cmd: HydratedCommandMetadata): Promise<boolean> {
   const ns = await cmd.namespace.getMetadata();
   return (!cmd.groups || !cmd.groups.includes(CommandGroup.Hidden)) && (!ns.groups || !ns.groups.includes(NamespaceGroup.Hidden));
 }
 
-export async function isOptionHidden(opt: CommandMetadataOption): Promise<boolean> {
+export function isOptionVisible(opt: CommandMetadataOption): boolean {
   return !opt.groups || !opt.groups.includes(OptionGroup.Hidden);
 }
 
@@ -71,7 +72,9 @@ export class NamespaceStringHelpFormatter extends BaseNamespaceStringHelpFormatt
   }
 
   async getExtraOptions(): Promise<string[]> {
-    return ['--verbose', '--quiet', '--no-interactive', '--no-color', '--confirm'];
+    return GLOBAL_OPTIONS
+      .filter(opt => isOptionVisible(opt))
+      .map(opt => formatOptionName(opt, { showAliases: false }));
   }
 
   async formatCommands() {
@@ -87,7 +90,7 @@ export class NamespaceStringHelpFormatter extends BaseNamespaceStringHelpFormatt
   }
 
   async filterCommandCallback(cmd: HydratedCommandMetadata): Promise<boolean> {
-    return isCommandHidden(cmd);
+    return isCommandVisible(cmd);
   }
 }
 
@@ -106,7 +109,7 @@ export class CommandStringHelpFormatter extends BaseCommandStringHelpFormatter<I
   }
 
   async filterOptionCallback(opt: CommandMetadataOption): Promise<boolean> {
-    return isOptionHidden(opt);
+    return isOptionVisible(opt);
   }
 
   async formatBeforeSummary(): Promise<string> {
@@ -121,7 +124,7 @@ export class CommandStringHelpFormatter extends BaseCommandStringHelpFormatter<I
 
 export class NamespaceSchemaHelpFormatter extends BaseNamespaceSchemaHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
   async filterCommandCallback(cmd: HydratedCommandMetadata): Promise<boolean> {
-    return isCommandHidden(cmd);
+    return isCommandVisible(cmd);
   }
 
   async formatCommand(cmd: HydratedCommandMetadata): Promise<CommandHelpSchema> {
@@ -149,7 +152,7 @@ export class CommandSchemaHelpFormatter extends BaseCommandSchemaHelpFormatter<I
   }
 
   async filterOptionCallback(opt: CommandMetadataOption): Promise<boolean> {
-    return isOptionHidden(opt);
+    return isOptionVisible(opt);
   }
 }
 

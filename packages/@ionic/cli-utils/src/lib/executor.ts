@@ -6,6 +6,7 @@ import { PROJECT_FILE } from '../constants';
 import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace } from '../definitions';
 import { isCommand } from '../guards';
 
+import { GLOBAL_OPTIONS } from './config';
 import { FatalException } from './errors';
 
 export interface ExecutorDeps {
@@ -52,7 +53,8 @@ export class Executor extends AbstractExecutor<ICommand, INamespace, CommandMeta
       }
     }
 
-    const minimistOpts = metadataOptionsToParseArgsOptions(metadata.options ? metadata.options : []);
+    const metadataOpts = [...metadata.options ? metadata.options : [], ...GLOBAL_OPTIONS];
+    const minimistOpts = metadataOptionsToParseArgsOptions(metadataOpts);
     const cmdoptions = parseArgs(cmdargs, minimistOpts);
     const cmdinputs = cmdoptions._;
 

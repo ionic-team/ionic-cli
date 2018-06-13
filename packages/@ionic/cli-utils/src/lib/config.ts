@@ -1,23 +1,50 @@
+import { OptionGroup, ParsedArgs, metadataOptionsToParseArgsOptions, parseArgs } from '@ionic/cli-framework';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { ERROR_FILE_INVALID_JSON, fsMkdirp, fsReadJsonFile, fsStat, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
+import { str2num } from '@ionic/cli-framework/utils/string';
+import chalk from 'chalk';
+import * as lodash from 'lodash';
 import * as os from 'os';
 import * as path from 'path';
 
-import chalk from 'chalk';
-import * as lodash from 'lodash';
-
-import { ParsedArgs } from '@ionic/cli-framework';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
-import {
-  ERROR_FILE_INVALID_JSON,
-  fsMkdirp,
-  fsReadJsonFile,
-  fsStat,
-  fsWriteJsonFile,
-} from '@ionic/cli-framework/utils/fs';
-import { str2num } from '@ionic/cli-framework/utils/string';
-
-import { ConfigFile, IBaseConfig, IConfig, IonicEnvironment } from '../definitions';
+import { CommandMetadataOption, ConfigFile, IBaseConfig, IConfig } from '../definitions';
 
 import { FatalException } from './errors';
+
+export const GLOBAL_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+  {
+    name: 'verbose',
+    summary: 'Print debug log messages',
+    type: Boolean,
+  },
+  {
+    name: 'quiet',
+    summary: 'Only print warning and error log messages',
+    type: Boolean,
+  },
+  {
+    name: 'interactive',
+    summary: 'Disable interactivity such as progress indicators and prompts',
+    type: Boolean,
+    default: true,
+  },
+  {
+    name: 'color',
+    summary: 'Disable colors in stdout',
+    type: Boolean,
+    default: true,
+  },
+  {
+    name: 'confirm',
+    summary: 'Automatically answer YES to confirmation prompts',
+    type: Boolean,
+  },
+  {
+    name: 'project',
+    summary: 'The project ID to use in a multi-app configuration setup',
+    groups: [OptionGroup.Hidden],
+  },
+];
 
 export abstract class BaseConfig<T> implements IBaseConfig<T> {
   readonly directory: string;
@@ -252,9 +279,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
   }
 }
 
-export function gatherFlags(argv: ParsedArgs): IonicEnvironment['flags'] {
-  return {
-    interactive: typeof argv['interactive'] === 'undefined' ? true : argv['interactive'],
-    confirm: typeof argv['confirm'] === 'undefined' ? false : argv['confirm'],
-  };
+export function parseGlobalOptions(pargv: string[]): ParsedArgs {
+  return parseArgs(pargv, metadataOptionsToParseArgsOptions(GLOBAL_OPTIONS));
 }

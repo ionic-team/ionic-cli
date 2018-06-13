@@ -1,5 +1,5 @@
 
-import { LOGGER_LEVELS, createPromptModule, createTaskChainWithOutput, parseArgs } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, createPromptModule, createTaskChainWithOutput } from '@ionic/cli-framework';
 import { findBaseDirectory, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
 import chalk from 'chalk';
@@ -9,7 +9,7 @@ import * as path from 'path';
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { PROJECT_FILE } from './constants';
 import { IProject, InfoItem, IonicContext, IonicEnvironment, ProjectType } from './definitions';
-import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, gatherFlags } from './lib/config';
+import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, parseGlobalOptions } from './lib/config';
 import { Environment } from './lib/environment';
 import { Client } from './lib/http';
 import { OutsideProject, Project, ProjectDeps } from './lib/project';
@@ -57,17 +57,15 @@ export async function getProject(projectDir: string | undefined, projectName: st
 export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[], env: { [key: string]: string; }): Promise<IonicEnvironment> {
   process.chdir(ctx.execPath);
 
-  const argv = parseArgs(pargv, { boolean: ['quiet', 'interactive', 'confirm'], string: ['_', 'project'] });
-
+  const argv = parseGlobalOptions(pargv);
   const projectName = argv['project'] ? String(argv['project']) : undefined;
   const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
-  const flags = gatherFlags(argv);
 
   const configData = await config.load();
   debug('Terminal info: %o', TERMINAL_INFO);
 
   if (configData.interactive === false || !TERMINAL_INFO.tty || TERMINAL_INFO.ci) {
-    flags.interactive = false;
+    argv['interactive'] = false;
   }
 
   const log = new Logger({
@@ -76,11 +74,11 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   });
 
   const prompt = await createPromptModule({
-    interactive: flags.interactive,
-    onFallback: createOnFallback({ ...flags, log }),
+    interactive: argv['interactive'],
+    onFallback: createOnFallback({ confirm: argv['confirm'], interactive: argv['interactive'], log }),
   });
   const tasks = createTaskChainWithOutput(
-    flags.interactive
+    argv['interactive']
       ? { output: prompt.output }
       : { output: { stream: log.createWriteStream(LOGGER_LEVELS.INFO, false) } }
   );
@@ -123,7 +121,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const ienv = new Environment({
     client,
     config,
-    flags,
+    flags: argv as any, // TODO
     getInfo,
     log,
     ctx,
@@ -142,7 +140,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     }
   }
 
-  debug('CLI flags: %o', flags);
+  debug('CLI global options: %o', argv);
 
   if (typeof argv['yarn'] === 'boolean') {
     log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} was removed in CLI 4.0. Use ${chalk.green(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);
