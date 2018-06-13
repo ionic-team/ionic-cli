@@ -79,8 +79,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
   buildArchitectCommand(options: AngularBuildOptions): string[] {
     const cmd = options.engine === 'cordova' ? 'ionic-cordova-build' : 'build';
+    const project = options.project ? options.project : 'app';
 
-    return ['run', `${options.project}:${cmd}${options.configuration ? `:${options.configuration}` : ''}`];
+    return ['run', `${project}:${cmd}${options.configuration ? `:${options.configuration}` : ''}`];
   }
 
   async buildProject(options: AngularBuildOptions): Promise<void> {

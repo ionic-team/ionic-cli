@@ -196,7 +196,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
   buildArchitectCommand(options: AngularServeOptions): string[] {
     const cmd = options.engine === 'cordova' ? 'ionic-cordova-serve' : 'serve';
+    const project = options.project ? options.project : 'app';
 
-    return ['run', `${options.project}:${cmd}${options.configuration ? `:${options.configuration}` : ''}`];
+    return ['run', `${project}:${cmd}${options.configuration ? `:${options.configuration}` : ''}`];
   }
 }
