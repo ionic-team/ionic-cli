@@ -188,7 +188,7 @@ export class Shell implements IShell {
     });
   }
 
-  protected supplementPATH(p: string) {
-    return this.projectDir ? `${path.resolve(this.projectDir, 'node_modules', '.bin')}${path.delimiter}${p}` : p;
+  protected supplementPATH(p = ''): string {
+    return this.projectDir ? `${path.resolve(this.projectDir, 'node_modules', '.bin')}${p ? path.delimiter + p : ''}` : p;
   }
 }
