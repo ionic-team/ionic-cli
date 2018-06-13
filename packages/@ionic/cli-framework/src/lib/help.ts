@@ -421,16 +421,10 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
   }
 
   async formatOptionLine(opt: O) {
-    const { weak, input } = this.colors;
-    const showInverse = opt.type === Boolean && opt.default === true && opt.name.length > 1;
-    const optionList = (showInverse ? input(`--no-${opt.name}`) : input(`-${opt.name.length > 1 ? '-' : ''}${opt.name}`)) +
-      (!showInverse && opt.aliases && opt.aliases.length > 0 ? ', ' +
-        opt.aliases
-        .map(alias => input(`-${alias}`))
-        .join(', ') : '');
-
-    const optionListLength = stringWidth(optionList);
-    const fullLength = optionListLength > this.dotswidth ? optionListLength + 1 : this.dotswidth;
+    const { weak } = this.colors;
+    const optionName = formatOptionName(opt, { colors: this.colors });
+    const optionNameLength = stringWidth(optionName);
+    const fullLength = optionNameLength > this.dotswidth ? optionNameLength + 1 : this.dotswidth;
     const fullDescription = (
       (this.formatBeforeOptionSummary ? await this.formatBeforeOptionSummary(opt) : '') +
       opt.summary +
@@ -439,7 +433,7 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
 
     const wrappedDescription = wordWrap(fullDescription, { indentation: this.dotswidth + 6 });
 
-    return `${optionList} ${weak('.').repeat(fullLength - optionListLength)} ${wrappedDescription}`;
+    return `${optionName} ${weak('.').repeat(fullLength - optionNameLength)} ${wrappedDescription}`;
   }
 
   async formatAfterOptionSummary(opt: O): Promise<string> {
@@ -645,6 +639,19 @@ export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
 
     return { name, namespace: namespacePath, summary, description, groups, exampleCommands, aliases, inputs, options };
   }
+}
+
+export function formatOptionName<O extends CommandMetadataOption>(opt: O, { showAliases = true, colors = DEFAULT_COLORS }: { showAliases?: boolean; colors?: Colors; } = {}): string {
+  const { input } = colors;
+  const showInverse = opt.type === Boolean && opt.default === true && opt.name.length > 1;
+
+  return (
+    (showInverse ? input(`--no-${opt.name}`) : input(`-${opt.name.length > 1 ? '-' : ''}${opt.name}`)) +
+    (showAliases ?
+      (!showInverse && opt.aliases && opt.aliases.length > 0 ? ', ' + opt.aliases
+        .map(alias => input(`-${alias}`))
+        .join(', ') : '') : '')
+  );
 }
 
 export function createCommandMetadataFromSchema(schema: CommandHelpSchema): Required<CommandMetadata> {
