@@ -13,8 +13,7 @@
     },
     "cordovaBasePath": {
       "type": "string",
-      "description": "Path to cordova directory",
-      "default": "."
+      "description": "Path to cordova directory"
     }
   },
   "additionalProperties": false,
