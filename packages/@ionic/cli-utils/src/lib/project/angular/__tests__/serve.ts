@@ -30,7 +30,7 @@ describe('@ionic/cli-utils', () => {
           ssl: false,
           project: undefined,
           prod: undefined,
-          platform: undefined
+          platform: undefined,
         };
 
         it('should provide defaults with no options', () => {
@@ -73,6 +73,33 @@ describe('@ionic/cli-utils', () => {
           const runner = new ServeRunner({});
           const result = runner.createOptionsFromCommandLine([], { '--': ['foo', '--bar'] });
           expect(result).toEqual({ ...defaults, '--': ['foo', '--bar'] });
+        });
+
+      });
+
+      describe('serveOptionsToNgArgs', () => {
+
+        const defaults = {
+          '--': [],
+        };
+
+        it('should pass cordova options', async () => {
+          const root = 'fakeRoot';
+          const project = {
+            getIntegration: jest.fn(() => ({ root })),
+          };
+          const runner = new ServeRunner({ project });
+          const options = {
+            ...defaults,
+            engine: 'cordova',
+            platform: 'fakePlatform',
+          };
+
+          const result = await runner.serveOptionsToNgArgs(options);
+          expect(result).toEqual(jasmine.arrayContaining([
+            `--platform=${options.platform}`,
+            `--cordova-base-path=${root}`,
+          ]));
         });
 
       });
