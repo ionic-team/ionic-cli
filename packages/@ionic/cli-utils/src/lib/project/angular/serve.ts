@@ -16,13 +16,12 @@ const DEFAULT_PROGRAM = 'ng';
 const NG_SERVE_OPTIONS = [
   {
     name: 'prod',
-    summary: `Flag to set configuration to ${chalk.green('prod')}`,
+    summary: `Flag to use the ${chalk.green('production')} configuration`,
     type: Boolean,
     hint: chalk.dim('[ng]'),
   },
   {
     name: 'configuration',
-    aliases: ['c'],
     summary: 'Specify the configuration to use.',
     type: String,
     groups: [OptionGroup.Advanced],
@@ -51,11 +50,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularServeOptions {
     const baseOptions = super.createOptionsFromCommandLine(inputs, options);
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
-    const configuration = options['configuration'] ? String(options['configuration']) : undefined;
+    const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
 
     return {
       ...baseOptions,
-      prod,
       configuration,
     };
   }

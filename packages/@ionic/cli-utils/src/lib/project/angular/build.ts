@@ -57,7 +57,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
     return {
       ...baseOptions,
-      prod,
       configuration,
       type: 'angular',
     };

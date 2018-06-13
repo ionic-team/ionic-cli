@@ -527,7 +527,6 @@ export interface BuildOptions<T extends ProjectType> extends BaseBuildOptions {
 }
 
 export interface AngularBuildOptions extends BuildOptions<'angular'> {
-  prod?: boolean;
   configuration?: string;
 }
 
@@ -577,7 +576,6 @@ export interface ServeOptions {
 }
 
 export interface AngularServeOptions extends ServeOptions {
-  prod?: boolean;
   configuration?: string;
 }
 
