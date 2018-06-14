@@ -316,10 +316,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
             const projectTypes = lodash.uniq(starterTemplates.map(t => t.type));
             const cols = columnar(projectTypes.map(type => [`${chalk.green(type)}${type === recommendedType ? ' (recommended)' : ''}`, prettyProjectName(type)]), {}).split('\n');
 
-            return cols.map((col, i) => ({
-              name: col,
-              short: projectTypes[i],
-              value: projectTypes[i],
+            return projectTypes.map((projectType, i) => ({
+              name: cols[i],
+              short: projectType,
+              value: projectType,
             }));
           },
         });
@@ -344,11 +344,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
             const starterTemplateList = starterTemplates.filter(st => st.type === options['type']);
             const cols = columnar(starterTemplateList.map(({ name, description }) => [chalk.green(name), description || '']), {}).split('\n');
 
-            return cols.map((col, i) => {
+            return starterTemplateList.map((starterTemplate, i) => {
               return {
-                name: col,
-                short: starterTemplateList[i].name,
-                value: starterTemplateList[i].name,
+                name: cols[i],
+                short: starterTemplate.name,
+                value: starterTemplate.name,
               };
             });
           },
