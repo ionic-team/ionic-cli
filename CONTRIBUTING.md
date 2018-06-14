@@ -35,11 +35,9 @@ first PR to the Ionic CLI. :heart_eyes:
 
 #### Structure
 
-Our CLI is organized into a monorepo. Common tools, such as TypeScript and Jest,
-are installed in the base directory while package dependencies are each
-installed in their respective `packages/**/node_modules` directories.
+The Ionic CLI is organized into a monorepo. Here are the packages:
 
-Each `packages/*` folder represents a package on npm.
+##### General Purpose
 
 * [`packages/ionic`](https://github.com/ionic-team/ionic-cli/tree/master/packages/ionic):
   Ionic CLI executable.
@@ -50,22 +48,30 @@ Each `packages/*` folder represents a package on npm.
 * [`packages/@ionic/discover`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/discover):
   Service discovery library used for `ionic serve` with the [Ionic
   DevApp](https://ionicframework.com/docs/pro/devapp/).
-* [`packages/@ionic/schematics-angular`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/schematics-angular):
-  Ionic Angular v4+ schematics for `ionic generate`.
-* [`packages/@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/v1-toolkit):
-  Utility CLI for Ionic v1 Apps, used by `ionic serve`.
 * [`packages/@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/lab):
   Utility CLI for Ionic Lab, used by `ionic serve`.
+
+##### Ionic/Angular 4+
+
+* [`packages/@ionic/ng-toolkit`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/ng-toolkit):
+  Builders for Ionic/Angular 4+.
+* [`packages/@ionic/schematics-angular`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/schematics-angular):
+  Schematics for `ng generate`.
+
+##### Ionic 1
+
+* [`packages/@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/v1-toolkit):
+  Utility CLI for Ionic v1 Apps, used by `ionic serve`.
 
 #### Toolset
 
 * npm 5 is required.
 * Node 8+ is required.
-* Our codebase is written in [TypeScript](https://www.typescriptlang.org/). If
+* The codebase is written in [TypeScript](https://www.typescriptlang.org/). If
   you're unfamiliar with TypeScript, we recommend using [VS
   Code](https://code.visualstudio.com/) and finding a tutorial to familiarize
   yourself with basic concepts.
-* Our test suite uses [Jest](https://facebook.github.io/jest/).
+* The test suite uses [Jest](https://facebook.github.io/jest/).
 
 #### Setup
 
@@ -79,7 +85,6 @@ Each `packages/*` folder represents a package on npm.
 1. TypeScript source files are in `packages/**/src`.
 1. Good luck! :muscle: Please open an issue if you have questions or something
    is unclear.
-1. If node-sass error occurs, you should add permission `npm`. ex) `sudo chown -R $(whoami) ~/.npm`
 
 #### Running Dev CLI
 
