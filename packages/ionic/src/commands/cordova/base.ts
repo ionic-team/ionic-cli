@@ -79,10 +79,9 @@ export abstract class CordovaCommand extends Command {
     const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
 
     await this.env.project.load();
+    await this.checkCordova(runinfo);
 
     const cordova = await this.env.project.getIntegration('cordova');
-
-    await this.checkCordova(runinfo);
 
     // Check for www folder
     if (this.env.project.directory) {
