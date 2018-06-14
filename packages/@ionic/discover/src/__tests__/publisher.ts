@@ -41,10 +41,10 @@ describe('publisher', () => {
     const p = new Publisher('devapp', 'conference-app', 8100);
     p.on('error', () => {});
     p.path = '/?devapp=true';
-    const now = Date.now();
     const message = p.buildMessage('192.168.0.1');
-    const expected = 'ION_DP' + JSON.stringify({
-      t: now,
+    expect(message.t).toEqual(expect.any(Number));
+    const expected = {
+      t: message.t,
       id: p.id,
       nspace: 'devapp',
       name: 'conference-app',
@@ -52,7 +52,7 @@ describe('publisher', () => {
       ip: '192.168.0.1',
       port: 8100,
       path: '/?devapp=true'
-    });
+    };
     expect(message).toEqual(expected);
   });
 

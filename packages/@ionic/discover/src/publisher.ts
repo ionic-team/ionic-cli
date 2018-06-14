@@ -15,6 +15,18 @@ export interface Interface {
   broadcast: string;
 }
 
+export interface PublisherMessage {
+  t: number;
+  id: string;
+  nspace: string;
+  name: string;
+  host: string;
+  ip: string;
+  port: number;
+  commPort?: number;
+  path: string;
+}
+
 export interface IPublisherEventEmitter {
   on(event: 'error', listener: (err: Error) => void): this;
 }
@@ -93,10 +105,9 @@ export class Publisher extends events.EventEmitter implements IPublisherEventEmi
     }
   }
 
-  protected buildMessage(ip: string): string {
-    const now = Date.now();
-    const message = {
-      t: now,
+  protected buildMessage(ip: string): PublisherMessage {
+    return {
+      t: Date.now(),
       id: this.id,
       nspace: this.namespace,
       name: this.name,
@@ -106,8 +117,6 @@ export class Publisher extends events.EventEmitter implements IPublisherEventEmi
       commPort: this.commPort,
       path: this.path,
     };
-
-    return PREFIX + JSON.stringify(message);
   }
 
   protected getInterfaces(): Interface[] {
@@ -125,12 +134,13 @@ export class Publisher extends events.EventEmitter implements IPublisherEventEmi
 
     try {
       for (const iface of this.interfaces) {
-        const serialized = this.buildMessage(iface.address);
-        const message = new Buffer(serialized);
+        const message = this.buildMessage(iface.address);
+        const serialized = PREFIX + JSON.stringify(message);
+        const buf = new Buffer(serialized);
 
         debug(`Broadcasting %O to ${iface.broadcast}`, serialized);
 
-        this.client.send(message, 0, message.length, PORT, iface.broadcast, err => {
+        this.client.send(buf, 0, buf.length, PORT, iface.broadcast, err => {
           if (err) {
             this.emit('error', err);
           }
