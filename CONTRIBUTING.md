@@ -102,6 +102,26 @@ $ npm run unlink
 $ npm install -g ionic
 ```
 
+##### Debugging
+
+The following workflow is recommended for debugging the Ionic CLI:
+
+1. Place
+   [`debugger;`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger)
+   statements where desired.
+1. Run the CLI via `node` to use Node's `--inspect-brk` flag:
+
+    * Instead of `~/path/to/ionic <command>` use `node --inspect-brk
+      ~/path/to/ionic <command>`.
+    * Instead of `ionic <command>`, try `node --inspect-brk $(which ionic)
+      <command>` (works on Mac and Linux).
+
+1. Open `chrome://inspect` in Chrome and select the remote target to use
+   DevTools for debugging.
+
+Read more about Node debugging in the [Debugging
+Guide](https://nodejs.org/en/docs/guides/debugging-getting-started/).
+
 ##### Code Structure
 
 TODO: Be helpful about where to look for commands, utilities, etc.
