@@ -341,8 +341,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           name: 'template',
           message: 'Starter template:',
           choices: () => {
-            const starterTemplateList = starterTemplates.filter(st => st.type === options['type']);
+            const chosenType = String(options['type']);
+            const starterTemplateList = starterTemplates.filter(st => st.type === chosenType);
             const cols = columnar(starterTemplateList.map(({ name, description }) => [chalk.green(name), description || '']), {}).split('\n');
+
+            if (starterTemplateList.length === 0) {
+              throw new FatalException(`No starter templates found for project type: ${chalk.green(chosenType)}.`);
+            }
 
             return starterTemplateList.map((starterTemplate, i) => {
               return {
