@@ -5,7 +5,6 @@ aliases:
       keys:
         - dependency-cache-{{ .Branch }}-{{ checksum "package.json" }}
         - dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/cli-framework/package.json" }}
-        - dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/cli-hooks/package.json" }}
         - dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/cli-utils/package.json" }}
         - dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/discover/package.json" }}
         - dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/lab/package.json" }}
@@ -23,11 +22,6 @@ aliases:
       key: dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/cli-framework/package.json" }}
       paths:
         - packages/@ionic/cli-framework/node_modules
-
-  - &save-cache-cli-hooks
-      key: dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/cli-hooks/package.json" }}
-      paths:
-        - packages/@ionic/cli-hooks/node_modules
 
   - &save-cache-cli-utils
       key: dependency-cache-{{ .Branch }}-{{ checksum "packages/@ionic/cli-utils/package.json" }}
@@ -76,7 +70,6 @@ base: &base
     - save_cache: *save-cache
     - run: npm run bootstrap
     - save_cache: *save-cache-cli-framework
-    - save_cache: *save-cache-cli-hooks
     - save_cache: *save-cache-cli-utils
     - save_cache: *save-cache-discover
     - save_cache: *save-cache-lab
