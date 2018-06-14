@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as util from 'util';
 
-import { fsReadJsonFile } from '../../../../@ionic/cli-framework/utils/fs';
+import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 
 export class ConfigGetCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {

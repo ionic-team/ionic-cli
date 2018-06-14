@@ -6,7 +6,7 @@ import { FatalException } from '@ionic/cli-utils/lib/errors';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { fsReadJsonFile, fsWriteJsonFile } from '../../../../@ionic/cli-framework/utils/fs';
+import { fsReadJsonFile, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 
 export class ConfigUnsetCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
