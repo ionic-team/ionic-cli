@@ -1,10 +1,8 @@
 import * as path from 'path';
 
 import chalk from 'chalk';
-import * as lodash from 'lodash';
 
 import { fsReadFile } from '@ionic/cli-framework/utils/fs';
-import { compileNodeModulesPaths, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { IAilmentRegistry, TreatableAilment } from '../../../definitions';
 import { AppClient } from '../../app';
@@ -42,7 +40,8 @@ class NpmInstalledLocally extends Ailment implements TreatableAilment {
   }
 
   async detected() {
-    return !(lodash.attempt(() => resolve('npm', { paths: compileNodeModulesPaths(this.project.directory) })) instanceof Error);
+    const pkg = await this.getLocalPackageJson('npm');
+    return pkg !== undefined;
   }
 
   async getTreatmentSteps() {
@@ -73,7 +72,8 @@ class IonicCLIInstalledLocally extends Ailment implements TreatableAilment {
   }
 
   async detected() {
-    return !(lodash.attempt(() => resolve('ionic', { paths: compileNodeModulesPaths(this.project.directory) })) instanceof Error);
+    const pkg = await this.getLocalPackageJson('ionic');
+    return pkg !== undefined;
   }
 
   async getTreatmentSteps() {
@@ -204,7 +204,8 @@ class IonicNativeOldVersionInstalled extends Ailment {
   }
 
   async detected() {
-    return !(lodash.attempt(() => resolve('ionic-native', { paths: compileNodeModulesPaths(this.project.directory) })) instanceof Error);
+    const pkg = await this.getLocalPackageJson('ionic-native');
+    return pkg !== undefined;
   }
 
   async getTreatmentSteps() {

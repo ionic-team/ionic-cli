@@ -1,6 +1,6 @@
 import * as Debug from 'debug';
 
-import { DoctorAilmentId, IAilment, IAilmentRegistry, IClient, IConfig, ILogger, IProject, ISession, IShell, PatientTreatmentStep, ProjectType } from '../../../definitions';
+import { DoctorAilmentId, IAilment, IAilmentRegistry, IClient, IConfig, ILogger, IProject, ISession, IShell, PackageJson, PatientTreatmentStep, ProjectType } from '../../../definitions';
 
 export interface AilmentDeps {
   client: IClient;
@@ -44,6 +44,16 @@ export abstract class Ailment implements IAilment {
   abstract async getMessage(): Promise<string>;
   abstract async detected(): Promise<boolean>;
   abstract async getTreatmentSteps(): Promise<PatientTreatmentStep[]>;
+
+  async getLocalPackageJson(pkgName: string): Promise<PackageJson | undefined> {
+    try {
+      return await this.project.requirePackageJson(pkgName);
+    } catch (e) {
+      if (e.fatal) {
+        throw e;
+      }
+    }
+  }
 }
 
 export class AilmentRegistry implements IAilmentRegistry {
