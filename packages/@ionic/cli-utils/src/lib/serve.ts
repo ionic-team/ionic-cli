@@ -1,11 +1,4 @@
-import {
-  BaseError,
-  LOGGER_LEVELS,
-  NetworkInterface,
-  OptionGroup,
-  PromptModule,
-  createPrefixedFormatter,
-} from '@ionic/cli-framework';
+import { BaseError, LOGGER_LEVELS, NetworkInterface, OptionGroup, PromptModule, createPrefixedFormatter } from '@ionic/cli-framework';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { findClosestOpenPort, getExternalIPv4Interfaces } from '@ionic/cli-framework/utils/network';
 import { onBeforeExit, processExit } from '@ionic/cli-framework/utils/process';
@@ -21,25 +14,11 @@ import * as split2 from 'split2';
 import * as through2 from 'through2';
 
 import { ASSETS_DIRECTORY, PROJECT_FILE } from '../constants';
-import {
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandMetadataOption,
-  DevAppDetails,
-  IConfig,
-  ILogger,
-  IProject,
-  IShell,
-  IonicEnvironment,
-  LabServeDetails,
-  Runner,
-  ServeDetails,
-  ServeOptions,
-} from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, Runner, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 
 import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
+import { emit } from './events';
 import { Hook } from './hooks';
 import * as ζprojectAngularServe from './project/angular/serve';
 import * as ζprojectIonicAngularServe from './project/ionic-angular/serve';
@@ -273,6 +252,8 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       this.log.info(`Browser window opened to ${chalk.bold(openURL)}!`);
       this.log.nl();
     }
+
+    emit('serve:ready', lodash.pick(details, 'port'));
 
     this.scheduleAfterServe(options, details);
 
