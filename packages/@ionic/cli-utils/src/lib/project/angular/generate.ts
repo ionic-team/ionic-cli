@@ -7,7 +7,7 @@ import { CommandGroup, unparseArgs, validators } from '@ionic/cli-framework';
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { GLOBAL_OPTIONS } from '../../config';
 import { FatalException } from '../../errors';
-import { GenerateRunner as BaseGenerateRunner } from '../../generate';
+import { GenerateRunner } from '../../generate';
 
 const SCHEMATICS: ReadonlyArray<string> = ['page', 'component', 'service', 'module', 'class', 'directive', 'guard', 'pipe', 'interface', 'enum'];
 
@@ -18,7 +18,7 @@ function pluralizeType(type: string): string {
   return `${type}${suffix}`;
 }
 
-export class GenerateRunner extends BaseGenerateRunner<AngularGenerateOptions> {
+export class AngularGenerateRunner extends GenerateRunner<AngularGenerateOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       groups: [CommandGroup.Experimental],

@@ -388,7 +388,7 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     const filterCallback = this.filterOptionCallback;
     const options = metadata.options ? metadata.options : [];
     const filteredOptions = filterCallback ? await filter(options, async opt => filterCallback(opt)) : options;
-    const formattedInputs = metadata.inputs ? await Promise.all(metadata.inputs.map(async input => this.formatInlineInput(input))) : [];
+    const formattedInputs = metadata.inputs ? await Promise.all(metadata.inputs.map(async i => this.formatInlineInput(i))) : [];
 
     return (
       `\n  ${strong('Usage')}:` +
@@ -405,7 +405,7 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
       return '';
     }
 
-    const fillStrings = generateFillSpaceStringList(inputs.map(input => input.name), this.dotswidth, weak('.'));
+    const fillStrings = generateFillSpaceStringList(inputs.map(i => i.name), this.dotswidth, weak('.'));
 
     const inputLineFn = ({ name, summary }: I, index: number) => {
       const optionList = input(`${name}`);

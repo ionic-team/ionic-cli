@@ -41,7 +41,7 @@ Optionally supply the ${chalk.green('id')} argument to attempt to fix a single i
 
     if (id) {
       const registry = await this.getRegistry();
-      const ailmentIds = registry.ailments.map(ailment => ailment.id);
+      const ailmentIds = registry.ailments.map(a => a.id);
       validate(id, 'id', [contains(ailmentIds, {})]);
       const ailment = registry.get(id);
 

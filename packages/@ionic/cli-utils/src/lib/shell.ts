@@ -46,25 +46,25 @@ export class Shell implements IShell {
       const promise = cmd.run();
 
       if (promise.p.stdout) {
-        const stream = combineStreams(split2(), ws);
+        const s = combineStreams(split2(), ws);
 
         // TODO: https://github.com/angular/angular-cli/issues/10922
-        stream.on('error', (err: Error) => {
+        s.on('error', (err: Error) => {
           debug('Error in subprocess stdout pipe: %o', err);
         });
 
-        promise.p.stdout.pipe(stream);
+        promise.p.stdout.pipe(s);
       }
 
       if (promise.p.stderr) {
-        const stream = combineStreams(split2(), ws);
+        const s = combineStreams(split2(), ws);
 
         // TODO: https://github.com/angular/angular-cli/issues/10922
-        stream.on('error', (err: Error) => {
+        s.on('error', (err: Error) => {
           debug('Error in subprocess stderr pipe: %o', err);
         });
 
-        promise.p.stderr.pipe(stream);
+        promise.p.stderr.pipe(s);
       }
 
       if (killOnExit) {

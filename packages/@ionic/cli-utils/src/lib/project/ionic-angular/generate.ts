@@ -2,13 +2,13 @@ import { contains, unparseArgs, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularGenerateOptions } from '../../../definitions';
-import { GenerateRunner as BaseGenerateRunner } from '../../generate';
+import { GenerateRunner } from '../../generate';
 
 import { importAppScripts } from './app-scripts';
 
 const GENERATOR_TYPES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
 
-export class GenerateRunner extends BaseGenerateRunner<IonicAngularGenerateOptions> {
+export class IonicAngularGenerateRunner extends GenerateRunner<IonicAngularGenerateOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       groups: [],

@@ -109,20 +109,20 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     this.shell = shell;
   }
 
-  static async createFromProject(deps: ServeRunnerDeps): Promise<ζprojectAngularServe.ServeRunner>;
-  static async createFromProject(deps: ServeRunnerDeps): Promise<ζprojectIonicAngularServe.ServeRunner>;
-  static async createFromProject(deps: ServeRunnerDeps): Promise<ζprojectIonic1Serve.ServeRunner>;
+  static async createFromProject(deps: ServeRunnerDeps): Promise<ζprojectAngularServe.AngularServeRunner>;
+  static async createFromProject(deps: ServeRunnerDeps): Promise<ζprojectIonicAngularServe.IonicAngularServeRunner>;
+  static async createFromProject(deps: ServeRunnerDeps): Promise<ζprojectIonic1Serve.Ionic1ServeRunner>;
   static async createFromProject(deps: ServeRunnerDeps): Promise<ServeRunner<any>>;
   static async createFromProject(deps: ServeRunnerDeps): Promise<ServeRunner<any>> {
-    if (deps.project.type === 'ionic1') {
-      const { ServeRunner } = await import('./project/ionic1/serve');
-      return new ServeRunner(deps);
+    if (deps.project.type === 'angular') {
+      const { AngularServeRunner } = await import('./project/angular/serve');
+      return new AngularServeRunner(deps);
     } else if (deps.project.type === 'ionic-angular') {
-      const { ServeRunner } = await import('./project/ionic-angular/serve');
-      return new ServeRunner(deps);
-    } else if (deps.project.type === 'angular') {
-      const { ServeRunner } = await import('./project/angular/serve');
-      return new ServeRunner(deps);
+      const { IonicAngularServeRunner } = await import('./project/ionic-angular/serve');
+      return new IonicAngularServeRunner(deps);
+    } else if (deps.project.type === 'ionic1') {
+      const { Ionic1ServeRunner } = await import('./project/ionic1/serve');
+      return new Ionic1ServeRunner(deps);
     } else {
       throw new RunnerNotFoundException(
         `Cannot perform serve for ${deps.project.type ? '' : 'unknown '}project type${deps.project.type ? `: ${chalk.bold(deps.project.type)}` : ''}.\n` +

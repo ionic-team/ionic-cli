@@ -254,14 +254,14 @@ export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, 
   //  - Aliases whose original key is defined
   //  - Options not known to the schema, according to
   //    `parseArgsOptions.unknown` option.
-  const pairs = lodash.toPairs(parsedArgs).filter(([k]) =>
+  const pairedOptions = lodash.toPairs(parsedArgs).filter(([k]) =>
     k !== '_' &&
     k !== '--' &&
     !(aliases.get(k) && typeof parsedArgs[k] !== 'undefined') &&
     isKnown(k)
   );
 
-  for (const [ key, val ] of pairs) {
+  for (const [ key, val ] of pairedOptions) {
     if (val === true) {
       pushPairs([key, undefined]);
     } else if (val === false && !ignoreFalse) {

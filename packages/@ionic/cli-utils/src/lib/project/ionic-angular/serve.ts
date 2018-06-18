@@ -10,7 +10,7 @@ import * as through2 from 'through2';
 import { prettyProjectName } from '../';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularServeOptions, ServeDetails } from '../../../definitions';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
-import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
+import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner } from '../../serve';
 import { findOpenIonicPorts } from '../common';
 
 import { APP_SCRIPTS_OPTIONS } from './app-scripts';
@@ -24,7 +24,7 @@ interface ServeCmdDetails {
   program: string;
 }
 
-export class ServeRunner extends BaseServeRunner<IonicAngularServeOptions> {
+export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       options: [

@@ -314,7 +314,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           message: 'Project type:',
           choices: () => {
             const projectTypes = lodash.uniq(starterTemplates.map(t => t.type));
-            const cols = columnar(projectTypes.map(type => [`${chalk.green(type)}${type === recommendedType ? ' (recommended)' : ''}`, prettyProjectName(type)]), {}).split('\n');
+            const cols = columnar(projectTypes.map(projectType => [`${chalk.green(projectType)}${projectType === recommendedType ? ' (recommended)' : ''}`, prettyProjectName(projectType)]), {}).split('\n');
 
             return projectTypes.map((projectType, i) => ({
               name: cols[i],

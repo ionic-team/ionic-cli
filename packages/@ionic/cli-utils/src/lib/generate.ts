@@ -31,16 +31,16 @@ export abstract class GenerateRunner<T extends GenerateOptions> implements Runne
     this.shell = shell;
   }
 
-  static async createFromProject(env: IonicEnvironment): Promise<ζangularProjectGenerate.GenerateRunner>;
-  static async createFromProject(env: IonicEnvironment): Promise<ζionicAngularProjectGenerate.GenerateRunner>;
+  static async createFromProject(env: IonicEnvironment): Promise<ζangularProjectGenerate.AngularGenerateRunner>;
+  static async createFromProject(env: IonicEnvironment): Promise<ζionicAngularProjectGenerate.IonicAngularGenerateRunner>;
   static async createFromProject(env: IonicEnvironment): Promise<GenerateRunner<any>>;
   static async createFromProject(env: IonicEnvironment): Promise<GenerateRunner<any>> {
     if (env.project.type === 'angular') {
-      const { GenerateRunner } = await import('./project/angular/generate');
-      return new GenerateRunner(env);
+      const { AngularGenerateRunner } = await import('./project/angular/generate');
+      return new AngularGenerateRunner(env);
     } else if (env.project.type === 'ionic-angular') {
-      const { GenerateRunner } = await import('./project/ionic-angular/generate');
-      return new GenerateRunner(env);
+      const { IonicAngularGenerateRunner } = await import('./project/ionic-angular/generate');
+      return new IonicAngularGenerateRunner(env);
     } else {
       throw new RunnerNotFoundException(
         `Generators are not supported in this project type (${chalk.bold(prettyProjectName(env.project.type))}).` +

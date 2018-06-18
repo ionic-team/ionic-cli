@@ -107,17 +107,17 @@ export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk
       return lines;
     });
 
-    for (const i in row) {
-      if (columns[i]) {
-        columns[i].push(...splitRows[i], ...Array(highestLineCount - splitRows[i].length).fill(''));
+    for (const rowIndex in row) {
+      if (columns[rowIndex]) {
+        columns[rowIndex].push(...splitRows[rowIndex], ...Array(highestLineCount - splitRows[rowIndex].length).fill(''));
       }
     }
   }
 
-  const paddedColumns = columns.map((col, i) => {
-    if (i < columnCount - 1) {
+  const paddedColumns = columns.map((col, columnIndex) => {
+    if (columnIndex < columnCount - 1) {
       const spaceCol = generateFillSpaceStringList(col);
-      return col.map((cell, i) => `${cell}${spaceCol[i]}${vsep === '' ? '' : `${vsep} `}`);
+      return col.map((cell, cellIndex) => `${cell}${spaceCol[cellIndex]}${vsep === '' ? '' : `${vsep} `}`);
     } else {
       return col;
     }

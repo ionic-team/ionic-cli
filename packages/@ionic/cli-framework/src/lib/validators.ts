@@ -4,10 +4,10 @@ import { ValidationError, Validator, Validators } from '../definitions';
 import { InputValidationError } from '../errors';
 import { isValidEmail, isValidURL, slugify } from '../utils/string';
 
-export function validate(input: string, key: string, validators: Validator[]) {
+export function validate(input: string, key: string, validatorsToUse: Validator[]) {
   const errors: ValidationError[] = [];
 
-  for (const validator of validators) {
+  for (const validator of validatorsToUse) {
     const message = validator(input, key);
 
     if (message !== true) {

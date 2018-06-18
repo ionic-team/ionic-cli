@@ -9,7 +9,7 @@ import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner } from '../../serve';
 
 const DEFAULT_PROGRAM = 'ng';
 
@@ -35,7 +35,7 @@ interface ServeCmdDetails {
   program: string;
 }
 
-export class ServeRunner extends BaseServeRunner<AngularServeOptions> {
+export class AngularServeRunner extends ServeRunner<AngularServeOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       groups: [CommandGroup.Experimental],

@@ -10,7 +10,7 @@ import { str2num } from '@ionic/cli-framework/utils/string';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1ServeOptions, ServeDetails } from '../../../definitions';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
-import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner as BaseServeRunner } from '../../serve';
+import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner } from '../../serve';
 import { findOpenIonicPorts } from '../common';
 
 const DEFAULT_PROGRAM = 'ionic-v1';
@@ -21,7 +21,7 @@ interface ServeCmdDetails {
   program: string;
 }
 
-export class ServeRunner extends BaseServeRunner<Ionic1ServeOptions> {
+export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       options: [

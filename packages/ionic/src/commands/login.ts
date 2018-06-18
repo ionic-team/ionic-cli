@@ -39,14 +39,12 @@ If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ email ] = inputs;
-
     const config = await this.env.config.load();
 
     if (options['email'] || options['password']) {
       throw new FatalException(
         `${chalk.green('email')} and ${chalk.green('password')} are command arguments, not options. Please try this:\n` +
-        `${chalk.green('ionic login ' + (options['email'] ? options['email'] : email) + ' *****')}\n`
+        `${chalk.green('ionic login <email> <password>')}\n`
       );
     }
 
