@@ -2,17 +2,16 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import * as lodash from 'lodash';
-import * as semver from 'semver';
 
-import { fsReadDir, fsReadFile } from '@ionic/cli-framework/utils/fs';
-import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/npm';
+import { fsReadFile } from '@ionic/cli-framework/utils/fs';
+import { compileNodeModulesPaths, resolve } from '@ionic/cli-framework/utils/npm';
 
 import { IAilmentRegistry, TreatableAilment } from '../../../definitions';
 import { AppClient } from '../../app';
 import { getIonicRemote, isRepoInitialized } from '../../git';
 import { loadConfigXml } from '../../integrations/cordova/config';
 import { getPlatforms } from '../../integrations/cordova/project';
-import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
+import { pkgManagerArgs } from '../../utils/npm';
 
 import { Ailment, AilmentDeps } from './base';
 
@@ -24,8 +23,6 @@ export async function registerAilments(registry: IAilmentRegistry, deps: Ailment
   registry.register(new IonicCLIInstalledLocally(deps));
   registry.register(new GitNotUsed(deps));
   registry.register(new GitConfigInvalid(deps));
-  registry.register(new IonicNativeUpdateAvailable(deps));
-  registry.register(new IonicNativeMajorUpdateAvailable(deps));
   registry.register(new IonicNativeOldVersionInstalled(deps));
   registry.register(new UnsavedCordovaPlatforms(deps));
   registry.register(new DefaultCordovaBundleIdUsed(deps));
@@ -192,130 +189,6 @@ class GitConfigInvalid extends Ailment {
   async getTreatmentSteps() {
     return [
       { message: `Run: ${chalk.green('ionic git remote')}` },
-    ];
-  }
-}
-
-class IonicNativeUpdateAvailable extends Ailment implements TreatableAilment {
-  readonly id = 'ionic-native-update-available';
-  readonly treatable = true;
-  currentVersion?: string;
-  latestVersion?: string;
-
-  async getVersionPair(): Promise<[string, string]> {
-    const config = await this.config.load();
-    const { npmClient } = config;
-
-    if (!this.currentVersion || !this.latestVersion) {
-      try {
-        const pkgPath = resolve('@ionic-native/core/package', { paths: compileNodeModulesPaths(this.project.directory) });
-        this.currentVersion = (await readPackageJsonFile(pkgPath)).version;
-      } catch (e) {
-        // Not installed
-      }
-
-      const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic-native/core' });
-      this.latestVersion = pkg ? pkg.version : undefined;
-    }
-
-    if (!this.currentVersion || !this.latestVersion) {
-      return ['0.0.0', '0.0.0'];
-    }
-
-    return [ this.currentVersion, this.latestVersion ];
-  }
-
-  async getMessage() {
-    const [ currentVersion, latestVersion ] = await this.getVersionPair();
-
-    return (
-      `Update available for Ionic Native.\n` +
-      `An update is available for Ionic Native (${chalk.cyan(currentVersion)} => ${chalk.cyan(latestVersion)}).\n`
-    ).trim();
-  }
-
-  async detected() {
-    const [ currentVersion, latestVersion ] = await this.getVersionPair();
-    const diff = semver.diff(currentVersion, latestVersion);
-
-    return diff === 'minor' || diff === 'patch';
-  }
-
-  async getTreatmentSteps() {
-    const config = await this.config.load();
-    const { npmClient } = config;
-    const [ , latestVersion ] = await this.getVersionPair();
-
-    const modulePath = path.dirname(path.dirname(resolve('@ionic-native/core/package', { paths: compileNodeModulesPaths(this.project.directory) })));
-    const modules = await fsReadDir(modulePath);
-
-    return Promise.all(modules.filter(m => m).map(async m => {
-      const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg: `@ionic-native/${m}@${latestVersion ? latestVersion : 'latest'}` });
-
-      return {
-        message: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
-        treat: async () => {
-          await this.shell.run(manager, managerArgs, {});
-        },
-      };
-    }));
-  }
-}
-
-class IonicNativeMajorUpdateAvailable extends Ailment {
-  readonly id = 'ionic-native-major-update-available';
-  currentVersion?: string;
-  latestVersion?: string;
-
-  async getVersionPair(): Promise<[string, string]> {
-    const config = await this.config.load();
-    const { npmClient } = config;
-
-    if (!this.currentVersion || !this.latestVersion) {
-      try {
-        const pkgPath = resolve('@ionic-native/core/package', { paths: compileNodeModulesPaths(this.project.directory) });
-        this.currentVersion = (await readPackageJsonFile(pkgPath)).version;
-      } catch (e) {
-        // Not installed
-      }
-
-      const pkg = await pkgFromRegistry(npmClient, { pkg: '@ionic-native/core' });
-      this.latestVersion = pkg ? pkg.version : undefined;
-    }
-
-    if (!this.currentVersion || !this.latestVersion) {
-      return ['0.0.0', '0.0.0'];
-    }
-
-    return [ this.currentVersion, this.latestVersion ];
-  }
-
-  async getMessage() {
-    const [ currentVersion, latestVersion ] = await this.getVersionPair();
-
-    return (
-      `Major update available for Ionic Native.\n` +
-      `A major update is available for Ionic Native (${chalk.cyan(currentVersion)} => ${chalk.cyan(latestVersion)}).\n`
-    ).trim();
-  }
-
-  async detected() {
-    const [ currentVersion, latestVersion ] = await this.getVersionPair();
-    const diff = semver.diff(currentVersion, latestVersion);
-
-    return diff === 'major';
-  }
-
-  async getTreatmentSteps() {
-    const config = await this.config.load();
-    const { npmClient } = config;
-    const [ , latestVersion ] = await this.getVersionPair();
-    const args = await pkgManagerArgs(npmClient, { command: 'install', pkg: `@ionic-native/core@${latestVersion ? latestVersion : 'latest'}` });
-
-    return [
-      { message: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-native/releases')}, looking for breaking changes` },
-      { message: `Update each ${chalk.bold('@ionic-native/')} package. For example, ${chalk.green(args.join(' '))}` },
-      { message: `Update your app according to the breaking changes, if any` },
     ];
   }
 }

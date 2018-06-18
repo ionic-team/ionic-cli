@@ -20,7 +20,7 @@ export async function registerAilments(registry: IAilmentRegistry, deps: IonicAn
   registry.register(new IonicAngularPackageJsonHasDefaultIonicServeCommand(deps));
 }
 
-export interface IonicAngularAilmentDeps extends AilmentDeps {
+interface IonicAngularAilmentDeps extends AilmentDeps {
   readonly project: IonicAngularProject;
 }
 
