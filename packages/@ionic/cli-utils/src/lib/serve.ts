@@ -253,7 +253,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       this.log.nl();
     }
 
-    emit('serve:ready', lodash.pick(details, 'port'));
+    emit('serve:ready', details);
 
     this.scheduleAfterServe(options, details);
 
