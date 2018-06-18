@@ -547,6 +547,10 @@ export interface GenerateOptions {
   name: string;
 }
 
+export interface AngularGenerateOptions extends GenerateOptions {
+  [key: string]: any; // TODO
+}
+
 export interface IonicAngularGenerateOptions extends GenerateOptions {
   module: boolean;
   constants: boolean;
