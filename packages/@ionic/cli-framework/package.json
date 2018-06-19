@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@types/debug": "0.0.30",
-    "@types/inquirer": "0.0.41",
+    "@types/inquirer": "0.0.42",
     "@types/klaw": "^2.1.1",
     "@types/lodash": "^4.14.104",
     "@types/make-dir": "^1.0.3",
