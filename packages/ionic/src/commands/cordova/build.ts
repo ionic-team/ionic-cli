@@ -1,24 +1,13 @@
 import chalk from 'chalk';
 
 import { CommandMetadataOption, validators } from '@ionic/cli-framework';
-import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { BuildRunner } from '@ionic/cli-utils/lib/build';
-import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
 import { COMMON_CORDOVA_BUILD_COMMAND_OPTIONS, CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 
 export class BuildCommand extends CordovaCommand implements CommandPreRun {
-  protected buildRunner?: BuildRunner<BuildOptions<any>>;
-
-  async getBuildRunner() {
-    if (!this.buildRunner) {
-      this.buildRunner = await BuildRunner.createFromProject(this.env, this.env.project);
-    }
-
-    return this.buildRunner;
-  }
-
   async getMetadata(): Promise<CommandMetadata> {
     const options: CommandMetadataOption[] = [
       // Build Options
@@ -31,14 +20,11 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
       ...COMMON_CORDOVA_BUILD_COMMAND_OPTIONS,
     ];
 
-    try {
-      const runner = await this.getBuildRunner();
+    const runner = this.project && await this.project.getBuildRunner();
+
+    if (runner) {
       const libmetadata = await runner.getCommandMetadata();
       options.push(...libmetadata.options || []);
-    } catch (e) {
-      if (!(e instanceof RunnerNotFoundException)) {
-        throw e;
-      }
     }
 
     return {
@@ -86,9 +72,14 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/gu
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const metadata = await this.getMetadata();
 
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic cordova build')} outside a project directory.`);
+    }
+
     if (options.build) {
       const { build } = await import('@ionic/cli-utils/lib/build');
-      await build(this.env, inputs, generateBuildOptions(metadata, inputs, options));
+      // TODO: use runner directly
+      await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, project: this.project }, inputs, generateBuildOptions(metadata, inputs, options));
     }
 
     const cordovaArgs = filterArgumentsForCordova(metadata, options);

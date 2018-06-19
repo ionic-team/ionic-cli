@@ -8,13 +8,17 @@ import { runCommand } from '@ionic/cli-utils/lib/executor';
 
 export abstract class CapacitorCommand extends Command {
   async checkCapacitor(runinfo: CommandInstanceInfo) {
-    const projectConfig = await this.env.project.load();
+    if (!this.project) {
+      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
+    }
 
-    if (projectConfig.integrations.capacitor && projectConfig.integrations.capacitor.enabled === false) {
+    const integration = this.project.config.get('integrations').capacitor;
+
+    if (integration && integration.enabled === false) {
       return;
     }
 
-    if (!projectConfig.integrations.capacitor) {
+    if (!integration) {
       await runCommand(runinfo, ['integrations', 'enable', 'capacitor']);
     }
   }
@@ -51,12 +55,14 @@ export abstract class CapacitorCommand extends Command {
   }
 
   private async promptToInstallCapacitor(): Promise<boolean> {
+    if (!this.project) {
+      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
+    }
+
     const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
-    const config = await this.env.config.load();
-    const { npmClient } = config;
 
     const pkg = '@capacitor/cli';
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { pkg, command: 'install', saveDev: true });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { pkg, command: 'install', saveDev: true });
 
     const confirm = await this.env.prompt({
       name: 'confirm',
@@ -69,7 +75,7 @@ export abstract class CapacitorCommand extends Command {
       return false;
     }
 
-    await this.env.shell.run(manager, managerArgs, { cwd: this.env.project.directory });
+    await this.env.shell.run(manager, managerArgs, { cwd: this.project.directory });
 
     return true;
   }

@@ -1,13 +1,13 @@
+import { columnar } from '@ionic/cli-framework/utils/format';
+import { strcmp } from '@ionic/cli-framework/utils/string';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, PROJECT_FILE } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as util from 'util';
 
-import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
+import { BaseConfigCommand, ConfigContext, getConfig } from './base';
 
-export class ConfigGetCommand extends Command {
+export class ConfigGetCommand extends BaseConfigCommand {
   async getMetadata(): Promise<CommandMetadata> {
     return {
       name: 'get',
@@ -16,7 +16,7 @@ export class ConfigGetCommand extends Command {
       description: `
 By default, this command prints properties in your project's ${chalk.bold(PROJECT_FILE)} file.
 
-For ${chalk.green('--global')} config, the CLI prints properties in the global CLI config file (${chalk.bold('~/.ionic/config.json')}).
+For ${chalk.green('--global')} config, the CLI prints the global CLI config within ${chalk.bold('~/.ionic/config.json')}.
 
 For nested properties, separate nest levels with dots. For example, the property name ${chalk.green('user.email')} will look in the ${chalk.bold('user')} object (a root-level field in the global CLI config file) for the ${chalk.bold('email')} field.
 
@@ -24,7 +24,7 @@ Without a ${chalk.green('property')} argument, this command prints out the entir
 
 If you are using this command programmatically, you can use the ${chalk.green('--json')} option.
 
-This command attempts to sanitize config output for known sensitive fields, such as fields within the ${chalk.bold('tokens')} object in the global CLI config file. This functionality is disabled when using ${chalk.green('--json')}.
+This command will sanitize config output for known sensitive fields, such as fields within the ${chalk.bold('tokens')} object in the global CLI config file. This functionality is disabled when using ${chalk.green('--json')}.
       `,
       inputs: [
         {
@@ -50,37 +50,37 @@ This command attempts to sanitize config output for known sensitive fields, such
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ p ] = inputs;
-    const { global, json } = options;
+    const ctx = this.generateContext(inputs, options);
+    const conf = getConfig(ctx);
 
-    if (!global && !this.env.project.directory) {
-      throw new FatalException(`Sorry--this won't work outside an Ionic project directory. Did you mean to print global config using ${chalk.green('--global')}?`);
-    }
+    this.printConfig(ctx, conf);
+  }
 
-    const file = global ? this.env.config : this.env.project;
-
-    const config = await fsReadJsonFile(file.filePath);
-    const v = lodash.cloneDeep(p ? lodash.get(config, p) : config);
+  printConfig(ctx: ConfigContext, v: any): void {
+    const { global, json } = ctx;
 
     if (json) {
-      process.stdout.write(JSON.stringify(v));
+      process.stdout.write(this.jsonStringify(v));
     } else {
-      this.sanitize(p, v);
-      this.env.log.rawmsg(util.inspect(v, { colors: chalk.enabled }));
+      if (global && v && typeof v === 'object') {
+        const columns = lodash.entries(v)
+          .map(([k, v]) => [k, this.sanitizeEntry(k, v)])
+          .map(([k, v]) => [chalk.bold(k), util.inspect(v, { colors: chalk.enabled })]);
+
+        columns.sort((a, b) => strcmp(a[0], b[0]));
+
+        this.env.log.rawmsg(columnar(columns, {}));
+      } else {
+        this.env.log.rawmsg(util.inspect(v, { colors: chalk.enabled }));
+      }
     }
   }
 
-  scrubTokens(obj: any) {
-    return lodash.mapValues(obj, () => '*****');
-  }
-
-  sanitize(key: string, obj: any) {
-    if (typeof obj === 'object' && 'tokens' in obj) {
-      obj['tokens'] = this.scrubTokens(obj['tokens']);
+  sanitizeEntry(key: string, value: any): typeof value {
+    if (key.includes('tokens')) {
+      return '*****';
     }
 
-    if (key === 'tokens') {
-      lodash.assign(obj, this.scrubTokens(obj));
-    }
+    return value;
   }
 }

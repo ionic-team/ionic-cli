@@ -137,9 +137,7 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
   private async servecmd(options: Ionic1ServeOptions): Promise<ServeCmdDetails> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
-    const config = await this.config.load();
     const pkg = await this.project.requirePackageJson();
-    const { npmClient } = config;
 
     let program = DEFAULT_PROGRAM;
     let args = ['--host', options.address, '--port', String(options.port), '--lr-port', String(options.livereloadPort), '--dev-port', String(options.notificationPort)];
@@ -149,7 +147,7 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
 
     if (pkg.scripts && pkg.scripts[SERVE_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(npmClient, { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
       program = pkgManager;
       args = pkgArgs;
     } else {

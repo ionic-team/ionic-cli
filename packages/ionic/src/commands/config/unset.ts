@@ -1,14 +1,11 @@
 import { validators } from '@ionic/cli-framework';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, IBaseConfig, PROJECT_FILE } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, PROJECT_FILE } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import chalk from 'chalk';
-import * as lodash from 'lodash';
 
-import { fsReadJsonFile, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
+import { BaseConfigCommand, getConfig, unsetConfig } from './base';
 
-export class ConfigUnsetCommand extends Command {
+export class ConfigUnsetCommand extends BaseConfigCommand {
   async getMetadata(): Promise<CommandMetadata> {
     return {
       name: 'unset',
@@ -41,25 +38,20 @@ For nested properties, separate nest levels with dots. For example, the property
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ p ] = inputs;
-    const { global } = options;
+    const ctx = this.generateContext(inputs, options);
+    const { property } = ctx;
 
-    if (!global && !this.env.project.directory) {
-      throw new FatalException(`Sorry--this won't work outside an Ionic project directory. Did you mean to print global config using ${chalk.green('--global')}?`);
+    if (typeof property === 'undefined') {
+      throw new FatalException(`Cannot unset config entry without a property.`);
     }
 
-    const file: IBaseConfig<object> = global ? this.env.config : this.env.project;
-
-    const config = await fsReadJsonFile(file.filePath);
-    const propertyExists = lodash.has(config, p);
+    const propertyExists = typeof getConfig(ctx) !== 'undefined';
+    unsetConfig({ ...ctx, property });
 
     if (propertyExists) {
-      lodash.unset(config, p);
-      this.env.log.ok(`${chalk.green(p)} unset in ${chalk.bold(prettyPath(file.filePath))}.`);
+      this.env.log.ok(`${chalk.green(property)} unset!`);
     } else {
-      this.env.log.warn(`Property ${chalk.green(p)} does not exist--cannot unset.`);
+      this.env.log.warn(`Property ${chalk.green(property)} does not exist--cannot unset.`);
     }
-
-    await fsWriteJsonFile(file.filePath, config, { encoding: 'utf8' });
   }
 }

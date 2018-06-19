@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { fsOpen } from '@ionic/cli-framework/utils/fs';
+import { fsMkdirp, fsOpen } from '@ionic/cli-framework/utils/fs';
 import { fork } from '@ionic/cli-framework/utils/shell';
 
 import { IConfig, IPCMessage, IonicContext } from '../definitions';
@@ -11,7 +11,9 @@ export interface SendMessageDeps {
 }
 
 export async function sendMessage({ config, ctx }: SendMessageDeps, msg: IPCMessage) {
-  const fd = await fsOpen(path.resolve(config.directory, 'helper.log'), 'a');
+  const dir = path.dirname(config.p);
+  await fsMkdirp(dir);
+  const fd = await fsOpen(path.resolve(dir, 'helper.log'), 'a');
   const p = fork(ctx.binPath, ['_', '--no-interactive'], { stdio: ['ignore', fd, fd, 'ipc'] });
 
   p.send(msg);

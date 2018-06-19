@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { IClient, IConfig, IProject, ISession, IonicEnvironment } from '../definitions';
+import { IClient, IConfig, ISession, IonicEnvironment } from '../definitions';
 import { isLoginResponse, isSuperAgentError } from '../guards';
 
 import { FatalException, SessionException } from './errors';
@@ -9,57 +9,52 @@ import { formatResponseError } from './http';
 export interface SessionDeps {
   readonly config: IConfig;
   readonly client: IClient;
-  readonly project?: IProject;
 }
 
 export class BaseSession {
   protected config: IConfig;
   protected client: IClient;
-  protected project?: IProject;
 
-  constructor({ config, client, project }: SessionDeps) {
+  constructor({ config, client }: SessionDeps) {
     this.config = config;
     this.client = client;
-    this.project = project;
-  }
-
-  async isLoggedIn(): Promise<boolean> {
-    const c = await this.config.load();
-    return typeof c.tokens.user === 'string';
   }
 
   async logout(): Promise<void> {
-    const c = await this.config.load();
-
-    c.user = {};
-    delete c.tokens.user;
-    c.git.setup = false;
+    this.config.unset('user.id');
+    this.config.unset('user.email');
+    this.config.unset('tokens.user');
+    this.config.set('git.setup', false);
   }
 
-  async getUser(): Promise<{ id: number; }> {
-    const c = await this.config.load();
+  isLoggedIn(): boolean {
+    return typeof this.config.get('tokens.user') === 'string';
+  }
 
-    if (!c.user.id) {
+  getUser(): { id: number; } {
+    const userId = this.config.get('user.id');
+
+    if (!userId) {
       throw new SessionException(
         `Oops, sorry! You'll need to log in:\n    ${chalk.green('ionic login')}\n\n` +
         `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`
       );
     }
 
-    return { id: c.user.id };
+    return { id: userId };
   }
 
-  async getUserToken(): Promise<string> {
-    const c = await this.config.load();
+  getUserToken(): string {
+    const userToken = this.config.get('tokens.user');
 
-    if (!c.tokens.user) {
+    if (!userToken) {
       throw new SessionException(
         `Oops, sorry! You'll need to log in:\n    ${chalk.green('ionic login')}\n\n` +
         `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`
       );
     }
 
-    return c.tokens.user;
+    return userToken;
   }
 }
 
@@ -85,17 +80,14 @@ export class ProSession extends BaseSession implements ISession {
       }
 
       const { token, user } = res.data;
-      const c = await this.config.load();
 
-      const user_id = user.id;
-
-      if (c.user.id !== user_id) { // User changed
+      if (this.config.get('user.id') !== user.id) { // User changed
         await this.logout();
       }
 
-      c.user.id = user_id;
-      c.user.email = email;
-      c.tokens.user = token;
+      this.config.set('user.id', user.id);
+      this.config.set('user.email', email);
+      this.config.set('tokens.user', token);
     } catch (e) {
       if (isSuperAgentError(e) && (e.response.status === 401 || e.response.status === 403)) {
         throw new SessionException('Incorrect email or password.');
@@ -109,19 +101,18 @@ export class ProSession extends BaseSession implements ISession {
     const { UserClient } = await import('./user');
 
     const userClient = new UserClient({ client: this.client, token });
-    const c = await this.config.load();
 
     try {
       const user = await userClient.loadSelf();
       const user_id = user.id;
 
-      if (c.user.id !== user_id) { // User changed
+      if (this.config.get('user.id') !== user_id) { // User changed
         await this.logout();
       }
 
-      c.user.id = user_id;
-      c.user.email = user.email;
-      c.tokens.user = token;
+      this.config.set('user.id', user_id);
+      this.config.set('user.email', user.email);
+      this.config.set('tokens.user', token);
     } catch (e) {
       if (isSuperAgentError(e) && (e.response.status === 401 || e.response.status === 403)) {
         throw new SessionException('Invalid auth token.');

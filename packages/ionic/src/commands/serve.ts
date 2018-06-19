@@ -2,22 +2,12 @@ import chalk from 'chalk';
 import * as lodash from 'lodash';
 
 import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, ServeOptions } from '@ionic/cli-utils';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
-import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT, ServeRunner } from '@ionic/cli-utils/lib/serve';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT } from '@ionic/cli-utils/lib/serve';
 
 export class ServeCommand extends Command implements CommandPreRun {
-  protected runner?: ServeRunner<ServeOptions>;
-
-  async getRunner() {
-    if (!this.runner) {
-      this.runner = await ServeRunner.createFromProject(this.env);
-    }
-
-    return this.runner;
-  }
-
   async getMetadata(): Promise<CommandMetadata> {
     let groups: string[] = [];
 
@@ -89,17 +79,14 @@ By default, ${chalk.green('ionic serve')} boots up a development server on all n
 
 Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
 
-    try {
-      const runner = await this.getRunner();
+    const runner = this.project && await this.project.getServeRunner();
+
+    if (runner) {
       const libmetadata = await runner.getCommandMetadata();
       groups = libmetadata.groups || [];
       options.push(...libmetadata.options || []);
       description += `\n\n${(libmetadata.description || '').trim()}`;
       exampleCommands.push(...libmetadata.exampleCommands || []);
-    } catch (e) {
-      if (!(e instanceof RunnerNotFoundException)) {
-        throw e;
-      }
     }
 
     return {
@@ -148,7 +135,12 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { serve } = await import('@ionic/cli-utils/lib/serve');
 
-    await serve(this.env, inputs, options);
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic serve')} outside a project directory.`);
+    }
+
+    // TODO: use runner directly
+    await serve({ config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, options);
   }
 }
 

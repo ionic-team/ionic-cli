@@ -11,11 +11,11 @@ import {
   GithubRepo,
   GithubRepoAssociation,
   ICommand,
+  IProjectConfig,
   IntegrationName,
   Login,
   MultiProjectConfig,
   Org,
-  ProjectConfig,
   Response,
   SSHKey,
   SecurityProfile,
@@ -285,7 +285,7 @@ export function isIntegrationName(name: string): name is IntegrationName {
   return INTEGRATION_NAMES.includes(n);
 }
 
-export function isProjectConfig(configFile?: object): configFile is ProjectConfig {
+export function isProjectConfig(configFile?: object): configFile is IProjectConfig {
   return configFile !== undefined && !configFile.hasOwnProperty('projects');
 }
 

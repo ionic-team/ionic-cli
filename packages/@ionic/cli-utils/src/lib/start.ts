@@ -56,8 +56,7 @@ export async function getIonicProText() {
 }
 
 export async function getStarterList(config: IConfig, tag = 'latest'): Promise<StarterList> {
-  const c = await config.load();
-  const { req } = await createRequest('GET', `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}starters.json`, c);
+  const { req } = await createRequest('GET', `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}starters.json`, config.getHTTPConfig());
 
   const res = await req;
 

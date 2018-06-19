@@ -308,7 +308,7 @@ describe('@ionic/cli-utils', () => {
           imageId: '60278b0fa1d5abf43d07c5ae0f8a0b41'
         };
 
-        const response = await resources.uploadSourceImage({ config: { load: async () => undefined } }, sourceImage);
+        const response = await resources.uploadSourceImage({ config: { getHTTPConfig: () => ({}) } }, sourceImage);
         expect(response).toEqual({
           Error: '',
           Width: 337,

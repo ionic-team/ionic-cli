@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 import * as semver from 'semver';
 
-import { IAilmentRegistry, ProjectType, TreatableAilment } from '../../../definitions';
+import { ProjectType, TreatableAilment } from '../../../definitions';
 import { BUILD_SCRIPT } from '../../build';
-import { Ailment, AilmentDeps } from '../../doctor/ailments';
+import { Ailment, AilmentDeps } from '../../doctor';
 import { SERVE_SCRIPT } from '../../serve';
 import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
 
@@ -11,20 +11,11 @@ import { IonicAngularProject } from './';
 import { DEFAULT_BUILD_SCRIPT_VALUE } from './build';
 import { DEFAULT_SERVE_SCRIPT_VALUE } from './serve';
 
-export async function registerAilments(registry: IAilmentRegistry, deps: IonicAngularAilmentDeps): Promise<void> {
-  registry.register(new IonicAngularUpdateAvailable(deps));
-  registry.register(new IonicAngularMajorUpdateAvailable(deps));
-  registry.register(new AppScriptsUpdateAvailable(deps));
-  registry.register(new AppScriptsMajorUpdateAvailable(deps));
-  registry.register(new IonicAngularPackageJsonHasDefaultIonicBuildCommand(deps));
-  registry.register(new IonicAngularPackageJsonHasDefaultIonicServeCommand(deps));
-}
-
-interface IonicAngularAilmentDeps extends AilmentDeps {
+export interface IonicAngularAilmentDeps extends AilmentDeps {
   readonly project: IonicAngularProject;
 }
 
-abstract class IonicAngularAilment extends Ailment {
+export abstract class IonicAngularAilment extends Ailment {
   readonly projects: ProjectType[] = ['ionic-angular'];
   protected readonly project: IonicAngularProject;
 
@@ -34,18 +25,15 @@ abstract class IonicAngularAilment extends Ailment {
   }
 }
 
-class IonicAngularUpdateAvailable extends IonicAngularAilment {
+export class IonicAngularUpdateAvailable extends IonicAngularAilment {
   readonly id = 'ionic-angular-update-available';
   currentVersion?: string;
   latestVersion?: string;
 
   async getVersionPair(): Promise<[string, string]> {
-    const config = await this.config.load();
-    const { npmClient } = config;
-
     if (!this.currentVersion || !this.latestVersion) {
       const [ currentPkg ] = await this.project.getPackageJson('ionic-angular');
-      const latestPkg = await pkgFromRegistry(npmClient, { pkg: 'ionic-angular' });
+      const latestPkg = await pkgFromRegistry(this.config.get('npmClient'), { pkg: 'ionic-angular' });
       this.currentVersion = currentPkg ? currentPkg.version : undefined;
       this.latestVersion = latestPkg ? latestPkg.version : undefined;
     }
@@ -74,10 +62,8 @@ class IonicAngularUpdateAvailable extends IonicAngularAilment {
   }
 
   async getTreatmentSteps() {
-    const config = await this.config.load();
-    const { npmClient } = config;
     const [ , latestVersion ] = await this.getVersionPair();
-    const args = await pkgManagerArgs(npmClient, { command: 'install', pkg: `ionic-angular@${latestVersion ? latestVersion : 'latest'}` });
+    const args = await pkgManagerArgs(this.config.get('npmClient'), { command: 'install', pkg: `ionic-angular@${latestVersion ? latestVersion : 'latest'}` });
 
     return [
       { message: `Visit ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for each upgrade's instructions` },
@@ -87,18 +73,15 @@ class IonicAngularUpdateAvailable extends IonicAngularAilment {
   }
 }
 
-class IonicAngularMajorUpdateAvailable extends IonicAngularAilment {
+export class IonicAngularMajorUpdateAvailable extends IonicAngularAilment {
   readonly id = 'ionic-angular-major-update-available';
   currentVersion?: string;
   latestVersion?: string;
 
   async getVersionPair(): Promise<[string, string]> {
-    const config = await this.config.load();
-    const { npmClient } = config;
-
     if (!this.currentVersion || !this.latestVersion) {
       const [ currentPkg ] = await this.project.getPackageJson('ionic-angular');
-      const latestPkg = await pkgFromRegistry(npmClient, { pkg: 'ionic-angular' });
+      const latestPkg = await pkgFromRegistry(this.config.get('npmClient'), { pkg: 'ionic-angular' });
       this.currentVersion = currentPkg ? currentPkg.version : undefined;
       this.latestVersion = latestPkg ? latestPkg.version : undefined;
     }
@@ -133,19 +116,16 @@ class IonicAngularMajorUpdateAvailable extends IonicAngularAilment {
   }
 }
 
-class AppScriptsUpdateAvailable extends IonicAngularAilment implements TreatableAilment {
+export class AppScriptsUpdateAvailable extends IonicAngularAilment implements TreatableAilment {
   readonly id = 'app-scripts-update-available';
   readonly treatable = true;
   currentVersion?: string;
   latestVersion?: string;
 
   async getVersionPair(): Promise<[string, string]> {
-    const config = await this.config.load();
-    const { npmClient } = config;
-
     if (!this.currentVersion || !this.latestVersion) {
       const [ currentPkg ] = await this.project.getPackageJson('@ionic/app-scripts');
-      const latestPkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/app-scripts' });
+      const latestPkg = await pkgFromRegistry(this.config.get('npmClient'), { pkg: '@ionic/app-scripts' });
       this.currentVersion = currentPkg ? currentPkg.version : undefined;
       this.latestVersion = latestPkg ? latestPkg.version : undefined;
     }
@@ -174,10 +154,8 @@ class AppScriptsUpdateAvailable extends IonicAngularAilment implements Treatable
   }
 
   async getTreatmentSteps() {
-    const config = await this.config.load();
-    const { npmClient } = config;
     const [ , latestVersion ] = await this.getVersionPair();
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg: `@ionic/app-scripts@${latestVersion ? latestVersion : 'latest'}`, saveDev: true });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'install', pkg: `@ionic/app-scripts@${latestVersion ? latestVersion : 'latest'}`, saveDev: true });
 
     return [
       {
@@ -190,18 +168,15 @@ class AppScriptsUpdateAvailable extends IonicAngularAilment implements Treatable
   }
 }
 
-class AppScriptsMajorUpdateAvailable extends IonicAngularAilment {
+export class AppScriptsMajorUpdateAvailable extends IonicAngularAilment {
   readonly id = 'app-scripts-major-update-available';
   currentVersion?: string;
   latestVersion?: string;
 
   async getVersionPair(): Promise<[string, string]> {
-    const config = await this.config.load();
-    const { npmClient } = config;
-
     if (!this.currentVersion || !this.latestVersion) {
       const [ currentPkg ] = await this.project.getPackageJson('@ionic/app-scripts');
-      const latestPkg = await pkgFromRegistry(npmClient, { pkg: '@ionic/app-scripts' });
+      const latestPkg = await pkgFromRegistry(this.config.get('npmClient'), { pkg: '@ionic/app-scripts' });
       this.currentVersion = currentPkg ? currentPkg.version : undefined;
       this.latestVersion = latestPkg ? latestPkg.version : undefined;
     }
@@ -236,7 +211,7 @@ class AppScriptsMajorUpdateAvailable extends IonicAngularAilment {
   }
 }
 
-class IonicAngularPackageJsonHasDefaultIonicBuildCommand extends IonicAngularAilment {
+export class IonicAngularPackageJsonHasDefaultIonicBuildCommand extends IonicAngularAilment {
   readonly id = 'ionic-angular-package-json-has-default-ionic-build-command';
   currentVersion?: string;
   latestVersion?: string;
@@ -266,7 +241,7 @@ class IonicAngularPackageJsonHasDefaultIonicBuildCommand extends IonicAngularAil
   }
 }
 
-class IonicAngularPackageJsonHasDefaultIonicServeCommand extends IonicAngularAilment {
+export class IonicAngularPackageJsonHasDefaultIonicServeCommand extends IonicAngularAilment {
   readonly id = 'ionic-angular-package-json-has-default-ionic-serve-command';
   currentVersion?: string;
   latestVersion?: string;

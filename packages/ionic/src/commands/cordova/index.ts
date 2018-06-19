@@ -7,7 +7,7 @@ export class CordovaNamespace extends Namespace {
   async getMetadata() {
     const groups: string[] = [];
 
-    if (this.env.project.type === 'angular') {
+    if (this.project && this.project.type === 'angular') {
       groups.push(NamespaceGroup.Experimental);
     }
 
@@ -27,15 +27,15 @@ Cordova Reference documentation:
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
-      ['build', async () => { const { BuildCommand } = await import('./build'); return new BuildCommand(this, this.env); }],
-      ['compile', async () => { const { CompileCommand } = await import('./compile'); return new CompileCommand(this, this.env); }],
-      ['emulate', async () => { const { EmulateCommand } = await import('./emulate'); return new EmulateCommand(this, this.env); }],
-      ['platform', async () => { const { PlatformCommand } = await import('./platform'); return new PlatformCommand(this, this.env); }],
-      ['plugin', async () => { const { PluginCommand } = await import('./plugin'); return new PluginCommand(this, this.env); }],
-      ['prepare', async () => { const { PrepareCommand } = await import('./prepare'); return new PrepareCommand(this, this.env); }],
-      ['resources', async () => { const { ResourcesCommand } = await import('./resources'); return new ResourcesCommand(this, this.env); }],
-      ['run', async () => { const { RunCommand } = await import('./run'); return new RunCommand(this, this.env); }],
-      ['requirements', async () => { const { RequirementsCommand } = await import('./requirements'); return new RequirementsCommand(this, this.env); }],
+      ['build', async () => { const { BuildCommand } = await import('./build'); return new BuildCommand(this, this.env, this.project); }],
+      ['compile', async () => { const { CompileCommand } = await import('./compile'); return new CompileCommand(this, this.env, this.project); }],
+      ['emulate', async () => { const { EmulateCommand } = await import('./emulate'); return new EmulateCommand(this, this.env, this.project); }],
+      ['platform', async () => { const { PlatformCommand } = await import('./platform'); return new PlatformCommand(this, this.env, this.project); }],
+      ['plugin', async () => { const { PluginCommand } = await import('./plugin'); return new PluginCommand(this, this.env, this.project); }],
+      ['prepare', async () => { const { PrepareCommand } = await import('./prepare'); return new PrepareCommand(this, this.env, this.project); }],
+      ['resources', async () => { const { ResourcesCommand } = await import('./resources'); return new ResourcesCommand(this, this.env, this.project); }],
+      ['run', async () => { const { RunCommand } = await import('./run'); return new RunCommand(this, this.env, this.project); }],
+      ['requirements', async () => { const { RequirementsCommand } = await import('./requirements'); return new RequirementsCommand(this, this.env, this.project); }],
       ['platforms', 'platform'],
       ['plugins', 'plugin'],
     ]);

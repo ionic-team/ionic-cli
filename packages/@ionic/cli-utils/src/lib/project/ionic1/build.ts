@@ -35,8 +35,6 @@ export class Ionic1BuildRunner extends BuildRunner<Ionic1BuildOptions> {
 
   async buildProject(options: Ionic1BuildOptions): Promise<void> {
     const { pkgManagerArgs } = await import('../../utils/npm');
-    const config = await this.config.load();
-    const { npmClient } = config;
     const pkg = await this.project.requirePackageJson();
     const shellOptions = { cwd: this.project.directory };
 
@@ -44,7 +42,7 @@ export class Ionic1BuildRunner extends BuildRunner<Ionic1BuildOptions> {
 
     if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(npmClient, { command: 'run', script: BUILD_SCRIPT });
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: BUILD_SCRIPT });
       await this.shell.run(pkgManager, pkgArgs, shellOptions);
     } else {
       await this.shell.run('ionic-v1', ['build'], shellOptions);

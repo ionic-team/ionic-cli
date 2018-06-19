@@ -39,26 +39,31 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic monitoring syncmaps')} outside a project directory.`);
+    }
+
     const token = await this.env.session.getUserToken();
-    const proId = await this.env.project.requireProId();
+    const proId = await this.project.requireProId();
 
     const [ snapshotId ] = inputs;
     const doBuild = options.build ? true : false;
 
     const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
-    const conf = await loadConfigXml({ project: this.env.project });
+    const conf = await loadConfigXml({ project: this.project });
     const cordovaInfo = conf.getProjectInfo();
 
     const appVersion = cordovaInfo.version;
-    const commitHash = (await this.env.shell.output('git', ['rev-parse', 'HEAD'], { cwd: this.env.project.directory })).trim();
+    const commitHash = (await this.env.shell.output('git', ['rev-parse', 'HEAD'], { cwd: this.project.directory })).trim();
     debug(`Commit hash: ${chalk.bold(commitHash)}`);
 
-    const sourcemapsDir = path.resolve(this.env.project.directory, SOURCEMAP_DIRECTORY);
+    const sourcemapsDir = path.resolve(this.project.directory, SOURCEMAP_DIRECTORY);
     let sourcemapsExist = await pathExists(sourcemapsDir);
 
     if (doBuild || !sourcemapsExist) {
       const { build } = await import('@ionic/cli-utils/lib/build');
-      await build(this.env, [], { _: [], prod: true });
+      // TODO: use runner directly
+      await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, project: this.project }, [], { _: [], prod: true });
     }
 
     sourcemapsExist = await pathExists(sourcemapsDir);
@@ -138,8 +143,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     const fileData = await fsReadFile(file, { encoding: 'utf8' });
     const sourcemapPost = sm.data.sourcemap_post;
 
-    const c = await this.env.config.load();
-    const { req } = await createRequest('POST', sourcemapPost.url, c);
+    const { req } = await createRequest('POST', sourcemapPost.url, this.env.config.getHTTPConfig());
 
     req
       .field(sourcemapPost.fields)

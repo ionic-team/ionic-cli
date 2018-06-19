@@ -2,10 +2,12 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
+import { Project } from '../';
 import { IAilmentRegistry, InfoItem } from '../../../definitions';
 
-import { Project } from '../';
-import * as ζdoctor from '../../doctor';
+import * as ζbuild from './build';
+import * as ζgenerate from './generate';
+import * as ζserve from './serve';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic-angular');
 
@@ -28,14 +30,17 @@ export class IonicAngularProject extends Project {
     ];
   }
 
-  async getAilmentRegistry(deps: ζdoctor.AilmentDeps): Promise<IAilmentRegistry> {
-    const { registerAilments } = await import('./ailments');
+  async registerAilments(registry: IAilmentRegistry): Promise<void> {
+    await super.registerAilments(registry);
+    const ailments = await import('./ailments');
+    const deps = { ...this.e, project: this };
 
-    const registry = await super.getAilmentRegistry(deps);
-
-    await registerAilments(registry, { ...deps, project: this });
-
-    return registry;
+    registry.register(new ailments.IonicAngularUpdateAvailable(deps));
+    registry.register(new ailments.IonicAngularMajorUpdateAvailable(deps));
+    registry.register(new ailments.AppScriptsUpdateAvailable(deps));
+    registry.register(new ailments.AppScriptsMajorUpdateAvailable(deps));
+    registry.register(new ailments.IonicAngularPackageJsonHasDefaultIonicBuildCommand(deps));
+    registry.register(new ailments.IonicAngularPackageJsonHasDefaultIonicServeCommand(deps));
   }
 
   async detected() {
@@ -54,4 +59,21 @@ export class IonicAngularProject extends Project {
     return false;
   }
 
+  async requireBuildRunner(): Promise<ζbuild.IonicAngularBuildRunner> {
+    const { IonicAngularBuildRunner } = await import('./build');
+    const deps = { ...this.e, project: this };
+    return new IonicAngularBuildRunner(deps);
+  }
+
+  async requireServeRunner(): Promise<ζserve.IonicAngularServeRunner> {
+    const { IonicAngularServeRunner } = await import('./serve');
+    const deps = { ...this.e, project: this };
+    return new IonicAngularServeRunner(deps);
+  }
+
+  async requireGenerateRunner(): Promise<ζgenerate.IonicAngularGenerateRunner> {
+    const { IonicAngularGenerateRunner } = await import('./generate');
+    const deps = { ...this.e, project: this };
+    return new IonicAngularGenerateRunner(deps);
+  }
 }

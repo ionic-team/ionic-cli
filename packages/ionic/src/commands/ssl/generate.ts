@@ -31,7 +31,7 @@ interface OpenSSLConfig {
 
 export class SSLGenerateCommand extends SSLBaseCommand implements CommandPreRun {
   getDefaultPath() {
-    return this.env.project.directory ? path.resolve(this.env.project.directory, '.ionic/ssl') : path.resolve(this.env.config.directory, 'ssl');
+    return this.project ? path.resolve(this.project.directory, '.ionic/ssl') : path.resolve(path.dirname(this.env.config.p), 'ssl');
   }
 
   async getMetadata(): Promise<CommandMetadata> {

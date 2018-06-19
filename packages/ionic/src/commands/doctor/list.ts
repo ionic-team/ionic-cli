@@ -4,9 +4,10 @@ import { columnar } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, isTreatableAilment } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
 
-export class DoctorListCommand extends Command {
+import { DoctorCommand } from './base';
+
+export class DoctorListCommand extends DoctorCommand {
   async getMetadata(): Promise<CommandMetadata> {
     return {
       name: 'list',
@@ -24,14 +25,11 @@ You can flip whether an issue is ignored or not by using ${chalk.green('ionic co
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const registry = await this.env.project.getAilmentRegistry(this.env);
-    const config = await this.env.config.load();
+    const registry = await this.getRegistry();
 
-    const rows = await Promise.all(registry.ailments.map(async ailment => {
-      const issueConfig = config.doctor.issues[ailment.id];
-      const ignored = issueConfig && issueConfig.ignored;
-
+    const rows = registry.ailments.map(ailment => {
       const tags: string[] = [];
+      const ignored = this.env.config.get(`doctor.issues.${ailment.id}.ignored` as any);
 
       if (ignored) {
         tags.push('ignored');
@@ -50,7 +48,7 @@ You can flip whether an issue is ignored or not by using ${chalk.green('ionic co
         ailment.projects ? ailment.projects.map(t => chalk.bold(t)).join(', ') : 'all',
         tags.map(t => chalk.bold(t)).join(', '),
       ];
-    }));
+    });
 
     rows.sort((row1, row2) => strcmp(row1[0], row2[0]));
 

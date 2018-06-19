@@ -26,17 +26,17 @@ export class DocsCommand extends Command {
     const opn = await import('opn');
 
     const browser = options['browser'] ? String(options['browser']) : undefined;
-    const config = await this.env.config.load();
 
-    const url = await this.env.project.getDocsUrl();
+    const homepage = 'https://ionicframework.com/docs';
+    const url = this.project ? await this.project.getDocsUrl() : homepage;
 
     try {
-      const { req } = await createRequest('HEAD', url, config);
+      const { req } = await createRequest('HEAD', url, this.env.config.getHTTPConfig());
       await req;
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 404) {
         this.env.log.warn(`Docs not found for your specific version of Ionic. Directing you to docs homepage.`);
-        await opn('https://ionicframework.com/docs', { app: browser, wait: false });
+        await opn(homepage, { app: browser, wait: false });
         return;
       }
 

@@ -7,7 +7,6 @@ import { CommandLineInputs, CommandLineOptions, CommandMetadata, isIntegrationNa
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { INTEGRATION_NAMES } from '@ionic/cli-utils/lib/integrations';
-import { ProjectIntegration } from '@ionic/cli-utils/src/definitions';
 
 export class IntegrationsEnableCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
@@ -41,13 +40,17 @@ export class IntegrationsEnableCommand extends Command {
     const [ name ] = inputs;
     const { add, quiet } = options;
 
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic integrations enable')} outside a project directory.`);
+    }
+
     if (!isIntegrationName(name)) {
       throw new FatalException(`Don't know about ${chalk.green(name)} integration!`);
     }
 
-    const projectConfig = await this.env.project.load();
-    const integration = await this.env.project.createIntegration(name);
-    const integrationConfig = projectConfig.integrations[name];
+    const integration = await this.project.createIntegration(name);
+    const integrationsConfig = this.project.config.get('integrations');
+    const integrationConfig = integrationsConfig[name];
 
     try {
       if (!integrationConfig || add) {
@@ -73,7 +76,7 @@ export class IntegrationsEnableCommand extends Command {
           },
         });
 
-        projectConfig.integrations[name] = {} as ProjectIntegration;
+        integrationsConfig[name] = {};
         this.env.log.ok(`Integration ${chalk.green(integration.name)} added!`);
       } else {
         const wasEnabled = integrationConfig.enabled !== false;
@@ -97,6 +100,6 @@ export class IntegrationsEnableCommand extends Command {
       throw e;
     }
 
-    await this.env.project.save();
+    this.project.config.set('integrations', integrationsConfig);
   }
 }

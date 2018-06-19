@@ -37,7 +37,6 @@ Optionally supply the ${chalk.green('id')} argument to attempt to fix a single i
     const { formatAilmentMessage } = await import('@ionic/cli-utils/lib/doctor');
 
     const [ id ] = inputs;
-    const config = await this.env.config.load();
 
     if (id) {
       const registry = await this.getRegistry();
@@ -65,7 +64,7 @@ Optionally supply the ${chalk.green('id')} argument to attempt to fix a single i
         );
       }
 
-      if (config.doctor.issues[ailment.id] !== false) {
+      if (this.env.config.get(`doctor.issues.${ailment.id}.ignored` as any)) {
         const confirm = await this.env.prompt({
           type: 'confirm',
           name: 'confirm',
@@ -76,11 +75,7 @@ Optionally supply the ${chalk.green('id')} argument to attempt to fix a single i
           return;
         }
 
-        const issueConfig = config.doctor.issues[ailment.id];
-
-        if (issueConfig) {
-          delete issueConfig.ignored;
-        }
+        this.env.config.unset(`doctor.issues.${ailment.id}.ignored` as any);
       }
 
       try {
@@ -109,13 +104,10 @@ Optionally supply the ${chalk.green('id')} argument to attempt to fix a single i
       }
     }
 
-    const fn = treatedAilments > 0 ? this.env.log.info.bind(this.env.log) : this.env.log.ok.bind(this.env.log);
-
-    fn(
+    this.env.log.info(
       'Doctor Summary\n' +
-      `- Detected ${chalk.bold(String(ailments.length))} issue${ailments.length === 1 ? '' : 's'}.` +
-      `${ailments.length === 0 ? ' Aww yeah! 💪' : ''}\n` +
-      `- ${chalk.bold(String(treatedAilments))} ${treatedAilments === 1 ? 'issue was' : 'issues were'} fixed automatically`
+      `- Detected ${chalk.bold(String(ailments.length))} treatable issue${ailments.length === 1 ? '' : 's'}\n` +
+      (treatedAilments > 0 ? `- ${chalk.bold(String(treatedAilments))} ${treatedAilments === 1 ? 'issue was' : 'issues were'} fixed automatically` : '')
     );
   }
 
@@ -132,7 +124,6 @@ Optionally supply the ${chalk.green('id')} argument to attempt to fix a single i
   async treatAilment(ailment: TreatableAilment) {
     const { formatAilmentMessage } = await import('@ionic/cli-utils/lib/doctor');
 
-    const config = await this.env.config.load();
     const treatmentSteps = await ailment.getTreatmentSteps();
     this.env.log.warn(await formatAilmentMessage(ailment));
 
@@ -177,9 +168,7 @@ Optionally supply the ${chalk.green('id')} argument to attempt to fix a single i
     } else if (choice === CHOICE_NO) {
       throw ERROR_AILMENT_SKIPPED;
     } else if (choice === CHOICE_IGNORE) {
-      const issueConfig = config.doctor.issues[ailment.id] || {};
-      issueConfig.ignored = true;
-      config.doctor.issues[ailment.id] = issueConfig;
+      this.env.config.set(`doctor.issues.${ailment.id}.ignored` as any, true);
 
       throw ERROR_AILMENT_IGNORED;
     }

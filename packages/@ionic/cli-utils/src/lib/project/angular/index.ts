@@ -3,9 +3,11 @@ import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
 import { Project } from '../';
-
 import { IAilmentRegistry, InfoItem } from '../../../definitions';
-import * as ζdoctor from '../../doctor';
+
+import * as ζbuild from './build';
+import * as ζgenerate from './generate';
+import * as ζserve from './serve';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular');
 
@@ -56,13 +58,26 @@ export class AngularProject extends Project {
     return false;
   }
 
-  async getAilmentRegistry(deps: ζdoctor.AilmentDeps): Promise<IAilmentRegistry> {
-    const { registerAilments } = await import('./ailments');
+  async requireBuildRunner(): Promise<ζbuild.AngularBuildRunner> {
+    const { AngularBuildRunner } = await import('./build');
+    const deps = { ...this.e, project: this };
+    return new AngularBuildRunner(deps);
+  }
 
-    const registry = await super.getAilmentRegistry(deps);
+  async requireServeRunner(): Promise<ζserve.AngularServeRunner> {
+    const { AngularServeRunner } = await import('./serve');
+    const deps = { ...this.e, project: this };
+    return new AngularServeRunner(deps);
+  }
 
-    await registerAilments(registry, { ...deps, project: this });
+  async requireGenerateRunner(): Promise<ζgenerate.AngularGenerateRunner> {
+    const { AngularGenerateRunner } = await import('./generate');
+    const deps = { ...this.e, project: this };
+    return new AngularGenerateRunner(deps);
+  }
 
-    return registry;
+  async registerAilments(registry: IAilmentRegistry): Promise<void> {
+    await super.registerAilments(registry);
+    // TODO: register angular project ailments
   }
 }

@@ -1,5 +1,5 @@
-
 import { LOGGER_LEVELS, createPromptModule, createTaskChainWithOutput } from '@ionic/cli-framework';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { findBaseDirectory, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
 import chalk from 'chalk';
@@ -12,7 +12,7 @@ import { IProject, InfoItem, IonicContext, IonicEnvironment, ProjectType } from 
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, parseGlobalOptions } from './lib/config';
 import { Environment } from './lib/environment';
 import { Client } from './lib/http';
-import { OutsideProject, Project, ProjectDeps } from './lib/project';
+import { ProjectDeps, createProjectFromType, determineProjectType } from './lib/project';
 import { createOnFallback } from './lib/prompts';
 import { ProSession } from './lib/session';
 import { Shell } from './lib/shell';
@@ -25,11 +25,12 @@ export * from './guards';
 
 const debug = Debug('ionic:cli-utils');
 
-export async function getProject(projectDir: string | undefined, projectName: string | undefined, deps: ProjectDeps): Promise<IProject> {
+export async function getProject(projectDir: string | undefined, projectName: string | undefined, deps: ProjectDeps): Promise<IProject | undefined> {
   if (!projectDir) {
-    return new OutsideProject('', PROJECT_FILE);
+    return;
   }
 
+  const { log } = deps;
   const projectFilePath = path.resolve(projectDir, PROJECT_FILE);
   let projectFile: { [key: string]: any; } | undefined;
   let type: ProjectType | undefined;
@@ -37,34 +38,37 @@ export async function getProject(projectDir: string | undefined, projectName: st
   try {
     projectFile = await fsReadJsonFile(projectFilePath);
   } catch (e) {
-    debug('Attempted to load project config %s but got error: %O', projectFilePath, e);
+    log.error(
+      `Error while loading project config file.\n` +
+      `Attempted to load project config ${chalk.bold(prettyPath(projectFilePath))} but got error:\n\n` +
+      chalk.red(e.toString())
+    );
   }
 
   if (projectFile) {
-    type = await Project.determineType(projectDir, projectName, projectFile, deps);
     projectName = projectName || projectFile.defaultProject;
+    type = await determineProjectType(projectDir, projectName, projectFile, deps);
 
     debug(`Project name: ${chalk.bold(String(projectName))}`);
   }
 
   if (!type) {
-    return new OutsideProject('', PROJECT_FILE);
+    return;
   }
 
-  return Project.createFromProjectType(projectDir, PROJECT_FILE, projectName, deps, type);
+  return createProjectFromType(projectFilePath, projectName, deps, type);
 }
 
-export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[], env: { [key: string]: string; }): Promise<IonicEnvironment> {
+export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[], env: { [key: string]: string; }): Promise<{ env: IonicEnvironment; project?: IProject; }> {
   process.chdir(ctx.execPath);
 
   const argv = parseGlobalOptions(pargv);
   const projectName = argv['project'] ? String(argv['project']) : undefined;
-  const config = new Config(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE);
+  const config = new Config(path.resolve(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE));
 
-  const configData = await config.load();
   debug('Terminal info: %o', TERMINAL_INFO);
 
-  if (configData.interactive === false || !TERMINAL_INFO.tty || TERMINAL_INFO.ci) {
+  if (config.get('interactive') === false || !TERMINAL_INFO.tty || TERMINAL_INFO.ci) {
     argv['interactive'] = false;
   }
 
@@ -77,6 +81,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     interactive: argv['interactive'],
     onFallback: createOnFallback({ confirm: argv['confirm'], interactive: argv['interactive'], log }),
   });
+
   const tasks = createTaskChainWithOutput(
     argv['interactive']
       ? { output: prompt.output }
@@ -84,7 +89,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   );
 
   const projectDir = await findBaseDirectory(ctx.execPath, PROJECT_FILE);
-  const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map(e => [e, env[e]]).filter(([e, v]) => !!v);
+  const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map((e): [string, string] => [e, env[e]]).filter(([, v]) => !!v);
 
   const getInfo = async () => {
     const osName = await import('os-name');
@@ -106,31 +111,22 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     ];
 
     info.push(...proxyVars.map(([e, v]): InfoItem => ({ group: 'environment', key: e, value: v })));
-    info.push(...(await project.getInfo()));
+
+    if (project) {
+      info.push(...(await project.getInfo()));
+    }
 
     return info;
   };
 
+  const flags = argv as any; // TODO
+  debug('CLI global options: %o', flags);
+
   const shell = new Shell({ log, projectDir });
-  const project = await getProject(projectDir, projectName, { config, log, shell, tasks });
   const client = new Client(config);
-  const session = new ProSession({ config, client, project });
-
-  await config.prepare();
-
-  const ienv = new Environment({
-    client,
-    config,
-    flags: argv as any, // TODO
-    getInfo,
-    log,
-    ctx,
-    prompt,
-    project,
-    session,
-    shell,
-    tasks,
-  });
+  const session = new ProSession({ config, client });
+  const deps = { client, config, log, prompt, session, shell, tasks };
+  const ienv = new Environment({ flags, getInfo, ctx, ...deps });
 
   ienv.open();
 
@@ -140,11 +136,18 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     }
   }
 
-  debug('CLI global options: %o', argv);
-
   if (typeof argv['yarn'] === 'boolean') {
     log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} was removed in CLI 4.0. Use ${chalk.green(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);
   }
 
-  return ienv;
+  let project: IProject | undefined;
+
+  try {
+    project = await getProject(projectDir, projectName, deps);
+  } catch (e) {
+    log.warn(e.toString());
+    log.nl();
+  }
+
+  return { env: ienv, project };
 }

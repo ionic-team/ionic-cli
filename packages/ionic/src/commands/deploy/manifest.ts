@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -6,6 +7,7 @@ import { map } from '@ionic/cli-framework/utils/array';
 import { fsStat, fsWriteFile, readDir } from '@ionic/cli-framework/utils/fs';
 import { CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 interface DeployManifestItem {
   href: string;
@@ -14,8 +16,6 @@ interface DeployManifestItem {
 }
 
 export class DeployManifestCommand extends Command {
-  buildDir: string = path.resolve(this.env.project.directory, 'www');
-
   async getMetadata(): Promise<CommandMetadata> {
     return {
       name: 'manifest',
@@ -25,25 +25,31 @@ export class DeployManifestCommand extends Command {
   }
 
   async run(): Promise<void> {
-    const manifest = await this.getFilesAndSizesAndHashesForGlobPattern();
-    await fsWriteFile(path.resolve(this.buildDir, 'pro-manifest.json'), JSON.stringify(manifest, undefined, 2), { encoding: 'utf8' });
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic deploy manifest')} outside a project directory.`);
+    }
+
+    const buildDir = path.resolve(this.project.directory, 'www'); // TODO: this is hard-coded
+    const manifest = await this.getFilesAndSizesAndHashesForGlobPattern(buildDir);
+
+    await fsWriteFile(path.resolve(buildDir, 'pro-manifest.json'), JSON.stringify(manifest, undefined, 2), { encoding: 'utf8' });
   }
 
-  private async getFilesAndSizesAndHashesForGlobPattern(): Promise<DeployManifestItem[]> {
-    const contents = await readDir(this.buildDir, { recursive: true });
+  private async getFilesAndSizesAndHashesForGlobPattern(buildDir: string): Promise<DeployManifestItem[]> {
+    const contents = await readDir(buildDir, { recursive: true });
     const stats = await map(contents, async (f): Promise<[string, fs.Stats]> => [f, await fsStat(f)]);
     const files = stats.filter(([ , stat ]) => !stat.isDirectory());
 
-    const items = await Promise.all(files.map(([f, stat]) => this.getFileAndSizeAndHashForFile(f, stat)));
+    const items = await Promise.all(files.map(([f, stat]) => this.getFileAndSizeAndHashForFile(buildDir, f, stat)));
 
     return items;
   }
 
-  private async getFileAndSizeAndHashForFile(file: string, stat: fs.Stats): Promise<DeployManifestItem> {
+  private async getFileAndSizeAndHashForFile(buildDir: string, file: string, stat: fs.Stats): Promise<DeployManifestItem> {
     const buffer = await this.readFile(file);
 
     return {
-      href: path.relative(this.buildDir, file),
+      href: path.relative(buildDir, file),
       size: stat.size,
       integrity: this.getIntegrity(buffer),
     };

@@ -2,28 +2,15 @@ import chalk from 'chalk';
 
 import { BaseCommand, generateCommandPath, unparseArgs } from '@ionic/cli-framework';
 
-import {
-  CommandInstanceInfo,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandMetadataInput,
-  CommandMetadataOption,
-  ICommand,
-  INamespace,
-  IonicEnvironment,
-} from '../definitions';
-
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace, IProject, IonicEnvironment } from '../definitions';
 import { isCommandPreRun } from '../guards';
 
 export abstract class Command extends BaseCommand<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> implements ICommand {
-  constructor(public namespace: INamespace, public env: IonicEnvironment) {
+  constructor(public namespace: INamespace, public env: IonicEnvironment, public project?: IProject) {
     super(namespace);
   }
 
   async execute(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
-    const config = await this.env.config.load();
-
     if (isCommandPreRun(this)) {
       await this.preRun(inputs, options, runinfo);
     }
@@ -41,7 +28,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
     const runPromise = this.run(inputs, options, runinfo);
 
     const telemetryPromise = (async () => {
-      if (config.telemetry !== false) {
+      if (this.env.config.get('telemetry') !== false) {
         const { Telemetry } = await import('./telemetry');
 
         let cmdInputs: CommandLineInputs = [];
@@ -57,7 +44,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
 
         const cmd: ICommand = this;
         const path = await generateCommandPath(cmd);
-        const telemetry = new Telemetry({ client: this.env.client, config: this.env.config, getInfo: this.env.getInfo, ctx: this.env.ctx, project: this.env.project, session: this.env.session });
+        const telemetry = new Telemetry({ client: this.env.client, config: this.env.config, getInfo: this.env.getInfo, ctx: this.env.ctx, project: this.project, session: this.env.session });
 
         await telemetry.sendCommand(path.map(([p]) => p).join(' '), cmdInputs);
       }

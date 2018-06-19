@@ -52,8 +52,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
 
   async buildProject(options: IonicAngularBuildOptions): Promise<void> {
     const { pkgManagerArgs } = await import('../../utils/npm');
-    const config = await this.config.load();
-    const { npmClient } = config;
     const pkg = await this.project.requirePackageJson();
 
     let program = DEFAULT_PROGRAM;
@@ -68,7 +66,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
         args = ['build', ...args];
       } else {
         debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(npmClient, { command: 'run', script: BUILD_SCRIPT, scriptArgs: args });
+        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: BUILD_SCRIPT, scriptArgs: args });
         program = pkgManager;
         args = pkgArgs;
       }

@@ -25,13 +25,17 @@ export class IntegrationsDisableCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ name ] = inputs;
 
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic integrations disable')} outside a project directory.`);
+    }
+
     if (!isIntegrationName(name)) {
       throw new FatalException(`Don't know about ${chalk.green(name)} integration!`);
     }
 
-    const projectConfig = await this.env.project.load();
-    const integration = await this.env.project.createIntegration(name);
-    const integrationConfig = projectConfig.integrations[name];
+    const integration = await this.project.createIntegration(name);
+    const integrationsConfig = this.project.config.get('integrations');
+    const integrationConfig = integrationsConfig[name];
 
     try {
       if (!integrationConfig || integrationConfig.enabled === false) {
@@ -49,6 +53,6 @@ export class IntegrationsDisableCommand extends Command {
       throw e;
     }
 
-    await this.env.project.save();
+    this.project.config.set('integrations', integrationsConfig);
   }
 }

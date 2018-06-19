@@ -138,9 +138,7 @@ export function findMostSpecificSourceImage(imageResource: ImageResource, srcIma
  * for transforms for the next 5 minutes.
  */
 export async function uploadSourceImage(env: IonicEnvironment, srcImage: SourceImage): Promise<ImageUploadResponse> {
-  const c = await env.config.load();
-
-  let { req } = await createRequest('POST', UPLOAD_URL, c);
+  let { req } = await createRequest('POST', UPLOAD_URL, env.config.getHTTPConfig());
 
   req = req
     .type('form')
@@ -157,8 +155,7 @@ export async function uploadSourceImage(env: IonicEnvironment, srcImage: SourceI
  * into the appropriate w x h and then write the file.
  */
 export async function transformResourceImage(env: IonicEnvironment, imageResource: ImageResource): Promise<string> {
-  const c = await env.config.load();
-  const { req } = await createRequest('POST', TRANSFORM_URL, c);
+  const { req } = await createRequest('POST', TRANSFORM_URL, env.config.getHTTPConfig());
 
   return new Promise<string>((resolve, reject) => {
     req

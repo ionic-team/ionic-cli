@@ -5,23 +5,26 @@ import { concurrentFilter } from '@ionic/cli-framework/utils/array';
 
 import { IAilment, IAilmentRegistry, TreatableAilment, isTreatableAilment } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 const debug = Debug('ionic:cli:commands:doctor:base');
 
 export abstract class DoctorCommand extends Command {
-  private _registry?: IAilmentRegistry;
-
   async getRegistry(): Promise<IAilmentRegistry> {
-    if (!this._registry) {
-      this._registry = await this.env.project.getAilmentRegistry(this.env);
+    if (!this.project) {
+      throw new FatalException(`Cannot use ${chalk.green('ionic doctor')} outside a project directory.`);
     }
 
-    return this._registry;
+    const { AilmentRegistry } = await import('@ionic/cli-utils/lib/doctor');
+
+    const registry = new AilmentRegistry();
+    await this.project.registerAilments(registry);
+
+    return registry;
   }
 
   async detectAilments(): Promise<IAilment[]> {
     const registry = await this.getRegistry();
-    const config = await this.env.config.load();
     let count = 0;
 
     const isLoggedIn = await this.env.session.isLoggedIn();
@@ -33,9 +36,7 @@ export abstract class DoctorCommand extends Command {
     const detectTask = this.env.tasks.next('Detecting issues');
 
     const ailments = registry.ailments.filter(ailment => {
-      const issueConfig = config.doctor.issues[ailment.id];
-
-      if (issueConfig && issueConfig.ignored === true) {
+      if (this.env.config.get(`doctor.issues.${ailment.id}.ignored` as any)) {
         debug('Issue %s ignored by config', ailment.id);
         return false;
       }

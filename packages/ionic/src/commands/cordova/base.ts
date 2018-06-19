@@ -64,27 +64,34 @@ export const CORDOVA_BUILD_EXAMPLE_COMMANDS = [
 
 export abstract class CordovaCommand extends Command {
   async checkCordova(runinfo: CommandInstanceInfo) {
-    const projectConfig = await this.env.project.load();
+    if (!this.project) {
+      throw new FatalException('Cannot use Cordova outside a project directory.');
+    }
 
-    if (projectConfig.integrations.cordova && projectConfig.integrations.cordova.enabled === false) {
+    const integration = this.project.config.get('integrations').cordova;
+
+    if (integration && integration.enabled === false) {
       return;
     }
 
-    if (!projectConfig.integrations.cordova) {
+    if (!integration) {
       await runCommand(runinfo, ['integrations', 'enable', 'cordova']);
     }
   }
 
   async preRunChecks(runinfo: CommandInstanceInfo) {
+    if (!this.project) {
+      throw new FatalException('Cannot use Cordova outside a project directory.');
+    }
+
     const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
 
-    await this.env.project.load();
     await this.checkCordova(runinfo);
 
-    const cordova = await this.env.project.getIntegration('cordova');
+    const cordova = await this.project.getIntegration('cordova');
 
     // Check for www folder
-    if (this.env.project.directory) {
+    if (this.project.directory) {
       const wwwPath = path.join(cordova.root, 'www');
       const wwwExists = await pathExists(wwwPath); // TODO: hard-coded
 
@@ -95,22 +102,24 @@ export abstract class CordovaCommand extends Command {
       }
     }
 
-    const conf = await loadConfigXml({ project: this.env.project });
+    const conf = await loadConfigXml({ project: this.project });
     conf.resetContentSrc();
     await conf.save();
   }
 
   async runCordova(argList: string[], { fatalOnNotFound = false, truncateErrorOutput = 5000, ...options }: IShellRunOptions = {}): Promise<void> {
+    if (!this.project) {
+      throw new FatalException('Cannot use Cordova outside a project directory.');
+    }
+
     const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
-    const config = await this.env.config.load();
-    const { npmClient } = config;
-    const { root: cwd } = await this.env.project.getIntegration('cordova');
+    const { root: cwd } = await this.project.getIntegration('cordova');
 
     try {
       await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, cwd, ...options });
     } catch (e) {
       if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
-        const cdvInstallArgs = await pkgManagerArgs(npmClient, { command: 'install', pkg: 'cordova', global: true });
+        const cdvInstallArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'cordova', global: true });
         throw new FatalException(
           `The Cordova CLI was not found on your PATH. Please install Cordova globally:\n` +
           `${chalk.green(cdvInstallArgs.join(' '))}\n`
@@ -127,10 +136,14 @@ export abstract class CordovaCommand extends Command {
   }
 
   async checkForPlatformInstallation(runPlatform: string) {
+    if (!this.project) {
+      throw new FatalException('Cannot use Cordova outside a project directory.');
+    }
+
     if (runPlatform) {
       const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
 
-      const cordova = await this.env.project.getIntegration('cordova');
+      const cordova = await this.project.getIntegration('cordova');
       const platforms = await getPlatforms(cordova.root);
 
       if (!platforms.includes(runPlatform)) {

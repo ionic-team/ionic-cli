@@ -5,10 +5,9 @@ import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class SSLNamespace extends Namespace {
   async getMetadata() {
-    const config = await this.env.config.load();
     const groups: NamespaceGroup[] = [NamespaceGroup.Beta];
 
-    if (!config.features['ssl-commands']) {
+    if (!this.env.config.get('features.ssl-commands')) {
       groups.push(NamespaceGroup.Hidden);
     }
 
@@ -24,7 +23,7 @@ These commands make it easy to generate SSL certificates for using HTTPS with ${
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
-      ['generate', async () => { const { SSLGenerateCommand } = await import('./generate'); return new SSLGenerateCommand(this, this.env); }],
+      ['generate', async () => { const { SSLGenerateCommand } = await import('./generate'); return new SSLGenerateCommand(this, this.env, this.project); }],
       ['g', 'generate'],
     ]);
   }

@@ -2,11 +2,24 @@ import * as Debug from 'debug';
 
 import { DEFAULT_LOGGER_HANDLERS, PromptModule, StreamHandler, TaskChain } from '@ionic/cli-framework';
 
-import { IClient, IConfig, ILogger, IProject, ISession, IShell, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags } from '../definitions';
+import { IClient, IConfig, ILogger, ISession, IShell, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags } from '../definitions';
 
 import { createFormatter } from './utils/logger';
 
 const debug = Debug('ionic:cli-utils:lib:environment');
+
+export interface EnvironmentDeps {
+  readonly client: IClient;
+  readonly config: IConfig; // CLI global config (~/.ionic/config.json)
+  readonly flags: IonicEnvironmentFlags;
+  readonly getInfo: () => Promise<InfoItem[]>;
+  readonly log: ILogger;
+  readonly ctx: IonicContext;
+  readonly prompt: PromptModule;
+  readonly session: ISession;
+  readonly shell: IShell;
+  readonly tasks: TaskChain;
+}
 
 export class Environment implements IonicEnvironment {
   readonly flags: IonicEnvironmentFlags;
@@ -15,45 +28,19 @@ export class Environment implements IonicEnvironment {
   getInfo: () => Promise<InfoItem[]>;
   readonly log: ILogger;
   readonly prompt: PromptModule;
-  project: IProject; // project config (ionic.config.json)
   session: ISession;
   readonly shell: IShell;
   readonly tasks: TaskChain;
   readonly ctx: IonicContext;
   keepopen = false;
 
-  constructor({
-    client,
-    config,
-    flags,
-    getInfo,
-    log,
-    ctx,
-    project,
-    prompt,
-    session,
-    shell,
-    tasks,
-  }: {
-    client: IClient;
-    config: IConfig; // CLI global config (~/.ionic/config.json)
-    flags: IonicEnvironmentFlags;
-    getInfo: () => Promise<InfoItem[]>;
-    log: ILogger;
-    ctx: IonicContext,
-    project: IProject; // project config (ionic.config.json)
-    prompt: PromptModule;
-    session: ISession;
-    shell: IShell;
-    tasks: TaskChain;
-  }) {
+  constructor({ client, config, flags, getInfo, log, ctx, prompt, session, shell, tasks }: EnvironmentDeps) {
     this.client = client;
     this.config = config;
     this.flags = flags;
     this.getInfo = getInfo;
     this.log = log;
     this.ctx = ctx;
-    this.project = project;
     this.prompt = prompt;
     this.session = session;
     this.shell = shell;

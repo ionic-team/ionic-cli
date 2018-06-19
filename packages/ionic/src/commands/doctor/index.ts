@@ -10,9 +10,9 @@ export class DoctorNamespace extends Namespace {
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
-      ['check', async () => { const { DoctorCheckCommand } = await import('./check'); return new DoctorCheckCommand(this, this.env); }],
-      ['treat', async () => { const { DoctorTreatCommand } = await import('./treat'); return new DoctorTreatCommand(this, this.env); }],
-      ['list', async () => { const { DoctorListCommand } = await import('./list'); return new DoctorListCommand(this, this.env); }],
+      ['check', async () => { const { DoctorCheckCommand } = await import('./check'); return new DoctorCheckCommand(this, this.env, this.project); }],
+      ['treat', async () => { const { DoctorTreatCommand } = await import('./treat'); return new DoctorTreatCommand(this, this.env, this.project); }],
+      ['list', async () => { const { DoctorListCommand } = await import('./list'); return new DoctorListCommand(this, this.env, this.project); }],
       ['ls', 'list'],
       ['checkup', 'check'],
       ['validate', 'check'],

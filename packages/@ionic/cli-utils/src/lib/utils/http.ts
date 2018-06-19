@@ -48,9 +48,21 @@ export async function createRequest(method: HttpMethod, url: string, { proxy, ss
   }
 
   if (ssl) {
-    req.ca(await Promise.all(conform(ssl.cafile).map(p => fsReadFile(p, { encoding: 'utf8' }))));
-    req.cert(await Promise.all(conform(ssl.certfile).map(p => fsReadFile(p, { encoding: 'utf8' }))));
-    req.key(await Promise.all(conform(ssl.keyfile).map(p => fsReadFile(p, { encoding: 'utf8' }))));
+    const cafiles = conform(ssl.cafile);
+    const certfiles = conform(ssl.certfile);
+    const keyfiles = conform(ssl.keyfile);
+
+    if (cafiles.length > 0) {
+      req.ca(await Promise.all(cafiles.map(p => fsReadFile(p, { encoding: 'utf8' }))));
+    }
+
+    if (certfiles.length > 0) {
+      req.cert(await Promise.all(certfiles.map(p => fsReadFile(p, { encoding: 'utf8' }))));
+    }
+
+    if (keyfiles.length > 0) {
+      req.key(await Promise.all(keyfiles.map(p => fsReadFile(p, { encoding: 'utf8' }))));
+    }
   }
 
   return { req };

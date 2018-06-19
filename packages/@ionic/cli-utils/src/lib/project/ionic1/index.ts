@@ -1,16 +1,16 @@
-import * as path from 'path';
-
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { ERROR_FILE_INVALID_JSON, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
-
-import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { ERROR_FILE_INVALID_JSON, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
-
-import { InfoItem } from '../../../definitions';
-import { FatalException } from '../../errors';
+import * as path from 'path';
 
 import { Project } from '../';
+import { InfoItem } from '../../../definitions';
+import { FatalException, RunnerNotFoundException } from '../../errors';
+
+import * as ζbuild from './build';
+import * as ζserve from './serve';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular');
 
@@ -86,7 +86,7 @@ export class Ionic1Project extends Project {
         const ionicVersionJson = await fsReadJsonFile(ionicVersionFilePath);
         return ionicVersionJson['version'];
       } catch (e) {
-        this.log.warn(`Error with ${chalk.bold(prettyPath(ionicVersionFilePath))} file: ${e}, trying ${chalk.bold(prettyPath(bowerJsonPath))}.`);
+        this.e.log.warn(`Error with ${chalk.bold(prettyPath(ionicVersionFilePath))} file: ${e}, trying ${chalk.bold(prettyPath(bowerJsonPath))}.`);
 
         const bwr = await this.loadBowerJson();
         const deps = lodash.assign({}, bwr.dependencies, bwr.devDependencies);
@@ -104,7 +104,7 @@ export class Ionic1Project extends Project {
         }
       }
     } catch (e) {
-      this.log.error(`Error with ${chalk.bold(prettyPath(bowerJsonPath))} file: ${e}`);
+      this.e.log.error(`Error with ${chalk.bold(prettyPath(bowerJsonPath))} file: ${e}`);
     }
   }
 
@@ -125,5 +125,21 @@ export class Ionic1Project extends Project {
     }
 
     return this.bowerJsonFile;
+  }
+
+  async requireBuildRunner(): Promise<ζbuild.Ionic1BuildRunner> {
+    const { Ionic1BuildRunner } = await import('./build');
+    const deps = { ...this.e, project: this };
+    return new Ionic1BuildRunner(deps);
+  }
+
+  async requireServeRunner(): Promise<ζserve.Ionic1ServeRunner> {
+    const { Ionic1ServeRunner } = await import('./serve');
+    const deps = { ...this.e, project: this };
+    return new Ionic1ServeRunner(deps);
+  }
+
+  async requireGenerateRunner(): Promise<never> {
+    throw new RunnerNotFoundException('Generators are not supported in Ionic 1 projects.');
   }
 }

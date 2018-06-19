@@ -1,24 +1,13 @@
 import chalk from 'chalk';
 
 import { CommandMetadataOption } from '@ionic/cli-framework';
-import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { BuildRunner } from '@ionic/cli-utils/lib/build';
-import { FatalException, RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
 import { CordovaCommand } from './base';
 
 export class PrepareCommand extends CordovaCommand implements CommandPreRun {
-  protected buildRunner?: BuildRunner<BuildOptions<any>>;
-
-  async getBuildRunner() {
-    if (!this.buildRunner) {
-      this.buildRunner = await BuildRunner.createFromProject(this.env, this.env.project);
-    }
-
-    return this.buildRunner;
-  }
-
   async getMetadata(): Promise<CommandMetadata> {
     const options: CommandMetadataOption[] = [
       {
@@ -29,14 +18,11 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
       },
     ];
 
-    try {
-      const runner = await this.getBuildRunner();
+    const runner = this.project && await this.project.getBuildRunner();
+
+    if (runner) {
       const libmetadata = await runner.getCommandMetadata();
       options.push(...libmetadata.options || []);
-    } catch (e) {
-      if (!(e instanceof RunnerNotFoundException)) {
-        throw e;
-      }
     }
 
     return {
@@ -74,7 +60,11 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
 
     const [ platform ] = inputs;
 
-    const cordova = await this.env.project.getIntegration('cordova');
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic cordova prepare')} outside a project directory.`);
+    }
+
+    const cordova = await this.project.getIntegration('cordova');
     const platforms = await getPlatforms(cordova.root);
 
     if (platform) {
@@ -108,7 +98,8 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
       const buildOptions = generateBuildOptions(metadata, inputs, options);
 
       if (buildOptions['platform']) {
-        await build(this.env, inputs, buildOptions);
+        // TODO: use runner directly
+        await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, project: this.project }, inputs, buildOptions);
       } else {
         this.env.log.warn(
           `Cannot perform Ionic build without ${chalk.green('platform')}. Falling back to just ${chalk.green('cordova prepare')}.\n` +

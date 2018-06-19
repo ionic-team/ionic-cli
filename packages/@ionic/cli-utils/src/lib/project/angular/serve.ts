@@ -116,9 +116,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   private async servecmd(options: AngularServeOptions): Promise<ServeCmdDetails> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
-    const config = await this.config.load();
     const pkg = await this.project.requirePackageJson();
-    const { npmClient } = config;
 
     let program = DEFAULT_PROGRAM;
     let args = await this.serveOptionsToNgArgs(options);
@@ -128,7 +126,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
     if (pkg.scripts && pkg.scripts[SERVE_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(npmClient, { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
       program = pkgManager;
       args = pkgArgs;
     } else {

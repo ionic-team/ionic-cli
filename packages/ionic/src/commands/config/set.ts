@@ -1,15 +1,11 @@
 import { OptionGroup, validators } from '@ionic/cli-framework';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, IBaseConfig, PROJECT_FILE } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, PROJECT_FILE } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import chalk from 'chalk';
-import * as lodash from 'lodash';
-import * as path from 'path';
 
-import { fsReadJsonFile, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
+import { BaseConfigCommand, getConfig, setConfig } from './base';
 
-export class ConfigSetCommand extends Command {
+export class ConfigSetCommand extends BaseConfigCommand {
   async getMetadata(): Promise<CommandMetadata> {
     return {
       name: 'set',
@@ -62,54 +58,20 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ p ] = inputs;
-    let [ , v ] = inputs;
+    const ctx = this.generateContext(inputs, options);
+    const { property } = ctx;
 
-    const { global, json, force } = options;
-
-    if (!global && !this.env.project.directory) {
-      throw new FatalException(`Sorry--this won't work outside an Ionic project directory. Did you mean to set global config using ${chalk.green('--global')}?`);
+    if (typeof property === 'undefined') {
+      throw new FatalException(`Cannot set config to ${chalk.green(ctx.value)} without a property.`);
     }
 
-    const file: IBaseConfig<object> = global ? this.env.config : this.env.project;
+    const originalValue = getConfig(ctx);
+    setConfig({ ...ctx, property, originalValue });
 
-    const config = await fsReadJsonFile(file.filePath);
-
-    const oldValue = lodash.get(config, p);
-
-    if (!v.match(/^\d+e\d+$/)) {
-      try {
-        v = JSON.parse(v);
-      } catch (e) {
-        if (!(e instanceof SyntaxError)) {
-          throw e;
-        }
-
-        if (json) {
-          throw new FatalException(`${chalk.green('--json')}: ${chalk.green(v)} is invalid JSON: ${chalk.red(String(e))}`);
-        }
-      }
-    }
-
-    const newValue = v;
-
-    if (oldValue && typeof oldValue === 'object' && !force) {
-      throw new FatalException(
-        `Sorry--will not override objects or arrays without ${chalk.green('--force')}.\n` +
-        `Value of ${chalk.green(p)} is: ${chalk.bold(JSON.stringify(oldValue))}`
-      );
-    }
-
-    const valueChanged = oldValue !== newValue;
-
-    lodash.set(config, p, newValue);
-
-    await fsWriteJsonFile(path.resolve(file.filePath), config, { encoding: 'utf8' });
-
-    if (valueChanged) {
-      this.env.log.ok(`${chalk.green(p)} set to ${chalk.green(JSON.stringify(v))} in ${chalk.bold(prettyPath(file.filePath))}!`);
+    if (ctx.value !== originalValue) {
+      this.env.log.ok(`${chalk.green(property)} set to ${chalk.green(JSON.stringify(ctx.value))}!`);
     } else {
-      this.env.log.msg(`${chalk.green(p)} is already set to ${chalk.bold(JSON.stringify(v))}.`);
+      this.env.log.info(`${chalk.green(property)} is already set to ${chalk.green(JSON.stringify(ctx.value))}.`);
     }
   }
 }

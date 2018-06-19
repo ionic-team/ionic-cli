@@ -136,9 +136,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
   private async servecmd(options: IonicAngularServeOptions): Promise<ServeCmdDetails> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
-    const config = await this.config.load();
     const pkg = await this.project.requirePackageJson();
-    const { npmClient } = config;
 
     let program = DEFAULT_PROGRAM;
     let args = await this.serveOptionsToAppScriptsArgs(options);
@@ -152,7 +150,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
         args = ['serve', ...args];
       } else {
         debug(`Invoking ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
-        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(npmClient, { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
+        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
         program = pkgManager;
         args = pkgArgs;
       }

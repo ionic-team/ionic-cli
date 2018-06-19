@@ -3,11 +3,11 @@ import chalk from 'chalk';
 import { LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
-import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, ServeOptions } from '@ionic/cli-utils';
-import { BuildRunner, COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
-import { FatalException, RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
+import { COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
-import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, ServeRunner } from '@ionic/cli-utils/lib/serve';
+import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
 
 import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 
@@ -56,25 +56,6 @@ const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
 ];
 
 export class RunCommand extends CordovaCommand implements CommandPreRun {
-  protected serveRunner?: ServeRunner<ServeOptions>;
-  protected buildRunner?: BuildRunner<BuildOptions<any>>;
-
-  async getServeRunner() {
-    if (!this.serveRunner) {
-      this.serveRunner = await ServeRunner.createFromProject(this.env);
-    }
-
-    return this.serveRunner;
-  }
-
-  async getBuildRunner() {
-    if (!this.buildRunner) {
-      this.buildRunner = await BuildRunner.createFromProject(this.env, this.env.project);
-    }
-
-    return this.buildRunner;
-  }
-
   async getMetadata(): Promise<CommandMetadata> {
     let groups: string[] = [];
     const exampleCommands = CORDOVA_BUILD_EXAMPLE_COMMANDS;
@@ -103,29 +84,22 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       },
     ];
 
-    try {
-      const runner = await this.getBuildRunner();
-      const libmetadata = await runner.getCommandMetadata();
+    const serveRunner = this.project && await this.project.getServeRunner();
+    const buildRunner = this.project && await this.project.getBuildRunner();
+
+    if (buildRunner) {
+      const libmetadata = await buildRunner.getCommandMetadata();
       groups = libmetadata.groups || [];
       options.push(...libmetadata.options || []);
       exampleCommands.push(...libmetadata.exampleCommands || []);
-    } catch (e) {
-      if (!(e instanceof RunnerNotFoundException)) {
-        throw e;
-      }
     }
 
-    try {
-      const runner = await this.getServeRunner();
-      const libmetadata = await runner.getCommandMetadata();
+    if (serveRunner) {
+      const libmetadata = await serveRunner.getCommandMetadata();
       const existingOpts = options.map(o => o.name);
       groups = libmetadata.groups || [];
       options.push(...(libmetadata.options || []).filter(o => !existingOpts.includes(o.name)).map(o => ({ ...o, hint: `${o.hint} ${chalk.dim('(--livereload)')}` })));
       exampleCommands.push(...libmetadata.exampleCommands || []);
-    } catch (e) {
-      if (!(e instanceof RunnerNotFoundException)) {
-        throw e;
-      }
     }
 
     // Cordova Options
@@ -205,8 +179,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
 
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic cordova run/emulate')} outside a project directory.`);
+    }
+
     const metadata = await this.getMetadata();
-    const conf = await loadConfigXml({ project: this.env.project });
+    const conf = await loadConfigXml({ project: this.project });
 
     options['livereload'] = options['livereload'] !== undefined ? options['livereload'] : options['l'];
 
@@ -217,8 +195,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
     if (options['livereload']) {
       const { serve } = await import('@ionic/cli-utils/lib/serve');
-      const details = await serve(this.env, inputs, generateBuildOptions(metadata, inputs, options));
 
+      // TODO: use runner directly
+      const details = await serve({ config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateBuildOptions(metadata, inputs, options));
       if (details.externallyAccessible === false) {
         const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
         this.env.log.warn(`Your device or emulator may not be able to access ${chalk.bold(details.externalAddress)}.${extra}\n\n`);
@@ -235,7 +214,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
     } else {
       if (options.build) {
         const { build } = await import('@ionic/cli-utils/lib/build');
-        await build(this.env, inputs, generateBuildOptions(metadata, inputs, options));
+        // TODO: use runner directly
+        await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, project: this.project }, inputs, generateBuildOptions(metadata, inputs, options));
       }
 
       await this.runCordova(filterArgumentsForCordova(metadata, options));

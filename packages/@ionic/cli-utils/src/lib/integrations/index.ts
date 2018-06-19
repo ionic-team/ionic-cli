@@ -100,8 +100,7 @@ export abstract class BaseIntegration implements IIntegration {
     await fsMkdirp(tmpdir, 0o777);
 
     const ws = tar.extract({ cwd: tmpdir });
-    const c = await this.config.load();
-    const { req } = await createRequest('GET', this.archiveUrl, c);
+    const { req } = await createRequest('GET', this.archiveUrl, this.config.getHTTPConfig());
     await download(req, ws, { progress: (loaded, total) => task.progress(loaded, total) });
     this.tasks.end();
 

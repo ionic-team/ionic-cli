@@ -27,8 +27,6 @@ export class SSHSetupCommand extends SSHBaseCommand {
     const { getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
 
-    const config = await this.env.config.load();
-
     if (!(await this.env.session.isLoggedIn())) {
       await promptToLogin(this.env);
     }
@@ -38,7 +36,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
     const CHOICE_SKIP = 'skip';
     const CHOICE_IGNORE = 'ignore';
 
-    if (config.git.setup) {
+    if (this.env.config.get('git.setup')) {
       const rerun = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
@@ -80,7 +78,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
 
     if (setupChoice === CHOICE_AUTOMATIC) {
       const sshconfigPath = getConfigPath();
-      const keyPath = await getGeneratedPrivateKeyPath(config.user.id);
+      const keyPath = await getGeneratedPrivateKeyPath(this.env.config.get('user.id'));
       const pubkeyPath = `${keyPath}.pub`;
 
       const [ pubkeyExists, keyExists ] = await Promise.all([pathExists(keyPath), pathExists(pubkeyPath)]);
@@ -127,7 +125,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
         this.env.log.ok('SSH setup successful!');
       }
 
-      config.git.setup = true;
+      this.env.config.set('git.setup', true);
     }
   }
 }

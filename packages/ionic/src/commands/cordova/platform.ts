@@ -82,11 +82,15 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
     const { getPlatforms } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
     const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/integrations/cordova/utils');
 
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic cordova platform')} outside a project directory.`);
+    }
+
     const [ action, platformName ] = inputs;
 
     const metadata = await this.getMetadata();
 
-    const cordova = await this.env.project.getIntegration('cordova');
+    const cordova = await this.project.getIntegration('cordova');
     const platforms = await getPlatforms(cordova.root);
 
     if (action === 'add' && platforms.includes(platformName)) {

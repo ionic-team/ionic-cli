@@ -15,7 +15,7 @@ export interface TelemetryDeps {
   readonly config: IConfig;
   readonly getInfo: () => Promise<InfoItem[]>;
   readonly ctx: IonicContext;
-  readonly project: IProject;
+  readonly project?: IProject;
   readonly session: ISession;
 }
 
@@ -24,7 +24,7 @@ export class Telemetry implements ITelemetry {
   protected readonly config: IConfig;
   protected readonly getInfo: () => Promise<InfoItem[]>;
   protected readonly ctx: IonicContext;
-  protected readonly project: IProject;
+  protected readonly project?: IProject;
   protected readonly session: ISession;
 
   constructor({ config, client, getInfo, ctx, project, session }: TelemetryDeps) {
@@ -37,9 +37,7 @@ export class Telemetry implements ITelemetry {
   }
 
   async sendCommand(command: string, args: string[]): Promise<void> {
-    const config = await this.config.load();
-
-    if (config.telemetry) {
+    if (this.config.get('telemetry')) {
       await sendMessage({ config: this.config, ctx: this.ctx }, { type: 'telemetry', data: { command, args } });
     }
   }
@@ -48,19 +46,20 @@ export class Telemetry implements ITelemetry {
 async function getLeek({ config, version }: { config: IConfig; version: string; }): Promise<ζleek> {
   if (!_gaTracker) {
     const Leek = await import('leek');
-    const c = await config.load();
+    let telemetryToken = config.get('tokens.telemetry');
 
-    if (!c.tokens.telemetry) {
-      c.tokens.telemetry = generateUUID();
-      debug(`setting telemetry token to ${c.tokens.telemetry}`);
+    if (!telemetryToken) {
+      telemetryToken = generateUUID();
+      config.set('tokens.telemetry', telemetryToken);
+      debug(`setting telemetry token to ${telemetryToken}`);
     }
 
     _gaTracker = new Leek({
-      name: c.tokens.telemetry,
+      name: telemetryToken,
       trackingCode: GA_CODE,
       globalName: 'ionic',
       version,
-      silent: c.telemetry !== true,
+      silent: !config.get('telemetry'),
     });
   }
 
@@ -83,22 +82,15 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
       }
     })(),
     (async () => {
-      const c = await config.load();
-      const p = project.directory ? await project.load() : undefined;
       const now = new Date().toISOString();
-
-      let proId: string | undefined;
-
-      if (p) {
-        proId = p.pro_id;
-      }
+      const proId = project ? project.config.get('pro_id') : undefined;
 
       const { req } = await client.make('POST', '/events/metrics');
 
       const metric: { [key: string]: any; } = {
         'name': 'cli_command_metrics',
         'timestamp': now,
-        'session_id': c.tokens.telemetry,
+        'session_id': config.get('tokens.telemetry'),
         'source': 'cli',
         'value': {
           'command': command,
@@ -110,11 +102,11 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
         },
       };
 
-      const isLoggedIn = await session.isLoggedIn();
+      const isLoggedIn = session.isLoggedIn();
       const info = await getInfo();
 
       if (isLoggedIn) {
-        const token = await session.getUserToken();
+        const token = session.getUserToken();
         req.set('Authorization', `Bearer ${token}`);
       }
 
@@ -173,6 +165,4 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
       }
     })(),
   ]);
-
-  await config.save();
 }

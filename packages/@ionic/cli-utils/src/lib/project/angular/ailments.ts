@@ -1,13 +1,8 @@
-import { IAilmentRegistry } from '../../../definitions';
-import { AilmentDeps } from '../../doctor/ailments';
+import { AilmentDeps } from '../../doctor';
 
 import { AngularProject } from './';
 
-export async function registerAilments(registry: IAilmentRegistry, deps: AngularAilmentDeps): Promise<void> {
-  // TODO: register ailments
-}
-
-interface AngularAilmentDeps extends AilmentDeps {
+export interface AngularAilmentDeps extends AilmentDeps {
   readonly project: AngularProject;
 }
 

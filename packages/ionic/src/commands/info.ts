@@ -47,7 +47,7 @@ export class InfoCommand extends Command {
         return strcmp(a.key.toLowerCase(), b.key.toLowerCase());
       };
 
-      const projectPath = this.env.project.directory;
+      const projectPath = this.project && this.project.directory;
 
       const splitInfo = (ary: InfoItem[]) => ary
         .sort(sortInfo)

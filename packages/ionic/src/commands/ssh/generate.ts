@@ -52,11 +52,10 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.checkForOpenSSH();
 
-    const config = await this.env.config.load();
     await this.env.session.getUserToken();
 
     if (!options['annotation']) {
-      options['annotation'] = config.user.email;
+      options['annotation'] = this.env.config.get('user.email');
     }
 
     validate(String(options['type']), 'type', [contains(SSH_KEY_TYPES, { caseSensitive: false })]);
@@ -67,8 +66,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
 
     const { bits, annotation } = options;
 
-    const config = await this.env.config.load();
-    const keyPath = inputs[0] ? expandPath(String(inputs[0])) : await getGeneratedPrivateKeyPath(config.user.id);
+    const keyPath = inputs[0] ? expandPath(String(inputs[0])) : await getGeneratedPrivateKeyPath(this.env.config.get('user.id'));
     const keyPathDir = path.dirname(keyPath);
     const pubkeyPath = `${keyPath}.pub`;
 

@@ -1,38 +1,25 @@
 import chalk from 'chalk';
 
-import { BuildOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
-import { BuildRunner, COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
+import { COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
 import { Command } from '@ionic/cli-utils/lib/command';
-import { RunnerNotFoundException } from '@ionic/cli-utils/lib/errors';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 export class BuildCommand extends Command implements CommandPreRun {
-  protected runner?: BuildRunner<BuildOptions<any>>;
-
-  async getRunner() {
-    if (!this.runner) {
-      this.runner = await BuildRunner.createFromProject(this.env, this.env.project);
-    }
-
-    return this.runner;
-  }
-
   async getMetadata(): Promise<CommandMetadata> {
     const options: CommandMetadataOption[] = [];
     const exampleCommands = [''];
     let description = `${chalk.green('ionic build')} will perform an Ionic build, which compiles web assets and prepares them for deployment.`;
     let groups: string[] = [];
 
-    try {
-      const runner = await this.getRunner();
+    const runner = this.project && await this.project.getBuildRunner();
+
+    if (runner) {
       const libmetadata = await runner.getCommandMetadata();
       groups = libmetadata.groups || [];
       options.push(...libmetadata.options || []);
       description += libmetadata.description ? `\n\n${libmetadata.description.trim()}` : '';
       exampleCommands.push(...libmetadata.exampleCommands || []);
-    } catch (e) {
-      if (!(e instanceof RunnerNotFoundException)) {
-        throw e;
-      }
     }
 
     options.push(...COMMON_BUILD_COMMAND_OPTIONS);
@@ -61,6 +48,12 @@ export class BuildCommand extends Command implements CommandPreRun {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const { build } = await import('@ionic/cli-utils/lib/build');
-    await build(this.env, inputs, options);
+
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic build')} outside a project directory.`);
+    }
+
+    // TODO: use runner directly
+    await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, project: this.project }, inputs, options);
   }
 }

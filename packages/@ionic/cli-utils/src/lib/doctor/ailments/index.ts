@@ -4,31 +4,19 @@ import chalk from 'chalk';
 
 import { fsReadFile } from '@ionic/cli-framework/utils/fs';
 
-import { IAilmentRegistry, TreatableAilment } from '../../../definitions';
+import { TreatableAilment } from '../../../definitions';
 import { AppClient } from '../../app';
 import { getIonicRemote, isRepoInitialized } from '../../git';
 import { loadConfigXml } from '../../integrations/cordova/config';
 import { getPlatforms } from '../../integrations/cordova/project';
 import { pkgManagerArgs } from '../../utils/npm';
 
-import { Ailment, AilmentDeps } from './base';
+import { Ailment } from './base';
 
 export * from './base';
 export * from './utils';
 
-export async function registerAilments(registry: IAilmentRegistry, deps: AilmentDeps): Promise<void> {
-  registry.register(new NpmInstalledLocally(deps));
-  registry.register(new IonicCLIInstalledLocally(deps));
-  registry.register(new GitNotUsed(deps));
-  registry.register(new GitConfigInvalid(deps));
-  registry.register(new IonicNativeOldVersionInstalled(deps));
-  registry.register(new UnsavedCordovaPlatforms(deps));
-  registry.register(new DefaultCordovaBundleIdUsed(deps));
-  registry.register(new ViewportFitNotSet(deps));
-  registry.register(new CordovaPlatformsCommitted(deps));
-}
-
-class NpmInstalledLocally extends Ailment implements TreatableAilment {
+export class NpmInstalledLocally extends Ailment implements TreatableAilment {
   readonly id = 'npm-installed-locally';
   readonly treatable = true;
 
@@ -45,9 +33,7 @@ class NpmInstalledLocally extends Ailment implements TreatableAilment {
   }
 
   async getTreatmentSteps() {
-    const config = await this.config.load();
-    const { npmClient } = config;
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'uninstall', pkg: 'npm' });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'uninstall', pkg: 'npm' });
 
     return [
       {
@@ -60,7 +46,7 @@ class NpmInstalledLocally extends Ailment implements TreatableAilment {
   }
 }
 
-class IonicCLIInstalledLocally extends Ailment implements TreatableAilment {
+export class IonicCLIInstalledLocally extends Ailment implements TreatableAilment {
   readonly id = 'ionic-installed-locally';
   readonly treatable = true;
 
@@ -77,9 +63,7 @@ class IonicCLIInstalledLocally extends Ailment implements TreatableAilment {
   }
 
   async getTreatmentSteps() {
-    const config = await this.config.load();
-    const { npmClient } = config;
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'uninstall', pkg: 'ionic' });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'uninstall', pkg: 'ionic' });
 
     return [
       {
@@ -92,7 +76,7 @@ class IonicCLIInstalledLocally extends Ailment implements TreatableAilment {
   }
 }
 
-class GitNotUsed extends Ailment {
+export class GitNotUsed extends Ailment {
   readonly id = 'git-not-used';
 
   async getMessage() {
@@ -139,7 +123,7 @@ class GitNotUsed extends Ailment {
   }
 }
 
-class GitConfigInvalid extends Ailment {
+export class GitConfigInvalid extends Ailment {
   readonly id = 'git-config-invalid';
 
   async getMessage() {
@@ -152,14 +136,13 @@ class GitConfigInvalid extends Ailment {
   }
 
   async detected() {
-    const isLoggedIn = await this.session.isLoggedIn();
+    const isLoggedIn = this.session.isLoggedIn();
 
     if (!isLoggedIn) {
       return false;
     }
 
-    const projectConfig = await this.project.load();
-    const proId = projectConfig.pro_id;
+    const proId = this.project.config.get('pro_id');
 
     if (!proId) {
       return false;
@@ -175,7 +158,7 @@ class GitConfigInvalid extends Ailment {
       return true;
     }
 
-    const token = await this.session.getUserToken();
+    const token = this.session.getUserToken();
     const appClient = new AppClient({ token, client: this.client });
     const app = await appClient.load(proId);
 
@@ -193,7 +176,7 @@ class GitConfigInvalid extends Ailment {
   }
 }
 
-class IonicNativeOldVersionInstalled extends Ailment {
+export class IonicNativeOldVersionInstalled extends Ailment {
   readonly id = 'ionic-native-old-version-installed';
 
   async getMessage() {
@@ -209,9 +192,7 @@ class IonicNativeOldVersionInstalled extends Ailment {
   }
 
   async getTreatmentSteps() {
-    const config = await this.config.load();
-    const { npmClient } = config;
-    const args = await pkgManagerArgs(npmClient, { command: 'uninstall', pkg: 'ionic-native' });
+    const args = await pkgManagerArgs(this.config.get('npmClient'), { command: 'uninstall', pkg: 'ionic-native' });
 
     return [
       { message: `Run ${chalk.green(args.join(' '))}` },
@@ -220,7 +201,7 @@ class IonicNativeOldVersionInstalled extends Ailment {
   }
 }
 
-class UnsavedCordovaPlatforms extends Ailment {
+export class UnsavedCordovaPlatforms extends Ailment {
   readonly id = 'unsaved-cordova-platforms';
 
   async getMessage() {
@@ -232,7 +213,6 @@ class UnsavedCordovaPlatforms extends Ailment {
   }
 
   async detected() {
-    await this.project.load();
     let cordova;
 
     try {
@@ -258,7 +238,7 @@ class UnsavedCordovaPlatforms extends Ailment {
   }
 }
 
-class DefaultCordovaBundleIdUsed extends Ailment {
+export class DefaultCordovaBundleIdUsed extends Ailment {
   readonly id = 'default-cordova-bundle-id-used';
 
   async getMessage() {
@@ -269,9 +249,7 @@ class DefaultCordovaBundleIdUsed extends Ailment {
   }
 
   async detected() {
-    const projectConfig = await this.project.load();
-
-    if (!projectConfig.integrations.cordova) {
+    if (!this.project.config.get('integrations').cordova) {
       return false;
     }
 
@@ -287,8 +265,8 @@ class DefaultCordovaBundleIdUsed extends Ailment {
   }
 }
 
-class ViewportFitNotSet extends Ailment {
-  readonly id = 'viewport-fit-not-set';
+export class ViewportFitNotSet extends Ailment {
+  readonly id: 'viewport-fit-not-set' = 'viewport-fit-not-set';
 
   async getMessage() {
     return (
@@ -310,7 +288,7 @@ class ViewportFitNotSet extends Ailment {
   }
 }
 
-class CordovaPlatformsCommitted extends Ailment {
+export class CordovaPlatformsCommitted extends Ailment {
   readonly id = 'cordova-platforms-committed';
 
   async getMessage() {

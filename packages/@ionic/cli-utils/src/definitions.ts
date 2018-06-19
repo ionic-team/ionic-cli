@@ -1,9 +1,11 @@
+import * as ζframework from '@ionic/cli-framework';
 import { ChildProcess, SpawnOptions } from 'child_process';
 import * as fs from 'fs';
-
 import * as ζsuperagent from 'superagent';
 
-import * as framework from '@ionic/cli-framework';
+import * as ζbuild from './lib/build';
+import * as ζgenerate from './lib/generate';
+import * as ζserve from './lib/serve';
 
 export {
   CommandLineInputs,
@@ -19,7 +21,7 @@ export interface SuperAgentError extends Error {
 
 export type LogFn = (msg: string) => void;
 
-export interface ILogger extends framework.Logger {
+export interface ILogger extends ζframework.Logger {
   ok: LogFn;
   rawmsg: LogFn;
 }
@@ -30,7 +32,7 @@ export interface StarterManifest {
   welcome?: string;
 }
 
-export interface CordovaPackageJson extends framework.PackageJson {
+export interface CordovaPackageJson extends ζframework.PackageJson {
   cordova: {
     platforms: string[];
     plugins: {
@@ -80,34 +82,12 @@ export type IntegrationName = 'capacitor' | 'cordova';
 
 export interface ProjectIntegration {
   enabled?: boolean;
-  root: string;
+  root?: string;
 }
 
 export interface ProjectIntegrations {
   cordova?: ProjectIntegration;
   capacitor?: ProjectIntegration;
-}
-
-export interface ProjectConfig {
-  name: string;
-  pro_id?: string;
-
-  readonly integrations: ProjectIntegrations;
-  readonly hooks?: Record<HookName, string | string[] | undefined>;
-
-  ssl?: {
-    key?: string;
-    cert?: string;
-  };
-
-  type: ProjectType;
-}
-
-export interface MultiProjectConfig {
-  defaultProject: string | undefined;
-  projects: {
-    [key: string]: ProjectConfig | undefined;
-  };
 }
 
 export interface Response<T extends object> extends APIResponseSuccess {
@@ -224,11 +204,12 @@ export interface SecurityProfile {
   };
 }
 
-export interface IConfig extends IBaseConfig<ConfigFile> {
-  getAPIUrl(): Promise<string>;
-  getDashUrl(): Promise<string>;
-  getGitHost(): Promise<string>;
-  getGitPort(): Promise<number>;
+export interface IConfig extends ζframework.BaseConfig<ConfigFile> {
+  getAPIUrl(): string;
+  getDashUrl(): string;
+  getGitHost(): string;
+  getGitPort(): number;
+  getHTTPConfig(): CreateRequestOptions;
 }
 
 export interface ProjectPersonalizationDetails {
@@ -239,9 +220,35 @@ export interface ProjectPersonalizationDetails {
   description?: string;
 }
 
-export interface IProject extends IBaseConfig<ProjectConfig> {
-  type: ProjectType | undefined;
-  name: string | undefined;
+export interface IProjectConfig {
+  name: string;
+  type?: ProjectType;
+  pro_id?: string;
+
+  readonly integrations: ProjectIntegrations;
+  readonly hooks?: Record<HookName, string | string[] | undefined>;
+
+  ssl?: {
+    key?: string;
+    cert?: string;
+  };
+}
+
+export interface MultiProjectConfig {
+  defaultProject?: string;
+  projects: {
+    [key: string]: IProjectConfig | undefined;
+  };
+}
+
+export type ProjectFile = IProjectConfig | MultiProjectConfig;
+
+export interface IProject {
+  readonly directory: string;
+  readonly filePath: string;
+  readonly name?: string;
+  readonly type: ProjectType;
+  readonly config: ζframework.BaseConfig<IProjectConfig>;
 
   getDocsUrl(): Promise<string>;
   getSourceDir(sourceRoot?: string): Promise<string>;
@@ -249,12 +256,18 @@ export interface IProject extends IBaseConfig<ProjectConfig> {
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
   createIntegration(name: IntegrationName): Promise<IIntegration>;
-  getIntegration(name: IntegrationName): Promise<ProjectIntegration>;
+  getIntegration(name: IntegrationName): Promise<Required<ProjectIntegration>>;
   requireProId(): Promise<string>;
-  getPackageJson(pkgName?: string): Promise<[framework.PackageJson | undefined, string | undefined]>;
-  requirePackageJson(pkgName?: string): Promise<framework.PackageJson>;
+  getPackageJson(pkgName?: string): Promise<[ζframework.PackageJson | undefined, string | undefined]>;
+  requirePackageJson(pkgName?: string): Promise<ζframework.PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
-  getAilmentRegistry(env: IonicEnvironment): Promise<IAilmentRegistry>;
+  registerAilments(registry: IAilmentRegistry): Promise<void>;
+  getBuildRunner(): Promise<ζbuild.BuildRunner<any> | undefined>;
+  getServeRunner(): Promise<ζserve.ServeRunner<any> | undefined>;
+  getGenerateRunner(): Promise<ζgenerate.GenerateRunner<any> | undefined>;
+  requireBuildRunner(): Promise<ζbuild.BuildRunner<any>>;
+  requireServeRunner(): Promise<ζserve.ServeRunner<any>>;
+  requireGenerateRunner(): Promise<ζgenerate.GenerateRunner<any>>;
 }
 
 export interface IIntegrationAddOptions {
@@ -278,7 +291,7 @@ export interface PackageVersions {
   [key: string]: string;
 }
 
-export interface CommandMetadataOption extends framework.CommandMetadataOption {
+export interface CommandMetadataOption extends ζframework.CommandMetadataOption {
   private?: boolean;
   hint?: string;
 }
@@ -287,21 +300,22 @@ export interface ExitCodeException extends Error {
   exitCode: number;
 }
 
-export interface CommandMetadata extends framework.CommandMetadata<framework.CommandMetadataInput, CommandMetadataOption> {
+export interface CommandMetadata extends ζframework.CommandMetadata<ζframework.CommandMetadataInput, CommandMetadataOption> {
   type: 'global' | 'project';
 }
 
-export type HydratedCommandMetadata = CommandMetadata & framework.HydratedCommandMetadata<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption>;
-export type CommandInstanceInfo = framework.CommandInstanceInfo<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption>;
-export type NamespaceLocateResult = framework.NamespaceLocateResult<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption>;
+export type HydratedCommandMetadata = CommandMetadata & ζframework.HydratedCommandMetadata<ICommand, INamespace, CommandMetadata, ζframework.CommandMetadataInput, CommandMetadataOption>;
+export type CommandInstanceInfo = ζframework.CommandInstanceInfo<ICommand, INamespace, CommandMetadata, ζframework.CommandMetadataInput, CommandMetadataOption>;
+export type NamespaceLocateResult = ζframework.NamespaceLocateResult<ICommand, INamespace, CommandMetadata, ζframework.CommandMetadataInput, CommandMetadataOption>;
 
 export interface ISession {
   login(email: string, password: string): Promise<void>;
   tokenLogin(token: string): Promise<void>;
   logout(): Promise<void>;
-  isLoggedIn(): Promise<boolean>;
-  getUser(): Promise<{ id: number; }>;
-  getUserToken(): Promise<string>;
+
+  isLoggedIn(): boolean;
+  getUser(): { id: number; };
+  getUserToken(): string;
 }
 
 export interface IShellSpawnOptions extends SpawnOptions {
@@ -335,75 +349,33 @@ export type NpmClient = 'yarn' | 'npm';
 
 export type FeatureId = 'project-angular' | 'capacitor-commands' | 'ssl-commands';
 
-export type DoctorAilmentId = (
-  // Base
-  'npm-installed-locally' |
-  'ionic-installed-locally' |
-  'git-not-used' |
-  'git-config-invalid' |
-  'ionic-native-update-available' |
-  'ionic-native-major-update-available' |
-  'ionic-native-old-version-installed' |
-  'unsaved-cordova-platforms' |
-  'default-cordova-bundle-id-used' |
-  'viewport-fit-not-set' |
-  'cordova-platforms-committed' |
-
-  // angular
-  'ionic-for-angular-update-available' |
-  'ionic-for-angular-major-update-available' |
-  'ionic-schematics-angular-update-available' |
-  'ionic-schematics-angular-major-update-available' |
-  'angular-cli-update-available' |
-  'angular-cli-major-update-available' |
-  'angular-devkit-core-update-available' |
-  'angular-devkit-core-major-update-available' |
-  'angular-devkit-schematics-update-available' |
-  'angular-devkit-schematics-major-update-available' |
-
-  // ionic-angular
-  'ionic-angular-update-available' |
-  'ionic-angular-major-update-available' |
-  'app-scripts-update-available' |
-  'app-scripts-major-update-available' |
-  'ionic-angular-package-json-has-default-ionic-build-command' |
-  'ionic-angular-package-json-has-default-ionic-serve-command'
-);
-
 export interface ConfigFile {
-  state: {
-    lastCommand: string;
-  };
-  addresses: {
-    dashUrl?: string;
-    apiUrl?: string;
-    gitHost?: string;
-    gitPort?: number;
-  };
-  ssl?: SSLConfig;
-  proxy?: string;
-  git: {
-    setup?: boolean;
-  };
-  user: {
-    id?: number;
-    email?: string;
-  };
-  tokens: {
-    user?: string;
-    telemetry?: string;
-  };
-  doctor: {
-    issues: {
-      [I in DoctorAilmentId]?: {
-        ignored?: boolean;
-      };
-    };
-  };
-  features: { [I in FeatureId]?: boolean; };
-  telemetry: boolean;
-  interactive?: boolean;
-  npmClient: NpmClient;
+  'version': string;
+  'telemetry': boolean;
+  'npmClient': NpmClient;
+  'interactive'?: boolean;
+
+  // HTTP configuration
+  'proxy'?: string;
+  'ssl.cafile'?: string | string[];
+  'ssl.certfile'?: string | string[];
+  'ssl.keyfile'?: string | string[];
+
+  // Ionic Pro
+  'urls.api'?: string;
+  'urls.dash'?: string;
+  'git.host'?: string;
+  'git.port'?: number;
+  'git.setup'?: boolean;
+  'user.id'?: number;
+  'user.email'?: string;
+  'tokens.user'?: string;
+  'tokens.telemetry'?: string;
+
+  // Features
+  'features.project-angular'?: boolean;
+  'features.capacitor-commands'?: boolean;
+  'features.ssl-commands'?: boolean;
 }
 
 export interface SSLConfig {
@@ -415,15 +387,6 @@ export interface SSLConfig {
 export interface CreateRequestOptions {
   ssl?: SSLConfig;
   proxy?: string;
-}
-
-export interface IBaseConfig<T extends { [key: string]: any }> {
-  directory: string;
-  fileName: string;
-  filePath: string;
-
-  load(options?: { disk?: boolean; }): Promise<T>;
-  save(configFile?: T): Promise<void>;
 }
 
 export type APIResponse = APIResponseSuccess | APIResponseError;
@@ -624,21 +587,21 @@ export interface ServeDetails {
   localAddress: string;
   externalAddress: string;
   port: number;
-  externalNetworkInterfaces: framework.NetworkInterface[];
+  externalNetworkInterfaces: ζframework.NetworkInterface[];
   externallyAccessible: boolean;
 }
 
 export interface IAilment {
+  readonly id: string;
   implicit: boolean;
   projects?: ProjectType[];
-  id: DoctorAilmentId;
   getMessage(): Promise<string>;
   detected(): Promise<boolean>;
   getTreatmentSteps(): Promise<PatientTreatmentStep[]>;
 }
 
 export interface TreatableAilment extends IAilment {
-  treatable: true;
+  readonly treatable: boolean;
   getTreatmentSteps(): Promise<DoctorTreatmentStep[]>;
 }
 
@@ -669,12 +632,11 @@ export interface IonicEnvironment {
   readonly client: IClient;
   readonly config: IConfig; // CLI global config (~/.ionic/config.json)
   readonly log: ILogger;
-  readonly prompt: framework.PromptModule;
+  readonly prompt: ζframework.PromptModule;
   readonly ctx: IonicContext;
-  project: IProject; // project config (ionic.config.json)
   session: ISession;
   readonly shell: IShell;
-  readonly tasks: framework.TaskChain;
+  readonly tasks: ζframework.TaskChain;
   keepopen: boolean;
 
   open(): void;
@@ -689,18 +651,20 @@ export interface IonicEnvironmentFlags {
 
 export type DistTag = 'testing' | 'canary' | 'latest';
 
-export interface ICommand extends framework.ICommand<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption> {
+export interface ICommand extends ζframework.ICommand<ICommand, INamespace, CommandMetadata, ζframework.CommandMetadataInput, CommandMetadataOption> {
   env: IonicEnvironment;
+  project?: IProject;
 
-  execute(inputs: framework.CommandLineInputs, options: framework.CommandLineOptions, metadata: CommandInstanceInfo): Promise<void>;
+  execute(inputs: ζframework.CommandLineInputs, options: ζframework.CommandLineOptions, metadata: CommandInstanceInfo): Promise<void>;
 }
 
 export interface CommandPreRun extends ICommand {
-  preRun(inputs: framework.CommandLineInputs, options: framework.CommandLineOptions, metadata: CommandInstanceInfo): Promise<void>;
+  preRun(inputs: ζframework.CommandLineInputs, options: ζframework.CommandLineOptions, metadata: CommandInstanceInfo): Promise<void>;
 }
 
-export interface INamespace extends framework.INamespace<ICommand, INamespace, CommandMetadata, framework.CommandMetadataInput, CommandMetadataOption> {
+export interface INamespace extends ζframework.INamespace<ICommand, INamespace, CommandMetadata, ζframework.CommandMetadataInput, CommandMetadataOption> {
   env: IonicEnvironment;
+  project?: IProject;
 }
 
 export interface ImageResource {
@@ -787,5 +751,3 @@ export interface IPCMessage {
   type: 'telemetry';
   data: { command: string; args: string[]; };
 }
-
-export type ProjectFile = ProjectConfig | MultiProjectConfig;

@@ -87,13 +87,17 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
 
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic link')} outside a project directory.`);
+    }
+
     let proId: string | undefined = inputs[0];
     let { create } = options;
 
-    const projectConfig = await this.env.project.load();
+    const proIdFromConfig = this.project.config.get('pro_id');
 
-    if (projectConfig.pro_id) {
-      if (proId && projectConfig.pro_id === proId) {
+    if (proIdFromConfig) {
+      if (proId && proIdFromConfig === proId) {
         this.env.log.msg(`Already linked with app ${chalk.green(proId)}.`);
         return;
       }
@@ -105,7 +109,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `Pro ID ${chalk.green(projectConfig.pro_id)} is already set up with this app. ${msg}`,
+        message: `Pro ID ${chalk.green(proIdFromConfig)} is already set up with this app. ${msg}`,
       });
 
       if (!confirm) {
@@ -121,7 +125,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     if (!proId && !create) {
       const choices = [
         {
-          name: `Link ${projectConfig.pro_id ? 'a different' : 'an existing'} app on Ionic Pro`,
+          name: `Link ${proIdFromConfig ? 'a different' : 'an existing'} app on Ionic Pro`,
           value: CHOICE_LINK_EXISTING_APP,
         },
         {
@@ -130,9 +134,9 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
         },
       ];
 
-      if (projectConfig.pro_id) {
+      if (proIdFromConfig) {
         choices.unshift({
-          name: `Relink ${chalk.green(projectConfig.pro_id)}`,
+          name: `Relink ${chalk.green(proIdFromConfig)}`,
           value: CHOICE_RELINK,
         });
       }
@@ -185,7 +189,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
           }
         }
       } else if (result === CHOICE_RELINK) {
-        proId = projectConfig.pro_id;
+        proId = proIdFromConfig;
       }
     }
 
@@ -206,8 +210,6 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
       const app = await this.lookUpApp(proId);
       await this.linkApp(app, runinfo);
     }
-
-    await Promise.all([this.env.config.save(), this.env.project.save()]);
   }
 
   private async getAppClient() {
@@ -255,6 +257,8 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
       `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/pro/basics/git/')}`
     );
 
+    this.env.log.nl();
+
     const service = await this.env.prompt({
       type: 'list',
       name: 'gitService',
@@ -274,9 +278,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
 
     let githubUrl: string | undefined;
     if (service === CHOICE_IONIC) {
-      const config = await this.env.config.load();
-
-      if (!config.git.setup) {
+      if (!this.env.config.get('git.setup')) {
         await runCommand(runinfo, ['ssh', 'setup']);
       }
 

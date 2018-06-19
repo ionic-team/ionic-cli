@@ -19,12 +19,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://dashboard.ionicframework.com/setting
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
-      ['generate', async () => { const { SSHGenerateCommand } = await import('./generate'); return new SSHGenerateCommand(this, this.env); }],
-      ['use', async () => { const { SSHUseCommand } = await import('./use'); return new SSHUseCommand(this, this.env); }],
-      ['add', async () => { const { SSHAddCommand } = await import('./add'); return new SSHAddCommand(this, this.env); }],
-      ['delete', async () => { const { SSHDeleteCommand } = await import('./delete'); return new SSHDeleteCommand(this, this.env); }],
-      ['list', async () => { const { SSHListCommand } = await import('./list'); return new SSHListCommand(this, this.env); }],
-      ['setup', async () => { const { SSHSetupCommand } = await import('./setup'); return new SSHSetupCommand(this, this.env); }],
+      ['generate', async () => { const { SSHGenerateCommand } = await import('./generate'); return new SSHGenerateCommand(this, this.env, this.project); }],
+      ['use', async () => { const { SSHUseCommand } = await import('./use'); return new SSHUseCommand(this, this.env, this.project); }],
+      ['add', async () => { const { SSHAddCommand } = await import('./add'); return new SSHAddCommand(this, this.env, this.project); }],
+      ['delete', async () => { const { SSHDeleteCommand } = await import('./delete'); return new SSHDeleteCommand(this, this.env, this.project); }],
+      ['list', async () => { const { SSHListCommand } = await import('./list'); return new SSHListCommand(this, this.env, this.project); }],
+      ['setup', async () => { const { SSHSetupCommand } = await import('./setup'); return new SSHSetupCommand(this, this.env, this.project); }],
       ['ls', 'list'],
       ['remove', 'delete'],
       ['rm', 'delete'],

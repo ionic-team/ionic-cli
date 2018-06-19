@@ -43,20 +43,18 @@ export abstract class Hook {
       return; // TODO: will we need hooks outside a project?
     }
 
-    const projectConfig = await this.project.load();
     const pkg = await this.project.requirePackageJson();
-    const config = await this.config.load();
-    const { npmClient } = config;
 
     debug(`Looking for ${chalk.cyan(this.script)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[this.script]) {
       debug(`Invoking ${chalk.cyan(this.script)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(npmClient, { command: 'run', script: this.script });
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: this.script });
       await this.shell.run(pkgManager, pkgArgs, {});
     }
 
-    const hooks = projectConfig.hooks ? conform(projectConfig.hooks[this.name]) : [];
+    const projectHooks = this.project.config.get('hooks');
+    const hooks = projectHooks ? conform(projectHooks[this.name]) : [];
 
     for (const h of hooks) {
       const p = path.resolve(this.project.directory, h);

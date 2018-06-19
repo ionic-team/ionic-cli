@@ -13,16 +13,13 @@ import * as path from 'path';
 import * as split2 from 'split2';
 import * as through2 from 'through2';
 
-import { ASSETS_DIRECTORY, PROJECT_FILE } from '../constants';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironment, LabServeDetails, Runner, ServeDetails, ServeOptions } from '../definitions';
+import { ASSETS_DIRECTORY } from '../constants';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, LabServeDetails, Runner, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 
-import { FatalException, RunnerException, RunnerNotFoundException } from './errors';
+import { FatalException, RunnerException } from './errors';
 import { emit } from './events';
 import { Hook } from './hooks';
-import * as ζprojectAngularServe from './project/angular/serve';
-import * as ζprojectIonicAngularServe from './project/ionic-angular/serve';
-import * as ζprojectIonic1Serve from './project/ionic1/serve';
 import { PkgManagerOptions } from './utils/npm';
 
 const debug = Debug('ionic:cli-utils:lib:serve');
@@ -107,29 +104,6 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     this.project = project;
     this.prompt = prompt;
     this.shell = shell;
-  }
-
-  static async createFromProject(deps: ServeRunnerDeps): Promise<ζprojectAngularServe.AngularServeRunner>;
-  static async createFromProject(deps: ServeRunnerDeps): Promise<ζprojectIonicAngularServe.IonicAngularServeRunner>;
-  static async createFromProject(deps: ServeRunnerDeps): Promise<ζprojectIonic1Serve.Ionic1ServeRunner>;
-  static async createFromProject(deps: ServeRunnerDeps): Promise<ServeRunner<any>>;
-  static async createFromProject(deps: ServeRunnerDeps): Promise<ServeRunner<any>> {
-    if (deps.project.type === 'angular') {
-      const { AngularServeRunner } = await import('./project/angular/serve');
-      return new AngularServeRunner(deps);
-    } else if (deps.project.type === 'ionic-angular') {
-      const { IonicAngularServeRunner } = await import('./project/ionic-angular/serve');
-      return new IonicAngularServeRunner(deps);
-    } else if (deps.project.type === 'ionic1') {
-      const { Ionic1ServeRunner } = await import('./project/ionic1/serve');
-      return new Ionic1ServeRunner(deps);
-    } else {
-      throw new RunnerNotFoundException(
-        `Cannot perform serve for ${deps.project.type ? '' : 'unknown '}project type${deps.project.type ? `: ${chalk.bold(deps.project.type)}` : ''}.\n` +
-        (deps.project.type === 'custom' ? `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to serve custom projects.\n\n` : '') +
-        `If you'd like the CLI to try to detect your project type, you can unset the ${chalk.bold('type')} attribute in ${chalk.bold(PROJECT_FILE)}.`
-      );
-    }
   }
 
   abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
@@ -303,8 +277,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     if (options.devapp) {
       const { createCommServer, createPublisher } = await import('./devapp');
 
-      const projectConfig = await this.project.load();
-      const publisher = await createPublisher(projectConfig.name, details.port, details.commPort);
+      const publisher = await createPublisher(this.project.config.get('name'), details.port, details.commPort);
       const comm = await createCommServer(publisher.id, details.commPort);
 
       publisher.interfaces = details.interfaces;
@@ -365,10 +338,10 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     };
 
     if (options.ssl) {
-      const projectConfig = await this.project.load();
+      const sslConfig = this.project.config.get('ssl');
 
-      if (projectConfig.ssl && projectConfig.ssl.key && projectConfig.ssl.cert) {
-        labDetails.ssl = { key: projectConfig.ssl.key, cert: projectConfig.ssl.cert };
+      if (sslConfig && sslConfig.key && sslConfig.cert) {
+        labDetails.ssl = { key: sslConfig.key, cert: sslConfig.cert };
       } else {
         throw new FatalException(
           `Both ${chalk.green('ssl.key')} and ${chalk.green('ssl.cert')} config entries must be set.\n` +
@@ -402,11 +375,11 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
   }
 
   async runLabServer(url: string, details: LabServeDetails): Promise<void> {
-    const projectConfig = await this.project.load();
     const pkg = await this.project.requirePackageJson();
 
+    const appName = this.project.config.get('name');
     const labArgs = [url, '--host', details.address, '--port', String(details.port)];
-    const nameArgs = projectConfig.name ? ['--app-name', projectConfig.name] : [];
+    const nameArgs = appName ? ['--app-name', appName] : [];
     const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
 
     if (details.ssl) {
@@ -446,9 +419,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
 
   async promptToInstallPkg(options: Partial<PkgManagerOptions> & { pkg: string; }): Promise<boolean> {
     const { pkgManagerArgs } = await import('./utils/npm');
-    const config = await this.config.load();
-    const { npmClient } = config;
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', ...options });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'install', ...options });
 
     const confirm = await this.prompt({
       name: 'confirm',
@@ -517,14 +488,14 @@ class ServeAfterHook extends Hook {
   readonly name = 'serve:after';
 }
 
-export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
+export async function serve(deps: ServeRunnerDeps, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
   try {
-    const runner = await ServeRunner.createFromProject(env);
+    const runner = await deps.project.requireServeRunner();
 
     runner.on('cli-utility-spawn', cp => {
       cp.on('close', code => {
-        env.log.nl();
-        env.log.error(
+        deps.log.nl();
+        deps.log.error(
           `A utility CLI has unexpectedly closed.\n` +
           'The Ionic CLI will exit. Please check any output above for error details.'
         );
@@ -532,14 +503,14 @@ export async function serve(env: IonicEnvironment, inputs: CommandLineInputs, op
       });
     });
 
-    if (env.project.name) {
-      options['project'] = env.project.name;
+    if (deps.project.name) {
+      options['project'] = deps.project.name;
     }
 
     const opts = runner.createOptionsFromCommandLine(inputs, options);
     const details = await runner.run(opts);
 
-    env.keepopen = true;
+    (deps as any).keepopen = true; // TODO: this is gross
 
     return details;
   } catch (e) {

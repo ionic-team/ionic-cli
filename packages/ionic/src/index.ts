@@ -50,7 +50,8 @@ export async function generateContext(): Promise<IonicContext> {
 
 export async function loadExecutor(ctx: IonicContext, pargv: string[], env: { [k: string]: string; }): Promise<Executor> {
   if (!_executor) {
-    const namespace = new IonicNamespace(undefined, await generateIonicEnvironment(ctx, pargv, env));
+    const { env: ienv, project } = await generateIonicEnvironment(ctx, pargv, env);
+    const namespace = new IonicNamespace(undefined, ienv, project);
     _executor = new Executor({ namespace });
   }
 
@@ -58,7 +59,6 @@ export async function loadExecutor(ctx: IonicContext, pargv: string[], env: { [k
 }
 
 export async function run(pargv: string[], env: { [k: string]: string; }) {
-  const now = new Date();
   let err: any;
   let executor: Executor;
 
@@ -76,15 +76,13 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
 
   if (pargv[0] !== '_') {
     try {
-      const config = await ienv.config.load();
-
       debug('Context: %o', ienv.ctx);
 
       if (env['IONIC_TOKEN']) {
         const wasLoggedIn = await ienv.session.isLoggedIn();
         debug(`${chalk.bold('IONIC_TOKEN')} environment variable detected`);
 
-        if (config.tokens.user !== env['IONIC_TOKEN']) {
+        if (ienv.config.get('tokens.user') !== env['IONIC_TOKEN']) {
           debug(`${chalk.bold('IONIC_TOKEN')} mismatch with current session--attempting login`);
           await ienv.session.tokenLogin(env['IONIC_TOKEN']);
 
@@ -95,7 +93,7 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
       } else if (env['IONIC_EMAIL'] && env['IONIC_PASSWORD']) {
         debug(`${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables detected`);
 
-        if (config.user.email !== env['IONIC_EMAIL']) {
+        if (ienv.config.get('user.email') !== env['IONIC_EMAIL']) {
           debug(`${chalk.bold('IONIC_EMAIL')} mismatch with current session--attempting login`);
 
           try {
@@ -119,7 +117,6 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
         );
       } else {
         await executor.execute(pargv, env);
-        config.state.lastCommand = now.toISOString();
       }
 
       if (ienv.flags.interactive) {
@@ -129,15 +126,8 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     } catch (e) {
       err = e;
     }
-  }
 
-  try {
-    // Prevent conflict with 'config' command
-    if (pargv[0] !== 'config') {
-      await Promise.all([ienv.config.save(), ienv.project.save()]);
-    }
-  } catch (e) {
-    ienv.log.error(String(e.stack ? e.stack : e));
+    ienv.config.set('version', ienv.ctx.version);
   }
 
   if (err) {
@@ -187,7 +177,7 @@ export async function receive(msg: IPCMessage) {
     throw new Error('Executor not initialized.');
   }
 
-  const env = _executor.namespace.env;
+  const { env, project } = _executor.namespace;
 
   if (msg.type === 'telemetry') {
     const { sendCommand } = await import('@ionic/cli-utils/lib/telemetry');
@@ -197,7 +187,7 @@ export async function receive(msg: IPCMessage) {
       client: env.client,
       config: env.config,
       ctx: env.ctx,
-      project: env.project,
+      project,
       session: env.session,
     }, msg.data.command, msg.data.args);
   }

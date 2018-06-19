@@ -39,7 +39,7 @@ export class HelpCommand extends Command {
       if (location.args.length > 0) {
         this.env.log.error(
           `Unable to find command: ${chalk.green(inputs.join(' '))}` +
-          (this.env.project.directory ? '' : '\nYou may need to be in an Ionic project directory.')
+          (this.project ? '' : '\nYou may need to be in an Ionic project directory.')
         );
       }
 
@@ -50,7 +50,7 @@ export class HelpCommand extends Command {
       const suffix = now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
 
       const formatterOptions = {
-        inProject: this.env.project.directory ? true : false,
+        inProject: this.project ? true : false,
         version: prefix + version + suffix,
         location,
         namespace: location.obj,

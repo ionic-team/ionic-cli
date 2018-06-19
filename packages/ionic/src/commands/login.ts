@@ -39,8 +39,6 @@ If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const config = await this.env.config.load();
-
     if (options['email'] || options['password']) {
       throw new FatalException(
         `${chalk.green('email')} and ${chalk.green('password')} are command arguments, not options. Please try this:\n` +
@@ -50,7 +48,8 @@ If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
 
     if (await this.env.session.isLoggedIn()) {
       const extra = !inputs[0] || !inputs[1] ? 'Prompting for new credentials.' : 'Attempting login.';
-      this.env.log.warn(`You are already logged in${config.user.email ? ' as ' + chalk.bold(config.user.email) : ''}! ${this.env.flags.interactive ? extra : ''}`);
+      const email = this.env.config.get('user.email');
+      this.env.log.warn(`You are already logged in${email ? ' as ' + chalk.bold(email) : ''}! ${this.env.flags.interactive ? extra : ''}`);
     } else {
       this.env.log.msg(
         `Log into your Ionic Pro account\n` +
@@ -87,12 +86,10 @@ If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const [ email, password ] = inputs;
 
-    const config = await this.env.config.load();
-
     if (await this.env.session.isLoggedIn()) {
       this.env.log.msg('Logging you out.');
       await runCommand(runinfo, ['logout']);
-      config.tokens.telemetry = generateUUID();
+      this.env.config.set('tokens.telemetry', generateUUID());
     }
 
     await this.env.session.login(email, password);

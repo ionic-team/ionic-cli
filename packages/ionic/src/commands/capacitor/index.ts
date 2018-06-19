@@ -6,9 +6,8 @@ import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 export class CapacitorNamespace extends Namespace {
   async getMetadata() {
     const groups: string[] = [NamespaceGroup.Beta];
-    const config = await this.env.config.load();
 
-    if (!config.features['capacitor-commands']) {
+    if (!this.env.config.get('features.capacitor-commands')) {
       groups.push(NamespaceGroup.Hidden);
     }
 
@@ -27,11 +26,11 @@ Learn more about Capacitor:
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
-      ['add', async () => { const { AddCommand } = await import('./add'); return new AddCommand(this, this.env); }],
-      ['copy', async () => { const { CopyCommand } = await import('./copy'); return new CopyCommand(this, this.env); }],
-      ['open', async () => { const { OpenCommand } = await import('./open'); return new OpenCommand(this, this.env); }],
-      ['sync', async () => { const { SyncCommand } = await import('./sync'); return new SyncCommand(this, this.env); }],
-      ['update', async () => { const { UpdateCommand } = await import('./update'); return new UpdateCommand(this, this.env); }],
+      ['add', async () => { const { AddCommand } = await import('./add'); return new AddCommand(this, this.env, this.project); }],
+      ['copy', async () => { const { CopyCommand } = await import('./copy'); return new CopyCommand(this, this.env, this.project); }],
+      ['open', async () => { const { OpenCommand } = await import('./open'); return new OpenCommand(this, this.env, this.project); }],
+      ['sync', async () => { const { SyncCommand } = await import('./sync'); return new SyncCommand(this, this.env, this.project); }],
+      ['update', async () => { const { UpdateCommand } = await import('./update'); return new UpdateCommand(this, this.env, this.project); }],
     ]);
   }
 }

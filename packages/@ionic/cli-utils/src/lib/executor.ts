@@ -58,7 +58,7 @@ export class Executor extends AbstractExecutor<ICommand, INamespace, CommandMeta
     const cmdoptions = parseArgs(cmdargs, minimistOpts);
     const cmdinputs = cmdoptions._;
 
-    if (!this.namespace.env.project.directory && metadata.type === 'project') {
+    if (!this.namespace.project && metadata.type === 'project') {
       throw new FatalException(
         `Sorry! ${chalk.green(fullNameParts.join(' '))} can only be run in an Ionic project directory.\n` +
         `If this is a project you'd like to integrate with Ionic, create an ${chalk.bold(PROJECT_FILE)} file.`

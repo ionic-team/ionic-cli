@@ -3,19 +3,7 @@ import * as Debug from 'debug';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { cacheFileChecksum, pathExists } from '@ionic/cli-framework/utils/fs';
-
-import {
-  CommandInstanceInfo,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandPreRun,
-  KnownPlatform,
-  ResourcesConfig,
-  ResourcesImageConfig,
-  SourceImage,
-} from '@ionic/cli-utils';
-
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, KnownPlatform, ResourcesConfig, ResourcesImageConfig, SourceImage } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
 import { CordovaCommand } from './base';
@@ -107,10 +95,14 @@ This command uses Ionic servers, so we require you to be logged into your free I
       uploadSourceImage,
     } = await import('@ionic/cli-utils/lib/integrations/cordova/resources');
 
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic cordova resources')} outside a project directory.`);
+    }
+
     const [ platform ] = inputs;
     const { force } = options;
 
-    const conf = await loadConfigXml({ project: this.env.project });
+    const conf = await loadConfigXml({ project: this.project });
 
     // if no resource filters are passed as arguments assume to use all.
     let resourceTypes = AVAILABLE_RESOURCE_TYPES.filter((type, index, array) => options[type]);
@@ -120,7 +112,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     debug(`resourceJsonStructure=${Object.keys(RESOURCES).length}`);
 
     // check that at least one platform has been installed
-    const integration = await this.env.project.getIntegration('cordova');
+    const integration = await this.project.getIntegration('cordova');
     let platforms = await getPlatforms(integration.root);
     debug(`platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
 

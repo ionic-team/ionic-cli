@@ -13,7 +13,7 @@ export class DeployNamespace extends Namespace {
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
-      ['manifest', async () => { const { DeployManifestCommand } = await import('./manifest'); return new DeployManifestCommand(this, this.env); }],
+      ['manifest', async () => { const { DeployManifestCommand } = await import('./manifest'); return new DeployManifestCommand(this, this.env, this.project); }],
     ]);
   }
 }

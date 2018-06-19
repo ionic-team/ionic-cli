@@ -19,9 +19,8 @@ export class Client implements IClient {
   constructor(public config: IConfig) {}
 
   async make(method: HttpMethod, path: string): Promise<{ req: ζsuperagent.SuperAgentRequest; }> {
-    const c = await this.config.load();
-    const url = path.startsWith('http://') || path.startsWith('https://') ? path : `${await this.config.getAPIUrl()}${path}`;
-    const { req } = await createRequest(method, url, c);
+    const url = path.startsWith('http://') || path.startsWith('https://') ? path : `${this.config.getAPIUrl()}${path}`;
+    const { req } = await createRequest(method, url, this.config.getHTTPConfig());
 
     req
       .set('Content-Type', CONTENT_TYPE_JSON)

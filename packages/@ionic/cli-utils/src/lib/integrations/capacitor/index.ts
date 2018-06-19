@@ -8,25 +8,21 @@ export class Integration extends BaseIntegration {
   readonly archiveUrl = undefined;
 
   async add(options?: IIntegrationAddOptions): Promise<void> {
-    const projectConfig = await this.project.load();
-
     await this.installCapacitorCore();
     await this.installCapacitorCLI();
 
-    await this.shell.run('capacitor', ['init', projectConfig.name, 'io.ionic.starter'], {});
+    await this.shell.run('capacitor', ['init', this.project.config.get('name'), 'io.ionic.starter'], {});
 
     await super.add(options);
   }
 
   async installCapacitorCore() {
-    const { npmClient } = await this.config.load();
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg: '@capacitor/core' });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'install', pkg: '@capacitor/core' });
     await this.shell.run(manager, managerArgs, { cwd: this.project.directory });
   }
 
   async installCapacitorCLI() {
-    const { npmClient } = await this.config.load();
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(npmClient, { command: 'install', pkg: '@capacitor/cli' });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli' });
     await this.shell.run(manager, managerArgs, { cwd: this.project.directory });
   }
 

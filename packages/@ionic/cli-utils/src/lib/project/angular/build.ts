@@ -88,8 +88,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
   async buildProject(options: AngularBuildOptions): Promise<void> {
     const { pkgManagerArgs } = await import('../../utils/npm');
-    const config = await this.config.load();
-    const { npmClient } = config;
     const pkg = await this.project.requirePackageJson();
 
     const args = await this.buildOptionsToNgArgs(options);
@@ -99,7 +97,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
     if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-      const [pkgManager, ...pkgArgs] = await pkgManagerArgs(npmClient, { command: 'run', script: BUILD_SCRIPT });
+      const [pkgManager, ...pkgArgs] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: BUILD_SCRIPT });
       await this.shell.run(pkgManager, pkgArgs, shellOptions);
     } else {
       await this.shell.run('ng', [...this.buildArchitectCommand(options), ...args], shellOptions);

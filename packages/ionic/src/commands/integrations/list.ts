@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IntegrationName } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
+import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { INTEGRATION_NAMES } from '@ionic/cli-utils/lib/integrations';
 
 export class IntegrationsListCommand extends Command {
@@ -15,11 +16,16 @@ export class IntegrationsListCommand extends Command {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const projectConfig = await this.env.project.load();
-    const integrations = await Promise.all(INTEGRATION_NAMES.map(async name => this.env.project.createIntegration(name)));
+    const { project } = this;
+
+    if (!project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic integrations list')} outside a project directory.`);
+    }
+
+    const integrations = await Promise.all(INTEGRATION_NAMES.map(async name => project.createIntegration(name)));
 
     const status = (name: IntegrationName) => {
-      const c = projectConfig.integrations[name];
+      const c = project.config.get('integrations')[name];
 
       if (c) {
         if (c.enabled === false) {
