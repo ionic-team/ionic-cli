@@ -30,8 +30,16 @@ export abstract class BaseConfig<T extends object> {
     writeFileAtomicSync(this.p, JSON.stringify(value, undefined, 2));
   }
 
-  get<P extends keyof T>(property: P): T[P] {
-    return this.c[property];
+  get<P extends keyof T>(property: P): T[P];
+  get<P extends keyof T>(property: P, defaultValue: NonNullable<T[P]>): NonNullable<T[P]>;
+  get<P extends keyof T>(property: P, defaultValue?: T[P]): T[P] {
+    const value = this.c[property];
+
+    if (defaultValue && typeof value === 'undefined') {
+      return defaultValue;
+    }
+
+    return value;
   }
 
   set<P extends keyof T>(property: P, value: T[P]): void {

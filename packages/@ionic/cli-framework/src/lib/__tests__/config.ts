@@ -106,7 +106,7 @@ describe('@ionic/cli-framework', () => {
       expect(result).toEqual({ bar: 'baz' });
     });
 
-    it('should get defaulted value', () => {
+    it('should get value from provideDefaults', () => {
       const config = new Config('/path/to/file');
       mockReadFileSync.mockImplementationOnce(() => '{}');
       const result = config.get('defaulted');
@@ -118,6 +118,20 @@ describe('@ionic/cli-framework', () => {
       mockReadFileSync.mockImplementationOnce(() => '{}');
       const result = config.get('unknown');
       expect(result).not.toBeDefined();
+    });
+
+    it('should get value from file even with default provided', () => {
+      const config = new Config('/path/to/file');
+      mockReadFileSync.mockImplementationOnce(() => '{"foo":5}');
+      const result = config.get('foo', 10);
+      expect(result).toEqual(5);
+    });
+
+    it('should get default value with default provided if value in file does not exist', () => {
+      const config = new Config('/path/to/file');
+      mockReadFileSync.mockImplementationOnce(() => '{}');
+      const result = config.get('foo', 10);
+      expect(result).toEqual(10);
     });
 
     it('should set value in file', () => {
