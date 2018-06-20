@@ -4,12 +4,35 @@ import * as path from 'path';
 
 import { makeDir, writeFileAtomicSync } from '../utils/fs';
 
+export interface BaseConfigOptions {
+  /**
+   * If specified, the class will operate on a nested object within the config
+   * file navigated to by this path prefix, an array of object path keys.
+   *
+   * For example, to operate on `c` object within `{ a: { b: { c: {} } } }`,
+   * use `pathPrefix` of `['a', 'b', 'c']`.
+   */
+  pathPrefix?: ReadonlyArray<string>;
+}
+
 export abstract class BaseConfig<T extends object> {
-  constructor(readonly p: string) {}
+  protected readonly pathPrefix: ReadonlyArray<string>;
+
+  constructor(readonly p: string, { pathPrefix = [] }: BaseConfigOptions = {}) {
+    this.pathPrefix = pathPrefix;
+  }
+
+  get file() {
+    const contents = fs.readFileSync(this.p, 'utf8');
+    return JSON.parse(contents);
+  }
 
   get c(): T {
     try {
-      const config = JSON.parse(fs.readFileSync(this.p, 'utf8'));
+      const file = this.file;
+      const navigated = this.pathPrefix.length === 0 ? file : lodash.get(file, [...this.pathPrefix]);
+      const config = typeof navigated === 'object' ? navigated : {};
+
       return lodash.assign({}, this.provideDefaults(config), config);
     } catch (e) {
       if (e.code === 'ENOENT') {
@@ -26,8 +49,10 @@ export abstract class BaseConfig<T extends object> {
   }
 
   set c(value: T) {
+    const v = this.pathPrefix.length === 0 ? value : lodash.set(this.file, [...this.pathPrefix], value);
+
     makeDir.sync(path.dirname(this.p));
-    writeFileAtomicSync(this.p, JSON.stringify(value, undefined, 2));
+    writeFileAtomicSync(this.p, JSON.stringify(v, undefined, 2));
   }
 
   get<P extends keyof T>(property: P): T[P];
