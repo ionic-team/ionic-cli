@@ -7,13 +7,7 @@ import * as ζbuild from './lib/build';
 import * as ζgenerate from './lib/generate';
 import * as ζserve from './lib/serve';
 
-export {
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadataInput,
-  NamespaceMetadata,
-  PackageJson,
-} from '@ionic/cli-framework';
+export { CommandLineInputs, CommandLineOptions, CommandMetadataInput, NamespaceMetadata, PackageJson } from '@ionic/cli-framework';
 
 export interface SuperAgentError extends Error {
   response: ζsuperagent.Response;
@@ -652,8 +646,8 @@ export interface IonicEnvironmentFlags {
 export type DistTag = 'testing' | 'canary' | 'latest';
 
 export interface ICommand extends ζframework.ICommand<ICommand, INamespace, CommandMetadata, ζframework.CommandMetadataInput, CommandMetadataOption> {
-  env: IonicEnvironment;
-  project?: IProject;
+  readonly env: IonicEnvironment;
+  readonly project?: IProject;
 
   execute(inputs: ζframework.CommandLineInputs, options: ζframework.CommandLineOptions, metadata: CommandInstanceInfo): Promise<void>;
 }

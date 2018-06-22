@@ -26,11 +26,11 @@ Learn more about Capacitor:
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
-      ['add', async () => { const { AddCommand } = await import('./add'); return new AddCommand(this, this.env, this.project); }],
-      ['copy', async () => { const { CopyCommand } = await import('./copy'); return new CopyCommand(this, this.env, this.project); }],
-      ['open', async () => { const { OpenCommand } = await import('./open'); return new OpenCommand(this, this.env, this.project); }],
-      ['sync', async () => { const { SyncCommand } = await import('./sync'); return new SyncCommand(this, this.env, this.project); }],
-      ['update', async () => { const { UpdateCommand } = await import('./update'); return new UpdateCommand(this, this.env, this.project); }],
+      ['add', async () => { const { AddCommand } = await import('./add'); return new AddCommand(this); }],
+      ['copy', async () => { const { CopyCommand } = await import('./copy'); return new CopyCommand(this); }],
+      ['open', async () => { const { OpenCommand } = await import('./open'); return new OpenCommand(this); }],
+      ['sync', async () => { const { SyncCommand } = await import('./sync'); return new SyncCommand(this); }],
+      ['update', async () => { const { UpdateCommand } = await import('./update'); return new UpdateCommand(this); }],
     ]);
   }
 }

@@ -74,6 +74,7 @@ export type ICommandMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<
 export type INamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = AliasedMap<string, NamespaceMapGetter<C, N, M, I, O>>;
 
 export interface INamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
+  root: N;
   parent: N | undefined;
 
   locate(argv: ReadonlyArray<string>): Promise<NamespaceLocateResult<C, N, M, I, O>>;

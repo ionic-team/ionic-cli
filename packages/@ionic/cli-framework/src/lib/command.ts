@@ -57,6 +57,16 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
     this.parent = parent;
   }
 
+  get root(): N {
+    let n: any = this;
+
+    while (n.parent) {
+      n = n.parent;
+    }
+
+    return n;
+  }
+
   abstract getMetadata(): Promise<NamespaceMetadata>;
 
   // TODO: https://github.com/Microsoft/TypeScript/issues/9659

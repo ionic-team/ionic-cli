@@ -11,9 +11,9 @@ export class IntegrationsNamespace extends Namespace {
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
-      ['enable', async () => { const { IntegrationsEnableCommand } = await import('./enable'); return new IntegrationsEnableCommand(this, this.env, this.project); }],
-      ['disable', async () => { const { IntegrationsDisableCommand } = await import('./disable'); return new IntegrationsDisableCommand(this, this.env, this.project); }],
-      ['list', async () => { const { IntegrationsListCommand } = await import('./list'); return new IntegrationsListCommand(this, this.env, this.project); }],
+      ['enable', async () => { const { IntegrationsEnableCommand } = await import('./enable'); return new IntegrationsEnableCommand(this); }],
+      ['disable', async () => { const { IntegrationsDisableCommand } = await import('./disable'); return new IntegrationsDisableCommand(this); }],
+      ['list', async () => { const { IntegrationsListCommand } = await import('./list'); return new IntegrationsListCommand(this); }],
       ['ls', 'list'],
     ]);
   }

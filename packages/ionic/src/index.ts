@@ -50,8 +50,8 @@ export async function generateContext(): Promise<IonicContext> {
 
 export async function loadExecutor(ctx: IonicContext, pargv: string[], env: { [k: string]: string; }): Promise<Executor> {
   if (!_executor) {
-    const { env: ienv, project } = await generateIonicEnvironment(ctx, pargv, env);
-    const namespace = new IonicNamespace(undefined, ienv, project);
+    const deps = await generateIonicEnvironment(ctx, pargv, env);
+    const namespace = new IonicNamespace(deps);
     _executor = new Executor({ namespace });
   }
 

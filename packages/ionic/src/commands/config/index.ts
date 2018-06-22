@@ -20,9 +20,9 @@ To use these commands for the global CLI config file (${chalk.bold('~/.ionic/con
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
-      ['get', async () => { const { ConfigGetCommand } = await import('./get'); return new ConfigGetCommand(this, this.env, this.project); }],
-      ['set', async () => { const { ConfigSetCommand } = await import('./set'); return new ConfigSetCommand(this, this.env, this.project); }],
-      ['unset', async () => { const { ConfigUnsetCommand } = await import('./unset'); return new ConfigUnsetCommand(this, this.env, this.project); }],
+      ['get', async () => { const { ConfigGetCommand } = await import('./get'); return new ConfigGetCommand(this); }],
+      ['set', async () => { const { ConfigSetCommand } = await import('./set'); return new ConfigSetCommand(this); }],
+      ['unset', async () => { const { ConfigUnsetCommand } = await import('./unset'); return new ConfigUnsetCommand(this); }],
     ]);
   }
 }

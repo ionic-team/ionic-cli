@@ -87,7 +87,24 @@ describe('@ionic/cli-framework', () => {
 
     describe('Namespace', () => {
 
-      describe('parent and namespace', () => {
+      describe('root and parent', () => {
+
+        it('should have root attribute', async () => {
+          const testNamespace = async ns => {
+            const namespaces = await ns.getNamespaces();
+
+            for (let [ , nsgetter ] of namespaces.entries()) {
+              if (typeof nsgetter !== 'string' && typeof nsgetter !== 'symbol') {
+                const namespace = await nsgetter();
+                expect(namespace.root).toBe(myns);
+                await testNamespace(namespace);
+              }
+            }
+          };
+
+          const myns = new MyNamespace();
+          await testNamespace(myns);
+        });
 
         it('should have parent attribute', async () => {
           const testNamespace = async ns => {
@@ -106,7 +123,11 @@ describe('@ionic/cli-framework', () => {
           await testNamespace(myns);
         });
 
-        it('should have namespace attribute', async () => {
+      });
+
+      describe('getNamespaces', () => {
+
+        it('should get subnamespaces', async () => {
           const testNamespace = async ns => {
             const commands = await ns.getCommands();
             const namespaces = await ns.getNamespaces();

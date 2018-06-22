@@ -6,8 +6,16 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { isCommandPreRun } from '../guards';
 
 export abstract class Command extends BaseCommand<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> implements ICommand {
-  constructor(public namespace: INamespace, public env: IonicEnvironment, public project?: IProject) {
+  constructor(public namespace: INamespace) {
     super(namespace);
+  }
+
+  get env(): IonicEnvironment {
+    return this.namespace.root.env;
+  }
+
+  get project(): IProject | undefined {
+    return this.namespace.root.project;
   }
 
   async execute(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
