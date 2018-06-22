@@ -1,3 +1,4 @@
+import { BaseConfig } from '@ionic/cli-framework';
 import { CommandLineInputs, CommandLineOptions, IConfig, IProject } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
@@ -8,6 +9,7 @@ import * as util from 'util';
 export interface BaseConfigContext {
   json: boolean;
   force: boolean;
+  root: boolean;
   property?: string;
   value?: any;
 }
@@ -30,10 +32,15 @@ export abstract class BaseConfigCommand extends Command {
     const global = options['global'] ? true : false;
     const json = options['json'] ? true : false;
     const force = options['force'] ? true : false;
+    const root = options['root'] ? true : false;
     const value = this.interpretValue(v, json);
-    const base: BaseConfigContext = { json, property, value, force };
+    const base: BaseConfigContext = { json, property, value, force, root };
 
     if (global) {
+      if (root) {
+        this.env.log.warn(`${chalk.green('--root')} has no effect with ${chalk.green('--global')}: this command always operates at root for CLI config.`);
+      }
+
       return { global, config: this.env.config, ...base };
     } else {
       if (!this.project) {
@@ -52,12 +59,12 @@ export abstract class BaseConfigCommand extends Command {
       const serialized = JSON.stringify(v);
 
       if (typeof serialized === 'undefined') {
-        throw new FatalException(`Cannot serialize value: ${v}`);
+        throw new FatalException(`Cannot serialize value: ${chalk.bold(v)}`);
       }
 
       return serialized;
     } catch (e) {
-      throw new FatalException(`Cannot serialize value: ${v}`);
+      throw new FatalException(`Cannot serialize value: ${chalk.bold(v)}`);
     }
   }
 
@@ -86,17 +93,31 @@ export abstract class BaseConfigCommand extends Command {
   }
 }
 
-export function getConfig(ctx: ConfigContext): any {
-  if (ctx.global) { // Global config is flattened
-    const conf: { [key: string]: any; } = ctx.config.c;
-    return ctx.property ? conf[ctx.property] : conf;
-  } else {
-    const conf = ctx.config.c;
-    return ctx.property ? lodash.get(conf, ctx.property) : conf;
+interface FlexibleConfigFile { [key: string]: any; }
+
+class FlexibleConfig extends BaseConfig<FlexibleConfigFile> {
+  provideDefaults() {
+    return {};
   }
 }
 
-export function setConfig(ctx: ConfigContext & { property: string; originalValue: any; }): void {
+export function getConfig(ctx: ConfigContext): FlexibleConfigFile {
+  return ctx.root ? new FlexibleConfig(ctx.config.p) : ctx.config;
+}
+
+export function getConfigValue(ctx: ConfigContext): any {
+  const { c } = getConfig(ctx);
+
+  if (ctx.global) { // Global config is flattened
+    return ctx.property ? c[ctx.property] : c;
+  } else {
+    return ctx.property ? lodash.get(c, ctx.property) : c;
+  }
+}
+
+export function setConfigValue(ctx: ConfigContext & { property: string; originalValue: any; }): void {
+  const conf = getConfig(ctx);
+
   if (ctx.originalValue && typeof ctx.originalValue === 'object' && !ctx.force) {
     throw new FatalException(
       `Sorry--will not override objects or arrays without ${chalk.green('--force')}.\n` +
@@ -105,20 +126,22 @@ export function setConfig(ctx: ConfigContext & { property: string; originalValue
   }
 
   if (ctx.global) { // Global config is flattened
-    ctx.config.set(ctx.property as any, ctx.value);
+    conf.set(ctx.property, ctx.value);
   } else {
-    const conf = ctx.config.c;
-    lodash.set(conf, ctx.property, ctx.value);
-    ctx.config.c = conf;
+    const { c } = conf;
+    lodash.set(c, ctx.property, ctx.value);
+    conf.c = c;
   }
 }
 
-export function unsetConfig(ctx: ConfigContext & { property: string; }): void {
+export function unsetConfigValue(ctx: ConfigContext & { property: string; }): void {
+  const conf = getConfig(ctx);
+
   if (ctx.global) { // Global config is flattened
-    ctx.config.unset(ctx.property as any);
+    conf.unset(ctx.property);
   } else {
-    const conf = ctx.config.c;
-    lodash.unset(conf, ctx.property);
-    ctx.config.c = conf;
+    const { c } = conf;
+    lodash.unset(c, ctx.property);
+    conf.c = c;
   }
 }

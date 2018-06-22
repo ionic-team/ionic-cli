@@ -1,9 +1,9 @@
-import { validators } from '@ionic/cli-framework';
+import { OptionGroup, validators } from '@ionic/cli-framework';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, PROJECT_FILE } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import chalk from 'chalk';
 
-import { BaseConfigCommand, getConfig, unsetConfig } from './base';
+import { BaseConfigCommand, getConfigValue, unsetConfigValue } from './base';
 
 export class ConfigUnsetCommand extends BaseConfigCommand {
   async getMetadata(): Promise<CommandMetadata> {
@@ -12,11 +12,11 @@ export class ConfigUnsetCommand extends BaseConfigCommand {
       type: 'global',
       summary: 'Delete config values',
       description: `
-By default, this command deletes properties in your project's ${chalk.bold(PROJECT_FILE)} file.
+This command deletes configuration values from the project's ${chalk.bold(PROJECT_FILE)} file. It can also operate on the global CLI configuration (${chalk.bold('~/.ionic/config.json')}) using the ${chalk.green('--global')} option.
 
-For ${chalk.green('--global')} config, the CLI deletes properties in the global CLI config file (${chalk.bold('~/.ionic/config.json')}).
+For nested properties, separate nest levels with dots. For example, the property name ${chalk.green('integrations.cordova')} will look in the ${chalk.bold('integrations')} object for the ${chalk.bold('cordova')} property.
 
-For nested properties, separate nest levels with dots. For example, the property name ${chalk.green('user.email')} will look in the ${chalk.bold('user')} object (a root-level field in the global CLI config file) for the ${chalk.bold('email')} field.
+For multi-app projects, this command is scoped to the current project by default. To operate at the root of the project configuration file instead, use the ${chalk.green('--root')} option.
       `,
       inputs: [
         {
@@ -32,6 +32,13 @@ For nested properties, separate nest levels with dots. For example, the property
           type: Boolean,
           aliases: ['g'],
         },
+        {
+          name: 'root',
+          summary: `Operate on root of ${chalk.bold(PROJECT_FILE)}`,
+          type: Boolean,
+          hint: chalk.dim('[multi-app]'),
+          groups: [OptionGroup.Advanced],
+        },
       ],
       exampleCommands: ['', 'type', '--global git.setup', '-g interactive'],
     };
@@ -45,8 +52,8 @@ For nested properties, separate nest levels with dots. For example, the property
       throw new FatalException(`Cannot unset config entry without a property.`);
     }
 
-    const propertyExists = typeof getConfig(ctx) !== 'undefined';
-    unsetConfig({ ...ctx, property });
+    const propertyExists = typeof getConfigValue(ctx) !== 'undefined';
+    unsetConfigValue({ ...ctx, property });
 
     if (propertyExists) {
       this.env.log.ok(`${chalk.green(property)} unset!`);

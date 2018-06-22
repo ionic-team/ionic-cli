@@ -1,3 +1,4 @@
+import { OptionGroup } from '@ionic/cli-framework';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, PROJECT_FILE } from '@ionic/cli-utils';
@@ -5,7 +6,7 @@ import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as util from 'util';
 
-import { BaseConfigCommand, ConfigContext, getConfig } from './base';
+import { BaseConfigCommand, ConfigContext, getConfigValue } from './base';
 
 export class ConfigGetCommand extends BaseConfigCommand {
   async getMetadata(): Promise<CommandMetadata> {
@@ -14,17 +15,17 @@ export class ConfigGetCommand extends BaseConfigCommand {
       type: 'global',
       summary: 'Print config values',
       description: `
-By default, this command prints properties in your project's ${chalk.bold(PROJECT_FILE)} file.
+This command reads and prints configuration values from the project's ${chalk.bold(PROJECT_FILE)} file. It can also operate on the global CLI configuration (${chalk.bold('~/.ionic/config.json')}) using the ${chalk.green('--global')} option.
 
-For ${chalk.green('--global')} config, the CLI prints the global CLI config within ${chalk.bold('~/.ionic/config.json')}.
+For nested properties, separate nest levels with dots. For example, the property name ${chalk.green('integrations.cordova')} will look in the ${chalk.bold('integrations')} object for the ${chalk.bold('cordova')} property.
 
-For nested properties, separate nest levels with dots. For example, the property name ${chalk.green('user.email')} will look in the ${chalk.bold('user')} object (a root-level field in the global CLI config file) for the ${chalk.bold('email')} field.
+Without a ${chalk.green('property')} argument, this command prints out the entire config.
 
-Without a ${chalk.green('property')} argument, this command prints out the entire file contents.
+For multi-app projects, this command is scoped to the current project by default. To operate at the root of the project configuration file instead, use the ${chalk.green('--root')} option.
 
 If you are using this command programmatically, you can use the ${chalk.green('--json')} option.
 
-This command will sanitize config output for known sensitive fields, such as fields within the ${chalk.bold('tokens')} object in the global CLI config file. This functionality is disabled when using ${chalk.green('--json')}.
+This command will sanitize config output for known sensitive fields (disabled when using ${chalk.green('--json')}).
       `,
       inputs: [
         {
@@ -43,6 +44,14 @@ This command will sanitize config output for known sensitive fields, such as fie
           name: 'json',
           summary: 'Output config values in JSON',
           type: Boolean,
+          groups: [OptionGroup.Advanced],
+        },
+        {
+          name: 'root',
+          summary: `Operate on root of ${chalk.bold(PROJECT_FILE)}`,
+          type: Boolean,
+          hint: chalk.dim('[multi-app]'),
+          groups: [OptionGroup.Advanced],
         },
       ],
       exampleCommands: ['', 'pro_id', '--global user.email', '-g npmClient'],
@@ -51,7 +60,7 @@ This command will sanitize config output for known sensitive fields, such as fie
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const ctx = this.generateContext(inputs, options);
-    const conf = getConfig(ctx);
+    const conf = getConfigValue(ctx);
 
     this.printConfig(ctx, conf);
   }
@@ -71,7 +80,7 @@ This command will sanitize config output for known sensitive fields, such as fie
 
         this.env.log.rawmsg(columnar(columns, {}));
       } else {
-        this.env.log.rawmsg(util.inspect(v, { colors: chalk.enabled }));
+        this.env.log.rawmsg(util.inspect(v, { depth: Infinity, colors: chalk.enabled }));
       }
     }
   }

@@ -3,7 +3,7 @@ import { CommandLineInputs, CommandLineOptions, CommandMetadata, PROJECT_FILE } 
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import chalk from 'chalk';
 
-import { BaseConfigCommand, getConfig, setConfig } from './base';
+import { BaseConfigCommand, getConfigValue, setConfigValue } from './base';
 
 export class ConfigSetCommand extends BaseConfigCommand {
   async getMetadata(): Promise<CommandMetadata> {
@@ -12,13 +12,13 @@ export class ConfigSetCommand extends BaseConfigCommand {
       type: 'global',
       summary: 'Set config values',
       description: `
-By default, this command sets JSON properties in your project's ${chalk.bold(PROJECT_FILE)} file.
+This command writes configuration values to the project's ${chalk.bold(PROJECT_FILE)} file. It can also operate on the global CLI configuration (${chalk.bold('~/.ionic/config.json')}) using the ${chalk.green('--global')} option.
 
-For ${chalk.green('--global')} config, the CLI sets properties in the global CLI config file (${chalk.bold('~/.ionic/config.json')}).
+For nested properties, separate nest levels with dots. For example, the property name ${chalk.green('integrations.cordova')} will look in the ${chalk.bold('integrations')} object for the ${chalk.bold('cordova')} property.
 
-For nested properties, separate nest levels with dots. For example, the property name ${chalk.green('user.email')} will look in the ${chalk.bold('user')} object (a root-level field in the global CLI config file) for the ${chalk.bold('email')} field.
+For multi-app projects, this command is scoped to the current project by default. To operate at the root of the project configuration file instead, use the ${chalk.green('--root')} option.
 
-${chalk.green('ionic config set')} will attempt to coerce ${chalk.green('value')} into a suitable JSON type. If it is JSON-parsable, such as ${chalk.green('true')} or ${chalk.green('[]')}, it takes the parsed result. Otherwise, the value is interpreted as a string. For stricter input, use ${chalk.green('--json')}, which will error with non-JSON values.
+This command will attempt to coerce ${chalk.green('value')} into a suitable JSON type. If it is JSON-parsable, such as ${chalk.green('123')}, ${chalk.green('true')}, ${chalk.green('[]')}, etc., then it takes the parsed result. Otherwise, the value is interpreted as a string. For stricter input, use ${chalk.green('--json')}, which will error with non-JSON values.
 
 By default, if ${chalk.green('property')} exists and is an object or an array, the value is not overwritten. To disable this check and always overwrite the property, use ${chalk.green('--force')}.
       `,
@@ -45,6 +45,7 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
           name: 'json',
           summary: `Always interpret ${chalk.green('value')} as JSON`,
           type: Boolean,
+          groups: [OptionGroup.Advanced],
         },
         {
           name: 'force',
@@ -52,8 +53,15 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
           type: Boolean,
           groups: [OptionGroup.Advanced],
         },
+        {
+          name: 'root',
+          summary: `Operate on root of ${chalk.bold(PROJECT_FILE)}`,
+          type: Boolean,
+          hint: chalk.dim('[multi-app]'),
+          groups: [OptionGroup.Advanced],
+        },
       ],
-      exampleCommands: ['name newAppName', 'name "\\"newAppName\\"" --json', '-g interactive true'],
+      exampleCommands: ['name newAppName', 'name "\\"newAppName\\"" --json', '-g interactive false'],
     };
   }
 
@@ -65,8 +73,8 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
       throw new FatalException(`Cannot set config to ${chalk.green(ctx.value)} without a property.`);
     }
 
-    const originalValue = getConfig(ctx);
-    setConfig({ ...ctx, property, originalValue });
+    const originalValue = getConfigValue(ctx);
+    setConfigValue({ ...ctx, property, originalValue });
 
     if (ctx.value !== originalValue) {
       this.env.log.ok(`${chalk.green(property)} set to ${chalk.green(JSON.stringify(ctx.value))}!`);
