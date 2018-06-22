@@ -1,24 +1,3 @@
-import { metadataOptionsToParseArgsOptions, parseArgs, unparseArgs } from '@ionic/cli-framework';
-
-import { GLOBAL_OPTIONS } from './config';
-
-export function modifyArguments(pargv: string[]): string[] {
-  const modifiedArgArray: string[] = pargv.slice();
-  const minimistArgv = parseArgs(pargv, { boolean: true, string: '_' });
-
-  const extra = [...minimistArgv._, ...unparseArgs(minimistArgv, {}, metadataOptionsToParseArgsOptions(GLOBAL_OPTIONS))];
-
-  if (minimistArgv._.length === 0 && (minimistArgv['version'] || minimistArgv['v'])) {
-    return ['version', ...extra];
-  }
-
-  if (minimistArgv._.length === 0 || minimistArgv['help'] || minimistArgv['h']) {
-    return ['help', ...extra];
-  }
-
-  return modifiedArgArray;
-}
-
 /**
  * Find the command that is the equivalent of a legacy command.
  */

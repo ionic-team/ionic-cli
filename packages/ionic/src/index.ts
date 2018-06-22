@@ -9,7 +9,7 @@ import { processExit } from '@ionic/cli-framework/utils/process';
 
 import { IPCMessage, IonicContext, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
 import { Executor } from '@ionic/cli-utils/lib/executor';
-import { mapLegacyCommand, modifyArguments } from '@ionic/cli-utils/lib/init';
+import { mapLegacyCommand } from '@ionic/cli-utils/lib/init';
 
 import { IonicNamespace } from './commands';
 
@@ -61,8 +61,6 @@ export async function loadExecutor(ctx: IonicContext, pargv: string[], env: { [k
 export async function run(pargv: string[], env: { [k: string]: string; }) {
   let err: any;
   let executor: Executor;
-
-  pargv = modifyArguments(pargv);
 
   try {
     executor = await loadExecutor(await generateContext(), pargv, env);

@@ -6,6 +6,13 @@ import { CommandMetadataOption, ConfigFile, CreateRequestOptions, IConfig } from
 
 export const GLOBAL_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
   {
+    name: 'help',
+    summary: 'Display help for commands',
+    aliases: ['h'],
+    type: Boolean,
+    groups: [OptionGroup.Hidden],
+  },
+  {
     name: 'verbose',
     summary: 'Print debug log messages',
     type: Boolean,
