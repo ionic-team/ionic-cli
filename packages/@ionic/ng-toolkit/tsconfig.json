@@ -1,7 +1,6 @@
 {
   "extends": "../../../tsconfig.base.json",
   "include": [
-    "../../../types/string-width.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

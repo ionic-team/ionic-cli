@@ -4,7 +4,6 @@
     "outDir": "./dist"
   },
   "include": [
-    "../../../types/string-width.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

@@ -10,7 +10,6 @@
     "../../../types/slice-ansi.d.ts",
     "../../../types/ssh-config.d.ts",
     "../../../types/stream-combiner2.d.ts",
-    "../../../types/string-width.d.ts",
     "../../../types/superagent-proxy.d.ts",
     "../../../types/superagent.d.ts",
     "../../../types/tiny-lr.d.ts",

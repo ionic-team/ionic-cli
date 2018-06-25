@@ -6,7 +6,6 @@
   "include": [
     "../../../types/cross-spawn.d.ts",
     "../../../types/stream-combiner2.d.ts",
-    "../../../types/string-width.d.ts",
     "../../../types/slice-ansi.d.ts",
     "src/**/*.ts"
   ],
