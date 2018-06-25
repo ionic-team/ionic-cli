@@ -6,7 +6,6 @@
   "include": [
     "../../../types/elementtree.d.ts",
     "../../../types/leek.d.ts",
-    "../../../types/os-name.d.ts",
     "../../../types/slice-ansi.d.ts",
     "../../../types/ssh-config.d.ts",
     "../../../types/stream-combiner2.d.ts",

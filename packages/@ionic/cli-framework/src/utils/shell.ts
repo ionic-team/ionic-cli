@@ -142,8 +142,8 @@ export class ShellCommand {
   }
 }
 
-export function spawn(command: string, args?: ReadonlyArray<string>, options?: SpawnOptions): ChildProcess {
-  return crossSpawn.spawn(command, args, options);
+export function spawn(command: string, args: ReadonlyArray<string> = [], options?: SpawnOptions): ChildProcess {
+  return crossSpawn(command, [...args], options);
 }
 
 export function fork(modulePath: string, args: ReadonlyArray<string> = [], options: ForkOptions & Pick<SpawnOptions, 'stdio'> = {}): ChildProcess {

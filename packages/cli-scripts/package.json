@@ -19,7 +19,6 @@
     "@ionic/cli-framework": "1.0.0-rc.9",
     "@ionic/cli-utils": "2.0.0-rc.9",
     "ansi-styles": "^3.2.0",
-    "ascii-tree": "^0.3.0",
     "chalk": "^2.3.0",
     "escape-string-regexp": "^1.0.5",
     "ionic": "4.0.0-rc.9",
