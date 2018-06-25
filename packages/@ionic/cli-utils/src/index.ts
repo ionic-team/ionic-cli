@@ -59,7 +59,7 @@ export async function getProject(projectDir: string | undefined, projectName: st
   return createProjectFromType(projectFilePath, projectName, deps, type);
 }
 
-export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[], env: { [key: string]: string; }): Promise<{ env: IonicEnvironment; project?: IProject; }> {
+export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[], env: NodeJS.ProcessEnv): Promise<{ env: IonicEnvironment; project?: IProject; }> {
   process.chdir(ctx.execPath);
 
   const argv = parseGlobalOptions(pargv);
@@ -89,7 +89,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   );
 
   const projectDir = await findBaseDirectory(ctx.execPath, PROJECT_FILE);
-  const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map((e): [string, string] => [e, env[e]]).filter(([, v]) => !!v);
+  const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map((e): [string, string | undefined] => [e, env[e]]).filter(([, v]) => !!v);
 
   const getInfo = async () => {
     const osName = await import('os-name');
@@ -110,7 +110,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
       { group: 'system', key: 'OS', value: os },
     ];
 
-    info.push(...proxyVars.map(([e, v]): InfoItem => ({ group: 'environment', key: e, value: v })));
+    info.push(...proxyVars.map(([e, v]): InfoItem => ({ group: 'environment', key: e, value: v || 'not set' })));
 
     if (project) {
       info.push(...(await project.getInfo()));

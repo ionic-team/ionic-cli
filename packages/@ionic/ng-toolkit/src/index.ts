@@ -15,6 +15,6 @@ export class IonicNgNamespace extends Namespace {
 
 const namespace = new IonicNgNamespace();
 
-export async function run(argv: string[], env: { [key: string]: string; }) {
+export async function run(argv: string[], env: NodeJS.ProcessEnv) {
   await execute({ namespace, argv, env });
 }

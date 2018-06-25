@@ -56,7 +56,7 @@ export interface CommandMetadata<I = CommandMetadataInput, O = CommandMetadataOp
 
 export interface CommandInstanceInfo<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   location: NamespaceLocateResult<C, N, M, I, O>;
-  env: { [key: string]: string; };
+  env: NodeJS.ProcessEnv;
   executor: IExecutor<C, N, M, I, O>;
 }
 
@@ -111,7 +111,7 @@ export interface HydratedNamespaceMetadata<C extends ICommand<C, N, M, I, O>, N 
 export interface IExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   readonly namespace: N;
 
-  execute(argv: ReadonlyArray<string>, env: { [key: string]: string; }): Promise<void>;
+  execute(argv: ReadonlyArray<string>, env: NodeJS.ProcessEnv): Promise<void>;
   run(command: C, cmdargs: ReadonlyArray<string>, runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;
 }
 
@@ -120,10 +120,10 @@ export interface PackageJson {
   version: string;
   main?: string;
   description?: string;
-  bin?: { [key: string]: string; };
-  scripts?: { [key: string]: string; };
-  dependencies?: { [key: string]: string; };
-  devDependencies?: { [key: string]: string; };
+  bin?: { [key: string]: string | undefined; };
+  scripts?: { [key: string]: string | undefined; };
+  dependencies?: { [key: string]: string | undefined; };
+  devDependencies?: { [key: string]: string | undefined; };
 }
 
 export interface Validators {

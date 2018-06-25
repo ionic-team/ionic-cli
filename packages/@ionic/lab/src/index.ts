@@ -137,6 +137,6 @@ class LabNamespace extends Namespace {
 
 const namespace = new LabNamespace();
 
-export async function run(argv: string[], env: { [k: string]: string; }) {
+export async function run(argv: string[], env: NodeJS.ProcessEnv) {
   await execute({ namespace, argv, env });
 }

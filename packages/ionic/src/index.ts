@@ -48,7 +48,7 @@ export async function generateContext(): Promise<IonicContext> {
   };
 }
 
-export async function loadExecutor(ctx: IonicContext, pargv: string[], env: { [k: string]: string; }): Promise<Executor> {
+export async function loadExecutor(ctx: IonicContext, pargv: string[], env: NodeJS.ProcessEnv): Promise<Executor> {
   if (!_executor) {
     const deps = await generateIonicEnvironment(ctx, pargv, env);
     const namespace = new IonicNamespace(deps);
@@ -58,7 +58,7 @@ export async function loadExecutor(ctx: IonicContext, pargv: string[], env: { [k
   return _executor;
 }
 
-export async function run(pargv: string[], env: { [k: string]: string; }) {
+export async function run(pargv: string[], env: NodeJS.ProcessEnv) {
   let err: any;
   let executor: Executor;
 
@@ -76,26 +76,30 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
     try {
       debug('Context: %o', ienv.ctx);
 
-      if (env['IONIC_TOKEN']) {
+      const token = env['IONIC_TOKEN'];
+      const email = env['IONIC_EMAIL'];
+      const password = env['IONIC_PASSWORD'];
+
+      if (token) {
         const wasLoggedIn = await ienv.session.isLoggedIn();
         debug(`${chalk.bold('IONIC_TOKEN')} environment variable detected`);
 
-        if (ienv.config.get('tokens.user') !== env['IONIC_TOKEN']) {
+        if (ienv.config.get('tokens.user') !== token) {
           debug(`${chalk.bold('IONIC_TOKEN')} mismatch with current session--attempting login`);
-          await ienv.session.tokenLogin(env['IONIC_TOKEN']);
+          await ienv.session.tokenLogin(token);
 
           if (wasLoggedIn) {
             ienv.log.info(`You have been logged out--using ${chalk.bold('IONIC_TOKEN')} environment variable`);
           }
         }
-      } else if (env['IONIC_EMAIL'] && env['IONIC_PASSWORD']) {
+      } else if (email && password) {
         debug(`${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables detected`);
 
-        if (ienv.config.get('user.email') !== env['IONIC_EMAIL']) {
+        if (ienv.config.get('user.email') !== email) {
           debug(`${chalk.bold('IONIC_EMAIL')} mismatch with current session--attempting login`);
 
           try {
-            await ienv.session.login(env['IONIC_EMAIL'], env['IONIC_PASSWORD']);
+            await ienv.session.login(email, password);
           } catch (e) {
             ienv.log.error(`Error occurred during automatic login via ${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables.`);
             throw e;

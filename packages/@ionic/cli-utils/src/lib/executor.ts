@@ -21,7 +21,7 @@ export class Executor extends AbstractExecutor<ICommand, INamespace, CommandMeta
     this.namespace = namespace;
   }
 
-  async execute(argv: string[], env: { [key: string]: string; }): Promise<void> {
+  async execute(argv: string[], env: NodeJS.ProcessEnv): Promise<void> {
     const pargs = stripOptions(argv, {});
 
     const location = await this.namespace.locate(pargs);

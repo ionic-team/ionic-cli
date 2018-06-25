@@ -24,7 +24,7 @@ export const EXECUTOR_OPS: ExecutorOperations = Object.freeze({
 export abstract class AbstractExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends EventEmitter implements IExecutor<C, N, M, I, O> {
   abstract readonly namespace: N;
 
-  abstract execute(argv: ReadonlyArray<string>, env: { [key: string]: string; }): Promise<void>;
+  abstract execute(argv: ReadonlyArray<string>, env: NodeJS.ProcessEnv): Promise<void>;
   abstract run(command: C, cmdargs: ReadonlyArray<string>, runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;
 }
 
@@ -69,7 +69,7 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
    *             executor. Usually, this means `process.argv.slice(2)`.
    * @param env Environment variables for this execution.
    */
-  async execute(argv: ReadonlyArray<string>, env: { [key: string]: string; }): Promise<void> {
+  async execute(argv: ReadonlyArray<string>, env: NodeJS.ProcessEnv): Promise<void> {
     if (argv[0] === EXECUTOR_OPS.RPC) {
       return this.rpc();
     }
@@ -165,7 +165,7 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
 
 export class Executor extends BaseExecutor<Command, Namespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
 
-export async function execute<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>({ namespace, argv, env, ...rest }: { namespace: N; argv: string[]; env: { [key: string]: string; } } & Partial<BaseExecutorDeps<C, N, M, I, O>>) {
+export async function execute<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>({ namespace, argv, env, ...rest }: { namespace: N; argv: string[]; env: NodeJS.ProcessEnv } & Partial<BaseExecutorDeps<C, N, M, I, O>>) {
   const executor = new BaseExecutor<C, N, M, I, O>({ namespace, ...rest });
   await executor.execute(argv, env);
 }

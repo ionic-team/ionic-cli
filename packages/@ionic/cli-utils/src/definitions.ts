@@ -49,7 +49,7 @@ export interface BaseHookContext {
     srcDir: string;
   };
   argv: string[];
-  env: { [key: string]: string | undefined; };
+  env: NodeJS.ProcessEnv;
 }
 
 export interface BuildHookInput {
