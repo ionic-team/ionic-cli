@@ -91,7 +91,6 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       const libmetadata = await buildRunner.getCommandMetadata();
       groups = libmetadata.groups || [];
       options.push(...libmetadata.options || []);
-      exampleCommands.push(...libmetadata.exampleCommands || []);
     }
 
     if (serveRunner) {
@@ -99,7 +98,6 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       const existingOpts = options.map(o => o.name);
       groups = libmetadata.groups || [];
       options.push(...(libmetadata.options || []).filter(o => !existingOpts.includes(o.name)).map(o => ({ ...o, hint: `${o.hint} ${chalk.dim('(--livereload)')}` })));
-      exampleCommands.push(...libmetadata.exampleCommands || []);
     }
 
     // Cordova Options
@@ -134,8 +132,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
     await this.preRunChecks(runinfo);
 
     const metadata = await this.getMetadata();
-
-    options['livereload'] = options['livereload'] !== undefined ? options['livereload'] : options['l'];
 
     if (options['noproxy']) {
       this.env.log.warn(`The ${chalk.green('--noproxy')} option has been deprecated. Please use ${chalk.green('--no-proxy')}.`);
@@ -185,8 +181,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
     const metadata = await this.getMetadata();
     const conf = await loadConfigXml({ project: this.project });
-
-    options['livereload'] = options['livereload'] !== undefined ? options['livereload'] : options['l'];
 
     onBeforeExit(async () => {
       conf.resetContentSrc();

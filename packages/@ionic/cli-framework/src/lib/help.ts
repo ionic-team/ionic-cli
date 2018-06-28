@@ -485,7 +485,7 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     }
 
     const exampleLines = metadata.exampleCommands.map(cmd => {
-      const sepIndex = cmd.indexOf(' -- ');
+      const sepIndex = cmd.indexOf('-- ');
       cmd = sepIndex === -1 ? input(cmd) : input(cmd.substring(0, sepIndex)) + cmd.substring(sepIndex);
       const wrappedCmd = wordWrap(cmd, { indentation: 12, append: ' \\' });
 
