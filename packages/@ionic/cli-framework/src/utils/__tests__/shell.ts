@@ -60,9 +60,8 @@ describe('@ionic/cli-framework', () => {
       });
 
       jest.resetModules();
-      const mockSpawn = jest.fn();
+      const mockCrossSpawn = jest.fn();
       const mock_os = { homedir: () => '/home/me' };
-      const mockCrossSpawn = { spawn: mockSpawn };
       jest.mock('cross-spawn', () => mockCrossSpawn);
       jest.mock('os', () => mock_os);
       const mock_path_posix = path.posix;
@@ -130,15 +129,15 @@ describe('@ionic/cli-framework', () => {
 
       it('should call spawn with correct args and return child process', async () => {
         const result = {};
-        mockSpawn.mockImplementation(() => result);
+        mockCrossSpawn.mockImplementation(() => result);
         const name = 'cmd';
         const args = ['foo', 'bar', 'baz'];
         const options = { env: { PATH: '' } };
         const cmd = new ShellCommand(name, args, options);
         const expectedOptions = { env: createProcessEnv(options.env) };
         expect(cmd.spawn()).toBe(result);
-        expect(mockSpawn).toHaveBeenCalledTimes(1);
-        expect(mockSpawn).toHaveBeenCalledWith(name, args, expectedOptions);
+        expect(mockCrossSpawn).toHaveBeenCalledTimes(1);
+        expect(mockCrossSpawn).toHaveBeenCalledWith(name, args, expectedOptions);
       });
 
       it('should pipe stdout and stderr in run()', async () => {
@@ -146,7 +145,7 @@ describe('@ionic/cli-framework', () => {
         const mockSpawnStdout = new ReadableStreamBuffer();
         const mockSpawnStderr = new ReadableStreamBuffer();
         const cp = new class extends EventEmitter { stdout = mockSpawnStdout; stderr = mockSpawnStderr; };
-        mockSpawn.mockImplementation(() => cp);
+        mockCrossSpawn.mockImplementation(() => cp);
         const stdoutMock = new WritableStreamBuffer();
         const stderrMock = new WritableStreamBuffer();
         const promise = cmd.run();
@@ -159,7 +158,7 @@ describe('@ionic/cli-framework', () => {
         await Promise.all([promisifyEvent(stdoutMock, 'finish'), promisifyEvent(stderrMock, 'finish')]);
         cp.emit('close', 0);
         await promise;
-        expect(mockSpawn).toHaveBeenCalledTimes(1);
+        expect(mockCrossSpawn).toHaveBeenCalledTimes(1);
         expect(stdoutMock.consume().toString()).toEqual('hello world!');
         expect(stderrMock.consume().toString()).toEqual('oh no!');
       });
@@ -169,7 +168,7 @@ describe('@ionic/cli-framework', () => {
         const mockSpawnStdout = new ReadableStreamBuffer();
         const mockSpawnStderr = new ReadableStreamBuffer();
         const cp = new class extends EventEmitter { stdout = mockSpawnStdout; stderr = mockSpawnStderr; };
-        mockSpawn.mockImplementation(() => cp);
+        mockCrossSpawn.mockImplementation(() => cp);
         const buf = new WritableStreamBuffer();
         const promise = cmd.run();
         promise.p.stdout.pipe(buf);
@@ -186,7 +185,7 @@ describe('@ionic/cli-framework', () => {
         const mockSpawnStdout = new ReadableStreamBuffer();
         const mockSpawnStderr = new ReadableStreamBuffer();
         const cp = new class extends EventEmitter { stdout = mockSpawnStdout; stderr = mockSpawnStderr; };
-        mockSpawn.mockImplementation(() => cp);
+        mockCrossSpawn.mockImplementation(() => cp);
         const buf = new WritableStreamBuffer();
         const promise = cmd.run(buf, buf);
         expect(promise.p).toBe(cp);
@@ -197,7 +196,7 @@ describe('@ionic/cli-framework', () => {
         const mockSpawnStdout = new ReadableStreamBuffer();
         const mockSpawnStderr = new ReadableStreamBuffer();
         const cp = new class extends EventEmitter { stdout = mockSpawnStdout; stderr = mockSpawnStderr; };
-        mockSpawn.mockImplementation(() => cp);
+        mockCrossSpawn.mockImplementation(() => cp);
         const p = cmd.combinedOutput();
         const outletter = '1';
         const errletter = '2';
@@ -220,7 +219,7 @@ describe('@ionic/cli-framework', () => {
         const mockSpawnStdout = new ReadableStreamBuffer();
         const mockSpawnStderr = new ReadableStreamBuffer();
         const cp = new class extends EventEmitter { stdout = mockSpawnStdout; stderr = mockSpawnStderr; };
-        mockSpawn.mockImplementation(() => cp);
+        mockCrossSpawn.mockImplementation(() => cp);
         const p = cmd.output();
         const outletter = '1';
         const errletter = '2';
@@ -247,7 +246,7 @@ describe('@ionic/cli-framework', () => {
         const mockSpawnStdout = new ReadableStreamBuffer();
         const mockSpawnStderr = new ReadableStreamBuffer();
         const cp = new class extends EventEmitter { stdout = mockSpawnStdout; stderr = mockSpawnStderr; };
-        mockSpawn.mockImplementation(() => cp);
+        mockCrossSpawn.mockImplementation(() => cp);
         const p = cmd.combinedOutput();
         const outletter = '1';
         const errletter = '2';
@@ -274,7 +273,7 @@ describe('@ionic/cli-framework', () => {
         const mockSpawnStdout = new ReadableStreamBuffer();
         const mockSpawnStderr = new ReadableStreamBuffer();
         const cp = new class extends EventEmitter { stdout = mockSpawnStdout; stderr = mockSpawnStderr; };
-        mockSpawn.mockImplementation(() => cp);
+        mockCrossSpawn.mockImplementation(() => cp);
         const p = cmd.output();
         mockSpawnStdout.feed('hello world!');
         mockSpawnStdout.stop();
