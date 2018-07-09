@@ -35,7 +35,7 @@ describe('@ionic/cli-utils', () => {
 
       it('should throw error for invalid public keys', async () => {
         for (let valid of valids) {
-          expect(() => parsePublicKey(fmt(valid)).rejects.toBe(ERROR_SSH_INVALID_PUBKEY);
+          expect(() => parsePublicKey(fmt(valid)).rejects.toBe(ERROR_SSH_INVALID_PUBKEY));
         }
       });
 

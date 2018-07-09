@@ -160,6 +160,8 @@ describe('@ionic/cli-framework', () => {
         expect(stripAnsi(result)).toBe(true);
       });
 
+    });
+
   });
 
 });

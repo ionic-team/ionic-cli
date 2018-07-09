@@ -35,7 +35,7 @@
     "jest-cli": "^23.0.1",
     "rimraf": "^2.6.2",
     "source-map": "^0.7.0",
-    "ts-jest": "^22.4.1",
+    "ts-jest": "^23.0.0",
     "tslint": "^5.9.1"
   },
   "peerDependencies": {

@@ -248,7 +248,7 @@ describe('@ionic/cli-framework', () => {
                   "summary": "input2 summary",
                   "required": false
                 }
-              ]
+              ],
               "options": [
                 {
                   "name": "opt1",
@@ -298,7 +298,7 @@ describe('@ionic/cli-framework', () => {
                   "summary": "input2 summary",
                   "required": false
                 }
-              ]
+              ],
               "options": [
                 {
                   "name": "opt1",
@@ -334,7 +334,7 @@ describe('@ionic/cli-framework', () => {
                 "my foo b1",
                 "my foo b2"
               ],
-              "inputs": []
+              "inputs": [],
               "options": []
             },
             {
@@ -349,7 +349,7 @@ describe('@ionic/cli-framework', () => {
               ],
               "exampleCommands": [],
               "aliases": [],
-              "inputs": []
+              "inputs": [],
               "options": []
             }
           ]
