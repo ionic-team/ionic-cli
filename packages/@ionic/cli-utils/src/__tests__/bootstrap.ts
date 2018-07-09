@@ -9,7 +9,7 @@ describe('@ionic/cli-utils', () => {
       });
 
       it('should detect local cli if installed in project', async () => {
-        jest.mock('@ionic/cli-framework/utils/npm', () => ({
+        jest.mock('@ionic/cli-framework/utils/node', () => ({
           resolve: () => '/path/to/project/node_modules/ionic/package.json',
           compileNodeModulesPaths: () => [],
           readPackageJsonFile: () => Promise.resolve({ version: '4.999.0' }),
@@ -21,7 +21,7 @@ describe('@ionic/cli-utils', () => {
       });
 
       it('should not detect local cli if installed and too old', async () => {
-        jest.mock('@ionic/cli-framework/utils/npm', () => ({
+        jest.mock('@ionic/cli-framework/utils/node', () => ({
           resolve: () => '/path/to/project/node_modules/ionic/package.json',
           compileNodeModulesPaths: () => [],
           readPackageJsonFile: () => Promise.resolve({ version: '3.9.2' }),
@@ -32,7 +32,7 @@ describe('@ionic/cli-utils', () => {
       });
 
       it('should not detect local cli if not installed in project', async () => {
-        jest.mock('@ionic/cli-framework/utils/npm', () => ({
+        jest.mock('@ionic/cli-framework/utils/node', () => ({
           resolve: () => { throw new Error('Module not found') },
           compileNodeModulesPaths: () => [],
         }));

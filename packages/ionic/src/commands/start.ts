@@ -7,7 +7,7 @@ import * as lodash from 'lodash';
 import { OptionGroup, validators } from '@ionic/cli-framework';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
-import { isValidPackageName } from '@ionic/cli-framework/utils/npm';
+import { isValidPackageName } from '@ionic/cli-framework/utils/node';
 import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, ResolvedStarterTemplate, StarterManifest, StarterTemplate, getProject } from '@ionic/cli-utils';

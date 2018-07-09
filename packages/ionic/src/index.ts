@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { BaseError, InputValidationError, PackageJson, stripOptions } from '@ionic/cli-framework';
-import { readPackageJsonFile } from '@ionic/cli-framework/utils/npm';
+import { readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { processExit } from '@ionic/cli-framework/utils/process';
 
 import { IPCMessage, IonicContext, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';

@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { OptionGroup } from '@ionic/cli-framework';
-import { compileNodeModulesPaths, resolve } from '@ionic/cli-framework/utils/npm';
+import { compileNodeModulesPaths, resolve } from '@ionic/cli-framework/utils/node';
 
 import { CommandMetadataOption } from '../../../definitions';
 

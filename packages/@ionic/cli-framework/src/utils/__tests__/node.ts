@@ -1,9 +1,9 @@
 import * as path from 'path'
-import { compileNodeModulesPaths } from '../npm';
+import { compileNodeModulesPaths } from '../node';
 
 describe('@ionic/cli-framework', () => {
 
-  describe('utils/npm', () => {
+  describe('utils/node', () => {
 
     describe('compileNodeModulesPaths', () => {
 
@@ -12,19 +12,19 @@ describe('@ionic/cli-framework', () => {
         jest.resetModules();
         jest.mock('path', () => mock_path_posix);
 
-        const npmLib = require('../npm');
+        const nodeLib = require('../node');
 
         it('should not accept a malformed path', () => {
-          expect(() => npmLib.compileNodeModulesPaths('.')).toThrowError('. is not an absolute path');
+          expect(() => nodeLib.compileNodeModulesPaths('.')).toThrowError('. is not an absolute path');
         });
 
         it('should compile an array of node_modules directories working backwards from a base directory', () => {
-          const result = npmLib.compileNodeModulesPaths('/some/dir');
+          const result = nodeLib.compileNodeModulesPaths('/some/dir');
           expect(result).toEqual(['/some/dir/node_modules', '/some/node_modules', '/node_modules']);
         });
 
         it('should work for the root directory', () => {
-          const result = npmLib.compileNodeModulesPaths('/');
+          const result = nodeLib.compileNodeModulesPaths('/');
           expect(result).toEqual(['/node_modules']);
         });
 
@@ -35,19 +35,19 @@ describe('@ionic/cli-framework', () => {
         jest.resetModules();
         jest.mock('path', () => mock_path_win32);
 
-        const npmLib = require('../npm');
+        const nodeLib = require('../node');
 
         it('should not accept a malformed path', () => {
-          expect(() => npmLib.compileNodeModulesPaths('.')).toThrowError('. is not an absolute path');
+          expect(() => nodeLib.compileNodeModulesPaths('.')).toThrowError('. is not an absolute path');
         });
 
         it('should compile an array of node_modules directories working backwards from a base directory', () => {
-          const result = npmLib.compileNodeModulesPaths('\\some\\dir');
+          const result = nodeLib.compileNodeModulesPaths('\\some\\dir');
           expect(result).toEqual(['\\some\\dir\\node_modules', '\\some\\node_modules', '\\node_modules']);
         });
 
         it('should work for the root directory', () => {
-          const result = npmLib.compileNodeModulesPaths('\\');
+          const result = nodeLib.compileNodeModulesPaths('\\');
           expect(result).toEqual(['\\node_modules']);
         });
 
