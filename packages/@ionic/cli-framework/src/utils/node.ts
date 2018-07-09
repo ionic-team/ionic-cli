@@ -8,6 +8,7 @@ import { fsReadJsonFile } from './fs';
 import { compilePaths } from './path';
 
 export const ERROR_INVALID_PACKAGE_JSON = 'INVALID_PACKAGE_JSON';
+export const ERROR_BIN_NOT_FOUND = 'BIN_NOT_FOUND';
 
 /**
  * Lightweight version of https://github.com/npm/validate-npm-package-name
@@ -30,6 +31,10 @@ export function compileNodeModulesPaths(filePath: string): string[] {
   return compilePaths(filePath).map(f => path.join(f, 'node_modules'));
 }
 
+export interface ResolveOptions {
+  paths?: string[];
+}
+
 /**
  * Poorly implemented shim for Node 8+ `require.resolve()`, with `paths`
  * option.
@@ -39,7 +44,7 @@ export function compileNodeModulesPaths(filePath: string): string[] {
  * @see https://nodejs.org/docs/latest-v8.x/api/modules.html#modules_require_resolve_request_options
  * @see https://nodejs.org/docs/latest-v8.x/api/modules.html#modules_all_together
  */
-export function resolve(m: string, options?: { paths?: string[] }): string {
+export function resolve(m: string, options?: ResolveOptions): string {
   const paths = options && options.paths ? options.paths : undefined;
 
   if (!paths) {
@@ -124,6 +129,23 @@ export namespace resolve {
       return foundPath;
     }
   }
+}
+
+export function resolveBin(m: string, bin: string, options?: ResolveOptions): string {
+  const packageJsonPath = resolve(`${m}/package`, options);
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, { encoding: 'utf8' }));
+
+  if (!isPackageJson(packageJson) || !packageJson.bin) {
+    throw ERROR_INVALID_PACKAGE_JSON;
+  }
+
+  const desiredBin = packageJson.bin[bin];
+
+  if (!desiredBin) {
+    throw ERROR_BIN_NOT_FOUND;
+  }
+
+  return path.resolve(path.dirname(packageJsonPath), desiredBin);
 }
 
 function safeStatSync(filePath: string): fs.Stats | undefined {
