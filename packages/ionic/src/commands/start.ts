@@ -508,6 +508,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           cmdArgs.push(proId);
         }
 
+        cmdArgs.push('--name', this.schema.name);
+
         await runCommand(runinfo, cmdArgs);
       }
 
