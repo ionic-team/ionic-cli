@@ -1,4 +1,4 @@
-import { BaseConfig, PromptModule, TaskChain } from '@ionic/cli-framework';
+import { BaseConfig, BaseConfigOptions, PromptModule, TaskChain } from '@ionic/cli-framework';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_FILE_INVALID_JSON, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/node';
@@ -103,6 +103,21 @@ export async function createProjectFromType(filePath: string, name: string | und
 }
 
 export class ProjectConfig extends BaseConfig<IProjectConfig> {
+  constructor(p: string, options?: BaseConfigOptions) {
+    super(p, options);
+
+    const c = this.c as any;
+
+    // <4.0.0 project config migration
+    if (typeof c.app_id === 'string') {
+      if (c.app_id) {
+        this.set('pro_id', c.app_id);
+      }
+
+      this.unset('app_id' as any);
+    }
+  }
+
   provideDefaults(): IProjectConfig {
     return {
       name: 'New Ionic App',

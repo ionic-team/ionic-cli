@@ -1,4 +1,4 @@
-import { BaseConfig, OptionGroup, ParsedArgs, metadataOptionsToParseArgsOptions, parseArgs } from '@ionic/cli-framework';
+import { BaseConfig, BaseConfigOptions, OptionGroup, ParsedArgs, metadataOptionsToParseArgsOptions, parseArgs } from '@ionic/cli-framework';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -56,8 +56,9 @@ export const CONFIG_FILE = 'config.json';
 export const DEFAULT_CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
 
 export class Config extends BaseConfig<ConfigFile> implements IConfig {
-  constructor(p: string) {
-    super(p);
+  constructor(p: string, options?: BaseConfigOptions) {
+    super(p, options);
+
     const c = this.c as any;
 
     // <4.0.0 config migration
