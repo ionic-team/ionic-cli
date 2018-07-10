@@ -212,7 +212,8 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       (labAddress ? `\nLab: ${chalk.bold(labAddress)}` : '') +
       `\nLocal: ${chalk.bold(localAddress)}` +
       (details.externalNetworkInterfaces.length > 0 ? `\nExternal: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}` : '') +
-      (devAppDetails && devAppDetails.channel ? `\nDevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '')
+      (devAppDetails && devAppDetails.channel ? `\nDevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '') +
+      `\n\n${chalk.yellow('Use Ctrl+C to quit this process')}`
     );
     this.log.nl();
 
