@@ -1,7 +1,6 @@
-import { camelCase, kebabCase, upperFirst } from 'lodash';
 import * as ts from 'typescript';
 
-import { Path, join, normalize } from '@angular-devkit/core';
+import { Path, join, normalize, strings } from '@angular-devkit/core';
 
 import {
   DirEntry,
@@ -35,7 +34,7 @@ function findRoutingModuleFromOptions(host: Tree, options: ModuleOptions): Path 
 
   if (!options.module) {
     const pathToCheck = (options.path || '')
-                      + (options.flat ? '' : '/' + kebabCase(options.name));
+                      + (options.flat ? '' : '/' + strings.dasherize(options.name));
 
     return normalize(findRoutingModule(host, pathToCheck));
   } else {
@@ -98,14 +97,14 @@ function addRouteToNgModule(options: PageOptions): Rule {
 
     const pagePath = (
       `/${options.path}/` +
-      (options.flat ? '' : `${kebabCase(options.name)}/`) +
-      `${kebabCase(options.name)}.module`
+      (options.flat ? '' : `${strings.dasherize(options.name)}/`) +
+      `${strings.dasherize(options.name)}.module`
     );
 
     const relativePath = buildRelativePath(module, pagePath);
 
     const routePath = options.routePath ? options.routePath : options.name;
-    const routeLoadChildren = `${relativePath}#${upperFirst(camelCase(options.name))}PageModule`;
+    const routeLoadChildren = `${relativePath}#${strings.classify(options.name)}PageModule`;
     const changes = addRouteToRoutesArray(source, module, routePath, routeLoadChildren);
     const recorder = host.beginUpdate(module);
 
@@ -152,7 +151,7 @@ function addRouteToRoutesArray(source: ts.SourceFile, ngModulePath: string, rout
 }
 
 function buildSelector(options: PageOptions) {
-  let selector = kebabCase(options.name);
+  let selector = strings.dasherize(options.name);
 
   if (options.prefix) {
     selector = `${options.prefix}-${selector}`;
@@ -188,9 +187,7 @@ export default function(options: PageOptions): Rule {
     const templateSource = apply(url('./files'), [
       options.spec ? noop() : filter(p => !p.endsWith('.spec.ts')),
       template({
-        camelCase,
-        kebabCase,
-        upperFirst,
+        ...strings,
         'if-flat': (s: string) => options.flat ? '' : s,
         ...options,
       }),

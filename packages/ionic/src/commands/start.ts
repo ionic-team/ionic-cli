@@ -528,7 +528,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
       if (gitIntegration) {
         try {
-          await this.env.shell.run('git', ['add', 'asdf'], shellOptions);
+          await this.env.shell.run('git', ['add', '-A'], shellOptions);
           await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], shellOptions);
         } catch (e) {
           this.env.log.warn('Error encountered during commit. Disabling further git operations.');

@@ -5,12 +5,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { <%= upperFirst(camelCase(name)) %>Page } from './<%= kebabCase(name) %>.page';
+import { <%= classify(name) %>Page } from './<%= dasherize(name) %>.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: <%= upperFirst(camelCase(name)) %>Page
+    component: <%= classify(name) %>Page
   }
 ];
 
@@ -21,6 +21,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [<%= upperFirst(camelCase(name)) %>Page]
+  declarations: [<%= classify(name) %>Page]
 })
-export class <%= upperFirst(camelCase(name)) %>PageModule {}
+export class <%= classify(name) %>PageModule {}

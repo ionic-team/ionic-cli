@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 <% if(routePath) { %>import { ActivatedRoute, Params } from '@angular/router';<% } %>
 @Component({
   selector: '<%= selector %>',
-  templateUrl: './<%= kebabCase(name) %>.page.html',
-  styleUrls: ['./<%= kebabCase(name) %>.page.<%= styleext %>'],
+  templateUrl: './<%= dasherize(name) %>.page.html',
+  styleUrls: ['./<%= dasherize(name) %>.page.<%= styleext %>'],
 })
-export class <%= upperFirst(camelCase(name)) %>Page implements OnInit {
+export class <%= classify(name) %>Page implements OnInit {
 
   <% if(routePath) { %>public params: Params;<% } %>
 
