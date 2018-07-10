@@ -441,7 +441,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       throw new FatalException('Error while loading new project. Please report this error!');
     }
 
-    const shellOptions = { cwd: projectDir, stdio: ['inherit', 'ignore', 'ignore'] };
+    const shellOptions = { cwd: projectDir, stdio: 'inherit' };
 
     if (!this.schema.cloned) {
       if (!options['cordova'] && !options['capacitor']) {
@@ -474,7 +474,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       this.env.log.rawmsg(await getIonicDevAppText());
 
       const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install' });
-      await this.env.shell.run(installer, installerArgs, { ...shellOptions, stdio: 'inherit' });
+      await this.env.shell.run(installer, installerArgs, shellOptions);
     }
 
     if (!this.schema.cloned) {
