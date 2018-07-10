@@ -103,7 +103,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
         key: 'ionic',
         flair: 'Ionic CLI',
         value: ctx.version,
-        path: path.dirname(path.dirname(ctx.libPath)),
+        path: ctx.libPath,
       },
       { group: 'system', key: 'NodeJS', value: process.version, path: process.execPath },
       { group: 'system', key: 'npm', value: npm || 'not installed' },

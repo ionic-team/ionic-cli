@@ -25,7 +25,7 @@ export async function detectLocalCLI(): Promise<string> {
     // ignore
   }
 
-  if (pkgPath) {
+  if (pkgPath && process.env.IONIC_CLI_LIB !== path.dirname(pkgPath)) {
     const pkg = await readPackageJsonFile(pkgPath);
 
     debug(`local CLI ${chalk.bold(pkg.version)} found at ${chalk.bold(pkgPath)}`);

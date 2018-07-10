@@ -25,12 +25,6 @@ describe('ionic', () => {
         expect(pathParts).toEqual(['bin', 'ionic']);
       });
 
-      it('should have expected path for main script', async () => {
-        const { libPath } = await generateContext();
-        const pathParts = lodash.takeRight(libPath.split(path.sep), 2);
-        expect(pathParts).toEqual(['dist', 'index.js']);
-      });
-
     });
 
   });

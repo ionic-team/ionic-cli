@@ -9,6 +9,7 @@ process.title = 'ionic';
 process.on('unhandledRejection', function(r) { process.stderr.write(r); process.exit(1); });
 
 var events = require('events');
+var path = require('path');
 var evt = new events.EventEmitter();
 
 var cli;
@@ -34,24 +35,26 @@ if (process.argv.includes('--no-color')) {
   process.env.DEBUG_COLORS = '0';
 }
 
-var bootstrap = require('@ionic/cli-utils/bootstrap');
-
 var pargv = process.argv.slice(2);
+var lib = path.resolve(__dirname, '..');
+
+process.env.IONIC_CLI_BIN = __filename;
+process.env.IONIC_CLI_LIB = lib;
+
+var bootstrap = require('@ionic/cli-utils/bootstrap');
 
 bootstrap.detectLocalCLI()
   .then(function(localPath) {
     cli = require(localPath);
-    process.env.IONIC_CLI_BIN = __filename;
     return cli.run(pargv, process.env);
   }, function(err) {
-    cli = require('../');
+    cli = require(lib);
 
     if (typeof err !== 'string') {
       throw err;
     }
 
     process.env.IONIC_CLI_LOCAL_ERROR = err;
-    process.env.IONIC_CLI_BIN = __filename;
 
     return cli.run(pargv, process.env);
   })

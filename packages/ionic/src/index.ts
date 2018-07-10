@@ -42,7 +42,7 @@ export async function generateContext(): Promise<IonicContext> {
 
   return {
     binPath: path.resolve(PACKAGE_ROOT_PATH, pkg.bin.ionic),
-    libPath: path.resolve(PACKAGE_ROOT_PATH, pkg.main),
+    libPath: PACKAGE_ROOT_PATH,
     execPath: process.cwd(),
     version: pkg.version,
   };
