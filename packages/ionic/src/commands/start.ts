@@ -391,7 +391,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     const gitDesired = options['git'] ? true : false;
     const gitInstalled = await isGitInstalled(this.env);
     const gitTopLevel = await getTopLevel(this.env);
-    const gitIntegration = gitDesired && gitInstalled && !gitTopLevel ? true : false;
+
+    let gitIntegration = gitDesired && gitInstalled && !gitTopLevel ? true : false;
 
     if (!gitInstalled) {
       const installationDocs = `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`;
@@ -479,7 +480,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     if (!this.schema.cloned) {
       if (gitIntegration) {
-        await this.env.shell.run('git', ['init'], shellOptions); // TODO: use initializeRepo()?
+        try {
+          await this.env.shell.run('git', ['init'], shellOptions); // TODO: use initializeRepo()?
+        } catch (e) {
+          this.env.log.warn('Error encountered during repo initialization. Disabling further git operations.');
+          gitIntegration = false;
+        }
       }
 
       if (options['link'] && !linkConfirmed) {
@@ -521,8 +527,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       }
 
       if (gitIntegration) {
-        await this.env.shell.run('git', ['add', '-A'], shellOptions);
-        await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], shellOptions);
+        try {
+          await this.env.shell.run('git', ['add', 'asdf'], shellOptions);
+          await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], shellOptions);
+        } catch (e) {
+          this.env.log.warn('Error encountered during commit. Disabling further git operations.');
+          gitIntegration = false;
+        }
       }
 
       if (manifest) {
