@@ -510,8 +510,6 @@ export async function serve(deps: ServeRunnerDeps, inputs: CommandLineInputs, op
     const opts = runner.createOptionsFromCommandLine(inputs, options);
     const details = await runner.run(opts);
 
-    (deps as any).keepopen = true; // TODO: this is gross
-
     return details;
   } catch (e) {
     if (e instanceof RunnerException) {

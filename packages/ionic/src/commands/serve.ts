@@ -2,6 +2,8 @@ import chalk from 'chalk';
 import * as lodash from 'lodash';
 
 import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
+import { sleepForever } from '@ionic/cli-framework/utils/process';
+
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
@@ -141,6 +143,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
 
     // TODO: use runner directly
     await serve({ config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, options);
+    await sleepForever();
   }
 }
 

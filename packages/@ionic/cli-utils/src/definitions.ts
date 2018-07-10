@@ -631,7 +631,6 @@ export interface IonicEnvironment {
   session: ISession;
   readonly shell: IShell;
   readonly tasks: ζframework.TaskChain;
-  keepopen: boolean;
 
   open(): void;
   close(): void;

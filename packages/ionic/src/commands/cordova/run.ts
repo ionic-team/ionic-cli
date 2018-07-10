@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
-import { onBeforeExit } from '@ionic/cli-framework/utils/process';
+import { onBeforeExit, sleepForever } from '@ionic/cli-framework/utils/process';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
 import { COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
@@ -192,6 +192,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
       // TODO: use runner directly
       const details = await serve({ config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateBuildOptions(metadata, inputs, options));
+
       if (details.externallyAccessible === false) {
         const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
         this.env.log.warn(`Your device or emulator may not be able to access ${chalk.bold(details.externalAddress)}.${extra}\n\n`);
@@ -205,6 +206,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
 
       await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: ws });
+      await sleepForever();
     } else {
       if (options.build) {
         const { build } = await import('@ionic/cli-utils/lib/build');

@@ -76,6 +76,8 @@ export async function run(pargv: string[], env: NodeJS.ProcessEnv) {
     try {
       debug('Context: %o', ienv.ctx);
 
+      ienv.config.set('version', ienv.ctx.version);
+
       const token = env['IONIC_TOKEN'];
       const email = env['IONIC_EMAIL'];
       const password = env['IONIC_PASSWORD'];
@@ -128,8 +130,6 @@ export async function run(pargv: string[], env: NodeJS.ProcessEnv) {
     } catch (e) {
       err = e;
     }
-
-    ienv.config.set('version', ienv.ctx.version);
   }
 
   if (err) {

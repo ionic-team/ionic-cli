@@ -32,7 +32,6 @@ export class Environment implements IonicEnvironment {
   readonly shell: IShell;
   readonly tasks: TaskChain;
   readonly ctx: IonicContext;
-  keepopen = false;
 
   constructor({ client, config, flags, getInfo, log, ctx, prompt, session, shell, tasks }: EnvironmentDeps) {
     this.client = client;
@@ -61,14 +60,12 @@ export class Environment implements IonicEnvironment {
   }
 
   close() {
-    if (!this.keepopen) {
-      this.tasks.cleanup();
+    this.tasks.cleanup();
 
-      this.prompt.close();
-      const formatter = createFormatter();
-      this.log.handlers = new Set([...DEFAULT_LOGGER_HANDLERS].map(handler => handler.clone({ formatter })));
+    this.prompt.close();
+    const formatter = createFormatter();
+    this.log.handlers = new Set([...DEFAULT_LOGGER_HANDLERS].map(handler => handler.clone({ formatter })));
 
-      debug('Environment closed.');
-    }
+    debug('Environment closed.');
   }
 }

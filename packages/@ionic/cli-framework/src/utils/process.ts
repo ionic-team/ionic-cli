@@ -51,6 +51,13 @@ export async function sleepUntil(predicate: () => boolean, { interval = 30, time
 }
 
 /**
+ * Never resolves.
+ */
+export async function sleepForever(): Promise<never> {
+  return new Promise<never>(() => { /* never resolves */ });
+}
+
+/**
  * Register a synchronous function to be called once the process exits.
  */
 export function onExit(fn: () => void) {
