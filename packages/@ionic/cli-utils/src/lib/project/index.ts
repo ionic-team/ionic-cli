@@ -342,12 +342,24 @@ export function prettyProjectName(type?: string): string {
   }
 
   if (type === 'angular') {
-    return 'ionic/angular v4+';
+    return 'ionic/angular 4';
   } else if (type === 'ionic-angular') {
-    return 'Ionic Angular v2/v3';
+    return 'Ionic Angular 3';
   } else if (type === 'ionic1') {
     return 'Ionic 1';
   }
 
   return type;
+}
+
+export function prettyProjectTooling(type?: string): string {
+  if (type === 'angular') {
+    return 'Angular 6+, Angular CLI';
+  } else if (type === 'ionic-angular') {
+    return 'Angular 5, @ionic/app-scripts';
+  } else if (type === 'ionic1') {
+    return 'AngularJS, gulp, sass';
+  }
+
+  return 'unknown tooling';
 }

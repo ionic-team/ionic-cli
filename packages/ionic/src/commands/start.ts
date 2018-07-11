@@ -14,7 +14,7 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
-import { prettyProjectName } from '@ionic/cli-utils/lib/project';
+import { prettyProjectTooling } from '@ionic/cli-utils/lib/project';
 import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
 
 const debug = Debug('ionic:cli:commands:start');
@@ -298,7 +298,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       if (!options['type']) {
         const projectTypes = await this.getStarterProjectTypes();
         const recommendedType = 'ionic-angular';
-        const betaTypes = ['angular'];
 
         if (this.env.flags.interactive) {
           this.env.log.nl();
@@ -314,19 +313,23 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           name: 'template',
           message: 'Project type:',
           choices: () => {
-            const formatProjectType = (projectType: string) => {
+            const formatProjectName = (projectType: string) => {
               let extra = '';
 
               if (projectType === recommendedType) {
-                extra += ' (recommended)';
-              } else if (betaTypes.includes(projectType)) {
-                extra += ` ${chalk.bold.red('(beta)')}`;
+                extra += ` ${chalk.bold('(recommended)')}`;
               }
 
-              return `${chalk.green(projectType)}${extra}`;
+              if (projectType === 'angular') {
+                extra += ` ${chalk.bold.red('(beta)')}`;
+              } else if (projectType === 'ionic1') {
+                extra += ` ${chalk.bold.yellow('(legacy)')}`;
+              }
+
+              return `${prettyProjectTooling(projectType)}${extra}`;
             };
 
-            const cols = columnar(projectTypes.map(projectType => [prettyProjectName(projectType), formatProjectType(projectType)]), {}).split('\n');
+            const cols = columnar(projectTypes.map(projectType => [formatProjectName(projectType), chalk.green(projectType)]), {}).split('\n');
 
             return projectTypes.map((projectType, i) => ({
               name: cols[i],
