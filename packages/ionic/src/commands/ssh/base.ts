@@ -7,7 +7,7 @@ import { FatalException } from '@ionic/cli-utils/lib/errors';
 export abstract class SSHBaseCommand extends Command {
   async checkForOpenSSH() {
     try {
-      await this.env.shell.run('ssh', ['-V'], { showCommand: false, fatalOnNotFound: false });
+      await this.env.shell.run('ssh', ['-V'], { stdio: 'ignore', showCommand: false, fatalOnNotFound: false });
     } catch (e) {
       if (!(e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND)) {
         throw e;

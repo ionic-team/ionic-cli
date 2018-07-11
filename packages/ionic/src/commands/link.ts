@@ -27,13 +27,13 @@ export class LinkCommand extends Command implements CommandPreRun {
     return {
       name: 'link',
       type: 'project',
-      summary: 'Connect your local app to Ionic Pro',
+      summary: 'Connect local apps to Ionic Pro',
       description: `
-If you have an app on Ionic Pro, you can link it to this local Ionic project with this command.
+Link apps on Ionic Pro to local Ionic projects with this command.
 
-Excluding the ${chalk.green('pro-id')} argument looks up your apps on Ionic Pro and prompts you to select one.
+If the ${chalk.green('pro-id')} argument is excluded, this command will prompt you to select an app from Ionic Pro.
 
-Ionic Pro uses a git-based workflow to manage app updates. During the linking process, you may select ${chalk.bold('GitHub')} (recommended) or ${chalk.bold('Ionic Pro')} as a git host. See our documentation${chalk.cyan('[1]')} for more information.
+Ionic Pro uses a git-based workflow to manage app updates. During the linking process, select ${chalk.bold('GitHub')} (recommended) or ${chalk.bold('Ionic Pro')} as a git host. See our documentation${chalk.cyan('[1]')} for more information.
 
 Ultimately, this command sets the ${chalk.bold('pro_id')} property in ${chalk.bold(PROJECT_FILE)}, which marks this app as linked.
 

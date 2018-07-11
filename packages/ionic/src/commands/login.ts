@@ -16,9 +16,15 @@ export class LoginCommand extends Command implements CommandPreRun {
       description: `
 Authenticate with Ionic Pro and retrieve a user token, which is stored in the CLI config.
 
-Alternatively, set the ${chalk.green('IONIC_TOKEN')} environment variable and the CLI will automatically authenticate you. (You can also use ${chalk.green('IONIC_EMAIL')} and ${chalk.green('IONIC_PASSWORD')}.)
+If the ${chalk.green('IONIC_TOKEN')} environment variable is set, the CLI will automatically authenticate you. To retrieve your user token, first use ${chalk.green('ionic login')}, then print the token by running the ${chalk.green('ionic config get -g tokens.user')} command.
+
+You can also use ${chalk.green('IONIC_EMAIL')} and ${chalk.green('IONIC_PASSWORD')} environment variables for automatic authentication, but it is not recommended to store your password in plain text.
 
 If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
+
+If you are having issues logging in, please get in touch with our Support${chalk.cyan('[1]')}.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')}
       `,
       exampleCommands: ['', 'john@example.com', 'hello@example.com secret'],
       inputs: [

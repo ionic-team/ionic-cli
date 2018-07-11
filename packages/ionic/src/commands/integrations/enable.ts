@@ -13,7 +13,12 @@ export class IntegrationsEnableCommand extends Command {
     return {
       name: 'enable',
       type: 'project',
-      summary: 'Add various integrations to your app',
+      summary: 'Add & enable integrations to your app',
+      description: `
+Integrations, such as Cordova, can be enabled with this command. If the integration has never been added to the project, ${chalk.green('ionic integrations enable')} will download and add the integration.
+
+Integrations can be re-added with the ${chalk.green('--add')} option.
+      `,
       inputs: [
         {
           name: 'name',

@@ -9,7 +9,14 @@ export class GitRemoteCommand extends Command {
     return {
       name: 'remote',
       type: 'project',
-      summary: 'Adds/updates the Ionic git remote to your local Ionic app repository',
+      summary: 'Adds/updates the Ionic Pro git remote to your local Ionic app',
+      description: `
+This command is used by ${chalk.green('ionic link')} when Ionic Pro is used as the git host.
+
+${chalk.green('ionic git remote')} will check the local repository for whether or not the git remote is properly set up. This command operates on the ${chalk.bold('ionic')} remote. For advanced configuration, see ${chalk.bold('Settings')} => ${chalk.bold('Git')} in the app settings of the Dashboard${chalk.cyan('[1]')}.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://dashboard.ionicframework.com')}
+      `,
     };
   }
 

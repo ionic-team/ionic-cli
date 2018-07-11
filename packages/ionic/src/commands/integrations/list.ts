@@ -12,6 +12,12 @@ export class IntegrationsListCommand extends Command {
       name: 'list',
       type: 'project',
       summary: 'List available and active integrations in your app',
+      description: `
+This command will print the status of integrations in Ionic projects. Integrations can be ${chalk.bold('enabled')} (added and enabled), ${chalk.bold('disabled')} (added but disabled), and ${chalk.bold('not added')} (never added to the project).
+
+- To enable or add integrations, see ${chalk.green('ionic integrations enable --help')}
+- To disable integrations, see ${chalk.green('ionic integrations disable --help')}
+      `,
     };
   }
 
@@ -38,6 +44,6 @@ export class IntegrationsListCommand extends Command {
       return chalk.dim('not added');
     };
 
-    this.env.log.rawmsg(columnar(integrations.map(i => [chalk.bold(i.name), i.summary, status(i.name)]), { headers: ['name', 'summary', 'status'] }));
+    this.env.log.rawmsg(columnar(integrations.map(i => [chalk.green(i.name), i.summary, status(i.name)]), { headers: ['name', 'summary', 'status'] }));
   }
 }

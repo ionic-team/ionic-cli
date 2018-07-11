@@ -14,7 +14,15 @@ export class SSHSetupCommand extends SSHBaseCommand {
     return {
       name: 'setup',
       type: 'global',
-      summary: 'Setup your Ionic SSH keys automatically',
+      summary: 'Setup your Ionic Pro SSH keys automatically',
+      description: `
+This command offers a setup wizard for Ionic Pro SSH keys using a series of prompts. For more control, see the commands available for managing SSH keys with the ${chalk.green('ionic ssh --help')} command. For an entirely manual approach, see ${chalk.bold('Personal Settings')} => ${chalk.bold('SSH Keys')} in the Dashboard${chalk.cyan('[1]')}.
+
+If you are having issues setting up SSH keys, please get in touch with our Support${chalk.cyan('[2]')}.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://dashboard.ionicframework.com/settings/ssh-keys')}
+${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')}
+      `,
     };
   }
 

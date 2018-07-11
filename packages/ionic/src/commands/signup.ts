@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
@@ -7,6 +9,13 @@ export class SignupCommand extends Command {
       name: 'signup',
       type: 'global',
       summary: 'Create an account for Ionic Pro',
+      description: `
+Learn more about Ionic Pro: ${chalk.bold('https://ionicframework.com/pro')}
+
+If you are having issues signing up, please get in touch with our Support${chalk.cyan('[1]')}.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')}
+      `,
     };
   }
 

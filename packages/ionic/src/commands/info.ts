@@ -12,7 +12,10 @@ export class InfoCommand extends Command {
     return {
       name: 'info',
       type: 'global',
-      summary: 'Print system/environment info',
+      summary: 'Print project, system, and environment information',
+      description: `
+This command is an easy way to share information about your setup. If applicable, be sure to run ${chalk.green('ionic info')} within your project directory to display even more information.
+      `,
       options: [
         {
           name: 'json',

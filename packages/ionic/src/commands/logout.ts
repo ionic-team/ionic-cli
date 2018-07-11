@@ -12,6 +12,8 @@ export class LogoutCommand extends Command {
       description: `
 Remove the Ionic Pro user token from the CLI config.
 
+Login again with ${chalk.green('ionic login')}.
+
 If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
       `,
     };

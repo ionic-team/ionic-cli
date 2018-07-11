@@ -5,7 +5,7 @@ export class IntegrationsNamespace extends Namespace {
     return {
       name: 'integrations',
       summary: 'Manage various integrations in your app',
-      description: 'Integrations, such as Cordova, can easily be enabled or disabled in your app with these commands.',
+      description: 'Integrations, such as Cordova, can be enabled or disabled in your app with these commands.',
     };
   }
 

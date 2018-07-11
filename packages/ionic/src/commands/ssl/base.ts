@@ -7,7 +7,7 @@ import { FatalException } from '@ionic/cli-utils/lib/errors';
 export abstract class SSLBaseCommand extends Command {
   async checkForOpenSSL() {
     try {
-      await this.env.shell.run('openssl', ['version'], { showCommand: false, fatalOnNotFound: false });
+      await this.env.shell.run('openssl', ['version'], { stdio: 'ignore', showCommand: false, fatalOnNotFound: false });
     } catch (e) {
       if (!(e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND)) {
         throw e;

@@ -15,6 +15,13 @@ export class SSHUseCommand extends SSHBaseCommand {
       name: 'use',
       type: 'global',
       summary: 'Set your active Ionic SSH key',
+      description: `
+This command modifies the SSH configuration file (${chalk.bold('~/.ssh/config')}) to set an active private key for the ${chalk.bold('git.ionicjs.com')} host. Read more about SSH configuration by running the ${chalk.green('man ssh_config')} command or by visiting online man pages${chalk.cyan('[1]')}.
+
+Before making changes, ${chalk.green('ionic ssh use')} will print a diff and ask for permission to write the file.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://linux.die.net/man/5/ssh_config')}
+      `,
       inputs: [
         {
           name: 'key-path',

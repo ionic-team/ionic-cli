@@ -12,6 +12,9 @@ export class IntegrationsDisableCommand extends Command {
       name: 'disable',
       type: 'project',
       summary: 'Disable an integration',
+      description: `
+Integrations, such as Cordova, can be disabled with this command.
+      `,
       inputs: [
         {
           name: 'name',
