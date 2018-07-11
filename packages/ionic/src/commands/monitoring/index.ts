@@ -1,10 +1,18 @@
+import { NamespaceGroup } from '@ionic/cli-framework';
 import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class MonitoringNamespace extends Namespace {
   async getMetadata() {
+    const groups: NamespaceGroup[] = [];
+
+    if (!this.project || this.project.type !== 'ionic-angular') {
+      groups.push(NamespaceGroup.Hidden);
+    }
+
     return {
       name: 'monitoring',
       summary: 'Commands relating to Ionic Pro error monitoring',
+      groups,
     };
   }
 
