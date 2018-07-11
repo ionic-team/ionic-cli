@@ -1,16 +1,9 @@
 import chalk from 'chalk';
 
-import { NamespaceGroup } from '@ionic/cli-framework';
 import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class CordovaNamespace extends Namespace {
   async getMetadata() {
-    const groups: string[] = [];
-
-    if (this.project && this.project.type === 'angular') {
-      groups.push(NamespaceGroup.Experimental);
-    }
-
     return {
       name: 'cordova',
       summary: 'Cordova functionality',
@@ -21,7 +14,6 @@ Cordova Reference documentation:
 - Overview: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/overview/index.html')}
 - CLI documentation: ${chalk.bold('https://cordova.apache.org/docs/en/latest/reference/cordova-cli/')}
       `,
-      groups,
     };
   }
 

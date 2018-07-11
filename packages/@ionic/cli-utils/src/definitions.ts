@@ -341,7 +341,7 @@ export interface ITelemetry {
 
 export type NpmClient = 'yarn' | 'npm';
 
-export type FeatureId = 'project-angular' | 'capacitor-commands' | 'ssl-commands';
+export type FeatureId = 'capacitor-commands' | 'ssl-commands';
 
 export interface ConfigFile {
   'version': string;
@@ -367,7 +367,6 @@ export interface ConfigFile {
   'tokens.telemetry'?: string;
 
   // Features
-  'features.project-angular'?: boolean;
   'features.capacitor-commands'?: boolean;
   'features.ssl-commands'?: boolean;
 }

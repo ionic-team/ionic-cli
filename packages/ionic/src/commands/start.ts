@@ -296,7 +296,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       };
     } else {
       if (!options['type']) {
-        const recommendedType = this.env.config.get('features.project-angular') ? 'angular' : 'ionic-angular';
+        const recommendedType = 'ionic-angular';
+        const betaTypes = ['angular'];
 
         if (this.env.flags.interactive) {
           this.env.log.nl();
@@ -312,8 +313,20 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           name: 'template',
           message: 'Project type:',
           choices: () => {
+            const formatProjectType = (projectType: string) => {
+              let extra = '';
+
+              if (projectType === recommendedType) {
+                extra += ' (recommended)';
+              } else if (betaTypes.includes(projectType)) {
+                extra += ` ${chalk.bold.red('(beta)')}`;
+              }
+
+              return `${chalk.green(projectType)}${extra}`;
+            };
+
             const projectTypes = lodash.uniq(starterTemplates.map(t => t.type));
-            const cols = columnar(projectTypes.map(projectType => [`${chalk.green(projectType)}${projectType === recommendedType ? ' (recommended)' : ''}`, prettyProjectName(projectType)]), {}).split('\n');
+            const cols = columnar(projectTypes.map(projectType => [formatProjectType(projectType), prettyProjectName(projectType)]), {}).split('\n');
 
             return projectTypes.map((projectType, i) => ({
               name: cols[i],
@@ -321,6 +334,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
               value: projectType,
             }));
           },
+          default: recommendedType,
         });
 
         options['type'] = type;
@@ -549,8 +563,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   async getStarterTemplates(): Promise<StarterTemplate[]> {
     const { STARTER_TEMPLATES } = await import('@ionic/cli-utils/lib/start');
 
-    const hasProjectAngular = this.env.config.get('features.project-angular');
-    return STARTER_TEMPLATES.filter(({ type }) => type !== 'angular' || hasProjectAngular);
+    return STARTER_TEMPLATES;
   }
 
   async checkForExisting(projectDir: string) {

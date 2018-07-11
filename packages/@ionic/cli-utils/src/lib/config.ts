@@ -74,7 +74,6 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
         'git.setup': c.git && c.git.setup,
         'tokens.user': c.tokens && c.tokens.user,
         'tokens.telemetry': c.tokens && c.tokens.telemetry,
-        'features.project-angular': c.features && c.features['project-angular'],
         'features.capacitor-commands': c.features && c.features['capacitor-commands'],
         'features.ssl-commands': c.features && c.features['ssl-commands'],
       };

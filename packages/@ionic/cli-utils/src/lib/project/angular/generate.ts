@@ -21,7 +21,7 @@ function pluralizeType(type: string): string {
 export class AngularGenerateRunner extends GenerateRunner<AngularGenerateOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
-      groups: [CommandGroup.Experimental],
+      groups: [CommandGroup.Beta],
       description: `
 This command uses the Angular CLI to generate ${['pages', 'components', 'directives', 'services'].map(c => chalk.green(c)).join(', ')}, etc.
 
