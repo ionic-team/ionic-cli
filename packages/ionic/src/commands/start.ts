@@ -296,6 +296,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       };
     } else {
       if (!options['type']) {
+        const projectTypes = await this.getStarterProjectTypes();
         const recommendedType = 'ionic-angular';
         const betaTypes = ['angular'];
 
@@ -325,7 +326,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
               return `${chalk.green(projectType)}${extra}`;
             };
 
-            const projectTypes = lodash.uniq(starterTemplates.map(t => t.type));
             const cols = columnar(projectTypes.map(projectType => [formatProjectType(projectType), prettyProjectName(projectType)]), {}).split('\n');
 
             return projectTypes.map((projectType, i) => ({
@@ -339,6 +339,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
         options['type'] = type;
       }
+
+      await this.validateProjectType(String(options['type']));
 
       if (!inputs[1]) {
         if (this.env.flags.interactive) {
@@ -566,6 +568,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     return STARTER_TEMPLATES;
   }
 
+  async getStarterProjectTypes(): Promise<string[]> {
+    const starterTemplates = await this.getStarterTemplates();
+    return lodash.uniq(starterTemplates.map(t => t.type));
+  }
+
   async checkForExisting(projectDir: string) {
     const projectExists = await pathExists(projectDir);
 
@@ -614,6 +621,17 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       throw new FatalException(
         `Unable to find starter template for ${chalk.green(template)}\n` +
         `If this is not a typo, please make sure it is a valid starter template within the starters repo: ${chalk.bold('https://github.com/ionic-team/starters')}`
+      );
+    }
+  }
+
+  async validateProjectType(type: string) {
+    const projectTypes = await this.getStarterProjectTypes();
+
+    if (!projectTypes.includes(type)) {
+      throw new FatalException(
+        `${chalk.green(type)} is not a valid project type.\n` +
+        `Please choose a different ${chalk.green('--type')}. Use ${chalk.green('ionic start --list')} to list all available starter templates.`
       );
     }
   }
