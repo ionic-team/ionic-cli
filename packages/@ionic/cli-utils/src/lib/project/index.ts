@@ -342,7 +342,7 @@ export function prettyProjectName(type?: string): string {
   }
 
   if (type === 'angular') {
-    return 'Ionic Angular v4+';
+    return 'ionic/angular v4+';
   } else if (type === 'ionic-angular') {
     return 'Ionic Angular v2/v3';
   } else if (type === 'ionic1') {

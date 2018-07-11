@@ -1,3 +1,3 @@
-# Ionic Angular v4+ CLI Utility
+# ionic/angular v4+ CLI Utility
 
-Low-level CLI mostly for serving Ionic Angular v4+ apps.
+Low-level utilities mostly for building/serving ionic/angular v4+ apps.

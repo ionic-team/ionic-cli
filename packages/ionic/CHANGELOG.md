@@ -3,7 +3,7 @@
 <a name="4.0.0"></a>
 ### 4.0.0 (PENDING)
 
-This release offers opt-in support for :sparkles: **Ionic Angular 4**
+This release offers opt-in support for :sparkles: **ionic/angular 4**
 :sparkles:. Please be aware that [the
 framework](https://github.com/ionic-team/ionic/tree/master/angular) is still in
 early alpha. Opt-in to the new project type and help us test: [#3019
@@ -26,7 +26,7 @@ seamless.
 
 **Ionic Angular v2/v3**: The CLI will continue working with apps using
 `@ionic/app-scripts` for tooling. The CLI will continue to support projects that
-have yet to migrate to Ionic Angular 4 w/ Angular CLI for tooling.
+have yet to migrate to ionic/angular 4 w/ Angular CLI for tooling.
 
 **Ionic 1**: For Ionic 1 projects, a new toolkit has been introduced to slim
 down the main CLI package. All functionality is still supported, but the

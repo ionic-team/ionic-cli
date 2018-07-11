@@ -5,10 +5,6 @@
 
 :wave: :point_right: *Please test :sparkles: **CLI 4** :sparkles: release candidates:* `npm i -g ionic@rc` :heart:
 
-If you find issues, please let us know:
-* **Tooling for Ionic Angular 4**: See [#3019](https://github.com/ionic-team/ionic-cli/issues/3019)
-* **Other CLI 4 Issues**: Please create new issue
-
 ---
 
 The Ionic command line interface (CLI) is your go-to tool for developing
