@@ -24,7 +24,7 @@ documentation.
 Aside from a few edge cases listed below, upgrading to CLI v4 should be
 seamless.
 
-**Ionic Angular v2/v3**: The CLI will continue working with apps using
+**Ionic Angular 3**: The CLI will continue working with apps using
 `@ionic/app-scripts` for tooling. The CLI will continue to support projects that
 have yet to migrate to ionic/angular 4 w/ Angular CLI for tooling.
 
@@ -55,7 +55,8 @@ down the main CLI package. All functionality is still supported, but the
   https://github.com/ionic-team/ionic-conference-app`.
 * The `--display-name` option for `ionic start` has been removed. The `name`
   argument is now used as the display name and slugified for directory name,
-  package name, etc. To provide a custom slug, use `--project-id`.
+  package name, etc. To provide a custom slug, use `--project-id` (see
+  [#3038](https://github.com/ionic-team/ionic-cli/issues/3038)).
 * The `ionic:watch:before` npm script hook has been renamed to
   `ionic:serve:before`, but behaves the same.
 * `ionic doctor check` will now _only_ print issues and exit with exit code 1 if
