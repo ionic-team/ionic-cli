@@ -170,7 +170,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
         this.log.warn(
           'Detected unsupported Cordova plugins with Ionic DevApp:\n' +
           `${packageCordovaPluginsDiff.map(p => `- ${chalk.bold(p)}`).join('\n')}\n\n` +
-          `App may not function as expected in Ionic DevApp and Ionic View.`
+          `App may not function as expected in Ionic DevApp.`
         );
       }
     }

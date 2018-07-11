@@ -116,7 +116,6 @@ export class App {
           <a href="https://ionicframework.com/docs">Documentation</a>
           <a href="https://forum.ionicframework.com/">Forum</a>
           <a href="https://github.com/ionic-team/ionic">GitHub</a>
-          <a href="https://ionicframework.com/pro/view">Ionic View</a>
         </div>
       </footer>
     ];
