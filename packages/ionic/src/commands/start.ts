@@ -326,7 +326,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
               return `${chalk.green(projectType)}${extra}`;
             };
 
-            const cols = columnar(projectTypes.map(projectType => [formatProjectType(projectType), prettyProjectName(projectType)]), {}).split('\n');
+            const cols = columnar(projectTypes.map(projectType => [prettyProjectName(projectType), formatProjectType(projectType)]), {}).split('\n');
 
             return projectTypes.map((projectType, i) => ({
               name: cols[i],
