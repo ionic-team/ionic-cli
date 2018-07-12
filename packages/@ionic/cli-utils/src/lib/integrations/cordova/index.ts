@@ -1,5 +1,9 @@
+import * as Debug from 'debug';
+
 import { BaseIntegration } from '../';
 import { InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../../definitions';
+
+const debug = Debug('ionic:cli-utils:lib:integrations:cordova');
 
 export class Integration extends BaseIntegration {
   readonly name: IntegrationName = 'cordova';
@@ -68,13 +72,19 @@ export class Integration extends BaseIntegration {
   }
 
   async getCordovaPlatformVersions(): Promise<string | undefined> {
-    const output = await this.shell.cmdinfo('cordova', ['platform', 'ls', '--no-telemetry']);
+    try {
+      const output = await this.shell.output('cordova', ['platform', 'ls', '--no-telemetry'], { showCommand: false });
 
-    return output ? output
-      .replace(/\s+/g, ' ')
-      .replace('Installed platforms:', '')
-      .replace(/Available platforms.+/, '')
-      .trim() : undefined;
+      return output
+        .replace('Installed platforms:', '')
+        .replace(/Available platforms[\s\S]+/, '')
+        .split('\n')
+        .map(l => l.trim())
+        .filter(l => l)
+        .join(', ');
+    } catch (e) {
+      debug('Error while getting Cordova platforms: %o', e);
+    }
   }
 
   async getXcodebuildVersion(): Promise<string | undefined> {
