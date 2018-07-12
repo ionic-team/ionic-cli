@@ -97,7 +97,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       const libmetadata = await serveRunner.getCommandMetadata();
       const existingOpts = options.map(o => o.name);
       groups = libmetadata.groups || [];
-      options.push(...(libmetadata.options || []).filter(o => !existingOpts.includes(o.name)).map(o => ({ ...o, hint: `${o.hint} ${chalk.dim('(--livereload)')}` })));
+      options.push(...(libmetadata.options || []).filter(o => !existingOpts.includes(o.name)).map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${chalk.dim('(--livereload)')}` })));
     }
 
     // Cordova Options

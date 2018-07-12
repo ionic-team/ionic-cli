@@ -58,7 +58,7 @@ export const APP_SCRIPTS_OPTIONS: CommandMetadataOption[] = [
   {
     name: 'env',
     summary: '',
-    groups: [OptionGroup.Advanced, 'app-scripts'],
+    groups: [OptionGroup.Hidden, OptionGroup.Advanced, 'app-scripts'],
     hint: chalk.dim('[app-scripts]'),
   },
 ];

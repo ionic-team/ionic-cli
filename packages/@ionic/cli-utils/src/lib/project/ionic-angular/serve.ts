@@ -33,6 +33,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           summary: 'Print app console logs to Ionic CLI',
           type: Boolean,
           aliases: ['c'],
+          hint: chalk.dim('[app-scripts]'),
         },
         {
           name: 'serverlogs',
@@ -40,6 +41,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           type: Boolean,
           aliases: ['s'],
           groups: [OptionGroup.Hidden],
+          hint: chalk.dim('[app-scripts]'),
         },
         {
           name: 'livereload-port',
@@ -47,12 +49,14 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           default: DEFAULT_LIVERELOAD_PORT.toString(),
           aliases: ['r'],
           groups: [OptionGroup.Advanced],
+          hint: chalk.dim('[app-scripts]'),
         },
         {
           name: 'dev-logger-port',
-          summary: 'Use specific port for dev server communication',
+          summary: 'Use specific port for dev server',
           default: DEFAULT_DEV_LOGGER_PORT.toString(),
           groups: [OptionGroup.Advanced],
+          hint: chalk.dim('[app-scripts]'),
         },
         {
           name: 'proxy',
@@ -60,6 +64,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           type: Boolean,
           default: true,
           groups: [OptionGroup.Advanced],
+          hint: chalk.dim('[app-scripts]'),
           // TODO: Adding 'x' to aliases here has some weird behavior with minimist.
         },
         ...APP_SCRIPTS_OPTIONS,
