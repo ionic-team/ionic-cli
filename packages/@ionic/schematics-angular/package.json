@@ -1,6 +1,6 @@
 {
   "name": "@ionic/schematics-angular",
-  "version": "1.0.0-rc.10",
+  "version": "1.0.0-rc.11",
   "description": "Schematics specific to Ionic for Angular",
   "homepage": "https://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com) ",
