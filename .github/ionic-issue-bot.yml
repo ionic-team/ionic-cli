@@ -32,6 +32,16 @@ closeAndLock:
 
 
         Thank you for using Ionic!
+    - label: "ionitron: old major version"
+      message: >
+        Thanks for the issue! This issue appears to be associated with an old
+        version of the Ionic CLI. Please update to the latest CLI version,
+        which supports all versions of the Ionic Framework. If the issue is
+        relevant and if it persists after updating to the latest CLI version,
+        please create a new issue.
+
+
+        Thank you for using Ionic!
     - label: "ionitron: cordova"
       message: >
         Thanks for the issue! We use this issue tracker exclusively for bug
