@@ -27,11 +27,14 @@ export class IonicAngularBuildRunner extends BuildRunner<IonicAngularBuildOption
 
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
-      exampleCommands: ['--prod', '-- --generateSourceMap false'],
       description: `${chalk.green('ionic build')} uses ${chalk.bold('@ionic/app-scripts')}. See the project's ${chalk.bold('README.md')}${chalk.cyan('[1]')} for documentation. Options not listed below are considered advanced and can be passed to the ${chalk.green('ionic-app-scripts')} CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scripts/blob/master/README.md')}`,
       options: APP_SCRIPTS_OPTIONS,
+      exampleCommands: [
+        '--prod',
+        '--prod -- --generateSourceMap true',
+      ],
     };
   }
 

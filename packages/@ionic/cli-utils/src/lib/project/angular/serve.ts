@@ -44,7 +44,9 @@ ${chalk.green('ionic serve')} uses the Angular CLI. Use ${chalk.green('ng serve 
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/serve')}`,
       options: NG_SERVE_OPTIONS,
-      exampleCommands: ['-- --proxy-config proxy.conf.json'],
+      exampleCommands: [
+        '-- --proxy-config proxy.conf.json',
+      ],
     };
   }
 
