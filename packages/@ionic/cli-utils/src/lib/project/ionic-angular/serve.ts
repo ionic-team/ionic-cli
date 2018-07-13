@@ -67,6 +67,13 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           hint: chalk.dim('[app-scripts]'),
           // TODO: Adding 'x' to aliases here has some weird behavior with minimist.
         },
+        {
+          name: 'source-map',
+          summary: 'Output sourcemaps',
+          type: Boolean,
+          groups: [OptionGroup.Advanced],
+          hint: chalk.dim('[app-scripts]'),
+        },
         ...APP_SCRIPTS_OPTIONS,
       ],
       exampleCommands: [
@@ -77,11 +84,13 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicAngularServeOptions {
     const baseOptions = super.createOptionsFromCommandLine(inputs, options);
+    const sourcemaps = typeof options['source-map'] === 'boolean' ? Boolean(options['source-map']) : undefined;
     const livereloadPort = str2num(options['livereload-port'], DEFAULT_LIVERELOAD_PORT);
     const notificationPort = str2num(options['dev-logger-port'], DEFAULT_DEV_LOGGER_PORT);
 
     return {
       ...baseOptions,
+      sourcemaps,
       consolelogs: options['consolelogs'] ? true : false,
       serverlogs: options['serverlogs'] ? true : false,
       livereloadPort,
@@ -212,20 +221,21 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
       _: [],
       address: options.address,
       port: String(options.port),
-      livereloadPort: String(options.livereloadPort),
-      devLoggerPort: String(options.notificationPort),
+      'livereload-port': String(options.livereloadPort),
+      'dev-logger-port': String(options.notificationPort),
       consolelogs: options.consolelogs,
       serverlogs: options.serverlogs,
       nobrowser: true,
       nolivereload: !options.livereload,
       noproxy: !options.proxy,
       iscordovaserve: options.engine === 'cordova',
+      generateSourceMap: typeof options.sourcemaps !== 'undefined' ? options.sourcemaps ? 'true' : 'false' : undefined,
       platform: options.platform,
       target: options.engine === 'cordova' ? 'cordova' : undefined,
       env: options.env,
     };
 
-    return [...unparseArgs(args, { useEquals: false }), ...options['--']];
+    return [...unparseArgs(args, { allowCamelCase: true, useEquals: false }), ...options['--']];
   }
 
 }

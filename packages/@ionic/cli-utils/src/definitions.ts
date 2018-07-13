@@ -483,11 +483,19 @@ export interface BuildOptions<T extends ProjectType> extends BaseBuildOptions {
 }
 
 export interface AngularBuildOptions extends BuildOptions<'angular'> {
+  /**
+   * The Angular architect configuration to use for builds.
+   *
+   * The `--prod` command line flag is a shortcut which translates to the
+   * 'production' configuration.
+   */
   configuration?: string;
+  sourcemaps?: boolean;
 }
 
 export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> {
   prod: boolean;
+  sourcemaps?: boolean;
   aot: boolean;
   minifyjs: boolean;
   minifycss: boolean;
@@ -537,9 +545,11 @@ export interface ServeOptions {
 
 export interface AngularServeOptions extends ServeOptions {
   configuration?: string;
+  sourcemaps?: boolean;
 }
 
 export interface IonicAngularServeOptions extends ServeOptions {
+  sourcemaps?: boolean;
   consolelogs: boolean;
   serverlogs: boolean;
   env?: string;

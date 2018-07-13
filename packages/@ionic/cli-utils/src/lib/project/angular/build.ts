@@ -9,13 +9,7 @@ import { AngularProject } from './';
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:build');
 
-export const NG_BUILD_OPTIONS = [
-  {
-    name: 'prod',
-    summary: `Flag to set configuration to ${chalk.green('prod')}`,
-    type: Boolean,
-    hint: chalk.dim('[ng]'),
-  },
+const NG_BUILD_OPTIONS = [
   {
     name: 'configuration',
     aliases: ['c'],
@@ -45,7 +39,22 @@ export class AngularBuildRunner extends BuildRunner<AngularBuildOptions> {
 ${chalk.green('ionic build')} uses the Angular CLI. Use ${chalk.green('ng build --help')} to list all Angular CLI options for building your app. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the ${chalk.green('ng')} CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/build')}`,
-      options: NG_BUILD_OPTIONS,
+      options: [
+        {
+          name: 'prod',
+          summary: `Flag to set configuration to ${chalk.bold('production')}`,
+          type: Boolean,
+          hint: chalk.dim('[ng]'),
+        },
+        {
+          name: 'source-map',
+          summary: 'Output sourcemaps',
+          type: Boolean,
+          groups: [OptionGroup.Advanced],
+          hint: chalk.dim('[ng]'),
+        },
+        ...NG_BUILD_OPTIONS,
+      ],
       exampleCommands: [
         '--prod',
       ],
@@ -56,10 +65,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
+    const sourcemaps = typeof options['source-map'] === 'boolean' ? Boolean(options['source-map']) : undefined;
 
     return {
       ...baseOptions,
       configuration,
+      sourcemaps,
       type: 'angular',
     };
   }
@@ -67,6 +78,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   async buildOptionsToNgArgs(options: AngularBuildOptions): Promise<string[]> {
     const args: ParsedArgs = {
       _: [],
+      'source-map': options.sourcemaps !== false ? options.sourcemaps : 'false',
     };
 
     if (options.engine === 'cordova') {

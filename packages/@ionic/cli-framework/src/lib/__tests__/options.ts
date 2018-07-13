@@ -113,7 +113,7 @@ describe('@ionic/cli-framework', () => {
           string: ['_', 'foo', 'bar'],
           boolean: ['flag1'],
           alias: { foo: ['f'], bar: [], flag1: [] },
-          default: { foo: null, bar: 'soup', flag1: false },
+          default: { foo: null, bar: 'soup', flag1: null },
           '--': true,
         });
       });
@@ -123,7 +123,7 @@ describe('@ionic/cli-framework', () => {
         it('should parse with empty argv', () => {
           const opts = metadataOptionsToParseArgsOptions(metadata1.options);
           const result = minimist([], opts);
-          expect(result).toEqual({ _: [], foo: null, f: null, bar: 'soup', flag1: false, '--': [] });
+          expect(result).toEqual({ _: [], foo: null, f: null, bar: 'soup', flag1: null, '--': [] });
         });
 
         it('should parse with comprehensive argv', () => {

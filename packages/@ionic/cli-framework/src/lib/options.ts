@@ -1,7 +1,7 @@
 import * as lodash from 'lodash';
 import * as minimist from 'minimist';
 
-import { CommandLineOptions, CommandMetadataOption, CommandOptionType, HydratedCommandMetadataOption, HydratedParseArgsOptions, ParsedArg } from '../definitions';
+import { CommandLineOptions, CommandMetadataOption, HydratedCommandMetadataOption, HydratedParseArgsOptions, ParsedArg } from '../definitions';
 
 export const parseArgs = minimist;
 export { ParsedArgs } from 'minimist';
@@ -73,10 +73,6 @@ export function separateArgv(pargv: ReadonlyArray<string>): [string[], string[]]
   return [ ownArgs, otherArgs ];
 }
 
-const typeDefaults = new Map<CommandOptionType, null | string | boolean>()
-  .set(String, null) // tslint:disable-line:no-null-keyword
-  .set(Boolean, false);
-
 /**
  * Takes a Minimist command option and normalizes its values.
  */
@@ -85,7 +81,7 @@ export function hydrateCommandMetadataOption<O extends CommandMetadataOption>(op
 
   return lodash.assign({}, option, {
     type,
-    default: option.default ? option.default : typeDefaults.get(type),
+    default: typeof option.default !== 'undefined' ? option.default : null, // tslint:disable-line:no-null-keyword
     aliases: Array.isArray(option.aliases) ? option.aliases : [],
   });
 }

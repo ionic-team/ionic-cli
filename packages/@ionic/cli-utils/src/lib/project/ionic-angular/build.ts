@@ -1,4 +1,4 @@
-import { unparseArgs } from '@ionic/cli-framework';
+import { OptionGroup, unparseArgs } from '@ionic/cli-framework';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
@@ -30,21 +30,31 @@ export class IonicAngularBuildRunner extends BuildRunner<IonicAngularBuildOption
       description: `${chalk.green('ionic build')} uses ${chalk.bold('@ionic/app-scripts')}. See the project's ${chalk.bold('README.md')}${chalk.cyan('[1]')} for documentation. Options not listed below are considered advanced and can be passed to the ${chalk.green('ionic-app-scripts')} CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scripts/blob/master/README.md')}`,
-      options: APP_SCRIPTS_OPTIONS,
+      options: [
+        {
+          name: 'source-map',
+          summary: 'Output sourcemaps',
+          type: Boolean,
+          groups: [OptionGroup.Advanced],
+          hint: chalk.dim('[app-scripts]'),
+        },
+        ...APP_SCRIPTS_OPTIONS,
+      ],
       exampleCommands: [
         '--prod',
-        '--prod -- --generateSourceMap true',
       ],
     };
   }
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicAngularBuildOptions {
     const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
+    const sourcemaps = typeof options['source-map'] === 'boolean' ? Boolean(options['source-map']) : undefined;
 
     return {
       ...baseOptions,
       type: 'ionic-angular',
       prod: options['prod'] ? true : false,
+      sourcemaps,
       aot: options['aot'] ? true : false,
       minifyjs: options['minifyjs'] ? true : false,
       minifycss: options['minifycss'] ? true : false,
@@ -88,11 +98,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
       minifyjs: options.minifyjs ? true : false,
       minifycss: options.minifycss ? true : false,
       optimizejs: options.optimizejs ? true : false,
+      generateSourceMap: typeof options.sourcemaps !== 'undefined' ? options.sourcemaps ? 'true' : 'false' : undefined,
       target: options.target,
       platform: options.platform,
       env: options.env,
     };
 
-    return [...unparseArgs(minimistArgs, { useEquals: false }), ...options['--']];
+    return [...unparseArgs(minimistArgs, { allowCamelCase: true, useEquals: false }), ...options['--']];
   }
 }
