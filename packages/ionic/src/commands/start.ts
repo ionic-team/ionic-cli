@@ -14,7 +14,6 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
-import { prettyProjectTooling } from '@ionic/cli-utils/lib/project';
 import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
 
 const debug = Debug('ionic:cli:commands:start');
@@ -295,55 +294,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         projectDir,
       };
     } else {
-      if (!options['type']) {
-        const projectTypes = await this.getStarterProjectTypes();
-        const recommendedType = 'ionic-angular';
-
-        if (this.env.flags.interactive) {
-          this.env.log.nl();
-          this.env.log.msg(
-            `${chalk.bold('What type of project would you like to create?')}\n` +
-            `We recommend ${chalk.green(recommendedType)}. To learn more about project types, see the CLI documentation${chalk.cyan('[1]')}. To bypass this prompt next time, supply the ${chalk.green('--type')} option.\n\n` +
-            `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}\n\n`
-          );
-        }
-
-        const type = await this.env.prompt({
-          type: 'list',
-          name: 'template',
-          message: 'Project type:',
-          choices: () => {
-            const formatProjectName = (projectType: string) => {
-              let extra = '';
-
-              if (projectType === recommendedType) {
-                extra += ` ${chalk.bold('(recommended)')}`;
-              }
-
-              if (projectType === 'angular') {
-                extra += ` ${chalk.bold.red('(beta)')}`;
-              } else if (projectType === 'ionic1') {
-                extra += ` ${chalk.bold.yellow('(legacy)')}`;
-              }
-
-              return `${prettyProjectTooling(projectType)}${extra}`;
-            };
-
-            const cols = columnar(projectTypes.map(projectType => [formatProjectName(projectType), chalk.green(projectType)]), {}).split('\n');
-
-            return projectTypes.map((projectType, i) => ({
-              name: cols[i],
-              short: projectType,
-              value: projectType,
-            }));
-          },
-          default: recommendedType,
-        });
-
-        options['type'] = type;
-      }
-
-      await this.validateProjectType(String(options['type']));
+      const type = options['type'] ? String(options['type']) : 'ionic-angular';
+      await this.validateProjectType(type);
 
       if (!inputs[1]) {
         if (this.env.flags.interactive) {
@@ -359,12 +311,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           name: 'template',
           message: 'Starter template:',
           choices: () => {
-            const chosenType = String(options['type']);
-            const starterTemplateList = starterTemplates.filter(st => st.type === chosenType);
+            const starterTemplateList = starterTemplates.filter(st => st.type === type);
             const cols = columnar(starterTemplateList.map(({ name, description }) => [chalk.green(name), description || '']), {}).split('\n');
 
             if (starterTemplateList.length === 0) {
-              throw new FatalException(`No starter templates found for project type: ${chalk.green(chosenType)}.`);
+              throw new FatalException(`No starter templates found for project type: ${chalk.green(type)}.`);
             }
 
             return starterTemplateList.map((starterTemplate, i) => {
@@ -383,7 +334,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       this.schema = {
         cloned,
         name: inputs[0],
-        type: String(options['type']),
+        type,
         template: inputs[1],
         projectId,
         projectDir,
