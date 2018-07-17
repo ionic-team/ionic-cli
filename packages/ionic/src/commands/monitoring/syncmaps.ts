@@ -43,7 +43,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
       throw new FatalException(`Cannot run ${chalk.green('ionic monitoring syncmaps')} outside a project directory.`);
     }
 
-    const token = await this.env.session.getUserToken();
+    const token = this.env.session.getUserToken();
     const proId = await this.project.requireProId();
 
     const [ snapshotId ] = inputs;

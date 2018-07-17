@@ -28,7 +28,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://dashboard.ionicframework.com')}
       throw new FatalException(`Cannot run ${chalk.green('ionic git remote')} outside a project directory.`);
     }
 
-    const token = await this.env.session.getUserToken();
+    const token = this.env.session.getUserToken();
     const proId = await this.project.requireProId();
     const appClient = new AppClient({ token, client: this.env.client });
     const app = await appClient.load(proId);

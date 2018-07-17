@@ -52,7 +52,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')
       );
     }
 
-    if (await this.env.session.isLoggedIn()) {
+    if (this.env.session.isLoggedIn()) {
       const extra = !inputs[0] || !inputs[1] ? 'Prompting for new credentials.' : 'Attempting login.';
       const email = this.env.config.get('user.email');
       this.env.log.warn(`You are already logged in${email ? ' as ' + chalk.bold(email) : ''}! ${this.env.flags.interactive ? extra : ''}`);
@@ -92,7 +92,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const [ email, password ] = inputs;
 
-    if (await this.env.session.isLoggedIn()) {
+    if (this.env.session.isLoggedIn()) {
       this.env.log.msg('Logging you out.');
       await runCommand(runinfo, ['logout']);
       this.env.config.set('tokens.telemetry', generateUUID());

@@ -16,7 +16,7 @@ export class ShareCommand extends Command {
   }
 
   async run(): Promise<void> {
-    const dashUrl = await this.env.config.getDashUrl();
+    const dashUrl = this.env.config.getDashUrl();
 
     throw new FatalException(
       `${chalk.green('ionic share')} has been removed as of CLI 3.0.\n` +

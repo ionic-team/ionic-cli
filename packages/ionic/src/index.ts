@@ -83,7 +83,7 @@ export async function run(pargv: string[], env: NodeJS.ProcessEnv) {
       const password = env['IONIC_PASSWORD'];
 
       if (token) {
-        const wasLoggedIn = await ienv.session.isLoggedIn();
+        const wasLoggedIn = ienv.session.isLoggedIn();
         debug(`${chalk.bold('IONIC_TOKEN')} environment variable detected`);
 
         if (ienv.config.get('tokens.user') !== token) {

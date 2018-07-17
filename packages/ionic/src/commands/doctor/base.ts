@@ -27,7 +27,7 @@ export abstract class DoctorCommand extends Command {
     const registry = await this.getRegistry();
     let count = 0;
 
-    const isLoggedIn = await this.env.session.isLoggedIn();
+    const isLoggedIn = this.env.session.isLoggedIn();
 
     if (!isLoggedIn) {
       this.env.log.warn(`For best results, please make sure you're logged in to Ionic.\nSome issues can't be detected without authentication. Run:\n\n    ${chalk.green('ionic login')}`);

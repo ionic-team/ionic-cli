@@ -198,7 +198,7 @@ commonName                 = ${commonName}
 subjectAltName=DNS:${commonName}
 `.trim();
 
-    const p = await tmpfilepath('ionic-ssl');
+    const p = tmpfilepath('ionic-ssl');
     await fsWriteFile(p, cnf, { encoding: 'utf8' });
     return p;
   }

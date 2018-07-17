@@ -43,7 +43,7 @@ export class HelpCommand extends Command {
         );
       }
 
-      const isLoggedIn = await this.env.session.isLoggedIn();
+      const isLoggedIn = this.env.session.isLoggedIn();
       const now = new Date();
       const prefix = isLoggedIn ? chalk.blue('PRO') + ' ' : '';
       const version = this.env.ctx.version;

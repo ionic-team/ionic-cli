@@ -28,7 +28,7 @@ export class GitCloneCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     // let [ proId, destination ] = inputs;
 
-    // const appLoader = new App(await this.env.session.getUserToken(), this.env.client);
+    // const appLoader = new App(this.env.session.getUserToken(), this.env.client);
     // const app = await appLoader.load(proId);
     // const remote = await formatGitRepoUrl(this.env.config, app.id);
 

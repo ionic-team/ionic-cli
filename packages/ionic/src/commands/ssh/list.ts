@@ -32,8 +32,8 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
 
     const { json } = options;
 
-    const user = await this.env.session.getUser();
-    const token = await this.env.session.getUserToken();
+    const user = this.env.session.getUser();
+    const token = this.env.session.getUserToken();
 
     const sshkeyClient = new SSHKeyClient({ client: this.env.client, user, token });
     const paginator = sshkeyClient.paginate();
@@ -49,7 +49,7 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
 
       const sshConfigPath = getConfigPath();
       const conf = await loadFromPath(sshConfigPath);
-      const section = findHostSection(conf, await this.env.config.getGitHost());
+      const section = findHostSection(conf, this.env.config.getGitHost());
 
       if (section && section.config) {
         const [ identityFile ] = section.config.filter(line => {

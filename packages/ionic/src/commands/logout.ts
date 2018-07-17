@@ -20,7 +20,7 @@ If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    if (!(await this.env.session.isLoggedIn())) {
+    if (!this.env.session.isLoggedIn()) {
       this.env.log.msg('You are already logged out.');
       return;
     }

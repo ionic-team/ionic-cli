@@ -21,7 +21,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const opn = await import('opn');
-    const dashUrl = await this.env.config.getDashUrl();
+    const dashUrl = this.env.config.getDashUrl();
 
     await opn(`${dashUrl}/signup?source=cli`, { wait: false });
 

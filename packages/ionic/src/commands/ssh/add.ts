@@ -79,8 +79,8 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
       throw e;
     }
 
-    const user = await this.env.session.getUser();
-    const token = await this.env.session.getUserToken();
+    const user = this.env.session.getUser();
+    const token = this.env.session.getUserToken();
     const sshkeyClient = new SSHKeyClient({ client: this.env.client, token, user });
 
     try {

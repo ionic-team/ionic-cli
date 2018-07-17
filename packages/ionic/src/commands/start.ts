@@ -234,7 +234,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
 
     if (proId) {
-      if (!(await this.env.session.isLoggedIn())) {
+      if (!this.env.session.isLoggedIn()) {
         await promptToLogin(this.env);
       }
     }
@@ -242,7 +242,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     if (!inputs[0]) {
       if (proId) {
         const { AppClient } = await import('@ionic/cli-utils/lib/app');
-        const token = await this.env.session.getUserToken();
+        const token = this.env.session.getUserToken();
         const appClient = new AppClient({ token, client: this.env.client });
         this.env.tasks.next(`Looking up app ${chalk.green(proId)}`);
         const app = await appClient.load(proId);

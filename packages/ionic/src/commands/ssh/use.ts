@@ -60,7 +60,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://linux.die.net/man/5/ssh_config')}
     const sshConfigPath = getConfigPath();
     const text1 = await fileToString(sshConfigPath);
     const conf = SSHConfig.parse(text1);
-    ensureHostAndKeyPath(conf, { host: await this.env.config.getGitHost(), port: await this.env.config.getGitPort() }, keyPath);
+    ensureHostAndKeyPath(conf, { host: this.env.config.getGitHost(), port: this.env.config.getGitPort() }, keyPath);
     const text2 = SSHConfig.stringify(conf);
 
     if (text1 === text2) {

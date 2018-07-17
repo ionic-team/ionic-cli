@@ -22,6 +22,6 @@
     "chokidar-cli": "^1.2.0",
     "husky": "^0.14.3",
     "lerna": "^2.9.1",
-    "tslint-ionic-rules": "0.0.16"
+    "tslint-ionic-rules": "0.0.17"
   }
 }

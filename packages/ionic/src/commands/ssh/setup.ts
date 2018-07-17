@@ -35,7 +35,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     const { getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
     const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
 
-    if (!(await this.env.session.isLoggedIn())) {
+    if (!this.env.session.isLoggedIn()) {
       await promptToLogin(this.env);
     }
 

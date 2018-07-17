@@ -25,8 +25,8 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
     const { SSHKeyClient } = await import('@ionic/cli-utils/lib/ssh');
 
     if (!inputs[0]) {
-      const user = await this.env.session.getUser();
-      const token = await this.env.session.getUserToken();
+      const user = this.env.session.getUser();
+      const token = this.env.session.getUserToken();
 
       const sshkeyClient = new SSHKeyClient({ client: this.env.client, user, token });
       const paginator = sshkeyClient.paginate();
@@ -55,8 +55,8 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
 
     const [ id ] = inputs;
 
-    const user = await this.env.session.getUser();
-    const token = await this.env.session.getUserToken();
+    const user = this.env.session.getUser();
+    const token = this.env.session.getUserToken();
 
     const sshkeyClient = new SSHKeyClient({ client: this.env.client, user, token });
     await sshkeyClient.delete(id);

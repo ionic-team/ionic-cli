@@ -118,7 +118,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
       }
     }
 
-    if (!(await this.env.session.isLoggedIn())) {
+    if (!this.env.session.isLoggedIn()) {
       await promptToLogin(this.env);
     }
 
@@ -214,13 +214,13 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
 
   private async getAppClient() {
     const { AppClient } = await import('@ionic/cli-utils/lib/app');
-    const token = await this.env.session.getUserToken();
+    const token = this.env.session.getUserToken();
     return new AppClient({ token, client: this.env.client });
   }
 
   private async getUserClient() {
     const { UserClient } = await import('@ionic/cli-utils/lib/user');
-    const token = await this.env.session.getUserToken();
+    const token = this.env.session.getUserToken();
     return new UserClient({ token, client: this.env.client });
   }
 
@@ -314,7 +314,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
   }
 
   async linkGithub(app: App): Promise<string | undefined> {
-    const { id } = await this.env.session.getUser();
+    const { id } = this.env.session.getUser();
 
     const userClient = await this.getUserClient();
     const user = await userClient.load(id, { fields: ['oauth_identities'] });
@@ -481,7 +481,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
   }
 
   async selectGithubRepo(): Promise<number> {
-    const user = await this.env.session.getUser();
+    const user = this.env.session.getUser();
     const userClient = await this.getUserClient();
 
     const task = this.env.tasks.next('Looking up your GitHub repositories');
@@ -557,7 +557,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
         throw new FatalException('Aborting. No branch choice specified.');
     }
 
-    const user = await this.env.session.getUser();
+    const user = this.env.session.getUser();
     const userClient = await this.getUserClient();
     const paginator = userClient.paginateGithubBranches(user.id, repoId);
     const task = this.env.tasks.next('Looking for available branches');
