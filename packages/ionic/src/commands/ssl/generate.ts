@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import * as lodash from 'lodash';
 
 import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
-import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsMkdirp, fsUnlink, fsWriteFile, pathExists } from '@ionic/cli-framework/utils/fs';
 import { tmpfilepath } from '@ionic/cli-framework/utils/path';
 
@@ -29,15 +29,25 @@ interface OpenSSLConfig {
   commonName: string;
 }
 
+const DEFAULT_KEY_FILE = '.ionic/ssl/key.pem';
+const DEFAULT_CERT_FILE = '.ionic/ssl/cert.pem';
+
 export class SSLGenerateCommand extends SSLBaseCommand implements CommandPreRun {
-  getDefaultPath() {
-    return this.project ? path.resolve(this.project.directory, '.ionic/ssl') : path.resolve(path.dirname(this.env.config.p), 'ssl');
+  getDefaultKeyPath() {
+    return path.resolve(this.project ? this.project.directory : '', DEFAULT_KEY_FILE);
+  }
+
+  getDefaultCertPath() {
+    return path.resolve(this.project ? this.project.directory : '', DEFAULT_CERT_FILE);
   }
 
   async getMetadata(): Promise<CommandMetadata> {
+    const defaultKeyPath = prettyPath(this.getDefaultKeyPath());
+    const defaultCertPath = prettyPath(this.getDefaultCertPath());
+
     return {
       name: 'generate',
-      type: 'global',
+      type: 'project',
       summary: 'Generates an SSL key & certificate',
       // TODO: document how to add trusted certs
       description: `
@@ -45,18 +55,18 @@ Uses OpenSSL to create a self-signed certificate for ${chalk.bold('localhost')} 
 
 After the certificate is generated, you will still need to add it to your system or browser as a trusted certificate.
 
-The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert-path')} is ${chalk.green('.ionic/ssl/')} inside of Ionic projects and ${chalk.green('~/.ionic/ssl/')} outside of Ionic projects.
+The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert-path')} is ${chalk.green('.ionic/ssl/')}.
       `,
       options: [
         {
           name: 'key-path',
           summary: 'Destination of private key file',
-          default: prettyPath(path.resolve(this.getDefaultPath(), 'key.pem')),
+          default: defaultKeyPath,
         },
         {
           name: 'cert-path',
           summary: 'Destination of certificate file',
-          default: prettyPath(path.resolve(this.getDefaultPath(), 'cert.pem')),
+          default: defaultCertPath,
         },
         {
           name: 'country-name',
@@ -96,7 +106,7 @@ The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert
           groups: [OptionGroup.Advanced],
         },
       ],
-      groups: [CommandGroup.Beta],
+      groups: [CommandGroup.Experimental],
     };
   }
 
@@ -105,9 +115,13 @@ The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const keyPath = expandPath(options['key-path'] ? String(options['key-path']) : path.join(this.getDefaultPath(), 'key.pem'));
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic ssl generate')} outside a project directory.`);
+    }
+
+    const keyPath = path.resolve(options['key-path'] ? String(options['key-path']) : this.getDefaultKeyPath());
     const keyPathDir = path.dirname(keyPath);
-    const certPath = expandPath(options['cert-path'] ? String(options['cert-path']) : path.join(this.getDefaultPath(), 'cert.pem'));
+    const certPath = path.resolve(options['cert-path'] ? String(options['cert-path']) : this.getDefaultCertPath());
     const certPathDir = path.dirname(certPath);
 
     const bits = options['bits'] ? String(options['bits']) : DEFAULT_BITS;
@@ -139,8 +153,8 @@ The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert
     this.env.log.nl();
 
     this.env.log.rawmsg(
-      `Key:  ${chalk.bold(keyPath)}\n` +
-      `Cert: ${chalk.bold(certPath)}\n\n`
+      `Key:  ${chalk.bold(prettyPath(keyPath))}\n` +
+      `Cert: ${chalk.bold(prettyPath(certPath))}\n\n`
     );
 
     this.env.log.ok('Generated key & certificate!');

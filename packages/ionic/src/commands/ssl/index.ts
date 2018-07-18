@@ -5,18 +5,12 @@ import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class SSLNamespace extends Namespace {
   async getMetadata() {
-    const groups: NamespaceGroup[] = [NamespaceGroup.Beta];
-
-    if (!this.env.config.get('features.ssl-commands')) {
-      groups.push(NamespaceGroup.Hidden);
-    }
-
     return {
       name: 'ssl',
       summary: 'Commands for managing SSL keys & certificates',
-      groups,
+      groups: [NamespaceGroup.Experimental],
       description: `
-These commands make it easy to generate SSL certificates for using HTTPS with ${chalk.green('ionic serve')}, etc.
+These commands make it easy to manage SSL certificates for using HTTPS with ${chalk.green('ionic serve')}.
       `,
     };
   }
