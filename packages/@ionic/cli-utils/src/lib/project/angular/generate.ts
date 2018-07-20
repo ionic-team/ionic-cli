@@ -13,9 +13,12 @@ const SCHEMATICS: ReadonlyArray<string> = ['page', 'component', 'service', 'modu
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:generate');
 
-function pluralizeType(type: string): string {
-  const suffix = type === 'class' ? 'es' : 's';
-  return `${type}${suffix}`;
+function examplePath(type: string): string {
+  if (['page', 'component', 'service', 'directive', 'pipe'].includes(type)) {
+    return `${type}s/<name>`;
+  }
+
+  return 'path/to/<name>';
 }
 
 export class AngularGenerateRunner extends GenerateRunner<AngularGenerateOptions> {
@@ -25,19 +28,14 @@ export class AngularGenerateRunner extends GenerateRunner<AngularGenerateOptions
       description: `
 This command uses the Angular CLI to generate ${['pages', 'components', 'directives', 'services'].map(c => chalk.green(c)).join(', ')}, etc.
 
- - For a full list of available schematics, use ${chalk.green('npx ng g --help')}
- - For a list of options for a schematic, use ${chalk.green('npx ng g <schematic> --help')}
+ - For a full list of available types, use ${chalk.green('npx ng g --help')}
+ - For a list of options for a types, use ${chalk.green('npx ng g <type> --help')}
 
 We recommend prefixing ${chalk.green('name')} with a consistent, descriptive path within ${chalk.bold('src/app/')}, otherwise the app will quickly become cluttered. For example, for ${chalk.green('pages')}, try ${chalk.green('ionic g page pages/my-new-page')}.
 
 You can nest components deeper inside other components. For example, specify a name of ${chalk.green('pages/tabs-page/tab1')} to generate page files at ${chalk.bold('src/app/pages/tabs-page/tab1/')}.
 
 To test a generator before file modifications are made, use the ${chalk.green('--dry-run')} option.
-
-${chalk.green('ionic generate')} differs from ${chalk.green('ng generate')}:
-
- 1. ${chalk.green('ionic generate')} will prompt for ${chalk.green('type')} and ${chalk.green('name')} if not provided.
- 2. The prompts will always prefix the specified ${chalk.green('name')} with a directory (e.g. ${chalk.green('login-page')} => ${chalk.green('pages/login-page')}).
       `,
       exampleCommands: [
         'page',
@@ -67,7 +65,7 @@ ${chalk.green('ionic generate')} differs from ${chalk.green('ng generate')}:
       const type = await this.prompt({
         type: 'list',
         name: 'type',
-        message: 'What would you like to generate:',
+        message: 'What would you like to generate?',
         choices: SCHEMATICS,
       });
 
@@ -78,9 +76,8 @@ ${chalk.green('ionic generate')} differs from ${chalk.green('ng generate')}:
       const name = await this.prompt({
         type: 'input',
         name: 'name',
-        message: 'What should the name be?',
+        message: `Name/path (e.g. ${chalk.green(examplePath(inputs[0]))}):`,
         validate: v => validators.required(v),
-        filter: input => `${pluralizeType(inputs[0])}/${input}`,
       });
 
       inputs[1] = name;
