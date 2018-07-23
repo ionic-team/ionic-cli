@@ -80,7 +80,7 @@ To test a generator before file modifications are made, use the ${chalk.green('-
         validate: v => validators.required(v),
       });
 
-      inputs[1] = name;
+      inputs[1] = name.trim();
     }
   }
 
