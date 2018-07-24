@@ -197,6 +197,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       options['git'] = true;
     }
 
+    const projectType = options['type'] ? String(options['type']) : 'ionic-angular';
+    await this.validateProjectType(projectType);
+
     const proId = options['pro-id'] ? String(options['pro-id']) : undefined;
 
     if (this.project) {
@@ -294,9 +297,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         projectDir,
       };
     } else {
-      const type = options['type'] ? String(options['type']) : 'ionic-angular';
-      await this.validateProjectType(type);
-
       if (!inputs[1]) {
         if (this.env.flags.interactive) {
           this.env.log.nl();
@@ -311,11 +311,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           name: 'template',
           message: 'Starter template:',
           choices: () => {
-            const starterTemplateList = starterTemplates.filter(st => st.type === type);
+            const starterTemplateList = starterTemplates.filter(st => st.type === projectType);
             const cols = columnar(starterTemplateList.map(({ name, description }) => [chalk.green(name), description || '']), {}).split('\n');
 
             if (starterTemplateList.length === 0) {
-              throw new FatalException(`No starter templates found for project type: ${chalk.green(type)}.`);
+              throw new FatalException(`No starter templates found for project type: ${chalk.green(projectType)}.`);
             }
 
             return starterTemplateList.map((starterTemplate, i) => {
@@ -334,7 +334,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       this.schema = {
         cloned,
         name: inputs[0],
-        type,
+        type: projectType,
         template: inputs[1],
         projectId,
         projectDir,
@@ -399,7 +399,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     if (this.schema.cloned) {
       await this.env.shell.run('git', ['clone', this.schema.url, projectDir, '--progress'], { stdio: 'inherit' });
     } else {
-      const starterTemplate = await this.findStarterTemplate(this.schema.template, String(options['type']), tag);
+      const starterTemplate = await this.findStarterTemplate(this.schema.template, this.schema.type, tag);
       await this.downloadStarterTemplate(projectDir, starterTemplate);
     }
 
