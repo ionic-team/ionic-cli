@@ -219,7 +219,7 @@ export class IonicAngularPackageJsonHasDefaultIonicBuildCommand extends IonicAng
   async getMessage() {
     return (
       `The ${chalk.bold(BUILD_SCRIPT)} npm script is unchanged.\n` +
-      `The Ionic CLI as of version 4.0 looks for the ${chalk.bold(BUILD_SCRIPT)} npm script in ${chalk.bold('package.json')} for a custom build script to run instead of the default (${chalk.green(DEFAULT_BUILD_SCRIPT_VALUE)}). If you don't use it, it's considered quicker and cleaner to just remove it.`
+      `The Ionic CLI now looks for the ${chalk.bold(BUILD_SCRIPT)} npm script in ${chalk.bold('package.json')} for a custom build script to run instead of the default (${chalk.green(DEFAULT_BUILD_SCRIPT_VALUE)}). If you don't use it, it's considered quicker and cleaner to just remove it.`
     ).trim();
   }
 
@@ -249,7 +249,7 @@ export class IonicAngularPackageJsonHasDefaultIonicServeCommand extends IonicAng
   async getMessage() {
     return (
       `The ${chalk.bold(SERVE_SCRIPT)} npm script is unchanged.\n` +
-      `The Ionic CLI as of version 4.0 looks for the ${chalk.bold(SERVE_SCRIPT)} npm script in ${chalk.bold('package.json')} for a custom serve script to run instead of the default (${chalk.green(DEFAULT_SERVE_SCRIPT_VALUE)}). If you don't use it, it's considered quicker and cleaner to just remove it.`
+      `The Ionic CLI now looks for the ${chalk.bold(SERVE_SCRIPT)} npm script in ${chalk.bold('package.json')} for a custom serve script to run instead of the default (${chalk.green(DEFAULT_SERVE_SCRIPT_VALUE)}). If you don't use it, it's considered quicker and cleaner to just remove it.`
     ).trim();
   }
 

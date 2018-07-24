@@ -358,7 +358,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     } catch (e) {
       if (e.code === 'ENOENT') {
         const pkg = '@ionic/lab';
-        const requiredMsg = `This package is required for Ionic Lab as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md#4.0.0')}`;
+        const requiredMsg = `This package is required for Ionic Lab. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md#4.0.0')}`;
         this.log.nl();
         this.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
 

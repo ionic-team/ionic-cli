@@ -118,7 +118,7 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
       }
 
       const pkg = '@ionic/v1-toolkit';
-      const requiredMsg = `This package is required for ${chalk.green('ionic serve')} as of CLI 4.0. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md#4.0.0')}`;
+      const requiredMsg = `This package is required for ${chalk.green('ionic serve')}. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md#4.0.0')}`;
 
       this.log.nl();
       this.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);

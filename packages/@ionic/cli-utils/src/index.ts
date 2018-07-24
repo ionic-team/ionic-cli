@@ -137,7 +137,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   }
 
   if (typeof argv['yarn'] === 'boolean') {
-    log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} was removed in CLI 4.0. Use ${chalk.green(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);
+    log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} has been removed. Use ${chalk.green(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);
   }
 
   let project: IProject | undefined;

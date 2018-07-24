@@ -26,7 +26,7 @@ export class StateCommand extends Command {
     ];
 
     throw new FatalException(
-      `${chalk.green('ionic state')} has been removed as of CLI 3.0.\n\n` +
+      `${chalk.green('ionic state')} has been removed.\n\n` +
       `We recommend using Cordova directly to manage Cordova plugins and platforms.\n` +
       `The following commands fulfill the old ${chalk.green('ionic state')} functionality:\n\n` +
       `${columnar(data, {})}\n\n` +

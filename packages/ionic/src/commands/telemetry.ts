@@ -23,7 +23,7 @@ export class TelemetryCommand extends Command {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     throw new FatalException(
-      `${chalk.green('ionic telemetry')} has been removed as of CLI 4.0.\n` +
+      `${chalk.green('ionic telemetry')} has been removed.\n` +
       `Please use ${chalk.green('ionic config')} directly. Examples:\n\n` +
       `    ${chalk.green('ionic config get -g telemetry')}\n` +
       `    ${chalk.green('ionic config set -g telemetry true')}\n` +

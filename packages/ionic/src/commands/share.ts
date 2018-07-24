@@ -19,7 +19,7 @@ export class ShareCommand extends Command {
     const dashUrl = this.env.config.getDashUrl();
 
     throw new FatalException(
-      `${chalk.green('ionic share')} has been removed as of CLI 3.0.\n` +
+      `${chalk.green('ionic share')} has been removed.\n` +
       `The functionality now exists in the Ionic Dashboard: ${chalk.bold(dashUrl)}`
     );
   }
