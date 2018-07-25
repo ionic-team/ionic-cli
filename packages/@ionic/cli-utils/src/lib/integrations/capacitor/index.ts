@@ -11,7 +11,7 @@ export class Integration extends BaseIntegration {
     await this.installCapacitorCore();
     await this.installCapacitorCLI();
 
-    await this.shell.run('capacitor', ['init', this.project.config.get('name'), 'io.ionic.starter'], {});
+    await this.shell.run('capacitor', ['init', this.project.config.get('name'), 'io.ionic.starter'], { cwd: this.project.directory });
 
     await super.add(options);
   }
@@ -44,6 +44,6 @@ export class Integration extends BaseIntegration {
   }
 
   async getCapacitorCLIVersion(): Promise<string | undefined> {
-    return this.shell.cmdinfo('capacitor', ['--version']);
+    return this.shell.cmdinfo('capacitor', ['--version'], { cwd: this.project.directory });
   }
 }

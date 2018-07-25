@@ -413,6 +413,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       throw new FatalException('Error while loading new project. Please report this error!');
     }
 
+    // TODO: more hacks
+    this.env.shell.projectDir = this.project.directory;
+
     const shellOptions = { cwd: projectDir, stdio: 'inherit' };
 
     if (!this.schema.cloned) {

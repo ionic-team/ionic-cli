@@ -1,4 +1,5 @@
 import * as ζframework from '@ionic/cli-framework';
+import { ShellCommandOptions } from '@ionic/cli-framework/utils/shell';
 import { ChildProcess, SpawnOptions } from 'child_process';
 import * as fs from 'fs';
 import * as ζsuperagent from 'superagent';
@@ -329,10 +330,12 @@ export interface IShellRunOptions extends IShellOutputOptions {
 }
 
 export interface IShell {
+  projectDir?: string;
+
   run(command: string, args: string[], options: IShellRunOptions): Promise<void>;
   output(command: string, args: string[], options: IShellOutputOptions): Promise<string>;
   spawn(command: string, args: string[], options: IShellSpawnOptions): ChildProcess;
-  cmdinfo(cmd: string, args?: string[]): Promise<string | undefined>;
+  cmdinfo(cmd: string, args?: string[], options?: ShellCommandOptions): Promise<string | undefined>;
 }
 
 export interface ITelemetry {
