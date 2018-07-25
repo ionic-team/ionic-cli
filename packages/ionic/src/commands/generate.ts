@@ -32,7 +32,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
     return {
       name: 'generate',
       type: 'project',
-      summary: 'Automatically create framework components',
+      summary: 'Automatically create framework features',
       description,
       inputs,
       options,
