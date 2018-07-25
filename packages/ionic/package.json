@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "4.0.0-rc.12",
+  "version": "4.0.0-rc.13",
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "https://ionicframework.com",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com) ",
@@ -44,8 +44,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ionic/cli-framework": "1.0.0-rc.12",
-    "@ionic/cli-utils": "2.0.0-rc.12",
+    "@ionic/cli-framework": "1.0.0-rc.13",
+    "@ionic/cli-utils": "2.0.0-rc.13",
     "chalk": "^2.3.0",
     "debug": "^3.1.0",
     "lodash": "^4.17.5",
