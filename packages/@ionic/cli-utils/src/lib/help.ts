@@ -14,6 +14,12 @@ const IONIC_LOGO = String.raw`
 
 type Decoration = [string, string];
 
+const OPTION_DECORATIONS: Decoration[] = [
+  [OptionGroup.Beta, chalk.red.bold('(beta)')],
+  [OptionGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
+  [OptionGroup.Experimental, chalk.red.bold('(experimental)')],
+];
+
 const COMMAND_DECORATIONS: Decoration[] = [
   [CommandGroup.Beta, chalk.red.bold('(beta)')],
   [CommandGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
@@ -118,7 +124,7 @@ export class CommandStringHelpFormatter extends BaseCommandStringHelpFormatter<I
   }
 
   async formatBeforeOptionSummary(opt: CommandMetadataOption): Promise<string> {
-    return opt.hint ? `${opt.hint} ` : '';
+    return (opt.hint ? `${opt.hint} ` : '') + formatGroupDecorations(OPTION_DECORATIONS, opt.groups);
   }
 }
 
