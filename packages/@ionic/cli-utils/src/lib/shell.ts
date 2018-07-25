@@ -16,13 +16,13 @@ import { FatalException } from './errors';
 const debug = Debug('ionic:cli-utils:lib:shell');
 
 export interface ShellDeps {
-  log: ILogger;
-  projectDir?: string;
+  readonly log: ILogger;
+  readonly projectDir?: string;
 }
 
 export class Shell implements IShell {
-  protected log: ILogger;
-  protected projectDir?: string;
+  protected readonly log: ILogger;
+  projectDir?: string; // TODO: better way?
 
   constructor({ log, projectDir }: ShellDeps) {
     this.log = log;
