@@ -101,11 +101,16 @@ jobs:
     <<: *defaults
     docker:
       - image: circleci/node:8
+    environment:
+      GIT_AUTHOR_NAME: Ionitron
+      GIT_AUTHOR_EMAIL: hi@ionicframework.com
+      GIT_COMMITTER_NAME: Ionitron
+      GIT_COMMITTER_EMAIL: hi@ionicframework.com
     steps:
       - attach_workspace:
           at: /tmp/workspace
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-      - run: npm run publish:ci-4.x -- --yes
+      - run: npm run publish:ci -- --yes
 
 workflows:
   version: 2
@@ -114,8 +119,8 @@ workflows:
       - node-6
       - node-8
       - node-latest
-      # - deploy:
-      #     requires: [node-6, node-8, node-latest]
-      #     filters:
-      #       branches:
-      #         only: master
+      - deploy:
+          requires: [node-6, node-8, node-latest]
+          filters:
+            branches:
+              only: master
