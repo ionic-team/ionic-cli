@@ -11,7 +11,7 @@ import { MULTI_PROJECT_TYPES, PROJECT_FILE, PROJECT_TYPES } from '../../constant
 import { IAilmentRegistry, IClient, IConfig, IIntegration, ILogger, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, PackageJson, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { isMultiProjectConfig, isProjectConfig } from '../../guards';
 import * as ζbuild from '../build';
-import { FatalException, RunnerNotFoundException } from '../errors';
+import { FatalException, IntegrationNotFoundException, RunnerNotFoundException } from '../errors';
 import * as ζgenerate from '../generate';
 import { BaseIntegration } from '../integrations';
 import * as ζserve from '../serve';
@@ -324,15 +324,27 @@ export abstract class Project implements IProject {
   }
 
   protected async getIntegrations(): Promise<IIntegration[]> {
-    const integrations = this.config.get('integrations');
-    const names = Object.keys(integrations) as IntegrationName[]; // TODO
+    const integrationsFromConfig = this.config.get('integrations');
+    const names = Object.keys(integrationsFromConfig) as IntegrationName[]; // TODO
 
     const integrationNames = names.filter(n => {
-      const c = integrations[n];
+      const c = integrationsFromConfig[n];
       return c && c.enabled !== false;
     });
 
-    return Promise.all(integrationNames.map(async name => this.createIntegration(name)));
+    const integrations: (IIntegration | undefined)[] = await Promise.all(integrationNames.map(async name => {
+      try {
+        return await this.createIntegration(name);
+      } catch (e) {
+        if (!(e instanceof IntegrationNotFoundException)) {
+          throw e;
+        }
+
+        this.e.log.warn(e.message);
+      }
+    }));
+
+    return integrations.filter((i): i is IIntegration => typeof i !== 'undefined');
   }
 }
 
