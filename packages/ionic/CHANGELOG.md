@@ -1,3 +1,15 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+<a name="4.0.0"></a>
+# [4.0.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.0.0-rc.13...ionic@4.0.0) (2018-07-25)
+
+
+
+
+**Note:** Version bump only for package ionic
 
 This release offers support for :sparkles: **Ionic 4** :sparkles: (beta).
 
