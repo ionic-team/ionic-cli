@@ -16,7 +16,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "@ionic/cli-framework": "1.0.0-rc.13",
+    "@ionic/cli-framework": "1.0.0-testing.70319022",
     "@ionic/cli-utils": "2.0.0-rc.13",
     "ansi-styles": "^3.2.0",
     "chalk": "^2.3.0",
