@@ -28,14 +28,14 @@ Aside from a few edge cases listed below, upgrading to CLI 4 should be seamless.
 * Support for legacy Ionic Cloud ended on January 31st, 2018. The `ionic upload` and `ionic package` commands have been removed from the CLI. Support for [Ionic Pro](https://ionicframework.com/pro/) will be a major focus for the CLI going forward. :ok_hand:
 * The `app_id` property in `ionic.config.json` has been renamed to `pro_id` and is now optional (see [#3038](https://github.com/ionic-team/ionic-cli/issues/3038)). The CLI automatically detects this and changes it, but this notice is here if your build scripts rely on the setting.
 * `ionic build` will no longer run `cordova prepare`. Instead, run `ionic cordova prepare <platform>`, which performs an Ionic build beforehand.
-* Ionic Lab has been moved into the [`@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/lab) package, which will need to be installed for Lab to work.
+* Ionic Lab has been moved into the [`@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/@ionic/lab) package, which will need to be installed for Lab to work.
 * The `conference` starter template has been removed from `ionic start`. To clone existing apps (as opposed to starting new apps from starter templates), please use the app's repository URL. For example, to create the conference app, use `ionic start "Conference App" https://github.com/ionic-team/ionic-conference-app`.
 * The `--display-name` option for `ionic start` has been removed. The `name` argument is now used as the display name and slugified for directory name, package name, etc. To provide a custom slug, use `--project-id` (see [#3038](https://github.com/ionic-team/ionic-cli/issues/3038)).
 * The `ionic:watch:before` npm script hook has been renamed to `ionic:serve:before`, but behaves the same.
 * `ionic doctor check` will now _only_ print issues and exit with exit code 1 if issues are found. Use `ionic doctor treat` to attempt automatic fixes.
 * `ionic doctor ignore` has been removed in favor of `ionic config set -g doctor.issues.<issue>.ignored true`).
-* Ionic 1 build/serve functionality has been moved into the [`@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-toolkit) package, which will need to be installed in your Ionic 1 project(s). The file watcher, [chokidar](https://github.com/paulmillr/chokidar), has been updated to 2.0.0, which will require those using `watchPatterns` to [always use POSIX-style slashes](https://github.com/paulmillr/chokidar/blob/master/CHANGELOG.md#chokidar-200-dec-29-2017) (not an issue if you've never used a backslash in globs for Windows).
-* The gulp integration has been removed from the CLI and put into the [`@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/master/packages/@ionic/v1-toolkit) package, which is only for Ionic v1 apps.
+* Ionic 1 build/serve functionality has been moved into the [`@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/@ionic/v1-toolkit) package, which will need to be installed in your Ionic 1 project(s). The file watcher, [chokidar](https://github.com/paulmillr/chokidar), has been updated to 2.0.0, which will require those using `watchPatterns` to [always use POSIX-style slashes](https://github.com/paulmillr/chokidar/blob/master/CHANGELOG.md#chokidar-200-dec-29-2017) (not an issue if you've never used a backslash in globs for Windows).
+* The gulp integration has been removed from the CLI and put into the [`@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/@ionic/v1-toolkit) package, which is only for Ionic v1 apps.
 
 #### :rocket: Enhancements
 
@@ -61,7 +61,7 @@ Aside from a few edge cases listed below, upgrading to CLI 4 should be seamless.
 #### :house: Internal
 
 * A huge amount of code refactoring has been accomplished to prepare the CLI for a scalable, flexible future. Changes in behavior and help output based upon environment and config are now trivially accomplished.
-* The [CLI Framework](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/cli-framework), a (currently) internal framework for building general-purpose command-line programs, has had many features added to support the utility CLIs such as `ionic-lab` and `ionic-v1`.
+* The [CLI Framework](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/cli-framework), a (currently) internal framework for building general-purpose command-line programs, has had many features added to support the utility CLIs such as `ionic-lab` and `ionic-v1`.
 * Ionic Lab has been rebuilt using [StencilJS](https://stenciljs.com) and now works for any Ionic Framework version.
 
 ## Older Changes

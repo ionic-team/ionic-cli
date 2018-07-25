@@ -6,15 +6,6 @@
 The Ionic command line interface (CLI) is your go-to tool for developing
 [Ionic][ionic-homepage] apps.
 
-We have several branches for CLI versions:
-
-* [`master`](https://github.com/ionic-team/ionic-cli) (stable): `npm install -g
-  ionic`
-* [`3.x`](https://github.com/ionic-team/ionic-cli/tree/3.x) (old): `npm install
-  -g ionic@3`
-* [`2.x`](https://github.com/ionic-team/ionic-cli/tree/2.x) (legacy): `npm
-  install -g ionic@legacy`
-
 :book: **Documentation**:
 [https://beta.ionicframework.com/docs/cli/overview][ionic-cli-docs]
 
@@ -23,8 +14,7 @@ general support questions. The issues on GitHub should be reserved for bug
 reports and feature requests.
 
 :sparkling_heart: **Want to contribute?** Please see
-[CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/master/CONTRIBUTING.md).
-
+[CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/develop/CONTRIBUTING.md).
 
 [ionic-homepage]: https://ionicframework.com
 [ionic-cli-docs]: https://beta.ionicframework.com/docs/cli/overview

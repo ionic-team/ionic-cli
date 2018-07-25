@@ -4,6 +4,13 @@
 Page](https://ionicframework.com/support) for general support questions. The
 issues on GitHub should be reserved for bug reports and feature requests.
 
+### Branches
+
+* [`develop`](https://github.com/ionic-team/ionic-cli/tree/develop): **development** branch
+* [`master`](https://github.com/ionic-team/ionic-cli/tree/master): **stable** version (`npm install -g ionic`)
+* [`3.x`](https://github.com/ionic-team/ionic-cli/tree/3.x): **previous** version (`npm install -g ionic@3`)
+* [`2.x`](https://github.com/ionic-team/ionic-cli/tree/2.x): **legacy** version (`npm install -g ionic@legacy`)
+
 ### Bug Reports
 
 Run the command(s) with `--verbose` to produce debugging output. We may ask for
@@ -39,29 +46,20 @@ The Ionic CLI is organized into a monorepo. Here are the packages:
 
 ##### General Purpose
 
-* [`packages/ionic`](https://github.com/ionic-team/ionic-cli/tree/master/packages/ionic):
-  Ionic CLI executable.
-* [`packages/@ionic/cli-utils`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/cli-utils):
-  Ionic CLI library and utilities.
-* [`packages/@ionic/cli-framework`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/cli-framework):
-  Framework for command-line programs.
-* [`packages/@ionic/discover`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/discover):
-  Service discovery library used for `ionic serve` with the [Ionic
-  DevApp](https://ionicframework.com/docs/pro/devapp/).
-* [`packages/@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/lab):
-  Utility CLI for Ionic Lab, used by `ionic serve`.
+* [`packages/ionic`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/ionic): Ionic CLI executable.
+* [`packages/@ionic/cli-utils`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/cli-utils): Ionic CLI library and utilities.
+* [`packages/@ionic/cli-framework`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/cli-framework): Framework for command-line programs.
+* [`packages/@ionic/discover`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/discover): Service discovery library used for `ionic serve` with the [Ionic DevApp](https://ionicframework.com/docs/pro/devapp/).
+* [`packages/@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/lab): Utility CLI for Ionic Lab, used by `ionic serve`.
 
 ##### Ionic/Angular 4+
 
-* [`packages/@ionic/ng-toolkit`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/ng-toolkit):
-  Builders for Ionic/Angular 4+.
-* [`packages/@ionic/schematics-angular`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/schematics-angular):
-  Schematics for `ng generate`.
+* [`packages/@ionic/ng-toolkit`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/ng-toolkit): Builders for Ionic/Angular 4+.
+* [`packages/@ionic/schematics-angular`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/schematics-angular): Schematics for `ng generate`.
 
 ##### Ionic 1
 
-* [`packages/@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/master/packages/%40ionic/v1-toolkit):
-  Utility CLI for Ionic v1 Apps, used by `ionic serve`.
+* [`packages/@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/v1-toolkit): Utility CLI for Ionic v1 Apps, used by `ionic serve`.
 
 #### Toolset
 
@@ -126,12 +124,11 @@ Guide](https://nodejs.org/en/docs/guides/debugging-getting-started/).
 
 TODO: Be helpful about where to look for commands, utilities, etc.
 
-##### Publishing Steps
+##### Publishing
+
+Publishing occurs in CI when new changes are merged into `master`.
+
+To publish **testing** versions, follow these steps:
 
 1. Cancel any watch scripts.
-1. Write notable changes in the package(s)'s `CHANGELOG.md` file(s).
-1. For...
-
-    * ...testing releases: `npm run publish:testing`
-    * ...canary releases: `npm run publish:canary`
-    * ...stable releases: `npm run publish`
+1. Run `npm run publish:testing`
