@@ -106,6 +106,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           name: 'capacitor',
           summary: 'Include Capacitor integration',
           type: Boolean,
+          groups: [OptionGroup.Experimental],
         },
         {
           name: 'deps',
