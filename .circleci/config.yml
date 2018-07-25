@@ -1,5 +1,7 @@
 version: 2
 
+# ALIASES & DEFAULTS
+
 aliases:
   - &restore-cache
       keys:
@@ -59,48 +61,59 @@ aliases:
         - packages/ionic/node_modules
 
 defaults: &defaults
+  docker:
+    - image: circleci/node:latest
   working_directory: /tmp/workspace
 
-base: &base
+
+unit-test-base: &unit-test-base
   <<: *defaults
   steps:
-    - checkout
-    - restore_cache: *restore-cache
-    - run: npm install
-    - save_cache: *save-cache
-    - run: npm run bootstrap
-    - save_cache: *save-cache-cli-framework
-    - save_cache: *save-cache-cli-utils
-    - save_cache: *save-cache-discover
-    - save_cache: *save-cache-lab
-    - save_cache: *save-cache-schematics-angular
-    - save_cache: *save-cache-v1-toolkit
-    - save_cache: *save-cache-cli-scripts
-    - save_cache: *save-cache-ionic
+    - attach_workspace:
+        at: /tmp/workspace
+    - run: npm rebuild # We need to rebuild/recompile for specific Node versions.
     - run: npm run lint
     - run: npm run test
-    - persist_to_workspace:
-        root: /tmp/workspace
-        paths:
-          - "*"
+
+# JOBS
 
 jobs:
-  node-6:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache: *restore-cache
+      - run: npm install
+      - save_cache: *save-cache
+      - run: npm run bootstrap
+      - save_cache: *save-cache-cli-framework
+      - save_cache: *save-cache-cli-utils
+      - save_cache: *save-cache-discover
+      - save_cache: *save-cache-lab
+      - save_cache: *save-cache-schematics-angular
+      - save_cache: *save-cache-v1-toolkit
+      - save_cache: *save-cache-cli-scripts
+      - save_cache: *save-cache-ionic
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - "*"
+
+  unit-test-node-6:
+    <<: *unit-test-base
     docker:
       - image: circleci/node:6
-    <<: *base
-  node-8:
+
+  unit-test-node-8:
+    <<: *unit-test-base
     docker:
       - image: circleci/node:8
-    <<: *base
-  node-latest:
-    docker:
-      - image: circleci/node:latest
-    <<: *base
+
+  unit-test-node-latest:
+    <<: *unit-test-base
+
   deploy:
     <<: *defaults
-    docker:
-      - image: circleci/node:8
     environment:
       GIT_AUTHOR_NAME: Ionitron
       GIT_AUTHOR_EMAIL: hi@ionicframework.com
@@ -112,15 +125,20 @@ jobs:
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
       - run: npm run publish:ci -- --yes
 
+
 workflows:
   version: 2
   build:
     jobs:
-      - node-6
-      - node-8
-      - node-latest
+      - build
+      - unit-test-node-6:
+          requires: [build]
+      - unit-test-node-8:
+          requires: [build]
+      - unit-test-node-latest:
+          requires: [build]
       - deploy:
-          requires: [node-6, node-8, node-latest]
+          requires: [unit-test-node-6, unit-test-node-8, unit-test-node-latest]
           filters:
             branches:
               only: master
