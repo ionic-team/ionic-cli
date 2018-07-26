@@ -150,11 +150,13 @@ function addRouteToRoutesArray(source: ts.SourceFile, ngModulePath: string, rout
   return [];
 }
 
-function buildSelector(options: PageOptions) {
+function buildSelector(options: PageOptions, projectPrefix: string) {
   let selector = strings.dasherize(options.name);
 
   if (options.prefix) {
     selector = `${options.prefix}-${selector}`;
+  } else if (options.prefix === undefined && projectPrefix) {
+    selector = `${projectPrefix}-${selector}`;
   }
 
   return selector;
@@ -179,7 +181,7 @@ export default function(options: PageOptions): Rule {
     const parsedPath = parseName(options.path, options.name);
     options.name = parsedPath.name;
     options.path = parsedPath.path;
-    options.selector = options.selector ? options.selector : buildSelector(options);
+    options.selector = options.selector ? options.selector : buildSelector(options, project.prefix);
 
     validateName(options.name);
     validateHtmlSelector(options.selector);
