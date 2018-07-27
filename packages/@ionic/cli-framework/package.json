@@ -15,7 +15,11 @@
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
     "test": "jest",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "npm run lint"
   },
   "license": "MIT",
   "dependencies": {
@@ -55,6 +59,7 @@
   "devDependencies": {
     "jest": "^23.0.1",
     "jest-cli": "^23.0.1",
+    "lint-staged": "^7.2.0",
     "ts-jest": "^23.0.0",
     "tslint": "^5.9.1",
     "typescript": "~2.9.1"
