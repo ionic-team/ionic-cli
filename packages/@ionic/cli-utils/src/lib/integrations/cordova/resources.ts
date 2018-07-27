@@ -1,19 +1,13 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsMkdirp, getFileChecksums, readDir } from '@ionic/cli-framework/utils/fs';
+import { tmpfilepath } from '@ionic/cli-framework/utils/path';
+import { WritableStreamBuffer } from '@ionic/cli-framework/utils/streams';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import {
-  ImageResource,
-  ImageUploadResponse,
-  IonicEnvironment,
-  KnownPlatform,
-  ResourcesConfig,
-  SourceImage,
-} from '../../../definitions';
-import { FatalException } from '../../errors';
+import { ImageResource, ImageResourceTransformResult, ImageUploadResponse, IonicEnvironment, KnownPlatform, ResourcesConfig, SourceImage } from '../../../definitions';
 import { formatResponseError } from '../../http';
 import { createRequest } from '../../utils/http';
 
@@ -152,41 +146,76 @@ export async function uploadSourceImage(env: IonicEnvironment, srcImage: SourceI
 
 /**
  * Using the transformation web service, transform the provided image resource
- * into the appropriate w x h and then write the file.
+ * into the appropriate w x h and then write the temporary file.
  */
-export async function transformResourceImage(env: IonicEnvironment, imageResource: ImageResource): Promise<string> {
+export async function transformResourceImage(env: IonicEnvironment, resource: ImageResource): Promise<ImageResourceTransformResult> {
   const { req } = await createRequest('POST', TRANSFORM_URL, env.config.getHTTPConfig());
+  const tmpDest = tmpfilepath(`ionic-cordova-resources-${resource.name}`);
 
-  return new Promise<string>((resolve, reject) => {
+  return new Promise<ImageResourceTransformResult>(resolve => {
+    let errorMarker = false;
+    const result: ImageResourceTransformResult = { resource, tmpDest };
+
+    debug('creating write stream for tmp file: %s', tmpDest);
+
+    const tmpfp = fs.createWriteStream(tmpDest)
+      .on('error', (err: Error) => {
+        result.error = err;
+      })
+      .on('finish', () => {
+        if (!errorMarker) {
+          resolve(result);
+        }
+      });
+
     req
-      .parse((res, cb) => cb(null, null)) // tslint:disable-line:no-null-keyword
       .type('form')
       .send({
-        'name': imageResource.name,
-        'image_id': imageResource.imageId,
-        'width': imageResource.width,
-        'height': imageResource.height,
-        'res_type': imageResource.resType,
+        'name': resource.name,
+        'image_id': resource.imageId,
+        'width': resource.width,
+        'height': resource.height,
+        'res_type': resource.resType,
         'crop': 'center',
         'encoding': 'png',
       })
       .on('response', res => {
-        if (res.statusCode === 200) {
-          const fp = fs.createWriteStream(imageResource.dest)
-            .on('error', reject)
-            .on('finish', () => resolve(imageResource.dest));
+        debug('response %d received for %s: (id: %s)', res.statusCode, resource.name, resource.imageId);
 
-          res.pipe(fp);
-        } else {
-          reject(new FatalException(
-            `Resource server responded with an error.\n` +
-            `This could mean the server is experiencing difficulties right now--please try again later.\n\n` +
-            formatResponseError(req, res.statusCode)
-          ));
+        if (res.statusCode !== 200) {
+          const generalErrorMsg = !res.statusCode || res.statusCode >= 500
+            ? 'the server may be experiencing difficulties right now--please try again later.'
+            : 'the server marked a source image as invalid for this resource.';
+
+          errorMarker = true;
+
+          const buf = new WritableStreamBuffer();
+
+          res.pipe(buf);
+
+          buf.on('finish', () => {
+            let serverMsg = buf.consume().toString();
+
+            try {
+              serverMsg = JSON.parse(serverMsg).Error;
+            } catch (e) {
+              serverMsg = formatResponseError(req, res.statusCode, serverMsg);
+            }
+
+            result.error = new Error(
+              `Error while generating ${chalk.bold(resource.name)}: ` +
+              `${generalErrorMsg}\n\n` +
+              `Server: "${serverMsg}"`
+            );
+
+            resolve(result);
+          });
         }
       })
-      .on('error', reject)
-      .end();
+      .on('error', err => {
+        result.error = err;
+      })
+      .pipe(tmpfp);
   });
 }
 

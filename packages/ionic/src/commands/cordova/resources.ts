@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { cacheFileChecksum, pathExists } from '@ionic/cli-framework/utils/fs';
+import { cacheFileChecksum, copyFile, pathExists } from '@ionic/cli-framework/utils/fs';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, KnownPlatform, ResourcesConfig, ResourcesImageConfig, SourceImage } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
@@ -83,17 +83,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
     const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
-
-    const {
-      RESOURCES,
-      addResourcesToConfigXml,
-      createImgDestinationDirectories,
-      findMostSpecificSourceImage,
-      getImageResources,
-      getSourceImages,
-      transformResourceImage,
-      uploadSourceImage,
-    } = await import('@ionic/cli-utils/lib/integrations/cordova/resources');
+    const { RESOURCES, addResourcesToConfigXml, createImgDestinationDirectories, findMostSpecificSourceImage, getImageResources, getSourceImages, transformResourceImage, uploadSourceImage } = await import('@ionic/cli-utils/lib/integrations/cordova/resources');
 
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic cordova resources')} outside a project directory.`);
@@ -289,15 +279,29 @@ This command uses Ionic servers, so we require you to be logged into your free I
     count = 0;
 
     const transforms = imgResources.map(async img => {
-      const response = await transformResourceImage(this.env, img);
+      const result = await transformResourceImage(this.env, img);
       count += 1;
       generateTask.msg = `Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`;
-      return response;
+      return result;
     });
 
-    const generateImageResponses = await Promise.all(transforms);
+    const transformResults = await Promise.all(transforms);
     generateTask.msg = `Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`;
-    debug(`${chalk.cyan('generateResourceImage')} completed: responses=%o`, generateImageResponses.map(p => prettyPath(p)));
+    debug('transforms completed');
+
+    const transformErrors: Error[] = transformResults.map(result => result.error).filter((err): err is Error => typeof err !== 'undefined');
+
+    if (transformErrors.length > 0) {
+      throw new FatalException(
+        `Encountered ${transformErrors.length} error(s) during image transforms:\n\n` +
+        transformErrors.map((err, i) => `${i + 1}): ` + chalk.red(err.toString())).join('\n\n')
+      );
+    }
+
+    await Promise.all(transformResults.map(async result => {
+      await copyFile(result.tmpDest, result.resource.dest);
+      debug('copied transformed image %s into project as %s', result.tmpDest, result.resource.dest);
+    }));
 
     await Promise.all(srcImagesAvailable.map(async img => {
       await cacheFileChecksum(img.path, img.imageId);

@@ -686,6 +686,12 @@ export interface ImageResource {
   orientation?: 'landscape' | 'portrait';
 }
 
+export interface ImageResourceTransformResult {
+  resource: ImageResource;
+  error?: Error;
+  tmpDest: string;
+}
+
 export interface ResourcesImageConfig {
   name: string;
   width: number;
