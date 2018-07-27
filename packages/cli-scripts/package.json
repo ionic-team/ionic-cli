@@ -18,7 +18,7 @@
   "dependencies": {
     "@ionic/cli-framework": "1.0.0",
     "@ionic/cli-utils": "2.0.1",
-    "ansi-styles": "^3.2.0",
+    "ansi-styles": "^3.2.1",
     "chalk": "^2.3.0",
     "escape-string-regexp": "^1.0.5",
     "ionic": "4.0.1",
