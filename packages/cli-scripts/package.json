@@ -39,7 +39,7 @@
     "lint-staged": "^7.2.0",
     "rimraf": "^2.6.2",
     "ts-jest": "^23.0.0",
-    "tslint": "^5.9.1",
+    "tslint": "^5.11.0",
     "typescript": "~2.9.1"
   },
   "jest": {
