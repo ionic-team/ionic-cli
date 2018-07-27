@@ -35,7 +35,7 @@
     "@types/node": "^6.0.101",
     "@types/strip-ansi": "^3.0.0",
     "jest": "^23.0.1",
-    "jest-cli": "^23.0.1",
+    "jest-cli": "^23.4.1",
     "lint-staged": "^7.2.0",
     "rimraf": "^2.6.2",
     "ts-jest": "^23.0.0",
