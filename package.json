@@ -15,7 +15,7 @@
     "publish:canary": "lerna publish --independent --canary --exact --npm-tag=canary --skip-git",
     "publish:testing": "lerna publish --independent --canary=testing --exact --npm-tag=testing --skip-git",
     "publish:ci": "lerna publish --independent -m 'chore(release): publish [skip ci]' --exact --conventional-commits",
-    "precommit": "git stash -k && lerna run precommit; git stash pop"
+    "precommit": "node packages/cli-scripts/bin/ionic-cli-scripts precommit"
   },
   "devDependencies": {
     "chokidar-cli": "^1.2.0",

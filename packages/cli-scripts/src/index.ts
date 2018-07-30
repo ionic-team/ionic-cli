@@ -1,6 +1,7 @@
 import { CommandMap, Namespace, execute } from '@ionic/cli-framework';
 
 import { DocsCommand } from './docs';
+import { PrecommitCommand } from './precommit';
 
 class CLIScriptsNamespace extends Namespace {
   async getMetadata() {
@@ -11,7 +12,10 @@ class CLIScriptsNamespace extends Namespace {
   }
 
   async getCommands(): Promise<CommandMap> {
-    return new CommandMap([['docs', async () => new DocsCommand(this)]]);
+    return new CommandMap([
+      ['docs', async () => new DocsCommand(this)],
+      ['precommit', async () => new PrecommitCommand(this)],
+    ]);
   }
 }
 
