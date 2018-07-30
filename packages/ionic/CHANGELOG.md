@@ -30,7 +30,7 @@ This release offers support for :sparkles: **Ionic 4** :sparkles: (beta).
 
 Aside from a few edge cases listed below, upgrading to CLI 4 should be seamless.
 
-**Ionic 2/3**: The CLI will continue working with apps using `@ionic/app-scripts` for tooling. The CLI will continue to support projects that have yet to migrate to Ionic 4 w/ Angular CLI for tooling. For those who wish to migrate v3 apps to v4, see the [Migration Guide](https://beta.ionicframework.com/docs/building/migration).
+**Ionic 2/3**: The CLI will continue working with apps using `@ionic/app-scripts` for tooling (please [update to the latest version](https://github.com/ionic-team/ionic-app-scripts) to avoid any issues). The CLI will continue to support projects that have yet to migrate to Ionic 4 w/ Angular CLI for tooling. For those who wish to migrate v3 apps to v4, see the [Migration Guide](https://beta.ionicframework.com/docs/building/migration).
 
 **Ionic 1**: For Ionic 1 projects, a new toolkit has been introduced to slim down the main CLI package. All functionality is still supported, but the `@ionic/v1-toolkit` package needs to be installed.
 
