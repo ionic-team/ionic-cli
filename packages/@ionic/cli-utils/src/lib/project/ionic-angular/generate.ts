@@ -2,13 +2,22 @@ import { contains, unparseArgs, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularGenerateOptions } from '../../../definitions';
-import { GenerateRunner } from '../../generate';
+import { GenerateRunner, GenerateRunnerDeps } from '../../generate';
 
+import { IonicAngularProject } from './';
 import { importAppScripts } from './app-scripts';
 
 const GENERATOR_TYPES = ['component', 'directive', 'page', 'pipe', 'provider', 'tabs'];
 
+export interface IonicAngularGenerateRunnerDeps extends GenerateRunnerDeps {
+  readonly project: IonicAngularProject;
+}
+
 export class IonicAngularGenerateRunner extends GenerateRunner<IonicAngularGenerateOptions> {
+  constructor(protected readonly e: IonicAngularGenerateRunnerDeps) {
+    super();
+  }
+
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       groups: [],
@@ -58,7 +67,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
 
   async ensureCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!inputs[0]) {
-      const generatorType = await this.prompt({
+      const generatorType = await this.e.prompt({
         type: 'list',
         name: 'generatorType',
         message: 'What would you like to generate:',
@@ -69,7 +78,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
     }
 
     if (!inputs[1]) {
-      const generatorName = await this.prompt({
+      const generatorName = await this.e.prompt({
         type: 'input',
         name: 'generatorName',
         message: 'What should the name be?',
@@ -91,11 +100,11 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
   }
 
   async run(options: IonicAngularGenerateOptions) {
-    const AppScripts = await importAppScripts(this.project.directory);
+    const AppScripts = await importAppScripts(this.e.project.directory);
 
     const appScriptsArgs = unparseArgs({ _: [], module: options.module, constants: options.constants }, { useEquals: false, ignoreFalse: true, allowCamelCase: true });
     AppScripts.setProcessArgs(['node', 'appscripts'].concat(appScriptsArgs));
-    AppScripts.setCwd(this.project.directory);
+    AppScripts.setCwd(this.e.project.directory);
 
     const context = AppScripts.generateContext();
 
@@ -125,13 +134,13 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
         break;
     }
 
-    this.log.ok(`Generated a ${chalk.bold(options.type)}${options.type === 'tabs' ? ' page' : ''} named ${chalk.bold(options.name)}!`);
+    this.e.log.ok(`Generated a ${chalk.bold(options.type)}${options.type === 'tabs' ? ' page' : ''} named ${chalk.bold(options.name)}!`);
   }
 
   async tabsPrompt() {
     const tabNames = [];
 
-    const howMany = await this.prompt({
+    const howMany = await this.e.prompt({
       type: 'input',
       name: 'howMany',
       message: 'How many tabs?',
@@ -139,7 +148,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
     });
 
     for (let i = 0; i < parseInt(howMany, 10); i++) {
-      const tabName = await this.prompt({
+      const tabName = await this.e.prompt({
         type: 'input',
         name: 'tabName',
         message: 'Name of this tab:',

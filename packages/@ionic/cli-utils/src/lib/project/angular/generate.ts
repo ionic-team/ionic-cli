@@ -7,7 +7,9 @@ import { CommandGroup, unparseArgs, validators } from '@ionic/cli-framework';
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { GLOBAL_OPTIONS } from '../../config';
 import { FatalException } from '../../errors';
-import { GenerateRunner } from '../../generate';
+import { GenerateRunner, GenerateRunnerDeps } from '../../generate';
+
+import { AngularProject } from './';
 
 // https://github.com/ionic-team/ionic-cli/blob/develop/packages/%40ionic/schematics-angular/collection.json
 const SCHEMATICS: ReadonlyArray<string> = ['page', 'component', 'service', 'module', 'class', 'directive', 'guard', 'pipe', 'interface', 'enum'];
@@ -26,7 +28,15 @@ const SCHEMATIC_ALIAS = new Map<string, string>([
 
 const debug = Debug('ionic:cli-utils:lib:project:angular:generate');
 
+export interface AngularGenerateRunnerDeps extends GenerateRunnerDeps {
+  readonly project: AngularProject;
+}
+
 export class AngularGenerateRunner extends GenerateRunner<AngularGenerateOptions> {
+  constructor(protected readonly e: AngularGenerateRunnerDeps) {
+    super();
+  }
+
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       groups: [CommandGroup.Beta],
@@ -67,7 +77,7 @@ To test a generator before file modifications are made, use the ${chalk.green('-
     if (inputs[0]) {
       this.validateFeatureType(inputs[0]);
     } else {
-      const type = await this.prompt({
+      const type = await this.e.prompt({
         type: 'list',
         name: 'type',
         message: 'What would you like to generate?',
@@ -79,7 +89,7 @@ To test a generator before file modifications are made, use the ${chalk.green('-
 
     if (!inputs[1]) {
       const type = SCHEMATIC_ALIAS.get(inputs[0]) || inputs[0];
-      const name = await this.prompt({
+      const name = await this.e.prompt({
         type: 'input',
         name: 'name',
         message: `Name/path of ${chalk.green(type)}:`,
@@ -114,7 +124,7 @@ To test a generator before file modifications are made, use the ${chalk.green('-
     }
 
     if (!options['dry-run']) {
-      this.log.ok(`Generated ${chalk.green(type)}!`);
+      this.e.log.ok(`Generated ${chalk.green(type)}!`);
     }
   }
 
@@ -137,8 +147,8 @@ To test a generator before file modifications are made, use the ${chalk.green('-
 
   private async generateComponent(type: string, name: string, options: { [key: string]: string | boolean; }) {
     const ngArgs = unparseArgs({ _: ['generate', type, name], ...options }, {});
-    const shellOptions = { cwd: this.project.directory };
+    const shellOptions = { cwd: this.e.project.directory };
 
-    await this.shell.run('ng', ngArgs, shellOptions);
+    await this.e.shell.run('ng', ngArgs, shellOptions);
   }
 }

@@ -11,19 +11,7 @@ export interface GenerateRunnerDeps {
 }
 
 export abstract class GenerateRunner<T extends GenerateOptions> implements Runner<T, void> {
-  protected readonly config: IConfig;
-  protected readonly log: ILogger;
-  protected readonly project: IProject;
-  protected readonly prompt: PromptModule;
-  protected readonly shell: IShell;
-
-  constructor({ config, log, project, prompt, shell }: GenerateRunnerDeps) {
-    this.config = config;
-    this.log = log;
-    this.project = project;
-    this.prompt = prompt;
-    this.shell = shell;
-  }
+  protected abstract readonly e: GenerateRunnerDeps;
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): GenerateOptions {
     const [ type, name ] = inputs;
