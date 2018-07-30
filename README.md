@@ -9,7 +9,7 @@ The Ionic command line interface (CLI) is your go-to tool for developing
 
 ### CLI 4 is here! :tada:
 
-- Ionic 4 support is **beta**.
+- Ionic 4 support is **beta**. use `--type=angular` flug. ex) ionic start myApp tabs --type=angular
 - Capacitor support is **experimental**.
 - Full Ionic 2/3 support!
 - Full Ionic 1 support! (requires a package install)
