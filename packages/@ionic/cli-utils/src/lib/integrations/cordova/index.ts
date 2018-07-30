@@ -31,7 +31,7 @@ export class Integration extends BaseIntegration {
 
     const info: InfoItem[] = [
       { group: 'cordova', key: 'cordova', flair: 'Cordova CLI', value: cordovaVersion || 'not installed' },
-      { group: 'cordova', key: 'Cordova Platforms', value: cordovaPlatforms || 'none' },
+      { group: 'cordova', key: 'Cordova Platforms', value: cordovaPlatforms },
     ];
 
     if (xcode) {
@@ -71,19 +71,24 @@ export class Integration extends BaseIntegration {
     return this.shell.cmdinfo('cordova', ['-v', '--no-telemetry']);
   }
 
-  async getCordovaPlatformVersions(): Promise<string | undefined> {
+  async getCordovaPlatformVersions(): Promise<string> {
     try {
       const output = await this.shell.output('cordova', ['platform', 'ls', '--no-telemetry'], { showCommand: false });
-
-      return output
+      const platforms = output
         .replace('Installed platforms:', '')
         .replace(/Available platforms[\s\S]+/, '')
         .split('\n')
         .map(l => l.trim())
-        .filter(l => l && !l.startsWith('.'))
-        .join(', ');
+        .filter(l => l && !l.startsWith('.'));
+
+      if (platforms.length === 0) {
+        return 'none';
+      }
+
+      return platforms.join(', ');
     } catch (e) {
       debug('Error while getting Cordova platforms: %o', e);
+      return 'not available';
     }
   }
 
