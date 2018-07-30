@@ -64,7 +64,9 @@ To test a generator before file modifications are made, use the ${chalk.green('-
   }
 
   async ensureCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    if (!inputs[0]) {
+    if (inputs[0]) {
+      this.validateFeatureType(inputs[0]);
+    } else {
       const type = await this.prompt({
         type: 'list',
         name: 'type',
@@ -113,6 +115,23 @@ To test a generator before file modifications are made, use the ${chalk.green('-
 
     if (!options['dry-run']) {
       this.log.ok(`Generated ${chalk.green(type)}!`);
+    }
+  }
+
+  private validateFeatureType(type: string) {
+    if (type === 'provider') {
+      throw new FatalException(
+        `Please use ${chalk.green('ionic generate service')} for generating service providers.\n` +
+        `For more information, please see the Angular documentation${chalk.cyan('[1]')} on services.\n\n` +
+        `${chalk.cyan('[1]')}: ${chalk.bold('https://angular.io/guide/architecture-services')}`
+      );
+    }
+
+    if (!SCHEMATICS.includes(type) && !SCHEMATIC_ALIAS.get(type)) {
+      throw new FatalException(
+        `${chalk.green(type)} is not a known feature.\n` +
+        `Use ${chalk.green('npx ng g --help')} to list available types of features.`
+      );
     }
   }
 
