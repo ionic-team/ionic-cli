@@ -9,7 +9,7 @@ The Ionic command line interface (CLI) is your go-to tool for developing
 
 ### CLI 4 is here! :tada:
 
-- Ionic 4 support is **beta**.
+- Ionic 4 support is **beta**. See [the docs](https://beta.ionicframework.com/docs/building/starting/) to get started (and don't forget `--type=angular`)!
 - Capacitor support is **experimental**.
 - Full Ionic 2/3 support!
 - Full Ionic 1 support! (requires a package install)
