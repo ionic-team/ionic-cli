@@ -134,7 +134,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       platform: options['platform'] ? String(options['platform']) : undefined,
       port,
       proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
-      ssl: false,
+      ssl: options['ssl'] ? true : false,
       project: options['project'] ? String(options['project']) : undefined,
     };
   }
