@@ -18,7 +18,11 @@
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
     "test": "jest",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "npm run lint"
   },
   "files": [
     "bin/",
@@ -62,6 +66,7 @@
     "@types/update-notifier": "^2.0.0",
     "jest": "^23.0.1",
     "jest-cli": "^23.0.1",
+    "lint-staged": "^7.2.0",
     "rimraf": "^2.6.2",
     "ts-jest": "^23.0.0",
     "tslint": "^5.9.1",

@@ -69,6 +69,7 @@ defaults: &defaults
 unit-test-base: &unit-test-base
   <<: *defaults
   steps:
+    - checkout
     - attach_workspace:
         at: /tmp/workspace
     - run: npm rebuild # We need to rebuild/recompile for specific Node versions.
@@ -120,6 +121,7 @@ jobs:
       GIT_COMMITTER_NAME: Ionitron
       GIT_COMMITTER_EMAIL: hi@ionicframework.com
     steps:
+      - checkout
       - attach_workspace:
           at: /tmp/workspace
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
