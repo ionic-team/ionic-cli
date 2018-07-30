@@ -125,8 +125,8 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const shell = new Shell({ log }, { alterPath: p => projectDir ? prependNodeModulesBinToPath(projectDir, p) : p });
   const client = new Client(config);
   const session = new ProSession({ config, client });
-  const deps = { client, config, log, prompt, session, shell, tasks };
-  const ienv = new Environment({ flags, getInfo, ctx, ...deps });
+  const deps = { client, config, ctx, log, prompt, session, shell, tasks };
+  const ienv = new Environment({ flags, getInfo, ...deps });
 
   ienv.open();
 

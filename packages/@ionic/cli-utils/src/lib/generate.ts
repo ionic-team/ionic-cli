@@ -1,9 +1,10 @@
 import { PromptModule } from '@ionic/cli-framework';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions, IConfig, ILogger, IProject, IShell, Runner } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions, IConfig, ILogger, IProject, IShell, IonicContext, Runner } from '../definitions';
 
 export interface GenerateRunnerDeps {
   readonly config: IConfig;
+  readonly ctx: IonicContext;
   readonly log: ILogger;
   readonly project: IProject;
   readonly prompt: PromptModule;

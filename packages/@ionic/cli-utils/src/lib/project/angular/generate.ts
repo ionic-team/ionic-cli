@@ -147,7 +147,7 @@ To test a generator before file modifications are made, use the ${chalk.green('-
 
   private async generateComponent(type: string, name: string, options: { [key: string]: string | boolean; }) {
     const ngArgs = unparseArgs({ _: ['generate', type, name], ...options }, {});
-    const shellOptions = { cwd: this.e.project.directory };
+    const shellOptions = { cwd: this.e.ctx.execPath };
 
     await this.e.shell.run('ng', ngArgs, shellOptions);
   }

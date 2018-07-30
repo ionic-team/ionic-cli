@@ -8,7 +8,7 @@ import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { MULTI_PROJECT_TYPES, PROJECT_FILE, PROJECT_TYPES } from '../../constants';
-import { IAilmentRegistry, IClient, IConfig, IIntegration, ILogger, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, PackageJson, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
+import { IAilmentRegistry, IClient, IConfig, IIntegration, ILogger, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, IonicContext, PackageJson, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { isMultiProjectConfig, isProjectConfig } from '../../guards';
 import * as ζbuild from '../build';
 import { FatalException, IntegrationNotFoundException, RunnerNotFoundException } from '../errors';
@@ -134,6 +134,7 @@ export interface ProjectDeps {
   readonly session: ISession;
   readonly shell: IShell;
   readonly tasks: TaskChain;
+  readonly ctx: IonicContext;
 }
 
 export abstract class Project implements IProject {
