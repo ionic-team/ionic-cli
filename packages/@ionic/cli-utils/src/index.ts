@@ -15,7 +15,7 @@ import { Client } from './lib/http';
 import { ProjectDeps, createProjectFromType, determineProjectType } from './lib/project';
 import { createOnFallback } from './lib/prompts';
 import { ProSession } from './lib/session';
-import { Shell } from './lib/shell';
+import { Shell, prependNodeModulesBinToPath } from './lib/shell';
 import { PROXY_ENVIRONMENT_VARIABLES } from './lib/utils/http';
 import { Logger } from './lib/utils/logger';
 
@@ -122,7 +122,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const flags = argv as any; // TODO
   debug('CLI global options: %o', flags);
 
-  const shell = new Shell({ log, projectDir });
+  const shell = new Shell({ log }, { alterPath: p => projectDir ? prependNodeModulesBinToPath(projectDir, p) : p });
   const client = new Client(config);
   const session = new ProSession({ config, client });
   const deps = { client, config, log, prompt, session, shell, tasks };

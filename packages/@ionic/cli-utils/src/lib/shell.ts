@@ -17,16 +17,17 @@ const debug = Debug('ionic:cli-utils:lib:shell');
 
 export interface ShellDeps {
   readonly log: ILogger;
-  readonly projectDir?: string;
+}
+
+export interface ShellOptions {
+  readonly alterPath?: (p: string) => string;
 }
 
 export class Shell implements IShell {
-  protected readonly log: ILogger;
-  projectDir?: string; // TODO: better way?
+  readonly alterPath: (p: string) => string;
 
-  constructor({ log, projectDir }: ShellDeps) {
-    this.log = log;
-    this.projectDir = projectDir;
+  constructor(protected readonly e: ShellDeps, options?: ShellOptions) {
+    this.alterPath = options && options.alterPath ? options.alterPath : (p: string) => p;
   }
 
   async run(command: string, args: string[], { stream, killOnExit = true, showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<void> {
@@ -36,11 +37,11 @@ export class Shell implements IShell {
     const fullCmd = cmd.bashify();
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
 
-    if (showCommand && this.log.level >= LOGGER_LEVELS.INFO) {
-      this.log.rawmsg(`> ${chalk.green(fullCmd)}`);
+    if (showCommand && this.e.log.level >= LOGGER_LEVELS.INFO) {
+      this.e.log.rawmsg(`> ${chalk.green(fullCmd)}`);
     }
 
-    const ws = stream ? stream : this.log.createWriteStream(LOGGER_LEVELS.INFO, false);
+    const ws = stream ? stream : this.e.log.createWriteStream(LOGGER_LEVELS.INFO, false);
 
     try {
       const promise = cmd.run();
@@ -107,7 +108,7 @@ export class Shell implements IShell {
         }
       } else {
         if (showError) {
-          this.log.error(publicErrorMsg);
+          this.e.log.error(publicErrorMsg);
         }
       }
 
@@ -121,8 +122,8 @@ export class Shell implements IShell {
     const fullCmd = cmd.bashify();
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
 
-    if (showCommand && this.log.level >= LOGGER_LEVELS.INFO) {
-      this.log.rawmsg(`> ${chalk.green(fullCmd)}`);
+    if (showCommand && this.e.log.level >= LOGGER_LEVELS.INFO) {
+      this.e.log.rawmsg(`> ${chalk.green(fullCmd)}`);
     }
 
     try {
@@ -142,7 +143,7 @@ export class Shell implements IShell {
         throw new FatalException(errorMsg, e.exitCode);
       } else {
         if (showError) {
-          this.log.error(errorMsg);
+          this.e.log.error(errorMsg);
         }
       }
 
@@ -156,8 +157,8 @@ export class Shell implements IShell {
     const cmd = new ShellCommand(command, args, crossSpawnOptions);
     const p = cmd.spawn();
 
-    if (showCommand && this.log.level >= LOGGER_LEVELS.INFO) {
-      this.log.rawmsg(`> ${chalk.green(cmd.bashify())}`);
+    if (showCommand && this.e.log.level >= LOGGER_LEVELS.INFO) {
+      this.e.log.rawmsg(`> ${chalk.green(cmd.bashify())}`);
     }
 
     return p;
@@ -183,12 +184,12 @@ export class Shell implements IShell {
     // with the `node_modules\.bin` folder in the project directory so that we
     // can run binaries inside a project.
     options.env = createProcessEnv(process.env, options.env, {
-      PATH: this.supplementPATH(process.env.PATH),
+      PATH: this.alterPath(process.env.PATH || ''),
       FORCE_COLOR: chalk.enabled ? '1' : '0',
     });
   }
+}
 
-  protected supplementPATH(p = ''): string {
-    return this.projectDir ? `${path.resolve(this.projectDir, 'node_modules', '.bin')}${p ? path.delimiter + p : ''}` : p;
-  }
+export function prependNodeModulesBinToPath(projectDir: string, p: string): string {
+  return path.resolve(projectDir, 'node_modules', '.bin') + path.delimiter + p;
 }

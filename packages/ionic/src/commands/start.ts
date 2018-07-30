@@ -14,6 +14,7 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
+import { prependNodeModulesBinToPath } from '@ionic/cli-utils/lib/shell';
 import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
 
 const debug = Debug('ionic:cli:commands:start');
@@ -413,8 +414,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       throw new FatalException('Error while loading new project. Please report this error!');
     }
 
-    // TODO: more hacks
-    this.env.shell.projectDir = this.project.directory;
+    this.env.shell.alterPath = p => prependNodeModulesBinToPath(projectDir, p);
 
     const shellOptions = { cwd: projectDir, stdio: 'inherit' };
 

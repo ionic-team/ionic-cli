@@ -330,7 +330,7 @@ export interface IShellRunOptions extends IShellOutputOptions {
 }
 
 export interface IShell {
-  projectDir?: string;
+  alterPath: (path: string) => string;
 
   run(command: string, args: string[], options: IShellRunOptions): Promise<void>;
   output(command: string, args: string[], options: IShellOutputOptions): Promise<string>;
