@@ -19,11 +19,6 @@ export const COMMON_BUILD_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
     summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => chalk.green(e)).join(', ')})`,
     groups: [OptionGroup.Advanced],
   },
-  {
-    name: 'project',
-    summary: 'The name of the project',
-    groups: [OptionGroup.Experimental],
-  },
 ];
 
 export interface BuildRunnerDeps {
