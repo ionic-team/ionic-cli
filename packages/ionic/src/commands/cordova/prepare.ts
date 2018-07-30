@@ -84,11 +84,6 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
           );
         }
       }
-    } else {
-      if (platforms.length === 0) {
-        this.env.log.warn(`No platforms installed. See ${chalk.green('ionic cordova platform add --help')} to add Cordova platforms.`);
-        return;
-      }
     }
 
     const metadata = await this.getMetadata();
