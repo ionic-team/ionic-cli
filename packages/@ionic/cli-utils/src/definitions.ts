@@ -639,7 +639,7 @@ export interface IonicEnvironment {
   readonly log: ILogger;
   readonly prompt: ζframework.PromptModule;
   readonly ctx: IonicContext;
-  session: ISession;
+  readonly session: ISession;
   readonly shell: IShell;
   readonly tasks: ζframework.TaskChain;
 
