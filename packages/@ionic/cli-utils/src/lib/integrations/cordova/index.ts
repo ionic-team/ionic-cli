@@ -80,7 +80,7 @@ export class Integration extends BaseIntegration {
         .replace(/Available platforms[\s\S]+/, '')
         .split('\n')
         .map(l => l.trim())
-        .filter(l => l)
+        .filter(l => l && !l.startsWith('.'))
         .join(', ');
     } catch (e) {
       debug('Error while getting Cordova platforms: %o', e);
