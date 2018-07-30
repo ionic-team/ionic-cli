@@ -10,9 +10,10 @@ import * as through2 from 'through2';
 import { prettyProjectName } from '../';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularServeOptions, ServeDetails } from '../../../definitions';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
-import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner } from '../../serve';
+import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner, ServeRunnerDeps } from '../../serve';
 import { findOpenIonicPorts } from '../common';
 
+import { IonicAngularProject } from './';
 import { APP_SCRIPTS_OPTIONS } from './app-scripts';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:serve');
@@ -21,10 +22,18 @@ const DEFAULT_PROGRAM = 'ionic-app-scripts';
 export const DEFAULT_SERVE_SCRIPT_VALUE = `${DEFAULT_PROGRAM} serve`;
 
 interface ServeCmdDetails {
-  program: string;
+  readonly program: string;
+}
+
+export interface IonicAngularServeRunnerDeps extends ServeRunnerDeps {
+  readonly project: IonicAngularProject;
 }
 
 export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOptions> {
+  constructor(protected readonly e: IonicAngularServeRunnerDeps) {
+    super();
+  }
+
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       options: [
@@ -114,7 +123,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
     const { program } = await this.serveCommandWrapper(options);
 
     const interval = setInterval(() => {
-      this.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
+      this.e.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
     }, 5000);
 
     await isHostConnectable('localhost', port);
@@ -140,7 +149,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
       }
 
       const pkg = '@ionic/app-scripts';
-      this.log.nl();
+      this.e.log.nl();
 
       throw new FatalException(
         `${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.\n` +
@@ -153,11 +162,11 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
   private async servecmd(options: IonicAngularServeOptions): Promise<ServeCmdDetails> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
-    const pkg = await this.project.requirePackageJson();
+    const pkg = await this.e.project.requirePackageJson();
 
     let program = DEFAULT_PROGRAM;
     let args = await this.serveOptionsToAppScriptsArgs(options);
-    const shellOptions = { cwd: this.project.directory };
+    const shellOptions = { cwd: this.e.project.directory };
 
     debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
 
@@ -167,7 +176,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
         args = ['serve', ...args];
       } else {
         debug(`Invoking ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
-        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
+        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
         program = pkgManager;
         args = pkgArgs;
       }
@@ -175,7 +184,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
       args = ['serve', ...args];
     }
 
-    const p = this.shell.spawn(program, args, shellOptions);
+    const p = this.e.shell.spawn(program, args, shellOptions);
     this.emit('cli-utility-spawn', p);
 
     return new Promise<ServeCmdDetails>((resolve, reject) => {
@@ -189,7 +198,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
 
       onBeforeExit(async () => p.kill());
 
-      const log = this.log.clone();
+      const log = this.e.log.clone();
       log.setFormatter(createPrefixedFormatter(chalk.dim(`[${program === DEFAULT_PROGRAM ? 'app-scripts' : program}]`)));
       const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
 

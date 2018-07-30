@@ -9,7 +9,9 @@ import { onBeforeExit } from '@ionic/cli-framework/utils/process';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner } from '../../serve';
+import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner, ServeRunnerDeps } from '../../serve';
+
+import { AngularProject } from './';
 
 const DEFAULT_PROGRAM = 'ng';
 
@@ -26,10 +28,18 @@ const NG_SERVE_OPTIONS = [
 const debug = Debug('ionic:cli-utils:lib:project:angular:serve');
 
 interface ServeCmdDetails {
-  program: string;
+  readonly program: string;
+}
+
+export interface AngularServeRunnerDeps extends ServeRunnerDeps {
+  readonly project: AngularProject;
 }
 
 export class AngularServeRunner extends ServeRunner<AngularServeOptions> {
+  constructor(protected readonly e: AngularServeRunnerDeps) {
+    super();
+  }
+
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       groups: [CommandGroup.Beta],
@@ -91,7 +101,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const { program } = await this.serveCommandWrapper(options);
 
     const interval = setInterval(() => {
-      this.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
+      this.e.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
     }, 5000);
 
     await isHostConnectable('localhost', ngPort);
@@ -117,7 +127,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       }
 
       const pkg = '@angular/cli';
-      this.log.nl();
+      this.e.log.nl();
 
       throw new FatalException(
         `${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.\n` +
@@ -130,24 +140,24 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   private async servecmd(options: AngularServeOptions): Promise<ServeCmdDetails> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
-    const pkg = await this.project.requirePackageJson();
+    const pkg = await this.e.project.requirePackageJson();
 
     let program = DEFAULT_PROGRAM;
     let args = await this.serveOptionsToNgArgs(options);
-    const shellOptions = { cwd: this.project.directory };
+    const shellOptions = { cwd: this.e.project.directory };
 
     debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[SERVE_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
       program = pkgManager;
       args = pkgArgs;
     } else {
       args = [...this.buildArchitectCommand(options), ...args];
     }
 
-    const p = this.shell.spawn(program, args, shellOptions);
+    const p = this.e.shell.spawn(program, args, shellOptions);
     this.emit('cli-utility-spawn', p);
 
     return new Promise<ServeCmdDetails>((resolve, reject) => {
@@ -161,7 +171,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
       onBeforeExit(async () => p.kill());
 
-      const log = this.log.clone();
+      const log = this.e.log.clone();
       log.setFormatter(createPrefixedFormatter(chalk.dim(`[${program}]`)));
       const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
 
@@ -196,10 +206,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     };
 
     if (options.engine === 'cordova') {
-      const integration = await this.project.getIntegration('cordova');
+      const integration = await this.e.project.getIntegration('cordova');
       args.platform = options.platform;
 
-      if (this.project.directory !== integration.root) {
+      if (this.e.project.directory !== integration.root) {
         args.cordovaBasePath = integration.root;
       }
     }

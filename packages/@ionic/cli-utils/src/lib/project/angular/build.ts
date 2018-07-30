@@ -25,11 +25,8 @@ export interface AngularBuildRunnerDeps extends BuildRunnerDeps {
 }
 
 export class AngularBuildRunner extends BuildRunner<AngularBuildOptions> {
-  readonly project: AngularProject;
-
-  constructor(deps: AngularBuildRunnerDeps) {
-    super(deps);
-    this.project = deps.project;
+  constructor(protected readonly e: AngularBuildRunnerDeps) {
+    super();
   }
 
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
@@ -82,10 +79,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     };
 
     if (options.engine === 'cordova') {
-      const integration = await this.project.getIntegration('cordova');
+      const integration = await this.e.project.getIntegration('cordova');
       args.platform = options.platform;
 
-      if (this.project.directory !== integration.root) {
+      if (this.e.project.directory !== integration.root) {
         args.cordovaBasePath = integration.root;
       }
     }
@@ -102,19 +99,19 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
   async buildProject(options: AngularBuildOptions): Promise<void> {
     const { pkgManagerArgs } = await import('../../utils/npm');
-    const pkg = await this.project.requirePackageJson();
+    const pkg = await this.e.project.requirePackageJson();
 
     const args = await this.buildOptionsToNgArgs(options);
-    const shellOptions = { cwd: this.project.directory };
+    const shellOptions = { cwd: this.e.project.directory };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-      const [pkgManager, ...pkgArgs] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: BUILD_SCRIPT });
-      await this.shell.run(pkgManager, pkgArgs, shellOptions);
+      const [pkgManager, ...pkgArgs] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: BUILD_SCRIPT });
+      await this.e.shell.run(pkgManager, pkgArgs, shellOptions);
     } else {
-      await this.shell.run('ng', [...this.buildArchitectCommand(options), ...args], shellOptions);
+      await this.e.shell.run('ng', [...this.buildArchitectCommand(options), ...args], shellOptions);
     }
   }
 }

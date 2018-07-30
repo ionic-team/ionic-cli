@@ -20,44 +20,36 @@ export interface HookDeps {
 export abstract class Hook {
   abstract readonly name: HookName;
 
-  protected readonly config: IConfig;
-  protected readonly project: IProject;
-  protected readonly shell: IShell;
-
   get script() {
     return `ionic:${this.name}`;
   }
 
-  constructor({ config, project, shell }: HookDeps) {
-    this.config = config;
-    this.project = project;
-    this.shell = shell;
-  }
+  constructor(protected readonly e: HookDeps) {}
 
   async run(input: HookInput) {
     const { pkgManagerArgs } = await import('./utils/npm');
 
-    const type = this.project.type;
+    const type = this.e.project.type;
 
-    if (!type || !this.project.directory) {
+    if (!type || !this.e.project.directory) {
       return; // TODO: will we need hooks outside a project?
     }
 
-    const pkg = await this.project.requirePackageJson();
+    const pkg = await this.e.project.requirePackageJson();
 
     debug(`Looking for ${chalk.cyan(this.script)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[this.script]) {
       debug(`Invoking ${chalk.cyan(this.script)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: this.script });
-      await this.shell.run(pkgManager, pkgArgs, {});
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script });
+      await this.e.shell.run(pkgManager, pkgArgs, {});
     }
 
-    const projectHooks = this.project.config.get('hooks');
+    const projectHooks = this.e.project.config.get('hooks');
     const hooks = projectHooks ? conform(projectHooks[this.name]) : [];
 
     for (const h of hooks) {
-      const p = path.resolve(this.project.directory, h);
+      const p = path.resolve(this.e.project.directory, h);
 
       try {
         if (path.extname(p) !== '.js') {
@@ -73,8 +65,8 @@ export abstract class Hook {
         await hook(lodash.assign({}, input, {
           project: {
             type,
-            dir: this.project.directory,
-            srcDir: await this.project.getSourceDir(),
+            dir: this.e.project.directory,
+            srcDir: await this.e.project.getSourceDir(),
           },
           argv: process.argv,
           env: process.env,

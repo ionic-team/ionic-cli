@@ -84,22 +84,9 @@ export interface ServeRunner<T extends ServeOptions> {
 }
 
 export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter implements Runner<T, ServeDetails> {
-  protected readonly config: IConfig;
-  protected readonly log: ILogger;
-  protected readonly project: IProject;
-  protected readonly prompt: PromptModule;
-  protected readonly shell: IShell;
-
   protected devAppConnectionMade = false;
 
-  constructor({ config, log, project, prompt, shell }: ServeRunnerDeps) {
-    super();
-    this.config = config;
-    this.log = log;
-    this.project = project;
-    this.prompt = prompt;
-    this.shell = shell;
-  }
+  protected abstract readonly e: ServeRunnerDeps;
 
   abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
   abstract serveProject(options: T): Promise<ServeDetails>;
@@ -152,7 +139,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
   }
 
   async displayDevAppMessage(options: T) {
-    const pkg = await this.project.requirePackageJson();
+    const pkg = await this.e.project.requirePackageJson();
 
     // If this is regular `ionic serve`, we warn the dev about unsupported
     // plugins in the devapp.
@@ -162,7 +149,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       const packageCordovaPluginsDiff = packageCordovaPlugins.filter(p => !plugins.has(p));
 
       if (packageCordovaPluginsDiff.length > 0) {
-        this.log.warn(
+        this.e.log.warn(
           'Detected unsupported Cordova plugins with Ionic DevApp:\n' +
           `${packageCordovaPluginsDiff.map(p => `- ${chalk.bold(p)}`).join('\n')}\n\n` +
           `App may not function as expected in Ionic DevApp.`
@@ -172,7 +159,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
   }
 
   async beforeServe(options: T) {
-    const hook = new ServeBeforeHook({ config: this.config, project: this.project, shell: this.shell });
+    const hook = new ServeBeforeHook(this.e);
 
     try {
       await hook.run({ name: hook.name, serve: options });
@@ -201,8 +188,8 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     const fmtExternalAddress = (address: string) => `${details.protocol}://${address}:${details.port}`;
     const labAddress = labDetails ? `${labDetails.protocol}://${labDetails.address}:${labDetails.port}` : undefined;
 
-    this.log.nl();
-    this.log.info(
+    this.e.log.nl();
+    this.e.log.info(
       `Development server running!` +
       (labAddress ? `\nLab: ${chalk.bold(labAddress)}` : '') +
       `\nLocal: ${chalk.bold(localAddress)}` +
@@ -210,7 +197,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       (devAppDetails && devAppDetails.channel ? `\nDevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '') +
       `\n\n${chalk.yellow('Use Ctrl+C to quit this process')}`
     );
-    this.log.nl();
+    this.e.log.nl();
 
     if (options.open) {
       const openAddress = labAddress ? labAddress : localAddress;
@@ -219,8 +206,8 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       const opn = await import('opn');
       await opn(openURL, { app: options.browser, wait: false });
 
-      this.log.info(`Browser window opened to ${chalk.bold(openURL)}!`);
-      this.log.nl();
+      this.e.log.info(`Browser window opened to ${chalk.bold(openURL)}!`);
+      this.e.log.nl();
     }
 
     emit('serve:ready', details);
@@ -231,7 +218,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
   }
 
   async afterServe(options: T, details: ServeDetails) {
-    const hook = new ServeAfterHook({ config: this.config, project: this.project, shell: this.shell });
+    const hook = new ServeAfterHook(this.e);
 
     try {
       await hook.run({ name: hook.name, serve: lodash.assign({}, options, details) });
@@ -273,7 +260,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     if (options.devapp) {
       const { createCommServer, createPublisher } = await import('./devapp');
 
-      const publisher = await createPublisher(this.project.config.get('name'), details.port, details.commPort);
+      const publisher = await createPublisher(this.e.project.config.get('name'), details.port, details.commPort);
       const comm = await createCommServer(publisher.id, details.commPort);
 
       publisher.interfaces = details.interfaces;
@@ -288,7 +275,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
           await this.displayDevAppMessage(options);
         }
 
-        this.log.info(`DevApp connection established from ${chalk.bold(data.email)}`);
+        this.e.log.info(`DevApp connection established from ${chalk.bold(data.email)}`);
       });
 
       publisher.on('error', (err: Error) => {
@@ -298,13 +285,13 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       try {
         await comm.start();
       } catch (e) {
-        this.log.error(`Could not create DevApp comm server: ${String(e.stack ? e.stack : e)}`);
+        this.e.log.error(`Could not create DevApp comm server: ${String(e.stack ? e.stack : e)}`);
       }
 
       try {
         await publisher.start();
       } catch (e) {
-        this.log.error(`Could not publish DevApp service: ${String(e.stack ? e.stack : e)}`);
+        this.e.log.error(`Could not publish DevApp service: ${String(e.stack ? e.stack : e)}`);
       }
 
       return publisher.name;
@@ -334,7 +321,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     };
 
     if (options.ssl) {
-      const sslConfig = this.project.config.get('ssl');
+      const sslConfig = this.e.project.config.get('ssl');
 
       if (sslConfig && sslConfig.key && sslConfig.cert) {
         labDetails.ssl = { key: sslConfig.key, cert: sslConfig.cert };
@@ -354,8 +341,8 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       if (e.code === 'ENOENT') {
         const pkg = '@ionic/lab';
         const requiredMsg = `This package is required for Ionic Lab. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md#4.0.0')}`;
-        this.log.nl();
-        this.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
+        this.e.log.nl();
+        this.e.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
 
         const installed = await this.promptToInstallPkg({ pkg, saveDev: true });
 
@@ -371,9 +358,9 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
   }
 
   async runLabServer(url: string, details: LabServeDetails): Promise<void> {
-    const pkg = await this.project.requirePackageJson();
+    const pkg = await this.e.project.requirePackageJson();
 
-    const appName = this.project.config.get('name');
+    const appName = this.e.project.config.get('name');
     const labArgs = [url, '--host', details.address, '--port', String(details.port)];
     const nameArgs = appName ? ['--app-name', appName] : [];
     const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
@@ -382,7 +369,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       labArgs.push('--ssl', '--ssl-key', details.ssl.key, '--ssl-cert', details.ssl.cert);
     }
 
-    const p = this.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.project.directory });
+    const p = this.e.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.e.project.directory });
     this.emit('cli-utility-spawn', p);
 
     return new Promise<void>((resolve, reject) => {
@@ -392,7 +379,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
 
       onBeforeExit(async () => p.kill());
 
-      const log = this.log.clone();
+      const log = this.e.log.clone();
       log.setFormatter(createPrefixedFormatter(chalk.dim('[lab]')));
       const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
 
@@ -415,20 +402,20 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
 
   async promptToInstallPkg(options: Partial<PkgManagerOptions> & { pkg: string; }): Promise<boolean> {
     const { pkgManagerArgs } = await import('./utils/npm');
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'install', ...options });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', ...options });
 
-    const confirm = await this.prompt({
+    const confirm = await this.e.prompt({
       name: 'confirm',
       message: `Install ${chalk.green(options.pkg)}?`,
       type: 'confirm',
     });
 
     if (!confirm) {
-      this.log.warn(`Not installing--here's how to install manually: ${chalk.green(`${manager} ${managerArgs.join(' ')}`)}`);
+      this.e.log.warn(`Not installing--here's how to install manually: ${chalk.green(`${manager} ${managerArgs.join(' ')}`)}`);
       return false;
     }
 
-    await this.shell.run(manager, managerArgs, { cwd: this.project.directory });
+    await this.e.shell.run(manager, managerArgs, { cwd: this.e.project.directory });
 
     return true;
   }
@@ -451,13 +438,13 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
         chosenIP = availableInterfaces[0].address;
       } else if (availableInterfaces.length > 1) {
         if (options.externalAddressRequired) {
-          this.log.warn(
+          this.e.log.warn(
             'Multiple network interfaces detected!\n' +
             'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n\n' +
             `You may also use the ${chalk.green('--address')} option to skip this prompt.`
           );
 
-          const promptedIp = await this.prompt({
+          const promptedIp = await this.e.prompt({
             type: 'list',
             name: 'promptedIp',
             message: 'Please select which IP to use:',

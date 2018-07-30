@@ -18,11 +18,8 @@ export interface IonicAngularBuildRunnerDeps extends BuildRunnerDeps {
 }
 
 export class IonicAngularBuildRunner extends BuildRunner<IonicAngularBuildOptions> {
-  protected readonly project: IonicAngularProject;
-
-  constructor(deps: IonicAngularBuildRunnerDeps) {
-    super(deps);
-    this.project = deps.project;
+  constructor(protected readonly e: IonicAngularBuildRunnerDeps) {
+    super();
   }
 
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
@@ -65,11 +62,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
 
   async buildProject(options: IonicAngularBuildOptions): Promise<void> {
     const { pkgManagerArgs } = await import('../../utils/npm');
-    const pkg = await this.project.requirePackageJson();
+    const pkg = await this.e.project.requirePackageJson();
 
     let program = DEFAULT_PROGRAM;
     let args = this.generateAppScriptsArgs(options);
-    const shellOptions = { cwd: this.project.directory };
+    const shellOptions = { cwd: this.e.project.directory };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
 
@@ -79,7 +76,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
         args = ['build', ...args];
       } else {
         debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: BUILD_SCRIPT, scriptArgs: args });
+        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: BUILD_SCRIPT, scriptArgs: args });
         program = pkgManager;
         args = pkgArgs;
       }
@@ -87,7 +84,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
       args = ['build', ...args];
     }
 
-    await this.shell.run(program, args, shellOptions);
+    await this.e.shell.run(program, args, shellOptions);
   }
 
   generateAppScriptsArgs(options: IonicAngularBuildOptions): string[] {

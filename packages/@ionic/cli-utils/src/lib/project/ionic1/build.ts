@@ -13,11 +13,8 @@ export interface Ionic1BuildRunnerDeps extends BuildRunnerDeps {
 }
 
 export class Ionic1BuildRunner extends BuildRunner<Ionic1BuildOptions> {
-  protected readonly project: Ionic1Project;
-
-  constructor(deps: Ionic1BuildRunnerDeps) {
-    super(deps);
-    this.project = deps.project;
+  constructor(protected readonly e: Ionic1BuildRunnerDeps) {
+    super();
   }
 
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
@@ -35,17 +32,17 @@ export class Ionic1BuildRunner extends BuildRunner<Ionic1BuildOptions> {
 
   async buildProject(options: Ionic1BuildOptions): Promise<void> {
     const { pkgManagerArgs } = await import('../../utils/npm');
-    const pkg = await this.project.requirePackageJson();
-    const shellOptions = { cwd: this.project.directory };
+    const pkg = await this.e.project.requirePackageJson();
+    const shellOptions = { cwd: this.e.project.directory };
 
     debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: BUILD_SCRIPT });
-      await this.shell.run(pkgManager, pkgArgs, shellOptions);
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: BUILD_SCRIPT });
+      await this.e.shell.run(pkgManager, pkgArgs, shellOptions);
     } else {
-      await this.shell.run('ionic-v1', ['build'], shellOptions);
+      await this.e.shell.run('ionic-v1', ['build'], shellOptions);
     }
   }
 }

@@ -29,17 +29,8 @@ export interface BuildRunnerDeps {
 }
 
 export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner<T, void> {
-  protected readonly config: IConfig;
-  protected readonly log: ILogger;
-  protected readonly shell: IShell;
 
-  protected abstract readonly project: IProject;
-
-  constructor({ config, log, shell }: BuildRunnerDeps) {
-    this.config = config;
-    this.log = log;
-    this.shell = shell;
-  }
+  protected abstract readonly e: BuildRunnerDeps;
 
   abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
   abstract createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): T;
@@ -67,7 +58,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
   }
 
   async beforeBuild(options: T): Promise<void> {
-    const hook = new BuildBeforeHook({ config: this.config, project: this.project, shell: this.shell });
+    const hook = new BuildBeforeHook(this.e);
 
     try {
       await hook.run({ name: hook.name, build: options });
@@ -82,7 +73,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
 
   async run(options: T): Promise<void> {
     if (options.engine === 'cordova' && !options.platform) {
-      this.log.warn(`Cordova engine chosen without a target platform. This could cause issues. Please use the ${chalk.green('--platform')} option.`);
+      this.e.log.warn(`Cordova engine chosen without a target platform. This could cause issues. Please use the ${chalk.green('--platform')} option.`);
     }
 
     await this.beforeBuild(options);
@@ -91,7 +82,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
   }
 
   async afterBuild(options: T): Promise<void> {
-    const hook = new BuildAfterHook({ config: this.config, project: this.project, shell: this.shell });
+    const hook = new BuildAfterHook(this.e);
 
     try {
       await hook.run({ name: hook.name, build: options });

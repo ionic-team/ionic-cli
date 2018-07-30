@@ -10,18 +10,28 @@ import { str2num } from '@ionic/cli-framework/utils/string';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1ServeOptions, ServeDetails } from '../../../definitions';
 import { FatalException, ServeCommandNotFoundException } from '../../errors';
-import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner } from '../../serve';
+import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner, ServeRunnerDeps } from '../../serve';
 import { findOpenIonicPorts } from '../common';
+
+import { Ionic1Project } from './';
 
 const DEFAULT_PROGRAM = 'ionic-v1';
 
 const debug = Debug('ionic:cli-utils:lib:project:ionic1');
 
 interface ServeCmdDetails {
-  program: string;
+  readonly program: string;
+}
+
+export interface Ionic1ServeRunnerDeps extends ServeRunnerDeps {
+  readonly project: Ionic1Project;
 }
 
 export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
+  constructor(protected readonly e: Ionic1ServeRunnerDeps) {
+    super();
+  }
+
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       options: [
@@ -92,7 +102,7 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
     const { program } = await this.serveCommandWrapper(options);
 
     const interval = setInterval(() => {
-      this.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
+      this.e.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
     }, 5000);
 
     await isHostConnectable('localhost', port);
@@ -120,13 +130,13 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
       const pkg = '@ionic/v1-toolkit';
       const requiredMsg = `This package is required for ${chalk.green('ionic serve')}. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md#4.0.0')}`;
 
-      this.log.nl();
-      this.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
+      this.e.log.nl();
+      this.e.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
 
       const installed = await this.promptToInstallPkg({ pkg, saveDev: true });
 
       if (!installed) {
-        this.log.nl();
+        this.e.log.nl();
         throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.\n` + requiredMsg);
       }
 
@@ -137,17 +147,17 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
   private async servecmd(options: Ionic1ServeOptions): Promise<ServeCmdDetails> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
-    const pkg = await this.project.requirePackageJson();
+    const pkg = await this.e.project.requirePackageJson();
 
     let program = DEFAULT_PROGRAM;
     let args = ['--host', options.address, '--port', String(options.port), '--lr-port', String(options.livereloadPort), '--dev-port', String(options.notificationPort)];
-    const shellOptions = { cwd: this.project.directory };
+    const shellOptions = { cwd: this.e.project.directory };
 
     debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[SERVE_SCRIPT]) {
       debug(`Invoking ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
+      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
       program = pkgManager;
       args = pkgArgs;
     } else {
@@ -160,7 +170,7 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
       args = [...v1utilArgs, ...args];
     }
 
-    const p = this.shell.spawn(program, args, shellOptions);
+    const p = this.e.shell.spawn(program, args, shellOptions);
     this.emit('cli-utility-spawn', p);
 
     return new Promise<ServeCmdDetails>((resolve, reject) => {
@@ -174,7 +184,7 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
 
       onBeforeExit(async () => p.kill());
 
-      const log = this.log.clone();
+      const log = this.e.log.clone();
       log.setFormatter(createPrefixedFormatter(chalk.dim(`[${program === DEFAULT_PROGRAM ? 'v1' : program}]`)));
       const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
 
