@@ -503,7 +503,6 @@ export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> 
   minifyjs: boolean;
   minifycss: boolean;
   optimizejs: boolean;
-  target?: string;
   env?: string;
 }
 

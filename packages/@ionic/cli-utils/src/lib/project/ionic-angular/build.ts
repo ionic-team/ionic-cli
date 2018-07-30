@@ -99,7 +99,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
       minifycss: options.minifycss ? true : false,
       optimizejs: options.optimizejs ? true : false,
       generateSourceMap: typeof options.sourcemaps !== 'undefined' ? options.sourcemaps ? 'true' : 'false' : undefined,
-      target: options.target,
+      target: options.engine === 'cordova' ? 'cordova' : undefined,
       platform: options.platform,
       env: options.env,
     };
