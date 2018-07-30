@@ -84,6 +84,11 @@ export async function isHostConnectable(host: string, port: number, { timeout }:
         resolve(true);
       });
 
+      if (sock.connecting === true) {
+        sock.destroy();
+        resolve(true);
+      }
+
       sock.on('error', err => {
         reject(err);
       });
