@@ -1,6 +1,6 @@
 {
   "name": "@ionic/ng-toolkit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Utilities for ionic/angular v4+ apps, used by Ionic CLI",
   "bin": {
     "ionic-ng": "./bin/ionic-ng"
@@ -37,7 +37,7 @@
     "*.{ts,tsx}": "npm run lint"
   },
   "dependencies": {
-    "@ionic/cli-framework": "1.0.0",
+    "@ionic/cli-framework": "1.0.1",
     "chalk": "^2.3.0",
     "debug": "^3.1.0",
     "rxjs": "^6.2.0",
