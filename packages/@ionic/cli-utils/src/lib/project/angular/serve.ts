@@ -104,7 +104,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       this.e.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
     }, 5000);
 
-    await isHostConnectable('localhost', ngPort);
+    await isHostConnectable(options.address, ngPort);
     clearInterval(interval);
 
     return {

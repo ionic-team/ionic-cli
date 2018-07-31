@@ -126,7 +126,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
       this.e.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
     }, 5000);
 
-    await isHostConnectable('localhost', port);
+    await isHostConnectable(options.address, port);
     clearInterval(interval);
 
     return {
