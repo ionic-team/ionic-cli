@@ -105,7 +105,7 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
       this.e.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
     }, 5000);
 
-    await isHostConnectable('localhost', port);
+    await isHostConnectable(options.address, port);
     clearInterval(interval);
 
     return {
