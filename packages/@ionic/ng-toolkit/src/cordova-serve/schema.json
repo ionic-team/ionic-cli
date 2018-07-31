@@ -15,6 +15,10 @@
       "type": "string",
       "description": "Cordova platform to use during serve."
     },
+    "proxyConfig": {
+      "type": "string",
+      "description": "Proxy configuration file."
+    },
     "port": {
       "type": "number",
       "description": "Port to listen on.",

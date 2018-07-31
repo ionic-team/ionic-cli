@@ -4,5 +4,6 @@ export interface CordovaServeBuilderSchema {
   platform: string;
   port?: number;
   host?: string;
+  proxyConfig?: string;
   cordovaBasePath?: string;
 }
