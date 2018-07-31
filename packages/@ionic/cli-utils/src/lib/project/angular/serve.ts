@@ -97,7 +97,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   async serveProject(options: AngularServeOptions): Promise<ServeDetails> {
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
 
-    const ngPort = options.port = await findClosestOpenPort(options.port, '0.0.0.0');
+    const ngPort = options.port = await findClosestOpenPort(options.port);
     const { program } = await this.serveCommandWrapper(options);
 
     const interval = setInterval(() => {

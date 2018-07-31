@@ -9,6 +9,26 @@ const debug = Debug('ionic:cli-framework:utils:network');
 
 export const ERROR_NETWORK_ADDRESS_NOT_AVAIL = 'NETWORK_ADDRESS_NOT_AVAIL';
 
+export const DEFAULT_ADDRESSES: ReadonlyArray<string> = getDefaultAddresses();
+
+function getDefaultAddresses(): string[] {
+  const addresses: string[] = ['0.0.0.0'];
+
+  try {
+    const networkInterfaces = os.networkInterfaces();
+
+    for (const device of Object.keys(networkInterfaces)) {
+      const networkInterface = networkInterfaces[device];
+
+      addresses.push(...networkInterface.map(i => i.address));
+    }
+  } catch (e) {
+    // swallow
+  }
+
+  return addresses;
+}
+
 export function getExternalIPv4Interfaces(): NetworkInterface[] {
   const networkInterfaces = os.networkInterfaces();
   const devices: NetworkInterface[] = [];
@@ -26,9 +46,17 @@ export function getExternalIPv4Interfaces(): NetworkInterface[] {
   return devices;
 }
 
-export async function findClosestOpenPort(port: number, host?: string): Promise<number> {
+/**
+ * Attempts to locate a port number starting from `port` and incrementing by 1.
+ *
+ * This function looks through all internal network interfaces, attempting
+ * host/port combinations until it finds an available port on all interfaces.
+ *
+ * @param port The port at which to start checking.
+ */
+export async function findClosestOpenPort(port: number): Promise<number> {
   async function t(portToCheck: number): Promise<number> {
-    if (await isPortAvailable(portToCheck, host)) {
+    if (await isPortAvailable(portToCheck)) {
       return portToCheck;
     }
 
@@ -38,7 +66,33 @@ export async function findClosestOpenPort(port: number, host?: string): Promise<
   return t(port);
 }
 
-export async function isPortAvailable(port: number, host?: string): Promise<boolean> {
+/**
+ * Checks whether a port is open or closed.
+ *
+ * This function looks through all internal network interfaces, checking
+ * whether all host/port combinations are open. If one or more is not, the port
+ * is not available.
+ */
+export async function isPortAvailable(port: number): Promise<boolean> {
+  let available = true;
+
+  for (const address of DEFAULT_ADDRESSES) {
+    try {
+      debug('checking for open port on %s:%d', address, port);
+      available = await isPortAvailableForHost(address, port);
+
+      if (!available) {
+        return false;
+      }
+    } catch (e) {
+      debug('error while checking %s:%d: %o', address, port, e);
+    }
+  }
+
+  return available;
+}
+
+export function isPortAvailableForHost(host: string, port: number): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     const tester = net.createServer()
       .once('error', (err: any) => {

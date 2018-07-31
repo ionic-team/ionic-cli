@@ -21,9 +21,9 @@ export interface Ports {
 export async function findOpenIonicPorts(address: string, ports: Ports): Promise<Ports> {
   try {
     const [ port, livereloadPort, notificationPort ] = await Promise.all([
-      findClosestOpenPort(ports.port, '0.0.0.0'),
-      findClosestOpenPort(ports.livereloadPort, '0.0.0.0'),
-      findClosestOpenPort(ports.notificationPort, '0.0.0.0'),
+      findClosestOpenPort(ports.port),
+      findClosestOpenPort(ports.livereloadPort),
+      findClosestOpenPort(ports.notificationPort),
     ]);
 
     if (ports.port !== port) {

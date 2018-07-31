@@ -250,7 +250,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       const { port } = details;
 
       // the comm server always binds to 0.0.0.0 to target every possible interface
-      const commPort = await findClosestOpenPort(DEFAULT_DEVAPP_COMM_PORT, '0.0.0.0');
+      const commPort = await findClosestOpenPort(DEFAULT_DEVAPP_COMM_PORT);
 
       return { port, commPort, interfaces };
     }
@@ -317,7 +317,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     const labDetails: LabServeDetails = {
       protocol: options.ssl ? 'https' : 'http',
       address: options.labHost,
-      port: await findClosestOpenPort(options.labPort, options.labHost),
+      port: await findClosestOpenPort(options.labPort),
     };
 
     if (options.ssl) {
