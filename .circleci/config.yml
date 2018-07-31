@@ -121,6 +121,9 @@ jobs:
       GIT_COMMITTER_NAME: Ionitron
       GIT_COMMITTER_EMAIL: hi@ionicframework.com
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "d6:7e:1d:d6:ff:84:c5:2a:60:c8:19:a7:22:08:b5:e6" # ionitron user key
       - checkout
       - attach_workspace:
           at: /tmp/workspace
