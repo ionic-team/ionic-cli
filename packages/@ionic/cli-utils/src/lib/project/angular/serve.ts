@@ -109,7 +109,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
     return {
       custom: program !== DEFAULT_PROGRAM,
-      protocol: 'http',
+      protocol: options.ssl ? 'https' : 'http',
       localAddress: 'localhost',
       externalAddress: externalIP,
       externalNetworkInterfaces: availableInterfaces,
@@ -203,6 +203,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       host: options.address,
       port: String(options.port),
       'source-map': options.sourcemaps !== false ? options.sourcemaps : 'false',
+      ssl: options.ssl,
     };
 
     if (options.engine === 'cordova') {
