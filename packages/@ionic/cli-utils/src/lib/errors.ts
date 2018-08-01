@@ -12,9 +12,7 @@ export class FatalException extends BaseException {
   }
 }
 
-export class ServeException extends BaseException {}
-
-export class ServeCommandNotFoundException extends ServeException {}
+export class ServeCLIProgramNotFoundException extends BaseException {}
 
 export class SessionException extends BaseException {}
 

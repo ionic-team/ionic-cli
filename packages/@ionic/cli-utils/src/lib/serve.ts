@@ -1,26 +1,25 @@
 import { BaseError, LOGGER_LEVELS, NetworkInterface, OptionGroup, PromptModule, createPrefixedFormatter } from '@ionic/cli-framework';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
-import { findClosestOpenPort, getExternalIPv4Interfaces } from '@ionic/cli-framework/utils/network';
+import { findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/cli-framework/utils/network';
 import { onBeforeExit, processExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import chalk from 'chalk';
-import { ChildProcess } from 'child_process';
 import * as Debug from 'debug';
 import { EventEmitter } from 'events';
 import * as lodash from 'lodash';
 import * as os from 'os';
 import * as path from 'path';
 import * as split2 from 'split2';
+import * as stream from 'stream';
 import * as through2 from 'through2';
 
 import { ASSETS_DIRECTORY } from '../constants';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, LabServeDetails, Runner, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 
-import { FatalException, RunnerException } from './errors';
+import { FatalException, RunnerException, ServeCLIProgramNotFoundException } from './errors';
 import { emit } from './events';
 import { Hook } from './hooks';
-import { PkgManagerOptions } from './utils/npm';
 
 const debug = Debug('ionic:cli-utils:lib:serve');
 
@@ -78,12 +77,7 @@ export interface ServeRunnerDeps {
   readonly shell: IShell;
 }
 
-export interface ServeRunner<T extends ServeOptions> {
-  on(event: 'cli-utility-spawn', handler: (cp: ChildProcess) => void): this;
-  emit(event: 'cli-utility-spawn', cp: ChildProcess): boolean;
-}
-
-export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter implements Runner<T, ServeDetails> {
+export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, ServeDetails> {
   protected devAppConnectionMade = false;
 
   protected abstract readonly e: ServeRunnerDeps;
@@ -313,7 +307,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
     return new Set(plugins);
   }
 
-  async runLab(options: T, details: ServeDetails): Promise<LabServeDetails> {
+  async runLab(options: T, serveDetails: ServeDetails): Promise<LabServeDetails> {
     const labDetails: LabServeDetails = {
       protocol: options.ssl ? 'https' : 'http',
       address: options.labHost,
@@ -333,91 +327,10 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       }
     }
 
-    const appUrl = `${details.protocol}://localhost:${details.port}`;
-
-    try {
-      await this.runLabServer(appUrl, labDetails);
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        const pkg = '@ionic/lab';
-        const requiredMsg = `This package is required for Ionic Lab. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md#4.0.0')}`;
-        this.e.log.nl();
-        this.e.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
-
-        const installed = await this.promptToInstallPkg({ pkg, saveDev: true });
-
-        if (!installed) {
-          throw new FatalException(`${chalk.green(pkg)} is required for Ionic Lab to work properly.\n` + requiredMsg);
-        }
-
-        await this.runLabServer(appUrl, labDetails);
-      }
-    }
+    const lab = new IonicLabServeCLI(this.e);
+    await lab.start({ serveDetails, ...labDetails });
 
     return labDetails;
-  }
-
-  async runLabServer(url: string, details: LabServeDetails): Promise<void> {
-    const pkg = await this.e.project.requirePackageJson();
-
-    const appName = this.e.project.config.get('name');
-    const labArgs = [url, '--host', details.address, '--port', String(details.port)];
-    const nameArgs = appName ? ['--app-name', appName] : [];
-    const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
-
-    if (details.ssl) {
-      labArgs.push('--ssl', '--ssl-key', details.ssl.key, '--ssl-cert', details.ssl.cert);
-    }
-
-    const p = this.e.shell.spawn('ionic-lab', [...labArgs, ...nameArgs, ...versionArgs], { cwd: this.e.project.directory });
-    this.emit('cli-utility-spawn', p);
-
-    return new Promise<void>((resolve, reject) => {
-      p.on('error', err => {
-        reject(err);
-      });
-
-      onBeforeExit(async () => p.kill());
-
-      const log = this.e.log.clone();
-      log.setFormatter(createPrefixedFormatter(chalk.dim('[lab]')));
-      const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
-
-      const stdoutFilter = through2((chunk, enc, callback) => {
-        const str = chunk.toString();
-
-        if (str.includes('Ionic Lab running')) {
-          resolve();
-        } else {
-          // no stdout
-        }
-
-        callback();
-      });
-
-      p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
-      p.stderr.pipe(split2()).pipe(ws);
-    });
-  }
-
-  async promptToInstallPkg(options: Partial<PkgManagerOptions> & { pkg: string; }): Promise<boolean> {
-    const { pkgManagerArgs } = await import('./utils/npm');
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', ...options });
-
-    const confirm = await this.e.prompt({
-      name: 'confirm',
-      message: `Install ${chalk.green(options.pkg)}?`,
-      type: 'confirm',
-    });
-
-    if (!confirm) {
-      this.e.log.warn(`Not installing--here's how to install manually: ${chalk.green(`${manager} ${managerArgs.join(' ')}`)}`);
-      return false;
-    }
-
-    await this.e.shell.run(manager, managerArgs, { cwd: this.e.project.directory });
-
-    return true;
   }
 
   async selectExternalIP(options: T): Promise<[string, NetworkInterface[]]> {
@@ -430,7 +343,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
       if (availableInterfaces.length === 0) {
         if (options.externalAddressRequired) {
           throw new FatalException(
-            `No external network interfaces detected. In order to use livereload with run/emulate you will need one.\n` +
+            `No external network interfaces detected. In order to use the dev server externally you will need one.\n` +
             `Are you connected to a local network?\n`
           );
         }
@@ -440,7 +353,7 @@ export abstract class ServeRunner<T extends ServeOptions> extends EventEmitter i
         if (options.externalAddressRequired) {
           this.e.log.warn(
             'Multiple network interfaces detected!\n' +
-            'You will be prompted to select an external-facing IP for the livereload server that your device or emulator has access to.\n\n' +
+            'You will be prompted to select an external-facing IP for the dev server that your device or emulator has access to.\n\n' +
             `You may also use the ${chalk.green('--address')} option to skip this prompt.`
           );
 
@@ -471,20 +384,257 @@ class ServeAfterHook extends Hook {
   readonly name = 'serve:after';
 }
 
+export interface ServeCLIOptions {
+  readonly address: string;
+  readonly port: number;
+}
+
+export interface ServeCLI<T extends ServeCLIOptions> {
+  on(event: 'ready', handler: () => void): this;
+  once(event: 'ready', handler: () => void): this;
+  emit(event: 'ready'): boolean;
+}
+
+export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
+  constructor(protected readonly e: ServeRunnerDeps) {
+    super();
+  }
+
+  /**
+   * The pretty name of this Utility CLI.
+   */
+  abstract readonly name: string;
+
+  /**
+   * The npm package of this Utility CLI.
+   */
+  abstract readonly pkg: string;
+
+  /**
+   * The bin program to use for this Utility CLI.
+   */
+  abstract readonly program: string;
+
+  /**
+   * The prefix to use for log statements.
+   */
+  abstract readonly prefix: string;
+
+  /**
+   * If specified, `package.json` is inspected for this script to use instead
+   * of `program`.
+   */
+  abstract readonly script?: string;
+
+  /**
+   * Build the arguments for starting this Utility CLI. Called by
+   * `this.start()`.
+   */
+  protected abstract buildArgs(options: T): Promise<string[]>;
+
+  resolvedProgram = this.program;
+
+  /**
+   * Called whenever a line of stdout is received.
+   *
+   * If `false` is returned, the line is not emitted to the log.
+   *
+   * By default, the CLI is considered ready whenever stdout is emitted. This
+   * method should be overridden to more accurately portray readiness.
+   *
+   * @param line A line of stdout.
+   */
+  protected stdoutFilter(line: string): boolean {
+    this.emit('ready');
+
+    return true;
+  }
+
+  /**
+   * Called whenever a line of stderr is received.
+   *
+   * If `false` is returned, the line is not emitted to the log.
+   */
+  protected stderrFilter(line: string): boolean {
+    return true;
+  }
+
+  async start(options: T): Promise<void> {
+    this.resolvedProgram = await this.resolveProgram();
+
+    await this.spawnWrapper(options);
+
+    const interval = setInterval(() => {
+      this.e.log.info(`Waiting for connectivity with ${chalk.green(this.resolvedProgram)}...`);
+    }, 5000);
+
+    debug('awaiting TCP connection to %s:%d', options.address, options.port);
+    await isHostConnectable(options.address, options.port);
+    clearInterval(interval);
+  }
+
+  protected async spawnWrapper(options: T): Promise<void> {
+    try {
+      return await this.spawn(options);
+    } catch (e) {
+      if (!(e instanceof ServeCLIProgramNotFoundException)) {
+        throw e;
+      }
+
+      this.e.log.nl();
+      this.e.log.info(
+        `Looks like ${chalk.green(this.pkg)} isn't installed in this project.\n` +
+        `This package is required for this command to work properly.`
+      );
+
+      const installed = await this.promptToInstall();
+
+      if (!installed) {
+        this.e.log.nl();
+        throw new FatalException(`${chalk.green(this.pkg)} is required for this command to work properly.`);
+      }
+
+      return this.spawn(options);
+    }
+  }
+
+  protected async spawn(options: T): Promise<void> {
+    const args = await this.buildArgs(options);
+    const p = this.e.shell.spawn(this.resolvedProgram, args, { stdio: 'pipe', cwd: this.e.project.directory });
+
+    return new Promise<void>((resolve, reject) => {
+      const errorHandler = (err: NodeJS.ErrnoException) => {
+        debug('received error for %s: %o', this.resolvedProgram, err);
+
+        if (this.resolvedProgram === this.program && err.code === 'ENOENT') {
+          p.removeListener('close', closeHandler); // do not exit Ionic CLI, we can gracefully ask to install this CLI
+          reject(new ServeCLIProgramNotFoundException(`${chalk.bold(this.program)} command not found.`));
+        } else {
+          reject(err);
+        }
+      };
+
+      const closeHandler = (code: number, signal: string) => {
+        debug('received unexpected close for %s (code: %d, signal: %s)', this.resolvedProgram, code, signal);
+
+        this.e.log.nl();
+        this.e.log.error(
+          `A utility CLI has unexpectedly closed (exit code ${code}).\n` +
+          'The Ionic CLI will exit. Please check any output above for error details.'
+        );
+
+        processExit(1); // tslint:disable-line:no-floating-promises
+      };
+
+      p.on('error', errorHandler);
+      p.on('close', closeHandler);
+
+      onBeforeExit(async () => p.kill());
+
+      const log = this.e.log.clone();
+      log.setFormatter(createPrefixedFormatter(chalk.dim(`[${this.resolvedProgram === this.program ? this.prefix : this.resolvedProgram}]`)));
+      const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
+
+      p.stdout.pipe(split2()).pipe(this.createStreamFilter(line => this.stdoutFilter(line))).pipe(ws);
+      p.stderr.pipe(split2()).pipe(this.createStreamFilter(line => this.stderrFilter(line))).pipe(ws);
+
+      this.once('ready', () => {
+        resolve();
+      });
+    });
+  }
+
+  protected async resolveProgram(): Promise<string> {
+    if (typeof this.script !== 'undefined') {
+      debug(`Looking for ${chalk.cyan(this.script)} npm script.`);
+
+      const pkg = await this.e.project.requirePackageJson();
+
+      if (pkg.scripts && pkg.scripts[this.script]) {
+        debug(`Using ${chalk.cyan(this.script)} npm script.`);
+        return this.e.config.get('npmClient');
+      }
+    }
+
+    return this.program;
+  }
+
+  protected createStreamFilter(filter: (line: string) => boolean): stream.Transform {
+    return through2(function(chunk, enc, callback) {
+      const str = chunk.toString();
+
+      if (filter(str)) {
+        this.push(chunk);
+      }
+
+      callback();
+    });
+  }
+
+  protected async promptToInstall(): Promise<boolean> {
+    const { pkgManagerArgs } = await import('./utils/npm');
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: this.pkg, saveDev: true, saveExact: true });
+
+    this.e.log.nl();
+
+    const confirm = await this.e.prompt({
+      name: 'confirm',
+      message: `Install ${chalk.green(this.pkg)}?`,
+      type: 'confirm',
+    });
+
+    if (!confirm) {
+      this.e.log.warn(`Not installing--here's how to install manually: ${chalk.green(`${manager} ${managerArgs.join(' ')}`)}`);
+      return false;
+    }
+
+    await this.e.shell.run(manager, managerArgs, { cwd: this.e.project.directory });
+
+    return true;
+  }
+}
+
+interface IonicLabServeCLIOptions extends Readonly<LabServeDetails> {
+  readonly serveDetails: Readonly<ServeDetails>;
+}
+
+class IonicLabServeCLI extends ServeCLI<IonicLabServeCLIOptions> {
+  readonly name = 'Ionic Lab';
+  readonly pkg = '@ionic/lab';
+  readonly program = 'ionic-lab';
+  readonly prefix = 'lab';
+  readonly script = undefined;
+
+  protected stdoutFilter(line: string): boolean {
+    if (line.includes('running')) {
+      this.emit('ready');
+    }
+
+    return false; // no stdout
+  }
+
+  protected async buildArgs(options: IonicLabServeCLIOptions): Promise<string[]> {
+    const { serveDetails, ...labDetails } = options;
+
+    const pkg = await this.e.project.requirePackageJson();
+
+    const url = `${serveDetails.protocol}://localhost:${serveDetails.port}`;
+    const appName = this.e.project.config.get('name');
+    const labArgs = [url, '--host', labDetails.address, '--port', String(labDetails.port)];
+    const nameArgs = appName ? ['--app-name', appName] : [];
+    const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
+
+    if (labDetails.ssl) {
+      labArgs.push('--ssl', '--ssl-key', labDetails.ssl.key, '--ssl-cert', labDetails.ssl.cert);
+    }
+
+    return [...labArgs, ...nameArgs, ...versionArgs];
+  }
+}
+
 export async function serve(deps: ServeRunnerDeps, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
   try {
     const runner = await deps.project.requireServeRunner();
-
-    runner.on('cli-utility-spawn', cp => {
-      cp.on('close', code => {
-        deps.log.nl();
-        deps.log.error(
-          `A utility CLI has unexpectedly closed.\n` +
-          'The Ionic CLI will exit. Please check any output above for error details.'
-        );
-        processExit(1); // tslint:disable-line:no-floating-promises
-      });
-    });
 
     if (deps.project.name) {
       options['project'] = deps.project.name;

@@ -1,27 +1,11 @@
-import chalk from 'chalk';
-import * as Debug from 'debug';
-import * as split2 from 'split2';
-import * as through2 from 'through2';
-
-import { LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
-import { isHostConnectable } from '@ionic/cli-framework/utils/network';
-import { onBeforeExit } from '@ionic/cli-framework/utils/process';
+import { OptionGroup } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1ServeOptions, ServeDetails } from '../../../definitions';
-import { FatalException, ServeCommandNotFoundException } from '../../errors';
-import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner, ServeRunnerDeps } from '../../serve';
+import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
 import { findOpenIonicPorts } from '../common';
 
 import { Ionic1Project } from './';
-
-const DEFAULT_PROGRAM = 'ionic-v1';
-
-const debug = Debug('ionic:cli-utils:lib:project:ionic1');
-
-interface ServeCmdDetails {
-  readonly program: string;
-}
 
 export interface Ionic1ServeRunnerDeps extends ServeRunnerDeps {
   readonly project: Ionic1Project;
@@ -99,17 +83,11 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
     options.livereloadPort = livereloadPort;
     options.notificationPort = notificationPort;
 
-    const { program } = await this.serveCommandWrapper(options);
-
-    const interval = setInterval(() => {
-      this.e.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
-    }, 5000);
-
-    await isHostConnectable(options.address, port);
-    clearInterval(interval);
+    const v1 = new Ionic1ServeCLI(this.e);
+    await v1.start(options);
 
     return {
-      custom: program !== DEFAULT_PROGRAM,
+      custom: v1.resolvedProgram !== v1.program,
       protocol: 'http',
       localAddress: 'localhost',
       externalAddress: externalIP,
@@ -118,96 +96,44 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
       externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
     };
   }
+}
 
-  private async serveCommandWrapper(options: Ionic1ServeOptions): Promise<ServeCmdDetails> {
-    try {
-      return await this.servecmd(options);
-    } catch (e) {
-      if (!(e instanceof ServeCommandNotFoundException)) {
-        throw e;
-      }
+class Ionic1ServeCLI extends ServeCLI<Ionic1ServeOptions> {
+  readonly name = 'Ionic 1 Toolkit';
+  readonly pkg = '@ionic/v1-toolkit';
+  readonly program = 'ionic-v1';
+  readonly prefix = 'v1';
+  readonly script = SERVE_SCRIPT;
 
-      const pkg = '@ionic/v1-toolkit';
-      const requiredMsg = `This package is required for ${chalk.green('ionic serve')}. For more details, please see the CHANGELOG: ${chalk.bold('https://github.com/ionic-team/ionic-cli/blob/master/packages/ionic/CHANGELOG.md#4.0.0')}`;
-
-      this.e.log.nl();
-      this.e.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
-
-      const installed = await this.promptToInstallPkg({ pkg, saveDev: true });
-
-      if (!installed) {
-        this.e.log.nl();
-        throw new FatalException(`${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.\n` + requiredMsg);
-      }
-
-      return this.servecmd(options);
+  protected stdoutFilter(line: string): boolean {
+    if (this.resolvedProgram !== this.program) {
+      return super.stdoutFilter(line);
     }
+
+    if (line.includes('server running')) {
+      this.emit('ready');
+      return false;
+    }
+
+    return true;
   }
 
-  private async servecmd(options: Ionic1ServeOptions): Promise<ServeCmdDetails> {
+  protected async buildArgs(options: Ionic1ServeOptions): Promise<string[]> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
-    const pkg = await this.e.project.requirePackageJson();
+    const args = ['--host', options.address, '--port', String(options.port), '--lr-port', String(options.livereloadPort), '--dev-port', String(options.notificationPort)];
 
-    let program = DEFAULT_PROGRAM;
-    let args = ['--host', options.address, '--port', String(options.port), '--lr-port', String(options.livereloadPort), '--dev-port', String(options.notificationPort)];
-    const shellOptions = { cwd: this.e.project.directory };
-
-    debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
-
-    if (pkg.scripts && pkg.scripts[SERVE_SCRIPT]) {
-      debug(`Invoking ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
-      program = pkgManager;
-      args = pkgArgs;
-    } else {
+    if (this.resolvedProgram === this.program) {
       const v1utilArgs = ['serve'];
 
       if (options.consolelogs) {
         v1utilArgs.push('-c');
       }
 
-      args = [...v1utilArgs, ...args];
+      return [...v1utilArgs, ...args];
+    } else {
+      const [ , ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script, scriptArgs: [...args] });
+      return pkgArgs;
     }
-
-    const p = this.e.shell.spawn(program, args, shellOptions);
-    this.emit('cli-utility-spawn', p);
-
-    return new Promise<ServeCmdDetails>((resolve, reject) => {
-      p.on('error', (err: NodeJS.ErrnoException) => {
-        if (program === DEFAULT_PROGRAM && err.code === 'ENOENT') {
-          reject(new ServeCommandNotFoundException(`${chalk.bold(DEFAULT_PROGRAM)} command not found.`));
-        } else {
-          reject(err);
-        }
-      });
-
-      onBeforeExit(async () => p.kill());
-
-      const log = this.e.log.clone();
-      log.setFormatter(createPrefixedFormatter(chalk.dim(`[${program === DEFAULT_PROGRAM ? 'v1' : program}]`)));
-      const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
-
-      if (program === DEFAULT_PROGRAM) {
-        const stdoutFilter = through2(function(chunk, enc, callback) {
-          const str = chunk.toString();
-
-          if (str.includes('server running')) {
-            resolve({ program });
-          } else {
-            this.push(chunk);
-          }
-
-          callback();
-        });
-
-        p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
-        p.stderr.pipe(split2()).pipe(ws);
-      } else {
-        p.stdout.pipe(split2()).pipe(ws);
-        p.stderr.pipe(split2()).pipe(ws);
-        resolve({ program });
-      }
-    });
   }
 }

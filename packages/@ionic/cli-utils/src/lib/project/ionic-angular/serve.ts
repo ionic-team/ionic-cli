@@ -1,16 +1,10 @@
-import { LOGGER_LEVELS, OptionGroup, ParsedArgs, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
-import { isHostConnectable } from '@ionic/cli-framework/utils/network';
-import { onBeforeExit } from '@ionic/cli-framework/utils/process';
+import { OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import chalk from 'chalk';
 import * as Debug from 'debug';
-import * as split2 from 'split2';
-import * as through2 from 'through2';
 
-import { prettyProjectName } from '../';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularServeOptions, ServeDetails } from '../../../definitions';
-import { FatalException, ServeCommandNotFoundException } from '../../errors';
-import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeRunner, ServeRunnerDeps } from '../../serve';
+import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
 import { findOpenIonicPorts } from '../common';
 
 import { IonicAngularProject } from './';
@@ -20,10 +14,6 @@ const debug = Debug('ionic:cli-utils:lib:project:ionic-angular:serve');
 
 const DEFAULT_PROGRAM = 'ionic-app-scripts';
 export const DEFAULT_SERVE_SCRIPT_VALUE = `${DEFAULT_PROGRAM} serve`;
-
-interface ServeCmdDetails {
-  readonly program: string;
-}
 
 export interface IonicAngularServeRunnerDeps extends ServeRunnerDeps {
   readonly project: IonicAngularProject;
@@ -120,17 +110,11 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
     options.livereloadPort = livereloadPort;
     options.notificationPort = notificationPort;
 
-    const { program } = await this.serveCommandWrapper(options);
-
-    const interval = setInterval(() => {
-      this.e.log.info(`Waiting for connectivity with ${chalk.green(program)}...`);
-    }, 5000);
-
-    await isHostConnectable(options.address, port);
-    clearInterval(interval);
+    const appscripts = new IonicAngularServeCLI(this.e);
+    await appscripts.start(options);
 
     return {
-      custom: program !== DEFAULT_PROGRAM,
+      custom: appscripts.resolvedProgram !== appscripts.program,
       protocol: 'http',
       localAddress: 'localhost',
       externalAddress: externalIP,
@@ -139,93 +123,42 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
       externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
     };
   }
+}
 
-  private async serveCommandWrapper(options: IonicAngularServeOptions): Promise<ServeCmdDetails> {
-    try {
-      return await this.servecmd(options);
-    } catch (e) {
-      if (!(e instanceof ServeCommandNotFoundException)) {
-        throw e;
-      }
+class IonicAngularServeCLI extends ServeCLI<IonicAngularServeOptions> {
+  readonly name = 'Ionic App Scripts';
+  readonly pkg = '@ionic/app-scripts';
+  readonly program = DEFAULT_PROGRAM;
+  readonly prefix = 'app-scripts';
+  readonly script = SERVE_SCRIPT;
 
-      const pkg = '@ionic/app-scripts';
-      this.e.log.nl();
-
-      throw new FatalException(
-        `${chalk.green(pkg)} is required for ${chalk.green('ionic serve')} to work properly.\n` +
-        `Looks like ${chalk.green(pkg)} isn't installed in this project.\n\n` +
-        `This package is required for ${chalk.green('ionic serve')} in ${prettyProjectName('angular')} projects.`
-      );
+  protected stdoutFilter(line: string): boolean {
+    if (this.resolvedProgram !== this.program) {
+      return super.stdoutFilter(line);
     }
+
+    if (line.includes('server running')) {
+      this.emit('ready');
+      return false;
+    }
+
+    return true;
   }
 
-  private async servecmd(options: IonicAngularServeOptions): Promise<ServeCmdDetails> {
+  protected async buildArgs(options: IonicAngularServeOptions): Promise<string[]> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
-    const pkg = await this.e.project.requirePackageJson();
+    const args = this.serveOptionsToAppScriptsArgs(options);
 
-    let program = DEFAULT_PROGRAM;
-    let args = await this.serveOptionsToAppScriptsArgs(options);
-    const shellOptions = { cwd: this.e.project.directory };
-
-    debug(`Looking for ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
-
-    if (pkg.scripts && pkg.scripts[SERVE_SCRIPT]) {
-      if (pkg.scripts[SERVE_SCRIPT] === DEFAULT_SERVE_SCRIPT_VALUE) {
-        debug(`Found ${chalk.cyan(SERVE_SCRIPT)}, but it is the default. Not running.`);
-        args = ['serve', ...args];
-      } else {
-        debug(`Invoking ${chalk.cyan(SERVE_SCRIPT)} npm script.`);
-        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: SERVE_SCRIPT, scriptArgs: [...args] });
-        program = pkgManager;
-        args = pkgArgs;
-      }
+    if (this.resolvedProgram === this.program) {
+      return ['serve', ...args];
     } else {
-      args = ['serve', ...args];
+      const [ , ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script, scriptArgs: [...args] });
+      return pkgArgs;
     }
-
-    const p = this.e.shell.spawn(program, args, shellOptions);
-    this.emit('cli-utility-spawn', p);
-
-    return new Promise<ServeCmdDetails>((resolve, reject) => {
-      p.on('error', (err: NodeJS.ErrnoException) => {
-        if (program === DEFAULT_PROGRAM && err.code === 'ENOENT') {
-          reject(new ServeCommandNotFoundException(`${chalk.bold(DEFAULT_PROGRAM)} command not found.`));
-        } else {
-          reject(err);
-        }
-      });
-
-      onBeforeExit(async () => p.kill());
-
-      const log = this.e.log.clone();
-      log.setFormatter(createPrefixedFormatter(chalk.dim(`[${program === DEFAULT_PROGRAM ? 'app-scripts' : program}]`)));
-      const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
-
-      if (program === DEFAULT_PROGRAM) {
-        const stdoutFilter = through2(function(chunk, enc, callback) {
-          const str = chunk.toString();
-
-          if (str.includes('server running')) {
-            resolve({ program }); // TODO: https://github.com/ionic-team/ionic-app-scripts/pull/1372
-          } else {
-            this.push(chunk);
-          }
-
-          callback();
-        });
-
-        p.stdout.pipe(split2()).pipe(stdoutFilter).pipe(ws);
-        p.stderr.pipe(split2()).pipe(ws);
-      } else {
-        p.stdout.pipe(split2()).pipe(ws);
-        p.stderr.pipe(split2()).pipe(ws);
-        resolve({ program });
-      }
-    });
   }
 
-  async serveOptionsToAppScriptsArgs(options: IonicAngularServeOptions): Promise<string[]> {
+  protected serveOptionsToAppScriptsArgs(options: IonicAngularServeOptions): string[] {
     const args: ParsedArgs = {
       _: [],
       address: options.address,
@@ -247,4 +180,22 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
     return [...unparseArgs(args, { allowCamelCase: true, useEquals: false }), ...options['--']];
   }
 
+  protected async resolveProgram(): Promise<string> {
+    if (typeof this.script !== 'undefined') {
+      debug(`Looking for ${chalk.cyan(this.script)} npm script.`);
+
+      const pkg = await this.e.project.requirePackageJson();
+
+      if (pkg.scripts && pkg.scripts[this.script]) {
+        if (pkg.scripts[this.script] === DEFAULT_SERVE_SCRIPT_VALUE) {
+          debug(`Found ${chalk.cyan(this.script)}, but it is the default. Not running.`);
+        } else {
+          debug(`Using ${chalk.cyan(this.script)} npm script.`);
+          return this.e.config.get('npmClient');
+        }
+      }
+    }
+
+    return this.program;
+  }
 }

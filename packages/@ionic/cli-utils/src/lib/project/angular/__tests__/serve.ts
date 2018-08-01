@@ -1,4 +1,4 @@
-import { AngularServeRunner } from '../serve';
+import { AngularServeRunner, AngularServeCLI } from '../serve';
 import { ServeRunnerDeps } from '../../../../../lib/serve';
 import { CommandLineOptions } from '../../../../definitions';
 import { Project } from '../../../../../lib/project';
@@ -77,6 +77,10 @@ describe('@ionic/cli-utils', () => {
 
       });
 
+    });
+
+    describe('AngularServeCLI', () => {
+
       describe('serveOptionsToNgArgs', () => {
 
         const defaults = {
@@ -88,7 +92,7 @@ describe('@ionic/cli-utils', () => {
           const project = {
             getIntegration: jest.fn(() => ({ root })),
           };
-          const runner = new AngularServeRunner({ project });
+          const runner = new AngularServeCLI({ project });
           const options = {
             ...defaults,
             engine: 'cordova',
