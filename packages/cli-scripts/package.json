@@ -15,7 +15,12 @@
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "npm run lint"
+    "linters": {
+      "*.{ts,tsx}": "npm run lint"
+    },
+    "ignore": [
+      "**/__tests__/*.{ts,tsx}"
+    ]
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

@@ -39,7 +39,12 @@
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "npm run lint"
+    "linters": {
+      "*.{ts,tsx}": "npm run lint"
+    },
+    "ignore": [
+      "**/__tests__/*.{ts,tsx}"
+    ]
   },
   "dependencies": {
     "@ionic/cli-framework": "1.0.1",
