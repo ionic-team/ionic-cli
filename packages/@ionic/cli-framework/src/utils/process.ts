@@ -12,6 +12,7 @@ export function killProcessTree(pid: number, signal: string | number = 'SIGTERM'
   return new Promise((resolve, reject) => {
     kill(pid, signal, err => {
       if (err) {
+        debug('error while killing process tree for %d: %o', pid, err);
         return reject(err);
       }
 
