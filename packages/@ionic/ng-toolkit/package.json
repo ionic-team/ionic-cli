@@ -51,7 +51,7 @@
   "devDependencies": {
     "@angular-devkit/architect": "0.7.0",
     "@angular-devkit/build-angular": "0.7.0",
-    "@angular-devkit/core": "0.7.0-rc.1",
+    "@angular-devkit/core": "0.7.2",
     "@angular-devkit/schematics": "0.7.0-rc.1",
     "@types/debug": "0.0.30",
     "@types/node": "^6.0.101",
