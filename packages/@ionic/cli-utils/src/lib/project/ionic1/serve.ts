@@ -121,7 +121,7 @@ class Ionic1ServeCLI extends ServeCLI<Ionic1ServeOptions> {
   protected async buildArgs(options: Ionic1ServeOptions): Promise<string[]> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
-    const args = ['--host', options.address, '--port', String(options.port), '--lr-port', String(options.livereloadPort), '--dev-port', String(options.notificationPort)];
+    const args = ['--host', options.address, '--port', String(options.port), '--livereload-port', String(options.livereloadPort), '--dev-port', String(options.notificationPort)];
 
     if (this.resolvedProgram === this.program) {
       const v1utilArgs = ['serve'];
