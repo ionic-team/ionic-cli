@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.0.3"></a>
+## [4.0.3](https://github.com/ionic-team/ionic-cli/compare/ionic@4.0.2...ionic@4.0.3) (2018-08-02)
+
+
+### Bug Fixes
+
+* **build:** prompt to install "build cli" for all projects ([2862762](https://github.com/ionic-team/ionic-cli/commit/2862762))
+
+
+
+
 <a name="4.0.2"></a>
 ## [4.0.2](https://github.com/ionic-team/ionic-cli/compare/ionic@4.0.1...ionic@4.0.2) (2018-07-30)
 
