@@ -1,5 +1,5 @@
 import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommandError } from '@ionic/cli-framework';
-import { createProcessEnv, onBeforeExit } from '@ionic/cli-framework/utils/process';
+import { createProcessEnv, killProcessTree, onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { ShellCommand } from '@ionic/cli-framework/utils/shell';
 import { combineStreams } from '@ionic/cli-framework/utils/streams';
 import chalk from 'chalk';
@@ -69,7 +69,7 @@ export class Shell implements IShell {
       }
 
       if (killOnExit) {
-        onBeforeExit(async () => promise.p.kill());
+        onBeforeExit(async () => killProcessTree(promise.p.pid));
       }
 
       await promise;
