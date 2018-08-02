@@ -49,7 +49,7 @@
     "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "@angular-devkit/architect": "0.7.0",
+    "@angular-devkit/architect": "0.7.1",
     "@angular-devkit/build-angular": "0.7.0",
     "@angular-devkit/core": "0.7.0-rc.1",
     "@angular-devkit/schematics": "0.7.0-rc.1",
