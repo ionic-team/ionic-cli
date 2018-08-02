@@ -48,6 +48,15 @@ export class ServeCommand extends Command {
           type: Boolean,
           aliases: ['c'],
         },
+        {
+          name: 'engine',
+          summary: `Target engine (e.g. ${['browser', 'cordova'].map(e => chalk.green(e)).join(', ')})`,
+          default: 'browser',
+        },
+        {
+          name: 'platform',
+          summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => chalk.green(e)).join(', ')})`,
+        },
       ],
     };
   }
@@ -59,6 +68,8 @@ export class ServeCommand extends Command {
     const livereload = options['livereload'] ? true : false;
     const livereloadPort = str2num(options['livereload-port']);
     const consolelogs = options['consolelogs'] ? true : false;
+    const engine = String(options['engine']);
+    const platform = options['platform'] ? String(options['platform']) : undefined;
 
     const url = `http://${host}:${port}`;
 
@@ -79,7 +90,19 @@ export class ServeCommand extends Command {
 
     process.stdout.write(`${timestamp()} Serving directory ${chalk.bold(wwwDir)}\n`);
 
-    await runServer({ host, port, livereload, consolelogs, devPort, livereloadPort, wwwDir, watchPatterns: c.watchPatterns, proxies });
+    await runServer({
+      host,
+      port,
+      engine,
+      platform,
+      livereload,
+      consolelogs,
+      devPort,
+      livereloadPort,
+      wwwDir,
+      watchPatterns: c.watchPatterns,
+      proxies,
+    });
 
     process.stdout.write(`${timestamp()} Dev server running at ${chalk.bold(url)}\n`);
   }

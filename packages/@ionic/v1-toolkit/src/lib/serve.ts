@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { fsReadFile } from '@ionic/cli-framework/utils/fs';
+import { fsReadFile, pathExists } from '@ionic/cli-framework/utils/fs';
 import chalk from 'chalk';
 
 import * as ζexpress from 'express';
@@ -47,6 +47,8 @@ export interface ServeOptions {
   devPort: number;
   livereloadPort: number;
   wwwDir: string;
+  engine: string;
+  platform?: string;
   watchPatterns: string[];
   proxies: ProxyConfig[];
 }
@@ -113,8 +115,27 @@ async function createHttpServer(options: ServeOptions): Promise<ζexpress.Applic
     res.send(indexHtml);
   };
 
+  const serveCordovaPlatformResource = async (req: ζexpress.Request, res: ζexpress.Response, next: ζexpress.NextFunction) => {
+    if (options.engine !== 'cordova' || !options.platform) {
+      return next();
+    }
+
+    const resourcePath = path.resolve('platforms', options.platform, 'platform_www');
+
+    if (await pathExists(path.join(resourcePath, req.url))) {
+      res.sendFile(req.url, { root: resourcePath });
+    } else {
+      next();
+    }
+  };
+
   app.get('/', serveIndex);
   app.use('/', express.static(options.wwwDir));
+
+  // Cordova
+  app.get('/cordova.js', serveCordovaPlatformResource, serveMockCordovaJS);
+  app.get('/cordova_plugins.js', serveCordovaPlatformResource);
+  app.get('/plugins/*', serveCordovaPlatformResource);
 
   const livereloadUrl = `http://localhost:${options.livereloadPort}`;
   const pathPrefix = `/${DEV_SERVER_PREFIX}/tiny-lr`;
@@ -150,4 +171,9 @@ async function createHttpServer(options: ServeOptions): Promise<ζexpress.Applic
 async function attachProxy(app: ζexpress.Application, config: ProxyConfig) {
   const proxyMiddleware = await import('http-proxy-middleware');
   app.use(config.mount, proxyMiddleware(config.mount, config));
+}
+
+function serveMockCordovaJS(req: ζexpress.Request, res: ζexpress.Response) {
+  res.set('Content-Type', 'application/javascript');
+  res.send('// mock cordova file during development');
 }
