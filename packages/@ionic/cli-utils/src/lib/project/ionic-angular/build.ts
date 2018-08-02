@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularBuildOptions } from '../../../definitions';
-import { BUILD_SCRIPT, BuildRunner, BuildRunnerDeps } from '../../build';
+import { BUILD_SCRIPT, BuildCLI, BuildRunner, BuildRunnerDeps } from '../../build';
 
 import { IonicAngularProject } from './';
 import { APP_SCRIPTS_OPTIONS } from './app-scripts';
@@ -61,33 +61,19 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
   }
 
   async buildProject(options: IonicAngularBuildOptions): Promise<void> {
-    const { pkgManagerArgs } = await import('../../utils/npm');
-    const pkg = await this.e.project.requirePackageJson();
-
-    let program = DEFAULT_PROGRAM;
-    let args = this.generateAppScriptsArgs(options);
-    const shellOptions = { cwd: this.e.project.directory };
-
-    debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-
-    if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
-      if (pkg.scripts[BUILD_SCRIPT] === DEFAULT_BUILD_SCRIPT_VALUE) {
-        debug(`Found ${chalk.cyan(BUILD_SCRIPT)}, but it is the default. Not running.`);
-        args = ['build', ...args];
-      } else {
-        debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-        const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: BUILD_SCRIPT, scriptArgs: args });
-        program = pkgManager;
-        args = pkgArgs;
-      }
-    } else {
-      args = ['build', ...args];
-    }
-
-    await this.e.shell.run(program, args, shellOptions);
+    const appscripts = new IonicAngularBuildCLI(this.e);
+    await appscripts.build(options);
   }
+}
 
-  generateAppScriptsArgs(options: IonicAngularBuildOptions): string[] {
+export class IonicAngularBuildCLI extends BuildCLI<IonicAngularBuildOptions> {
+  readonly name = 'Ionic App Scripts';
+  readonly pkg = '@ionic/app-scripts';
+  readonly program = DEFAULT_PROGRAM;
+  readonly prefix = 'app-scripts';
+  readonly script = BUILD_SCRIPT;
+
+  protected buildOptionsToAppScriptsArgs(options: IonicAngularBuildOptions): string[] {
     const minimistArgs = {
       _: [],
       prod: options.prod ? true : false,
@@ -102,5 +88,37 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/ionic-team/ionic-app-scri
     };
 
     return [...unparseArgs(minimistArgs, { allowCamelCase: true, useEquals: false }), ...options['--']];
+  }
+
+  protected async buildArgs(options: IonicAngularBuildOptions): Promise<string[]> {
+    const { pkgManagerArgs } = await import('../../utils/npm');
+
+    const args = this.buildOptionsToAppScriptsArgs(options);
+
+    if (this.resolvedProgram === this.program) {
+      return ['build', ...args];
+    } else {
+      const [ , ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script, scriptArgs: [...args] });
+      return pkgArgs;
+    }
+  }
+
+  protected async resolveProgram(): Promise<string> {
+    if (typeof this.script !== 'undefined') {
+      debug(`Looking for ${chalk.cyan(this.script)} npm script.`);
+
+      const pkg = await this.e.project.requirePackageJson();
+
+      if (pkg.scripts && pkg.scripts[this.script]) {
+        if (pkg.scripts[this.script] === DEFAULT_BUILD_SCRIPT_VALUE) {
+          debug(`Found ${chalk.cyan(this.script)}, but it is the default. Not running.`);
+        } else {
+          debug(`Using ${chalk.cyan(this.script)} npm script.`);
+          return this.e.config.get('npmClient');
+        }
+      }
+    }
+
+    return this.program;
   }
 }

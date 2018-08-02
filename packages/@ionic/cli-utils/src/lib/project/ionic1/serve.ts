@@ -84,7 +84,7 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
     options.notificationPort = notificationPort;
 
     const v1 = new Ionic1ServeCLI(this.e);
-    await v1.start(options);
+    await v1.serve(options);
 
     return {
       custom: v1.resolvedProgram !== v1.program,

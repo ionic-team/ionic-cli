@@ -1,12 +1,7 @@
-import chalk from 'chalk';
-import * as Debug from 'debug';
-
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1BuildOptions } from '../../../definitions';
-import { BUILD_SCRIPT, BuildRunner, BuildRunnerDeps } from '../../build';
+import { BUILD_SCRIPT, BuildCLI, BuildRunner, BuildRunnerDeps } from '../../build';
 
 import { Ionic1Project } from './';
-
-const debug = Debug('ionic:cli-utils:lib:project:ionic1:build');
 
 export interface Ionic1BuildRunnerDeps extends BuildRunnerDeps {
   readonly project: Ionic1Project;
@@ -31,18 +26,26 @@ export class Ionic1BuildRunner extends BuildRunner<Ionic1BuildOptions> {
   }
 
   async buildProject(options: Ionic1BuildOptions): Promise<void> {
+    const v1 = new Ionic1BuildCLI(this.e);
+    await v1.build(options);
+  }
+}
+
+class Ionic1BuildCLI extends BuildCLI<Ionic1BuildOptions> {
+  readonly name = 'Ionic 1 Toolkit';
+  readonly pkg = '@ionic/v1-toolkit';
+  readonly program = 'ionic-v1';
+  readonly prefix = 'v1';
+  readonly script = BUILD_SCRIPT;
+
+  protected async buildArgs(options: Ionic1BuildOptions): Promise<string[]> {
     const { pkgManagerArgs } = await import('../../utils/npm');
-    const pkg = await this.e.project.requirePackageJson();
-    const shellOptions = { cwd: this.e.project.directory };
 
-    debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-
-    if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
-      debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: BUILD_SCRIPT });
-      await this.e.shell.run(pkgManager, pkgArgs, shellOptions);
+    if (this.resolvedProgram === this.program) {
+      return ['build'];
     } else {
-      await this.e.shell.run('ionic-v1', ['build'], shellOptions);
+      const [ , ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script });
+      return pkgArgs;
     }
   }
 }

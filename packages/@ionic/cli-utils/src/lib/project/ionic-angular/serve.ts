@@ -111,7 +111,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
     options.notificationPort = notificationPort;
 
     const appscripts = new IonicAngularServeCLI(this.e);
-    await appscripts.start(options);
+    await appscripts.serve(options);
 
     return {
       custom: appscripts.resolvedProgram !== appscripts.program,

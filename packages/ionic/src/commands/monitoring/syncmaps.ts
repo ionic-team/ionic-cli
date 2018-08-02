@@ -63,7 +63,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     if (doBuild || !sourcemapsExist) {
       const { build } = await import('@ionic/cli-utils/lib/build');
       // TODO: use runner directly
-      await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, project: this.project }, [], { _: [], prod: true });
+      await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, [], { _: [], prod: true });
     }
 
     sourcemapsExist = await pathExists(sourcemapsDir);

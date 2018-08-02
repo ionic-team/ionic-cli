@@ -87,7 +87,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const port = options.port = await findClosestOpenPort(options.port);
 
     const ng = new AngularServeCLI(this.e);
-    await ng.start(options);
+    await ng.serve(options);
 
     return {
       custom: ng.resolvedProgram !== ng.program,

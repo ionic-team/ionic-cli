@@ -328,7 +328,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     }
 
     const lab = new IonicLabServeCLI(this.e);
-    await lab.start({ serveDetails, ...labDetails });
+    await lab.serve({ serveDetails, ...labDetails });
 
     return labDetails;
   }
@@ -396,22 +396,19 @@ export interface ServeCLI<T extends ServeCLIOptions> {
 }
 
 export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
-  constructor(protected readonly e: ServeRunnerDeps) {
-    super();
-  }
 
   /**
-   * The pretty name of this Utility CLI.
+   * The pretty name of this Serve CLI.
    */
   abstract readonly name: string;
 
   /**
-   * The npm package of this Utility CLI.
+   * The npm package of this Serve CLI.
    */
   abstract readonly pkg: string;
 
   /**
-   * The bin program to use for this Utility CLI.
+   * The bin program to use for this Serve CLI.
    */
   abstract readonly program: string;
 
@@ -426,13 +423,16 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
    */
   abstract readonly script?: string;
 
+  resolvedProgram = this.program;
+
+  constructor(protected readonly e: ServeRunnerDeps) {
+    super();
+  }
+
   /**
-   * Build the arguments for starting this Utility CLI. Called by
-   * `this.start()`.
+   * Build the arguments for starting this Serve CLI. Called by `this.start()`.
    */
   protected abstract buildArgs(options: T): Promise<string[]>;
-
-  resolvedProgram = this.program;
 
   /**
    * Called whenever a line of stdout is received.
@@ -459,7 +459,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
     return true;
   }
 
-  async start(options: T): Promise<void> {
+  async serve(options: T): Promise<void> {
     this.resolvedProgram = await this.resolveProgram();
 
     await this.spawnWrapper(options);
@@ -508,7 +508,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
         if (this.resolvedProgram === this.program && err.code === 'ENOENT') {
           p.removeListener('close', closeHandler); // do not exit Ionic CLI, we can gracefully ask to install this CLI
-          reject(new ServeCLIProgramNotFoundException(`${chalk.bold(this.program)} command not found.`));
+          reject(new ServeCLIProgramNotFoundException(`${chalk.bold(this.resolvedProgram)} command not found.`));
         } else {
           reject(err);
         }

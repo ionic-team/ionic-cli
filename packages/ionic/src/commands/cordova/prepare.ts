@@ -94,7 +94,7 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
 
       if (buildOptions['platform']) {
         // TODO: use runner directly
-        await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, project: this.project }, inputs, buildOptions);
+        await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, buildOptions);
       } else {
         this.env.log.warn(
           `Cannot perform Ionic build without ${chalk.green('platform')}. Falling back to just ${chalk.green('cordova prepare')}.\n` +

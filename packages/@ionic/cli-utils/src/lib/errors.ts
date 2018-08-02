@@ -12,6 +12,8 @@ export class FatalException extends BaseException {
   }
 }
 
+export class BuildCLIProgramNotFoundException extends BaseException {}
+
 export class ServeCLIProgramNotFoundException extends BaseException {}
 
 export class SessionException extends BaseException {}

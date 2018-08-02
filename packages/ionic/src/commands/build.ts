@@ -54,6 +54,6 @@ export class BuildCommand extends Command implements CommandPreRun {
     }
 
     // TODO: use runner directly
-    await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, project: this.project }, inputs, options);
+    await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, options);
   }
 }

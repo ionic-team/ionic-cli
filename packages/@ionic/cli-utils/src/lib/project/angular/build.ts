@@ -1,13 +1,10 @@
 import { CommandGroup, OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import chalk from 'chalk';
-import * as Debug from 'debug';
 
 import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
-import { BUILD_SCRIPT, BuildRunner, BuildRunnerDeps } from '../../build';
+import { BUILD_SCRIPT, BuildCLI, BuildRunner, BuildRunnerDeps } from '../../build';
 
 import { AngularProject } from './';
-
-const debug = Debug('ionic:cli-utils:lib:project:angular:build');
 
 const NG_BUILD_OPTIONS = [
   {
@@ -72,7 +69,33 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     };
   }
 
-  async buildOptionsToNgArgs(options: AngularBuildOptions): Promise<string[]> {
+  async buildProject(options: AngularBuildOptions): Promise<void> {
+    const ng = new AngularBuildCLI(this.e);
+    await ng.build(options);
+  }
+}
+
+class AngularBuildCLI extends BuildCLI<AngularBuildOptions> {
+  readonly name = 'Angular CLI';
+  readonly pkg = '@angular/cli';
+  readonly program = 'ng';
+  readonly prefix = 'ng';
+  readonly script = BUILD_SCRIPT;
+
+  protected async buildArgs(options: AngularBuildOptions): Promise<string[]> {
+    const { pkgManagerArgs } = await import('../../utils/npm');
+
+    const args = await this.buildOptionsToNgArgs(options);
+
+    if (this.resolvedProgram === this.program) {
+      return [...this.buildArchitectCommand(options), ...args];
+    } else {
+      const [ , ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script, scriptArgs: [...args] });
+      return pkgArgs;
+    }
+  }
+
+  protected async buildOptionsToNgArgs(options: AngularBuildOptions): Promise<string[]> {
     const args: ParsedArgs = {
       _: [],
       'source-map': options.sourcemaps !== false ? options.sourcemaps : 'false',
@@ -90,28 +113,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     return [...unparseArgs(args), ...options['--']];
   }
 
-  buildArchitectCommand(options: AngularBuildOptions): string[] {
+  protected buildArchitectCommand(options: AngularBuildOptions): string[] {
     const cmd = options.engine === 'cordova' ? 'ionic-cordova-build' : 'build';
     const project = options.project ? options.project : 'app';
 
     return ['run', `${project}:${cmd}${options.configuration ? `:${options.configuration}` : ''}`];
-  }
-
-  async buildProject(options: AngularBuildOptions): Promise<void> {
-    const { pkgManagerArgs } = await import('../../utils/npm');
-    const pkg = await this.e.project.requirePackageJson();
-
-    const args = await this.buildOptionsToNgArgs(options);
-    const shellOptions = { cwd: this.e.project.directory };
-
-    debug(`Looking for ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-
-    if (pkg.scripts && pkg.scripts[BUILD_SCRIPT]) {
-      debug(`Invoking ${chalk.cyan(BUILD_SCRIPT)} npm script.`);
-      const [pkgManager, ...pkgArgs] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: BUILD_SCRIPT });
-      await this.e.shell.run(pkgManager, pkgArgs, shellOptions);
-    } else {
-      await this.e.shell.run('ng', [...this.buildArchitectCommand(options), ...args], shellOptions);
-    }
   }
 }

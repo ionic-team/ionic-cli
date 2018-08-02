@@ -211,7 +211,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       if (options.build) {
         const { build } = await import('@ionic/cli-utils/lib/build');
         // TODO: use runner directly
-        await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, project: this.project }, inputs, generateBuildOptions(metadata, inputs, options));
+        await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, generateBuildOptions(metadata, inputs, options));
       }
 
       await this.runCordova(filterArgumentsForCordova(metadata, options));

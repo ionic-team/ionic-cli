@@ -1,12 +1,12 @@
-import { IonicAngularBuildRunner } from '../build';
+import { IonicAngularBuildCLI } from '../build';
 
 describe('@ionic/cli-utils', () => {
 
   describe('lib/ionic-angular', () => {
 
-    describe('IonicAngularBuildRunner', () => {
+    describe('IonicAngularBuildCLI', () => {
 
-      describe('generateAppScriptsArgs', () => {
+      describe('buildOptionsToAppScriptsArgs', () => {
 
         const options = {
           '--': ['--generateSourceMap', 'false'],
@@ -18,14 +18,14 @@ describe('@ionic/cli-utils', () => {
         };
 
         it('should transform defaults', async () => {
-          const runner = new IonicAngularBuildRunner({});
-          const result = await runner.generateAppScriptsArgs({ '--': [] });
+          const appscripts = new IonicAngularBuildCLI({});
+          const result = await appscripts.buildOptionsToAppScriptsArgs({ '--': [] });
           expect(result).toEqual([]);
         });
 
         it('should transform options', async () => {
-          const runner = new IonicAngularBuildRunner({});
-          const result = await runner.generateAppScriptsArgs(options);
+          const appscripts = new IonicAngularBuildCLI({});
+          const result = await appscripts.buildOptionsToAppScriptsArgs(options);
           expect(result).toEqual(['--prod', '--aot', '--minifyjs', '--minifycss', '--optimizejs', '--generateSourceMap', 'false']);
         });
 
