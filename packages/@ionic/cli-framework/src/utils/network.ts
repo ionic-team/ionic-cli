@@ -131,6 +131,10 @@ export function isPortAvailableForHost(host: string, port: number): Promise<bool
 export async function isHostConnectable(host: string, port: number, { timeout }: { timeout?: number; } = {}): Promise<boolean> {
   const tryConnect = async () => {
     return new Promise<boolean>((resolve, reject) => {
+      if (host === '0.0.0.0') {
+        host = '127.0.0.1';
+      }
+
       const sock = net.connect({ port, host });
 
       sock.on('connect', () => {
