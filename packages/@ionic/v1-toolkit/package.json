@@ -70,18 +70,16 @@
     "typescript": "~3.0.1"
   },
   "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfigFile": "tsconfig.json"
-      }
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
     },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
-      "js"
-    ],
-    "transform": {
-      ".(ts)": "<rootDir>/../../../node_modules/ts-jest/preprocessor.js"
-    },
-    "testRegex": "/__tests__/.*\\.(ts|js)$"
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
   }
 }
