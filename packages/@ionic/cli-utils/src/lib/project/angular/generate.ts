@@ -26,6 +26,15 @@ const SCHEMATIC_ALIAS = new Map<string, string>([
   ['s', 'service'],
 ]);
 
+const SCHEMATIC_FOLDER = new Map<string, string>([
+  ['page', 'pages'],
+  ['component', 'components'],
+  ['directive', 'directives'],
+  ['interface', 'interfaces'],
+  ['pipe', 'pipes'],
+  ['service', 'services'],
+]);
+
 const debug = Debug('ionic:cli-utils:lib:project:angular:generate');
 
 export interface AngularGenerateRunnerDeps extends GenerateRunnerDeps {
@@ -68,6 +77,14 @@ To test a generator before file modifications are made, use the ${chalk.green('-
           name: 'name',
           summary: 'The name/path of the feature being generated',
           validators: [validators.required],
+        },
+      ],
+      options: [
+        {
+          name: 'structure',
+          summary: `To stratify the folder structure. ex) generated page ${chalk.green('app/pages/')}, service ${chalk.green('app/services/')}`,
+          type: Boolean,
+          aliases: ['s'],
         },
       ],
     };
@@ -113,8 +130,12 @@ To test a generator before file modifications are made, use the ${chalk.green('-
   }
 
   async run(options: AngularGenerateOptions) {
-    const { name } = options;
+    let { name } = options;
     const type = SCHEMATIC_ALIAS.get(options.type) || options.type;
+
+    if (options.structure && SCHEMATIC_FOLDER.get(type)) {
+      name = SCHEMATIC_FOLDER.get(type) + '/' + name;
+    }
 
     try {
       await this.generateComponent(type, name, lodash.omit(options, 'type', 'name'));
