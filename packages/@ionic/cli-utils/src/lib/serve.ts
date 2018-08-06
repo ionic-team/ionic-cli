@@ -1,7 +1,7 @@
 import { BaseError, LOGGER_LEVELS, NetworkInterface, OptionGroup, PromptModule, createPrefixedFormatter } from '@ionic/cli-framework';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/cli-framework/utils/network';
-import { onBeforeExit, processExit } from '@ionic/cli-framework/utils/process';
+import { killProcessTree, onBeforeExit, processExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import chalk from 'chalk';
 import * as Debug from 'debug';
@@ -529,7 +529,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
       p.on('error', errorHandler);
       p.on('close', closeHandler);
 
-      onBeforeExit(async () => p.kill());
+      onBeforeExit(async () => killProcessTree(p.pid));
 
       const log = this.e.log.clone();
       log.setFormatter(createPrefixedFormatter(chalk.dim(`[${this.resolvedProgram === this.program ? this.prefix : this.resolvedProgram}]`)));

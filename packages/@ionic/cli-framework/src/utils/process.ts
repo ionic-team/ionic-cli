@@ -1,11 +1,25 @@
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
+import * as kill from 'tree-kill';
 
 import { createCaseInsensitiveObject } from './object';
 
 const debug = Debug('ionic:cli-framework:utils:process');
 
 export const ERROR_TIMEOUT_REACHED = 'TIMEOUT_REACHED';
+
+export function killProcessTree(pid: number, signal: string | number = 'SIGTERM'): Promise<void> {
+  return new Promise((resolve, reject) => {
+    kill(pid, signal, err => {
+      if (err) {
+        debug('error while killing process tree for %d: %o', pid, err);
+        return reject(err);
+      }
+
+      resolve();
+    });
+  });
+}
 
 /**
  * Creates an alternative implementation of `process.env` object.

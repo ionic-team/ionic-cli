@@ -206,6 +206,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
 
       await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: ws });
+      this.env.close(); // TODO: better way
       await sleepForever();
     } else {
       if (options.build) {
