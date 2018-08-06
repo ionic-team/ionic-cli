@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.3"></a>
+## [1.0.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.0.2...@ionic/cli-framework@1.0.3) (2018-08-06)
+
+
+### Bug Fixes
+
+* **serve:** properly cleanup child processes ([#3481](https://github.com/ionic-team/ionic-cli/issues/3481)) ([38217bf](https://github.com/ionic-team/ionic-cli/commit/38217bf))
+* **serve:** use 127.0.0.1 to attempt connections ([#3476](https://github.com/ionic-team/ionic-cli/issues/3476)) ([12c3f35](https://github.com/ionic-team/ionic-cli/commit/12c3f35))
+
+
+
+
 <a name="1.0.2"></a>
 ## [1.0.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.0.1...@ionic/cli-framework@1.0.2) (2018-08-02)
 

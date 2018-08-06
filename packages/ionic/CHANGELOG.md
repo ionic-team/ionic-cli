@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.0.4"></a>
+## [4.0.4](https://github.com/ionic-team/ionic-cli/compare/ionic@4.0.3...ionic@4.0.4) (2018-08-06)
+
+
+### Bug Fixes
+
+* **serve:** properly cleanup child processes ([#3481](https://github.com/ionic-team/ionic-cli/issues/3481)) ([38217bf](https://github.com/ionic-team/ionic-cli/commit/38217bf))
+
+
+
+
 <a name="4.0.3"></a>
 ## [4.0.3](https://github.com/ionic-team/ionic-cli/compare/ionic@4.0.2...ionic@4.0.3) (2018-08-02)
 
