@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.0.5"></a>
+## [4.0.5](https://github.com/ionic-team/ionic-cli/compare/ionic@4.0.4...ionic@4.0.5) (2018-08-07)
+
+
+
+
+**Note:** Version bump only for package ionic
+
 <a name="4.0.4"></a>
 ## [4.0.4](https://github.com/ionic-team/ionic-cli/compare/ionic@4.0.3...ionic@4.0.4) (2018-08-06)
 
