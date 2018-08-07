@@ -1,10 +1,10 @@
 import * as Debug from 'debug';
 
-import { DEFAULT_LOGGER_HANDLERS, PromptModule, StreamHandler, TaskChain } from '@ionic/cli-framework';
+import { PromptModule, StreamHandler, TaskChain } from '@ionic/cli-framework';
 
 import { IClient, IConfig, ILogger, ISession, IShell, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags } from '../definitions';
 
-import { createFormatter } from './utils/logger';
+import { createDefaultLoggerHandlers, createFormatter } from './utils/logger';
 
 const debug = Debug('ionic:cli-utils:lib:environment');
 
@@ -54,7 +54,7 @@ export class Environment implements IonicEnvironment {
     const formatter = createFormatter();
     this.log.handlers = this.flags.interactive
       ? new Set([new StreamHandler({ stream: this.prompt.output.stream, formatter })])
-      : new Set([...DEFAULT_LOGGER_HANDLERS].map(handler => handler.clone({ formatter })));
+      : createDefaultLoggerHandlers();
 
     debug('Environment open.');
   }
@@ -63,8 +63,7 @@ export class Environment implements IonicEnvironment {
     this.tasks.cleanup();
 
     this.prompt.close();
-    const formatter = createFormatter();
-    this.log.handlers = new Set([...DEFAULT_LOGGER_HANDLERS].map(handler => handler.clone({ formatter })));
+    this.log.handlers = createDefaultLoggerHandlers();
 
     debug('Environment closed.');
   }

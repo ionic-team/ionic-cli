@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { CreateTaggedFormatterOptions, Logger as BaseLogger, LoggerFormatter, createTaggedFormatter } from '@ionic/cli-framework';
+import { CreateTaggedFormatterOptions, DEFAULT_LOGGER_HANDLERS, Logger as BaseLogger, LoggerFormatter, createTaggedFormatter } from '@ionic/cli-framework';
 
 import { ILogger } from '../../definitions';
 
@@ -18,4 +18,8 @@ export function createFormatter(options: CreateTaggedFormatterOptions = {}): Log
   const prefix = process.argv.includes('--log-timestamps') ? () => `${chalk.dim('[' + new Date().toISOString() + ']')}` : '';
 
   return createTaggedFormatter({ prefix, titleize: true, wrap: true, ...options });
+}
+
+export function createDefaultLoggerHandlers(formatter = createFormatter()) {
+  return new Set([...DEFAULT_LOGGER_HANDLERS].map(handler => handler.clone({ formatter })));
 }

@@ -20,6 +20,7 @@ import { isCordovaPackageJson } from '../guards';
 import { FatalException, RunnerException, ServeCLIProgramNotFoundException } from './errors';
 import { emit } from './events';
 import { Hook } from './hooks';
+import { createDefaultLoggerHandlers } from './utils/logger';
 
 const debug = Debug('ionic:cli-utils:lib:serve');
 
@@ -531,9 +532,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
       onBeforeExit(async () => killProcessTree(p.pid));
 
-      const log = this.e.log.clone();
-      log.setFormatter(createPrefixedFormatter(chalk.dim(`[${this.resolvedProgram === this.program ? this.prefix : this.resolvedProgram}]`)));
-      const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
+      const ws = this.createLoggerStream();
 
       p.stdout.pipe(split2()).pipe(this.createStreamFilter(line => this.stdoutFilter(line))).pipe(ws);
       p.stderr.pipe(split2()).pipe(this.createStreamFilter(line => this.stderrFilter(line))).pipe(ws);
@@ -542,6 +541,12 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
         resolve();
       });
     });
+  }
+
+  protected createLoggerStream(): NodeJS.WritableStream {
+    const log = this.e.log.clone();
+    log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(chalk.dim(`[${this.resolvedProgram === this.program ? this.prefix : this.resolvedProgram}]`)));
+    return log.createWriteStream(LOGGER_LEVELS.INFO);
   }
 
   protected async resolveProgram(): Promise<string> {
