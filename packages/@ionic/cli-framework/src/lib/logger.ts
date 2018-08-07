@@ -214,12 +214,6 @@ export class Logger {
       }
     }();
   }
-
-  setFormatter(formatter: LoggerFormatter): void {
-    for (const handler of this.handlers) {
-      handler.formatter = formatter;
-    }
-  }
 }
 
 export interface CreateTaggedFormatterOptions {

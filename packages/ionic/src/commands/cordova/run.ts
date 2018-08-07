@@ -8,6 +8,7 @@ import { COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
+import { createDefaultLoggerHandlers } from '@ionic/cli-utils/lib/utils/logger';
 
 import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 
@@ -190,6 +191,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
     if (options['livereload']) {
       const { serve } = await import('@ionic/cli-utils/lib/serve');
 
+      const cordovalog = this.env.log.clone();
+      cordovalog.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(`${chalk.dim(`[cordova]`)} `));
+      const cordovalogws = cordovalog.createWriteStream(LOGGER_LEVELS.INFO);
+
       // TODO: use runner directly
       const details = await serve({ config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateBuildOptions(metadata, inputs, options));
 
@@ -201,11 +206,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       conf.writeContentSrc(`${details.protocol || 'http'}://${details.externalAddress}:${details.port}`);
       await conf.save();
 
-      const log = this.env.log.clone();
-      log.setFormatter(createPrefixedFormatter(`${chalk.dim(`[cordova]`)} `));
-      const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
-
-      await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: ws });
+      await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: cordovalogws });
       await sleepForever();
     } else {
       if (options.build) {
