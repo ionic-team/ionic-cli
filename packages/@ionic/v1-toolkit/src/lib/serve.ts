@@ -63,7 +63,7 @@ export async function runServer(options: ServeOptions): Promise<ServeOptions> {
   let reloadfn: LiveReloadFunction | undefined;
 
   if (options.livereload) {
-    reloadfn = await createLiveReloadServer({ port: options.livereloadPort, wwwDir: options.wwwDir });
+    reloadfn = await createLiveReloadServer({ host: options.host, port: options.livereloadPort, wwwDir: options.wwwDir });
   }
 
   await createHttpServer(options);
@@ -149,7 +149,7 @@ async function createHttpServer(options: ServeOptions): Promise<ζexpress.Applic
 
   app.get(`/${DEV_SERVER_PREFIX}/dev-server.js`, await createDevServerHandler(options));
 
-  const wss = await createDevLoggerServer(options.devPort);
+  const wss = await createDevLoggerServer(options.host, options.devPort);
 
   return new Promise<ζexpress.Application>((resolve, reject) => {
     const httpserv = app.listen(options.port, options.host);

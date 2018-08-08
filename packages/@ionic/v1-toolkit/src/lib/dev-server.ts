@@ -85,10 +85,10 @@ function getDevServerScript() {
 `;
 }
 
-export async function createLiveReloadServer({ port, wwwDir }: { port: number; wwwDir: string; }): Promise<LiveReloadFunction> {
+export async function createLiveReloadServer({ host, port, wwwDir }: { host: string, port: number; wwwDir: string; }): Promise<LiveReloadFunction> {
   const tinylr = await import('tiny-lr');
   const lrserver = tinylr();
-  lrserver.listen(port);
+  lrserver.listen(port, host);
 
   return changedFiles => {
     lrserver.changed({
@@ -128,10 +128,10 @@ function getLiveReloadScript(port: number) {
 `;
 }
 
-export async function createDevLoggerServer(port: number): Promise<ζws.Server> {
+export async function createDevLoggerServer(host: string, port: number): Promise<ζws.Server> {
   const WebSocket = await import('ws');
 
-  const wss = new WebSocket.Server({ port });
+  const wss = new WebSocket.Server({ host, port });
 
   wss.on('connection', ws => {
     ws.on('message', data => {
