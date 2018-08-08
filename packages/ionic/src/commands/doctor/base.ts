@@ -27,13 +27,14 @@ export abstract class DoctorCommand extends Command {
     const registry = await this.getRegistry();
     let count = 0;
 
+    const tasks = this.createTaskChain();
     const isLoggedIn = this.env.session.isLoggedIn();
 
     if (!isLoggedIn) {
       this.env.log.warn(`For best results, please make sure you're logged in to Ionic.\nSome issues can't be detected without authentication. Run:\n\n    ${chalk.green('ionic login')}`);
     }
 
-    const detectTask = this.env.tasks.next('Detecting issues');
+    const detectTask = tasks.next('Detecting issues');
 
     const ailments = registry.ailments.filter(ailment => {
       if (this.env.config.get(`doctor.issues.${ailment.id}.ignored` as any)) {
@@ -69,7 +70,7 @@ export abstract class DoctorCommand extends Command {
     });
 
     detectTask.msg = `Detecting issues: ${chalk.bold(`${ailments.length} / ${ailments.length}`)} complete`;
-    this.env.tasks.end();
+    tasks.end();
 
     return detectedAilments;
   }

@@ -1,4 +1,4 @@
-import { LOGGER_LEVELS, createPromptModule, createTaskChainWithOutput } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, createPromptModule } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { findBaseDirectory, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
@@ -8,7 +8,7 @@ import * as path from 'path';
 
 import { ERROR_VERSION_TOO_OLD } from './bootstrap';
 import { PROJECT_FILE } from './constants';
-import { IProject, InfoItem, IonicContext, IonicEnvironment, ProjectType } from './definitions';
+import { IProject, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags, ProjectType } from './definitions';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, parseGlobalOptions } from './lib/config';
 import { Environment } from './lib/environment';
 import { Client } from './lib/http';
@@ -17,7 +17,7 @@ import { createOnFallback } from './lib/prompts';
 import { ProSession } from './lib/session';
 import { Shell, prependNodeModulesBinToPath } from './lib/shell';
 import { PROXY_ENVIRONMENT_VARIABLES } from './lib/utils/http';
-import { Logger } from './lib/utils/logger';
+import { Logger, createDefaultLoggerHandlers } from './lib/utils/logger';
 
 export * from './definitions';
 export * from './constants';
@@ -72,21 +72,18 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     argv['interactive'] = false;
   }
 
+  const flags = argv as any as IonicEnvironmentFlags; // TODO
+  debug('CLI global options: %o', flags);
+
   const log = new Logger({
     level: argv['quiet'] ? LOGGER_LEVELS.WARN : LOGGER_LEVELS.INFO,
-    handlers: new Set(),
+    handlers: createDefaultLoggerHandlers(),
   });
 
   const prompt = await createPromptModule({
     interactive: argv['interactive'],
-    onFallback: createOnFallback({ confirm: argv['confirm'], interactive: argv['interactive'], log }),
+    onFallback: createOnFallback({ flags, log }),
   });
-
-  const tasks = createTaskChainWithOutput(
-    argv['interactive']
-      ? { output: prompt.output }
-      : { output: { stream: log.createWriteStream(LOGGER_LEVELS.INFO, false) } }
-  );
 
   const projectDir = await findBaseDirectory(ctx.execPath, PROJECT_FILE);
   const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map((e): [string, string | undefined] => [e, env[e]]).filter(([, v]) => !!v);
@@ -119,16 +116,11 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     return info;
   };
 
-  const flags = argv as any; // TODO
-  debug('CLI global options: %o', flags);
-
   const shell = new Shell({ log }, { alterPath: p => projectDir ? prependNodeModulesBinToPath(projectDir, p) : p });
   const client = new Client(config);
   const session = new ProSession({ config, client });
-  const deps = { client, config, ctx, log, prompt, session, shell, tasks };
+  const deps = { client, config, ctx, log, prompt, session, shell };
   const ienv = new Environment({ flags, getInfo, ...deps });
-
-  ienv.open();
 
   if (env['IONIC_CLI_LOCAL_ERROR']) {
     if (env['IONIC_CLI_LOCAL_ERROR'] === ERROR_VERSION_TOO_OLD) {

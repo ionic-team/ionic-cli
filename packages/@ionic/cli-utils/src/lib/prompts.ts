@@ -4,11 +4,12 @@ import { PromptQuestion, PromptValue } from '@ionic/cli-framework';
 
 import { ILogger, IonicEnvironmentFlags } from '../definitions';
 
-export interface CreateOnFallbackOptions extends IonicEnvironmentFlags {
+export interface CreateOnFallbackOptions {
+  readonly flags: IonicEnvironmentFlags;
   readonly log: ILogger;
 }
 
-export function createOnFallback({ confirm, interactive, log }: CreateOnFallbackOptions) {
+export function createOnFallback({ flags: { confirm }, log }: CreateOnFallbackOptions) {
   return (question: PromptQuestion): PromptValue | void => {
     if (question.type === 'confirm') {
       if (confirm) {

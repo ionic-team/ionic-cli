@@ -11,19 +11,19 @@ export class Integration extends BaseIntegration {
     await this.installCapacitorCore();
     await this.installCapacitorCLI();
 
-    await this.shell.run('capacitor', ['init', this.project.config.get('name'), 'io.ionic.starter'], { cwd: this.project.directory });
+    await this.e.shell.run('capacitor', ['init', this.e.project.config.get('name'), 'io.ionic.starter'], { cwd: this.e.project.directory });
 
     await super.add(options);
   }
 
   async installCapacitorCore() {
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'install', pkg: '@capacitor/core' });
-    await this.shell.run(manager, managerArgs, { cwd: this.project.directory });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/core' });
+    await this.e.shell.run(manager, managerArgs, { cwd: this.e.project.directory });
   }
 
   async installCapacitorCLI() {
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli' });
-    await this.shell.run(manager, managerArgs, { cwd: this.project.directory });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli' });
+    await this.e.shell.run(manager, managerArgs, { cwd: this.e.project.directory });
   }
 
   async getInfo(): Promise<InfoItem[]> {
@@ -31,7 +31,7 @@ export class Integration extends BaseIntegration {
       [ capacitorCorePkg, capacitorCorePkgPath ],
       capacitorCLIVersion,
     ] = await Promise.all([
-      this.project.getPackageJson('@capacitor/core'),
+      this.e.project.getPackageJson('@capacitor/core'),
       this.getCapacitorCLIVersion(),
     ]);
 
@@ -44,6 +44,6 @@ export class Integration extends BaseIntegration {
   }
 
   async getCapacitorCLIVersion(): Promise<string | undefined> {
-    return this.shell.cmdinfo('capacitor', ['--version'], { cwd: this.project.directory });
+    return this.e.shell.cmdinfo('capacitor', ['--version'], { cwd: this.e.project.directory });
   }
 }

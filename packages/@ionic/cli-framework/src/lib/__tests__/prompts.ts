@@ -185,61 +185,12 @@ describe('@ionic/cli-framework', () => {
         expect(onFallbackSpy).toHaveBeenCalledWith(question);
       });
 
-      describe('open', () => {
+      describe('_inquirer', () => {
 
-        it('should call mute', async () => {
+        it('should get _inquirer module from prompt module', async () => {
           const prompts = setupPromptMocks({ tty: true });
           const prompt = await prompts.createPromptModule();
-          prompt.open();
-          expect(mockMute).toHaveBeenCalledTimes(1);
-        });
-
-        it('should call mute once if opened multiple times', async () => {
-          const prompts = setupPromptMocks({ tty: true });
-          const prompt = await prompts.createPromptModule();
-          prompt.open();
-          prompt.open();
-          prompt.open();
-          expect(mockMute).toHaveBeenCalledTimes(1);
-        });
-
-      });
-
-      describe('close', () => {
-
-        it('should not close bottomBar if not opened', async () => {
-          const prompts = setupPromptMocks({ tty: true });
-          const prompt = await prompts.createPromptModule();
-          prompt.close();
-          expect(mockClose).not.toHaveBeenCalled();
-        });
-
-        it('should close bottomBar if opened', async () => {
-          const prompts = setupPromptMocks({ tty: true });
-          const prompt = await prompts.createPromptModule();
-          prompt.open();
-          prompt.close();
-          expect(mockClose).toHaveBeenCalledTimes(1);
-        });
-
-        it('should close bottomBar once if closed multiple times', async () => {
-          const prompts = setupPromptMocks({ tty: true });
-          const prompt = await prompts.createPromptModule();
-          prompt.open();
-          prompt.close();
-          prompt.close();
-          expect(mockClose).toHaveBeenCalledTimes(1);
-        });
-
-      });
-
-      describe('output', () => {
-
-        it('should get output stream from prompt module', async () => {
-          const prompts = setupPromptMocks({ tty: true });
-          const prompt = await prompts.createPromptModule();
-          expect(prompt.output).toBeDefined();
-          expect(prompt.output.stream).toBe(mockLogStream);
+          expect(prompt._inquirer).toBeDefined();
         });
 
       });

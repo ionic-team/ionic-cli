@@ -1,11 +1,14 @@
+import { BaseCommand, BottomBarOutputStrategy, LOGGER_LEVELS, OutputStrategy, StreamHandler, StreamOutputStrategy, TaskChain, generateCommandPath, unparseArgs } from '@ionic/cli-framework';
 import chalk from 'chalk';
-
-import { BaseCommand, generateCommandPath, unparseArgs } from '@ionic/cli-framework';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace, IProject, IonicEnvironment } from '../definitions';
 import { isCommandPreRun } from '../guards';
 
+import { createDefaultLoggerHandlers, createFormatter } from './utils/logger';
+
 export abstract class Command extends BaseCommand<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> implements ICommand {
+  protected readonly taskChains: TaskChain[] = [];
+
   constructor(public namespace: INamespace) {
     super(namespace);
   }
@@ -16,6 +19,30 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
 
   get project(): IProject | undefined {
     return this.namespace.root.project;
+  }
+
+  createTaskChain(): TaskChain {
+    let output: OutputStrategy;
+
+    const formatter = createFormatter();
+
+    if (this.env.flags.interactive) {
+      const { ui: { BottomBar } } = this.env.prompt._inquirer;
+      output = new BottomBarOutputStrategy({ BottomBar });
+      this.env.log.handlers = new Set([new StreamHandler({ stream: output.stream, formatter })]);
+    } else {
+      this.env.log.handlers = createDefaultLoggerHandlers();
+      output = new StreamOutputStrategy({ stream: this.env.log.createWriteStream(LOGGER_LEVELS.INFO, false) });
+    }
+
+    const chain = output.createTaskChain();
+    this.taskChains.push(chain);
+
+    chain.on('end', () => {
+      this.env.log.handlers = createDefaultLoggerHandlers();
+    });
+
+    return chain;
   }
 
   async execute(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {

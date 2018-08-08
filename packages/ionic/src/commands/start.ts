@@ -249,10 +249,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         const { AppClient } = await import('@ionic/cli-utils/lib/app');
         const token = this.env.session.getUserToken();
         const appClient = new AppClient({ token, client: this.env.client });
-        this.env.tasks.next(`Looking up app ${chalk.green(proId)}`);
+        const tasks = this.createTaskChain();
+        tasks.next(`Looking up app ${chalk.green(proId)}`);
         const app = await appClient.load(proId);
         // TODO: can ask to clone via repo_url
-        this.env.tasks.end();
+        tasks.end();
         this.env.log.info(`Using ${chalk.bold(app.name)} for ${chalk.green('name')} and ${chalk.bold(app.slug)} for ${chalk.green('--project-id')}.`);
         inputs[0] = app.name;
         options['project-id'] = app.slug;
@@ -388,7 +389,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       this.env.log.info(`Existing git project found (${chalk.bold(gitTopLevel)}). Git operations are disabled.`);
     }
 
-    this.env.tasks.next(`Preparing directory ${chalk.green(prettyPath(projectDir))}`);
+    const tasks = this.createTaskChain();
+    tasks.next(`Preparing directory ${chalk.green(prettyPath(projectDir))}`);
 
     if (this.canRemoveExisting) {
       await removeDirectory(projectDir);
@@ -396,7 +398,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     await fsMkdir(projectDir, 0o777);
 
-    this.env.tasks.end();
+    tasks.end();
 
     if (this.schema.cloned) {
       await this.env.shell.run('git', ['clone', this.schema.url, projectDir, '--progress'], { stdio: 'inherit' });
@@ -549,8 +551,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
       this.canRemoveExisting = confirm;
     }
-
-    this.env.tasks.end();
   }
 
   async findStarterTemplate(template: string, type: string, tag: string): Promise<ResolvedStarterTemplate> {
@@ -565,12 +565,15 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       };
     }
 
-    this.env.tasks.next('Looking up starter');
+    const tasks = this.createTaskChain();
+    tasks.next('Looking up starter');
     const starterList = await getStarterList(this.env.config, tag);
 
     const starter = starterList.starters.find(t => t.type === type && t.name === template);
 
     if (starter) {
+      tasks.end();
+
       return {
         ...starter,
         archive: `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}${starter.id}.tar.gz`,
@@ -629,14 +632,15 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     const { createRequest, download } = await import('@ionic/cli-utils/lib/utils/http');
     const { tar } = await import('@ionic/cli-utils/lib/utils/archive');
 
-    const task = this.env.tasks.next(`Downloading and extracting ${chalk.green(starterTemplate.name.toString())} starter`);
+    const tasks = this.createTaskChain();
+    const task = tasks.next(`Downloading and extracting ${chalk.green(starterTemplate.name.toString())} starter`);
     debug('Tar extraction created for %s', projectDir);
     const ws = tar.extract({ cwd: projectDir });
 
     const { req } = await createRequest('GET', starterTemplate.archive, this.env.config.getHTTPConfig());
     await download(req, ws, { progress: (loaded, total) => task.progress(loaded, total) });
 
-    this.env.tasks.end();
+    tasks.end();
   }
 
   async showNextSteps(projectDir: string, cloned: boolean, linkConfirmed: boolean) {
