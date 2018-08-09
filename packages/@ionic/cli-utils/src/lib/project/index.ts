@@ -8,7 +8,7 @@ import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { MULTI_PROJECT_TYPES, PROJECT_FILE, PROJECT_TYPES } from '../../constants';
-import { IAilmentRegistry, IClient, IConfig, IIntegration, ILogger, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, IonicContext, PackageJson, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
+import { IAilmentRegistry, IClient, IConfig, IIntegration, ILogger, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, IonicContext, IonicEnvironmentFlags, PackageJson, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { isMultiProjectConfig, isProjectConfig } from '../../guards';
 import * as ζbuild from '../build';
 import { FatalException, IntegrationNotFoundException, RunnerNotFoundException } from '../errors';
@@ -129,6 +129,7 @@ export class ProjectConfig extends BaseConfig<IProjectConfig> {
 export interface ProjectDeps {
   readonly client: IClient;
   readonly config: IConfig;
+  readonly flags: IonicEnvironmentFlags;
   readonly log: ILogger;
   readonly prompt: PromptModule;
   readonly session: ISession;

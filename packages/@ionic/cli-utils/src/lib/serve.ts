@@ -14,7 +14,7 @@ import * as stream from 'stream';
 import * as through2 from 'through2';
 
 import { ASSETS_DIRECTORY } from '../constants';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, LabServeDetails, Runner, ServeDetails, ServeOptions } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, LabServeDetails, Runner, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 
 import { FatalException, RunnerException, ServeCLIProgramNotFoundException } from './errors';
@@ -72,6 +72,7 @@ export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
 
 export interface ServeRunnerDeps {
   readonly config: IConfig;
+  readonly flags: IonicEnvironmentFlags;
   readonly log: ILogger;
   readonly project: IProject;
   readonly prompt: PromptModule;
@@ -352,23 +353,30 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
         chosenIP = availableInterfaces[0].address;
       } else if (availableInterfaces.length > 1) {
         if (options.externalAddressRequired) {
-          this.e.log.warn(
-            'Multiple network interfaces detected!\n' +
-            'You will be prompted to select an external-facing IP for the dev server that your device or emulator has access to.\n\n' +
-            `You may also use the ${chalk.green('--address')} option to skip this prompt.`
-          );
+          if (this.e.flags.interactive) {
+            this.e.log.warn(
+              'Multiple network interfaces detected!\n' +
+              'You will be prompted to select an external-facing IP for the dev server that your device or emulator has access to.\n\n' +
+              `You may also use the ${chalk.green('--address')} option to skip this prompt.`
+            );
 
-          const promptedIp = await this.e.prompt({
-            type: 'list',
-            name: 'promptedIp',
-            message: 'Please select which IP to use:',
-            choices: availableInterfaces.map(i => ({
-              name: `${i.address} ${chalk.dim(`(${i.device})`)}`,
-              value: i.address,
-            })),
-          });
+            const promptedIp = await this.e.prompt({
+              type: 'list',
+              name: 'promptedIp',
+              message: 'Please select which IP to use:',
+              choices: availableInterfaces.map(i => ({
+                name: `${i.address} ${chalk.dim(`(${i.device})`)}`,
+                value: i.address,
+              })),
+            });
 
-          chosenIP = promptedIp;
+            chosenIP = promptedIp;
+          } else {
+            throw new FatalException(
+              `Multiple network interfaces detected!\n` +
+              `You must select an external-facing IP for the dev server that your device or emulator has access to with the ${chalk.green('--address')} option.`
+            );
+          }
         }
       }
     }

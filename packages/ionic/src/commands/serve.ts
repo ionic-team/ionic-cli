@@ -142,7 +142,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
     }
 
     // TODO: use runner directly
-    await serve({ config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, options);
+    await serve({ flags: this.env.flags, config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, options);
     await sleepForever();
   }
 }

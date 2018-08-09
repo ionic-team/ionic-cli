@@ -119,8 +119,8 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const shell = new Shell({ log }, { alterPath: p => projectDir ? prependNodeModulesBinToPath(projectDir, p) : p });
   const client = new Client(config);
   const session = new ProSession({ config, client });
-  const deps = { client, config, ctx, log, prompt, session, shell };
-  const ienv = new Environment({ flags, getInfo, ...deps });
+  const deps = { client, config, ctx, flags, log, prompt, session, shell };
+  const ienv = new Environment({ getInfo, ...deps });
 
   if (env['IONIC_CLI_LOCAL_ERROR']) {
     if (env['IONIC_CLI_LOCAL_ERROR'] === ERROR_VERSION_TOO_OLD) {

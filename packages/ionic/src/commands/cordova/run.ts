@@ -196,7 +196,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       const cordovalogws = cordovalog.createWriteStream(LOGGER_LEVELS.INFO);
 
       // TODO: use runner directly
-      const details = await serve({ config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateBuildOptions(metadata, inputs, options));
+      const details = await serve({ flags: this.env.flags, config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateBuildOptions(metadata, inputs, options));
 
       if (details.externallyAccessible === false) {
         const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
