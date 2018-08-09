@@ -133,7 +133,6 @@ export async function run(pargv: string[], env: NodeJS.ProcessEnv) {
   }
 
   if (err) {
-    ienv.tasks.fail();
     process.exitCode = 1;
 
     if (err instanceof InputValidationError) {
@@ -170,8 +169,6 @@ export async function run(pargv: string[], env: NodeJS.ProcessEnv) {
       }
     }
   }
-
-  ienv.close();
 }
 
 export async function receive(msg: IPCMessage) {

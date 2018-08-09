@@ -1,4 +1,4 @@
-import { BaseConfig, BaseConfigOptions, PromptModule, TaskChain } from '@ionic/cli-framework';
+import { BaseConfig, BaseConfigOptions, PromptModule } from '@ionic/cli-framework';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_FILE_INVALID_JSON, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/node';
@@ -133,7 +133,6 @@ export interface ProjectDeps {
   readonly prompt: PromptModule;
   readonly session: ISession;
   readonly shell: IShell;
-  readonly tasks: TaskChain;
   readonly ctx: IonicContext;
 }
 
@@ -307,7 +306,7 @@ export abstract class Project implements IProject {
       config: this.e.config,
       project: this,
       shell: this.e.shell,
-      tasks: this.e.tasks,
+      log: this.e.log,
     }, name);
   }
 

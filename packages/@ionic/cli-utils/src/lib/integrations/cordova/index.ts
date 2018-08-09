@@ -57,7 +57,7 @@ export class Integration extends BaseIntegration {
 
   async personalize({ name, packageId }: ProjectPersonalizationDetails) {
     const { loadConfigXml } = await import('./config');
-    const conf = await loadConfigXml({ project: this.project });
+    const conf = await loadConfigXml({ project: this.e.project });
     conf.setName(name);
 
     if (packageId) {
@@ -68,12 +68,12 @@ export class Integration extends BaseIntegration {
   }
 
   async getCordovaVersion(): Promise<string | undefined> {
-    return this.shell.cmdinfo('cordova', ['-v', '--no-telemetry']);
+    return this.e.shell.cmdinfo('cordova', ['-v', '--no-telemetry']);
   }
 
   async getCordovaPlatformVersions(): Promise<string> {
     try {
-      const output = await this.shell.output('cordova', ['platform', 'ls', '--no-telemetry'], { showCommand: false });
+      const output = await this.e.shell.output('cordova', ['platform', 'ls', '--no-telemetry'], { showCommand: false });
       const platforms = output
         .replace('Installed platforms:', '')
         .replace(/Available platforms[\s\S]+/, '')
@@ -93,14 +93,14 @@ export class Integration extends BaseIntegration {
   }
 
   async getXcodebuildVersion(): Promise<string | undefined> {
-    return this.shell.cmdinfo('xcodebuild', ['-version']);
+    return this.e.shell.cmdinfo('xcodebuild', ['-version']);
   }
 
   async getIOSDeployVersion(): Promise<string | undefined> {
-    return this.shell.cmdinfo('ios-deploy', ['--version']);
+    return this.e.shell.cmdinfo('ios-deploy', ['--version']);
   }
 
   async getIOSSimVersion(): Promise<string | undefined> {
-    return this.shell.cmdinfo('ios-sim', ['--version']);
+    return this.e.shell.cmdinfo('ios-sim', ['--version']);
   }
 }

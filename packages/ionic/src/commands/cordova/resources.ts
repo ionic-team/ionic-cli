@@ -92,13 +92,14 @@ This command uses Ionic servers, so we require you to be logged into your free I
     const [ platform ] = inputs;
     const { force } = options;
 
+    const tasks = this.createTaskChain();
     const conf = await loadConfigXml({ project: this.project });
 
     // if no resource filters are passed as arguments assume to use all.
     let resourceTypes = AVAILABLE_RESOURCE_TYPES.filter((type, index, array) => options[type]);
     resourceTypes = resourceTypes.length ? resourceTypes : AVAILABLE_RESOURCE_TYPES;
 
-    this.env.tasks.next(`Collecting resource configuration and source images`);
+    tasks.next(`Collecting resource configuration and source images`);
     debug(`resourceJsonStructure=${Object.keys(RESOURCES).length}`);
 
     // check that at least one platform has been installed
@@ -107,7 +108,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     debug(`platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
 
     if (platform && !platforms.includes(platform)) {
-      this.env.tasks.end();
+      tasks.end();
       const confirm = await this.env.prompt({
         message: `Platform ${chalk.green(platform)} not detected. Would you like to install it?`,
         type: 'confirm',
@@ -127,7 +128,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     const buildPlatforms = Object.keys(RESOURCES).filter(p => platforms.includes(p));
     debug(`buildPlatforms=${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
     if (buildPlatforms.length === 0) {
-      this.env.tasks.end();
+      tasks.end();
       throw new FatalException(`No platforms detected. Please run: ${chalk.green('ionic cordova platform add')}`);
     }
     debug(`${chalk.cyan('getProjectPlatforms')} completed: ${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
@@ -195,7 +196,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       );
     }
 
-    this.env.tasks.next(`Filtering out image resources that do not need regeneration`);
+    tasks.next(`Filtering out image resources that do not need regeneration`);
 
     const cachedSourceIds = srcImagesAvailable
       .filter(img => img.imageId && img.cachedId && img.imageId === img.cachedId)
@@ -213,9 +214,9 @@ This command uses Ionic servers, so we require you to be logged into your free I
       imgResources = imgResources.filter((img, i) => keepImgResources[i]);
 
       if (imgResources.length === 0) {
-        this.env.tasks.end();
+        tasks.end();
         this.env.log.nl();
-        this.env.log.ok(
+        this.env.log.info(
           'No need to regenerate images.\n' +
           'This could mean your generated images exist and do not need updating or your source files are unchanged.\n\n' +
           `You can force image regeneration with the ${chalk.green('--force')} option.`
@@ -225,7 +226,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       }
     }
 
-    const uploadTask = this.env.tasks.next(`Uploading source images to prepare for transformations`);
+    const uploadTask = tasks.next(`Uploading source images to prepare for transformations`);
 
     let count = 0;
     // Upload images to service to prepare for resource transformations
@@ -268,14 +269,14 @@ This command uses Ionic servers, so we require you to be logged into your free I
     });
 
     if (imgResources.length === 0) {
-      this.env.tasks.end();
+      tasks.end();
       this.env.log.nl();
-      this.env.log.ok('No need to regenerate images--images too large for transformation.'); // TODO: improve messaging
+      this.env.log.info('No need to regenerate images--images too large for transformation.'); // TODO: improve messaging
       throw new FatalException('', 0);
     }
 
     // Call the transform service and output images to appropriate destination
-    const generateTask = this.env.tasks.next(`Generating platform resources`);
+    const generateTask = tasks.next(`Generating platform resources`);
     count = 0;
 
     const transforms = imgResources.map(async img => {
@@ -307,7 +308,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       await cacheFileChecksum(img.path, img.imageId);
     }));
 
-    this.env.tasks.next(`Modifying config.xml to add new image resources`);
+    tasks.next(`Modifying config.xml to add new image resources`);
     const imageResourcesForConfig = imgResources.reduce((rc, img) => {
       if (!rc[img.platform]) {
         rc[img.platform] = {
@@ -340,7 +341,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     const platformList = Object.keys(imageResourcesForConfig) as KnownPlatform[];
     await addResourcesToConfigXml(conf, platformList, imageResourcesForConfig);
 
-    this.env.tasks.end();
+    tasks.end();
 
     // All images that were not processed
     if (imagesTooLargeForSource.length > 0) {

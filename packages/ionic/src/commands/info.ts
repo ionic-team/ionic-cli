@@ -7,6 +7,8 @@ import { strcmp } from '@ionic/cli-framework/utils/string';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, InfoItem, InfoItemGroup } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 
+const INFO_GROUPS: ReadonlyArray<InfoItemGroup> = ['ionic', 'capacitor', 'cordova', 'system', 'environment'];
+
 export class InfoCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
     return {
@@ -32,11 +34,14 @@ This command is an easy way to share information about your setup. If applicable
     if (json) {
       process.stdout.write(JSON.stringify(await this.env.getInfo()));
     } else {
-      const task = this.env.tasks.next('Gathering environment info');
+      const tasks = this.createTaskChain();
+      tasks.next('Gathering environment info');
       const results = await this.env.getInfo();
+      tasks.end();
 
-      const groups: InfoItemGroup[] = ['ionic', 'capacitor', 'cordova', 'system', 'environment'];
-      const groupedInfo: Map<InfoItemGroup, InfoItem[]> = new Map(groups.map((group): [typeof group, InfoItem[]] => [group, results.filter(item => item.group === group)]));
+      const groupedInfo: Map<InfoItemGroup, InfoItem[]> = new Map(
+        INFO_GROUPS.map((group): [typeof group, InfoItem[]] => [group, results.filter(item => item.group === group)])
+      );
 
       const sortInfo = (a: InfoItem, b: InfoItem): number => {
         if (a.key[0] === '@' && b.key[0] !== '@') {
@@ -57,8 +62,6 @@ This command is an easy way to share information about your setup. If applicable
         .map((item): [string, string] => [`   ${item.key}${item.flair ? ' ' + chalk.dim('(' + item.flair + ')') : ''}`, chalk.dim(item.value) + (item.path && projectPath && !item.path.startsWith(projectPath) ? ` ${chalk.dim('(' + item.path + ')')}` : '')]);
 
       const format = (details: [string, string][]) => columnar(details, { vsep: ':' });
-
-      task.end();
 
       if (!projectPath) {
         this.env.log.warn('You are not in an Ionic project directory. Project context may be missing.');

@@ -29,11 +29,8 @@ export abstract class CapacitorCommand extends Command {
 
   async runCapacitor(argList: string[]): Promise<void> {
     try {
-      this.env.close();
       await this._runCapacitor(argList);
-      this.env.open();
     } catch (e) {
-      this.env.open();
       if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
         const pkg = '@capacitor/cli';
         const requiredMsg = `The Capacitor CLI is required for Capacitor projects.`;

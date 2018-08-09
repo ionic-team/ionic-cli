@@ -1,7 +1,6 @@
 import * as Debug from 'debug';
 import * as ζinquirer from 'inquirer';
 
-import { OutputStrategy, RedrawLine } from '../definitions';
 import { TERMINAL_INFO } from '../utils/terminal';
 
 const debug = Debug('ionic:cli-framework:lib:prompts');
@@ -66,14 +65,11 @@ export interface PromptQuestionOther extends PromptQuestionBase {
 export type PromptQuestion = PromptQuestionConfirm | PromptQuestionCheckbox | PromptQuestionOther;
 
 export interface PromptModule {
-  readonly output: OutputStrategy & RedrawLine;
+  readonly _inquirer: ζinquirer.Inquirer;
 
   (question: PromptQuestionConfirm): Promise<PromptValueConfirm>;
   (question: PromptQuestionCheckbox): Promise<PromptValueCheckbox>;
   (question: PromptQuestionOther): Promise<PromptValueOther>;
-
-  open(): void;
-  close(): void;
 }
 
 async function loadInquirer(): Promise<ζinquirer.Inquirer> {
@@ -109,9 +105,9 @@ export interface CreatePromptModuleOptions {
  *                           a 'fallback'.
  */
 export async function createPromptModule({ interactive, onFallback }: CreatePromptModuleOptions = {}): Promise<PromptModule> {
-  const { createPromptModule: createInquirerPromptModule, ui: { BottomBar } } = await loadInquirer();
+  const inquirer = await loadInquirer();
+  const { createPromptModule: createInquirerPromptModule } = inquirer;
   const promptModule = createInquirerPromptModule();
-  const manager = new BottomBarManager({ BottomBar });
 
   async function createPrompter(question: PromptQuestionConfirm): Promise<PromptValueConfirm>;
   async function createPrompter(question: PromptQuestionCheckbox): Promise<PromptValueCheckbox>;
@@ -161,12 +157,10 @@ export async function createPromptModule({ interactive, onFallback }: CreateProm
   }
 
   Object.defineProperties(createPrompter, {
-    open: { value: () => manager.open() },
-    close: { value: () => manager.close() },
-    output: { value: manager },
+    _inquirer: { value: inquirer },
   });
 
-  return createPrompter as any;
+  return createPrompter as any as PromptModule;
 }
 
 export function createPromptChoiceSeparator(): ζinquirer.objects.Separator {
@@ -175,64 +169,4 @@ export function createPromptChoiceSeparator(): ζinquirer.objects.Separator {
   }
 
   return new _inquirer.Separator();
-}
-
-interface BottomBarManagerOptions {
-  readonly BottomBar: typeof ζinquirer.ui.BottomBar;
-  readonly input?: NodeJS.ReadableStream;
-  readonly output?: NodeJS.WritableStream;
-}
-
-class BottomBarManager implements OutputStrategy, RedrawLine {
-  protected bottomBar?: ζinquirer.ui.BottomBar;
-
-  protected readonly BottomBar: typeof ζinquirer.ui.BottomBar;
-  protected readonly rawinput: NodeJS.ReadableStream;
-  protected readonly rawoutput: NodeJS.WritableStream;
-
-  constructor({ BottomBar, input = process.stdin, output = process.stdout }: BottomBarManagerOptions) {
-    this.BottomBar = BottomBar;
-    this.rawinput = input;
-    this.rawoutput = output;
-  }
-
-  get stream(): NodeJS.WritableStream {
-    const bottomBar = this.get();
-    return bottomBar.log;
-  }
-
-  redrawLine(msg = ''): void {
-    const bottomBar = this.get();
-    bottomBar.updateBottomBar(msg);
-  }
-
-  get(): typeof ζinquirer.ui.BottomBar {
-    if (!this.bottomBar) {
-      this.bottomBar = new this.BottomBar({ input: this.rawinput, output: this.rawoutput } as any);
-
-      try {
-        // the mute() call appears to be necessary, otherwise when answering
-        // inquirer prompts upon pressing enter, a copy of the prompt is
-        // printed to the screen and looks gross
-        (this.bottomBar as any).rl.output.mute();
-      } catch (e) {
-        debug('Error while muting bottomBar output: %o', e);
-      }
-    }
-
-    return this.bottomBar;
-  }
-
-  open(): void {
-    this.get();
-  }
-
-  close(): void {
-    if (this.bottomBar) {
-      // instantiating inquirer.ui.BottomBar hangs, so when close() is called,
-      // close BottomBar streams
-      this.bottomBar.close();
-      this.bottomBar = undefined;
-    }
-  }
 }

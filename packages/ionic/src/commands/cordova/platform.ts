@@ -117,7 +117,5 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
     if (isLoggedIn && action === 'add' && options['resources'] && ['ios', 'android'].includes(platformName)) {
       await runCommand(runinfo, ['cordova', 'resources', platformName, '--force']);
     }
-
-    this.env.tasks.end();
   }
 }

@@ -641,16 +641,13 @@ export interface IonicEnvironment {
   readonly ctx: IonicContext;
   readonly session: ISession;
   readonly shell: IShell;
-  readonly tasks: ζframework.TaskChain;
 
-  open(): void;
-  close(): void;
   getInfo(): Promise<InfoItem[]>;
 }
 
 export interface IonicEnvironmentFlags {
-  interactive: boolean;
-  confirm: boolean;
+  readonly interactive: boolean;
+  readonly confirm: boolean;
 }
 
 export type DistTag = 'testing' | 'canary' | 'latest';

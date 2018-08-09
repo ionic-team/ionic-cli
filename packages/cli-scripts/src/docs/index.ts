@@ -35,7 +35,6 @@ export class DocsCommand extends Command {
       // TODO: possible to do this without a physical directory?
       const ctx = { ...baseCtx, execPath: path.resolve(PROJECTS_DIRECTORY, projectType) };
       const executor = await loadExecutor(ctx, [], {});
-      const env = executor.namespace.env;
 
       const location = await executor.namespace.locate([]);
       const formatter = new NamespaceSchemaHelpFormatter({ location, namespace: executor.namespace });
@@ -47,8 +46,6 @@ export class DocsCommand extends Command {
       projectJson.commands.sort((a, b) => strcmp(a.name, b.name));
 
       await fsWriteFile(path.resolve(STAGING_DIRECTORY, `${projectType}.json`), JSON.stringify(projectJson, undefined, 2), { encoding: 'utf8' });
-
-      env.close();
     }
 
     process.stdout.write(`${chalk.green('Done.')}\n`);

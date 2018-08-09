@@ -152,7 +152,8 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
         create = true;
         proId = undefined;
       } else if (result === CHOICE_LINK_EXISTING_APP) {
-        this.env.tasks.next(`Looking up your apps`);
+        const tasks = this.createTaskChain();
+        tasks.next(`Looking up your apps`);
         const apps: App[] = [];
 
         const appClient = await this.getAppClient();
@@ -163,7 +164,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
           apps.push(...res.data);
         }
 
-        this.env.tasks.end();
+        tasks.end();
 
         if (apps.length === 0) {
           const confirm = await this.env.prompt({
@@ -225,12 +226,13 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
   }
 
   async lookUpApp(proId: string): Promise<App> {
-    this.env.tasks.next(`Looking up app ${chalk.green(proId)}`);
+    const tasks = this.createTaskChain();
+    tasks.next(`Looking up app ${chalk.green(proId)}`);
 
     const appClient = await this.getAppClient();
     const app = await appClient.load(proId); // Make sure the user has access to the app
 
-    this.env.tasks.end();
+    tasks.end();
 
     return app;
   }
@@ -484,7 +486,8 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     const user = this.env.session.getUser();
     const userClient = await this.getUserClient();
 
-    const task = this.env.tasks.next('Looking up your GitHub repositories');
+    const tasks = this.createTaskChain();
+    const task = tasks.next('Looking up your GitHub repositories');
 
     const paginator = userClient.paginateGithubRepositories(user.id);
     const repos: GithubRepo[] = [];
@@ -497,7 +500,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
         task.msg = `Looking up your GitHub repositories: ${chalk.bold(String(repos.length))} found`;
       }
     } catch (e) {
-      this.env.tasks.fail();
+      tasks.fail();
 
       if (isSuperAgentError(e) && e.response.status === 401) {
         await this.oAuthProcess(user.id);
@@ -507,7 +510,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
       throw e;
     }
 
-    this.env.tasks.end();
+    tasks.end();
 
     const repoId = await this.env.prompt({
       type: 'list',
@@ -560,7 +563,8 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     const user = this.env.session.getUser();
     const userClient = await this.getUserClient();
     const paginator = userClient.paginateGithubBranches(user.id, repoId);
-    const task = this.env.tasks.next('Looking for available branches');
+    const tasks = this.createTaskChain();
+    const task = tasks.next('Looking for available branches');
     const availableBranches: GithubBranch[] = [];
     try {
       for (const r of paginator) {
@@ -570,10 +574,10 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
         task.msg = `Looking up the available branches on your GitHub repository: ${chalk.bold(String(availableBranches.length))} found`;
       }
     } catch (e) {
-      this.env.tasks.fail();
+      tasks.fail();
       throw e;
     }
-    this.env.tasks.end();
+    tasks.end();
 
     const choices = availableBranches.map(branch => ({
       name: branch.name,

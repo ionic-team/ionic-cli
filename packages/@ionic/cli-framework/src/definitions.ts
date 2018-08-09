@@ -2,7 +2,7 @@ import * as os from 'os';
 
 import { Opts as ParseArgsOptions, ParsedArgs } from 'minimist';
 
-import { AliasedMap } from './utils/object';
+import * as ζobject from './utils/object';
 
 export type NetworkInterface = { device: string; } & os.NetworkInterfaceInfo;
 
@@ -70,8 +70,8 @@ export interface ICommand<C extends ICommand<C, N, M, I, O>, N extends INamespac
 
 export type CommandMapGetter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = () => Promise<C>;
 export type NamespaceMapGetter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = () => Promise<N>;
-export type ICommandMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = AliasedMap<string, CommandMapGetter<C, N, M, I, O>>;
-export type INamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = AliasedMap<string, NamespaceMapGetter<C, N, M, I, O>>;
+export type ICommandMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = ζobject.AliasedMap<string, CommandMapGetter<C, N, M, I, O>>;
+export type INamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = ζobject.AliasedMap<string, NamespaceMapGetter<C, N, M, I, O>>;
 
 export interface INamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   root: N;
@@ -138,12 +138,4 @@ export interface ValidationError {
   key: string;
   message: string;
   validator: Validator;
-}
-
-export interface OutputStrategy {
-  readonly stream: NodeJS.WritableStream;
-}
-
-export interface RedrawLine {
-  redrawLine(msg?: string): void;
 }

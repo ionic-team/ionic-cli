@@ -5,10 +5,9 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { TaskChain } from '@ionic/cli-framework';
 import { copyDirectory, fsMkdirp, fsStat, pathExists, readDir, removeDirectory } from '@ionic/cli-framework/utils/fs';
 
-import { IConfig, IIntegration, IIntegrationAddOptions, IProject, IShell, InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../definitions';
+import { IConfig, IIntegration, IIntegrationAddOptions, ILogger, IProject, IShell, InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../definitions';
 import { IntegrationNotFoundException } from '../errors';
 
 import * as ζcapacitor from './capacitor';
@@ -23,28 +22,18 @@ export interface IntegrationOptions {
 }
 
 export interface IntegrationDeps {
-  config: IConfig;
-  shell: IShell;
-  project: IProject;
-  tasks: TaskChain;
+  readonly config: IConfig;
+  readonly shell: IShell;
+  readonly project: IProject;
+  readonly log: ILogger;
 }
 
 export abstract class BaseIntegration implements IIntegration {
-  protected readonly config: IConfig;
-  protected readonly project: IProject;
-  protected readonly shell: IShell;
-  protected readonly tasks: TaskChain;
-
   abstract readonly name: IntegrationName;
   abstract readonly summary: string;
   abstract readonly archiveUrl?: string;
 
-  constructor({ config, project, shell, tasks }: IntegrationDeps) {
-    this.config = config;
-    this.project = project;
-    this.shell = shell;
-    this.tasks = tasks;
-  }
+  constructor(protected readonly e: IntegrationDeps) {}
 
   static async createFromName(deps: IntegrationDeps, name: 'capacitor'): Promise<ζcapacitor.Integration>;
   static async createFromName(deps: IntegrationDeps, name: 'cordova'): Promise<ζcordova.Integration>;
@@ -88,7 +77,7 @@ export abstract class BaseIntegration implements IIntegration {
     const { createRequest, download } = await import('../utils/http');
     const { tar } = await import('../utils/archive');
 
-    const task = this.tasks.next(`Downloading integration ${chalk.green(this.name)}`);
+    this.e.log.info(`Downloading integration ${chalk.green(this.name)}`);
     const tmpdir = path.resolve(os.tmpdir(), `ionic-integration-${this.name}`);
 
     // TODO: etag
@@ -100,9 +89,8 @@ export abstract class BaseIntegration implements IIntegration {
     await fsMkdirp(tmpdir, 0o777);
 
     const ws = tar.extract({ cwd: tmpdir });
-    const { req } = await createRequest('GET', this.archiveUrl, this.config.getHTTPConfig());
-    await download(req, ws, { progress: (loaded, total) => task.progress(loaded, total) });
-    this.tasks.end();
+    const { req } = await createRequest('GET', this.archiveUrl, this.e.config.getHTTPConfig());
+    await download(req, ws, {});
 
     const contents = await readDir(tmpdir);
     const blacklist: string[] = [];
@@ -110,7 +98,7 @@ export abstract class BaseIntegration implements IIntegration {
     debug(`Integration files downloaded to ${chalk.bold(tmpdir)} (files: ${contents.map(f => chalk.bold(f)).join(', ')})`);
 
     for (const f of contents) {
-      const projectf = path.resolve(this.project.directory, f);
+      const projectf = path.resolve(this.e.project.directory, f);
 
       try {
         const stats = await fsStat(projectf);
@@ -126,10 +114,10 @@ export abstract class BaseIntegration implements IIntegration {
       }
     }
 
-    this.tasks.next(`Copying integrations files to project`);
+    this.e.log.info(`Copying integrations files to project`);
     debug(`Blacklist: ${blacklist.map(f => chalk.bold(f)).join(', ')}`);
 
-    await copyDirectory(tmpdir, this.project.directory, {
+    await copyDirectory(tmpdir, this.e.project.directory, {
       filter: f => {
         if (f === tmpdir) {
           return true;
@@ -152,8 +140,6 @@ export abstract class BaseIntegration implements IIntegration {
         return true;
       },
     });
-
-    this.tasks.end();
 
     await this.enable();
   }

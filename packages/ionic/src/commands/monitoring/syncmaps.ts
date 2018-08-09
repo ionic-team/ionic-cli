@@ -78,7 +78,8 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     }
 
     let count = 0;
-    const syncTask = this.env.tasks.next('Syncing sourcemaps');
+    const tasks = this.createTaskChain();
+    const syncTask = tasks.next('Syncing sourcemaps');
 
     const sourcemapFiles = (await readDir(sourcemapsDir)).filter(f => f.endsWith('.js.map'));
     debug(`Found ${sourcemapFiles.length} sourcemap files: ${sourcemapFiles.map(f => chalk.bold(f)).join(', ')}`);
@@ -90,7 +91,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     }));
 
     syncTask.msg = `Syncing sourcemaps: ${chalk.bold(`${sourcemapFiles.length} / ${sourcemapFiles.length}`)}`;
-    this.env.tasks.end();
+    tasks.end();
 
     const details = columnar([
       ['Pro ID', chalk.bold(proId)],
@@ -128,7 +129,6 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
         if (e.response.status === 401) {
           this.env.log.error('Try logging out and back in again.');
         }
-        this.env.tasks.fail();
       } else {
         throw e;
       }
