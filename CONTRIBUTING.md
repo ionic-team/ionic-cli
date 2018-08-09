@@ -126,7 +126,25 @@ TODO: Be helpful about where to look for commands, utilities, etc.
 
 ##### Publishing
 
-Publishing occurs in CI when new changes are merged into `master`.
+CI automatically publishes the next version semantically from analyzing commits in `master`. To maintain a shared history between `develop` and `master`, the branches must be rebased with each other locally.
+
+* When it's time to cut a release from `develop`:
+
+    ```
+    git checkout master
+    git rebase develop
+    git push origin master
+    ```
+
+* Await successful publish in CI. Ionitron will push the updated versions and tags to `master`.
+* Sync `develop` with `master`.
+
+  ```
+  git pull origin master
+  git checkout develop
+  git rebase master
+  git push origin develop
+  ```
 
 To publish **testing** versions, follow these steps:
 
