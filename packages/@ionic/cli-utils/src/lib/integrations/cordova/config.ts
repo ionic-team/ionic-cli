@@ -8,6 +8,7 @@ import * as et from 'elementtree';
 
 import { IProject, ResourcesPlatform } from '../../../definitions';
 import { FatalException } from '../../errors';
+import { shortid } from '../../utils/uuid';
 
 const debug = Debug('ionic:cli-utils:lib:integrations:cordova:config');
 
@@ -19,9 +20,10 @@ export interface PlatformEngine {
 
 export class ConfigXml {
   protected _doc?: et.ElementTree;
+  protected _sessionid?: string;
   protected saving = false;
 
-  constructor(public filePath: string) {}
+  constructor(readonly filePath: string) {}
 
   get doc() {
     if (!this._doc) {
@@ -29,6 +31,14 @@ export class ConfigXml {
     }
 
     return this._doc;
+  }
+
+  get sessionid() {
+    if (!this._sessionid) {
+      throw new Error('No doc loaded.');
+    }
+
+    return this._sessionid;
   }
 
   static async load(filePath: string): Promise<ConfigXml> {
@@ -51,6 +61,7 @@ export class ConfigXml {
 
     try {
       this._doc = et.parse(configFileContents);
+      this._sessionid = shortid();
     } catch (e) {
       throw new Error(`Cannot parse config.xml file: ${e.stack ? e.stack : e}`);
     }
@@ -103,7 +114,7 @@ export class ConfigXml {
     let navElement = root.find(`allow-navigation[@href='${newSrc}']`);
 
     if (!navElement) {
-      navElement = et.SubElement(root, 'allow-navigation', { href: newSrc });
+      navElement = et.SubElement(root, 'allow-navigation', { sessionid: this.sessionid, href: newSrc });
     }
   }
 
@@ -123,6 +134,12 @@ export class ConfigXml {
     if (originalSrc) {
       contentElement.set('src', originalSrc);
       delete contentElement.attrib['original-src'];
+    }
+
+    const navElements = root.findall(`allow-navigation[@sessionid='${this.sessionid}']`);
+
+    for (const navElement of navElements) {
+      root.remove(navElement);
     }
   }
 
