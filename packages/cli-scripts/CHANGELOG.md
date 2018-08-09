@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.0.15"></a>
+## [0.0.15](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@0.0.14...cli-scripts@0.0.15) (2018-08-09)
+
+
+### Bug Fixes
+
+* **serve:** fix unclosed connection issue again ([#3500](https://github.com/ionic-team/ionic-cli/issues/3500)) ([1f0ef3b](https://github.com/ionic-team/ionic-cli/commit/1f0ef3b))
+
+
+
+
 <a name="0.0.14"></a>
 ## [0.0.14](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@0.0.13...cli-scripts@0.0.14) (2018-08-07)
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.0.6"></a>
+## [2.0.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@2.0.5...@ionic/cli-utils@2.0.6) (2018-08-09)
+
+
+### Bug Fixes
+
+* **serve:** fix unclosed connection issue again ([#3500](https://github.com/ionic-team/ionic-cli/issues/3500)) ([1f0ef3b](https://github.com/ionic-team/ionic-cli/commit/1f0ef3b))
+
+
+
+
 <a name="2.0.5"></a>
 ## [2.0.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@2.0.4...@ionic/cli-utils@2.0.5) (2018-08-07)
 
