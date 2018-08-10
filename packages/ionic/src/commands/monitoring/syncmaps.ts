@@ -6,6 +6,7 @@ import * as Debug from 'debug';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { fsReadFile, pathExists, readDir } from '@ionic/cli-framework/utils/fs';
 import { APIResponseSuccess, CommandLineInputs, CommandLineOptions, CommandMetadata, isSuperAgentError } from '@ionic/cli-utils';
+import { build } from '@ionic/cli-utils/lib/build';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
@@ -61,7 +62,6 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     let sourcemapsExist = await pathExists(sourcemapsDir);
 
     if (doBuild || !sourcemapsExist) {
-      const { build } = await import('@ionic/cli-utils/lib/build');
       // TODO: use runner directly
       await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, [], { _: [], prod: true });
     }

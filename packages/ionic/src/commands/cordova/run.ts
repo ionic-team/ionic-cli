@@ -4,10 +4,11 @@ import { LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-
 import { onBeforeExit, sleepForever } from '@ionic/cli-framework/utils/process';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
-import { COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
+import { COMMON_BUILD_COMMAND_OPTIONS, build } from '@ionic/cli-utils/lib/build';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { loadConfigXml } from '@ionic/cli-utils/lib/integrations/cordova/config';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '@ionic/cli-utils/lib/integrations/cordova/utils';
-import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
+import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, serve } from '@ionic/cli-utils/lib/serve';
 import { createDefaultLoggerHandlers } from '@ionic/cli-utils/lib/utils/logger';
 
 import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
@@ -70,7 +71,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       // Build Options
       {
         name: 'build',
-        summary: 'Do not invoke Ionic build/serve',
+        summary: 'Do not invoke Ionic build',
         type: Boolean,
         default: true,
       },
@@ -174,22 +175,19 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
-
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic cordova run/emulate')} outside a project directory.`);
     }
 
     const metadata = await this.getMetadata();
-    const conf = await loadConfigXml({ project: this.project });
-
-    onBeforeExit(async () => {
-      conf.resetContentSrc();
-      await conf.save();
-    });
 
     if (options['livereload']) {
-      const { serve } = await import('@ionic/cli-utils/lib/serve');
+      const conf = await loadConfigXml({ project: this.project });
+
+      onBeforeExit(async () => {
+        conf.resetContentSrc();
+        await conf.save();
+      });
 
       const cordovalog = this.env.log.clone();
       cordovalog.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(`${chalk.dim(`[cordova]`)} `));

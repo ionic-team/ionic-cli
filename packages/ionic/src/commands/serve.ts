@@ -7,7 +7,7 @@ import { sleepForever } from '@ionic/cli-framework/utils/process';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT } from '@ionic/cli-utils/lib/serve';
+import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT, serve } from '@ionic/cli-utils/lib/serve';
 
 export class ServeCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -135,8 +135,6 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { serve } = await import('@ionic/cli-utils/lib/serve');
-
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic serve')} outside a project directory.`);
     }

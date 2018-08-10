@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { CommandMetadataOption, validators } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { build } from '@ionic/cli-utils/lib/build';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
@@ -77,7 +78,6 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/gu
     }
 
     if (options.build) {
-      const { build } = await import('@ionic/cli-utils/lib/build');
       // TODO: use runner directly
       await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
     }

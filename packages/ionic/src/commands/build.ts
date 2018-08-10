@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
-import { COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
+import { COMMON_BUILD_COMMAND_OPTIONS, build } from '@ionic/cli-utils/lib/build';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 
@@ -47,8 +47,6 @@ export class BuildCommand extends Command implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
-    const { build } = await import('@ionic/cli-utils/lib/build');
-
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic build')} outside a project directory.`);
     }

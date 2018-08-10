@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { CommandMetadataOption } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { build } from '@ionic/cli-utils/lib/build';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
@@ -89,7 +90,6 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
     const metadata = await this.getMetadata();
 
     if (options.build) {
-      const { build } = await import('@ionic/cli-utils/lib/build');
       const buildOptions = generateOptionsForCordovaBuild(metadata, inputs, options);
 
       if (buildOptions['platform']) {
