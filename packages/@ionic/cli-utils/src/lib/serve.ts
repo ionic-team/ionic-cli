@@ -61,12 +61,12 @@ export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
   {
     name: 'engine',
     summary: `Target engine (e.g. ${['browser', 'cordova'].map(e => chalk.green(e)).join(', ')})`,
-    groups: [OptionGroup.Advanced],
+    groups: [OptionGroup.Hidden, OptionGroup.Advanced],
   },
   {
     name: 'platform',
     summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => chalk.green(e)).join(', ')})`,
-    groups: [OptionGroup.Advanced],
+    groups: [OptionGroup.Hidden, OptionGroup.Advanced],
   },
 ];
 
