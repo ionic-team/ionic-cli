@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 
+import { CommandGroup } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 
 import { CapacitorCommand } from './base';
@@ -22,6 +23,7 @@ ${chalk.green('ionic capacitor sync')} will do the following:
           summary: `The platform to sync (e.g. ${['android', 'ios', 'electron'].map(v => chalk.green(v)).join(', ')})`,
         },
       ],
+      groups: [CommandGroup.Beta],
     };
   }
 

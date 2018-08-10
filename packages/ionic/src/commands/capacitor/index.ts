@@ -5,12 +5,6 @@ import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
 
 export class CapacitorNamespace extends Namespace {
   async getMetadata() {
-    const groups: string[] = [NamespaceGroup.Beta];
-
-    if (!this.env.config.get('features.capacitor-commands')) {
-      groups.push(NamespaceGroup.Hidden);
-    }
-
     return {
       name: 'capacitor',
       summary: 'Capacitor functionality',
@@ -20,7 +14,7 @@ These commands integrate with Capacitor, Ionic's new native layer project which 
 Learn more about Capacitor:
 - Main documentation: ${chalk.bold('https://capacitor.ionicframework.com/')}
       `,
-      groups,
+      groups: [NamespaceGroup.Beta],
     };
   }
 

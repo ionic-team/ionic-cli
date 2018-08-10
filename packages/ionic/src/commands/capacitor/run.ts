@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import * as path from 'path';
 
-import { validators } from '@ionic/cli-framework';
+import { CommandGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/cli-framework/utils/process';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
 import { build } from '@ionic/cli-utils/lib/build';
@@ -14,7 +14,7 @@ import { CapacitorCommand } from './base';
 
 export class RunCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
-    let groups: string[] = [];
+    let groups: string[] = [CommandGroup.Beta];
     const options: CommandMetadataOption[] = [
       // Build Options
       {

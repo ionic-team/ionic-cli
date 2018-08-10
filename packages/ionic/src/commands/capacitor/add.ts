@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { validators } from '@ionic/cli-framework';
+import { CommandGroup, validators } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 
 import { CapacitorCommand } from './base';
@@ -22,6 +22,7 @@ ${chalk.green('ionic capacitor add')} will do the following:
           validators: [validators.required],
         },
       ],
+      groups: [CommandGroup.Beta],
     };
   }
 
