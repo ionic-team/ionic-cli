@@ -15,8 +15,12 @@ ${chalk.green('ionic capacitor update')} will do the following:
 - Update each Capacitor native project, such as any dependencies that need updating.
 - Install any discovered Capacitor or Cordova plugins.
       `,
-      exampleCommands: [],
-      inputs: [],
+      inputs: [
+        {
+          name: 'platform',
+          summary: `The platform to update (e.g. ${['android', 'ios', 'electron'].map(v => chalk.green(v)).join(', ')})`,
+        },
+      ],
     };
   }
 
@@ -26,10 +30,12 @@ ${chalk.green('ionic capacitor update')} will do the following:
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ platform ] = inputs;
-    const args = [ 'update' ];
+    const args = ['update'];
+
     if (platform) {
       args.push(platform);
     }
+
     await this.runCapacitor(args);
   }
 }

@@ -9,13 +9,17 @@ export class CopyCommand extends CapacitorCommand implements CommandPreRun {
     return {
       name: 'copy',
       type: 'project',
-      summary: 'Copies web assets to each Capacitor native platform',
+      summary: 'Copies web assets to Capacitor native platforms',
       description: `
 ${chalk.green('ionic capacitor copy')} will do the following:
 - Copy the ${chalk.bold('www/')} directory into your native platforms.
       `,
-      exampleCommands: [],
-      inputs: [],
+      inputs: [
+        {
+          name: 'platform',
+          summary: `The platform to copy (e.g. ${['android', 'ios', 'electron'].map(v => chalk.green(v)).join(', ')})`,
+        },
+      ],
     };
   }
 
@@ -24,6 +28,13 @@ ${chalk.green('ionic capacitor copy')} will do the following:
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    await this.runCapacitor(['copy']);
+    const [ platform ] = inputs;
+    const args = ['copy'];
+
+    if (platform) {
+      args.push(platform);
+    }
+
+    await this.runCapacitor(args);
   }
 }

@@ -16,8 +16,12 @@ ${chalk.green('ionic capacitor sync')} will do the following:
 - Update each Capacitor native platforms, such as any dependencies that need updating.
 - Install any discovered Capacitor or Cordova plugins.
       `,
-      exampleCommands: [],
-      inputs: [],
+      inputs: [
+        {
+          name: 'platform',
+          summary: `The platform to sync (e.g. ${['android', 'ios', 'electron'].map(v => chalk.green(v)).join(', ')})`,
+        },
+      ],
     };
   }
 
@@ -27,10 +31,12 @@ ${chalk.green('ionic capacitor sync')} will do the following:
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ platform ] = inputs;
-    const args = [ 'sync' ];
+    const args = ['sync'];
+
     if (platform) {
       args.push(platform);
     }
+
     await this.runCapacitor(args);
   }
 }
