@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { CommandMetadataOption, validators } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
+import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
 import { COMMON_CORDOVA_BUILD_COMMAND_OPTIONS, CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 
@@ -79,7 +79,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/gu
     if (options.build) {
       const { build } = await import('@ionic/cli-utils/lib/build');
       // TODO: use runner directly
-      await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, generateBuildOptions(metadata, inputs, options));
+      await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
     }
 
     const cordovaArgs = filterArgumentsForCordova(metadata, options);

@@ -35,7 +35,7 @@ export function filterArgumentsForCordova(metadata: CommandMetadata, options: Co
   return [m.name, ...args];
 }
 
-export function generateBuildOptions(metadata: CommandMetadata, inputs: CommandLineInputs, options: CommandLineOptions): CommandLineOptions {
+export function generateOptionsForCordovaBuild(metadata: CommandMetadata, inputs: CommandLineInputs, options: CommandLineOptions): CommandLineOptions {
   const [ platform ] = inputs;
   const includesAppScriptsGroup = OptionFilters.includesGroups('app-scripts');
   const excludesCordovaGroup = OptionFilters.excludesGroups('cordova');

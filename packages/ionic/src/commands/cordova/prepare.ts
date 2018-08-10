@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { CommandMetadataOption } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
+import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 
 import { CordovaCommand } from './base';
 
@@ -90,7 +90,7 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
 
     if (options.build) {
       const { build } = await import('@ionic/cli-utils/lib/build');
-      const buildOptions = generateBuildOptions(metadata, inputs, options);
+      const buildOptions = generateOptionsForCordovaBuild(metadata, inputs, options);
 
       if (buildOptions['platform']) {
         // TODO: use runner directly

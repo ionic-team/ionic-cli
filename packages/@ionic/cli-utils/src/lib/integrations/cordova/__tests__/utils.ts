@@ -1,4 +1,4 @@
-import { filterArgumentsForCordova, generateBuildOptions } from '../utils';
+import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../utils';
 
 describe('@ionic/cli-utils', () => {
 
@@ -71,13 +71,13 @@ describe('@ionic/cli-utils', () => {
 
   });
 
-  describe('generateBuildOptions', () => {
+  describe('generateOptionsForCordovaBuild', () => {
 
     it('should return added options even for no options passed', () => {
       const inputs = ['ios'];
       const options = { _: [] };
 
-      const result = generateBuildOptions(metadata, inputs, options);
+      const result = generateOptionsForCordovaBuild(metadata, inputs, options);
       expect(result).toEqual({ '_': [], externalAddressRequired: true, nobrowser: true, engine: 'cordova', platform: 'ios' });
     });
 
@@ -85,7 +85,7 @@ describe('@ionic/cli-utils', () => {
       const inputs = ['ios'];
       const options = { _: [], boolopt: false, cdvopt1: null, cdvopt2: false, prod: true, optimizejs: true };
 
-      const result = generateBuildOptions(metadata, inputs, options);
+      const result = generateOptionsForCordovaBuild(metadata, inputs, options);
       expect(result).toEqual({ '_': [], boolopt: false, externalAddressRequired: true, nobrowser: true, engine: 'cordova', platform: 'ios', prod: true, optimizejs: true });
     });
 

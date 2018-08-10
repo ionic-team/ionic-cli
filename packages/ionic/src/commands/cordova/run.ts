@@ -6,7 +6,7 @@ import { onBeforeExit, sleepForever } from '@ionic/cli-framework/utils/process';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
 import { COMMON_BUILD_COMMAND_OPTIONS } from '@ionic/cli-utils/lib/build';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { filterArgumentsForCordova, generateBuildOptions } from '@ionic/cli-utils/lib/integrations/cordova/utils';
+import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '@ionic/cli-utils/lib/integrations/cordova/utils';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '@ionic/cli-utils/lib/serve';
 import { createDefaultLoggerHandlers } from '@ionic/cli-utils/lib/utils/logger';
 
@@ -196,7 +196,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       const cordovalogws = cordovalog.createWriteStream(LOGGER_LEVELS.INFO);
 
       // TODO: use runner directly
-      const details = await serve({ flags: this.env.flags, config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateBuildOptions(metadata, inputs, options));
+      const details = await serve({ flags: this.env.flags, config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
 
       if (details.externallyAccessible === false) {
         const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
@@ -210,9 +210,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       await sleepForever();
     } else {
       if (options.build) {
-        const { build } = await import('@ionic/cli-utils/lib/build');
         // TODO: use runner directly
-        await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, generateBuildOptions(metadata, inputs, options));
+        await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
       }
 
       await this.runCordova(filterArgumentsForCordova(metadata, options));
