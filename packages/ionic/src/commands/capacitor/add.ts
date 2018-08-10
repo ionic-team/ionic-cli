@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 
-import { validators } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 
 import { CapacitorCommand } from './base';
@@ -25,10 +24,10 @@ ${chalk.green('ionic capacitor add')} will do the following:
 
     if (inputs.length < 1) {
       const platform = await this.env.prompt({
-        type: 'input',
+        type: 'list',
         name: 'platform',
-        message: `What platform would you like to add (${['android', 'ios', 'electron'].map(v => chalk.green(v)).join(', ')}):`,
-        validate: v => validators.required(v),
+        message: 'What platform would you like to add?',
+        choices: ['android', 'ios', 'electron'],
       });
 
       inputs[0] = platform.trim();
