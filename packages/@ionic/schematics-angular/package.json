@@ -33,7 +33,7 @@
     "@schematics/angular": "~0.7.2",
     "lodash": "^4.17.5",
     "tslib": "^1.9.0",
-    "typescript": ">=2.6.2 <2.8"
+    "typescript": ">=2.6.2 <2.10"
   },
   "devDependencies": {
     "@angular-devkit/core": "~0.7.2",
