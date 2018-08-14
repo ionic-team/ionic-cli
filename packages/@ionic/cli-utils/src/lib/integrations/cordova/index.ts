@@ -16,6 +16,7 @@ export class Integration extends BaseIntegration {
     const [
       cordovaVersion,
       cordovaPlatforms,
+      cordovaPlugins,
       xcode,
       iosDeploy,
       iosSim,
@@ -23,6 +24,7 @@ export class Integration extends BaseIntegration {
     ] = await Promise.all([
       this.getCordovaVersion(),
       this.getCordovaPlatformVersions(),
+      this.getCordovaPluginVersions(),
       this.getXcodebuildVersion(),
       this.getIOSDeployVersion(),
       this.getIOSSimVersion(),
@@ -32,6 +34,7 @@ export class Integration extends BaseIntegration {
     const info: InfoItem[] = [
       { group: 'cordova', key: 'cordova', flair: 'Cordova CLI', value: cordovaVersion || 'not installed' },
       { group: 'cordova', key: 'Cordova Platforms', value: cordovaPlatforms },
+      { group: 'cordova', key: 'Cordova Plugins', value: cordovaPlugins },
     ];
 
     if (xcode) {
@@ -88,6 +91,38 @@ export class Integration extends BaseIntegration {
       return platforms.join(', ');
     } catch (e) {
       debug('Error while getting Cordova platforms: %o', e);
+      return 'not available';
+    }
+  }
+
+  async getCordovaPluginVersions(): Promise<string> {
+    const whitelist = [
+      /^cordova-plugin-ionic$/,
+      /^cordova-plugin-ionic-.+/,
+    ];
+
+    try {
+      const output = await this.e.shell.output('cordova', ['plugin', 'ls', '--no-telemetry'], { showCommand: false });
+      const pluginRe = /^([a-z-]+)\s+(\d\.\d\.\d).+$/;
+      const plugins = output
+        .split('\n')
+        .map(l => l.trim().match(pluginRe))
+        .filter((l): l is RegExpMatchArray => l !== null)
+        .map(m => [m[1], m[2]]);
+
+      const whitelistedPlugins = plugins
+        .filter(([ plugin, version ]) => whitelist.some(re => re.test(plugin)))
+        .map(([ plugin, version ]) => `${plugin} ${version}`);
+
+      const count = plugins.length - whitelistedPlugins.length;
+
+      if (whitelistedPlugins.length === 0) {
+        return `no whitelisted plugins (${count} plugins total)`;
+      }
+
+      return `${whitelistedPlugins.join(', ')}${count > 0 ? `, (and ${count} other plugins)` : ''}`;
+    } catch (e) {
+      debug('Error while getting Cordova plugins: %o', e);
       return 'not available';
     }
   }
