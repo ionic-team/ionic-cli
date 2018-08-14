@@ -86,8 +86,6 @@ export class Ionic1Project extends Project {
         const ionicVersionJson = await fsReadJsonFile(ionicVersionFilePath);
         return ionicVersionJson['version'];
       } catch (e) {
-        this.e.log.warn(`Error with ${chalk.bold(prettyPath(ionicVersionFilePath))} file: ${e}, trying ${chalk.bold(prettyPath(bowerJsonPath))}.`);
-
         const bwr = await this.loadBowerJson();
         const deps = lodash.assign({}, bwr.dependencies, bwr.devDependencies);
 
