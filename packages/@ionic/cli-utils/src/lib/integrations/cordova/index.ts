@@ -71,12 +71,12 @@ export class Integration extends BaseIntegration {
   }
 
   async getCordovaVersion(): Promise<string | undefined> {
-    return this.e.shell.cmdinfo('cordova', ['-v', '--no-telemetry']);
+    return this.e.shell.cmdinfo('cordova', ['-v', '--no-telemetry', '--no-update-notifier']);
   }
 
   async getCordovaPlatformVersions(): Promise<string> {
     try {
-      const output = await this.e.shell.output('cordova', ['platform', 'ls', '--no-telemetry'], { showCommand: false });
+      const output = await this.e.shell.output('cordova', ['platform', 'ls', '--no-telemetry', '--no-update-notifier'], { showCommand: false });
       const platforms = output
         .replace('Installed platforms:', '')
         .replace(/Available platforms[\s\S]+/, '')
@@ -102,7 +102,7 @@ export class Integration extends BaseIntegration {
     ];
 
     try {
-      const output = await this.e.shell.output('cordova', ['plugin', 'ls', '--no-telemetry'], { showCommand: false });
+      const output = await this.e.shell.output('cordova', ['plugin', 'ls', '--no-telemetry', '--no-update-notifier'], { showCommand: false });
       const pluginRe = /^([a-z-]+)\s+(\d\.\d\.\d).+$/;
       const plugins = output
         .split('\n')
