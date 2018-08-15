@@ -4,6 +4,8 @@ import * as lodash from 'lodash';
 export const CAPACITOR_CONFIG_FILE = 'capacitor.config.json';
 
 export interface CapacitorConfigFile {
+  appId?: string;
+  appName?: string;
   webDir?: string;
   server?: {
     url?: string;

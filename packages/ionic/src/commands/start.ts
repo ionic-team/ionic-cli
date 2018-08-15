@@ -439,7 +439,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       }
 
       if (options['capacitor']) {
-        await runCommand(runinfo, ['integrations', 'enable', 'capacitor', '--quiet']);
+        await runCommand(runinfo, ['integrations', 'enable', 'capacitor', '--quiet', '--', this.schema.name, packageId ? packageId : 'io.ionic.starter']);
       }
 
       await this.project.personalize({ name: this.schema.name, projectId, packageId });

@@ -60,6 +60,7 @@ Integrations can be re-added with the ${chalk.green('--add')} option.
     try {
       if (!integrationConfig || add) {
         await integration.add({
+          enableArgs: options['--'] ? options['--'] : undefined,
           conflictHandler: async (f, stats) => {
             const isDirectory = stats.isDirectory();
             const filename = `${path.basename(f)}${isDirectory ? '/' : ''}`;

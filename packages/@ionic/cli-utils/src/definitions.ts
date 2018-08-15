@@ -266,6 +266,7 @@ export interface IProject {
 }
 
 export interface IIntegrationAddOptions {
+  enableArgs?: string[];
   conflictHandler?(f: string, stats: fs.Stats): Promise<boolean>;
   onFileCreate?(f: string): void;
 }
