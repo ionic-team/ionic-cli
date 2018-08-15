@@ -90,6 +90,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
       inputs[0] = platform.trim();
     }
+
+    await this.checkForPlatformInstallation(inputs[0]);
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

@@ -39,6 +39,8 @@ ${chalk.green('ionic capacitor open')} will do the following:
 
       inputs[0] = platform.trim();
     }
+
+    await this.checkForPlatformInstallation(inputs[0]);
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {

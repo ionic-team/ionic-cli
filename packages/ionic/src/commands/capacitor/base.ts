@@ -1,6 +1,8 @@
 import chalk from 'chalk';
+import * as path from 'path';
 
 import { ERROR_SHELL_COMMAND_NOT_FOUND, ShellCommandError } from '@ionic/cli-framework';
+import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { CommandInstanceInfo } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
@@ -47,6 +49,24 @@ export abstract class CapacitorCommand extends Command {
         await this._runCapacitor(argList);
       } else {
         throw e;
+      }
+    }
+  }
+
+  async checkForPlatformInstallation(platform: string) {
+    if (!this.project) {
+      throw new FatalException('Cannot use Capacitor outside a project directory.');
+    }
+
+    if (platform) {
+      const integrationRoot = this.project.directory;
+      const platformsToCheck = ['android', 'ios', 'electron'];
+      const platforms = (await Promise.all(platformsToCheck.map(async (p): Promise<[string, boolean]> => [p, await pathExists(path.resolve(integrationRoot, p))])))
+        .filter(([, e]) => e)
+        .map(([p]) => p);
+
+      if (!platforms.includes(platform)) {
+        await this._runCapacitor(['add', platform]);
       }
     }
   }

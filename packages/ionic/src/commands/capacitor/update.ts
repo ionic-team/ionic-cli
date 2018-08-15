@@ -28,6 +28,10 @@ ${chalk.green('ionic capacitor update')} will do the following:
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     await this.preRunChecks(runinfo);
+
+    if (inputs[0]) {
+      await this.checkForPlatformInstallation(inputs[0]);
+    }
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
