@@ -123,21 +123,33 @@ export interface GithubBranch {
 }
 
 export interface AppAssociation {
-  repository: GithubRepoAssociation;
+  repository: RepoAssociation;
 }
 
-export interface RepoAssociation {
+export interface RepoAssociationBase {
   html_url: string;
   clone_url: string;
   full_name: string;
 }
 
-export interface GithubRepoAssociation extends RepoAssociation {
-    type: 'github';
-    id: number;
+export interface GithubRepoAssociation extends RepoAssociationBase {
+  type: 'github';
+  id: number;
 }
 
-export type AssociationType = 'github';
+export interface BitbucketCloudRepoAssociation extends RepoAssociationBase {
+  type: 'bitbucket_cloud';
+  id: string;
+}
+
+export interface BitbucketServerRepoAssociation extends RepoAssociationBase {
+  type: 'bitbucket_server';
+  id: number;
+}
+
+export type RepoAssociation = GithubRepoAssociation | BitbucketCloudRepoAssociation | BitbucketServerRepoAssociation;
+
+export type AssociationType = 'github' | 'bitbucket_cloud' | 'bitbucket_server';
 
 export interface App {
   id: string;

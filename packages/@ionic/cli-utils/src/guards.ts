@@ -4,6 +4,8 @@ import {
   APIResponseSuccess,
   App,
   AppAssociation,
+  BitbucketCloudRepoAssociation,
+  BitbucketServerRepoAssociation,
   CommandPreRun,
   CordovaPackageJson,
   ExitCodeException,
@@ -118,10 +120,17 @@ export function isGithubBranchListResponse(r: APIResponse): r is Response<Github
 
 export function isAppAssociation(a: object): a is AppAssociation {
   const association = a as AppAssociation;
-  return association
-    && typeof association.repository === 'object'
-    && typeof association.repository.html_url === 'string'
-    && isGithubRepoAssociation(association.repository);
+
+  return (
+    association &&
+    typeof association.repository === 'object' &&
+    typeof association.repository.html_url === 'string' &&
+    (
+      isGithubRepoAssociation(association.repository) ||
+      isBitbucketCloudRepoAssociation(association.repository) ||
+      isBitbucketServerRepoAssociation(association.repository)
+    )
+  );
 }
 
 export function isAppAssociationResponse(r: APIResponse): r is Response<AppAssociation> {
@@ -134,6 +143,20 @@ export function isGithubRepoAssociation(a: object): a is GithubRepoAssociation {
   const repo = a as GithubRepoAssociation;
   return repo
     && repo.type === 'github'
+    && typeof repo.id === 'number';
+}
+
+export function isBitbucketCloudRepoAssociation(a: object): a is BitbucketCloudRepoAssociation {
+  const repo = a as BitbucketCloudRepoAssociation;
+  return repo
+    && repo.type === 'bitbucket_cloud'
+    && typeof repo.id === 'string';
+}
+
+export function isBitbucketServerRepoAssociation(a: object): a is BitbucketServerRepoAssociation {
+  const repo = a as BitbucketServerRepoAssociation;
+  return repo
+    && repo.type === 'bitbucket_server'
     && typeof repo.id === 'number';
 }
 
