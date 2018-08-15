@@ -1,6 +1,6 @@
 {
   "name": "@ionic/v1-toolkit",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Utility CLI for Ionic 1.x apps, used by Ionic CLI",
   "bin": {
     "ionic-v1": "./bin/ionic-v1"

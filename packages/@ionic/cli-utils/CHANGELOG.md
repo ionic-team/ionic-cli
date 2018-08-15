@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.1.0"></a>
+# [2.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@2.0.6...@ionic/cli-utils@2.1.0) (2018-08-15)
+
+
+### Bug Fixes
+
+* **capacitor:** pass in project/package id during start ([1357c5c](https://github.com/ionic-team/ionic-cli/commit/1357c5c))
+* **cordova:** properly error for multiple IPs with non-interactive mode ([0346adc](https://github.com/ionic-team/ionic-cli/commit/0346adc))
+* **cordova:** remove unwanted allow-navigation entries ([77984e1](https://github.com/ionic-team/ionic-cli/commit/77984e1))
+* **info:** disable update check for cordova cli ([8310ff6](https://github.com/ionic-team/ionic-cli/commit/8310ff6))
+* **info:** remove version.json warning for v1 ([78c3582](https://github.com/ionic-team/ionic-cli/commit/78c3582))
+* **link:** support new repo association types ([1c1e1f1](https://github.com/ionic-team/ionic-cli/commit/1c1e1f1))
+
+
+### Features
+
+* **capacitor:** add run command ([62a2918](https://github.com/ionic-team/ionic-cli/commit/62a2918))
+* **capacitor:** unlock capacitor commands as beta ([2480a01](https://github.com/ionic-team/ionic-cli/commit/2480a01))
+* **info:** print whitelisted cordova plugins ([c266b7b](https://github.com/ionic-team/ionic-cli/commit/c266b7b))
+
+
+
+
 <a name="2.0.6"></a>
 ## [2.0.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@2.0.5...@ionic/cli-utils@2.0.6) (2018-08-09)
 

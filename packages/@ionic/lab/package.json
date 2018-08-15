@@ -1,6 +1,6 @@
 {
   "name": "@ionic/lab",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Ionic Lab utility for developing Ionic apps, used by Ionic CLI",
   "bin": {
     "ionic-lab": "./bin/ionic-lab"

@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.1.0"></a>
+# [4.1.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.0.6...ionic@4.1.0) (2018-08-15)
+
+
+### Bug Fixes
+
+* **capacitor:** pass in project/package id during start ([1357c5c](https://github.com/ionic-team/ionic-cli/commit/1357c5c))
+* **cordova:** properly error for multiple IPs with non-interactive mode ([0346adc](https://github.com/ionic-team/ionic-cli/commit/0346adc))
+
+
+### Features
+
+* **capacitor:** add run command ([62a2918](https://github.com/ionic-team/ionic-cli/commit/62a2918))
+* **capacitor:** document platform argument, prompt when required ([2a312ab](https://github.com/ionic-team/ionic-cli/commit/2a312ab))
+* **capacitor:** install platform if missing ([9e29235](https://github.com/ionic-team/ionic-cli/commit/9e29235))
+* **capacitor:** prompt for supported platforms when adding ([54c7d55](https://github.com/ionic-team/ionic-cli/commit/54c7d55))
+* **capacitor:** unlock capacitor commands as beta ([2480a01](https://github.com/ionic-team/ionic-cli/commit/2480a01))
+
+
+
+
 <a name="4.0.6"></a>
 ## [4.0.6](https://github.com/ionic-team/ionic-cli/compare/ionic@4.0.5...ionic@4.0.6) (2018-08-09)
 
