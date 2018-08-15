@@ -86,18 +86,26 @@ The Ionic CLI is organized into a monorepo. Here are the packages:
 
 #### Running Dev CLI
 
-Switch to dev CLI:
+To switch between dev CLI and stable CLI, you can use a Node version manager
+such as [nvm](https://github.com/creationix/nvm) and switch between
+environments, e.g.
 
 ```bash
-$ npm uninstall -g ionic
-$ npm run link
+nvm install v8.11.3
+nvm alias cli-local v8.11.3
 ```
 
-Switch back to stable CLI:
+You can even set up an alias in your terminal that sets `IONIC_CONFIG_DIRECTORY`
+to have seperate configuration environments.
 
 ```bash
-$ npm run unlink
-$ npm install -g ionic
+alias cli-local="nvm use cli-local && export IONIC_CONFIG_DIRECTORY=$HOME/.ionic/cli-local"
+```
+
+When the Node environment is created, create a symlink to `packages/ionic/bin/ionic` within `$NVM_BIN`:
+
+```bash
+ln -s $(pwd)/packages/ionic/bin/ionic $NVM_BIN
 ```
 
 ##### Debugging
