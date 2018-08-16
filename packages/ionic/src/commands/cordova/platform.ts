@@ -1,15 +1,8 @@
 import chalk from 'chalk';
-
 import * as lodash from 'lodash';
 
-import { contains, separateArgv, validate, validators } from '@ionic/cli-framework';
-import {
-  CommandInstanceInfo,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMetadata,
-  CommandPreRun,
-} from '@ionic/cli-utils';
+import { contains, validate, validators } from '@ionic/cli-framework';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
 
@@ -100,17 +93,15 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
 
     const cordovaArgs = filterArgumentsForCordova(metadata, options);
 
-    if ((action === 'add' || action === 'remove') && lodash.intersection(cordovaArgs, ['--save', '--nosave', '--no-save']).length === 0) {
+    if (
+      (action === 'add' || action === 'remove') &&
+      (options['save'] !== false && !options['nosave']) &&
+      lodash.intersection(options['--'] || [], ['--save', '--nosave', '--no-save']).length === 0
+    ) {
       cordovaArgs.push('--save');
     }
 
-    if (action === 'add') {
-      const { installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
-      const [ , extraArgs ] = separateArgv(inputs);
-      await installPlatform(this.env, platformName, cordova.root, extraArgs);
-    } else {
-      await this.runCordova(cordovaArgs, {});
-    }
+    await this.runCordova(cordovaArgs, {});
 
     const isLoggedIn = this.env.session.isLoggedIn();
 

@@ -21,38 +21,6 @@ describe('@ionic/cli-utils', () => {
 
     });
 
-    describe('installPlatform', () => {
-
-      const mockRun = jest.fn();
-      const mockRunWithError = jest.fn(() => {
-        throw new Error('Platform fakePlatform already added');
-      });
-      const env = jest.fn(run => {
-        return {
-          shell: { run },
-          log: {
-            warn: jest.fn(),
-          },
-        };
-      });
-
-      it('should run the process in the cwd', async () => {
-        await project.installPlatform(new env(mockRun), 'fakePlatform', 'fakeCwd');
-        try {
-          await project.installPlatform(new env(mockRunWithError), 'fakePlatform', 'fakeCwd');
-        } catch (e) {
-          // ignore
-        }
-        expect(mockRun.mock.calls[0][2]).toEqual(jasmine.objectContaining({
-          cwd: 'fakeCwd',
-        }));
-        expect(mockRunWithError.mock.calls[1][2]).toEqual(jasmine.objectContaining({
-          cwd: 'fakeCwd',
-        }));
-      });
-
-    });
-
   });
 
 });

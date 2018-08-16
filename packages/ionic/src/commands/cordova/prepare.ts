@@ -57,35 +57,19 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
-
     const [ platform ] = inputs;
 
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic cordova prepare')} outside a project directory.`);
     }
 
-    const cordova = await this.project.getIntegration('cordova');
-    const platforms = await getPlatforms(cordova.root);
-
-    if (platform) {
-      if (!platforms.includes(platform)) {
-        const confirm = await this.env.prompt({
-          message: `Platform ${chalk.green(platform)} is not installed! Would you like to install it?`,
-          type: 'confirm',
-          name: 'confirm',
-        });
-
-        if (confirm) {
-          await installPlatform(this.env, platform, cordova.root);
-        } else {
-          throw new FatalException(
-            `Can't prepare for ${chalk.green(platform)} unless the platform is installed.\n` +
-            `Did you mean just ${chalk.green('ionic cordova prepare')}?\n`
-          );
-        }
-      }
-    }
+    await this.checkForPlatformInstallation(platform, {
+      promptToInstall: true,
+      promptToInstallRefusalMsg: (
+        `Can't prepare for ${chalk.green(platform)} unless the platform is installed.\n` +
+        `Did you mean just ${chalk.green('ionic cordova prepare')}?\n`
+      ),
+    });
 
     const metadata = await this.getMetadata();
 

@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import * as lodash from 'lodash';
 
 import { OptionGroup, contains, validate, validators } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
@@ -72,13 +73,18 @@ Like running ${chalk.green('cordova plugin')} directly, but provides friendly ch
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const [ action ] = inputs;
     const metadata = await this.getMetadata();
-    const optionList = filterArgumentsForCordova(metadata, options);
+    const cordovaArgs = filterArgumentsForCordova(metadata, options);
 
-    if (!optionList.includes('--save')) {
-      optionList.push('--save');
+    if (
+      (action === 'add' || action === 'remove') &&
+      (options['save'] !== false && !options['nosave']) &&
+      lodash.intersection(options['--'] || [], ['--save', '--nosave', '--no-save']).length === 0
+    ) {
+      cordovaArgs.push('--save');
     }
 
-    await this.runCordova(optionList, {});
+    await this.runCordova(cordovaArgs, {});
   }
 }

@@ -19,6 +19,12 @@ export function filterArgumentsForCordova(metadata: CommandMetadata, options: Co
       type: Boolean,
       groups: ['cordova'],
     },
+    {
+      name: 'nosave',
+      summary: '',
+      type: Boolean,
+      groups: ['cordova'],
+    },
   ];
 
   m.options.push(...globalCordovaOpts);

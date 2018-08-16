@@ -82,7 +82,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
-    const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
+    const { getPlatforms } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
     const { RESOURCES, addResourcesToConfigXml, createImgDestinationDirectories, findMostSpecificSourceImage, getImageResources, getSourceImages, transformResourceImage, uploadSourceImage } = await import('@ionic/cli-utils/lib/integrations/cordova/resources');
 
     if (!this.project) {
@@ -93,45 +93,29 @@ This command uses Ionic servers, so we require you to be logged into your free I
     const { force } = options;
 
     const tasks = this.createTaskChain();
-    const conf = await loadConfigXml({ project: this.project });
 
     // if no resource filters are passed as arguments assume to use all.
     let resourceTypes = AVAILABLE_RESOURCE_TYPES.filter((type, index, array) => options[type]);
     resourceTypes = resourceTypes.length ? resourceTypes : AVAILABLE_RESOURCE_TYPES;
 
-    tasks.next(`Collecting resource configuration and source images`);
     debug(`resourceJsonStructure=${Object.keys(RESOURCES).length}`);
 
-    // check that at least one platform has been installed
+    await this.checkForPlatformInstallation(platform, { promptToInstall: true });
+
     const integration = await this.project.getIntegration('cordova');
-    let platforms = await getPlatforms(integration.root);
-    debug(`platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
-
-    if (platform && !platforms.includes(platform)) {
-      tasks.end();
-      const confirm = await this.env.prompt({
-        message: `Platform ${chalk.green(platform)} not detected. Would you like to install it?`,
-        type: 'confirm',
-        name: 'confirm',
-      });
-
-      if (confirm) {
-        await installPlatform(this.env, platform, integration.root);
-        await conf.reload();
-        platforms = await getPlatforms(integration.root);
-        debug(`platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
-      } else {
-        throw new FatalException(`Platform ${chalk.green(platform)} not installed.`);
-      }
-    }
-
+    const conf = await loadConfigXml({ project: this.project });
+    const platforms = await getPlatforms(integration.root);
     const buildPlatforms = Object.keys(RESOURCES).filter(p => platforms.includes(p));
+
+    debug(`platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
     debug(`buildPlatforms=${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
+
     if (buildPlatforms.length === 0) {
-      tasks.end();
       throw new FatalException(`No platforms detected. Please run: ${chalk.green('ionic cordova platform add')}`);
     }
     debug(`${chalk.cyan('getProjectPlatforms')} completed: ${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
+
+    tasks.next(`Collecting resource configuration and source images`);
 
     const orientation = conf.getPreference('Orientation') || 'default';
 

@@ -137,19 +137,29 @@ export abstract class CordovaCommand extends Command {
     }
   }
 
-  async checkForPlatformInstallation(runPlatform: string) {
+  async checkForPlatformInstallation(platform: string, { promptToInstall = false, promptToInstallRefusalMsg = `Cannot run this command for the ${chalk.green(platform)} platform unless it is installed.` }: { promptToInstall?: boolean; promptToInstallRefusalMsg?: string; } = {}): Promise<void> {
     if (!this.project) {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }
 
-    if (runPlatform) {
-      const { getPlatforms, installPlatform } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
+    if (platform) {
+      const { getPlatforms } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
 
       const cordova = await this.project.getIntegration('cordova');
       const platforms = await getPlatforms(cordova.root);
 
-      if (!platforms.includes(runPlatform)) {
-        await installPlatform(this.env, runPlatform, cordova.root);
+      if (!platforms.includes(platform)) {
+        const confirm = promptToInstall ? await this.env.prompt({
+          message: `Platform ${chalk.green(platform)} is not installed! Would you like to install it?`,
+          type: 'confirm',
+          name: 'confirm',
+        }) : true;
+
+        if (confirm) {
+          await this.runCordova(['platform', 'add', platform, '--save']);
+        } else {
+          throw new FatalException(promptToInstallRefusalMsg);
+        }
       }
     }
   }
