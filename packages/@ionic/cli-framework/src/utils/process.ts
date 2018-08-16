@@ -12,7 +12,7 @@ export function killProcessTree(pid: number, signal: string | number = 'SIGTERM'
   return new Promise((resolve, reject) => {
     kill(pid, signal, err => {
       if (err) {
-        debug('error while killing process tree for %d: %o', pid, err);
+        debug('error while killing process tree for %d: %O', pid, err);
         return reject(err);
       }
 
@@ -111,8 +111,12 @@ const beforeExitHandlerWrapper = (signal: string) => lodash.once(async () => {
   debug(`onBeforeExit handler: ${signal} received`);
   debug(`onBeforeExit handler: running ${exitQueue.length} queued functions`);
 
-  for (const fn of exitQueue) {
-    await fn();
+  for (const [ i, fn ] of exitQueue.entries()) {
+    try {
+      await fn();
+    } catch (e) {
+      debug('Error from function %d in exit queue: %O', i, e);
+    }
   }
 
   debug(`onBeforeExit handler: exiting (exit code ${process.exitCode ? process.exitCode : 0})`);
