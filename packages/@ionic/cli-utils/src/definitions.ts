@@ -332,13 +332,13 @@ export interface IShellSpawnOptions extends SpawnOptions {
 
 export interface IShellOutputOptions extends IShellSpawnOptions {
   fatalOnError?: boolean;
+  fatalOnNotFound?: boolean;
   showError?: boolean;
 }
 
 export interface IShellRunOptions extends IShellOutputOptions {
   stream?: NodeJS.WritableStream;
   killOnExit?: boolean;
-  fatalOnNotFound?: boolean;
   truncateErrorOutput?: number;
 }
 

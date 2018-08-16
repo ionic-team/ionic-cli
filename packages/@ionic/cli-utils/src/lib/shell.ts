@@ -120,7 +120,7 @@ export class Shell implements IShell {
     }
   }
 
-  async output(command: string, args: string[], { fatalOnError = true, showError = true, showCommand = false, ...crossSpawnOptions }: IShellOutputOptions): Promise<string> {
+  async output(command: string, args: string[], { fatalOnNotFound = true, fatalOnError = true, showError = true, showCommand = false, ...crossSpawnOptions }: IShellOutputOptions): Promise<string> {
     const cmd = new ShellCommand(command, args, crossSpawnOptions);
 
     const fullCmd = cmd.bashify();
@@ -134,7 +134,11 @@ export class Shell implements IShell {
       return await cmd.output();
     } catch (e) {
       if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
-        throw new FatalException(`Command not found: ${chalk.green(command)}`, 127);
+        if (fatalOnNotFound) {
+          throw new FatalException(`Command not found: ${chalk.green(command)}`, 127);
+        } else {
+          throw e;
+        }
       }
 
       if (!isExitCodeException(e)) {
