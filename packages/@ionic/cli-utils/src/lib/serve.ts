@@ -540,7 +540,10 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
       onBeforeExit(async () => {
         p.removeListener('close', closeHandler);
-        await killProcessTree(p.pid);
+
+        if (p.pid) {
+          await killProcessTree(p.pid);
+        }
       });
 
       const ws = this.createLoggerStream();

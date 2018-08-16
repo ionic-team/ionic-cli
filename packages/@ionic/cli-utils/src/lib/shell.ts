@@ -69,7 +69,11 @@ export class Shell implements IShell {
       }
 
       if (killOnExit) {
-        onBeforeExit(async () => killProcessTree(promise.p.pid));
+        onBeforeExit(async () => {
+          if (promise.p.pid) {
+            await killProcessTree(promise.p.pid);
+          }
+        });
       }
 
       await promise;
