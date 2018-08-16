@@ -8,7 +8,7 @@ export async function getAndroidSdkToolsVersion(): Promise<string | undefined> {
   if (androidHome) {
     try {
       const f = await fsReadFile(path.join(androidHome, 'tools', 'source.properties'), { encoding: 'utf8' });
-      return parseSDKVersion(f);
+      return `${await parseSDKVersion(f)} (${androidHome})`;
     } catch (e) {
       if (e.code !== 'ENOENT') {
         throw e;

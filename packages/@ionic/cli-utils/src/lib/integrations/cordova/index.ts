@@ -53,8 +53,6 @@ export class Integration extends BaseIntegration {
       info.push({ group: 'system', key: 'Android SDK Tools', value: androidSdkToolsVersion });
     }
 
-    info.push({ group: 'environment', key: 'ANDROID_HOME', value: process.env.ANDROID_HOME || 'not set' });
-
     return info;
   }
 
