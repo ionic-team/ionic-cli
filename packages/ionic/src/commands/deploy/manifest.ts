@@ -42,7 +42,7 @@ export class DeployManifestCommand extends Command {
 
     const items = await Promise.all(files.map(([f, stat]) => this.getFileAndSizeAndHashForFile(buildDir, f, stat)));
 
-    return items;
+    return items.filter(item => item.href !== 'pro-manifest.json');
   }
 
   private async getFileAndSizeAndHashForFile(buildDir: string, file: string, stat: fs.Stats): Promise<DeployManifestItem> {
