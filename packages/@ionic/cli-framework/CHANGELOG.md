@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.6"></a>
+## [1.0.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.0.5...@ionic/cli-framework@1.0.6) (2018-08-20)
+
+
+### Bug Fixes
+
+* **process:** catch and log errors in exit queue ([f3cd886](https://github.com/ionic-team/ionic-cli/commit/f3cd886))
+
+
+
+
 <a name="1.0.5"></a>
 ## [1.0.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.0.4...@ionic/cli-framework@1.0.5) (2018-08-09)
 

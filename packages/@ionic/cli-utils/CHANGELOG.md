@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.2.0"></a>
+# [2.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@2.1.0...@ionic/cli-utils@2.2.0) (2018-08-20)
+
+
+### Bug Fixes
+
+* **cordova:** respect --nosave for platform/plugin add ([eb4934b](https://github.com/ionic-team/ionic-cli/commit/eb4934b))
+* **shell:** allow output() to fail with original error ([e6a5bff](https://github.com/ionic-team/ionic-cli/commit/e6a5bff))
+* **shell:** check if process is still alive before sending signal ([0ff1e48](https://github.com/ionic-team/ionic-cli/commit/0ff1e48))
+
+
+### Features
+
+* **info:** fall back to ANDROID_SDK_ROOT ([e9b0f29](https://github.com/ionic-team/ionic-cli/commit/e9b0f29))
+* **info:** move SDK root inline ([79defc5](https://github.com/ionic-team/ionic-cli/commit/79defc5))
+
+
+
+
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@2.0.6...@ionic/cli-utils@2.1.0) (2018-08-15)
 

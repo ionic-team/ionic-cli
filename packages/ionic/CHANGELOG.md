@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.1.1"></a>
+## [4.1.1](https://github.com/ionic-team/ionic-cli/compare/ionic@4.1.0...ionic@4.1.1) (2018-08-20)
+
+
+### Bug Fixes
+
+* **cordova:** respect --nosave for platform/plugin add ([eb4934b](https://github.com/ionic-team/ionic-cli/commit/eb4934b))
+* **deploy:** exclude any existing pro-manifest.json files ([#3527](https://github.com/ionic-team/ionic-cli/issues/3527)) ([d03057d](https://github.com/ionic-team/ionic-cli/commit/d03057d))
+
+
+
+
 <a name="4.1.0"></a>
 # [4.1.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.0.6...ionic@4.1.0) (2018-08-15)
 

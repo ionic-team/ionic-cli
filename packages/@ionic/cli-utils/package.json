@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-utils",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Ionic CLI Utils",
   "homepage": "https://ionicframework.com",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com)",
@@ -46,7 +46,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ionic/cli-framework": "1.0.5",
+    "@ionic/cli-framework": "1.0.6",
     "@ionic/discover": "1.0.4",
     "chalk": "^2.3.0",
     "debug": "^3.1.0",
