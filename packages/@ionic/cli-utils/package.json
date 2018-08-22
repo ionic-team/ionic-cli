@@ -48,6 +48,7 @@
   "dependencies": {
     "@ionic/cli-framework": "1.0.6",
     "@ionic/discover": "1.0.4",
+    "@ionic/utils-network": "0.0.0",
     "chalk": "^2.3.0",
     "debug": "^3.1.0",
     "diff": "^3.4.0",
@@ -67,7 +68,6 @@
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "@ionic/utils-network": "0.0.1",
     "@types/clean-css": "^3.4.30",
     "@types/debug": "0.0.30",
     "@types/diff": "^3.2.2",
