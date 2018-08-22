@@ -1,4 +1,4 @@
-import { ERROR_NETWORK_ADDRESS_NOT_AVAIL, findClosestOpenPort } from '@ionic/cli-framework/utils/network';
+import { findClosestOpenPort } from '@ionic/utils-network';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
@@ -43,7 +43,7 @@ export async function findOpenIonicPorts(address: string, ports: Ports): Promise
 
     return { port, livereloadPort, notificationPort };
   } catch (e) {
-    if (e !== ERROR_NETWORK_ADDRESS_NOT_AVAIL) {
+    if (e.code !== 'EADDRNOTAVAIL') {
       throw e;
     }
 

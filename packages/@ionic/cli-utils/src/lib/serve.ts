@@ -1,8 +1,8 @@
-import { BaseError, LOGGER_LEVELS, NetworkInterface, OptionGroup, PromptModule, createPrefixedFormatter } from '@ionic/cli-framework';
+import { BaseError, LOGGER_LEVELS, OptionGroup, PromptModule, createPrefixedFormatter } from '@ionic/cli-framework';
 import { fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
-import { findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/cli-framework/utils/network';
 import { killProcessTree, onBeforeExit, processExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
+import { NetworkInterface, findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import { EventEmitter } from 'events';

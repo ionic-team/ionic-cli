@@ -1,10 +1,6 @@
-import * as os from 'os';
-
 import { Opts as ParseArgsOptions, ParsedArgs } from 'minimist';
 
 import * as ζobject from './utils/object';
-
-export type NetworkInterface = { device: string; } & os.NetworkInterfaceInfo;
 
 export type ParsedArg = string | boolean | null | undefined | string[];
 export type Validator = (input?: string, key?: string) => true | string;

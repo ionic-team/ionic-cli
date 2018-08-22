@@ -1,0 +1,66 @@
+{
+  "name": "@ionic/utils-network",
+  "version": "0.0.1",
+  "description": "Network utils for Node",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "homepage": "https://ionicframework.com/",
+  "author": "Ionic Team <hi@ionic.io> (https://ionic.io)",
+  "license": "MIT",
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ionic-team/ionic-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ionic-team/ionic-cli/issues"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "lint": "tslint --config tslint.js --project tsconfig.json",
+    "build": "npm run clean && tsc",
+    "watch": "tsc -w --preserveWatchOutput",
+    "test": "jest",
+    "prepublishOnly": "npm run build",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "linters": {
+      "*.{ts,tsx}": "npm run lint"
+    },
+    "ignore": [
+      "**/__tests__/*.{ts,tsx}"
+    ]
+  },
+  "dependencies": {
+    "debug": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/debug": "0.0.30",
+    "@types/node": "^6.0.101",
+    "jest": "^23.0.1",
+    "jest-cli": "^23.0.1",
+    "lint-staged": "^7.2.0",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^23.0.0",
+    "tslint": "^5.9.1",
+    "typescript": "~3.0.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
+  }
+}

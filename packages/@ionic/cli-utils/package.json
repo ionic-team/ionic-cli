@@ -67,6 +67,7 @@
     "uuid": "^3.2.1"
   },
   "devDependencies": {
+    "@ionic/utils-network": "0.0.1",
     "@types/clean-css": "^3.4.30",
     "@types/debug": "0.0.30",
     "@types/diff": "^3.2.2",

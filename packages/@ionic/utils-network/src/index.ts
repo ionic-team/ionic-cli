@@ -3,13 +3,11 @@ import * as os from 'os';
 
 import * as Debug from 'debug';
 
-import { NetworkInterface } from '../definitions';
-
-const debug = Debug('ionic:cli-framework:utils:network');
-
-export const ERROR_NETWORK_ADDRESS_NOT_AVAIL = 'NETWORK_ADDRESS_NOT_AVAIL';
+const debug = Debug('ionic:utils-network');
 
 export const DEFAULT_ADDRESSES: ReadonlyArray<string> = getDefaultAddresses();
+
+export type NetworkInterface = { device: string; } & os.NetworkInterfaceInfo;
 
 function getDefaultAddresses(): string[] {
   const addresses: string[] = ['0.0.0.0'];
@@ -96,9 +94,7 @@ export function isPortAvailableForHost(host: string, port: number): Promise<bool
   return new Promise<boolean>((resolve, reject) => {
     const tester = net.createServer()
       .once('error', (err: any) => {
-        if (err.code === 'EADDRNOTAVAIL') {
-          reject(ERROR_NETWORK_ADDRESS_NOT_AVAIL);
-        } else if (err.code === 'EADDRINUSE') {
+        if (err.code === 'EADDRINUSE') {
           resolve(false); // host/port in use
         } else {
           reject(err);
