@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { CommandGroup, OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
-import { findClosestOpenPort } from '@ionic/cli-framework/utils/network';
+import { findClosestOpenPort } from '@ionic/utils-network';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
 import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';

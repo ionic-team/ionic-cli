@@ -1,5 +1,6 @@
 import * as ζframework from '@ionic/cli-framework';
 import { ShellCommandOptions } from '@ionic/cli-framework/utils/shell';
+import { NetworkInterface } from '@ionic/utils-network';
 import { ChildProcess, SpawnOptions } from 'child_process';
 import * as fs from 'fs';
 import * as ζsuperagent from 'superagent';
@@ -604,7 +605,7 @@ export interface ServeDetails {
   localAddress: string;
   externalAddress: string;
   port: number;
-  externalNetworkInterfaces: ζframework.NetworkInterface[];
+  externalNetworkInterfaces: NetworkInterface[];
   externallyAccessible: boolean;
 }
 
