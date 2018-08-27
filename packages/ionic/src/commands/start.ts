@@ -6,7 +6,7 @@ import * as lodash from 'lodash';
 
 import { OptionGroup, validators } from '@ionic/cli-framework';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
-import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
+import { copyDirectory, fsMkdir, fsReadDir, fsReadFile, fsUnlink, fsWriteFile, pathExists, removeDirectory } from '@ionic/cli-framework/utils/fs';
 import { isValidPackageName } from '@ionic/cli-framework/utils/node';
 import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
 
@@ -149,6 +149,30 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
           summary: `Specify a tag to use for the starters (e.g. ${['latest', 'testing', 'next'].map(t => chalk.green(t)).join(', ')})`,
           default: 'latest',
           groups: [OptionGroup.Hidden],
+        },
+        {
+          name: 'no-karma',
+          summary: 'no-karma',
+          type: Boolean,
+          default: false,
+        },
+        {
+          name: 'theme',
+          summary: 'theme',
+          type: String,
+          default: 'default',
+        },
+        {
+          name: 'no-lazy-loading',
+          summary: 'no-lazy-loading',
+          type: Boolean,
+          default: false,
+        },
+        {
+          name: 'feature-structure',
+          summary: 'feature-structure',
+          type: String,
+          default: 'default',
         },
       ],
     };
@@ -405,6 +429,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     } else {
       const starterTemplate = await this.findStarterTemplate(this.schema.template, this.schema.type, tag);
       await this.downloadStarterTemplate(projectDir, starterTemplate);
+
+      if (this.schema.type === 'angular') {
+        const changeTemplate = new ChangeDownloadStarterTemplate(projectDir, options);
+        await changeTemplate.doChange();
+      }
     }
 
     // start is weird, once the project directory is created, it becomes a
@@ -655,5 +684,83 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
 
     this.env.log.info(`${chalk.bold('Next Steps')}:\n${steps.map(s => `- ${s}`).join('\n')}`);
+  }
+}
+
+export class ChangeDownloadStarterTemplate {
+
+  constructor(public projectDir: string, public options: CommandLineOptions) {
+  }
+
+  async doChange() {
+    await this.deleteKarma(this.options['no-karma'] as boolean);
+    await this.changeTheme(this.options['theme'] as string);
+    await this.deleteLazyLoading(this.options['no-lazy-loading'] as boolean);
+    await this.changeStructure(this.options['feature-structure'] as string);
+  }
+
+  private async deleteKarma(option: boolean) {
+    if (!option) {
+      return;
+    }
+  }
+
+  private async changeTheme(option: string) {
+    if (option === 'default') {
+      return;
+    }
+  }
+
+  private async deleteLazyLoading(option: boolean) {
+    if (!option) {
+      return;
+    }
+  }
+
+  private async changeStructure(option: string) {
+    if (option === 'default') {
+      return;
+    }
+
+    /***
+     * children : does not correspond
+     * loadChildren : 1 depth
+     *  - loadChildren call children: 1 depth
+     */
+    if (option === 'ionic-angular') {
+      const appHome = this.projectDir + '/src/app';
+      const routerModule = await fsReadFile(appHome + '/app-routing.module.ts', { encoding: 'UTF-8' });
+      const loadChildren = routerModule.match(/loadChildren: \'(.+)\#/g);
+      if (loadChildren === null) {
+        return;
+      }
+
+      await fsMkdir(appHome + '/pages', 0o777);
+      loadChildren.forEach(async filepath => {
+        const folder = filepath.match(/loadChildren: \'\.\/(.+)\//);
+        if (folder !== null) {
+          await copyDirectory(appHome + '/' + folder[1], appHome + '/pages/' + folder[1]);
+          await removeDirectory(appHome + '/' + folder[1]);
+
+          // search child-router
+          const fileInFolder = await fsReadDir(appHome + '/pages/' + folder[1]);
+          const routerFile = fileInFolder.filter(RegExp.prototype.test, /router\.module\.ts/);
+          if (routerFile[0]) {
+            const childRouterModule = await fsReadFile(appHome + '/pages/' + folder[1] + '/' + routerFile[0], { encoding: 'UTF-8' });
+
+            let pageDir;
+            const regexp = /import {.*} from \'\.\.\/(.*)\/.*\.page\'/g;
+
+            // tslint:disable-next-line
+            while ((pageDir = regexp.exec(childRouterModule)) !== null) {
+              await copyDirectory(appHome + '/' + pageDir[1], appHome + '/pages/' + pageDir[1]);
+              await removeDirectory(appHome + '/' + pageDir[1]);
+            }
+          }
+        }
+      });
+      const newModule = routerModule.replace(/loadChildren: \'\./g, 'loadChildren: \'./pages');
+      await fsWriteFile(appHome + '/app-routing.module.ts', newModule, { encoding: 'UTF-8' });
+    }
   }
 }
