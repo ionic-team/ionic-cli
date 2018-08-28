@@ -6,5 +6,9 @@
   "exclude": [
     "node_modules",
     "src/**/__tests__/*.ts"
-  ]
+  ],
+  // Fix: https://github.com/angular/angular-cli/issues/11992
+  "compilerOptions": {
+    "skipLibCheck": true
+  }
 }
