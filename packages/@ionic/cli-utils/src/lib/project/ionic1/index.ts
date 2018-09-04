@@ -1,5 +1,5 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { fsReadJsonFile } from '@ionic/utils-fs';
+import { readJsonFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
@@ -27,7 +27,7 @@ function isBowerJson(obj: any): obj is BowerJson {
 }
 
 async function readBowerJsonFile(p: string): Promise<BowerJson> {
-  const bowerJson = await fsReadJsonFile(p);
+  const bowerJson = await readJsonFile(p);
 
   if (!isBowerJson(bowerJson)) {
     throw ERROR_INVALID_BOWER_JSON;
@@ -83,7 +83,7 @@ export class Ionic1Project extends Project {
 
     try {
       try {
-        const ionicVersionJson = await fsReadJsonFile(ionicVersionFilePath);
+        const ionicVersionJson = await readJsonFile(ionicVersionFilePath);
         return ionicVersionJson['version'];
       } catch (e) {
         const bwr = await this.loadBowerJson();

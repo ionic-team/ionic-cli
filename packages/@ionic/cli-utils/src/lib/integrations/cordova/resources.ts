@@ -1,6 +1,6 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { WritableStreamBuffer } from '@ionic/cli-framework/utils/streams';
-import { fsMkdirp, getFileChecksums, readDir, tmpfilepath } from '@ionic/utils-fs';
+import { getFileChecksums, mkdirp, readDir, tmpfilepath } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as fs from 'fs';
@@ -54,7 +54,7 @@ export async function createImgDestinationDirectories(imgResources: ImageResourc
   const buildDirPromises = imgResources
     .map(img => path.dirname(img.dest))
     .filter((dir, i, dirNames) => dirNames.indexOf(dir) === i)
-    .map(dir => fsMkdirp(dir));
+    .map(dir => mkdirp(dir));
 
   return Promise.all(buildDirPromises);
 }

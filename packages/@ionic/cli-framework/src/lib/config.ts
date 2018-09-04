@@ -1,4 +1,4 @@
-import { makeDir, writeFileAtomicSync } from '@ionic/utils-fs';
+import { mkdirpSync, writeFileAtomicSync } from '@ionic/utils-fs';
 import * as fs from 'fs';
 import * as lodash from 'lodash';
 import * as path from 'path';
@@ -50,7 +50,7 @@ export abstract class BaseConfig<T extends object> {
   set c(value: T) {
     const v = this.pathPrefix.length === 0 ? value : lodash.set(this.file, [...this.pathPrefix], value);
 
-    makeDir.sync(path.dirname(this.p));
+    mkdirpSync(path.dirname(this.p));
     writeFileAtomicSync(this.p, JSON.stringify(v, undefined, 2));
   }
 

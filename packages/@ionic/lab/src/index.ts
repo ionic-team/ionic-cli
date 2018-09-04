@@ -1,5 +1,5 @@
 import { Command, CommandLineInputs, CommandLineOptions, CommandMap, CommandMapDefault, Namespace, execute, validators } from '@ionic/cli-framework';
-import { fsReadFile } from '@ionic/utils-fs';
+import { readFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as express from 'express';
 import * as http from 'http';
@@ -102,7 +102,7 @@ class DefaultCommand extends Command {
 
   async readPem(p: string): Promise<string> {
     try {
-      return await fsReadFile(p, { encoding: 'utf8' });
+      return await readFile(p, { encoding: 'utf8' });
     } catch (e) {
       process.stderr.write(String(e.stack ? e.stack : e) + '\n');
       throw new Error(`Error encountered with ${p}`);

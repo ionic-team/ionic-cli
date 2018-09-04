@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { fsReadFile, fsWriteFile } from '@ionic/utils-fs';
+import { readFile, writeFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as et from 'elementtree';
@@ -53,7 +53,7 @@ export class ConfigXml {
   }
 
   async reload(): Promise<void> {
-    const configFileContents = await fsReadFile(this.filePath, { encoding: 'utf8' });
+    const configFileContents = await readFile(this.filePath, { encoding: 'utf8' });
 
     if (!configFileContents) {
       throw new Error(`Cannot load empty config.xml file.`);
@@ -70,7 +70,7 @@ export class ConfigXml {
   async save(): Promise<void> {
     if (!this.saving) {
       this.saving = true;
-      await fsWriteFile(this.filePath, this.write(), { encoding: 'utf8' });
+      await writeFile(this.filePath, this.write(), { encoding: 'utf8' });
       this.saving = false;
     }
   }

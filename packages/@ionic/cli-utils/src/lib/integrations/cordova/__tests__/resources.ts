@@ -72,12 +72,12 @@ describe('@ionic/cli-utils', () => {
         }));
 
       it('should create directories that required for all of the images', async () => {
-        spyOn(fsSpy, 'fsMkdirp').and.callFake((dir) => Promise.resolve(dir));
+        spyOn(fsSpy, 'mkdirp').and.callFake((dir) => Promise.resolve(dir));
         await resources.createImgDestinationDirectories(imgResources);
 
-        expect(fsSpy.fsMkdirp.calls.count()).toEqual(2);
-        expect(fsSpy.fsMkdirp.calls.argsFor(0)).toEqual([path.normalize('/resourcesDir/ios/splash')]);
-        expect(fsSpy.fsMkdirp.calls.argsFor(1)).toEqual([path.normalize('/resourcesDir/android/splash')]);
+        expect(fsSpy.mkdirp.calls.count()).toEqual(2);
+        expect(fsSpy.mkdirp.calls.argsFor(0)).toEqual([path.normalize('/resourcesDir/ios/splash')]);
+        expect(fsSpy.mkdirp.calls.argsFor(1)).toEqual([path.normalize('/resourcesDir/android/splash')]);
       });
     });
 

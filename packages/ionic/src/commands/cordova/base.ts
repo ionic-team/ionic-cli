@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import { ERROR_SHELL_COMMAND_NOT_FOUND, OptionGroup, ShellCommandError } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { fsMkdir, pathExists } from '@ionic/utils-fs';
+import { mkdirp, pathExists } from '@ionic/utils-fs';
 
 import { CommandInstanceInfo, CommandMetadataOption, IShellRunOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
@@ -99,7 +99,7 @@ export abstract class CordovaCommand extends Command {
         const tasks = this.createTaskChain();
 
         tasks.next(`Creating ${chalk.bold(prettyPath(wwwPath))} directory for you`);
-        await fsMkdir(wwwPath, 0o777);
+        await mkdirp(wwwPath, 0o777);
         tasks.end();
       }
     }

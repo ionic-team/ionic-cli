@@ -1,4 +1,4 @@
-import { compilePaths, fsReadJsonFile } from '@ionic/utils-fs';
+import { compilePaths, readJsonFile } from '@ionic/utils-fs';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -16,7 +16,7 @@ export function isValidPackageName(name: string): boolean {
 }
 
 export async function readPackageJsonFile(p: string): Promise<PackageJson> {
-  const packageJson = await fsReadJsonFile(p);
+  const packageJson = await readJsonFile(p);
 
   if (!isPackageJson(packageJson)) {
     throw ERROR_INVALID_PACKAGE_JSON;

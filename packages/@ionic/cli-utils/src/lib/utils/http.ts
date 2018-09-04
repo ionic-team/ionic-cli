@@ -3,7 +3,7 @@ import * as Debug from 'debug';
 import * as ζsuperagent from 'superagent';
 
 import { conform } from '@ionic/cli-framework/utils/array';
-import { fsReadFile } from '@ionic/utils-fs';
+import { readFile } from '@ionic/utils-fs';
 
 import { CreateRequestOptions, HttpMethod } from '../../definitions';
 
@@ -53,15 +53,15 @@ export async function createRequest(method: HttpMethod, url: string, { proxy, ss
     const keyfiles = conform(ssl.keyfile);
 
     if (cafiles.length > 0) {
-      req.ca(await Promise.all(cafiles.map(p => fsReadFile(p, { encoding: 'utf8' }))));
+      req.ca(await Promise.all(cafiles.map(p => readFile(p, { encoding: 'utf8' }))));
     }
 
     if (certfiles.length > 0) {
-      req.cert(await Promise.all(certfiles.map(p => fsReadFile(p, { encoding: 'utf8' }))));
+      req.cert(await Promise.all(certfiles.map(p => readFile(p, { encoding: 'utf8' }))));
     }
 
     if (keyfiles.length > 0) {
-      req.key(await Promise.all(keyfiles.map(p => fsReadFile(p, { encoding: 'utf8' }))));
+      req.key(await Promise.all(keyfiles.map(p => readFile(p, { encoding: 'utf8' }))));
     }
   }
 

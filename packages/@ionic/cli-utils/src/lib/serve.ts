@@ -1,7 +1,7 @@
 import { BaseError, LOGGER_LEVELS, OptionGroup, PromptModule, createPrefixedFormatter } from '@ionic/cli-framework';
 import { killProcessTree, onBeforeExit, processExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
-import { fsReadJsonFile } from '@ionic/utils-fs';
+import { readJsonFile } from '@ionic/utils-fs';
 import { NetworkInterface, findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
 import chalk from 'chalk';
 import * as Debug from 'debug';
@@ -296,7 +296,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
   async getSupportedDevAppPlugins(): Promise<Set<string>> {
     const p = path.resolve(ASSETS_DIRECTORY, 'devapp', 'plugins.json');
-    const plugins = await fsReadJsonFile(p);
+    const plugins = await readJsonFile(p);
 
     if (!Array.isArray(plugins)) {
       throw new Error(`Cannot read ${p} file of supported plugins.`);

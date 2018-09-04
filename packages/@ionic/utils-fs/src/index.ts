@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import * as makeDir from 'make-dir';
 import * as ζncp from 'ncp';
 import * as wfa from 'write-file-atomic';
 
@@ -40,66 +39,51 @@ export interface FSWriteFileOptions {
   flag?: string;
 }
 
-export const fsAccess = promisify<void, string, number>(fs.access);
-export const fsMkdir = promisify<void, string, number>(fs.mkdir);
-export const fsOpen = promisify<number, string, string>(fs.open);
-export const fsStat = promisify<fs.Stats, string>(fs.stat);
-export const fsUnlink = promisify<void, string>(fs.unlink);
-export const fsReadFile = promisify<string, string, FSReadFileOptions>(fs.readFile);
-export const fsWriteFile = promisify<void, string, any, FSWriteFileOptions>(fs.writeFile);
-export const fsReadDir = promisify<string[], string>(fs.readdir);
+export const access = promisify<void, string, number>(fs.access);
+export const mkdir = promisify<void, string, number>(fs.mkdir);
+export const open = promisify<number, string, string>(fs.open);
+export const stat = promisify<fs.Stats, string>(fs.stat);
+export const unlink = promisify<void, string>(fs.unlink);
+export const readFile = promisify<string, string, FSReadFileOptions>(fs.readFile);
+export const writeFile = promisify<void, string, any, FSWriteFileOptions>(fs.writeFile);
+export const readDir = promisify<string[], string>(fs.readdir);
 
 export const writeFileAtomic = promisify<void, string, string | Buffer, wfa.Options>(wfa);
 export const writeFileAtomicSync = wfa.sync;
 
-export { makeDir };
-
 /**
- * Error-less, promisified `fs.readdir` with an option to recurse into
- * subdirectories.
+ * Error-less, promisified `fs.readdir` that recurses into subdirectories.
  *
  * This function will not throw errors. If there is an issue with the
  * directory, an empty array is returned.
  *
  * @param dir The path to the directory to read.
- * @param options.recursive If true, compile an array of all files in all
- *                          subdirectories.
  */
-export async function readDir(dir: string, options?: { recursive?: boolean; }): Promise<string[]> {
-  options = options ? options : {};
+export async function readDirp(dir: string): Promise<string[]> {
+  const klaw = await import('klaw');
 
-  if (options.recursive) {
-    const klaw = await import('klaw');
+  return new Promise<string[]>((resolve, reject) => {
+    const items: string[] = [];
 
-    return new Promise<string[]>((resolve, reject) => {
-      const items: string[] = [];
-
-      klaw(dir)
-        .on('error', err => { /* ignore */ })
-        .on('data', item => items.push(item.path))
-        .on('end', () => resolve(items));
-    });
-  } else {
-    try {
-      return await fsReadDir(dir);
-    } catch (e) {
-      return [];
-    }
-  }
+    klaw(dir)
+      .on('error', err => { /* ignore */ })
+      .on('data', item => items.push(item.path))
+      .on('end', () => resolve(items));
+  });
 }
 
-export async function fsReadJsonFile(filePath: string, options: FSReadFileOptions = { encoding: 'utf8' }): Promise<{ [key: string]: any }> {
-  const f = await fsReadFile(filePath, options);
+export async function readJsonFile(filePath: string, options: FSReadFileOptions = { encoding: 'utf8' }): Promise<{ [key: string]: any }> {
+  const f = await readFile(filePath, options);
   return JSON.parse(f);
 }
 
-export async function fsWriteJsonFile(filePath: string, json: { [key: string]: any; }, options: FSWriteFileOptions): Promise<void> {
-  return fsWriteFile(filePath, JSON.stringify(json, undefined, 2) + '\n', options);
+export async function writeJsonFile(filePath: string, json: { [key: string]: any; }, options: FSWriteFileOptions): Promise<void> {
+  return writeFile(filePath, JSON.stringify(json, undefined, 2) + '\n', options);
 }
 
 export async function fileToString(filePath: string): Promise<string> {
   try {
-    return await fsReadFile(filePath, { encoding: 'utf8' });
+    return await readFile(filePath, { encoding: 'utf8' });
   } catch (e) {
     if (e.code === 'ENOENT') {
       return '';
@@ -109,7 +93,7 @@ export async function fileToString(filePath: string): Promise<string> {
   }
 }
 
-export async function fsMkdirp(p: string, mode = 0o777): Promise<void> {
+export async function mkdirp(p: string, mode = 0o777): Promise<void> {
   const absPath = path.resolve(p);
   const pathObj = path.parse(absPath);
   const dirnames = absPath.split(path.sep).splice(1);
@@ -117,7 +101,24 @@ export async function fsMkdirp(p: string, mode = 0o777): Promise<void> {
 
   for (const dir of dirs) {
     try {
-      await fsMkdir(dir, mode);
+      await mkdir(dir, mode);
+    } catch (e) {
+      if (e.code !== 'EEXIST') {
+        throw e;
+      }
+    }
+  }
+}
+
+export function mkdirpSync(p: string, mode = 0o777): void {
+  const absPath = path.resolve(p);
+  const pathObj = path.parse(absPath);
+  const dirnames = absPath.split(path.sep).splice(1);
+  const dirs = dirnames.map((v, i) => path.resolve(pathObj.root, ...dirnames.slice(0, i), v));
+
+  for (const dir of dirs) {
+    try {
+      fs.mkdirSync(dir, mode);
     } catch (e) {
       if (e.code !== 'EEXIST') {
         throw e;
@@ -160,7 +161,7 @@ export async function getFileChecksums(p: string): Promise<[string, string | und
     getFileChecksum(p),
     (async () => {
       try {
-        const md5 = await fsReadFile(`${p}.md5`, { encoding: 'utf8' });
+        const md5 = await readFile(`${p}.md5`, { encoding: 'utf8' });
         return md5.trim();
       } catch (e) {
         if (e.code !== 'ENOENT') {
@@ -179,7 +180,7 @@ export async function getFileChecksums(p: string): Promise<[string, string | und
  */
 export async function cacheFileChecksum(p: string, checksum?: string): Promise<void> {
   const md5 = await getFileChecksum(p);
-  await fsWriteFile(`${p}.md5`, md5, { encoding: 'utf8' });
+  await writeFile(`${p}.md5`, md5, { encoding: 'utf8' });
 }
 
 export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: string): Promise<any> {
@@ -229,7 +230,7 @@ export function copyFile(fileName: string, target: string, mode = 0o666) {
 
 export async function pathAccessible(filePath: string, mode: number): Promise<boolean> {
   try {
-    await fsAccess(filePath, mode);
+    await access(filePath, mode);
   } catch (e) {
     return false;
   }
@@ -250,7 +251,7 @@ export async function findBaseDirectory(dir: string, file: string): Promise<stri
   }
 
   for (const d of compilePaths(dir)) {
-    const results = await fsReadDir(d);
+    const results = await readDir(d);
 
     if (results.includes(file)) {
       return d;

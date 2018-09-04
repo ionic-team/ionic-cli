@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import { injectScript } from '../dev-server';
-import { fsReadFile } from '@ionic/utils-fs';
+import { readFile } from '@ionic/utils-fs';
 
 describe('@ionic/ionic-v1', () => {
 
@@ -42,7 +42,7 @@ describe('@ionic/ionic-v1', () => {
 
       it('should inject script into app template', async () => {
         // TODO: this test is fragile and gross
-        const apphtml = await fsReadFile(path.resolve(__dirname, 'fixtures/dev-server/app.html'), { encoding: 'utf8' });
+        const apphtml = await readFile(path.resolve(__dirname, 'fixtures/dev-server/app.html'), { encoding: 'utf8' });
         const code = `
     <script src="script.js"></script>
 `;

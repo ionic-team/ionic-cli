@@ -10,7 +10,7 @@ describe('@ionic/cli-framework', () => {
       mockWriteFileAtomicSync = jest.fn();
       jest.resetModules();
       jest.mock('fs', () => ({ readFileSync: mockReadFileSync }));
-      jest.mock('@ionic/utils-fs', () => ({ makeDir: { sync: mockMakeDirSync }, writeFileAtomicSync: mockWriteFileAtomicSync }));
+      jest.mock('@ionic/utils-fs', () => ({ mkdirpSync: mockMakeDirSync, writeFileAtomicSync: mockWriteFileAtomicSync }));
 
       const { BaseConfig } = require('../config');
 
@@ -28,7 +28,7 @@ describe('@ionic/cli-framework', () => {
       expect(config.p).toEqual('/path/to/file');
     });
 
-    it('should call makeDir upon setting c', () => {
+    it('should call mkdirpSync upon setting c', () => {
       const config = new Config('/path/to/file');
       config.c = {};
       expect(mockMakeDirSync).toHaveBeenCalledTimes(1);
@@ -164,7 +164,7 @@ describe('@ionic/cli-framework', () => {
       mockWriteFileAtomicSync = jest.fn();
       jest.resetModules();
       jest.mock('fs', () => ({ readFileSync: mockReadFileSync }));
-      jest.mock('@ionic/utils-fs', () => ({ makeDir: { sync: mockMakeDirSync }, writeFileAtomicSync: mockWriteFileAtomicSync }));
+      jest.mock('@ionic/utils-fs', () => ({ mkdirpSync: mockMakeDirSync, writeFileAtomicSync: mockWriteFileAtomicSync }));
 
       const { BaseConfig } = require('../config');
 

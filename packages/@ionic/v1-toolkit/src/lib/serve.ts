@@ -1,4 +1,4 @@
-import { fsReadFile, pathExists } from '@ionic/utils-fs';
+import { pathExists, readFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as ζexpress from 'express';
 import * as ζproxyMiddleware from 'http-proxy-middleware';
@@ -101,7 +101,7 @@ async function createHttpServer(options: ServeOptions): Promise<ζexpress.Applic
   const serveIndex = async (req: ζexpress.Request, res: ζexpress.Response) => {
     // respond with the index.html file
     const indexFileName = path.join(options.wwwDir, 'index.html');
-    let indexHtml = await fsReadFile(indexFileName, { encoding: 'utf8' });
+    let indexHtml = await readFile(indexFileName, { encoding: 'utf8' });
 
     indexHtml = injectDevServerScript(indexHtml);
 

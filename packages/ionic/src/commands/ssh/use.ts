@@ -4,7 +4,7 @@ import { validators } from '@ionic/cli-framework';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { fileToString, fsWriteFile } from '@ionic/utils-fs';
+import { fileToString, writeFile } from '@ionic/utils-fs';
 
 import { SSHBaseCommand } from './base';
 
@@ -83,7 +83,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://linux.die.net/man/5/ssh_config')}
       }
     }
 
-    await fsWriteFile(sshConfigPath, text2, { encoding: 'utf8', mode: 0o600 });
+    await writeFile(sshConfigPath, text2, { encoding: 'utf8', mode: 0o600 });
 
     this.env.log.ok(`Your active Ionic SSH key has been set to ${chalk.bold(keyPath)}!`);
   }

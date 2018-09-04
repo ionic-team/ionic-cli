@@ -1,7 +1,7 @@
 import { LOGGER_LEVELS, createPromptModule } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
-import { findBaseDirectory, fsReadJsonFile } from '@ionic/utils-fs';
+import { findBaseDirectory, readJsonFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
@@ -36,7 +36,7 @@ export async function getProject(projectDir: string | undefined, projectName: st
   let type: ProjectType | undefined;
 
   try {
-    projectFile = await fsReadJsonFile(projectFilePath);
+    projectFile = await readJsonFile(projectFilePath);
   } catch (e) {
     log.error(
       `Error while loading project config file.\n` +

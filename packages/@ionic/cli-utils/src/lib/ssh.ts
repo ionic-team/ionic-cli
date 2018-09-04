@@ -1,4 +1,4 @@
-import { fsReadFile, fsStat } from '@ionic/utils-fs';
+import { readFile, stat } from '@ionic/utils-fs';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -16,7 +16,7 @@ export async function getGeneratedPrivateKeyPath(userId = 0): Promise<string> {
 }
 
 export async function parsePublicKeyFile(pubkeyPath: string): Promise<[string, string, string, string]> {
-  return parsePublicKey((await fsReadFile(pubkeyPath, { encoding: 'utf8' })).trim());
+  return parsePublicKey((await readFile(pubkeyPath, { encoding: 'utf8' })).trim());
 }
 
 /**
@@ -42,7 +42,7 @@ export async function parsePublicKey(pubkey: string): Promise<[string, string, s
 
 export async function validatePrivateKey(keyPath: string): Promise<void> {
   try {
-    await fsStat(keyPath);
+    await stat(keyPath);
   } catch (e) {
     if (e.code === 'ENOENT') {
       throw ERROR_SSH_MISSING_PRIVKEY;
@@ -51,7 +51,7 @@ export async function validatePrivateKey(keyPath: string): Promise<void> {
     throw e;
   }
 
-  const f = await fsReadFile(keyPath, { encoding: 'utf8' });
+  const f = await readFile(keyPath, { encoding: 'utf8' });
   const lines = f.split('\n');
 
   if (!lines[0].match(/^\-{5}BEGIN [R|D]SA PRIVATE KEY\-{5}$/)) {

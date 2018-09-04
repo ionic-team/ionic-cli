@@ -5,7 +5,7 @@ import stripAnsi = require('strip-ansi');
 
 import { Command, CommandHelpSchemaInput, CommandHelpSchemaOption, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-framework';
 import { strcmp } from '@ionic/cli-framework/utils/string';
-import { fsMkdirp, fsWriteFile, removeDirectory } from '@ionic/utils-fs';
+import { mkdirp, removeDirectory, writeFile } from '@ionic/utils-fs';
 
 import { ProjectType } from '@ionic/cli-utils';
 import { CommandHelpSchema, NamespaceSchemaHelpFormatter } from '@ionic/cli-utils/lib/help';
@@ -26,7 +26,7 @@ export class DocsCommand extends Command {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions) {
     await removeDirectory(STAGING_DIRECTORY);
-    await fsMkdirp(STAGING_DIRECTORY);
+    await mkdirp(STAGING_DIRECTORY);
 
     const projectTypes: ProjectType[] = ['angular', 'ionic-angular', 'ionic1'];
     const baseCtx = await generateContext();
@@ -45,7 +45,7 @@ export class DocsCommand extends Command {
       projectJson.commands = await Promise.all(projectJson.commands.map(async cmd => this.extractCommand(cmd as CommandHelpSchema)));
       projectJson.commands.sort((a, b) => strcmp(a.name, b.name));
 
-      await fsWriteFile(path.resolve(STAGING_DIRECTORY, `${projectType}.json`), JSON.stringify(projectJson, undefined, 2), { encoding: 'utf8' });
+      await writeFile(path.resolve(STAGING_DIRECTORY, `${projectType}.json`), JSON.stringify(projectJson, undefined, 2), { encoding: 'utf8' });
     }
 
     process.stdout.write(`${chalk.green('Done.')}\n`);

@@ -8,7 +8,7 @@ import { OptionGroup, validators } from '@ionic/cli-framework';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { isValidPackageName } from '@ionic/cli-framework/utils/node';
 import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
-import { fsMkdir, fsUnlink, pathExists, removeDirectory } from '@ionic/utils-fs';
+import { mkdir, pathExists, removeDirectory, unlink } from '@ionic/utils-fs';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, ResolvedStarterTemplate, StarterManifest, StarterTemplate, getProject } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
@@ -396,7 +396,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       await removeDirectory(projectDir);
     }
 
-    await fsMkdir(projectDir, 0o777);
+    await mkdir(projectDir, 0o777);
 
     tasks.end();
 
@@ -499,7 +499,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       const manifest = await this.loadManifest(manifestPath);
 
       if (manifest) {
-        await fsUnlink(manifestPath);
+        await unlink(manifestPath);
       }
 
       if (gitIntegration) {

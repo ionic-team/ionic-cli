@@ -1,13 +1,13 @@
 import * as path from 'path';
 
-import { fsReadFile } from '@ionic/utils-fs';
+import { readFile } from '@ionic/utils-fs';
 
 export async function getAndroidSdkToolsVersion(): Promise<string | undefined> {
   const androidHome = await locateSDKHome();
 
   if (androidHome) {
     try {
-      const f = await fsReadFile(path.join(androidHome, 'tools', 'source.properties'), { encoding: 'utf8' });
+      const f = await readFile(path.join(androidHome, 'tools', 'source.properties'), { encoding: 'utf8' });
       return `${await parseSDKVersion(f)} (${androidHome})`;
     } catch (e) {
       if (e.code !== 'ENOENT') {

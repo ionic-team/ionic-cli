@@ -8,7 +8,7 @@ import { APIResponseSuccess, CommandLineInputs, CommandLineOptions, CommandMetad
 import { build } from '@ionic/cli-utils/lib/build';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { fsReadFile, pathExists, readDir } from '@ionic/utils-fs';
+import { pathExists, readDir, readFile } from '@ionic/utils-fs';
 
 const debug = Debug('ionic:cli:commands:monitoring:syncmaps');
 
@@ -140,7 +140,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
 
     const sm = sourcemap as any;
 
-    const fileData = await fsReadFile(file, { encoding: 'utf8' });
+    const fileData = await readFile(file, { encoding: 'utf8' });
     const sourcemapPost = sm.data.sourcemap_post;
 
     const { req } = await createRequest('POST', sourcemapPost.url, this.env.config.getHTTPConfig());

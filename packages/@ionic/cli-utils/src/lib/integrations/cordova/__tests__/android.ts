@@ -12,7 +12,7 @@ describe('@ionic/cli-utils', () => {
 
       it('should return undefined for a missing source.properties file', async () => {
         jest.mock('@ionic/utils-fs', () => ({
-          fsReadFile: () => {
+          readFile: () => {
             const err = new Error();
             err.code = 'ENOENT';
             return Promise.reject(err);

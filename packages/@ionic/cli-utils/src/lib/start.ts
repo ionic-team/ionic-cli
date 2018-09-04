@@ -1,4 +1,4 @@
-import { fsReadJsonFile } from '@ionic/utils-fs';
+import { readJsonFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 
 import { IConfig, StarterList, StarterManifest, StarterTemplate } from '../definitions';
@@ -11,7 +11,7 @@ export const STARTER_BASE_URL = 'https://d2ql0qc7j8u4b2.cloudfront.net';
 
 export async function readStarterManifest(p: string): Promise<StarterManifest> {
   try {
-    const manifest = await fsReadJsonFile(p);
+    const manifest = await readJsonFile(p);
 
     if (!isStarterManifest(manifest)) {
       throw new Error(`${p} is not a valid starter manifest.`);

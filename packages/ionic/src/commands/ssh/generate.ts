@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import { OptionGroup, contains, validate } from '@ionic/cli-framework';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { fsMkdirp, fsUnlink, pathExists } from '@ionic/utils-fs';
+import { mkdirp, pathExists, unlink } from '@ionic/utils-fs';
 
 import { SSHBaseCommand } from './base';
 
@@ -70,7 +70,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
     const pubkeyPath = `${keyPath}.pub`;
 
     if (!(await pathExists(keyPathDir))) {
-      await fsMkdirp(keyPathDir, 0o700);
+      await mkdirp(keyPathDir, 0o700);
       this.env.log.msg(`Created ${chalk.bold(prettyPath(keyPathDir))} directory for you.`);
     }
 
@@ -82,7 +82,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
       });
 
       if (confirm) {
-        await fsUnlink(keyPath);
+        await unlink(keyPath);
       } else {
         this.env.log.msg(`Not overwriting ${chalk.bold(prettyPath(keyPath))}.`);
         return;

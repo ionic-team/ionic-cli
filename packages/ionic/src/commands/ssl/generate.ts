@@ -5,7 +5,7 @@ import * as lodash from 'lodash';
 
 import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { fsMkdirp, fsUnlink, fsWriteFile, pathExists, tmpfilepath } from '@ionic/utils-fs';
+import { mkdirp, pathExists, tmpfilepath, unlink, writeFile } from '@ionic/utils-fs';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
@@ -137,11 +137,11 @@ The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert
     const overwriteCertPath = await this.checkExistingFile(certPath);
 
     if (overwriteKeyPath) {
-      await fsUnlink(keyPath);
+      await unlink(keyPath);
     }
 
     if (overwriteCertPath) {
-      await fsUnlink(certPath);
+      await unlink(certPath);
     }
 
     const cnf = { bits, countryName, stateOrProvinceName, localityName, organizationName, commonName };
@@ -173,7 +173,7 @@ The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert
 
   private async ensureDirectory(p: string) {
     if (!(await pathExists(p))) {
-      await fsMkdirp(p, 0o700);
+      await mkdirp(p, 0o700);
       this.env.log.msg(`Created ${chalk.bold(prettyPath(p))} directory for you.`);
     }
   }
@@ -212,7 +212,7 @@ subjectAltName=DNS:${commonName}
 `.trim();
 
     const p = tmpfilepath('ionic-ssl');
-    await fsWriteFile(p, cnf, { encoding: 'utf8' });
+    await writeFile(p, cnf, { encoding: 'utf8' });
     return p;
   }
 }

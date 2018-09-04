@@ -1,4 +1,4 @@
-import { fsReadFile } from '@ionic/utils-fs';
+import { readFile } from '@ionic/utils-fs';
 import chalk, { Chalk } from 'chalk';
 import * as ζexpress from 'express';
 import * as path from 'path';
@@ -49,7 +49,7 @@ export async function createDevServerHandler(options: DevServerOptions): Promise
     wsPort: options.devPort,
   };
 
-  const devServerJs = await fsReadFile(path.join(__dirname, '..', '..', 'assets', 'dev-server.js'), { encoding: 'utf8' });
+  const devServerJs = await readFile(path.join(__dirname, '..', '..', 'assets', 'dev-server.js'), { encoding: 'utf8' });
 
   return (req, res) => {
     res.set('Content-Type', 'application/javascript');

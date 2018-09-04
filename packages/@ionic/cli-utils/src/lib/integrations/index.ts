@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { copyDirectory, fsMkdirp, fsStat, pathExists, readDir, removeDirectory } from '@ionic/utils-fs';
+import { copyDirectory, mkdirp, pathExists, readDir, removeDirectory, stat } from '@ionic/utils-fs';
 
 import { IConfig, IIntegration, IIntegrationAddOptions, ILogger, IProject, IShell, InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../definitions';
 import { IntegrationNotFoundException } from '../errors';
@@ -86,7 +86,7 @@ export abstract class BaseIntegration implements IIntegration {
       await removeDirectory(tmpdir);
     }
 
-    await fsMkdirp(tmpdir, 0o777);
+    await mkdirp(tmpdir, 0o777);
 
     const ws = tar.extract({ cwd: tmpdir });
     const { req } = await createRequest('GET', this.archiveUrl, this.e.config.getHTTPConfig());
@@ -101,7 +101,7 @@ export abstract class BaseIntegration implements IIntegration {
       const projectf = path.resolve(this.e.project.directory, f);
 
       try {
-        const stats = await fsStat(projectf);
+        const stats = await stat(projectf);
         const overwrite = await conflictHandler(projectf, stats);
 
         if (!overwrite) {

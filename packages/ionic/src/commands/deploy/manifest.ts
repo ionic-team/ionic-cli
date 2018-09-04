@@ -7,7 +7,7 @@ import { map } from '@ionic/cli-framework/utils/array';
 import { CommandMetadata } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { fsStat, fsWriteFile, readDir } from '@ionic/utils-fs';
+import { readDirp, stat, writeFile } from '@ionic/utils-fs';
 
 interface DeployManifestItem {
   href: string;
@@ -32,12 +32,12 @@ export class DeployManifestCommand extends Command {
     const buildDir = path.resolve(this.project.directory, 'www'); // TODO: this is hard-coded
     const manifest = await this.getFilesAndSizesAndHashesForGlobPattern(buildDir);
 
-    await fsWriteFile(path.resolve(buildDir, 'pro-manifest.json'), JSON.stringify(manifest, undefined, 2), { encoding: 'utf8' });
+    await writeFile(path.resolve(buildDir, 'pro-manifest.json'), JSON.stringify(manifest, undefined, 2), { encoding: 'utf8' });
   }
 
   private async getFilesAndSizesAndHashesForGlobPattern(buildDir: string): Promise<DeployManifestItem[]> {
-    const contents = await readDir(buildDir, { recursive: true });
-    const stats = await map(contents, async (f): Promise<[string, fs.Stats]> => [f, await fsStat(f)]);
+    const contents = await readDirp(buildDir);
+    const stats = await map(contents, async (f): Promise<[string, fs.Stats]> => [f, await stat(f)]);
     const files = stats.filter(([ , stat ]) => !stat.isDirectory());
 
     const items = await Promise.all(files.map(([f, stat]) => this.getFileAndSizeAndHashForFile(buildDir, f, stat)));
