@@ -4,7 +4,6 @@
     "outDir": "./dist"
   },
   "include": [
-    "../../types/elementtree.d.ts",
     "../../types/slice-ansi.d.ts",
     "../../types/ssh-config.d.ts",
     "../../types/superagent.d.ts",

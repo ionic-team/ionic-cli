@@ -186,7 +186,7 @@ export class ConfigXml {
       nameElement.text = 'MyApp';
     }
 
-    const name = nameElement.text;
+    const name = nameElement.text.toString();
 
     return { id, name, version };
   }
@@ -283,7 +283,7 @@ export class ConfigXml {
     return contents;
   }
 
-  protected engineElementToPlatformEngine(engine: et.IElement): PlatformEngine {
+  protected engineElementToPlatformEngine(engine: et.Element): PlatformEngine {
     const name = engine.get('name');
     const spec = engine.get('spec');
 

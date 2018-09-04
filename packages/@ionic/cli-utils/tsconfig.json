@@ -4,7 +4,6 @@
     "outDir": "./"
   },
   "include": [
-    "../../../types/elementtree.d.ts",
     "../../../types/leek.d.ts",
     "../../../types/slice-ansi.d.ts",
     "../../../types/ssh-config.d.ts",
