@@ -10,7 +10,8 @@ describe('@ionic/cli-framework', () => {
       mockWriteFileAtomicSync = jest.fn();
       jest.resetModules();
       jest.mock('fs', () => ({ readFileSync: mockReadFileSync }));
-      jest.mock('@ionic/utils-fs', () => ({ mkdirpSync: mockMakeDirSync, writeFileAtomicSync: mockWriteFileAtomicSync }));
+      jest.mock('@ionic/utils-fs', () => ({ mkdirpSync: mockMakeDirSync }));
+      jest.mock('write-file-atomic', () => ({ sync: mockWriteFileAtomicSync }));
 
       const { BaseConfig } = require('../config');
 
@@ -164,7 +165,8 @@ describe('@ionic/cli-framework', () => {
       mockWriteFileAtomicSync = jest.fn();
       jest.resetModules();
       jest.mock('fs', () => ({ readFileSync: mockReadFileSync }));
-      jest.mock('@ionic/utils-fs', () => ({ mkdirpSync: mockMakeDirSync, writeFileAtomicSync: mockWriteFileAtomicSync }));
+      jest.mock('@ionic/utils-fs', () => ({ mkdirpSync: mockMakeDirSync }));
+      jest.mock('write-file-atomic', () => ({ sync: mockWriteFileAtomicSync }));
 
       const { BaseConfig } = require('../config');
 

@@ -40,15 +40,13 @@
     "debug": "^3.1.0",
     "ncp": "^2.0.0",
     "through2": "^2.0.3",
-    "tslib": "^1.9.0",
-    "write-file-atomic": "^2.3.0"
+    "tslib": "^1.9.0"
   },
   "devDependencies": {
     "@types/debug": "0.0.30",
     "@types/ncp": "^2.0.1",
     "@types/node": "^6.0.101",
     "@types/through2": "^2.0.33",
-    "@types/write-file-atomic": "^2.1.1",
     "jest": "^23.0.1",
     "jest-cli": "^23.0.1",
     "lint-staged": "^7.2.0",

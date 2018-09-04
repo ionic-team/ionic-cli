@@ -1,7 +1,8 @@
-import { mkdirpSync, writeFileAtomicSync } from '@ionic/utils-fs';
+import { mkdirpSync } from '@ionic/utils-fs';
 import * as fs from 'fs';
 import * as lodash from 'lodash';
 import * as path from 'path';
+import * as writeFileAtomic from 'write-file-atomic';
 
 export interface BaseConfigOptions {
   /**
@@ -39,7 +40,7 @@ export abstract class BaseConfig<T extends object> {
       }
 
       if (e.name === 'SyntaxError') {
-        writeFileAtomicSync(this.p, '');
+        writeFileAtomic.sync(this.p, '');
         return this.provideDefaults({});
       }
 
@@ -51,7 +52,7 @@ export abstract class BaseConfig<T extends object> {
     const v = this.pathPrefix.length === 0 ? value : lodash.set(this.file, [...this.pathPrefix], value);
 
     mkdirpSync(path.dirname(this.p));
-    writeFileAtomicSync(this.p, JSON.stringify(v, undefined, 2));
+    writeFileAtomic.sync(this.p, JSON.stringify(v, undefined, 2));
   }
 
   get<P extends keyof T>(property: P): T[P];

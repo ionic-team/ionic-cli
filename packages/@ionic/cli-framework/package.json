@@ -42,7 +42,8 @@
     "tree-kill": "1.2.0",
     "tslib": "^1.9.0",
     "untildify": "^3.0.2",
-    "wrap-ansi": "^4.0.0"
+    "wrap-ansi": "^4.0.0",
+    "write-file-atomic": "^2.3.0"
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.0",
@@ -56,6 +57,7 @@
     "@types/strip-ansi": "^3.0.0",
     "@types/untildify": "^3.0.0",
     "@types/wrap-ansi": "^3.0.0",
+    "@types/write-file-atomic": "^2.1.1",
     "jest": "^23.0.1",
     "jest-cli": "^23.0.1",
     "lint-staged": "^7.2.0",

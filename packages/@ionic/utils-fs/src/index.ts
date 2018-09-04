@@ -5,7 +5,6 @@ import * as stream from 'stream';
 import * as through2 from 'through2';
 
 import * as ζncp from 'ncp';
-import * as wfa from 'write-file-atomic';
 
 interface Promisify {
   <T>(func: (callback: (err: any, result?: T) => void) => void): () => Promise<T>;
@@ -49,9 +48,6 @@ export const unlink = promisify<void, string>(fs.unlink);
 export const readFile = promisify<string, string, ReadFileOptions>(fs.readFile);
 export const writeFile = promisify<void, string, any, WriteFileOptions>(fs.writeFile);
 export const readDir = promisify<string[], string>(fs.readdir);
-
-export const writeFileAtomic = promisify<void, string, string | Buffer, wfa.Options>(wfa);
-export const writeFileAtomicSync = wfa.sync;
 
 export async function statSafe(p: string): Promise<fs.Stats | undefined> {
   try {
