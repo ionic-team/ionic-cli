@@ -1,6 +1,8 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as stream from 'stream';
+import * as through2 from 'through2';
 
 import * as ζncp from 'ncp';
 import * as wfa from 'write-file-atomic';
@@ -28,12 +30,12 @@ const promisify: Promisify = (func: any) => {
   };
 };
 
-export interface FSReadFileOptions {
+export interface ReadFileOptions {
   encoding: string;
   flag?: string;
 }
 
-export interface FSWriteFileOptions {
+export interface WriteFileOptions {
   encoding: string;
   mode?: number;
   flag?: string;
@@ -44,40 +46,63 @@ export const mkdir = promisify<void, string, number>(fs.mkdir);
 export const open = promisify<number, string, string>(fs.open);
 export const stat = promisify<fs.Stats, string>(fs.stat);
 export const unlink = promisify<void, string>(fs.unlink);
-export const readFile = promisify<string, string, FSReadFileOptions>(fs.readFile);
-export const writeFile = promisify<void, string, any, FSWriteFileOptions>(fs.writeFile);
+export const readFile = promisify<string, string, ReadFileOptions>(fs.readFile);
+export const writeFile = promisify<void, string, any, WriteFileOptions>(fs.writeFile);
 export const readDir = promisify<string[], string>(fs.readdir);
 
 export const writeFileAtomic = promisify<void, string, string | Buffer, wfa.Options>(wfa);
 export const writeFileAtomicSync = wfa.sync;
 
-/**
- * Error-less, promisified `fs.readdir` that recurses into subdirectories.
- *
- * This function will not throw errors. If there is an issue with the
- * directory, an empty array is returned.
- *
- * @param dir The path to the directory to read.
- */
-export async function readDirp(dir: string): Promise<string[]> {
-  const klaw = await import('klaw');
+export async function statSafe(p: string): Promise<fs.Stats | undefined> {
+  try {
+    return await stat(p);
+  } catch (e) {
+    // ignore
+  }
+}
 
+export interface ReadDirROptions {
+  readonly filter?: (item: WalkerItem) => boolean;
+  readonly walkerOptions?: WalkerOptions;
+}
+
+export async function readDirp(dir: string, { filter, walkerOptions }: ReadDirROptions = {}): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
     const items: string[] = [];
 
-    klaw(dir)
-      .on('error', err => { /* ignore */ })
-      .on('data', item => items.push(item.path))
+    let rs: NodeJS.ReadableStream = walk(dir, walkerOptions);
+
+    if (filter) {
+      rs = rs.pipe(through2.obj(function(obj: WalkerItem, enc, cb) {
+        if (!filter || filter(obj)) {
+          this.push(obj);
+        }
+
+        cb();
+      }));
+    }
+
+    rs
+      .on('error', (err: Error) => reject(err))
+      .on('data', (item: WalkerItem) => items.push(item.path))
       .on('end', () => resolve(items));
   });
 }
 
-export async function readJsonFile(filePath: string, options: FSReadFileOptions = { encoding: 'utf8' }): Promise<{ [key: string]: any }> {
+export async function readDirSafe(dir: string): Promise<string[]> {
+  try {
+    return await readDir(dir);
+  } catch (e) {
+    return [];
+  }
+}
+
+export async function readJsonFile(filePath: string, options: ReadFileOptions = { encoding: 'utf8' }): Promise<{ [key: string]: any }> {
   const f = await readFile(filePath, options);
   return JSON.parse(f);
 }
 
-export async function writeJsonFile(filePath: string, json: { [key: string]: any; }, options: FSWriteFileOptions): Promise<void> {
+export async function writeJsonFile(filePath: string, json: { [key: string]: any; }, options: WriteFileOptions): Promise<void> {
   return writeFile(filePath, JSON.stringify(json, undefined, 2) + '\n', options);
 }
 
@@ -251,7 +276,7 @@ export async function findBaseDirectory(dir: string, file: string): Promise<stri
   }
 
   for (const d of compilePaths(dir)) {
-    const results = await readDir(d);
+    const results = await readDirSafe(d);
 
     if (results.includes(file)) {
       return d;
@@ -297,4 +322,79 @@ export function compilePaths(filePath: string): string[] {
     .split(path.sep)
     .map((segment, i, array) => parsed.root + path.join(...array.slice(0, array.length - i)))
     .concat(parsed.root);
+}
+
+export async function isDir(p: string): Promise<boolean> {
+  const stats = await statSafe(p);
+
+  if (stats && stats.isDirectory()) {
+    return true;
+  }
+
+  return false;
+}
+
+export interface WalkerItem {
+  readonly path: string;
+  readonly stats: fs.Stats;
+}
+
+export interface Walker extends stream.Readable {
+  on(event: 'data', callback: (item: WalkerItem) => void): this;
+  on(event: string, callback: (...args: any[]) => any): this;
+}
+
+export interface WalkerOptions {
+  pathFilter?: (p: string) => boolean;
+}
+
+export class Walker extends stream.Readable {
+  readonly paths: string[] = [this.p];
+
+  constructor(readonly p: string, readonly options: WalkerOptions = {}) {
+    super({ objectMode: true });
+  }
+
+  _read() {
+    const p = this.paths.shift();
+    const { pathFilter } = this.options;
+
+    if (!p) {
+      this.push(null); // tslint:disable-line:no-null-keyword
+      return;
+    }
+
+    fs.stat(p, (err, stats) => {
+      if (err) {
+        this.emit('error', err);
+        return;
+      }
+
+      const item: WalkerItem = { path: p, stats };
+
+      if (stats.isDirectory()) {
+        fs.readdir(p, (err, contents) => {
+          if (err) {
+            this.emit('error', err);
+            return;
+          }
+
+          let paths = contents.map(file => path.join(p, file));
+
+          if (pathFilter) {
+            paths = paths.filter(p => pathFilter(p.substring(this.p.length + 1)));
+          }
+
+          this.paths.push(...paths);
+          this.push(item);
+        });
+      } else {
+        this.push(item);
+      }
+    });
+  }
+}
+
+export function walk(p: string, options: WalkerOptions = {}): Walker {
+  return new Walker(p, options);
 }

@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { copyDirectory, mkdirp, pathExists, readDir, removeDirectory, stat } from '@ionic/utils-fs';
+import { copyDirectory, mkdirp, pathExists, readDirSafe, removeDirectory, stat } from '@ionic/utils-fs';
 
 import { IConfig, IIntegration, IIntegrationAddOptions, ILogger, IProject, IShell, InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../definitions';
 import { IntegrationNotFoundException } from '../errors';
@@ -92,7 +92,7 @@ export abstract class BaseIntegration implements IIntegration {
     const { req } = await createRequest('GET', this.archiveUrl, this.e.config.getHTTPConfig());
     await download(req, ws, {});
 
-    const contents = await readDir(tmpdir);
+    const contents = await readDirSafe(tmpdir);
     const blacklist: string[] = [];
 
     debug(`Integration files downloaded to ${chalk.bold(tmpdir)} (files: ${contents.map(f => chalk.bold(f)).join(', ')})`);

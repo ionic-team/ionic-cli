@@ -8,7 +8,7 @@ import { APIResponseSuccess, CommandLineInputs, CommandLineOptions, CommandMetad
 import { build } from '@ionic/cli-utils/lib/build';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { pathExists, readDir, readFile } from '@ionic/utils-fs';
+import { pathExists, readDirSafe, readFile } from '@ionic/utils-fs';
 
 const debug = Debug('ionic:cli:commands:monitoring:syncmaps');
 
@@ -81,7 +81,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     const tasks = this.createTaskChain();
     const syncTask = tasks.next('Syncing sourcemaps');
 
-    const sourcemapFiles = (await readDir(sourcemapsDir)).filter(f => f.endsWith('.js.map'));
+    const sourcemapFiles = (await readDirSafe(sourcemapsDir)).filter(f => f.endsWith('.js.map'));
     debug(`Found ${sourcemapFiles.length} sourcemap files: ${sourcemapFiles.map(f => chalk.bold(f)).join(', ')}`);
 
     await Promise.all(sourcemapFiles.map(async f => {

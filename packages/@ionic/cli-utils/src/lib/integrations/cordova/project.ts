@@ -1,9 +1,9 @@
 import * as path from 'path';
 
-import { readDir } from '@ionic/utils-fs';
+import { readDirSafe } from '@ionic/utils-fs';
 
 export async function getPlatforms(projectDir: string): Promise<string[]> {
   const platformsDir = path.resolve(projectDir, 'platforms');
-  const dirContents = await readDir(platformsDir);
+  const dirContents = await readDirSafe(platformsDir);
   return dirContents.filter(f => f && f !== 'platforms.json' && !f.startsWith('.'));
 }
