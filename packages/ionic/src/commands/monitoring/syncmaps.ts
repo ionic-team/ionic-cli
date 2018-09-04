@@ -4,11 +4,11 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
-import { fsReadFile, pathExists, readDir } from '@ionic/cli-framework/utils/fs';
 import { APIResponseSuccess, CommandLineInputs, CommandLineOptions, CommandMetadata, isSuperAgentError } from '@ionic/cli-utils';
 import { build } from '@ionic/cli-utils/lib/build';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { fsReadFile, pathExists, readDir } from '@ionic/utils-fs';
 
 const debug = Debug('ionic:cli:commands:monitoring:syncmaps');
 

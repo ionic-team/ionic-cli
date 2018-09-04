@@ -1,7 +1,7 @@
 import { BaseConfig, BaseConfigOptions, PromptModule } from '@ionic/cli-framework';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
-import { ERROR_FILE_INVALID_JSON, fsWriteJsonFile } from '@ionic/cli-framework/utils/fs';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/node';
+import { fsWriteJsonFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
@@ -240,7 +240,7 @@ export abstract class Project implements IProject {
       const pkgPath = pkgName ? resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
       return await readPackageJsonFile(pkgPath);
     } catch (e) {
-      if (e === ERROR_FILE_INVALID_JSON) {
+      if (e instanceof SyntaxError) {
         throw new FatalException(`Could not parse ${chalk.bold(pkgName ? pkgName : `project's`)} ${chalk.bold('package.json')}. Is it a valid JSON file?`);
       } else if (e === ERROR_INVALID_PACKAGE_JSON) {
         throw new FatalException(`The ${chalk.bold(pkgName ? pkgName : `project's`)} ${chalk.bold('package.json')} file seems malformed.`);

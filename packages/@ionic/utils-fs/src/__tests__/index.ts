@@ -12,7 +12,7 @@ describe('@ionic/cli-framework', () => {
         jest.resetModules();
         jest.mock('path', () => mock_path_posix);
 
-        const fslib = require('../fs');
+        const fslib = require('../');
 
         it('should get undefined with empty input', async () => {
           const result = await fslib.findBaseDirectory('', '');
@@ -59,7 +59,7 @@ describe('@ionic/cli-framework', () => {
         jest.resetModules();
         jest.mock('path', () => mock_path_win32);
 
-        const fslib = require('../fs');
+        const fslib = require('../');
 
         it('should get undefined with empty input', async () => {
           const result = await fslib.findBaseDirectory('', '');
@@ -96,6 +96,58 @@ describe('@ionic/cli-framework', () => {
             .mockImplementationOnce(async () => ['dir', 'foo']);
           const result = await fslib.findBaseDirectory('C:\\some\\dir\\\\that\\is\\really\\nested', 'foo');
           expect(result).toEqual('C:\\some');
+        });
+
+      });
+
+    });
+
+    describe('compilePaths', () => {
+
+      describe('posix', () => {
+
+        const mock_path_posix = path.posix;
+        jest.resetModules();
+        jest.mock('path', () => mock_path_posix);
+
+        const fslib = require('../');
+
+        it('should not accept a malformed path', () => {
+          expect(() => fslib.compilePaths('.')).toThrowError('. is not an absolute path');
+        });
+
+        it('should compile an array of paths working backwards from a base directory', () => {
+          const result = fslib.compilePaths('/some/dir');
+          expect(result).toEqual(['/some/dir', '/some', '/']);
+        });
+
+        it('should work for the root directory', () => {
+          const result = fslib.compilePaths('/');
+          expect(result).toEqual(['/']);
+        });
+
+      });
+
+      describe('windows', () => {
+
+        const mock_path_win32 = path.win32;
+        jest.resetModules();
+        jest.mock('path', () => mock_path_win32);
+
+        const fslib = require('../');
+
+        it('should not accept a malformed path', () => {
+          expect(() => fslib.compilePaths('.')).toThrowError('. is not an absolute path');
+        });
+
+        it('should compile an array of paths working backwards from a base directory', () => {
+          const result = fslib.compilePaths('C:\\some\\dir');
+          expect(result).toEqual(['C:\\some\\dir', 'C:\\some', 'C:\\']);
+        });
+
+        it('should work for the root directory', () => {
+          const result = fslib.compilePaths('C:\\');
+          expect(result).toEqual(['C:\\']);
         });
 
       });

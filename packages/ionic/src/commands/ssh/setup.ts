@@ -1,11 +1,10 @@
 import chalk from 'chalk';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { pathExists } from '@ionic/cli-framework/utils/fs';
-
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
+import { pathExists } from '@ionic/utils-fs';
 
 import { SSHBaseCommand } from './base';
 

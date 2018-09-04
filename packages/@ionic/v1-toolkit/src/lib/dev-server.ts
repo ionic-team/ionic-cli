@@ -1,11 +1,9 @@
+import { fsReadFile } from '@ionic/utils-fs';
+import chalk, { Chalk } from 'chalk';
+import * as ζexpress from 'express';
 import * as path from 'path';
 import * as util from 'util';
-
-import { fsReadFile } from '@ionic/cli-framework/utils/fs';
-import * as ζexpress from 'express';
 import * as ζws from 'ws';
-
-import chalk, { Chalk } from 'chalk';
 
 export const DEV_SERVER_PREFIX = '__ionic';
 

@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import { ERROR_SHELL_COMMAND_NOT_FOUND, OptionGroup, ShellCommandError } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { fsMkdir, pathExists } from '@ionic/cli-framework/utils/fs';
+import { fsMkdir, pathExists } from '@ionic/utils-fs';
 
 import { CommandInstanceInfo, CommandMetadataOption, IShellRunOptions } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';

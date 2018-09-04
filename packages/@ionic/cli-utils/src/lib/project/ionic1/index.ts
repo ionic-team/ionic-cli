@@ -1,5 +1,5 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { ERROR_FILE_INVALID_JSON, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
+import { fsReadJsonFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
@@ -112,7 +112,7 @@ export class Ionic1Project extends Project {
       try {
         this.bowerJsonFile = await readBowerJsonFile(bowerJsonPath);
       } catch (e) {
-        if (e === ERROR_FILE_INVALID_JSON) {
+        if (e instanceof SyntaxError) {
           throw new FatalException(`Could not parse ${chalk.bold('bower.json')}. Is it a valid JSON file?`);
         } else if (e === ERROR_INVALID_BOWER_JSON) {
           throw new FatalException(`The ${chalk.bold('bower.json')} file seems malformed.`);

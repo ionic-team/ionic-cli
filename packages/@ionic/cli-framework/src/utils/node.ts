@@ -1,11 +1,9 @@
+import { compilePaths, fsReadJsonFile } from '@ionic/utils-fs';
 import * as fs from 'fs';
 import * as path from 'path';
 
 import { PackageJson } from '../definitions';
 import { isPackageJson } from '../guards';
-
-import { fsReadJsonFile } from './fs';
-import { compilePaths } from './path';
 
 export const ERROR_INVALID_PACKAGE_JSON = 'INVALID_PACKAGE_JSON';
 export const ERROR_BIN_NOT_FOUND = 'BIN_NOT_FOUND';

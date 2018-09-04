@@ -1,10 +1,8 @@
-import * as path from 'path';
-
-import { fsReadFile, pathExists } from '@ionic/cli-framework/utils/fs';
+import { fsReadFile, pathExists } from '@ionic/utils-fs';
 import chalk from 'chalk';
-
 import * as ζexpress from 'express';
 import * as ζproxyMiddleware from 'http-proxy-middleware';
+import * as path from 'path';
 
 import { ConfigFileProxy } from './config';
 import { DEV_SERVER_PREFIX, LiveReloadFunction, createDevLoggerServer, createDevServerHandler, createLiveReloadServer, injectDevServerScript, injectLiveReloadScript } from './dev-server';

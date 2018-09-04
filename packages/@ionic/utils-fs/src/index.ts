@@ -1,16 +1,33 @@
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 
 import * as makeDir from 'make-dir';
 import * as ζncp from 'ncp';
 import * as wfa from 'write-file-atomic';
 
-import { compilePaths } from './path';
-import { promisify } from './promise';
+interface Promisify {
+  <T>(func: (callback: (err: any, result?: T) => void) => void): () => Promise<T>;
+  <T, A1>(func: (arg1: A1, callback: (err: any, result?: T) => void) => void): (arg1: A1) => Promise<T>;
+  <T, A1, A2>(func: (arg1: A1, arg2: A2, callback: (err: any, result?: T) => void) => void): (arg1: A1, arg2: A2) => Promise<T>;
+  <T, A1, A2, A3>(func: (arg1: A1, arg2: A2, arg3: A3, callback: (err: any, result?: T) => void) => void): (arg1: A1, arg2: A2, arg3: A3) => Promise<T>;
+  <T, A1, A2, A3, A4>(func: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, callback: (err: any, result?: T) => void) => void): (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => Promise<T>;
+  <T, A1, A2, A3, A4, A5>(func: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, callback: (err: any, result?: T) => void) => void): (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => Promise<T>;
+}
 
-export const ERROR_FILE_NOT_FOUND = 'FILE_NOT_FOUND';
-export const ERROR_FILE_INVALID_JSON = 'FILE_INVALID_JSON';
-export const ERROR_OVERWRITE_DENIED = 'OVERWRITE_DENIED';
+const promisify: Promisify = (func: any) => {
+  return (...args: any[]) => {
+    return new Promise((resolve, reject) => {
+      func(...args, (err: any, response: any) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(response);
+      });
+    });
+  };
+};
 
 export interface FSReadFileOptions {
   encoding: string;
@@ -72,18 +89,8 @@ export async function readDir(dir: string, options?: { recursive?: boolean; }): 
 }
 
 export async function fsReadJsonFile(filePath: string, options: FSReadFileOptions = { encoding: 'utf8' }): Promise<{ [key: string]: any }> {
-  try {
-    const f = await fsReadFile(filePath, options);
-    return JSON.parse(f);
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      throw ERROR_FILE_NOT_FOUND;
-    } else if (e instanceof SyntaxError) {
-      throw ERROR_FILE_INVALID_JSON;
-    }
-
-    throw e;
-  }
+  const f = await fsReadFile(filePath, options);
+  return JSON.parse(f);
 }
 
 export async function fsWriteJsonFile(filePath: string, json: { [key: string]: any; }, options: FSWriteFileOptions): Promise<void> {
@@ -249,4 +256,44 @@ export async function findBaseDirectory(dir: string, file: string): Promise<stri
       return d;
     }
   }
+}
+
+/**
+ * Generate a random file path within the computer's temporary directory.
+ *
+ * @param prefix Optionally provide a filename prefix.
+ */
+export function tmpfilepath(prefix?: string): string {
+  const rn = Math.random().toString(16).substring(2, 8);
+  const p = path.resolve(os.tmpdir(), prefix ? `${prefix}-${rn}` : rn);
+
+  return p;
+}
+
+/**
+ * Given an absolute system path, compile an array of paths working backwards
+ * one directory at a time, always ending in the root directory.
+ *
+ * For example, `'/some/dir'` => `['/some/dir', '/some', '/']`
+ *
+ * @param filePath Absolute system base path.
+ */
+export function compilePaths(filePath: string): string[] {
+  filePath = path.normalize(filePath);
+
+  if (!path.isAbsolute(filePath)) {
+    throw new Error(`${filePath} is not an absolute path`);
+  }
+
+  const parsed = path.parse(filePath);
+
+  if (filePath === parsed.root) {
+    return [filePath];
+  }
+
+  return filePath
+    .slice(parsed.root.length)
+    .split(path.sep)
+    .map((segment, i, array) => parsed.root + path.join(...array.slice(0, array.length - i)))
+    .concat(parsed.root);
 }

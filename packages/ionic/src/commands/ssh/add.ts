@@ -6,11 +6,10 @@ import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
-import { ERROR_FILE_NOT_FOUND, pathAccessible, pathExists } from '@ionic/cli-framework/utils/fs';
-
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isSuperAgentError } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
+import { pathAccessible, pathExists } from '@ionic/utils-fs';
 
 import { SSHBaseCommand } from './base';
 
@@ -64,7 +63,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
     try {
       [ pubkey ] = await parsePublicKeyFile(pubkeyPath);
     } catch (e) {
-      if (e === ERROR_FILE_NOT_FOUND) {
+      if (e.code === 'ENOENT') {
         throw new FatalException(
           `${chalk.bold(prettyPath(pubkeyPath))} does not appear to exist. Please specify a valid SSH public key.\n` +
           `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`

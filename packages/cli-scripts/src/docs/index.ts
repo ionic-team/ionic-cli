@@ -4,8 +4,8 @@ import chalk from 'chalk';
 import stripAnsi = require('strip-ansi');
 
 import { Command, CommandHelpSchemaInput, CommandHelpSchemaOption, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-framework';
-import { fsMkdirp, fsWriteFile, removeDirectory } from '@ionic/cli-framework/utils/fs';
 import { strcmp } from '@ionic/cli-framework/utils/string';
+import { fsMkdirp, fsWriteFile, removeDirectory } from '@ionic/utils-fs';
 
 import { ProjectType } from '@ionic/cli-utils';
 import { CommandHelpSchema, NamespaceSchemaHelpFormatter } from '@ionic/cli-utils/lib/help';

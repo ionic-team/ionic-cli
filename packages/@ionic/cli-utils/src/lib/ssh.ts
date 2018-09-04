@@ -1,4 +1,4 @@
-import { ERROR_FILE_NOT_FOUND, fsReadFile, fsStat } from '@ionic/cli-framework/utils/fs';
+import { fsReadFile, fsStat } from '@ionic/utils-fs';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -16,16 +16,6 @@ export async function getGeneratedPrivateKeyPath(userId = 0): Promise<string> {
 }
 
 export async function parsePublicKeyFile(pubkeyPath: string): Promise<[string, string, string, string]> {
-  try {
-    await fsStat(pubkeyPath);
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      throw ERROR_FILE_NOT_FOUND;
-    }
-
-    throw e;
-  }
-
   return parsePublicKey((await fsReadFile(pubkeyPath, { encoding: 'utf8' })).trim());
 }
 

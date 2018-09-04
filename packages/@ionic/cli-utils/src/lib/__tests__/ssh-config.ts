@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import * as SSHConfig from 'ssh-config';
-import { fsReadFile } from '@ionic/cli-framework/utils/fs';
+import { fsReadFile } from '@ionic/utils-fs';
 
 import { ensureHostAndKeyPath } from '../ssh-config';
 

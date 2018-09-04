@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import * as fsSpy from '@ionic/cli-framework/utils/fs';
+import * as fsSpy from '@ionic/utils-fs';
 
 import * as httpSpy from '../../../utils/http';
 import * as resources from '../resources';

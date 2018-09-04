@@ -1,7 +1,7 @@
 import { LOGGER_LEVELS, createPromptModule } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { findBaseDirectory, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
+import { findBaseDirectory, fsReadJsonFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';

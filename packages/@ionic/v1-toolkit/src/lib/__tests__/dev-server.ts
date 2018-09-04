@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import { injectScript } from '../dev-server';
-import { fsReadFile } from '@ionic/cli-framework/utils/fs';
+import { fsReadFile } from '@ionic/utils-fs';
 
 describe('@ionic/ionic-v1', () => {
 

@@ -1,23 +1,11 @@
+import { Command, CommandLineInputs, CommandLineOptions, CommandMap, CommandMapDefault, Namespace, execute, validators } from '@ionic/cli-framework';
+import { fsReadFile } from '@ionic/utils-fs';
+import chalk from 'chalk';
+import * as express from 'express';
 import * as http from 'http';
 import * as https from 'https';
 import * as path from 'path';
 import * as tls from 'tls';
-
-import chalk from 'chalk';
-import * as express from 'express';
-
-import {
-  Command,
-  CommandLineInputs,
-  CommandLineOptions,
-  CommandMap,
-  CommandMapDefault,
-  Namespace,
-  execute,
-  validators,
-} from '@ionic/cli-framework';
-
-import { fsReadFile } from '@ionic/cli-framework/utils/fs';
 
 const WWW_DIRECTORY = path.join(__dirname, '..', 'www');
 

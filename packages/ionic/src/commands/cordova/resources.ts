@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { cacheFileChecksum, copyFile, pathExists } from '@ionic/cli-framework/utils/fs';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, KnownPlatform, ResourcesConfig, ResourcesImageConfig, SourceImage } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { cacheFileChecksum, copyFile, pathExists } from '@ionic/utils-fs';
 
 import { CordovaCommand } from './base';
 

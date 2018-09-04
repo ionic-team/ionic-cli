@@ -2,10 +2,9 @@ import chalk from 'chalk';
 
 import { validators } from '@ionic/cli-framework';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
-import { fileToString, fsWriteFile } from '@ionic/cli-framework/utils/fs';
-
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { fileToString, fsWriteFile } from '@ionic/utils-fs';
 
 import { SSHBaseCommand } from './base';
 

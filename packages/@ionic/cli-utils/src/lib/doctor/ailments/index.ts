@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 
-import { fsReadFile } from '@ionic/cli-framework/utils/fs';
+import { fsReadFile } from '@ionic/utils-fs';
 
 import { TreatableAilment } from '../../../definitions';
 import { AppClient } from '../../app';

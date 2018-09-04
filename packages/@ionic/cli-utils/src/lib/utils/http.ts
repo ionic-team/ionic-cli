@@ -3,7 +3,7 @@ import * as Debug from 'debug';
 import * as ζsuperagent from 'superagent';
 
 import { conform } from '@ionic/cli-framework/utils/array';
-import { fsReadFile } from '@ionic/cli-framework/utils/fs';
+import { fsReadFile } from '@ionic/utils-fs';
 
 import { CreateRequestOptions, HttpMethod } from '../../definitions';
 

@@ -2,11 +2,11 @@ import chalk from 'chalk';
 import * as path from 'path';
 
 import { ERROR_SHELL_COMMAND_NOT_FOUND, ShellCommandError } from '@ionic/cli-framework';
-import { pathExists } from '@ionic/cli-framework/utils/fs';
 import { CommandInstanceInfo } from '@ionic/cli-utils';
 import { Command } from '@ionic/cli-utils/lib/command';
 import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { runCommand } from '@ionic/cli-utils/lib/executor';
+import { pathExists } from '@ionic/utils-fs';
 
 export abstract class CapacitorCommand extends Command {
   async checkCapacitor(runinfo: CommandInstanceInfo) {

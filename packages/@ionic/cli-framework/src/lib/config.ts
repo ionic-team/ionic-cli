@@ -1,8 +1,7 @@
+import { makeDir, writeFileAtomicSync } from '@ionic/utils-fs';
 import * as fs from 'fs';
 import * as lodash from 'lodash';
 import * as path from 'path';
-
-import { makeDir, writeFileAtomicSync } from '../utils/fs';
 
 export interface BaseConfigOptions {
   /**

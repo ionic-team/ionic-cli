@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { copyDirectory, fsMkdirp, fsStat, pathExists, readDir, removeDirectory } from '@ionic/cli-framework/utils/fs';
+import { copyDirectory, fsMkdirp, fsStat, pathExists, readDir, removeDirectory } from '@ionic/utils-fs';
 
 import { IConfig, IIntegration, IIntegrationAddOptions, ILogger, IProject, IShell, InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../definitions';
 import { IntegrationNotFoundException } from '../errors';

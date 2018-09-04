@@ -1,4 +1,4 @@
-import { ERROR_FILE_INVALID_JSON, ERROR_FILE_NOT_FOUND, fsReadJsonFile } from '@ionic/cli-framework/utils/fs';
+import { fsReadJsonFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 
 import { IConfig, StarterList, StarterManifest, StarterTemplate } from '../definitions';
@@ -19,9 +19,9 @@ export async function readStarterManifest(p: string): Promise<StarterManifest> {
 
     return manifest;
   } catch (e) {
-    if (e === ERROR_FILE_NOT_FOUND) {
+    if (e.code === 'ENOENT') {
       throw new Error(`${p} not found`);
-    } else if (e === ERROR_FILE_INVALID_JSON) {
+    } else if (e instanceof SyntaxError) {
       throw new Error(`${p} is not valid JSON.`);
     }
 

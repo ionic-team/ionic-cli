@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { pathExists } from '@ionic/cli-framework/utils/fs';
+import { pathExists } from '@ionic/utils-fs';
 
 import { IShell } from '../definitions';
 

@@ -5,8 +5,7 @@ import * as lodash from 'lodash';
 
 import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { fsMkdirp, fsUnlink, fsWriteFile, pathExists } from '@ionic/cli-framework/utils/fs';
-import { tmpfilepath } from '@ionic/cli-framework/utils/path';
+import { fsMkdirp, fsUnlink, fsWriteFile, pathExists, tmpfilepath } from '@ionic/utils-fs';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
 import { FatalException } from '@ionic/cli-utils/lib/errors';

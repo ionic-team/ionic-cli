@@ -4,9 +4,8 @@ import chalk from 'chalk';
 
 import { OptionGroup, contains, validate } from '@ionic/cli-framework';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
-import { fsMkdirp, fsUnlink, pathExists } from '@ionic/cli-framework/utils/fs';
-
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { fsMkdirp, fsUnlink, pathExists } from '@ionic/utils-fs';
 
 import { SSHBaseCommand } from './base';
 

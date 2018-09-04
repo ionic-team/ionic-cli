@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { fsReadFile } from '@ionic/cli-framework/utils/fs';
+import { fsReadFile } from '@ionic/utils-fs';
 
 export async function getAndroidSdkToolsVersion(): Promise<string | undefined> {
   const androidHome = await locateSDKHome();
