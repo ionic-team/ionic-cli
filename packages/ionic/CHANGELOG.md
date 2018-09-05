@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.1.2"></a>
+## [4.1.2](https://github.com/ionic-team/ionic-cli/compare/ionic@4.1.1...ionic@4.1.2) (2018-09-05)
+
+
+### Bug Fixes
+
+* **capacitor:** use integration root for Capacitor CLI ([81a45d5](https://github.com/ionic-team/ionic-cli/commit/81a45d5))
+
+
+
+
 <a name="4.1.1"></a>
 ## [4.1.1](https://github.com/ionic-team/ionic-cli/compare/ionic@4.1.0...ionic@4.1.1) (2018-08-20)
 
