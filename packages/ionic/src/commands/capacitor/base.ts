@@ -98,6 +98,12 @@ export abstract class CapacitorCommand extends Command {
   }
 
   private async _runCapacitor(argList: string[]) {
-    await this.env.shell.run('capacitor', argList, { fatalOnNotFound: false, truncateErrorOutput: 5000, stdio: 'inherit' });
+    if (!this.project) {
+      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
+    }
+
+    const { root: cwd } = await this.project.getIntegration('capacitor');
+
+    await this.env.shell.run('capacitor', argList, { fatalOnNotFound: false, truncateErrorOutput: 5000, stdio: 'inherit', cwd });
   }
 }
