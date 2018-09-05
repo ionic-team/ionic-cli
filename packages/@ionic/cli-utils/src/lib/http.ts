@@ -3,7 +3,7 @@ import * as lodash from 'lodash';
 import * as ζsuperagent from 'superagent';
 import * as util from 'util';
 
-import { APIResponse, APIResponseMeta, APIResponsePageTokenMeta, APIResponseSuccess, HttpMethod, IClient, IConfig, IPaginator, PagePaginatorState, PaginateArgs, PaginatorDeps, PaginatorGuard, PaginatorRequestGenerator, ResourceClientRequestModifiers, Response, SuperAgentError, TokenPaginatorState } from '../definitions';
+import { APIResponse, APIResponsePageTokenMeta, APIResponseSuccess, HttpMethod, IClient, IConfig, IPaginator, PagePaginatorState, PaginateArgs, PaginatorDeps, PaginatorGuard, PaginatorRequestGenerator, ResourceClientRequestModifiers, Response, SuperAgentError, TokenPaginatorState } from '../definitions';
 import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
 
 import { FatalException } from './errors';
@@ -177,8 +177,7 @@ export class TokenPaginator<T extends Response<object[]>> implements IPaginator<
     };
   }
 
-  isPageTokenResponseMeta(m: APIResponseMeta): m is APIResponsePageTokenMeta {
-    const meta = m as APIResponsePageTokenMeta;
+  isPageTokenResponseMeta(meta: any): meta is APIResponsePageTokenMeta {
     return meta
       && (!meta.prev_page_token || typeof meta.prev_page_token === 'string')
       && (!meta.next_page_token || typeof meta.next_page_token === 'string');

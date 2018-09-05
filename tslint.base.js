@@ -3,5 +3,6 @@ module.exports = {
   "rules": {
     "forin": false, // TODO
     "no-empty-interface": false, // TODO
+    "strict-boolean-conditions": false,
   }
 };

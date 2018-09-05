@@ -58,7 +58,7 @@ export abstract class BaseConfig<T extends object> {
   get<P extends keyof T>(property: P): T[P];
   get<P extends keyof T>(property: P, defaultValue: NonNullable<T[P]>): NonNullable<T[P]>;
   get<P extends keyof T>(property: P, defaultValue?: T[P]): T[P] {
-    const value = this.c[property];
+    const value: any = this.c[property];
 
     if (defaultValue && typeof value === 'undefined') {
       return defaultValue;

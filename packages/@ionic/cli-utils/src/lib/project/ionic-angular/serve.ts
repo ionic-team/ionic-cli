@@ -130,7 +130,7 @@ class IonicAngularServeCLI extends ServeCLI<IonicAngularServeOptions> {
   readonly pkg = '@ionic/app-scripts';
   readonly program = DEFAULT_PROGRAM;
   readonly prefix = 'app-scripts';
-  readonly script = SERVE_SCRIPT;
+  readonly script?: string = SERVE_SCRIPT;
 
   protected stdoutFilter(line: string): boolean {
     if (this.resolvedProgram !== this.program) {

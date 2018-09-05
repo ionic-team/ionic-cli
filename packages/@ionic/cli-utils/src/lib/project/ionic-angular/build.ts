@@ -71,7 +71,7 @@ export class IonicAngularBuildCLI extends BuildCLI<IonicAngularBuildOptions> {
   readonly pkg = '@ionic/app-scripts';
   readonly program = DEFAULT_PROGRAM;
   readonly prefix = 'app-scripts';
-  readonly script = BUILD_SCRIPT;
+  readonly script?: string = BUILD_SCRIPT;
 
   protected buildOptionsToAppScriptsArgs(options: IonicAngularBuildOptions): string[] {
     const minimistArgs = {

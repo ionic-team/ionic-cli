@@ -47,7 +47,7 @@ Like running ${chalk.green('cordova plugin')} directly, but provides friendly ch
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     await this.preRunChecks(runinfo);
 
-    inputs[0] = (typeof inputs[0] === 'undefined') ? 'ls' : inputs[0];
+    inputs[0] = !inputs[0] ? 'ls' : inputs[0];
     inputs[0] = (inputs[0] === 'rm') ? 'remove' : inputs[0];
     inputs[0] = (inputs[0] === 'list') ? 'ls' : inputs[0];
 

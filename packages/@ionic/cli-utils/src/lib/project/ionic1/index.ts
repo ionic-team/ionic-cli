@@ -18,8 +18,8 @@ export const ERROR_INVALID_BOWER_JSON = 'INVALID_BOWER_JSON';
 
 export interface BowerJson {
   name: string;
-  dependencies?: { [key: string]: string };
-  devDependencies?: { [key: string]: string };
+  dependencies?: { [key: string]: string | undefined; };
+  devDependencies?: { [key: string]: string | undefined; };
 }
 
 function isBowerJson(obj: any): obj is BowerJson {
