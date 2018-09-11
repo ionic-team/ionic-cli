@@ -6,4 +6,5 @@ export interface CordovaServeBuilderSchema {
   host?: string;
   proxyConfig?: string;
   cordovaBasePath?: string;
+  sourceMap?: boolean;
 }

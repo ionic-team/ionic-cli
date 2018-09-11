@@ -32,6 +32,10 @@
     "cordovaBasePath": {
       "type": "string",
       "description": "Path to cordova directory"
+    },
+    "sourceMap":  {
+      "type": "boolean",
+      "description": "Create source-map file"
     }
   },
   "additionalProperties": false,
