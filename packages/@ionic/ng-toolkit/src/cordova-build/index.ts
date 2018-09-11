@@ -41,22 +41,26 @@ export class CordovaBuildBuilder implements Builder<CordovaBuildBuilderSchema> {
 
     const platformWWWPath = join(cordovaBasePath, normalize(`platforms/${options.platform}/platform_www`));
 
-    // Add Cordova www assets that were generated whenever platform(s) and
-    // plugin(s) are added. This includes `cordova.js`,
-    // `cordova_plugins.js`, and all plugin JS.
-    browserOptions.assets.push({
-      glob: '**/*',
-      input: getSystemPath(platformWWWPath),
-      output: './',
-    });
+    if (options.cordovaAssets) {
+      // Add Cordova www assets that were generated whenever platform(s) and
+      // plugin(s) are added. This includes `cordova.js`,
+      // `cordova_plugins.js`, and all plugin JS.
+      browserOptions.assets.push({
+        glob: '**/*',
+        input: getSystemPath(platformWWWPath),
+        output: './',
+      });
 
-    // Register `cordova.js` as a global script so it is included in
-    // `index.html`.
-    browserOptions.scripts.push({
-      input: getSystemPath(join(platformWWWPath, normalize('cordova.js'))),
-      bundleName: 'cordova',
-      lazy: false,
-    });
+      // Register `cordova.js` as a global script so it is included in
+      // `index.html`.
+      browserOptions.scripts.push({
+        input: getSystemPath(join(platformWWWPath, normalize('cordova.js'))),
+        bundleName: 'cordova',
+        lazy: false,
+      });
+    } else {
+      // TODO: we still need to add cordova.js to index.html if missing
+    }
   }
 
   protected _getBrowserConfig(options: CordovaBuildBuilderSchema): Observable<BuilderConfiguration<BrowserBuilderSchema>> {

@@ -18,6 +18,11 @@
     "sourceMap":  {
       "type": "boolean",
       "description": "Create source-map file"
+    },
+    "cordovaAssets": {
+      "type": "boolean",
+      "description": "Bundle Cordova assets with build",
+      "default": true
     }
   },
   "additionalProperties": false,

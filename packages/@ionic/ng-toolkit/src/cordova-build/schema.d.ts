@@ -3,4 +3,5 @@ export interface CordovaBuildBuilderSchema {
   platform: string;
   cordovaBasePath?: string;
   sourceMap?: boolean;
+  cordovaAssets?: boolean;
 }

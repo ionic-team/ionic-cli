@@ -42,12 +42,20 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
         },
         {
           name: 'source-map',
-          summary: 'Output sourcemaps',
+          summary: 'Always output source maps',
           type: Boolean,
           groups: [OptionGroup.Advanced],
           hint: chalk.dim('[ng]'),
         },
         ...NG_BUILD_OPTIONS,
+        {
+          name: 'cordova-assets',
+          summary: 'Do not bundle Cordova assets during Cordova build',
+          type: Boolean,
+          groups: [OptionGroup.Advanced],
+          // hint: chalk.dim('[ng]'),
+          default: true,
+        },
       ],
       exampleCommands: [
         '--prod',
@@ -60,11 +68,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
     const sourcemaps = typeof options['source-map'] === 'boolean' ? Boolean(options['source-map']) : undefined;
+    const cordovaAssets = typeof options['cordova-assets'] === 'boolean' ? Boolean(options['cordova-assets']) : undefined;
 
     return {
       ...baseOptions,
       configuration,
       sourcemaps,
+      cordovaAssets,
       type: 'angular',
     };
   }
@@ -99,6 +109,7 @@ class AngularBuildCLI extends BuildCLI<AngularBuildOptions> {
     const args: ParsedArgs = {
       _: [],
       'source-map': options.sourcemaps !== false ? options.sourcemaps : 'false',
+      'cordova-assets': options.cordovaAssets !== false ? options.cordovaAssets : 'false',
     };
 
     if (options.engine === 'cordova') {
