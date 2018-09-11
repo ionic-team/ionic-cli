@@ -131,6 +131,10 @@ function addRouteToRoutesArray(source: ts.SourceFile, ngModulePath: string, rout
         const node = declaration.initializer.getChildAt(1);
         const lastRouteNode = node.getLastToken();
 
+        if (!lastRouteNode) {
+          return [];
+        }
+
         const changes: Change[] = [];
         let trailingCommaFound = false;
 

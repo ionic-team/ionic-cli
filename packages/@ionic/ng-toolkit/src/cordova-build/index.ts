@@ -1,12 +1,11 @@
 import { BuildEvent, Builder, BuilderConfiguration, BuilderContext } from '@angular-devkit/architect';
-// https://github.com/angular/devkit/issues/963
+import { BrowserBuilder } from '@angular-devkit/build-angular/src/browser';
+import { BrowserBuilderSchema } from '@angular-devkit/build-angular/src/browser/schema';
 import { getSystemPath, join, normalize } from '@angular-devkit/core';
 import { Observable, of } from 'rxjs';
 import { concatMap, tap } from 'rxjs/operators';
 
 import { CordovaBuildBuilderSchema } from './schema';
-
-const { BrowserBuilder } = require('@angular-devkit/build-angular/src/browser'); // tslint:disable-line
 
 export { CordovaBuildBuilderSchema };
 
@@ -21,8 +20,8 @@ export class CordovaBuildBuilder implements Builder<CordovaBuildBuilderSchema> {
     );
   }
 
-  buildBrowserConfig(options: CordovaBuildBuilderSchema): Observable</* BrowserBuilderSchema */any> {
-    let browserConfig: /* BrowserBuilderSchema */any;
+  buildBrowserConfig(options: CordovaBuildBuilderSchema): Observable<BuilderConfiguration<BrowserBuilderSchema>> {
+    let browserConfig: BuilderConfiguration<BrowserBuilderSchema>;
 
     return of(null).pipe(// tslint:disable-line:no-null-keyword
       concatMap(() => this._getBrowserConfig(options)),
@@ -33,7 +32,7 @@ export class CordovaBuildBuilder implements Builder<CordovaBuildBuilderSchema> {
   }
 
   // Mutates browserOptions
-  prepareBrowserConfig(options: CordovaBuildBuilderSchema, browserOptions: /* BrowserBuilderSchema */any) {
+  prepareBrowserConfig(options: CordovaBuildBuilderSchema, browserOptions: BrowserBuilderSchema) {
     const cordovaBasePath = normalize(options.cordovaBasePath ? options.cordovaBasePath : '.');
 
     // We always need to output the build to `www` because it is a hard
@@ -56,14 +55,15 @@ export class CordovaBuildBuilder implements Builder<CordovaBuildBuilderSchema> {
     browserOptions.scripts.push({
       input: getSystemPath(join(platformWWWPath, normalize('cordova.js'))),
       bundleName: 'cordova',
+      lazy: false,
     });
   }
 
-  protected _getBrowserConfig(options: CordovaBuildBuilderSchema): Observable</* BrowserBuilderSchema */any> {
+  protected _getBrowserConfig(options: CordovaBuildBuilderSchema): Observable<BuilderConfiguration<BrowserBuilderSchema>> {
     const { architect } = this.context;
     const [ project, target, configuration ] = options.browserTarget.split(':');
     const browserTargetSpec = { project, target, configuration, overrides: {} };
-    const builderConfig = architect.getBuilderConfiguration</* BrowserBuilderSchema */any>(browserTargetSpec);
+    const builderConfig = architect.getBuilderConfiguration<BrowserBuilderSchema>(browserTargetSpec);
 
     return architect.getBuilderDescription(builderConfig).pipe(
       concatMap(browserDescription => architect.validateBuilderOptions(builderConfig, browserDescription))

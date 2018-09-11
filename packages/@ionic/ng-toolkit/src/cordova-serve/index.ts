@@ -1,14 +1,14 @@
 import { BuildEvent, Builder, BuilderConfiguration, BuilderContext, BuilderDescription } from '@angular-devkit/architect';
+import { BrowserBuilderSchema } from '@angular-devkit/build-angular/src/browser/schema';
+import { DevServerBuilder, DevServerBuilderOptions } from '@angular-devkit/build-angular/src/dev-server';
 import { Path, virtualFs } from '@angular-devkit/core';
 import * as ζfs from 'fs';
 import { Observable, of } from 'rxjs';
 import { concatMap, tap } from 'rxjs/operators';
 
-import { CordovaBuildBuilder } from '../cordova-build';
+import { CordovaBuildBuilder, CordovaBuildBuilderSchema } from '../cordova-build';
 
 import { CordovaServeBuilderSchema } from './schema';
-
-const { DevServerBuilder } = require('@angular-devkit/build-angular/src/dev-server'); // tslint:disable-line
 
 export class CordovaServeBuilder implements Builder<CordovaServeBuilderSchema> {
   constructor(public context: BuilderContext) {}
@@ -17,7 +17,7 @@ export class CordovaServeBuilder implements Builder<CordovaServeBuilderSchema> {
     const [ project, target, configuration ] = builderConfig.options.devServerTarget.split(':');
     const { port, host, proxyConfig } = builderConfig.options;
     const devServerTargetSpec = { project, target, configuration, overrides: { port, host, proxyConfig } };
-    const devServerBuilderConfig = this.context.architect.getBuilderConfiguration</* DevServerBuilderSchema */any>(devServerTargetSpec);
+    const devServerBuilderConfig = this.context.architect.getBuilderConfiguration<DevServerBuilderOptions>(devServerTargetSpec);
 
     // TODO: architect doesn't use the defaults from schema
     devServerBuilderConfig.options.watch = true;
@@ -44,11 +44,11 @@ class CordovaDevServerBuilder extends DevServerBuilder {
   //   return super.run(builderConfig);
   // }
 
-  buildWebpackConfig(root: Path, projectRoot: Path, host: virtualFs.Host<ζfs.Stats>, browserOptions: /* BrowserBuilderSchema */any) {
+  buildWebpackConfig(root: Path, projectRoot: Path, host: virtualFs.Host<ζfs.Stats>, browserOptions: BrowserBuilderSchema) {
     const { platform } = this.cordovaServeOptions;
     const [ project, target, configuration ] = this.cordovaServeOptions.cordovaBuildTarget.split(':');
     const cordovaBuildTargetSpec = { project, target, configuration, overrides: { platform } };
-    const cordovaBuildTargetConfig = this.context.architect.getBuilderConfiguration(cordovaBuildTargetSpec);
+    const cordovaBuildTargetConfig = this.context.architect.getBuilderConfiguration<CordovaBuildBuilderSchema>(cordovaBuildTargetSpec);
 
     const builder = new CordovaBuildBuilder(this.context);
     builder.prepareBrowserConfig(cordovaBuildTargetConfig.options, browserOptions);
