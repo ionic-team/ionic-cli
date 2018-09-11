@@ -57,7 +57,7 @@
     "@ionic/cli-utils": "2.2.1",
     "@ionic/utils-fs": "0.0.1",
     "chalk": "^2.3.0",
-    "debug": "^3.1.0",
+    "debug": "^4.0.0",
     "lodash": "^4.17.5",
     "opn": "^5.2.0",
     "semver": "^5.5.0",
