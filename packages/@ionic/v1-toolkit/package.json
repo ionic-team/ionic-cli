@@ -46,7 +46,7 @@
     "@ionic/utils-fs": "0.0.1",
     "chalk": "^2.3.0",
     "chokidar": "^2.0.0",
-    "debug": "^3.1.0",
+    "debug": "^4.0.0",
     "express": "^4.16.2",
     "gulp": "^3.9.1",
     "http-proxy-middleware": "^0.19.0",
