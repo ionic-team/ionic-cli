@@ -37,7 +37,7 @@
     ]
   },
   "dependencies": {
-    "debug": "^3.1.0",
+    "debug": "^4.0.0",
     "netmask": "^1.0.6",
     "tslib": "^1.9.0",
     "ws": "^6.0.0"
