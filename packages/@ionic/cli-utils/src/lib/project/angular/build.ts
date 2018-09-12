@@ -108,7 +108,7 @@ class AngularBuildCLI extends BuildCLI<AngularBuildOptions> {
     const args: ParsedArgs = {
       _: [],
       'source-map': options.sourcemaps !== false ? options.sourcemaps : 'false',
-      'cordova-assets': options.cordovaAssets !== false ? options.cordovaAssets : 'false',
+      'cordova-assets': options.cordovaAssets !== false ? undefined : 'false',
     };
 
     if (options.engine === 'cordova') {
