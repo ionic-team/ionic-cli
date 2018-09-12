@@ -507,6 +507,7 @@ export interface AngularBuildOptions extends BuildOptions<'angular'> {
    */
   configuration?: string;
   sourcemaps?: boolean;
+  cordovaAssets?: boolean;
 }
 
 export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> {
