@@ -15,7 +15,10 @@ export class Preview {
       return;
     }
 
-    const qp = { 'ionic:mode': platformMode(platform) };
+    const qp = {
+      'ionic:mode': platformMode(platform),
+      'ionic:persistConfig': 'true',
+    };
 
     if (platform === PLATFORM_IOS) {
       qp['ionic:statusbarPadding'] = 'true';

@@ -78,7 +78,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   }
 
   modifyOpenURL(url: string, options: AngularServeOptions): string {
-    return `${url}${options.browserOption ? options.browserOption : ''}${options.platform ? `?ionic:mode=${this.platformToMode(options.platform)}` : ''}`;
+    return `${url}${options.browserOption ? options.browserOption : ''}${options.platform ? `?ionic:mode=${this.platformToMode(options.platform)}&ionic:persistConfig=true` : ''}`;
   }
 
   async serveProject(options: AngularServeOptions): Promise<ServeDetails> {
