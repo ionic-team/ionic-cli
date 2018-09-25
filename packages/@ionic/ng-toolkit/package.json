@@ -45,7 +45,7 @@
     "@ionic/cli-framework": "1.0.7",
     "chalk": "^2.3.0",
     "debug": "^4.0.0",
-    "rxjs": "~6.2.0",
+    "rxjs": "~6.3.2",
     "tslib": "^1.9.0"
   },
   "devDependencies": {
