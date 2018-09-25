@@ -49,10 +49,10 @@
     "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "@angular-devkit/architect": "~0.9.0-beta.2",
-    "@angular-devkit/build-angular": "~0.9.0-beta.2",
-    "@angular-devkit/core": "~0.9.0-beta.2",
-    "@angular-devkit/schematics": "~0.9.0-beta.2",
+    "@angular-devkit/architect": "0.9.0-beta.3",
+    "@angular-devkit/build-angular": "0.9.0-beta.3",
+    "@angular-devkit/core": "0.9.0-beta.3",
+    "@angular-devkit/schematics": "0.9.0-beta.3",
     "@types/debug": "0.0.30",
     "@types/node": "^6.0.101",
     "@types/webpack": "^4.4.11",
@@ -63,9 +63,9 @@
     "typescript": "~3.0.1"
   },
   "peerDependencies": {
-    "@angular-devkit/architect": "~0.9.0-beta.2",
-    "@angular-devkit/build-angular": "~0.9.0-beta.2",
-    "@angular-devkit/core": "~0.9.0-beta.2",
-    "@angular-devkit/schematics": "~0.9.0-beta.2"
+    "@angular-devkit/architect": "0.9.0-beta.3",
+    "@angular-devkit/build-angular": "0.9.0-beta.3",
+    "@angular-devkit/core": "0.9.0-beta.3",
+    "@angular-devkit/schematics": "0.9.0-beta.3"
   }
 }
