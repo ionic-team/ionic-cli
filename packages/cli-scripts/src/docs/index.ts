@@ -7,9 +7,8 @@ import { Command, CommandHelpSchemaInput, CommandHelpSchemaOption, CommandLineIn
 import { strcmp } from '@ionic/cli-framework/utils/string';
 import { mkdirp, removeDirectory, writeFile } from '@ionic/utils-fs';
 
-import { ProjectType } from '@ionic/cli-utils';
-import { CommandHelpSchema, NamespaceSchemaHelpFormatter } from '@ionic/cli-utils/lib/help';
-import { generateContext, loadExecutor } from 'ionic';
+import { ProjectType, generateContext, loadExecutor } from 'ionic';
+import { CommandHelpSchema, NamespaceSchemaHelpFormatter } from 'ionic/lib/help';
 
 import { ansi2md, links2md } from './utils';
 

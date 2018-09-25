@@ -1,13 +1,12 @@
+import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
+import { sleepForever } from '@ionic/cli-framework/utils/process';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
-import { sleepForever } from '@ionic/cli-framework/utils/process';
-
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT, serve } from '@ionic/cli-utils/lib/serve';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../definitions';
+import { Command } from '../lib/command';
+import { FatalException } from '../lib/errors';
+import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT, serve } from '../lib/serve';
 
 export class ServeCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {

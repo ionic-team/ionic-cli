@@ -1,12 +1,12 @@
+import { ERROR_SHELL_COMMAND_NOT_FOUND, ShellCommandError } from '@ionic/cli-framework';
+import { pathExists } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as path from 'path';
 
-import { ERROR_SHELL_COMMAND_NOT_FOUND, ShellCommandError } from '@ionic/cli-framework';
-import { CommandInstanceInfo } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { runCommand } from '@ionic/cli-utils/lib/executor';
-import { pathExists } from '@ionic/utils-fs';
+import { CommandInstanceInfo } from '../../definitions';
+import { Command } from '../../lib/command';
+import { FatalException } from '../../lib/errors';
+import { runCommand } from '../../lib/executor';
 
 export abstract class CapacitorCommand extends Command {
   async checkCapacitor(runinfo: CommandInstanceInfo) {
@@ -76,7 +76,7 @@ export abstract class CapacitorCommand extends Command {
       throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
 
-    const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
+    const { pkgManagerArgs } = await import('../../lib/utils/npm');
 
     const pkg = '@capacitor/cli';
     const [ manager, ...managerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { pkg, command: 'install', saveDev: true });

@@ -1,9 +1,11 @@
 import { OptionGroup } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, isSuperAgentError } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { BROWSERS } from '@ionic/cli-utils/lib/serve';
-import { createRequest } from '@ionic/cli-utils/lib/utils/http';
 import chalk from 'chalk';
+
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
+import { isSuperAgentError } from '../guards';
+import { Command } from '../lib/command';
+import { BROWSERS } from '../lib/serve';
+import { createRequest } from '../lib/utils/http';
 
 export class DocsCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {

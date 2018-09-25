@@ -1,15 +1,15 @@
+import { validators } from '@ionic/cli-framework';
+import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
+import { pathAccessible, pathExists } from '@ionic/utils-fs';
+import chalk from 'chalk';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import chalk from 'chalk';
-
-import { validators } from '@ionic/cli-framework';
-import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, isSuperAgentError } from '@ionic/cli-utils';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { runCommand } from '@ionic/cli-utils/lib/executor';
-import { pathAccessible, pathExists } from '@ionic/utils-fs';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { isSuperAgentError } from '../../guards';
+import { FatalException } from '../../lib/errors';
+import { runCommand } from '../../lib/executor';
 
 import { SSHBaseCommand } from './base';
 
@@ -53,7 +53,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
-    const { ERROR_SSH_INVALID_PUBKEY, SSHKeyClient, parsePublicKeyFile } = await import('@ionic/cli-utils/lib/ssh');
+    const { ERROR_SSH_INVALID_PUBKEY, SSHKeyClient, parsePublicKeyFile } = await import('../../lib/ssh');
 
     const pubkeyPath = expandPath(inputs[0]);
     const pubkeyName = prettyPath(pubkeyPath);

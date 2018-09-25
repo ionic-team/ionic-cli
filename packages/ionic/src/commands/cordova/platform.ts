@@ -1,10 +1,10 @@
+import { contains, validate, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { contains, validate, validators } from '@ionic/cli-framework';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { runCommand } from '@ionic/cli-utils/lib/executor';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { FatalException } from '../../lib/errors';
+import { runCommand } from '../../lib/executor';
 
 import { CordovaCommand } from './base';
 
@@ -72,8 +72,8 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
-    const { getPlatforms } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
-    const { filterArgumentsForCordova } = await import('@ionic/cli-utils/lib/integrations/cordova/utils');
+    const { getPlatforms } = await import('../../lib/integrations/cordova/project');
+    const { filterArgumentsForCordova } = await import('../../lib/integrations/cordova/utils');
 
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic cordova platform')} outside a project directory.`);

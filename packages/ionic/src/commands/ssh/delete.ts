@@ -1,7 +1,7 @@
+import { validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
-import { validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 
 import { SSHBaseCommand } from './base';
 
@@ -22,7 +22,7 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { SSHKeyClient } = await import('@ionic/cli-utils/lib/ssh');
+    const { SSHKeyClient } = await import('../../lib/ssh');
 
     if (!inputs[0]) {
       const user = this.env.session.getUser();
@@ -51,7 +51,7 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { SSHKeyClient } = await import('@ionic/cli-utils/lib/ssh');
+    const { SSHKeyClient } = await import('../../lib/ssh');
 
     const [ id ] = inputs;
 

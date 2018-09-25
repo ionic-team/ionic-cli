@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
+import { Command } from '../../lib/command';
+import { FatalException } from '../../lib/errors';
 
 export class GitRemoteCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
@@ -21,8 +21,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://dashboard.ionicframework.com')}
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { AppClient } = await import('@ionic/cli-utils/lib/app');
-    const { addIonicRemote, getIonicRemote, initializeRepo, isRepoInitialized, setIonicRemote } = await import('@ionic/cli-utils/lib/git');
+    const { AppClient } = await import('../../lib/app');
+    const { addIonicRemote, getIonicRemote, initializeRepo, isRepoInitialized, setIonicRemote } = await import('../../lib/git');
 
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic git remote')} outside a project directory.`);

@@ -1,7 +1,7 @@
+import { CommandGroup } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
-import { CommandGroup } from '@ionic/cli-framework';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 
 import { CapacitorCommand } from './base';
 

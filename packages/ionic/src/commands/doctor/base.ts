@@ -1,13 +1,13 @@
+import { concurrentFilter } from '@ionic/cli-framework/utils/array';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { concurrentFilter } from '@ionic/cli-framework/utils/array';
+import { IAilment, IAilmentRegistry, TreatableAilment } from '../../definitions';
+import { isTreatableAilment } from '../../guards';
+import { Command } from '../../lib/command';
+import { FatalException } from '../../lib/errors';
 
-import { IAilment, IAilmentRegistry, TreatableAilment, isTreatableAilment } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-
-const debug = Debug('ionic:cli:commands:doctor:base');
+const debug = Debug('ionic:commands:doctor:base');
 
 export abstract class DoctorCommand extends Command {
   async getRegistry(): Promise<IAilmentRegistry> {
@@ -15,7 +15,7 @@ export abstract class DoctorCommand extends Command {
       throw new FatalException(`Cannot use ${chalk.green('ionic doctor')} outside a project directory.`);
     }
 
-    const { AilmentRegistry } = await import('@ionic/cli-utils/lib/doctor');
+    const { AilmentRegistry } = await import('../../lib/doctor');
 
     const registry = new AilmentRegistry();
     await this.project.registerAilments(registry);

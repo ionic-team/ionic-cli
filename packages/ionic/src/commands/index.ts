@@ -1,5 +1,5 @@
-import { IProject, IonicEnvironment } from '@ionic/cli-utils';
-import { CommandMap, Namespace, NamespaceMap } from '@ionic/cli-utils/lib/namespace';
+import { IProject, IonicEnvironment } from '../definitions';
+import { CommandMap, Namespace, NamespaceMap } from '../lib/namespace';
 
 export interface IonicEnvironmentDeps {
   readonly env: IonicEnvironment;

@@ -1,9 +1,9 @@
 import chalk from 'chalk';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
-import { COMMON_BUILD_COMMAND_OPTIONS, build } from '@ionic/cli-utils/lib/build';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../definitions';
+import { COMMON_BUILD_COMMAND_OPTIONS, build } from '../lib/build';
+import { Command } from '../lib/command';
+import { FatalException } from '../lib/errors';
 
 export class BuildCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {

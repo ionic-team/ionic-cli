@@ -1,7 +1,9 @@
 import { OptionGroup, validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, PROJECT_FILE } from '@ionic/cli-utils';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
 import chalk from 'chalk';
+
+import { PROJECT_FILE } from '../../constants';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
+import { FatalException } from '../../lib/errors';
 
 import { BaseConfigCommand, getConfigValue, unsetConfigValue } from './base';
 

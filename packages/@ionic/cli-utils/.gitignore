@@ -1,4 +1,0 @@
-*.js
-!assets/**/*.js
-!tslint.js
-*.d.ts

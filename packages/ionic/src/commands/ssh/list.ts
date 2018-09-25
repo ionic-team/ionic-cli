@@ -1,8 +1,7 @@
+import { columnar } from '@ionic/cli-framework/utils/format';
 import chalk from 'chalk';
 
-import { columnar } from '@ionic/cli-framework/utils/format';
-
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 
 import { SSHBaseCommand } from './base';
 
@@ -27,8 +26,8 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { SSHKeyClient } = await import('@ionic/cli-utils/lib/ssh');
-    const { findHostSection, getConfigPath, isDirective, loadFromPath } = await import('@ionic/cli-utils/lib/ssh-config');
+    const { SSHKeyClient } = await import('../../lib/ssh');
+    const { findHostSection, getConfigPath, isDirective, loadFromPath } = await import('../../lib/ssh-config');
 
     const { json } = options;
 

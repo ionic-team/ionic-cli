@@ -1,4 +1,4 @@
-import { CommandMetadata } from '@ionic/cli-utils';
+import { CommandMetadata } from '../../definitions';
 
 import { RunCommand } from './run';
 

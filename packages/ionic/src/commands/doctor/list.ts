@@ -1,9 +1,9 @@
-import chalk from 'chalk';
-
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
+import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, isTreatableAilment } from '@ionic/cli-utils';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
+import { isTreatableAilment } from '../../guards';
 
 import { DoctorCommand } from './base';
 

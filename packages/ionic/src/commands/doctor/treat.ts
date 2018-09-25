@@ -1,8 +1,9 @@
+import { contains, validate } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
-import { contains, validate } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, TreatableAilment, isExitCodeException, isTreatableAilment } from '@ionic/cli-utils';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, TreatableAilment } from '../../definitions';
+import { isExitCodeException, isTreatableAilment } from '../../guards';
+import { FatalException } from '../../lib/errors';
 
 import { DoctorCommand } from './base';
 
@@ -34,7 +35,7 @@ Optionally supply the ${chalk.green('id')} argument to attempt to fix a single i
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { formatAilmentMessage } = await import('@ionic/cli-utils/lib/doctor');
+    const { formatAilmentMessage } = await import('../../lib/doctor');
 
     const [ id ] = inputs;
 
@@ -122,7 +123,7 @@ Optionally supply the ${chalk.green('id')} argument to attempt to fix a single i
   }
 
   async treatAilment(ailment: TreatableAilment) {
-    const { formatAilmentMessage } = await import('@ionic/cli-utils/lib/doctor');
+    const { formatAilmentMessage } = await import('../../lib/doctor');
 
     const treatmentSteps = await ailment.getTreatmentSteps();
     this.env.log.warn(await formatAilmentMessage(ailment));

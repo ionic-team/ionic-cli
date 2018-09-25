@@ -7,15 +7,20 @@ import { BaseError, InputValidationError, PackageJson, stripOptions } from '@ion
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { processExit } from '@ionic/cli-framework/utils/process';
 
-import { IPCMessage, IonicContext, generateIonicEnvironment, isExitCodeException, isSuperAgentError } from '@ionic/cli-utils';
-import { Executor } from '@ionic/cli-utils/lib/executor';
-import { mapLegacyCommand } from '@ionic/cli-utils/lib/init';
-
 import { IonicNamespace } from './commands';
+import { IPCMessage, IonicContext } from './definitions';
+import { isExitCodeException, isSuperAgentError } from './guards';
+import { generateIonicEnvironment } from './lib';
+import { Executor } from './lib/executor';
+import { mapLegacyCommand } from './lib/init';
 
-const debug = Debug('ionic:cli');
+export * from './constants';
+export * from './guards';
+export * from './definitions';
 
-const PACKAGE_ROOT_PATH = path.dirname(path.dirname(__filename));
+const debug = Debug('ionic');
+
+const PACKAGE_ROOT_PATH = __dirname;
 const PACKAGE_JSON_PATH = path.resolve(PACKAGE_ROOT_PATH, 'package.json');
 
 let _pkg: PackageJson | undefined;
@@ -141,7 +146,7 @@ export async function run(pargv: string[], env: NodeJS.ProcessEnv) {
       }
       ienv.log.msg(`Use the ${chalk.green('--help')} flag for more details.`);
     } else if (isSuperAgentError(err)) {
-      const { formatSuperAgentError } = await import('@ionic/cli-utils/lib/http');
+      const { formatSuperAgentError } = await import('./lib/http');
       ienv.log.rawmsg(formatSuperAgentError(err));
     } else if (err.code && err.code === 'ENOTFOUND' || err.code === 'ECONNREFUSED') {
       ienv.log.error(
@@ -179,7 +184,7 @@ export async function receive(msg: IPCMessage) {
   const { env, project } = _executor.namespace;
 
   if (msg.type === 'telemetry') {
-    const { sendCommand } = await import('@ionic/cli-utils/lib/telemetry');
+    const { sendCommand } = await import('./lib/telemetry');
 
     await sendCommand({
       getInfo: env.getInfo,

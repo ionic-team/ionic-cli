@@ -1,4 +1,4 @@
-import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
+import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class DoctorNamespace extends Namespace {
   async getMetadata() {

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
+import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class CordovaNamespace extends Namespace {
   async getMetadata() {

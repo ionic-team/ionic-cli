@@ -1,14 +1,14 @@
+import { CommandGroup, validators } from '@ionic/cli-framework';
+import { onBeforeExit, sleepForever } from '@ionic/cli-framework/utils/process';
 import chalk from 'chalk';
 import * as path from 'path';
 
-import { CommandGroup, validators } from '@ionic/cli-framework';
-import { onBeforeExit, sleepForever } from '@ionic/cli-framework/utils/process';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
-import { build } from '@ionic/cli-utils/lib/build';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '@ionic/cli-utils/lib/integrations/capacitor/config';
-import { generateOptionsForCapacitorBuild } from '@ionic/cli-utils/lib/integrations/capacitor/utils';
-import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, serve } from '@ionic/cli-utils/lib/serve';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
+import { build } from '../../lib/build';
+import { FatalException } from '../../lib/errors';
+import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
+import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
+import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, serve } from '../../lib/serve';
 
 import { CapacitorCommand } from './base';
 

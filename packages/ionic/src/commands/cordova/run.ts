@@ -1,15 +1,14 @@
-import chalk from 'chalk';
-
 import { LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/cli-framework/utils/process';
+import chalk from 'chalk';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
-import { COMMON_BUILD_COMMAND_OPTIONS, build } from '@ionic/cli-utils/lib/build';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { loadConfigXml } from '@ionic/cli-utils/lib/integrations/cordova/config';
-import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '@ionic/cli-utils/lib/integrations/cordova/utils';
-import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, serve } from '@ionic/cli-utils/lib/serve';
-import { createDefaultLoggerHandlers } from '@ionic/cli-utils/lib/utils/logger';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
+import { COMMON_BUILD_COMMAND_OPTIONS, build } from '../../lib/build';
+import { FatalException } from '../../lib/errors';
+import { loadConfigXml } from '../../lib/integrations/cordova/config';
+import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
+import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, serve } from '../../lib/serve';
+import { createDefaultLoggerHandlers } from '../../lib/utils/logger';
 
 import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 

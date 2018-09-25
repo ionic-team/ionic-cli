@@ -1,11 +1,14 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./dist"
+    "outDir": "./"
   },
   "include": [
+    "../../types/leek.d.ts",
     "../../types/slice-ansi.d.ts",
     "../../types/ssh-config.d.ts",
+    "../../types/stream-combiner2.d.ts",
+    "../../types/superagent-proxy.d.ts",
     "../../types/superagent.d.ts",
     "src/**/*.ts"
   ],

@@ -1,14 +1,14 @@
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { cacheFileChecksum, copyFile, pathExists } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, KnownPlatform, ResourcesConfig, ResourcesImageConfig, SourceImage } from '@ionic/cli-utils';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { cacheFileChecksum, copyFile, pathExists } from '@ionic/utils-fs';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, KnownPlatform, ResourcesConfig, ResourcesImageConfig, SourceImage } from '../../definitions';
+import { FatalException } from '../../lib/errors';
 
 import { CordovaCommand } from './base';
 
-const debug = Debug('ionic:cli:commands:cordova:resources');
+const debug = Debug('ionic:commands:cordova:resources');
 
 const AVAILABLE_RESOURCE_TYPES = ['icon', 'splash'];
 
@@ -70,7 +70,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     await this.preRunChecks(runinfo);
 
-    const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
+    const { promptToLogin } = await import('../../lib/session');
 
     const isLoggedIn = this.env.session.isLoggedIn();
 
@@ -81,9 +81,9 @@ This command uses Ionic servers, so we require you to be logged into your free I
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
-    const { getPlatforms } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
-    const { RESOURCES, addResourcesToConfigXml, createImgDestinationDirectories, findMostSpecificSourceImage, getImageResources, getSourceImages, transformResourceImage, uploadSourceImage } = await import('@ionic/cli-utils/lib/integrations/cordova/resources');
+    const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
+    const { getPlatforms } = await import('../../lib/integrations/cordova/project');
+    const { RESOURCES, addResourcesToConfigXml, createImgDestinationDirectories, findMostSpecificSourceImage, getImageResources, getSourceImages, transformResourceImage, uploadSourceImage } = await import('../../lib/integrations/cordova/resources');
 
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic cordova resources')} outside a project directory.`);

@@ -1,14 +1,15 @@
+import { OptionGroup, createPromptChoiceSeparator, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { OptionGroup, createPromptChoiceSeparator, validators } from '@ionic/cli-framework';
+import { PROJECT_FILE } from '../constants';
+import { App, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GithubBranch, GithubRepo } from '../definitions';
+import { isSuperAgentError } from '../guards';
+import { Command } from '../lib/command';
+import { FatalException } from '../lib/errors';
+import { runCommand } from '../lib/executor';
 
-import { App, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GithubBranch, GithubRepo, PROJECT_FILE, isSuperAgentError } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { runCommand } from '@ionic/cli-utils/lib/executor';
-
-const debug = Debug('ionic:cli:commands:link');
+const debug = Debug('ionic:commands:link');
 
 const CHOICE_CREATE_NEW_APP = 'createNewApp';
 const CHOICE_NEVERMIND = 'nevermind';
@@ -85,7 +86,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
-    const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
+    const { promptToLogin } = await import('../lib/session');
 
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic link')} outside a project directory.`);
@@ -214,13 +215,13 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
   }
 
   private async getAppClient() {
-    const { AppClient } = await import('@ionic/cli-utils/lib/app');
+    const { AppClient } = await import('../lib/app');
     const token = this.env.session.getUserToken();
     return new AppClient({ token, client: this.env.client });
   }
 
   private async getUserClient() {
-    const { UserClient } = await import('@ionic/cli-utils/lib/user');
+    const { UserClient } = await import('../lib/user');
     const token = this.env.session.getUserToken();
     return new UserClient({ token, client: this.env.client });
   }
@@ -455,7 +456,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
   }
 
   async chooseApp(apps: App[]): Promise<string> {
-    const { formatName } = await import('@ionic/cli-utils/lib/app');
+    const { formatName } = await import('../lib/app');
 
     const neverMindChoice = {
       name: chalk.bold('Nevermind'),

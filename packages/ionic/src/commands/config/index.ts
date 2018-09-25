@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
-import { PROJECT_FILE } from '@ionic/cli-utils';
-import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
+import { PROJECT_FILE } from '../../constants';
+import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class ConfigNamespace extends Namespace {
   async getMetadata() {

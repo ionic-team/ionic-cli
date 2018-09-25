@@ -1,13 +1,13 @@
+import { map } from '@ionic/cli-framework/utils/array';
+import { readDirp, stat, writeFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { map } from '@ionic/cli-framework/utils/array';
-import { CommandMetadata } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { readDirp, stat, writeFile } from '@ionic/utils-fs';
+import { CommandMetadata } from '../../definitions';
+import { Command } from '../../lib/command';
+import { FatalException } from '../../lib/errors';
 
 interface DeployManifestItem {
   href: string;

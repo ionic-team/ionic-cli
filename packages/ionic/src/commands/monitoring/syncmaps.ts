@@ -1,16 +1,16 @@
-import * as path from 'path';
-
+import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
+import { pathExists, readDirSafe, readFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
+import * as path from 'path';
 
-import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
-import { APIResponseSuccess, CommandLineInputs, CommandLineOptions, CommandMetadata, isSuperAgentError } from '@ionic/cli-utils';
-import { build } from '@ionic/cli-utils/lib/build';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { pathExists, readDirSafe, readFile } from '@ionic/utils-fs';
+import { APIResponseSuccess, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
+import { isSuperAgentError } from '../../guards';
+import { build } from '../../lib/build';
+import { Command } from '../../lib/command';
+import { FatalException } from '../../lib/errors';
 
-const debug = Debug('ionic:cli:commands:monitoring:syncmaps');
+const debug = Debug('ionic:commands:monitoring:syncmaps');
 
 const SOURCEMAP_DIRECTORY = '.sourcemaps';
 
@@ -50,7 +50,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     const [ snapshotId ] = inputs;
     const doBuild = options.build ? true : false;
 
-    const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
+    const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
     const conf = await loadConfigXml({ project: this.project });
     const cordovaInfo = conf.getProjectInfo();
 
@@ -136,7 +136,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
   }
 
   async uploadSourcemap(sourcemap: APIResponseSuccess, file: string) {
-    const { createRequest } = await import('@ionic/cli-utils/lib/utils/http');
+    const { createRequest } = await import('../../lib/utils/http');
 
     const sm = sourcemap as any;
 

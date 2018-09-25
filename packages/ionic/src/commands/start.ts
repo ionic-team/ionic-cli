@@ -1,23 +1,22 @@
-import * as path from 'path';
-
-import chalk from 'chalk';
-import * as Debug from 'debug';
-import * as lodash from 'lodash';
-
 import { OptionGroup, validators } from '@ionic/cli-framework';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { isValidPackageName } from '@ionic/cli-framework/utils/node';
 import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
 import { mkdir, pathExists, removeDirectory, unlink } from '@ionic/utils-fs';
+import chalk from 'chalk';
+import * as Debug from 'debug';
+import * as lodash from 'lodash';
+import * as path from 'path';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, ResolvedStarterTemplate, StarterManifest, StarterTemplate, getProject } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { runCommand } from '@ionic/cli-utils/lib/executor';
-import { prependNodeModulesBinToPath } from '@ionic/cli-utils/lib/shell';
-import { emoji } from '@ionic/cli-utils/lib/utils/emoji';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, ResolvedStarterTemplate, StarterManifest, StarterTemplate } from '../definitions';
+import { getProject } from '../lib';
+import { Command } from '../lib/command';
+import { FatalException } from '../lib/errors';
+import { runCommand } from '../lib/executor';
+import { prependNodeModulesBinToPath } from '../lib/shell';
+import { emoji } from '../lib/utils/emoji';
 
-const debug = Debug('ionic:cli:commands:start');
+const debug = Debug('ionic:commands:start');
 
 interface CommonAppSchema {
   projectId: string;
@@ -155,7 +154,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
+    const { promptToLogin } = await import('../lib/session');
 
     const starterTemplates = await this.getStarterTemplates();
     const cloned = isValidURL(inputs[1]);
@@ -246,7 +245,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     if (!inputs[0]) {
       if (proId) {
-        const { AppClient } = await import('@ionic/cli-utils/lib/app');
+        const { AppClient } = await import('../lib/app');
         const token = this.env.session.getUserToken();
         const appClient = new AppClient({ token, client: this.env.client });
         const tasks = this.createTaskChain();
@@ -348,9 +347,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
-    const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
-    const { getTopLevel, isGitInstalled } = await import('@ionic/cli-utils/lib/git');
-    const { getIonicDevAppText, getIonicProText } = await import('@ionic/cli-utils/lib/start');
+    const { pkgManagerArgs } = await import('../lib/utils/npm');
+    const { getTopLevel, isGitInstalled } = await import('../lib/git');
+    const { getIonicDevAppText, getIonicProText } = await import('../lib/start');
 
     if (!this.schema) {
       throw new FatalException(`Invalid information: cannot start app.`);
@@ -523,7 +522,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   }
 
   async getStarterTemplates(): Promise<StarterTemplate[]> {
-    const { STARTER_TEMPLATES } = await import('@ionic/cli-utils/lib/start');
+    const { STARTER_TEMPLATES } = await import('../lib/start');
 
     return STARTER_TEMPLATES;
   }
@@ -554,7 +553,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   }
 
   async findStarterTemplate(template: string, type: string, tag: string): Promise<ResolvedStarterTemplate> {
-    const { STARTER_BASE_URL, getStarterList } = await import('@ionic/cli-utils/lib/start');
+    const { STARTER_BASE_URL, getStarterList } = await import('../lib/start');
     const starterTemplates = await this.getStarterTemplates();
     const starterTemplate = starterTemplates.find(t => t.type === type && t.name === template);
 
@@ -611,7 +610,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   }
 
   async loadManifest(manifestPath: string): Promise<StarterManifest | undefined> {
-    const { readStarterManifest } = await import('@ionic/cli-utils/lib/start');
+    const { readStarterManifest } = await import('../lib/start');
 
     try {
       return await readStarterManifest(manifestPath);
@@ -629,8 +628,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   }
 
   async downloadStarterTemplate(projectDir: string, starterTemplate: ResolvedStarterTemplate) {
-    const { createRequest, download } = await import('@ionic/cli-utils/lib/utils/http');
-    const { tar } = await import('@ionic/cli-utils/lib/utils/archive');
+    const { createRequest, download } = await import('../lib/utils/http');
+    const { tar } = await import('../lib/utils/archive');
 
     const tasks = this.createTaskChain();
     const task = tasks.next(`Downloading and extracting ${chalk.green(starterTemplate.name.toString())} starter`);

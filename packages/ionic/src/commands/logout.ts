@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
+import { Command } from '../lib/command';
 
 export class LogoutCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {

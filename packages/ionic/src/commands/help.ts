@@ -1,7 +1,9 @@
 import { CommandGroup } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, isCommand } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
 import chalk from 'chalk';
+
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
+import { isCommand } from '../guards';
+import { Command } from '../lib/command';
 
 export class HelpCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
@@ -28,7 +30,7 @@ export class HelpCommand extends Command {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { CommandSchemaHelpFormatter, CommandStringHelpFormatter, NamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter } = await import('@ionic/cli-utils/lib/help');
+    const { CommandSchemaHelpFormatter, CommandStringHelpFormatter, NamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter } = await import('../lib/help');
     const location = await this.namespace.locate(inputs);
 
     if (isCommand(location.obj)) {

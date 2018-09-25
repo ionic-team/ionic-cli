@@ -4,8 +4,8 @@ import * as lodash from 'lodash';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, InfoItem, InfoItemGroup } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, InfoItem, InfoItemGroup } from '../definitions';
+import { Command } from '../lib/command';
 
 const INFO_GROUPS: ReadonlyArray<InfoItemGroup> = ['ionic', 'capacitor', 'cordova', 'system', 'environment'];
 

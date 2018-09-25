@@ -1,10 +1,10 @@
+import { OptionGroup, contains, validate, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { OptionGroup, contains, validate, validators } from '@ionic/cli-framework';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { filterArgumentsForCordova } from '@ionic/cli-utils/lib/integrations/cordova/utils';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { FatalException } from '../../lib/errors';
+import { filterArgumentsForCordova } from '../../lib/integrations/cordova/utils';
 
 import { CordovaCommand } from './base';
 

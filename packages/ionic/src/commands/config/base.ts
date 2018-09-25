@@ -1,10 +1,11 @@
 import { BaseConfig } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, IConfig, IProject } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as util from 'util';
+
+import { CommandLineInputs, CommandLineOptions, IConfig, IProject } from '../../definitions';
+import { Command } from '../../lib/command';
+import { FatalException } from '../../lib/errors';
 
 export interface BaseConfigContext {
   json: boolean;

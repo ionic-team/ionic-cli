@@ -1,8 +1,9 @@
+import { contains, validate } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
-import { contains, validate } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, IAilment, isTreatableAilment } from '@ionic/cli-utils';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, IAilment } from '../../definitions';
+import { isTreatableAilment } from '../../guards';
+import { FatalException } from '../../lib/errors';
 
 import { DoctorCommand } from './base';
 
@@ -81,7 +82,7 @@ Optionally supply the ${chalk.green('id')} argument to check a single issue. Use
   }
 
   async checkAilment(ailment: IAilment) {
-    const { formatAilmentMessage } = await import('@ionic/cli-utils/lib/doctor');
+    const { formatAilmentMessage } = await import('../../lib/doctor');
 
     if (await ailment.detected()) {
       this.env.log.warn(await formatAilmentMessage(ailment));

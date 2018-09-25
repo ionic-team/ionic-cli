@@ -1,10 +1,10 @@
+import { columnar } from '@ionic/cli-framework/utils/format';
 import chalk from 'chalk';
 
-import { columnar } from '@ionic/cli-framework/utils/format';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, IntegrationName } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { INTEGRATION_NAMES } from '@ionic/cli-utils/lib/integrations';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, IntegrationName } from '../../definitions';
+import { Command } from '../../lib/command';
+import { FatalException } from '../../lib/errors';
+import { INTEGRATION_NAMES } from '../../lib/integrations';
 
 export class IntegrationsListCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {

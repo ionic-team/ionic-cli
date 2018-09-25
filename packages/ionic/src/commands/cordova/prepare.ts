@@ -1,10 +1,10 @@
+import { CommandMetadataOption } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
-import { CommandMetadataOption } from '@ionic/cli-framework';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { build } from '@ionic/cli-utils/lib/build';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '@ionic/cli-utils/lib/integrations/cordova/utils';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { build } from '../../lib/build';
+import { FatalException } from '../../lib/errors';
+import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
 
 import { CordovaCommand } from './base';
 

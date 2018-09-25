@@ -1,14 +1,12 @@
-import * as path from 'path';
-
-import chalk from 'chalk';
-import * as lodash from 'lodash';
-
 import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { mkdirp, pathExists, tmpfilepath, unlink, writeFile } from '@ionic/utils-fs';
+import chalk from 'chalk';
+import * as lodash from 'lodash';
+import * as path from 'path';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { FatalException } from '../../lib/errors';
 
 import { SSLBaseCommand } from './base';
 

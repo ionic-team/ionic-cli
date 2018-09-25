@@ -1,12 +1,12 @@
+import { BaseError, contains, validators } from '@ionic/cli-framework';
+import chalk from 'chalk';
 import * as path from 'path';
 
-import chalk from 'chalk';
-
-import { BaseError, contains, validators } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, isIntegrationName } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { INTEGRATION_NAMES } from '@ionic/cli-utils/lib/integrations';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
+import { isIntegrationName } from '../../guards';
+import { Command } from '../../lib/command';
+import { FatalException } from '../../lib/errors';
+import { INTEGRATION_NAMES } from '../../lib/integrations';
 
 export class IntegrationsEnableCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {

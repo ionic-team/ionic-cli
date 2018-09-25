@@ -46,8 +46,7 @@ The Ionic CLI is organized into a monorepo. Here are the packages:
 
 ##### General Purpose
 
-* [`packages/ionic`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/ionic): Ionic CLI executable.
-* [`packages/@ionic/cli-utils`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/cli-utils): Ionic CLI library and utilities.
+* [`packages/ionic`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/ionic): Ionic CLI executable and library.
 * [`packages/@ionic/cli-framework`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/cli-framework): Framework for command-line programs.
 * [`packages/@ionic/discover`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/discover): Service discovery library used for `ionic serve` with the [Ionic DevApp](https://ionicframework.com/docs/pro/devapp/).
 * [`packages/@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/lab): Utility CLI for Ionic Lab, used by `ionic serve`.

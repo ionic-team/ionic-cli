@@ -1,5 +1,6 @@
 import { NamespaceGroup } from '@ionic/cli-framework';
-import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
+
+import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class DeployNamespace extends Namespace {
   async getMetadata() {

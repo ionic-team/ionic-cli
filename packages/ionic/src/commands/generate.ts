@@ -1,10 +1,10 @@
+import { CommandGroup } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
-import { CommandGroup } from '@ionic/cli-framework';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandPreRun } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { prettyProjectName } from '@ionic/cli-utils/lib/project';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandPreRun } from '../definitions';
+import { Command } from '../lib/command';
+import { FatalException } from '../lib/errors';
+import { prettyProjectName } from '../lib/project';
 
 export class GenerateCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {

@@ -1,14 +1,13 @@
-import chalk from 'chalk';
-import * as path from 'path';
-
 import { ERROR_SHELL_COMMAND_NOT_FOUND, OptionGroup, ShellCommandError } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { mkdirp, pathExists } from '@ionic/utils-fs';
+import chalk from 'chalk';
+import * as path from 'path';
 
-import { CommandInstanceInfo, CommandMetadataOption, IShellRunOptions } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { runCommand } from '@ionic/cli-utils/lib/executor';
+import { CommandInstanceInfo, CommandMetadataOption, IShellRunOptions } from '../../definitions';
+import { Command } from '../../lib/command';
+import { FatalException } from '../../lib/errors';
+import { runCommand } from '../../lib/executor';
 
 export const COMMON_CORDOVA_BUILD_COMMAND_OPTIONS: CommandMetadataOption[] = [
   {
@@ -84,7 +83,7 @@ export abstract class CordovaCommand extends Command {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }
 
-    const { loadConfigXml } = await import('@ionic/cli-utils/lib/integrations/cordova/config');
+    const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
 
     await this.checkCordova(runinfo);
 
@@ -114,7 +113,7 @@ export abstract class CordovaCommand extends Command {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }
 
-    const { pkgManagerArgs } = await import('@ionic/cli-utils/lib/utils/npm');
+    const { pkgManagerArgs } = await import('../../lib/utils/npm');
     const { root: cwd } = await this.project.getIntegration('cordova');
 
     try {
@@ -143,7 +142,7 @@ export abstract class CordovaCommand extends Command {
     }
 
     if (platform) {
-      const { getPlatforms } = await import('@ionic/cli-utils/lib/integrations/cordova/project');
+      const { getPlatforms } = await import('../../lib/integrations/cordova/project');
 
       const cordova = await this.project.getIntegration('cordova');
       const platforms = await getPlatforms(cordova.root);

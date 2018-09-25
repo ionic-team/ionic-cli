@@ -1,10 +1,12 @@
 import { OptionGroup } from '@ionic/cli-framework';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, PROJECT_FILE } from '@ionic/cli-utils';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as util from 'util';
+
+import { PROJECT_FILE } from '../../constants';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 
 import { BaseConfigCommand, ConfigContext, getConfigValue } from './base';
 

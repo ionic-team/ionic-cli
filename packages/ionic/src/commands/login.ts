@@ -1,11 +1,11 @@
+import { validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
-import { validators } from '@ionic/cli-framework';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { runCommand } from '@ionic/cli-utils/lib/executor';
-import { generateUUID } from '@ionic/cli-utils/lib/utils/uuid';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../definitions';
+import { Command } from '../lib/command';
+import { FatalException } from '../lib/errors';
+import { runCommand } from '../lib/executor';
+import { generateUUID } from '../lib/utils/uuid';
 
 export class LoginCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {

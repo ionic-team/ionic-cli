@@ -1,10 +1,10 @@
-import chalk from 'chalk';
-
 import { validators } from '@ionic/cli-framework';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
 import { fileToString, writeFile } from '@ionic/utils-fs';
+import chalk from 'chalk';
+
+import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
+import { FatalException } from '../../lib/errors';
 
 import { SSHBaseCommand } from './base';
 
@@ -32,8 +32,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://linux.die.net/man/5/ssh_config')}
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { ERROR_SSH_INVALID_PRIVKEY, ERROR_SSH_MISSING_PRIVKEY, validatePrivateKey } = await import('@ionic/cli-utils/lib/ssh');
-    const { ensureHostAndKeyPath, getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
+    const { ERROR_SSH_INVALID_PRIVKEY, ERROR_SSH_MISSING_PRIVKEY, validatePrivateKey } = await import('../../lib/ssh');
+    const { ensureHostAndKeyPath, getConfigPath } = await import('../../lib/ssh-config');
 
     const keyPath = expandPath(inputs[0]);
 
@@ -55,7 +55,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://linux.die.net/man/5/ssh_config')}
       }
     }
 
-    const { SSHConfig } = await import('@ionic/cli-utils/lib/ssh-config');
+    const { SSHConfig } = await import('../../lib/ssh-config');
     const sshConfigPath = getConfigPath();
     const text1 = await fileToString(sshConfigPath);
     const conf = SSHConfig.parse(text1);
@@ -66,7 +66,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://linux.die.net/man/5/ssh_config')}
       this.env.log.msg(`${chalk.bold(prettyPath(keyPath))} is already your active SSH key.`);
       return;
     } else {
-      const { diffPatch } = await import('@ionic/cli-utils/lib/diff');
+      const { diffPatch } = await import('../../lib/diff');
       const diff = await diffPatch(sshConfigPath, text1, text2);
 
       this.env.log.rawmsg(diff);

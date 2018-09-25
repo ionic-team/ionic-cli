@@ -1,10 +1,10 @@
-import chalk from 'chalk';
-
 import { CommandGroup } from '@ionic/cli-framework';
 import { columnar, indent } from '@ionic/cli-framework/utils/format';
-import { CommandMetadata } from '@ionic/cli-utils';
-import { Command } from '@ionic/cli-utils/lib/command';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
+import chalk from 'chalk';
+
+import { CommandMetadata } from '../definitions';
+import { Command } from '../lib/command';
+import { FatalException } from '../lib/errors';
 
 export class StateCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {

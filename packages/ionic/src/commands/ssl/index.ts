@@ -1,7 +1,7 @@
+import { NamespaceGroup } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
-import { NamespaceGroup } from '@ionic/cli-framework';
-import { CommandMap, Namespace } from '@ionic/cli-utils/lib/namespace';
+import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class SSLNamespace extends Namespace {
   async getMetadata() {

@@ -1,10 +1,10 @@
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { pathExists } from '@ionic/utils-fs';
 import chalk from 'chalk';
 
-import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-utils';
-import { FatalException } from '@ionic/cli-utils/lib/errors';
-import { runCommand } from '@ionic/cli-utils/lib/executor';
-import { pathExists } from '@ionic/utils-fs';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
+import { FatalException } from '../../lib/errors';
+import { runCommand } from '../../lib/executor';
 
 import { SSHBaseCommand } from './base';
 
@@ -30,9 +30,9 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
-    const { getGeneratedPrivateKeyPath } = await import('@ionic/cli-utils/lib/ssh');
-    const { getConfigPath } = await import('@ionic/cli-utils/lib/ssh-config');
-    const { promptToLogin } = await import('@ionic/cli-utils/lib/session');
+    const { getGeneratedPrivateKeyPath } = await import('../../lib/ssh');
+    const { getConfigPath } = await import('../../lib/ssh-config');
+    const { promptToLogin } = await import('../../lib/session');
 
     if (!this.env.session.isLoggedIn()) {
       await promptToLogin(this.env);
