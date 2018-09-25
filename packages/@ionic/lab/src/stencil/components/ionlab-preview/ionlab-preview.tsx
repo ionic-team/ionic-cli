@@ -21,7 +21,7 @@ export class Preview {
     };
 
     if (platform === PLATFORM_IOS) {
-      qp['ionic:statusbarPadding'] = 'true';
+      qp['ionic:_forceStatusbarPadding'] = 'true';
     }
 
     return `${this.url}?${Object.keys(qp).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(qp[k])}`).join('&')}`;
