@@ -22,6 +22,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * **cordova:** respect --nosave for platform/plugin add ([eb4934b](https://github.com/ionic-team/ionic-cli/commit/eb4934b))
 * **deploy:** exclude any existing pro-manifest.json files ([#3527](https://github.com/ionic-team/ionic-cli/issues/3527)) ([d03057d](https://github.com/ionic-team/ionic-cli/commit/d03057d))
+* **shell:** allow output() to fail with original error ([e6a5bff](https://github.com/ionic-team/ionic-cli/commit/e6a5bff))
+* **shell:** check if process is still alive before sending signal ([0ff1e48](https://github.com/ionic-team/ionic-cli/commit/0ff1e48))
 
 
 
@@ -34,6 +36,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * **capacitor:** pass in project/package id during start ([1357c5c](https://github.com/ionic-team/ionic-cli/commit/1357c5c))
 * **cordova:** properly error for multiple IPs with non-interactive mode ([0346adc](https://github.com/ionic-team/ionic-cli/commit/0346adc))
+* **cordova:** remove unwanted allow-navigation entries ([77984e1](https://github.com/ionic-team/ionic-cli/commit/77984e1))
+* **info:** disable update check for cordova cli ([8310ff6](https://github.com/ionic-team/ionic-cli/commit/8310ff6))
+* **info:** remove version.json warning for v1 ([78c3582](https://github.com/ionic-team/ionic-cli/commit/78c3582))
+* **link:** support new repo association types ([1c1e1f1](https://github.com/ionic-team/ionic-cli/commit/1c1e1f1))
 
 
 ### Features
@@ -43,6 +49,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **capacitor:** install platform if missing ([9e29235](https://github.com/ionic-team/ionic-cli/commit/9e29235))
 * **capacitor:** prompt for supported platforms when adding ([54c7d55](https://github.com/ionic-team/ionic-cli/commit/54c7d55))
 * **capacitor:** unlock capacitor commands as beta ([2480a01](https://github.com/ionic-team/ionic-cli/commit/2480a01))
+* **info:** print whitelisted cordova plugins ([c266b7b](https://github.com/ionic-team/ionic-cli/commit/c266b7b))
 
 
 
@@ -84,6 +91,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Bug Fixes
 
 * **build:** prompt to install "build cli" for all projects ([2862762](https://github.com/ionic-team/ionic-cli/commit/2862762))
+* **serve:** await connectivity on specified host, not localhost ([#3444](https://github.com/ionic-team/ionic-cli/issues/3444)) ([bf10674](https://github.com/ionic-team/ionic-cli/commit/bf10674))
+* **serve:** check all network interfaces for an available port ([30fd6ef](https://github.com/ionic-team/ionic-cli/commit/30fd6ef))
+* **serve:** fix --livereload for device/emulator ([f31e79d](https://github.com/ionic-team/ionic-cli/commit/f31e79d))
+* **serve:** use correct livereload port option for v1 ([bf3e775](https://github.com/ionic-team/ionic-cli/commit/bf3e775))
 
 
 
@@ -96,6 +107,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * **cordova:** default to `cordova prepare` without platforms ([d40d961](https://github.com/ionic-team/ionic-cli/commit/d40d961))
 * **resources:** fix hanging issue ([#3429](https://github.com/ionic-team/ionic-cli/issues/3429)) ([6b7c732](https://github.com/ionic-team/ionic-cli/commit/6b7c732))
+* **build:** properly pass --target to remove fonts for cordova ([530d87a](https://github.com/ionic-team/ionic-cli/commit/530d87a))
+* **generate:** run in current directory ([54c632b](https://github.com/ionic-team/ionic-cli/commit/54c632b))
+* **info:** filter out hidden files/folders ([2e56dd7](https://github.com/ionic-team/ionic-cli/commit/2e56dd7))
+* **info:** show 'not available' when cordova is missing ([db60879](https://github.com/ionic-team/ionic-cli/commit/db60879))
 
 
 
@@ -107,6 +122,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Bug Fixes
 
 * **generate:** remove pages/ prefix recommendation ([#3392](https://github.com/ionic-team/ionic-cli/issues/3392)) ([23d0db6](https://github.com/ionic-team/ionic-cli/commit/23d0db6))
+* **help:** properly show option decorations ([b2509de](https://github.com/ionic-team/ionic-cli/commit/b2509de))
 
 
 
