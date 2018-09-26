@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "chokidar-cli": "^1.2.0",
-    "husky": "^0.14.3",
+    "husky": "^1.0.0",
     "lerna": "^2.9.1",
     "tslint-ionic-rules": "0.0.19"
   }
