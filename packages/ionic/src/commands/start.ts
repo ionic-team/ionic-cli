@@ -198,6 +198,26 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       options['git'] = true;
     }
 
+    if (!options['type']) {
+      this.env.log.info(
+        `You are about to create an Ionic 3 app. Would you like to try Ionic 4 ${chalk.red.bold('(beta)')}?\n` +
+        `Ionic 4 uses the power of the modern Web and embraces the Angular CLI and Angular Router to bring you the best version of Ionic ever. See our blog announcement${chalk.cyan('[1]')} and documentation${chalk.cyan('[2]')} for more information. We'd love to hear your feedback on our latest version!\n\n` +
+        `${chalk.cyan('[1]')}: ${chalk.bold('https://blog.ionicframework.com/announcing-ionic-4-beta/')}\n` +
+        `${chalk.cyan('[2]')}: ${chalk.bold('https://beta.ionicframework.com/docs/')}\n`
+      );
+
+      const confirm = await this.env.prompt({
+        type: 'confirm',
+        name: 'confirm',
+        message: 'Try Ionic 4?',
+        default: false,
+      });
+
+      if (confirm) {
+        options['type'] = 'angular';
+      }
+    }
+
     const projectType = options['type'] ? String(options['type']) : 'ionic-angular';
     await this.validateProjectType(projectType);
 
