@@ -142,6 +142,8 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
       'source-map': options.sourcemaps !== false ? options.sourcemaps : 'false',
     };
 
+    let separatedArgs = options['--'];
+
     if (options.engine === 'cordova') {
       const integration = await this.e.project.getIntegration('cordova');
       args.platform = options.platform;
@@ -149,9 +151,11 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
       if (this.e.project.directory !== integration.root) {
         args.cordovaBasePath = integration.root;
       }
+
+      separatedArgs = [];
     }
 
-    return [...unparseArgs(args), ...options['--']];
+    return [...unparseArgs(args), ...separatedArgs];
   }
 
   protected buildArchitectCommand(options: AngularServeOptions): string[] {

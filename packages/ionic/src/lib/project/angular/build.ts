@@ -111,6 +111,8 @@ class AngularBuildCLI extends BuildCLI<AngularBuildOptions> {
       'cordova-assets': options.cordovaAssets !== false ? undefined : 'false',
     };
 
+    let separatedArgs = options['--'];
+
     if (options.engine === 'cordova') {
       const integration = await this.e.project.getIntegration('cordova');
       args.platform = options.platform;
@@ -118,9 +120,11 @@ class AngularBuildCLI extends BuildCLI<AngularBuildOptions> {
       if (this.e.project.directory !== integration.root) {
         args.cordovaBasePath = integration.root;
       }
+
+      separatedArgs = [];
     }
 
-    return [...unparseArgs(args), ...options['--']];
+    return [...unparseArgs(args), ...separatedArgs];
   }
 
   protected buildArchitectCommand(options: AngularBuildOptions): string[] {
