@@ -29,10 +29,6 @@
       "**/__tests__/*.{ts,tsx}"
     ]
   },
-  "files": [
-    "bin/",
-    "dist/"
-  ],
   "keywords": [
     "ionic",
     "ionic framework",
