@@ -18,9 +18,17 @@ export function expandTildePath(p: string) {
 export interface ShellCommandOptions extends SpawnOptions {}
 
 export class ShellCommand {
+  protected readonly path?: string;
   protected _options: SpawnOptions;
 
   constructor(public name: string, public args: ReadonlyArray<string>, options: ShellCommandOptions = {}) {
+    const i = name.lastIndexOf(path.sep);
+
+    if (i >= 0) {
+      this.name = name.substring(i + 1);
+      this.path = name;
+    }
+
     this._options = options;
   }
 
@@ -129,7 +137,7 @@ export class ShellCommand {
   }
 
   spawn(): ChildProcess {
-    return spawn(this.name, this.args, this.options);
+    return spawn(this.path ? this.path : this.name, this.args, this.options);
   }
 
   bashify(): string {

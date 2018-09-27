@@ -72,11 +72,21 @@ describe('@ionic/cli-framework', () => {
         jest.resetAllMocks();
       });
 
-      it('should set name and args attributes', async () => {
+      it('should set attributes', async () => {
         const name = 'cmd';
         const args = ['foo', 'bar', 'baz'];
         const cmd = new ShellCommand(name, args);
         expect(cmd.name).toEqual(name);
+        expect(cmd.path).not.toBeDefined();
+        expect(cmd.args).toEqual(args);
+      });
+
+      it('should set attributes for pathed name', async () => {
+        const name = path.resolve('/path', 'to', 'cmd');
+        const args = ['foo', 'bar', 'baz'];
+        const cmd = new ShellCommand(name, args);
+        expect(cmd.name).toEqual('cmd');
+        expect(cmd.path).toEqual(name);
         expect(cmd.args).toEqual(args);
       });
 
@@ -111,6 +121,14 @@ describe('@ionic/cli-framework', () => {
         expect(result).toEqual('cmd foo bar baz');
       });
 
+      it('should bashify command and args with pathed name', async () => {
+        const name = path.resolve('/path', 'to', 'cmd');
+        const args = ['foo', 'bar', 'baz'];
+        const cmd = new ShellCommand(name, args);
+        const result = cmd.bashify();
+        expect(result).toEqual('cmd foo bar baz');
+      });
+
       it('should bashify command and args with spaces', async () => {
         const name = 'cmd';
         const args = ['foo bar baz'];
@@ -127,10 +145,23 @@ describe('@ionic/cli-framework', () => {
         expect(result).toEqual('cmd "foo \\"bar\\" baz"');
       });
 
-      it('should call spawn with correct args and return child process', async () => {
+      it('should call spawn with correct program/args', async () => {
         const result = {};
         mockCrossSpawn.mockImplementation(() => result);
         const name = 'cmd';
+        const args = ['foo', 'bar', 'baz'];
+        const options = { env: { PATH: '' } };
+        const cmd = new ShellCommand(name, args, options);
+        const expectedOptions = { env: createProcessEnv(options.env) };
+        expect(cmd.spawn()).toBe(result);
+        expect(mockCrossSpawn).toHaveBeenCalledTimes(1);
+        expect(mockCrossSpawn).toHaveBeenCalledWith(name, args, expectedOptions);
+      });
+
+      it('should call spawn with correct program/args with pathed name', async () => {
+        const result = {};
+        mockCrossSpawn.mockImplementation(() => result);
+        const name = path.resolve('/path', 'to', 'cmd');
         const args = ['foo', 'bar', 'baz'];
         const options = { env: { PATH: '' } };
         const cmd = new ShellCommand(name, args, options);
