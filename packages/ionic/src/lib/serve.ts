@@ -493,7 +493,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
       this.e.log.nl();
       this.e.log.info(
         `Looks like ${chalk.green(this.pkg)} isn't installed in this project.\n` +
-        `This package is required for this command to work properly.`
+        `This package is required for this command to work properly. The package provides a CLI utility, but the ${chalk.green(this.resolvedProgram)} binary was not found in your PATH.`
       );
 
       const installed = await this.promptToInstall();
@@ -509,7 +509,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
   protected async spawn(options: T): Promise<void> {
     const args = await this.buildArgs(options);
-    const p = this.e.shell.spawn(this.resolvedProgram, args, { stdio: 'pipe', cwd: this.e.project.directory });
+    const p = await this.e.shell.spawn(this.resolvedProgram, args, { stdio: 'pipe', cwd: this.e.project.directory });
 
     return new Promise<void>((resolve, reject) => {
       const errorHandler = (err: NodeJS.ErrnoException) => {

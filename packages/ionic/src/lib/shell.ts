@@ -1,9 +1,9 @@
 import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommandError } from '@ionic/cli-framework';
 import { createProcessEnv, killProcessTree, onBeforeExit } from '@ionic/cli-framework/utils/process';
-import { ShellCommand } from '@ionic/cli-framework/utils/shell';
+import { ShellCommand, which } from '@ionic/cli-framework/utils/shell';
 import { combineStreams } from '@ionic/cli-framework/utils/streams';
 import chalk from 'chalk';
-import { ChildProcess } from 'child_process';
+import { ChildProcess, SpawnOptions } from 'child_process';
 import * as Debug from 'debug';
 import * as path from 'path';
 import * as split2 from 'split2';
@@ -32,7 +32,9 @@ export class Shell implements IShell {
 
   async run(command: string, args: string[], { stream, killOnExit = true, showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<void> {
     this.prepareSpawnOptions(crossSpawnOptions);
-    const cmd = new ShellCommand(command, args, crossSpawnOptions);
+
+    const cmdpath = await this.resolveCommandPath(command, crossSpawnOptions);
+    const cmd = new ShellCommand(cmdpath, args, crossSpawnOptions);
 
     const fullCmd = cmd.bashify();
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
@@ -121,7 +123,8 @@ export class Shell implements IShell {
   }
 
   async output(command: string, args: string[], { fatalOnNotFound = true, fatalOnError = true, showError = true, showCommand = false, ...crossSpawnOptions }: IShellOutputOptions): Promise<string> {
-    const cmd = new ShellCommand(command, args, crossSpawnOptions);
+    const cmdpath = await this.resolveCommandPath(command, crossSpawnOptions);
+    const cmd = new ShellCommand(cmdpath, args, crossSpawnOptions);
 
     const fullCmd = cmd.bashify();
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
@@ -159,10 +162,31 @@ export class Shell implements IShell {
     }
   }
 
-  spawn(command: string, args: string[], { showCommand = true, ...crossSpawnOptions }: IShellSpawnOptions): ChildProcess {
+  /**
+   * When `child_process.spawn` isn't provided a full path to the command
+   * binary, it behaves differently on Windows than other platforms. For
+   * Windows, discover the full path to the binary, otherwise fallback to the
+   * command provided.
+   *
+   * @see https://github.com/ionic-team/ionic-cli/issues/3563#issuecomment-425232005
+   */
+  async resolveCommandPath(command: string, options: SpawnOptions): Promise<string> {
+    if (process.platform === 'win32') {
+      try {
+        return await which(command, { PATH: options.env.PATH });
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    return command;
+  }
+
+  async spawn(command: string, args: string[], { showCommand = true, ...crossSpawnOptions }: IShellSpawnOptions): Promise<ChildProcess> {
     this.prepareSpawnOptions(crossSpawnOptions);
 
-    const cmd = new ShellCommand(command, args, crossSpawnOptions);
+    const cmdpath = await this.resolveCommandPath(command, crossSpawnOptions);
+    const cmd = new ShellCommand(cmdpath, args, crossSpawnOptions);
     const p = cmd.spawn();
 
     if (showCommand && this.e.log.level >= LOGGER_LEVELS.INFO) {
@@ -176,7 +200,8 @@ export class Shell implements IShell {
     const opts: IShellSpawnOptions = {};
     this.prepareSpawnOptions(opts);
 
-    const cmd = new ShellCommand(command, args, opts);
+    const cmdpath = await this.resolveCommandPath(command, opts);
+    const cmd = new ShellCommand(cmdpath, args, opts);
 
     try {
       const out = await cmd.output();

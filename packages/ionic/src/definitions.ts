@@ -348,7 +348,7 @@ export interface IShell {
 
   run(command: string, args: string[], options: IShellRunOptions): Promise<void>;
   output(command: string, args: string[], options: IShellOutputOptions): Promise<string>;
-  spawn(command: string, args: string[], options: IShellSpawnOptions): ChildProcess;
+  spawn(command: string, args: string[], options: IShellSpawnOptions): Promise<ChildProcess>;
   cmdinfo(cmd: string, args?: string[], options?: ShellCommandOptions): Promise<string | undefined>;
 }
 
