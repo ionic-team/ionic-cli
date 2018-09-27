@@ -1,3 +1,4 @@
+import { statSafe } from '@ionic/utils-fs';
 import { ChildProcess, ForkOptions, SpawnOptions, fork as _fork } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
@@ -5,6 +6,7 @@ import * as path from 'path';
 import * as crossSpawn from 'cross-spawn';
 
 import { ERROR_SHELL_COMMAND_NOT_FOUND, ERROR_SHELL_NON_ZERO_EXIT, ShellCommandError } from '../errors';
+import { reduce } from '../utils/array';
 import { createProcessEnv } from '../utils/process';
 import { WritableStreamBuffer } from '../utils/streams';
 
@@ -156,4 +158,45 @@ export function spawn(command: string, args: ReadonlyArray<string> = [], options
 
 export function fork(modulePath: string, args: ReadonlyArray<string> = [], options: ForkOptions & Pick<SpawnOptions, 'stdio'> = {}): ChildProcess {
   return _fork(modulePath, [...args], options);
+}
+
+export interface WhichOptions {
+  PATH?: string;
+}
+
+export async function which(command: string, { PATH = process.env.PATH || '' }: WhichOptions = {}): Promise<string> {
+  if (command.includes(path.sep)) {
+    return command;
+  }
+
+  const pathParts = PATH.split(path.delimiter);
+
+  // tslint:disable:no-null-keyword
+
+  const value = await reduce<string, string | null>(pathParts, async (acc, v) => {
+    // acc is no longer null, so we found the first match already
+    if (acc) {
+      return acc;
+    }
+
+    const p = path.join(v, command);
+    const stats = await statSafe(p);
+
+    if (stats && stats.isFile()) {
+      // TODO: check if file is executable
+      return p;
+    }
+
+    return null;
+  }, null);
+
+  // tslint:enable:no-null-keyword
+
+  if (!value) {
+    const err: NodeJS.ErrnoException = new Error(`${command} cannot be found within PATH`);
+    err.code = 'ENOENT';
+    throw err;
+  }
+
+  return value;
 }

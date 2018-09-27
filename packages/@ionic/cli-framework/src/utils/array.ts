@@ -49,9 +49,11 @@ export async function map<T, U>(array: T[] | ReadonlyArray<T>, callback: (curren
 
 export async function reduce<T>(array: T[], callback: (accumulator: T, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<T>): Promise<T>;
 export async function reduce<T>(array: T[], callback: (accumulator: T, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<T>, initialValue: T): Promise<T>;
+export async function reduce<T, R>(array: T[], callback: (accumulator: R, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<R>): Promise<R>;
 export async function reduce<T, U>(array: T[], callback: (accumulator: U, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>, initialValue: U): Promise<U>;
 export async function reduce<T>(array: ReadonlyArray<T>, callback: (accumulator: T, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<T>): Promise<T>;
 export async function reduce<T>(array: ReadonlyArray<T>, callback: (accumulator: T, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<T>, initialValue: T): Promise<T>;
+export async function reduce<T, R>(array: ReadonlyArray<T>, callback: (accumulator: R, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<R>): Promise<R>;
 export async function reduce<T, U>(array: ReadonlyArray<T>, callback: (accumulator: U, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>, initialValue: U): Promise<U>;
 export async function reduce<T, U>(array: T[] | ReadonlyArray<T>, callback: (accumulator: T | U, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<T | U>, initialValue?: T | U): Promise<T | U> {
   const hadInitialValue = typeof initialValue === 'undefined';
