@@ -37,10 +37,12 @@ export namespace Components {
 
   interface IonlabPreview {
     'activeDevices': string[];
+    'projectType': string;
     'url': string;
   }
   interface IonlabPreviewAttributes extends StencilHTMLAttributes {
     'activeDevices'?: string[];
+    'projectType'?: string;
     'url'?: string;
   }
 

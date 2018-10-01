@@ -9,19 +9,28 @@ import { PLATFORM_IOS, platformIoniconClass, platformMode, platformPrettyName } 
 export class Preview {
   @Prop() activeDevices: string[];
   @Prop() url?: string;
+  @Prop() projectType?: string;
 
   platformUrl(platform: string) {
     if (!this.url) {
       return;
     }
 
-    const qp = {
-      'ionic:mode': platformMode(platform),
-      'ionic:persistConfig': 'true',
-    };
+    const qp = {};
 
-    if (platform === PLATFORM_IOS) {
-      qp['ionic:_forceStatusbarPadding'] = 'true';
+    if (this.projectType === 'angular') {
+      qp['ionic:mode'] = platformMode(platform);
+      qp['ionic:persistConfig'] = 'true';
+
+      if (platform === PLATFORM_IOS) {
+        qp['ionic:_forceStatusbarPadding'] = 'true';
+      }
+    } else if (this.projectType === 'ionic-angular') {
+      qp['ionicplatform'] = platform;
+
+      if (platform === PLATFORM_IOS) {
+        qp['ionicstatusbarpadding'] = 'true';
+      }
     }
 
     return `${this.url}?${Object.keys(qp).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(qp[k])}`).join('&')}`;

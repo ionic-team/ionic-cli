@@ -311,6 +311,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
   async runLab(options: T, serveDetails: ServeDetails): Promise<LabServeDetails> {
     const labDetails: LabServeDetails = {
+      projectType: this.e.project.type,
       protocol: options.ssl ? 'https' : 'http',
       address: options.labHost,
       port: await findClosestOpenPort(options.labPort),
@@ -649,7 +650,7 @@ class IonicLabServeCLI extends ServeCLI<IonicLabServeCLIOptions> {
 
     const url = `${serveDetails.protocol}://localhost:${serveDetails.port}`;
     const appName = this.e.project.config.get('name');
-    const labArgs = [url, '--host', labDetails.address, '--port', String(labDetails.port)];
+    const labArgs = [url, '--host', labDetails.address, '--port', String(labDetails.port), '--project-type', labDetails.projectType];
     const nameArgs = appName ? ['--app-name', appName] : [];
     const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
 

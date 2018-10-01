@@ -33,6 +33,10 @@ class DefaultCommand extends Command {
           default: '8200',
         },
         {
+          name: 'project-type',
+          summary: 'Ionic project type',
+        },
+        {
           name: 'ssl',
           summary: 'Host Ionic Lab with HTTPS',
           type: Boolean,
@@ -60,8 +64,9 @@ class DefaultCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions) {
     const [ url ] = inputs;
     const { host, port, ssl } = options;
-    const protocol = ssl ? 'https' : 'http';
 
+    const protocol = ssl ? 'https' : 'http';
+    const projectType = options['project-type'];
     const name = options['app-name'];
     const version = options['app-version'];
 
@@ -70,7 +75,7 @@ class DefaultCommand extends Command {
     app.use('/', express.static(WWW_DIRECTORY));
 
     app.get('/api/app', (req, res) => {
-      res.json({ url, name, version });
+      res.json({ url, name, version, projectType });
     });
 
     const server = ssl ? https.createServer(await this.collectSecureContextOptions(options), app) : http.createServer(app);

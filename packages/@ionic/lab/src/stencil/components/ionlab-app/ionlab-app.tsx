@@ -8,7 +8,7 @@ import { PLATFORM_IOS, PLATFORM_ANDROID } from '../../utils';
 export class App {
   @State() sidebarVisible: boolean = true;
   @State() activeDevices: string[] = [PLATFORM_IOS, PLATFORM_ANDROID];
-  @State() details: { url?: string; name?: string; version?: string; } = {};
+  @State() details: { url?: string; name?: string; version?: string; projectType?: string; } = {};
   session: string;
 
   componentWillLoad() {
@@ -103,7 +103,7 @@ export class App {
       </header>,
       <main>
         <ionlab-sidebar visible={ this.sidebarVisible } />
-        <ionlab-preview url={ this.details.url } activeDevices={ this.activeDevices } />
+        <ionlab-preview projectType={ this.details.projectType } url={ this.details.url } activeDevices={ this.activeDevices } />
       </main>,
       <footer>
         <div id="footer-left">

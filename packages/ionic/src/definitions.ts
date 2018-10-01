@@ -581,6 +581,7 @@ export interface Ionic1ServeOptions extends ServeOptions {
 }
 
 export interface LabServeDetails {
+  projectType: ProjectType;
   protocol: string;
   address: string;
   port: number;
