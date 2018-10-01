@@ -432,10 +432,18 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
    */
   abstract readonly script?: string;
 
-  resolvedProgram = this.program;
+  private _resolvedProgram?: string;
 
   constructor(protected readonly e: ServeRunnerDeps) {
     super();
+  }
+
+  get resolvedProgram() {
+    if (this._resolvedProgram) {
+      return this._resolvedProgram;
+    }
+
+    return this.program;
   }
 
   /**
@@ -469,7 +477,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
   }
 
   async serve(options: T): Promise<void> {
-    this.resolvedProgram = await this.resolveProgram();
+    this._resolvedProgram = await this.resolveProgram();
 
     await this.spawnWrapper(options);
 
