@@ -31,7 +31,7 @@
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
     "prepublishOnly": "npm run build",
-    "precommit": "lint-staged"
+    "cli-scripts:pre-commit": "lint-staged"
   },
   "lint-staged": {
     "linters": {

@@ -7,7 +7,7 @@ export class PrecommitCommand extends Command {
 
   async getMetadata(): Promise<CommandMetadata> {
     return {
-      name: 'precommit',
+      name: 'pre-commit',
       summary: '',
     };
   }
@@ -22,7 +22,7 @@ export class PrecommitCommand extends Command {
     onBeforeExit(async () => this.cleanup());
 
     try {
-      await new ShellCommand('lerna', ['run', 'precommit'], { stdio: 'inherit' }).run();
+      await new ShellCommand('lerna', ['run', 'cli-scripts:pre-commit'], { stdio: 'inherit' }).run();
     } catch (e) {
       throw e;
     } finally {

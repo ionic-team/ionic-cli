@@ -12,7 +12,7 @@
     "watch": "tsc -w --preserveWatchOutput",
     "test": "jest",
     "prepublishOnly": "npm run build",
-    "precommit": "lint-staged"
+    "cli-scripts:pre-commit": "lint-staged"
   },
   "lint-staged": {
     "linters": {

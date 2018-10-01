@@ -14,13 +14,17 @@
     "docs:watch": "chokidar 'packages/cli-scripts/dist/docs/**/*.js' -c 'npm run docs'",
     "publish:canary": "lerna publish --independent --canary --exact --npm-tag=canary --skip-git",
     "publish:testing": "lerna publish --independent --canary=testing --exact --npm-tag=testing --skip-git",
-    "publish:ci": "lerna publish --independent -m 'chore(release): publish [skip ci]' --exact --conventional-commits",
-    "precommit": "node packages/cli-scripts/bin/ionic-cli-scripts precommit"
+    "publish:ci": "lerna publish --independent -m 'chore(release): publish [skip ci]' --exact --conventional-commits"
   },
   "devDependencies": {
     "chokidar-cli": "^1.2.0",
-    "husky": "^0.14.3",
+    "husky": "^1.1.0",
     "lerna": "^2.9.1",
     "tslint-ionic-rules": "0.0.19"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "node packages/cli-scripts/bin/ionic-cli-scripts pre-commit"
+    }
   }
 }
