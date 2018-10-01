@@ -81,9 +81,9 @@ export function onExit(fn: () => void) {
   });
 }
 
-export type ExitQueueFn = () => Promise<void>;
+export type ExitFn = () => Promise<void>;
 
-const exitQueue: ExitQueueFn[] = [];
+const exitFns = new Set<ExitFn>();
 
 /**
  * Register an asynchronous function to be called when the process wants to
@@ -91,33 +91,33 @@ const exitQueue: ExitQueueFn[] = [];
  *
  * A handler will be registered for the 'SIGINT', 'SIGTERM', 'SIGHUP',
  * 'SIGBREAK' signals. If any of the signal events is emitted, `fn` will be
- * called exactly once, awaited upon, and then the process will exit when the
- * queue of functions is empty.
+ * called exactly once, awaited upon, and then the process will exit once all
+ * registered functions are resolved.
  */
-export function onBeforeExit(fn: ExitQueueFn): void {
-  exitQueue.push(fn);
+export function onBeforeExit(fn: ExitFn): void {
+  exitFns.add(fn);
 }
 
 /**
  * Remove a function that was registered with `onBeforeExit`.
  */
-export function offBeforeExit(fn: ExitQueueFn): void {
-  lodash.pull(exitQueue, fn);
+export function offBeforeExit(fn: ExitFn): void {
+  exitFns.delete(fn);
 }
 
 const BEFORE_EXIT_SIGNALS = ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGBREAK'];
 
 const beforeExitHandlerWrapper = (signal: string) => lodash.once(async () => {
   debug(`onBeforeExit handler: ${signal} received`);
-  debug(`onBeforeExit handler: running ${exitQueue.length} queued functions`);
+  debug(`onBeforeExit handler: running ${exitFns.size} functions`);
 
-  for (const [ i, fn ] of exitQueue.entries()) {
+  await Promise.all([...exitFns.values()].map(async fn => {
     try {
       await fn();
     } catch (e) {
-      debug('Error from function %d in exit queue: %O', i, e);
+      debug('onBeforeExit handler: error from function: %O', e);
     }
-  }
+  }));
 
   debug(`onBeforeExit handler: exiting (exit code ${process.exitCode ? process.exitCode : 0})`);
 
