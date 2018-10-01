@@ -531,16 +531,18 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
         }
       };
 
-      const closeHandler = (code: number, signal: string) => {
-        debug('received unexpected close for %s (code: %d, signal: %s)', this.resolvedProgram, code, signal);
+      const closeHandler = (code: number | null) => {
+        if (code !== null) { // tslint:disable-line:no-null-keyword
+          debug('received unexpected close for %s (code: %d)', this.resolvedProgram, code);
 
-        this.e.log.nl();
-        this.e.log.error(
-          `A utility CLI has unexpectedly closed (exit code ${code}).\n` +
-          'The Ionic CLI will exit. Please check any output above for error details.'
-        );
+          this.e.log.nl();
+          this.e.log.error(
+            `${chalk.green(this.resolvedProgram)} has unexpectedly closed (exit code ${code}).\n` +
+            'The Ionic CLI will exit. Please check any output above for error details.'
+          );
 
-        processExit(1); // tslint:disable-line:no-floating-promises
+          processExit(1); // tslint:disable-line:no-floating-promises
+        }
       };
 
       p.on('error', errorHandler);
