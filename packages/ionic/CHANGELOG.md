@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.2.0"></a>
+# [4.2.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.1.2...ionic@4.2.0) (2018-10-03)
+
+
+### Bug Fixes
+
+* **cordova:** ng should ignore separated args for Cordova build ([16a0111](https://github.com/ionic-team/ionic-cli/commit/16a0111))
+* **lab:** use correct query params for project type ([4801680](https://github.com/ionic-team/ionic-cli/commit/4801680))
+* **serve:** fix incorrect message about app-scripts not being installed ([abd665b](https://github.com/ionic-team/ionic-cli/commit/abd665b))
+* **serve:** unnecessary message about utility CLI exiting during Ctrl+C ([8e78bf3](https://github.com/ionic-team/ionic-cli/commit/8e78bf3))
+
+
+### Features
+
+* new `ionic repair` command ([7588233](https://github.com/ionic-team/ionic-cli/commit/7588233))
+
+
+
+
 <a name="4.1.2"></a>
 ## [4.1.2](https://github.com/ionic-team/ionic-cli/compare/ionic@4.1.1...ionic@4.1.2) (2018-09-05)
 

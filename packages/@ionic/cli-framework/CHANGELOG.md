@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.0.7...@ionic/cli-framework@1.1.0) (2018-10-03)
+
+
+### Features
+
+* **shell:** accept pathed name ([7e6c713](https://github.com/ionic-team/ionic-cli/commit/7e6c713))
+* **shell:** provide which utility for finding binaries ([4dbe922](https://github.com/ionic-team/ionic-cli/commit/4dbe922))
+
+
+
+
 <a name="1.0.7"></a>
 ## [1.0.7](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.0.6...@ionic/cli-framework@1.0.7) (2018-09-05)
 

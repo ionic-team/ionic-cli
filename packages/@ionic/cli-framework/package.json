@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-framework",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "The foundation framework of the Ionic CLI",
   "homepage": "https://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com) ",
@@ -28,7 +28,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ionic/utils-fs": "0.0.1",
+    "@ionic/utils-fs": "0.0.2",
     "chalk": "^2.3.0",
     "debug": "^4.0.0",
     "inquirer": "^6.0.0",

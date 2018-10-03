@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/ng-toolkit@1.0.8...@ionic/ng-toolkit@1.1.0) (2018-10-03)
+
+
+### Bug Fixes
+
+* **angular:** use config from workspace for serve ([9bbd193](https://github.com/ionic-team/ionic-cli/commit/9bbd193))
+
+
+### Features
+
+* **angular:** add --no-cordova-assets for build ([#3578](https://github.com/ionic-team/ionic-cli/issues/3578)) ([5c6507d](https://github.com/ionic-team/ionic-cli/commit/5c6507d))
+* **angular:** add source-map scheme ([#3545](https://github.com/ionic-team/ionic-cli/issues/3545)) ([0fe09ce](https://github.com/ionic-team/ionic-cli/commit/0fe09ce))
+
+
+
+
 <a name="1.0.8"></a>
 ## [1.0.8](https://github.com/ionic-team/ionic-cli/compare/@ionic/ng-toolkit@1.0.7...@ionic/ng-toolkit@1.0.8) (2018-09-05)
 
