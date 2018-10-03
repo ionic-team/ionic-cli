@@ -181,7 +181,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
     const metadata = await this.getMetadata();
 
     if (options['livereload']) {
-      const conf = await loadConfigXml({ project: this.project });
+      const conf = await loadConfigXml(this.integration);
 
       onBeforeExit(async () => {
         conf.resetContentSrc();

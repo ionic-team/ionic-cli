@@ -213,16 +213,14 @@ export class UnsavedCordovaPlatforms extends Ailment {
   }
 
   async detected() {
-    let cordova;
+    const cordova = this.project.getIntegration('cordova');
 
-    try {
-      cordova = await this.project.getIntegration('cordova');
-    } catch (e) {
+    if (!cordova || !cordova.enabled) {
       return false;
     }
 
     const platforms = await getPlatforms(cordova.root);
-    const conf = await loadConfigXml({ project: this.project });
+    const conf = await loadConfigXml(cordova);
     const engines = conf.getPlatformEngines();
     const engineNames = new Set([...engines.map(e => e.name)]);
 
@@ -249,11 +247,13 @@ export class DefaultCordovaBundleIdUsed extends Ailment {
   }
 
   async detected() {
-    if (!this.project.config.get('integrations').cordova) {
+    const cordova = this.project.getIntegration('cordova');
+
+    if (!cordova || !cordova.enabled) {
       return false;
     }
 
-    const conf = await loadConfigXml({ project: this.project });
+    const conf = await loadConfigXml(cordova);
 
     return conf.getBundleId() === 'io.ionic.starter';
   }

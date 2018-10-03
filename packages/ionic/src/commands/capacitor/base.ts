@@ -3,24 +3,34 @@ import { pathExists } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as path from 'path';
 
-import { CommandInstanceInfo } from '../../definitions';
+import { CommandInstanceInfo, ProjectIntegration } from '../../definitions';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
 
 export abstract class CapacitorCommand extends Command {
+  private _integration?: Required<ProjectIntegration>;
+
+  get integration(): Required<ProjectIntegration> {
+    if (!this.project) {
+      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
+    }
+
+    if (!this._integration) {
+      this._integration = this.project.requireIntegration('capacitor');
+    }
+
+    return this._integration;
+  }
+
   async checkCapacitor(runinfo: CommandInstanceInfo) {
     if (!this.project) {
       throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
 
-    const integration = this.project.config.get('integrations').capacitor;
+    const capacitor = this.project.getIntegration('capacitor');
 
-    if (integration && integration.enabled === false) {
-      return;
-    }
-
-    if (!integration) {
+    if (!capacitor) {
       await runCommand(runinfo, ['integrations', 'enable', 'capacitor']);
     }
   }
@@ -102,8 +112,6 @@ export abstract class CapacitorCommand extends Command {
       throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
 
-    const { root: cwd } = await this.project.getIntegration('capacitor');
-
-    await this.env.shell.run('capacitor', argList, { fatalOnNotFound: false, truncateErrorOutput: 5000, stdio: 'inherit', cwd });
+    await this.env.shell.run('capacitor', argList, { fatalOnNotFound: false, truncateErrorOutput: 5000, stdio: 'inherit', cwd: this.integration.root });
   }
 }

@@ -264,7 +264,8 @@ export interface IProject {
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
   createIntegration(name: IntegrationName): Promise<IIntegration>;
-  getIntegration(name: IntegrationName): Promise<Required<ProjectIntegration>>;
+  getIntegration(name: IntegrationName): Required<ProjectIntegration> | undefined;
+  requireIntegration(name: IntegrationName): Required<ProjectIntegration>;
   requireProId(): Promise<string>;
   getPackageJson(pkgName?: string): Promise<[ζframework.PackageJson | undefined, string | undefined]>;
   requirePackageJson(pkgName?: string): Promise<ζframework.PackageJson>;

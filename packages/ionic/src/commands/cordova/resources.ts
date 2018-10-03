@@ -102,9 +102,8 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
     await this.checkForPlatformInstallation(platform, { promptToInstall: true });
 
-    const integration = await this.project.getIntegration('cordova');
-    const conf = await loadConfigXml({ project: this.project });
-    const platforms = await getPlatforms(integration.root);
+    const conf = await loadConfigXml(this.integration);
+    const platforms = await getPlatforms(this.integration.root);
     const buildPlatforms = Object.keys(RESOURCES).filter(p => platforms.includes(p));
 
     debug(`platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
@@ -122,7 +121,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     // Convert the resource structure to a flat array then filter the array so
     // that it only has img resources that we need. Finally add src path to the
     // items that remain.
-    let imgResources = getImageResources(integration.root)
+    let imgResources = getImageResources(this.integration.root)
       .filter(img => orientation === 'default' || typeof img.orientation === 'undefined' || img.orientation === orientation)
       .filter(img => buildPlatforms.includes(img.platform))
       .filter(img => resourceTypes.includes(img.resType));
@@ -143,7 +142,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     let srcImagesAvailable: SourceImage[] = [];
 
     try {
-      srcImagesAvailable = await getSourceImages(integration.root, buildPlatforms, resourceTypes);
+      srcImagesAvailable = await getSourceImages(this.integration.root, buildPlatforms, resourceTypes);
       debug(`${chalk.cyan('getSourceImages')} completed: (${srcImagesAvailable.map(v => chalk.bold(prettyPath(v.path))).join(', ')})`);
     } catch (e) {
       this.env.log.error(`Error in ${chalk.green('getSourceImages')}: ${e.stack ? e.stack : e}`);

@@ -6,7 +6,7 @@ import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as et from 'elementtree';
 
-import { IProject, ResourcesPlatform } from '../../../definitions';
+import { ProjectIntegration, ResourcesPlatform } from '../../../definitions';
 import { FatalException } from '../../errors';
 import { shortid } from '../../utils/uuid';
 
@@ -291,10 +291,8 @@ export class ConfigXml {
   }
 }
 
-export async function loadConfigXml({ project }: { project: IProject }): Promise<ConfigXml> {
-  const cordova = await project.getIntegration('cordova');
-
-  const filePath = path.resolve(cordova.root, 'config.xml');
+export async function loadConfigXml(integration: Required<ProjectIntegration>): Promise<ConfigXml> {
+  const filePath = path.resolve(integration.root, 'config.xml');
   debug(`Using config.xml: ${filePath}`);
 
   try {

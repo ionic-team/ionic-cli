@@ -114,7 +114,7 @@ class AngularBuildCLI extends BuildCLI<AngularBuildOptions> {
     let separatedArgs = options['--'];
 
     if (options.engine === 'cordova') {
-      const integration = await this.e.project.getIntegration('cordova');
+      const integration = this.e.project.requireIntegration('cordova');
       args.platform = options.platform;
 
       if (this.e.project.directory !== integration.root) {

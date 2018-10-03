@@ -311,17 +311,29 @@ export abstract class Project implements IProject {
     }, name);
   }
 
-  async getIntegration(name: IntegrationName): Promise<Required<ProjectIntegration>> {
+  getIntegration(name: IntegrationName): Required<ProjectIntegration> | undefined {
     const integration = this.config.get('integrations')[name];
+
+    if (integration) {
+      return {
+        enabled: integration.enabled !== false,
+        root: integration.root === undefined ? this.directory : path.resolve(this.directory, integration.root),
+      };
+    }
+  }
+
+  requireIntegration(name: IntegrationName): Required<ProjectIntegration> {
+    const integration = this.getIntegration(name);
 
     if (!integration) {
       throw new FatalException(`Could not find ${chalk.bold(name)} integration in the ${chalk.bold(this.name ? this.name : 'default')} project.`);
     }
 
-    return {
-      enabled: integration.enabled !== false,
-      root: integration.root === undefined ? this.directory : path.resolve(this.directory, integration.root),
-    };
+    if (!integration.enabled) {
+      throw new FatalException(`${chalk.bold(name)} integration is disabled in the ${chalk.bold(this.name ? this.name : 'default')} project.`);
+    }
+
+    return integration;
   }
 
   protected async getIntegrations(): Promise<IIntegration[]> {

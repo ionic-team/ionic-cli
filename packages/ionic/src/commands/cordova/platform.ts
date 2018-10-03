@@ -81,16 +81,14 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
 
     const [ action, platformName ] = inputs;
 
-    const metadata = await this.getMetadata();
-
-    const cordova = await this.project.getIntegration('cordova');
-    const platforms = await getPlatforms(cordova.root);
+    const platforms = await getPlatforms(this.integration.root);
 
     if (action === 'add' && platforms.includes(platformName)) {
       this.env.log.msg(`Platform ${platformName} already exists.`);
       return;
     }
 
+    const metadata = await this.getMetadata();
     const cordovaArgs = filterArgumentsForCordova(metadata, options);
 
     if (

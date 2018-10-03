@@ -66,6 +66,7 @@ export class IonicNamespace extends Namespace {
       ['link', async () => { const { LinkCommand } = await import('./link'); return new LinkCommand(this); }],
       ['login', async () => { const { LoginCommand } = await import('./login'); return new LoginCommand(this); }],
       ['logout', async () => { const { LogoutCommand } = await import('./logout'); return new LogoutCommand(this); }],
+      ['repair', async () => { const { RepairCommand } = await import('./repair'); return new RepairCommand(this); }],
       ['serve', async () => { const { ServeCommand } = await import('./serve'); return new ServeCommand(this); }],
       ['share', async () => { const { ShareCommand } = await import('./share'); return new ShareCommand(this); }],
       ['signup', async () => { const { SignupCommand } = await import('./signup'); return new SignupCommand(this); }],

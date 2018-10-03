@@ -40,6 +40,8 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
+
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic monitoring syncmaps')} outside a project directory.`);
     }
@@ -50,8 +52,8 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     const [ snapshotId ] = inputs;
     const doBuild = options.build ? true : false;
 
-    const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
-    const conf = await loadConfigXml({ project: this.project });
+    const cordova = this.project.requireIntegration('cordova');
+    const conf = await loadConfigXml(cordova);
     const cordovaInfo = conf.getProjectInfo();
 
     const appVersion = cordovaInfo.version;

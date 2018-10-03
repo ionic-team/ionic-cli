@@ -82,7 +82,7 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
       } else {
         this.env.log.warn(
           `Cannot perform Ionic build without ${chalk.green('platform')}. Falling back to just ${chalk.green('cordova prepare')}.\n` +
-          `Please supply a ${chalk.green('platform')} (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')}) so the Ionic CLI can build web assets. The ${chalk.green('--no-build')} option can be specified to hide this warning.`
+          `Please supply a ${chalk.green('platform')} (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')}) so the Ionic CLI can build web assets. The ${chalk.green('--no-build')} option will hide this warning.`
         );
 
         this.env.log.nl();

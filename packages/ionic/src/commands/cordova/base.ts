@@ -4,7 +4,7 @@ import { mkdirp, pathExists } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as path from 'path';
 
-import { CommandInstanceInfo, CommandMetadataOption, IShellRunOptions } from '../../definitions';
+import { CommandInstanceInfo, CommandMetadataOption, IShellRunOptions, ProjectIntegration } from '../../definitions';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
@@ -62,18 +62,28 @@ export const CORDOVA_BUILD_EXAMPLE_COMMANDS = [
 ];
 
 export abstract class CordovaCommand extends Command {
+  private _integration?: Required<ProjectIntegration>;
+
+  get integration(): Required<ProjectIntegration> {
+    if (!this.project) {
+      throw new FatalException(`Cannot use Cordova outside a project directory.`);
+    }
+
+    if (!this._integration) {
+      this._integration = this.project.requireIntegration('cordova');
+    }
+
+    return this._integration;
+  }
+
   async checkCordova(runinfo: CommandInstanceInfo) {
     if (!this.project) {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }
 
-    const integration = this.project.config.get('integrations').cordova;
+    const cordova = this.project.getIntegration('cordova');
 
-    if (integration && integration.enabled === false) {
-      return;
-    }
-
-    if (!integration) {
+    if (!cordova) {
       await runCommand(runinfo, ['integrations', 'enable', 'cordova']);
     }
   }
@@ -87,11 +97,9 @@ export abstract class CordovaCommand extends Command {
 
     await this.checkCordova(runinfo);
 
-    const cordova = await this.project.getIntegration('cordova');
-
     // Check for www folder
     if (this.project.directory) {
-      const wwwPath = path.join(cordova.root, 'www');
+      const wwwPath = path.join(this.integration.root, 'www');
       const wwwExists = await pathExists(wwwPath); // TODO: hard-coded
 
       if (!wwwExists) {
@@ -103,7 +111,7 @@ export abstract class CordovaCommand extends Command {
       }
     }
 
-    const conf = await loadConfigXml({ project: this.project });
+    const conf = await loadConfigXml(this.integration);
     conf.resetContentSrc();
     await conf.save();
   }
@@ -114,10 +122,9 @@ export abstract class CordovaCommand extends Command {
     }
 
     const { pkgManagerArgs } = await import('../../lib/utils/npm');
-    const { root: cwd } = await this.project.getIntegration('cordova');
 
     try {
-      await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, cwd, ...options });
+      await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, cwd: this.integration.root, ...options });
     } catch (e) {
       if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
         const cdvInstallArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'cordova', global: true });
@@ -144,8 +151,7 @@ export abstract class CordovaCommand extends Command {
     if (platform) {
       const { getPlatforms } = await import('../../lib/integrations/cordova/project');
 
-      const cordova = await this.project.getIntegration('cordova');
-      const platforms = await getPlatforms(cordova.root);
+      const platforms = await getPlatforms(this.integration.root);
 
       if (!platforms.includes(platform)) {
         const confirm = promptToInstall ? await this.env.prompt({

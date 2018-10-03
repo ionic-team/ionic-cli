@@ -90,7 +90,7 @@ describe('ionic', () => {
         it('should pass cordova options', async () => {
           const root = 'fakeRoot';
           const project = {
-            getIntegration: jest.fn(() => ({ root })),
+            requireIntegration: jest.fn(() => ({ root })),
           };
           const runner = new AngularServeCLI({ project });
           const options = {
