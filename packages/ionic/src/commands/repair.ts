@@ -68,10 +68,10 @@ For Cordova apps, it removes and recreates the generated native project and the 
     const packageLockFile = path.resolve(project.directory, 'package-lock.json');
     const nodeModulesDir = path.resolve(project.directory, 'node_modules');
 
-    tasks.next(`Removing ${prettyPath(packageLockFile)}`);
+    tasks.next(`Removing ${chalk.bold(prettyPath(packageLockFile))}`);
     await unlink(packageLockFile);
 
-    tasks.next(`Removing ${prettyPath(nodeModulesDir)}`);
+    tasks.next(`Removing ${chalk.bold(prettyPath(nodeModulesDir))}`);
     await removeDirectory(nodeModulesDir);
 
     tasks.end();
@@ -87,10 +87,10 @@ For Cordova apps, it removes and recreates the generated native project and the 
       const platformsDir = path.resolve(cordova.root, 'platforms');
       const pluginsDir = path.resolve(cordova.root, 'plugins');
 
-      tasks.next(`Removing ${prettyPath(platformsDir)}`);
+      tasks.next(`Removing ${chalk.bold(prettyPath(platformsDir))}`);
       await removeDirectory(platformsDir);
 
-      tasks.next(`Removing ${prettyPath(pluginsDir)}`);
+      tasks.next(`Removing ${chalk.bold(prettyPath(pluginsDir))}`);
       await removeDirectory(pluginsDir);
 
       tasks.end();
