@@ -254,8 +254,8 @@ export abstract class Project implements IProject {
     return 'https://ionicframework.com/docs';
   }
 
-  async getSourceDir(sourceRoot = 'src'): Promise<string> {
-    return path.resolve(this.directory, sourceRoot);
+  async getSourceDir(): Promise<string> {
+    return path.resolve(this.directory, 'src');
   }
 
   async getDistDir(): Promise<string> {

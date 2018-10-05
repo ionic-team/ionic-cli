@@ -72,6 +72,10 @@ export class Ionic1Project extends Project {
     return false;
   }
 
+  async getSourceDir(): Promise<string> {
+    return this.getDistDir(); // ionic1's source directory is the dist directory
+  }
+
   async getDocsUrl(): Promise<string> {
     return 'https://ionicframework.com/docs/v1/';
   }
