@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.10"></a>
+## [1.0.10](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@1.0.9...@ionic/v1-toolkit@1.0.10) (2018-10-05)
+
+
+
+
+**Note:** Version bump only for package @ionic/v1-toolkit
+
 <a name="1.0.9"></a>
 ## [1.0.9](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@1.0.8...@ionic/v1-toolkit@1.0.9) (2018-10-03)
 

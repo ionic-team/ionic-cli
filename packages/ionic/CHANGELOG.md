@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.2.1"></a>
+## [4.2.1](https://github.com/ionic-team/ionic-cli/compare/ionic@4.2.0...ionic@4.2.1) (2018-10-05)
+
+
+### Bug Fixes
+
+* **doctor:** fix viewport-fit-not-set for ionic1 ([826b9ae](https://github.com/ionic-team/ionic-cli/commit/826b9ae))
+* **info:** show versions for [@ionic](https://github.com/ionic)/angular-toolkit ([9d1824a](https://github.com/ionic-team/ionic-cli/commit/9d1824a))
+
+
+
+
 <a name="4.2.0"></a>
 # [4.2.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.1.2...ionic@4.2.0) (2018-10-03)
 

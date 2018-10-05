@@ -1,6 +1,6 @@
 {
   "name": "@ionic/utils-fs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Filesystem utils for Node",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
