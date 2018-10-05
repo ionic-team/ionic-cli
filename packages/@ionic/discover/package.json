@@ -43,7 +43,7 @@
     "ws": "^6.0.0"
   },
   "devDependencies": {
-    "@types/debug": "0.0.30",
+    "@types/debug": "0.0.31",
     "@types/netmask": "^1.0.30",
     "@types/node": "^6.0.101",
     "@types/ws": "^6.0.0",

@@ -43,7 +43,7 @@
     "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "@types/debug": "0.0.30",
+    "@types/debug": "0.0.31",
     "@types/ncp": "^2.0.1",
     "@types/node": "^6.0.101",
     "@types/through2": "^2.0.33",

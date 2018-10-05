@@ -53,7 +53,7 @@
     "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "@types/debug": "0.0.30",
+    "@types/debug": "0.0.31",
     "@types/node": "^6.0.101",
     "@types/webpack": "^4.4.11",
     "@types/webpack-dev-server": "^3.1.0",

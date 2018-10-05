@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.0",
-    "@types/debug": "0.0.30",
+    "@types/debug": "0.0.31",
     "@types/inquirer": "0.0.43",
     "@types/lodash": "^4.14.104",
     "@types/minimist": "^1.2.0",
