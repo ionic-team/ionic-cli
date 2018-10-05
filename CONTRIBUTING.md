@@ -51,11 +51,6 @@ The Ionic CLI is organized into a monorepo. Here are the packages:
 * [`packages/@ionic/discover`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/discover): Service discovery library used for `ionic serve` with the [Ionic DevApp](https://ionicframework.com/docs/pro/devapp/).
 * [`packages/@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/lab): Utility CLI for Ionic Lab, used by `ionic serve`.
 
-##### Ionic/Angular 4+
-
-* [`packages/@ionic/ng-toolkit`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/ng-toolkit): Builders for Ionic/Angular 4+.
-* [`packages/@ionic/schematics-angular`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/schematics-angular): Schematics for `ng generate`.
-
 ##### Ionic 1
 
 * [`packages/@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/v1-toolkit): Utility CLI for Ionic v1 Apps, used by `ionic serve`.
