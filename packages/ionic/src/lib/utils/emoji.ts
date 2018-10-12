@@ -1,10 +1,9 @@
-// Emoji falback, right now just uses fallback on windows,
-// but could expand to be more sophisticated to allow emoji
-// on Hyper term on windows, for example.
-export const emoji = (x: string, fallback: string) => {
-  if (process.platform === 'win32') {
+import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
+
+export function emoji(x: string, fallback: string): string {
+  if (TERMINAL_INFO.windows) {
     return fallback;
   }
 
   return x;
-};
+}

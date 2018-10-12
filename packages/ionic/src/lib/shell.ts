@@ -2,6 +2,7 @@ import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommandError } from 
 import { createProcessEnv, killProcessTree, onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { ShellCommand, which } from '@ionic/cli-framework/utils/shell';
 import { combineStreams } from '@ionic/cli-framework/utils/streams';
+import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
 import chalk from 'chalk';
 import { ChildProcess, SpawnOptions } from 'child_process';
 import * as Debug from 'debug';
@@ -171,7 +172,7 @@ export class Shell implements IShell {
    * @see https://github.com/ionic-team/ionic-cli/issues/3563#issuecomment-425232005
    */
   async resolveCommandPath(command: string, options: SpawnOptions): Promise<string> {
-    if (process.platform === 'win32') {
+    if (TERMINAL_INFO.windows) {
       try {
         return await which(command, { PATH: options.env.PATH });
       } catch (e) {
