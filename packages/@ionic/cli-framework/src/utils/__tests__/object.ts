@@ -101,17 +101,17 @@ describe('@ionic/cli-framework', () => {
 
       });
 
-      describe('resolveAliases', () => {
+      describe('resolveAlias', () => {
 
         it('should return undefined for unknown command', () => {
           const m = new MyAliasedMap([]);
-          expect(m.resolveAliases('bar')).toBeUndefined();
+          expect(m.resolveAlias('bar')).toBeUndefined();
         });
 
         it('should return command when immediately found', async () => {
           const obj = { foo: 'bar' };
           const m = new MyAliasedMap([['foo', obj]]);
-          const result = m.resolveAliases('foo');
+          const result = m.resolveAlias('foo');
           expect(result).toBe(obj);
         });
 

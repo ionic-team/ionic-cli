@@ -1,6 +1,6 @@
 import * as lodash from 'lodash';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMapGetter, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandPathItem, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, ICommandMap, INamespace, INamespaceMap, NamespaceLocateResult, NamespaceMapGetter, NamespaceMetadata, ValidationError } from '../definitions';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMapGetter, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandPathItem, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, ICommandMap, INamespace, INamespaceMap, NamespaceLocateOptions, NamespaceLocateResult, NamespaceMapGetter, NamespaceMetadata, ValidationError } from '../definitions';
 import { InputValidationError } from '../errors';
 import { AliasedMap } from '../utils/object';
 import { strcmp } from '../utils/string';
@@ -96,17 +96,17 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
    *
    * @param argv The set of command-line arguments to use to locate.
    */
-  async locate(argv: ReadonlyArray<string>): Promise<NamespaceLocateResult<C, N, M, I, O>> {
+  async locate(argv: ReadonlyArray<string>, { useAliases = true }: NamespaceLocateOptions = {}): Promise<NamespaceLocateResult<C, N, M, I, O>> {
     const _locate = async (inputs: ReadonlyArray<string>, parent: N, path: CommandPathItem<C, N, M, I, O>[]): Promise<NamespaceLocateResult<C, N, M, I, O>> => {
       const [ key ] = inputs;
       const children = await parent.getNamespaces();
-      const nsgetter = children.resolveAliases(key);
+      const nsgetter = useAliases ? children.resolveAlias(key) : children.get(key);
 
-      if (!nsgetter) {
+      if (!nsgetter || typeof nsgetter === 'string' || typeof nsgetter === 'symbol') {
         const commands = await parent.getCommands();
-        const cmdgetter = commands.resolveAliases(key);
+        const cmdgetter = useAliases ? commands.resolveAlias(key) : commands.get(key);
 
-        if (cmdgetter) {
+        if (cmdgetter && typeof cmdgetter !== 'string' && typeof cmdgetter !== 'symbol') {
           const cmd = await cmdgetter();
           return { args: inputs.slice(1), obj: cmd, path: [...path, [key, cmd]] };
         }

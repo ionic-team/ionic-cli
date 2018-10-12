@@ -38,13 +38,13 @@ export class AliasedMap<K, V> extends Map<AliasedMapKey | K, AliasedMapKey | V> 
     return aliasmap;
   }
 
-  resolveAliases(key: AliasedMapKey | K): V | undefined {
+  resolveAlias(key: AliasedMapKey | K): V | undefined {
     const r = this.get(key);
 
     if (typeof r !== 'string' && typeof r !== 'symbol') {
       return r;
     }
 
-    return this.resolveAliases(r);
+    return this.resolveAlias(r);
   }
 }
