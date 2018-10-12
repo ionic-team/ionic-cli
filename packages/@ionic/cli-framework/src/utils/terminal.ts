@@ -14,11 +14,24 @@ if (CI_ENVIRONMENT_VARIABLES_DETECTED.length > 0) {
 }
 
 export interface TerminalInfo {
+  /**
+   * Whether the terminal is an interactive TTY or not.
+   */
   readonly tty: boolean;
+
+  /**
+   * Whether this is in CI or not.
+   */
   readonly ci: boolean;
+
+  /**
+   * Whether this is a Windows shell or not.
+   */
+  readonly windows: boolean;
 }
 
 export const TERMINAL_INFO: TerminalInfo = Object.freeze({
   tty: Boolean(process.stdin.isTTY && process.stdout.isTTY && process.stderr.isTTY),
   ci: CI_ENVIRONMENT_VARIABLES_DETECTED.length > 0,
+  windows: process.platform === 'win32' && (process.env.MSYSTEM && /^MINGW(32|64)$/.test(process.env.MSYSTEM) || process.env.TERM === 'cygwin'),
 });

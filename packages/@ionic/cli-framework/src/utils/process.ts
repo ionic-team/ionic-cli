@@ -3,6 +3,7 @@ import * as lodash from 'lodash';
 import * as kill from 'tree-kill';
 
 import { createCaseInsensitiveObject } from './object';
+import { TERMINAL_INFO } from './terminal';
 
 const debug = Debug('ionic:cli-framework:utils:process');
 
@@ -24,13 +25,13 @@ export function killProcessTree(pid: number, signal: string | number = 'SIGTERM'
 /**
  * Creates an alternative implementation of `process.env` object.
  *
- * On Windows, `process.env` is a magic object that offers case-insensitive
- * environment variable access. On other platforms, case sensitivity matters.
- * This method creates an empty "`process.env`" object type that works for all
- * platforms.
+ * On a Windows shell, `process.env` is a magic object that offers
+ * case-insensitive environment variable access. On other platforms, case
+ * sensitivity matters. This method creates an empty "`process.env`" object
+ * type that works for all platforms.
  */
 export function createProcessEnv(...sources: { [key: string]: string | undefined; }[]): { [key: string]: string; } {
-  return lodash.assign(process.platform === 'win32' ? createCaseInsensitiveObject() : {}, ...sources);
+  return lodash.assign(TERMINAL_INFO.windows ? createCaseInsensitiveObject() : {}, ...sources);
 }
 
 /**
