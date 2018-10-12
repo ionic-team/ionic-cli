@@ -117,6 +117,33 @@ describe('@ionic/cli-framework', () => {
 
       });
 
+      describe('keysWithoutAliases', () => {
+
+        it('should return empty array', () => {
+          const m = new MyAliasedMap([]);
+          expect(m.keysWithoutAliases()).toEqual([]);
+        });
+
+        it('should return non-aliased keys for a plain map', async () => {
+          const m = new MyAliasedMap([['foo', { foo: 'bar' }], ['bar', { foo: 'bar' }]]);
+          const result = m.keysWithoutAliases();
+          expect(result).toEqual(['foo', 'bar']);
+        });
+
+        it('should return non-aliased keys for a map with aliases', async () => {
+          const m = new MyAliasedMap([['foo', { foo: 'bar' }], ['bar', { foo: 'bar' }], ['f', 'foo'], ['b', 'bar']]);
+          const result = m.keysWithoutAliases();
+          expect(result).toEqual(['foo', 'bar']);
+        });
+
+        it('should return non-aliased keys for a map with invalid aliases', async () => {
+          const m = new MyAliasedMap([['foo', { foo: 'bar' }], ['f', 'foo'], ['g', 'garbage']]);
+          const result = m.keysWithoutAliases();
+          expect(result).toEqual(['foo']);
+        });
+
+      });
+
     });
 
   });

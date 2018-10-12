@@ -47,4 +47,10 @@ export class AliasedMap<K, V> extends Map<AliasedMapKey | K, AliasedMapKey | V> 
 
     return this.resolveAlias(r);
   }
+
+  keysWithoutAliases(): K[] {
+    return [...this.entries()]
+      .filter((entry): entry is [K, V] => typeof entry[1] !== 'string' && typeof entry[1] !== 'symbol')
+      .map(([k, v]) => k);
+  }
 }
