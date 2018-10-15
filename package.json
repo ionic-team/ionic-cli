@@ -10,7 +10,7 @@
     "docs": "node ./packages/@ionic/cli-scripts/bin/docs",
     "publish:canary": "lerna publish --canary --exact --npm-tag=canary --skip-git",
     "publish:testing": "lerna publish --canary=testing --exact --npm-tag=testing --skip-git",
-    "publish": "lerna publish --exact --conventional-commits",
+    "publish": "lerna publish --exact --conventional-commits --npm-tag=latest-3",
     "precommit": "npm run lint"
   },
   "devDependencies": {
