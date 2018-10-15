@@ -1,12 +1,10 @@
 import * as path from 'path';
 
-import chalk from 'chalk';
-
 import * as expressType from 'express';
 
 import { DaemonFile, DistTag, IonicEnvironment } from '../definitions';
 import { BaseConfig } from './config';
-import { fsOpen, fsReadFile, fsWriteFile } from '@ionic/cli-framework/utils/fs';
+import { fsReadFile, fsWriteFile } from '@ionic/cli-framework/utils/fs';
 import { KNOWN_PLUGINS, formatFullPluginName } from './plugins';
 
 const KNOWN_PACKAGES = [
@@ -129,44 +127,6 @@ export function processRunning(pid: number): boolean {
   } catch (e) {
     return e.code === 'EPERM';
   }
-}
-
-export async function checkForDaemon(env: IonicEnvironment): Promise<number> {
-  const config = await env.config.load();
-
-  if (!config.daemon.updates) {
-    return 0;
-  }
-
-  const f = await env.daemon.getPid();
-
-  if (f && processRunning(f)) {
-    env.log.debug(() => `Daemon found (pid: ${chalk.bold(String(f))})`);
-    return f;
-  }
-
-  const crossSpawn = await import('cross-spawn');
-  const fd = await fsOpen(env.daemon.logFilePath, 'a');
-
-  const crossSpawnOptions: { cwd: string; stdio: (string | number)[]; shell?: boolean; detached?: boolean; } = {
-    cwd: env.config.directory,
-    stdio: ['ignore', fd, fd],
-  };
-
-  // TODO: should cross-spawn figure this stuff out? https://github.com/IndigoUnited/node-cross-spawn/issues/77
-  if (process.platform === 'win32') {
-    crossSpawnOptions.shell = true;
-    crossSpawnOptions.detached = false;
-  }
-
-  const crossSpawnArgs = [crossSpawnOptions.shell ? `"${env.meta.binPath}"` : env.meta.binPath, 'daemon', '--verbose', '--no-interactive', '--log-timestamps'];
-  const p = crossSpawn.spawn(crossSpawnOptions.shell ? `"${process.execPath}"` : process.execPath, crossSpawnArgs, crossSpawnOptions);
-
-  p.unref();
-
-  env.log.debug(`New daemon pid: ${chalk.bold(String(p.pid))}`);
-
-  return p.pid;
 }
 
 export async function createCommServer(env: IonicEnvironment): Promise<expressType.Application> {

@@ -103,23 +103,6 @@ export async function run(pargv: string[], env: { [k: string]: string; }) {
         ienv.log.debug(() => chalk.red(chalk.bold('Plugin error: ') + (e.stack ? e.stack : e)));
       }
 
-      if (ienv.flags.interactive) {
-        if (await ienv.config.isUpdatingEnabled()) {
-          const { checkForDaemon } = await import('@ionic/cli-utils/lib/daemon');
-          await checkForDaemon(ienv);
-
-          const { checkForUpdates, getLatestPluginVersion, versionNeedsUpdating } = await import('@ionic/cli-utils/lib/plugins');
-          const latestVersion = await getLatestPluginVersion(ienv, plugin.meta.name, plugin.meta.version);
-
-          if (latestVersion) {
-            plugin.meta.latestVersion = latestVersion;
-            plugin.meta.updateAvailable = await versionNeedsUpdating(plugin.meta.version, latestVersion);
-
-            await checkForUpdates(ienv);
-          }
-        }
-      }
-
       await ienv.hooks.fire('plugins:init', { env: ienv });
       await namespace.runCommand(ienv, pargv);
       config.state.lastCommand = now.toISOString();
