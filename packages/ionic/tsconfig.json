@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./"
+    "outDir": "./",
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "../../types/leek.d.ts",

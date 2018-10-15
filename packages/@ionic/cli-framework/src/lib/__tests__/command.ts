@@ -1,18 +1,15 @@
-import {
-  Command,
-  CommandMap,
-  CommandMapDefault,
-  Namespace,
-  NamespaceMap,
-  generateCommandPath,
-} from '../command';
+import { CommandMetadata } from '../../definitions';
+import { Command, CommandMap, CommandMapDefault, Namespace, NamespaceMap, generateCommandPath } from '../command';
 
 class MyNamespace extends Namespace {
-  async getMetadata() {
-    return { name: 'my' };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'my',
+      summary: '',
+    };
   }
 
-  async getNamespaces() {
+  async getNamespaces(): Promise<NamespaceMap> {
     return new NamespaceMap([
       ['foo', async () => new FooNamespace(this)],
       ['defns', async () => new NamespaceWithDefault(this)],
@@ -22,11 +19,14 @@ class MyNamespace extends Namespace {
 }
 
 class NamespaceWithDefault extends Namespace {
-  async getMetadata() {
-    return { name: 'defns' };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'defns',
+      summary: '',
+    };
   }
 
-  async getCommands() {
+  async getCommands(): Promise<CommandMap> {
     return new CommandMap([
       [CommandMapDefault, async () => new DefaultCommand(this)],
     ]);
@@ -34,11 +34,14 @@ class NamespaceWithDefault extends Namespace {
 }
 
 class FooNamespace extends Namespace {
-  async getMetadata() {
-    return { name: 'foo' };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'foo',
+      summary: '',
+    };
   }
 
-  async getCommands() {
+  async getCommands(): Promise<CommandMap> {
     return new CommandMap([
       ['bar', async () => new BarCommand(this)],
       ['baz', async () => new BazCommand(this)],
@@ -48,37 +51,45 @@ class FooNamespace extends Namespace {
 }
 
 class EmptyNamespace extends Namespace {
-  async getMetadata() {
-    return { name: 'empty' };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'empty',
+      summary: '',
+    };
   }
 }
 
 class DefaultCommand extends Command {
-  async getMetadata() {
-    return { name: 'def', description: '' };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'def',
+      summary: '',
+    };
   }
+
+  async run() {}
 }
 
 class BarCommand extends Command {
-  async getMetadata() {
-    return { name: 'bar', description: '' };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'bar',
+      summary: '',
+    };
   }
+
+  async run() {}
 }
 
 class BazCommand extends Command {
-  async getMetadata() {
-    return { name: 'baz', description: '' };
-  }
-}
-
-class FooCommand extends Command {
-  async getMetadata() {
+  async getMetadata(): Promise<CommandMetadata> {
     return {
-      name: 'foo',
-      type: 'global',
-      description: '',
+      name: 'baz',
+      summary: '',
     };
   }
+
+  async run() {}
 }
 
 describe('@ionic/cli-framework', () => {
@@ -90,7 +101,7 @@ describe('@ionic/cli-framework', () => {
       describe('root and parent', () => {
 
         it('should have root attribute', async () => {
-          const testNamespace = async ns => {
+          const testNamespace = async (ns: Namespace) => {
             const namespaces = await ns.getNamespaces();
 
             for (let [ , nsgetter ] of namespaces.entries()) {
@@ -107,7 +118,7 @@ describe('@ionic/cli-framework', () => {
         });
 
         it('should have parent attribute', async () => {
-          const testNamespace = async ns => {
+          const testNamespace = async (ns: Namespace) => {
             const namespaces = await ns.getNamespaces();
 
             for (let [ , nsgetter ] of namespaces.entries()) {
@@ -128,7 +139,7 @@ describe('@ionic/cli-framework', () => {
       describe('getNamespaces', () => {
 
         it('should get subnamespaces', async () => {
-          const testNamespace = async ns => {
+          const testNamespace = async (ns: Namespace) => {
             const commands = await ns.getCommands();
             const namespaces = await ns.getNamespaces();
 
@@ -297,7 +308,9 @@ describe('@ionic/cli-framework', () => {
           const ns = new MyNamespace();
           const result = await ns.getCommandMetadataList();
           const bar = result.find(c => c.command instanceof BarCommand);
-          expect(bar).toBeDefined();
+          if (!bar) {
+            throw new Error('bar not defined');
+          }
           expect(bar.path.length).toEqual(3);
           expect(bar.path[0][0]).toEqual('my');
           expect(bar.path[0][1]).toBe(ns);
@@ -312,11 +325,17 @@ describe('@ionic/cli-framework', () => {
           const result = await ns.getCommandMetadataList();
           expect(result.length).toEqual(3);
           const bar = result.find(c => c.command instanceof BarCommand);
-          expect(bar).toBeDefined();
+          if (!bar) {
+            throw new Error('bar not defined');
+          }
           const baz = result.find(c => c.command instanceof BazCommand);
-          expect(baz).toBeDefined();
+          if (!baz) {
+            throw new Error('baz not defined');
+          }
           const def = result.find(c => c.command instanceof DefaultCommand);
-          expect(def).toBeDefined();
+          if (!def) {
+            throw new Error('def not defined');
+          }
           expect(bar.aliases).toEqual(['my foo b']);
           expect(def.aliases).toEqual([]);
           expect(baz.aliases).toEqual([]);
@@ -333,7 +352,7 @@ describe('@ionic/cli-framework', () => {
       it('should get path for single namespace and command', async () => {
         const ns = new FooNamespace();
         const { obj } = await ns.locate(['bar']);
-        const result = await generateCommandPath(obj);
+        const result = await generateCommandPath(obj as any);
         expect(result.length).toEqual(2);
         const [ foons, barcmd ] = result;
         expect(foons).toBeDefined();
@@ -347,7 +366,7 @@ describe('@ionic/cli-framework', () => {
       it('should work back through nested namespace', async () => {
         const ns = new MyNamespace();
         const { obj } = await ns.locate(['foo', 'bar']);
-        const result = await generateCommandPath(obj);
+        const result = await generateCommandPath(obj as any);
         expect(result.length).toEqual(3);
         const [ rootns, foons, barcmd ] = result;
         expect(rootns).toEqual(['my', ns]);

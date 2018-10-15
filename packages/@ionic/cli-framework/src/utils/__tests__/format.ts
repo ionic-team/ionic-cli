@@ -9,17 +9,18 @@ describe('@ionic/cli-framework', () => {
 
     describe('prettyPath', () => {
 
+      let originalCwd: () => string;
       const mock_os = os;
 
       jest.resetModules();
 
       beforeEach(() => {
-        this.originalCwd = process.cwd;
+        originalCwd = process.cwd;
         process.cwd = () => '/home/user/dir1/dir2/dir3';
       });
 
       afterEach(() => {
-        process.cwd = this.originalCwd;
+        process.cwd = originalCwd;
       });
 
       describe('posix', () => {
@@ -105,6 +106,7 @@ describe('@ionic/cli-framework', () => {
 
       describe('windows', () => {
 
+        let originalCwd: () => string;
         jest.resetModules();
         const mock_path_win32 = path.win32;
         const mock_homedir = () => 'C:\\home\\user';
@@ -113,12 +115,12 @@ describe('@ionic/cli-framework', () => {
         const { prettyPath } = require('../format');
 
         beforeEach(() => {
-          this.originalCwd = process.cwd;
+          originalCwd = process.cwd;
           process.cwd = () => 'C:\\home\\user\\dir1\\dir2\\dir3';
         });
 
         afterEach(() => {
-          process.cwd = this.originalCwd;
+          process.cwd = originalCwd;
         });
 
         it('should pretty print file in cwd', () => {

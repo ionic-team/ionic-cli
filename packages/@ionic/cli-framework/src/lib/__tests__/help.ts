@@ -1,6 +1,5 @@
 import { Command, CommandMap, CommandMapDefault, Namespace, NamespaceMap } from '../command';
 import { CommandGroup, NamespaceGroup, OptionGroup } from '../options';
-import { DISABLED_COLORS } from '../colors';
 import { CommandStringHelpFormatter, NamespaceStringHelpFormatter, NamespaceSchemaHelpFormatter } from '../help';
 import { stripAnsi } from '../../utils/format';
 
@@ -12,7 +11,7 @@ class MyNamespace extends Namespace {
     };
   }
 
-  async getNamespaces() {
+  async getNamespaces(): Promise<NamespaceMap> {
     return new NamespaceMap([
       ['foo', async () => new FooNamespace(this)],
       ['defns', async () => new NamespaceWithDefault(this)],
@@ -20,7 +19,7 @@ class MyNamespace extends Namespace {
     ]);
   }
 
-  async getCommands() {
+  async getCommands(): Promise<CommandMap> {
     return new CommandMap([
       ['bar', async () => new BarCommand(this)],
     ]);
@@ -36,7 +35,7 @@ class NamespaceWithDefault extends Namespace {
     };
   }
 
-  async getCommands() {
+  async getCommands(): Promise<CommandMap> {
     return new CommandMap([
       [CommandMapDefault, async () => new DefaultCommand(this)],
     ]);
@@ -52,7 +51,7 @@ class FooNamespace extends Namespace {
     };
   }
 
-  async getCommands() {
+  async getCommands(): Promise<CommandMap> {
     return new CommandMap([
       ['bar', async () => new BarCommand(this)],
       ['baz', async () => new BazCommand(this)],
@@ -110,18 +109,6 @@ class BazCommand extends Command {
   async validate() {}
 }
 
-class FooCommand extends Command {
-  async getMetadata() {
-    return {
-      name: 'foo',
-      summary: 'the foo command',
-    };
-  }
-
-  async run() {}
-  async validate() {}
-}
-
 describe('@ionic/cli-framework', () => {
 
   describe('lib/help', () => {
@@ -131,7 +118,7 @@ describe('@ionic/cli-framework', () => {
       it('should format a command appropriately', async () => {
         const myns = new MyNamespace();
         const location = await myns.locate(['foo', 'bar']);
-        const formatter = new CommandStringHelpFormatter({ location, command: location.obj });
+        const formatter = new CommandStringHelpFormatter({ location, command: location.obj as any });
         const result = await formatter.format();
 
         expect(stripAnsi(result)).toEqual(`
@@ -169,7 +156,7 @@ describe('@ionic/cli-framework', () => {
       it('should format a namespace appropriately', async () => {
         const myns = new MyNamespace();
         const location = await myns.locate([]);
-        const formatter = new NamespaceStringHelpFormatter({ location, namespace: location.obj });
+        const formatter = new NamespaceStringHelpFormatter({ location, namespace: location.obj as any });
         const result = await formatter.format();
 
         expect(stripAnsi(result)).toEqual(`
@@ -191,7 +178,7 @@ describe('@ionic/cli-framework', () => {
       it('should format a subnamespace appropriately', async () => {
         const myns = new MyNamespace();
         const location = await myns.locate(['foo']);
-        const formatter = new NamespaceStringHelpFormatter({ location, namespace: location.obj });
+        const formatter = new NamespaceStringHelpFormatter({ location, namespace: location.obj as any });
         const result = await formatter.format();
 
         expect(stripAnsi(result)).toEqual(`
@@ -356,7 +343,7 @@ describe('@ionic/cli-framework', () => {
         };
         const myns = new MyNamespace();
         const location = await myns.locate([]);
-        const formatter = new NamespaceSchemaHelpFormatter({ location, namespace: location.obj });
+        const formatter = new NamespaceSchemaHelpFormatter({ location, namespace: location.obj as any });
         const result = await formatter.serialize();
         expect(result).toEqual(expected);
       });

@@ -16,7 +16,7 @@ describe('ionic', () => {
       it('should take the resources structure and flatten it', async () => {
         const result = resources.getImageResources('/path/to/proj');
 
-        expect(result).toEqual(jasmine.any(Array));
+        expect(result).toEqual(jest.any(Array));
         expect(result.length).toEqual(53);
         expect(result.find(img => img.name === 'Default-568h@2x~iphone.png')).toEqual({
           platform: 'ios',

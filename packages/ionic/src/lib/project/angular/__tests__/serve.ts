@@ -100,7 +100,7 @@ describe('ionic', () => {
           };
 
           const result = await runner.serveOptionsToNgArgs(options);
-          expect(result).toEqual(jasmine.arrayContaining([
+          expect(result).toEqual(jest.arrayContaining([
             `--platform=${options.platform}`,
             `--cordova-base-path=${root}`,
           ]));

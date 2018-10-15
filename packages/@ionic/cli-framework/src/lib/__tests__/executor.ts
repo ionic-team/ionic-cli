@@ -1,21 +1,19 @@
-import {
-  Command,
-  CommandMap,
-  CommandMapDefault,
-  Namespace,
-  NamespaceMap,
-} from '../command';
+import { Command, CommandMap, CommandMapDefault, Namespace, NamespaceMap } from '../command';
+import { CommandMetadata, NamespaceMetadata } from '../../definitions';
 
 import { Executor } from '../executor';
 
-export const superspy = () => {};
+export const superspy = jest.fn();
 
 class MyNamespace extends Namespace {
-  async getMetadata() {
-    return { name: 'my' };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'my',
+      summary: '',
+    };
   }
 
-  async getNamespaces() {
+  async getNamespaces(): Promise<NamespaceMap> {
     return new NamespaceMap([
       ['foo', async () => new FooNamespace(this)],
       ['defns', async () => new NamespaceWithDefault(this)],
@@ -24,11 +22,14 @@ class MyNamespace extends Namespace {
 }
 
 class NamespaceWithDefault extends Namespace {
-  async getMetadata() {
-    return { name: 'defns' };
+  async getMetadata(): Promise<NamespaceMetadata> {
+    return {
+      name: 'defns',
+      summary: '',
+    };
   }
 
-  async getCommands() {
+  async getCommands(): Promise<CommandMap> {
     return new CommandMap([
       [CommandMapDefault, async () => new DefaultCommand(this)],
     ]);
@@ -36,11 +37,14 @@ class NamespaceWithDefault extends Namespace {
 }
 
 class FooNamespace extends Namespace {
-  async getMetadata() {
-    return { name: 'foo' };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'foo',
+      summary: '',
+    };
   }
 
-  async getCommands() {
+  async getCommands(): Promise<CommandMap> {
     return new CommandMap([
       ['bar', async () => new BarCommand(this)],
       ['baz', async () => new BazCommand(this)],
@@ -50,14 +54,22 @@ class FooNamespace extends Namespace {
 }
 
 class DefaultCommand extends Command {
-  async getMetadata() {
-    return { name: 'def', description: '' };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'def',
+      summary: '',
+    };
   }
+
+  async run() {}
 }
 
 class BarCommand extends Command {
-  async getMetadata() {
-    return { name: 'bar', description: '' };
+  async getMetadata(): Promise<CommandMetadata> {
+    return {
+      name: 'bar',
+      summary: '',
+    };
   }
 
   async validate() {
@@ -70,19 +82,14 @@ class BarCommand extends Command {
 }
 
 class BazCommand extends Command {
-  async getMetadata() {
-    return { name: 'baz', description: '' };
-  }
-}
-
-class FooCommand extends Command {
-  async getMetadata() {
+  async getMetadata(): Promise<CommandMetadata> {
     return {
-      name: 'foo',
-      type: 'global',
-      description: '',
+      name: 'baz',
+      summary: '',
     };
   }
+
+  async run() {}
 }
 
 describe('@ionic/cli-framework', () => {
@@ -112,8 +119,8 @@ describe('@ionic/cli-framework', () => {
           delete runArgs[1]._;
           expect(runArgs[1]).toEqual({ '--': ['c'] });
           expect(runArgs[2].location.obj).toBeInstanceOf(BarCommand);
-          const runPath = runArgs[2].location.path.map(([n]) => n);
-          const runPathObjs = runArgs[2].location.path.map(([, o]) => o);
+          const runPath = runArgs[2].location.path.map(([n]: any) => n);
+          const runPathObjs = runArgs[2].location.path.map(([, o]: any) => o);
           expect(runPath).toEqual(['my', 'foo', 'bar']);
           expect(runPathObjs[0]).toBeInstanceOf(MyNamespace);
           expect(runPathObjs[1]).toBeInstanceOf(FooNamespace);
@@ -128,7 +135,7 @@ describe('@ionic/cli-framework', () => {
           const namespace = new MyNamespace();
           const executor = new Executor({ namespace });
           const location = await namespace.locate(['foo', 'bar']);
-          await executor.run(location.obj, []);
+          await executor.run(location.obj as any, []);
           expect(spy.mock.calls.length).toEqual(2);
           const [ [ validateId, validateArgs ], [ runId, runArgs ] ] = spy.mock.calls;
           expect(validateId).toEqual('bar:validate');

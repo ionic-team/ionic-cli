@@ -42,7 +42,7 @@ describe('@ionic/cli-framework', () => {
       it('should be fed a string', () => {
         const msg = 'hello world!';
         const rsb = new ReadableStreamBuffer();
-        const spy = jest.spyOn(rsb.buffer, 'write');
+        const spy = jest.spyOn((rsb as any).buffer, 'write');
         expect(rsb.size).toEqual(0);
         rsb.feed(msg);
         rsb.stop();
@@ -82,7 +82,7 @@ describe('@ionic/cli-framework', () => {
 
       it('should be pipeable', done => {
         let result = '';
-        const ws = new class extends Writable { _write(chunk, enc, cb) { result += chunk.toString(); cb(); } };
+        const ws = new class extends Writable { _write(chunk: any, enc: string, cb: () => void) { result += chunk.toString(); cb(); } };
         const rsb = new ReadableStreamBuffer();
         ws.on('pipe', src => {
           expect(src).toBe(rsb);
