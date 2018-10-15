@@ -1,5 +1,6 @@
 {
   "name": "@ionic/cli-scripts",
+  "private": true,
   "version": "0.3.9",
   "scripts": {
     "clean": "rm -rf ./dist",

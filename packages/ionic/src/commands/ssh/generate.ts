@@ -98,7 +98,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
     );
 
     await this.env.close();
-    const shellOptions = { stdio: 'inherit', showCommand: false, showExecution: false, showError: false };
+    const shellOptions: any = { stdio: 'inherit', showCommand: false, showExecution: false, showError: false };
     await this.env.shell.run('ssh-keygen', ['-q', '-t', String(options['type']), '-b', String(bits), '-C', String(annotation), '-f', keyPath], shellOptions);
     await this.env.open();
 

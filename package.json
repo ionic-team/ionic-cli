@@ -14,7 +14,7 @@
     "precommit": "npm run lint"
   },
   "devDependencies": {
-    "@types/node": "^6.0.92",
+    "@types/node": "6.0.92",
     "concurrently": "^3.4.0",
     "eslint-config-ionic": "0.0.2",
     "husky": "^0.14.3",
@@ -25,6 +25,6 @@
     "ts-jest": "^21.2.3",
     "tslint": "^5.8.0",
     "tslint-ionic-rules": "^0.0.11",
-    "typescript": "^2.6.1"
+    "typescript": "~2.6.1"
   }
 }
