@@ -61,6 +61,7 @@ export class IonicNamespace extends Namespace {
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
       ['build', async () => { const { BuildCommand } = await import('./build'); return new BuildCommand(this); }],
+      ['completion', async () => { const { CompletionCommand } = await import('./completion'); return new CompletionCommand(this); }],
       ['docs', async () => { const { DocsCommand } = await import('./docs'); return new DocsCommand(this); }],
       ['generate', async () => { const { GenerateCommand } = await import('./generate'); return new GenerateCommand(this); }],
       ['help', async () => { const { HelpCommand } = await import('./help'); return new HelpCommand(this); }],

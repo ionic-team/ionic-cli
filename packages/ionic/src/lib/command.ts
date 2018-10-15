@@ -70,7 +70,13 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
         const metadata = await this.getMetadata();
 
         if (metadata.name === 'login' || metadata.name === 'logout') {
+          // This is a hack to wait until the selected commands complete before
+          // sending telemetry data. These commands update `this.env` in some
+          // way, which is used in the `Telemetry` instance.
           await runPromise;
+        } else if (metadata.name === 'completion') {
+          // Ignore telemetry for these commands.
+          return;
         } else if (metadata.name === 'help') {
           cmdInputs = inputs;
         } else {
