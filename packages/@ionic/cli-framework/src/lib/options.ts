@@ -106,6 +106,10 @@ export function formatOptionName<O extends CommandMetadataOption>(opt: O, { show
   );
 }
 
+export async function isOptionVisible<O extends CommandMetadataOption>(opt: O): Promise<boolean> {
+  return !opt.groups || !opt.groups.includes(OptionGroup.Hidden);
+}
+
 export function metadataOptionsToParseArgsOptions(commandOptions: ReadonlyArray<CommandMetadataOption>): HydratedParseArgsOptions {
   const options: HydratedParseArgsOptions = {
     string: ['_'],

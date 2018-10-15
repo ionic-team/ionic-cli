@@ -5,6 +5,7 @@ import { InputValidationError } from '../errors';
 import { AliasedMap } from '../utils/object';
 import { strcmp } from '../utils/string';
 
+import { CommandGroup, NamespaceGroup } from './options';
 import { validate } from './validators';
 
 export abstract class BaseCommand<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
@@ -267,4 +268,9 @@ export async function generateCommandPath<C extends ICommand<C, N, M, I, O>, N e
   };
 
   return [...(await _cmdpath(ns)), [cmdmeta.name, cmd]];
+}
+
+export async function isCommandVisible<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(cmd: HydratedCommandMetadata<C, N, M, I, O>): Promise<boolean> {
+  const ns = await cmd.namespace.getMetadata();
+  return (!cmd.groups || !cmd.groups.includes(CommandGroup.Hidden)) && (!ns.groups || !ns.groups.includes(NamespaceGroup.Hidden));
 }

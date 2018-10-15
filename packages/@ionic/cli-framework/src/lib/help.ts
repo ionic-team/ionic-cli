@@ -7,7 +7,8 @@ import { filter, map } from '../utils/array';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '../utils/format';
 
 import { Colors, DEFAULT_COLORS } from './colors';
-import { formatOptionName } from './options';
+import { isCommandVisible } from './command';
+import { formatOptionName, isOptionVisible } from './options';
 import { validators } from './validators';
 
 const DEFAULT_DOTS_WIDTH = 25;
@@ -49,7 +50,9 @@ export abstract class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, 
    * @param meta: The metadata of the command.
    * @return `true` to keep, `false` to discard
    */
-  filterCommandCallback?(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<boolean>;
+  async filterCommandCallback(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<boolean> {
+    return isCommandVisible(meta);
+  }
 
   async getNamespaceMetadata(): Promise<NamespaceMetadata> {
     if (!this._metadata) {
@@ -159,8 +162,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
   async formatCommandGroup(title: string, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string> {
     const { strong } = this.colors;
 
-    const filterCallback = this.filterCommandCallback;
-    const filteredCommands = filterCallback ? await filter(commands, async cmd => filterCallback(cmd)) : commands;
+    const filteredCommands = await filter(commands, async cmd => this.filterCommandCallback(cmd));
 
     const [ cmdDetails, nsDetails ] = await Promise.all([
       this.getListOfCommandDetails(filteredCommands.filter(cmd => cmd.namespace === this.namespace)),
@@ -294,7 +296,9 @@ export abstract class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N 
    *
    * @return `true` to keep, `false` to discard
    */
-  filterOptionCallback?(option: O): Promise<boolean>;
+  async filterOptionCallback(option: O): Promise<boolean> {
+    return isOptionVisible(option);
+  }
 
   async getCommandMetadata(): Promise<M | HydratedCommandMetadata<C, N, M, I, O>> {
     if (this._hydratedMetadata) {
@@ -386,9 +390,8 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     const fullName = await this.getCommandFullName();
     const metadata = await this.getCommandMetadata();
 
-    const filterCallback = this.filterOptionCallback;
     const options = metadata.options ? metadata.options : [];
-    const filteredOptions = filterCallback ? await filter(options, async opt => filterCallback(opt)) : options;
+    const filteredOptions = await filter(options, async opt => this.filterOptionCallback(opt));
     const formattedInputs = metadata.inputs ? await Promise.all(metadata.inputs.map(async i => this.formatInlineInput(i))) : [];
 
     return (
@@ -461,8 +464,7 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
   async formatOptionsGroup(title: string, options: O[]): Promise<string> {
     const { strong } = this.colors;
 
-    const filterCallback = this.filterOptionCallback;
-    const filteredOptions = filterCallback ? await filter(options, async opt => filterCallback(opt)) : options;
+    const filteredOptions = await filter(options, async opt => this.filterOptionCallback(opt));
 
     if (filteredOptions.length === 0) {
       return '';
@@ -540,8 +542,7 @@ export class NamespaceSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
   }
 
   async formatCommandGroup(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<CommandHelpSchema[]> {
-    const filterCallback = this.filterCommandCallback;
-    const filteredCommands = filterCallback ? await filter(commands, async cmd => filterCallback(cmd)) : commands;
+    const filteredCommands = await filter(commands, async cmd => this.filterCommandCallback(cmd));
 
     return map(filteredCommands, async cmd => this.formatCommand(cmd));
   }
@@ -610,8 +611,7 @@ export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
   }
 
   async formatOptions(options: ReadonlyArray<O>): Promise<ReadonlyArray<CommandHelpSchemaOption>> {
-    const filterCallback = this.filterOptionCallback;
-    const filteredOptions = filterCallback ? await filter(options, async opt => filterCallback(opt)) : options;
+    const filteredOptions = await filter(options, async opt => this.filterOptionCallback(opt));
 
     return Promise.all(filteredOptions.map(async opt => this.formatOption(opt)));
   }

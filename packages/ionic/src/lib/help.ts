@@ -1,4 +1,4 @@
-import { CommandGroup, CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, NamespaceGroup, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, OptionGroup, formatOptionName } from '@ionic/cli-framework';
+import { CommandGroup, CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, NamespaceGroup, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, OptionGroup, formatOptionName, isOptionVisible } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
 import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace, NamespaceMetadata } from '../definitions';
@@ -31,15 +31,6 @@ const NAMESPACE_DECORATIONS: Decoration[] = [
   [NamespaceGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
   [NamespaceGroup.Experimental, chalk.red.bold('(experimental)')],
 ];
-
-export async function isCommandVisible(cmd: HydratedCommandMetadata): Promise<boolean> {
-  const ns = await cmd.namespace.getMetadata();
-  return (!cmd.groups || !cmd.groups.includes(CommandGroup.Hidden)) && (!ns.groups || !ns.groups.includes(NamespaceGroup.Hidden));
-}
-
-export function isOptionVisible(opt: CommandMetadataOption): boolean {
-  return !opt.groups || !opt.groups.includes(OptionGroup.Hidden);
-}
 
 export interface NamespaceHelpFormatterDeps extends BaseNamespaceHelpFormatterDeps<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
   readonly inProject: boolean;
@@ -94,10 +85,6 @@ export class NamespaceStringHelpFormatter extends BaseNamespaceStringHelpFormatt
       (this.inProject ? await this.formatCommandGroup('Project Commands', projectCmds) : `\n  ${strong('Project Commands')}:\n\n    You are not in a project directory.\n`)
     );
   }
-
-  async filterCommandCallback(cmd: HydratedCommandMetadata): Promise<boolean> {
-    return isCommandVisible(cmd);
-  }
 }
 
 export class CommandStringHelpFormatter extends BaseCommandStringHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
@@ -114,10 +101,6 @@ export class CommandStringHelpFormatter extends BaseCommandStringHelpFormatter<I
     );
   }
 
-  async filterOptionCallback(opt: CommandMetadataOption): Promise<boolean> {
-    return isOptionVisible(opt);
-  }
-
   async formatBeforeSummary(): Promise<string> {
     const metadata = await this.getCommandMetadata();
     return formatGroupDecorations(COMMAND_DECORATIONS, metadata.groups);
@@ -129,10 +112,6 @@ export class CommandStringHelpFormatter extends BaseCommandStringHelpFormatter<I
 }
 
 export class NamespaceSchemaHelpFormatter extends BaseNamespaceSchemaHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
-  async filterCommandCallback(cmd: HydratedCommandMetadata): Promise<boolean> {
-    return isCommandVisible(cmd);
-  }
-
   async formatCommand(cmd: HydratedCommandMetadata): Promise<CommandHelpSchema> {
     const { command } = cmd;
 
@@ -155,10 +134,6 @@ export class CommandSchemaHelpFormatter extends BaseCommandSchemaHelpFormatter<I
     const formatted = await super.formatCommand(cmd);
 
     return { ...formatted, type: cmd.type };
-  }
-
-  async filterOptionCallback(opt: CommandMetadataOption): Promise<boolean> {
-    return isOptionVisible(opt);
   }
 }
 
