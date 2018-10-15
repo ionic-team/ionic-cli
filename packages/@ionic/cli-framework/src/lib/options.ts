@@ -3,6 +3,8 @@ import * as minimist from 'minimist';
 
 import { CommandLineOptions, CommandMetadataOption, HydratedCommandMetadataOption, HydratedParseArgsOptions, ParsedArg } from '../definitions';
 
+import { Colors, DEFAULT_COLORS } from './colors';
+
 export const parseArgs = minimist;
 export { ParsedArgs } from 'minimist';
 
@@ -84,6 +86,24 @@ export function hydrateCommandMetadataOption<O extends CommandMetadataOption>(op
     default: typeof option.default !== 'undefined' ? option.default : null, // tslint:disable-line:no-null-keyword
     aliases: Array.isArray(option.aliases) ? option.aliases : [],
   });
+}
+
+export interface FormatOptionNameOptions {
+  readonly showAliases?: boolean;
+  readonly colors?: Colors | false;
+}
+
+export function formatOptionName<O extends CommandMetadataOption>(opt: O, { showAliases = true, colors = DEFAULT_COLORS }: FormatOptionNameOptions = {}): string {
+  const colorfn: (input: string) => string = colors ? colors.input : lodash.identity;
+  const showInverse = opt.type === Boolean && opt.default === true && opt.name.length > 1;
+
+  return (
+    (showInverse ? colorfn(`--no-${opt.name}`) : colorfn(`-${opt.name.length > 1 ? '-' : ''}${opt.name}`)) +
+    (showAliases ?
+      (!showInverse && opt.aliases && opt.aliases.length > 0 ? ', ' + opt.aliases
+        .map(alias => colorfn(`-${alias}`))
+        .join(', ') : '') : '')
+  );
 }
 
 export function metadataOptionsToParseArgsOptions(commandOptions: ReadonlyArray<CommandMetadataOption>): HydratedParseArgsOptions {

@@ -7,6 +7,7 @@ import { filter, map } from '../utils/array';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '../utils/format';
 
 import { Colors, DEFAULT_COLORS } from './colors';
+import { formatOptionName } from './options';
 import { validators } from './validators';
 
 const DEFAULT_DOTS_WIDTH = 25;
@@ -639,19 +640,6 @@ export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
 
     return { name, namespace: namespacePath, summary, description, groups, exampleCommands, aliases, inputs, options };
   }
-}
-
-export function formatOptionName<O extends CommandMetadataOption>(opt: O, { showAliases = true, colors = DEFAULT_COLORS }: { showAliases?: boolean; colors?: Colors; } = {}): string {
-  const { input } = colors;
-  const showInverse = opt.type === Boolean && opt.default === true && opt.name.length > 1;
-
-  return (
-    (showInverse ? input(`--no-${opt.name}`) : input(`-${opt.name.length > 1 ? '-' : ''}${opt.name}`)) +
-    (showAliases ?
-      (!showInverse && opt.aliases && opt.aliases.length > 0 ? ', ' + opt.aliases
-        .map(alias => input(`-${alias}`))
-        .join(', ') : '') : '')
-  );
 }
 
 export function createCommandMetadataFromSchema(schema: CommandHelpSchema): Required<CommandMetadata> {
