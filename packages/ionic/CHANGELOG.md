@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.20.1"></a>
+## [3.20.1](https://github.com/ionic-team/ionic-cli/compare/ionic@3.20.0...ionic@3.20.1) (2018-10-15)
+
+
+### Bug Fixes
+
+* disable update prompts ([8482a6a](https://github.com/ionic-team/ionic-cli/commit/8482a6a))
+
+
+
+
 <a name="3.20.0"></a>
 # [3.20.0](https://github.com/ionic-team/ionic-cli/compare/ionic@3.19.1...ionic@3.20.0) (2018-03-13)
 

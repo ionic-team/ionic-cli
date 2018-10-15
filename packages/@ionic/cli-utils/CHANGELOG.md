@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.19.3"></a>
+## [1.19.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.19.2...@ionic/cli-utils@1.19.3) (2018-10-15)
+
+
+### Bug Fixes
+
+* disable update prompts ([8482a6a](https://github.com/ionic-team/ionic-cli/commit/8482a6a))
+
+
+
+
 <a name="1.19.2"></a>
 ## [1.19.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-utils@1.19.1...@ionic/cli-utils@1.19.2) (2018-03-13)
 
