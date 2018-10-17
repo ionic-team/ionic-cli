@@ -35,7 +35,7 @@
     "lodash": "^4.17.5",
     "minimist": "^1.2.0",
     "rimraf": "^2.6.2",
-    "slice-ansi": "^1.0.0",
+    "slice-ansi": "^2.0.0",
     "stream-combiner2": "^1.1.1",
     "string-width": "^2.1.1",
     "strip-ansi": "^5.0.0",
