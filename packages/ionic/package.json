@@ -17,7 +17,7 @@
     "lint": "tslint --config tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
-    "test": "jest",
+    "test": "jest --maxWorkers=4",
     "prepublishOnly": "npm run build",
     "cli-scripts:pre-commit": "lint-staged"
   },
