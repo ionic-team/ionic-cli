@@ -106,6 +106,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       options['livereload'] = true;
     }
 
+    if (!options['build'] && options['livereload']) {
+      this.env.log.warn(`No livereload with ${chalk.green('--no-build')}.`);
+      options['livereload'] = false;
+    }
+
     await this.checkForPlatformInstallation(inputs[0]);
   }
 
