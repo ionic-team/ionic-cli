@@ -8,9 +8,9 @@ describe('@ionic/cli-framework', () => {
       const mockClose = jest.fn();
       const mockLogStream = {};
 
-      function setupPromptMocks({ value, tty }: { value: string; tty: boolean; }) {
+      function setupPromptMocks({ value, tty }: { value?: any; tty: boolean; }) {
         const mocktty = tty;
-        const mockCreatePromptModule = () => async (question) => ({ [question.name]: value });
+        const mockCreatePromptModule = () => async (question: { name: string; }) => ({ [question.name]: value });
         mockMute.mockReset();
         mockClose.mockReset();
         jest.resetModules();

@@ -1,6 +1,8 @@
 import * as guards from '../guards';
 
-const OBJECT_GUARDS = [
+type Guard = (o: any) => boolean;
+
+const OBJECT_GUARDS: Guard[] = [
   guards.isCommand,
   guards.isCommandPreRun,
   guards.isStarterManifest,
@@ -42,9 +44,7 @@ const OBJECT_GUARDS = [
   guards.isMultiProjectConfig,
 ];
 
-const ALL_GUARDS = [...OBJECT_GUARDS];
-
-const API_RESPONSE_SUCCESS_GUARDS = [
+const API_RESPONSE_SUCCESS_GUARDS: Guard[] = [
   guards.isGithubRepoListResponse,
   guards.isGithubBranchListResponse,
   guards.isAppAssociationResponse,

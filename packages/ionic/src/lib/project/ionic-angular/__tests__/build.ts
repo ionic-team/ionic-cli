@@ -18,14 +18,14 @@ describe('ionic', () => {
         };
 
         it('should transform defaults', async () => {
-          const appscripts = new IonicAngularBuildCLI({});
-          const result = await appscripts.buildOptionsToAppScriptsArgs({ '--': [] });
+          const appscripts = new IonicAngularBuildCLI({} as any);
+          const result = await (appscripts as any).buildOptionsToAppScriptsArgs({ _: [], '--': [] });
           expect(result).toEqual([]);
         });
 
         it('should transform options', async () => {
-          const appscripts = new IonicAngularBuildCLI({});
-          const result = await appscripts.buildOptionsToAppScriptsArgs(options);
+          const appscripts = new IonicAngularBuildCLI({} as any);
+          const result = await (appscripts as any).buildOptionsToAppScriptsArgs(options);
           expect(result).toEqual(['--prod', '--aot', '--minifyjs', '--minifycss', '--optimizejs', '--generateSourceMap', 'false']);
         });
 

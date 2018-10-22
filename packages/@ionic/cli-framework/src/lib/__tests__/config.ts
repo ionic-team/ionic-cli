@@ -2,9 +2,12 @@ describe('@ionic/cli-framework', () => {
 
   describe('BaseConfig', () => {
 
-    let Config, mockReadFileSync, mockMakeDirSync, mockWriteFileAtomicSync;
+    let Config: any;
+    let mockReadFileSync: jest.Mock;
+    let mockMakeDirSync: jest.Mock;
+    let mockWriteFileAtomicSync: jest.Mock;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       mockReadFileSync = jest.fn();
       mockMakeDirSync = jest.fn();
       mockWriteFileAtomicSync = jest.fn();
@@ -13,10 +16,10 @@ describe('@ionic/cli-framework', () => {
       jest.mock('@ionic/utils-fs', () => ({ mkdirpSync: mockMakeDirSync }));
       jest.mock('write-file-atomic', () => ({ sync: mockWriteFileAtomicSync }));
 
-      const { BaseConfig } = require('../config');
+      const { BaseConfig } = await import('../config');
 
-      Config = class extends BaseConfig {
-        provideDefaults(c) {
+      Config = class extends BaseConfig<any> {
+        provideDefaults() {
           return {
             defaulted: 5,
           };
@@ -157,9 +160,12 @@ describe('@ionic/cli-framework', () => {
 
   describe('BaseConfig with pathPrefix', () => {
 
-    let Config, mockReadFileSync, mockMakeDirSync, mockWriteFileAtomicSync;
+    let Config: any;
+    let mockReadFileSync: jest.Mock;
+    let mockMakeDirSync: jest.Mock;
+    let mockWriteFileAtomicSync: jest.Mock;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       mockReadFileSync = jest.fn();
       mockMakeDirSync = jest.fn();
       mockWriteFileAtomicSync = jest.fn();
@@ -168,10 +174,10 @@ describe('@ionic/cli-framework', () => {
       jest.mock('@ionic/utils-fs', () => ({ mkdirpSync: mockMakeDirSync }));
       jest.mock('write-file-atomic', () => ({ sync: mockWriteFileAtomicSync }));
 
-      const { BaseConfig } = require('../config');
+      const { BaseConfig } = await import('../config');
 
-      Config = class extends BaseConfig {
-        provideDefaults(c) {
+      Config = class extends BaseConfig<any> {
+        provideDefaults() {
           return {
             defaulted: 5,
           };

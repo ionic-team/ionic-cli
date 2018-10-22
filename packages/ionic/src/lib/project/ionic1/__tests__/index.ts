@@ -8,7 +8,7 @@ describe('ionic', () => {
     describe('Ionic1Project', () => {
 
       it('should set directory attribute', async () => {
-        const p = new Ionic1Project('/path/to/proj/file', undefined, {});
+        const p = new Ionic1Project('/path/to/proj/file', undefined, {} as any);
         expect(p.directory).toEqual(path.resolve('/path/to/proj'));
       });
 

@@ -59,11 +59,8 @@
     "@types/express": "^4.11.0",
     "@types/node": "^6.0.101",
     "concurrently": "^4.0.1",
-    "jest": "^23.0.1",
-    "jest-cli": "^23.0.1",
     "lint-staged": "^7.2.0",
     "rimraf": "^2.6.2",
-    "ts-jest": "~23.1.0",
     "tslint": "^5.9.1",
     "typescript": "~3.1.1"
   }

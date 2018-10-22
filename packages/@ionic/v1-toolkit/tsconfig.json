@@ -1,7 +1,10 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "../../../types/slice-ansi.d.ts",

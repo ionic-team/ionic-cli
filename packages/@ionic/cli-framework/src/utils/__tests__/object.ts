@@ -47,7 +47,7 @@ describe('@ionic/cli-framework', () => {
 
       it('should work for property keys that are symbols', () => {
         const o = createCaseInsensitiveObject<string>();
-        const s = Symbol('key');
+        const s: any = Symbol('key');
         o[s] = 'val';
         expect(o[s]).toEqual('val');
       });

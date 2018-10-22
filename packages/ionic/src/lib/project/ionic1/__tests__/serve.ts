@@ -32,38 +32,38 @@ describe('ionic', () => {
         };
 
         it('should provide defaults with no options', () => {
-          const runner = new Ionic1ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], {});
+          const runner = new Ionic1ServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [] });
           expect(result).toEqual(defaults);
         });
 
         it('should provide options from negations of cli flag defaults', () => {
-          const runner = new Ionic1ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
+          const runner = new Ionic1ServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
           expect(result).toEqual({ ...defaults, livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
         });
 
         it('should turn off devapp for cordova', () => {
-          const runner = new Ionic1ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { engine: 'cordova' });
+          const runner = new Ionic1ServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], engine: 'cordova' });
           expect(result).toEqual({ ...defaults, devapp: false, engine: 'cordova' });
         });
 
         it('should allow overrides of default values', () => {
-          const runner = new Ionic1ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { address: 'localhost', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
+          const runner = new Ionic1ServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], address: 'localhost', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
           expect(result).toEqual({ ...defaults, address: 'localhost', port: 1111, livereloadPort: 2222, notificationPort: 3333 });
         });
 
         it('should respect --local flag', () => {
-          const runner = new Ionic1ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { local: true });
+          const runner = new Ionic1ServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], local: true });
           expect(result).toEqual({ ...defaults, address: 'localhost', devapp: false });
         });
 
         it('should pass on separated args', () => {
-          const runner = new Ionic1ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { '--': ['foo', '--bar'] });
+          const runner = new Ionic1ServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], '--': ['foo', '--bar'] });
           expect(result).toEqual({ ...defaults, '--': ['foo', '--bar'] });
         });
 

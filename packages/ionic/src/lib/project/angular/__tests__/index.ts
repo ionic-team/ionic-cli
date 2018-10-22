@@ -8,14 +8,14 @@ describe('ionic', () => {
     describe('AngularProject', () => {
 
       it('should set directory attribute', async () => {
-        const p = new AngularProject('/path/to/proj/file', undefined, {});
+        const p = new AngularProject('/path/to/proj/file', undefined, {} as any);
         expect(p.directory).toEqual(path.resolve('/path/to/proj'));
       });
 
       describe('getSourceDir', () => {
 
         it('should default to src', async () => {
-          const p = new AngularProject('/path/to/proj/file', undefined, {});
+          const p = new AngularProject('/path/to/proj/file', undefined, {} as any);
           const result = await p.getSourceDir();
           expect(result).toEqual(path.resolve('/path/to/proj/src'));
         });

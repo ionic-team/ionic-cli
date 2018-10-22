@@ -1,5 +1,15 @@
 import { ServeRunner } from '../serve';
 
+class MyServeRunner extends ServeRunner<never> {
+  constructor(protected readonly e: any) {
+    super();
+  }
+
+  async getCommandMetadata(): Promise<any> { }
+  modifyOpenURL(): any { }
+  async serveProject(): Promise<any> { }
+}
+
 describe('ionic', () => {
 
   describe('lib/serve', () => {
@@ -28,38 +38,38 @@ describe('ionic', () => {
         };
 
         it('should provide defaults with no options', () => {
-          const runner = new ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], {});
+          const runner = new MyServeRunner({});
+          const result = runner.createOptionsFromCommandLine([], { _: [] });
           expect(result).toEqual(defaults);
         });
 
         it('should provide options from negations of cli flag defaults', () => {
-          const runner = new ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
+          const runner = new MyServeRunner({});
+          const result = runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
           expect(result).toEqual({ ...defaults, livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
         });
 
         it('should allow overrides of default values', () => {
-          const runner = new ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { address: 'localhost', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
+          const runner = new MyServeRunner({});
+          const result = runner.createOptionsFromCommandLine([], { _: [], address: 'localhost', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
           expect(result).toEqual({ ...defaults, address: 'localhost', port: 1111 });
         });
 
         it('should respect --local flag', () => {
-          const runner = new ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { local: true });
+          const runner = new MyServeRunner({});
+          const result = runner.createOptionsFromCommandLine([], { _: [], local: true });
           expect(result).toEqual({ ...defaults, address: 'localhost', devapp: false });
         });
 
         it('should respect --project flag', () => {
-          const runner = new ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { project: 'app' });
+          const runner = new MyServeRunner({});
+          const result = runner.createOptionsFromCommandLine([], { _: [], project: 'app' });
           expect(result).toEqual({ ...defaults, project: 'app' });
         });
 
         it('should pass on separated args', () => {
-          const runner = new ServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { '--': ['foo', '--bar'] });
+          const runner = new MyServeRunner({});
+          const result = runner.createOptionsFromCommandLine([], { _: [], '--': ['foo', '--bar'] });
           expect(result).toEqual({ ...defaults, '--': ['foo', '--bar'] });
         });
 

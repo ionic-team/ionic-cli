@@ -51,7 +51,7 @@ describe('@ionic/cli-framework', () => {
     describe('concurrentFilter', () => {
 
       it('should return new empty array', async () => {
-        const initial = [];
+        const initial: number[] = [];
         const result = await concurrentFilter(initial, async () => true);
         expect(result).not.toBe(initial);
         expect(result).toEqual([]);
@@ -81,7 +81,7 @@ describe('@ionic/cli-framework', () => {
     describe('filter', () => {
 
       it('should return new empty array', async () => {
-        const initial = [];
+        const initial: number[] = [];
         const result = await filter(initial, async () => true);
         expect(result).not.toBe(initial);
         expect(result).toEqual([]);
@@ -114,7 +114,7 @@ describe('@ionic/cli-framework', () => {
 
       it('should pass array into callback with each iteration', async () => {
         const initial = [1, 2, 3];
-        const result = await filter(initial, async (v, i, arr) => { expect(arr).toBe(initial); });
+        const result = await filter(initial, async (v, i, arr) => { expect(arr).toBe(initial); return false; });
         expect(result).toEqual([]);
       });
 
@@ -123,7 +123,7 @@ describe('@ionic/cli-framework', () => {
     describe('map', () => {
 
       it('should return new empty array', async () => {
-        const initial = [];
+        const initial: number[] = [];
         const result = await map(initial, async () => {});
         expect(result).not.toBe(initial);
         expect(result).toEqual([]);
@@ -166,12 +166,13 @@ describe('@ionic/cli-framework', () => {
       });
 
       it('should reduce to initial value with empty array', async () => {
-        const result = await reduce([], async () => {}, 10);
+        const result = await reduce<number>([], async value => value, 10);
         expect(result).toEqual(10);
       });
 
       it('should reduce to undefined if callback returns nothing', async () => {
-        const result = await reduce([1, 2, 3], async () => {}, 0);
+        const cb = async () => undefined;
+        const result = await reduce([1, 2, 3], cb as any, 0);
         expect(result).toBeUndefined();
       });
 
@@ -196,12 +197,12 @@ describe('@ionic/cli-framework', () => {
       });
 
       it('should reduce via returned values using accumulator and current index', async () => {
-        const result = await reduce([1, 2, 3], async (acc, v, i) => acc + String(v + i));
+        const result = await reduce<number, string>([1, 2, 3], async (acc, v, i) => String(acc) + String(v + i));
         expect(result).toEqual('135');
       });
 
       it('should reduce via accumulator', async () => {
-        const result = await reduce([1, 2, 3], async (acc, v) => { acc.push('call: ' + v); return acc; }, []);
+        const result = await reduce<number, string[]>([1, 2, 3], async (acc, v) => { acc.push('call: ' + v); return acc; }, []);
         expect(result).toEqual(['call: 1', 'call: 2', 'call: 3']);
       });
 

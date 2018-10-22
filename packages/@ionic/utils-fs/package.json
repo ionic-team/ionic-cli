@@ -24,7 +24,7 @@
     "lint": "tslint --config tslint.js --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
-    "test": "jest",
+    "test": "jest --maxWorkers=4",
     "prepublishOnly": "npm run build",
     "cli-scripts:pre-commit": "lint-staged"
   },
@@ -44,6 +44,7 @@
   },
   "devDependencies": {
     "@types/debug": "0.0.31",
+    "@types/jest": "^23.3.5",
     "@types/ncp": "^2.0.1",
     "@types/node": "^6.0.101",
     "@types/through2": "^2.0.33",
@@ -51,7 +52,7 @@
     "jest-cli": "^23.0.1",
     "lint-staged": "^7.2.0",
     "rimraf": "^2.6.2",
-    "ts-jest": "~23.1.0",
+    "ts-jest": "^23.10.1",
     "tslint": "^5.9.1",
     "typescript": "~3.1.1"
   }

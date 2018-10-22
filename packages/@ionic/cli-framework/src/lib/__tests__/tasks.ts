@@ -6,7 +6,14 @@ describe('@ionic/cli-framework', () => {
 
     describe('Task', () => {
 
-      let task, handlers;
+      let task: Task;
+      let handlers: {
+        success: jest.Mock;
+        failure: jest.Mock;
+        clear: jest.Mock;
+        tick: jest.Mock;
+        end: jest.Mock;
+      };
 
       beforeEach(() => {
         jest.useFakeTimers();
@@ -161,7 +168,13 @@ describe('@ionic/cli-framework', () => {
 
     describe('TaskChain', () => {
 
-      let chain, createTaskSpy, handlers;
+      let chain: TaskChain;
+      let createTaskSpy: jest.SpyInstance;
+      let handlers: {
+        end: jest.Mock;
+        failure: jest.Mock;
+        next: jest.Mock;
+      };
 
       beforeEach(() => {
         chain = new TaskChain();
@@ -177,33 +190,33 @@ describe('@ionic/cli-framework', () => {
       });
 
       it('should set current task upon first next', () => {
-        expect(chain.current).toBeUndefined();
+        expect((chain as any).current).toBeUndefined();
         const msg = 'hello world!';
         const task = chain.next(msg);
         expect(task.msg).toEqual(msg);
         expect(task.running).toEqual(true);
-        expect(chain.current).toBe(task);
+        expect((chain as any).current).toBe(task);
       });
 
       it('should remove current task when complete', () => {
-        expect(chain.current).toBeUndefined();
+        expect((chain as any).current).toBeUndefined();
         const task = chain.next('hello world!');
         const spy = jest.fn();
         task.on('success', spy);
-        expect(chain.current).toBe(task);
+        expect((chain as any).current).toBe(task);
         chain.end();
-        expect(chain.current).toBeUndefined();
+        expect((chain as any).current).toBeUndefined();
         expect(spy).toHaveBeenCalledTimes(1);
       });
 
       it('should fail current task', () => {
-        expect(chain.current).toBeUndefined();
+        expect((chain as any).current).toBeUndefined();
         const task = chain.next('hello world!');
         const spy = jest.fn();
         task.on('failure', spy);
-        expect(chain.current).toBe(task);
+        expect((chain as any).current).toBe(task);
         chain.fail();
-        expect(chain.current).toBe(task);
+        expect((chain as any).current).toBe(task);
         expect(spy).toHaveBeenCalledTimes(1);
       });
 

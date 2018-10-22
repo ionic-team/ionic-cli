@@ -10,9 +10,7 @@
     "pretty": true,
     "strict": true,
     "target": "es6",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "types": [],
     "lib": [
       "es2016"
     ]

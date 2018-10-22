@@ -20,9 +20,9 @@ export async function parsePublicKeyFile(pubkeyPath: string): Promise<[string, s
 }
 
 /**
- * @return Promise<[full pubkey, algorithm, public numbers, annotation]>
+ * @return [full pubkey, algorithm, public numbers, annotation]
  */
-export async function parsePublicKey(pubkey: string): Promise<[string, string, string, string]> {
+export function parsePublicKey(pubkey: string): [string, string, string, string] {
   const r = /^(ssh-[A-z0-9]+)\s([A-z0-9+\/=]+)\s?(.+)?$/.exec(pubkey);
 
   if (!r) {

@@ -1,10 +1,8 @@
-import { Writable } from 'stream';
-import { WritableStreamBuffer } from '../../utils/streams';
-
 import stripAnsi = require('strip-ansi');
 import { wordWrap } from '../../utils/format';
+import { WritableStreamBuffer } from '../../utils/streams';
 
-import { DEFAULT_OUTPUT, LOGGER_LEVELS, LOGGER_OUTPUTS, Logger, StreamHandler, createPrefixedFormatter, createTaggedFormatter } from '../logger';
+import { LOGGER_LEVELS, Logger, StreamHandler, createPrefixedFormatter, createTaggedFormatter } from '../logger';
 
 describe('@ionic/cli-framework', () => {
 
@@ -41,7 +39,8 @@ describe('@ionic/cli-framework', () => {
 
       describe('msg', () => {
 
-        let stream, logger;
+        let stream: WritableStreamBuffer;
+        let logger: Logger;
 
         beforeEach(() => {
           stream = new WritableStreamBuffer();
@@ -57,7 +56,8 @@ describe('@ionic/cli-framework', () => {
 
       describe('nl', () => {
 
-        let stream, logger;
+        let stream: WritableStreamBuffer;
+        let logger: Logger;
 
         beforeEach(() => {
           stream = new WritableStreamBuffer();
@@ -78,7 +78,9 @@ describe('@ionic/cli-framework', () => {
 
       describe('log', () => {
 
-        let stream, logger, handler;
+        let stream: WritableStreamBuffer;
+        let handler: StreamHandler;
+        let logger: Logger;
 
         beforeEach(() => {
           stream = new WritableStreamBuffer();
@@ -119,7 +121,9 @@ describe('@ionic/cli-framework', () => {
 
       describe('debug', () => {
 
-        let stream, logger, handler;
+        let stream: WritableStreamBuffer;
+        let handler: StreamHandler;
+        let logger: Logger;
 
         beforeEach(() => {
           stream = new WritableStreamBuffer();
@@ -142,7 +146,9 @@ describe('@ionic/cli-framework', () => {
 
       describe('info', () => {
 
-        let stream, logger, handler;
+        let stream: WritableStreamBuffer;
+        let handler: StreamHandler;
+        let logger: Logger;
 
         beforeEach(() => {
           stream = new WritableStreamBuffer();
@@ -165,7 +171,9 @@ describe('@ionic/cli-framework', () => {
 
       describe('warn', () => {
 
-        let stream, logger, handler;
+        let stream: WritableStreamBuffer;
+        let handler: StreamHandler;
+        let logger: Logger;
 
         beforeEach(() => {
           stream = new WritableStreamBuffer();
@@ -188,7 +196,9 @@ describe('@ionic/cli-framework', () => {
 
       describe('error', () => {
 
-        let stream, logger, handler;
+        let stream: WritableStreamBuffer;
+        let handler: StreamHandler;
+        let logger: Logger;
 
         beforeEach(() => {
           stream = new WritableStreamBuffer();
@@ -226,40 +236,50 @@ describe('@ionic/cli-framework', () => {
 
     describe('createTaggedFormatter', () => {
 
+      let stream: WritableStreamBuffer;
+      let handler: StreamHandler;
+      let logger: Logger;
+
+      beforeEach(() => {
+        stream = new WritableStreamBuffer();
+        handler = new StreamHandler({ stream });
+        logger = new Logger({ handlers: new Set([handler]) });
+      });
+
       it('should not format if requested', () => {
         const formatter = createTaggedFormatter();
-        const result = formatter({ msg: 'hi', level: LOGGER_LEVELS.INFO, format: false });
+        const result = formatter({ msg: 'hi', level: LOGGER_LEVELS.INFO, format: false, logger });
         expect(result).toEqual('hi');
       });
 
       it('should not tag non-leveled outputs', () => {
         const formatter = createTaggedFormatter();
-        const result = formatter({ msg: 'hi' });
+        const result = formatter({ msg: 'hi', logger });
         expect(result).toEqual('hi');
       });
 
       it('should log multi-line message properly for non-leveled outputs', () => {
         const formatter = createTaggedFormatter({ wrap: false });
-        const result = formatter({ msg: 'hello world!\nThis is a message.' });
+        const result = formatter({ msg: 'hello world!\nThis is a message.', logger });
         expect(result).toEqual('hello world!\nThis is a message.');
       });
 
       it('should log multi-line message properly for wrapped, non-leveled outputs', () => {
         const formatter = createTaggedFormatter({ wrap: true });
-        const result = formatter({ msg: 'hello world!\nThis is a message.' });
+        const result = formatter({ msg: 'hello world!\nThis is a message.', logger });
         expect(result).toEqual('hello world!\nThis is a message.');
       });
 
       it('should tag leveled outputs', () => {
         const formatter = createTaggedFormatter();
-        const result = formatter({ msg: 'hi', level: LOGGER_LEVELS.INFO });
+        const result = formatter({ msg: 'hi', level: LOGGER_LEVELS.INFO, logger });
         expect(stripAnsi(result)).toEqual('[INFO] hi');
       });
 
       it('should not wrap by default', () => {
         const formatter = createTaggedFormatter();
         const msg = 'A '.repeat(1000);
-        const result = formatter({ msg, level: LOGGER_LEVELS.INFO });
+        const result = formatter({ msg, level: LOGGER_LEVELS.INFO, logger });
         expect(stripAnsi(result)).toEqual(`[INFO] ${msg}`);
       });
 
@@ -267,31 +287,31 @@ describe('@ionic/cli-framework', () => {
         const wordWrapOpts = { width: 50 };
         const formatter = createTaggedFormatter({ wrap: wordWrapOpts });
         const msg = 'A '.repeat(1000);
-        const result = formatter({ msg, level: LOGGER_LEVELS.INFO });
+        const result = formatter({ msg, level: LOGGER_LEVELS.INFO, logger });
         expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 7, ...wordWrapOpts })}`);
       });
 
       it('should not titleize by default', () => {
         const formatter = createTaggedFormatter();
-        const result = formatter({ msg: `Hello!\nThis is a message.\nHere's another.`, level: LOGGER_LEVELS.INFO });
+        const result = formatter({ msg: `Hello!\nThis is a message.\nHere's another.`, level: LOGGER_LEVELS.INFO, logger });
         expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n       This is a message.\n       Here's another.`);
       });
 
       it('should not titleize for single line', () => {
         const formatter = createTaggedFormatter({ titleize: true });
-        const result = formatter({ msg: 'Hello!', level: LOGGER_LEVELS.INFO });
+        const result = formatter({ msg: 'Hello!', level: LOGGER_LEVELS.INFO, logger });
         expect(stripAnsi(result)).toEqual(`[INFO] Hello!`);
       });
 
       it('should titleize properly for double newline after first line', () => {
         const formatter = createTaggedFormatter({ titleize: true });
-        const result = formatter({ msg: `Hello!\n\nThis is a message.\n\nHere's another.`, level: LOGGER_LEVELS.INFO });
+        const result = formatter({ msg: `Hello!\n\nThis is a message.\n\nHere's another.`, level: LOGGER_LEVELS.INFO, logger });
         expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n\n       This is a message.\n\n       Here's another.`);
       });
 
       it('should titleize if wanted', () => {
         const formatter = createTaggedFormatter({ titleize: true });
-        const result = formatter({ msg: `Hello!\nThis is a message.\nHere's another.`, level: LOGGER_LEVELS.INFO });
+        const result = formatter({ msg: `Hello!\nThis is a message.\nHere's another.`, level: LOGGER_LEVELS.INFO, logger });
         expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n\n       This is a message.\n       Here's another.`);
       });
 
@@ -299,14 +319,14 @@ describe('@ionic/cli-framework', () => {
         const wordWrapOpts = { width: 50 };
         const formatter = createTaggedFormatter({ titleize: true, wrap: wordWrapOpts });
         const msg = 'A '.repeat(1000);
-        const result = formatter({ msg, level: LOGGER_LEVELS.INFO });
+        const result = formatter({ msg, level: LOGGER_LEVELS.INFO, logger });
         expect(stripAnsi(result)).toEqual(`[INFO] ${wordWrap(msg, { indentation: 7, ...wordWrapOpts })}`);
       });
 
       it('should prefix single line without level', () => {
         const now = new Date().toISOString();
         const formatter = createTaggedFormatter({ prefix: `[${now}]` });
-        const result = formatter({ msg: 'hello world!' });
+        const result = formatter({ msg: 'hello world!', logger });
         expect(result).toEqual(`[${now}] hello world!`);
       });
 
@@ -314,8 +334,8 @@ describe('@ionic/cli-framework', () => {
         let count = 0;
         const spy = jest.fn(() => `[${++count}]`);
         const formatter = createTaggedFormatter({ prefix: spy });
-        const result1 = formatter({ msg: 'hello world!' });
-        const result2 = formatter({ msg: 'hello world!' });
+        const result1 = formatter({ msg: 'hello world!', logger });
+        const result2 = formatter({ msg: 'hello world!', logger });
         expect(result1).toEqual('[1] hello world!');
         expect(result2).toEqual('[2] hello world!');
         expect(spy).toHaveBeenCalledTimes(2);
@@ -325,15 +345,25 @@ describe('@ionic/cli-framework', () => {
 
     describe('createPrefixedFormatter', () => {
 
+      let stream: WritableStreamBuffer;
+      let handler: StreamHandler;
+      let logger: Logger;
+
+      beforeEach(() => {
+        stream = new WritableStreamBuffer();
+        handler = new StreamHandler({ stream });
+        logger = new Logger({ handlers: new Set([handler]) });
+      });
+
       it('should not format if requested', () => {
         const formatter = createPrefixedFormatter('[prefix]');
-        const result = formatter({ msg: 'hello world!', format: false });
+        const result = formatter({ msg: 'hello world!', format: false, logger });
         expect(result).toEqual('hello world!');
       });
 
       it('should prefix message', () => {
         const formatter = createPrefixedFormatter('[prefix]');
-        const result = formatter({ msg: 'hello world!' });
+        const result = formatter({ msg: 'hello world!', logger });
         expect(result).toEqual('[prefix] hello world!');
       });
 
@@ -341,8 +371,8 @@ describe('@ionic/cli-framework', () => {
         let count = 0;
         const spy = jest.fn(() => `[${++count}]`);
         const formatter = createPrefixedFormatter(spy);
-        const result1 = formatter({ msg: 'hello world!' });
-        const result2 = formatter({ msg: 'hello world!' });
+        const result1 = formatter({ msg: 'hello world!', logger });
+        const result2 = formatter({ msg: 'hello world!', logger });
         expect(result1).toEqual('[1] hello world!');
         expect(result2).toEqual('[2] hello world!');
         expect(spy).toHaveBeenCalledTimes(2);

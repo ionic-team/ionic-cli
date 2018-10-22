@@ -1,9 +1,11 @@
 import { EventEmitter } from 'events';
-import { createProcessEnv } from '../process';
-
-import { PromiseUtil, promisifyEvent } from '../promise';
-import { ReadableStreamBuffer, WritableStreamBuffer } from '../streams';
 import * as path from 'path';
+
+import { ShellCommandError } from '../../errors';
+
+import { createProcessEnv } from '../process';
+import { promisifyEvent } from '../promise';
+import { ReadableStreamBuffer, WritableStreamBuffer } from '../streams';
 
 describe('@ionic/cli-framework', () => {
 
@@ -49,7 +51,7 @@ describe('@ionic/cli-framework', () => {
 
     });
 
-    describe('ShellCommand', () => {
+    describe('ShellCommand', async () => {
 
       beforeEach(() => {
         jest.useFakeTimers();
@@ -66,7 +68,7 @@ describe('@ionic/cli-framework', () => {
       jest.mock('os', () => mock_os);
       const mock_path_posix = path.posix;
       jest.mock('path', () => mock_path_posix);
-      const { ShellCommand } = require('../shell');
+      const { ShellCommand } = await import('../shell');
 
       beforeEach(() => {
         jest.resetAllMocks();
@@ -77,7 +79,7 @@ describe('@ionic/cli-framework', () => {
         const args = ['foo', 'bar', 'baz'];
         const cmd = new ShellCommand(name, args);
         expect(cmd.name).toEqual(name);
-        expect(cmd.path).not.toBeDefined();
+        expect((cmd as any).path).not.toBeDefined();
         expect(cmd.args).toEqual(args);
       });
 
@@ -86,7 +88,7 @@ describe('@ionic/cli-framework', () => {
         const args = ['foo', 'bar', 'baz'];
         const cmd = new ShellCommand(name, args);
         expect(cmd.name).toEqual('cmd');
-        expect(cmd.path).toEqual(name);
+        expect((cmd as any).path).toEqual(name);
         expect(cmd.args).toEqual(args);
       });
 
@@ -217,8 +219,7 @@ describe('@ionic/cli-framework', () => {
         const mockSpawnStderr = new ReadableStreamBuffer();
         const cp = new class extends EventEmitter { stdout = mockSpawnStdout; stderr = mockSpawnStderr; };
         mockCrossSpawn.mockImplementation(() => cp);
-        const buf = new WritableStreamBuffer();
-        const promise = cmd.run(buf, buf);
+        const promise = cmd.run();
         expect(promise.p).toBe(cp);
       });
 
@@ -265,6 +266,14 @@ describe('@ionic/cli-framework', () => {
         try {
           await p;
         } catch (e) {
+          if (!(e instanceof ShellCommandError)) {
+            throw new Error('not ShellCommandError');
+          }
+
+          if (!e.output) {
+            throw new Error('no output');
+          }
+
           expect(e.output.length).toEqual(outinput.length + errinput.length);
           expect(e.output.split('').filter(l => l !== outletter).join('')).toEqual(errinput);
           expect(e.output.split('').filter(l => l !== errletter).join('')).toEqual(outinput);
@@ -292,6 +301,14 @@ describe('@ionic/cli-framework', () => {
         try {
           await p;
         } catch (e) {
+          if (!(e instanceof ShellCommandError)) {
+            throw new Error('not ShellCommandError');
+          }
+
+          if (!e.output) {
+            throw new Error('no output');
+          }
+
           expect(e.output.length).toEqual(outinput.length + errinput.length);
           expect(e.output.split('').filter(l => l !== outletter).join('')).toEqual(errinput);
           expect(e.output.split('').filter(l => l !== errletter).join('')).toEqual(outinput);

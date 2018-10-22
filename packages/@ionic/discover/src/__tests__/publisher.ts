@@ -5,10 +5,10 @@ describe('publisher', () => {
   it('create', () => {
     const p = new Publisher('devapp', 'conference-app', 8100);
     p.on('error', () => {});
-    expect(p.client).toBeUndefined();
+    expect((p as any).client).toBeUndefined();
     expect(p.namespace).toEqual('devapp');
     expect(p.name).toEqual('conference-app');
-    expect(p.interval).toEqual(2000);
+    expect((p as any).interval).toEqual(2000);
     expect(p.path).toEqual('/');
     expect(p.port).toEqual(8100);
     expect(p.id.length).toBeGreaterThan(0);
@@ -19,9 +19,9 @@ describe('publisher', () => {
     const p = new Publisher('devapp', 'conference-app', 8100);
     p.on('error', () => {});
     await p.start();
-    expect(p.timer).toBeDefined();
+    expect((p as any).timer).toBeDefined();
     p.stop();
-    expect(p.timer).toBeUndefined();
+    expect((p as any).timer).toBeUndefined();
   }, 1000);
 
   it('start/stop', async () => {
@@ -29,19 +29,19 @@ describe('publisher', () => {
     p.on('error', () => {});
     await p.start();
     expect(p.running).toBeTruthy();
-    expect(p.client).toBeDefined();
+    expect((p as any).client).toBeDefined();
 
     p.stop();
     expect(p.running).toBeFalsy();
-    expect(p.client).toBeUndefined();
+    expect((p as any).client).toBeUndefined();
 
   }, 1000);
 
   it('buildMessage', () => {
     const p = new Publisher('devapp', 'conference-app', 8100);
     p.on('error', () => {});
-    p.path = '/?devapp=true';
-    const message = p.buildMessage('192.168.0.1');
+    (p as any).path = '/?devapp=true';
+    const message = (p as any).buildMessage('192.168.0.1');
     expect(message.t).toEqual(expect.any(Number));
     const expected = {
       t: message.t,

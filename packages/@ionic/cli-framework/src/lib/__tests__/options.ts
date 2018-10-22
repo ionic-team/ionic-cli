@@ -1,14 +1,7 @@
 import * as minimist from 'minimist';
 
-import {
-  OptionFilters,
-  filterCommandLineOptions,
-  filterCommandLineOptionsByGroup,
-  metadataOptionsToParseArgsOptions,
-  separateArgv,
-  stripOptions,
-  unparseArgs,
-} from '../options';
+import { CommandMetadata } from '../../definitions';
+import { OptionFilters, filterCommandLineOptions, filterCommandLineOptionsByGroup, metadataOptionsToParseArgsOptions, separateArgv, stripOptions, unparseArgs } from '../options';
 
 describe('@ionic/cli-framework', () => {
 
@@ -77,29 +70,38 @@ describe('@ionic/cli-framework', () => {
 
     });
 
-    const metadata1 = {
+    const metadata1: Required<CommandMetadata> = {
       name: 'bar',
+      summary: '',
+      description: '',
+      exampleCommands: [],
+      groups: [],
       inputs: [
         {
           name: 'input1',
+          summary: '',
         },
         {
           name: 'input2',
+          summary: '',
         },
       ],
       options: [
         {
           name: 'foo',
+          summary: '',
           aliases: ['f'],
           groups: ['a'],
         },
         {
           name: 'bar',
+          summary: '',
           default: 'soup',
           groups: ['b'],
         },
         {
           name: 'flag1',
+          summary: '',
           type: Boolean,
         },
       ],
@@ -268,7 +270,7 @@ describe('@ionic/cli-framework', () => {
       });
 
       it('should exclude options that do not match the predicate using opt', () => {
-        const result = filterCommandLineOptions(metadata1.options, { _: [], unknown: 'yep', foo: 'wow', bar: 'hi', flag1: true }, opt => opt.groups && opt.groups.includes('a'));
+        const result = filterCommandLineOptions(metadata1.options, { _: [], unknown: 'yep', foo: 'wow', bar: 'hi', flag1: true }, opt => opt.groups ? opt.groups.includes('a') : false);
         expect(result).toEqual({ _: [], foo: 'wow' });
       });
 
@@ -278,8 +280,8 @@ describe('@ionic/cli-framework', () => {
       });
 
       it('should include separated args from original parsed args', () => {
-        const result = filterCommandLineOptions(metadata1.options, { _: [], '--': 'some more --args' });
-        expect(result).toEqual({ _: [], '--': 'some more --args' });
+        const result = filterCommandLineOptions(metadata1.options, { _: [], '--': ['some', 'more', '--args'] });
+        expect(result).toEqual({ _: [], '--': ['some', 'more', '--args'] });
       });
 
       describe('OptionFilters.includesGroups', () => {
