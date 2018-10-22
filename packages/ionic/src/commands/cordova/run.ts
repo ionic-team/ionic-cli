@@ -59,7 +59,12 @@ const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
 export class RunCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
     let groups: string[] = [];
-    const exampleCommands = CORDOVA_BUILD_EXAMPLE_COMMANDS;
+    const exampleCommands = [
+      ...CORDOVA_BUILD_EXAMPLE_COMMANDS,
+      'android -l',
+      'ios --livereload',
+      'ios --livereload-url=http://localhost:8100',
+    ].sort();
     const options: CommandMetadataOption[] = [
       {
         name: 'list',
@@ -82,6 +87,10 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         summary: 'Spin up dev server to live-reload www files',
         type: Boolean,
         aliases: ['l'],
+      },
+      {
+        name: 'livereload-url',
+        summary: 'Provide a custom URL to the dev server',
       },
     ];
 
@@ -113,7 +122,7 @@ Like running ${chalk.green('cordova run')} or ${chalk.green('cordova emulate')} 
 
 For Android and iOS, you can setup Remote Debugging on your device with browser development tools using these docs${chalk.cyan('[1]')}.
 
-Just like with ${chalk.green('ionic cordova build')}, you can pass additional options to the Cordova CLI using the ${chalk.green('--')} separator.
+Just like with ${chalk.green('ionic cordova build')}, you can pass additional options to the Cordova CLI using the ${chalk.green('--')} separator. To pass additional options to the dev server, consider using ${chalk.green('ionic serve')} and the ${chalk.green('--livereload-url')} option.
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-resources/developer-tips/')}
       `,
@@ -141,6 +150,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
     if (options['x']) {
       options['proxy'] = false;
+    }
+
+    if (options['livereload-url']) {
+      options['livereload'] = true;
     }
 
     if (!options['build'] && options['livereload']) {
@@ -181,6 +194,20 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
     const metadata = await this.getMetadata();
 
     if (options['livereload']) {
+      let livereloadUrl = options['livereload-url'] ? String(options['livereload-url']) : undefined;
+
+      if (!livereloadUrl) {
+        // TODO: use runner directly
+        const details = await serve({ flags: this.env.flags, config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
+
+        if (details.externallyAccessible === false) {
+          const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
+          this.env.log.warn(`Your device or emulator may not be able to access ${chalk.bold(details.externalAddress)}.${extra}\n\n`);
+        }
+
+        livereloadUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
+      }
+
       const conf = await loadConfigXml(this.integration);
 
       onBeforeExit(async () => {
@@ -188,20 +215,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
         await conf.save();
       });
 
+      conf.writeContentSrc(livereloadUrl);
+      await conf.save();
+
       const cordovalog = this.env.log.clone();
       cordovalog.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(`${chalk.dim(`[cordova]`)} `));
       const cordovalogws = cordovalog.createWriteStream(LOGGER_LEVELS.INFO);
-
-      // TODO: use runner directly
-      const details = await serve({ flags: this.env.flags, config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
-
-      if (details.externallyAccessible === false) {
-        const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
-        this.env.log.warn(`Your device or emulator may not be able to access ${chalk.bold(details.externalAddress)}.${extra}\n\n`);
-      }
-
-      conf.writeContentSrc(`${details.protocol || 'http'}://${details.externalAddress}:${details.port}`);
-      await conf.save();
 
       await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: cordovalogws });
       await sleepForever();

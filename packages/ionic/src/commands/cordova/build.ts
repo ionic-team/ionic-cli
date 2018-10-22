@@ -10,6 +10,7 @@ import { COMMON_CORDOVA_BUILD_COMMAND_OPTIONS, CORDOVA_BUILD_EXAMPLE_COMMANDS, C
 
 export class BuildCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
+    const exampleCommands = CORDOVA_BUILD_EXAMPLE_COMMANDS.sort();
     const options: CommandMetadataOption[] = [
       // Build Options
       {
@@ -42,7 +43,7 @@ The Cordova CLI requires a separator for platform-specific arguments for Android
 ${chalk.cyan('[1]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html#using-flags')}
 ${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/platforms/ios/index.html#using-flags')}
       `,
-      exampleCommands: CORDOVA_BUILD_EXAMPLE_COMMANDS,
+      exampleCommands,
       inputs: [
         {
           name: 'platform',
