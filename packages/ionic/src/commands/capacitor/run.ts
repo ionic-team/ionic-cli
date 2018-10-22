@@ -15,6 +15,13 @@ import { CapacitorCommand } from './base';
 export class RunCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
     let groups: string[] = [CommandGroup.Beta];
+    const exampleCommands = [
+      '',
+      'android',
+      'android -l',
+      'ios --livereload',
+      'ios --livereload-url=http://localhost:8100',
+    ].sort();
     const options: CommandMetadataOption[] = [
       // Build Options
       {
@@ -29,6 +36,10 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
         summary: 'Spin up dev server to live-reload www files',
         type: Boolean,
         aliases: ['l'],
+      },
+      {
+        name: 'livereload-url',
+        summary: 'Provide a custom URL to the dev server',
       },
     ];
 
@@ -64,10 +75,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-resources/developer-tips/')}
       `,
-      exampleCommands: [
-        '',
-        '-l',
-      ],
+      exampleCommands,
       inputs: [
         {
           name: 'platform',
@@ -94,6 +102,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       inputs[0] = platform.trim();
     }
 
+    if (options['livereload-url']) {
+      options['livereload'] = true;
+    }
+
     await this.checkForPlatformInstallation(inputs[0]);
   }
 
@@ -105,21 +117,28 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
     const [ platform ] = inputs;
 
     if (options['livereload']) {
-      const conf = new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
+      let livereloadUrl = options['livereload-url'] ? String(options['livereload-url']) : undefined;
 
-      // TODO: use runner directly
-      const details = await serve({ flags: this.env.flags, config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateOptionsForCapacitorBuild(inputs, options));
+      if (!livereloadUrl) {
+        // TODO: use runner directly
+        const details = await serve({ flags: this.env.flags, config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateOptionsForCapacitorBuild(inputs, options));
 
-      if (details.externallyAccessible === false) {
-        const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
-        this.env.log.warn(`Your device or emulator may not be able to access ${chalk.bold(details.externalAddress)}.${extra}\n\n`);
+        if (details.externallyAccessible === false) {
+          const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
+          this.env.log.warn(`Your device or emulator may not be able to access ${chalk.bold(details.externalAddress)}.${extra}\n\n`);
+        }
+
+        livereloadUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
       }
 
-      conf.setServerUrl(`${details.protocol || 'http'}://${details.externalAddress}:${details.port}`);
+      const conf = new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
 
       onBeforeExit(async () => {
         conf.resetServerUrl();
       });
+
+      conf.setServerUrl(livereloadUrl);
+
     } else {
       if (options['build']) {
         // TODO: use runner directly
