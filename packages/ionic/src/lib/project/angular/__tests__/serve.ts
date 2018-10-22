@@ -1,8 +1,5 @@
 import { AngularServeRunner, AngularServeCLI } from '../serve';
-import { ServeRunnerDeps } from '../../../../../lib/serve';
 import { CommandLineOptions } from '../../../../definitions';
-import { Project } from '../../../../../lib/project';
-import { AngularProject } from '../../../../../lib/project/angular';
 
 describe('ionic', () => {
 
@@ -34,44 +31,44 @@ describe('ionic', () => {
         };
 
         it('should provide defaults with no options', () => {
-          const runner = new AngularServeRunner({} as ServeRunnerDeps);
+          const runner = new AngularServeRunner({} as any);
           const result = runner.createOptionsFromCommandLine([], {} as CommandLineOptions);
           expect(result).toEqual(defaults);
         });
 
         it('should provide options from negations of cli flag defaults', () => {
-          const runner = new AngularServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
+          const runner = new AngularServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
           expect(result).toEqual({ ...defaults, livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
         });
 
         it('should turn off devapp for cordova', () => {
-          const runner = new AngularServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { engine: 'cordova' });
+          const runner = new AngularServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], engine: 'cordova' });
           expect(result).toEqual({ ...defaults, devapp: false, engine: 'cordova' });
         });
 
         it('should allow overrides of default values', () => {
-          const runner = new AngularServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { address: 'localhost', port: '1111' });
+          const runner = new AngularServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], address: 'localhost', port: '1111' });
           expect(result).toEqual({ ...defaults, address: 'localhost', port: 1111 });
         });
 
         it('should respect --local flag', () => {
-          const runner = new AngularServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { local: true });
+          const runner = new AngularServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], local: true });
           expect(result).toEqual({ ...defaults, address: 'localhost', devapp: false });
         });
 
         it('should respect --project and --configuration flags', () => {
-          const runner = new AngularServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { project: 'app', configuration: 'production' });
+          const runner = new AngularServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], project: 'app', configuration: 'production' });
           expect(result).toEqual({ ...defaults, project: 'app', configuration: 'production' });
         });
 
         it('should pass on separated args', () => {
-          const runner = new AngularServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { '--': ['foo', '--bar'] });
+          const runner = new AngularServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], '--': ['foo', '--bar'] });
           expect(result).toEqual({ ...defaults, '--': ['foo', '--bar'] });
         });
 
@@ -92,15 +89,15 @@ describe('ionic', () => {
           const project = {
             requireIntegration: jest.fn(() => ({ root })),
           };
-          const runner = new AngularServeCLI({ project });
+          const runner = new AngularServeCLI({ project } as any);
           const options = {
             ...defaults,
             engine: 'cordova',
             platform: 'fakePlatform',
           };
 
-          const result = await runner.serveOptionsToNgArgs(options);
-          expect(result).toEqual(jest.arrayContaining([
+          const result = await (runner as any).serveOptionsToNgArgs(options);
+          expect(result).toEqual(expect.arrayContaining([
             `--platform=${options.platform}`,
             `--cordova-base-path=${root}`,
           ]));

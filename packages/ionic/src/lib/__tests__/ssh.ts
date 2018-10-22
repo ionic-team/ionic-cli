@@ -11,16 +11,12 @@ describe('ionic', () => {
         'AAAAB3NzaC1yc2EAAAADAQABAAABAQDqQmHXeWG737iR40rMO5enlhHMTGTmTi4Kehql9TxheN1PPujeBlQk6Kl0ylYDjPqqUBrSxq/tdxHyyF8h5QD+L5uO9PHyEVLoNCE0gYRhvSupf6K4EhZNz91KVYchRNZcldt6esf6KQfZIF20fNKLnIBJ5rkGO3vJJJkDZIBMH3IzMI7DUyZIA3RBE7wzfbSaZC3X87GWxS3IYM31IdFHXlKwBNFQpv4PKZ3RAeLRHpSuiyXlIuBWE7KEJCxcbDSFSTc3oFNUkwQACSfDze9Gt2T3zCowVB+G5k1pTpBunmMb6uXdzcqAzR41M2cpbbqRCpRmqzbW8psUbcsyTMM5',
       ];
 
-      const invalids = [
-        'asdf',
-      ];
-
       const fmt = (bytes: string, annotation?: string) => `ssh-rsa ${bytes}${annotation ? ' ' + annotation : ''}`;
 
       it('should parse valid public keys', async () => {
         for (let valid of valids) {
           const formatted = fmt(valid, 'super');
-          const results = await parsePublicKey(formatted);
+          const results = parsePublicKey(formatted);
           expect(results).toEqual([formatted, 'ssh-rsa', valid, 'super']);
         }
       });
@@ -28,15 +24,13 @@ describe('ionic', () => {
       it('should parse valid public keys with no annotation', async () => {
         for (let valid of valids) {
           const formatted = fmt(valid);
-          const results = await parsePublicKey(formatted);
+          const results = parsePublicKey(formatted);
           expect(results).toEqual([formatted, 'ssh-rsa', valid, '']);
         }
       });
 
       it('should throw error for invalid public keys', async () => {
-        for (let valid of valids) {
-          expect(() => parsePublicKey(fmt(valid)).rejects.toBe(ERROR_SSH_INVALID_PUBKEY));
-        }
+        expect(() => parsePublicKey('blah')).toThrow(ERROR_SSH_INVALID_PUBKEY);
       });
 
     });

@@ -16,7 +16,7 @@ describe('ionic', () => {
       it('should take the resources structure and flatten it', async () => {
         const result = resources.getImageResources('/path/to/proj');
 
-        expect(result).toEqual(jest.any(Array));
+        expect(result).toEqual(expect.any(Array));
         expect(result.length).toEqual(53);
         expect(result.find(img => img.name === 'Default-568h@2x~iphone.png')).toEqual({
           platform: 'ios',
@@ -72,25 +72,25 @@ describe('ionic', () => {
         }));
 
       it('should create directories that required for all of the images', async () => {
-        spyOn(fsSpy, 'mkdirp').and.callFake((dir) => Promise.resolve(dir));
+        const spy = spyOn(fsSpy, 'mkdirp').and.callFake((dir) => Promise.resolve(dir));
         await resources.createImgDestinationDirectories(imgResources);
 
-        expect(fsSpy.mkdirp.calls.count()).toEqual(2);
-        expect(fsSpy.mkdirp.calls.argsFor(0)).toEqual([path.normalize('/resourcesDir/ios/splash')]);
-        expect(fsSpy.mkdirp.calls.argsFor(1)).toEqual([path.normalize('/resourcesDir/android/splash')]);
+        expect(spy.calls.count()).toEqual(2);
+        expect(spy.calls.argsFor(0)).toEqual([path.normalize('/resourcesDir/ios/splash')]);
+        expect(spy.calls.argsFor(1)).toEqual([path.normalize('/resourcesDir/android/splash')]);
       });
     });
 
     describe('getSourceImages', () => {
       it('should look in resources directory and platform directories to find images', async () => {
-        spyOn(fsSpy, 'readDir').and.returnValue(Promise.resolve([]));
+        const spy = spyOn(fsSpy, 'readDir').and.returnValue(Promise.resolve([]));
 
         await resources.getSourceImages('/path/to/proj', ['ios', 'android'], ['splash', 'icon']);
 
-        expect(fsSpy.readDir.calls.count()).toEqual(3);
-        expect(fsSpy.readDir.calls.argsFor(0)).toEqual([path.resolve('/path/to/proj/resources/ios')]);
-        expect(fsSpy.readDir.calls.argsFor(1)).toEqual([path.resolve('/path/to/proj/resources/android')]);
-        expect(fsSpy.readDir.calls.argsFor(2)).toEqual([path.resolve('/path/to/proj/resources')]);
+        expect(spy.calls.count()).toEqual(3);
+        expect(spy.calls.argsFor(0)).toEqual([path.resolve('/path/to/proj/resources/ios')]);
+        expect(spy.calls.argsFor(1)).toEqual([path.resolve('/path/to/proj/resources/android')]);
+        expect(spy.calls.argsFor(2)).toEqual([path.resolve('/path/to/proj/resources')]);
       });
 
       it('should find all sourceImages available and prioritize based on specificity', async () => {
@@ -308,7 +308,7 @@ describe('ionic', () => {
           imageId: '60278b0fa1d5abf43d07c5ae0f8a0b41'
         };
 
-        const response = await resources.uploadSourceImage({ config: { getHTTPConfig: () => ({}) } }, sourceImage);
+        const response = await resources.uploadSourceImage({ config: { getHTTPConfig: () => ({}) } } as any, sourceImage);
         expect(response).toEqual({
           Error: '',
           Width: 337,

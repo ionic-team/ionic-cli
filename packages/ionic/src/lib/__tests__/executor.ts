@@ -1,3 +1,4 @@
+import { CommandMetadata } from '../../definitions';
 import { metadataToCmdOptsEnv } from '../executor';
 
 describe('ionic', () => {
@@ -6,20 +7,24 @@ describe('ionic', () => {
 
     describe('metadataToCmdOptsEnv', () => {
 
-      const metadata = {
-        fullName: 'foo bar',
+      const metadata: CommandMetadata = {
+        name: '',
+        summary: '',
+        type: 'global',
         options: [
           {
             name: 'baz',
+            summary: '',
           },
           {
             name: 'opt-with-dashes',
+            summary: '',
           },
         ],
       };
 
       it('should return empty array for command with no options', () => {
-        const result = metadataToCmdOptsEnv({ options: [] }, ['cmd']);
+        const result = metadataToCmdOptsEnv({ name: '', summary: '', type: 'global', options: [] }, ['cmd']);
         expect(result.size).toEqual(0);
       });
 

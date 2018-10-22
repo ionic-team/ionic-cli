@@ -1,55 +1,69 @@
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../utils';
+import { CommandMetadata } from '../../../../definitions';
 
 describe('ionic', () => {
 
-  const buildMetadata = {
+  const buildMetadata: CommandMetadata = {
     name: 'build',
+    summary: '',
+    type: 'global',
     inputs: [
       {
         name: 'platform',
+        summary: '',
       }
     ],
     options: [
       {
         name: 'boolopt',
+        summary: '',
         type: Boolean,
         default: false,
       },
       {
         name: 'cdvopt1',
+        summary: '',
         groups: ['cordova'],
       },
       {
         name: 'cdvopt2',
+        summary: '',
         type: Boolean,
         groups: ['cordova'],
       },
       {
         name: 'prod',
+        summary: '',
         type: Boolean,
         groups: ['app-scripts'],
       },
       {
         name: 'optimizejs',
+        summary: '',
         type: Boolean,
         groups: ['app-scripts'],
       },
     ]
   };
 
-  const platformMetadata = {
+  const platformMetadata: CommandMetadata = {
     name: 'platform',
+    summary: '',
+    type: 'global',
     inputs: [
       {
         name: 'action',
+        summary: '',
       },
       {
         name: 'platform',
+        summary: '',
       }
     ],
     options: [
       {
         name: 'boolopt',
+        summary: '',
         type: Boolean,
         default: false,
       },
