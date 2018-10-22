@@ -66,10 +66,12 @@ export async function sleepUntil(predicate: () => boolean, { interval = 30, time
 }
 
 /**
- * Never resolves.
+ * Never resolves and keeps Node running.
  */
 export async function sleepForever(): Promise<never> {
-  return new Promise<never>(() => { /* never resolves */ });
+  return new Promise<never>(() => {
+    setInterval(() => { /* do nothing */ }, 1000);
+  });
 }
 
 /**
