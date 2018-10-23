@@ -1,3 +1,4 @@
+import { prettyPath } from '@ionic/cli-framework/utils/format';
 import chalk from 'chalk';
 
 import { PROJECT_FILE } from '../../constants';
@@ -5,13 +6,15 @@ import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class ConfigNamespace extends Namespace {
   async getMetadata() {
+    const projectFile = this.project ? prettyPath(this.project.filePath) : PROJECT_FILE;
+
     return {
       name: 'config',
       summary: 'Manage CLI and project config values',
       description: `
 These commands are used to programmatically read, write, and delete CLI and project config values.
 
-By default, these commands use your project's ${chalk.bold(PROJECT_FILE)} file.
+By default, these commands use your project's ${chalk.bold(prettyPath(projectFile))} file.
 
 To use these commands for the global CLI config file (${chalk.bold('~/.ionic/config.json')}), use the ${chalk.green('--global')} flag.
       `,

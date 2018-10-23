@@ -1,4 +1,5 @@
 import { OptionGroup, createPromptChoiceSeparator, validators } from '@ionic/cli-framework';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
@@ -25,6 +26,8 @@ const CHOICE_SPECIFIC_BRANCHES = 'specific';
 
 export class LinkCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
+    const projectFile = this.project ? prettyPath(this.project.filePath) : PROJECT_FILE;
+
     return {
       name: 'link',
       type: 'project',
@@ -36,7 +39,7 @@ If the ${chalk.green('pro-id')} argument is excluded, this command will prompt y
 
 Ionic Pro uses a git-based workflow to manage app updates. During the linking process, select ${chalk.bold('GitHub')} (recommended) or ${chalk.bold('Ionic Pro')} as a git host. See our documentation${chalk.cyan('[1]')} for more information.
 
-Ultimately, this command sets the ${chalk.bold('pro_id')} property in ${chalk.bold(PROJECT_FILE)}, which marks this app as linked.
+Ultimately, this command sets the ${chalk.bold('pro_id')} property in ${chalk.bold(prettyPath(projectFile))}, which marks this app as linked.
 
 If you are having issues linking, please get in touch with our Support${chalk.cyan('[2]')}.
 

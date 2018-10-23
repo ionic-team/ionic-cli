@@ -53,9 +53,9 @@ export async function generateContext(): Promise<IonicContext> {
   };
 }
 
-export async function loadExecutor(ctx: IonicContext, pargv: string[], env: NodeJS.ProcessEnv): Promise<Executor> {
+export async function loadExecutor(ctx: IonicContext, pargv: string[]): Promise<Executor> {
   if (!_executor) {
-    const deps = await generateIonicEnvironment(ctx, pargv, env);
+    const deps = await generateIonicEnvironment(ctx, pargv);
     const namespace = new IonicNamespace(deps);
     _executor = new Executor({ namespace });
   }
@@ -63,12 +63,12 @@ export async function loadExecutor(ctx: IonicContext, pargv: string[], env: Node
   return _executor;
 }
 
-export async function run(pargv: string[], env: NodeJS.ProcessEnv) {
+export async function run(pargv: string[]): Promise<void> {
   let err: any;
   let executor: Executor;
 
   try {
-    executor = await loadExecutor(await generateContext(), pargv, env);
+    executor = await loadExecutor(await generateContext(), pargv);
   } catch (e) {
     process.stderr.write(`${e.message ? e.message : (e.stack ? e.stack : e)}\n`);
     process.exitCode = 1;
@@ -83,9 +83,9 @@ export async function run(pargv: string[], env: NodeJS.ProcessEnv) {
 
       ienv.config.set('version', ienv.ctx.version);
 
-      const token = env['IONIC_TOKEN'];
-      const email = env['IONIC_EMAIL'];
-      const password = env['IONIC_PASSWORD'];
+      const token = process.env['IONIC_TOKEN'];
+      const email = process.env['IONIC_EMAIL'];
+      const password = process.env['IONIC_PASSWORD'];
 
       if (token) {
         const wasLoggedIn = ienv.session.isLoggedIn();
@@ -125,7 +125,7 @@ export async function run(pargv: string[], env: NodeJS.ProcessEnv) {
           `    ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`
         );
       } else {
-        await executor.execute(pargv, env);
+        await executor.execute(pargv, process.env);
       }
 
       if (ienv.flags.interactive) {

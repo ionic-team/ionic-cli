@@ -1,4 +1,5 @@
 import { OptionGroup, validators } from '@ionic/cli-framework';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
 import chalk from 'chalk';
 
 import { PROJECT_FILE } from '../../constants';
@@ -9,12 +10,14 @@ import { BaseConfigCommand, getConfigValue, unsetConfigValue } from './base';
 
 export class ConfigUnsetCommand extends BaseConfigCommand {
   async getMetadata(): Promise<CommandMetadata> {
+    const projectFile = this.project ? prettyPath(this.project.filePath) : PROJECT_FILE;
+
     return {
       name: 'unset',
       type: 'global',
       summary: 'Delete config values',
       description: `
-This command deletes configuration values from the project's ${chalk.bold(PROJECT_FILE)} file. It can also operate on the global CLI configuration (${chalk.bold('~/.ionic/config.json')}) using the ${chalk.green('--global')} option.
+This command deletes configuration values from the project's ${chalk.bold(prettyPath(projectFile))} file. It can also operate on the global CLI configuration (${chalk.bold('~/.ionic/config.json')}) using the ${chalk.green('--global')} option.
 
 For nested properties, separate nest levels with dots. For example, the property name ${chalk.green('integrations.cordova')} will look in the ${chalk.bold('integrations')} object for the ${chalk.bold('cordova')} property.
 
@@ -36,7 +39,7 @@ For multi-app projects, this command is scoped to the current project by default
         },
         {
           name: 'root',
-          summary: `Operate on root of ${chalk.bold(PROJECT_FILE)}`,
+          summary: `Operate on root of ${chalk.bold(prettyPath(projectFile))}`,
           type: Boolean,
           hint: chalk.dim('[multi-app]'),
           groups: [OptionGroup.Advanced],

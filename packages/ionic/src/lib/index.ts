@@ -56,12 +56,12 @@ export async function getProject(projectDir: string | undefined, projectName: st
   return createProjectFromType(projectFilePath, projectName, deps, type);
 }
 
-export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[], env: NodeJS.ProcessEnv): Promise<{ env: IonicEnvironment; project?: IProject; }> {
+export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[]): Promise<{ env: IonicEnvironment; project?: IProject; }> {
   process.chdir(ctx.execPath);
 
   const argv = parseGlobalOptions(pargv);
   const projectName = argv['project'] ? String(argv['project']) : undefined;
-  const config = new Config(path.resolve(env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE));
+  const config = new Config(path.resolve(process.env['IONIC_CONFIG_DIRECTORY'] || DEFAULT_CONFIG_DIRECTORY, CONFIG_FILE));
 
   debug('Terminal info: %o', TERMINAL_INFO);
 
@@ -83,7 +83,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   });
 
   const projectDir = await findBaseDirectory(ctx.execPath, PROJECT_FILE);
-  const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map((e): [string, string | undefined] => [e, env[e]]).filter(([, v]) => !!v);
+  const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map((e): [string, string | undefined] => [e, process.env[e]]).filter(([, v]) => !!v);
 
   const getInfo = async () => {
     const osName = await import('os-name');
@@ -117,10 +117,10 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const client = new Client(config);
   const session = new ProSession({ config, client });
   const deps = { client, config, ctx, flags, log, prompt, session, shell };
-  const ienv = new Environment({ getInfo, ...deps });
+  const env = new Environment({ getInfo, ...deps });
 
-  if (env['IONIC_CLI_LOCAL_ERROR']) {
-    if (env['IONIC_CLI_LOCAL_ERROR'] === ERROR_VERSION_TOO_OLD) {
+  if (process.env['IONIC_CLI_LOCAL_ERROR']) {
+    if (process.env['IONIC_CLI_LOCAL_ERROR'] === ERROR_VERSION_TOO_OLD) {
       log.warn(`Detected locally installed Ionic CLI, but it's too old--using global CLI.`);
     }
   }
@@ -138,5 +138,5 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     log.nl();
   }
 
-  return { env: ienv, project };
+  return { env, project };
 }

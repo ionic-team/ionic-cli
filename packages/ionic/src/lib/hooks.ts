@@ -1,10 +1,10 @@
 import { conform } from '@ionic/cli-framework/utils/array';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
 
-import { PROJECT_FILE } from '../constants';
 import { HookFn, HookInput, HookName, IConfig, IProject, IShell } from '../definitions';
 
 import { HookException } from './errors';
@@ -73,7 +73,7 @@ export abstract class Hook {
         }));
       } catch (e) {
         throw new HookException(
-          `An error occurred while running an Ionic CLI hook defined in ${chalk.bold(PROJECT_FILE)}.\n` +
+          `An error occurred while running an Ionic CLI hook defined in ${chalk.bold(prettyPath(this.e.project.filePath))}.\n` +
           `Hook: ${chalk.bold(this.name)}\n` +
           `File: ${chalk.bold(p)}\n\n` +
           `${chalk.red(e.stack ? e.stack : e)}`

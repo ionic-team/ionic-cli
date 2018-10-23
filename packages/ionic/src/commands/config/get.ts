@@ -1,5 +1,5 @@
 import { OptionGroup } from '@ionic/cli-framework';
-import { columnar } from '@ionic/cli-framework/utils/format';
+import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
@@ -12,12 +12,14 @@ import { BaseConfigCommand, ConfigContext, getConfigValue } from './base';
 
 export class ConfigGetCommand extends BaseConfigCommand {
   async getMetadata(): Promise<CommandMetadata> {
+    const projectFile = this.project ? prettyPath(this.project.filePath) : PROJECT_FILE;
+
     return {
       name: 'get',
       type: 'global',
       summary: 'Print config values',
       description: `
-This command reads and prints configuration values from the project's ${chalk.bold(PROJECT_FILE)} file. It can also operate on the global CLI configuration (${chalk.bold('~/.ionic/config.json')}) using the ${chalk.green('--global')} option.
+This command reads and prints configuration values from the project's ${chalk.bold(projectFile)} file. It can also operate on the global CLI configuration (${chalk.bold('~/.ionic/config.json')}) using the ${chalk.green('--global')} option.
 
 For nested properties, separate nest levels with dots. For example, the property name ${chalk.green('integrations.cordova')} will look in the ${chalk.bold('integrations')} object for the ${chalk.bold('cordova')} property.
 
@@ -50,7 +52,7 @@ This command will sanitize config output for known sensitive fields (disabled wh
         },
         {
           name: 'root',
-          summary: `Operate on root of ${chalk.bold(PROJECT_FILE)}`,
+          summary: `Operate on root of ${chalk.bold(projectFile)}`,
           type: Boolean,
           hint: chalk.dim('[multi-app]'),
           groups: [OptionGroup.Advanced],

@@ -33,7 +33,7 @@ export class DocsCommand extends Command {
     for (const projectType of projectTypes) {
       // TODO: possible to do this without a physical directory?
       const ctx = { ...baseCtx, execPath: path.resolve(PROJECTS_DIRECTORY, projectType) };
-      const executor = await loadExecutor(ctx, [], {});
+      const executor = await loadExecutor(ctx, []);
 
       const location = await executor.namespace.locate([]);
       const formatter = new NamespaceSchemaHelpFormatter({ location, namespace: executor.namespace });
