@@ -198,6 +198,20 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       options['git'] = true;
     }
 
+    if (this.project) {
+      const confirm = await this.env.prompt({
+        type: 'confirm',
+        name: 'confirm',
+        message: 'You are already in an Ionic project directory. Do you really want to start another project here?',
+        default: false,
+      });
+
+      if (!confirm) {
+        this.env.log.info('Not starting project within existing project.');
+        throw new FatalException();
+      }
+    }
+
     if (!options['type']) {
       if (this.env.flags.interactive) {
         this.env.log.info(
@@ -221,23 +235,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
 
     const projectType = options['type'] ? String(options['type']) : 'ionic-angular';
-    await this.validateProjectType(projectType);
-
     const proId = options['pro-id'] ? String(options['pro-id']) : undefined;
 
-    if (this.project) {
-      const confirm = await this.env.prompt({
-        type: 'confirm',
-        name: 'confirm',
-        message: 'You are already in an Ionic project directory. Do you really want to start another project here?',
-        default: false,
-      });
-
-      if (!confirm) {
-        this.env.log.info('Not starting project within existing project.');
-        throw new FatalException();
-      }
-    }
+    await this.validateProjectType(projectType);
 
     if (options['v1'] || options['v2']) {
       throw new FatalException(
