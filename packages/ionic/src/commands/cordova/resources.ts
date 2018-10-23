@@ -80,16 +80,30 @@ This command uses Ionic servers, so we require you to be logged into your free I
     }
   }
 
+  async getBuildPlatforms() {
+    const { getPlatforms } = await import('../../lib/integrations/cordova/project');
+    const { RESOURCES } = await import('../../lib/integrations/cordova/resources');
+
+    debug(`RESOURCES=${Object.keys(RESOURCES).length}`);
+
+    const installedPlatforms = await getPlatforms(this.integration.root);
+    debug(`installedPlatforms=${installedPlatforms.map(e => chalk.bold(e)).join(', ')}`);
+
+    const buildPlatforms = Object.keys(RESOURCES).filter(p => installedPlatforms.includes(p));
+    debug(`buildPlatforms=${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
+
+    return buildPlatforms;
+  }
+
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
-    const { getPlatforms } = await import('../../lib/integrations/cordova/project');
-    const { RESOURCES, addResourcesToConfigXml, createImgDestinationDirectories, findMostSpecificSourceImage, getImageResources, getSourceImages, transformResourceImage, uploadSourceImage } = await import('../../lib/integrations/cordova/resources');
+    const { addResourcesToConfigXml, createImgDestinationDirectories, findMostSpecificSourceImage, getImageResources, getSourceImages, transformResourceImage, uploadSourceImage } = await import('../../lib/integrations/cordova/resources');
 
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic cordova resources')} outside a project directory.`);
     }
 
-    const [ platform ] = inputs;
+    const platform = inputs[0] ? String(inputs[0]) : undefined;
     const { force } = options;
 
     const tasks = this.createTaskChain();
@@ -98,21 +112,14 @@ This command uses Ionic servers, so we require you to be logged into your free I
     let resourceTypes = AVAILABLE_RESOURCE_TYPES.filter((type, index, array) => options[type]);
     resourceTypes = resourceTypes.length ? resourceTypes : AVAILABLE_RESOURCE_TYPES;
 
-    debug(`resourceJsonStructure=${Object.keys(RESOURCES).length}`);
-
-    await this.checkForPlatformInstallation(platform, { promptToInstall: true });
+    // await this.checkForPlatformInstallation(platform, { promptToInstall: true });
 
     const conf = await loadConfigXml(this.integration);
-    const platforms = await getPlatforms(this.integration.root);
-    const buildPlatforms = Object.keys(RESOURCES).filter(p => platforms.includes(p));
-
-    debug(`platforms=${platforms.map(e => chalk.bold(e)).join(', ')}`);
-    debug(`buildPlatforms=${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
+    const buildPlatforms = platform ? [platform] : await this.getBuildPlatforms();
 
     if (buildPlatforms.length === 0) {
       throw new FatalException(`No platforms detected. Please run: ${chalk.green('ionic cordova platform add')}`);
     }
-    debug(`${chalk.cyan('getProjectPlatforms')} completed: ${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
 
     tasks.next(`Collecting resource configuration and source images`);
 
@@ -220,7 +227,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       return response;
     }));
 
-    debug(`${chalk.cyan('uploadSourceImages')} completed: responses=%o`, imageUploadResponses);
+    debug(`${chalk.cyan('uploadSourceImages')} completed: responses=%O`, imageUploadResponses);
 
     srcImagesAvailable = srcImagesAvailable.map((img, index) => {
       return {
@@ -231,7 +238,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       };
     });
 
-    debug('srcImagesAvailable=%o', srcImagesAvailable);
+    debug('srcImagesAvailable=%O', srcImagesAvailable);
 
     // If any images are asking to be generated but are not of the correct size
     // inform the user and continue on.
@@ -244,7 +251,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
       return !resourceSourceImage.vector && (img.width > resourceSourceImage.width || img.height > resourceSourceImage.height);
     });
 
-    debug('imagesTooLargeForSource=%o', imagesTooLargeForSource);
+    debug('imagesTooLargeForSource=%O', imagesTooLargeForSource);
 
     // Remove all images too large for transformations
     imgResources = imgResources.filter(img => {
