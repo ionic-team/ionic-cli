@@ -10,7 +10,7 @@ export class CopyCommand extends CapacitorCommand implements CommandPreRun {
     return {
       name: 'copy',
       type: 'project',
-      summary: 'Copies web assets to Capacitor native platforms',
+      summary: 'Copy web assets to native platforms',
       description: `
 ${chalk.green('ionic capacitor copy')} will do the following:
 - Copy the ${chalk.bold('www/')} directory into your native platforms.

@@ -10,7 +10,7 @@ export class AddCommand extends CapacitorCommand implements CommandPreRun {
     return {
       name: 'add',
       type: 'project',
-      summary: 'Adds a new Capacitor native platform to your Ionic project',
+      summary: 'Add a native platform to your Ionic project',
       description: `
 ${chalk.green('ionic capacitor add')} will do the following:
 - Add a new platform specific folder to your project (ios, android, or electron)

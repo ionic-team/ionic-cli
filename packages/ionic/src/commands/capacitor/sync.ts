@@ -10,7 +10,7 @@ export class SyncCommand extends CapacitorCommand implements CommandPreRun {
     return {
       name: 'sync',
       type: 'project',
-      summary: 'Syncs your Capacitor project, equivalent to performing a "copy followed by an "update"',
+      summary: 'Sync (copy + update) an Ionic project',
       description: `
 ${chalk.green('ionic capacitor sync')} will do the following:
 - Copy web assets to all Capacitor native platforms

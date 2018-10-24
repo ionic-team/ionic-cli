@@ -62,7 +62,7 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
     return {
       name: 'run',
       type: 'project',
-      summary: 'Copies web assets to each Capacitor native platform',
+      summary: 'Run an Ionic project on a connected device',
       description: `
 ${chalk.green('ionic capacitor run')} will do the following:
 - Perform ${chalk.green('ionic build')} (or run the dev server from ${chalk.green('ionic serve')} with the ${chalk.green('--livereload')} option)

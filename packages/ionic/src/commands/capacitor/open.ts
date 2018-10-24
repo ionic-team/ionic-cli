@@ -10,7 +10,7 @@ export class OpenCommand extends CapacitorCommand implements CommandPreRun {
     return {
       name: 'open',
       type: 'project',
-      summary: 'Opens the IDE for the specified Capacitor native platform project',
+      summary: 'Open the IDE for a given native platform project',
       description: `
 ${chalk.green('ionic capacitor open')} will do the following:
 - Open the IDE for your native project (Xcode for iOS, Android Studio for Android)

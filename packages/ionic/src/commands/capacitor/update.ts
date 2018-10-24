@@ -10,7 +10,7 @@ export class UpdateCommand extends CapacitorCommand implements CommandPreRun {
     return {
       name: 'update',
       type: 'project',
-      summary: 'Updates each Capacitor native platform, and installs any Capacitor/Cordova plugins found',
+      summary: 'Update Capacitor native platforms, install Capacitor/Cordova plugins',
       description: `
 ${chalk.green('ionic capacitor update')} will do the following:
 - Update each Capacitor native project, such as any dependencies that need updating.
