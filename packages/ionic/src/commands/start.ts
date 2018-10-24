@@ -449,7 +449,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     this.namespace.root.project = project;
 
     if (!this.project) {
-      throw new FatalException('Error while loading new project. Please report this error!');
+      throw new FatalException('Error while loading project.');
     }
 
     this.env.shell.alterPath = p => prependNodeModulesBinToPath(projectDir, p);

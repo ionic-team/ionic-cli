@@ -8,12 +8,12 @@ import * as path from 'path';
 
 import { ERROR_VERSION_TOO_OLD } from '../bootstrap';
 import { PROJECT_FILE } from '../constants';
-import { IProject, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags, ProjectType } from '../definitions';
+import { IProject, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags } from '../definitions';
 
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, parseGlobalOptions } from './config';
 import { Environment } from './environment';
 import { Client } from './http';
-import { ProjectDeps, createProjectFromType, determineProjectType } from './project';
+import { ProjectDeps, ProjectDetails, createProjectFromType, determineProjectDetails } from './project';
 import { createOnFallback } from './prompts';
 import { ProSession } from './session';
 import { Shell, prependNodeModulesBinToPath } from './shell';
@@ -30,7 +30,7 @@ export async function getProject(projectDir: string | undefined, projectName: st
   const { log } = deps;
   const projectFilePath = path.resolve(projectDir, PROJECT_FILE);
   let projectFile: { [key: string]: any; } | undefined;
-  let type: ProjectType | undefined;
+  let projectDetails: ProjectDetails | undefined;
 
   try {
     projectFile = await readJsonFile(projectFilePath);
@@ -40,20 +40,25 @@ export async function getProject(projectDir: string | undefined, projectName: st
       `Attempted to load project config ${chalk.bold(prettyPath(projectFilePath))} but got error:\n\n` +
       chalk.red(e.toString())
     );
+    log.nl();
   }
 
   if (projectFile) {
-    projectName = projectName || projectFile.defaultProject;
-    type = await determineProjectType(projectDir, projectName, projectFile, deps);
-
-    debug(`Project name: ${chalk.bold(String(projectName))}`);
+    try {
+      projectDetails = await determineProjectDetails(projectDir, projectName, projectFile, deps);
+    } catch (e) {
+      log.warn(e.toString());
+      log.nl();
+    }
   }
 
-  if (!type) {
+  if (!projectDetails) {
     return;
   }
 
-  return createProjectFromType(projectFilePath, projectName, deps, type);
+  const { name, type } = projectDetails;
+
+  return createProjectFromType(projectFilePath, name, deps, type);
 }
 
 export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[]): Promise<{ env: IonicEnvironment; project?: IProject; }> {
@@ -129,14 +134,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} has been removed. Use ${chalk.green(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);
   }
 
-  let project: IProject | undefined;
-
-  try {
-    project = await getProject(projectDir, projectName, deps);
-  } catch (e) {
-    log.warn(e.toString());
-    log.nl();
-  }
+  const project = await getProject(projectDir, projectName, deps);
 
   return { env, project };
 }

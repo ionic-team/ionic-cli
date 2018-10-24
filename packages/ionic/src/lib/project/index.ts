@@ -18,13 +18,43 @@ import * as ζserve from '../serve';
 
 const debug = Debug('ionic:lib:project');
 
-export async function determineProjectType(projectDir: string, projectName: string | undefined, projectConfig: { [key: string]: any; } | undefined, deps: ProjectDeps): Promise<ProjectType | undefined> {
+export interface ProjectDetails {
+  name?: string;
+  type: ProjectType;
+}
+
+export async function determineProjectDetails(rootProjectDir: string, projectName: string | undefined, projectConfig: { [key: string]: any; } | undefined, deps: ProjectDeps): Promise<ProjectDetails | undefined> {
+  let name: string | undefined;
   let type: ProjectType | undefined;
+
+  if (projectName) {
+    name = projectName;
+    debug(`Project name from projectName: ${chalk.bold(name)}`);
+  }
 
   if (isProjectConfig(projectConfig)) {
     type = projectConfig.type;
   } else if (isMultiProjectConfig(projectConfig)) {
-    const name = projectName ? projectName : projectConfig.defaultProject;
+    if (!name) {
+      const { ctx } = deps;
+
+      for (const [ key, value ] of lodash.entries(projectConfig.projects)) {
+        if (value && value.root) {
+          const projectDir = path.resolve(rootProjectDir, value.root);
+
+          if (ctx.execPath.includes(projectDir)) {
+            name = key;
+            debug(`Project name from path match: ${chalk.bold(name)}`);
+            break;
+          }
+        }
+      }
+    }
+
+    if (!name && projectConfig.defaultProject) {
+      name = projectConfig.defaultProject;
+      debug(`Project name from defaultProject: ${chalk.bold(name)}`);
+    }
 
     if (!name) {
       throw new Error(
@@ -37,6 +67,7 @@ export async function determineProjectType(projectDir: string, projectName: stri
 
     if (config) {
       type = config.type;
+      debug(`Project type from config: ${chalk.bold(prettyProjectName(type))} ${type ? chalk.bold(`(${type})`) : ''}`);
     } else {
       throw new Error(
         `Multi-app workspace detected, but project was not found in configuration.\n` +
@@ -52,18 +83,20 @@ export async function determineProjectType(projectDir: string, projectName: stri
     }
   }
 
-  if (type && PROJECT_TYPES.includes(type)) {
-    debug(`Project type from config: ${chalk.bold(prettyProjectName(type))} ${type ? chalk.bold(`(${type})`) : ''}`);
-    return type;
+  if (!type) {
+    for (const projectType of PROJECT_TYPES) {
+      const p = await createProjectFromType(path.resolve(rootProjectDir, PROJECT_FILE), projectName, deps, projectType);
+
+      if (await p.detected()) {
+        debug(`Project type from detection: ${chalk.bold(prettyProjectName(p.type))} ${p.type ? chalk.bold(`(${p.type})`) : ''}`);
+        type = p.type;
+        break;
+      }
+    }
   }
 
-  for (const projectType of PROJECT_TYPES) {
-    const p = await createProjectFromType(path.resolve(projectDir, PROJECT_FILE), projectName, deps, projectType);
-
-    if (await p.detected()) {
-      debug(`Project type detected: ${chalk.bold(prettyProjectName(p.type))} ${p.type ? chalk.bold(`(${p.type})`) : ''}`);
-      return p.type;
-    }
+  if (type && PROJECT_TYPES.includes(type)) {
+    return { name, type };
   }
 
   const listWrapOptions = { width: TTY_WIDTH - 8 - 3, indentation: 1 };
@@ -71,7 +104,7 @@ export async function determineProjectType(projectDir: string, projectName: stri
   // TODO: move some of this to the CLI docs
 
   throw new Error(
-    `Could not determine project type (project config: ${chalk.bold(prettyPath(path.resolve(projectDir, PROJECT_FILE)))}).\n` +
+    `Could not determine project type (project config: ${chalk.bold(prettyPath(path.resolve(rootProjectDir, PROJECT_FILE)))}).\n` +
     `- ${wordWrap(`For ${chalk.bold(prettyProjectName('angular'))} projects, make sure ${chalk.green('@ionic/angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n` +
     `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic-angular'))} projects, make sure ${chalk.green('ionic-angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n` +
     `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic1'))} projects, make sure ${chalk.green('ionic')} is listed as a dependency in ${chalk.bold('bower.json')}.`, listWrapOptions)}\n\n` +
