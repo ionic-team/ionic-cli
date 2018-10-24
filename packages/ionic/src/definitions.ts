@@ -232,6 +232,7 @@ export interface IProjectConfig {
   name: string;
   type?: ProjectType;
   pro_id?: string;
+  root?: string;
 
   readonly integrations: ProjectIntegrations;
   readonly hooks?: Record<HookName, string | string[] | undefined>;
@@ -242,16 +243,17 @@ export interface IProjectConfig {
   };
 }
 
-export interface MultiProjectConfig {
+export interface IMultiProjectConfig {
   defaultProject?: string;
   projects: {
     [key: string]: IProjectConfig | undefined;
   };
 }
 
-export type ProjectFile = IProjectConfig | MultiProjectConfig;
+export type ProjectFile = IProjectConfig | IMultiProjectConfig;
 
 export interface IProject {
+  readonly rootDirectory: string;
   readonly directory: string;
   readonly filePath: string;
   readonly name?: string;

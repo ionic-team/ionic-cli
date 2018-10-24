@@ -148,7 +148,7 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
       const integration = this.e.project.requireIntegration('cordova');
       args.platform = options.platform;
 
-      if (this.e.project.directory !== integration.root) {
+      if (this.e.project.rootDirectory !== integration.root) {
         args.cordovaBasePath = integration.root;
       }
 

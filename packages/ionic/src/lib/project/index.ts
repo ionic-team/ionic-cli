@@ -138,7 +138,7 @@ export interface ProjectDeps {
 }
 
 export abstract class Project implements IProject {
-  readonly directory: string;
+  readonly rootDirectory: string;
   abstract readonly type: ProjectType;
   protected originalConfigFile?: { [key: string]: any };
 
@@ -157,7 +157,17 @@ export abstract class Project implements IProject {
 
     protected readonly e: ProjectDeps
   ) {
-    this.directory = path.dirname(filePath);
+    this.rootDirectory = path.dirname(filePath);
+  }
+
+  get directory(): string {
+    const root = this.config.get('root');
+
+    if (!root) {
+      return this.rootDirectory;
+    }
+
+    return path.resolve(this.rootDirectory, root);
   }
 
   get config(): ProjectConfig {
@@ -317,7 +327,7 @@ export abstract class Project implements IProject {
     if (integration) {
       return {
         enabled: integration.enabled !== false,
-        root: integration.root === undefined ? this.directory : path.resolve(this.directory, integration.root),
+        root: integration.root === undefined ? this.directory : path.resolve(this.rootDirectory, integration.root),
       };
     }
   }

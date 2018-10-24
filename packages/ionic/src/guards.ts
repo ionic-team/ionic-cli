@@ -13,10 +13,10 @@ import {
   GithubRepo,
   GithubRepoAssociation,
   ICommand,
+  IMultiProjectConfig,
   IProjectConfig,
   IntegrationName,
   Login,
-  MultiProjectConfig,
   Org,
   Response,
   SSHKey,
@@ -284,7 +284,7 @@ export function isProjectConfig(configFile: any): configFile is IProjectConfig {
     && typeof configFile.projects === 'undefined';
 }
 
-export function isMultiProjectConfig(configFile: any): configFile is MultiProjectConfig {
+export function isMultiProjectConfig(configFile: any): configFile is IMultiProjectConfig {
   return configFile
     && typeof configFile.name === 'undefined'
     && typeof configFile.projects === 'object';
