@@ -52,7 +52,7 @@ export abstract class BaseConfig<T extends object> {
     const v = this.pathPrefix.length === 0 ? value : lodash.set(this.file, [...this.pathPrefix], value);
 
     mkdirpSync(path.dirname(this.p));
-    writeFileAtomic.sync(this.p, JSON.stringify(v, undefined, 2));
+    writeFileAtomic.sync(this.p, JSON.stringify(v, undefined, 2) + '\n');
   }
 
   get<P extends keyof T>(property: P): T[P];

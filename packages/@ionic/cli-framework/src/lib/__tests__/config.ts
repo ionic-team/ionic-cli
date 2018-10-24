@@ -43,7 +43,7 @@ describe('@ionic/cli-framework', () => {
       const config = new Config('/path/to/file');
       config.c = {};
       expect(mockWriteFileAtomicSync).toHaveBeenCalledTimes(1);
-      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', '{}');
+      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', '{}\n');
     });
 
     it('should call readFileSync upon getting c', () => {
@@ -144,7 +144,7 @@ describe('@ionic/cli-framework', () => {
       jest.spyOn(config, 'provideDefaults').mockImplementation(() => ({}));
       config.set('foo', 5);
       expect(mockWriteFileAtomicSync).toHaveBeenCalledTimes(1);
-      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', '{\n  "foo": 5\n}');
+      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', '{\n  "foo": 5\n}\n');
     });
 
     it('should unset value in file', () => {
@@ -153,7 +153,7 @@ describe('@ionic/cli-framework', () => {
       jest.spyOn(config, 'provideDefaults').mockImplementation(() => ({}));
       config.unset('foo');
       expect(mockWriteFileAtomicSync).toHaveBeenCalledTimes(1);
-      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', '{}');
+      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', '{}\n');
     });
 
   });
@@ -289,7 +289,7 @@ describe('@ionic/cli-framework', () => {
       jest.spyOn(config, 'provideDefaults').mockImplementation(() => ({}));
       config.set('foo', 5);
       expect(mockWriteFileAtomicSync).toHaveBeenCalledTimes(1);
-      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', '{\n  "sub": {\n    "foo": 5\n  }\n}');
+      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', '{\n  "sub": {\n    "foo": 5\n  }\n}\n');
     });
 
     it('should unset value in file', () => {
@@ -298,7 +298,7 @@ describe('@ionic/cli-framework', () => {
       jest.spyOn(config, 'provideDefaults').mockImplementation(() => ({}));
       config.unset('foo');
       expect(mockWriteFileAtomicSync).toHaveBeenCalledTimes(1);
-      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', '{\n  "sub": {}\n}');
+      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', '{\n  "sub": {}\n}\n');
     });
 
   });
