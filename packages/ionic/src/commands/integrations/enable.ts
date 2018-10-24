@@ -33,6 +33,10 @@ Integrations can be re-added with the ${chalk.green('--add')} option.
           type: Boolean,
         },
         {
+          name: 'root',
+          summary: 'Specify an alternative destination to download into when adding',
+        },
+        {
           name: 'quiet',
           summary: 'Do not log file operations',
           type: Boolean,
@@ -49,6 +53,8 @@ Integrations can be re-added with the ${chalk.green('--add')} option.
       throw new FatalException(`Cannot run ${chalk.green('ionic integrations enable')} outside a project directory.`);
     }
 
+    const root = options['root'] ? path.resolve(this.project.directory, String(options['root'])) : this.project.directory;
+
     if (!isIntegrationName(name)) {
       throw new FatalException(`Don't know about ${chalk.green(name)} integration!`);
     }
@@ -60,7 +66,9 @@ Integrations can be re-added with the ${chalk.green('--add')} option.
     try {
       if (!integrationConfig || add) {
         await integration.add({
+          root,
           enableArgs: options['--'] ? options['--'] : undefined,
+        }, {
           conflictHandler: async (f, stats) => {
             const isDirectory = stats.isDirectory();
             const filename = `${path.basename(f)}${isDirectory ? '/' : ''}`;
@@ -82,7 +90,10 @@ Integrations can be re-added with the ${chalk.green('--add')} option.
           },
         });
 
-        integrationsConfig[name] = {};
+        integrationsConfig[name] = {
+          root: root !== this.project.directory ? path.relative(this.project.rootDirectory, root) : undefined,
+        };
+
         this.env.log.ok(`Integration ${chalk.green(integration.name)} added!`);
       } else {
         const wasEnabled = integrationConfig.enabled !== false;

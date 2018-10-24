@@ -281,10 +281,14 @@ export interface IProject {
   requireGenerateRunner(): Promise<ζgenerate.GenerateRunner<any>>;
 }
 
-export interface IIntegrationAddOptions {
+export interface IntegrationAddDetails {
+  root: string;
   enableArgs?: string[];
-  conflictHandler?(f: string, stats: fs.Stats): Promise<boolean>;
-  onFileCreate?(f: string): void;
+}
+
+export interface IntegrationAddHandlers {
+  conflictHandler?: (f: string, stats: fs.Stats) => Promise<boolean>;
+  onFileCreate?: (f: string) => void;
 }
 
 export interface IIntegration {
@@ -292,7 +296,7 @@ export interface IIntegration {
   readonly summary: string;
   readonly archiveUrl?: string;
 
-  add(opts?: IIntegrationAddOptions): Promise<void>;
+  add(details: IntegrationAddDetails, handlers?: IntegrationAddHandlers): Promise<void>;
   enable(): Promise<void>;
   disable(): Promise<void>;
   getInfo(): Promise<InfoItem[]>;

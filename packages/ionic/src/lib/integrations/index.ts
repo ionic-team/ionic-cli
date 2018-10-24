@@ -1,13 +1,11 @@
-import * as os from 'os';
-import * as path from 'path';
-
+import { copyDirectory, mkdirp, pathExists, readDirSafe, removeDirectory, stat } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
+import * as os from 'os';
+import * as path from 'path';
 
-import { copyDirectory, mkdirp, pathExists, readDirSafe, removeDirectory, stat } from '@ionic/utils-fs';
-
-import { IConfig, IIntegration, IIntegrationAddOptions, ILogger, IProject, IShell, InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../definitions';
+import { IConfig, IIntegration, ILogger, IProject, IShell, InfoItem, IntegrationAddDetails, IntegrationAddHandlers, IntegrationName, ProjectPersonalizationDetails } from '../../definitions';
 import { IntegrationNotFoundException } from '../errors';
 
 import * as ζcapacitor from './capacitor';
@@ -66,13 +64,13 @@ export abstract class BaseIntegration implements IIntegration {
     // optionally overwritten by subclasses
   }
 
-  async add(opts?: IIntegrationAddOptions): Promise<void> {
+  async add(details: IntegrationAddDetails, handlers: IntegrationAddHandlers = {}): Promise<void> {
     if (!this.archiveUrl) {
       return;
     }
 
-    const onFileCreate = opts && opts.onFileCreate ? opts.onFileCreate : lodash.noop;
-    const conflictHandler = opts && opts.conflictHandler ? opts.conflictHandler : async () => false;
+    const onFileCreate = handlers.onFileCreate ? handlers.onFileCreate : lodash.noop;
+    const conflictHandler = handlers.conflictHandler ? handlers.conflictHandler : async () => false;
 
     const { createRequest, download } = await import('../utils/http');
     const { tar } = await import('../utils/archive');
@@ -117,7 +115,9 @@ export abstract class BaseIntegration implements IIntegration {
     this.e.log.info(`Copying integrations files to project`);
     debug(`Blacklist: ${blacklist.map(f => chalk.bold(f)).join(', ')}`);
 
-    await copyDirectory(tmpdir, this.e.project.directory, {
+    await mkdirp(details.root);
+
+    await copyDirectory(tmpdir, details.root, {
       filter: f => {
         if (f === tmpdir) {
           return true;

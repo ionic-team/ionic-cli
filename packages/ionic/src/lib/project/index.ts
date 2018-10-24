@@ -42,7 +42,7 @@ export async function determineProjectDetails(rootProjectDir: string, projectNam
         if (value && value.root) {
           const projectDir = path.resolve(rootProjectDir, value.root);
 
-          if (ctx.execPath.includes(projectDir)) {
+          if (ctx.execPath.startsWith(projectDir)) {
             name = key;
             debug(`Project name from path match: ${chalk.bold(name)}`);
             break;

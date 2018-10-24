@@ -136,5 +136,9 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
 
   const project = await getProject(projectDir, projectName, deps);
 
+  if (project) {
+    shell.alterPath = p => prependNodeModulesBinToPath(project.directory, p);
+  }
+
   return { env, project };
 }

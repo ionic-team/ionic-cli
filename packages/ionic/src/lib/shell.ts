@@ -25,7 +25,7 @@ export interface ShellOptions {
 }
 
 export class Shell implements IShell {
-  readonly alterPath: (p: string) => string;
+  alterPath: (p: string) => string;
 
   constructor(protected readonly e: ShellDeps, options?: ShellOptions) {
     this.alterPath = options && options.alterPath ? options.alterPath : (p: string) => p;

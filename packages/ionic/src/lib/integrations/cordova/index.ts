@@ -72,12 +72,18 @@ export class Integration extends BaseIntegration {
   }
 
   async getCordovaVersion(): Promise<string | undefined> {
-    return this.e.shell.cmdinfo('cordova', ['-v', '--no-telemetry', '--no-update-notifier']);
+    try {
+      const integration = this.e.project.requireIntegration('cordova');
+      return this.e.shell.cmdinfo('cordova', ['-v', '--no-telemetry', '--no-update-notifier'], { cwd: integration.root });
+    } catch (e) {
+      debug('Error while getting Cordova version: %O', e);
+    }
   }
 
   async getCordovaPlatformVersions(): Promise<string> {
     try {
-      const output = await this.e.shell.output('cordova', ['platform', 'ls', '--no-telemetry', '--no-update-notifier'], { showCommand: false });
+      const integration = this.e.project.requireIntegration('cordova');
+      const output = await this.e.shell.output('cordova', ['platform', 'ls', '--no-telemetry', '--no-update-notifier'], { cwd: integration.root, showCommand: false });
       const platforms = output
         .replace('Installed platforms:', '')
         .replace(/Available platforms[\s\S]+/, '')
@@ -91,7 +97,7 @@ export class Integration extends BaseIntegration {
 
       return platforms.join(', ');
     } catch (e) {
-      debug('Error while getting Cordova platforms: %o', e);
+      debug('Error while getting Cordova platforms: %O', e);
       return 'not available';
     }
   }
@@ -103,7 +109,8 @@ export class Integration extends BaseIntegration {
     ];
 
     try {
-      const output = await this.e.shell.output('cordova', ['plugin', 'ls', '--no-telemetry', '--no-update-notifier'], { showCommand: false });
+      const integration = this.e.project.requireIntegration('cordova');
+      const output = await this.e.shell.output('cordova', ['plugin', 'ls', '--no-telemetry', '--no-update-notifier'], { cwd: integration.root, showCommand: false });
       const pluginRe = /^([a-z-]+)\s+(\d\.\d\.\d).+$/;
       const plugins = output
         .split('\n')
@@ -123,7 +130,7 @@ export class Integration extends BaseIntegration {
 
       return `${whitelistedPlugins.join(', ')}${count > 0 ? `, (and ${count} other plugins)` : ''}`;
     } catch (e) {
-      debug('Error while getting Cordova plugins: %o', e);
+      debug('Error while getting Cordova plugins: %O', e);
       return 'not available';
     }
   }
