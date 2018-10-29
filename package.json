@@ -3,7 +3,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap && npm run build",
     "clean": "lerna run clean",
-    "lint": "lerna run lint --parallel",
+    "lint": "lerna run lint",
     "lint:fix": "lerna run lint -- -- --fix",
     "link": "lerna exec npm link",
     "unlink": "lerna exec npm unlink",
@@ -24,7 +24,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "node packages/cli-scripts/bin/ionic-cli-scripts pre-commit"
+      "pre-commit": "lerna exec --concurrency 1 --stream -- lint-staged"
     }
   }
 }

@@ -25,8 +25,7 @@
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
     "test": "jest --maxWorkers=4",
-    "prepublishOnly": "npm run build",
-    "cli-scripts:pre-commit": "lint-staged"
+    "prepublishOnly": "npm run build"
   },
   "lint-staged": {
     "linters": {
@@ -46,7 +45,7 @@
     "@types/node": "^6.0.101",
     "jest": "^23.0.1",
     "jest-cli": "^23.0.1",
-    "lint-staged": "^7.2.0",
+    "lint-staged": "^8.0.0",
     "rimraf": "^2.6.2",
     "ts-jest": "^23.10.1",
     "tslint": "^5.9.1",
