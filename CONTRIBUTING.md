@@ -57,8 +57,8 @@ The Ionic CLI is organized into a monorepo. Here are the packages:
 
 #### Toolset
 
-* npm 5 is required.
-* Node 8+ is required.
+* npm 6+ is required.
+* Node 10+ is required.
 * The codebase is written in [TypeScript](https://www.typescriptlang.org/). If
   you're unfamiliar with TypeScript, we recommend using [VS
   Code](https://code.visualstudio.com/) and finding a tutorial to familiarize
