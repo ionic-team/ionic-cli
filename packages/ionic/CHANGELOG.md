@@ -168,7 +168,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 This release offers support for :sparkles: **Ionic 4** :sparkles: (beta).
 
-:memo: Use the new [CLI Documentation](https://beta.ionicframework.com/docs/cli/overview) on the beta framework documentation website for CLI 4.
+:memo: Use the new [CLI Documentation](https://beta.ionicframework.com/docs/cli) on the beta framework documentation website for CLI 4.
 
 #### :lollipop: Upgrading from CLI 3
 

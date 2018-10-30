@@ -19,7 +19,7 @@ See the CLI's [`CHANGELOG.md`](https://github.com/ionic-team/ionic-cli/blob/deve
 ---
 
 :book: **Documentation**:
-[https://beta.ionicframework.com/docs/cli/overview][ionic-cli-docs]
+[https://beta.ionicframework.com/docs/cli][ionic-cli-docs]
 
 :mega: **Support/Questions?** Please see our [Support Page][ionic-support] for
 general support questions. The issues on GitHub should be reserved for bug
@@ -29,7 +29,7 @@ reports and feature requests.
 [CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/develop/CONTRIBUTING.md).
 
 [ionic-homepage]: https://ionicframework.com
-[ionic-cli-docs]: https://beta.ionicframework.com/docs/cli/overview
+[ionic-cli-docs]: https://beta.ionicframework.com/docs/cli
 [ionic-support]: https://ionicframework.com/support
 
 [circle-badge]: https://circleci.com/gh/ionic-team/ionic-cli.svg?style=shield
