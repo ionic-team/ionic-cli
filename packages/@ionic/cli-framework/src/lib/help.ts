@@ -134,7 +134,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     return wordWrap(metadata.description.trim(), { indentation: 4 });
   }
 
-  async getExtraOptions(): Promise<string[]> {
+  async getGlobalOptions(): Promise<string[]> {
     return [];
   }
 
@@ -142,7 +142,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     const { strong, weak, input } = this.colors;
     const fullName = await this.getNamespaceFullName();
 
-    const options = ['--help', ...(await this.getExtraOptions())];
+    const options = ['--help', ...(await this.getGlobalOptions())];
     const usageLines = [
       `<command> ${weak('[<args>]')} ${options.map(opt => weak('[' + opt + ']')).join(' ')} ${weak('[options]')}`,
     ];

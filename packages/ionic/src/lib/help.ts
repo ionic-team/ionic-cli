@@ -1,4 +1,5 @@
 import { CommandGroup, CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, NamespaceGroup, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, OptionGroup, formatOptionName, isOptionVisible } from '@ionic/cli-framework';
+import { filter } from '@ionic/cli-framework/utils/array';
 import chalk from 'chalk';
 
 import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace, NamespaceMetadata } from '../definitions';
@@ -68,10 +69,9 @@ export class NamespaceStringHelpFormatter extends BaseNamespaceStringHelpFormatt
     return formatGroupDecorations(COMMAND_DECORATIONS, cmd.groups);
   }
 
-  async getExtraOptions(): Promise<string[]> {
-    return GLOBAL_OPTIONS
-      .filter(opt => isOptionVisible(opt))
-      .map(opt => formatOptionName(opt, { showAliases: false }));
+  async getGlobalOptions(): Promise<string[]> {
+    const visibleOptions = await filter(GLOBAL_OPTIONS, async opt => isOptionVisible(opt));
+    return visibleOptions.map(opt => formatOptionName(opt, { showAliases: false }));
   }
 
   async formatCommands() {
