@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.1.1...@ionic/cli-framework@1.2.0) (2018-10-31)
+
+
+### Bug Fixes
+
+* **config:** write json file with ending newline ([dc3f2a5](https://github.com/ionic-team/ionic-cli/commit/dc3f2a5))
+* **help:** filter out unnecessary global options ([7809c99](https://github.com/ionic-team/ionic-cli/commit/7809c99))
+* **process:** keep node running for `sleepForever()` ([ea08f8d](https://github.com/ionic-team/ionic-cli/commit/ea08f8d))
+
+
+### Features
+
+* **namespace:** add `useAliases` option to `locate()` ([489617b](https://github.com/ionic-team/ionic-cli/commit/489617b))
+* **object:** add `keysWithoutAliases()` method to `AliasedMap` ([f4807f4](https://github.com/ionic-team/ionic-cli/commit/f4807f4))
+* **terminal:** detect windows shell ([dcc912d](https://github.com/ionic-team/ionic-cli/commit/dcc912d))
+
+
+
+
 <a name="1.1.1"></a>
 ## [1.1.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.1.0...@ionic/cli-framework@1.1.1) (2018-10-05)
 

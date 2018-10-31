@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.3.0"></a>
+# [4.3.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.2.1...ionic@4.3.0) (2018-10-31)
+
+
+### Bug Fixes
+
+* **capacitor:** switch off livereload for --no-build ([9960047](https://github.com/ionic-team/ionic-cli/commit/9960047))
+* **help:** filter out unnecessary global options ([7809c99](https://github.com/ionic-team/ionic-cli/commit/7809c99))
+* **ssh:** adjust validator to work for OpenSSH 7.8 ([dcc598a](https://github.com/ionic-team/ionic-cli/commit/dcc598a))
+* **terminal:** adjust some feature detection on windows ([8a2ed99](https://github.com/ionic-team/ionic-cli/commit/8a2ed99))
+
+
+### Features
+
+* **capacitor:** add --livereload-url option for custom dev server ([b7738f5](https://github.com/ionic-team/ionic-cli/commit/b7738f5))
+* **cordova:** add --livereload-url option for custom dev server ([ad57e36](https://github.com/ionic-team/ionic-cli/commit/ad57e36))
+* **integrations:** --root option for choosing an alternative location ([7e8f11e](https://github.com/ionic-team/ionic-cli/commit/7e8f11e))
+* **multi-app:** determine active project via cwd path match ([f83dc5b](https://github.com/ionic-team/ionic-cli/commit/f83dc5b))
+* **resources:** generate resources without needing platform installation ([4f20554](https://github.com/ionic-team/ionic-cli/commit/4f20554))
+* **start:** better multi-app support ([3c70e87](https://github.com/ionic-team/ionic-cli/commit/3c70e87))
+
+
+
+
 <a name="4.2.1"></a>
 ## [4.2.1](https://github.com/ionic-team/ionic-cli/compare/ionic@4.2.0...ionic@4.2.1) (2018-10-05)
 
