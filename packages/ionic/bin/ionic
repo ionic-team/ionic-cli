@@ -46,7 +46,7 @@ var bootstrap = require(path.resolve(lib, 'bootstrap'));
 bootstrap.detectLocalCLI()
   .then(function(localPath) {
     cli = require(localPath);
-    return cli.run(pargv);
+    return cli.run(pargv, process.env);
   }, function(err) {
     cli = require(lib);
 
@@ -56,7 +56,7 @@ bootstrap.detectLocalCLI()
 
     process.env.IONIC_CLI_LOCAL_ERROR = err;
 
-    return cli.run(pargv);
+    return cli.run(pargv, process.env);
   })
   .then(function() {
     evt.emit('ready');
