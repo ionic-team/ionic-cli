@@ -6,7 +6,7 @@
 // versions (mostly 0.12). See https://node.green for syntax support.
 
 process.title = 'ionic';
-process.on('unhandledRejection', function(r) { process.stderr.write(r); process.exit(1); });
+process.on('unhandledRejection', function(r) { process.stderr.write(String(r)); process.exit(1); });
 
 var events = require('events');
 var path = require('path');
