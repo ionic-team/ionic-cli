@@ -1,5 +1,6 @@
 import * as Debug from 'debug';
 import * as ζinquirer from 'inquirer';
+import * as ζlogUpdate from 'log-update';
 
 import { Colors, DEFAULT_COLORS } from './colors';
 import { ICON_FAILURE, ICON_SUCCESS, Spinner, TaskChain } from './tasks';
@@ -13,8 +14,6 @@ export interface OutputStrategy {
 
 export interface RedrawLine {
   redrawLine(msg?: string): void;
-  open(): void;
-  close(): void;
 }
 
 export interface StreamOutputStrategyOptions {
@@ -44,6 +43,63 @@ export class StreamOutputStrategy implements OutputStrategy {
       task.on('failure', () => {
         this.stream.write(`${failure(ICON_FAILURE)} ${task.msg} - failed!`);
       });
+    });
+
+    return chain;
+  }
+}
+
+export interface LogUpdateOutputStrategyOptions {
+  readonly LogUpdate: typeof ζlogUpdate;
+  readonly stream?: NodeJS.WritableStream;
+  readonly colors?: Colors;
+}
+
+export class LogUpdateOutputStrategy implements OutputStrategy, RedrawLine {
+  readonly stream: NodeJS.WritableStream;
+
+  protected readonly colors: Colors;
+  protected readonly logUpdate: typeof ζlogUpdate;
+
+  constructor({ LogUpdate, stream = process.stdout, colors = DEFAULT_COLORS }: LogUpdateOutputStrategyOptions) {
+    this.stream = stream;
+    this.colors = colors;
+    this.logUpdate = LogUpdate.create(stream);
+  }
+
+  redrawLine(msg = ''): void {
+    this.logUpdate(msg);
+  }
+
+  createTaskChain(): TaskChain {
+    const { failure, strong, success } = this.colors;
+    const chain = new TaskChain({ taskOptions: { tickInterval: 50 } });
+
+    chain.on('next', task => {
+      task.on('success', () => {
+        this.stream.write(`${success(ICON_SUCCESS)} ${task.msg} - done!\n`);
+      });
+
+      task.on('failure', () => {
+        this.stream.write(`${failure(ICON_FAILURE)} ${task.msg} - failed!\n`);
+      });
+
+      const spinner = new Spinner();
+
+      task.on('tick', () => {
+        const progress = task.progressRatio ? (task.progressRatio * 100).toFixed(2) : '';
+        const frame = spinner.frame();
+
+        this.redrawLine(`${strong(frame)} ${task.msg}${progress ? ' (' + strong(String(progress) + '%') + ')' : ''} `);
+      });
+
+      task.on('clear', () => {
+        this.logUpdate.clear();
+      });
+    });
+
+    chain.on('end', () => {
+      this.logUpdate.done();
     });
 
     return chain;
@@ -112,7 +168,7 @@ export class BottomBarOutputStrategy implements OutputStrategy, RedrawLine {
     }
   }
 
-  createTaskChain() {
+  createTaskChain(): TaskChain {
     const { failure, strong, success } = this.colors;
     const chain = new TaskChain({ taskOptions: { tickInterval: 50 } });
 
