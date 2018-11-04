@@ -91,7 +91,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} has been removed. Use ${chalk.green(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);
   }
 
-  const project = projectDir ? await createProjectFromDirectory(projectDir, argv, deps) : undefined;
+  const project = projectDir ? await createProjectFromDirectory(projectDir, argv, deps, { logErrors: argv._[0] !== 'start' }) : undefined;
 
   if (project) {
     shell.alterPath = p => prependNodeModulesBinToPath(project.directory, p);
