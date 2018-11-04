@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.2.0...@ionic/cli-framework@1.3.0) (2018-11-04)
+
+
+### Bug Fixes
+
+* **start:** fix stdio freezing issue on Windows ([#3725](https://github.com/ionic-team/ionic-cli/issues/3725)) ([a570770](https://github.com/ionic-team/ionic-cli/commit/a570770))
+
+
+### Features
+
+* **fn:** add function for resolving values from function series ([ac97f78](https://github.com/ionic-team/ionic-cli/commit/ac97f78))
+
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.1.1...@ionic/cli-framework@1.2.0) (2018-10-31)
 
