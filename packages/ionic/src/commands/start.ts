@@ -10,11 +10,10 @@ import * as path from 'path';
 
 import { PROJECT_FILE } from '../constants';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, IProject, ProjectType, ResolvedStarterTemplate, StarterManifest, StarterTemplate } from '../definitions';
-import { getProject } from '../lib';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { runCommand } from '../lib/executor';
-import { createProjectFromType } from '../lib/project';
+import { createProjectFromDirectory, createProjectFromType } from '../lib/project';
 import { prependNodeModulesBinToPath } from '../lib/shell';
 import { emoji } from '../lib/utils/emoji';
 
@@ -440,7 +439,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       project.config.set('type', this.schema.type);
       project.config.set('root', path.relative(this.project.rootDirectory, projectDir));
     } else {
-      project = await getProject(projectDir, undefined, this.env);
+      project = await createProjectFromDirectory(projectDir, { _: [] }, this.env, { logErrors: false });
     }
 
     // start is weird, once the project directory is created, it becomes a
