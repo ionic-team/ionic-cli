@@ -1,18 +1,18 @@
-export function resolveValueSync<T>(...fns: (() => T | undefined)[]): T | undefined {
+export async function resolveValue<T>(...fns: (() => Promise<T | undefined>)[]): Promise<T | undefined> {
   for (const fn of fns) {
-    const result = fn();
+    const result = await fn();
 
-    if (result) {
+    if (typeof result !== 'undefined') {
       return result;
     }
   }
 }
 
-export async function resolveValue<T>(...fns: (() => Promise<T | undefined>)[]): Promise<T | undefined> {
+export function resolveValueSync<T>(...fns: (() => T | undefined)[]): T | undefined {
   for (const fn of fns) {
-    const result = await fn();
+    const result = fn();
 
-    if (result) {
+    if (typeof result !== 'undefined') {
       return result;
     }
   }
