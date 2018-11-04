@@ -34,10 +34,7 @@ This command is an easy way to share information about your setup. If applicable
     if (json) {
       process.stdout.write(JSON.stringify(await this.env.getInfo()));
     } else {
-      const tasks = this.createTaskChain();
-      tasks.next('Gathering environment info');
       const results = await this.env.getInfo();
-      tasks.end();
 
       const groupedInfo: Map<InfoItemGroup, InfoItem[]> = new Map(
         INFO_GROUPS.map((group): [typeof group, InfoItem[]] => [group, results.filter(item => item.group === group)])
