@@ -42,7 +42,7 @@
   "devDependencies": {
     "@types/debug": "0.0.31",
     "@types/jest": "^23.3.5",
-    "@types/node": "^6.0.101",
+    "@types/node": "^10.12.3",
     "jest": "^23.0.1",
     "jest-cli": "^23.0.1",
     "lint-staged": "^8.0.0",
