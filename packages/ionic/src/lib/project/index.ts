@@ -321,7 +321,13 @@ export async function createProjectFromDirectory(rootDirectory: string, args: Pa
     return;
   }
 
-  return createProjectFromType(result.configPath, result.context === 'multiapp' ? result.name : undefined, deps, type);
+  const project = await createProjectFromType(result.configPath, result.context === 'multiapp' ? result.name : undefined, deps, type);
+
+  if (project.type !== project.config.get('type')) {
+    project.config.set('type', project.type);
+  }
+
+  return project;
 }
 
 export class ProjectConfig extends BaseConfig<IProjectConfig> {
