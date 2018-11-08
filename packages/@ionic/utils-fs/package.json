@@ -45,7 +45,7 @@
     "@types/debug": "0.0.31",
     "@types/jest": "^23.3.5",
     "@types/ncp": "^2.0.1",
-    "@types/node": "^6.0.101",
+    "@types/node": "^10.12.3",
     "@types/through2": "^2.0.33",
     "jest": "^23.0.1",
     "jest-cli": "^23.0.1",
