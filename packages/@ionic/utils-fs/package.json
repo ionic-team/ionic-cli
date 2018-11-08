@@ -38,7 +38,7 @@
   "dependencies": {
     "debug": "^4.0.0",
     "ncp": "^2.0.0",
-    "through2": "^2.0.3",
+    "through2": "^3.0.0",
     "tslib": "^1.9.0"
   },
   "devDependencies": {
