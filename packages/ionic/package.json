@@ -62,7 +62,7 @@
     "opn": "^5.2.0",
     "os-name": "^2.0.1",
     "semver": "^5.5.0",
-    "split2": "^2.2.0",
+    "split2": "^3.0.0",
     "ssh-config": "^1.1.1",
     "superagent": "^3.8.2",
     "superagent-proxy": "^2.0.0",
