@@ -67,7 +67,7 @@
     "superagent": "^3.8.2",
     "superagent-proxy": "^2.0.0",
     "tar": "^4.3.0",
-    "through2": "^2.0.3",
+    "through2": "^3.0.0",
     "tslib": "^1.9.0",
     "update-notifier": "^2.3.0",
     "uuid": "^3.2.1"
