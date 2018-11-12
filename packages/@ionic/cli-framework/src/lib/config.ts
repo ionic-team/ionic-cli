@@ -23,25 +23,26 @@ export abstract class BaseConfig<T extends object> {
   }
 
   get file() {
-    const contents = fs.readFileSync(this.p, 'utf8');
-    return JSON.parse(contents);
+    try {
+      return this._getFile();
+    } catch (e) {
+      return {};
+    }
   }
 
   get c(): T {
     try {
-      const file = this.file;
+      const file = this._getFile();
       const navigated = this.pathPrefix.length === 0 ? file : lodash.get(file, [...this.pathPrefix]);
       const config = typeof navigated === 'object' ? navigated : {};
 
       return lodash.assign({}, this.provideDefaults(config), config);
     } catch (e) {
-      if (e.code === 'ENOENT') {
-        return this.provideDefaults({});
-      }
-
-      if (e.name === 'SyntaxError') {
-        writeFileAtomic.sync(this.p, '');
-        return this.provideDefaults({});
+      if (e.code === 'ENOENT' || e.name === 'SyntaxError') {
+        const value = this.provideDefaults({});
+        const v = this.pathPrefix.length === 0 ? value : lodash.set({}, [...this.pathPrefix], value);
+        this._setFile(v);
+        return value;
       }
 
       throw e;
@@ -50,9 +51,7 @@ export abstract class BaseConfig<T extends object> {
 
   set c(value: T) {
     const v = this.pathPrefix.length === 0 ? value : lodash.set(this.file, [...this.pathPrefix], value);
-
-    mkdirpSync(path.dirname(this.p));
-    writeFileAtomic.sync(this.p, JSON.stringify(v, undefined, 2) + '\n');
+    this._setFile(v);
   }
 
   get<P extends keyof T>(property: P): T[P];
@@ -80,4 +79,14 @@ export abstract class BaseConfig<T extends object> {
   }
 
   abstract provideDefaults(c: Partial<Readonly<T>>): T;
+
+  private _getFile(): any {
+    const contents = fs.readFileSync(this.p, 'utf8');
+    return JSON.parse(contents);
+  }
+
+  private _setFile(value: any): void {
+    mkdirpSync(path.dirname(this.p));
+    writeFileAtomic.sync(this.p, JSON.stringify(value, undefined, 2) + '\n');
+  }
 }

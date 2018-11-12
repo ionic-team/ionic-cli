@@ -82,12 +82,12 @@ describe('@ionic/cli-framework', () => {
       expect(result).toEqual({ defaulted: 5 });
     });
 
-    it('should call clear file upon JSON syntax error', () => {
+    it('should rewrite file with defaults upon JSON syntax error', () => {
       const config = new Config('/path/to/file');
       mockReadFileSync.mockImplementationOnce(() => { throw { name: 'SyntaxError' } });
       config.c;
       expect(mockWriteFileAtomicSync).toHaveBeenCalledTimes(1);
-      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', '');
+      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', JSON.stringify({ defaulted: 5 }, undefined, 2) + '\n');
     });
 
     it('should throw upon unknown error', () => {
@@ -213,12 +213,12 @@ describe('@ionic/cli-framework', () => {
       expect(result).toEqual({ defaulted: 5 });
     });
 
-    it('should call clear file upon JSON syntax error', () => {
+    it('should rewrite file with defaults upon JSON syntax error', () => {
       const config = new Config('/path/to/file', { pathPrefix: ['sub'] });
       mockReadFileSync.mockImplementationOnce(() => { throw { name: 'SyntaxError' } });
       config.c;
       expect(mockWriteFileAtomicSync).toHaveBeenCalledTimes(1);
-      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', '');
+      expect(mockWriteFileAtomicSync).toHaveBeenCalledWith('/path/to/file', JSON.stringify({ sub: { defaulted: 5 } }, undefined, 2) + '\n');
     });
 
     it('should throw upon unknown error', () => {
