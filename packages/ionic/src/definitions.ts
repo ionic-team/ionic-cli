@@ -166,6 +166,10 @@ export interface Login {
   token: string;
 }
 
+export interface SSOConnection {
+  uuid: string;
+}
+
 export interface User {
   id: number;
   email: string;
@@ -326,6 +330,7 @@ export type NamespaceLocateResult = ζframework.NamespaceLocateResult<ICommand, 
 
 export interface ISession {
   login(email: string, password: string): Promise<void>;
+  ssoLogin(email: string): Promise<void>;
   tokenLogin(token: string): Promise<void>;
   logout(): Promise<void>;
 

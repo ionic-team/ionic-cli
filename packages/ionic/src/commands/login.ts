@@ -1,4 +1,4 @@
-import { validators } from '@ionic/cli-framework';
+import { OptionGroup, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../definitions';
@@ -37,14 +37,25 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')
         {
           name: 'password',
           summary: 'Your password',
-          validators: [validators.required],
+          // this is a hack since sso is hidden, no need to make password not required for it
+          validators: process.argv.includes('--sso') ? [] : [validators.required],
           private: true,
+        },
+      ],
+      options: [
+        {
+          name: 'sso',
+          type: Boolean,
+          summary: 'Open a window to log in with the SSO provider associated with your email',
+          groups: [OptionGroup.Hidden],
         },
       ],
     };
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const sso = !!options['sso'];
+
     if (options['email'] || options['password']) {
       throw new FatalException(
         `${chalk.green('email')} and ${chalk.green('password')} are command arguments, not options. Please try this:\n` +
@@ -76,7 +87,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')
       inputs[0] = email;
     }
 
-    if (!inputs[1]) {
+    if (!sso && !inputs[1]) {
       const password = await this.env.prompt({
         type: 'password',
         name: 'password',
@@ -91,6 +102,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const [ email, password ] = inputs;
+    const sso = !!options['sso'];
 
     if (this.env.session.isLoggedIn()) {
       this.env.log.msg('Logging you out.');
@@ -98,7 +110,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')
       this.env.config.set('tokens.telemetry', generateUUID());
     }
 
-    await this.env.session.login(email, password);
+    if (sso) {
+      await this.env.session.ssoLogin(email);
+    } else {
+      await this.env.session.login(email, password);
+    }
 
     this.env.log.ok('You are logged in!');
   }

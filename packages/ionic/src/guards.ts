@@ -20,6 +20,7 @@ import {
   Org,
   Response,
   SSHKey,
+  SSOConnection,
   SecurityProfile,
   Snapshot,
   StarterManifest,
@@ -217,6 +218,14 @@ export function isLogin(login: any): login is Login {
 
 export function isLoginResponse(res: APIResponse): res is Response<Login> {
   return isAPIResponseSuccess(res) && isLogin(res.data);
+}
+
+export function isSSOConnection(login: any): login is SSOConnection {
+  return login && typeof login.uuid === 'string';
+}
+
+export function isSSOConnectionResponse(res: APIResponse): res is Response<SSOConnection> {
+  return isAPIResponseSuccess(res) && isSSOConnection(res.data);
 }
 
 export function isUser(user: any): user is User {
