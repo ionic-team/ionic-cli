@@ -33,5 +33,9 @@ export interface TerminalInfo {
 export const TERMINAL_INFO: TerminalInfo = Object.freeze({
   tty: Boolean(process.stdin.isTTY && process.stdout.isTTY && process.stderr.isTTY),
   ci: CI_ENVIRONMENT_VARIABLES_DETECTED.length > 0,
-  windows: process.platform === 'win32' && (process.env.MSYSTEM && /^MINGW(32|64)$/.test(process.env.MSYSTEM) || process.env.TERM === 'cygwin'),
+  windows: process.platform === 'win32' || (
+    process.env.OSTYPE && /^(msys|cygwin)$/.test(process.env.OSTYPE) ||
+    process.env.MSYSTEM && /^MINGW(32|64)$/.test(process.env.MSYSTEM) ||
+    process.env.TERM === 'cygwin'
+  ),
 });
