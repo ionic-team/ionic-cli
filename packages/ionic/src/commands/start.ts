@@ -1,6 +1,5 @@
 import { OptionGroup, validators } from '@ionic/cli-framework';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
-import { isValidPackageName } from '@ionic/cli-framework/utils/node';
 import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
 import { mkdir, pathExists, removeDirectory, unlink } from '@ionic/utils-fs';
 import chalk from 'chalk';
@@ -13,7 +12,7 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { runCommand } from '../lib/executor';
-import { createProjectFromDirectory, createProjectFromType } from '../lib/project';
+import { createProjectFromDetails, createProjectFromDirectory, isValidProjectId } from '../lib/project';
 import { prependNodeModulesBinToPath } from '../lib/shell';
 import { emoji } from '../lib/utils/emoji';
 
@@ -199,7 +198,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       options['git'] = true;
     }
 
-    if (this.project && !this.project.name) {
+    if (this.project && this.project.details.context === 'app') {
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
@@ -304,7 +303,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     if (projectId) {
       await this.validateProjectId(projectId);
     } else {
-      projectId = options['project-id'] = this.isValidProjectId(inputs[0]) ? inputs[0] : slugify(inputs[0]);
+      projectId = options['project-id'] = isValidProjectId(inputs[0]) ? inputs[0] : slugify(inputs[0]);
     }
 
     const projectDir = path.resolve(projectId);
@@ -431,11 +430,11 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
     let project: IProject | undefined;
 
-    if (this.project && this.project.name && !this.schema.cloned) {
+    if (this.project && this.project.details.context === 'multiapp' && !this.schema.cloned) {
       // We're in a multi-app setup, so the new config file isn't wanted.
       await unlink(path.resolve(projectDir, 'ionic.config.json'));
 
-      project = await createProjectFromType(path.resolve(this.project.rootDirectory, PROJECT_FILE), projectId, this.env, this.schema.type);
+      project = await createProjectFromDetails({ context: 'multiapp', configPath: path.resolve(this.project.rootDirectory, PROJECT_FILE), id: projectId, type: this.schema.type, errors: [] }, this.env);
       project.config.set('type', this.schema.type);
       project.config.set('root', path.relative(this.project.rootDirectory, projectDir));
     } else {
@@ -634,16 +633,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   }
 
   async validateProjectId(projectId: string) {
-    if (!this.isValidProjectId(projectId)) {
+    if (!isValidProjectId(projectId)) {
       throw new FatalException(
         `${chalk.green(projectId)} is not a valid package or directory name.\n` +
         `Please choose a different ${chalk.green('--project-id')}. Alphanumeric characters are always safe.`
       );
     }
-  }
-
-  isValidProjectId(projectId: string): boolean {
-    return projectId !== '.' && isValidPackageName(projectId) && projectId === path.basename(projectId);
   }
 
   async loadManifest(manifestPath: string): Promise<StarterManifest | undefined> {

@@ -666,8 +666,8 @@ export async function serve(deps: ServeRunnerDeps, inputs: CommandLineInputs, op
   try {
     const runner = await deps.project.requireServeRunner();
 
-    if (deps.project.name) {
-      options['project'] = deps.project.name;
+    if (deps.project.details.context === 'multiapp') {
+      options['project'] = deps.project.details.id;
     }
 
     const opts = runner.createOptionsFromCommandLine(inputs, options);

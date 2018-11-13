@@ -7,6 +7,7 @@ import * as ζsuperagent from 'superagent';
 
 import * as ζbuild from './lib/build';
 import * as ζgenerate from './lib/generate';
+import * as ζproject from './lib/project';
 import * as ζserve from './lib/serve';
 
 export { CommandLineInputs, CommandLineOptions, CommandMetadataInput, NamespaceMetadata, PackageJson } from '@ionic/cli-framework';
@@ -256,9 +257,9 @@ export interface IProject {
   readonly rootDirectory: string;
   readonly directory: string;
   readonly filePath: string;
-  readonly name?: string;
   readonly type: ProjectType;
   readonly config: ζframework.BaseConfig<IProjectConfig>;
+  readonly details: ζproject.ProjectDetailsResult;
 
   getDocsUrl(): Promise<string>;
   getSourceDir(sourceRoot?: string): Promise<string>;
