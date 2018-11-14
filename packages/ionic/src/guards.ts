@@ -20,7 +20,6 @@ import {
   Org,
   Response,
   SSHKey,
-  SSOConnection,
   SecurityProfile,
   Snapshot,
   StarterManifest,
@@ -28,6 +27,8 @@ import {
   TreatableAilment,
   User,
 } from './definitions';
+
+import { AuthConnection } from './lib/auth';
 
 export const INTEGRATION_NAMES: IntegrationName[] = ['capacitor', 'cordova'];
 
@@ -220,12 +221,12 @@ export function isLoginResponse(res: APIResponse): res is Response<Login> {
   return isAPIResponseSuccess(res) && isLogin(res.data);
 }
 
-export function isSSOConnection(login: any): login is SSOConnection {
-  return login && typeof login.uuid === 'string';
+export function isAuthConnection(connection: any): connection is AuthConnection {
+  return connection && typeof connection.uuid === 'string';
 }
 
-export function isSSOConnectionResponse(res: APIResponse): res is Response<SSOConnection> {
-  return isAPIResponseSuccess(res) && isSSOConnection(res.data);
+export function isAuthConnectionResponse(res: APIResponse): res is Response<AuthConnection> {
+  return isAPIResponseSuccess(res) && isAuthConnection(res.data);
 }
 
 export function isUser(user: any): user is User {

@@ -30,7 +30,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://dashboard.ionicframework.com')}
 
     const token = this.env.session.getUserToken();
     const proId = await this.project.requireProId();
-    const appClient = new AppClient({ token, client: this.env.client });
+    const appClient = new AppClient(token, this.env);
     const app = await appClient.load(proId);
 
     if (!app.repo_url) {

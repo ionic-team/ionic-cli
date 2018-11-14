@@ -166,10 +166,6 @@ export interface Login {
   token: string;
 }
 
-export interface SSOConnection {
-  uuid: string;
-}
-
 export interface User {
   id: number;
   email: string;
@@ -390,6 +386,7 @@ export interface ConfigFile {
   'git.host'?: string;
   'git.port'?: number;
   'git.setup'?: boolean;
+  'org.id'?: string;
   'user.id'?: number;
   'user.email'?: string;
   'tokens.user'?: string;

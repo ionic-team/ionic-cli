@@ -4,10 +4,6 @@ import * as http from 'http';
 import * as qs from 'querystring';
 
 import { IClient } from '../definitions';
-import { isSSOConnectionResponse } from '../guards';
-
-import { FatalException } from './errors';
-import { createFatalAPIFormat } from './http';
 
 const REDIRECT_PORT = 8123;
 const REDIRECT_HOST = 'localhost';
@@ -138,47 +134,28 @@ const API_AUDIENCE = 'https://api.ionicjs.com';
 
 export interface Auth0OAuth2FlowOptions extends Partial<OAuth2FlowOptions> {
   readonly email: string;
+  readonly connection: string;
   readonly audience?: string;
 }
 
 export class Auth0OAuth2Flow extends OAuth2Flow {
   readonly email: string;
   readonly audience: string;
-  connection?: string;
+  readonly connection: string;
 
-  constructor({ email, audience = API_AUDIENCE, authorizationUrl = AUTHORIZATION_URL, tokenUrl = TOKEN_URL, clientId = CLIENT_ID, ...options }: Auth0OAuth2FlowOptions, readonly e: OAuth2FlowDeps) {
+  constructor({ email, connection, audience = API_AUDIENCE, authorizationUrl = AUTHORIZATION_URL, tokenUrl = TOKEN_URL, clientId = CLIENT_ID, ...options }: Auth0OAuth2FlowOptions, readonly e: OAuth2FlowDeps) {
     super({ authorizationUrl, tokenUrl, clientId, ...options }, e);
     this.email = email;
+    this.connection = connection;
     this.audience = audience;
   }
 
-  async run(): Promise<string> {
-    const { req } = await this.e.client.make('GET', `/auth/connections/${this.email}`);
-    const res = await this.e.client.do(req);
-
-    if (!isSSOConnectionResponse(res)) {
-      throw createFatalAPIFormat(req, res);
-    }
-
-    const { uuid: connection } = res.data;
-
-    this.connection = connection;
-
-    return super.run();
-  }
-
   protected generateAuthorizationParameters(challenge: string): AuthorizationParameters {
-    const connection = this.connection;
-
-    if (!connection) {
-      throw new FatalException('No SSO ID set. Cannot complete OAuth2 flow without valid connection.');
-    }
-
     return {
       audience: this.audience,
       scope: 'openid profile email offline_access',
       response_type: 'code',
-      connection,
+      connection: this.connection,
       client_id: this.clientId,
       code_challenge: challenge,
       code_challenge_method: 'S256',

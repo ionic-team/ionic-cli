@@ -15,27 +15,22 @@ export function formatName(app: Pick<App, 'name' | 'org'>) {
 
 export interface AppClientDeps {
   readonly client: IClient;
-  readonly token: string;
 }
 
 export interface AppCreateDetails {
-  name: string;
+  readonly name: string;
+  readonly org_id?: string;
 }
 
 export class AppClient extends ResourceClient implements ResourceClientLoad<App>, ResourceClientCreate<App, AppCreateDetails>, ResourceClientPaginate<App> {
-  protected client: IClient;
-  protected token: string;
-
-  constructor({ client, token }: AppClientDeps) {
+  constructor(readonly token: string, readonly e: AppClientDeps) {
     super();
-    this.client = client;
-    this.token = token;
   }
 
   async load(id: string): Promise<App> {
-    const { req } = await this.client.make('GET', `/apps/${id}`);
+    const { req } = await this.e.client.make('GET', `/apps/${id}`);
     this.applyAuthentication(req, this.token);
-    const res = await this.client.do(req);
+    const res = await this.e.client.do(req);
 
     if (!isAppResponse(res)) {
       throw createFatalAPIFormat(req, res);
@@ -44,11 +39,11 @@ export class AppClient extends ResourceClient implements ResourceClientLoad<App>
     return res.data;
   }
 
-  async create({ name }: AppCreateDetails): Promise<App> {
-    const { req } = await this.client.make('POST', '/apps');
+  async create(details: AppCreateDetails): Promise<App> {
+    const { req } = await this.e.client.make('POST', '/apps');
     this.applyAuthentication(req, this.token);
-    req.send({ name });
-    const res = await this.client.do(req);
+    req.send(details);
+    const res = await this.e.client.do(req);
 
     if (!isAppResponse(res)) {
       throw createFatalAPIFormat(req, res);
@@ -58,9 +53,9 @@ export class AppClient extends ResourceClient implements ResourceClientLoad<App>
   }
 
   paginate(args: Partial<PaginateArgs<Response<App[]>>> = {}): IPaginator<Response<App[]>, PaginatorState> {
-    return this.client.paginate({
+    return this.e.client.paginate({
       reqgen: async () => {
-        const { req } = await this.client.make('GET', '/apps');
+        const { req } = await this.e.client.make('GET', '/apps');
         this.applyAuthentication(req, this.token);
         return { req };
       },
@@ -70,17 +65,17 @@ export class AppClient extends ResourceClient implements ResourceClientLoad<App>
   }
 
   async createAssociation(id: string, association: { repoId: number; type: AssociationType; branches: string[] }): Promise<AppAssociation> {
-    const { req } = await this.client.make('POST', `/apps/${id}/repository`);
+    const { req } = await this.e.client.make('POST', `/apps/${id}/repository`);
 
     req
       .set('Authorization', `Bearer ${this.token}`)
-    .send({
-      repository_id: association.repoId,
-      type: association.type,
-      branches: association.branches,
-    });
+      .send({
+        repository_id: association.repoId,
+        type: association.type,
+        branches: association.branches,
+      });
 
-    const res = await this.client.do(req);
+    const res = await this.e.client.do(req);
 
     if (!isAppAssociationResponse(res)) {
       throw createFatalAPIFormat(req, res);
@@ -90,7 +85,7 @@ export class AppClient extends ResourceClient implements ResourceClientLoad<App>
   }
 
   async deleteAssociation(id: string): Promise<void> {
-    const { req } = await this.client.make('DELETE', `/apps/${id}/repository`);
+    const { req } = await this.e.client.make('DELETE', `/apps/${id}/repository`);
 
     req
       .set('Authorization', `Bearer ${this.token}`)

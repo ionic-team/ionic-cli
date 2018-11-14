@@ -12,27 +12,22 @@ export interface SessionDeps {
 }
 
 export class BaseSession {
-  protected config: IConfig;
-  protected client: IClient;
-
-  constructor({ config, client }: SessionDeps) {
-    this.config = config;
-    this.client = client;
-  }
+  constructor(readonly e: SessionDeps) {}
 
   async logout(): Promise<void> {
-    this.config.unset('user.id');
-    this.config.unset('user.email');
-    this.config.unset('tokens.user');
-    this.config.set('git.setup', false);
+    this.e.config.unset('org.id');
+    this.e.config.unset('user.id');
+    this.e.config.unset('user.email');
+    this.e.config.unset('tokens.user');
+    this.e.config.set('git.setup', false);
   }
 
   isLoggedIn(): boolean {
-    return typeof this.config.get('tokens.user') === 'string';
+    return typeof this.e.config.get('tokens.user') === 'string';
   }
 
   getUser(): { id: number; } {
-    const userId = this.config.get('user.id');
+    const userId = this.e.config.get('user.id');
 
     if (!userId) {
       throw new SessionException(
@@ -45,7 +40,7 @@ export class BaseSession {
   }
 
   getUserToken(): string {
-    const userToken = this.config.get('tokens.user');
+    const userToken = this.e.config.get('tokens.user');
 
     if (!userToken) {
       throw new SessionException(
@@ -60,11 +55,11 @@ export class BaseSession {
 
 export class ProSession extends BaseSession implements ISession {
   async login(email: string, password: string): Promise<void> {
-    const { req } = await this.client.make('POST', '/login');
+    const { req } = await this.e.client.make('POST', '/login');
     req.send({ email, password, source: 'cli' });
 
     try {
-      const res = await this.client.do(req);
+      const res = await this.e.client.do(req);
 
       if (!isLoginResponse(res)) {
         const data = res.data;
@@ -81,13 +76,13 @@ export class ProSession extends BaseSession implements ISession {
 
       const { token, user } = res.data;
 
-      if (this.config.get('user.id') !== user.id) { // User changed
+      if (this.e.config.get('user.id') !== user.id) { // User changed
         await this.logout();
       }
 
-      this.config.set('user.id', user.id);
-      this.config.set('user.email', email);
-      this.config.set('tokens.user', token);
+      this.e.config.set('user.id', user.id);
+      this.e.config.set('user.email', email);
+      this.e.config.set('tokens.user', token);
     } catch (e) {
       if (isSuperAgentError(e) && (e.response.status === 401 || e.response.status === 403)) {
         throw new SessionException('Incorrect email or password.');
@@ -98,30 +93,36 @@ export class ProSession extends BaseSession implements ISession {
   }
 
   async ssoLogin(email: string): Promise<void> {
+    const { AuthClient } = await import('./auth');
     const { Auth0OAuth2Flow } = await import('./sso');
 
-    const flow = new Auth0OAuth2Flow({ email }, { client: this.client });
+    const authClient = new AuthClient(this.e);
+    const { uuid: connection } = await authClient.connections.load(email);
+
+    const flow = new Auth0OAuth2Flow({ email, connection }, this.e);
     const token = await flow.run();
 
-    return this.tokenLogin(token);
+    await this.tokenLogin(token);
+
+    this.e.config.set('org.id', connection);
   }
 
-  async tokenLogin(token: string) {
+  async tokenLogin(token: string): Promise<void> {
     const { UserClient } = await import('./user');
 
-    const userClient = new UserClient({ client: this.client, token });
+    const userClient = new UserClient(token, this.e);
 
     try {
       const user = await userClient.loadSelf();
       const user_id = user.id;
 
-      if (this.config.get('user.id') !== user_id) { // User changed
+      if (this.e.config.get('user.id') !== user_id) { // User changed
         await this.logout();
       }
 
-      this.config.set('user.id', user_id);
-      this.config.set('user.email', user.email);
-      this.config.set('tokens.user', token);
+      this.e.config.set('user.id', user_id);
+      this.e.config.set('user.email', user.email);
+      this.e.config.set('tokens.user', token);
     } catch (e) {
       if (isSuperAgentError(e) && (e.response.status === 401 || e.response.status === 403)) {
         throw new SessionException('Invalid auth token.');
