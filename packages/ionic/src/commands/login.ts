@@ -1,10 +1,9 @@
 import { OptionGroup, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../definitions';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
-import { runCommand } from '../lib/executor';
 import { generateUUID } from '../lib/utils/uuid';
 
 export class LoginCommand extends Command implements CommandPreRun {
@@ -63,20 +62,32 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')
       );
     }
 
+    const askForEmail = !inputs[0];
+    const askForPassword = !sso && !inputs[1];
+
     if (this.env.session.isLoggedIn()) {
-      const extra = !inputs[0] || !inputs[1] ? 'Prompting for new credentials.' : 'Attempting login.';
       const email = this.env.config.get('user.email');
-      this.env.log.warn(`You are already logged in${email ? ' as ' + chalk.bold(email) : ''}! ${this.env.flags.interactive ? extra : ''}`);
-    } else {
-      this.env.log.msg(
-        `Log into your Ionic Pro account\n` +
-        `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`
+
+      const extra = askForEmail || askForPassword
+        ? (this.env.flags.interactive ? `Prompting for new credentials.\n\nUse ${chalk.yellow('Ctrl+C')} to cancel and remain logged in.` : '')
+        : 'You will be logged out beforehand.';
+
+      this.env.log.warn(
+        'You will be logged out.\n' +
+        `You are already logged in${email ? ' as ' + chalk.bold(email) : ''}! ${extra}`
       );
+      this.env.log.nl();
+    } else {
+      this.env.log.info(
+        `Log into your Ionic Pro account!\n` +
+        `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}`
+      );
+      this.env.log.nl();
     }
 
     // TODO: combine with promptToLogin ?
 
-    if (!inputs[0]) {
+    if (askForEmail) {
       const email = await this.env.prompt({
         type: 'input',
         name: 'email',
@@ -87,7 +98,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')
       inputs[0] = email;
     }
 
-    if (!sso && !inputs[1]) {
+    if (askForPassword) {
       const password = await this.env.prompt({
         type: 'password',
         name: 'password',
@@ -100,22 +111,27 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')
     }
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ email, password ] = inputs;
     const sso = !!options['sso'];
 
     if (this.env.session.isLoggedIn()) {
-      this.env.log.msg('Logging you out.');
-      await runCommand(runinfo, ['logout']);
+      await this.env.session.logout();
       this.env.config.set('tokens.telemetry', generateUUID());
     }
 
     if (sso) {
+      this.env.log.info(
+        `Ionic Pro SSO Login\n` +
+        `During this process, a browser window will open to authenticate you with the identity provider for ${chalk.green(email)}. Please leave this process running until authentication is complete.`
+      );
+      this.env.log.nl();
+
       await this.env.session.ssoLogin(email);
     } else {
       await this.env.session.login(email, password);
     }
 
-    this.env.log.ok('You are logged in!');
+    this.env.log.ok(chalk.green.bold('You are logged in!'));
   }
 }
