@@ -1,8 +1,11 @@
+import { readFile } from '@ionic/utils-fs';
 import { isPortAvailable } from '@ionic/utils-network';
 import * as crypto from 'crypto';
 import * as http from 'http';
+import * as path from 'path';
 import * as qs from 'querystring';
 
+import { ASSETS_DIRECTORY } from '../constants';
 import { IClient } from '../definitions';
 
 const REDIRECT_PORT = 8123;
@@ -67,10 +70,19 @@ export abstract class OAuth2Flow {
   protected abstract generateAuthorizationParameters(challenge: string): AuthorizationParameters;
   protected abstract generateTokenParameters(authorizationCode: string, verifier: string): TokenParameters;
 
+  protected async getSuccessHtml(): Promise<string> {
+    const p = path.resolve(ASSETS_DIRECTORY, 'sso', 'success', 'index.html');
+    const contents = await readFile(p, { encoding: 'utf8' });
+
+    return contents;
+  }
+
   protected async getAuthorizationCode(): Promise<string> {
     if (!(await isPortAvailable(this.redirectPort))) {
       throw new Error(`Cannot start local server. Port ${this.redirectPort} is in use.`);
     }
+
+    const successHtml = await this.getSuccessHtml();
 
     return new Promise<string>((resolve, reject) => {
       const server = http.createServer((req, res) => {
@@ -79,19 +91,11 @@ export abstract class OAuth2Flow {
 
           if (params.code) {
             res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(`
-              <html>
-                <head></head>
-                <body>
-                  Success! You may close this window now.
-                <body>
-              </html>
-            `);
+            res.end(successHtml);
+            req.socket.destroy();
             server.close();
 
-            server.on('close', () => {
-              resolve(params.code);
-            });
+            resolve(params.code);
           }
 
           // TODO, timeout, error handling
