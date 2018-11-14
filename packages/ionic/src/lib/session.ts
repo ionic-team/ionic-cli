@@ -1,10 +1,7 @@
-import { isPortAvailable } from '@ionic/utils-network';
 import chalk from 'chalk';
-import { createHash, randomBytes } from 'crypto';
-import { createServer } from 'http';
 
 import { IClient, IConfig, ISession, IonicEnvironment } from '../definitions';
-import { isLoginResponse, isSSOConnectionResponse, isSuperAgentError } from '../guards';
+import { isLoginResponse, isSuperAgentError } from '../guards';
 
 import { FatalException, SessionException } from './errors';
 import { formatResponseError } from './http';
@@ -101,83 +98,12 @@ export class ProSession extends BaseSession implements ISession {
   }
 
   async ssoLogin(email: string): Promise<void> {
-    const { req: connectionReq } = await this.client.make('GET', `/auth/connections/${email}`);
+    const { Auth0OAuth2Flow } = await import('./sso');
 
-    const connectionRes = await this.client.do(connectionReq);
+    const flow = new Auth0OAuth2Flow({ email }, { client: this.client });
+    const token = await flow.run();
 
-    if (!isSSOConnectionResponse(connectionRes)) {
-      throw new FatalException(
-        'API request was successful, but the response format was unrecognized.\n' +
-        formatResponseError(connectionReq, connectionRes.meta.status, connectionRes.data)
-      );
-    }
-    const { uuid: ssoId } = connectionRes.data;
-
-    // from Auth0 website
-    function base64URLEncode(buffer: Buffer) {
-      return buffer.toString('base64')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=/g, '');
-    }
-    const verifier = base64URLEncode(randomBytes(32));
-
-    function sha256(str: string) {
-      return createHash('sha256').update(str).digest();
-    }
-    const challenge = base64URLEncode(sha256(verifier));
-
-    const getCode = new Promise((resolve, reject) => {
-      const server = createServer((req, res) => {
-        const code = req.url!.split('=')[1]; // tslint:disable-line
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(`
-          <html>
-            <head></head>
-            <body>
-              Success! You may close this window now.
-            <body>
-          </html>
-        `);
-        server.close();
-        resolve(code);
-      });
-
-      if (isPortAvailable(8123)) {
-        server.listen(8123, 'localhost');
-      } else {
-        reject('Unable to listen on port 8123 for login callback, port already in use.');
-      }
-    });
-
-    const opn = await import('opn');
-    const { URL, URLSearchParams } = await import('url');
-    const url = new URL('https://auth.ionicframework.com/authorize');
-    url.search = new URLSearchParams({
-      audience: 'https://api.ionicjs.com',
-      scope: 'openid profile email offline_access',
-      response_type: 'code',
-      connection: ssoId,
-      client_id: 'cyo8pwNzgjMcL23mYlKDF2ZBa1MwC2Bj',
-      code_challenge: challenge,
-      code_challenge_method: 'S256',
-      redirect_uri: 'http://localhost:8123',
-    }).toString();
-
-    const windowProcess = await opn(url.toString(), { wait: false });
-    const code = await getCode;
-    windowProcess.kill();
-
-    const { req: tokenReq } = await this.client.make('POST', 'https://auth.ionicframework.com/oauth/token');
-    const tokenRes = await tokenReq.send({
-      grant_type: 'authorization_code',
-      client_id: 'cyo8pwNzgjMcL23mYlKDF2ZBa1MwC2Bj',
-      code_verifier: verifier,
-      code,
-      redirect_uri: 'http://localhost:8123',
-    });
-
-    return this.tokenLogin(tokenRes.body.access_token);
+    return this.tokenLogin(token);
   }
 
   async tokenLogin(token: string) {
