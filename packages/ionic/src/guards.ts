@@ -28,6 +28,8 @@ import {
   User,
 } from './definitions';
 
+import { AuthConnection } from './lib/auth';
+
 export const INTEGRATION_NAMES: IntegrationName[] = ['capacitor', 'cordova'];
 
 export function isCommand(cmd: any): cmd is ICommand {
@@ -217,6 +219,14 @@ export function isLogin(login: any): login is Login {
 
 export function isLoginResponse(res: APIResponse): res is Response<Login> {
   return isAPIResponseSuccess(res) && isLogin(res.data);
+}
+
+export function isAuthConnection(connection: any): connection is AuthConnection {
+  return connection && typeof connection.uuid === 'string';
+}
+
+export function isAuthConnectionResponse(res: APIResponse): res is Response<AuthConnection> {
+  return isAPIResponseSuccess(res) && isAuthConnection(res.data);
 }
 
 export function isUser(user: any): user is User {

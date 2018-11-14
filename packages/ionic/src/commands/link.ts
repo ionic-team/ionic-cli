@@ -220,13 +220,13 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
   private async getAppClient() {
     const { AppClient } = await import('../lib/app');
     const token = this.env.session.getUserToken();
-    return new AppClient({ token, client: this.env.client });
+    return new AppClient(token, this.env);
   }
 
   private async getUserClient() {
     const { UserClient } = await import('../lib/user');
     const token = this.env.session.getUserToken();
-    return new UserClient({ token, client: this.env.client });
+    return new UserClient(token, this.env);
   }
 
   async lookUpApp(proId: string): Promise<App> {
@@ -243,7 +243,8 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
 
   async createApp({ name }: { name: string; }, runinfo: CommandInstanceInfo): Promise<string> {
     const appClient = await this.getAppClient();
-    const app = await appClient.create({ name });
+    const org_id = this.env.config.get('org.id');
+    const app = await appClient.create({ name, org_id });
 
     await this.linkApp(app, runinfo);
 

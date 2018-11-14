@@ -159,7 +159,7 @@ export class GitConfigInvalid extends Ailment {
     }
 
     const token = this.session.getUserToken();
-    const appClient = new AppClient({ token, client: this.client });
+    const appClient = new AppClient(token, { client: this.client });
     const app = await appClient.load(proId);
 
     if (app.repo_url !== remote) {

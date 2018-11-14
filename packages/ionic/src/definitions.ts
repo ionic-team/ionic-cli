@@ -327,6 +327,7 @@ export type NamespaceLocateResult = ζframework.NamespaceLocateResult<ICommand, 
 
 export interface ISession {
   login(email: string, password: string): Promise<void>;
+  ssoLogin(email: string): Promise<void>;
   tokenLogin(token: string): Promise<void>;
   logout(): Promise<void>;
 
@@ -386,6 +387,7 @@ export interface ConfigFile {
   'git.host'?: string;
   'git.port'?: number;
   'git.setup'?: boolean;
+  'org.id'?: string;
   'user.id'?: number;
   'user.email'?: string;
   'tokens.user'?: string;

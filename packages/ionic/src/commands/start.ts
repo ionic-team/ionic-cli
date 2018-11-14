@@ -269,7 +269,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       if (proId) {
         const { AppClient } = await import('../lib/app');
         const token = this.env.session.getUserToken();
-        const appClient = new AppClient({ token, client: this.env.client });
+        const appClient = new AppClient(token, this.env);
         const tasks = this.createTaskChain();
         tasks.next(`Looking up app ${chalk.green(proId)}`);
         const app = await appClient.load(proId);
