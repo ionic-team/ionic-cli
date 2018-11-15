@@ -136,7 +136,7 @@ export class Publisher extends events.EventEmitter implements IPublisherEventEmi
       for (const iface of this.interfaces) {
         const message = this.buildMessage(iface.address);
         const serialized = PREFIX + JSON.stringify(message);
-        const buf = new Buffer(serialized);
+        const buf = Buffer.from(serialized);
 
         debug(`Broadcasting %O to ${iface.broadcast}`, serialized);
 
