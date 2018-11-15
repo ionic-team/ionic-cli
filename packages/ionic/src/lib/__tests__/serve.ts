@@ -33,7 +33,6 @@ describe('ionic', () => {
           open: false,
           port: 8100,
           proxy: true,
-          ssl: false,
           project: undefined,
         };
 

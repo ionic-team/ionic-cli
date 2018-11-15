@@ -24,7 +24,6 @@ describe('ionic', () => {
           open: false,
           port: 8100,
           proxy: true,
-          ssl: false,
           project: undefined,
           prod: undefined,
           platform: undefined,
@@ -83,6 +82,25 @@ describe('ionic', () => {
         const defaults = {
           '--': [],
         };
+
+        it('should pass options', async () => {
+          const root = 'fakeRoot';
+          const project = {
+            requireIntegration: jest.fn(() => ({ root })),
+          };
+          const runner = new AngularServeCLI({ project } as any);
+          const options = {
+            ...defaults,
+            sourcemaps: true,
+            ssl: true,
+          };
+
+          const result = await (runner as any).serveOptionsToNgArgs(options);
+          expect(result).toEqual(expect.arrayContaining([
+            `--ssl`,
+            `--source-map`,
+          ]));
+        });
 
         it('should pass cordova options', async () => {
           const root = 'fakeRoot';
