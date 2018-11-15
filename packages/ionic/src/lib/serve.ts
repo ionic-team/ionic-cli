@@ -117,7 +117,6 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       platform: options['platform'] ? String(options['platform']) : undefined,
       port,
       proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
-      ssl: false,
       project: options['project'] ? String(options['project']) : undefined,
     };
   }
@@ -182,7 +181,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
     const localAddress = `${details.protocol}://localhost:${details.port}`;
     const fmtExternalAddress = (address: string) => `${details.protocol}://${address}:${details.port}`;
-    const labAddress = labDetails ? `${labDetails.protocol}://${labDetails.address}:${labDetails.port}` : undefined;
+    const labAddress = labDetails ? `http://${labDetails.address}:${labDetails.port}` : undefined;
 
     this.e.log.nl();
     this.e.log.info(
@@ -312,23 +311,9 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
   async runLab(options: T, serveDetails: ServeDetails): Promise<LabServeDetails> {
     const labDetails: LabServeDetails = {
       projectType: this.e.project.type,
-      protocol: options.ssl ? 'https' : 'http',
       address: options.labHost,
       port: await findClosestOpenPort(options.labPort),
     };
-
-    if (options.ssl) {
-      const sslConfig = this.e.project.config.get('ssl');
-
-      if (sslConfig && sslConfig.key && sslConfig.cert) {
-        labDetails.ssl = { key: sslConfig.key, cert: sslConfig.cert };
-      } else {
-        throw new FatalException(
-          `Both ${chalk.green('ssl.key')} and ${chalk.green('ssl.cert')} config entries must be set.\n` +
-          `See ${chalk.green('ionic serve --help')} for details on using your own SSL key and certificate for Ionic Lab and the dev server.`
-        );
-      }
-    }
 
     const lab = new IonicLabServeCLI(this.e);
     await lab.serve({ serveDetails, ...labDetails });
@@ -653,10 +638,6 @@ class IonicLabServeCLI extends ServeCLI<IonicLabServeCLIOptions> {
     const labArgs = [url, '--host', labDetails.address, '--port', String(labDetails.port), '--project-type', labDetails.projectType];
     const nameArgs = appName ? ['--app-name', appName] : [];
     const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
-
-    if (labDetails.ssl) {
-      labArgs.push('--ssl', '--ssl-key', labDetails.ssl.key, '--ssl-cert', labDetails.ssl.cert);
-    }
 
     return [...labArgs, ...nameArgs, ...versionArgs];
   }

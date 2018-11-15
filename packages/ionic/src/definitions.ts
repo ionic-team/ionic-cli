@@ -237,11 +237,6 @@ export interface IProjectConfig {
 
   readonly integrations: ProjectIntegrations;
   readonly hooks?: Record<HookName, string | string[] | undefined>;
-
-  ssl?: {
-    key?: string;
-    cert?: string;
-  };
 }
 
 export interface IMultiProjectConfig {
@@ -550,7 +545,6 @@ export interface ServeOptions {
   // Command Options
   address: string;
   port: number;
-  ssl: boolean;
   livereload: boolean;
   proxy: boolean;
   lab: boolean;
@@ -570,6 +564,7 @@ export interface ServeOptions {
 }
 
 export interface AngularServeOptions extends ServeOptions {
+  ssl?: boolean;
   configuration?: string;
   sourcemaps?: boolean;
 }
@@ -592,13 +587,8 @@ export interface Ionic1ServeOptions extends ServeOptions {
 
 export interface LabServeDetails {
   projectType: ProjectType;
-  protocol: string;
   address: string;
   port: number;
-  ssl?: {
-    key: string;
-    cert: string;
-  };
 }
 
 export interface DevAppDetails {

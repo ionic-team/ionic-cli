@@ -63,12 +63,6 @@ export class ServeCommand extends Command implements CommandPreRun {
         type: Boolean,
         aliases: ['l'],
       },
-      {
-        name: 'auth',
-        summary: 'HTTP Basic Auth password to secure the server on your local network',
-        type: String,
-        groups: [OptionGroup.Hidden],
-      },
     ];
 
     const exampleCommands = ['', '-c', '--local', '--lab'];

@@ -8,16 +8,6 @@ import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner,
 
 import { AngularProject } from './';
 
-const NG_SERVE_OPTIONS = [
-  {
-    name: 'configuration',
-    summary: 'Specify the configuration to use.',
-    type: String,
-    groups: [OptionGroup.Advanced],
-    hint: chalk.dim('[ng]'),
-  },
-];
-
 export interface AngularServeRunnerDeps extends ServeRunnerDeps {
   readonly project: AngularProject;
 }
@@ -36,9 +26,22 @@ ${chalk.green('ionic serve')} uses the Angular CLI. Use ${chalk.green('ng serve 
 ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/serve')}`,
       options: [
         {
+          name: 'ssl',
+          summary: 'Use HTTPS for the dev server',
+          type: Boolean,
+          hint: chalk.dim('[ng]'),
+        },
+        {
           name: 'prod',
           summary: `Flag to use the ${chalk.green('production')} configuration`,
           type: Boolean,
+          hint: chalk.dim('[ng]'),
+        },
+        {
+          name: 'configuration',
+          summary: 'Specify the configuration to use.',
+          type: String,
+          groups: [OptionGroup.Advanced],
           hint: chalk.dim('[ng]'),
         },
         {
@@ -48,7 +51,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
           groups: [OptionGroup.Advanced],
           hint: chalk.dim('[ng]'),
         },
-        ...NG_SERVE_OPTIONS,
       ],
       exampleCommands: [
         '-- --proxy-config proxy.conf.json',
@@ -59,11 +61,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularServeOptions {
     const baseOptions = super.createOptionsFromCommandLine(inputs, options);
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
+    const ssl = options['ssl'] ? Boolean(options['ssl']) : undefined;
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
     const sourcemaps = typeof options['source-map'] === 'boolean' ? Boolean(options['source-map']) : undefined;
 
     return {
       ...baseOptions,
+      ssl,
       configuration,
       sourcemaps,
     };
@@ -91,7 +95,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
 
     return {
       custom: ng.resolvedProgram !== ng.program,
-      protocol: 'http',
+      protocol: options.ssl ? 'https' : 'http',
       localAddress: 'localhost',
       externalAddress: externalIP,
       externalNetworkInterfaces: availableInterfaces,
@@ -140,6 +144,7 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
       host: options.address,
       port: String(options.port),
       'source-map': options.sourcemaps !== false ? options.sourcemaps : 'false',
+      'ssl': options.ssl !== false ? options.ssl : 'false',
     };
 
     let separatedArgs = options['--'];
