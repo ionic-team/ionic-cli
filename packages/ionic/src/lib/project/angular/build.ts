@@ -37,13 +37,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/
       options: [
         {
           name: 'prod',
-          summary: `Flag to set configuration to ${chalk.bold('production')}`,
+          summary: `Flag to use the ${chalk.green('production')} configuration`,
           type: Boolean,
           hint: chalk.dim('[ng]'),
         },
         {
           name: 'source-map',
-          summary: 'Always output source maps',
+          summary: 'Output source maps',
           type: Boolean,
           groups: [OptionGroup.Advanced],
           hint: chalk.dim('[ng]'),
