@@ -1,4 +1,4 @@
-import { CommandGroup, CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, NamespaceGroup, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, OptionGroup, formatOptionName, isOptionVisible } from '@ionic/cli-framework';
+import { CommandGroup, CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, NO_COLORS, NamespaceGroup, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, OptionGroup, formatOptionName, isOptionVisible } from '@ionic/cli-framework';
 import { filter } from '@ionic/cli-framework/utils/array';
 import chalk from 'chalk';
 
@@ -71,7 +71,7 @@ export class NamespaceStringHelpFormatter extends BaseNamespaceStringHelpFormatt
 
   async getGlobalOptions(): Promise<string[]> {
     const visibleOptions = await filter(GLOBAL_OPTIONS, async opt => isOptionVisible(opt));
-    return visibleOptions.map(opt => formatOptionName(opt, { showAliases: false }));
+    return visibleOptions.map(opt => formatOptionName(opt, { colors: NO_COLORS, showAliases: false }));
   }
 
   async formatCommands() {

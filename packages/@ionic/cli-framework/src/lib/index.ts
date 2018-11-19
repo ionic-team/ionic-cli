@@ -1,5 +1,6 @@
 import { Logger } from './logger';
 
+export * from './colors';
 export * from './command';
 export * from './config';
 export * from './executor';
