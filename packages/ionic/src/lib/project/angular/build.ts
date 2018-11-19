@@ -14,6 +14,7 @@ const NG_BUILD_OPTIONS = [
     type: String,
     groups: [OptionGroup.Advanced],
     hint: chalk.dim('[ng]'),
+    spec: { value: 'conf' },
   },
 ];
 

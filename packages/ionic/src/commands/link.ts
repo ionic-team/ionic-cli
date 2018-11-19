@@ -69,6 +69,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
           name: 'pro-id',
           summary: 'Specify an app ID from the Ionic Pro to link',
           groups: [OptionGroup.Hidden],
+          spec: { value: 'id' },
         },
       ],
     };

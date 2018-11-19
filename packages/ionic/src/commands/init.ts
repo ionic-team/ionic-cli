@@ -49,6 +49,7 @@ ${chalk.green('ionic init')} will prompt for a project name and then proceed to 
           name: 'project-id',
           summary: 'Specify a slug for your app',
           groups: [OptionGroup.Advanced],
+          spec: { value: 'slug' },
         },
       ],
       groups: [CommandGroup.Beta],

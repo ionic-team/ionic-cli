@@ -43,6 +43,7 @@ export const COMMON_CORDOVA_BUILD_COMMAND_OPTIONS: CommandMetadataOption[] = [
     summary: 'Use the specified build configuration',
     groups: [OptionGroup.Advanced, 'cordova'],
     hint: chalk.dim('[cordova]'),
+    spec: { value: 'file' },
   },
 ];
 

@@ -47,6 +47,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/ionic-team/ionic-cli/issu
           type: String,
           groups: [OptionGroup.Advanced],
           hint: chalk.dim('[ng]'),
+          spec: { value: 'conf' },
         },
         {
           name: 'source-map',

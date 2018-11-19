@@ -38,12 +38,14 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
           default: DEFAULT_LIVERELOAD_PORT.toString(),
           aliases: ['r'],
           groups: [OptionGroup.Advanced],
+          spec: { value: 'port' },
         },
         {
           name: 'dev-logger-port',
           summary: 'Use specific port for dev server communication',
           default: DEFAULT_DEV_LOGGER_PORT.toString(),
           groups: [OptionGroup.Advanced],
+          spec: { value: 'port' },
         },
         {
           name: 'proxy',

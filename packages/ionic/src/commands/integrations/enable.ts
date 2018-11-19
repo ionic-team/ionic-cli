@@ -35,6 +35,7 @@ Integrations can be re-added with the ${chalk.green('--add')} option.
         {
           name: 'root',
           summary: 'Specify an alternative destination to download into when adding',
+          spec: { value: 'path' },
         },
         {
           name: 'quiet',

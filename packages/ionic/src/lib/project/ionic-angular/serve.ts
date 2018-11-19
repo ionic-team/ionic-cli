@@ -49,6 +49,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           aliases: ['r'],
           groups: [OptionGroup.Advanced],
           hint: chalk.dim('[app-scripts]'),
+          spec: { value: 'port' },
         },
         {
           name: 'dev-logger-port',
@@ -56,6 +57,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           default: DEFAULT_DEV_LOGGER_PORT.toString(),
           groups: [OptionGroup.Advanced],
           hint: chalk.dim('[app-scripts]'),
+          spec: { value: 'port' },
         },
         {
           name: 'proxy',

@@ -19,12 +19,14 @@ export class ServeCommand extends Command implements CommandPreRun {
         summary: 'Use specific address for Ionic Lab server',
         default: 'localhost',
         groups: [OptionGroup.Advanced],
+        spec: { value: 'host' },
       },
       {
         name: 'lab-port',
         summary: 'Use specific port for Ionic Lab server',
         default: DEFAULT_LAB_PORT.toString(),
         groups: [OptionGroup.Advanced],
+        spec: { value: 'port' },
       },
       {
         name: 'devapp',
@@ -56,6 +58,7 @@ export class ServeCommand extends Command implements CommandPreRun {
         summary: `Specifies a path to open to (${chalk.green('/#/tab/dash')})`,
         aliases: ['o'],
         groups: [OptionGroup.Advanced],
+        spec: { value: 'path' },
       },
       {
         name: 'lab',

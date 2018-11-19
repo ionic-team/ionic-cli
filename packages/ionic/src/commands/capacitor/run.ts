@@ -40,6 +40,7 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       {
         name: 'livereload-url',
         summary: 'Provide a custom URL to the dev server',
+        spec: { value: 'url' },
       },
     ];
 

@@ -53,6 +53,7 @@ const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
     summary: 'Use the specified build configuration',
     groups: [OptionGroup.Advanced, 'cordova'],
     hint: chalk.dim('[cordova]'),
+    spec: { value: 'file' },
   },
 ];
 

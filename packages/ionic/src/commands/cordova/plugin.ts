@@ -39,6 +39,7 @@ Like running ${chalk.green('cordova plugin')} directly, but provides friendly ch
           name: 'variable',
           summary: 'Specify plugin variables',
           groups: ['cordova'],
+          spec: { value: 'KEY=VALUE' },
         },
       ],
     };

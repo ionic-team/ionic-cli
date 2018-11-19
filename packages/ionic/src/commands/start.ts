@@ -132,16 +132,19 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         {
           name: 'pro-id',
           summary: 'Specify an Ionic Pro ID to link',
+          spec: { value: 'id' },
         },
         {
           name: 'project-id',
           summary: 'Specify a slug for your app (used for the directory name and npm/yarn package name)',
           groups: [OptionGroup.Advanced],
+          spec: { value: 'slug' },
         },
         {
           name: 'package-id',
           summary: 'Specify the bundle ID/application ID for your app (reverse-DNS notation)',
           groups: [OptionGroup.Advanced],
+          spec: { value: 'id' },
         },
         {
           name: 'tag',
