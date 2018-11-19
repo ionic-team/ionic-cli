@@ -23,12 +23,16 @@ export class AngularServeRunner extends ServeRunner<AngularServeOptions> {
       description: `
 ${chalk.green('ionic serve')} uses the Angular CLI. Use ${chalk.green('ng serve --help')} to list all Angular CLI options for serving your app. See the ${chalk.green('ng serve')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
 
-${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/serve')}`,
+The dev server can use HTTPS via the ${chalk.green('--ssl')} option ${chalk.bold.red('(experimental)')}. There are several known issues with HTTPS. See issue #3305${chalk.cyan('[2]')}.
+
+${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/serve')}
+${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/ionic-team/ionic-cli/issues/3305')}`,
       options: [
         {
           name: 'ssl',
           summary: 'Use HTTPS for the dev server',
           type: Boolean,
+          groups: [OptionGroup.Experimental],
           hint: chalk.dim('[ng]'),
         },
         {
