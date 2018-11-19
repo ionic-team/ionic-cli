@@ -8,10 +8,10 @@ import { generateFillSpaceStringList, stringWidth, wordWrap } from '../utils/for
 
 import { Colors, DEFAULT_COLORS } from './colors';
 import { isCommandVisible } from './command';
-import { formatOptionName, isOptionVisible } from './options';
+import { formatOptionName, hydrateOptionSpec, isOptionVisible } from './options';
 import { validators } from './validators';
 
-const DEFAULT_DOTS_WIDTH = 25;
+const DEFAULT_DOTS_WIDTH = 32;
 
 export abstract class HelpFormatter {
   protected readonly colors: Colors;
@@ -573,6 +573,9 @@ export interface CommandHelpSchemaOption {
   readonly aliases: ReadonlyArray<string>;
   readonly type: string;
   readonly default?: string | boolean;
+  readonly spec: {
+    readonly value: string;
+  };
 }
 
 export interface CommandHelpSchema {
@@ -622,8 +625,9 @@ export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     const groups = option.groups ? option.groups : [];
     const aliases = option.aliases ? option.aliases : [];
     const type = option.type ? option.type.name.toLowerCase() : 'string';
+    const spec = hydrateOptionSpec(option);
 
-    return { name, type, summary, default: option.default, groups, aliases };
+    return { name, type, summary, default: option.default, groups, aliases, spec };
   }
 
   async formatCommand(cmd: M | HydratedCommandMetadata<C, N, M, I, O>): Promise<CommandHelpSchema> {

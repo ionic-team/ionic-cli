@@ -31,6 +31,9 @@ export interface CommandMetadataOption extends Metadata {
   type?: CommandOptionType;
   default?: string | boolean;
   aliases?: string[];
+  spec?: {
+    value?: string;
+  };
 }
 
 export type HydratedCommandMetadataOption<O extends CommandMetadataOption> = Readonly<Required<O>>;

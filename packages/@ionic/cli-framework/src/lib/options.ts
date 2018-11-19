@@ -88,20 +88,34 @@ export function hydrateCommandMetadataOption<O extends CommandMetadataOption>(op
   });
 }
 
-export interface FormatOptionNameOptions {
-  readonly showAliases?: boolean;
-  readonly colors?: Colors | false;
+export interface HydratedOptionSpec {
+  readonly value: string;
 }
 
-export function formatOptionName<O extends CommandMetadataOption>(opt: O, { showAliases = true, colors = DEFAULT_COLORS }: FormatOptionNameOptions = {}): string {
-  const colorfn: (input: string) => string = colors ? colors.input : lodash.identity;
+export function hydrateOptionSpec<O extends CommandMetadataOption>(opt: O): HydratedOptionSpec {
+  return { ...{ value: opt.type === Boolean ? 'true/false' : opt.name }, ...opt.spec || {} };
+}
+
+export interface FormatOptionNameOptions {
+  readonly showAliases?: boolean;
+  readonly showValueSpec?: boolean;
+  readonly colors?: Colors;
+}
+
+export function formatOptionName<O extends CommandMetadataOption>(opt: O, { showAliases = true, showValueSpec = true, colors = DEFAULT_COLORS }: FormatOptionNameOptions = {}): string {
+  const { input, weak } = colors;
+  const spec = hydrateOptionSpec(opt);
+
   const showInverse = opt.type === Boolean && opt.default === true && opt.name.length > 1;
+  const valueSpec = opt.type === Boolean ? '' : `=<${spec.value}>`;
+  const aliasValueSpec = opt.type === Boolean ? '' : '=?';
 
   return (
-    (showInverse ? colorfn(`--no-${opt.name}`) : colorfn(`-${opt.name.length > 1 ? '-' : ''}${opt.name}`)) +
+    (showInverse ? input(`--no-${opt.name}`) : input(`-${opt.name.length > 1 ? '-' : ''}${opt.name}`)) +
+    (showValueSpec ? weak(valueSpec) : '') +
     (showAliases ?
       (!showInverse && opt.aliases && opt.aliases.length > 0 ? ', ' + opt.aliases
-        .map(alias => colorfn(`-${alias}`))
+        .map(alias => input(`-${alias}`) + (showValueSpec ? weak(aliasValueSpec) : ''))
         .join(', ') : '') : '')
   );
 }

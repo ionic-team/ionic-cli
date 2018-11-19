@@ -1,4 +1,4 @@
-import chalk, { Chalk } from 'chalk';
+import chalk from 'chalk';
 import * as lodash from 'lodash';
 import { Writable } from 'stream';
 import * as util from 'util';
@@ -6,7 +6,7 @@ import * as util from 'util';
 import { WordWrapOptions, stringWidth, wordWrap } from '../utils/format';
 import { enforceLF } from '../utils/string';
 
-import { Colors, DEFAULT_COLORS } from './colors';
+import { ColorFunction, Colors, DEFAULT_COLORS } from './colors';
 
 export interface LogRecord {
   msg: string;
@@ -43,7 +43,7 @@ export function getLoggerLevelName(level?: LoggerLevelWeight): LoggerLevel | und
   }
 }
 
-export function getLoggerLevelColor(colors: Colors, level?: LoggerLevelWeight): Chalk | undefined {
+export function getLoggerLevelColor(colors: Colors, level?: LoggerLevelWeight): ColorFunction | undefined {
   const levelName = getLoggerLevelName(level);
 
   if (levelName) {

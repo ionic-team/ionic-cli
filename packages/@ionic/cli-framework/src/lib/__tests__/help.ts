@@ -86,8 +86,9 @@ class BarCommand extends Command {
         { name: 'input2', summary: 'input2 summary' },
       ],
       options: [
-        { name: 'opt1', summary: 'opt1 summary', aliases: ['o'] },
+        { name: 'opt1', summary: 'opt1 summary', aliases: ['o'], spec: { value: 'optvalue' } },
         { name: 'opt2', summary: 'opt2 summary', groups: [OptionGroup.Advanced] },
+        { name: 'opt3', summary: 'opt3 summary', type: Boolean },
       ],
       exampleCommands: ['', 'input1 input2', '--opt1 --opt2'],
     };
@@ -132,13 +133,14 @@ describe('@ionic/cli-framework', () => {
 
   Inputs:
 
-    input1 ................... input1 summary
-    input2 ................... input2 summary
+    input1 .......................... input1 summary
+    input2 .......................... input2 summary
 
   Options:
 
-    --opt1, -o ............... opt1 summary
-    --opt2 ................... opt2 summary
+    --opt1=<optvalue>, -o=? ......... opt1 summary
+    --opt2=<opt2> ................... opt2 summary
+    --opt3 .......................... opt3 summary
 
   Examples:
 
@@ -168,9 +170,9 @@ describe('@ionic/cli-framework', () => {
 
   Commands:
 
-    bar ...................... the bar command
-    defns <subcommand> ....... the defns namespace (subcommands: def)
-    foo <subcommand> ......... the foo namespace (subcommands: bar, baz) (alias: f)
+    bar ............................. the bar command
+    defns <subcommand> .............. the defns namespace (subcommands: def)
+    foo <subcommand> ................ the foo namespace (subcommands: bar, baz) (alias: f)
 
 `);
       });
@@ -192,8 +194,8 @@ describe('@ionic/cli-framework', () => {
 
   Commands:
 
-    bar ...................... the bar command (alias: b)
-    baz ...................... the baz command (aliases: b1, b2)
+    bar ............................. the bar command (alias: b)
+    baz ............................. the baz command (aliases: b1, b2)
 
 `);
       });
@@ -244,7 +246,10 @@ describe('@ionic/cli-framework', () => {
                   "groups": [],
                   "aliases": [
                     "o"
-                  ]
+                  ],
+                  "spec": {
+                    "value": "optvalue"
+                  },
                 },
                 {
                   "name": "opt2",
@@ -254,7 +259,20 @@ describe('@ionic/cli-framework', () => {
                   "groups": [
                     "advanced"
                   ],
-                }
+                  "spec": {
+                    "value": "opt2"
+                  },
+                },
+                {
+                  "name": "opt3",
+                  "type": "boolean",
+                  "summary": "opt3 summary",
+                  "aliases": [],
+                  "groups": [],
+                  "spec": {
+                    "value": "true/false"
+                  },
+                },
               ]
             },
             {
@@ -294,7 +312,10 @@ describe('@ionic/cli-framework', () => {
                   "groups": [],
                   "aliases": [
                     "o"
-                  ]
+                  ],
+                  "spec": {
+                    "value": "optvalue"
+                  },
                 },
                 {
                   "name": "opt2",
@@ -303,8 +324,21 @@ describe('@ionic/cli-framework', () => {
                   "groups": [
                     "advanced"
                   ],
-                  "aliases": []
-                }
+                  "aliases": [],
+                  "spec": {
+                    "value": "opt2"
+                  },
+                },
+                {
+                  "name": "opt3",
+                  "type": "boolean",
+                  "summary": "opt3 summary",
+                  "aliases": [],
+                  "groups": [],
+                  "spec": {
+                    "value": "true/false"
+                  },
+                },
               ]
             },
             {
