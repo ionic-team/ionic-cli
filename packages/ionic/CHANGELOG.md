@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.4.0"></a>
+# [4.4.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.3.1...ionic@4.4.0) (2018-11-20)
+
+
+### Bug Fixes
+
+* **multi-app:** properly handle bare projects ([3f84a6f](https://github.com/ionic-team/ionic-cli/commit/3f84a6f)), closes [/github.com/ionic-team/ionic-docs/issues/83#issuecomment-439655706](https://github.com//github.com/ionic-team/ionic-docs/issues/83/issues/issuecomment-439655706)
+* **project:** write determined project type to config ([307d81f](https://github.com/ionic-team/ionic-cli/commit/307d81f))
+
+
+### Features
+
+* **build:** show build progress ([3090615](https://github.com/ionic-team/ionic-cli/commit/3090615))
+* **help:** show value hint for options ([aa13ba8](https://github.com/ionic-team/ionic-cli/commit/aa13ba8))
+* **init:** add `ionic init` command ([4a12b17](https://github.com/ionic-team/ionic-cli/commit/4a12b17))
+* **login:** SSO authentication flow ([#3741](https://github.com/ionic-team/ionic-cli/issues/3741)) ([71b319a](https://github.com/ionic-team/ionic-cli/commit/71b319a))
+* **serve:** forward `--ssl` to Angular CLI ([815b49a](https://github.com/ionic-team/ionic-cli/commit/815b49a))
+
+
+
+
 <a name="4.3.1"></a>
 ## [4.3.1](https://github.com/ionic-team/ionic-cli/compare/ionic@4.3.0...ionic@4.3.1) (2018-11-04)
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.0.23"></a>
+## [0.0.23](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@0.0.22...cli-scripts@0.0.23) (2018-11-20)
+
+
+### Bug Fixes
+
+* **docs:** add name to dummy config files ([7976f29](https://github.com/ionic-team/ionic-cli/commit/7976f29))
+
+
+
+
 <a name="0.0.22"></a>
 ## [0.0.22](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@0.0.21...cli-scripts@0.0.22) (2018-11-04)
 

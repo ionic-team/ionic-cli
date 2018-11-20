@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.3.0...@ionic/cli-framework@1.4.0) (2018-11-20)
+
+
+### Bug Fixes
+
+* **config:** rewrite config for not found & syntax errors ([13298f1](https://github.com/ionic-team/ionic-cli/commit/13298f1))
+* **terminal:** expand upon and fix Windows shell detection ([c3aa5a1](https://github.com/ionic-team/ionic-cli/commit/c3aa5a1)), closes [/github.com/ionic-team/ionic-cli/commit/dcc912d889011afd5944eaf4829bc8e5b4d0f4b6#commitcomment-31280556](https://github.com//github.com/ionic-team/ionic-cli/commit/dcc912d889011afd5944eaf4829bc8e5b4d0f4b6/issues/commitcomment-31280556)
+
+
+### Features
+
+* **help:** spec for customizing option help schema ([73830bc](https://github.com/ionic-team/ionic-cli/commit/73830bc))
+
+
+
+
 <a name="1.3.0"></a>
 # [1.3.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.2.0...@ionic/cli-framework@1.3.0) (2018-11-04)
 
