@@ -175,7 +175,7 @@ export abstract class BuildCLI<T extends object> {
     const args = await this.buildArgs(options);
 
     try {
-      await this.e.shell.run(this.resolvedProgram, args, { cwd: this.e.project.directory, fatalOnNotFound: false });
+      await this.e.shell.run(this.resolvedProgram, args, { stdio: 'inherit', cwd: this.e.project.directory, fatalOnNotFound: false });
     } catch (e) {
       if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
         throw new BuildCLIProgramNotFoundException(`${chalk.bold(this.resolvedProgram)} command not found.`);
