@@ -289,26 +289,33 @@ export class ProjectDetails {
 }
 
 export async function createProjectFromDetails(details: ProjectDetailsResult, deps: ProjectDeps): Promise<IProject> {
-  let project: IProject | undefined;
-  const { type } = details;
+  const { context, type } = details;
 
-  if (type === 'angular') {
-    const { AngularProject } = await import('./angular');
-    project = new AngularProject(details, deps);
-  } else if (type === 'ionic-angular') {
-    const { IonicAngularProject } = await import('./ionic-angular');
-    project = new IonicAngularProject(details, deps);
-  } else if (type === 'ionic1') {
-    const { Ionic1Project } = await import('./ionic1');
-    project = new Ionic1Project(details, deps);
-  } else if (type === 'custom') {
-    const { CustomProject } = await import('./custom');
-    project = new CustomProject(details, deps);
-  } else {
-    throw new FatalException(`Bad project type: ${chalk.bold(String(type))}`); // TODO?
+  switch (type) {
+    case 'angular':
+      const { AngularProject } = await import('./angular');
+      return new AngularProject(details, deps);
+    case 'ionic-angular':
+      const { IonicAngularProject } = await import('./ionic-angular');
+      return new IonicAngularProject(details, deps);
+    case 'ionic1':
+      const { Ionic1Project } = await import('./ionic1');
+      return new Ionic1Project(details, deps);
+    case 'custom':
+      const { CustomProject } = await import('./custom');
+      return new CustomProject(details, deps);
   }
 
-  return project;
+  // If we can't match any of the types above, but we've detected a multi-app
+  // setup, it likely means this is a "bare" project, or a project without
+  // apps. This can occur when `ionic start` is used for the first time in a
+  // new multi-app setup.
+  if (context === 'multiapp') {
+    const { BareProject } = await import('./bare');
+    return new BareProject(details, deps);
+  }
+
+  throw new FatalException(`Bad project type: ${chalk.bold(String(type))}`); // TODO?
 }
 
 export async function findProjectDirectory(cwd: string): Promise<string | undefined> {
@@ -328,24 +335,23 @@ export async function createProjectFromDirectory(rootDirectory: string, args: Pa
     details.processResult(result);
   }
 
-  const { type } = result;
-
-  if (!type) {
+  if (result.context === 'unknown') {
     return;
   }
 
-  const project = await createProjectFromDetails(result, deps);
+  return createProjectFromDetails(result, deps);
+}
 
-  if (project.type !== project.config.get('type')) {
-    project.config.set('type', project.type);
-  }
-
-  return project;
+export interface ProjectConfigOptions extends BaseConfigOptions {
+  readonly type?: ProjectType;
 }
 
 export class ProjectConfig extends BaseConfig<IProjectConfig> {
-  constructor(p: string, options?: BaseConfigOptions) {
+  protected readonly type?: ProjectType;
+
+  constructor(p: string, { type, ...options }: ProjectConfigOptions = {}) {
     super(p, options);
+    this.type = type;
 
     const c = this.c as any;
 
@@ -363,6 +369,7 @@ export class ProjectConfig extends BaseConfig<IProjectConfig> {
     return lodash.assign({
       name: 'New Ionic App',
       integrations: {},
+      type: this.type,
     }, c);
   }
 }
@@ -406,7 +413,7 @@ export abstract class Project implements IProject {
 
   get config(): ProjectConfig {
     const id = this.details.context === 'multiapp' ? this.details.id : undefined;
-    const options = { pathPrefix: id ? ['projects', id] : [] };
+    const options = { type: this.type, pathPrefix: id ? ['projects', id] : [] };
 
     return new ProjectConfig(this.filePath, options);
   }

@@ -42,7 +42,7 @@ export interface Runner<T extends object, U> {
   run(options: T): Promise<U>;
 }
 
-export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom';
+export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom' | 'bare';
 export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after';
 
 export interface BaseHookContext {
