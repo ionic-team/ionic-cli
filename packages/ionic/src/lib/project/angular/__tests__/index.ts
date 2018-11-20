@@ -15,7 +15,6 @@ describe('ionic', () => {
       });
 
       it('should set directory attribute', async () => {
-        debugger;
         expect(p.directory).toEqual(path.resolve('/path/to/proj'));
       });
 
