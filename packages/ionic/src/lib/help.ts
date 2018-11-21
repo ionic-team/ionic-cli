@@ -1,8 +1,7 @@
-import { CommandGroup, CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, NO_COLORS, NamespaceGroup, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, OptionGroup, formatOptionName, isOptionVisible } from '@ionic/cli-framework';
+import { CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, NO_COLORS, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, OptionGroup, formatOptionName, isOptionVisible } from '@ionic/cli-framework';
 import { filter } from '@ionic/cli-framework/utils/array';
-import chalk from 'chalk';
 
-import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace, NamespaceMetadata } from '../definitions';
+import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace } from '../definitions';
 
 import { GLOBAL_OPTIONS } from './config';
 
@@ -12,26 +11,6 @@ const IONIC_LOGO = String.raw`
   | |/ _ \| '_ \| |/ __|
   | | (_) | | | | | (__
   |_|\___/|_| |_|_|\___|`;
-
-type Decoration = [string, string];
-
-const OPTION_DECORATIONS: Decoration[] = [
-  [OptionGroup.Beta, chalk.red.bold('(beta)')],
-  [OptionGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
-  [OptionGroup.Experimental, chalk.red.bold('(experimental)')],
-];
-
-const COMMAND_DECORATIONS: Decoration[] = [
-  [CommandGroup.Beta, chalk.red.bold('(beta)')],
-  [CommandGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
-  [CommandGroup.Experimental, chalk.red.bold('(experimental)')],
-];
-
-const NAMESPACE_DECORATIONS: Decoration[] = [
-  [NamespaceGroup.Beta, chalk.red.bold('(beta)')],
-  [NamespaceGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
-  [NamespaceGroup.Experimental, chalk.red.bold('(experimental)')],
-];
 
 export interface NamespaceHelpFormatterDeps extends BaseNamespaceHelpFormatterDeps<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
   readonly inProject: boolean;
@@ -54,19 +33,6 @@ export class NamespaceStringHelpFormatter extends BaseNamespaceStringHelpFormatt
 
   async formatIonicHeader(): Promise<string> {
     return IONIC_LOGO + `  CLI ${this.version}\n\n`;
-  }
-
-  async formatBeforeNamespaceSummary(meta: NamespaceMetadata): Promise<string> {
-    return formatGroupDecorations(NAMESPACE_DECORATIONS, meta.groups);
-  }
-
-  async formatBeforeSummary(): Promise<string> {
-    const metadata = await this.getNamespaceMetadata();
-    return formatGroupDecorations(NAMESPACE_DECORATIONS, metadata.groups);
-  }
-
-  async formatBeforeCommandSummary(cmd: HydratedCommandMetadata): Promise<string> {
-    return formatGroupDecorations(COMMAND_DECORATIONS, cmd.groups);
   }
 
   async getGlobalOptions(): Promise<string[]> {
@@ -101,13 +67,8 @@ export class CommandStringHelpFormatter extends BaseCommandStringHelpFormatter<I
     );
   }
 
-  async formatBeforeSummary(): Promise<string> {
-    const metadata = await this.getCommandMetadata();
-    return formatGroupDecorations(COMMAND_DECORATIONS, metadata.groups);
-  }
-
   async formatBeforeOptionSummary(opt: CommandMetadataOption): Promise<string> {
-    return (opt.hint ? `${opt.hint} ` : '') + formatGroupDecorations(OPTION_DECORATIONS, opt.groups);
+    return (opt.hint ? `${opt.hint} ` : '') + await super.formatBeforeOptionSummary(opt);
   }
 }
 
@@ -135,13 +96,4 @@ export class CommandSchemaHelpFormatter extends BaseCommandSchemaHelpFormatter<I
 
     return { ...formatted, type: cmd.type };
   }
-}
-
-function formatGroupDecorations(decorations: Decoration[], groups?: string[]): string {
-  if (!groups) {
-    return '';
-  }
-
-  const prepends = decorations.filter(([g]) => groups.includes(g)).map(([, d]) => d);
-  return prepends.length ? prepends.join(' ') + ' ' : '';
 }

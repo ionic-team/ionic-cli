@@ -1,6 +1,5 @@
 import { Command, CommandMap, CommandMapDefault, Namespace, NamespaceMap } from '../command';
-import { CommandGroup, NamespaceGroup, OptionGroup } from '../options';
-import { CommandStringHelpFormatter, NamespaceStringHelpFormatter, NamespaceSchemaHelpFormatter } from '../help';
+import { CommandGroup, NamespaceGroup, OptionGroup, CommandStringHelpFormatter, NamespaceStringHelpFormatter, NamespaceSchemaHelpFormatter } from '../help';
 import { stripAnsi } from '../../utils/format';
 
 class MyNamespace extends Namespace {
@@ -171,7 +170,7 @@ describe('@ionic/cli-framework', () => {
   Commands:
 
     bar ............................. the bar command
-    defns <subcommand> .............. the defns namespace (subcommands: def)
+    defns <subcommand> .............. (beta) the defns namespace (subcommands: def)
     foo <subcommand> ................ the foo namespace (subcommands: bar, baz) (alias: f)
 
 `);

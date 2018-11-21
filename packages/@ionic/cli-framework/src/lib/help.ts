@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import * as lodash from 'lodash';
 
 import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
@@ -7,11 +8,70 @@ import { filter, map } from '../utils/array';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '../utils/format';
 
 import { Colors, DEFAULT_COLORS } from './colors';
-import { isCommandVisible } from './command';
-import { formatOptionName, hydrateOptionSpec, isOptionVisible } from './options';
+import { formatOptionName, hydrateOptionSpec } from './options';
 import { validators } from './validators';
 
 const DEFAULT_DOTS_WIDTH = 32;
+
+export enum CommandGroup {
+  Deprecated = 'deprecated',
+  Hidden = 'hidden',
+  Beta = 'beta',
+  Experimental = 'experimental',
+}
+
+export enum NamespaceGroup {
+  Deprecated = 'deprecated',
+  Hidden = 'hidden',
+  Beta = 'beta',
+  Experimental = 'experimental',
+}
+
+export enum OptionGroup {
+  Deprecated = 'deprecated',
+  Hidden = 'hidden',
+  Beta = 'beta',
+  Experimental = 'experimental',
+  Advanced = 'advanced',
+}
+
+type Decoration<T extends string> = [T, string];
+
+const OPTION_DECORATIONS: Decoration<OptionGroup>[] = [
+  [OptionGroup.Beta, chalk.red.bold('(beta)')],
+  [OptionGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
+  [OptionGroup.Experimental, chalk.red.bold('(experimental)')],
+];
+
+const COMMAND_DECORATIONS: Decoration<CommandGroup>[] = [
+  [CommandGroup.Beta, chalk.red.bold('(beta)')],
+  [CommandGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
+  [CommandGroup.Experimental, chalk.red.bold('(experimental)')],
+];
+
+const NAMESPACE_DECORATIONS: Decoration<NamespaceGroup>[] = [
+  [NamespaceGroup.Beta, chalk.red.bold('(beta)')],
+  [NamespaceGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
+  [NamespaceGroup.Experimental, chalk.red.bold('(experimental)')],
+];
+
+function formatGroupDecorations<T extends string>(decorations: Decoration<T>[], groups?: string[]): string {
+  if (!groups) {
+    return '';
+  }
+
+  const prepends = decorations.filter(([g]) => groups.includes(g)).map(([, d]) => d);
+  return prepends.length ? prepends.join(' ') + ' ' : '';
+}
+
+export async function isOptionVisible<O extends CommandMetadataOption>(opt: O): Promise<boolean> {
+  return !opt.groups || !opt.groups.includes(OptionGroup.Hidden);
+}
+
+export async function isCommandVisible<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(cmd: HydratedCommandMetadata<C, N, M, I, O>): Promise<boolean> {
+  const ns = await cmd.namespace.getMetadata();
+  return (!cmd.groups || !cmd.groups.includes(CommandGroup.Hidden)) && (!ns.groups || !ns.groups.includes(NamespaceGroup.Hidden));
+}
 
 export abstract class HelpFormatter {
   protected readonly colors: Colors;
@@ -72,31 +132,6 @@ export abstract class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, 
 }
 
 export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends NamespaceHelpFormatter<C, N, M, I, O> {
-  /**
-   * Insert text that appears before a commands's summary.
-   *
-   * @param meta: The metadata of the command.
-   */
-  formatBeforeCommandSummary?(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<string>;
-
-  /**
-   * Insert text before summaries of listed subnamespaces.
-   *
-   * @param meta The metadata of the namespace.
-   * @param commands An array of the metadata of the namespace's commands.
-   */
-  formatBeforeNamespaceSummary?(meta: HydratedNamespaceMetadata<C, N, M, I, O>, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string>;
-
-  /**
-   * Insert text before the namespace's summary.
-   */
-  formatBeforeSummary?(): Promise<string>;
-
-  /**
-   * Insert text after the namespace's summary.
-   */
-  formatAfterSummary?(): Promise<string>;
-
   async formatHeader(): Promise<string> {
     const { strong, input } = this.colors;
     const fullName = await this.getNamespaceFullName();
@@ -114,9 +149,9 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     const fullName = await this.getNamespaceFullName();
     const metadata = await this.getNamespaceMetadata();
     const summary = (
-      (this.formatBeforeSummary ? await this.formatBeforeSummary() : '') +
+      (await this.formatBeforeSummary(metadata)) +
       metadata.summary +
-      (this.formatAfterSummary ? await this.formatAfterSummary() : '')
+      (await this.formatAfterSummary(metadata))
     );
 
     const wrappedSummary = wordWrap(summary, { indentation: fullName.length + 5 });
@@ -190,7 +225,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
 
     const formattedCommands = await Promise.all(commands.map(async (cmd, index) => {
       const summary = (
-        (this.formatBeforeCommandSummary ? await this.formatBeforeCommandSummary(cmd) : '') +
+        (await this.formatBeforeCommandSummary(cmd)) +
         cmd.summary +
         (await this.formatAfterCommandSummary(cmd))
       );
@@ -210,7 +245,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
 
     const formattedNamespaces = await Promise.all(namespaces.map(async (meta, i) => {
       const summary = (
-        (this.formatBeforeNamespaceSummary ? await this.formatBeforeNamespaceSummary(meta, meta.commands) : '') +
+        (await this.formatBeforeNamespaceSummary(meta, meta.commands)) +
         meta.summary +
         (await this.formatAfterNamespaceSummary(meta, meta.commands))
       );
@@ -221,6 +256,33 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     }));
 
     return formattedNamespaces;
+  }
+
+  /**
+   * Insert text before the namespace's summary.
+   *
+   * @param meta: The metadata of the namespace.
+   */
+  async formatBeforeSummary(meta: NamespaceMetadata): Promise<string> {
+    return formatGroupDecorations(NAMESPACE_DECORATIONS, meta.groups);
+  }
+
+  /**
+   * Insert text after the namespace's summary.
+   *
+   * @param meta: The metadata of the namespace.
+   */
+  async formatAfterSummary(meta: NamespaceMetadata): Promise<string> {
+    return '';
+  }
+
+  /**
+   * Insert text that appears before a commands's summary.
+   *
+   * @param meta: The metadata of the command.
+   */
+  async formatBeforeCommandSummary(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<string> {
+    return formatGroupDecorations(COMMAND_DECORATIONS, meta.groups);
   }
 
   /**
@@ -235,6 +297,16 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     const formattedAliases = aliases.length > 0 ? weak('(alias' + (aliases.length === 1 ? '' : 'es') + ': ') + aliases.map(a => input(a)).join(', ') + weak(')') : '';
 
     return formattedAliases ? ` ${formattedAliases}` : '';
+  }
+
+  /**
+   * Insert text that appears before a namespace's summary.
+   *
+   * @param meta The metadata of the namespace.
+   * @param commands An array of the metadata of the namespace's commands.
+   */
+  async formatBeforeNamespaceSummary(meta: HydratedNamespaceMetadata<C, N, M, I, O>, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string> {
+    return formatGroupDecorations(NAMESPACE_DECORATIONS, meta.groups);
   }
 
   /**
@@ -322,23 +394,6 @@ export abstract class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N 
 }
 
 export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends CommandHelpFormatter<C, N, M, I, O> {
-  /**
-   * Insert text that appears before an option's summary.
-   *
-   * @param opt The metadata of the option.
-   */
-  formatBeforeOptionSummary?(opt: O): Promise<string>;
-
-  /**
-   * Insert text before the command's summary.
-   */
-  formatBeforeSummary?(): Promise<string>;
-
-  /**
-   * Insert text after the command's summary.
-   */
-  formatAfterSummary?(): Promise<string>;
-
   async formatHeader(): Promise<string> {
     const { strong, input } = this.colors;
     const fullName = await this.getCommandFullName();
@@ -357,9 +412,9 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     const metadata = await this.getCommandMetadata();
 
     const summary = (
-      (this.formatBeforeSummary ? await this.formatBeforeSummary() : '') +
+      (await this.formatBeforeSummary(metadata)) +
       metadata.summary +
-      (this.formatAfterSummary ? await this.formatAfterSummary() : '')
+      (await this.formatAfterSummary(metadata))
     );
 
     const wrappedSummary = wordWrap(summary, { indentation: fullName.length + 5 });
@@ -430,7 +485,7 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     const optionNameLength = stringWidth(optionName);
     const fullLength = optionNameLength > this.dotswidth ? optionNameLength + 1 : this.dotswidth;
     const fullDescription = (
-      (this.formatBeforeOptionSummary ? await this.formatBeforeOptionSummary(opt) : '') +
+      (await this.formatBeforeOptionSummary(opt)) +
       opt.summary +
       (await this.formatAfterOptionSummary(opt))
     );
@@ -438,6 +493,33 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     const wrappedDescription = wordWrap(fullDescription, { indentation: this.dotswidth + 6 });
 
     return `${optionName} ${weak('.').repeat(fullLength - optionNameLength)} ${wrappedDescription}`;
+  }
+
+  /**
+   * Insert text before the command's summary.
+   *
+   * @param meta The metadata of the command.
+   */
+  async formatBeforeSummary(meta: M): Promise<string> {
+    return formatGroupDecorations(COMMAND_DECORATIONS, meta.groups);
+  }
+
+  /**
+   * Insert text after the command's summary.
+   *
+   * @param meta The metadata of the command.
+   */
+  async formatAfterSummary(meta: M): Promise<string> {
+    return '';
+  }
+
+  /**
+   * Insert text that appears before an option's summary.
+   *
+   * @param opt The metadata of the option.
+   */
+  async formatBeforeOptionSummary(opt: O): Promise<string> {
+    return formatGroupDecorations(OPTION_DECORATIONS, opt.groups);
   }
 
   async formatAfterOptionSummary(opt: O): Promise<string> {

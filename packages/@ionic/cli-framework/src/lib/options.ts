@@ -8,28 +8,6 @@ import { Colors, DEFAULT_COLORS } from './colors';
 export const parseArgs = minimist;
 export { ParsedArgs } from 'minimist';
 
-export enum CommandGroup {
-  Deprecated = 'deprecated',
-  Hidden = 'hidden',
-  Beta = 'beta',
-  Experimental = 'experimental',
-}
-
-export enum NamespaceGroup {
-  Deprecated = 'deprecated',
-  Hidden = 'hidden',
-  Beta = 'beta',
-  Experimental = 'experimental',
-}
-
-export enum OptionGroup {
-  Deprecated = 'deprecated',
-  Hidden = 'hidden',
-  Beta = 'beta',
-  Experimental = 'experimental',
-  Advanced = 'advanced',
-}
-
 /**
  * Remove options, which are any arguments that starts with a hyphen (-), from
  * a list of process args and return the result.
@@ -118,10 +96,6 @@ export function formatOptionName<O extends CommandMetadataOption>(opt: O, { show
         .map(alias => input(`-${alias}`) + (showValueSpec ? weak(aliasValueSpec) : ''))
         .join(', ') : '') : '')
   );
-}
-
-export async function isOptionVisible<O extends CommandMetadataOption>(opt: O): Promise<boolean> {
-  return !opt.groups || !opt.groups.includes(OptionGroup.Hidden);
 }
 
 export function metadataOptionsToParseArgsOptions(commandOptions: ReadonlyArray<CommandMetadataOption>): HydratedParseArgsOptions {
