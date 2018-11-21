@@ -7,7 +7,7 @@ import { isHydratedCommandMetadata } from '../guards';
 import { filter, map } from '../utils/array';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '../utils/format';
 
-import { Colors, DEFAULT_COLORS } from './colors';
+import { ColorFunction, Colors, DEFAULT_COLORS } from './colors';
 import { formatOptionName, hydrateOptionSpec } from './options';
 import { validators } from './validators';
 
@@ -224,6 +224,8 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     const fillStringArray = generateFillSpaceStringList(fullCmd, this.dotswidth, weak('.'));
 
     const formattedCommands = await Promise.all(commands.map(async (cmd, index) => {
+      const wrapColor: ColorFunction = cmd.groups && cmd.groups.includes(CommandGroup.Deprecated) ? weak : lodash.identity;
+
       const summary = (
         (await this.formatBeforeCommandSummary(cmd)) +
         cmd.summary +
@@ -231,7 +233,9 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
       );
 
       const wrappedSummary = wordWrap(summary, { indentation: this.dotswidth + 6 });
-      return `${input(lodash.tail(cmd.path).map(([p]) => p).join(' '))}${wrappedSummary ? ' ' + fillStringArray[index] + ' ' + wrappedSummary : ''}`;
+      const line = `${input(lodash.tail(cmd.path).map(([p]) => p).join(' '))}${wrappedSummary ? ' ' + fillStringArray[index] + ' ' + wrappedSummary : ''}`;
+
+      return wrapColor(line);
     }));
 
     return formattedCommands;
@@ -481,6 +485,7 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
 
   async formatOptionLine(opt: O) {
     const { weak } = this.colors;
+    const wrapColor: ColorFunction = opt.groups && opt.groups.includes(OptionGroup.Deprecated) ? weak : lodash.identity;
     const optionName = formatOptionName(opt, { colors: this.colors });
     const optionNameLength = stringWidth(optionName);
     const fullLength = optionNameLength > this.dotswidth ? optionNameLength + 1 : this.dotswidth;
@@ -491,8 +496,9 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     );
 
     const wrappedDescription = wordWrap(fullDescription, { indentation: this.dotswidth + 6 });
+    const line = `${optionName} ${weak('.').repeat(fullLength - optionNameLength)} ${wrappedDescription}`;
 
-    return `${optionName} ${weak('.').repeat(fullLength - optionNameLength)} ${wrappedDescription}`;
+    return wrapColor(line);
   }
 
   /**
