@@ -1,4 +1,4 @@
-import { ERROR_SHELL_COMMAND_NOT_FOUND, ShellCommandError } from '@ionic/cli-framework';
+import { ERROR_SHELL_COMMAND_NOT_FOUND, ERROR_SHELL_SIGNAL_EXIT, ShellCommandError } from '@ionic/cli-framework';
 import { pathExists } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as path from 'path';
@@ -41,25 +41,31 @@ export abstract class CapacitorCommand extends Command {
 
   async runCapacitor(argList: string[]): Promise<void> {
     try {
-      await this._runCapacitor(argList);
+      return await this._runCapacitor(argList);
     } catch (e) {
-      if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
-        const pkg = '@capacitor/cli';
-        const requiredMsg = `The Capacitor CLI is required for Capacitor projects.`;
-        this.env.log.nl();
-        this.env.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
-        this.env.log.nl();
+      if (e instanceof ShellCommandError) {
+        if (e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
+          const pkg = '@capacitor/cli';
+          const requiredMsg = `The Capacitor CLI is required for Capacitor projects.`;
+          this.env.log.nl();
+          this.env.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
+          this.env.log.nl();
 
-        const installed = await this.promptToInstallCapacitor();
+          const installed = await this.promptToInstallCapacitor();
 
-        if (!installed) {
-          throw new FatalException(`${chalk.green(pkg)} is required for Capacitor projects.`);
+          if (!installed) {
+            throw new FatalException(`${chalk.green(pkg)} is required for Capacitor projects.`);
+          }
+
+          return this.runCapacitor(argList);
         }
 
-        await this._runCapacitor(argList);
-      } else {
-        throw e;
+        if (e.code === ERROR_SHELL_SIGNAL_EXIT) {
+          return;
+        }
       }
+
+      throw e;
     }
   }
 
