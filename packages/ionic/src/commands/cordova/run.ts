@@ -15,7 +15,6 @@ import { pkgManagerArgs } from '../../lib/utils/npm';
 
 import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
 
-// TODO: does this change for running on Android device?
 const CORDOVA_ANDROID_PACKAGE_PATH = 'platforms/android/app/build/outputs/apk/';
 const CORDOVA_IOS_SIMULATOR_PACKAGE_PATH = 'platforms/ios/build/emulator';
 const CORDOVA_IOS_DEVICE_PACKAGE_PATH = 'platforms/ios/build/device';
@@ -370,6 +369,8 @@ function createNativeRunListArgs(inputs: string[], options: CommandLineOptions) 
 
 function getPackagePath(appName: string, platform: string, emulator: boolean) {
   if (platform === 'android') {
+    // TODO: don't hardcode this/support multiple build paths (ex: multiple arch builds)
+    // use app/build/outputs/apk/debug/output.json?
     return path.join(CORDOVA_ANDROID_PACKAGE_PATH, 'debug', 'app-debug.apk');
   }
   if (platform === 'ios' && emulator) {
