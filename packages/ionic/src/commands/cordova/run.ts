@@ -1,4 +1,4 @@
-import { LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
+import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, OptionGroup, ShellCommandError, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit, processExit, sleepForever } from '@ionic/cli-framework/utils/process';
 import chalk from 'chalk';
 import * as path from 'path';
@@ -182,7 +182,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       }
       if (options['native-run']) {
         const args = createNativeRunListArgs(inputs, options);
-        await this.nativeRun(args, !!options['json']);
+        await this.nativeRun(args);
       } else {
         const args = filterArgumentsForCordova(metadata, options);
         await this.runCordova(['run', ...args.slice(1)], {});
@@ -252,7 +252,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
         const platform = inputs[0];
         const packagePath = getPackagePath(conf.getProjectInfo().name, platform, options['emulator'] as boolean);
         const nativeRunArgs = createNativeRunArgs(packagePath, platform, options);
-        await this.nativeRun(nativeRunArgs, !!options['json']);
+        await this.nativeRun(nativeRunArgs);
       } else {
         await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: cordovalogws });
         await sleepForever();
@@ -267,58 +267,43 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
     }
   }
 
-  protected async nativeRun(args: any, json: boolean): Promise<void> {
+  protected async nativeRun(args: ReadonlyArray<string>): Promise<void> {
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic cordova run/emulate')} outside a project directory.`);
     }
 
-    const p = await this.env.shell.spawn('native-run', args, { showCommand: !json, stdio: 'pipe', cwd: this.project.directory });
+    let ws: NodeJS.WritableStream | undefined;
 
-    // no resolve, native-run --connect stays running until SIGINT or app close
-    return new Promise<void>((_, reject) => {
-      p.on('error', async (err: NodeJS.ErrnoException) => {
-        if (err.code === 'ENOENT') {
-          const nativeRunInstallArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'native-run', global: true });
-          this.env.log.nl();
-          this.env.log.error(
-            `Native-run was not found on your PATH. Please install native-run globally:\n` +
-            `${chalk.green(nativeRunInstallArgs.join(' '))}\n`
-          );
-          processExit(1); // tslint:disable-line:no-floating-promises
-        } else {
-          reject(err);
-        }
-      });
+    if (!args.includes('--list')) {
+      const log = this.env.log.clone();
+      log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(chalk.dim(`[native-run]`)));
+      ws = log.createWriteStream(LOGGER_LEVELS.INFO);
+    }
 
-      p.on('close', code => {
-        if (code > 0) {
-          this.env.log.nl();
-          this.env.log.error(
-            `${chalk.green('native-run')} has unexpectedly closed (exit code ${code}).\n` +
-            'The Ionic CLI will exit. Please check any output above for error details.'
-          );
-          processExit(1); // tslint:disable-line:no-floating-promises
-        }
-        process.stdout.write('\n');
-        processExit(0); // tslint:disable-line:no-floating-promises
-      });
-
-      if (!json) {
-        const log = this.env.log.clone();
-        log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(chalk.dim(`[native-run]`)));
-        const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
-
-        p.stdout.pipe(ws);
-        p.stderr.pipe(ws);
-      } else {
-        p.stdout.pipe(process.stdout);
-        p.stderr.pipe(process.stderr);
+    try {
+      await this.env.shell.run('native-run', args, { showCommand: !args.includes('--json'), fatalOnNotFound: false, cwd: this.project.directory, stream: ws });
+    } catch (e) {
+      if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
+        const cdvInstallArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'native-run', global: true });
+        throw new FatalException(
+          `${chalk.green('native-run')} was not found on your PATH. Please install it globally:\n` +
+          `${chalk.green(cdvInstallArgs.join(' '))}\n`
+        );
       }
-    });
+
+      throw e;
+    }
+
+    // If we connect the `native-run` process to the running app, then we
+    // should also connect the Ionic CLI with the running `native-run` process.
+    // This will exit the Ionic CLI when `native-run` exits.
+    if (args.includes('--connect')) {
+      processExit(0); // tslint:disable-line:no-floating-promises
+    }
   }
 }
 
-function createNativeRunArgs(packagePath: string, platform: string, options: CommandLineOptions) {
+function createNativeRunArgs(packagePath: string, platform: string, options: CommandLineOptions): string[] {
   const opts = [platform, '--app', packagePath];
   const target = options['target'] as string;
   if (target) {
@@ -327,10 +312,15 @@ function createNativeRunArgs(packagePath: string, platform: string, options: Com
     opts.push('--virtual');
   }
   opts.push('--connect');
+
+  if (options['json']) {
+    opts.push('--json');
+  }
+
   return opts;
 }
 
-function createNativeRunListArgs(inputs: string[], options: CommandLineOptions) {
+function createNativeRunListArgs(inputs: string[], options: CommandLineOptions): string[] {
   const args = [];
   if (inputs[0]) {
     args.push(inputs[0]);
@@ -345,6 +335,10 @@ function createNativeRunListArgs(inputs: string[], options: CommandLineOptions) 
   if (options['emulator']) {
     args.push('--virtual');
   }
+  if (options['json']) {
+    args.push('--json');
+  }
+
   return args;
 }
 
