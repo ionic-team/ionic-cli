@@ -1,5 +1,6 @@
 import { LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit, processExit, sleepForever } from '@ionic/cli-framework/utils/process';
+import { ShellCommand } from '@ionic/cli-framework/utils/shell';
 import chalk from 'chalk';
 import * as path from 'path';
 
@@ -181,9 +182,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
           options['emulator'] = true;
         }
       }
-
-      const args = filterArgumentsForCordova(metadata, options);
-      await this.runCordova(['run', ...args.slice(1)], {});
+      if (options['native-run']) {
+        const args = createNativeRunListArgs(inputs, options);
+        await this.nativeRunList(args, !!options['json']);
+      } else {
+        const args = filterArgumentsForCordova(metadata, options);
+        await this.runCordova(['run', ...args.slice(1)], {});
+      }
       throw new FatalException('', 0);
     }
 
@@ -263,6 +268,24 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       await this.runCordova(filterArgumentsForCordova(metadata, options));
     }
   }
+  protected async nativeRunList(args: string[], json: boolean) {
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic cordova run/emulate')} outside a project directory.`);
+    }
+
+    const nativeRun = new ShellCommand('native-run', args, { cwd: this.project.directory });
+    try {
+      process.stdout.write(await nativeRun.combinedOutput());
+    } catch (e) {
+      // native-run prints errors as JSON with --json
+      if (json) {
+        process.stderr.write(`${chalk.dim(`[native-run]`)} ${JSON.parse(e.output).error}\n`);
+      } else {
+        process.stderr.write(`${chalk.dim(`[native-run]`)} ${e.output}`);
+      }
+      throw e;
+    }
+  }
 
   protected async nativeRun(args: any): Promise<void> {
     if (!this.project) {
@@ -325,6 +348,24 @@ function createNativeRunArgs(packagePath: string, platform: string, options: Com
   }
   opts.push('--connect');
   return opts;
+}
+
+function createNativeRunListArgs(inputs: string[], options: CommandLineOptions) {
+  const args = [];
+  if (inputs[0]) {
+    args.push(inputs[0]);
+  }
+  args.push('--list');
+  if (options['json']) {
+    args.push('--json');
+  }
+  if (options['device']) {
+    args.push('--device');
+  }
+  if (options['emulator']) {
+    args.push('--virtual');
+  }
+  return args;
 }
 
 function getPackagePath(appName: string, platform: string, emulator: boolean) {
