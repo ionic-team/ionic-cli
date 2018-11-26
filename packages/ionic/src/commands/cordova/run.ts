@@ -287,6 +287,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
           processExit(1); // tslint:disable-line:no-floating-promises
         }
         process.stdout.write('\n');
+        processExit(0); // tslint:disable-line:no-floating-promises
       };
 
       p.on('error', async (err: NodeJS.ErrnoException) => {
@@ -313,7 +314,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
         p.stderr.pipe(ws);
       } else {
         p.stdout.pipe(process.stdout);
-        p.stdout.pipe(process.stderr);
+        p.stderr.pipe(process.stderr);
       }
     });
   }
