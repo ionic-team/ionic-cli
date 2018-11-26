@@ -275,7 +275,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
     const nativeRun = new ShellCommand('native-run', args, { cwd: this.project.directory });
     try {
-      process.stdout.write(await nativeRun.combinedOutput());
+      process.stdout.write(await nativeRun.combinedOutput() + '\n');
     } catch (e) {
       // native-run prints errors as JSON with --json
       if (json) {
