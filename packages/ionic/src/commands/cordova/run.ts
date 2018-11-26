@@ -333,21 +333,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 }
 
 function createNativeRunArgs(packagePath: string, platform: string, options: CommandLineOptions) {
+  const opts = [platform, '--app', packagePath];
   const target = options['target'] as string;
-  const emulator = options['emulator'] as boolean;
-  const opts = [platform];
-  if (platform === 'android') {
-    opts.push('--apk');
-  } else {
-    opts.push('--app');
-  }
-  opts.push(packagePath);
   if (target) {
-    opts.concat(['--target', target]);
-  } else if (emulator && platform === 'ios') {
-    opts.push('--simulator');
-  } else if (emulator) {
-    opts.push('--emulator');
+    opts.push('--target', target);
+  } else if (options['emulator']) {
+    opts.push('--virtual');
   }
   opts.push('--connect');
   return opts;
