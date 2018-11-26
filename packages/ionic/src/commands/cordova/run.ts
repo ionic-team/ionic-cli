@@ -63,6 +63,23 @@ const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
   },
 ];
 
+const NATIVE_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+  {
+    name: 'native-run',
+    summary: `Use ${chalk.green('native-run')} instead of Cordova for running the app`,
+    type: Boolean,
+    groups: [OptionGroup.Hidden, 'native-run'],
+  },
+  {
+    name: 'connect',
+    summary: 'Do not tie the running app to the process',
+    type: Boolean,
+    default: true,
+    groups: [OptionGroup.Hidden, 'native-run'],
+    hint: chalk.dim('[native-run]'),
+  },
+];
+
 export class RunCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
     let groups: string[] = [];
@@ -99,12 +116,6 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         name: 'livereload-url',
         summary: 'Provide a custom URL to the dev server',
       },
-      {
-        name: 'native-run',
-        summary: 'Use native-run instead of cordova for running the app',
-        type: Boolean,
-        groups: [OptionGroup.Hidden],
-      },
     ];
 
     const serveRunner = this.project && await this.project.getServeRunner();
@@ -125,6 +136,9 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
 
     // Cordova Options
     options.push(...CORDOVA_RUN_OPTIONS);
+
+    // `native-run` Options
+    options.push(...NATIVE_RUN_OPTIONS);
 
     return {
       name: 'run',
@@ -311,7 +325,10 @@ function createNativeRunArgs(packagePath: string, platform: string, options: Com
   } else if (options['emulator']) {
     opts.push('--virtual');
   }
-  opts.push('--connect');
+
+  if (options['connect']) {
+    opts.push('--connect');
+  }
 
   if (options['json']) {
     opts.push('--json');
