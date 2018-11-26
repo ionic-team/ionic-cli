@@ -276,20 +276,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
     // no resolve, native-run --connect stays running until SIGINT or app close
     return new Promise<void>((_, reject) => {
-      const closeHandler = (code: number | null) => {
-        const UV_ENOENT = -2; // error from libuv, already handled by error handler as Node ENOENT
-        if (code !== null && code !== 0 && code !== UV_ENOENT) { // tslint:disable-line:no-null-keyword
-          this.env.log.nl();
-          this.env.log.error(
-            `${chalk.green('native-run')} has unexpectedly closed (exit code ${code}).\n` +
-            'The Ionic CLI will exit. Please check any output above for error details.'
-          );
-          processExit(1); // tslint:disable-line:no-floating-promises
-        }
-        process.stdout.write('\n');
-        processExit(0); // tslint:disable-line:no-floating-promises
-      };
-
       p.on('error', async (err: NodeJS.ErrnoException) => {
         if (err.code === 'ENOENT') {
           const nativeRunInstallArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'native-run', global: true });
@@ -303,7 +289,19 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
           reject(err);
         }
       });
-      p.on('close', closeHandler);
+
+      p.on('close', code => {
+        if (code > 0) {
+          this.env.log.nl();
+          this.env.log.error(
+            `${chalk.green('native-run')} has unexpectedly closed (exit code ${code}).\n` +
+            'The Ionic CLI will exit. Please check any output above for error details.'
+          );
+          processExit(1); // tslint:disable-line:no-floating-promises
+        }
+        process.stdout.write('\n');
+        processExit(0); // tslint:disable-line:no-floating-promises
+      });
 
       if (!json) {
         const log = this.env.log.clone();
