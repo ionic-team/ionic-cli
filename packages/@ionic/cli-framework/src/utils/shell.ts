@@ -5,7 +5,7 @@ import * as path from 'path';
 
 import * as crossSpawn from 'cross-spawn';
 
-import { ERROR_SHELL_COMMAND_NOT_FOUND, ERROR_SHELL_NON_ZERO_EXIT, ShellCommandError } from '../errors';
+import { ERROR_SHELL_COMMAND_NOT_FOUND, ERROR_SHELL_NON_ZERO_EXIT, ERROR_SHELL_SIGNAL_EXIT, ShellCommandError } from '../errors';
 import { reduce } from '../utils/array';
 import { createProcessEnv } from '../utils/process';
 import { WritableStreamBuffer } from '../utils/streams';
@@ -119,15 +119,23 @@ export class ShellCommand {
       });
 
       p.on('close', (code, signal) => {
+        let err: ShellCommandError;
+
         if (code === 0) {
-          resolve();
+          return resolve();
+        }
+
+        if (signal) {
+          err = new ShellCommandError('Signal exit from subprocess.');
+          err.code = ERROR_SHELL_SIGNAL_EXIT;
+          err.signal = signal;
         } else {
-          const err = new ShellCommandError('Non-zero exit from subprocess.');
+          err = new ShellCommandError('Non-zero exit from subprocess.');
           err.code = ERROR_SHELL_NON_ZERO_EXIT;
           err.exitCode = code;
-          err.signal = signal ? signal : undefined;
-          reject(err);
         }
+
+        reject(err);
       });
     });
 

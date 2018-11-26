@@ -213,6 +213,23 @@ describe('@ionic/cli-framework', () => {
         await expect(promise).rejects.toThrow('Non-zero exit from subprocess.');
       });
 
+      it('should error for signal exit', async () => {
+        const cmd = new ShellCommand('cmd', []);
+        const mockSpawnStdout = new ReadableStreamBuffer();
+        const mockSpawnStderr = new ReadableStreamBuffer();
+        const cp = new class extends EventEmitter { stdout = mockSpawnStdout; stderr = mockSpawnStderr; };
+        mockCrossSpawn.mockImplementation(() => cp);
+        const buf = new WritableStreamBuffer();
+        const promise = cmd.run();
+        promise.p.stdout.pipe(buf);
+        promise.p.stderr.pipe(buf);
+        mockSpawnStdout.stop();
+        mockSpawnStderr.stop();
+        await promisifyEvent(buf, 'finish');
+        cp.emit('close', null, 'SIGINT');
+        await expect(promise).rejects.toThrow('Signal exit from subprocess.');
+      });
+
       it('should have child process in run() return value', async () => {
         const cmd = new ShellCommand('cmd', []);
         const mockSpawnStdout = new ReadableStreamBuffer();
