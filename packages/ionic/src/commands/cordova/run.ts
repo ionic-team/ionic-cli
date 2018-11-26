@@ -267,6 +267,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       await this.runCordova(filterArgumentsForCordova(metadata, options));
     }
   }
+
   protected async nativeRunList(args: string[], json: boolean) {
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic cordova run/emulate')} outside a project directory.`);
