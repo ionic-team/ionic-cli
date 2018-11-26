@@ -1,6 +1,5 @@
 import { LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit, processExit, sleepForever } from '@ionic/cli-framework/utils/process';
-import { ShellCommand } from '@ionic/cli-framework/utils/shell';
 import chalk from 'chalk';
 import * as path from 'path';
 
@@ -183,7 +182,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       }
       if (options['native-run']) {
         const args = createNativeRunListArgs(inputs, options);
-        await this.nativeRunList(args, !!options['json']);
+        await this.nativeRun(args, !!options['json']);
       } else {
         const args = filterArgumentsForCordova(metadata, options);
         await this.runCordova(['run', ...args.slice(1)], {});
@@ -253,7 +252,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
         const platform = inputs[0];
         const packagePath = getPackagePath(conf.getProjectInfo().name, platform, options['emulator'] as boolean);
         const nativeRunArgs = createNativeRunArgs(packagePath, platform, options);
-        await this.nativeRun(nativeRunArgs);
+        await this.nativeRun(nativeRunArgs, !!options['json']);
       } else {
         await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: cordovalogws });
         await sleepForever();
@@ -268,31 +267,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
     }
   }
 
-  protected async nativeRunList(args: string[], json: boolean) {
+  protected async nativeRun(args: any, json: boolean): Promise<void> {
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic cordova run/emulate')} outside a project directory.`);
     }
 
-    const nativeRun = new ShellCommand('native-run', args, { cwd: this.project.directory });
-    try {
-      process.stdout.write(await nativeRun.combinedOutput() + '\n');
-    } catch (e) {
-      // native-run prints errors as JSON with --json
-      if (json) {
-        process.stderr.write(`${chalk.dim(`[native-run]`)} ${JSON.parse(e.output).error}\n`);
-      } else {
-        process.stderr.write(`${chalk.dim(`[native-run]`)} ${e.output}`);
-      }
-      throw e;
-    }
-  }
-
-  protected async nativeRun(args: any): Promise<void> {
-    if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic cordova run/emulate')} outside a project directory.`);
-    }
-
-    const p = await this.env.shell.spawn('native-run', args, { stdio: 'pipe', cwd: this.project.directory });
+    const p = await this.env.shell.spawn('native-run', args, { showCommand: !json, stdio: 'pipe', cwd: this.project.directory });
 
     // no resolve, native-run --connect stays running until SIGINT or app close
     return new Promise<void>((_, reject) => {
@@ -304,8 +284,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
             `${chalk.green('native-run')} has unexpectedly closed (exit code ${code}).\n` +
             'The Ionic CLI will exit. Please check any output above for error details.'
           );
+          processExit(1); // tslint:disable-line:no-floating-promises
         }
-        processExit(1); // tslint:disable-line:no-floating-promises
+        process.stdout.write('\n');
       };
 
       p.on('error', async (err: NodeJS.ErrnoException) => {
@@ -323,12 +304,17 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       });
       p.on('close', closeHandler);
 
-      const log = this.env.log.clone();
-      log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(chalk.dim(`[native-run]`)));
-      const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
+      if (!json) {
+        const log = this.env.log.clone();
+        log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(chalk.dim(`[native-run]`)));
+        const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
 
-      p.stdout.pipe(ws);
-      p.stderr.pipe(ws);
+        p.stdout.pipe(ws);
+        p.stderr.pipe(ws);
+      } else {
+        p.stdout.pipe(process.stdout);
+        p.stdout.pipe(process.stderr);
+      }
     });
   }
 }
