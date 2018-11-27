@@ -1,16 +1,22 @@
-import { LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
-import { onBeforeExit, sleepForever } from '@ionic/cli-framework/utils/process';
+import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, OptionGroup, ShellCommandError, createPrefixedFormatter } from '@ionic/cli-framework';
+import { onBeforeExit, processExit, sleepForever } from '@ionic/cli-framework/utils/process';
 import chalk from 'chalk';
+import * as path from 'path';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IShellRunOptions } from '../../definitions';
 import { COMMON_BUILD_COMMAND_OPTIONS, build } from '../../lib/build';
 import { FatalException } from '../../lib/errors';
 import { loadConfigXml } from '../../lib/integrations/cordova/config';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, serve } from '../../lib/serve';
 import { createDefaultLoggerHandlers } from '../../lib/utils/logger';
+import { pkgManagerArgs } from '../../lib/utils/npm';
 
 import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
+
+const CORDOVA_ANDROID_PACKAGE_PATH = 'platforms/android/app/build/outputs/apk/';
+const CORDOVA_IOS_SIMULATOR_PACKAGE_PATH = 'platforms/ios/build/emulator';
+const CORDOVA_IOS_DEVICE_PACKAGE_PATH = 'platforms/ios/build/device';
 
 const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
   {
@@ -31,21 +37,21 @@ const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
     name: 'device',
     summary: 'Deploy build to a device',
     type: Boolean,
-    groups: ['cordova'],
+    groups: ['cordova', 'native-run'],
     hint: chalk.dim('[cordova]'),
   },
   {
     name: 'emulator',
     summary: 'Deploy build to an emulator',
     type: Boolean,
-    groups: ['cordova'],
+    groups: ['cordova', 'native-run'],
     hint: chalk.dim('[cordova]'),
   },
   {
     name: 'target',
     summary: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
     type: String,
-    groups: [OptionGroup.Advanced, 'cordova'],
+    groups: [OptionGroup.Advanced, 'cordova', 'native-run'],
     hint: chalk.dim('[cordova]'),
   },
   {
@@ -54,6 +60,31 @@ const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
     groups: [OptionGroup.Advanced, 'cordova'],
     hint: chalk.dim('[cordova]'),
     spec: { value: 'file' },
+  },
+];
+
+const NATIVE_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+  {
+    name: 'native-run',
+    summary: `Use ${chalk.green('native-run')} instead of Cordova for running the app`,
+    type: Boolean,
+    groups: [OptionGroup.Hidden, 'native-run'],
+    hint: chalk.dim('[native-run]'),
+  },
+  {
+    name: 'connect',
+    summary: 'Do not tie the running app to the process',
+    type: Boolean,
+    default: true,
+    groups: [OptionGroup.Hidden, 'native-run'],
+    hint: chalk.dim('[native-run]'),
+  },
+  {
+    name: 'json',
+    summary: `Output ${chalk.green('--list')} targets in JSON`,
+    type: Boolean,
+    groups: [OptionGroup.Hidden, 'native-run'],
+    hint: chalk.dim('[native-run]'),
   },
 ];
 
@@ -69,9 +100,9 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
     const options: CommandMetadataOption[] = [
       {
         name: 'list',
-        summary: 'List all available Cordova targets',
+        summary: 'List all available targets',
         type: Boolean,
-        groups: ['cordova'],
+        groups: ['cordova', 'native-run'],
       },
       // Build Options
       {
@@ -113,6 +144,9 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
 
     // Cordova Options
     options.push(...CORDOVA_RUN_OPTIONS);
+
+    // `native-run` Options
+    options.push(...NATIVE_RUN_OPTIONS);
 
     return {
       name: 'run',
@@ -168,9 +202,13 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
           options['emulator'] = true;
         }
       }
-
-      const args = filterArgumentsForCordova(metadata, options);
-      await this.runCordova(['run', ...args.slice(1)], {});
+      if (options['native-run']) {
+        const args = createNativeRunListArgs(inputs, options);
+        await this.nativeRun(args);
+      } else {
+        const args = filterArgumentsForCordova(metadata, options);
+        await this.runCordova(['run', ...args.slice(1)], {});
+      }
       throw new FatalException('', 0);
     }
 
@@ -196,7 +234,6 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
     if (options['livereload']) {
       let livereloadUrl = options['livereload-url'] ? String(options['livereload-url']) : undefined;
-
       if (!livereloadUrl) {
         // TODO: use runner directly
         const details = await serve({ flags: this.env.flags, config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
@@ -223,8 +260,25 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
       cordovalog.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(`${chalk.dim(`[cordova]`)} `));
       const cordovalogws = cordovalog.createWriteStream(LOGGER_LEVELS.INFO);
 
-      await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: cordovalogws });
-      await sleepForever();
+      if (options['native-run']) {
+        // hack to do just Cordova build instead
+        metadata.name = 'build';
+
+        const buildOpts: IShellRunOptions = { stream: cordovalogws };
+        // ignore very verbose compiler output unless --verbose (still pipe stderr)
+        if (!options['verbose']) {
+          buildOpts.stdio = ['ignore', 'ignore', 'pipe'];
+        }
+        await this.runCordova(filterArgumentsForCordova(metadata, options), buildOpts);
+
+        const platform = inputs[0];
+        const packagePath = getPackagePath(conf.getProjectInfo().name, platform, options['emulator'] as boolean);
+        const nativeRunArgs = createNativeRunArgs(packagePath, platform, options);
+        await this.nativeRun(nativeRunArgs);
+      } else {
+        await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: cordovalogws });
+        await sleepForever();
+      }
     } else {
       if (options.build) {
         // TODO: use runner directly
@@ -233,5 +287,95 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
       await this.runCordova(filterArgumentsForCordova(metadata, options));
     }
+  }
+
+  protected async nativeRun(args: ReadonlyArray<string>): Promise<void> {
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${chalk.green('ionic cordova run/emulate')} outside a project directory.`);
+    }
+
+    let ws: NodeJS.WritableStream | undefined;
+
+    if (!args.includes('--list')) {
+      const log = this.env.log.clone();
+      log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(chalk.dim(`[native-run]`)));
+      ws = log.createWriteStream(LOGGER_LEVELS.INFO);
+    }
+
+    try {
+      await this.env.shell.run('native-run', args, { showCommand: !args.includes('--json'), fatalOnNotFound: false, cwd: this.project.directory, stream: ws });
+    } catch (e) {
+      if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
+        const cdvInstallArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'native-run', global: true });
+        throw new FatalException(
+          `${chalk.green('native-run')} was not found on your PATH. Please install it globally:\n` +
+          `${chalk.green(cdvInstallArgs.join(' '))}\n`
+        );
+      }
+
+      throw e;
+    }
+
+    // If we connect the `native-run` process to the running app, then we
+    // should also connect the Ionic CLI with the running `native-run` process.
+    // This will exit the Ionic CLI when `native-run` exits.
+    if (args.includes('--connect')) {
+      processExit(0); // tslint:disable-line:no-floating-promises
+    }
+  }
+}
+
+function createNativeRunArgs(packagePath: string, platform: string, options: CommandLineOptions): string[] {
+  const opts = [platform, '--app', packagePath];
+  const target = options['target'] as string;
+  if (target) {
+    opts.push('--target', target);
+  } else if (options['emulator']) {
+    opts.push('--virtual');
+  }
+
+  if (options['connect']) {
+    opts.push('--connect');
+  }
+
+  if (options['json']) {
+    opts.push('--json');
+  }
+
+  return opts;
+}
+
+function createNativeRunListArgs(inputs: string[], options: CommandLineOptions): string[] {
+  const args = [];
+  if (inputs[0]) {
+    args.push(inputs[0]);
+  }
+  args.push('--list');
+  if (options['json']) {
+    args.push('--json');
+  }
+  if (options['device']) {
+    args.push('--device');
+  }
+  if (options['emulator']) {
+    args.push('--virtual');
+  }
+  if (options['json']) {
+    args.push('--json');
+  }
+
+  return args;
+}
+
+function getPackagePath(appName: string, platform: string, emulator: boolean) {
+  if (platform === 'android') {
+    // TODO: don't hardcode this/support multiple build paths (ex: multiple arch builds)
+    // use app/build/outputs/apk/debug/output.json?
+    return path.join(CORDOVA_ANDROID_PACKAGE_PATH, 'debug', 'app-debug.apk');
+  }
+  if (platform === 'ios' && emulator) {
+    return path.join(CORDOVA_IOS_SIMULATOR_PACKAGE_PATH, `${appName}.app`);
+  } else {
+    return path.join(CORDOVA_IOS_DEVICE_PACKAGE_PATH, `${appName}.ipa`);
   }
 }
