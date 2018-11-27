@@ -1,4 +1,5 @@
 import { BaseCommand, LOGGER_LEVELS, LogUpdateOutputStrategy, OutputStrategy, StreamHandler, StreamOutputStrategy, TaskChain, generateCommandPath, unparseArgs } from '@ionic/cli-framework';
+import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
 import chalk from 'chalk';
 import * as LogUpdate from 'log-update';
 
@@ -63,7 +64,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
     const runPromise = this.run(inputs, options, runinfo);
 
     const telemetryPromise = (async () => {
-      if (this.env.config.get('telemetry') !== false) {
+      if (this.env.config.get('telemetry') !== false && !TERMINAL_INFO.ci) {
         const { Telemetry } = await import('./telemetry');
 
         let cmdInputs: CommandLineInputs = [];

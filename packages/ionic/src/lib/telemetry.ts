@@ -37,9 +37,8 @@ export class Telemetry implements ITelemetry {
   }
 
   async sendCommand(command: string, args: string[]): Promise<void> {
-    if (this.config.get('telemetry')) {
-      await sendMessage({ config: this.config, ctx: this.ctx }, { type: 'telemetry', data: { command, args } });
-    }
+    debug('Sending telemetry for command: %O %O', command, args);
+    await sendMessage({ config: this.config, ctx: this.ctx }, { type: 'telemetry', data: { command, args } });
   }
 }
 
