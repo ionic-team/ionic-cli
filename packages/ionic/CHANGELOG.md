@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.5.0"></a>
+# [4.5.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.4.0...ionic@4.5.0) (2018-11-27)
+
+
+### Bug Fixes
+
+* **cordova:** do not error for ctrl+c during livereload ([facc96b](https://github.com/ionic-team/ionic-cli/commit/facc96b))
+* **serve:** ignore link-local addresses ([#3761](https://github.com/ionic-team/ionic-cli/issues/3761)) ([1b7fd90](https://github.com/ionic-team/ionic-cli/commit/1b7fd90))
+* **telemetry:** disable automatically for CI ([217ca12](https://github.com/ionic-team/ionic-cli/commit/217ca12))
+
+
+### Features
+
+* Ionic Appflow rebranding ([16360af](https://github.com/ionic-team/ionic-cli/commit/16360af))
+* **cordova:** add `--native-run` option to Cordova run ([#3757](https://github.com/ionic-team/ionic-cli/issues/3757)) ([9ef53ad](https://github.com/ionic-team/ionic-cli/commit/9ef53ad))
+
+
+
+
 <a name="4.4.0"></a>
 # [4.4.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.3.1...ionic@4.4.0) (2018-11-20)
 
