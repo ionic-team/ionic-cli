@@ -326,7 +326,8 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     let chosenIP = options.address;
 
     if (options.address === BIND_ALL_ADDRESS) {
-      availableInterfaces = getExternalIPv4Interfaces();
+      // ignore link-local addresses
+      availableInterfaces = getExternalIPv4Interfaces().filter(i => !i.address.startsWith('169.254'));
 
       if (availableInterfaces.length === 0) {
         if (options.externalAddressRequired) {
