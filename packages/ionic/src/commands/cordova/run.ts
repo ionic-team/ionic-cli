@@ -37,21 +37,21 @@ const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
     name: 'device',
     summary: 'Deploy build to a device',
     type: Boolean,
-    groups: ['cordova'],
+    groups: ['cordova', 'native-run'],
     hint: chalk.dim('[cordova]'),
   },
   {
     name: 'emulator',
     summary: 'Deploy build to an emulator',
     type: Boolean,
-    groups: ['cordova'],
+    groups: ['cordova', 'native-run'],
     hint: chalk.dim('[cordova]'),
   },
   {
     name: 'target',
     summary: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
     type: String,
-    groups: [OptionGroup.Advanced, 'cordova'],
+    groups: [OptionGroup.Advanced, 'cordova', 'native-run'],
     hint: chalk.dim('[cordova]'),
   },
   {
@@ -69,12 +69,20 @@ const NATIVE_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
     summary: `Use ${chalk.green('native-run')} instead of Cordova for running the app`,
     type: Boolean,
     groups: [OptionGroup.Hidden, 'native-run'],
+    hint: chalk.dim('[native-run]'),
   },
   {
     name: 'connect',
     summary: 'Do not tie the running app to the process',
     type: Boolean,
     default: true,
+    groups: [OptionGroup.Hidden, 'native-run'],
+    hint: chalk.dim('[native-run]'),
+  },
+  {
+    name: 'json',
+    summary: `Output ${chalk.green('--list')} targets in JSON`,
+    type: Boolean,
     groups: [OptionGroup.Hidden, 'native-run'],
     hint: chalk.dim('[native-run]'),
   },
@@ -92,9 +100,9 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
     const options: CommandMetadataOption[] = [
       {
         name: 'list',
-        summary: 'List all available Cordova targets',
+        summary: 'List all available targets',
         type: Boolean,
-        groups: ['cordova'],
+        groups: ['cordova', 'native-run'],
       },
       // Build Options
       {
