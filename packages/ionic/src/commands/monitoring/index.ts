@@ -12,7 +12,7 @@ export class MonitoringNamespace extends Namespace {
 
     return {
       name: 'monitoring',
-      summary: 'Commands relating to Ionic Pro error monitoring',
+      summary: 'Commands relating to Ionic Appflow Error Monitoring',
       groups,
     };
   }

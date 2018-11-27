@@ -45,15 +45,13 @@ export class HelpCommand extends Command {
         );
       }
 
-      const isLoggedIn = this.env.session.isLoggedIn();
       const now = new Date();
-      const prefix = isLoggedIn ? chalk.blue('PRO') + ' ' : '';
       const version = this.env.ctx.version;
       const suffix = now.getMonth() === 9 && now.getDate() === 31 ? ' 🎃' : '';
 
       const formatterOptions = {
         inProject: this.project ? true : false,
-        version: prefix + version + suffix,
+        version: version + suffix,
         location,
         namespace: location.obj,
       };

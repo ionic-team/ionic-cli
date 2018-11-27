@@ -13,8 +13,8 @@ export class GitCloneCommand extends Command {
       summary: 'Clones an Ionic app git repository to your computer',
       inputs: [
         {
-          name: 'pro-id',
-          summary: 'The Pro ID of the Ionic app to clone',
+          name: 'id',
+          summary: 'The ID of the Ionic Appflow app to clone',
           validators: [validators.required],
         },
         {
@@ -27,10 +27,10 @@ export class GitCloneCommand extends Command {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    // let [ proId, destination ] = inputs;
+    // let [ id, destination ] = inputs;
 
     // const appLoader = new App(this.env.session.getUserToken(), this.env.client);
-    // const app = await appLoader.load(proId);
+    // const app = await appLoader.load(id);
     // const remote = await formatGitRepoUrl(this.env.config, app.id);
 
     // if (!destination) {

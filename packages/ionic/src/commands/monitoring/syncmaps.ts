@@ -19,7 +19,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
     return {
       name: 'syncmaps',
       type: 'project',
-      summary: 'Build & upload sourcemaps to Ionic Pro Monitoring service',
+      summary: 'Build & upload sourcemaps to Ionic Appflow Monitoring service',
       description: `
 By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcemap files within ${chalk.bold(SOURCEMAP_DIRECTORY)}. To optionally perform a production build before uploading sourcemaps, specify the ${chalk.green('--build')} flag.
       `,
@@ -47,7 +47,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     }
 
     const token = this.env.session.getUserToken();
-    const proId = await this.project.requireProId();
+    const appflowId = await this.project.requireAppflowId();
 
     const [ snapshotId ] = inputs;
     const doBuild = options.build ? true : false;
@@ -87,7 +87,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     debug(`Found ${sourcemapFiles.length} sourcemap files: ${sourcemapFiles.map(f => chalk.bold(f)).join(', ')}`);
 
     await Promise.all(sourcemapFiles.map(async f => {
-      await this.syncSourcemap(path.resolve(sourcemapsDir, f), snapshotId, appVersion, commitHash, proId, token);
+      await this.syncSourcemap(path.resolve(sourcemapsDir, f), snapshotId, appVersion, commitHash, appflowId, token);
       count += 1;
       syncTask.msg = `Syncing sourcemaps: ${chalk.bold(`${count} / ${sourcemapFiles.length}`)}`;
     }));
@@ -96,7 +96,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     tasks.end();
 
     const details = columnar([
-      ['Pro ID', chalk.bold(proId)],
+      ['Appflow ID', chalk.bold(appflowId)],
       ['Version', chalk.bold(appVersion)],
       ['Package ID', chalk.bold(cordovaInfo.id)],
       ['Snapshot ID', snapshotId ? chalk.bold(snapshotId) : chalk.dim('not set')],
@@ -105,12 +105,12 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     this.env.log.ok(
       `Sourcemaps synced!\n` +
       details + '\n\n' +
-      `See the Error Monitoring docs for usage information and next steps: ${chalk.bold('https://ionicframework.com/docs/pro/monitoring')}`
+      `See the Error Monitoring docs for usage information and next steps: ${chalk.bold('https://ionicframework.com/docs/appflow/monitoring')}`
     );
   }
 
-  async syncSourcemap(file: string, snapshotId: string, appVersion: string, commitHash: string, proId: string, token: string): Promise<void> {
-    const { req } = await this.env.client.make('POST', `/monitoring/${proId}/sourcemaps`);
+  async syncSourcemap(file: string, snapshotId: string, appVersion: string, commitHash: string, appflowId: string, token: string): Promise<void> {
+    const { req } = await this.env.client.make('POST', `/monitoring/${appflowId}/sourcemaps`);
 
     req
       .set('Authorization', `Bearer ${token}`)

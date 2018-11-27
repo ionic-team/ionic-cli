@@ -8,9 +8,9 @@ export class SignupCommand extends Command {
     return {
       name: 'signup',
       type: 'global',
-      summary: 'Create an account for Ionic Pro',
+      summary: 'Create an account for Ionic Appflow',
       description: `
-Learn more about Ionic Pro: ${chalk.bold('https://ionicframework.com/pro')}
+Learn more about Ionic Appflow: ${chalk.bold('https://ionicframework.com/appflow')}
 
 If you are having issues signing up, please get in touch with our Support${chalk.cyan('[1]')}.
 

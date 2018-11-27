@@ -239,7 +239,7 @@ Aside from a few edge cases listed below, upgrading to CLI 4 should be seamless.
 
 #### :boom: Breaking Changes
 
-* Support for legacy Ionic Cloud ended on January 31st, 2018. The `ionic upload` and `ionic package` commands have been removed from the CLI. Support for [Ionic Pro](https://ionicframework.com/pro/) will be a major focus for the CLI going forward. :ok_hand:
+* Support for legacy Ionic Cloud ended on January 31st, 2018. The `ionic upload` and `ionic package` commands have been removed from the CLI. Support for [Ionic Appflow](https://ionicframework.com/appflow/) will be a major focus for the CLI going forward. :ok_hand:
 * The `app_id` property in `ionic.config.json` has been renamed to `pro_id` and is now optional (see [#3038](https://github.com/ionic-team/ionic-cli/issues/3038)). The CLI automatically detects this and changes it, but this notice is here if your build scripts rely on the setting.
 * `ionic build` will no longer run `cordova prepare`. Instead, run `ionic cordova prepare <platform>`, which performs an Ionic build beforehand.
 * `ionic cordova prepare` will no longer run an Ionic build without a platform, e.g. `ionic cordova prepare ios` (see [#3653](https://github.com/ionic-team/ionic-cli/issues/3653))

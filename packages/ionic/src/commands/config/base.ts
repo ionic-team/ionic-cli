@@ -75,8 +75,8 @@ export abstract class BaseConfigCommand extends Command {
     }
 
     try {
-      // '12345e6' (a possible Pro ID) is interpreted as a number in scientific
-      // notation during JSON.parse, so don't try
+      // '12345e6' (a possible Appflow App ID) is interpreted as a number in
+      // scientific notation during JSON.parse, so don't try
       if (!v.match(/^\d+e\d+$/)) {
         v = JSON.parse(v);
       }

@@ -22,7 +22,7 @@ interface CommonAppSchema {
   projectId: string;
   projectDir: string;
   packageId?: string;
-  proId?: string;
+  appflowId?: string;
 }
 
 interface NewAppSchema extends CommonAppSchema {
@@ -124,14 +124,19 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         },
         {
           name: 'link',
-          summary: 'Do not ask to connect the app to Ionic Pro',
+          summary: 'Do not ask to connect the app to Ionic Appflow',
           type: Boolean,
           default: true,
           groups: [OptionGroup.Advanced],
         },
         {
+          name: 'id',
+          summary: 'Specify an app ID from the Ionic Appflow to link',
+        },
+        {
           name: 'pro-id',
-          summary: 'Specify an Ionic Pro ID to link',
+          summary: `Use the ${chalk.green('--id')} option`,
+          groups: [OptionGroup.Deprecated],
           spec: { value: 'id' },
         },
         {
@@ -180,14 +185,19 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
 
     if (options['pro-id']) {
+      this.env.log.warn(`The ${chalk.green('--pro-id')} option has been deprecated. Please use ${chalk.green('--id')}.`);
+      options['id'] = options['pro-id'];
+    }
+
+    if (options['id']) {
       if (!options['link']) {
-        this.env.log.warn(`The ${chalk.green('--no-link')} option has no effect with ${chalk.green('--pro-id')}. App must be linked.`);
+        this.env.log.warn(`The ${chalk.green('--no-link')} option has no effect with ${chalk.green('--id')}. App must be linked.`);
       }
 
       options['link'] = true;
 
       if (!options['git']) {
-        this.env.log.warn(`The ${chalk.green('--no-git')} option has no effect with ${chalk.green('--pro-id')}. Git must be used.`);
+        this.env.log.warn(`The ${chalk.green('--no-git')} option has no effect with ${chalk.green('--id')}. Git must be used.`);
       }
 
       options['git'] = true;
@@ -238,7 +248,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     }
 
     const projectType = options['type'] ? String(options['type']) : 'ionic-angular';
-    const proId = options['pro-id'] ? String(options['pro-id']) : undefined;
+    const appflowId = options['id'] ? String(options['id']) : undefined;
 
     await this.validateProjectType(projectType);
 
@@ -262,20 +272,20 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       options['package-id'] = options['bundle-id'];
     }
 
-    if (proId) {
+    if (appflowId) {
       if (!this.env.session.isLoggedIn()) {
         await promptToLogin(this.env);
       }
     }
 
     if (!inputs[0]) {
-      if (proId) {
+      if (appflowId) {
         const { AppClient } = await import('../lib/app');
         const token = this.env.session.getUserToken();
         const appClient = new AppClient(token, this.env);
         const tasks = this.createTaskChain();
-        tasks.next(`Looking up app ${chalk.green(proId)}`);
-        const app = await appClient.load(proId);
+        tasks.next(`Looking up app ${chalk.green(appflowId)}`);
+        const app = await appClient.load(appflowId);
         // TODO: can ask to clone via repo_url
         tasks.end();
         this.env.log.info(`Using ${chalk.bold(app.name)} for ${chalk.green('name')} and ${chalk.bold(app.slug)} for ${chalk.green('--project-id')}.`);
@@ -366,7 +376,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         projectId,
         projectDir,
         packageId,
-        proId,
+        appflowId,
       };
     }
   }
@@ -380,10 +390,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       throw new FatalException(`Invalid information: cannot start app.`);
     }
 
-    const { projectId, projectDir, packageId, proId } = this.schema;
+    const { projectId, projectDir, packageId, appflowId } = this.schema;
 
     const tag = options['tag'] ? String(options['tag']) : 'latest';
-    let linkConfirmed = typeof proId === 'string';
+    let linkConfirmed = typeof appflowId === 'string';
 
     const gitDesired = options['git'] ? true : false;
     const gitInstalled = await isGitInstalled(this.env);
@@ -394,7 +404,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     if (!gitInstalled) {
       const installationDocs = `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`;
 
-      if (proId) {
+      if (appflowId) {
         throw new FatalException(
           `Git CLI not found on your PATH.\n` +
           `Git must be installed to connect this app to Ionic. ${installationDocs}`
@@ -508,7 +518,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
         const confirm = await this.env.prompt({
           type: 'confirm',
           name: 'confirm',
-          message: 'Install the free Ionic Pro SDK and connect your app?',
+          message: 'Install the free Ionic Appflow SDK and connect your app?',
           fallback: false,
           default: true,
         });
@@ -524,8 +534,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
 
         const cmdArgs = ['link'];
 
-        if (proId) {
-          cmdArgs.push(proId);
+        if (appflowId) {
+          cmdArgs.push(appflowId);
         }
 
         cmdArgs.push('--name', this.schema.name);
@@ -684,8 +694,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     ];
 
     if (linkConfirmed) {
-      steps.push(`Finish setting up Ionic Pro Error Monitoring: ${chalk.bold('https://ionicframework.com/docs/pro/monitoring/#getting-started')}`);
-      steps.push(`Finally, push your code to Ionic Pro to perform real-time updates, and more: ${chalk.green('git push ionic master')}`);
+      steps.push(`Finish setting up Ionic Appflow Error Monitoring: ${chalk.bold('https://ionicframework.com/docs/appflow/monitoring/#getting-started')}`);
+      steps.push(`Finally, push your code to Ionic Appflow to perform real-time updates, and more: ${chalk.green('git push ionic master')}`);
     }
 
     this.env.log.info(`${chalk.bold('Next Steps')}:\n${steps.map(s => `- ${s}`).join('\n')}`);

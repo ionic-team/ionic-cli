@@ -13,9 +13,9 @@ export class SSHSetupCommand extends SSHBaseCommand {
     return {
       name: 'setup',
       type: 'global',
-      summary: 'Setup your Ionic Pro SSH keys automatically',
+      summary: 'Setup your Ionic Appflow SSH keys automatically',
       description: `
-This command offers a setup wizard for Ionic Pro SSH keys using a series of prompts. For more control, see the commands available for managing SSH keys with the ${chalk.green('ionic ssh --help')} command. For an entirely manual approach, see ${chalk.bold('Personal Settings')} => ${chalk.bold('SSH Keys')} in the Dashboard${chalk.cyan('[1]')}.
+This command offers a setup wizard for Ionic Appflow SSH keys using a series of prompts. For more control, see the commands available for managing SSH keys with the ${chalk.green('ionic ssh --help')} command. For an entirely manual approach, see ${chalk.bold('Personal Settings')} => ${chalk.bold('SSH Keys')} in the Dashboard${chalk.cyan('[1]')}.
 
 If you are having issues setting up SSH keys, please get in touch with our Support${chalk.cyan('[2]')}.
 
@@ -62,10 +62,10 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     const setupChoice = await this.env.prompt({
       type: 'list',
       name: 'setupChoice',
-      message: `How would you like to connect to Ionic Pro?`,
+      message: `How would you like to connect to Ionic Appflow?`,
       choices: [
         {
-          name: 'Automatically setup new a SSH key pair for Ionic Pro',
+          name: 'Automatically setup new a SSH key pair for Ionic Appflow',
           value: CHOICE_AUTOMATIC,
         },
         {

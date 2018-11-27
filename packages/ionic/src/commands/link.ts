@@ -31,26 +31,26 @@ export class LinkCommand extends Command implements CommandPreRun {
     return {
       name: 'link',
       type: 'project',
-      summary: 'Connect local apps to Ionic Pro',
+      summary: 'Connect local apps to Ionic Appflow',
       description: `
-Link apps on Ionic Pro to local Ionic projects with this command.
+Link apps on Ionic Appflow to local Ionic projects with this command.
 
-If the ${chalk.green('pro-id')} argument is excluded, this command will prompt you to select an app from Ionic Pro.
+If the ${chalk.green('id')} argument is excluded, this command will prompt you to select an app from Ionic Appflow.
 
-Ionic Pro uses a git-based workflow to manage app updates. During the linking process, select ${chalk.bold('GitHub')} (recommended) or ${chalk.bold('Ionic Pro')} as a git host. See our documentation${chalk.cyan('[1]')} for more information.
+Ionic Appflow uses a git-based workflow to manage app updates. During the linking process, select ${chalk.bold('GitHub')} (recommended) or ${chalk.bold('Ionic Appflow')} as a git host. See our documentation${chalk.cyan('[1]')} for more information.
 
-Ultimately, this command sets the ${chalk.bold('pro_id')} property in ${chalk.bold(prettyPath(projectFile))}, which marks this app as linked.
+Ultimately, this command sets the ${chalk.bold('id')} property in ${chalk.bold(prettyPath(projectFile))}, which marks this app as linked.
 
 If you are having issues linking, please get in touch with our Support${chalk.cyan('[2]')}.
 
-${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/pro/basics/git')}
+${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/appflow/basics/git')}
 ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')}
       `,
       exampleCommands: ['', 'a1b2c3d4'],
       inputs: [
         {
-          name: 'pro-id',
-          summary: `The Ionic Pro ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
+          name: 'id',
+          summary: `The Ionic Appflow ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
         },
       ],
       options: [
@@ -61,14 +61,14 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
         },
         {
           name: 'create',
-          summary: 'Create a new app on Ionic Pro and link it with this local Ionic project',
+          summary: 'Create a new app on Ionic Appflow and link it with this local Ionic project',
           type: Boolean,
           groups: [OptionGroup.Hidden],
         },
         {
           name: 'pro-id',
-          summary: 'Specify an app ID from the Ionic Pro to link',
-          groups: [OptionGroup.Hidden],
+          summary: 'Specify an app ID from the Ionic Appflow to link',
+          groups: [OptionGroup.Deprecated, OptionGroup.Hidden],
           spec: { value: 'id' },
         },
       ],
@@ -79,13 +79,13 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     const { create } = options;
 
     if (inputs[0] && create) {
-      throw new FatalException(`Sorry--cannot use both ${chalk.green('pro-id')} and ${chalk.green('--create')}. You must either link an existing app or create a new one.`);
+      throw new FatalException(`Sorry--cannot use both ${chalk.green('id')} and ${chalk.green('--create')}. You must either link an existing app or create a new one.`);
     }
 
-    const proAppId = options['pro-id'] ? String(options['pro-id']) : undefined;
+    const id = options['pro-id'] ? String(options['pro-id']) : undefined;
 
-    if (proAppId) {
-      inputs[0] = proAppId;
+    if (id) {
+      inputs[0] = id;
     }
   }
 
@@ -96,25 +96,25 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
       throw new FatalException(`Cannot run ${chalk.green('ionic link')} outside a project directory.`);
     }
 
-    let proId: string | undefined = inputs[0];
+    let id: string | undefined = inputs[0];
     let { create } = options;
 
-    const proIdFromConfig = this.project.config.get('pro_id');
+    const idFromConfig = this.project.config.get('id');
 
-    if (proIdFromConfig) {
-      if (proId && proIdFromConfig === proId) {
-        this.env.log.msg(`Already linked with app ${chalk.green(proId)}.`);
+    if (idFromConfig) {
+      if (id && idFromConfig === id) {
+        this.env.log.msg(`Already linked with app ${chalk.green(id)}.`);
         return;
       }
 
-      const msg = proId ?
-        `Are you sure you want to link it to ${chalk.green(proId)} instead?` :
+      const msg = id ?
+        `Are you sure you want to link it to ${chalk.green(id)} instead?` :
         `Would you like to run link again?`;
 
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `Pro ID ${chalk.green(proIdFromConfig)} is already set up with this app. ${msg}`,
+        message: `Appflow ID ${chalk.green(idFromConfig)} is already set up with this app. ${msg}`,
       });
 
       if (!confirm) {
@@ -127,21 +127,21 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
       await promptToLogin(this.env);
     }
 
-    if (!proId && !create) {
+    if (!id && !create) {
       const choices = [
         {
-          name: `Link ${proIdFromConfig ? 'a different' : 'an existing'} app on Ionic Pro`,
+          name: `Link ${idFromConfig ? 'a different' : 'an existing'} app on Ionic Appflow`,
           value: CHOICE_LINK_EXISTING_APP,
         },
         {
-          name: 'Create a new app on Ionic Pro',
+          name: 'Create a new app on Ionic Appflow',
           value: CHOICE_CREATE_NEW_APP,
         },
       ];
 
-      if (proIdFromConfig) {
+      if (idFromConfig) {
         choices.unshift({
-          name: `Relink ${chalk.green(proIdFromConfig)}`,
+          name: `Relink ${chalk.green(idFromConfig)}`,
           value: CHOICE_RELINK,
         });
       }
@@ -155,7 +155,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
 
       if (result === CHOICE_CREATE_NEW_APP) {
         create = true;
-        proId = undefined;
+        id = undefined;
       } else if (result === CHOICE_LINK_EXISTING_APP) {
         const tasks = this.createTaskChain();
         tasks.next(`Looking up your apps`);
@@ -175,7 +175,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
           const confirm = await this.env.prompt({
             type: 'confirm',
             name: 'confirm',
-            message: `No apps found. Would you like to create a new app on Ionic Pro?`,
+            message: `No apps found. Would you like to create a new app on Ionic Appflow?`,
           });
 
           if (!confirm) {
@@ -183,19 +183,19 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
           }
 
           create = true;
-          proId = undefined;
+          id = undefined;
         } else {
           const choice = await this.chooseApp(apps);
 
           if (choice === CHOICE_NEVERMIND) {
             this.env.log.info('Not linking app.');
-            proId = undefined;
+            id = undefined;
           } else {
-            proId = choice;
+            id = choice;
           }
         }
       } else if (result === CHOICE_RELINK) {
-        proId = proIdFromConfig;
+        id = idFromConfig;
       }
     }
 
@@ -211,9 +211,9 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
         });
       }
 
-      proId = await this.createApp({ name }, runinfo);
-    } else if (proId) {
-      const app = await this.lookUpApp(proId);
+      id = await this.createApp({ name }, runinfo);
+    } else if (id) {
+      const app = await this.lookUpApp(id);
       await this.linkApp(app, runinfo);
     }
   }
@@ -230,12 +230,12 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     return new UserClient(token, this.env);
   }
 
-  async lookUpApp(proId: string): Promise<App> {
+  async lookUpApp(id: string): Promise<App> {
     const tasks = this.createTaskChain();
-    tasks.next(`Looking up app ${chalk.green(proId)}`);
+    tasks.next(`Looking up app ${chalk.green(id)}`);
 
     const appClient = await this.getAppClient();
-    const app = await appClient.load(proId); // Make sure the user has access to the app
+    const app = await appClient.load(id); // Make sure the user has access to the app
 
     tasks.end();
 
@@ -260,9 +260,9 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     this.env.log.nl();
 
     this.env.log.info(
-      `Ionic Pro uses a git-based workflow to manage app updates.\n` +
+      `Ionic Appflow uses a git-based workflow to manage app updates.\n` +
       `You will be prompted to set up the git host and repository for this new app. See the docs${chalk.cyan('[1]')} for more information.\n\n` +
-      `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/pro/basics/git/')}`
+      `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/appflow/basics/git/')}`
     );
 
     this.env.log.nl();
@@ -277,7 +277,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
           value: CHOICE_GITHUB,
         },
         {
-          name: 'Ionic Pro',
+          name: 'Ionic Appflow',
           value: CHOICE_IONIC,
         },
         // TODO: option to skip git setup for now
@@ -290,14 +290,14 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
         await runCommand(runinfo, ['ssh', 'setup']);
       }
 
-      await runCommand(runinfo, ['config', 'set', 'pro_id', `"${app.id}"`, '--json']);
+      await runCommand(runinfo, ['config', 'set', 'id', `"${app.id}"`, '--json']);
       await runCommand(runinfo, ['git', 'remote']);
     } else {
       if (service === CHOICE_GITHUB) {
         githubUrl = await this.linkGithub(app);
       }
 
-      await runCommand(runinfo, ['config', 'set', 'pro_id', `"${app.id}"`, '--json']);
+      await runCommand(runinfo, ['config', 'set', 'id', `"${app.id}"`, '--json']);
     }
 
     this.env.log.ok(`Project linked with app ${chalk.green(app.id)}!`);
@@ -312,7 +312,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
 
       if (githubUrl) {
         this.env.log.info(
-          `You can now push to one of your branches on GitHub to trigger a build in Ionic Pro!\n` +
+          `You can now push to one of your branches on GitHub to trigger a build in Ionic Appflow!\n` +
           `If you haven't added GitHub as your origin you can do so by running:\n\n` +
           `${chalk.green('git remote add origin ' + githubUrl)}\n\n` +
           `You can find additional links above to help if you're having issues.`
@@ -373,7 +373,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     this.env.log.nl();
     this.env.log.info(
       `GitHub OAuth setup required.\n` +
-      `To continue, we need you to authorize Ionic Pro with your GitHub account. ` +
+      `To continue, we need you to authorize Ionic Appflow with your GitHub account. ` +
       `A browser will open and prompt you to complete the authorization request. ` +
       `When finished, please return to the CLI to continue linking your app.`
     );
@@ -533,7 +533,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
 
   async selectGithubBranches(repoId: number): Promise<string[]> {
     this.env.log.nl();
-    this.env.log.info(chalk.bold(`By default Ionic Pro links only to the ${chalk.green('master')} branch.`));
+    this.env.log.info(chalk.bold(`By default Ionic Appflow links only to the ${chalk.green('master')} branch.`));
     this.env.log.info(
       `${chalk.bold('If you\'d like to link to another branch or multiple branches you\'ll need to select each branch to connect to.')}\n` +
       `If you're not familiar with on working with branches in GitHub you can read about them here:\n\n` +

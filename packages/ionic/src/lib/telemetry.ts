@@ -82,7 +82,7 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
     })(),
     (async () => {
       const now = new Date().toISOString();
-      const proId = project ? project.config.get('pro_id') : undefined;
+      const appflowId = project ? project.config.get('id') : undefined;
 
       const { req } = await client.make('POST', '/events/metrics');
 
@@ -96,7 +96,7 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
           'arguments': prettyArgs.join(' '),
           'version': ctx.version,
           'node_version': process.version,
-          'app_id': proId,
+          'app_id': appflowId,
           'backend': 'pro', // TODO: is this necessary?
         },
       };

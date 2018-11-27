@@ -8,7 +8,7 @@ export class SSHNamespace extends Namespace {
       name: 'ssh',
       summary: 'Commands for configuring SSH keys',
       description: `
-These commands help automate your SSH configuration for Ionic Pro. As an alternative, SSH configuration can be done entirely manually by visiting your Personal Settings${chalk.cyan('[1]')}.
+These commands help automate your SSH configuration for Ionic Appflow. As an alternative, SSH configuration can be done entirely manually by visiting your Personal Settings${chalk.cyan('[1]')}.
 
 To begin, run ${chalk.green('ionic ssh setup')}, which lets you use existing keys or generate new ones just for Ionic.
 

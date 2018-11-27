@@ -232,7 +232,7 @@ export interface ProjectPersonalizationDetails {
 export interface IProjectConfig {
   name: string;
   type?: ProjectType;
-  pro_id?: string;
+  id?: string;
   root?: string;
 
   readonly integrations: ProjectIntegrations;
@@ -264,7 +264,7 @@ export interface IProject {
   createIntegration(name: IntegrationName): Promise<IIntegration>;
   getIntegration(name: IntegrationName): Required<ProjectIntegration> | undefined;
   requireIntegration(name: IntegrationName): Required<ProjectIntegration>;
-  requireProId(): Promise<string>;
+  requireAppflowId(): Promise<string>;
   getPackageJson(pkgName?: string): Promise<[ζframework.PackageJson | undefined, string | undefined]>;
   requirePackageJson(pkgName?: string): Promise<ζframework.PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
@@ -376,7 +376,7 @@ export interface ConfigFile {
   'ssl.certfile'?: string | string[];
   'ssl.keyfile'?: string | string[];
 
-  // Ionic Pro
+  // Ionic Appflow
   'urls.api'?: string;
   'urls.dash'?: string;
   'git.host'?: string;

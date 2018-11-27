@@ -8,13 +8,13 @@ export class LogoutCommand extends Command {
     return {
       name: 'logout',
       type: 'global',
-      summary: 'Logout of Ionic Pro',
+      summary: 'Logout of Ionic Appflow',
       description: `
-Remove the Ionic Pro user token from the CLI config.
+Remove the Ionic Appflow user token from the CLI config.
 
 Login again with ${chalk.green('ionic login')}.
 
-If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
+If you need to create an Ionic Appflow account, use ${chalk.green('ionic signup')}.
       `,
     };
   }

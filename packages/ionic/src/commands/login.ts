@@ -11,15 +11,15 @@ export class LoginCommand extends Command implements CommandPreRun {
     return {
       name: 'login',
       type: 'global',
-      summary: 'Login to Ionic Pro',
+      summary: 'Login to Ionic Appflow',
       description: `
-Authenticate with Ionic Pro and retrieve a user token, which is stored in the CLI config.
+Authenticate with Ionic Appflow and retrieve a user token, which is stored in the CLI config.
 
 If the ${chalk.green('IONIC_TOKEN')} environment variable is set, the CLI will automatically authenticate you. To retrieve your user token, first use ${chalk.green('ionic login')}, then print the token by running the ${chalk.green('ionic config get -g tokens.user')} command.
 
 You can also use ${chalk.green('IONIC_EMAIL')} and ${chalk.green('IONIC_PASSWORD')} environment variables for automatic authentication, but it is not recommended to store your password in plain text.
 
-If you need to create an Ionic Pro account, use ${chalk.green('ionic signup')}.
+If you need to create an Ionic Appflow account, use ${chalk.green('ionic signup')}.
 
 If you are having issues logging in, please get in touch with our Support${chalk.cyan('[1]')}.
 
@@ -79,7 +79,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')
       this.env.log.nl();
     } else {
       this.env.log.info(
-        `Log into your Ionic Pro account!\n` +
+        `Log into your Ionic Appflow account!\n` +
         `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}`
       );
       this.env.log.nl();
@@ -122,7 +122,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')
 
     if (sso) {
       this.env.log.info(
-        `Ionic Pro SSO Login\n` +
+        `Ionic Appflow SSO Login\n` +
         `During this process, a browser window will open to authenticate you with the identity provider for ${chalk.green(email)}. Please leave this process running until authentication is complete.`
       );
       this.env.log.nl();

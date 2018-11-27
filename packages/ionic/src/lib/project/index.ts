@@ -355,13 +355,21 @@ export class ProjectConfig extends BaseConfig<IProjectConfig> {
 
     const c = this.c as any;
 
-    // <4.0.0 project config migration
-    if (typeof c.app_id === 'string') {
-      if (c.app_id) {
-        this.set('pro_id', c.app_id);
+    if (typeof c.app_id === 'string') { // <4.0.0 project config migration
+      if (c.app_id && !c.id) {
+        // set `id` only if it has not been previously set and if `app_id`
+        // isn't an empty string (which it used to be, sometimes)
+        this.set('id', c.app_id);
       }
 
       this.unset('app_id' as any);
+    } else if (typeof c.pro_id === 'string') {
+      if (!c.id) {
+        // set `id` only if it has not been previously set
+        this.set('id', c.pro_id);
+      }
+
+      // we do not unset `pro_id` because it would break things
     }
   }
 
@@ -454,17 +462,17 @@ export abstract class Project implements IProject {
     }
   }
 
-  async requireProId(): Promise<string> {
-    const proId = this.config.get('pro_id');
+  async requireAppflowId(): Promise<string> {
+    const appflowId = this.config.get('id');
 
-    if (!proId) {
+    if (!appflowId) {
       throw new FatalException(
-        `Your project file (${chalk.bold(prettyPath(this.filePath))}) does not contain '${chalk.bold('pro_id')}'. ` +
+        `Your project file (${chalk.bold(prettyPath(this.filePath))}) does not contain '${chalk.bold('id')}'. ` +
         `Run ${chalk.green('ionic link')}.`
       );
     }
 
-    return proId;
+    return appflowId;
   }
 
   get packageJsonPath() {

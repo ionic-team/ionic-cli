@@ -9,9 +9,9 @@ export class GitRemoteCommand extends Command {
     return {
       name: 'remote',
       type: 'project',
-      summary: 'Adds/updates the Ionic Pro git remote to your local Ionic app',
+      summary: 'Adds/updates the Ionic Appflow git remote to your local Ionic app',
       description: `
-This command is used by ${chalk.green('ionic link')} when Ionic Pro is used as the git host.
+This command is used by ${chalk.green('ionic link')} when Ionic Appflow is used as the git host.
 
 ${chalk.green('ionic git remote')} will check the local repository for whether or not the git remote is properly set up. This command operates on the ${chalk.bold('ionic')} remote. For advanced configuration, see ${chalk.bold('Settings')} => ${chalk.bold('Git')} in the app settings of the Dashboard${chalk.cyan('[1]')}.
 
@@ -29,9 +29,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://dashboard.ionicframework.com')}
     }
 
     const token = this.env.session.getUserToken();
-    const proId = await this.project.requireProId();
+    const id = await this.project.requireAppflowId();
     const appClient = new AppClient(token, this.env);
-    const app = await appClient.load(proId);
+    const app = await appClient.load(id);
 
     if (!app.repo_url) {
       throw new FatalException(`Missing ${chalk.bold('repo_url')} property in app.`);

@@ -58,7 +58,7 @@ This command will sanitize config output for known sensitive fields (disabled wh
           groups: [OptionGroup.Advanced],
         },
       ],
-      exampleCommands: ['', 'pro_id', '--global user.email', '-g npmClient'],
+      exampleCommands: ['', 'id', '--global user.email', '-g npmClient'],
     };
   }
 

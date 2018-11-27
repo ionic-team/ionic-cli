@@ -45,11 +45,11 @@ export async function getIonicDevAppText() {
 
 export async function getIonicProText() {
   const msg = `
-     ${chalk.bold(`${emoji('🔥', '*')}   IONIC  PRO   ${emoji('🔥', '*')}`)}\n
- Supercharge your Ionic development with the ${chalk.bold('Ionic Pro')} SDK\n
+     ${chalk.bold(`${emoji('🔥', '*')}   IONIC  APPFLOW   ${emoji('🔥', '*')}`)}\n
+ Supercharge your Ionic development with the ${chalk.bold('Ionic Appflow')} SDK\n
   -  ${emoji('⚠️', '')}   Track runtime errors in real-time, back to your original TypeScript
   -  ${emoji('📲', '')}  Push remote updates and skip the app store queue\n
- Learn more about Ionic Pro: ${chalk.bold('https://ionicframework.com/pro')}
+ Learn more about Ionic Appflow: ${chalk.bold('https://ionicframework.com/appflow')}
 `;
 
   return `${msg}\n${advertisementSeparator.repeat(60)}\n\n`;

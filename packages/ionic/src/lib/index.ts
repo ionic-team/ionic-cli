@@ -1,4 +1,5 @@
 import { LOGGER_LEVELS, createPromptModule } from '@ionic/cli-framework';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
 import chalk from 'chalk';
 import * as Debug from 'debug';
@@ -95,6 +96,13 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
 
   if (project) {
     shell.alterPath = p => prependNodeModulesBinToPath(project.directory, p);
+
+    if (project.config.get('pro_id' as any) && argv._[1] !== 'unset') {
+      log.warn(
+        `The ${chalk.green('pro_id')} field in ${chalk.bold(prettyPath(project.filePath))} has been deprecated.\n` +
+        `Ionic Pro has been renamed to Ionic Appflow! We've copied the value in ${chalk.green('pro_id')} to ${chalk.green('id')}, but you may want to unset the deprecated property: ${chalk.green('ionic config unset pro_id')}\n`
+      );
+    }
   }
 
   return { env, project };
