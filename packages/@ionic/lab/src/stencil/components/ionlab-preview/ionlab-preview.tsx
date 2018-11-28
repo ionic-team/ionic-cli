@@ -27,10 +27,7 @@ export class Preview {
       }
     } else if (this.projectType === 'ionic-angular') {
       qp['ionicplatform'] = platform;
-
-      if (platform === PLATFORM_IOS) {
-        qp['ionicstatusbarpadding'] = 'true';
-      }
+      qp['ionicstatusbarpadding'] = 'true';
     }
 
     return `${this.url}?${Object.keys(qp).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(qp[k])}`).join('&')}`;
