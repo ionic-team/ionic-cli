@@ -70,18 +70,8 @@ ionlab-device-frame .frame-container iframe {
   background-image: url('/assets/ios-statusbar.png');
 }
 
-#device-android .frame-container iframe {
-  margin-top: 20px;
-  height: calc(var(--frame-height) - 20px);
-}
-
 #device-android .frame-container .statusbar {
   background-image: url('/assets/android-statusbar.png');
-}
-
-#device-windows .frame-container iframe {
-  margin-top: 20px;
-  height: calc(var(--frame-height) - 20px);
 }
 
 #device-windows .frame-container .statusbar {
