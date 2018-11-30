@@ -386,9 +386,12 @@ export interface ServeCLIOptions {
 }
 
 export interface ServeCLI<T extends ServeCLIOptions> {
-  on(event: 'ready', handler: () => void): this;
-  once(event: 'ready', handler: () => void): this;
+  emit(event: 'compile', chunks: number): boolean;
   emit(event: 'ready'): boolean;
+  on(event: 'compile', handler: (chunks: number) => void): this;
+  on(event: 'ready', handler: () => void): this;
+  once(event: 'compile', handler: (chunks: number) => void): this;
+  once(event: 'ready', handler: () => void): this;
 }
 
 export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {

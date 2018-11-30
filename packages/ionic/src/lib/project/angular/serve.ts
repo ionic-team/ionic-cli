@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
 import { CommandGroup, OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { stripAnsi } from '@ionic/cli-framework/utils/format';
 import { findClosestOpenPort } from '@ionic/utils-network';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
@@ -116,15 +117,38 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
   readonly program = 'ng';
   readonly prefix = 'ng';
   readonly script = SERVE_SCRIPT;
+  protected chunks = 0;
+
+  async serve(options: AngularServeOptions): Promise<void> {
+    this.on('compile', chunks => {
+      if (chunks > 0) {
+        this.e.log.info(`... and ${chalk.bold(chunks.toString())} additional chunks`);
+      }
+    });
+
+    return super.serve(options);
+  }
 
   protected stdoutFilter(line: string): boolean {
     if (this.resolvedProgram !== this.program) {
       return super.stdoutFilter(line);
     }
 
-    if (line.includes('Development Server is listening')) {
+    const strippedLine = stripAnsi(line);
+
+    if (strippedLine.includes('Development Server is listening')) {
       this.emit('ready');
       return false;
+    }
+
+    if (strippedLine.match(/.*chunk\s{\d+}.+/)) {
+      this.chunks++;
+      return false;
+    }
+
+    if (strippedLine.includes('Compiled successfully')) {
+      this.emit('compile', this.chunks);
+      this.chunks = 0;
     }
 
     return true;
