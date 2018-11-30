@@ -690,6 +690,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
   async showNextSteps(projectDir: string, cloned: boolean, linkConfirmed: boolean) {
     const steps = [
       `Go to your ${cloned ? 'cloned' : 'newly created'} project: ${chalk.green(`cd ${prettyPath(projectDir)}`)}`,
+      `Run ${chalk.green('ionic serve')} within the app directory to see your app`,
+      `Build features and components: ${chalk.bold('https://beta.ionicframework.com/docs/building/scaffolding')}`,
       `Get Ionic DevApp for easy device testing: ${chalk.bold('https://bit.ly/ionic-dev-app')}`,
     ];
 
