@@ -26,7 +26,7 @@ ${chalk.green('ionic serve')} uses the Angular CLI. Use ${chalk.green('ng serve 
 
 The dev server can use HTTPS via the ${chalk.green('--ssl')} option ${chalk.bold.red('(experimental)')}. There are several known issues with HTTPS. See issue #3305${chalk.cyan('[2]')}.
 
-${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/serve')}
+${chalk.cyan('[1]')}: ${chalk.bold('https://angular.io/cli/serve')}
 ${chalk.cyan('[2]')}: ${chalk.bold('https://github.com/ionic-team/ionic-cli/issues/3305')}`,
       options: [
         {

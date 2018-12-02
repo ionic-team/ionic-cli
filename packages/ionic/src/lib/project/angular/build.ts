@@ -33,7 +33,7 @@ export class AngularBuildRunner extends BuildRunner<AngularBuildOptions> {
       description: `
 ${chalk.green('ionic build')} uses the Angular CLI. Use ${chalk.green('ng build --help')} to list all Angular CLI options for building your app. See the ${chalk.green('ng build')} docs${chalk.cyan('[1]')} for explanations. Options not listed below are considered advanced and can be passed to the ${chalk.green('ng')} CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
 
-${chalk.cyan('[1]')}: ${chalk.bold('https://github.com/angular/angular-cli/wiki/build')}`,
+${chalk.cyan('[1]')}: ${chalk.bold('https://angular.io/cli/build')}`,
       options: [
         {
           name: 'prod',
