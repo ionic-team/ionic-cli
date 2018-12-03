@@ -57,7 +57,7 @@
     "@types/chokidar": "^1.7.4",
     "@types/debug": "0.0.31",
     "@types/express": "^4.11.0",
-    "@types/gulp": "^3.8.36",
+    "@types/gulp": "^4.0.5",
     "@types/http-proxy-middleware": "^0.19.0",
     "@types/jest": "^23.3.5",
     "@types/node": "^6.0.101",
