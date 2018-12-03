@@ -21,10 +21,7 @@ export class Preview {
     if (this.projectType === 'angular') {
       qp['ionic:mode'] = platformMode(platform);
       qp['ionic:persistConfig'] = 'true';
-
-      if (platform === PLATFORM_IOS) {
-        qp['ionic:_forceStatusbarPadding'] = 'true';
-      }
+      qp['ionic:_forceStatusbarPadding'] = 'true';
     } else if (this.projectType === 'ionic-angular') {
       qp['ionicplatform'] = platform;
       qp['ionicstatusbarpadding'] = 'true';
