@@ -32,4 +32,8 @@
   --main-bg: var(--body-bg);
   --section-bg: #151a21;
   --font-color: #a2a9b4;
+
+  --frame-ratio: .562; /* width/height */
+  --frame-default-width: 375px;
+  --frame-default-height: calc(var(--frame-default-width) / var(--frame-ratio));
 }

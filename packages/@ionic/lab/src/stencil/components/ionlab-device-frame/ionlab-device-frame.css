@@ -78,3 +78,9 @@ ionlab-device-frame .frame-container iframe {
   background-image: url('/assets/wp-statusbar.png');
   background-color: #fff;
 }
+
+@media only screen and (max-height: 850px) {
+  ionlab-device-frame h2 {
+    display: none;
+  }
+}

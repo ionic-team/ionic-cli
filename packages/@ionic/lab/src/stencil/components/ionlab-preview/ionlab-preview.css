@@ -3,8 +3,8 @@ ionlab-preview {
   flex: 1;
   overflow: scroll;
 
-  --frame-width: 375px;
-  --frame-height: 667px;
+  --frame-width: var(--frame-default-width);
+  --frame-height: var(--frame-default-height);
 }
 
 ionlab-preview > div {
@@ -16,4 +16,17 @@ ionlab-preview > div {
   align-items: center;
   padding-bottom: 60px;
   min-height: 100%;
+}
+
+@media only screen and (max-height: 850px) {
+  ionlab-preview {
+    overflow: hidden;
+
+    --frame-width: 300px;
+    --frame-height: calc(var(--frame-width) / var(--frame-ratio));
+  }
+
+  ionlab-preview > div {
+    padding-bottom: 0;
+  }
 }
