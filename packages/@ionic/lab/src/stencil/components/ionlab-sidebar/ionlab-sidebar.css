@@ -21,6 +21,7 @@ ionlab-sidebar h3 .icon {
   font-size: 24px;
   color: var(--font-color);
   margin-top: -5px;
+  cursor: pointer;
 }
 
 ionlab-sidebar .menu {

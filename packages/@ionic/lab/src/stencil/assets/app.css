@@ -46,9 +46,6 @@ header .icon {
   margin-top: -3px;
   font-size: 22px;
   color: var(--icon-color);
-}
-
-.icon {
   cursor: pointer;
 }
 
