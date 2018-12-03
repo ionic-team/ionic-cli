@@ -42,6 +42,7 @@
       "*.{ts,tsx}": "npm run lint"
     },
     "ignore": [
+      "src/stencil/**",
       "**/__tests__/*.{ts,tsx}"
     ]
   },
