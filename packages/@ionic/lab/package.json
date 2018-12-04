@@ -33,7 +33,7 @@
     "build.stencil": "npm run clean.stencil && stencil build",
     "build.tsc": "npm run clean.tsc && tsc",
     "watch": "npm run watch.tsc",
-    "watch.stencil": "npm run clean.stencil && concurrently \"stencil build --dev --watch\" \"stencil-dev-server --address localhost --httpPort 8900 --no-open\"",
+    "watch.stencil": "npm run clean.stencil && stencil build --dev --watch --serve --address localhost --port 8900 --no-open",
     "watch.tsc": "tsc -w --preserveWatchOutput",
     "prepublishOnly": "npm run build"
   },
@@ -54,11 +54,9 @@
     "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "@stencil/core": "^0.15.0",
-    "@stencil/dev-server": "0.0.18",
+    "@stencil/core": "^0.16.0",
     "@types/express": "^4.11.0",
     "@types/node": "^6.0.101",
-    "concurrently": "^4.0.1",
     "lint-staged": "^8.0.0",
     "rimraf": "^2.6.2",
     "tslint": "^5.9.1",
