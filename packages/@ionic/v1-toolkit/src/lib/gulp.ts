@@ -69,7 +69,8 @@ export async function runTask(name: string): Promise<void> {
 
   try {
     const gulp = await loadGulp();
-    const gulpStart = promisify<void, string>(gulp.start.bind(gulp));
+    const boundStart = gulp.start.bind(gulp);
+    const gulpStart = promisify<void, string>(boundStart as any);
 
     process.stdout.write(`${timestamp()} Invoking ${chalk.cyan(name)} gulp task.\n`);
     await gulpStart(name);
