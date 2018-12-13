@@ -28,7 +28,7 @@
     "clean": "npm run clean.tsc",
     "clean.tsc": "rimraf dist",
     "clean.stencil": "rimraf www",
-    "lint": "tslint --config tslint.js --project tsconfig.json",
+    "lint": "tslint --project tsconfig.json",
     "build": "npm run build.tsc && npm run build.stencil",
     "build.stencil": "npm run clean.stencil && stencil build",
     "build.tsc": "npm run clean.tsc && tsc",
