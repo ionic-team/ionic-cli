@@ -26,7 +26,7 @@
   },
   "scripts": {
     "clean": "rimraf dist",
-    "lint": "tslint --config tslint.js --project tsconfig.json",
+    "lint": "tslint --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
     "test": "jest --maxWorkers=4",

@@ -14,7 +14,7 @@
   "types": "./index.d.ts",
   "scripts": {
     "clean": "rimraf index.* bootstrap.* constants.* definitions.* guards.* lib commands",
-    "lint": "tslint --config tslint.js --project tsconfig.json",
+    "lint": "tslint --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
     "test": "jest --maxWorkers=4",
