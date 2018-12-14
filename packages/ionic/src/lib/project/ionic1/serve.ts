@@ -56,6 +56,9 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
           // TODO: Adding 'x' to aliases here has some weird behavior with minimist.
         },
       ],
+      exampleCommands: [
+        '-c',
+      ],
     };
   }
 
