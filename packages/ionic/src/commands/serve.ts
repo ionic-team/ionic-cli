@@ -68,7 +68,7 @@ export class ServeCommand extends Command implements CommandPreRun {
       },
     ];
 
-    const exampleCommands = ['', '-c', '--local', '--lab'];
+    const exampleCommands = ['', '--local', '--lab'];
 
     let description = `
 Easily spin up a development server which launches in your browser. It watches for changes in your source files and automatically reloads with the updated build.
