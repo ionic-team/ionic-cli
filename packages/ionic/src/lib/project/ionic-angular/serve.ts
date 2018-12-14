@@ -78,7 +78,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
         ...APP_SCRIPTS_OPTIONS,
       ],
       exampleCommands: [
-        '-- --enableLint false',
+        '-c', '-- --enableLint false',
       ],
     };
   }
