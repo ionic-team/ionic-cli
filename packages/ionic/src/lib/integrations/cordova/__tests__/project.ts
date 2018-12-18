@@ -7,14 +7,22 @@ describe('ionic', () => {
 
     describe('getPlatforms', () => {
 
-      it('should filter out platforms.json and empty string', async () => {
-        spyOn(fsSpy, 'readDir').and.callFake(async () => ['.DS_Store', 'android', 'ios', 'platforms.json', '']);
+      it('should filter out files and hidden files/folders', async () => {
+        const files = [['.DS_Store', false], ['.dir', true], ['android', true], ['ios', true], ['platforms.json', false]];
+        spyOn(fsSpy, 'readDirSafe').and.callFake(async () => files.map(([f]) => f));
+        spyOn(fsSpy, 'statSafe').and.callFake(async (p) => ({
+          isDirectory: () => {
+            const file = files.find(([f]) => p.endsWith(f));
+            return typeof file !== 'undefined' && file[1];
+          },
+        }));
+
         const platforms = await project.getPlatforms('/path/to/proj');
         expect(platforms).toEqual(['android', 'ios']);
       });
 
       it('should not error if directory empty', async () => {
-        spyOn(fsSpy, 'readDir').and.callFake(async () => []);
+        spyOn(fsSpy, 'readDirSafe').and.callFake(async () => []);
         const platforms = await project.getPlatforms('/path/to/proj');
         expect(platforms).toEqual([]);
       });
