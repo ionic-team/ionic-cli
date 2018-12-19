@@ -1,10 +1,9 @@
-import * as path from 'path';
-
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { readFile, writeFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as et from 'elementtree';
+import * as path from 'path';
 
 import { ProjectIntegration, ResourcesPlatform } from '../../../definitions';
 import { FatalException } from '../../errors';

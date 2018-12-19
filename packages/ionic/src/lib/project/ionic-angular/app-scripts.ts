@@ -1,8 +1,7 @@
-import chalk from 'chalk';
-import * as Debug from 'debug';
-
 import { OptionGroup } from '@ionic/cli-framework';
 import { compileNodeModulesPaths, resolve } from '@ionic/cli-framework/utils/node';
+import chalk from 'chalk';
+import * as Debug from 'debug';
 
 import { CommandMetadataOption } from '../../../definitions';
 

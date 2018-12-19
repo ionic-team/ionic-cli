@@ -1,10 +1,8 @@
-import * as path from 'path';
-
+import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/node';
 import chalk from 'chalk';
 import * as Debug from 'debug';
+import * as path from 'path';
 import * as semver from 'semver';
-
-import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/node';
 
 if (process.argv.includes('--no-color')) {
   chalk.enabled = false;

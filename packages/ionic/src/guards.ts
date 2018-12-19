@@ -1,33 +1,4 @@
-import {
-  APIResponse,
-  APIResponseError,
-  APIResponseSuccess,
-  App,
-  AppAssociation,
-  BitbucketCloudRepoAssociation,
-  BitbucketServerRepoAssociation,
-  CommandPreRun,
-  CordovaPackageJson,
-  ExitCodeException,
-  GithubBranch,
-  GithubRepo,
-  GithubRepoAssociation,
-  ICommand,
-  IMultiProjectConfig,
-  IProjectConfig,
-  IntegrationName,
-  Login,
-  Org,
-  Response,
-  SSHKey,
-  SecurityProfile,
-  Snapshot,
-  StarterManifest,
-  SuperAgentError,
-  TreatableAilment,
-  User,
-} from './definitions';
-
+import { APIResponse, APIResponseError, APIResponseSuccess, App, AppAssociation, BitbucketCloudRepoAssociation, BitbucketServerRepoAssociation, CommandPreRun, CordovaPackageJson, ExitCodeException, GithubBranch, GithubRepo, GithubRepoAssociation, ICommand, IMultiProjectConfig, IProjectConfig, IntegrationName, Login, Org, Response, SSHKey, SecurityProfile, Snapshot, StarterManifest, SuperAgentError, TreatableAilment, User } from './definitions';
 import { AuthConnection } from './lib/auth';
 
 export const INTEGRATION_NAMES: IntegrationName[] = ['capacitor', 'cordova'];

@@ -1,8 +1,7 @@
+import { CommandGroup, unparseArgs, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
-
-import { CommandGroup, unparseArgs, validators } from '@ionic/cli-framework';
 
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { GLOBAL_OPTIONS } from '../../config';

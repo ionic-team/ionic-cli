@@ -1,7 +1,6 @@
+import * as Debug from 'debug';
 import * as net from 'net';
 import * as os from 'os';
-
-import * as Debug from 'debug';
 
 const debug = Debug('ionic:utils-network');
 

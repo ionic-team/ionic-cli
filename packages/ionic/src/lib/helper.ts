@@ -1,7 +1,6 @@
-import * as path from 'path';
-
 import { fork } from '@ionic/cli-framework/utils/shell';
 import { mkdirp, open } from '@ionic/utils-fs';
+import * as path from 'path';
 
 import { IConfig, IPCMessage, IonicContext } from '../definitions';
 

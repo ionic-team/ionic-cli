@@ -1,6 +1,5 @@
-import chalk from 'chalk';
-
 import { PromptQuestion, PromptValue } from '@ionic/cli-framework';
+import chalk from 'chalk';
 
 import { ILogger, IonicEnvironmentFlags } from '../definitions';
 
