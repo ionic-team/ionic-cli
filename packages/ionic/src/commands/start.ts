@@ -228,9 +228,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     if (!options['type']) {
       if (this.env.flags.interactive) {
         this.env.log.info(
-          `You are about to create an Ionic 3 app. Would you like to try Ionic 4 ${chalk.red.bold('(beta)')}?\n` +
+          `You are about to create an Ionic 3 app. Would you like to try the release candidate for Ionic 4?\n` +
           `Ionic 4 uses the power of the modern Web and embraces the Angular CLI and Angular Router to bring you the best version of Ionic ever. See our blog announcement${chalk.cyan('[1]')} and documentation${chalk.cyan('[2]')} for more information. We'd love to hear your feedback on our latest version!\n\n` +
-          `${chalk.cyan('[1]')}: ${chalk.bold('https://blog.ionicframework.com/announcing-ionic-4-beta/')}\n` +
+          `${chalk.cyan('[1]')}: ${chalk.bold('https://blog.ionicframework.com/ionic-framework-4-0-rc-shipped-paving-way-for-final')}\n` +
           `${chalk.cyan('[2]')}: ${chalk.bold('https://beta.ionicframework.com/docs/')}\n`
         );
       }
