@@ -1,6 +1,6 @@
 {
   "name": "@ionic/utils-network",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Network utils for Node",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

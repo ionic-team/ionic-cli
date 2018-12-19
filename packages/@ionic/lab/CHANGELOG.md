@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.16"></a>
+## [1.0.16](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@1.0.15...@ionic/lab@1.0.16) (2018-12-19)
+
+
+### Bug Fixes
+
+* **lab:** correct statusbar position ([#3766](https://github.com/ionic-team/ionic-cli/issues/3766)) ([b37fa03](https://github.com/ionic-team/ionic-cli/commit/b37fa03))
+* **lab:** default cursor for platform titles ([b215beb](https://github.com/ionic-team/ionic-cli/commit/b215beb))
+* **lab:** improve dev experience on smaller screens ([45a6c58](https://github.com/ionic-team/ionic-cli/commit/45a6c58))
+* **lab:** statusbar padding for all versions ([4fa13a3](https://github.com/ionic-team/ionic-cli/commit/4fa13a3))
+
+
+
+
 <a name="1.0.15"></a>
 ## [1.0.15](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@1.0.14...@ionic/lab@1.0.15) (2018-11-27)
 

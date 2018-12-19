@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.6.0"></a>
+# [4.6.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.5.0...ionic@4.6.0) (2018-12-19)
+
+
+### Bug Fixes
+
+* **cordova:** warn for prepare w/o platforms ([385bdf2](https://github.com/ionic-team/ionic-cli/commit/385bdf2))
+
+
+### Features
+
+* **serve:** collapse numbered chunk output and summarize ([5ac6834](https://github.com/ionic-team/ionic-cli/commit/5ac6834))
+* **start:** update for Ionic Framework 4.0 RC ([7e943cc](https://github.com/ionic-team/ionic-cli/commit/7e943cc))
+
+
+
+
 <a name="4.5.0"></a>
 # [4.5.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.4.0...ionic@4.5.0) (2018-11-27)
 
