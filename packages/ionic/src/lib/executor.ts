@@ -1,6 +1,5 @@
 import { AbstractExecutor, metadataOptionsToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
 import chalk from 'chalk';
-import * as lodash from 'lodash';
 
 import { PROJECT_FILE } from '../constants';
 import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace } from '../definitions';
@@ -33,7 +32,10 @@ export class Executor extends AbstractExecutor<ICommand, INamespace, CommandMeta
     }
 
     const cmd = location.obj;
-    const cmdargs = lodash.drop(argv, location.path.length - 1);
+    const path = location.path;
+    const subcommandName = path[path.length - 1][0];
+    const subcommandNameArgIdx = argv.findIndex(arg => arg === subcommandName);
+    const cmdargs = argv.slice(subcommandNameArgIdx + 1);
 
     await this.run(cmd, cmdargs, { location, env, executor: this });
   }
