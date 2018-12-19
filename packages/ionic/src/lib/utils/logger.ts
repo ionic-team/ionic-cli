@@ -1,6 +1,5 @@
-import chalk from 'chalk';
-
 import { CreateTaggedFormatterOptions, DEFAULT_LOGGER_HANDLERS, Logger as BaseLogger, LoggerFormatter, createTaggedFormatter } from '@ionic/cli-framework';
+import chalk from 'chalk';
 
 import { ILogger } from '../../definitions';
 

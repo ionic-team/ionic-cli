@@ -1,9 +1,7 @@
-import * as Debug from 'debug';
-
-import * as ζsuperagent from 'superagent';
-
 import { conform } from '@ionic/cli-framework/utils/array';
 import { readFile } from '@ionic/utils-fs';
+import * as Debug from 'debug';
+import * as ζsuperagent from 'superagent';
 
 import { CreateRequestOptions, HttpMethod } from '../../definitions';
 

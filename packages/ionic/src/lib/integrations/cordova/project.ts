@@ -1,7 +1,6 @@
-import * as path from 'path';
-
 import { filter } from '@ionic/cli-framework/utils/array';
 import { readDirSafe, statSafe } from '@ionic/utils-fs';
+import * as path from 'path';
 
 export async function getPlatforms(projectDir: string): Promise<string[]> {
   const platformsDir = path.resolve(projectDir, 'platforms');

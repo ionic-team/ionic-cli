@@ -1,12 +1,9 @@
-import * as path from 'path';
-
-import chalk from 'chalk';
-import * as Debug from 'debug';
-
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { promisify } from '@ionic/cli-framework/utils/promise';
-
+import chalk from 'chalk';
+import * as Debug from 'debug';
 import * as ζgulp from 'gulp';
+import * as path from 'path';
 
 import { timestamp } from './log';
 

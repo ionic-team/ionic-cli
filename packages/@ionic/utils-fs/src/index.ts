@@ -1,10 +1,9 @@
 import * as fs from 'fs';
+import * as ζncp from 'ncp';
 import * as os from 'os';
 import * as path from 'path';
 import * as stream from 'stream';
 import * as through2 from 'through2';
-
-import * as ζncp from 'ncp';
 
 interface Promisify {
   <T>(func: (callback: (err: any, result?: T) => void) => void): () => Promise<T>;

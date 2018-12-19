@@ -1,7 +1,6 @@
+import chalk from 'chalk';
 import * as os from 'os';
 import * as path from 'path';
-
-import chalk from 'chalk';
 import sliceAnsi = require('slice-ansi');
 import stringWidth = require('string-width');
 import stripAnsi = require('strip-ansi');

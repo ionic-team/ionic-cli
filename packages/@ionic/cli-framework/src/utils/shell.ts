@@ -1,9 +1,8 @@
 import { statSafe } from '@ionic/utils-fs';
 import { ChildProcess, ForkOptions, SpawnOptions, fork as _fork } from 'child_process';
+import * as crossSpawn from 'cross-spawn';
 import * as os from 'os';
 import * as path from 'path';
-
-import * as crossSpawn from 'cross-spawn';
 
 import { ERROR_SHELL_COMMAND_NOT_FOUND, ERROR_SHELL_NON_ZERO_EXIT, ERROR_SHELL_SIGNAL_EXIT, ShellCommandError } from '../errors';
 import { reduce } from '../utils/array';

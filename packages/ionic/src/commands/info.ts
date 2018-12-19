@@ -1,8 +1,7 @@
-import chalk from 'chalk';
-import * as lodash from 'lodash';
-
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
+import chalk from 'chalk';
+import * as lodash from 'lodash';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, InfoItem, InfoItemGroup } from '../definitions';
 import { Command } from '../lib/command';

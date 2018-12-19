@@ -1,14 +1,11 @@
-import * as path from 'path';
-
-import chalk from 'chalk';
-import stripAnsi = require('strip-ansi');
-
 import { Command, CommandHelpSchemaInput, CommandHelpSchemaOption, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-framework';
 import { strcmp } from '@ionic/cli-framework/utils/string';
 import { mkdirp, removeDirectory, writeFile } from '@ionic/utils-fs';
-
+import chalk from 'chalk';
 import { ProjectType, generateContext, loadExecutor } from 'ionic';
 import { CommandHelpSchema, NamespaceSchemaHelpFormatter } from 'ionic/lib/help';
+import * as path from 'path';
+import stripAnsi = require('strip-ansi');
 
 import { ansi2md, links2md } from './utils';
 

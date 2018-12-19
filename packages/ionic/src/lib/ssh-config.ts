@@ -1,7 +1,6 @@
+import { fileToString } from '@ionic/utils-fs';
 import * as os from 'os';
 import * as path from 'path';
-
-import { fileToString } from '@ionic/utils-fs';
 import * as SSHConfig from 'ssh-config';
 
 export { SSHConfig };
