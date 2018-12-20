@@ -41,6 +41,7 @@ export class IonicNamespace extends Namespace {
 
   async getNamespaces(): Promise<NamespaceMap> {
     return new NamespaceMap([
+      ['appflow', async () => { const { AppflowNamespace } = await import('./appflow/index'); return new AppflowNamespace(this); }],
       ['config', async () => { const { ConfigNamespace } = await import('./config/index'); return new ConfigNamespace(this); }],
       ['cordova', async () => { const { CordovaNamespace } = await import('./cordova/index'); return new CordovaNamespace(this); }],
       ['capacitor', async () => { const { CapacitorNamespace } = await import('./capacitor/index'); return new CapacitorNamespace(this); }],
