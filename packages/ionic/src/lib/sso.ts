@@ -8,6 +8,8 @@ import * as qs from 'querystring';
 import { ASSETS_DIRECTORY } from '../constants';
 import { IClient } from '../definitions';
 
+import { open } from './open';
+
 const REDIRECT_PORT = 8123;
 const REDIRECT_HOST = 'localhost';
 
@@ -51,15 +53,13 @@ export abstract class OAuth2Flow {
   }
 
   async run(): Promise<string> {
-    const opn = await import('opn');
-
     const verifier = this.generateVerifier();
     const challenge = this.generateChallenge(verifier);
 
     const authorizationParams = this.generateAuthorizationParameters(challenge);
     const authorizationUrl = `${this.authorizationUrl}?${qs.stringify(authorizationParams)}`;
 
-    await opn(authorizationUrl, { wait: false });
+    await open(authorizationUrl);
 
     const authorizationCode = await this.getAuthorizationCode();
     const token = await this.getAccessToken(authorizationCode, verifier);

@@ -9,6 +9,7 @@ import { isSuperAgentError } from '../guards';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { runCommand } from '../lib/executor';
+import { open } from '../lib/open';
 
 const debug = Debug('ionic:commands:link');
 
@@ -364,8 +365,6 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
   }
 
   async oAuthProcess(userId: number) {
-    const opn = await import('opn');
-
     const userClient = await this.getUserClient();
 
     let confirm = false;
@@ -389,7 +388,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     }
 
     const url = await userClient.oAuthGithubLogin(userId);
-    await opn(url, { wait: false });
+    await open(url);
 
     confirm = await this.env.prompt({
       type: 'confirm',

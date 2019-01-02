@@ -20,6 +20,7 @@ import { isCordovaPackageJson } from '../guards';
 import { FatalException, RunnerException, ServeCLIProgramNotFoundException } from './errors';
 import { emit } from './events';
 import { Hook } from './hooks';
+import { open } from './open';
 import { createDefaultLoggerHandlers } from './utils/logger';
 
 const debug = Debug('ionic:lib:serve');
@@ -198,8 +199,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       const openAddress = labAddress ? labAddress : localAddress;
       const openURL = this.modifyOpenURL(openAddress, options);
 
-      const opn = await import('opn');
-      await opn(openURL, { app: options.browser, wait: false });
+      await open(openURL, { app: options.browser });
 
       this.e.log.info(`Browser window opened to ${chalk.bold(openURL)}!`);
       this.e.log.nl();

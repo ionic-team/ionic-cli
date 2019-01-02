@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
 import { Command } from '../lib/command';
+import { open } from '../lib/open';
 
 export class SignupCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
@@ -20,10 +21,9 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const opn = await import('opn');
     const dashUrl = this.env.config.getDashUrl();
 
-    await opn(`${dashUrl}/signup?source=cli`, { wait: false });
+    await open(`${dashUrl}/signup?source=cli`);
 
     this.env.log.ok('Launched signup form in your browser!');
   }
