@@ -52,7 +52,9 @@ export class PackageCommand extends Command {
     return {
       name: 'package',
       type: 'project',
-      summary: 'TODO',
+      summary: `
+Creates a package build on AppFlow using name parameters.
+      `,
       inputs: [
         {
           name: 'platform',

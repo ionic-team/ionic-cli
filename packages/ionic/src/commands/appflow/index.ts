@@ -8,7 +8,7 @@ export class AppflowNamespace extends Namespace {
       name: 'appflow',
       summary: 'Appflow functionality',
       description: `
-TODO...
+Inteface to execute commands on Ionic Appflow.
 
 Appflow documentation:
 - Overview: ${chalk.bold('https://ionicframework.com/docs/appflow/')}
