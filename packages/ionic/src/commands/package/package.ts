@@ -18,7 +18,7 @@ import { isSuperAgentError } from '../../guards';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
-const debug = Debug('ionic:commands:appflow:package');
+const debug = Debug('ionic:commands:package:build');
 const PLATFORMS = ['android', 'ios'];
 const BUILD_TYPES = ['debug', 'release', 'development', 'ad-hoc', 'app-store', 'enterprise'];
 
@@ -47,14 +47,12 @@ interface DownloadUrl {
   url: string | null;
 }
 
-export class PackageCommand extends Command {
+export class BuildCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
     return {
-      name: 'package',
+      name: 'build',
       type: 'project',
-      summary: `
-Creates a package build on AppFlow using name parameters.
-      `,
+      summary: `Creates a package build on AppFlow using name parameters.`,
       inputs: [
         {
           name: 'platform',
@@ -106,7 +104,7 @@ Creates a package build on AppFlow using name parameters.
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic appflow package')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${chalk.green('ionic package build')} outside a project directory.`);
     }
 
     const token = this.env.session.getUserToken();

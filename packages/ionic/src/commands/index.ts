@@ -41,12 +41,12 @@ export class IonicNamespace extends Namespace {
 
   async getNamespaces(): Promise<NamespaceMap> {
     return new NamespaceMap([
-      ['appflow', async () => { const { AppflowNamespace } = await import('./appflow/index'); return new AppflowNamespace(this); }],
       ['config', async () => { const { ConfigNamespace } = await import('./config/index'); return new ConfigNamespace(this); }],
       ['cordova', async () => { const { CordovaNamespace } = await import('./cordova/index'); return new CordovaNamespace(this); }],
       ['capacitor', async () => { const { CapacitorNamespace } = await import('./capacitor/index'); return new CapacitorNamespace(this); }],
       ['deploy', async () => { const { DeployNamespace } = await import('./deploy/index'); return new DeployNamespace(this); }],
       ['git', async () => { const { GitNamespace } = await import('./git/index'); return new GitNamespace(this); }],
+      ['package', async () => { const { PackageNamespace } = await import('./package/index'); return new PackageNamespace(this); }],
       ['ssl', async () => { const { SSLNamespace } = await import('./ssl/index'); return new SSLNamespace(this); }],
       ['ssh', async () => { const { SSHNamespace } = await import('./ssh/index'); return new SSHNamespace(this); }],
       ['monitoring', async () => { const { MonitoringNamespace } = await import('./monitoring/index'); return new MonitoringNamespace(this); }],
