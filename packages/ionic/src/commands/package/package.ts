@@ -55,7 +55,30 @@ export class BuildCommand extends Command {
     return {
       name: 'build',
       type: 'project',
-      summary: `Creates a package build on Appflow using name parameters.`,
+      summary: `Creates a package build on Appflow using name parameters, then tails the build log from Appflow and
+finally downloads the created app package file in the current directory if the build is successful.
+
+The basic commands can be customized a combination of Options and Advanced Options.
+
+Apart from the --commit option, all the others options can be specified using the verbose name you selected upon setup in the Appflow Dashboard.
+
+The --security-profile option is mandatory for any iOS build while is not required from an android debug build.
+
+Other notes:
+--environment allows to specify the name of an environment to customize the build
+--native-config allows to specify the name of a native config set of parameters to override the default specified in the app
+--target-platform allows to override the preferred platform with another one: this is currently useful only for building older iOS apps instead of the preferred iOS 10 used by default
+--build-file-name allows to specify a custon name for the build package file that will be downloaded; it can only be a file name and not a path
+`,
+      exampleCommands: [
+        'android debug',
+        'ios development --security-profile="iOS Security Profile Name"',
+        'android debug --environment="My Custom Environment Name"',
+        'android debug --native-config"My Custom Native Config Name"',
+        'android debug --commit=2345cd3305a1cf94de34e93b73a932f25baac77c',
+        'ios development --security-profile="iOS Security Profile Name" --target-platform="iOS - Xcode 9"',
+        'ios development --security-profile="iOS Security Profile Name" --build-file-name=my_custom_file_name.ipa',
+      ],
       inputs: [
         {
           name: 'platform',
