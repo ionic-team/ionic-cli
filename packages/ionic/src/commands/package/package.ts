@@ -18,6 +18,8 @@ import { isSuperAgentError } from '../../guards';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
+import { fileUtils } from './utils';
+
 const debug = Debug('ionic:commands:package:build');
 const PLATFORMS = ['android', 'ios'];
 const BUILD_TYPES = ['debug', 'release', 'development', 'ad-hoc', 'app-store', 'enterprise'];
@@ -98,6 +100,13 @@ export class BuildCommand extends Command {
           groups: [OptionGroup.Advanced],
           spec: { value: 'name' },
         },
+        {
+          name: 'buildFileName',
+          summary: 'The name for the downloaded build file',
+          type: String,
+          groups: [OptionGroup.Advanced],
+          spec: { value: 'name' },
+        },
       ],
     };
   }
@@ -118,6 +127,14 @@ export class BuildCommand extends Command {
 
     let build = await this.createPackageBuild(appflowId, token, platform, buildType, options);
     const buildId = build.job_id;
+
+    let customBuildFileName = '';
+    if (options.buildFileName) {
+      if (typeof (options.buildFileName) !== 'string' || !fileUtils.isValidFileName(options.buildFileName)) {
+        throw new FatalException(`${chalk.bold(options.buildFileName.toString())} is not a valid file name`);
+      }
+      customBuildFileName = options.buildFileName;
+    }
 
     const details = columnar([
       ['Appflow ID', chalk.bold(appflowId)],
@@ -145,7 +162,7 @@ export class BuildCommand extends Command {
       throw new Error('Missing URL in response');
     }
 
-    const filename = await this.downloadBuild(url.url);
+    const filename = await this.downloadBuild(url.url, customBuildFileName);
     this.env.log.ok(`Build completed: ${filename}`);
   }
 
@@ -235,11 +252,14 @@ export class BuildCommand extends Command {
     return build;
   }
 
-  async downloadBuild(url: string): Promise<string> {
+  async downloadBuild(url: string, customBuildFileName: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       https.get(url, res => {
         const contentDisposition = res.headers['content-disposition'];
-        const filename = contentDisposition ? contentDisposition.split('=')[1] : 'output.bin';
+        let filename = contentDisposition ? contentDisposition.split('=')[1] : 'output.bin';
+        if (customBuildFileName) {
+          filename = customBuildFileName;
+        }
         const ws = fs.createWriteStream(filename);
         ws.on('error', reject);
         ws.on('finish', () => resolve(filename));
