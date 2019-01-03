@@ -21,7 +21,9 @@ import { fileUtils } from '../../lib/utils/file';
 
 const debug = Debug('ionic:commands:package:build');
 const PLATFORMS = ['android', 'ios'];
-const BUILD_TYPES = ['debug', 'release', 'development', 'ad-hoc', 'app-store', 'enterprise'];
+const ANDROID_BUILD_TYPES = ['debug', 'release'];
+const IOS_BUILD_TYPES = ['development', 'ad-hoc', 'app-store', 'enterprise'];
+const BUILD_TYPES = ANDROID_BUILD_TYPES.concat(IOS_BUILD_TYPES);
 
 interface PackageBuild {
   job_id: number;
@@ -108,6 +110,56 @@ export class BuildCommand extends Command {
         },
       ],
     };
+  }
+
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (!inputs[0]) {
+      const platformInput = await this.env.prompt({
+        type: 'input',
+        name: 'platform',
+        message: `Platform to package (${PLATFORMS.map(v => chalk.green(v)).join(', ')}):`,
+        validate: v => validators.required(v) && contains(PLATFORMS, {})(v),
+      });
+
+      inputs[0] = platformInput;
+    }
+
+    const buildTypes = inputs[0] === 'ios' ? IOS_BUILD_TYPES : ANDROID_BUILD_TYPES;
+
+    // validate that the build type is valid for the platform
+    let reenterBuilType = false;
+    if (inputs[1] && !buildTypes.includes(inputs[1])) {
+      reenterBuilType = true;
+      this.env.log.warn(`Build type ${chalk.bold(inputs[1])} incompatible for ${chalk.bold(inputs[0])}`);
+      this.env.log.nl();
+    }
+
+    if (!inputs[1] || reenterBuilType) {
+      const typeInput = await this.env.prompt({
+        type: 'input',
+        name: 'type',
+        message: `Build type (${buildTypes.map(v => chalk.green(v)).join(', ')}):`,
+        validate: v => validators.required(v) && contains(buildTypes, {})(v),
+      });
+
+      inputs[1] = typeInput;
+    }
+
+    // the security profile is mandatory for iOS packages, so prompting if it is missing
+    if (inputs[0] === 'ios' && !options['security-profile']) {
+      if (this.env.flags.interactive) {
+        this.env.log.warn(`A security profile is mandatory to build an iOS package`);
+        this.env.log.nl();
+      }
+
+      const securityProfileOption = await this.env.prompt({
+        type: 'input',
+        name: 'security-profile',
+        message: `Security Profile Name:`,
+      });
+
+      options['security-profile'] = securityProfileOption;
+    }
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
