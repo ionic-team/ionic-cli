@@ -17,8 +17,7 @@ import { CommandMetadata } from '../../definitions';
 import { isSuperAgentError } from '../../guards';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
-
-import { fileUtils } from './utils';
+import { fileUtils } from '../../lib/utils/file';
 
 const debug = Debug('ionic:commands:package:build');
 const PLATFORMS = ['android', 'ios'];
@@ -54,7 +53,7 @@ export class BuildCommand extends Command {
     return {
       name: 'build',
       type: 'project',
-      summary: `Creates a package build on AppFlow using name parameters.`,
+      summary: `Creates a package build on Appflow using name parameters.`,
       inputs: [
         {
           name: 'platform',
@@ -69,7 +68,7 @@ export class BuildCommand extends Command {
       ],
       options: [
         {
-          name: 'securityProfile',
+          name: 'security-profile',
           summary: 'Security profile',
           type: String,
           spec: { value: 'name' },
@@ -81,7 +80,7 @@ export class BuildCommand extends Command {
           spec: { value: 'name' },
         },
         {
-          name: 'nativeConfig',
+          name: 'native-config',
           summary: 'The group of native config variables exposed to your build',
           type: String,
           spec: { value: 'name' },
@@ -94,14 +93,14 @@ export class BuildCommand extends Command {
           spec: { value: 'sha1' },
         },
         {
-          name: 'targetPlatform',
+          name: 'target-platform',
           summary: 'Target platform',
           type: String,
           groups: [OptionGroup.Advanced],
           spec: { value: 'name' },
         },
         {
-          name: 'buildFileName',
+          name: 'build-file-name',
           summary: 'The name for the downloaded build file',
           type: String,
           groups: [OptionGroup.Advanced],
@@ -129,11 +128,11 @@ export class BuildCommand extends Command {
     const buildId = build.job_id;
 
     let customBuildFileName = '';
-    if (options.buildFileName) {
-      if (typeof (options.buildFileName) !== 'string' || !fileUtils.isValidFileName(options.buildFileName)) {
-        throw new FatalException(`${chalk.bold(options.buildFileName.toString())} is not a valid file name`);
+    if (options['build-file-name']) {
+      if (typeof (options['build-file-name']) !== 'string' || !fileUtils.isValidFileName(options['build-file-name'])) {
+        throw new FatalException(`${chalk.bold(String(options['build-file-name']))} is not a valid file name`);
       }
-      customBuildFileName = options.buildFileName;
+      customBuildFileName = String(options['build-file-name']);
     }
 
     const details = columnar([
@@ -172,10 +171,10 @@ export class BuildCommand extends Command {
       platform,
       build_type: buildType,
       commit_sha: options.commit,
-      stack_name: options.targetPlatform,
-      profile_name: options.securityProfile,
+      stack_name: options['target-platform'],
+      profile_name: options['security-profile'],
       environment_name: options.environment,
-      native_config_name: options.nativeConfig,
+      native_config_name: options['native-config'],
     });
 
     try {
