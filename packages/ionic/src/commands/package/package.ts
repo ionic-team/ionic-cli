@@ -55,26 +55,28 @@ export class BuildCommand extends Command {
     return {
       name: 'build',
       type: 'project',
-      summary: `Creates a package build on Appflow using name parameters, then tails the build log from Appflow and
+      summary: 'Create a package build on Appflow.',
+      description: `
+Creates a package build on Appflow using named Appflow parameters, then tails the build log from Appflow and
 finally downloads the created app package file in the current directory if the build is successful.
 
-The basic commands can be customized a combination of Options and Advanced Options.
+The basic commands can be customized with a combination of Options and Advanced Options.
 
-Apart from the --commit option, all the others options can be specified using the verbose name you selected upon setup in the Appflow Dashboard.
+Apart from the ${chalk.green('--commit')} option, all the others options can be specified using the verbose name you selected upon setup in the Appflow Dashboard.
 
-The --security-profile option is mandatory for any iOS build while is not required from an android debug build.
+The ${chalk.green('--security-profile')} option is mandatory for any iOS build while is not required from an android debug build.
 
 Other notes:
---environment allows to specify the name of an environment to customize the build
---native-config allows to specify the name of a native config set of parameters to override the default specified in the app
---target-platform allows to override the preferred platform with another one: this is currently useful only for building older iOS apps instead of the preferred iOS 10 used by default
---build-file-name allows to specify a custon name for the build package file that will be downloaded; it can only be a file name and not a path
+${chalk.green('--environment')} allows to specify the name of an environment to customize the build
+${chalk.green('--native-config')} allows to specify the name of a native config set of parameters to override the default specified in the app
+${chalk.green('--target-platform')} allows to override the preferred platform with another one: this is currently useful only for building older iOS apps instead of the preferred iOS 10 used by default
+${chalk.green('--build-file-name')} allows to specify a custon name for the build package file that will be downloaded; it can only be a file name and not a path
 `,
       exampleCommands: [
         'android debug',
         'ios development --security-profile="iOS Security Profile Name"',
         'android debug --environment="My Custom Environment Name"',
-        'android debug --native-config"My Custom Native Config Name"',
+        'android debug --native-config="My Custom Native Config Name"',
         'android debug --commit=2345cd3305a1cf94de34e93b73a932f25baac77c',
         'ios development --security-profile="iOS Security Profile Name" --target-platform="iOS - Xcode 9"',
         'ios development --security-profile="iOS Security Profile Name" --build-file-name=my_custom_file_name.ipa',
@@ -138,9 +140,10 @@ Other notes:
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!inputs[0]) {
       const platformInput = await this.env.prompt({
-        type: 'input',
+        type: 'list',
         name: 'platform',
-        message: `Platform to package (${PLATFORMS.map(v => chalk.green(v)).join(', ')}):`,
+        choices: PLATFORMS,
+        message: `Platform to package:`,
         validate: v => validators.required(v) && contains(PLATFORMS, {})(v),
       });
 
@@ -153,15 +156,16 @@ Other notes:
     let reenterBuilType = false;
     if (inputs[1] && !buildTypes.includes(inputs[1])) {
       reenterBuilType = true;
-      this.env.log.warn(`Build type ${chalk.bold(inputs[1])} incompatible for ${chalk.bold(inputs[0])}`);
+      this.env.log.warn(`Build type ${chalk.bold(inputs[1])} incompatible for ${chalk.bold(inputs[0])}; please choose a correct one`);
       this.env.log.nl();
     }
 
     if (!inputs[1] || reenterBuilType) {
       const typeInput = await this.env.prompt({
-        type: 'input',
+        type: 'list',
         name: 'type',
-        message: `Build type (${buildTypes.map(v => chalk.green(v)).join(', ')}):`,
+        choices: buildTypes,
+        message: `Build type:`,
         validate: v => validators.required(v) && contains(buildTypes, {})(v),
       });
 
