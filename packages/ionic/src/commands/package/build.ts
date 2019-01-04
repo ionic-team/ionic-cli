@@ -52,25 +52,24 @@ interface DownloadUrl {
 
 export class BuildCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
+    const dashUrl = this.env.config.getDashUrl();
+
     return {
       name: 'build',
       type: 'project',
-      summary: 'Create a package build on Appflow.',
+      summary: 'Create a package build on Appflow',
       description: `
-Creates a package build on Appflow using named Appflow parameters, then tails the build log from Appflow and
-finally downloads the created app package file in the current directory if the build is successful.
+This command creates a package build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created app package file in the current directory.
 
-The basic commands can be customized with a combination of Options and Advanced Options.
+Apart from ${chalk.green('--commit')}, every option can be specified using the full name setup within the Appflow Dashboard${chalk.cyan('[1]')}.
 
-Apart from the ${chalk.green('--commit')} option, all the others options can be specified using the verbose name you selected upon setup in the Appflow Dashboard.
+The ${chalk.green('--security-profile')} option is mandatory for any iOS build but not for Android debug builds.
 
-The ${chalk.green('--security-profile')} option is mandatory for any iOS build while is not required from an android debug build.
+Customizing the build:
+- The ${chalk.green('--environment')} and ${chalk.green('--native-config')} options can be used to customize the groups of values exposed to the build.
+- Override the preferred platform with ${chalk.green('--target-platform')}. This is useful for building older iOS apps.
 
-Other notes:
-${chalk.green('--environment')} allows to specify the name of an environment to customize the build
-${chalk.green('--native-config')} allows to specify the name of a native config set of parameters to override the default specified in the app
-${chalk.green('--target-platform')} allows to override the preferred platform with another one: this is currently useful only for building older iOS apps instead of the preferred iOS 10 used by default
-${chalk.green('--build-file-name')} allows to specify a custon name for the build package file that will be downloaded; it can only be a file name and not a path
+${chalk.cyan('[1]')}: ${chalk.bold(dashUrl)}
 `,
       exampleCommands: [
         'android debug',
