@@ -21,9 +21,11 @@ import { fileUtils } from '../../lib/utils/file';
 
 const debug = Debug('ionic:commands:package:build');
 const PLATFORMS = ['android', 'ios'];
+
 const ANDROID_BUILD_TYPES = ['debug', 'release'];
 const IOS_BUILD_TYPES = ['development', 'ad-hoc', 'app-store', 'enterprise'];
 const BUILD_TYPES = ANDROID_BUILD_TYPES.concat(IOS_BUILD_TYPES);
+const TARGET_PLATFORM = ['Android', 'iOS - Xcode 10 (Preferred)', 'iOS - Xcode 9', 'iOS - Xcode 8'];
 
 interface PackageBuild {
   job_id: number;
@@ -120,7 +122,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold(dashUrl)}
         },
         {
           name: 'target-platform',
-          summary: 'Target platform',
+          summary: `Target platform (${TARGET_PLATFORM.map(v => chalk.green(`"${v}"`)).join(', ')})`,
           type: String,
           groups: [OptionGroup.Advanced],
           spec: { value: 'name' },
@@ -155,8 +157,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold(dashUrl)}
     let reenterBuilType = false;
     if (inputs[1] && !buildTypes.includes(inputs[1])) {
       reenterBuilType = true;
-      this.env.log.warn(`Build type ${chalk.bold(inputs[1])} incompatible for ${chalk.bold(inputs[0])}; please choose a correct one`);
       this.env.log.nl();
+      this.env.log.warn(`Build type ${chalk.bold(inputs[1])} incompatible for ${chalk.bold(inputs[0])}; please choose a correct one`);
     }
 
     if (!inputs[1] || reenterBuilType) {
@@ -174,8 +176,8 @@ ${chalk.cyan('[1]')}: ${chalk.bold(dashUrl)}
     // the security profile is mandatory for iOS packages, so prompting if it is missing
     if (inputs[0] === 'ios' && !options['security-profile']) {
       if (this.env.flags.interactive) {
-        this.env.log.warn(`A security profile is mandatory to build an iOS package`);
         this.env.log.nl();
+        this.env.log.warn(`A security profile is mandatory to build an iOS package`);
       }
 
       const securityProfileOption = await this.env.prompt({
