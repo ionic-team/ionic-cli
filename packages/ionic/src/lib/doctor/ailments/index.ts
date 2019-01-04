@@ -275,7 +275,7 @@ export class ViewportFitNotSet extends Ailment {
 
   async detected() {
     const indexHtml = await readFile(path.resolve(await this.project.getSourceDir(), 'index.html'), { encoding: 'utf8' });
-    const m = indexHtml.match(/\<meta.*viewport-fit=cover/);
+    const m = indexHtml.match(/\<meta([\s]*(name="viewport"){1})[\w\d\s\.\-,=]*(content="){1}[\w\d\s\.\-,=]*(viewport-fit=cover){1}[\w\d\s\.\-,="]+\/\>/);
     return !Boolean(m);
   }
 
