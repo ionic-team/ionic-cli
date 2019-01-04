@@ -262,12 +262,14 @@ ${chalk.cyan('[1]')}: ${chalk.bold(dashUrl)}
       return res.data as PackageBuild;
     } catch (e) {
       if (isSuperAgentError(e)) {
-        this.env.log.error(`Unable to create build: ` + e.message);
         if (e.response.status === 401) {
           this.env.log.error('Try logging out and back in again.');
         }
+        const apiErrorMessage = (e.response.body.error && e.response.body.error.message) ? e.response.body.error.message : 'Api Error';
+        throw new FatalException(`Unable to create build: ` + apiErrorMessage);
+      } else {
+        throw e;
       }
-      throw e;
     }
   }
 
@@ -280,12 +282,14 @@ ${chalk.cyan('[1]')}: ${chalk.bold(dashUrl)}
       return res.data as PackageBuild;
     } catch (e) {
       if (isSuperAgentError(e)) {
-        this.env.log.error(`Unable to get build ${buildId}: ` + e.message);
         if (e.response.status === 401) {
           this.env.log.error('Try logging out and back in again.');
         }
+        const apiErrorMessage = (e.response.body.error && e.response.body.error.message) ? e.response.body.error.message : 'Api Error';
+        throw new FatalException(`Unable to get build ${buildId}: ` + apiErrorMessage);
+      } else {
+        throw e;
       }
-      throw e;
     }
   }
 
@@ -298,12 +302,14 @@ ${chalk.cyan('[1]')}: ${chalk.bold(dashUrl)}
       return res.data as DownloadUrl;
     } catch (e) {
       if (isSuperAgentError(e)) {
-        this.env.log.error(`Unable to get download URL for build ${buildId}: ` + e.message);
         if (e.response.status === 401) {
           this.env.log.error('Try logging out and back in again.');
         }
+        const apiErrorMessage = (e.response.body.error && e.response.body.error.message) ? e.response.body.error.message : 'Api Error';
+        throw new FatalException(`Unable to get download URL for build ${buildId}: ` + apiErrorMessage);
+      } else {
+        throw e;
       }
-      throw e;
     }
   }
 
