@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.7.0"></a>
+# [4.7.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.6.0...ionic@4.7.0) (2019-01-07)
+
+
+### Bug Fixes
+
+* **doctor:** handle multilines for viewport-fit-not-set ([#3809](https://github.com/ionic-team/ionic-cli/issues/3809)) ([6aa7ae6](https://github.com/ionic-team/ionic-cli/commit/6aa7ae6))
+* **executor:** Exclude options for command argument parsing ([#3798](https://github.com/ionic-team/ionic-cli/issues/3798)) ([514015f](https://github.com/ionic-team/ionic-cli/commit/514015f))
+* **serve:** handle error in opn with debug statement ([89b6d33](https://github.com/ionic-team/ionic-cli/commit/89b6d33))
+
+
+### Features
+
+* **appflow:** command to create package builds ([#3808](https://github.com/ionic-team/ionic-cli/issues/3808)) ([149f06e](https://github.com/ionic-team/ionic-cli/commit/149f06e))
+* **cordova:** auto-forward port when using --native-run ([0da50ac](https://github.com/ionic-team/ionic-cli/commit/0da50ac))
+
+
+
+
 <a name="4.6.0"></a>
 # [4.6.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.5.0...ionic@4.6.0) (2018-12-19)
 

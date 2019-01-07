@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.10"></a>
+## [1.0.10](https://github.com/ionic-team/ionic-cli/compare/@ionic/discover@1.0.9...@ionic/discover@1.0.10) (2019-01-07)
+
+
+
+
+**Note:** Version bump only for package @ionic/discover
+
 <a name="1.0.9"></a>
 ## [1.0.9](https://github.com/ionic-team/ionic-cli/compare/@ionic/discover@1.0.8...@ionic/discover@1.0.9) (2018-12-19)
 
