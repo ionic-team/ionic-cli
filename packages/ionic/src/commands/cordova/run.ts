@@ -2,6 +2,7 @@ import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, OptionGroup, ShellCommand
 import { onBeforeExit, processExit, sleepForever } from '@ionic/cli-framework/utils/process';
 import chalk from 'chalk';
 import * as path from 'path';
+import * as url from 'url';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IShellRunOptions } from '../../definitions';
 import { COMMON_BUILD_COMMAND_OPTIONS, build } from '../../lib/build';
@@ -202,6 +203,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
           options['emulator'] = true;
         }
       }
+
       if (options['native-run']) {
         const args = createNativeRunListArgs(inputs, options);
         await this.nativeRun(args);
@@ -209,6 +211,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
         const args = filterArgumentsForCordova(metadata, options);
         await this.runCordova(['run', ...args.slice(1)], {});
       }
+
       throw new FatalException('', 0);
     }
 
@@ -234,16 +237,17 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
     if (options['livereload']) {
       let livereloadUrl = options['livereload-url'] ? String(options['livereload-url']) : undefined;
+
       if (!livereloadUrl) {
         // TODO: use runner directly
         const details = await serve({ flags: this.env.flags, config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
 
-        if (details.externallyAccessible === false) {
+        if (details.externallyAccessible === false && !options['native-run']) {
           const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
           this.env.log.warn(`Your device or emulator may not be able to access ${chalk.bold(details.externalAddress)}.${extra}\n\n`);
         }
 
-        livereloadUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
+        livereloadUrl = `${details.protocol || 'http'}://${options['native-run'] ? details.localAddress : details.externalAddress}:${details.port}`;
       }
 
       const conf = await loadConfigXml(this.integration);
@@ -273,7 +277,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
 
         const platform = inputs[0];
         const packagePath = getPackagePath(conf.getProjectInfo().name, platform, options['emulator'] as boolean);
-        const nativeRunArgs = createNativeRunArgs(packagePath, platform, options);
+        const nativeRunArgs = createNativeRunArgs(packagePath, platform, livereloadUrl, options);
         await this.nativeRun(nativeRunArgs);
       } else {
         await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: cordovalogws });
@@ -325,9 +329,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-re
   }
 }
 
-function createNativeRunArgs(packagePath: string, platform: string, options: CommandLineOptions): string[] {
+function createNativeRunArgs(packagePath: string, platform: string, livereloadUrl: string, options: CommandLineOptions): string[] {
   const opts = [platform, '--app', packagePath];
-  const target = options['target'] as string;
+  const target = options['target'] ? String(options['target']) : undefined;
+
   if (target) {
     opts.push('--target', target);
   } else if (options['emulator']) {
@@ -338,8 +343,17 @@ function createNativeRunArgs(packagePath: string, platform: string, options: Com
     opts.push('--connect');
   }
 
+  if (!options['livereload-url']) {
+    const { port } = url.parse(livereloadUrl);
+    opts.push('--forward', `${port}:${port}`);
+  }
+
   if (options['json']) {
     opts.push('--json');
+  }
+
+  if (options['verbose']) {
+    opts.push('--verbose');
   }
 
   return opts;
