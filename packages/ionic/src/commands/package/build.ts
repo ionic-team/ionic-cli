@@ -8,16 +8,17 @@ import {
 } from '@ionic/cli-framework';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { sleep } from '@ionic/cli-framework/utils/process';
+import { tmpfilepath } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as fs from 'fs';
-import * as https from 'https';
 
 import { CommandMetadata } from '../../definitions';
 import { isSuperAgentError } from '../../guards';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { fileUtils } from '../../lib/utils/file';
+import { createRequest, download } from '../../lib/utils/http';
 
 const debug = Debug('ionic:commands:package:build');
 const PLATFORMS = ['android', 'ios'];
@@ -337,19 +338,21 @@ ${chalk.cyan('[1]')}: ${chalk.bold(dashUrl)}
     return build;
   }
 
-  async downloadBuild(url: string, customBuildFileName: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      https.get(url, res => {
+  async downloadBuild(url: string, filename: string): Promise<string> {
+    const { req } = await createRequest('GET', url, this.env.config.getHTTPConfig());
+
+    if (!filename) {
+      req.on('response', res => {
         const contentDisposition = res.headers['content-disposition'];
-        let filename = contentDisposition ? contentDisposition.split('=')[1] : 'output.bin';
-        if (customBuildFileName) {
-          filename = customBuildFileName;
-        }
-        const ws = fs.createWriteStream(filename);
-        ws.on('error', reject);
-        ws.on('finish', () => resolve(filename));
-        res.pipe(ws);
-      }).on('error', reject);
-    });
+        filename = contentDisposition ? contentDisposition.split('=')[1] : 'output.bin';
+      });
+    }
+
+    const tmpFile = tmpfilepath('ionic-package-build');
+    const ws = fs.createWriteStream(tmpFile);
+    await download(req, ws, {});
+    fs.renameSync(tmpFile, filename);
+
+    return filename;
   }
 }
