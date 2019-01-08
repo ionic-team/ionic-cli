@@ -1,7 +1,7 @@
 import { OptionGroup, validators } from '@ionic/cli-framework';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
-import { mkdir, pathExists, removeDirectory, unlink } from '@ionic/utils-fs';
+import { mkdir, pathExists, remove, unlink } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
@@ -427,10 +427,10 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     tasks.next(`Preparing directory ${chalk.green(prettyPath(projectDir))}`);
 
     if (this.canRemoveExisting) {
-      await removeDirectory(projectDir);
+      await remove(projectDir);
     }
 
-    await mkdir(projectDir, 0o777);
+    await mkdir(projectDir);
 
     tasks.end();
 

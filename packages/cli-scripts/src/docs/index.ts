@@ -1,6 +1,6 @@
 import { Command, CommandHelpSchemaInput, CommandHelpSchemaOption, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-framework';
 import { strcmp } from '@ionic/cli-framework/utils/string';
-import { mkdirp, removeDirectory, writeFile } from '@ionic/utils-fs';
+import { mkdirp, remove, writeFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import { ProjectType, generateContext, loadExecutor } from 'ionic';
 import { CommandHelpSchema, NamespaceSchemaHelpFormatter } from 'ionic/lib/help';
@@ -21,7 +21,7 @@ export class DocsCommand extends Command {
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions) {
-    await removeDirectory(STAGING_DIRECTORY);
+    await remove(STAGING_DIRECTORY);
     await mkdirp(STAGING_DIRECTORY);
 
     const projectTypes: ProjectType[] = ['angular', 'ionic-angular', 'ionic1'];

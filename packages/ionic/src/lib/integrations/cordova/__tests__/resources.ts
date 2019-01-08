@@ -1,5 +1,6 @@
 import * as path from 'path';
 
+import * as fsExtraSpy from 'fs-extra';
 import * as fsSpy from '@ionic/utils-fs';
 
 import * as httpSpy from '../../../utils/http';
@@ -83,7 +84,7 @@ describe('ionic', () => {
 
     describe('getSourceImages', () => {
       it('should look in resources directory and platform directories to find images', async () => {
-        const spy = spyOn(fsSpy, 'readDir').and.returnValue(Promise.resolve([]));
+        const spy = spyOn(fsExtraSpy, 'readdir').and.returnValue(Promise.resolve([]));
 
         await resources.getSourceImages('/path/to/proj', ['ios', 'android'], ['splash', 'icon']);
 
@@ -96,7 +97,7 @@ describe('ionic', () => {
       it('should find all sourceImages available and prioritize based on specificity', async () => {
         spyOn(fsSpy, 'getFileChecksums').and.returnValue(Promise.resolve(['FJDKLFJDKL', undefined]));
         spyOn(fsSpy, 'cacheFileChecksum').and.callFake(() => {});
-        spyOn(fsSpy, 'readDir').and.callFake(dir => {
+        spyOn(fsExtraSpy, 'readdir').and.callFake(dir => {
           switch (dir) {
             case path.resolve('/path/to/proj/resources/ios'):
               return Promise.resolve([

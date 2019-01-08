@@ -1,5 +1,5 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { removeDirectory, unlink } from '@ionic/utils-fs';
+import { remove, unlink } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as path from 'path';
 
@@ -72,7 +72,7 @@ For Cordova apps, it removes and recreates the generated native project and the 
     await unlink(packageLockFile);
 
     tasks.next(`Removing ${chalk.bold(prettyPath(nodeModulesDir))}`);
-    await removeDirectory(nodeModulesDir);
+    await remove(nodeModulesDir);
 
     tasks.end();
 
@@ -88,10 +88,10 @@ For Cordova apps, it removes and recreates the generated native project and the 
       const pluginsDir = path.resolve(cordova.root, 'plugins');
 
       tasks.next(`Removing ${chalk.bold(prettyPath(platformsDir))}`);
-      await removeDirectory(platformsDir);
+      await remove(platformsDir);
 
       tasks.next(`Removing ${chalk.bold(prettyPath(pluginsDir))}`);
-      await removeDirectory(pluginsDir);
+      await remove(pluginsDir);
 
       tasks.end();
 

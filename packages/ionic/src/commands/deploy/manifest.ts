@@ -1,5 +1,5 @@
 import { map } from '@ionic/cli-framework/utils/array';
-import { readDirp, stat, writeFile } from '@ionic/utils-fs';
+import { readdirp, stat, writeFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
@@ -36,7 +36,7 @@ export class DeployManifestCommand extends Command {
   }
 
   private async getFilesAndSizesAndHashesForGlobPattern(buildDir: string): Promise<DeployManifestItem[]> {
-    const contents = await readDirp(buildDir);
+    const contents = await readdirp(buildDir);
     const stats = await map(contents, async (f): Promise<[string, fs.Stats]> => [f, await stat(f)]);
     const files = stats.filter(([ , stat ]) => !stat.isDirectory());
 

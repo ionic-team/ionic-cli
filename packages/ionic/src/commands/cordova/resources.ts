@@ -1,5 +1,5 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { cacheFileChecksum, copyFile, pathExists } from '@ionic/utils-fs';
+import { cacheFileChecksum, copy, pathExists } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
@@ -290,7 +290,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     }
 
     await Promise.all(transformResults.map(async result => {
-      await copyFile(result.tmpDest, result.resource.dest);
+      await copy(result.tmpDest, result.resource.dest);
       debug('copied transformed image %s into project as %s', result.tmpDest, result.resource.dest);
     }));
 

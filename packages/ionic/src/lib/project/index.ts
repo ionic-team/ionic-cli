@@ -2,7 +2,7 @@ import { BaseConfig, BaseConfigOptions, ParsedArgs, PromptModule } from '@ionic/
 import { resolveValue } from '@ionic/cli-framework/utils/fn';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/node';
-import { findBaseDirectory, readFile, writeFile, writeJsonFile } from '@ionic/utils-fs';
+import { findBaseDirectory, readFile, writeFile, writeJson } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
@@ -538,7 +538,7 @@ export abstract class Project implements IProject {
     pkg.version = version ? version : '0.0.1';
     pkg.description = description ? description : 'An Ionic project';
 
-    await writeJsonFile(this.packageJsonPath, pkg, { encoding: 'utf8' });
+    await writeJson(this.packageJsonPath, pkg);
 
     const integrations = await this.getIntegrations();
 

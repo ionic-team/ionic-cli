@@ -107,7 +107,7 @@ export abstract class CordovaCommand extends Command {
         const tasks = this.createTaskChain();
 
         tasks.next(`Creating ${chalk.bold(prettyPath(wwwPath))} directory for you`);
-        await mkdirp(wwwPath, 0o777);
+        await mkdirp(wwwPath);
         tasks.end();
       }
     }

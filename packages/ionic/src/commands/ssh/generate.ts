@@ -69,7 +69,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
     const pubkeyPath = `${keyPath}.pub`;
 
     if (!(await pathExists(keyPathDir))) {
-      await mkdirp(keyPathDir, 0o700);
+      await mkdirp(keyPathDir, 0o700 as any); // tslint:disable-line
       this.env.log.msg(`Created ${chalk.bold(prettyPath(keyPathDir))} directory for you.`);
     }
 

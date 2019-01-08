@@ -1,4 +1,4 @@
-import { copyDirectory, mkdirp, pathExists, readDirSafe, removeDirectory, stat } from '@ionic/utils-fs';
+import { copy, mkdirp, pathExists, readdirSafe, remove, stat } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
@@ -81,16 +81,16 @@ export abstract class BaseIntegration implements IIntegration {
     // TODO: etag
 
     if (await pathExists(tmpdir)) {
-      await removeDirectory(tmpdir);
+      await remove(tmpdir);
     }
 
-    await mkdirp(tmpdir, 0o777);
+    await mkdirp(tmpdir);
 
     const ws = tar.extract({ cwd: tmpdir });
     const { req } = await createRequest('GET', this.archiveUrl, this.e.config.getHTTPConfig());
     await download(req, ws, {});
 
-    const contents = await readDirSafe(tmpdir);
+    const contents = await readdirSafe(tmpdir);
     const blacklist: string[] = [];
 
     debug(`Integration files downloaded to ${chalk.bold(tmpdir)} (files: ${contents.map(f => chalk.bold(f)).join(', ')})`);
@@ -117,7 +117,7 @@ export abstract class BaseIntegration implements IIntegration {
 
     await mkdirp(details.root);
 
-    await copyDirectory(tmpdir, details.root, {
+    await copy(tmpdir, details.root, {
       filter: f => {
         if (f === tmpdir) {
           return true;

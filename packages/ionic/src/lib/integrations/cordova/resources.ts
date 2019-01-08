@@ -1,6 +1,6 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { WritableStreamBuffer } from '@ionic/cli-framework/utils/streams';
-import { getFileChecksums, mkdirp, readDirSafe, tmpfilepath } from '@ionic/utils-fs';
+import { getFileChecksums, mkdirp, readdirSafe, tmpfilepath } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as fs from 'fs';
@@ -72,7 +72,7 @@ export async function getSourceImages(projectDir: string, buildPlatforms: string
   const sourceImages: SourceImage[] = [];
 
   for (const srcImgDir of srcDirList) {
-    const srcImageDirContents = await readDirSafe(srcImgDir.path);
+    const srcImageDirContents = await readdirSafe(srcImgDir.path);
 
     for (const srcImage of srcImageDirContents) {
       const ext = path.extname(srcImage);

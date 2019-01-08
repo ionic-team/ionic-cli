@@ -178,7 +178,7 @@ The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert
 
   private async ensureDirectory(p: string) {
     if (!(await pathExists(p))) {
-      await mkdirp(p, 0o700);
+      await mkdirp(p, 0o700 as any); // tslint:disable-line
       this.env.log.msg(`Created ${chalk.bold(prettyPath(p))} directory for you.`);
     }
   }

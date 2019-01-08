@@ -1,5 +1,5 @@
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
-import { pathExists, readDirSafe, readFile } from '@ionic/utils-fs';
+import { pathExists, readFile, readdirSafe } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
@@ -83,7 +83,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     const tasks = this.createTaskChain();
     const syncTask = tasks.next('Syncing sourcemaps');
 
-    const sourcemapFiles = (await readDirSafe(sourcemapsDir)).filter(f => f.endsWith('.js.map'));
+    const sourcemapFiles = (await readdirSafe(sourcemapsDir)).filter(f => f.endsWith('.js.map'));
     debug(`Found ${sourcemapFiles.length} sourcemap files: ${sourcemapFiles.map(f => chalk.bold(f)).join(', ')}`);
 
     await Promise.all(sourcemapFiles.map(async f => {

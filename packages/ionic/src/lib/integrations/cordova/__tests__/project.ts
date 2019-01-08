@@ -9,7 +9,7 @@ describe('ionic', () => {
 
       it('should filter out files and hidden files/folders', async () => {
         const files = [['.DS_Store', false], ['.dir', true], ['android', true], ['ios', true], ['platforms.json', false]];
-        spyOn(fsSpy, 'readDirSafe').and.callFake(async () => files.map(([f]) => f));
+        spyOn(fsSpy, 'readdirSafe').and.callFake(async () => files.map(([f]) => f));
         spyOn(fsSpy, 'statSafe').and.callFake(async (p) => ({
           isDirectory: () => {
             const file = files.find(([f]) => p.endsWith(f));
@@ -22,7 +22,7 @@ describe('ionic', () => {
       });
 
       it('should not error if directory empty', async () => {
-        spyOn(fsSpy, 'readDirSafe').and.callFake(async () => []);
+        spyOn(fsSpy, 'readdirSafe').and.callFake(async () => []);
         const platforms = await project.getPlatforms('/path/to/proj');
         expect(platforms).toEqual([]);
       });
