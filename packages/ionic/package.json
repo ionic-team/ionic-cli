@@ -64,7 +64,7 @@
     "semver": "^5.5.0",
     "split2": "^3.0.0",
     "ssh-config": "^1.1.1",
-    "superagent": "^3.8.2",
+    "superagent": "^4.1.0",
     "superagent-proxy": "^2.0.0",
     "tar": "^4.3.0",
     "through2": "^3.0.0",

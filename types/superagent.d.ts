@@ -99,7 +99,6 @@ declare module "superagent" {
         auth(user: string, name: string): this;
         buffer(val?: boolean): this;
         clearTimeout(): this;
-        end(callback?: CallbackHandler): this;
         field(name: string, val: string | Buffer): this;
         field(fields: object): this;
         get(field: string): string;
