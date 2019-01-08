@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.18"></a>
+## [1.0.18](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@1.0.17...@ionic/lab@1.0.18) (2019-01-08)
+
+
+### Bug Fixes
+
+* **lab:** iframe now needs allow policy ([487b82a](https://github.com/ionic-team/ionic-cli/commit/487b82a))
+
+
+
+
 <a name="1.0.17"></a>
 ## [1.0.17](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@1.0.16...@ionic/lab@1.0.17) (2019-01-07)
 

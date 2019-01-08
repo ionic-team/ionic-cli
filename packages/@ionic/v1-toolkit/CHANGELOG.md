@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.17"></a>
+## [1.0.17](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@1.0.16...@ionic/v1-toolkit@1.0.17) (2019-01-08)
+
+
+
+
+**Note:** Version bump only for package @ionic/v1-toolkit
+
 <a name="1.0.16"></a>
 ## [1.0.16](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@1.0.15...@ionic/v1-toolkit@1.0.16) (2019-01-07)
 
