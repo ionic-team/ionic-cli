@@ -1,67 +1,21 @@
-import * as fs from 'fs';
-import * as ζncp from 'ncp';
+import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import * as stream from 'stream';
 import * as through2 from 'through2';
 
-interface Promisify {
-  <T>(func: (callback: (err: any, result?: T) => void) => void): () => Promise<T>;
-  <T, A1>(func: (arg1: A1, callback: (err: any, result?: T) => void) => void): (arg1: A1) => Promise<T>;
-  <T, A1, A2>(func: (arg1: A1, arg2: A2, callback: (err: any, result?: T) => void) => void): (arg1: A1, arg2: A2) => Promise<T>;
-  <T, A1, A2, A3>(func: (arg1: A1, arg2: A2, arg3: A3, callback: (err: any, result?: T) => void) => void): (arg1: A1, arg2: A2, arg3: A3) => Promise<T>;
-  <T, A1, A2, A3, A4>(func: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, callback: (err: any, result?: T) => void) => void): (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => Promise<T>;
-  <T, A1, A2, A3, A4, A5>(func: (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5, callback: (err: any, result?: T) => void) => void): (arg1: A1, arg2: A2, arg3: A3, arg4: A4, arg5: A5) => Promise<T>;
-}
+import * as safe from './safe';
 
-const promisify: Promisify = (func: any) => {
-  return (...args: any[]) => {
-    return new Promise((resolve, reject) => {
-      func(...args, (err: any, response: any) => {
-        if (err) {
-          return reject(err);
-        }
+export * from 'fs-extra';
 
-        resolve(response);
-      });
-    });
-  };
-};
+export { stat as statSafe, readdir as readdirSafe } from './safe';
 
-export interface ReadFileOptions {
-  encoding: string;
-  flag?: string;
-}
-
-export interface WriteFileOptions {
-  encoding: string;
-  mode?: number;
-  flag?: string;
-}
-
-export const access = promisify<void, string, number>(fs.access);
-export const mkdir = promisify<void, string, number>(fs.mkdir);
-export const open = promisify<number, string, string>(fs.open);
-export const stat = promisify<fs.Stats, string>(fs.stat);
-export const unlink = promisify<void, string>(fs.unlink);
-export const readFile = promisify<string, string, ReadFileOptions>(fs.readFile);
-export const writeFile = promisify<void, string, any, WriteFileOptions>(fs.writeFile);
-export const readDir = promisify<string[], string>(fs.readdir);
-
-export async function statSafe(p: string): Promise<fs.Stats | undefined> {
-  try {
-    return await stat(p);
-  } catch (e) {
-    // ignore
-  }
-}
-
-export interface ReadDirROptions {
+export interface ReaddirPOptions {
   readonly filter?: (item: WalkerItem) => boolean;
   readonly walkerOptions?: WalkerOptions;
 }
 
-export async function readDirp(dir: string, { filter, walkerOptions }: ReadDirROptions = {}): Promise<string[]> {
+export async function readdirp(dir: string, { filter, walkerOptions }: ReaddirPOptions = {}): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
     const items: string[] = [];
 
@@ -84,66 +38,15 @@ export async function readDirp(dir: string, { filter, walkerOptions }: ReadDirRO
   });
 }
 
-export async function readDirSafe(dir: string): Promise<string[]> {
-  try {
-    return await readDir(dir);
-  } catch (e) {
-    return [];
-  }
-}
-
-export async function readJsonFile(filePath: string, options: ReadFileOptions = { encoding: 'utf8' }): Promise<{ [key: string]: any }> {
-  const f = await readFile(filePath, options);
-  return JSON.parse(f);
-}
-
-export async function writeJsonFile(filePath: string, json: { [key: string]: any; }, options: WriteFileOptions): Promise<void> {
-  return writeFile(filePath, JSON.stringify(json, undefined, 2) + '\n', options);
-}
-
 export async function fileToString(filePath: string): Promise<string> {
   try {
-    return await readFile(filePath, { encoding: 'utf8' });
+    return await fs.readFile(filePath, { encoding: 'utf8' });
   } catch (e) {
     if (e.code === 'ENOENT') {
       return '';
     }
 
     throw e;
-  }
-}
-
-export async function mkdirp(p: string, mode = 0o777): Promise<void> {
-  const absPath = path.resolve(p);
-  const pathObj = path.parse(absPath);
-  const dirnames = absPath.split(path.sep).splice(1);
-  const dirs = dirnames.map((v, i) => path.resolve(pathObj.root, ...dirnames.slice(0, i), v));
-
-  for (const dir of dirs) {
-    try {
-      await mkdir(dir, mode);
-    } catch (e) {
-      if (e.code !== 'EEXIST') {
-        throw e;
-      }
-    }
-  }
-}
-
-export function mkdirpSync(p: string, mode = 0o777): void {
-  const absPath = path.resolve(p);
-  const pathObj = path.parse(absPath);
-  const dirnames = absPath.split(path.sep).splice(1);
-  const dirs = dirnames.map((v, i) => path.resolve(pathObj.root, ...dirnames.slice(0, i), v));
-
-  for (const dir of dirs) {
-    try {
-      fs.mkdirSync(dir, mode);
-    } catch (e) {
-      if (e.code !== 'EEXIST') {
-        throw e;
-      }
-    }
   }
 }
 
@@ -181,7 +84,7 @@ export async function getFileChecksums(p: string): Promise<[string, string | und
     getFileChecksum(p),
     (async () => {
       try {
-        const md5 = await readFile(`${p}.md5`, { encoding: 'utf8' });
+        const md5 = await fs.readFile(`${p}.md5`, { encoding: 'utf8' });
         return md5.trim();
       } catch (e) {
         if (e.code !== 'ENOENT') {
@@ -200,7 +103,7 @@ export async function getFileChecksums(p: string): Promise<[string, string | und
  */
 export async function cacheFileChecksum(p: string, checksum?: string): Promise<void> {
   const md5 = await getFileChecksum(p);
-  await writeFile(`${p}.md5`, md5, { encoding: 'utf8' });
+  await fs.writeFile(`${p}.md5`, md5, { encoding: 'utf8' });
 }
 
 export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: string): Promise<any> {
@@ -212,45 +115,9 @@ export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: st
   });
 }
 
-export async function copyDirectory(source: string, destination: string, options: ζncp.Options = {}): Promise<void> {
-  const ncp = await import('ncp');
-
-  return new Promise<void>((resolve, reject) => {
-    ncp.ncp(source, destination, options, err => {
-      if (err) {
-        reject(err);
-      }
-
-      resolve();
-    });
-  });
-}
-
-export async function removeDirectory(dir: string): Promise<void> {
-  const rimraf = await import('rimraf');
-  const rimrafp = promisify<void, string>(rimraf);
-  await rimrafp(dir);
-}
-
-export function copyFile(fileName: string, target: string, mode = 0o666) {
-  return new Promise((resolve, reject) => {
-    const rs = fs.createReadStream(fileName);
-    const ws = fs.createWriteStream(target, { mode });
-
-    rs.on('error', reject);
-    ws.on('error', reject);
-
-    ws.on('open', () => {
-      rs.pipe(ws);
-    });
-
-    ws.once('finish', resolve);
-  });
-}
-
 export async function pathAccessible(filePath: string, mode: number): Promise<boolean> {
   try {
-    await access(filePath, mode);
+    await fs.access(filePath, mode);
   } catch (e) {
     return false;
   }
@@ -271,7 +138,7 @@ export async function findBaseDirectory(dir: string, file: string): Promise<stri
   }
 
   for (const d of compilePaths(dir)) {
-    const results = await readDirSafe(d);
+    const results = await safe.readdir(d);
 
     if (results.includes(file)) {
       return d;
@@ -317,16 +184,6 @@ export function compilePaths(filePath: string): string[] {
     .split(path.sep)
     .map((segment, i, array) => parsed.root + path.join(...array.slice(0, array.length - i)))
     .concat(parsed.root);
-}
-
-export async function isDir(p: string): Promise<boolean> {
-  const stats = await statSafe(p);
-
-  if (stats && stats.isDirectory()) {
-    return true;
-  }
-
-  return false;
 }
 
 export interface WalkerItem {

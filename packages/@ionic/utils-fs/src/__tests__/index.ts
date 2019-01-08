@@ -13,6 +13,7 @@ describe('@ionic/cli-framework', () => {
         jest.mock('path', () => mock_path_posix);
 
         const fslib = require('../');
+        const safefslib = require('../safe');
 
         it('should get undefined with empty input', async () => {
           const result = await fslib.findBaseDirectory('', '');
@@ -20,19 +21,19 @@ describe('@ionic/cli-framework', () => {
         });
 
         it('should return undefined if marker file not found', async () => {
-          jest.spyOn(fslib, 'readDir').mockImplementation(async () => ['bar']);
+          jest.spyOn(safefslib, 'readdir').mockImplementation(async () => ['bar']);
           const result = await fslib.findBaseDirectory('/some/dir', 'foo');
           expect(result).toEqual(undefined);
         });
 
         it('should return path when marker file found in cwd', async () => {
-          jest.spyOn(fslib, 'readDir').mockImplementation(async () => ['foo']);
+          jest.spyOn(safefslib, 'readdir').mockImplementation(async () => ['foo']);
           const result = await fslib.findBaseDirectory('/some/dir', 'foo');
           expect(result).toEqual('/some/dir');
         });
 
         it('should return path when marker file found in one directory back', async () => {
-          jest.spyOn(fslib, 'readDir')
+          jest.spyOn(safefslib, 'readdir')
             .mockImplementationOnce(async () => ['garbage'])
             .mockImplementationOnce(async () => ['dir', 'foo']);
           const result = await fslib.findBaseDirectory('/some/dir', 'foo');
@@ -40,7 +41,7 @@ describe('@ionic/cli-framework', () => {
         });
 
         it('should return path when marker file found in really nested path', async () => {
-          jest.spyOn(fslib, 'readDir')
+          jest.spyOn(safefslib, 'readdir')
             .mockImplementationOnce(async () => [''])
             .mockImplementationOnce(async () => ['nested'])
             .mockImplementationOnce(async () => ['really'])
@@ -60,6 +61,7 @@ describe('@ionic/cli-framework', () => {
         jest.mock('path', () => mock_path_win32);
 
         const fslib = require('../');
+        const safefslib = require('../safe');
 
         it('should get undefined with empty input', async () => {
           const result = await fslib.findBaseDirectory('', '');
@@ -67,19 +69,19 @@ describe('@ionic/cli-framework', () => {
         });
 
         it('should return undefined if marker file not found', async () => {
-          jest.spyOn(fslib, 'readDir').mockImplementation(async () => ['bar']);
+          jest.spyOn(safefslib, 'readdir').mockImplementation(async () => ['bar']);
           const result = await fslib.findBaseDirectory('C:\\some\\dir', 'foo');
           expect(result).toEqual(undefined);
         });
 
         it('should return path when marker file found in cwd', async () => {
-          jest.spyOn(fslib, 'readDir').mockImplementation(async () => ['foo']);
+          jest.spyOn(safefslib, 'readdir').mockImplementation(async () => ['foo']);
           const result = await fslib.findBaseDirectory('C:\\some\\dir', 'foo');
           expect(result).toEqual('C:\\some\\dir');
         });
 
         it('should return path when marker file found in one directory back', async () => {
-          jest.spyOn(fslib, 'readDir')
+          jest.spyOn(safefslib, 'readdir')
             .mockImplementationOnce(async () => ['garbage'])
             .mockImplementationOnce(async () => ['dir', 'foo']);
           const result = await fslib.findBaseDirectory('C:\\some\\dir', 'foo');
@@ -87,7 +89,7 @@ describe('@ionic/cli-framework', () => {
         });
 
         it('should return path when marker file found in really nested path', async () => {
-          jest.spyOn(fslib, 'readDir')
+          jest.spyOn(safefslib, 'readdir')
             .mockImplementationOnce(async () => [''])
             .mockImplementationOnce(async () => ['nested'])
             .mockImplementationOnce(async () => ['really'])
