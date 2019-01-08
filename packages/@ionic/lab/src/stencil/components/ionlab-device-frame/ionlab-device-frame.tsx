@@ -39,7 +39,7 @@ export class DeviceFrame {
         <div class="statusbar" />
         { !this.loaded && !this.error ? <sk-fading-circle /> : null }
         { this.error ? <div class="load-error"><h3>Load Timeout</h3><p>Still trying...</p></div> : null }
-        <iframe src={ this.url } onLoad={ event => this.loadedHandler(event) } />
+        <iframe src={ this.url } onLoad={ event => this.loadedHandler(event) } allow="geolocation; microphone; camera; midi; encrypted-media"/>
       </div>
     ];
   }
