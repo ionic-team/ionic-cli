@@ -1,5 +1,3 @@
-import { NamespaceGroup } from '@ionic/cli-framework';
-
 import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class DeployNamespace extends Namespace {
@@ -7,13 +5,13 @@ export class DeployNamespace extends Namespace {
     return {
       name: 'deploy',
       summary: 'Commands for working with Ionic Deploy',
-      groups: [NamespaceGroup.Hidden],
       description: ` These commands make it easy to do all things deploy `,
     };
   }
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
+      ['build', async () => { const { BuildCommand } = await import('./build'); return new BuildCommand(this); }],
       ['manifest', async () => { const { DeployManifestCommand } = await import('./manifest'); return new DeployManifestCommand(this); }],
     ]);
   }
