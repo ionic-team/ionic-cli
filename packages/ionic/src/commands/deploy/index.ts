@@ -1,11 +1,18 @@
+import chalk from 'chalk';
+
 import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class DeployNamespace extends Namespace {
   async getMetadata() {
     return {
       name: 'deploy',
-      summary: 'Commands for working with Ionic Deploy',
-      description: ` These commands make it easy to do all things deploy `,
+      summary: 'Appflow Deploy functionality',
+      description: `
+Interface to execute commands about deploy builds on Ionic Appflow.
+
+Appflow deploy documentation:
+- Overview: ${chalk.bold('https://ionicframework.com/docs/appflow/deploy/')}
+`,
     };
   }
 
