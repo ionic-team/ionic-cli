@@ -1,3 +1,4 @@
+import { CommandGroup } from '@ionic/cli-framework';
 import { map } from '@ionic/cli-framework/utils/array';
 import { readdirp, stat, writeFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
@@ -21,6 +22,7 @@ export class DeployManifestCommand extends Command {
       name: 'manifest',
       type: 'project',
       summary: 'Generates a manifest file for the deploy service from a built app directory',
+      groups: [CommandGroup.Hidden],
     };
   }
 
