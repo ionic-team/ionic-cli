@@ -14,7 +14,7 @@ import { isSuperAgentError } from '../../guards';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
-const debug = Debug('ionic:commands:package:build');
+const debug = Debug('ionic:commands:deploy:build');
 
 interface DeployBuild {
   job_id: number;
