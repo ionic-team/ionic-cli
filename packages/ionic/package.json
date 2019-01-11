@@ -54,7 +54,7 @@
     "@ionic/utils-network": "0.0.6",
     "chalk": "^2.3.0",
     "debug": "^4.0.0",
-    "diff": "^3.4.0",
+    "diff": "^4.0.1",
     "elementtree": "^0.1.7",
     "leek": "0.0.24",
     "lodash": "^4.17.5",
