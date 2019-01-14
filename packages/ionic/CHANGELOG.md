@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.8.0"></a>
+# [4.8.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.7.1...ionic@4.8.0) (2019-01-14)
+
+
+### Features
+
+* **appflow:** command to create deploy builds ([#3815](https://github.com/ionic-team/ionic-cli/issues/3815)) ([d346e03](https://github.com/ionic-team/ionic-cli/commit/d346e03))
+
+
+
+
 <a name="4.7.1"></a>
 ## [4.7.1](https://github.com/ionic-team/ionic-cli/compare/ionic@4.7.0...ionic@4.7.1) (2019-01-08)
 
