@@ -9,18 +9,17 @@ const PREFIX = 'ION_CS';
 
 export interface CommServerConnectionPayload {
   event: 'connect';
-  email: string;
-  username: string;
+  device: string;
 }
 
 type Payload = CommServerConnectionPayload;
 
-export interface ICommServerEventEmitter {
+export interface CommServer {
   on(event: 'error', listener: (err: Error) => void): this;
   on(event: 'connect', listener: (data: CommServerConnectionPayload) => void): this;
 }
 
-export class CommServer extends events.EventEmitter implements ICommServerEventEmitter {
+export class CommServer extends events.EventEmitter {
   protected server?: WebSocket.Server;
 
   constructor(

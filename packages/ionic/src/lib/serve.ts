@@ -150,6 +150,8 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
           `${packageCordovaPluginsDiff.map(p => `- ${chalk.bold(p)}`).join('\n')}\n\n` +
           `App may not function as expected in Ionic DevApp.`
         );
+
+        this.e.log.nl();
       }
     }
   }
@@ -264,13 +266,14 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
         debug(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
       });
 
-      comm.on('connect', async (data: any) => {
+      comm.on('connect', async data => {
+        this.e.log.info(`DevApp connection established from ${chalk.bold(data.device)}`);
+        this.e.log.nl();
+
         if (!this.devAppConnectionMade) {
           this.devAppConnectionMade = true;
           await this.displayDevAppMessage(options);
         }
-
-        this.e.log.info(`DevApp connection established from ${chalk.bold(data.email)}`);
       });
 
       publisher.on('error', (err: Error) => {
