@@ -1,4 +1,4 @@
-import { Command, CommandHelpSchemaInput, CommandHelpSchemaOption, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-framework';
+import { Command, CommandHelpSchemaFootnote, CommandHelpSchemaInput, CommandHelpSchemaOption, CommandLineInputs, CommandLineOptions, CommandMetadata } from '@ionic/cli-framework';
 import { strcmp } from '@ionic/cli-framework/utils/string';
 import { mkdirp, remove, writeFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
@@ -51,10 +51,25 @@ export class DocsCommand extends Command {
     return {
       ...command,
       summary: stripAnsi(links2md(ansi2md(command.summary))).trim(),
-      description: stripAnsi(links2md(ansi2md(command.description))).trim(),
+      description: await this.formatFootnotes(stripAnsi(links2md(ansi2md(command.description))).trim(), command.footnotes),
+      footnotes: command.footnotes.filter(footnote => footnote.type !== 'link'), // we format link footnotes in `formatFootnotes()`
       inputs: await Promise.all(command.inputs.map(input => this.extractInput(input))),
       options: await Promise.all(command.options.map(opt => this.extractOption(opt))),
     };
+  }
+
+  private async formatFootnotes(description: string, footnotes: ReadonlyArray<CommandHelpSchemaFootnote>): Promise<string> {
+    return description.replace(/(\S+)\[\^([A-z0-9-]+)\]/g, (match, p1, p2) => {
+      const m = Number.parseInt(p2, 10);
+      const id = !Number.isNaN(m) ? m : p2;
+      const foundFootnote = footnotes.find(footnote => footnote.id === id);
+
+      if (!foundFootnote) {
+        throw new Error('Bad footnote.');
+      }
+
+      return foundFootnote.type === 'link' ? `[${p1}](${foundFootnote.url})` : match; // TODO: handle text footnotes
+    });
   }
 
   private async extractInput(input: CommandHelpSchemaInput): Promise<CommandHelpSchemaInput> {
