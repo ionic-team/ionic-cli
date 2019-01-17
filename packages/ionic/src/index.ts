@@ -149,7 +149,7 @@ export async function run(pargv: string[]): Promise<void> {
     } else if (err.code && err.code === 'ENOTFOUND' || err.code === 'ECONNREFUSED') {
       ienv.log.error(
         `Network connectivity error occurred, are you offline?\n` +
-        `If you are behind a firewall and need to configure proxy settings, see: ${chalk.bold('https://ionicframework.com/docs/cli/configuring.html#using-a-proxy')}\n\n` +
+        `If you are behind a firewall and need to configure proxy settings, see: ${chalk.bold('https://ion.link/cli-proxy-docs')}\n\n` +
         chalk.red(String(err.stack ? err.stack : err))
       );
     } else if (isExitCodeException(err)) {

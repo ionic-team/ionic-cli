@@ -1,4 +1,4 @@
-import { CommandGroup, validators } from '@ionic/cli-framework';
+import { CommandGroup, Footnote, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/cli-framework/utils/process';
 import chalk from 'chalk';
 import * as path from 'path';
@@ -22,6 +22,7 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       'ios --livereload',
       'ios --livereload-url=http://localhost:8100',
     ].sort();
+
     const options: CommandMetadataOption[] = [
       // Build Options
       {
@@ -44,6 +45,14 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       },
     ];
 
+    const footnotes: Footnote[] = [
+      {
+        id: 'remote-debugging-docs',
+        url: 'https://ionicframework.com/docs/developer-resources/developer-tips',
+        shortUrl: 'https://ion.link/remote-debugging-docs',
+      },
+    ];
+
     const serveRunner = this.project && await this.project.getServeRunner();
     const buildRunner = this.project && await this.project.getBuildRunner();
 
@@ -51,6 +60,7 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       const libmetadata = await buildRunner.getCommandMetadata();
       groups = libmetadata.groups || [];
       options.push(...libmetadata.options || []);
+      footnotes.push(...libmetadata.footnotes || []);
     }
 
     if (serveRunner) {
@@ -58,6 +68,7 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       const existingOpts = options.map(o => o.name);
       groups = libmetadata.groups || [];
       options.push(...(libmetadata.options || []).filter(o => !existingOpts.includes(o.name)).map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${chalk.dim('(--livereload)')}` })));
+      footnotes.push(...libmetadata.footnotes || []);
     }
 
     return {
@@ -72,10 +83,9 @@ ${chalk.green('ionic capacitor run')} will do the following:
 
 Once the web assets and configuration are copied into your native project, the app can run on devices and emulators/simulators using the native IDE. Unfortunately, programmatically building and launching the native project is not yet supported.
 
-For Android and iOS, you can setup Remote Debugging on your device with browser development tools using these docs${chalk.cyan('[1]')}.
-
-${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-resources/developer-tips/')}
+For Android and iOS, you can setup Remote Debugging on your device with browser development tools using these docs[^remote-debugging-docs].
       `,
+      footnotes,
       exampleCommands,
       inputs: [
         {

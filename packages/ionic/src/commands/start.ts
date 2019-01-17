@@ -56,9 +56,7 @@ Running ${chalk.green('ionic start')} without any arguments will prompt you for 
 
 The first argument is your app's ${chalk.green('name')}. Don't worry--you can always change this later. The ${chalk.green('--project-id')} is generated from ${chalk.green('name')} unless explicitly specified.
 
-The second argument is the ${chalk.green('template')} from which to generate your app. You can list all templates with the ${chalk.green('--list')} option. For more information on starter templates, see the CLI documentation${chalk.cyan('[1]')}. You can also specify a git repository URL for ${chalk.green('template')}, in which case the existing project will be cloned.
-
-${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters.html')}
+The second argument is the ${chalk.green('template')} from which to generate your app. You can list all templates with the ${chalk.green('--list')} option. You can also specify a git repository URL for ${chalk.green('template')}, in which case the existing project will be cloned.
       `,
       exampleCommands: [
         '',
@@ -691,13 +689,12 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     const steps = [
       `Go to your ${cloned ? 'cloned' : 'newly created'} project: ${chalk.green(`cd ${prettyPath(projectDir)}`)}`,
       `Run ${chalk.green('ionic serve')} within the app directory to see your app`,
-      `Build features and components: ${chalk.bold('https://beta.ionicframework.com/docs/building/scaffolding')}`,
+      `Build features and components: ${chalk.bold('https://ion.link/scaffolding-docs')}`,
       `Get Ionic DevApp for easy device testing: ${chalk.bold('https://bit.ly/ionic-dev-app')}`,
     ];
 
     if (linkConfirmed) {
-      steps.push(`Finish setting up Ionic Appflow Error Monitoring: ${chalk.bold('https://ionicframework.com/docs/appflow/monitoring/#getting-started')}`);
-      steps.push(`Finally, push your code to Ionic Appflow to perform real-time updates, and more: ${chalk.green('git push ionic master')}`);
+      steps.push(`Push your code to Ionic Appflow to perform real-time updates, and more: ${chalk.green('git push ionic master')}`);
     }
 
     this.env.log.info(`${chalk.bold('Next Steps')}:\n${steps.map(s => `- ${s}`).join('\n')}`);

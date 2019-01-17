@@ -6,6 +6,8 @@ import { FatalException } from '../../lib/errors';
 
 export class GitRemoteCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
+    const dashUrl = this.env.config.getDashUrl();
+
     return {
       name: 'remote',
       type: 'project',
@@ -13,10 +15,14 @@ export class GitRemoteCommand extends Command {
       description: `
 This command is used by ${chalk.green('ionic link')} when Ionic Appflow is used as the git host.
 
-${chalk.green('ionic git remote')} will check the local repository for whether or not the git remote is properly set up. This command operates on the ${chalk.bold('ionic')} remote. For advanced configuration, see ${chalk.bold('Settings')} => ${chalk.bold('Git')} in the app settings of the Dashboard${chalk.cyan('[1]')}.
-
-${chalk.cyan('[1]')}: ${chalk.bold('https://dashboard.ionicframework.com')}
+${chalk.green('ionic git remote')} will check the local repository for whether or not the git remote is properly set up. This command operates on the ${chalk.bold('ionic')} remote. For advanced configuration, see ${chalk.bold('Settings')} => ${chalk.bold('Git')} in the app settings of the Dashboard[^dashboard].
       `,
+      footnotes: [
+        {
+          id: 'dashboard',
+          url: dashUrl,
+        },
+      ],
     };
   }
 

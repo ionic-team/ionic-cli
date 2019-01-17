@@ -1,4 +1,4 @@
-import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, OptionGroup, ShellCommandError, createPrefixedFormatter } from '@ionic/cli-framework';
+import { ERROR_SHELL_COMMAND_NOT_FOUND, Footnote, LOGGER_LEVELS, OptionGroup, ShellCommandError, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit, processExit, sleepForever } from '@ionic/cli-framework/utils/process';
 import chalk from 'chalk';
 import * as path from 'path';
@@ -98,6 +98,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       'ios --livereload',
       'ios --livereload-url=http://localhost:8100',
     ].sort();
+
     const options: CommandMetadataOption[] = [
       {
         name: 'list',
@@ -127,6 +128,14 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       },
     ];
 
+    const footnotes: Footnote[] = [
+      {
+        id: 'remote-debugging-docs',
+        url: 'https://ionicframework.com/docs/developer-resources/developer-tips',
+        shortUrl: 'https://ion.link/remote-debugging-docs',
+      },
+    ];
+
     const serveRunner = this.project && await this.project.getServeRunner();
     const buildRunner = this.project && await this.project.getBuildRunner();
 
@@ -134,6 +143,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       const libmetadata = await buildRunner.getCommandMetadata();
       groups = libmetadata.groups || [];
       options.push(...libmetadata.options || []);
+      footnotes.push(...libmetadata.footnotes || []);
     }
 
     if (serveRunner) {
@@ -141,6 +151,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       const existingOpts = options.map(o => o.name);
       groups = libmetadata.groups || [];
       options.push(...(libmetadata.options || []).filter(o => !existingOpts.includes(o.name)).map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${chalk.dim('(--livereload)')}` })));
+      footnotes.push(...libmetadata.footnotes || []);
     }
 
     // Cordova Options
@@ -156,12 +167,11 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       description: `
 Like running ${chalk.green('cordova run')} or ${chalk.green('cordova emulate')} directly, but performs ${chalk.green('ionic build')} before deploying to the device or emulator. Optionally specify the ${chalk.green('--livereload')} option to use the dev server from ${chalk.green('ionic serve')} for livereload functionality.
 
-For Android and iOS, you can setup Remote Debugging on your device with browser development tools using these docs${chalk.cyan('[1]')}.
+For Android and iOS, you can setup Remote Debugging on your device with browser development tools using these docs[^remote-debugging-docs].
 
 Just like with ${chalk.green('ionic cordova build')}, you can pass additional options to the Cordova CLI using the ${chalk.green('--')} separator. To pass additional options to the dev server, consider using ${chalk.green('ionic serve')} and the ${chalk.green('--livereload-url')} option.
-
-${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-resources/developer-tips/')}
       `,
+      footnotes,
       exampleCommands,
       inputs: [
         {

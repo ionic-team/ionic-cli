@@ -47,10 +47,14 @@ This command creates a deploy build on Ionic Appflow. While the build is running
 Customizing the build:
 - The ${chalk.green('--environment')} and ${chalk.green('--channel')} options can be used to customize the groups of values exposed to the build.
 
-Apart from ${chalk.green('--commit')}, every option can be specified using the full name setup within the Appflow Dashboard${chalk.cyan('[1]')}.
-
-${chalk.cyan('[1]')}: ${chalk.bold(dashUrl)}
+Apart from ${chalk.green('--commit')}, every option can be specified using the full name setup within the Appflow Dashboard[^dashboard].
 `,
+      footnotes: [
+        {
+          id: 'dashboard',
+          url: dashUrl,
+        },
+      ],
       exampleCommands: [
         '',
         '--environment="My Custom Environment Name"',

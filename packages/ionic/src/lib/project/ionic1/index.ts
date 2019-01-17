@@ -77,7 +77,7 @@ export class Ionic1Project extends Project {
   }
 
   async getDocsUrl(): Promise<string> {
-    return 'https://ionicframework.com/docs/v1/';
+    return 'https://ion.link/v1-docs';
   }
 
   // this method search not only package.json

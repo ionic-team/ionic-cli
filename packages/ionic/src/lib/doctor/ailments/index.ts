@@ -194,7 +194,7 @@ export class IonicNativeOldVersionInstalled extends Ailment {
 
     return [
       { message: `Run ${chalk.green(args.join(' '))}` },
-      { message: `Refer to ${chalk.bold('https://ionicframework.com/docs/native')} for installation & usage instructions` },
+      { message: `Refer to ${chalk.bold('https://ion.link/native-docs')} for installation & usage instructions` },
     ];
   }
 }

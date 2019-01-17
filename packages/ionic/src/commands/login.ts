@@ -21,10 +21,14 @@ You can also use ${chalk.green('IONIC_EMAIL')} and ${chalk.green('IONIC_PASSWORD
 
 If you need to create an Ionic Appflow account, use ${chalk.green('ionic signup')}.
 
-If you are having issues logging in, please get in touch with our Support${chalk.cyan('[1]')}.
-
-${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')}
+If you are having issues logging in, please get in touch with our Support[^support-request].
       `,
+      footnotes: [
+        {
+          id: 'support-request',
+          url: 'https://ion.link/support-request',
+        },
+      ],
       exampleCommands: ['', 'john@example.com', 'hello@example.com secret'],
       inputs: [
         {

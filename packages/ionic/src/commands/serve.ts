@@ -1,4 +1,4 @@
-import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
+import { CommandGroup, Footnote, OptionGroup } from '@ionic/cli-framework';
 import { sleepForever } from '@ionic/cli-framework/utils/process';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
@@ -69,6 +69,7 @@ export class ServeCommand extends Command implements CommandPreRun {
     ];
 
     const exampleCommands = ['', '--local', '--lab'];
+    const footnotes: Footnote[] = [];
 
     let description = `
 Easily spin up a development server which launches in your browser. It watches for changes in your source files and automatically reloads with the updated build.
@@ -84,6 +85,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
       groups = libmetadata.groups || [];
       options.push(...libmetadata.options || []);
       description += `\n\n${(libmetadata.description || '').trim()}`;
+      footnotes.push(...libmetadata.footnotes || []);
       exampleCommands.push(...libmetadata.exampleCommands || []);
     }
 
@@ -92,6 +94,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
       type: 'project',
       summary: 'Start a local dev server for app dev/testing',
       description,
+      footnotes,
       groups,
       exampleCommands,
       options,

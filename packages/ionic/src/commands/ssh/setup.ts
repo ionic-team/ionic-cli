@@ -10,18 +10,27 @@ import { SSHBaseCommand } from './base';
 
 export class SSHSetupCommand extends SSHBaseCommand {
   async getMetadata(): Promise<CommandMetadata> {
+    const dashUrl = this.env.config.getDashUrl();
+
     return {
       name: 'setup',
       type: 'global',
       summary: 'Setup your Ionic Appflow SSH keys automatically',
       description: `
-This command offers a setup wizard for Ionic Appflow SSH keys using a series of prompts. For more control, see the commands available for managing SSH keys with the ${chalk.green('ionic ssh --help')} command. For an entirely manual approach, see ${chalk.bold('Personal Settings')} => ${chalk.bold('SSH Keys')} in the Dashboard${chalk.cyan('[1]')}.
+This command offers a setup wizard for Ionic Appflow SSH keys using a series of prompts. For more control, see the commands available for managing SSH keys with the ${chalk.green('ionic ssh --help')} command. For an entirely manual approach, see ${chalk.bold('Personal Settings')} => ${chalk.bold('SSH Keys')} in the Dashboard[^dashboard-settings-ssh-keys].
 
-If you are having issues setting up SSH keys, please get in touch with our Support${chalk.cyan('[2]')}.
-
-${chalk.cyan('[1]')}: ${chalk.bold('https://dashboard.ionicframework.com/settings/ssh-keys')}
-${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')}
+If you are having issues setting up SSH keys, please get in touch with our Support[^support-request].
       `,
+      footnotes: [
+        {
+          id: 'dashboard-settings-ssh-keys',
+          url: `${dashUrl}/settings/ssh-keys`,
+        },
+        {
+          id: 'support-request',
+          url: 'https://ion.link/support-request',
+        },
+      ],
     };
   }
 

@@ -1,4 +1,4 @@
-import { CommandGroup } from '@ionic/cli-framework';
+import { CommandGroup, Footnote } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandPreRun } from '../definitions';
@@ -11,6 +11,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
     const inputs: CommandMetadataInput[] = [];
     const options: CommandMetadataOption[] = [];
     const exampleCommands = [''];
+    const footnotes: Footnote[] = [];
 
     let groups: string[] = [CommandGroup.Hidden];
 
@@ -26,6 +27,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
       inputs.push(...libmetadata.inputs || []);
       options.push(...libmetadata.options || []);
       description = (libmetadata.description || '').trim();
+      footnotes.push(...libmetadata.footnotes || []);
       exampleCommands.push(...libmetadata.exampleCommands || []);
     }
 
@@ -34,6 +36,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
       type: 'project',
       summary: 'Automatically create framework features',
       description,
+      footnotes,
       inputs,
       options,
       groups,
