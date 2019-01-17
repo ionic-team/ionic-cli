@@ -1,14 +1,17 @@
 import chalk from 'chalk';
+import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
-import { isHydratedCommandMetadata } from '../guards';
+import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, Footnote, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, LinkFootnote, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
+import { isHydratedCommandMetadata, isLinkFootnote } from '../guards';
 import { filter, map } from '../utils/array';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '../utils/format';
 
 import { ColorFunction, Colors, DEFAULT_COLORS } from './colors';
 import { formatOptionName, hydrateOptionSpec } from './options';
 import { validators } from './validators';
+
+const debug = Debug('ionic:cli-framework:lib:help');
 
 const DEFAULT_DOTS_WIDTH = 32;
 
@@ -61,6 +64,49 @@ function formatGroupDecorations<T extends string>(decorations: Decoration<T>[], 
 
   const prepends = decorations.filter(([g]) => groups.includes(g)).map(([, d]) => d);
   return prepends.length ? prepends.join(' ') + ' ' : '';
+}
+
+function formatLinkFootnote(footnote: LinkFootnote, colors = DEFAULT_COLORS): string {
+  const { strong } = colors;
+
+  return strong(footnote.shortUrl ? footnote.shortUrl : footnote.url);
+}
+
+function formatFootnote(index: number, footnote: Footnote, colors = DEFAULT_COLORS): string {
+  const { ancillary } = colors;
+  const prefix = ancillary(`[${index}]`);
+
+  const output = isLinkFootnote(footnote) ? formatLinkFootnote(footnote, colors) : footnote.text;
+
+  return `${prefix}: ${output}`;
+}
+
+function formatFootnotes(text: string, footnotes?: ReadonlyArray<Footnote>, colors = DEFAULT_COLORS): string {
+  if (!footnotes) {
+    return text;
+  }
+
+  const { ancillary } = colors;
+  const discoveredFootnotes: Footnote[] = [];
+  const output = text.replace(/\[\^([A-z0-9-]+)\]/g, (match, p1) => {
+    const m = Number.parseInt(p1, 10);
+    const id = !Number.isNaN(m) ? m : p1;
+    const foundFootnote = footnotes.find(footnote => footnote.id === id);
+
+    if (foundFootnote) {
+      const len = discoveredFootnotes.push(foundFootnote);
+      return ancillary(`[${len}]`);
+    } else {
+      debug('No footnote found by ID: %O', id);
+      return '';
+    }
+  });
+
+  return output + (
+    discoveredFootnotes.length > 0 ?
+      `\n\n${discoveredFootnotes.map((footnote, i) => formatFootnote(i + 1, footnote, colors)).join('\n')}` :
+      ''
+  );
 }
 
 export async function isOptionVisible<O extends CommandMetadataOption>(opt: O): Promise<boolean> {
@@ -165,7 +211,9 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
       return '';
     }
 
-    return wordWrap(metadata.description.trim(), { indentation: 4 });
+    const text = formatFootnotes(metadata.description.trim(), metadata.footnotes, this.colors);
+
+    return wordWrap(text, { indentation: 4 });
   }
 
   async getGlobalOptions(): Promise<string[]> {
@@ -432,7 +480,9 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
       return '';
     }
 
-    return wordWrap(metadata.description.trim(), { indentation: 4 });
+    const text = formatFootnotes(metadata.description.trim(), metadata.footnotes, this.colors);
+
+    return wordWrap(text, { indentation: 4 });
   }
 
   async formatInlineInput(input: I): Promise<string> {
@@ -665,11 +715,27 @@ export interface CommandHelpSchemaOption {
   };
 }
 
+export interface CommandHelpSchemaFootnoteText {
+  readonly type: 'text';
+  readonly id: string | number;
+  readonly text: string;
+}
+
+export interface CommandHelpSchemaFootnoteLink {
+  readonly type: 'link';
+  readonly id: string | number;
+  readonly url: string;
+  readonly shortUrl?: string;
+}
+
+export type CommandHelpSchemaFootnote = CommandHelpSchemaFootnoteText | CommandHelpSchemaFootnoteLink;
+
 export interface CommandHelpSchema {
   readonly name: string;
   readonly namespace: ReadonlyArray<string>;
   readonly summary: string;
   readonly description: string;
+  readonly footnotes: ReadonlyArray<CommandHelpSchemaFootnote>;
   readonly groups: ReadonlyArray<string>;
   readonly exampleCommands: ReadonlyArray<string>;
   readonly aliases: ReadonlyArray<string>;
@@ -717,19 +783,24 @@ export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     return { name, type, summary, default: option.default, groups, aliases, spec };
   }
 
+  formatFootnote(footnote: Footnote): CommandHelpSchemaFootnote {
+    return isLinkFootnote(footnote) ? ({ type: 'link', ...footnote }) : ({ type: 'text', ...footnote });
+  }
+
   async formatCommand(cmd: M | HydratedCommandMetadata<C, N, M, I, O>): Promise<CommandHelpSchema> {
     const commandPath = this.location.path.map(([p]) => p);
     const namespacePath = lodash.initial(commandPath);
     const name = commandPath.join(' ');
     const summary = cmd.summary ? cmd.summary.trim() : '';
     const description = cmd.description ? cmd.description.trim() : '';
+    const footnotes = cmd.footnotes ? cmd.footnotes.map(footnote => this.formatFootnote(footnote)) : [];
     const groups = cmd.groups ? cmd.groups : [];
     const exampleCommands = cmd.exampleCommands ? cmd.exampleCommands.map(c => `${name} ${c}`) : [];
     const aliases = isHydratedCommandMetadata(cmd) ? cmd.aliases : [];
     const inputs = cmd.inputs ? await this.formatInputs(cmd.inputs) : [];
     const options = cmd.options ? await this.formatOptions(cmd.options) : [];
 
-    return { name, namespace: namespacePath, summary, description, groups, exampleCommands, aliases, inputs, options };
+    return { name, namespace: namespacePath, summary, description, footnotes, groups, exampleCommands, aliases, inputs, options };
   }
 }
 
@@ -738,6 +809,7 @@ export function createCommandMetadataFromSchema(schema: CommandHelpSchema): Requ
     name: schema.name,
     summary: schema.summary,
     description: schema.description,
+    footnotes: [...schema.footnotes],
     groups: [...schema.groups],
     exampleCommands: [...schema.exampleCommands],
     inputs: [...schema.inputs],

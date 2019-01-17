@@ -1,4 +1,4 @@
-import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace, PackageJson } from './definitions';
+import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace, LinkFootnote, PackageJson } from './definitions';
 
 export function isNamespace<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(obj: any): obj is N {
   return obj &&
@@ -25,4 +25,10 @@ export function isHydratedCommandMetadata<C extends ICommand<C, N, M, I, O>, N e
 
 export function isPackageJson(obj: any): obj is PackageJson {
   return obj && typeof obj.name === 'string';
+}
+
+export function isLinkFootnote(obj: any): obj is LinkFootnote {
+  return obj &&
+    (typeof obj.id === 'number' || typeof obj.id === 'string') &&
+    typeof obj.url === 'string';
 }

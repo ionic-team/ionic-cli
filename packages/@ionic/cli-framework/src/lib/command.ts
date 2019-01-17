@@ -229,6 +229,7 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
           aliases,
           ...nsmeta,
           description: nsmeta.description ? nsmeta.description : '',
+          footnotes: nsmeta.footnotes ? nsmeta.footnotes : [],
           groups: nsmeta.groups ? nsmeta.groups : [],
         };
         grouped.set(nsmeta.name, entry);
