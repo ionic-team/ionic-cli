@@ -225,29 +225,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
       }
     }
 
-    if (!options['type']) {
-      if (this.env.flags.interactive) {
-        this.env.log.info(
-          `You are about to create an Ionic 3 app. Would you like to try the release candidate for Ionic 4?\n` +
-          `Ionic 4 uses the power of the modern Web and embraces the Angular CLI and Angular Router to bring you the best version of Ionic ever. See our blog announcement${chalk.cyan('[1]')} and documentation${chalk.cyan('[2]')} for more information. We'd love to hear your feedback on our latest version!\n\n` +
-          `${chalk.cyan('[1]')}: ${chalk.bold('https://blog.ionicframework.com/ionic-framework-4-0-rc-shipped-paving-way-for-final')}\n` +
-          `${chalk.cyan('[2]')}: ${chalk.bold('https://beta.ionicframework.com/docs/')}\n`
-        );
-      }
-
-      const confirm = await this.env.prompt({
-        type: 'confirm',
-        name: 'confirm',
-        message: 'Try Ionic 4?',
-        default: false,
-      });
-
-      if (confirm) {
-        options['type'] = 'angular';
-      }
-    }
-
-    const projectType = options['type'] ? String(options['type']) : 'ionic-angular';
+    const projectType = options['type'] ? String(options['type']) : 'angular';
     const appflowId = options['id'] ? String(options['id']) : undefined;
 
     await this.validateProjectType(projectType);
@@ -691,7 +669,7 @@ ${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/cli/starters
     const steps = [
       `Go to your ${cloned ? 'cloned' : 'newly created'} project: ${chalk.green(`cd ${prettyPath(projectDir)}`)}`,
       `Run ${chalk.green('ionic serve')} within the app directory to see your app`,
-      `Build features and components: ${chalk.bold('https://beta.ionicframework.com/docs/building/scaffolding')}`,
+      `Build features and components: ${chalk.bold('https://ionicframework.com/docs/building/scaffolding')}`,
       `Get Ionic DevApp for easy device testing: ${chalk.bold('https://bit.ly/ionic-dev-app')}`,
     ];
 
