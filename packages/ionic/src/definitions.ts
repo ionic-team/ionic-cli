@@ -527,6 +527,8 @@ export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> 
 
 export interface Ionic1BuildOptions extends BuildOptions<'ionic1'> {}
 
+export interface CustomBuildOptions extends BuildOptions<'custom'> {}
+
 export interface GenerateOptions {
   type: string;
   name: string;
@@ -584,6 +586,8 @@ export interface Ionic1ServeOptions extends ServeOptions {
   livereloadPort: number;
   notificationPort: number;
 }
+
+export interface CustomServeOptions extends ServeOptions {}
 
 export interface LabServeDetails {
   projectType: ProjectType;

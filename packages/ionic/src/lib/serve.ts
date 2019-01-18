@@ -1,4 +1,4 @@
-import { BaseError, LOGGER_LEVELS, OptionGroup, PromptModule, createPrefixedFormatter } from '@ionic/cli-framework';
+import { BaseError, LOGGER_LEVELS, OptionGroup, ParsedArgs, PromptModule, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
 import { killProcessTree, onBeforeExit, processExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { readJson } from '@ionic/utils-fs';
@@ -14,7 +14,7 @@ import * as stream from 'stream';
 import * as through2 from 'through2';
 
 import { ASSETS_DIRECTORY } from '../constants';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, LabServeDetails, Runner, ServeDetails, ServeOptions } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, LabServeDetails, NpmClient, Runner, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 
 import { FatalException, RunnerException, ServeCLIProgramNotFoundException } from './errors';
@@ -88,6 +88,10 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
   abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
   abstract serveProject(options: T): Promise<ServeDetails>;
   abstract modifyOpenURL(url: string, options: T): string;
+
+  getPkgManagerServeCLI(): PkgManagerServeCLI {
+    return this.e.config.get('npmClient') === 'npm' ? new NpmServeCLI(this.e) : new YarnServeCLI(this.e);
+  }
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
     const separatedArgs = options['--'];
@@ -425,6 +429,11 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
    */
   abstract readonly script?: string;
 
+  /**
+   * If true, the Serve CLI will not prompt to be installed.
+   */
+  readonly global: boolean = false;
+
   private _resolvedProgram?: string;
 
   constructor(protected readonly e: ServeRunnerDeps) {
@@ -469,6 +478,16 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
     return true;
   }
 
+  async resolveScript(): Promise<string | undefined> {
+    if (typeof this.script === 'undefined') {
+      return;
+    }
+
+    const pkg = await this.e.project.requirePackageJson();
+
+    return pkg.scripts && pkg.scripts[this.script];
+  }
+
   async serve(options: T): Promise<void> {
     this._resolvedProgram = await this.resolveProgram();
 
@@ -489,6 +508,11 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
     } catch (e) {
       if (!(e instanceof ServeCLIProgramNotFoundException)) {
         throw e;
+      }
+
+      if (this.global) {
+        this.e.log.nl();
+        throw new FatalException(`${chalk.green(this.pkg)} is required for this command to work properly.`);
       }
 
       this.e.log.nl();
@@ -570,9 +594,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
     if (typeof this.script !== 'undefined') {
       debug(`Looking for ${chalk.cyan(this.script)} npm script.`);
 
-      const pkg = await this.e.project.requirePackageJson();
-
-      if (pkg.scripts && pkg.scripts[this.script]) {
+      if (await this.resolveScript()) {
         debug(`Using ${chalk.cyan(this.script)} npm script.`);
         return this.e.config.get('npmClient');
       }
@@ -614,6 +636,48 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
     return true;
   }
+}
+
+abstract class PkgManagerServeCLI extends ServeCLI<ServeOptions> {
+  readonly abstract program: NpmClient;
+  readonly global = true;
+  readonly script = SERVE_SCRIPT;
+
+  protected async resolveProgram(): Promise<string> {
+    return this.program;
+  }
+
+  protected async buildArgs(options: ServeOptions): Promise<string[]> {
+    const { pkgManagerArgs } = await import('./utils/npm');
+
+    // The Ionic CLI decides the host/port of the dev server, so --host and
+    // --port are provided to the downstream npm script as a best-effort
+    // attempt.
+    const args: ParsedArgs = {
+      _: [],
+      host: options.address,
+      port: options.port.toString(),
+    };
+
+    const scriptArgs = [...unparseArgs(args), ...options['--'] || []];
+    const [ , ...pkgArgs ] = await pkgManagerArgs(this.program, { command: 'run', script: this.script, scriptArgs });
+
+    return pkgArgs;
+  }
+}
+
+export class NpmServeCLI extends PkgManagerServeCLI {
+  readonly name = 'npm CLI';
+  readonly pkg = 'npm';
+  readonly program = 'npm';
+  readonly prefix = 'npm';
+}
+
+export class YarnServeCLI extends PkgManagerServeCLI {
+  readonly name = 'Yarn';
+  readonly pkg = 'yarn';
+  readonly program = 'yarn';
+  readonly prefix = 'yarn';
 }
 
 interface IonicLabServeCLIOptions extends Readonly<LabServeDetails> {

@@ -2,7 +2,7 @@ import { BaseError, ERROR_SHELL_COMMAND_NOT_FOUND, OptionGroup, PromptModule, Sh
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
-import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, Runner } from '../definitions';
+import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, NpmClient, Runner } from '../definitions';
 
 import { BuildCLIProgramNotFoundException, FatalException, RunnerException } from './errors';
 import { Hook } from './hooks';
@@ -39,6 +39,10 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
   abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
   abstract createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): T;
   abstract buildProject(options: T): Promise<void>;
+
+  getPkgManagerBuildCLI(): PkgManagerBuildCLI {
+    return this.e.config.get('npmClient') === 'npm' ? new NpmBuildCLI(this.e) : new YarnBuildCLI(this.e);
+  }
 
   createBaseOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): BaseBuildOptions {
     const separatedArgs = options['--'];
@@ -123,6 +127,11 @@ export abstract class BuildCLI<T extends object> {
    */
   abstract readonly script?: string;
 
+  /**
+   * If true, the Build CLI will not prompt to be installed.
+   */
+  readonly global: boolean = false;
+
   private _resolvedProgram?: string;
 
   constructor(protected readonly e: BuildRunnerDeps) {}
@@ -140,6 +149,16 @@ export abstract class BuildCLI<T extends object> {
    */
   protected abstract buildArgs(options: T): Promise<string[]>;
 
+  async resolveScript(): Promise<string | undefined> {
+    if (typeof this.script === 'undefined') {
+      return;
+    }
+
+    const pkg = await this.e.project.requirePackageJson();
+
+    return pkg.scripts && pkg.scripts[this.script];
+  }
+
   async build(options: T): Promise<void> {
     this._resolvedProgram = await this.resolveProgram();
 
@@ -152,6 +171,11 @@ export abstract class BuildCLI<T extends object> {
     } catch (e) {
       if (!(e instanceof BuildCLIProgramNotFoundException)) {
         throw e;
+      }
+
+      if (this.global) {
+        this.e.log.nl();
+        throw new FatalException(`${chalk.green(this.pkg)} is required for this command to work properly.`);
       }
 
       this.e.log.nl();
@@ -189,9 +213,7 @@ export abstract class BuildCLI<T extends object> {
     if (typeof this.script !== 'undefined') {
       debug(`Looking for ${chalk.cyan(this.script)} npm script.`);
 
-      const pkg = await this.e.project.requirePackageJson();
-
-      if (pkg.scripts && pkg.scripts[this.script]) {
+      if (await this.resolveScript()) {
         debug(`Using ${chalk.cyan(this.script)} npm script.`);
         return this.e.config.get('npmClient');
       }
@@ -221,6 +243,35 @@ export abstract class BuildCLI<T extends object> {
 
     return true;
   }
+}
+
+abstract class PkgManagerBuildCLI extends BuildCLI<BaseBuildOptions> {
+  readonly abstract program: NpmClient;
+  readonly global = true;
+  readonly script = BUILD_SCRIPT;
+
+  protected async resolveProgram(): Promise<string> {
+    return this.program;
+  }
+
+  protected async buildArgs(options: BaseBuildOptions): Promise<string[]> {
+    const { pkgManagerArgs } = await import('./utils/npm');
+    const [ , ...pkgArgs ] = await pkgManagerArgs(this.program, { command: 'run', script: this.script, scriptArgs: [...options['--'] || []] });
+
+    return pkgArgs;
+  }
+}
+
+export class NpmBuildCLI extends PkgManagerBuildCLI {
+  readonly name = 'npm CLI';
+  readonly pkg = 'npm';
+  readonly program = 'npm';
+}
+
+export class YarnBuildCLI extends PkgManagerBuildCLI {
+  readonly name = 'Yarn';
+  readonly pkg = 'yarn';
+  readonly program = 'yarn';
 }
 
 class BuildBeforeHook extends Hook {

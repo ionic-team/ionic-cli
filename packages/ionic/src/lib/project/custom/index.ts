@@ -3,6 +3,9 @@ import chalk from 'chalk';
 import { Project } from '../';
 import { RunnerNotFoundException } from '../../errors';
 
+import * as ζbuild from './build';
+import * as ζserve from './serve';
+
 export class CustomProject extends Project {
   readonly type: 'custom' = 'custom';
 
@@ -13,18 +16,16 @@ export class CustomProject extends Project {
     return false;
   }
 
-  async requireBuildRunner(): Promise<never> {
-    throw new RunnerNotFoundException(
-      `Cannot perform build for custom projects.\n` +
-      `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to build custom projects.`
-    );
+  async requireBuildRunner(): Promise<ζbuild.CustomBuildRunner> {
+    const { CustomBuildRunner } = await import('./build');
+    const deps = { ...this.e, project: this };
+    return new CustomBuildRunner(deps);
   }
 
-  async requireServeRunner(): Promise<never> {
-    throw new RunnerNotFoundException(
-      `Cannot perform serve for custom projects.\n` +
-      `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to serve custom projects.`
-    );
+  async requireServeRunner(): Promise<ζserve.CustomServeRunner> {
+    const { CustomServeRunner } = await import('./serve');
+    const deps = { ...this.e, project: this };
+    return new CustomServeRunner(deps);
   }
 
   async requireGenerateRunner(): Promise<never> {
