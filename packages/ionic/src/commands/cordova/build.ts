@@ -6,7 +6,7 @@ import { build } from '../../lib/build';
 import { FatalException } from '../../lib/errors';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
 
-import { COMMON_CORDOVA_BUILD_COMMAND_OPTIONS, CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
+import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CORDOVA_COMPILE_OPTIONS, CordovaCommand } from './base';
 
 export class BuildCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -19,7 +19,7 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
         type: Boolean,
         default: true,
       },
-      ...COMMON_CORDOVA_BUILD_COMMAND_OPTIONS,
+      ...CORDOVA_COMPILE_OPTIONS,
     ];
 
     const footnotes: Footnote[] = [

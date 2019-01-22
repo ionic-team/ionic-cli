@@ -13,56 +13,11 @@ import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, serve } from '../../lib/
 import { createDefaultLoggerHandlers } from '../../lib/utils/logger';
 import { pkgManagerArgs } from '../../lib/utils/npm';
 
-import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
+import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CORDOVA_RUN_OPTIONS, CordovaCommand } from './base';
 
 const CORDOVA_ANDROID_PACKAGE_PATH = 'platforms/android/app/build/outputs/apk/';
 const CORDOVA_IOS_SIMULATOR_PACKAGE_PATH = 'platforms/ios/build/emulator';
 const CORDOVA_IOS_DEVICE_PACKAGE_PATH = 'platforms/ios/build/device';
-
-const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
-  {
-    name: 'debug',
-    summary: 'Mark as a debug build',
-    type: Boolean,
-    groups: ['cordova'],
-    hint: chalk.dim('[cordova]'),
-  },
-  {
-    name: 'release',
-    summary: 'Mark as a release build',
-    type: Boolean,
-    groups: ['cordova'],
-    hint: chalk.dim('[cordova]'),
-  },
-  {
-    name: 'device',
-    summary: 'Deploy build to a device',
-    type: Boolean,
-    groups: ['cordova', 'native-run'],
-    hint: chalk.dim('[cordova]'),
-  },
-  {
-    name: 'emulator',
-    summary: 'Deploy build to an emulator',
-    type: Boolean,
-    groups: ['cordova', 'native-run'],
-    hint: chalk.dim('[cordova]'),
-  },
-  {
-    name: 'target',
-    summary: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
-    type: String,
-    groups: [OptionGroup.Advanced, 'cordova', 'native-run'],
-    hint: chalk.dim('[cordova]'),
-  },
-  {
-    name: 'buildConfig',
-    summary: 'Use the specified build configuration',
-    groups: [OptionGroup.Advanced, 'cordova'],
-    hint: chalk.dim('[cordova]'),
-    spec: { value: 'file' },
-  },
-];
 
 const NATIVE_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
   {
