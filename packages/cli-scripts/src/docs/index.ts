@@ -41,7 +41,7 @@ export class DocsCommand extends Command {
       projectJson.commands = await Promise.all(projectJson.commands.map(async cmd => this.extractCommand(cmd as CommandHelpSchema)));
       projectJson.commands.sort((a, b) => strcmp(a.name, b.name));
 
-      await writeFile(path.resolve(STAGING_DIRECTORY, `${projectType}.json`), JSON.stringify(projectJson, undefined, 2), { encoding: 'utf8' });
+      await writeFile(path.resolve(STAGING_DIRECTORY, `${projectType}.json`), JSON.stringify(projectJson, undefined, 2) + '\n', { encoding: 'utf8' });
     }
 
     process.stdout.write(`${chalk.green('Done.')}\n`);
