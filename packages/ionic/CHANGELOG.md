@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.9.0"></a>
+# [4.9.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.8.0...ionic@4.9.0) (2019-01-23)
+
+
+### Features
+
+* **custom:** run ionic:build/ionic:serve scripts ([9898fa8](https://github.com/ionic-team/ionic-cli/commit/9898fa8))
+* **resources:** --cordova-res option for local resource generation ([3c27e05](https://github.com/ionic-team/ionic-cli/commit/3c27e05))
+* **start:** make Ionic 4 the default for new projects ([#3820](https://github.com/ionic-team/ionic-cli/issues/3820)) ([0195f96](https://github.com/ionic-team/ionic-cli/commit/0195f96))
+
+
+
+
 <a name="4.8.0"></a>
 # [4.8.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.7.1...ionic@4.8.0) (2019-01-14)
 

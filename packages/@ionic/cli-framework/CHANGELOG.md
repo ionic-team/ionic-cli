@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.6.0"></a>
+# [1.6.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.5.3...@ionic/cli-framework@1.6.0) (2019-01-23)
+
+
+### Features
+
+* **help:** text/link footnotes for descriptions ([2c74d53](https://github.com/ionic-team/ionic-cli/commit/2c74d53))
+
+
+
+
 <a name="1.5.3"></a>
 ## [1.5.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.5.2...@ionic/cli-framework@1.5.3) (2019-01-08)
 
