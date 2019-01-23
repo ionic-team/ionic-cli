@@ -28,7 +28,7 @@ export class DocsCommand extends Command {
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const browser = options['browser'] ? String(options['browser']) : undefined;
 
-    const homepage = 'https://ionicframework.com/docs';
+    const homepage = 'https://ion.link/docs';
     const url = this.project ? await this.project.getDocsUrl() : homepage;
 
     try {

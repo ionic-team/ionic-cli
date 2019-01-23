@@ -11,7 +11,7 @@ export class DeployNamespace extends Namespace {
 Interface to execute commands about deploy builds on Ionic Appflow.
 
 Appflow deploy documentation:
-- Overview: ${chalk.bold('https://ionicframework.com/docs/appflow/deploy/')}
+- Overview: ${chalk.bold('https://ion.link/appflow-deploy-docs')}
 `,
     };
   }

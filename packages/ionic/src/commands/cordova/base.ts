@@ -9,33 +9,33 @@ import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
 
-export const COMMON_CORDOVA_BUILD_COMMAND_OPTIONS: CommandMetadataOption[] = [
+export const CORDOVA_COMPILE_OPTIONS: CommandMetadataOption[] = [
   {
     name: 'debug',
-    summary: 'Create a debug build',
+    summary: 'Mark as a debug build',
     type: Boolean,
     groups: ['cordova'],
     hint: chalk.dim('[cordova]'),
   },
   {
     name: 'release',
-    summary: 'Create a release build',
+    summary: 'Mark as a release build',
     type: Boolean,
     groups: ['cordova'],
     hint: chalk.dim('[cordova]'),
   },
   {
     name: 'device',
-    summary: 'Create a build for a device',
+    summary: 'Deploy build to a device',
     type: Boolean,
-    groups: ['cordova'],
+    groups: ['cordova', 'native-run'],
     hint: chalk.dim('[cordova]'),
   },
   {
     name: 'emulator',
-    summary: 'Create a build for an emulator',
+    summary: 'Deploy build to an emulator',
     type: Boolean,
-    groups: ['cordova'],
+    groups: ['cordova', 'native-run'],
     hint: chalk.dim('[cordova]'),
   },
   {
@@ -44,6 +44,17 @@ export const COMMON_CORDOVA_BUILD_COMMAND_OPTIONS: CommandMetadataOption[] = [
     groups: [OptionGroup.Advanced, 'cordova'],
     hint: chalk.dim('[cordova]'),
     spec: { value: 'file' },
+  },
+];
+
+export const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+  ...CORDOVA_COMPILE_OPTIONS,
+  {
+    name: 'target',
+    summary: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
+    type: String,
+    groups: [OptionGroup.Advanced, 'cordova', 'native-run'],
+    hint: chalk.dim('[cordova]'),
   },
 ];
 

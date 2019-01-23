@@ -11,12 +11,16 @@ export class SignupCommand extends Command {
       type: 'global',
       summary: 'Create an account for Ionic Appflow',
       description: `
-Learn more about Ionic Appflow: ${chalk.bold('https://ionicframework.com/appflow')}
+Learn more about Ionic Appflow: ${chalk.bold('https://ion.link/appflow')}
 
-If you are having issues signing up, please get in touch with our Support${chalk.cyan('[1]')}.
-
-${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/support/request')}
+If you are having issues signing up, please get in touch with our Support[^support-request].
       `,
+      footnotes: [
+        {
+          id: 'support-request',
+          url: 'https://ion.link/support-request',
+        },
+      ],
     };
   }
 

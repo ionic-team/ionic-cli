@@ -74,6 +74,7 @@ describe('@ionic/cli-framework', () => {
       name: 'bar',
       summary: '',
       description: '',
+      footnotes: [],
       exampleCommands: [],
       groups: [],
       inputs: [

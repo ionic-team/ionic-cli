@@ -46,7 +46,13 @@ class FooNamespace extends Namespace {
     return {
       name: 'foo',
       summary: 'the foo namespace',
-      description: 'my description',
+      description: 'my description with this footnote[^here] and more text',
+      footnotes: [
+        {
+          id: 'here',
+          text: 'A footnote is a thing',
+        },
+      ],
     };
   }
 
@@ -79,7 +85,13 @@ class BarCommand extends Command {
     return {
       name: 'bar',
       summary: 'the bar command',
-      description: 'my description',
+      description: 'my description with a numeric link footnote[^1] and some more text',
+      footnotes: [
+        {
+          id: 1,
+          url: 'https://ionicframework.com',
+        },
+      ],
       inputs: [
         { name: 'input1', summary: 'input1 summary' },
         { name: 'input2', summary: 'input2 summary' },
@@ -124,7 +136,9 @@ describe('@ionic/cli-framework', () => {
         expect(stripAnsi(result)).toEqual(`
   my foo bar - the bar command
 
-    my description
+    my description with a numeric link footnote[1] and some more text
+    
+    [1]: https://ionicframework.com
 
   Usage:
 
@@ -185,7 +199,9 @@ describe('@ionic/cli-framework', () => {
         expect(stripAnsi(result)).toEqual(`
   my foo - the foo namespace
 
-    my description
+    my description with this footnote[1] and more text
+    
+    [1]: A footnote is a thing
 
   Usage:
 
@@ -217,12 +233,19 @@ describe('@ionic/cli-framework', () => {
                 "my"
               ],
               "summary": "the bar command",
-              "description": "my description",
+              "description": "my description with a numeric link footnote[^1] and some more text",
               "groups": [],
               "exampleCommands": [
                 "my bar ",
                 "my bar input1 input2",
                 "my bar --opt1 --opt2"
+              ],
+              "footnotes": [
+                {
+                  "type": "link",
+                  "id": 1,
+                  "url": "https://ionicframework.com"
+                }
               ],
               "aliases": [],
               "inputs": [
@@ -281,12 +304,19 @@ describe('@ionic/cli-framework', () => {
                 "foo"
               ],
               "summary": "the bar command",
-              "description": "my description",
+              "description": "my description with a numeric link footnote[^1] and some more text",
               "groups": [],
               "exampleCommands": [
                 "my foo bar ",
                 "my foo bar input1 input2",
                 "my foo bar --opt1 --opt2"
+              ],
+              "footnotes": [
+                {
+                  "type": "link",
+                  "id": 1,
+                  "url": "https://ionicframework.com"
+                }
               ],
               "aliases": [
                 "my foo b"
@@ -350,6 +380,7 @@ describe('@ionic/cli-framework', () => {
               "description": "",
               "groups": [],
               "exampleCommands": [],
+              "footnotes": [],
               "aliases": [
                 "my foo b1",
                 "my foo b2"
@@ -368,6 +399,7 @@ describe('@ionic/cli-framework', () => {
                 "beta"
               ],
               "exampleCommands": [],
+              "footnotes": [],
               "aliases": [],
               "inputs": [],
               "options": []

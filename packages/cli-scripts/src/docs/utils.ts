@@ -13,7 +13,6 @@ export function links2md(str: string) {
 }
 
 export function ansi2md(str: string) {
-  str = str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
   str = convertAnsiToMd(str, ansiStyle.green, { open: '`', close: '`' });
   str = convertAnsiToMd(str, ansiStyle.yellow, { open: '', close: '' });
   str = convertAnsiToMd(str, ansiStyle.bold, { open: '**', close: '**' });

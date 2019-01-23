@@ -1,4 +1,4 @@
-import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, OptionGroup, ShellCommandError, createPrefixedFormatter } from '@ionic/cli-framework';
+import { ERROR_SHELL_COMMAND_NOT_FOUND, Footnote, LOGGER_LEVELS, OptionGroup, ShellCommandError, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit, processExit, sleepForever } from '@ionic/cli-framework/utils/process';
 import chalk from 'chalk';
 import * as path from 'path';
@@ -13,56 +13,11 @@ import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, serve } from '../../lib/
 import { createDefaultLoggerHandlers } from '../../lib/utils/logger';
 import { pkgManagerArgs } from '../../lib/utils/npm';
 
-import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
+import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CORDOVA_RUN_OPTIONS, CordovaCommand } from './base';
 
 const CORDOVA_ANDROID_PACKAGE_PATH = 'platforms/android/app/build/outputs/apk/';
 const CORDOVA_IOS_SIMULATOR_PACKAGE_PATH = 'platforms/ios/build/emulator';
 const CORDOVA_IOS_DEVICE_PACKAGE_PATH = 'platforms/ios/build/device';
-
-const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
-  {
-    name: 'debug',
-    summary: 'Mark as a debug build',
-    type: Boolean,
-    groups: ['cordova'],
-    hint: chalk.dim('[cordova]'),
-  },
-  {
-    name: 'release',
-    summary: 'Mark as a release build',
-    type: Boolean,
-    groups: ['cordova'],
-    hint: chalk.dim('[cordova]'),
-  },
-  {
-    name: 'device',
-    summary: 'Deploy build to a device',
-    type: Boolean,
-    groups: ['cordova', 'native-run'],
-    hint: chalk.dim('[cordova]'),
-  },
-  {
-    name: 'emulator',
-    summary: 'Deploy build to an emulator',
-    type: Boolean,
-    groups: ['cordova', 'native-run'],
-    hint: chalk.dim('[cordova]'),
-  },
-  {
-    name: 'target',
-    summary: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
-    type: String,
-    groups: [OptionGroup.Advanced, 'cordova', 'native-run'],
-    hint: chalk.dim('[cordova]'),
-  },
-  {
-    name: 'buildConfig',
-    summary: 'Use the specified build configuration',
-    groups: [OptionGroup.Advanced, 'cordova'],
-    hint: chalk.dim('[cordova]'),
-    spec: { value: 'file' },
-  },
-];
 
 const NATIVE_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
   {
@@ -98,6 +53,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       'ios --livereload',
       'ios --livereload-url=http://localhost:8100',
     ].sort();
+
     const options: CommandMetadataOption[] = [
       {
         name: 'list',
@@ -127,6 +83,14 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       },
     ];
 
+    const footnotes: Footnote[] = [
+      {
+        id: 'remote-debugging-docs',
+        url: 'https://ionicframework.com/docs/developer-resources/developer-tips',
+        shortUrl: 'https://ion.link/remote-debugging-docs',
+      },
+    ];
+
     const serveRunner = this.project && await this.project.getServeRunner();
     const buildRunner = this.project && await this.project.getBuildRunner();
 
@@ -134,6 +98,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       const libmetadata = await buildRunner.getCommandMetadata();
       groups = libmetadata.groups || [];
       options.push(...libmetadata.options || []);
+      footnotes.push(...libmetadata.footnotes || []);
     }
 
     if (serveRunner) {
@@ -141,6 +106,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       const existingOpts = options.map(o => o.name);
       groups = libmetadata.groups || [];
       options.push(...(libmetadata.options || []).filter(o => !existingOpts.includes(o.name)).map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${chalk.dim('(--livereload)')}` })));
+      footnotes.push(...libmetadata.footnotes || []);
     }
 
     // Cordova Options
@@ -156,12 +122,11 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       description: `
 Like running ${chalk.green('cordova run')} or ${chalk.green('cordova emulate')} directly, but performs ${chalk.green('ionic build')} before deploying to the device or emulator. Optionally specify the ${chalk.green('--livereload')} option to use the dev server from ${chalk.green('ionic serve')} for livereload functionality.
 
-For Android and iOS, you can setup Remote Debugging on your device with browser development tools using these docs${chalk.cyan('[1]')}.
+For Android and iOS, you can setup Remote Debugging on your device with browser development tools using these docs[^remote-debugging-docs].
 
 Just like with ${chalk.green('ionic cordova build')}, you can pass additional options to the Cordova CLI using the ${chalk.green('--')} separator. To pass additional options to the dev server, consider using ${chalk.green('ionic serve')} and the ${chalk.green('--livereload-url')} option.
-
-${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/developer-resources/developer-tips/')}
       `,
+      footnotes,
       exampleCommands,
       inputs: [
         {

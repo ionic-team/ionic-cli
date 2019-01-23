@@ -32,6 +32,11 @@ export interface Colors {
    */
   failure: ColorFunction;
 
+  /**
+   * Used to mark text as ancillary or supportive.
+   */
+  ancillary: ColorFunction;
+
   log: LoggerColors;
 }
 
@@ -41,6 +46,7 @@ export const DEFAULT_COLORS: Colors = Object.freeze({
   input: chalk.green,
   success: chalk.green,
   failure: chalk.red,
+  ancillary: chalk.cyan,
   log: Object.freeze({
     DEBUG: chalk.magenta,
     INFO: chalk.white,
@@ -55,6 +61,7 @@ export const NO_COLORS: Colors = Object.freeze({
   input: lodash.identity,
   success: lodash.identity,
   failure: lodash.identity,
+  ancillary: lodash.identity,
   log: Object.freeze({
     DEBUG: lodash.identity,
     INFO: lodash.identity,

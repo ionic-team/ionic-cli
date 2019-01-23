@@ -20,10 +20,24 @@ export interface CommandMetadataInput {
   private?: boolean;
 }
 
+export interface TextFootnote {
+  id: string | number;
+  text: string;
+}
+
+export interface LinkFootnote {
+  id: string | number;
+  url: string;
+  shortUrl?: string;
+}
+
+export type Footnote = TextFootnote | LinkFootnote;
+
 export interface Metadata {
   name: string;
   summary: string;
   description?: string;
+  footnotes?: Footnote[];
   groups?: string[];
 }
 

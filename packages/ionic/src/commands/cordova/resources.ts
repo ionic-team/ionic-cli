@@ -1,3 +1,4 @@
+import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, OptionGroup, ShellCommandError, createPrefixedFormatter } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { cacheFileChecksum, copy, pathExists } from '@ionic/utils-fs';
 import chalk from 'chalk';
@@ -5,6 +6,8 @@ import * as Debug from 'debug';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, KnownPlatform, ResourcesConfig, ResourcesImageConfig, SourceImage } from '../../definitions';
 import { FatalException } from '../../lib/errors';
+import { createDefaultLoggerHandlers } from '../../lib/utils/logger';
+import { pkgManagerArgs } from '../../lib/utils/npm';
 
 import { CordovaCommand } from './base';
 
@@ -63,6 +66,12 @@ This command uses Ionic servers, so we require you to be logged into your free I
           type: Boolean,
           aliases: ['s'],
         },
+        {
+          name: 'cordova-res',
+          summary: `Use ${chalk.green('cordova-res')} instead of Ionic resource server`,
+          type: Boolean,
+          groups: [OptionGroup.Hidden],
+        },
       ],
     };
   }
@@ -74,7 +83,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
 
     const isLoggedIn = this.env.session.isLoggedIn();
 
-    if (!isLoggedIn) {
+    if (!options['cordova-res'] && !isLoggedIn) {
       this.env.log.warn(`You need to be logged into your Ionic account in order to run ${chalk.green(`ionic cordova resources`)}.\n`);
       await promptToLogin(this.env);
     }
@@ -96,16 +105,60 @@ This command uses Ionic servers, so we require you to be logged into your free I
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
-    const { addResourcesToConfigXml, createImgDestinationDirectories, findMostSpecificSourceImage, getImageResources, getSourceImages, transformResourceImage, uploadSourceImage } = await import('../../lib/integrations/cordova/resources');
+    const platform = inputs[0] ? String(inputs[0]) : undefined;
 
+    if (options['cordova-res']) {
+      await this.runCordovaRes(platform, options);
+    } else {
+      await this.runResourceServer(platform, options);
+    }
+  }
+
+  async runCordovaRes(platform: string | undefined, options: CommandLineOptions): Promise<void> {
     if (!this.project) {
       throw new FatalException(`Cannot run ${chalk.green('ionic cordova resources')} outside a project directory.`);
     }
 
-    const platform = inputs[0] ? String(inputs[0]) : undefined;
-    const { force } = options;
+    const log = this.env.log.clone();
+    log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(chalk.dim(`[cordova-res]`)));
+    const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
 
+    const args: string[] = [];
+
+    if (platform) {
+      args.push(platform);
+    }
+
+    if (options['icon']) {
+      args.push('--type', 'icon');
+    } else if (options['splash']) {
+      args.push('--type', 'splash');
+    }
+
+    if (options['verbose']) {
+      args.push('--verbose');
+    }
+
+    try {
+      await this.env.shell.run('cordova-res', args, { showCommand: true, fatalOnNotFound: false, cwd: this.project.directory, stream: ws });
+    } catch (e) {
+      if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
+        const installArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'cordova-res', global: true });
+        throw new FatalException(
+          `${chalk.green('cordova-res')} was not found on your PATH. Please install it globally:\n` +
+          `${chalk.green(installArgs.join(' '))}\n`
+        );
+      }
+
+      throw e;
+    }
+  }
+
+  async runResourceServer(platform: string | undefined, options: CommandLineOptions): Promise<void> {
+    const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
+    const { addResourcesToConfigXml, createImgDestinationDirectories, findMostSpecificSourceImage, getImageResources, getSourceImages, transformResourceImage, uploadSourceImage } = await import('../../lib/integrations/cordova/resources');
+
+    const { force } = options;
     const tasks = this.createTaskChain();
 
     // if no resource filters are passed as arguments assume to use all.

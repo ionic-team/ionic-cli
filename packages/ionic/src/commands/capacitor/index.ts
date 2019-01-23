@@ -12,7 +12,7 @@ export class CapacitorNamespace extends Namespace {
 These commands integrate with Capacitor, Ionic's new native layer project which provides an alternative to Cordova for native functionality in your app.
 
 Learn more about Capacitor:
-- Main documentation: ${chalk.bold('https://capacitor.ionicframework.com/')}
+- Main documentation: ${chalk.bold('https://ion.link/capacitor')}
       `,
       groups: [NamespaceGroup.Beta],
     };

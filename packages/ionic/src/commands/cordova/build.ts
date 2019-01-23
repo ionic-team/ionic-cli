@@ -1,4 +1,4 @@
-import { CommandMetadataOption, validators } from '@ionic/cli-framework';
+import { CommandMetadataOption, Footnote, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
@@ -6,7 +6,7 @@ import { build } from '../../lib/build';
 import { FatalException } from '../../lib/errors';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
 
-import { COMMON_CORDOVA_BUILD_COMMAND_OPTIONS, CORDOVA_BUILD_EXAMPLE_COMMANDS, CordovaCommand } from './base';
+import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CORDOVA_COMPILE_OPTIONS, CordovaCommand } from './base';
 
 export class BuildCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -19,7 +19,18 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
         type: Boolean,
         default: true,
       },
-      ...COMMON_CORDOVA_BUILD_COMMAND_OPTIONS,
+      ...CORDOVA_COMPILE_OPTIONS,
+    ];
+
+    const footnotes: Footnote[] = [
+      {
+        id: 'cordova-android-using-flags',
+        url: 'https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html#using-flags',
+      },
+      {
+        id: 'cordova-ios-using-flags',
+        url: 'https://cordova.apache.org/docs/en/latest/guide/platforms/ios/index.html#using-flags',
+      },
     ];
 
     const runner = this.project && await this.project.getBuildRunner();
@@ -27,6 +38,7 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
     if (runner) {
       const libmetadata = await runner.getCommandMetadata();
       options.push(...libmetadata.options || []);
+      footnotes.push(...libmetadata.footnotes || []);
     }
 
     return {
@@ -38,11 +50,9 @@ Like running ${chalk.green('cordova build')} directly, but also builds web asset
 
 To pass additional options to the Cordova CLI, use the ${chalk.green('--')} separator after the Ionic CLI arguments.
 
-The Cordova CLI requires a separator for platform-specific arguments for Android builds${chalk.cyan('[1]')}, so an additional separator is required for the Ionic CLI, but it is not required for iOS builds${chalk.cyan('[2]')}. See the example commands for usage with separators. To avoid using flags, consider using ${chalk.green('--buildConfig')} with a ${chalk.bold('build.json')} file.
-
-${chalk.cyan('[1]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html#using-flags')}
-${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/platforms/ios/index.html#using-flags')}
+The Cordova CLI requires a separator for platform-specific arguments for Android builds[^cordova-android-using-flags], so an additional separator is required for the Ionic CLI, but it is not required for iOS builds[^cordova-ios-using-flags]. See the example commands for usage with separators. To avoid using flags, consider using ${chalk.green('--buildConfig')} with a ${chalk.bold('build.json')} file.
       `,
+      footnotes,
       exampleCommands,
       inputs: [
         {

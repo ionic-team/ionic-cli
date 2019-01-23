@@ -1,4 +1,4 @@
-import { CommandMetadataOption } from '@ionic/cli-framework';
+import { CommandMetadataOption, Footnote } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
@@ -19,11 +19,14 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
       },
     ];
 
+    const footnotes: Footnote[] = [];
+
     const runner = this.project && await this.project.getBuildRunner();
 
     if (runner) {
       const libmetadata = await runner.getCommandMetadata();
       options.push(...libmetadata.options || []);
+      footnotes.push(...libmetadata.footnotes || []);
     }
 
     return {
@@ -41,6 +44,7 @@ ${chalk.green('ionic cordova prepare')} will do the following:
 
 You may wish to use ${chalk.green('ionic cordova prepare')} if you run your project with Android Studio or Xcode.
       `,
+      footnotes,
       exampleCommands: ['', 'ios', 'android'],
       inputs: [
         {

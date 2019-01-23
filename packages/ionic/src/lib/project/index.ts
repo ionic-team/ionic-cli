@@ -509,7 +509,7 @@ export abstract class Project implements IProject {
   }
 
   async getDocsUrl(): Promise<string> {
-    return 'https://ionicframework.com/docs';
+    return 'https://ion.link/docs';
   }
 
   async getSourceDir(): Promise<string> {

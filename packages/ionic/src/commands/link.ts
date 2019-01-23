@@ -38,15 +38,23 @@ Link apps on Ionic Appflow to local Ionic projects with this command.
 
 If the ${chalk.green('id')} argument is excluded, this command will prompt you to select an app from Ionic Appflow.
 
-Ionic Appflow uses a git-based workflow to manage app updates. During the linking process, select ${chalk.bold('GitHub')} (recommended) or ${chalk.bold('Ionic Appflow')} as a git host. See our documentation${chalk.cyan('[1]')} for more information.
+Ionic Appflow uses a git-based workflow to manage app updates. During the linking process, select ${chalk.bold('GitHub')} (recommended) or ${chalk.bold('Ionic Appflow')} as a git host. See our documentation[^appflow-git-basics] for more information.
 
 Ultimately, this command sets the ${chalk.bold('id')} property in ${chalk.bold(prettyPath(projectFile))}, which marks this app as linked.
 
-If you are having issues linking, please get in touch with our Support${chalk.cyan('[2]')}.
-
-${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/appflow/basics/git')}
-${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')}
+If you are having issues linking, please get in touch with our Support[^support-request].
       `,
+      footnotes: [
+        {
+          id: 'appflow-git-basics',
+          url: 'https://ionicframework.com/docs/appflow/basics/git',
+          shortUrl: 'https://ion.link/appflow-git-basics',
+        },
+        {
+          id: 'support-request',
+          url: 'https://ion.link/support-request',
+        },
+      ],
       exampleCommands: ['', 'a1b2c3d4'],
       inputs: [
         {
@@ -263,7 +271,7 @@ ${chalk.cyan('[2]')}: ${chalk.bold('https://ionicframework.com/support/request')
     this.env.log.info(
       `Ionic Appflow uses a git-based workflow to manage app updates.\n` +
       `You will be prompted to set up the git host and repository for this new app. See the docs${chalk.cyan('[1]')} for more information.\n\n` +
-      `${chalk.cyan('[1]')}: ${chalk.bold('https://ionicframework.com/docs/appflow/basics/git/')}`
+      `${chalk.cyan('[1]')}: ${chalk.bold('https://ion.link/appflow-git-basics')}`
     );
 
     this.env.log.nl();

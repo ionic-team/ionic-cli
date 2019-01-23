@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { filterArgumentsForCordova } from '../../lib/integrations/cordova/utils';
 
-import { COMMON_CORDOVA_BUILD_COMMAND_OPTIONS, CordovaCommand } from './base';
+import { CORDOVA_COMPILE_OPTIONS, CordovaCommand } from './base';
 
 export class CompileCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -28,7 +28,7 @@ Like running ${chalk.green('cordova compile')} directly, but provides friendly c
         },
       ],
       options: [
-        ...COMMON_CORDOVA_BUILD_COMMAND_OPTIONS,
+        ...CORDOVA_COMPILE_OPTIONS,
       ],
     };
   }

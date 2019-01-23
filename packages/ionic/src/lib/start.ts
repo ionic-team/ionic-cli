@@ -48,7 +48,7 @@ export async function getIonicProText() {
      ${chalk.bold(`${emoji('🔥', '*')}   IONIC  APPFLOW   ${emoji('🔥', '*')}`)}\n
  Supercharge your Ionic development with the ${chalk.bold('Ionic Appflow')} SDK\n
   -  ${emoji('📲', '')}  Push remote updates and skip the app store queue\n
- Learn more about Ionic Appflow: ${chalk.bold('https://ionicframework.com/appflow')}
+ Learn more about Ionic Appflow: ${chalk.bold('https://ion.link/appflow')}
 `;
 
   return `${msg}\n${advertisementSeparator.repeat(60)}\n\n`;
