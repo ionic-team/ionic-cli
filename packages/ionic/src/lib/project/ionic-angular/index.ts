@@ -30,6 +30,10 @@ export class IonicAngularProject extends Project {
     ];
   }
 
+  async getDocsUrl(): Promise<string> {
+    return 'https://ion.link/v3-docs';
+  }
+
   async registerAilments(registry: IAilmentRegistry): Promise<void> {
     await super.registerAilments(registry);
     const ailments = await import('./ailments');
