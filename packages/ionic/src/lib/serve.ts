@@ -111,7 +111,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       address,
       browser: options['browser'] ? String(options['browser']) : undefined,
       browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
-      devapp: engine === 'browser' && (typeof options['devapp'] === 'undefined' || options['devapp']) ? true : false,
+      devapp: !!options['devapp'],
       engine,
       externalAddressRequired: options['externalAddressRequired'] ? true : false,
       lab: options['lab'] ? true : false,
