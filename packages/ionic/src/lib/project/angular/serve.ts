@@ -40,20 +40,21 @@ The dev server can use HTTPS via the ${chalk.green('--ssl')} option ${chalk.bold
           name: 'ssl',
           summary: 'Use HTTPS for the dev server',
           type: Boolean,
-          groups: [OptionGroup.Experimental],
+          groups: [OptionGroup.Experimental, 'cordova'],
           hint: chalk.dim('[ng]'),
         },
         {
           name: 'prod',
           summary: `Flag to use the ${chalk.green('production')} configuration`,
           type: Boolean,
+          groups: ['cordova'],
           hint: chalk.dim('[ng]'),
         },
         {
           name: 'configuration',
           summary: 'Specify the configuration to use.',
           type: String,
-          groups: [OptionGroup.Advanced],
+          groups: [OptionGroup.Advanced, 'cordova'],
           hint: chalk.dim('[ng]'),
           spec: { value: 'conf' },
         },
@@ -61,8 +62,15 @@ The dev server can use HTTPS via the ${chalk.green('--ssl')} option ${chalk.bold
           name: 'source-map',
           summary: 'Output sourcemaps',
           type: Boolean,
-          groups: [OptionGroup.Advanced],
+          groups: [OptionGroup.Advanced, 'cordova'],
           hint: chalk.dim('[ng]'),
+        },
+        {
+          name: 'devapp',
+          summary: 'Publish DevApp service',
+          type: Boolean,
+          default: false,
+          groups: [OptionGroup.Advanced],
         },
       ],
       exampleCommands: [
@@ -84,6 +92,14 @@ The dev server can use HTTPS via the ${chalk.green('--ssl')} option ${chalk.bold
       configuration,
       sourcemaps,
     };
+  }
+
+  determineEngineFromCommandLine(options: CommandLineOptions): string {
+    if (options['devapp']) {
+      return 'cordova';
+    }
+
+    return super.determineEngineFromCommandLine(options);
   }
 
   platformToMode(platform: string): string {
@@ -194,6 +210,10 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
       }
 
       separatedArgs = [];
+
+      if (options.devapp) {
+        args.cordovaMock = true;
+      }
     }
 
     return [...unparseArgs(args), ...separatedArgs];

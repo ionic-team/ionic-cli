@@ -29,13 +29,6 @@ export class ServeCommand extends Command implements CommandPreRun {
         spec: { value: 'port' },
       },
       {
-        name: 'devapp',
-        summary: 'Do not publish DevApp service',
-        type: Boolean,
-        default: true,
-        groups: [OptionGroup.Advanced],
-      },
-      {
         name: 'open',
         summary: 'Do not open a browser window',
         type: Boolean,
