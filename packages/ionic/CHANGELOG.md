@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.10.0"></a>
+# [4.10.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.9.0...ionic@4.10.0) (2019-01-29)
+
+
+### Bug Fixes
+
+* **ionic-angular:** link to proper v3 docs ([a89c097](https://github.com/ionic-team/ionic-cli/commit/a89c097))
+
+
+### Features
+
+* **serve:** add DevApp support for Ionic 4 projects ([#3830](https://github.com/ionic-team/ionic-cli/issues/3830)) ([6edf373](https://github.com/ionic-team/ionic-cli/commit/6edf373))
+
+
+
+
 <a name="4.9.0"></a>
 # [4.9.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.8.0...ionic@4.9.0) (2019-01-23)
 
