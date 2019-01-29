@@ -14,7 +14,7 @@ describe('ionic', () => {
           browser: undefined,
           browserOption: undefined,
           consolelogs: false,
-          devapp: true,
+          devapp: false,
           engine: 'browser',
           env: undefined,
           externalAddressRequired: false,
@@ -28,7 +28,7 @@ describe('ionic', () => {
           port: 8100,
           proxy: true,
           serverlogs: false,
-          project: undefined
+          project: undefined,
         };
 
         it('should provide defaults with no options', () => {

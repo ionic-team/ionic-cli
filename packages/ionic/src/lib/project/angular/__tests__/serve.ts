@@ -1,5 +1,5 @@
-import { AngularServeRunner, AngularServeCLI } from '../serve';
 import { CommandLineOptions } from '../../../../definitions';
+import { AngularServeCLI, AngularServeRunner } from '../serve';
 
 describe('ionic', () => {
 
@@ -14,7 +14,7 @@ describe('ionic', () => {
           address: '0.0.0.0',
           browser: undefined,
           browserOption: undefined,
-          devapp: true,
+          devapp: false,
           engine: 'browser',
           externalAddressRequired: false,
           lab: false,
