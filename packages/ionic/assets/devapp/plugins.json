@@ -1,5 +1,4 @@
 [
-  "com-intel-security-cordova-plugin",
   "com.darktalker.cordova.screenshot",
   "com.paypal.cordova.mobilesdk",
   "cordova-base64-to-gallery",
@@ -8,7 +7,6 @@
   "cordova-plugin-3dtouch",
   "cordova-plugin-actionsheet",
   "cordova-plugin-add-swift-support",
-  "cordova-plugin-admob-free",
   "cordova-plugin-advanced-http",
   "cordova-plugin-app-event",
   "cordova-plugin-app-version",
@@ -57,7 +55,6 @@
   "cordova-plugin-x-socialsharing",
   "cordova-plugin-x-toast",
   "cordova-plugin-zip",
-  "cordova-sms-plugin",
   "cordova-sqlite-storage",
   "de.appplant.cordova.plugin.local-notification",
   "de.appplant.cordova.plugin.printer",
