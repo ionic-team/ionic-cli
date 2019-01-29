@@ -105,7 +105,6 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
       livereloadPort,
       notificationPort,
       env: options['env'] ? String(options['env']) : undefined,
-      devapp: !!options.devapp,
     };
   }
 
