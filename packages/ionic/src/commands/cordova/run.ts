@@ -59,7 +59,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         name: 'list',
         summary: 'List all available targets',
         type: Boolean,
-        groups: ['cordova', 'native-run'],
+        groups: ['cordova', 'cordova-cli', 'native-run'],
       },
       // Build Options
       {

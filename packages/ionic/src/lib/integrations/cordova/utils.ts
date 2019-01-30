@@ -17,19 +17,19 @@ export function filterArgumentsForCordova(metadata: CommandMetadata, options: Co
       name: 'verbose',
       summary: '',
       type: Boolean,
-      groups: ['cordova'],
+      groups: ['cordova-cli'],
     },
     {
       name: 'nosave',
       summary: '',
       type: Boolean,
-      groups: ['cordova'],
+      groups: ['cordova-cli'],
     },
   ];
 
   m.options.push(...globalCordovaOpts);
 
-  const results = filterCommandLineOptionsByGroup(m.options, options, 'cordova');
+  const results = filterCommandLineOptionsByGroup(m.options, options, 'cordova-cli');
 
   const args = unparseArgs(results, { useEquals: false, allowCamelCase: true });
   const i = args.indexOf('--');
@@ -44,7 +44,7 @@ export function filterArgumentsForCordova(metadata: CommandMetadata, options: Co
 export function generateOptionsForCordovaBuild(metadata: CommandMetadata, inputs: CommandLineInputs, options: CommandLineOptions): CommandLineOptions {
   const [ platform ] = inputs;
   const includesAppScriptsGroup = OptionFilters.includesGroups('app-scripts');
-  const excludesCordovaGroup = OptionFilters.excludesGroups('cordova');
+  const excludesCordovaGroup = OptionFilters.excludesGroups('cordova-cli');
   const results = filterCommandLineOptions(metadata.options ? metadata.options : [], options, o => excludesCordovaGroup(o) || includesAppScriptsGroup(o));
 
   return {

@@ -23,13 +23,13 @@ describe('ionic', () => {
       {
         name: 'cdvopt1',
         summary: '',
-        groups: ['cordova'],
+        groups: ['cordova-cli'],
       },
       {
         name: 'cdvopt2',
         summary: '',
         type: Boolean,
-        groups: ['cordova'],
+        groups: ['cordova-cli'],
       },
       {
         name: 'prod',
@@ -120,7 +120,7 @@ describe('ionic', () => {
       expect(result).toEqual({ '_': [], externalAddressRequired: true, nobrowser: true, engine: 'cordova', platform: 'ios' });
     });
 
-    it('should include the options with app-scripts group or no group, but not cordova group', () => {
+    it('should include the options with app-scripts group or no group, but not cordova-cli group', () => {
       const inputs = ['ios'];
       const options = { _: [], boolopt: false, cdvopt1: null, cdvopt2: false, prod: true, optimizejs: true };
 
