@@ -74,7 +74,7 @@
   },
   "devDependencies": {
     "@types/debug": "0.0.31",
-    "@types/diff": "^3.2.2",
+    "@types/diff": "^4.0.0",
     "@types/elementtree": "^0.1.0",
     "@types/jest": "^23.3.5",
     "@types/lodash": "^4.14.104",
