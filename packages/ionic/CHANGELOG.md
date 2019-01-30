@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.10.1"></a>
+## [4.10.1](https://github.com/ionic-team/ionic-cli/compare/ionic@4.10.0...ionic@4.10.1) (2019-01-30)
+
+
+### Bug Fixes
+
+* **cordova:** only forward correct options ([817879b](https://github.com/ionic-team/ionic-cli/commit/817879b))
+
+
+
+
 <a name="4.10.0"></a>
 # [4.10.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.9.0...ionic@4.10.0) (2019-01-29)
 
