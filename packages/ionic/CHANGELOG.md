@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.10.2"></a>
+## [4.10.2](https://github.com/ionic-team/ionic-cli/compare/ionic@4.10.1...ionic@4.10.2) (2019-02-04)
+
+
+### Bug Fixes
+
+* **angular:** pass `--project` and `--configuration` for custom scripts ([2cf724f](https://github.com/ionic-team/ionic-cli/commit/2cf724f))
+
+
+
+
 <a name="4.10.1"></a>
 ## [4.10.1](https://github.com/ionic-team/ionic-cli/compare/ionic@4.10.0...ionic@4.10.1) (2019-01-30)
 
