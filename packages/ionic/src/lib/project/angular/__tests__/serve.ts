@@ -84,22 +84,23 @@ describe('ionic', () => {
         };
 
         it('should pass options', async () => {
-          const root = 'fakeRoot';
-          const project = {
-            requireIntegration: jest.fn(() => ({ root })),
-          };
-          const runner = new AngularServeCLI({ project } as any);
+          const project = {};
+          const cli = new AngularServeCLI({ project } as any);
           const options = {
             ...defaults,
+            address: 'localhost',
+            port: 4200,
             sourcemaps: true,
             ssl: true,
           };
 
-          const result = await (runner as any).serveOptionsToNgArgs(options);
-          expect(result).toEqual(expect.arrayContaining([
-            `--ssl`,
+          const result = await (cli as any).serveOptionsToNgArgs(options);
+          expect(result).toEqual([
+            `--host=${options.address}`,
+            `--port=${options.port}`,
             `--source-map`,
-          ]));
+            `--ssl`,
+          ]);
         });
 
         it('should pass cordova options', async () => {
@@ -107,18 +108,73 @@ describe('ionic', () => {
           const project = {
             requireIntegration: jest.fn(() => ({ root })),
           };
-          const runner = new AngularServeCLI({ project } as any);
+          const cli = new AngularServeCLI({ project } as any);
           const options = {
             ...defaults,
             engine: 'cordova',
             platform: 'fakePlatform',
           };
 
-          const result = await (runner as any).serveOptionsToNgArgs(options);
-          expect(result).toEqual(expect.arrayContaining([
+          const result = await (cli as any).serveOptionsToNgArgs(options);
+          expect(result).toEqual([
             `--platform=${options.platform}`,
             `--cordova-base-path=${root}`,
-          ]));
+          ]);
+        });
+
+        it('should pass separated options', async () => {
+          const project = {};
+          const cli = new AngularServeCLI({ project } as any);
+          const options = {
+            ...defaults,
+            '--': ['--extra=true'],
+          };
+
+          const result = await (cli as any).serveOptionsToNgArgs(options);
+          expect(result).toEqual(['--extra=true']);
+        });
+
+        it('should not pass separated options for cordova', async () => {
+          const root = 'fakeRoot';
+          const project = {
+            requireIntegration: jest.fn(() => ({ root })),
+          };
+          const cli = new AngularServeCLI({ project } as any);
+          const options = {
+            ...defaults,
+            engine: 'cordova',
+            platform: 'fakePlatform',
+            '--': ['--extra=true'],
+          };
+
+          const result = await (cli as any).serveOptionsToNgArgs(options);
+          expect(result).not.toEqual(expect.arrayContaining(['--extra=true']));
+        });
+
+        it('should pass configuration and project for custom program', async () => {
+          const project = {};
+          const cli = new AngularServeCLI({ project } as any);
+          (cli as any)._resolvedProgram = 'npm';
+          const options = {
+            ...defaults,
+            configuration: 'production',
+            project: 'otherProject',
+          };
+
+          const result = await (cli as any).serveOptionsToNgArgs(options);
+          expect(result).toEqual(['--configuration=production', '--project=otherProject']);
+        });
+
+        it('should not pass configuration and project for custom program if they are the defaults', async () => {
+          const project = {};
+          const cli = new AngularServeCLI({ project } as any);
+          (cli as any)._resolvedProgram = 'npm';
+          const options = {
+            ...defaults,
+          };
+
+          const result = await (cli as any).serveOptionsToNgArgs(options);
+          expect(result).toEqual([]);
         });
 
       });

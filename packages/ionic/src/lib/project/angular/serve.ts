@@ -194,11 +194,12 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
     const args: ParsedArgs = {
       _: [],
       host: options.address,
-      port: String(options.port),
+      port: options.port ? options.port.toString() : undefined,
       'source-map': options.sourcemaps !== false ? options.sourcemaps : 'false',
       'ssl': options.ssl !== false ? options.ssl : 'false',
     };
 
+    const projectArgs = [];
     let separatedArgs = options['--'];
 
     if (options.engine === 'cordova') {
@@ -216,7 +217,17 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
       }
     }
 
-    return [...unparseArgs(args), ...separatedArgs];
+    if (this.resolvedProgram !== this.program) {
+      if (options.configuration) {
+        projectArgs.push(`--configuration=${options.configuration}`);
+      }
+
+      if (options.project) {
+        projectArgs.push(`--project=${options.project}`);
+      }
+    }
+
+    return [...unparseArgs(args), ...projectArgs, ...separatedArgs];
   }
 
   protected buildArchitectCommand(options: AngularServeOptions): string[] {

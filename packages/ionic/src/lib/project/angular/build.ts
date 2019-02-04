@@ -90,7 +90,7 @@ ${chalk.green('ionic build')} uses the Angular CLI. Use ${chalk.green('ng build 
   }
 }
 
-class AngularBuildCLI extends BuildCLI<AngularBuildOptions> {
+export class AngularBuildCLI extends BuildCLI<AngularBuildOptions> {
   readonly name = 'Angular CLI';
   readonly pkg = '@angular/cli';
   readonly program = 'ng';
@@ -117,6 +117,7 @@ class AngularBuildCLI extends BuildCLI<AngularBuildOptions> {
       'cordova-assets': options.cordovaAssets !== false ? undefined : 'false',
     };
 
+    const projectArgs = [];
     let separatedArgs = options['--'];
 
     if (options.engine === 'cordova') {
@@ -130,7 +131,17 @@ class AngularBuildCLI extends BuildCLI<AngularBuildOptions> {
       separatedArgs = [];
     }
 
-    return [...unparseArgs(args), ...separatedArgs];
+    if (this.resolvedProgram !== this.program) {
+      if (options.configuration) {
+        projectArgs.push(`--configuration=${options.configuration}`);
+      }
+
+      if (options.project) {
+        projectArgs.push(`--project=${options.project}`);
+      }
+    }
+
+    return [...unparseArgs(args), ...projectArgs, ...separatedArgs];
   }
 
   protected buildArchitectCommand(options: AngularBuildOptions): string[] {
