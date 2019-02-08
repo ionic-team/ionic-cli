@@ -128,6 +128,10 @@ async function createHttpServer(options: ServeOptions): Promise<ζexpress.Applic
   };
 
   app.get('/', serveIndex);
+  app.use('/', (req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+  });
   app.use('/', express.static(options.wwwDir));
 
   // Cordova
