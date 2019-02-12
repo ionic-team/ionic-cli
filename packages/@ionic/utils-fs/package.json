@@ -44,7 +44,7 @@
   "devDependencies": {
     "@types/debug": "0.0.31",
     "@types/fs-extra": "^5.0.4",
-    "@types/jest": "^23.3.5",
+    "@types/jest": "^24.0.1",
     "@types/node": "^6.0.101",
     "@types/through2": "^2.0.33",
     "jest": "^23.0.1",

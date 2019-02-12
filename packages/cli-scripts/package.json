@@ -36,7 +36,7 @@
   "devDependencies": {
     "@types/ansi-styles": "^3.2.0",
     "@types/escape-string-regexp": "1.0.0",
-    "@types/jest": "^23.3.5",
+    "@types/jest": "^24.0.1",
     "@types/node": "^6.0.101",
     "@types/strip-ansi": "^3.0.0",
     "jest": "^23.0.1",
