@@ -54,7 +54,7 @@
     "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "@stencil/core": "^0.17.0",
+    "@stencil/core": "^0.18.0",
     "@types/express": "^4.11.0",
     "@types/node": "^6.0.101",
     "lint-staged": "^8.0.0",
