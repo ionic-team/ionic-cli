@@ -71,7 +71,7 @@ export abstract class BaseConfigCommand extends Command {
 
   interpretValue(v?: string, expectJson = false): any {
     if (typeof v === 'undefined') {
-      return undefined;
+      return;
     }
 
     try {
@@ -86,7 +86,7 @@ export abstract class BaseConfigCommand extends Command {
       }
 
       if (expectJson) {
-        throw new FatalException(`${chalk.green('--json')}: ${chalk.green(v)} is invalid JSON: ${chalk.red(e.toString())}`);
+        throw new FatalException(`${chalk.green('--json')}: ${chalk.green(String(v))} is invalid JSON: ${chalk.red(e.toString())}`);
       }
     }
 
