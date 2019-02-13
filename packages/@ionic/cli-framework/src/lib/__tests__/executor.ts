@@ -113,14 +113,14 @@ describe('@ionic/cli-framework', () => {
           expect(spy.mock.calls.length).toEqual(2);
           const [ [ validateId, validateArgs ], [ runId, runArgs ] ] = spy.mock.calls;
           expect(validateId).toEqual('bar:validate');
-          expect(validateArgs[0]).toEqual(['a', 'b']);
+          expect(validateArgs).toEqual([['a', 'b']]);
           expect(runId).toEqual('bar:run');
-          expect(runArgs[0]).toEqual(['a', 'b']);
-          delete runArgs[1]._;
-          expect(runArgs[1]).toEqual({ '--': ['c'] });
-          expect(runArgs[2].location.obj).toBeInstanceOf(BarCommand);
-          const runPath = runArgs[2].location.path.map(([n]: any) => n);
-          const runPathObjs = runArgs[2].location.path.map(([, o]: any) => o);
+          const args: any = runArgs;
+          expect(args[0]).toEqual(['a', 'b']);
+          expect(args[1]).toEqual({ '--': ['c'], '_': ['a', 'b'] });
+          expect(args[2].location.obj).toBeInstanceOf(BarCommand);
+          const runPath = args[2].location.path.map(([n]: any) => n);
+          const runPathObjs = args[2].location.path.map(([, o]: any) => o);
           expect(runPath).toEqual(['my', 'foo', 'bar']);
           expect(runPathObjs[0]).toBeInstanceOf(MyNamespace);
           expect(runPathObjs[1]).toBeInstanceOf(FooNamespace);
@@ -139,11 +139,9 @@ describe('@ionic/cli-framework', () => {
           expect(spy.mock.calls.length).toEqual(2);
           const [ [ validateId, validateArgs ], [ runId, runArgs ] ] = spy.mock.calls;
           expect(validateId).toEqual('bar:validate');
-          expect(validateArgs[0]).toEqual([]);
+          expect(validateArgs).toEqual([[]]);
           expect(runId).toEqual('bar:run');
-          expect(runArgs[0]).toEqual([]);
-          delete runArgs[1]._;
-          expect(runArgs[1]).toEqual({ '--': [] });
+          expect(runArgs).toEqual([[], { '--': [], '_': [] }, undefined]);
         });
 
       });
