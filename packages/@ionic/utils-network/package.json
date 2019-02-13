@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@types/debug": "0.0.31",
-    "@types/jest": "^23.3.5",
+    "@types/jest": "^24.0.3",
     "@types/node": "^6.0.101",
     "jest": "^23.0.1",
     "jest-cli": "^24.1.0",
