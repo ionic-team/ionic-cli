@@ -76,7 +76,7 @@
     "@types/debug": "0.0.31",
     "@types/diff": "^4.0.0",
     "@types/elementtree": "^0.1.0",
-    "@types/jest": "^23.3.5",
+    "@types/jest": "^24.0.3",
     "@types/lodash": "^4.14.104",
     "@types/log-update": "^2.0.0",
     "@types/node": "^6.0.101",
