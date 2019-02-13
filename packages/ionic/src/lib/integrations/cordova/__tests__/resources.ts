@@ -296,7 +296,7 @@ describe('ionic', () => {
           }))
         }});
 
-        createRequestSpy.mockImplementationOnce(() => createRequestMock);
+        createRequestSpy.mockImplementationOnce(() => createRequestMock as any);
 
         const sourceImage = {
           ext: '.png',

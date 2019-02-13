@@ -11,7 +11,7 @@ describe('ionic', () => {
 
       beforeEach(() => {
         p = new Ionic1Project({ context: 'app', configPath: '/path/to/proj/file' } as any, {} as any);
-        jest.spyOn(p, 'config', 'get').mockImplementation(() => ({ get: () => undefined }));
+        jest.spyOn(p, 'config', 'get').mockImplementation(() => ({ get: () => undefined } as any));
       });
 
       it('should set directory attribute', async () => {
