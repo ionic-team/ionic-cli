@@ -191,13 +191,13 @@ export interface WalkerItem {
   readonly stats: fs.Stats;
 }
 
+export interface WalkerOptions {
+  pathFilter?: (p: string) => boolean;
+}
+
 export interface Walker extends stream.Readable {
   on(event: 'data', callback: (item: WalkerItem) => void): this;
   on(event: string, callback: (...args: any[]) => any): this;
-}
-
-export interface WalkerOptions {
-  pathFilter?: (p: string) => boolean;
 }
 
 export class Walker extends stream.Readable {
@@ -216,7 +216,7 @@ export class Walker extends stream.Readable {
       return;
     }
 
-    fs.stat(p, (err, stats) => {
+    fs.lstat(p, (err, stats) => {
       if (err) {
         this.emit('error', err);
         return;
