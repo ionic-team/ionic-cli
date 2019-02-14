@@ -57,6 +57,8 @@ Running ${chalk.green('ionic start')} without any arguments will prompt you for 
 The first argument is your app's ${chalk.green('name')}. Don't worry--you can always change this later. The ${chalk.green('--project-id')} is generated from ${chalk.green('name')} unless explicitly specified.
 
 The second argument is the ${chalk.green('template')} from which to generate your app. You can list all templates with the ${chalk.green('--list')} option. You can also specify a git repository URL for ${chalk.green('template')}, in which case the existing project will be cloned.
+
+Use the ${chalk.green('--type')} option to start projects using older versions of Ionic. For example, you can start an Ionic 3 project with ${chalk.green('--type=ionic-angular')}. Use ${chalk.green('--list')} to see all project types and templates.
       `,
       exampleCommands: [
         '',
@@ -65,7 +67,7 @@ The second argument is the ${chalk.green('template')} from which to generate you
         'myApp blank',
         'myApp tabs --cordova',
         'myApp tabs --capacitor',
-        'myApp super --type=angular',
+        'myApp super --type=ionic-angular',
         'myApp blank --type=ionic1',
         'cordovaApp tabs --cordova',
         '"My App" blank',
