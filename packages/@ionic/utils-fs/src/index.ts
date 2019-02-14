@@ -38,6 +38,88 @@ export async function readdirp(dir: string, { filter, walkerOptions }: ReaddirPO
   });
 }
 
+export const enum FileType {
+  FILE = 'file',
+  DIRECTORY = 'directory',
+}
+
+export interface RegularFileNode {
+  path: string;
+  type: FileType.FILE;
+  parent: FileNode;
+}
+
+export interface DirectoryNode {
+  path: string;
+  type: FileType.DIRECTORY;
+  parent?: FileNode;
+  children: FileNode[];
+}
+
+export type FileNode = RegularFileNode | DirectoryNode;
+
+export interface GetFileTreeOptions {
+  readonly walkerOptions?: WalkerOptions;
+}
+
+/**
+ * Compile and return a file tree structure.
+ *
+ * This function walks a directory structure recursively, building a nested
+ * object structure in memory that represents it. When finished, the root
+ * directory node is returned.
+ *
+ * @param dir The root directory from which to compile the file tree
+ */
+export async function getFileTree(dir: string, { walkerOptions }: GetFileTreeOptions = {}): Promise<FileNode> {
+  const fileMap = new Map<string, FileNode>([]);
+
+  const getOrCreateParent = (item: WalkerItem): DirectoryNode => {
+    const parentPath = path.dirname(item.path);
+    const parent = fileMap.get(parentPath);
+
+    if (parent && parent.type === FileType.DIRECTORY) {
+      return parent;
+    }
+
+    return { path: parentPath, type: FileType.DIRECTORY, children: [] };
+  };
+
+  const createFileNode = (item: WalkerItem, parent: DirectoryNode): FileNode => {
+    return {
+      path: item.path,
+      parent,
+      ...(item.stats.isDirectory() ? { type: FileType.DIRECTORY, children: [] } : { type: FileType.FILE }),
+    };
+  };
+
+  return new Promise<FileNode>((resolve, reject) => {
+    dir = path.resolve(dir);
+    const rs = walk(dir, walkerOptions);
+
+    rs
+      .on('error', err => reject(err))
+      .on('data', item => {
+        const parent = getOrCreateParent(item);
+        const node = createFileNode(item, parent);
+
+        parent.children.push(node);
+        fileMap.set(item.path, node);
+        fileMap.set(parent.path, parent);
+      })
+      .on('end', () => {
+        const root = fileMap.get(dir);
+
+        if (!root) {
+          return reject(new Error('No root node found after walking directory structure.'));
+        }
+
+        delete root.parent;
+        resolve(root);
+      });
+  });
+}
+
 export async function fileToString(filePath: string): Promise<string> {
   try {
     return await fs.readFile(filePath, { encoding: 'utf8' });
@@ -187,8 +269,8 @@ export function compilePaths(filePath: string): string[] {
 }
 
 export interface WalkerItem {
-  readonly path: string;
-  readonly stats: fs.Stats;
+  path: string;
+  stats: fs.Stats;
 }
 
 export interface WalkerOptions {
@@ -204,7 +286,7 @@ export interface WalkerOptions {
    * @param p The file path.
    * @return `true` to include file path, otherwise it is excluded
    */
-  pathFilter?: (p: string) => boolean;
+  readonly pathFilter?: (p: string) => boolean;
 }
 
 export interface Walker extends stream.Readable {
