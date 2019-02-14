@@ -192,6 +192,18 @@ export interface WalkerItem {
 }
 
 export interface WalkerOptions {
+  /**
+   * Filter out file paths during walk.
+   *
+   * As the file tree is walked, this function can be used to exclude files and
+   * directories from the final result.
+   *
+   * It can also be used to tune performance. If a subdirectory is excluded, it
+   * is not walked.
+   *
+   * @param p The file path.
+   * @return `true` to include file path, otherwise it is excluded
+   */
   pathFilter?: (p: string) => boolean;
 }
 

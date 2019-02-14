@@ -156,6 +156,102 @@ describe('@ionic/cli-framework', () => {
 
     });
 
+    describe('Walker', () => {
+
+      jest.resetModules();
+      const path = require('path');
+      const lstatSpy = jest.fn();
+      const readdirSpy = jest.fn();
+      jest.mock('fs-extra', () => ({ lstat: lstatSpy, readdir: readdirSpy }));
+      const fslib = require('../');
+
+      beforeEach(() => {
+        lstatSpy.mockReset();
+        readdirSpy.mockReset();
+      });
+
+      it('should emit data once with path for single file', async done => {
+        lstatSpy.mockImplementation((p: string, cb: any) => { cb(null, { isDirectory: () => false }); });
+        const dataSpy = jest.fn();
+        const walker = new fslib.Walker('root');
+        walker.on('data', dataSpy);
+        walker.on('end', () => {
+          expect(lstatSpy).toHaveBeenCalledTimes(1);
+          expect(dataSpy).toHaveBeenCalledTimes(1);
+          expect(dataSpy).toHaveBeenCalledWith({ path: 'root', stats: expect.any(Object) });
+          done();
+        });
+      });
+
+      it('should emit data for each child', async done => {
+        const root = 'root';
+        const children = ['a', 'b', 'c'];
+        lstatSpy.mockImplementation((p: string, cb: any) => { cb(null, { isDirectory: () => p === root }); });
+        readdirSpy.mockImplementation((p: string, cb: any) => { cb(null, children); });
+        const dataSpy = jest.fn();
+        const walker = new fslib.Walker(root);
+        walker.on('data', dataSpy);
+        walker.on('end', () => {
+          expect(lstatSpy).toHaveBeenCalledTimes(4);
+          expect(readdirSpy).toHaveBeenCalledTimes(1);
+          expect(dataSpy).toHaveBeenCalledTimes(4);
+          expect(dataSpy).toHaveBeenCalledWith({ path: root, stats: expect.any(Object) });
+          for (const child of children.map(c => path.join(root, c))) {
+            expect(dataSpy).toHaveBeenCalledWith({ path: child, stats: expect.any(Object) });
+          }
+          done();
+        });
+      });
+
+      it('should emit data for each child recursively', async done => {
+        const root = 'root'; // directory
+        const children = ['foo', 'bar']; // directories
+        const fooChildren = ['a', 'b', 'c']; // directories
+        const barChildren = ['1', '2', '3']; // files
+        lstatSpy.mockImplementation((p: string, cb: any) => { cb(null, { isDirectory: () => p === root || children.map(c => path.join(root, c)).includes(p) || fooChildren.map(c => path.join(root, 'foo', c)).includes(p) }); });
+        readdirSpy.mockImplementation((p: string, cb: any) => { cb(null, p === root ? children : (p === path.join(root, 'foo') ? fooChildren : (p === path.join(root, 'bar') ? barChildren : []))) });
+        const dataSpy = jest.fn();
+        const walker = new fslib.Walker(root);
+        walker.on('data', dataSpy);
+        walker.on('end', () => {
+          expect(lstatSpy).toHaveBeenCalledTimes(9);
+          expect(readdirSpy).toHaveBeenCalledTimes(6);
+          expect(dataSpy).toHaveBeenCalledTimes(9);
+          expect(dataSpy).toHaveBeenCalledWith({ path: root, stats: expect.any(Object) });
+          for (const child of children.map(c => path.join(root, c))) {
+            expect(dataSpy).toHaveBeenCalledWith({ path: child, stats: expect.any(Object) });
+          }
+          for (const child of fooChildren.map(c => path.join(root, 'foo', c))) {
+            expect(dataSpy).toHaveBeenCalledWith({ path: child, stats: expect.any(Object) });
+          }
+          for (const child of barChildren.map(c => path.join(root, 'bar', c))) {
+            expect(dataSpy).toHaveBeenCalledWith({ path: child, stats: expect.any(Object) });
+          }
+          done();
+        });
+      });
+
+      it('should emit data for each child except for filtered paths', async done => {
+        const root = 'root';
+        const children = ['a', 'b', 'c'];
+        lstatSpy.mockImplementation((p: string, cb: any) => { cb(null, { isDirectory: () => p === root }); });
+        readdirSpy.mockImplementation((p: string, cb: any) => { cb(null, children); });
+        const dataSpy = jest.fn();
+        const walker = new fslib.Walker(root, { pathFilter: (p: string) => p !== 'b' });
+        walker.on('data', dataSpy);
+        walker.on('end', () => {
+          expect(lstatSpy).toHaveBeenCalledTimes(3);
+          expect(readdirSpy).toHaveBeenCalledTimes(1);
+          expect(dataSpy).toHaveBeenCalledTimes(3);
+          expect(dataSpy).toHaveBeenCalledWith({ path: root, stats: expect.any(Object) });
+          expect(dataSpy).toHaveBeenCalledWith({ path: path.join(root, 'a'), stats: expect.any(Object) });
+          expect(dataSpy).toHaveBeenCalledWith({ path: path.join(root, 'c'), stats: expect.any(Object) });
+          done();
+        });
+      });
+
+    });
+
   });
 
 });
