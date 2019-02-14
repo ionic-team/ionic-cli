@@ -12,10 +12,11 @@ export { stat as statSafe, readdir as readdirSafe } from './safe';
 
 export interface ReaddirPOptions {
   readonly filter?: (item: WalkerItem) => boolean;
+  readonly onError?: (err: Error) => void;
   readonly walkerOptions?: WalkerOptions;
 }
 
-export async function readdirp(dir: string, { filter, walkerOptions }: ReaddirPOptions = {}): Promise<string[]> {
+export async function readdirp(dir: string, { filter, onError, walkerOptions }: ReaddirPOptions = {}): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
     const items: string[] = [];
 
@@ -32,7 +33,7 @@ export async function readdirp(dir: string, { filter, walkerOptions }: ReaddirPO
     }
 
     rs
-      .on('error', (err: Error) => reject(err))
+      .on('error', (err: Error) => onError ? onError(err) : reject(err))
       .on('data', (item: WalkerItem) => items.push(item.path))
       .on('end', () => resolve(items));
   });
@@ -59,6 +60,7 @@ export interface DirectoryNode {
 export type FileNode = RegularFileNode | DirectoryNode;
 
 export interface GetFileTreeOptions {
+  readonly onError?: (err: Error) => void;
   readonly walkerOptions?: WalkerOptions;
 }
 
@@ -71,7 +73,7 @@ export interface GetFileTreeOptions {
  *
  * @param dir The root directory from which to compile the file tree
  */
-export async function getFileTree(dir: string, { walkerOptions }: GetFileTreeOptions = {}): Promise<FileNode> {
+export async function getFileTree(dir: string, { onError, walkerOptions }: GetFileTreeOptions = {}): Promise<FileNode> {
   const fileMap = new Map<string, FileNode>([]);
 
   const getOrCreateParent = (item: WalkerItem): DirectoryNode => {
@@ -98,7 +100,7 @@ export async function getFileTree(dir: string, { walkerOptions }: GetFileTreeOpt
     const rs = walk(dir, walkerOptions);
 
     rs
-      .on('error', err => reject(err))
+      .on('error', err => onError ? onError(err) : reject(err))
       .on('data', item => {
         const parent = getOrCreateParent(item);
         const node = createFileNode(item, parent);
