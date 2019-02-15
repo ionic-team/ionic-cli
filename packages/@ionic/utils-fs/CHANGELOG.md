@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-fs@1.0.0...@ionic/utils-fs@1.1.0) (2019-02-15)
+
+
+### Bug Fixes
+
+* **walk:** stat symlinks themselves while walking ([92f2cee](https://github.com/ionic-team/ionic-cli/commit/92f2cee))
+
+
+### Features
+
+* **fs:** `onError` option for `readdirp` and `getFileTree` ([90bcfcd](https://github.com/ionic-team/ionic-cli/commit/90bcfcd))
+* **fs:** `onFileNode` and `onDirectoryNode` options for `getFileTree` ([1858e96](https://github.com/ionic-team/ionic-cli/commit/1858e96))
+* **fs:** add `getFileTree` for creating file tree object structures ([c14b46b](https://github.com/ionic-team/ionic-cli/commit/c14b46b))
+
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-fs@0.0.7...@ionic/utils-fs@1.0.0) (2019-01-08)
 
