@@ -80,6 +80,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       {
         name: 'livereload-url',
         summary: 'Provide a custom URL to the dev server',
+        spec: { value: 'url' },
       },
     ];
 
