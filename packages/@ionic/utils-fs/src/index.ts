@@ -11,7 +11,18 @@ export * from 'fs-extra';
 export { stat as statSafe, readdir as readdirSafe } from './safe';
 
 export interface ReaddirPOptions {
+  /**
+   * Filter out items from the walk process from the final result.
+   *
+   * @return `true` to keep, otherwise the item is filtered out
+   */
   readonly filter?: (item: WalkerItem) => boolean;
+
+  /**
+   * Called whenever an error occurs during the walk process.
+   *
+   * If excluded, the function will throw an error when first encountered.
+   */
   readonly onError?: (err: Error) => void;
   readonly walkerOptions?: WalkerOptions;
 }
@@ -59,8 +70,29 @@ export interface DirectoryNode {
 
 export type FileNode = RegularFileNode | DirectoryNode;
 
-export interface GetFileTreeOptions {
+export interface GetFileTreeOptions<RE = {}, DE = {}> {
+  /**
+   * Called whenever an error occurs during the walk process.
+   *
+   * If excluded, the function will throw an error when first encountered.
+   */
   readonly onError?: (err: Error) => void;
+
+  /**
+   * Called whenever a file node is added to the tree.
+   *
+   * File nodes can be supplemented by returning a new object from this
+   * function.
+   */
+  readonly onFileNode?: (node: RegularFileNode) => RegularFileNode & RE;
+
+  /**
+   * Called whenever a directory node is added to the tree.
+   *
+   * Directory nodes can be supplemented by returning a new object from this
+   * function.
+   */
+  readonly onDirectoryNode?: (node: DirectoryNode) => DirectoryNode & DE;
   readonly walkerOptions?: WalkerOptions;
 }
 
@@ -73,10 +105,10 @@ export interface GetFileTreeOptions {
  *
  * @param dir The root directory from which to compile the file tree
  */
-export async function getFileTree(dir: string, { onError, walkerOptions }: GetFileTreeOptions = {}): Promise<FileNode> {
-  const fileMap = new Map<string, FileNode>([]);
+export async function getFileTree<RE = {}, DE = {}>(dir: string, { onError, onFileNode = n => n as RegularFileNode & RE, onDirectoryNode = n => n as DirectoryNode & DE, walkerOptions }: GetFileTreeOptions<RE, DE> = {}): Promise<RegularFileNode & RE | DirectoryNode & DE> {
+  const fileMap = new Map<string, RegularFileNode & RE | DirectoryNode & DE>([]);
 
-  const getOrCreateParent = (item: WalkerItem): DirectoryNode => {
+  const getOrCreateParent = (item: WalkerItem): DirectoryNode & DE => {
     const parentPath = path.dirname(item.path);
     const parent = fileMap.get(parentPath);
 
@@ -84,18 +116,18 @@ export async function getFileTree(dir: string, { onError, walkerOptions }: GetFi
       return parent;
     }
 
-    return { path: parentPath, type: FileType.DIRECTORY, children: [] };
+    return onDirectoryNode({ path: parentPath, type: FileType.DIRECTORY, children: [] });
   };
 
-  const createFileNode = (item: WalkerItem, parent: DirectoryNode): FileNode => {
-    return {
-      path: item.path,
-      parent,
-      ...(item.stats.isDirectory() ? { type: FileType.DIRECTORY, children: [] } : { type: FileType.FILE }),
-    };
+  const createFileNode = (item: WalkerItem, parent: DirectoryNode & DE): RegularFileNode & RE | DirectoryNode & DE => {
+    const node = { path: item.path, parent };
+
+    return item.stats.isDirectory() ?
+      onDirectoryNode({ ...node, type: FileType.DIRECTORY, children: [] }) :
+      onFileNode({ ...node, type: FileType.FILE });
   };
 
-  return new Promise<FileNode>((resolve, reject) => {
+  return new Promise<RegularFileNode & RE | DirectoryNode & DE>((resolve, reject) => {
     dir = path.resolve(dir);
     const rs = walk(dir, walkerOptions);
 
