@@ -18,7 +18,9 @@ See the CLI's [`CHANGELOG.md`](https://github.com/ionic-team/ionic-cli/blob/deve
 
 ---
 
-For further information on the commands and options provided by the Ionic CLI, once globally installed on your computer, as described in the [CLI documentation](https://ionicframework.com/docs/installation/cli), execute `--help` commands to get to know more.
+#### More information
+
+For further information on the commands and options provided by the Ionic CLI, once globally installed on your computer as described in the [CLI documentation](https://ionicframework.com/docs/installation/cli), execute `--help` commands to get to know more.
 
 * For its usage and list of global commands:
 
