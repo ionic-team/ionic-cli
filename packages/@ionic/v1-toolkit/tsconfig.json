@@ -7,7 +7,6 @@
     ]
   },
   "include": [
-    "../../../types/slice-ansi.d.ts",
     "../../../types/tiny-lr.d.ts",
     "src/**/*.ts"
   ],

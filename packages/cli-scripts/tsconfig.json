@@ -4,7 +4,6 @@
     "outDir": "./dist"
   },
   "include": [
-    "../../types/slice-ansi.d.ts",
     "../../types/superagent.d.ts",
     "src/**/*.ts"
   ],

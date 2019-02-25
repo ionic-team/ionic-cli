@@ -55,6 +55,7 @@
     "@types/minimist": "^1.2.0",
     "@types/node": "^6.0.101",
     "@types/rimraf": "^2.0.2",
+    "@types/slice-ansi": "^2.0.0",
     "@types/string-width": "^2.0.0",
     "@types/strip-ansi": "^3.0.0",
     "@types/untildify": "^3.0.0",
