@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.22"></a>
+## [1.0.22](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@1.0.21...@ionic/lab@1.0.22) (2019-02-27)
+
+
+
+
+**Note:** Version bump only for package @ionic/lab
+
 <a name="1.0.21"></a>
 ## [1.0.21](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@1.0.20...@ionic/lab@1.0.21) (2019-02-15)
 

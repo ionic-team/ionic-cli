@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.1.1"></a>
+## [1.1.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-fs@1.1.0...@ionic/utils-fs@1.1.1) (2019-02-27)
+
+
+
+
+**Note:** Version bump only for package @ionic/utils-fs
+
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-fs@1.0.0...@ionic/utils-fs@1.1.0) (2019-02-15)
 
