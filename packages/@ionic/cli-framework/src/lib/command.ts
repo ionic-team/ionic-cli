@@ -1,8 +1,8 @@
+import { AliasedMap } from '@ionic/utils-object';
 import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMapGetter, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandPathItem, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, ICommandMap, INamespace, INamespaceMap, NamespaceLocateOptions, NamespaceLocateResult, NamespaceMapGetter, NamespaceMetadata, ValidationError } from '../definitions';
 import { InputValidationError } from '../errors';
-import { AliasedMap } from '../utils/object';
 import { strcmp } from '../utils/string';
 
 import { validate } from './validators';
