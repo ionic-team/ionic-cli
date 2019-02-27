@@ -53,6 +53,7 @@
     "@ionic/utils-array": "0.0.0",
     "@ionic/utils-fs": "1.1.0",
     "@ionic/utils-network": "0.0.7",
+    "@ionic/utils-stream": "0.0.0",
     "chalk": "^2.3.0",
     "debug": "^4.0.0",
     "diff": "^4.0.1",

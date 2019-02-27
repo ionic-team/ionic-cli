@@ -29,6 +29,7 @@
   "dependencies": {
     "@ionic/utils-array": "0.0.0",
     "@ionic/utils-fs": "1.1.0",
+    "@ionic/utils-stream": "0.0.0",
     "chalk": "^2.3.0",
     "debug": "^4.0.0",
     "inquirer": "^6.0.0",
@@ -37,7 +38,6 @@
     "minimist": "^1.2.0",
     "rimraf": "^2.6.2",
     "slice-ansi": "^2.0.0",
-    "stream-combiner2": "^1.1.1",
     "string-width": "^3.0.0",
     "strip-ansi": "^5.0.0",
     "tree-kill": "1.2.1",

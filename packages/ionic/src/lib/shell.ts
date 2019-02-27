@@ -1,8 +1,8 @@
 import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommandError } from '@ionic/cli-framework';
 import { createProcessEnv, killProcessTree, onBeforeExit } from '@ionic/cli-framework/utils/process';
 import { ShellCommand, which } from '@ionic/cli-framework/utils/shell';
-import { combineStreams } from '@ionic/cli-framework/utils/streams';
 import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
+import { combineStreams } from '@ionic/utils-stream';
 import chalk from 'chalk';
 import { ChildProcess, SpawnOptions } from 'child_process';
 import * as Debug from 'debug';

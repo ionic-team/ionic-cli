@@ -1,6 +1,7 @@
+import { WritableStreamBuffer } from '@ionic/utils-stream';
 import stripAnsi = require('strip-ansi');
+
 import { wordWrap } from '../../utils/format';
-import { WritableStreamBuffer } from '../../utils/streams';
 
 import { LOGGER_LEVELS, Logger, StreamHandler, createPrefixedFormatter, createTaggedFormatter } from '../logger';
 

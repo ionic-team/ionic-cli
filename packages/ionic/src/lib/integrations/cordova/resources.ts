@@ -1,6 +1,6 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { WritableStreamBuffer } from '@ionic/cli-framework/utils/streams';
 import { getFileChecksums, mkdirp, readdirSafe, tmpfilepath } from '@ionic/utils-fs';
+import { WritableStreamBuffer } from '@ionic/utils-stream';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as fs from 'fs';

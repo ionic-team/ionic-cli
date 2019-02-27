@@ -1,5 +1,6 @@
 import { reduce } from '@ionic/utils-array';
 import { statSafe } from '@ionic/utils-fs';
+import { WritableStreamBuffer } from '@ionic/utils-stream';
 import { ChildProcess, ForkOptions, SpawnOptions, fork as _fork } from 'child_process';
 import * as crossSpawn from 'cross-spawn';
 import * as os from 'os';
@@ -7,7 +8,6 @@ import * as path from 'path';
 
 import { ERROR_SHELL_COMMAND_NOT_FOUND, ERROR_SHELL_NON_ZERO_EXIT, ERROR_SHELL_SIGNAL_EXIT, ShellCommandError } from '../errors';
 import { createProcessEnv } from '../utils/process';
-import { WritableStreamBuffer } from '../utils/streams';
 
 export const TILDE_PATH_REGEX = /^~($|\/|\\)/;
 

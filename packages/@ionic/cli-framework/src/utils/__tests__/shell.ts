@@ -1,3 +1,4 @@
+import { ReadableStreamBuffer, WritableStreamBuffer } from '@ionic/utils-stream';
 import { EventEmitter } from 'events';
 import * as path from 'path';
 
@@ -5,7 +6,6 @@ import { ShellCommandError } from '../../errors';
 
 import { createProcessEnv } from '../process';
 import { promisifyEvent } from '../promise';
-import { ReadableStreamBuffer, WritableStreamBuffer } from '../streams';
 
 describe('@ionic/cli-framework', () => {
 
