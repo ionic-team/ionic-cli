@@ -5,7 +5,7 @@ import {
   OptionGroup,
 } from '@ionic/cli-framework';
 import { columnar } from '@ionic/cli-framework/utils/format';
-import { sleep } from '@ionic/cli-framework/utils/process';
+import { sleep } from '@ionic/utils-process';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 

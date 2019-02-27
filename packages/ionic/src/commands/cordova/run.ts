@@ -1,5 +1,5 @@
 import { ERROR_SHELL_COMMAND_NOT_FOUND, Footnote, LOGGER_LEVELS, OptionGroup, ShellCommandError, createPrefixedFormatter } from '@ionic/cli-framework';
-import { onBeforeExit, processExit, sleepForever } from '@ionic/cli-framework/utils/process';
+import { onBeforeExit, processExit, sleepForever } from '@ionic/utils-process';
 import chalk from 'chalk';
 import * as path from 'path';
 import * as url from 'url';

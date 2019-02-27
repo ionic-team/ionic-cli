@@ -4,9 +4,9 @@ import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as kill from 'tree-kill';
 
-const debug = Debug('ionic:cli-framework:utils:process');
+const debug = Debug('ionic:utils-process');
 
-export const ERROR_TIMEOUT_REACHED = 'TIMEOUT_REACHED';
+export const ERROR_TIMEOUT_REACHED = new Error('TIMEOUT_REACHED');
 
 export function killProcessTree(pid: number, signal: string | number = 'SIGTERM'): Promise<void> {
   return new Promise((resolve, reject) => {

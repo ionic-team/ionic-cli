@@ -1,5 +1,5 @@
 import { CommandGroup, Footnote, validators } from '@ionic/cli-framework';
-import { onBeforeExit, sleepForever } from '@ionic/cli-framework/utils/process';
+import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import chalk from 'chalk';
 import * as path from 'path';
 

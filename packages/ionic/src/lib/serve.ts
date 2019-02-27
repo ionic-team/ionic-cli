@@ -1,8 +1,8 @@
 import { BaseError, LOGGER_LEVELS, OptionGroup, ParsedArgs, PromptModule, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
-import { killProcessTree, onBeforeExit, processExit } from '@ionic/cli-framework/utils/process';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { readJson } from '@ionic/utils-fs';
 import { NetworkInterface, findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
+import { killProcessTree, onBeforeExit, processExit } from '@ionic/utils-process';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import { EventEmitter } from 'events';

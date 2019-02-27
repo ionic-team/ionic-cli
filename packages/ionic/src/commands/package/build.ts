@@ -7,8 +7,8 @@ import {
   validators
 } from '@ionic/cli-framework';
 import { columnar } from '@ionic/cli-framework/utils/format';
-import { sleep } from '@ionic/cli-framework/utils/process';
 import { tmpfilepath } from '@ionic/utils-fs';
+import { sleep } from '@ionic/utils-process';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as fs from 'fs';

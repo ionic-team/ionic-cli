@@ -1,0 +1,59 @@
+{
+  "name": "@ionic/utils-process",
+  "version": "0.0.0",
+  "description": "Process utils for NodeJS",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "homepage": "https://ionicframework.com/",
+  "author": "Ionic Team <hi@ionic.io> (https://ionic.io)",
+  "license": "MIT",
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ionic-team/ionic-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ionic-team/ionic-cli/issues"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "lint": "tslint --project tsconfig.json",
+    "build": "npm run clean && tsc",
+    "watch": "tsc -w --preserveWatchOutput",
+    "test": "jest --maxWorkers=4",
+    "prepublishOnly": "npm run build"
+  },
+  "lint-staged": {
+    "linters": {
+      "*.{ts,tsx}": "npm run lint"
+    },
+    "ignore": [
+      "**/__tests__/*.{ts,tsx}"
+    ]
+  },
+  "dependencies": {
+    "@ionic/utils-object": "0.0.0",
+    "@ionic/utils-terminal": "0.0.0",
+    "debug": "^4.0.0",
+    "lodash": "^4.17.5",
+    "tree-kill": "1.2.1",
+    "tslib": "^1.9.0"
+  },
+  "devDependencies": {
+    "@types/debug": "4.1.1",
+    "@types/jest": "^24.0.3",
+    "@types/lodash": "^4.14.104",
+    "@types/node": "^6.0.101",
+    "jest": "^23.0.1",
+    "jest-cli": "^24.1.0",
+    "lint-staged": "^8.0.0",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^23.10.1",
+    "tslint": "^5.9.1",
+    "typescript": "~3.3.3"
+  }
+}

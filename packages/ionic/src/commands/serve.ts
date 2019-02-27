@@ -1,5 +1,5 @@
 import { CommandGroup, Footnote, OptionGroup } from '@ionic/cli-framework';
-import { sleepForever } from '@ionic/cli-framework/utils/process';
+import { sleepForever } from '@ionic/utils-process';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 
