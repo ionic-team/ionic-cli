@@ -1,4 +1,5 @@
-import { BaseError, ERROR_SHELL_COMMAND_NOT_FOUND, OptionGroup, PromptModule, ShellCommandError } from '@ionic/cli-framework';
+import { BaseError, OptionGroup, PromptModule } from '@ionic/cli-framework';
+import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
@@ -201,7 +202,7 @@ export abstract class BuildCLI<T extends object> {
     try {
       await this.e.shell.run(this.resolvedProgram, args, { stdio: 'inherit', cwd: this.e.project.directory, fatalOnNotFound: false });
     } catch (e) {
-      if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
+      if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         throw new BuildCLIProgramNotFoundException(`${chalk.bold(this.resolvedProgram)} command not found.`);
       }
 

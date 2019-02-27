@@ -1,6 +1,7 @@
-import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, OptionGroup, ShellCommandError, createPrefixedFormatter } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { cacheFileChecksum, copy, pathExists } from '@ionic/utils-fs';
+import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 
@@ -142,7 +143,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
     try {
       await this.env.shell.run('cordova-res', args, { showCommand: true, fatalOnNotFound: false, cwd: this.project.directory, stream: ws });
     } catch (e) {
-      if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
+      if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         const installArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'cordova-res', global: true });
         throw new FatalException(
           `${chalk.green('cordova-res')} was not found on your PATH. Please install it globally:\n` +

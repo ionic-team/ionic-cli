@@ -1,6 +1,6 @@
 import * as ζframework from '@ionic/cli-framework';
-import { ShellCommandOptions } from '@ionic/cli-framework/utils/shell';
 import { NetworkInterface } from '@ionic/utils-network';
+import { SubprocessOptions } from '@ionic/utils-subprocess';
 import { ChildProcess, SpawnOptions } from 'child_process';
 import * as fs from 'fs';
 import * as ζsuperagent from 'superagent';
@@ -353,7 +353,7 @@ export interface IShell {
   run(command: string, args: ReadonlyArray<string>, options: IShellRunOptions): Promise<void>;
   output(command: string, args: ReadonlyArray<string>, options: IShellOutputOptions): Promise<string>;
   spawn(command: string, args: ReadonlyArray<string>, options: IShellSpawnOptions): Promise<ChildProcess>;
-  cmdinfo(cmd: string, args?: ReadonlyArray<string>, options?: ShellCommandOptions): Promise<string | undefined>;
+  cmdinfo(cmd: string, args?: ReadonlyArray<string>, options?: SubprocessOptions): Promise<string | undefined>;
 }
 
 export interface ITelemetry {

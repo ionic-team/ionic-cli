@@ -5,9 +5,6 @@ import { ValidationError } from './definitions';
 
 export const ERROR_INPUT_VALIDATION = 'ERR_ICF_INPUT_VALIDATION';
 export const ERROR_COMMAND_NOT_FOUND = 'ERR_ICF_COMMAND_NOT_FOUND';
-export const ERROR_SHELL_NON_ZERO_EXIT = 'ERR_ICF_SHELL_NON_ZERO_EXIT';
-export const ERROR_SHELL_SIGNAL_EXIT = 'ERR_ICF_SHELL_SIGNAL_EXIT';
-export const ERROR_SHELL_COMMAND_NOT_FOUND = 'ERR_ICF_SHELL_COMMAND_NOT_FOUND';
 export const ERROR_IPC_MODULE_INACCESSIBLE = 'ERR_ICF_IPC_MODULE_INACCESSIBLE';
 export const ERROR_IPC_UNKNOWN_PROCEDURE = 'ERR_ICF_IPC_UNKNOWN_PROCEDURE';
 
@@ -55,13 +52,6 @@ export class CommandNotFoundError extends BaseError {
   constructor(message: string, public args: string[]) {
     super(message);
   }
-}
-
-export class ShellCommandError extends BaseError {
-  readonly name = 'ShellCommandError';
-  output?: string;
-  exitCode?: number;
-  signal?: string;
 }
 
 export class IPCError extends BaseError {

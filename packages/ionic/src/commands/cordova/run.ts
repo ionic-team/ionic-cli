@@ -1,5 +1,6 @@
-import { ERROR_SHELL_COMMAND_NOT_FOUND, Footnote, LOGGER_LEVELS, OptionGroup, ShellCommandError, createPrefixedFormatter } from '@ionic/cli-framework';
+import { Footnote, LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit, processExit, sleepForever } from '@ionic/utils-process';
+import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
 import chalk from 'chalk';
 import * as path from 'path';
 import * as url from 'url';
@@ -277,7 +278,7 @@ Just like with ${chalk.green('ionic cordova build')}, you can pass additional op
     try {
       await this.env.shell.run('native-run', args, { showCommand: !args.includes('--json'), fatalOnNotFound: false, cwd: this.project.directory, stream: ws });
     } catch (e) {
-      if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
+      if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         const cdvInstallArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'native-run', global: true });
         throw new FatalException(
           `${chalk.green('native-run')} was not found on your PATH. Please install it globally:\n` +

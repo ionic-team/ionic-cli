@@ -7,7 +7,9 @@ import * as crossSpawn from 'cross-spawn';
 import * as os from 'os';
 import * as path from 'path';
 
-import { ERROR_SHELL_COMMAND_NOT_FOUND, ERROR_SHELL_NON_ZERO_EXIT, ERROR_SHELL_SIGNAL_EXIT, ShellCommandError } from '../errors';
+export const ERROR_COMMAND_NOT_FOUND = 'ERR_SUBPROCESS_COMMAND_NOT_FOUND';
+export const ERROR_NON_ZERO_EXIT = 'ERR_SUBPROCESS_NON_ZERO_EXIT';
+export const ERROR_SIGNAL_EXIT = 'ERR_SUBPROCESS_SIGNAL_EXIT';
 
 export const TILDE_PATH_REGEX = /^~($|\/|\\)/;
 
@@ -16,13 +18,31 @@ export function expandTildePath(p: string) {
   return p.replace(TILDE_PATH_REGEX, `${h}$1`);
 }
 
-export interface ShellCommandOptions extends SpawnOptions {}
+export class SubprocessError extends Error {
+  readonly name = 'SubprocessError';
+  message: string;
+  stack: string;
 
-export class ShellCommand {
+  code?: typeof ERROR_COMMAND_NOT_FOUND | typeof ERROR_NON_ZERO_EXIT | typeof ERROR_SIGNAL_EXIT;
+  error?: Error;
+  output?: string;
+  signal?: string;
+  exitCode?: number;
+
+  constructor(message: string) {
+    super(message);
+    this.message = message;
+    this.stack = (new Error()).stack || '';
+  }
+}
+
+export interface SubprocessOptions extends SpawnOptions {}
+
+export class Subprocess {
   protected readonly path?: string;
   protected _options: SpawnOptions;
 
-  constructor(public name: string, public args: ReadonlyArray<string>, options: ShellCommandOptions = {}) {
+  constructor(public name: string, public args: ReadonlyArray<string>, options: SubprocessOptions = {}) {
     const i = name.lastIndexOf(path.sep);
 
     if (i >= 0) {
@@ -104,13 +124,13 @@ export class ShellCommand {
 
     const promise = new Promise<void>((resolve, reject) => {
       p.on('error', (error: NodeJS.ErrnoException) => {
-        let err: ShellCommandError;
+        let err: SubprocessError;
 
         if (error.code === 'ENOENT') {
-          err = new ShellCommandError('Command not found.');
-          err.code = ERROR_SHELL_COMMAND_NOT_FOUND;
+          err = new SubprocessError('Command not found.');
+          err.code = ERROR_COMMAND_NOT_FOUND;
         } else {
-          err = new ShellCommandError('Command error.');
+          err = new SubprocessError('Command error.');
         }
 
         err.error = error;
@@ -118,19 +138,19 @@ export class ShellCommand {
       });
 
       p.on('close', (code, signal) => {
-        let err: ShellCommandError;
+        let err: SubprocessError;
 
         if (code === 0) {
           return resolve();
         }
 
         if (signal) {
-          err = new ShellCommandError('Signal exit from subprocess.');
-          err.code = ERROR_SHELL_SIGNAL_EXIT;
+          err = new SubprocessError('Signal exit from subprocess.');
+          err.code = ERROR_SIGNAL_EXIT;
           err.signal = signal;
         } else {
-          err = new ShellCommandError('Non-zero exit from subprocess.');
-          err.code = ERROR_SHELL_NON_ZERO_EXIT;
+          err = new SubprocessError('Non-zero exit from subprocess.');
+          err.code = ERROR_NON_ZERO_EXIT;
           err.exitCode = code;
         }
 

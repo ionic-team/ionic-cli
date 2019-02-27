@@ -32,6 +32,7 @@
     "@ionic/utils-object": "0.0.0",
     "@ionic/utils-process": "0.0.0",
     "@ionic/utils-stream": "0.0.0",
+    "@ionic/utils-subprocess": "0.0.0",
     "@ionic/utils-terminal": "0.0.0",
     "chalk": "^2.3.0",
     "debug": "^4.0.0",
@@ -49,7 +50,6 @@
     "write-file-atomic": "^2.3.0"
   },
   "devDependencies": {
-    "@types/cross-spawn": "^6.0.0",
     "@types/debug": "4.1.1",
     "@types/inquirer": "0.0.43",
     "@types/jest": "^24.0.3",

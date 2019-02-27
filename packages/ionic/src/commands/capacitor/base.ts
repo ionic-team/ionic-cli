@@ -1,5 +1,5 @@
-import { ERROR_SHELL_COMMAND_NOT_FOUND, ERROR_SHELL_SIGNAL_EXIT, ShellCommandError } from '@ionic/cli-framework';
 import { pathExists } from '@ionic/utils-fs';
+import { ERROR_COMMAND_NOT_FOUND, ERROR_SIGNAL_EXIT, SubprocessError } from '@ionic/utils-subprocess';
 import chalk from 'chalk';
 import * as path from 'path';
 
@@ -43,8 +43,8 @@ export abstract class CapacitorCommand extends Command {
     try {
       return await this._runCapacitor(argList);
     } catch (e) {
-      if (e instanceof ShellCommandError) {
-        if (e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
+      if (e instanceof SubprocessError) {
+        if (e.code === ERROR_COMMAND_NOT_FOUND) {
           const pkg = '@capacitor/cli';
           const requiredMsg = `The Capacitor CLI is required for Capacitor projects.`;
           this.env.log.nl();
@@ -60,7 +60,7 @@ export abstract class CapacitorCommand extends Command {
           return this.runCapacitor(argList);
         }
 
-        if (e.code === ERROR_SHELL_SIGNAL_EXIT) {
+        if (e.code === ERROR_SIGNAL_EXIT) {
           return;
         }
       }

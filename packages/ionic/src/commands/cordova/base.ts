@@ -1,6 +1,7 @@
-import { ERROR_SHELL_COMMAND_NOT_FOUND, ERROR_SHELL_SIGNAL_EXIT, OptionGroup, ShellCommandError } from '@ionic/cli-framework';
+import { OptionGroup } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { mkdirp, pathExists } from '@ionic/utils-fs';
+import { ERROR_COMMAND_NOT_FOUND, ERROR_SIGNAL_EXIT, SubprocessError } from '@ionic/utils-subprocess';
 import chalk from 'chalk';
 import * as path from 'path';
 
@@ -138,8 +139,8 @@ export abstract class CordovaCommand extends Command {
     try {
       await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, cwd: this.integration.root, ...options });
     } catch (e) {
-      if (e instanceof ShellCommandError) {
-        if (e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
+      if (e instanceof SubprocessError) {
+        if (e.code === ERROR_COMMAND_NOT_FOUND) {
           const cdvInstallArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'cordova', global: true });
           throw new FatalException(
             `The Cordova CLI was not found on your PATH. Please install Cordova globally:\n` +
@@ -147,7 +148,7 @@ export abstract class CordovaCommand extends Command {
           );
         }
 
-        if (e.code === ERROR_SHELL_SIGNAL_EXIT) {
+        if (e.code === ERROR_SIGNAL_EXIT) {
           return;
         }
       }

@@ -1,7 +1,7 @@
-import { ERROR_SHELL_COMMAND_NOT_FOUND, LOGGER_LEVELS, ShellCommandError } from '@ionic/cli-framework';
-import { ShellCommand, which } from '@ionic/cli-framework/utils/shell';
+import { LOGGER_LEVELS } from '@ionic/cli-framework';
 import { createProcessEnv, killProcessTree, onBeforeExit } from '@ionic/utils-process';
 import { combineStreams } from '@ionic/utils-stream';
+import { ERROR_COMMAND_NOT_FOUND, Subprocess, SubprocessError, which } from '@ionic/utils-subprocess';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import chalk from 'chalk';
 import { ChildProcess, SpawnOptions } from 'child_process';
@@ -35,7 +35,7 @@ export class Shell implements IShell {
     this.prepareSpawnOptions(crossSpawnOptions);
 
     const cmdpath = await this.resolveCommandPath(command, crossSpawnOptions);
-    const cmd = new ShellCommand(cmdpath, args, crossSpawnOptions);
+    const cmd = new Subprocess(cmdpath, args, crossSpawnOptions);
 
     const fullCmd = cmd.bashify();
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
@@ -81,7 +81,7 @@ export class Shell implements IShell {
 
       await promise;
     } catch (e) {
-      if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
+      if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         if (fatalOnNotFound) {
           throw new FatalException(`Command not found: ${chalk.green(command)}`, 127);
         } else {
@@ -125,7 +125,7 @@ export class Shell implements IShell {
 
   async output(command: string, args: string[], { fatalOnNotFound = true, fatalOnError = true, showError = true, showCommand = false, ...crossSpawnOptions }: IShellOutputOptions): Promise<string> {
     const cmdpath = await this.resolveCommandPath(command, crossSpawnOptions);
-    const cmd = new ShellCommand(cmdpath, args, crossSpawnOptions);
+    const cmd = new Subprocess(cmdpath, args, crossSpawnOptions);
 
     const fullCmd = cmd.bashify();
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
@@ -137,7 +137,7 @@ export class Shell implements IShell {
     try {
       return await cmd.output();
     } catch (e) {
-      if (e instanceof ShellCommandError && e.code === ERROR_SHELL_COMMAND_NOT_FOUND) {
+      if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         if (fatalOnNotFound) {
           throw new FatalException(`Command not found: ${chalk.green(command)}`, 127);
         } else {
@@ -187,7 +187,7 @@ export class Shell implements IShell {
     this.prepareSpawnOptions(crossSpawnOptions);
 
     const cmdpath = await this.resolveCommandPath(command, crossSpawnOptions);
-    const cmd = new ShellCommand(cmdpath, args, crossSpawnOptions);
+    const cmd = new Subprocess(cmdpath, args, crossSpawnOptions);
     const p = cmd.spawn();
 
     if (showCommand && this.e.log.level >= LOGGER_LEVELS.INFO) {
@@ -202,7 +202,7 @@ export class Shell implements IShell {
     this.prepareSpawnOptions(opts);
 
     const cmdpath = await this.resolveCommandPath(command, opts);
-    const cmd = new ShellCommand(cmdpath, args, opts);
+    const cmd = new Subprocess(cmdpath, args, opts);
 
     try {
       const out = await cmd.output();
