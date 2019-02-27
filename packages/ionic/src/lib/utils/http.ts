@@ -1,4 +1,4 @@
-import { conform } from '@ionic/cli-framework/utils/array';
+import { conform } from '@ionic/utils-array';
 import { readFile } from '@ionic/utils-fs';
 import * as Debug from 'debug';
 import * as ζsuperagent from 'superagent';

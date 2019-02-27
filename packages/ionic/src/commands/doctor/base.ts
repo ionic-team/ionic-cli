@@ -1,4 +1,4 @@
-import { concurrentFilter } from '@ionic/cli-framework/utils/array';
+import { concurrentFilter } from '@ionic/utils-array';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 

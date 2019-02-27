@@ -1,4 +1,4 @@
-import { filter } from '@ionic/cli-framework/utils/array';
+import { filter } from '@ionic/utils-array';
 import { readdirSafe, statSafe } from '@ionic/utils-fs';
 import * as path from 'path';
 

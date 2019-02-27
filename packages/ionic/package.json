@@ -50,6 +50,7 @@
   "dependencies": {
     "@ionic/cli-framework": "1.6.1",
     "@ionic/discover": "1.0.12",
+    "@ionic/utils-array": "0.0.0",
     "@ionic/utils-fs": "1.1.0",
     "@ionic/utils-network": "0.0.7",
     "chalk": "^2.3.0",

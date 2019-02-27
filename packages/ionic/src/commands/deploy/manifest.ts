@@ -1,5 +1,5 @@
 import { CommandGroup } from '@ionic/cli-framework';
-import { map } from '@ionic/cli-framework/utils/array';
+import { map } from '@ionic/utils-array';
 import { readdirp, stat, writeFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as crypto from 'crypto';

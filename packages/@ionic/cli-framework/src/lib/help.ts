@@ -1,10 +1,10 @@
+import { filter, map } from '@ionic/utils-array';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
 import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, Footnote, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, LinkFootnote, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
 import { isHydratedCommandMetadata, isLinkFootnote } from '../guards';
-import { filter, map } from '../utils/array';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '../utils/format';
 
 import { ColorFunction, Colors, DEFAULT_COLORS } from './colors';
