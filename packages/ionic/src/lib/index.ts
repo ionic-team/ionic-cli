@@ -1,6 +1,6 @@
 import { LOGGER_LEVELS, createPromptModule } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
+import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';

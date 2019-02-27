@@ -1,6 +1,6 @@
 import * as Debug from 'debug';
 
-const debug = Debug('ionic:cli-framework:utils:terminal');
+const debug = Debug('ionic:utils-terminal');
 
 /**
  * These environment variables work for: Travis CI, CircleCI, Gitlab CI,

@@ -8,7 +8,7 @@ describe('@ionic/cli-framework', () => {
 
         const mock_terminal = { TERMINAL_INFO: { windows: false } };
         jest.resetModules();
-        jest.mock('../terminal', () => mock_terminal);
+        jest.mock('@ionic/utils-terminal', () => mock_terminal);
         const proc = require('../process');
 
         it('should be case sensitive', () => {
@@ -32,7 +32,7 @@ describe('@ionic/cli-framework', () => {
 
         const mock_terminal = { TERMINAL_INFO: { windows: true } };
         jest.resetModules();
-        jest.mock('../terminal', () => mock_terminal);
+        jest.mock('@ionic/utils-terminal', () => mock_terminal);
         const proc = require('../process');
 
         it('should be case insensitive', () => {

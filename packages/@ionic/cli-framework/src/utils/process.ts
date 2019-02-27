@@ -1,9 +1,9 @@
+import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as kill from 'tree-kill';
 
 import { createCaseInsensitiveObject } from './object';
-import { TERMINAL_INFO } from './terminal';
 
 const debug = Debug('ionic:cli-framework:utils:process');
 

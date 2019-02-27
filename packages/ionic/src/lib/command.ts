@@ -1,5 +1,5 @@
 import { BaseCommand, LOGGER_LEVELS, LogUpdateOutputStrategy, OutputStrategy, StreamHandler, StreamOutputStrategy, TaskChain, generateCommandPath, unparseArgs } from '@ionic/cli-framework';
-import { TERMINAL_INFO } from '@ionic/cli-framework/utils/terminal';
+import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import chalk from 'chalk';
 import * as LogUpdate from 'log-update';
 

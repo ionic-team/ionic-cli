@@ -1,7 +1,6 @@
+import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
 import * as ζinquirer from 'inquirer';
-
-import { TERMINAL_INFO } from '../utils/terminal';
 
 const debug = Debug('ionic:cli-framework:lib:prompts');
 

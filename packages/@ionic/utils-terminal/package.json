@@ -1,7 +1,7 @@
 {
-  "name": "@ionic/utils-array",
+  "name": "@ionic/utils-terminal",
   "version": "0.0.0",
-  "description": "Array utils",
+  "description": "Terminal utils for NodeJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "homepage": "https://ionicframework.com/",
@@ -24,7 +24,7 @@
     "lint": "tslint --project tsconfig.json",
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
-    "test": "jest --maxWorkers=4",
+    "test": "echo 'no tests yet'",
     "prepublishOnly": "npm run build"
   },
   "lint-staged": {

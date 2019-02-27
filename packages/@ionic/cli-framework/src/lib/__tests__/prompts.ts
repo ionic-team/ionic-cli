@@ -14,7 +14,7 @@ describe('@ionic/cli-framework', () => {
         mockMute.mockReset();
         mockClose.mockReset();
         jest.resetModules();
-        jest.mock('../../utils/terminal', () => ({ TERMINAL_INFO: { tty: mocktty } }));
+        jest.mock('@ionic/utils-terminal', () => ({ TERMINAL_INFO: { tty: mocktty } }));
         jest.mock('inquirer', () => ({
           ui: { BottomBar: class { close = mockClose; log = mockLogStream; rl = { output: { mute: mockMute } } } },
           createPromptModule: mockCreatePromptModule,
