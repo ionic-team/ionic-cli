@@ -41,7 +41,7 @@
     "tslib": "^1.9.0"
   },
   "devDependencies": {
-    "@types/debug": "4.1.1",
+    "@types/debug": "^4.1.1",
     "@types/jest": "^24.0.3",
     "@types/node": "^6.0.101",
     "jest": "^23.0.1",
