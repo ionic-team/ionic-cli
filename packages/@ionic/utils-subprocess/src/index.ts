@@ -1,5 +1,5 @@
 import { reduce } from '@ionic/utils-array';
-import { pathExecutable, statSafe } from '@ionic/utils-fs';
+import { isExecutableFile } from '@ionic/utils-fs';
 import { createProcessEnv } from '@ionic/utils-process';
 import { WritableStreamBuffer } from '@ionic/utils-stream';
 import { ChildProcess, ForkOptions, SpawnOptions, fork as _fork } from 'child_process';
@@ -214,9 +214,8 @@ export async function which(command: string, { PATH = process.env.PATH || '' }: 
     }
 
     const p = pathlib.join(v, command);
-    const [ stats, executable ] = await Promise.all([statSafe(p), pathExecutable(p)]);
 
-    if (stats && (stats.isFile() || stats.isSymbolicLink()) && executable) {
+    if (await isExecutableFile(p)) {
       return p;
     }
 
