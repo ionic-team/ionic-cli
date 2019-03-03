@@ -245,6 +245,18 @@ export async function pathExists(filePath: string): Promise<boolean> {
   return pathAccessible(filePath, fs.constants.F_OK);
 }
 
+export async function pathReadable(filePath: string): Promise<boolean> {
+  return pathAccessible(filePath, fs.constants.R_OK);
+}
+
+export async function pathWritable(filePath: string): Promise<boolean> {
+  return pathAccessible(filePath, fs.constants.W_OK);
+}
+
+export async function pathExecutable(filePath: string): Promise<boolean> {
+  return pathAccessible(filePath, fs.constants.X_OK);
+}
+
 /**
  * Find the base directory based on the path given and a marker file to look for.
  */
