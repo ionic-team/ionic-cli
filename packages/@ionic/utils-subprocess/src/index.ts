@@ -5,7 +5,7 @@ import { WritableStreamBuffer } from '@ionic/utils-stream';
 import { ChildProcess, ForkOptions, SpawnOptions, fork as _fork } from 'child_process';
 import * as crossSpawn from 'cross-spawn';
 import * as os from 'os';
-import * as path from 'path';
+import * as pathlib from 'path';
 
 export const ERROR_COMMAND_NOT_FOUND = 'ERR_SUBPROCESS_COMMAND_NOT_FOUND';
 export const ERROR_NON_ZERO_EXIT = 'ERR_SUBPROCESS_NON_ZERO_EXIT';
@@ -13,9 +13,23 @@ export const ERROR_SIGNAL_EXIT = 'ERR_SUBPROCESS_SIGNAL_EXIT';
 
 export const TILDE_PATH_REGEX = /^~($|\/|\\)/;
 
-export function expandTildePath(p: string) {
+export function expandTildePath(p: string): string {
   const h = os.homedir();
   return p.replace(TILDE_PATH_REGEX, `${h}$1`);
+}
+
+/**
+ * Prepare the PATH environment variable for use with subprocesses.
+ *
+ * If a raw tilde is found in PATH, e.g. `~/.bin`, it is expanded. The raw
+ * tilde works in Bash, but not in Node's `child_process` outside of a shell.
+ *
+ * This is a utility method. You do not need to use it with `Subprocess`.
+ *
+ * @param path Defaults to `process.env.PATH`
+ */
+export function convertPATH(path = process.env.PATH || ''): string {
+  return path.split(pathlib.delimiter).map(expandTildePath).join(pathlib.delimiter);
 }
 
 export class SubprocessError extends Error {
@@ -43,7 +57,7 @@ export class Subprocess {
   protected _options: SpawnOptions;
 
   constructor(public name: string, public args: ReadonlyArray<string>, options: SubprocessOptions = {}) {
-    const i = name.lastIndexOf(path.sep);
+    const i = name.lastIndexOf(pathlib.sep);
 
     if (i >= 0) {
       this.name = name.substring(i + 1);
@@ -60,13 +74,8 @@ export class Subprocess {
       opts.env = process.env;
     }
 
-    const PATH = typeof opts.env.PATH === 'string' ? opts.env.PATH : process.env.PATH;
-
     const env = createProcessEnv(opts.env || {}, {
-      // Some people prefix path parts with tilde, e.g. `~/.bin`. The tilde is
-      // expanded here because it's a bash character and won't work with Node's
-      // `child_process` outside of a shell.
-      PATH: PATH.split(path.delimiter).map(expandTildePath).join(path.delimiter),
+      PATH: convertPATH(typeof opts.env.PATH === 'string' ? opts.env.PATH : process.env.PATH),
     });
 
     return { ...opts, env };
@@ -192,11 +201,11 @@ export interface WhichOptions {
 }
 
 export async function which(command: string, { PATH = process.env.PATH || '' }: WhichOptions = {}): Promise<string> {
-  if (command.includes(path.sep)) {
+  if (command.includes(pathlib.sep)) {
     return command;
   }
 
-  const pathParts = PATH.split(path.delimiter);
+  const pathParts = PATH.split(pathlib.delimiter);
 
   // tslint:disable:no-null-keyword
 
@@ -206,7 +215,7 @@ export async function which(command: string, { PATH = process.env.PATH || '' }: 
       return acc;
     }
 
-    const p = path.join(v, command);
+    const p = pathlib.join(v, command);
     const stats = await statSafe(p);
 
     if (stats && stats.isFile()) {
