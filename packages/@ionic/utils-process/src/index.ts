@@ -2,6 +2,7 @@ import { createCaseInsensitiveObject } from '@ionic/utils-object';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
+import * as pathlib from 'path';
 import * as kill from 'tree-kill';
 
 const debug = Debug('ionic:utils-process');
@@ -29,8 +30,15 @@ export function killProcessTree(pid: number, signal: string | number = 'SIGTERM'
  * sensitivity matters. This method creates an empty "`process.env`" object
  * type that works for all platforms.
  */
-export function createProcessEnv(...sources: { [key: string]: string | undefined; }[]): { [key: string]: string; } {
+export function createProcessEnv(...sources: { [key: string]: string | undefined; }[]): NodeJS.ProcessEnv {
   return lodash.assign(TERMINAL_INFO.windows ? createCaseInsensitiveObject() : {}, ...sources);
+}
+
+/**
+ * Split a PATH string into path parts.
+ */
+export function getPathParts(envpath = process.env.PATH || ''): string[] {
+  return envpath.split(pathlib.delimiter);
 }
 
 /**
