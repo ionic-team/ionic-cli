@@ -1,6 +1,6 @@
-import { reduce } from '@ionic/utils-array';
+import { filter, reduce } from '@ionic/utils-array';
 import { isExecutableFile } from '@ionic/utils-fs';
-import { createProcessEnv } from '@ionic/utils-process';
+import { createProcessEnv, getPathParts } from '@ionic/utils-process';
 import { WritableStreamBuffer } from '@ionic/utils-stream';
 import { ChildProcess, ForkOptions, SpawnOptions, fork as _fork } from 'child_process';
 import * as crossSpawn from 'cross-spawn';
@@ -200,12 +200,19 @@ export interface WhichOptions {
   PATH?: string;
 }
 
-export async function which(command: string, { PATH = process.env.PATH || '' }: WhichOptions = {}): Promise<string> {
-  if (command.includes(pathlib.sep)) {
-    return command;
+/**
+ * Find the first instance of a program in PATH.
+ *
+ * If `program` contains a path separator, this function will merely return it.
+ *
+ * @param program A command name, such as `ionic`
+ */
+export async function which(program: string, { PATH = process.env.PATH || '' }: WhichOptions = {}): Promise<string> {
+  if (program.includes(pathlib.sep)) {
+    return program;
   }
 
-  const pathParts = PATH.split(pathlib.delimiter);
+  const pathParts = getPathParts(PATH);
 
   const value = await reduce<string, string | null>(pathParts, async (acc, v) => {
     // acc is no longer null, so we found the first match already
@@ -213,7 +220,7 @@ export async function which(command: string, { PATH = process.env.PATH || '' }: 
       return acc;
     }
 
-    const p = pathlib.join(v, command);
+    const p = pathlib.join(v, program);
 
     if (await isExecutableFile(p)) {
       return p;
@@ -223,10 +230,26 @@ export async function which(command: string, { PATH = process.env.PATH || '' }: 
   }, null); // tslint:disable-line:no-null-keyword
 
   if (!value) {
-    const err: NodeJS.ErrnoException = new Error(`${command} cannot be found within PATH`);
+    const err: NodeJS.ErrnoException = new Error(`${program} cannot be found within PATH`);
     err.code = 'ENOENT';
     throw err;
   }
 
   return value;
+}
+
+/**
+ * Find all instances of a program in PATH.
+ *
+ * If `program` contains a path separator, this function will merely return it
+ * inside an array.
+ *
+ * @param program A command name, such as `ionic`
+ */
+export async function findExecutables(program: string, { PATH = process.env.PATH || '' }: WhichOptions = {}): Promise<string[]> {
+  if (program.includes(pathlib.sep)) {
+    return [program];
+  }
+
+  return filter(getPathParts(PATH).map(p => pathlib.join(p, program)), async p => isExecutableFile(p));
 }
