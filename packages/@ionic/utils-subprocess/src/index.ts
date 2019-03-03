@@ -207,8 +207,6 @@ export async function which(command: string, { PATH = process.env.PATH || '' }: 
 
   const pathParts = PATH.split(pathlib.delimiter);
 
-  // tslint:disable:no-null-keyword
-
   const value = await reduce<string, string | null>(pathParts, async (acc, v) => {
     // acc is no longer null, so we found the first match already
     if (acc) {
@@ -218,15 +216,13 @@ export async function which(command: string, { PATH = process.env.PATH || '' }: 
     const p = pathlib.join(v, command);
     const stats = await statSafe(p);
 
-    if (stats && stats.isFile()) {
+    if (stats && (stats.isFile() || stats.isSymbolicLink())) {
       // TODO: check if file is executable
       return p;
     }
 
-    return null;
-  }, null);
-
-  // tslint:enable:no-null-keyword
+    return null; // tslint:disable-line:no-null-keyword
+  }, null); // tslint:disable-line:no-null-keyword
 
   if (!value) {
     const err: NodeJS.ErrnoException = new Error(`${command} cannot be found within PATH`);
