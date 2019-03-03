@@ -257,6 +257,12 @@ export async function pathExecutable(filePath: string): Promise<boolean> {
   return pathAccessible(filePath, fs.constants.X_OK);
 }
 
+export async function isExecutableFile(filePath: string): Promise<boolean> {
+  const [ stats, executable ] = await Promise.all([safe.stat(filePath), pathExecutable(filePath)]);
+
+  return !!stats && (stats.isFile() || stats.isSymbolicLink()) && executable;
+}
+
 /**
  * Find the base directory based on the path given and a marker file to look for.
  */
