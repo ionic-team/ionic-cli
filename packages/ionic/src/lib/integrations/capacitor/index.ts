@@ -1,18 +1,28 @@
 import { mkdirp } from '@ionic/utils-fs';
 import * as path from 'path';
 
-import { BaseIntegration } from '../';
-import { InfoItem, IntegrationAddDetails, IntegrationAddHandlers, IntegrationName, ProjectPersonalizationDetails } from '../../../definitions';
+import {BaseIntegration, IntegrationConfig} from '../';
+import {
+  InfoItem,
+  IntegrationAddDetails,
+  IntegrationName,
+  ProjectIntegration,
+  ProjectPersonalizationDetails
+} from '../../../definitions';
 import { pkgManagerArgs } from '../../utils/npm';
 
 import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from './config';
 
-export class Integration extends BaseIntegration {
+export class Integration extends BaseIntegration<ProjectIntegration> {
   readonly name: IntegrationName = 'capacitor';
   readonly summary = `Target native iOS and Android with Capacitor, Ionic's new native layer`;
   readonly archiveUrl = undefined;
 
-  async add(details: IntegrationAddDetails, handlers: IntegrationAddHandlers = {}): Promise<void> {
+  get config(): IntegrationConfig {
+    return new IntegrationConfig(this.e.project.filePath, {pathPrefix: ['integrations', this.name]});
+  }
+
+  async add(details: IntegrationAddDetails): Promise<void> {
     let name = this.e.project.config.get('name');
     let packageId = 'io.ionic.starter';
 
@@ -32,7 +42,7 @@ export class Integration extends BaseIntegration {
     await mkdirp(details.root);
     await this.e.shell.run('capacitor', ['init', name, packageId], { cwd: details.root });
 
-    await super.add(details, handlers);
+    await super.add(details);
   }
 
   async installCapacitorCore() {

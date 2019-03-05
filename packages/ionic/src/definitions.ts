@@ -75,16 +75,21 @@ export type HookContext = BaseHookContext & HookInput;
 
 export type HookFn = (ctx: HookContext) => Promise<void>;
 
-export type IntegrationName = 'capacitor' | 'cordova';
+export type IntegrationName = 'capacitor' | 'cordova' | 'enterprise';
 
 export interface ProjectIntegration {
   enabled?: boolean;
   root?: string;
 }
 
+export interface EnterpriseProjectIntegration extends ProjectIntegration{
+  productKey?: string;
+}
+
 export interface ProjectIntegrations {
   cordova?: ProjectIntegration;
   capacitor?: ProjectIntegration;
+  enterprise?: EnterpriseProjectIntegration;
 }
 
 export interface Response<T extends object> extends APIResponseSuccess {
@@ -261,7 +266,7 @@ export interface IProject {
   getDistDir(): Promise<string>;
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
-  createIntegration(name: IntegrationName): Promise<IIntegration>;
+  createIntegration(name: IntegrationName): Promise<IIntegration<ProjectIntegration>>;
   getIntegration(name: IntegrationName): Required<ProjectIntegration> | undefined;
   requireIntegration(name: IntegrationName): Required<ProjectIntegration>;
   requireAppflowId(): Promise<string>;
@@ -278,6 +283,8 @@ export interface IProject {
 }
 
 export interface IntegrationAddDetails {
+  env: IonicEnvironment;
+  quiet?: boolean;
   root: string;
   enableArgs?: string[];
 }
@@ -287,13 +294,16 @@ export interface IntegrationAddHandlers {
   onFileCreate?: (f: string) => void;
 }
 
-export interface IIntegration {
+export interface IIntegration<T extends ProjectIntegration> {
   readonly name: IntegrationName;
   readonly summary: string;
   readonly archiveUrl?: string;
+  readonly config: ζframework.BaseConfig<T>;
 
-  add(details: IntegrationAddDetails, handlers?: IntegrationAddHandlers): Promise<void>;
-  enable(): Promise<void>;
+  add(details: IntegrationAddDetails): Promise<void>;
+  isAdded(): boolean;
+  enable(config?: T): Promise<void>;
+  isEnabled(): boolean;
   disable(): Promise<void>;
   getInfo(): Promise<InfoItem[]>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;

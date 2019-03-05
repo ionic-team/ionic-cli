@@ -1,14 +1,126 @@
 import * as Debug from 'debug';
 
-import { BaseIntegration } from '../';
-import { InfoItem, IntegrationName, ProjectPersonalizationDetails } from '../../../definitions';
+import {BaseIntegration, IntegrationConfig} from '../';
+import {
+  InfoItem,
+  IntegrationAddDetails, IntegrationAddHandlers,
+  IntegrationName,
+  ProjectIntegration,
+  ProjectPersonalizationDetails
+} from '../../../definitions';
+import { copy, mkdirp, pathExists, readdirSafe, remove, stat } from '@ionic/utils-fs';
+import * as lodash from 'lodash';
+import * as os from 'os';
+import * as path from 'path';
+import chalk from 'chalk';
 
 const debug = Debug('ionic:lib:integrations:cordova');
 
-export class Integration extends BaseIntegration {
+export class Integration extends BaseIntegration<ProjectIntegration> {
   readonly name: IntegrationName = 'cordova';
   readonly summary = 'Target native iOS and Android with Apache Cordova';
   readonly archiveUrl = 'https://d2ql0qc7j8u4b2.cloudfront.net/integration-cordova.tar.gz';
+
+
+  get config(): IntegrationConfig {
+    return new IntegrationConfig(this.e.project.filePath, {pathPrefix: ['integrations', this.name]});
+  }
+
+  async add(details: IntegrationAddDetails): Promise<void> {
+    const handlers: IntegrationAddHandlers = {
+      conflictHandler: async (f, stats) => {
+        const isDirectory = stats.isDirectory();
+        const filename = `${path.basename(f)}${isDirectory ? '/' : ''}`;
+        const type = isDirectory ? 'directory' : 'file';
+
+        const confirm = await details.env.prompt({
+          type: 'confirm',
+          name: 'confirm',
+          message: `The ${chalk.cyan(filename)} ${type} exists in project. Overwrite?`,
+          default: false,
+        });
+
+        return confirm;
+      },
+      onFileCreate: f => {
+        if (!details.quiet) {
+          details.env.log.msg(`${chalk.green('CREATE')} ${f}`);
+        }
+      },
+    };
+    const onFileCreate = handlers.onFileCreate ? handlers.onFileCreate : lodash.noop;
+    const conflictHandler = handlers.conflictHandler ? handlers.conflictHandler : async () => false;
+
+    const { createRequest, download } = await import('../../utils/http');
+    const { tar } = await import('../../utils/archive');
+
+    this.e.log.info(`Downloading integration ${chalk.green(this.name)}`);
+    const tmpdir = path.resolve(os.tmpdir(), `ionic-integration-${this.name}`);
+
+    // TODO: etag
+
+    if (await pathExists(tmpdir)) {
+      await remove(tmpdir);
+    }
+
+    await mkdirp(tmpdir);
+
+    const ws = tar.extract({ cwd: tmpdir });
+    const { req } = await createRequest('GET', this.archiveUrl, this.e.config.getHTTPConfig());
+    await download(req, ws, {});
+
+    const contents = await readdirSafe(tmpdir);
+    const blacklist: string[] = [];
+
+    debug(`Integration files downloaded to ${chalk.bold(tmpdir)} (files: ${contents.map(f => chalk.bold(f)).join(', ')})`);
+
+    for (const f of contents) {
+      const projectf = path.resolve(this.e.project.directory, f);
+
+      try {
+        const stats = await stat(projectf);
+        const overwrite = await conflictHandler(projectf, stats);
+
+        if (!overwrite) {
+          blacklist.push(f);
+        }
+      } catch (e) {
+        if (e.code !== 'ENOENT') {
+          throw e;
+        }
+      }
+    }
+
+    this.e.log.info(`Copying integrations files to project`);
+    debug(`Blacklist: ${blacklist.map(f => chalk.bold(f)).join(', ')}`);
+
+    await mkdirp(details.root);
+
+    await copy(tmpdir, details.root, {
+      filter: f => {
+        if (f === tmpdir) {
+          return true;
+        }
+
+        const projectf = f.substring(tmpdir.length + 1);
+
+        for (const item of blacklist) {
+          if (item.slice(-1) === '/' && `${projectf}/` === item) {
+            return false;
+          }
+
+          if (projectf.startsWith(item)) {
+            return false;
+          }
+        }
+
+        onFileCreate(projectf);
+
+        return true;
+      },
+    });
+    await super.add(details);
+  }
 
   async getInfo(): Promise<InfoItem[]> {
     const { getAndroidSdkToolsVersion } = await import('./android');

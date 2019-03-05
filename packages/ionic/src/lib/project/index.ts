@@ -560,7 +560,7 @@ export abstract class Project implements IProject {
     registry.register(new ailments.CordovaPlatformsCommitted(deps));
   }
 
-  async createIntegration(name: IntegrationName): Promise<IIntegration> {
+  async createIntegration(name: IntegrationName): Promise<IIntegration<ProjectIntegration>> {
     return BaseIntegration.createFromName({
       config: this.e.config,
       project: this,
@@ -595,7 +595,7 @@ export abstract class Project implements IProject {
     return integration;
   }
 
-  protected async getIntegrations(): Promise<IIntegration[]> {
+  protected async getIntegrations(): Promise<IIntegration<ProjectIntegration>[]> {
     const integrationsFromConfig = this.config.get('integrations');
     const names = Object.keys(integrationsFromConfig) as IntegrationName[]; // TODO
 
@@ -604,7 +604,7 @@ export abstract class Project implements IProject {
       return c && c.enabled !== false;
     });
 
-    const integrations: (IIntegration | undefined)[] = await Promise.all(integrationNames.map(async name => {
+    const integrations: (IIntegration<ProjectIntegration> | undefined)[] = await Promise.all(integrationNames.map(async name => {
       try {
         return await this.createIntegration(name);
       } catch (e) {
@@ -616,7 +616,7 @@ export abstract class Project implements IProject {
       }
     }));
 
-    return integrations.filter((i): i is IIntegration => typeof i !== 'undefined');
+    return integrations.filter((i): i is IIntegration<ProjectIntegration> => typeof i !== 'undefined');
   }
 }
 

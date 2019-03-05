@@ -61,51 +61,26 @@ Integrations can be re-added with the ${chalk.green('--add')} option.
     }
 
     const integration = await this.project.createIntegration(name);
-    const integrationsConfig = this.project.config.get('integrations');
-    const integrationConfig = integrationsConfig[name];
 
     try {
-      if (!integrationConfig || add) {
+      if (!integration.isAdded() || add) {
         await integration.add({
           root,
           enableArgs: options['--'] ? options['--'] : undefined,
-        }, {
-          conflictHandler: async (f, stats) => {
-            const isDirectory = stats.isDirectory();
-            const filename = `${path.basename(f)}${isDirectory ? '/' : ''}`;
-            const type = isDirectory ? 'directory' : 'file';
-
-            const confirm = await this.env.prompt({
-              type: 'confirm',
-              name: 'confirm',
-              message: `The ${chalk.cyan(filename)} ${type} exists in project. Overwrite?`,
-              default: false,
-            });
-
-            return confirm;
-          },
-          onFileCreate: f => {
-            if (!quiet) {
-              this.env.log.msg(`${chalk.green('CREATE')} ${f}`);
-            }
-          },
-        });
-
-        integrationsConfig[name] = {
-          root: root !== this.project.directory ? path.relative(this.project.rootDirectory, root) : undefined,
-        };
+          quiet: Boolean(quiet),
+          env: this.env,
+        }, );
 
         this.env.log.ok(`Integration ${chalk.green(integration.name)} added!`);
       } else {
-        const wasEnabled = integrationConfig.enabled !== false;
+        const wasEnabled = integration.config.get('enabled') !== false;
 
         // We still need to run this whenever this command is run to make sure
         // everything is good with the integration.
         await integration.enable();
-        delete integrationConfig.enabled;
 
         if (wasEnabled) {
-          this.env.log.info(`Integration ${chalk.green(integration.name)} enabled.`);
+          this.env.log.info(`Integration ${chalk.green(integration.name)} already enabled.`);
         } else {
           this.env.log.ok(`Integration ${chalk.green(integration.name)} enabled!`);
         }
@@ -117,7 +92,5 @@ Integrations can be re-added with the ${chalk.green('--add')} option.
 
       throw e;
     }
-
-    this.project.config.set('integrations', integrationsConfig);
   }
 }
