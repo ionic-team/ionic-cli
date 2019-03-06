@@ -1,3 +1,4 @@
+import { parseArgs } from '@ionic/cli-framework';
 import { mkdirp } from '@ionic/utils-fs';
 import * as path from 'path';
 
@@ -15,6 +16,7 @@ export class Integration extends BaseIntegration {
   async add(details: IntegrationAddDetails, handlers: IntegrationAddHandlers = {}): Promise<void> {
     let name = this.e.project.config.get('name');
     let packageId = 'io.ionic.starter';
+    const options: string[] = [];
 
     if (details.enableArgs) {
       if (details.enableArgs[0]) {
@@ -24,13 +26,22 @@ export class Integration extends BaseIntegration {
       if (details.enableArgs[1]) {
         packageId = details.enableArgs[1];
       }
+
+      /*
+       * Use parseArgs on the process variables because integrations enable has its own set of options outside
+       * of the options that we will pass to capacitor
+       */
+      const parsedArgs = parseArgs(process.argv.slice(4));
+      if (parsedArgs['web-dir']) {
+        options.push('--web-dir', parsedArgs['web-dir']);
+      }
     }
 
     await this.installCapacitorCore();
     await this.installCapacitorCLI();
 
     await mkdirp(details.root);
-    await this.e.shell.run('capacitor', ['init', name, packageId], { cwd: details.root });
+    await this.e.shell.run('capacitor', ['init', name, packageId, ...options], { cwd: details.root });
 
     await super.add(details, handlers);
   }
