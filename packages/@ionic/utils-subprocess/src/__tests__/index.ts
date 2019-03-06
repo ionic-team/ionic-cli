@@ -17,8 +17,6 @@ const promisifyEvent = (emitter: EventEmitter, event: string | symbol): Promise<
 
 describe('@ionic/utils-subprocess', () => {
 
-  jest.setTimeout(300);
-
   describe('expandTildePath', () => {
 
     jest.resetModules();
@@ -57,7 +55,9 @@ describe('@ionic/utils-subprocess', () => {
 
   });
 
-  describe('Subprocess', async () => {
+  describe('Subprocess', () => {
+
+    jest.setTimeout(300);
 
     beforeEach(() => {
       jest.useFakeTimers();
@@ -74,7 +74,7 @@ describe('@ionic/utils-subprocess', () => {
     jest.mock('os', () => mock_os);
     const mock_path_posix = path.posix;
     jest.mock('path', () => mock_path_posix);
-    const { Subprocess, SubprocessError } = await import('../');
+    const { Subprocess, SubprocessError } = require('../');
 
     beforeEach(() => {
       jest.resetAllMocks();
@@ -135,6 +135,50 @@ describe('@ionic/utils-subprocess', () => {
       const cmd = new Subprocess(name, args);
       const result = cmd.bashify();
       expect(result).toEqual('cmd foo bar baz');
+    });
+
+    it('should bashify command and args with pathed name and keep path with maskArgv0 = false', async () => {
+      const name = path.resolve('/path', 'to', 'cmd');
+      const args = ['foo', 'bar', 'baz'];
+      const cmd = new Subprocess(name, args);
+      const result = cmd.bashify({ maskArgv0: false });
+      expect(result).toEqual(`${name} foo bar baz`);
+    });
+
+    it('should bashify command and args with pathed argv1', async () => {
+      const name = path.resolve('/path', 'to', 'cmd');
+      const argv1 = path.resolve('/path/to/foo');
+      const args = [argv1, 'bar', 'baz'];
+      const cmd = new Subprocess(name, args);
+      const result = cmd.bashify();
+      expect(result).toEqual(`cmd ${argv1} bar baz`);
+    });
+
+    it('should bashify command and args with pathed name and argv1 and mask both', async () => {
+      const name = path.resolve('/path', 'to', 'cmd');
+      const argv1 = path.resolve('/path/to/foo');
+      const args = [argv1, 'bar', 'baz'];
+      const cmd = new Subprocess(name, args);
+      const result = cmd.bashify({ maskArgv0: true, maskArgv1: true });
+      expect(result).toEqual(`cmd foo bar baz`);
+    });
+
+    it('should bashify shifted command and args', async () => {
+      const name = path.resolve('/path', 'to', 'cmd');
+      const argv1 = path.resolve('/path/to/foo');
+      const args = [argv1, 'bar', 'baz'];
+      const cmd = new Subprocess(name, args);
+      const result = cmd.bashify({ shiftArgv0: true });
+      expect(result).toEqual(`foo bar baz`);
+    });
+
+    it('should bashify shifted command and args but not mask', async () => {
+      const name = path.resolve('/path', 'to', 'cmd');
+      const argv1 = path.resolve('/path/to/foo');
+      const args = [argv1, 'bar', 'baz'];
+      const cmd = new Subprocess(name, args);
+      const result = cmd.bashify({ maskArgv0: false, shiftArgv0: true });
+      expect(result).toEqual(`${argv1} bar baz`);
     });
 
     it('should bashify command and args with spaces', async () => {
@@ -265,8 +309,8 @@ describe('@ionic/utils-subprocess', () => {
       cp.emit('close', 0);
       const result = await p;
       expect(result.length).toEqual(outinput.length + errinput.length);
-      expect(result.split('').filter(l => l !== outletter).join('')).toEqual(errinput);
-      expect(result.split('').filter(l => l !== errletter).join('')).toEqual(outinput);
+      expect(result.split('').filter((l: string) => l !== outletter).join('')).toEqual(errinput);
+      expect(result.split('').filter((l: string) => l !== errletter).join('')).toEqual(outinput);
     });
 
     it('should error with combined output for output()', async done => {
@@ -298,8 +342,8 @@ describe('@ionic/utils-subprocess', () => {
         }
 
         expect(e.output.length).toEqual(outinput.length + errinput.length);
-        expect(e.output.split('').filter(l => l !== outletter).join('')).toEqual(errinput);
-        expect(e.output.split('').filter(l => l !== errletter).join('')).toEqual(outinput);
+        expect(e.output.split('').filter((l: string) => l !== outletter).join('')).toEqual(errinput);
+        expect(e.output.split('').filter((l: string) => l !== errletter).join('')).toEqual(outinput);
         done();
       }
     });
@@ -333,8 +377,8 @@ describe('@ionic/utils-subprocess', () => {
         }
 
         expect(e.output.length).toEqual(outinput.length + errinput.length);
-        expect(e.output.split('').filter(l => l !== outletter).join('')).toEqual(errinput);
-        expect(e.output.split('').filter(l => l !== errletter).join('')).toEqual(outinput);
+        expect(e.output.split('').filter((l: string) => l !== outletter).join('')).toEqual(errinput);
+        expect(e.output.split('').filter((l: string) => l !== errletter).join('')).toEqual(outinput);
         done();
       }
     });

@@ -52,15 +52,50 @@ export class SubprocessError extends Error {
 
 export interface SubprocessOptions extends SpawnOptions {}
 
+export interface SubprocessBashifyOptions {
+
+  /**
+   * Mask file path to first argument.
+   *
+   * The first argument to subprocesses is the program name or path, e.g.
+   * `/path/to/bin/my-program`. If `true`, `bashify()` will return the program
+   * name without a file path, e.g. `my-program`.
+   *
+   * The default is `true`.
+   */
+  maskArgv0?: boolean;
+
+  /**
+   * Mask file path to second argument.
+   *
+   * In some subprocesses, the second argument is a script file to run, e.g.
+   * `node ./scripts/post-install`. If `true`, `bashify()` will return the
+   * script name without a file path, e.g. `node post-install`.
+   *
+   * The default is `false`.
+   */
+  maskArgv1?: boolean;
+
+  /**
+   * Remove the first argument from output.
+   *
+   * Useful to make a command such as `node ./scripts/post-install` appear as
+   * simply `post-install`.
+   *
+   * The default is `false`.
+   */
+  shiftArgv0?: boolean;
+}
+
 export class Subprocess {
   protected readonly path?: string;
   protected _options: SpawnOptions;
 
   constructor(public name: string, public args: ReadonlyArray<string>, options: SubprocessOptions = {}) {
-    const i = name.lastIndexOf(pathlib.sep);
+    const masked = this.maskArg(name);
 
-    if (i >= 0) {
-      this.name = name.substring(i + 1);
+    if (masked !== name) {
+      this.name = masked;
       this.path = name;
     }
 
@@ -178,13 +213,34 @@ export class Subprocess {
     return spawn(this.path ? this.path : this.name, this.args, this.options);
   }
 
-  bashify(): string {
-    return (
-      `${this.name} ` +
-      (this.args.length > 0
-        ? this.args.map(arg => arg.includes(' ') ? `"${arg.replace(/\"/g, '\\"')}"` : arg).join(' ')
-        : '')
-    );
+  bashify({ maskArgv0 = true, maskArgv1 = false, shiftArgv0 = false }: SubprocessBashifyOptions = {}): string {
+    const args = [this.path ? this.path : this.name, ...this.args];
+
+    if (shiftArgv0) {
+      args.shift();
+    }
+
+    if (args[0] && maskArgv0) {
+      args[0] = this.maskArg(args[0]);
+    }
+
+    if (args[1] && maskArgv1) {
+      args[1] = this.maskArg(args[1]);
+    }
+
+    return args.length > 0
+      ? args.map(arg => this.bashifyArg(arg)).join(' ')
+      : '';
+  }
+
+  bashifyArg(arg: string): string {
+    return arg.includes(' ') ? `"${arg.replace(/\"/g, '\\"')}"` : arg;
+  }
+
+  maskArg(arg: string): string {
+    const i = arg.lastIndexOf(pathlib.sep);
+
+    return i >= 0 ? arg.substring(i + 1) : arg;
   }
 }
 
