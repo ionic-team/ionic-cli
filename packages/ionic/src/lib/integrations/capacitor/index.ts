@@ -1,3 +1,4 @@
+import { parseArgs } from '@ionic/cli-framework';
 import { mkdirp } from '@ionic/utils-fs';
 import * as path from 'path';
 
@@ -15,14 +16,15 @@ export class Integration extends BaseIntegration {
   async add(details: IntegrationAddDetails, handlers: IntegrationAddHandlers = {}): Promise<void> {
     let name = this.e.project.config.get('name');
     let packageId = 'io.ionic.starter';
+    const options: string[] = [];
 
     if (details.enableArgs) {
-      if (details.enableArgs[0]) {
-        name = details.enableArgs[0];
-      }
+      const parsedArgs = parseArgs(details.enableArgs);
 
-      if (details.enableArgs[1]) {
-        packageId = details.enableArgs[1];
+      name = parsedArgs['_'][0] || name;
+      packageId = parsedArgs['_'][1] || packageId;
+      if (parsedArgs['web-dir']) {
+        options.push('--web-dir', parsedArgs['web-dir']);
       }
     }
 
@@ -30,7 +32,7 @@ export class Integration extends BaseIntegration {
     await this.installCapacitorCLI();
 
     await mkdirp(details.root);
-    await this.e.shell.run('capacitor', ['init', name, packageId], { cwd: details.root });
+    await this.e.shell.run('capacitor', ['init', name, packageId, ...options], { cwd: details.root });
 
     await super.add(details, handlers);
   }
