@@ -19,19 +19,10 @@ export class Integration extends BaseIntegration {
     const options: string[] = [];
 
     if (details.enableArgs) {
-      if (details.enableArgs[0]) {
-        name = details.enableArgs[0];
-      }
+      const parsedArgs = parseArgs(details.enableArgs);
 
-      if (details.enableArgs[1]) {
-        packageId = details.enableArgs[1];
-      }
-
-      /*
-       * Use parseArgs on the process variables because integrations enable has its own set of options outside
-       * of the options that we will pass to capacitor
-       */
-      const parsedArgs = parseArgs(process.argv.slice(4));
+      name = parsedArgs['_'][0] || name;
+      packageId = parsedArgs['_'][1] || packageId;
       if (parsedArgs['web-dir']) {
         options.push('--web-dir', parsedArgs['web-dir']);
       }
