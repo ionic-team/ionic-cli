@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-fs@1.1.1...@ionic/utils-fs@1.2.0) (2019-03-06)
+
+
+### Features
+
+* **fs:** add `isExecutableFile` utility ([53d9626](https://github.com/ionic-team/ionic-cli/commit/53d9626))
+* **fs:** add `pathReadable`, `pathWritable`, and `pathExecutable` ([5412791](https://github.com/ionic-team/ionic-cli/commit/5412791))
+
+
+
+
 <a name="1.1.1"></a>
 ## [1.1.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-fs@1.1.0...@ionic/utils-fs@1.1.1) (2019-02-27)
 

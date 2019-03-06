@@ -1,6 +1,6 @@
 {
   "name": "@ionic/utils-process",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Process utils for NodeJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

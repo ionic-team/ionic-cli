@@ -25,7 +25,7 @@ const NATIVE_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
     name: 'native-run',
     summary: `Use ${chalk.green('native-run')} instead of Cordova for running the app`,
     type: Boolean,
-    groups: [OptionGroup.Hidden, 'native-run'],
+    groups: [OptionGroup.Experimental, 'native-run'],
     hint: chalk.dim('[native-run]'),
   },
   {
@@ -33,14 +33,14 @@ const NATIVE_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
     summary: 'Do not tie the running app to the process',
     type: Boolean,
     default: true,
-    groups: [OptionGroup.Hidden, 'native-run'],
+    groups: [OptionGroup.Experimental, 'native-run'],
     hint: chalk.dim('[native-run]'),
   },
   {
     name: 'json',
     summary: `Output ${chalk.green('--list')} targets in JSON`,
     type: Boolean,
-    groups: [OptionGroup.Hidden, 'native-run'],
+    groups: [OptionGroup.Experimental, 'native-run'],
     hint: chalk.dim('[native-run]'),
   },
 ];
@@ -91,6 +91,10 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         url: 'https://ionicframework.com/docs/developer-resources/developer-tips',
         shortUrl: 'https://ion.link/remote-debugging-docs',
       },
+      {
+        id: 'native-run-repo',
+        url: 'https://github.com/ionic-team/native-run',
+      },
     ];
 
     const serveRunner = this.project && await this.project.getServeRunner();
@@ -129,6 +133,8 @@ Like running ${chalk.green('cordova run')} or ${chalk.green('cordova emulate')} 
 For Android and iOS, you can setup Remote Debugging on your device with browser development tools using these docs[^remote-debugging-docs].
 
 Just like with ${chalk.green('ionic cordova build')}, you can pass additional options to the Cordova CLI using the ${chalk.green('--')} separator. To pass additional options to the dev server, consider using ${chalk.green('ionic serve')} and the ${chalk.green('--livereload-url')} option.
+
+With the experimental ${chalk.green('--native-run')} flag, this command will first use Cordova to build your app, and then it will run it on a device using the ${chalk.green('native-run')} utility[^native-run-repo] instead of Cordova.
       `,
       footnotes,
       exampleCommands,

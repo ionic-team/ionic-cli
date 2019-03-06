@@ -39,8 +39,16 @@ Cordova reference documentation:
 - Icons: ${chalk.bold('https://cordova.apache.org/docs/en/latest/config_ref/images.html')}
 - Splash Screens: ${chalk.bold('https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-splashscreen/')}
 
-This command uses Ionic servers, so we require you to be logged into your free Ionic account. Use ${chalk.green('ionic login')} to login.
+This command uses Ionic servers and we require you to be logged into your free Ionic account. Use ${chalk.green('ionic login')} to login.
+
+With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ionic cordova resources')} will generate resources locally using the ${chalk.green('cordova-res')} utility[^cordova-res-repo].
       `,
+      footnotes: [
+        {
+          id: 'cordova-res-repo',
+          url: 'https://github.com/ionic-team/cordova-res',
+        },
+      ],
       exampleCommands: ['', 'ios', 'android'],
       inputs: [
         {
@@ -71,7 +79,7 @@ This command uses Ionic servers, so we require you to be logged into your free I
           name: 'cordova-res',
           summary: `Use ${chalk.green('cordova-res')} instead of Ionic resource server`,
           type: Boolean,
-          groups: [OptionGroup.Hidden],
+          groups: [OptionGroup.Experimental],
         },
       ],
     };
