@@ -1,10 +1,11 @@
 import { CommandGroup, OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { stripAnsi } from '@ionic/cli-framework/utils/format';
+import { str2num } from '@ionic/cli-framework/utils/string';
 import { findClosestOpenPort } from '@ionic/utils-network';
 import chalk from 'chalk';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
+import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT as DEFAULT_CONSOLE_LOGS_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
 
 import { AngularProject } from './';
 
@@ -36,6 +37,22 @@ The dev server can use HTTPS via the ${chalk.green('--ssl')} option ${chalk.bold
         },
       ],
       options: [
+        {
+          name: 'consolelogs',
+          summary: 'Print app console logs to Ionic CLI',
+          type: Boolean,
+          groups: [OptionGroup.Advanced, 'cordova'],
+          // aliases: ['c'], Already used by ng cli for --configuration
+          hint: chalk.dim('[ng]'),
+        },
+        {
+          name: 'consolelogs-port',
+          summary: 'Use specific port for console logs server',
+          type: String,
+          groups: [OptionGroup.Advanced, 'cordova'],
+          hint: chalk.dim('[ng]'),
+          spec: { value: 'port' },
+        },
         {
           name: 'ssl',
           summary: 'Use HTTPS for the dev server',
@@ -85,9 +102,16 @@ The dev server can use HTTPS via the ${chalk.green('--ssl')} option ${chalk.bold
     const ssl = options['ssl'] ? Boolean(options['ssl']) : undefined;
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
     const sourcemaps = typeof options['source-map'] === 'boolean' ? Boolean(options['source-map']) : undefined;
+    const consolelogs = typeof options['consolelogs'] === 'boolean' ? Boolean(options['consolelogs']) : undefined;
+    let consolelogsPort;
+    if (consolelogs) {
+      consolelogsPort = str2num(options['consolelogs-port'], DEFAULT_CONSOLE_LOGS_PORT);
+    }
 
     return {
       ...baseOptions,
+      consolelogs,
+      consolelogsPort,
       ssl,
       configuration,
       sourcemaps,
@@ -215,6 +239,8 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
       if (options.devapp) {
         args.cordovaMock = true;
       }
+      args.consolelogs = options.consolelogs ? true : undefined;
+      args['consolelogs-port'] = options.consolelogsPort ? String(options.consolelogsPort) : undefined;
     }
 
     if (this.resolvedProgram !== this.program) {

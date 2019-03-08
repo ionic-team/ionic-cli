@@ -566,6 +566,8 @@ export interface ServeOptions {
 }
 
 export interface AngularServeOptions extends ServeOptions {
+  consolelogs?: boolean;
+  consolelogsPort?: number;
   ssl?: boolean;
   configuration?: string;
   sourcemaps?: boolean;
