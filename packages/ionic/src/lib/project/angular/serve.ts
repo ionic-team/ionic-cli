@@ -39,7 +39,7 @@ The dev server can use HTTPS via the ${chalk.green('--ssl')} option ${chalk.bold
       options: [
         {
           name: 'consolelogs',
-          summary: 'Print app console logs to Ionic CLI',
+          summary: 'Print app console logs to the terminal',
           type: Boolean,
           groups: [OptionGroup.Advanced, 'cordova'],
           // aliases: ['c'], Already used by ng cli for --configuration
@@ -103,10 +103,7 @@ The dev server can use HTTPS via the ${chalk.green('--ssl')} option ${chalk.bold
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
     const sourcemaps = typeof options['source-map'] === 'boolean' ? Boolean(options['source-map']) : undefined;
     const consolelogs = typeof options['consolelogs'] === 'boolean' ? Boolean(options['consolelogs']) : undefined;
-    let consolelogsPort;
-    if (consolelogs) {
-      consolelogsPort = str2num(options['consolelogs-port'], DEFAULT_CONSOLE_LOGS_PORT);
-    }
+    const consolelogsPort = consolelogs ? str2num(options['consolelogs-port'], DEFAULT_CONSOLE_LOGS_PORT) : undefined;
 
     return {
       ...baseOptions,
