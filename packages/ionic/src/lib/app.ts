@@ -52,11 +52,14 @@ export class AppClient extends ResourceClient implements ResourceClientLoad<App>
     return res.data;
   }
 
-  paginate(args: Partial<PaginateArgs<Response<App[]>>> = {}): IPaginator<Response<App[]>, PaginatorState> {
+  paginate(args: Partial<PaginateArgs<Response<App[]>>> = {}, orgId?: string): IPaginator<Response<App[]>, PaginatorState> {
     return this.e.client.paginate({
       reqgen: async () => {
         const { req } = await this.e.client.make('GET', '/apps');
         this.applyAuthentication(req, this.token);
+        if (orgId) {
+          req.send({ org_id: orgId });
+        }
         return { req };
       },
       guard: isAppsResponse,

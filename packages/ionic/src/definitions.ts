@@ -82,8 +82,12 @@ export interface ProjectIntegration {
   root?: string;
 }
 
-export interface EnterpriseProjectIntegration extends ProjectIntegration{
+export interface EnterpriseProjectIntegration extends ProjectIntegration {
   productKey?: string;
+  registries?: string[];
+  appId?: string;
+  orgId?: string;
+  keyId?: number;
 }
 
 export interface ProjectIntegrations {
