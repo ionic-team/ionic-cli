@@ -31,8 +31,8 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     if (details.enableArgs) {
       const parsedArgs = parseArgs(details.enableArgs);
 
-      name = parsedArgs['_'][0] || name;
-      packageId = parsedArgs['_'][1] || packageId;
+      name = parsedArgs._[0] || name;
+      packageId = parsedArgs._[1] || packageId;
       if (parsedArgs['web-dir']) {
         options.push('--web-dir', parsedArgs['web-dir']);
       }

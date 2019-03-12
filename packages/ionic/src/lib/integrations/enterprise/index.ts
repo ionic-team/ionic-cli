@@ -1,4 +1,4 @@
-import { BaseConfig, createPromptChoiceSeparator } from '@ionic/cli-framework';
+import { BaseConfig, createPromptChoiceSeparator, parseArgs } from '@ionic/cli-framework';
 import { readFile, writeFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
@@ -48,12 +48,12 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
   async add(details: IntegrationAddDetails): Promise<void> {
     let productKey = this.config.get('productKey');
     let appId = this.config.get('appId');
-    if (details.enableArgs && details.enableArgs[0]) {
-      productKey = details.enableArgs[0];
 
-      if (details.enableArgs.length > 1) {
-        appId = details.enableArgs[1];
-      }
+    if (details.enableArgs) {
+      const parsedArgs = parseArgs(details.enableArgs, { string: ['app-id', 'key'] });
+
+      appId = parsedArgs['app-id'];
+      productKey = parsedArgs['key'];
     }
 
     if (!productKey) {
@@ -79,7 +79,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
       throw new FatalException('No Organization attached to key. Please contact support@ionic.io');
     }
 
-    if (!key.app) {
+    if (!key.app || appId) {
       if (!appId) {
         appId = await this.chooseAppToLink(details, key.org);
       }
