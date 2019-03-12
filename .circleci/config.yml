@@ -110,8 +110,13 @@ jobs:
     docker:
       - image: circleci/node:8
 
-  unit-test-node-latest:
+  unit-test-node-10:
     <<: *unit-test-base
+    docker:
+      - image: circleci/node:10
+
+  # unit-test-node-latest:
+  #   <<: *unit-test-base
 
   deploy:
     <<: *defaults
@@ -140,10 +145,16 @@ workflows:
           requires: [build]
       - unit-test-node-8:
           requires: [build]
-      - unit-test-node-latest:
+      - unit-test-node-10:
           requires: [build]
+      # - unit-test-node-latest:
+      #     requires: [build]
       - deploy:
-          requires: [unit-test-node-6, unit-test-node-8, unit-test-node-latest]
+          requires:
+            - unit-test-node-6
+            - unit-test-node-8
+            - unit-test-node-10
+            # - unit-test-node-latest
           filters:
             branches:
               only: master
