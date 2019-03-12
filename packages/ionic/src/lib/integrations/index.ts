@@ -1,19 +1,27 @@
-import { copy, mkdirp, pathExists, readdirSafe, remove, stat } from '@ionic/utils-fs';
+import { BaseConfig } from '@ionic/cli-framework';
 import chalk from 'chalk';
-import * as Debug from 'debug';
-import * as lodash from 'lodash';
-import * as os from 'os';
 import * as path from 'path';
 
-import { IConfig, IIntegration, ILogger, IProject, IShell, InfoItem, IntegrationAddDetails, IntegrationAddHandlers, IntegrationName, ProjectPersonalizationDetails } from '../../definitions';
+import {
+  IConfig,
+  IIntegration,
+  ILogger,
+  IProject,
+  IShell,
+  InfoItem,
+  IntegrationAddDetails,
+  IntegrationName,
+  ProjectIntegration,
+  ProjectPersonalizationDetails
+} from '../../definitions';
+import { isIntegrationName } from '../../guards';
 import { IntegrationNotFoundException } from '../errors';
 
 import * as ζcapacitor from './capacitor';
 import * as ζcordova from './cordova';
+import * as ζenterprise from './enterprise';
 
 export { INTEGRATION_NAMES } from '../../guards';
-
-const debug = Debug('ionic:lib:integrations');
 
 export interface IntegrationOptions {
   quiet?: boolean;
@@ -26,22 +34,30 @@ export interface IntegrationDeps {
   readonly log: ILogger;
 }
 
-export abstract class BaseIntegration implements IIntegration {
+export type IntegationUnion = ζcapacitor.Integration | ζcordova.Integration | ζenterprise.Integration;
+
+export class IntegrationConfig extends BaseConfig<ProjectIntegration> {
+
+  provideDefaults(c: Partial<Readonly<ProjectIntegration>>): ProjectIntegration {
+    return {};
+  }
+}
+
+export abstract class BaseIntegration<T extends ProjectIntegration> implements IIntegration<T> {
   abstract readonly name: IntegrationName;
   abstract readonly summary: string;
   abstract readonly archiveUrl?: string;
+  abstract readonly config: BaseConfig<T>;
 
   constructor(protected readonly e: IntegrationDeps) {}
 
   static async createFromName(deps: IntegrationDeps, name: 'capacitor'): Promise<ζcapacitor.Integration>;
   static async createFromName(deps: IntegrationDeps, name: 'cordova'): Promise<ζcordova.Integration>;
-  static async createFromName(deps: IntegrationDeps, name: IntegrationName): Promise<IIntegration>;
-  static async createFromName(deps: IntegrationDeps, name: IntegrationName): Promise<IIntegration> {
-    if (name === 'capacitor') {
-      const { Integration } = await import('./capacitor');
-      return new Integration(deps);
-    } else if (name === 'cordova') {
-      const { Integration } = await import('./cordova');
+  static async createFromName(deps: IntegrationDeps, name: 'enterprise'): Promise<ζenterprise.Integration>;
+  static async createFromName(deps: IntegrationDeps, name: IntegrationName): Promise<IIntegration<ProjectIntegration>>;
+  static async createFromName(deps: IntegrationDeps, name: IntegrationName): Promise<IntegationUnion> {
+    if (isIntegrationName(name)) {
+      const { Integration } = await import(`./${name}`);
       return new Integration(deps);
     }
 
@@ -52,95 +68,34 @@ export abstract class BaseIntegration implements IIntegration {
     return [];
   }
 
-  async enable(): Promise<void> {
-    // optionally overwritten by subclasses
+  isAdded(): boolean {
+    return !!this.e.project.config.get('integrations')[this.name];
+  }
+
+  isEnabled(): boolean {
+    const integrationConfig = this.e.project.config.get('integrations')[this.name];
+    return !!integrationConfig && integrationConfig.enabled !== false;
+  }
+
+  async enable(config?: ProjectIntegration): Promise<void> {
+    if (config && config.root) {
+      this.config.set('root', config.root);
+    }
+    this.config.unset('enabled');
   }
 
   async disable(): Promise<void> {
-    // optionally overwritten by subclasses
+    this.config.set('enabled', false);
   }
 
   async personalize(details: ProjectPersonalizationDetails) {
     // optionally overwritten by subclasses
   }
 
-  async add(details: IntegrationAddDetails, handlers: IntegrationAddHandlers = {}): Promise<void> {
-    if (!this.archiveUrl) {
-      return;
-    }
-
-    const onFileCreate = handlers.onFileCreate ? handlers.onFileCreate : lodash.noop;
-    const conflictHandler = handlers.conflictHandler ? handlers.conflictHandler : async () => false;
-
-    const { createRequest, download } = await import('../utils/http');
-    const { tar } = await import('../utils/archive');
-
-    this.e.log.info(`Downloading integration ${chalk.green(this.name)}`);
-    const tmpdir = path.resolve(os.tmpdir(), `ionic-integration-${this.name}`);
-
-    // TODO: etag
-
-    if (await pathExists(tmpdir)) {
-      await remove(tmpdir);
-    }
-
-    await mkdirp(tmpdir);
-
-    const ws = tar.extract({ cwd: tmpdir });
-    const { req } = await createRequest('GET', this.archiveUrl, this.e.config.getHTTPConfig());
-    await download(req, ws, {});
-
-    const contents = await readdirSafe(tmpdir);
-    const blacklist: string[] = [];
-
-    debug(`Integration files downloaded to ${chalk.bold(tmpdir)} (files: ${contents.map(f => chalk.bold(f)).join(', ')})`);
-
-    for (const f of contents) {
-      const projectf = path.resolve(this.e.project.directory, f);
-
-      try {
-        const stats = await stat(projectf);
-        const overwrite = await conflictHandler(projectf, stats);
-
-        if (!overwrite) {
-          blacklist.push(f);
-        }
-      } catch (e) {
-        if (e.code !== 'ENOENT') {
-          throw e;
-        }
-      }
-    }
-
-    this.e.log.info(`Copying integrations files to project`);
-    debug(`Blacklist: ${blacklist.map(f => chalk.bold(f)).join(', ')}`);
-
-    await mkdirp(details.root);
-
-    await copy(tmpdir, details.root, {
-      filter: f => {
-        if (f === tmpdir) {
-          return true;
-        }
-
-        const projectf = f.substring(tmpdir.length + 1);
-
-        for (const item of blacklist) {
-          if (item.slice(-1) === '/' && `${projectf}/` === item) {
-            return false;
-          }
-
-          if (projectf.startsWith(item)) {
-            return false;
-          }
-        }
-
-        onFileCreate(projectf);
-
-        return true;
-      },
-    });
-
-    await this.enable();
+  async add(details: IntegrationAddDetails): Promise<void> {
+    const config = details.root !== this.e.project.directory ?
+      { root: path.relative(this.e.project.rootDirectory, details.root) } :
+      undefined;
+    await this.enable(config);
   }
 }

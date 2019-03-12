@@ -38,15 +38,12 @@ Integrations, such as Cordova, can be disabled with this command.
     }
 
     const integration = await this.project.createIntegration(name);
-    const integrationsConfig = this.project.config.get('integrations');
-    const integrationConfig = integrationsConfig[name];
 
     try {
-      if (!integrationConfig || integrationConfig.enabled === false) {
+      if (!integration.isAdded() || !integration.isEnabled()) {
         this.env.log.info(`Integration ${chalk.green(name)} already disabled.`);
       } else {
         await integration.disable();
-        integrationConfig.enabled = false;
         this.env.log.ok(`Integration ${chalk.green(name)} disabled!`);
       }
     } catch (e) {
@@ -56,7 +53,5 @@ Integrations, such as Cordova, can be disabled with this command.
 
       throw e;
     }
-
-    this.project.config.set('integrations', integrationsConfig);
   }
 }
