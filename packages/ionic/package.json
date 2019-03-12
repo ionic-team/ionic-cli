@@ -1,6 +1,6 @@
 {
   "name": "ionic",
-  "version": "4.11.0",
+  "version": "4.12.0",
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "https://ionicframework.com",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com) ",
@@ -48,7 +48,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ionic/cli-framework": "1.6.3",
+    "@ionic/cli-framework": "1.7.0",
     "@ionic/discover": "1.0.13",
     "@ionic/utils-array": "0.0.1",
     "@ionic/utils-fs": "1.2.0",

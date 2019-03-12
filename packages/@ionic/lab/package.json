@@ -1,6 +1,6 @@
 {
   "name": "@ionic/lab",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "Ionic Lab utility for developing Ionic apps, used by Ionic CLI",
   "bin": {
     "ionic-lab": "./bin/ionic-lab"
@@ -47,7 +47,7 @@
     ]
   },
   "dependencies": {
-    "@ionic/cli-framework": "1.6.3",
+    "@ionic/cli-framework": "1.7.0",
     "@ionic/utils-fs": "1.2.0",
     "chalk": "^2.3.0",
     "express": "^4.16.2",

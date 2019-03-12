@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.0.36"></a>
+## [0.0.36](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@0.0.35...cli-scripts@0.0.36) (2019-03-12)
+
+
+
+
+**Note:** Version bump only for package cli-scripts
+
 <a name="0.0.35"></a>
 ## [0.0.35](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@0.0.34...cli-scripts@0.0.35) (2019-03-06)
 

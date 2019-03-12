@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="4.12.0"></a>
+# [4.12.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.11.0...ionic@4.12.0) (2019-03-12)
+
+
+### Features
+
+* **enterprise:** add shortcut for registering ([a1890b4](https://github.com/ionic-team/ionic-cli/commit/a1890b4))
+* add `i` as alias for `integrations` ([14a7ddb](https://github.com/ionic-team/ionic-cli/commit/14a7ddb))
+* **integrations:** add `--web-dir` option for capacitor integration ([#3895](https://github.com/ionic-team/ionic-cli/issues/3895)) ([8a1c4b2](https://github.com/ionic-team/ionic-cli/commit/8a1c4b2))
+* **integrations:** ionic enterprise integration ([#3905](https://github.com/ionic-team/ionic-cli/issues/3905)) ([b071fcb](https://github.com/ionic-team/ionic-cli/commit/b071fcb))
+
+
+
+
 <a name="4.11.0"></a>
 # [4.11.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.10.4...ionic@4.11.0) (2019-03-06)
 
