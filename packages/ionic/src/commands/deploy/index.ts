@@ -1,3 +1,4 @@
+import { NamespaceGroup } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
 import { CommandMap, Namespace } from '../../lib/namespace';
@@ -13,6 +14,7 @@ Interface to execute commands about deploy builds on Ionic Appflow.
 Appflow deploy documentation:
 - Overview: ${chalk.bold('https://ion.link/appflow-deploy-docs')}
 `,
+      groups: [NamespaceGroup.Paid],
     };
   }
 
