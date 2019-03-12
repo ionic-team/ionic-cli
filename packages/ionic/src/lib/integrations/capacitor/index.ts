@@ -2,7 +2,7 @@ import { parseArgs } from '@ionic/cli-framework';
 import { mkdirp } from '@ionic/utils-fs';
 import * as path from 'path';
 
-import {BaseIntegration, IntegrationConfig} from '../';
+import { BaseIntegration, IntegrationConfig } from '../';
 import {
   InfoItem,
   IntegrationAddDetails,
@@ -20,7 +20,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   readonly archiveUrl = undefined;
 
   get config(): IntegrationConfig {
-    return new IntegrationConfig(this.e.project.filePath, {pathPrefix: ['integrations', this.name]});
+    return new IntegrationConfig(this.e.project.filePath, { pathPrefix: ['integrations', this.name] });
   }
 
   async add(details: IntegrationAddDetails): Promise<void> {

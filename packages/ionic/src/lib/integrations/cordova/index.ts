@@ -1,6 +1,11 @@
+import { copy, mkdirp, pathExists, readdirSafe, remove, stat } from '@ionic/utils-fs';
+import chalk from 'chalk';
 import * as Debug from 'debug';
+import * as lodash from 'lodash';
+import * as os from 'os';
+import * as path from 'path';
 
-import {BaseIntegration, IntegrationConfig} from '../';
+import { BaseIntegration, IntegrationConfig } from '../';
 import {
   InfoItem,
   IntegrationAddDetails, IntegrationAddHandlers,
@@ -8,11 +13,6 @@ import {
   ProjectIntegration,
   ProjectPersonalizationDetails
 } from '../../../definitions';
-import { copy, mkdirp, pathExists, readdirSafe, remove, stat } from '@ionic/utils-fs';
-import * as lodash from 'lodash';
-import * as os from 'os';
-import * as path from 'path';
-import chalk from 'chalk';
 
 const debug = Debug('ionic:lib:integrations:cordova');
 
@@ -21,9 +21,8 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   readonly summary = 'Target native iOS and Android with Apache Cordova';
   readonly archiveUrl = 'https://d2ql0qc7j8u4b2.cloudfront.net/integration-cordova.tar.gz';
 
-
   get config(): IntegrationConfig {
-    return new IntegrationConfig(this.e.project.filePath, {pathPrefix: ['integrations', this.name]});
+    return new IntegrationConfig(this.e.project.filePath, { pathPrefix: ['integrations', this.name] });
   }
 
   async add(details: IntegrationAddDetails): Promise<void> {

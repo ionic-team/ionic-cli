@@ -1,4 +1,4 @@
-import {BaseConfig} from '@ionic/cli-framework';
+import { BaseConfig } from '@ionic/cli-framework';
 import chalk from 'chalk';
 import * as path from 'path';
 
@@ -11,15 +11,15 @@ import {
   InfoItem,
   IntegrationAddDetails,
   IntegrationName,
-  ProjectPersonalizationDetails,
-  ProjectIntegration
+  ProjectIntegration,
+  ProjectPersonalizationDetails
 } from '../../definitions';
+import { isIntegrationName } from '../../guards';
 import { IntegrationNotFoundException } from '../errors';
 
 import * as ζcapacitor from './capacitor';
 import * as ζcordova from './cordova';
 import * as ζenterprise from './enterprise';
-import {isIntegrationName} from "../../guards";
 
 export { INTEGRATION_NAMES } from '../../guards';
 
@@ -94,7 +94,7 @@ export abstract class BaseIntegration<T extends ProjectIntegration> implements I
 
   async add(details: IntegrationAddDetails): Promise<void> {
     const config = details.root !== this.e.project.directory ?
-      {root: path.relative(this.e.project.rootDirectory, details.root)} :
+      { root: path.relative(this.e.project.rootDirectory, details.root) } :
       undefined;
     await this.enable(config);
   }

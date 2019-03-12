@@ -69,7 +69,7 @@ Integrations can be re-added with the ${chalk.green('--add')} option.
           enableArgs: options['--'] ? options['--'] : undefined,
           quiet: Boolean(quiet),
           env: this.env,
-        }, );
+        });
 
         this.env.log.ok(`Integration ${chalk.green(integration.name)} added!`);
       } else {
