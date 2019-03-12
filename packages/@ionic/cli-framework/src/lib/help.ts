@@ -20,6 +20,7 @@ export enum CommandGroup {
   Hidden = 'hidden',
   Beta = 'beta',
   Experimental = 'experimental',
+  Paid = 'paid',
 }
 
 export enum NamespaceGroup {
@@ -27,6 +28,7 @@ export enum NamespaceGroup {
   Hidden = 'hidden',
   Beta = 'beta',
   Experimental = 'experimental',
+  Paid = 'paid',
 }
 
 export enum OptionGroup {
@@ -35,6 +37,7 @@ export enum OptionGroup {
   Beta = 'beta',
   Experimental = 'experimental',
   Advanced = 'advanced',
+  Paid = 'paid',
 }
 
 type Decoration<T extends string> = [T, string];
@@ -43,18 +46,21 @@ const OPTION_DECORATIONS: Decoration<OptionGroup>[] = [
   [OptionGroup.Beta, chalk.red.bold('(beta)')],
   [OptionGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
   [OptionGroup.Experimental, chalk.red.bold('(experimental)')],
+  [OptionGroup.Paid, chalk.blue.bold('(paid)')],
 ];
 
 const COMMAND_DECORATIONS: Decoration<CommandGroup>[] = [
   [CommandGroup.Beta, chalk.red.bold('(beta)')],
   [CommandGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
   [CommandGroup.Experimental, chalk.red.bold('(experimental)')],
+  [CommandGroup.Paid, chalk.blue.bold('(paid)')],
 ];
 
 const NAMESPACE_DECORATIONS: Decoration<NamespaceGroup>[] = [
   [NamespaceGroup.Beta, chalk.red.bold('(beta)')],
   [NamespaceGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
   [NamespaceGroup.Experimental, chalk.red.bold('(experimental)')],
+  [NamespaceGroup.Paid, chalk.blue.bold('(paid)')],
 ];
 
 function formatGroupDecorations<T extends string>(decorations: Decoration<T>[], groups?: string[]): string {
