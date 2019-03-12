@@ -1,5 +1,5 @@
 import { BaseConfig, createPromptChoiceSeparator } from '@ionic/cli-framework';
-import { readFileSync, writeFile } from '@ionic/utils-fs';
+import { readFile, writeFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as path from 'path';
@@ -60,7 +60,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
       productKey = await details.env.prompt({
         type: 'input',
         name: 'product-key',
-        message: 'Please enter your product key',
+        message: 'Please enter your product key:',
       });
     }
     const keyInfo = await this.validatePK(details, productKey, appId);
@@ -161,7 +161,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
       name: chalk.bold('Create A New App'),
       id: CHOICE_CREATE_NEW_APP,
       value: CHOICE_CREATE_NEW_APP,
-      org: org, // tslint:disable-line
+      org,
     };
 
     const linkedApp = await details.env.prompt({
@@ -214,7 +214,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
     }
     let npmrc = '';
     try {
-      npmrc = readFileSync(path.join(this.e.project.directory , '.npmrc'), 'utf8');
+      npmrc = await readFile(path.join(this.e.project.directory , '.npmrc'), 'utf8');
     } catch (e) {
       if (!e.message.includes('ENOENT')) {
         throw e;
