@@ -145,7 +145,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
     const appName = await details.env.prompt({
       type: 'input',
       name: 'appName',
-      message: 'Please enter the name of your app',
+      message: 'Please enter the name of your app:',
     });
 
     const appClient = await this.getAppClient(details);
