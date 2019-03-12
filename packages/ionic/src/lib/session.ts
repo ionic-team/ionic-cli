@@ -99,7 +99,7 @@ export class ProSession extends BaseSession implements ISession {
     const authClient = new AuthClient(this.e);
     const { uuid: connection } = await authClient.connections.load(email);
 
-    const flow = new Auth0OAuth2Flow({ email, connection }, this.e);
+    const flow = new Auth0OAuth2Flow({ audience: this.e.config.get('urls.api'), email, connection }, this.e);
     const token = await flow.run();
 
     await this.tokenLogin(token);
