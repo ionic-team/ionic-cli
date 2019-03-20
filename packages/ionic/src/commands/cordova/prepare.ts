@@ -61,6 +61,7 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
     const { getPlatforms } = await import('../../lib/integrations/cordova/project');
     const [ platform ] = inputs;
 
@@ -77,9 +78,11 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
         ),
       });
     } else {
+      const conf = await loadConfigXml(this.integration);
       const platforms = await getPlatforms(this.integration.root);
+      const engines = conf.getPlatformEngines();
 
-      if (platforms.length === 0) {
+      if (engines.length === 0 && platforms.length === 0) {
         this.env.log.warn(
           `No platforms added to this project. Cannot prepare native platforms without any installed.\n` +
           `Run ${chalk.green('ionic cordova platform add <platform>')} to add native platforms.`
