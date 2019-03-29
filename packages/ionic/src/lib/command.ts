@@ -1,7 +1,6 @@
 import { BaseCommand, LOGGER_LEVELS, LogUpdateOutputStrategy, OutputStrategy, StreamHandler, StreamOutputStrategy, TaskChain, generateCommandPath, unparseArgs } from '@ionic/cli-framework';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import chalk from 'chalk';
-import * as LogUpdate from 'log-update';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace, IProject, IonicEnvironment } from '../definitions';
 import { isCommandPreRun } from '../guards';
@@ -29,7 +28,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
     const formatter = createFormatter();
 
     if (this.env.flags.interactive) {
-      output = new LogUpdateOutputStrategy({ LogUpdate });
+      output = new LogUpdateOutputStrategy();
       this.env.log.handlers = new Set([new StreamHandler({ stream: output.stream, formatter })]);
     } else {
       this.env.log.handlers = createDefaultLoggerHandlers();
