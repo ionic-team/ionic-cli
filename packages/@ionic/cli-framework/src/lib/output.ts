@@ -1,7 +1,7 @@
 import * as Debug from 'debug';
 import * as ζinquirer from 'inquirer';
-import LogUpdateModule, { LogUpdate } from 'log-update';
-import { Writable } from 'stream';
+import logUpdate = require('log-update');
+import { LogUpdate } from 'log-update';
 
 import { Colors, DEFAULT_COLORS } from './colors';
 import { ICON_FAILURE, ICON_SUCCESS, Spinner, TaskChain } from './tasks';
@@ -64,7 +64,7 @@ export class LogUpdateOutputStrategy implements OutputStrategy, RedrawLine {
   constructor({ stream = process.stdout, colors = DEFAULT_COLORS }: LogUpdateOutputStrategyOptions = {}) {
     this.stream = stream;
     this.colors = colors;
-    this.logUpdate = LogUpdateModule.create(stream as Writable); // https://github.com/sindresorhus/log-update/pull/38
+    this.logUpdate = logUpdate.create(stream);
   }
 
   redrawLine(msg = ''): void {
