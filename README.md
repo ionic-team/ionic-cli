@@ -1,5 +1,5 @@
 [![Build Status][circle-badge]][circle-badge-url]
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&identifier=14562056)](https://dependabot.com)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=ionic-team/ionic-cli)](https://dependabot.com)
 [![npm][npm-badge]][npm-badge-url]
 
 # Ionic CLI
